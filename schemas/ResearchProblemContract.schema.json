@@ -1,0 +1,314 @@
+{
+  "$defs": {
+    "HypothesisOrigin": {
+      "enum": [
+        "human",
+        "ai",
+        "mixed"
+      ],
+      "title": "HypothesisOrigin",
+      "type": "string"
+    },
+    "ResearchBudget": {
+      "additionalProperties": false,
+      "properties": {
+        "maximum_compute_units": {
+          "exclusiveMinimum": 0,
+          "title": "Maximum Compute Units",
+          "type": "number"
+        },
+        "maximum_iterations": {
+          "minimum": 1,
+          "title": "Maximum Iterations",
+          "type": "integer"
+        },
+        "maximum_storage_bytes": {
+          "exclusiveMinimum": 0,
+          "title": "Maximum Storage Bytes",
+          "type": "integer"
+        },
+        "maximum_tool_calls": {
+          "minimum": 0,
+          "title": "Maximum Tool Calls",
+          "type": "integer"
+        },
+        "maximum_wall_seconds": {
+          "exclusiveMinimum": 0,
+          "title": "Maximum Wall Seconds",
+          "type": "number"
+        }
+      },
+      "required": [
+        "maximum_iterations",
+        "maximum_tool_calls",
+        "maximum_compute_units",
+        "maximum_wall_seconds",
+        "maximum_storage_bytes"
+      ],
+      "title": "ResearchBudget",
+      "type": "object"
+    },
+    "ResearchEvidencePolicy": {
+      "additionalProperties": false,
+      "properties": {
+        "allow_bounded_null": {
+          "default": true,
+          "title": "Allow Bounded Null",
+          "type": "boolean"
+        },
+        "minimum_independent_confirmations": {
+          "default": 1,
+          "minimum": 1,
+          "title": "Minimum Independent Confirmations",
+          "type": "integer"
+        },
+        "preregistration_required": {
+          "const": true,
+          "default": true,
+          "title": "Preregistration Required",
+          "type": "boolean"
+        },
+        "require_deliberate_falsification": {
+          "default": true,
+          "title": "Require Deliberate Falsification",
+          "type": "boolean"
+        },
+        "require_numerical_validity": {
+          "const": true,
+          "default": true,
+          "title": "Require Numerical Validity",
+          "type": "boolean"
+        }
+      },
+      "title": "ResearchEvidencePolicy",
+      "type": "object"
+    },
+    "ResearchHypothesis": {
+      "additionalProperties": false,
+      "description": "Open scientific proposition whose details are authored during the run.",
+      "properties": {
+        "assumptions": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Assumptions",
+          "type": "array"
+        },
+        "coordinates": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Coordinates",
+          "type": "array"
+        },
+        "formal_specification": {
+          "additionalProperties": true,
+          "title": "Formal Specification",
+          "type": "object"
+        },
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "machine_predicate": {
+          "minLength": 1,
+          "title": "Machine Predicate",
+          "type": "string"
+        },
+        "model_family": {
+          "minLength": 1,
+          "title": "Model Family",
+          "type": "string"
+        },
+        "motivating_evidence_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Motivating Evidence Ids",
+          "type": "array"
+        },
+        "observables": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Observables",
+          "type": "array"
+        },
+        "origin": {
+          "$ref": "#/$defs/HypothesisOrigin"
+        },
+        "parent_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Parent Ids",
+          "type": "array"
+        },
+        "proposition_class": {
+          "$ref": "#/$defs/ResearchPropositionClass"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "scope": {
+          "minLength": 1,
+          "title": "Scope",
+          "type": "string"
+        },
+        "statement": {
+          "minLength": 1,
+          "title": "Statement",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "statement",
+        "machine_predicate",
+        "formal_specification",
+        "proposition_class",
+        "model_family",
+        "scope",
+        "coordinates",
+        "observables",
+        "origin"
+      ],
+      "title": "ResearchHypothesis",
+      "type": "object"
+    },
+    "ResearchPropositionClass": {
+      "enum": [
+        "contribution",
+        "sufficiency",
+        "invariance",
+        "threshold",
+        "path_dependence",
+        "scaling_law",
+        "phase_boundary",
+        "closure",
+        "auxiliary_validity"
+      ],
+      "title": "ResearchPropositionClass",
+      "type": "string"
+    },
+    "ResearchResultClass": {
+      "enum": [
+        "counterexample",
+        "scaling_law",
+        "phase_boundary",
+        "closure",
+        "impossibility",
+        "bounded_null"
+      ],
+      "title": "ResearchResultClass",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Human direction and constitution, without a prescribed research path.",
+  "properties": {
+    "allowed_model_families": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Allowed Model Families",
+      "type": "array"
+    },
+    "allowed_result_classes": {
+      "items": {
+        "$ref": "#/$defs/ResearchResultClass"
+      },
+      "minItems": 1,
+      "title": "Allowed Result Classes",
+      "type": "array"
+    },
+    "allowed_tools": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Allowed Tools",
+      "type": "array"
+    },
+    "budget": {
+      "$ref": "#/$defs/ResearchBudget"
+    },
+    "evidence_policy": {
+      "$ref": "#/$defs/ResearchEvidencePolicy"
+    },
+    "forbidden_shortcuts": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Forbidden Shortcuts",
+      "type": "array"
+    },
+    "id": {
+      "minLength": 1,
+      "title": "Id",
+      "type": "string"
+    },
+    "maximum_invalid_decisions_per_iteration": {
+      "default": 3,
+      "maximum": 10,
+      "minimum": 1,
+      "title": "Maximum Invalid Decisions Per Iteration",
+      "type": "integer"
+    },
+    "question": {
+      "minLength": 1,
+      "title": "Question",
+      "type": "string"
+    },
+    "root_hypotheses": {
+      "items": {
+        "$ref": "#/$defs/ResearchHypothesis"
+      },
+      "minItems": 1,
+      "title": "Root Hypotheses",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "scientific_constraints": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Scientific Constraints",
+      "type": "array"
+    },
+    "significance": {
+      "minLength": 1,
+      "title": "Significance",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "question",
+    "significance",
+    "root_hypotheses",
+    "allowed_result_classes",
+    "allowed_model_families",
+    "allowed_tools",
+    "budget"
+  ],
+  "title": "ResearchProblemContract",
+  "type": "object"
+}

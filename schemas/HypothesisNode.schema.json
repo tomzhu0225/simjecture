@@ -1,0 +1,243 @@
+{
+  "$defs": {
+    "DomainSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "assumptions": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Assumptions",
+          "type": "array"
+        },
+        "description": {
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "fixed_parameters": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "title": "Fixed Parameters",
+          "type": "object"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "model_family": {
+          "minLength": 1,
+          "title": "Model Family",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "description",
+        "model_family"
+      ],
+      "title": "DomainSpec",
+      "type": "object"
+    },
+    "EvidenceContract": {
+      "additionalProperties": false,
+      "properties": {
+        "falsifying_witness": {
+          "minLength": 1,
+          "title": "Falsifying Witness",
+          "type": "string"
+        },
+        "minimum_independent_confirmation_attempts": {
+          "default": 1,
+          "minimum": 1,
+          "title": "Minimum Independent Confirmation Attempts",
+          "type": "integer"
+        },
+        "primary_observable_id": {
+          "title": "Primary Observable Id",
+          "type": "string"
+        },
+        "primary_tolerance": {
+          "exclusiveMinimum": 0,
+          "title": "Primary Tolerance",
+          "type": "number"
+        }
+      },
+      "required": [
+        "primary_observable_id",
+        "falsifying_witness",
+        "primary_tolerance"
+      ],
+      "title": "EvidenceContract",
+      "type": "object"
+    },
+    "HypothesisOrigin": {
+      "enum": [
+        "human",
+        "ai",
+        "mixed"
+      ],
+      "title": "HypothesisOrigin",
+      "type": "string"
+    },
+    "MatchedPairFormalPredicate": {
+      "additionalProperties": false,
+      "description": "Executable semantics for a finite predictive-sufficiency witness.",
+      "properties": {
+        "coordinate_tolerance": {
+          "default": 1e-10,
+          "minimum": 0,
+          "title": "Coordinate Tolerance",
+          "type": "number"
+        },
+        "matched_coordinates": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Matched Coordinates",
+          "type": "array"
+        },
+        "maximum_outcome_difference": {
+          "exclusiveMinimum": 0,
+          "title": "Maximum Outcome Difference",
+          "type": "number"
+        },
+        "outcome_observable_id": {
+          "minLength": 1,
+          "title": "Outcome Observable Id",
+          "type": "string"
+        },
+        "predicate_type": {
+          "const": "matched_pair_predictive_sufficiency",
+          "default": "matched_pair_predictive_sufficiency",
+          "title": "Predicate Type",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "matched_coordinates",
+        "outcome_observable_id",
+        "maximum_outcome_difference"
+      ],
+      "title": "MatchedPairFormalPredicate",
+      "type": "object"
+    },
+    "PropositionClass": {
+      "enum": [
+        "existential_contribution",
+        "universal_non_contribution",
+        "predictive_sufficiency",
+        "causal_exhaustiveness",
+        "invariance",
+        "threshold",
+        "path_dependence"
+      ],
+      "title": "PropositionClass",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "coordinates": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Coordinates",
+      "type": "array"
+    },
+    "domain": {
+      "$ref": "#/$defs/DomainSpec"
+    },
+    "evidence_contract": {
+      "$ref": "#/$defs/EvidenceContract"
+    },
+    "formal_predicate": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/MatchedPairFormalPredicate"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "machine_predicate": {
+      "minLength": 1,
+      "title": "Machine Predicate",
+      "type": "string"
+    },
+    "motivating_evidence_ids": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Motivating Evidence Ids",
+      "type": "array"
+    },
+    "origin": {
+      "$ref": "#/$defs/HypothesisOrigin"
+    },
+    "parent_ids": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Parent Ids",
+      "type": "array"
+    },
+    "proposition_class": {
+      "$ref": "#/$defs/PropositionClass"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "statement": {
+      "minLength": 1,
+      "title": "Statement",
+      "type": "string"
+    }
+  },
+  "required": [
+    "statement",
+    "machine_predicate",
+    "proposition_class",
+    "domain",
+    "coordinates",
+    "evidence_contract",
+    "origin"
+  ],
+  "title": "HypothesisNode",
+  "type": "object"
+}

@@ -1,0 +1,86 @@
+{
+  "$defs": {
+    "ResearchToolKind": {
+      "enum": [
+        "simulator",
+        "analysis",
+        "verifier",
+        "literature_search"
+      ],
+      "title": "ResearchToolKind",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "description": {
+      "minLength": 1,
+      "title": "Description",
+      "type": "string"
+    },
+    "idempotent": {
+      "const": true,
+      "default": true,
+      "title": "Idempotent",
+      "type": "boolean"
+    },
+    "input_schema": {
+      "additionalProperties": true,
+      "title": "Input Schema",
+      "type": "object"
+    },
+    "kind": {
+      "$ref": "#/$defs/ResearchToolKind"
+    },
+    "name": {
+      "pattern": "^[a-z][a-z0-9_.-]*$",
+      "title": "Name",
+      "type": "string"
+    },
+    "output_schema": {
+      "additionalProperties": true,
+      "title": "Output Schema",
+      "type": "object"
+    },
+    "supported_coordinates": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Supported Coordinates",
+      "type": "array"
+    },
+    "supported_model_families": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Supported Model Families",
+      "type": "array"
+    },
+    "supported_observables": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Supported Observables",
+      "type": "array"
+    },
+    "version": {
+      "minLength": 1,
+      "title": "Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "version",
+    "description",
+    "kind",
+    "input_schema",
+    "output_schema",
+    "supported_model_families"
+  ],
+  "title": "ResearchToolManifest",
+  "type": "object"
+}

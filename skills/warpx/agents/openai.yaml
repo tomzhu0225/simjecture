@@ -1,0 +1,4 @@
+interface:
+  display_name: "WarpX PIC Simulation"
+  short_description: "Commission and tune kinetic WarpX simulations"
+  default_prompt: "Use $warpx to design, commission, tune, and diagnose a WarpX particle-in-cell simulation."

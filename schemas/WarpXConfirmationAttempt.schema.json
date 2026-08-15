@@ -1,0 +1,86 @@
+{
+  "$defs": {
+    "NormalizedResult": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_hashes": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Artifact Hashes",
+          "type": "array"
+        },
+        "diagnostics": {
+          "additionalProperties": true,
+          "title": "Diagnostics",
+          "type": "object"
+        },
+        "experiment_id": {
+          "title": "Experiment Id",
+          "type": "string"
+        },
+        "observables": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "title": "Observables",
+          "type": "object"
+        }
+      },
+      "required": [
+        "experiment_id",
+        "observables",
+        "diagnostics"
+      ],
+      "title": "NormalizedResult",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "checks": {
+      "additionalProperties": {
+        "type": "boolean"
+      },
+      "title": "Checks",
+      "type": "object"
+    },
+    "confirmed": {
+      "title": "Confirmed",
+      "type": "boolean"
+    },
+    "normalized_result": {
+      "$ref": "#/$defs/NormalizedResult"
+    },
+    "resolution_id": {
+      "minLength": 1,
+      "title": "Resolution Id",
+      "type": "string"
+    },
+    "seed": {
+      "minimum": 1,
+      "title": "Seed",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "seed",
+    "resolution_id",
+    "normalized_result",
+    "checks",
+    "confirmed"
+  ],
+  "title": "WarpXConfirmationAttempt",
+  "type": "object"
+}

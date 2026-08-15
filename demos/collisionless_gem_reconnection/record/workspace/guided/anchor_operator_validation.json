@@ -1,0 +1,49 @@
+{
+  "schema_version": "0.1.0",
+  "validated_at": "2026-08-14T07:07:00+08:00",
+  "scope": "operator validation of a guided starting point; not autonomous campaign evidence",
+  "capability": "warpx-cuda-openpmd-26.07",
+  "execution": {
+    "returncode": 0,
+    "timed_out": false,
+    "workspace_exceeded": false,
+    "runner_wall_seconds": 445.7530827409937,
+    "simulation_wall_seconds": 445.4220437309996,
+    "gpu_enabled": true,
+    "gpu_backend": "CUDA",
+    "steps": 4623,
+    "final_time_omegaci": 12.001293753458157,
+    "openpmd_hdf5_files": 26,
+    "openpmd_hdf5_bytes": 69236544,
+    "commissioning_checks_passed": 26,
+    "commissioning_checks_total": 26
+  },
+  "identities": {
+    "program_sha256": "55ffac348ff4ad84fcb228fa13ffc38d97504897e78a1e8ccbf160cc5d051123",
+    "validation_summary_sha256": "580a9e63c5b3e04e11e780e9ae7d5c573dd2bda5cf11a326e0141fdf3a283447",
+    "diagnostic_figure_sha256": "0f1c0dea8485e995a1594b2baec9bb82b73f26ca75ca2932f47461c7054d43d5"
+  },
+  "physical_observations_for_starting_context_only": {
+    "late_flux_rate_window_time_omegaci": [
+      9.0,
+      12.001293753458157
+    ],
+    "late_flux_rate_sample_count": 7,
+    "late_flux_rate_median_upstream_normalized": 0.09535896924731277,
+    "late_flux_rate_minimum_upstream_normalized": 0.0904088159657082,
+    "late_flux_rate_maximum_upstream_normalized": 0.10075503627587724,
+    "reconnected_flux_change_over_B0_di": 1.1124360754034006,
+    "final_hall_quadrupole_projection_over_B0": -0.02531018422220461,
+    "initial_total_field_plus_particle_energy_J": 615.091319330896,
+    "final_total_field_plus_particle_energy_J": 615.062466038007,
+    "relative_total_energy_change": -0.000046908958039604265
+  },
+  "audit_notes": [
+    "The flux-derivative rate is smoother than the local electric-field estimator at 16 particles per cell per population.",
+    "The late flux-derivative values are compatible with the established order-0.1 collisionless rate, but this one point does not prove a plateau or universality boundary.",
+    "The current openPMD record is named lowercase j by this runtime; the reader uses that observed schema.",
+    "The CUDA runtime lacks Pillow, so the program writes a dependency-free SVG diagnostic figure.",
+    "The raw 78 MB operator run is retained beside this package but is deliberately not injected into the autonomous workspace.",
+    "Fresh prospective campaign execution remains mandatory before any supplied program output can support a claim."
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "total_units": {
+      "exclusiveMinimum": 0,
+      "title": "Total Units",
+      "type": "number"
+    },
+    "unit_name": {
+      "default": "normalized_compute_unit",
+      "minLength": 1,
+      "title": "Unit Name",
+      "type": "string"
+    }
+  },
+  "required": [
+    "total_units"
+  ],
+  "title": "CampaignBudget",
+  "type": "object"
+}

@@ -1,0 +1,30 @@
+{
+  "environment": {
+    "MPLBACKEND": "Agg",
+    "OMP_NUM_THREADS": "8",
+    "OMP_PLACES": "cores",
+    "OMP_PROC_BIND": "spread",
+    "OPENBLAS_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "executable": "bin/python",
+  "manifest": {
+    "description": "Release-pinned eight-thread OpenMP CPU WarpX/PICMI Python runtime",
+    "executable_kind": "python-picmi",
+    "name": "warpx-cpu-26.07",
+    "preflight_checks": [
+      "checks.completed",
+      "checks.openpmd_format_native",
+      "checks.h5_backend_native",
+      "checks.h5_file_nonempty",
+      "checks.iteration_readable",
+      "checks.mesh_records_readable"
+    ],
+    "preflight_resource": "examples/openpmd_field_smoke.py",
+    "preflight_result": "openpmd_capability_smoke.json",
+    "schema_version": "0.1.0",
+    "skill": "warpx",
+    "version": "26.07"
+  },
+  "runtime_root": "../.runtime/warpx-cpu"
+}

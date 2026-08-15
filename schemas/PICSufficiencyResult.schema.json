@@ -1,0 +1,630 @@
+{
+  "$defs": {
+    "DistributionMoments": {
+      "additionalProperties": false,
+      "properties": {
+        "density": {
+          "title": "Density",
+          "type": "number"
+        },
+        "mean_velocity": {
+          "title": "Mean Velocity",
+          "type": "number"
+        },
+        "variance": {
+          "minimum": 0,
+          "title": "Variance",
+          "type": "number"
+        }
+      },
+      "required": [
+        "density",
+        "mean_velocity",
+        "variance"
+      ],
+      "title": "DistributionMoments",
+      "type": "object"
+    },
+    "DomainSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "assumptions": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Assumptions",
+          "type": "array"
+        },
+        "description": {
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "fixed_parameters": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "title": "Fixed Parameters",
+          "type": "object"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "model_family": {
+          "minLength": 1,
+          "title": "Model Family",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "description",
+        "model_family"
+      ],
+      "title": "DomainSpec",
+      "type": "object"
+    },
+    "EvidenceContract": {
+      "additionalProperties": false,
+      "properties": {
+        "falsifying_witness": {
+          "minLength": 1,
+          "title": "Falsifying Witness",
+          "type": "string"
+        },
+        "minimum_independent_confirmation_attempts": {
+          "default": 1,
+          "minimum": 1,
+          "title": "Minimum Independent Confirmation Attempts",
+          "type": "integer"
+        },
+        "primary_observable_id": {
+          "title": "Primary Observable Id",
+          "type": "string"
+        },
+        "primary_tolerance": {
+          "exclusiveMinimum": 0,
+          "title": "Primary Tolerance",
+          "type": "number"
+        }
+      },
+      "required": [
+        "primary_observable_id",
+        "falsifying_witness",
+        "primary_tolerance"
+      ],
+      "title": "EvidenceContract",
+      "type": "object"
+    },
+    "HypothesisNode": {
+      "additionalProperties": false,
+      "properties": {
+        "coordinates": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Coordinates",
+          "type": "array"
+        },
+        "domain": {
+          "$ref": "#/$defs/DomainSpec"
+        },
+        "evidence_contract": {
+          "$ref": "#/$defs/EvidenceContract"
+        },
+        "formal_predicate": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MatchedPairFormalPredicate"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "machine_predicate": {
+          "minLength": 1,
+          "title": "Machine Predicate",
+          "type": "string"
+        },
+        "motivating_evidence_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Motivating Evidence Ids",
+          "type": "array"
+        },
+        "origin": {
+          "$ref": "#/$defs/HypothesisOrigin"
+        },
+        "parent_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Parent Ids",
+          "type": "array"
+        },
+        "proposition_class": {
+          "$ref": "#/$defs/PropositionClass"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "statement": {
+          "minLength": 1,
+          "title": "Statement",
+          "type": "string"
+        }
+      },
+      "required": [
+        "statement",
+        "machine_predicate",
+        "proposition_class",
+        "domain",
+        "coordinates",
+        "evidence_contract",
+        "origin"
+      ],
+      "title": "HypothesisNode",
+      "type": "object"
+    },
+    "HypothesisOrigin": {
+      "enum": [
+        "human",
+        "ai",
+        "mixed"
+      ],
+      "title": "HypothesisOrigin",
+      "type": "string"
+    },
+    "MatchedPairFormalPredicate": {
+      "additionalProperties": false,
+      "description": "Executable semantics for a finite predictive-sufficiency witness.",
+      "properties": {
+        "coordinate_tolerance": {
+          "default": 1e-10,
+          "minimum": 0,
+          "title": "Coordinate Tolerance",
+          "type": "number"
+        },
+        "matched_coordinates": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Matched Coordinates",
+          "type": "array"
+        },
+        "maximum_outcome_difference": {
+          "exclusiveMinimum": 0,
+          "title": "Maximum Outcome Difference",
+          "type": "number"
+        },
+        "outcome_observable_id": {
+          "minLength": 1,
+          "title": "Outcome Observable Id",
+          "type": "string"
+        },
+        "predicate_type": {
+          "const": "matched_pair_predictive_sufficiency",
+          "default": "matched_pair_predictive_sufficiency",
+          "title": "Predicate Type",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "matched_coordinates",
+        "outcome_observable_id",
+        "maximum_outcome_difference"
+      ],
+      "title": "MatchedPairFormalPredicate",
+      "type": "object"
+    },
+    "ObservableSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "estimator": {
+          "minLength": 1,
+          "title": "Estimator",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "mathematical_definition": {
+          "minLength": 1,
+          "title": "Mathematical Definition",
+          "type": "string"
+        },
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "semantic_kind": {
+          "minLength": 1,
+          "title": "Semantic Kind",
+          "type": "string"
+        },
+        "tolerance": {
+          "exclusiveMinimum": 0,
+          "title": "Tolerance",
+          "type": "number"
+        },
+        "units": {
+          "default": "dimensionless",
+          "title": "Units",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "semantic_kind",
+        "mathematical_definition",
+        "estimator",
+        "tolerance"
+      ],
+      "title": "ObservableSpec",
+      "type": "object"
+    },
+    "PICCaseResult": {
+      "additionalProperties": false,
+      "properties": {
+        "amplitude_ratio": {
+          "exclusiveMinimum": 0,
+          "title": "Amplitude Ratio",
+          "type": "number"
+        },
+        "classification": {
+          "enum": [
+            "damped",
+            "unstable",
+            "ambiguous"
+          ],
+          "title": "Classification",
+          "type": "string"
+        },
+        "config": {
+          "$ref": "#/$defs/PICConfig"
+        },
+        "distribution": {
+          "$ref": "#/$defs/PICDistribution"
+        },
+        "early_rms_amplitude": {
+          "exclusiveMinimum": 0,
+          "title": "Early Rms Amplitude",
+          "type": "number"
+        },
+        "effective_growth_rate": {
+          "title": "Effective Growth Rate",
+          "type": "number"
+        },
+        "initial_moments": {
+          "$ref": "#/$defs/DistributionMoments"
+        },
+        "late_rms_amplitude": {
+          "exclusiveMinimum": 0,
+          "title": "Late Rms Amplitude",
+          "type": "number"
+        },
+        "maximum_gauss_residual": {
+          "minimum": 0,
+          "title": "Maximum Gauss Residual",
+          "type": "number"
+        },
+        "particle_count": {
+          "minimum": 1,
+          "title": "Particle Count",
+          "type": "integer"
+        },
+        "relative_energy_drift": {
+          "minimum": 0,
+          "title": "Relative Energy Drift",
+          "type": "number"
+        },
+        "trace": {
+          "$ref": "#/$defs/PICTrace"
+        },
+        "validity_passed": {
+          "title": "Validity Passed",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "distribution",
+        "config",
+        "particle_count",
+        "initial_moments",
+        "early_rms_amplitude",
+        "late_rms_amplitude",
+        "amplitude_ratio",
+        "effective_growth_rate",
+        "classification",
+        "relative_energy_drift",
+        "maximum_gauss_residual",
+        "validity_passed",
+        "trace"
+      ],
+      "title": "PICCaseResult",
+      "type": "object"
+    },
+    "PICConfig": {
+      "additionalProperties": false,
+      "description": "Legacy fixed-pair benchmark configuration.",
+      "properties": {
+        "damped_ratio_threshold": {
+          "default": 0.75,
+          "exclusiveMaximum": 1,
+          "exclusiveMinimum": 0,
+          "title": "Damped Ratio Threshold",
+          "type": "number"
+        },
+        "diagnostic_interval": {
+          "default": 0.5,
+          "exclusiveMinimum": 0,
+          "title": "Diagnostic Interval",
+          "type": "number"
+        },
+        "early_window": {
+          "default": [
+            0.0,
+            4.0
+          ],
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Early Window",
+          "type": "array"
+        },
+        "final_time": {
+          "default": 20.0,
+          "exclusiveMinimum": 0,
+          "title": "Final Time",
+          "type": "number"
+        },
+        "grid_cells": {
+          "default": 64,
+          "minimum": 32,
+          "title": "Grid Cells",
+          "type": "integer"
+        },
+        "late_window": {
+          "default": [
+            14.0,
+            18.0
+          ],
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Late Window",
+          "type": "array"
+        },
+        "maximum_gauss_residual": {
+          "default": 1e-10,
+          "exclusiveMinimum": 0,
+          "title": "Maximum Gauss Residual",
+          "type": "number"
+        },
+        "maximum_relative_energy_drift": {
+          "default": 0.001,
+          "exclusiveMinimum": 0,
+          "title": "Maximum Relative Energy Drift",
+          "type": "number"
+        },
+        "particles_per_beam": {
+          "default": 64,
+          "minimum": 32,
+          "title": "Particles Per Beam",
+          "type": "integer"
+        },
+        "perturbation_amplitude": {
+          "default": 0.01,
+          "exclusiveMaximum": 0.1,
+          "exclusiveMinimum": 0,
+          "title": "Perturbation Amplitude",
+          "type": "number"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "seed": {
+          "default": 7,
+          "minimum": 0,
+          "title": "Seed",
+          "type": "integer"
+        },
+        "stream_drift": {
+          "default": 0.9,
+          "exclusiveMaximum": 1,
+          "exclusiveMinimum": 0,
+          "title": "Stream Drift",
+          "type": "number"
+        },
+        "time_step": {
+          "default": 0.05,
+          "exclusiveMinimum": 0,
+          "title": "Time Step",
+          "type": "number"
+        },
+        "unstable_ratio_threshold": {
+          "default": 1.5,
+          "exclusiveMinimum": 1,
+          "title": "Unstable Ratio Threshold",
+          "type": "number"
+        },
+        "velocity_beams": {
+          "default": 256,
+          "minimum": 64,
+          "title": "Velocity Beams",
+          "type": "integer"
+        },
+        "wavenumber": {
+          "default": 0.5,
+          "exclusiveMinimum": 0,
+          "title": "Wavenumber",
+          "type": "number"
+        }
+      },
+      "title": "PICConfig",
+      "type": "object"
+    },
+    "PICDistribution": {
+      "enum": [
+        "maxwellian",
+        "symmetric_two_stream"
+      ],
+      "title": "PICDistribution",
+      "type": "string"
+    },
+    "PICTrace": {
+      "additionalProperties": false,
+      "properties": {
+        "fundamental_mode_amplitudes": {
+          "items": {
+            "type": "number"
+          },
+          "title": "Fundamental Mode Amplitudes",
+          "type": "array"
+        },
+        "gauss_residuals": {
+          "items": {
+            "type": "number"
+          },
+          "title": "Gauss Residuals",
+          "type": "array"
+        },
+        "times": {
+          "items": {
+            "type": "number"
+          },
+          "title": "Times",
+          "type": "array"
+        },
+        "total_energies": {
+          "items": {
+            "type": "number"
+          },
+          "title": "Total Energies",
+          "type": "array"
+        }
+      },
+      "required": [
+        "times",
+        "fundamental_mode_amplitudes",
+        "total_energies",
+        "gauss_residuals"
+      ],
+      "title": "PICTrace",
+      "type": "object"
+    },
+    "PropositionClass": {
+      "enum": [
+        "existential_contribution",
+        "universal_non_contribution",
+        "predictive_sufficiency",
+        "causal_exhaustiveness",
+        "invariance",
+        "threshold",
+        "path_dependence"
+      ],
+      "title": "PropositionClass",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "hypothesis": {
+      "$ref": "#/$defs/HypothesisNode"
+    },
+    "hypothesis_falsified": {
+      "title": "Hypothesis Falsified",
+      "type": "boolean"
+    },
+    "maxwellian": {
+      "$ref": "#/$defs/PICCaseResult"
+    },
+    "moments_match": {
+      "title": "Moments Match",
+      "type": "boolean"
+    },
+    "observable": {
+      "$ref": "#/$defs/ObservableSpec"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "two_stream": {
+      "$ref": "#/$defs/PICCaseResult"
+    }
+  },
+  "required": [
+    "hypothesis",
+    "observable",
+    "maxwellian",
+    "two_stream",
+    "moments_match",
+    "hypothesis_falsified"
+  ],
+  "title": "PICSufficiencyResult",
+  "type": "object"
+}

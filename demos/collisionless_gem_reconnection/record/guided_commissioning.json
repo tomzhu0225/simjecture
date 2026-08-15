@@ -1,0 +1,95 @@
+{
+  "available": true,
+  "capability": "warpx-cuda-openpmd-26.07",
+  "description": "A fully kinetic 2D electron-ion Harris-sheet CUDA/openPMD program, a successful operator anchor, and non-evidentiary audits of three prior autonomous campaigns for a fresh held-out endpoint confirmation.",
+  "files": [
+    {
+      "bytes": 2491,
+      "path": "guided/anchor_operator_validation.json",
+      "sha256": "519179d51beaf88fc6f54bfcbd69e5ef0fa20dc650978622946a6432917b8277"
+    },
+    {
+      "bytes": 25080,
+      "path": "guided/gem_anchor_validation.json",
+      "sha256": "580a9e63c5b3e04e11e780e9ae7d5c573dd2bda5cf11a326e0141fdf3a283447"
+    },
+    {
+      "bytes": 35104,
+      "path": "guided/gem_collisionless.py",
+      "sha256": "55ffac348ff4ad84fcb228fa13ffc38d97504897e78a1e8ccbf160cc5d051123"
+    },
+    {
+      "bytes": 4226,
+      "path": "guided/prior_campaign_0002_audit_summary.json",
+      "sha256": "72d3a59658cd6e18a3feeab5f601245d09c3331c87a245969f2f07351cafa6b6"
+    },
+    {
+      "bytes": 5062,
+      "path": "guided/prior_campaign_0003_audit_summary.json",
+      "sha256": "304c25f98144a742185114fc39f3cdd1608a85558fc694bce8e10a9961bdd932"
+    },
+    {
+      "bytes": 5255,
+      "path": "guided/prior_campaign_audit_summary.json",
+      "sha256": "3713b6463268eb4e0436f8f994d6cbb6c6149c18de4ae07c992e452b88064a1d"
+    }
+  ],
+  "limitations": [
+    "Every supplied anchor, output, prior rate, and audit is non-evidentiary context; the confirmation requires fresh prospective evidence.",
+    "The supplied model uses a reduced ion/electron mass ratio of 25.",
+    "Run 0001 left a system-size refinement unresolved and exposed material same-input variability.",
+    "Run 0002 falsified a monotone guide-field refinement with an adaptive aggregation-contract qualification.",
+    "Run 0003 cleanly falsified Ti/Te monotonicity under one fixed seed and exposed an exploratory endpoint contrast, but did not establish seed-ensemble or convergence-qualified physics.",
+    "Discovery seed 20260814 is excluded from fresh confirmation evidence.",
+    "A single known-runnable anchor commissions execution but does not establish scientific reproducibility.",
+    "The supplied program exposes distinct electric-field and flux-derivative estimators; their identities must not be conflated."
+  ],
+  "name": "collisionless-gem-gpu-v1-heldout-confirmation",
+  "operator_validation": "The exact argv completed 4,623 fully kinetic explicit CUDA steps, wrote 26 readable HDF5 openPMD field states, passed all 26 five-aspect commissioning checks, and conserved combined field-plus-particle energy to 4.70e-5 relative over t*Omega_ci=12.",
+  "package_sha256": "c3a80d953edc958fbdcf480e410483569fcb197e0255f0400360dd85b6aeb5dc",
+  "policy": "operator_validated_starting_point_not_campaign_evidence",
+  "program_path": "guided/gem_collisionless.py",
+  "schema_version": "0.1.0",
+  "scientific_evidence_eligible": false,
+  "validated_argv": [
+    "guided/gem_collisionless.py",
+    "--nx",
+    "256",
+    "--ppc-per-population",
+    "16",
+    "--duration-omegaci",
+    "12",
+    "--diagnostic-count",
+    "24",
+    "--mass-ratio",
+    "25",
+    "--density-m3",
+    "1e24",
+    "--background-fraction",
+    "0.2",
+    "--va-reference-over-c",
+    "0.04",
+    "--ion-electron-temperature-ratio",
+    "5",
+    "--box-lx-di",
+    "25.6",
+    "--box-lz-di",
+    "12.8",
+    "--sheet-half-width-di",
+    "0.5",
+    "--perturbation-fraction",
+    "0.1",
+    "--guide-field-fraction",
+    "0",
+    "--max-grid-size",
+    "64",
+    "--seed",
+    "20260814",
+    "--output",
+    "guided/anchor_run",
+    "--summary",
+    "guided/gem_anchor_validation.json",
+    "--overwrite"
+  ],
+  "validation_summary_path": "guided/gem_anchor_validation.json"
+}

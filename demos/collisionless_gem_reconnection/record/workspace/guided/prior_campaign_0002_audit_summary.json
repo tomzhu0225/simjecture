@@ -1,0 +1,88 @@
+{
+  "schema_version": "0.1.0",
+  "kind": "operator_audited_prior_campaign_context",
+  "evidence_eligible": false,
+  "source_campaign_id": "campaign_collisionless_gem_followup_20260814_v2",
+  "source_run": "autonomous_run_0002",
+  "execution": {
+    "status": "completed",
+    "model_iterations": 70,
+    "fresh_simulations_completed": 5,
+    "workspace_artifacts": 187,
+    "simulation_instrument_status": "supported",
+    "aggregation_instrument_status": "supported",
+    "scientific_child_status": "falsified_with_protocol_qualification",
+    "root_status": "unresolved"
+  },
+  "tested_refinement": {
+    "description": "At fixed reduced-fidelity GEM parameters, increasing guide-field fraction from 0 to 1.5 produces a systematic monotone decrease and a discoverable boundary in the quasi-steady normalized reconnection rate.",
+    "fixed_regime": {
+      "nx": 128,
+      "nz": 128,
+      "ppc_per_population": 8,
+      "duration_omegaci": 10,
+      "mass_ratio": 25,
+      "box_lx_di": 12.8,
+      "box_lz_di": 12.8,
+      "seed": 20260814
+    },
+    "guide_field_fractions": [0.0, 0.3, 0.6, 1.0, 1.5],
+    "late_flux_derivative_rate_medians": [
+      0.05174446572841832,
+      -0.0024967982317283754,
+      0.04586494997768659,
+      0.03906937152483719,
+      0.01769039356790595
+    ],
+    "late_rate_10_90_intervals": [
+      [0.017505353567540773, 0.08457972915132271],
+      [-0.007831885588252822, 0.01085782343162381],
+      [0.017401397985978003, 0.2788351787403085],
+      [0.018369889662918627, 0.06849698098517708],
+      [0.013094320629556245, 0.04789921325713999]
+    ],
+    "whole_window_total_flux_rates": [
+      0.05480710879584155,
+      0.00522959114592236,
+      0.05225714409519404,
+      0.05554850974593508,
+      0.043196882880829374
+    ],
+    "observation": "Neither estimator was monotone over the five guide-field values. This agrees with the original decision rule, but the formal decisive link was not cleanly prospective."
+  },
+  "quality_controls": {
+    "all_five_runs_passed_26_of_26_checks": true,
+    "all_five_runs_wrote_18_readable_openpmd_field_files": true,
+    "correct_field_plus_particle_energy_drifts": [
+      -0.00032413348875649816,
+      -0.000281851397845682,
+      -0.00024095057533552746,
+      -0.00014873284623935225,
+      -0.00009273061558596321
+    ],
+    "same_input_control": {
+      "commission_rate": 0.06858572243089694,
+      "fresh_rate": 0.05174446572841832,
+      "relative_difference": 0.2455504747281318,
+      "histories_identical": false
+    }
+  },
+  "operator_audit": {
+    "scientific_disposition": "root_unresolved",
+    "release_threshold_reached": false,
+    "protocol_qualification": "All five simulation commands and the observable identity were prospective, and the original rule also rejected a non-monotone outcome. However, the original contract could not bind the required simulator-to-analysis pipeline. The aggregation program and replacement binding were authored after outcomes were visible.",
+    "energy_correction": "The autonomous aggregation redundantly summed total and component columns. Its relative drift happened to equal the correct result because both endpoints were doubled. Future analysis must select exact header-named total columns.",
+    "harness_repairs_after_audit": [
+      "Scientific contracts may prospectively declare multiple separately commissioned execution stages.",
+      "Each scientific execution stage is source-hash sealed on first use.",
+      "A claim with earlier linked evidence cannot close decisively under an adaptive replacement contract.",
+      "The WarpX skill supplies a strict header-aware total-energy reader."
+    ]
+  },
+  "reuse_policy": [
+    "This record and every supplied prior output are context only and are not admissible evidence for a new claim.",
+    "A new campaign must freeze its complete evidence pipeline and generate fresh evidence.",
+    "The prior guide-field result may motivate a replication or a different refinement, but it neither prescribes that choice nor establishes a counterexample.",
+    "If a contract or analysis must change after outcomes are visible, close that claim nondecisively or register a successor claim and collect fresh observations."
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "$defs": {
+    "CampaignStatus": {
+      "enum": [
+        "active",
+        "pause_requested",
+        "quiescing",
+        "paused",
+        "resuming",
+        "recovering",
+        "emergency_stopped",
+        "human_review",
+        "completed",
+        "terminated"
+      ],
+      "title": "CampaignStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "budget_reserved": {
+      "default": 0.0,
+      "minimum": 0,
+      "title": "Budget Reserved",
+      "type": "number"
+    },
+    "campaign_id": {
+      "title": "Campaign Id",
+      "type": "string"
+    },
+    "component_versions": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Component Versions",
+      "type": "object"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "external_job_ids": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "External Job Ids",
+      "type": "array"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "last_event_sequence": {
+      "minimum": 0,
+      "title": "Last Event Sequence",
+      "type": "integer"
+    },
+    "pending_action_ids": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Pending Action Ids",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "state_hash": {
+      "title": "State Hash",
+      "type": "string"
+    },
+    "status": {
+      "$ref": "#/$defs/CampaignStatus"
+    }
+  },
+  "required": [
+    "campaign_id",
+    "status",
+    "last_event_sequence",
+    "state_hash"
+  ],
+  "title": "CampaignCheckpoint",
+  "type": "object"
+}

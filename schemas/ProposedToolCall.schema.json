@@ -1,0 +1,143 @@
+{
+  "$defs": {
+    "EvidenceRole": {
+      "enum": [
+        "discovery",
+        "confirmation",
+        "qualification"
+      ],
+      "title": "EvidenceRole",
+      "type": "string"
+    },
+    "ObservablePrediction": {
+      "additionalProperties": false,
+      "properties": {
+        "condition": {
+          "minLength": 1,
+          "title": "Condition",
+          "type": "string"
+        },
+        "exact": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Exact"
+        },
+        "hypothesis_id": {
+          "minLength": 1,
+          "title": "Hypothesis Id",
+          "type": "string"
+        },
+        "maximum": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Maximum"
+        },
+        "minimum": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Minimum"
+        },
+        "observable": {
+          "minLength": 1,
+          "title": "Observable",
+          "type": "string"
+        }
+      },
+      "required": [
+        "hypothesis_id",
+        "observable",
+        "condition"
+      ],
+      "title": "ObservablePrediction",
+      "type": "object"
+    },
+    "ResearchEvidenceStage": {
+      "enum": [
+        "exploration",
+        "qualification",
+        "confirmation",
+        "falsification"
+      ],
+      "title": "ResearchEvidenceStage",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "arguments": {
+      "additionalProperties": true,
+      "title": "Arguments",
+      "type": "object"
+    },
+    "evidence_role": {
+      "$ref": "#/$defs/EvidenceRole"
+    },
+    "evidence_stage": {
+      "$ref": "#/$defs/ResearchEvidenceStage"
+    },
+    "falsification_condition": {
+      "minLength": 1,
+      "title": "Falsification Condition",
+      "type": "string"
+    },
+    "independence_group": {
+      "minLength": 1,
+      "title": "Independence Group",
+      "type": "string"
+    },
+    "predictions": {
+      "items": {
+        "$ref": "#/$defs/ObservablePrediction"
+      },
+      "minItems": 1,
+      "title": "Predictions",
+      "type": "array"
+    },
+    "purpose": {
+      "minLength": 1,
+      "title": "Purpose",
+      "type": "string"
+    },
+    "tool_name": {
+      "minLength": 1,
+      "title": "Tool Name",
+      "type": "string"
+    }
+  },
+  "required": [
+    "tool_name",
+    "arguments",
+    "purpose",
+    "evidence_stage",
+    "evidence_role",
+    "independence_group",
+    "predictions",
+    "falsification_condition"
+  ],
+  "title": "ProposedToolCall",
+  "type": "object"
+}

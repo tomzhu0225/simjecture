@@ -1,0 +1,79 @@
+{
+  "additionalProperties": false,
+  "description": "Operator-authored manifest for one known-runnable starting point.\n\nThe package deliberately says only what was run and where its compact validation\nrecord lives. It does not qualify the supplied output as campaign evidence.",
+  "properties": {
+    "capability": {
+      "minLength": 1,
+      "title": "Capability",
+      "type": "string"
+    },
+    "description": {
+      "minLength": 1,
+      "title": "Description",
+      "type": "string"
+    },
+    "files": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 2,
+      "title": "Files",
+      "type": "array"
+    },
+    "limitations": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Limitations",
+      "type": "array"
+    },
+    "name": {
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9._-]*$",
+      "title": "Name",
+      "type": "string"
+    },
+    "operator_validation": {
+      "minLength": 1,
+      "title": "Operator Validation",
+      "type": "string"
+    },
+    "program_path": {
+      "minLength": 1,
+      "title": "Program Path",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "validated_argv": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Validated Argv",
+      "type": "array"
+    },
+    "validation_summary_path": {
+      "minLength": 1,
+      "title": "Validation Summary Path",
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "description",
+    "capability",
+    "program_path",
+    "validated_argv",
+    "validation_summary_path",
+    "operator_validation",
+    "files"
+  ],
+  "title": "MVPGuidedCommissioningSpec",
+  "type": "object"
+}

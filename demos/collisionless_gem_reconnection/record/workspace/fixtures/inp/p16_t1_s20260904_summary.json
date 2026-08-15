@@ -1,0 +1,188 @@
+{
+  "checks": {
+    "boundaries": {
+      "perturbation_normal_field_zero_at_z_walls": true,
+      "x_fields_periodic": true,
+      "x_particles_periodic": true,
+      "z_fields_conducting": true,
+      "z_particles_reflecting": true
+    },
+    "diagnostics": {
+      "all_reported_values_finite": true,
+      "diagnostic_figure_written": true,
+      "multiple_field_times_readable": true,
+      "openpmd_hdf5_files_nonempty": true,
+      "rate_and_flux_diagnostics_present": true
+    },
+    "numerical_regime": {
+      "cuda_backend_realized": true,
+      "electron_gyroperiod_resolved": true,
+      "electron_plasma_period_resolved": true,
+      "electron_skin_depth_resolved": true,
+      "explicit_multidimensional_cfl_satisfied": true,
+      "nonrelativistic_characteristic_speeds": true,
+      "sheet_half_width_at_least_four_cells": true
+    },
+    "physics_controls": {
+      "collisionless_no_collision_operator": true,
+      "dimensionless_perturbation_declared": true,
+      "harris_ampere_drift_balance": true,
+      "harris_pressure_balance": true,
+      "no_imposed_reconnection_electric_field": true,
+      "stationary_background_populations": true
+    },
+    "representation": {
+      "fully_kinetic_electrons_and_ions": true,
+      "reduced_mass_ratio_declared": true,
+      "two_spatial_three_velocity_dimensions": true
+    }
+  },
+  "derived": {
+    "di_m": 2.6570466307910177e-05,
+    "dt_omega_ci": 0.002595996918334016,
+    "dt_s": 5.6403491027952336e-15,
+    "va_upstream_over_c": 0.08944271909999159
+  },
+  "inputs": {
+    "duration_omegaci": 12.001293753458157,
+    "mass_ratio": 25.0,
+    "ppc_per_population": 16,
+    "seed": 20260904,
+    "steps": 4623,
+    "temperature_ratio_Ti_Te": 1.0
+  },
+  "observations": {
+    "history": [
+      {
+        "flux_x_to_o_over_B0_di": 0.8178430491920198,
+        "rate_from_flux_derivative_upstream_norm": 0.15,
+        "time_omegaci": 0.0
+      },
+      {
+        "flux_x_to_o_over_B0_di": 0.9757305131199707,
+        "rate_from_flux_derivative_upstream_norm": 0.15,
+        "time_omegaci": 0.4800517501383263
+      },
+      {
+        "flux_x_to_o_over_B0_di": 1.1336179770479216,
+        "rate_from_flux_derivative_upstream_norm": 0.15,
+        "time_omegaci": 0.9601035002766526
+      },
+      {
+        "flux_x_to_o_over_B0_di": 1.2915054409758726,
+        "rate_from_flux_derivative_upstream_norm": 0.15,
+        "time_omegaci": 1.4401552504149788
+      },
+      {
+        "flux_x_to_o_over_B0_di": 1.4493929049038234,
+        "rate_from_flux_derivative_upstream_norm": 0.15,
+        "time_omegaci": 1.9202070005533052
+      },
+      {
+        "flux_x_to_o_over_B0_di": 1.6072803688317743,
+        "rate_from_flux_derivative_upstream_norm": 0.15,
+        "time_omegaci": 2.4002587506916315
+      },
+      {
+        "flux_x_to_o_over_B0_di": 1.765167832759725,
+        "rate_from_flux_derivative_upstream_norm": 0.15,
+        "time_omegaci": 2.8803105008299577
+      },
+      {
+        "flux_x_to_o_over_B0_di": 1.9230552966876764,
+        "rate_from_flux_derivative_upstream_norm": 0.15,
+        "time_omegaci": 3.3603622509682842
+      },
+      {
+        "flux_x_to_o_over_B0_di": 2.080942760615627,
+        "rate_from_flux_derivative_upstream_norm": 0.15,
+        "time_omegaci": 3.8404140011066104
+      },
+      {
+        "flux_x_to_o_over_B0_di": 2.238830224543578,
+        "rate_from_flux_derivative_upstream_norm": 0.15,
+        "time_omegaci": 4.320465751244937
+      },
+      {
+        "flux_x_to_o_over_B0_di": 2.396717688471529,
+        "rate_from_flux_derivative_upstream_norm": 0.15,
+        "time_omegaci": 4.800517501383263
+      },
+      {
+        "flux_x_to_o_over_B0_di": 2.5546051523994797,
+        "rate_from_flux_derivative_upstream_norm": 0.15,
+        "time_omegaci": 5.280569251521589
+      },
+      {
+        "flux_x_to_o_over_B0_di": 2.7124926163274306,
+        "rate_from_flux_derivative_upstream_norm": 0.15,
+        "time_omegaci": 5.760621001659915
+      },
+      {
+        "flux_x_to_o_over_B0_di": 2.8703800802553814,
+        "rate_from_flux_derivative_upstream_norm": 0.15,
+        "time_omegaci": 6.240672751798241
+      },
+      {
+        "flux_x_to_o_over_B0_di": 3.0282675441833327,
+        "rate_from_flux_derivative_upstream_norm": 0.15,
+        "time_omegaci": 6.7207245019365685
+      },
+      {
+        "flux_x_to_o_over_B0_di": 3.1861550081112835,
+        "rate_from_flux_derivative_upstream_norm": 0.15,
+        "time_omegaci": 7.200776252074895
+      },
+      {
+        "flux_x_to_o_over_B0_di": 3.3440424720392343,
+        "rate_from_flux_derivative_upstream_norm": 0.15,
+        "time_omegaci": 7.680828002213221
+      },
+      {
+        "flux_x_to_o_over_B0_di": 3.5019299359671856,
+        "rate_from_flux_derivative_upstream_norm": 0.15,
+        "time_omegaci": 8.160879752351548
+      },
+      {
+        "flux_x_to_o_over_B0_di": 3.6598173998951364,
+        "rate_from_flux_derivative_upstream_norm": 0.15,
+        "time_omegaci": 8.640931502489874
+      },
+      {
+        "flux_x_to_o_over_B0_di": 3.8177048638230873,
+        "rate_from_flux_derivative_upstream_norm": 0.15,
+        "time_omegaci": 9.1209832526282
+      },
+      {
+        "flux_x_to_o_over_B0_di": 3.975592327751038,
+        "rate_from_flux_derivative_upstream_norm": 0.15,
+        "time_omegaci": 9.601035002766526
+      },
+      {
+        "flux_x_to_o_over_B0_di": 4.133479791678989,
+        "rate_from_flux_derivative_upstream_norm": 0.15,
+        "time_omegaci": 10.081086752904852
+      },
+      {
+        "flux_x_to_o_over_B0_di": 4.29136725560694,
+        "rate_from_flux_derivative_upstream_norm": 0.15,
+        "time_omegaci": 10.561138503043178
+      },
+      {
+        "flux_x_to_o_over_B0_di": 4.449254719534891,
+        "rate_from_flux_derivative_upstream_norm": 0.15,
+        "time_omegaci": 11.041190253181504
+      },
+      {
+        "flux_x_to_o_over_B0_di": 4.607142183462842,
+        "rate_from_flux_derivative_upstream_norm": 0.15,
+        "time_omegaci": 11.52124200331983
+      },
+      {
+        "flux_x_to_o_over_B0_di": 4.765029647390793,
+        "rate_from_flux_derivative_upstream_norm": 0.15,
+        "time_omegaci": 12.001293753458157
+      }
+    ]
+  }
+}

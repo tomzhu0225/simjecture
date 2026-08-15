@@ -1,0 +1,337 @@
+{
+  "$defs": {
+    "ActionExecution": {
+      "additionalProperties": false,
+      "properties": {
+        "action_id": {
+          "title": "Action Id",
+          "type": "string"
+        },
+        "artifact_hashes": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Artifact Hashes",
+          "type": "array"
+        },
+        "evidence_eligible": {
+          "title": "Evidence Eligible",
+          "type": "boolean"
+        },
+        "output": {
+          "additionalProperties": true,
+          "title": "Output",
+          "type": "object"
+        },
+        "output_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Output Hash",
+          "type": "string"
+        }
+      },
+      "required": [
+        "action_id",
+        "evidence_eligible",
+        "output",
+        "output_hash"
+      ],
+      "title": "ActionExecution",
+      "type": "object"
+    },
+    "ActionFailureKind": {
+      "enum": [
+        "infrastructure",
+        "specification",
+        "numerical",
+        "validity"
+      ],
+      "title": "ActionFailureKind",
+      "type": "string"
+    },
+    "ActionFailureRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "action_id": {
+          "title": "Action Id",
+          "type": "string"
+        },
+        "budget_consumed": {
+          "default": true,
+          "title": "Budget Consumed",
+          "type": "boolean"
+        },
+        "detail": {
+          "minLength": 1,
+          "title": "Detail",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/ActionFailureKind"
+        }
+      },
+      "required": [
+        "action_id",
+        "kind",
+        "detail"
+      ],
+      "title": "ActionFailureRecord",
+      "type": "object"
+    },
+    "ActionOrigin": {
+      "enum": [
+        "human",
+        "ai",
+        "deterministic",
+        "mixed"
+      ],
+      "title": "ActionOrigin",
+      "type": "string"
+    },
+    "ActionStatus": {
+      "enum": [
+        "pending",
+        "reserved",
+        "running",
+        "completed",
+        "failed",
+        "blocked",
+        "vetoed"
+      ],
+      "title": "ActionStatus",
+      "type": "string"
+    },
+    "CampaignAction": {
+      "additionalProperties": false,
+      "properties": {
+        "action_type": {
+          "minLength": 1,
+          "title": "Action Type",
+          "type": "string"
+        },
+        "budget_units": {
+          "exclusiveMinimum": 0,
+          "title": "Budget Units",
+          "type": "number"
+        },
+        "dependencies": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Dependencies",
+          "type": "array"
+        },
+        "evidence_role": {
+          "$ref": "#/$defs/EvidenceRole"
+        },
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "independence_group": {
+          "minLength": 1,
+          "title": "Independence Group",
+          "type": "string"
+        },
+        "origin": {
+          "$ref": "#/$defs/ActionOrigin"
+        },
+        "payload": {
+          "additionalProperties": true,
+          "title": "Payload",
+          "type": "object"
+        },
+        "purpose": {
+          "minLength": 1,
+          "title": "Purpose",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "action_type",
+        "purpose",
+        "evidence_role",
+        "independence_group",
+        "origin",
+        "budget_units"
+      ],
+      "title": "CampaignAction",
+      "type": "object"
+    },
+    "DecisionRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "campaign_id": {
+          "title": "Campaign Id",
+          "type": "string"
+        },
+        "candidate_action_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Candidate Action Ids",
+          "type": "array"
+        },
+        "checkpoint_id": {
+          "title": "Checkpoint Id",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "model_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Model Id"
+        },
+        "model_route_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Model Route Reason"
+        },
+        "predicted_outcomes": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Predicted Outcomes",
+          "type": "object"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "selected_action_id": {
+          "title": "Selected Action Id",
+          "type": "string"
+        },
+        "validator_report": {
+          "additionalProperties": true,
+          "title": "Validator Report",
+          "type": "object"
+        }
+      },
+      "required": [
+        "campaign_id",
+        "checkpoint_id",
+        "candidate_action_ids",
+        "selected_action_id",
+        "predicted_outcomes",
+        "validator_report"
+      ],
+      "title": "DecisionRecord",
+      "type": "object"
+    },
+    "EvidenceRole": {
+      "enum": [
+        "discovery",
+        "confirmation",
+        "qualification"
+      ],
+      "title": "EvidenceRole",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "action": {
+      "$ref": "#/$defs/CampaignAction"
+    },
+    "block_reason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Block Reason"
+    },
+    "decision": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/DecisionRecord"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "execution": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ActionExecution"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "failure": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ActionFailureRecord"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "reserved_units": {
+      "minimum": 0,
+      "title": "Reserved Units",
+      "type": "number"
+    },
+    "spent_units": {
+      "minimum": 0,
+      "title": "Spent Units",
+      "type": "number"
+    },
+    "status": {
+      "$ref": "#/$defs/ActionStatus"
+    }
+  },
+  "required": [
+    "action",
+    "status",
+    "reserved_units",
+    "spent_units"
+  ],
+  "title": "CampaignActionState",
+  "type": "object"
+}

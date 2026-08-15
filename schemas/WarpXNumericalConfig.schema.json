@@ -1,0 +1,156 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "damped_ratio_threshold": {
+      "default": 0.75,
+      "exclusiveMaximum": 1,
+      "exclusiveMinimum": 0,
+      "title": "Damped Ratio Threshold",
+      "type": "number"
+    },
+    "diagnostic_interval_steps": {
+      "default": 2,
+      "maximum": 10000,
+      "minimum": 1,
+      "title": "Diagnostic Interval Steps",
+      "type": "integer"
+    },
+    "early_window_end_omega_pe": {
+      "default": 4.0,
+      "exclusiveMinimum": 0,
+      "title": "Early Window End Omega Pe",
+      "type": "number"
+    },
+    "early_window_start_omega_pe": {
+      "default": 0.0,
+      "minimum": 0,
+      "title": "Early Window Start Omega Pe",
+      "type": "number"
+    },
+    "electron_macroparticles_per_cell": {
+      "default": 512,
+      "maximum": 8192,
+      "minimum": 16,
+      "title": "Electron Macroparticles Per Cell",
+      "type": "integer"
+    },
+    "final_time_omega_pe": {
+      "default": 20.0,
+      "maximum": 500.0,
+      "minimum": 1.0,
+      "title": "Final Time Omega Pe",
+      "type": "number"
+    },
+    "grid_cells": {
+      "default": 64,
+      "maximum": 4096,
+      "minimum": 32,
+      "title": "Grid Cells",
+      "type": "integer"
+    },
+    "ion_macroparticles_per_cell": {
+      "default": 16,
+      "maximum": 1024,
+      "minimum": 1,
+      "title": "Ion Macroparticles Per Cell",
+      "type": "integer"
+    },
+    "late_window_end_omega_pe": {
+      "default": 18.0,
+      "exclusiveMinimum": 0,
+      "title": "Late Window End Omega Pe",
+      "type": "number"
+    },
+    "late_window_start_omega_pe": {
+      "default": 14.0,
+      "exclusiveMinimum": 0,
+      "title": "Late Window Start Omega Pe",
+      "type": "number"
+    },
+    "maximum_relative_charge_imbalance": {
+      "default": 0.01,
+      "exclusiveMinimum": 0,
+      "maximum": 1.0,
+      "title": "Maximum Relative Charge Imbalance",
+      "type": "number"
+    },
+    "maximum_relative_energy_drift": {
+      "default": 0.01,
+      "exclusiveMinimum": 0,
+      "maximum": 1.0,
+      "title": "Maximum Relative Energy Drift",
+      "type": "number"
+    },
+    "maximum_relative_gauss_residual": {
+      "default": 0.01,
+      "exclusiveMinimum": 0,
+      "maximum": 1.0,
+      "title": "Maximum Relative Gauss Residual",
+      "type": "number"
+    },
+    "minimum_diagnostic_samples": {
+      "default": 50,
+      "maximum": 10000,
+      "minimum": 3,
+      "title": "Minimum Diagnostic Samples",
+      "type": "integer"
+    },
+    "minimum_window_samples": {
+      "default": 20,
+      "maximum": 10000,
+      "minimum": 3,
+      "title": "Minimum Window Samples",
+      "type": "integer"
+    },
+    "moment_tolerance": {
+      "default": 0.05,
+      "exclusiveMinimum": 0,
+      "maximum": 0.5,
+      "title": "Moment Tolerance",
+      "type": "number"
+    },
+    "outcome_tolerance_omega_pe": {
+      "default": 0.02,
+      "exclusiveMinimum": 0,
+      "maximum": 1.0,
+      "title": "Outcome Tolerance Omega Pe",
+      "type": "number"
+    },
+    "poisson_max_iterations": {
+      "default": 200,
+      "maximum": 10000,
+      "minimum": 10,
+      "title": "Poisson Max Iterations",
+      "type": "integer"
+    },
+    "poisson_relative_tolerance": {
+      "default": 1e-10,
+      "maximum": 0.0001,
+      "minimum": 1e-14,
+      "title": "Poisson Relative Tolerance",
+      "type": "number"
+    },
+    "random_seed": {
+      "default": 1,
+      "maximum": 2147483647,
+      "minimum": 1,
+      "title": "Random Seed",
+      "type": "integer"
+    },
+    "time_step_omega_pe": {
+      "default": 0.05,
+      "maximum": 0.2,
+      "minimum": 0.001,
+      "title": "Time Step Omega Pe",
+      "type": "number"
+    },
+    "unstable_ratio_threshold": {
+      "default": 1.5,
+      "exclusiveMinimum": 1,
+      "title": "Unstable Ratio Threshold",
+      "type": "number"
+    }
+  },
+  "title": "WarpXNumericalConfig",
+  "type": "object"
+}

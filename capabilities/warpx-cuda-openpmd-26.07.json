@@ -1,0 +1,40 @@
+{
+  "device_paths": [
+    "/dev/dxg"
+  ],
+  "environment": {
+    "CUDA_VISIBLE_DEVICES": "0",
+    "CUDA_PATH": "/opt/acs-dependencies/cuda",
+    "LD_LIBRARY_PATH": "/opt/acs-dependencies/wsl-lib:/opt/acs-dependencies/cuda/lib:/opt/acs-dependencies/cuda/lib64:/opt/acs-dependencies/io/lib:/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx",
+    "MPLBACKEND": "Agg",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONPATH": "/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx/site-packages:/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages"
+  },
+  "executable": "bin/python",
+  "manifest": {
+    "description": "Release-pinned non-MPI 2D CUDA WarpX/PICMI runtime with HDF5 openPMD diagnostics for one local NVIDIA GPU",
+    "executable_kind": "python-picmi-cuda-openpmd",
+    "name": "warpx-cuda-openpmd-26.07",
+    "preflight_checks": [
+      "checks.completed",
+      "checks.openpmd_format_native",
+      "checks.h5_backend_native",
+      "checks.h5_file_nonempty",
+      "checks.iteration_readable",
+      "checks.mesh_records_readable"
+    ],
+    "preflight_resource": "examples/openpmd_field_smoke.py",
+    "preflight_result": "openpmd_capability_smoke.json",
+    "schema_version": "0.1.0",
+    "skill": "warpx",
+    "version": "26.07"
+  },
+  "read_only_mounts": {
+    "/opt/acs-dependencies/cuda": "../.runtime/cuda-toolkit-12.4",
+    "/opt/acs-dependencies/io": "../.runtime/warpx-cuda-openpmd-deps",
+    "/opt/acs-dependencies/wsl-lib": "/usr/lib/wsl/lib"
+  },
+  "runtime_root": "../.runtime/warpx-cuda-openpmd"
+}

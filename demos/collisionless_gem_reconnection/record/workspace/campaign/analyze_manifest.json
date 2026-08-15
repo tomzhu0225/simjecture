@@ -1,0 +1,19 @@
+{
+  "schema_version": "0.1.0",
+  "kind": "heldout_confirmation_scientific_manifest",
+  "scientific_evidence_eligible": false,
+  "runs": [
+    {"label": "p16_t1_s20260902", "summary": "campaign/summaries/p16_t1_s20260902_summary.json", "field_energy": "campaign/run_p16_t1_s20260902/reduced/field_energy.txt", "particle_energy": "campaign/run_p16_t1_s20260902/reduced/particle_energy.txt"},
+    {"label": "p16_t1_s20260903", "summary": "campaign/summaries/p16_t1_s20260903_summary.json", "field_energy": "campaign/run_p16_t1_s20260903/reduced/field_energy.txt", "particle_energy": "campaign/run_p16_t1_s20260903/reduced/particle_energy.txt"},
+    {"label": "p16_t1_s20260904", "summary": "campaign/summaries/p16_t1_s20260904_summary.json", "field_energy": "campaign/run_p16_t1_s20260904/reduced/field_energy.txt", "particle_energy": "campaign/run_p16_t1_s20260904/reduced/particle_energy.txt"},
+    {"label": "p16_t20_s20260902", "summary": "campaign/summaries/p16_t20_s20260902_summary.json", "field_energy": "campaign/run_p16_t20_s20260902/reduced/field_energy.txt", "particle_energy": "campaign/run_p16_t20_s20260902/reduced/particle_energy.txt"},
+    {"label": "p16_t20_s20260903", "summary": "campaign/summaries/p16_t20_s20260903_summary.json", "field_energy": "campaign/run_p16_t20_s20260903/reduced/field_energy.txt", "particle_energy": "campaign/run_p16_t20_s20260903/reduced/particle_energy.txt"},
+    {"label": "p16_t20_s20260904", "summary": "campaign/summaries/p16_t20_s20260904_summary.json", "field_energy": "campaign/run_p16_t20_s20260904/reduced/field_energy.txt", "particle_energy": "campaign/run_p16_t20_s20260904/reduced/particle_energy.txt"},
+    {"label": "p8_t1_s20260902", "summary": "campaign/summaries/p8_t1_s20260902_summary.json", "field_energy": "campaign/run_p8_t1_s20260902/reduced/field_energy.txt", "particle_energy": "campaign/run_p8_t1_s20260902/reduced/particle_energy.txt"},
+    {"label": "p8_t1_s20260903", "summary": "campaign/summaries/p8_t1_s20260903_summary.json", "field_energy": "campaign/run_p8_t1_s20260903/reduced/field_energy.txt", "particle_energy": "campaign/run_p8_t1_s20260903/reduced/particle_energy.txt"},
+    {"label": "p8_t1_s20260904", "summary": "campaign/summaries/p8_t1_s20260904_summary.json", "field_energy": "campaign/run_p8_t1_s20260904/reduced/field_energy.txt", "particle_energy": "campaign/run_p8_t1_s20260904/reduced/particle_energy.txt"},
+    {"label": "p8_t20_s20260902", "summary": "campaign/summaries/p8_t20_s20260902_summary.json", "field_energy": "campaign/run_p8_t20_s20260902/reduced/field_energy.txt", "particle_energy": "campaign/run_p8_t20_s20260902/reduced/particle_energy.txt"},
+    {"label": "p8_t20_s20260903", "summary": "campaign/summaries/p8_t20_s20260903_summary.json", "field_energy": "campaign/run_p8_t20_s20260903/reduced/field_energy.txt", "particle_energy": "campaign/run_p8_t20_s20260903/reduced/particle_energy.txt"},
+    {"label": "p8_t20_s20260904", "summary": "campaign/summaries/p8_t20_s20260904_summary.json", "field_energy": "campaign/run_p8_t20_s20260904/reduced/field_energy.txt", "particle_energy": "campaign/run_p8_t20_s20260904/reduced/particle_energy.txt"}
+  ]
+}

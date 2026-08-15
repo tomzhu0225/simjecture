@@ -1,0 +1,169 @@
+{
+  "$defs": {
+    "WarpXCaseSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "amplitude_ratio": {
+          "exclusiveMinimum": 0,
+          "title": "Amplitude Ratio",
+          "type": "number"
+        },
+        "case_name": {
+          "enum": [
+            "unit_maxwellian_reference",
+            "symmetric_mixture_candidate"
+          ],
+          "title": "Case Name",
+          "type": "string"
+        },
+        "classification": {
+          "enum": [
+            "damped",
+            "ambiguous",
+            "unstable"
+          ],
+          "title": "Classification",
+          "type": "string"
+        },
+        "diagnostic_manifest_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Diagnostic Manifest Hash",
+          "type": "string"
+        },
+        "diagnostic_samples": {
+          "minimum": 0,
+          "title": "Diagnostic Samples",
+          "type": "integer"
+        },
+        "early_rms_amplitude_v_m": {
+          "exclusiveMinimum": 0,
+          "title": "Early Rms Amplitude V M",
+          "type": "number"
+        },
+        "early_window_sample_count": {
+          "minimum": 0,
+          "title": "Early Window Sample Count",
+          "type": "integer"
+        },
+        "effective_growth_rate_omega_pe": {
+          "title": "Effective Growth Rate Omega Pe",
+          "type": "number"
+        },
+        "finite_values": {
+          "title": "Finite Values",
+          "type": "boolean"
+        },
+        "fundamental_amplitude_final_v_m": {
+          "minimum": 0,
+          "title": "Fundamental Amplitude Final V M",
+          "type": "number"
+        },
+        "fundamental_amplitude_initial_v_m": {
+          "minimum": 0,
+          "title": "Fundamental Amplitude Initial V M",
+          "type": "number"
+        },
+        "initial_density_normalized": {
+          "exclusiveMinimum": 0,
+          "title": "Initial Density Normalized",
+          "type": "number"
+        },
+        "initial_mean_velocity_normalized": {
+          "title": "Initial Mean Velocity Normalized",
+          "type": "number"
+        },
+        "initial_variance_normalized": {
+          "minimum": 0,
+          "title": "Initial Variance Normalized",
+          "type": "number"
+        },
+        "late_rms_amplitude_v_m": {
+          "exclusiveMinimum": 0,
+          "title": "Late Rms Amplitude V M",
+          "type": "number"
+        },
+        "late_window_sample_count": {
+          "minimum": 0,
+          "title": "Late Window Sample Count",
+          "type": "integer"
+        },
+        "relative_charge_imbalance": {
+          "minimum": 0,
+          "title": "Relative Charge Imbalance",
+          "type": "number"
+        },
+        "relative_energy_drift": {
+          "minimum": 0,
+          "title": "Relative Energy Drift",
+          "type": "number"
+        },
+        "relative_gauss_residual": {
+          "minimum": 0,
+          "title": "Relative Gauss Residual",
+          "type": "number"
+        },
+        "solver_converged": {
+          "title": "Solver Converged",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "case_name",
+        "solver_converged",
+        "finite_values",
+        "diagnostic_samples",
+        "effective_growth_rate_omega_pe",
+        "early_rms_amplitude_v_m",
+        "late_rms_amplitude_v_m",
+        "amplitude_ratio",
+        "early_window_sample_count",
+        "late_window_sample_count",
+        "classification",
+        "fundamental_amplitude_initial_v_m",
+        "fundamental_amplitude_final_v_m",
+        "initial_density_normalized",
+        "initial_mean_velocity_normalized",
+        "initial_variance_normalized",
+        "relative_energy_drift",
+        "relative_gauss_residual",
+        "relative_charge_imbalance",
+        "diagnostic_manifest_hash"
+      ],
+      "title": "WarpXCaseSummary",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "candidate": {
+      "$ref": "#/$defs/WarpXCaseSummary"
+    },
+    "contract_version": {
+      "const": "warpx_picmi_pair_v1",
+      "default": "warpx_picmi_pair_v1",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "postprocessor_version": {
+      "const": "warpx_openpmd_v2",
+      "default": "warpx_openpmd_v2",
+      "title": "Postprocessor Version",
+      "type": "string"
+    },
+    "reference": {
+      "$ref": "#/$defs/WarpXCaseSummary"
+    },
+    "runtime_warpx_version": {
+      "minLength": 1,
+      "title": "Runtime Warpx Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "runtime_warpx_version",
+    "reference",
+    "candidate"
+  ],
+  "title": "WarpXPairSummary",
+  "type": "object"
+}

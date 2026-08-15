@@ -1,0 +1,130 @@
+{
+  "additionalProperties": false,
+  "description": "Distribution-independent PIC discretization and validity contract.",
+  "properties": {
+    "damped_ratio_threshold": {
+      "default": 0.75,
+      "exclusiveMaximum": 1,
+      "exclusiveMinimum": 0,
+      "title": "Damped Ratio Threshold",
+      "type": "number"
+    },
+    "diagnostic_interval": {
+      "default": 0.5,
+      "exclusiveMinimum": 0,
+      "title": "Diagnostic Interval",
+      "type": "number"
+    },
+    "early_window": {
+      "default": [
+        0.0,
+        4.0
+      ],
+      "maxItems": 2,
+      "minItems": 2,
+      "prefixItems": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        }
+      ],
+      "title": "Early Window",
+      "type": "array"
+    },
+    "final_time": {
+      "default": 20.0,
+      "exclusiveMinimum": 0,
+      "title": "Final Time",
+      "type": "number"
+    },
+    "grid_cells": {
+      "default": 64,
+      "minimum": 32,
+      "title": "Grid Cells",
+      "type": "integer"
+    },
+    "late_window": {
+      "default": [
+        14.0,
+        18.0
+      ],
+      "maxItems": 2,
+      "minItems": 2,
+      "prefixItems": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        }
+      ],
+      "title": "Late Window",
+      "type": "array"
+    },
+    "maximum_gauss_residual": {
+      "default": 1e-10,
+      "exclusiveMinimum": 0,
+      "title": "Maximum Gauss Residual",
+      "type": "number"
+    },
+    "maximum_relative_energy_drift": {
+      "default": 0.001,
+      "exclusiveMinimum": 0,
+      "title": "Maximum Relative Energy Drift",
+      "type": "number"
+    },
+    "particles_per_beam": {
+      "default": 64,
+      "minimum": 32,
+      "title": "Particles Per Beam",
+      "type": "integer"
+    },
+    "perturbation_amplitude": {
+      "default": 0.01,
+      "exclusiveMaximum": 0.1,
+      "exclusiveMinimum": 0,
+      "title": "Perturbation Amplitude",
+      "type": "number"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "seed": {
+      "default": 7,
+      "minimum": 0,
+      "title": "Seed",
+      "type": "integer"
+    },
+    "time_step": {
+      "default": 0.05,
+      "exclusiveMinimum": 0,
+      "title": "Time Step",
+      "type": "number"
+    },
+    "unstable_ratio_threshold": {
+      "default": 1.5,
+      "exclusiveMinimum": 1,
+      "title": "Unstable Ratio Threshold",
+      "type": "number"
+    },
+    "velocity_beams": {
+      "default": 256,
+      "minimum": 64,
+      "title": "Velocity Beams",
+      "type": "integer"
+    },
+    "wavenumber": {
+      "default": 0.5,
+      "exclusiveMinimum": 0,
+      "title": "Wavenumber",
+      "type": "number"
+    }
+  },
+  "title": "PICNumericalConfig",
+  "type": "object"
+}

@@ -1,0 +1,33 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "maximum_boundary_contamination": {
+      "default": 0.01,
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Maximum Boundary Contamination",
+      "type": "number"
+    },
+    "maximum_numerical_damping_fraction": {
+      "default": 0.05,
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Maximum Numerical Damping Fraction",
+      "type": "number"
+    },
+    "maximum_relative_energy_drift": {
+      "default": 0.01,
+      "minimum": 0,
+      "title": "Maximum Relative Energy Drift",
+      "type": "number"
+    },
+    "maximum_residual": {
+      "default": 1e-08,
+      "exclusiveMinimum": 0,
+      "title": "Maximum Residual",
+      "type": "number"
+    }
+  },
+  "title": "NumericalGate",
+  "type": "object"
+}

@@ -1,0 +1,56 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "inner_drift": {
+      "default": 0.95,
+      "exclusiveMaximum": 1,
+      "minimum": 0,
+      "title": "Inner Drift",
+      "type": "number"
+    },
+    "inner_pair_weight": {
+      "default": 0.5,
+      "exclusiveMaximum": 1,
+      "exclusiveMinimum": 0,
+      "title": "Inner Pair Weight",
+      "type": "number"
+    },
+    "outer_drift": {
+      "default": 0.95,
+      "exclusiveMaximum": 1,
+      "minimum": 0,
+      "title": "Outer Drift",
+      "type": "number"
+    },
+    "perturbation_amplitude": {
+      "default": 0.02,
+      "maximum": 0.05,
+      "minimum": 1e-07,
+      "title": "Perturbation Amplitude",
+      "type": "number"
+    },
+    "reference_density_m3": {
+      "default": 1e+18,
+      "maximum": 1e+25,
+      "minimum": 1000000000000.0,
+      "title": "Reference Density M3",
+      "type": "number"
+    },
+    "velocity_unit_m_s": {
+      "default": 1000000.0,
+      "maximum": 20000000.0,
+      "minimum": 1000.0,
+      "title": "Velocity Unit M S",
+      "type": "number"
+    },
+    "wavenumber_dimensionless": {
+      "default": 0.5,
+      "maximum": 2.0,
+      "minimum": 0.1,
+      "title": "Wavenumber Dimensionless",
+      "type": "number"
+    }
+  },
+  "title": "WarpXPhysicalConfig",
+  "type": "object"
+}

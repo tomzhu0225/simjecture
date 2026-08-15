@@ -1,0 +1,72 @@
+{
+  "$defs": {
+    "WarpXAttemptFailureKind": {
+      "enum": [
+        "infrastructure",
+        "numerical",
+        "validity"
+      ],
+      "title": "WarpXAttemptFailureKind",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "consumed_case_units": {
+      "const": 2,
+      "default": 2,
+      "title": "Consumed Case Units",
+      "type": "integer"
+    },
+    "detail": {
+      "minLength": 1,
+      "title": "Detail",
+      "type": "string"
+    },
+    "experiment_id": {
+      "minLength": 1,
+      "title": "Experiment Id",
+      "type": "string"
+    },
+    "external_job_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "External Job Id"
+    },
+    "kind": {
+      "$ref": "#/$defs/WarpXAttemptFailureKind"
+    },
+    "ordinal": {
+      "minimum": 1,
+      "title": "Ordinal",
+      "type": "integer"
+    },
+    "resolution_id": {
+      "minLength": 1,
+      "title": "Resolution Id",
+      "type": "string"
+    },
+    "seed": {
+      "minimum": 1,
+      "title": "Seed",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "ordinal",
+    "seed",
+    "resolution_id",
+    "experiment_id",
+    "kind",
+    "detail"
+  ],
+  "title": "WarpXConfirmationFailure",
+  "type": "object"
+}

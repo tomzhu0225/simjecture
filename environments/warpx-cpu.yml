@@ -1,0 +1,8 @@
+name: acs-warpx-cpu-26-07
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - warpx=26.07
+  - openpmd-api
+  - numpy>=1.26

@@ -1,0 +1,45 @@
+{
+  "schema_version": "0.1.0",
+  "kind": "campaign_fallback_plan",
+  "scientific_evidence_eligible": false,
+  "primary_path": {
+    "name": "explicit_Yee_ESIRKEPOV_CUDA",
+    "capability": "warpx-cuda-openpmd-26.07",
+    "program": "guided/gem_collisionless.py",
+    "scheme": "picmi.ExplicitEvolveScheme with Yee solver, Esirkepov deposition, dt equal to 0.9 times the multidimensional electromagnetic CFL limit"
+  },
+  "documented_unavailable_paths": [
+    {
+      "name": "theta_implicit_em",
+      "reason": "Pinned skill reference time-integration.md documents repeated CUDA error 700 inside current deposition for loaded 2D electromagnetic plasmas on this runtime; implicit is not a commissioned solver path for this campaign.",
+      "status": "not_attempted_known_unavailable"
+    },
+    {
+      "name": "hybrid_or_fluid_electron",
+      "reason": "Explicitly forbidden by operator campaign instruction; the physical model must remain fully kinetic for electrons and ions.",
+      "status": "operator_forbidden"
+    },
+    {
+      "name": "imposed_reconnection_electric_field",
+      "reason": "Forbidden by the operator campaign instruction and by the self-consistent GEM-type reconnection required by the root hypothesis.",
+      "status": "operator_forbidden"
+    },
+    {
+      "name": "cpu_warpx_for_simulation",
+      "reason": "The simulation instrument contract binds the CUDA/openPMD capability; CPU WarpX is not part of the simulation pipeline for this campaign.",
+      "status": "not_bound"
+    }
+  ],
+  "retry_and_stopping_rule": {
+    "retries_per_command": 1,
+    "retry_action": "rerun the same exact capability argv unchanged once after a transient CUDA error 700 or GPU abort",
+    "stop_condition": "stop after two failures of the same scientific command; do not change source or parameters to force a run",
+    "closure_rule": "if fewer than 2 of the 3 paired seeds complete for either endpoint at either fidelity level, close the seed-ensemble claim as instrument_limited; if a complete fidelity group is missing, keep the primary decision only when a documented prose qualification states the fidelity-control component was not executed",
+    "cleanup": "failed runs remain on disk for auditing; reruns replace only their exact output targets"
+  },
+  "energy_quality_gate": "per-run combined field-plus-particle relative drift must have absolute value at most 2e-3 for the run to count toward the decisive ensemble (matches design_pin.json and analyze_ensemble.py ENERGY_GATE_ABS).",
+  "validation_basis": [
+    "Operator anchor validation: the exact supplied argv completed 4623 explicit CUDA steps in 445.4 s, wrote 26 readable HDF5 openPMD states, passed 26/26 five-aspect checks, and conserved combined field-plus-particle energy to 4.70e-5 relative over t*Omega_ci=12.",
+    "Guided package reuse policy: supplied program, outputs, and audits are non-evidentiary context; this plan only fixes solver selection, retry, and closure rules for fresh evidence."
+  ]
+}

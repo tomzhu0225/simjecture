@@ -1,0 +1,50 @@
+{
+  "$defs": {
+    "CampaignStatus": {
+      "enum": [
+        "active",
+        "pause_requested",
+        "quiescing",
+        "paused",
+        "resuming",
+        "recovering",
+        "emergency_stopped",
+        "human_review",
+        "completed",
+        "terminated"
+      ],
+      "title": "CampaignStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "campaign_id": {
+      "title": "Campaign Id",
+      "type": "string"
+    },
+    "interrupted_attempt_ids": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Interrupted Attempt Ids",
+      "type": "array"
+    },
+    "revision": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Revision",
+      "type": "integer"
+    },
+    "status": {
+      "$ref": "#/$defs/CampaignStatus",
+      "default": "active"
+    }
+  },
+  "required": [
+    "campaign_id"
+  ],
+  "title": "CampaignState",
+  "type": "object"
+}

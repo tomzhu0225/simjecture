@@ -1,0 +1,601 @@
+{
+  "$defs": {
+    "BlindedSearchRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "baseline_seed": {
+          "default": 20260809,
+          "minimum": 0,
+          "title": "Baseline Seed",
+          "type": "integer"
+        },
+        "candidate_space": {
+          "$ref": "#/$defs/SymmetricMixtureSearchSpace",
+          "default": {
+            "derived_width": "sqrt(1-inner_pair_weight*inner_drift^2-(1-inner_pair_weight)*outer_drift^2)",
+            "grammar": "symmetric_unit_variance_gaussian_mixture_v1",
+            "inner_drift": {
+              "maximum": 0.95,
+              "minimum": 0.0
+            },
+            "inner_pair_weight": {
+              "maximum": 0.9,
+              "minimum": 0.1
+            },
+            "outer_drift": {
+              "maximum": 0.95,
+              "minimum": 0.0
+            },
+            "required_order": "inner_drift <= outer_drift"
+          }
+        },
+        "comparison_methods": {
+          "default": [
+            "ai",
+            "grid",
+            "random",
+            "latin_hypercube"
+          ],
+          "items": {
+            "$ref": "#/$defs/SearchMethod"
+          },
+          "title": "Comparison Methods",
+          "type": "array"
+        },
+        "disclosure": {
+          "const": "candidate grammar and bounds only; no prior candidate evaluations or planted parameters",
+          "default": "candidate grammar and bounds only; no prior candidate evaluations or planted parameters",
+          "title": "Disclosure",
+          "type": "string"
+        },
+        "evaluations_per_method": {
+          "default": 8,
+          "maximum": 64,
+          "minimum": 2,
+          "title": "Evaluations Per Method",
+          "type": "integer"
+        },
+        "id": {
+          "default": "search_request_blinded_moment_sufficiency_v1",
+          "title": "Id",
+          "type": "string"
+        },
+        "model_family": {
+          "const": "linearized_1d_electrostatic_vlasov_poisson",
+          "default": "linearized_1d_electrostatic_vlasov_poisson",
+          "title": "Model Family",
+          "type": "string"
+        },
+        "moment_tolerance": {
+          "default": 1e-10,
+          "exclusiveMinimum": 0,
+          "title": "Moment Tolerance",
+          "type": "number"
+        },
+        "outcome_tolerance": {
+          "default": 0.02,
+          "exclusiveMinimum": 0,
+          "title": "Outcome Tolerance",
+          "type": "number"
+        },
+        "reference_distribution": {
+          "$ref": "#/$defs/GaussianMixture",
+          "default": {
+            "components": [
+              {
+                "drift": 0.0,
+                "sigma": 1.0,
+                "weight": 1.0
+              }
+            ]
+          }
+        },
+        "research_goal": {
+          "default": "Find a distribution with density=1, mean_velocity=0, and variance=1 whose dominant linear growth rate differs from the unit Maxwellian reference.",
+          "title": "Research Goal",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "target_moments": {
+          "$ref": "#/$defs/DistributionMoments",
+          "default": {
+            "density": 1.0,
+            "mean_velocity": 0.0,
+            "variance": 1.0
+          }
+        },
+        "wavenumber": {
+          "default": 0.5,
+          "exclusiveMinimum": 0,
+          "title": "Wavenumber",
+          "type": "number"
+        }
+      },
+      "title": "BlindedSearchRequest",
+      "type": "object"
+    },
+    "CandidateEvaluation": {
+      "additionalProperties": false,
+      "properties": {
+        "failure_detail": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Failure Detail"
+        },
+        "falsifies": {
+          "default": false,
+          "title": "Falsifies",
+          "type": "boolean"
+        },
+        "method": {
+          "$ref": "#/$defs/SearchMethod"
+        },
+        "mode": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LinearMode"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "moments": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DistributionMoments"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "outcome": {
+          "$ref": "#/$defs/CandidateOutcome"
+        },
+        "outcome_separation": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Outcome Separation"
+        },
+        "proposal": {
+          "$ref": "#/$defs/CandidateProposal"
+        },
+        "reference_growth_rate": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reference Growth Rate"
+        },
+        "request_id": {
+          "title": "Request Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "request_id",
+        "method",
+        "proposal",
+        "outcome"
+      ],
+      "title": "CandidateEvaluation",
+      "type": "object"
+    },
+    "CandidateOutcome": {
+      "enum": [
+        "valid",
+        "numerical_failure"
+      ],
+      "title": "CandidateOutcome",
+      "type": "string"
+    },
+    "CandidateProposal": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "ordinal": {
+          "minimum": 1,
+          "title": "Ordinal",
+          "type": "integer"
+        },
+        "parameters": {
+          "$ref": "#/$defs/SymmetricMixtureCandidate"
+        },
+        "rationale": {
+          "minLength": 1,
+          "title": "Rationale",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "ordinal",
+        "parameters",
+        "rationale"
+      ],
+      "title": "CandidateProposal",
+      "type": "object"
+    },
+    "DistributionMoments": {
+      "additionalProperties": false,
+      "properties": {
+        "density": {
+          "title": "Density",
+          "type": "number"
+        },
+        "mean_velocity": {
+          "title": "Mean Velocity",
+          "type": "number"
+        },
+        "variance": {
+          "minimum": 0,
+          "title": "Variance",
+          "type": "number"
+        }
+      },
+      "required": [
+        "density",
+        "mean_velocity",
+        "variance"
+      ],
+      "title": "DistributionMoments",
+      "type": "object"
+    },
+    "GaussianComponent": {
+      "additionalProperties": false,
+      "properties": {
+        "drift": {
+          "title": "Drift",
+          "type": "number"
+        },
+        "sigma": {
+          "exclusiveMinimum": 0,
+          "title": "Sigma",
+          "type": "number"
+        },
+        "weight": {
+          "exclusiveMinimum": 0,
+          "maximum": 1,
+          "title": "Weight",
+          "type": "number"
+        }
+      },
+      "required": [
+        "weight",
+        "drift",
+        "sigma"
+      ],
+      "title": "GaussianComponent",
+      "type": "object"
+    },
+    "GaussianMixture": {
+      "additionalProperties": false,
+      "properties": {
+        "components": {
+          "items": {
+            "$ref": "#/$defs/GaussianComponent"
+          },
+          "minItems": 1,
+          "title": "Components",
+          "type": "array"
+        }
+      },
+      "required": [
+        "components"
+      ],
+      "title": "GaussianMixture",
+      "type": "object"
+    },
+    "LinearMode": {
+      "additionalProperties": false,
+      "properties": {
+        "dielectric_residual": {
+          "minimum": 0,
+          "title": "Dielectric Residual",
+          "type": "number"
+        },
+        "frequency": {
+          "title": "Frequency",
+          "type": "number"
+        },
+        "growth_rate": {
+          "title": "Growth Rate",
+          "type": "number"
+        }
+      },
+      "required": [
+        "frequency",
+        "growth_rate",
+        "dielectric_residual"
+      ],
+      "title": "LinearMode",
+      "type": "object"
+    },
+    "MethodSearchResult": {
+      "additionalProperties": false,
+      "properties": {
+        "best_candidate_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Best Candidate Id"
+        },
+        "best_outcome_separation": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Best Outcome Separation"
+        },
+        "evaluations": {
+          "items": {
+            "$ref": "#/$defs/CandidateEvaluation"
+          },
+          "minItems": 1,
+          "title": "Evaluations",
+          "type": "array"
+        },
+        "first_falsifying_ordinal": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "First Falsifying Ordinal"
+        },
+        "method": {
+          "$ref": "#/$defs/SearchMethod"
+        }
+      },
+      "required": [
+        "method",
+        "evaluations"
+      ],
+      "title": "MethodSearchResult",
+      "type": "object"
+    },
+    "ParameterInterval": {
+      "additionalProperties": false,
+      "properties": {
+        "maximum": {
+          "title": "Maximum",
+          "type": "number"
+        },
+        "minimum": {
+          "title": "Minimum",
+          "type": "number"
+        }
+      },
+      "required": [
+        "minimum",
+        "maximum"
+      ],
+      "title": "ParameterInterval",
+      "type": "object"
+    },
+    "ReferenceQualification": {
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "$ref": "#/$defs/LinearMode"
+        },
+        "moments": {
+          "$ref": "#/$defs/DistributionMoments"
+        },
+        "qualified": {
+          "title": "Qualified",
+          "type": "boolean"
+        },
+        "request_id": {
+          "title": "Request Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "request_id",
+        "moments",
+        "mode",
+        "qualified"
+      ],
+      "title": "ReferenceQualification",
+      "type": "object"
+    },
+    "SearchMethod": {
+      "enum": [
+        "ai",
+        "grid",
+        "random",
+        "latin_hypercube"
+      ],
+      "title": "SearchMethod",
+      "type": "string"
+    },
+    "SymmetricMixtureCandidate": {
+      "additionalProperties": false,
+      "properties": {
+        "inner_drift": {
+          "exclusiveMaximum": 1,
+          "minimum": 0,
+          "title": "Inner Drift",
+          "type": "number"
+        },
+        "inner_pair_weight": {
+          "exclusiveMaximum": 1,
+          "exclusiveMinimum": 0,
+          "title": "Inner Pair Weight",
+          "type": "number"
+        },
+        "outer_drift": {
+          "exclusiveMaximum": 1,
+          "minimum": 0,
+          "title": "Outer Drift",
+          "type": "number"
+        }
+      },
+      "required": [
+        "inner_pair_weight",
+        "inner_drift",
+        "outer_drift"
+      ],
+      "title": "SymmetricMixtureCandidate",
+      "type": "object"
+    },
+    "SymmetricMixtureSearchSpace": {
+      "additionalProperties": false,
+      "description": "Two symmetric drift pairs with a shared derived thermal width.",
+      "properties": {
+        "derived_width": {
+          "const": "sqrt(1-inner_pair_weight*inner_drift^2-(1-inner_pair_weight)*outer_drift^2)",
+          "default": "sqrt(1-inner_pair_weight*inner_drift^2-(1-inner_pair_weight)*outer_drift^2)",
+          "title": "Derived Width",
+          "type": "string"
+        },
+        "grammar": {
+          "const": "symmetric_unit_variance_gaussian_mixture_v1",
+          "default": "symmetric_unit_variance_gaussian_mixture_v1",
+          "title": "Grammar",
+          "type": "string"
+        },
+        "inner_drift": {
+          "$ref": "#/$defs/ParameterInterval",
+          "default": {
+            "maximum": 0.95,
+            "minimum": 0.0
+          }
+        },
+        "inner_pair_weight": {
+          "$ref": "#/$defs/ParameterInterval",
+          "default": {
+            "maximum": 0.9,
+            "minimum": 0.1
+          }
+        },
+        "outer_drift": {
+          "$ref": "#/$defs/ParameterInterval",
+          "default": {
+            "maximum": 0.95,
+            "minimum": 0.0
+          }
+        },
+        "required_order": {
+          "const": "inner_drift <= outer_drift",
+          "default": "inner_drift <= outer_drift",
+          "title": "Required Order",
+          "type": "string"
+        }
+      },
+      "title": "SymmetricMixtureSearchSpace",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "confirmation_candidate": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SymmetricMixtureCandidate"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "confirmation_candidate_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Confirmation Candidate Id"
+    },
+    "equal_evaluation_budget": {
+      "title": "Equal Evaluation Budget",
+      "type": "boolean"
+    },
+    "method_results": {
+      "items": {
+        "$ref": "#/$defs/MethodSearchResult"
+      },
+      "title": "Method Results",
+      "type": "array"
+    },
+    "reference": {
+      "$ref": "#/$defs/ReferenceQualification"
+    },
+    "request": {
+      "$ref": "#/$defs/BlindedSearchRequest"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "selection_reason": {
+      "title": "Selection Reason",
+      "type": "string"
+    }
+  },
+  "required": [
+    "request",
+    "reference",
+    "method_results",
+    "equal_evaluation_budget",
+    "selection_reason"
+  ],
+  "title": "BlindedSearchReport",
+  "type": "object"
+}

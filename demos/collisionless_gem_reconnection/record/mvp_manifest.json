@@ -1,0 +1,137 @@
+{
+  "campaign_instruction": "Use the installed CUDA/openPMD WarpX capability and begin from the supplied guided-commissioning package. The physical model must remain fully kinetic for both electrons and ions; do not substitute a hybrid, fluid-electron, resistive-MHD, or imposed-reconnection-field model. This is a held-out confirmation successor motivated by the exploratory run-0003 endpoint contrast. All supplied anchors, prior outputs, rates, audits, and summaries are non-evidentiary context. Seed 20260814 was used during discovery and cannot count as fresh confirmation evidence.\n\nThe immutable root hypothesis already fixes the scientific comparison: the seed-ensemble mean late-window normalized flux-slope rate at Ti/Te = 1 versus Ti/Te = 20 in the supplied fixed physical regime, with ratio threshold mu_1 / mu_20 >= 1.25 and a numerical-fidelity control. You autonomously choose a finite prospective confirmation design: fresh paired seeds, sample size, fidelity levels, grid and particle parameters, duration, diagnostic implementation, uncertainty estimator, and decision rule. Use enough independent fresh observations to make an ensemble statement meaningful within the available time, and distinguish paired sampling uncertainty from within-run estimator variability. Do not use the prior discovery values as confirmation observations or silently tune the rule after seeing fresh outcomes.\n\nBefore generating any claim-bearing outcome, author and stabilize every program, register the decisive observable and decision rule, and freeze the complete execution pipeline. Put the simulator in execution_binding and every downstream capability program in additional_execution_bindings; enumerate every exact scientific argv and commission every distinct program under its own instrument claim with representation, physics_controls, boundaries, diagnostics, and numerical_regime checks. Every capability name must be selected exactly from the installed registry. Plain run_python is workbench-only and cannot qualify a downstream scientific evidence stage. Do not repair a scientific contract after outcomes and then close the same claim decisively; if the protocol must change, close nondecisively or create a successor and collect fresh evidence.\n\nBind the decisive JSON observable to machine-readable estimator or formula, component and sign convention, units, normalization, time or window rule, seed pairing, and uncertainty rule. Select exact header-named nonoverlapping field and particle energy totals. Continue autonomously without asking the operator to choose physics or parameters. Stop with a bounded supported, falsified, or honestly unresolved conclusion and account explicitly for numerical fidelity, sampling uncertainty, prior non-evidentiary discovery context, and every open or closed claim.",
+  "capability_hashes": {
+    "warpx-cpu-26.07": "038d478c8735ff24d299c46b73bd4a6a2a3e00253e6fa2d1c51c705f6874a7a7",
+    "warpx-cuda-openpmd-26.07": "0ef3b3cd374c381b02857efc263d73c2c5e8d486c69c669a8c32dbc966a4a7c8"
+  },
+  "claim_ledger_schema_version": "0.8.0",
+  "config": {
+    "command_heartbeat_seconds": 30.0,
+    "max_command_seconds": 3600.0,
+    "max_file_bytes": 536870912,
+    "max_iterations": null,
+    "max_memory_bytes": 34359738368,
+    "max_model_retries": 5,
+    "max_tool_output_chars": 30000,
+    "max_wall_seconds": 28800.0,
+    "max_workspace_bytes": 4294967296,
+    "model_failover_after": 2,
+    "recent_full_turns": 12
+  },
+  "guided_commissioning": {
+    "available": true,
+    "capability": "warpx-cuda-openpmd-26.07",
+    "description": "A fully kinetic 2D electron-ion Harris-sheet CUDA/openPMD program, a successful operator anchor, and non-evidentiary audits of three prior autonomous campaigns for a fresh held-out endpoint confirmation.",
+    "files": [
+      {
+        "bytes": 2491,
+        "path": "guided/anchor_operator_validation.json",
+        "sha256": "519179d51beaf88fc6f54bfcbd69e5ef0fa20dc650978622946a6432917b8277"
+      },
+      {
+        "bytes": 25080,
+        "path": "guided/gem_anchor_validation.json",
+        "sha256": "580a9e63c5b3e04e11e780e9ae7d5c573dd2bda5cf11a326e0141fdf3a283447"
+      },
+      {
+        "bytes": 35104,
+        "path": "guided/gem_collisionless.py",
+        "sha256": "55ffac348ff4ad84fcb228fa13ffc38d97504897e78a1e8ccbf160cc5d051123"
+      },
+      {
+        "bytes": 4226,
+        "path": "guided/prior_campaign_0002_audit_summary.json",
+        "sha256": "72d3a59658cd6e18a3feeab5f601245d09c3331c87a245969f2f07351cafa6b6"
+      },
+      {
+        "bytes": 5062,
+        "path": "guided/prior_campaign_0003_audit_summary.json",
+        "sha256": "304c25f98144a742185114fc39f3cdd1608a85558fc694bce8e10a9961bdd932"
+      },
+      {
+        "bytes": 5255,
+        "path": "guided/prior_campaign_audit_summary.json",
+        "sha256": "3713b6463268eb4e0436f8f994d6cbb6c6149c18de4ae07c992e452b88064a1d"
+      }
+    ],
+    "limitations": [
+      "Every supplied anchor, output, prior rate, and audit is non-evidentiary context; the confirmation requires fresh prospective evidence.",
+      "The supplied model uses a reduced ion/electron mass ratio of 25.",
+      "Run 0001 left a system-size refinement unresolved and exposed material same-input variability.",
+      "Run 0002 falsified a monotone guide-field refinement with an adaptive aggregation-contract qualification.",
+      "Run 0003 cleanly falsified Ti/Te monotonicity under one fixed seed and exposed an exploratory endpoint contrast, but did not establish seed-ensemble or convergence-qualified physics.",
+      "Discovery seed 20260814 is excluded from fresh confirmation evidence.",
+      "A single known-runnable anchor commissions execution but does not establish scientific reproducibility.",
+      "The supplied program exposes distinct electric-field and flux-derivative estimators; their identities must not be conflated."
+    ],
+    "name": "collisionless-gem-gpu-v1-heldout-confirmation",
+    "operator_validation": "The exact argv completed 4,623 fully kinetic explicit CUDA steps, wrote 26 readable HDF5 openPMD field states, passed all 26 five-aspect commissioning checks, and conserved combined field-plus-particle energy to 4.70e-5 relative over t*Omega_ci=12.",
+    "package_sha256": "c3a80d953edc958fbdcf480e410483569fcb197e0255f0400360dd85b6aeb5dc",
+    "policy": "operator_validated_starting_point_not_campaign_evidence",
+    "program_path": "guided/gem_collisionless.py",
+    "schema_version": "0.1.0",
+    "scientific_evidence_eligible": false,
+    "validated_argv": [
+      "guided/gem_collisionless.py",
+      "--nx",
+      "256",
+      "--ppc-per-population",
+      "16",
+      "--duration-omegaci",
+      "12",
+      "--diagnostic-count",
+      "24",
+      "--mass-ratio",
+      "25",
+      "--density-m3",
+      "1e24",
+      "--background-fraction",
+      "0.2",
+      "--va-reference-over-c",
+      "0.04",
+      "--ion-electron-temperature-ratio",
+      "5",
+      "--box-lx-di",
+      "25.6",
+      "--box-lz-di",
+      "12.8",
+      "--sheet-half-width-di",
+      "0.5",
+      "--perturbation-fraction",
+      "0.1",
+      "--guide-field-fraction",
+      "0",
+      "--max-grid-size",
+      "64",
+      "--seed",
+      "20260814",
+      "--output",
+      "guided/anchor_run",
+      "--summary",
+      "guided/gem_anchor_validation.json",
+      "--overwrite"
+    ],
+    "validation_summary_path": "guided/gem_anchor_validation.json"
+  },
+  "hypothesis": "In two-dimensional, non-relativistic, fully kinetic, collisionless electron-ion GEM-type Harris-sheet reconnection at reduced mass ratio 25 and the fixed physical geometry and normalization of the supplied guided regime, the seed-ensemble mean late-window normalized flux-slope reconnection rate at Ti/Te = 1 is at least 25 percent larger than at Ti/Te = 20 (mu_1 / mu_20 >= 1.25), and this endpoint contrast persists under a numerical-fidelity control.",
+  "literature_search": {
+    "identity": {
+      "credentials_required": false,
+      "name": "public-literature-search",
+      "network_location": "host",
+      "providers": [
+        "openalex",
+        "crossref",
+        "duckduckgo_html"
+      ],
+      "sandbox_network_enabled": false,
+      "version": "1"
+    },
+    "required_when_available": true
+  },
+  "schema_version": "0.20.0",
+  "skill_hashes": {
+    "warpx": "9934064567a29676d2d8ec189c9be57216c2962847986d4d480b448b7f16b1fd"
+  },
+  "system_prompt_sha256": "5c03571e905993547d07eaa51d1385d99c649fb0ce365f07ac1d1b7818beba84"
+}

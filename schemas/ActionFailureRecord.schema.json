@@ -1,0 +1,41 @@
+{
+  "$defs": {
+    "ActionFailureKind": {
+      "enum": [
+        "infrastructure",
+        "specification",
+        "numerical",
+        "validity"
+      ],
+      "title": "ActionFailureKind",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "action_id": {
+      "title": "Action Id",
+      "type": "string"
+    },
+    "budget_consumed": {
+      "default": true,
+      "title": "Budget Consumed",
+      "type": "boolean"
+    },
+    "detail": {
+      "minLength": 1,
+      "title": "Detail",
+      "type": "string"
+    },
+    "kind": {
+      "$ref": "#/$defs/ActionFailureKind"
+    }
+  },
+  "required": [
+    "action_id",
+    "kind",
+    "detail"
+  ],
+  "title": "ActionFailureRecord",
+  "type": "object"
+}

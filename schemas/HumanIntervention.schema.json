@@ -1,0 +1,88 @@
+{
+  "$defs": {
+    "InterventionType": {
+      "enum": [
+        "pause",
+        "resume",
+        "emergency_stop",
+        "action_veto",
+        "priority_update",
+        "tactical_suggestion",
+        "reviewer_challenge",
+        "evidence_injection",
+        "contract_amendment",
+        "campaign_branch"
+      ],
+      "title": "InterventionType",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "actor": {
+      "title": "Actor",
+      "type": "string"
+    },
+    "checkpoint_after": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Checkpoint After"
+    },
+    "checkpoint_before": {
+      "title": "Checkpoint Before",
+      "type": "string"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "impact": {
+      "additionalProperties": true,
+      "title": "Impact",
+      "type": "object"
+    },
+    "intervention_type": {
+      "$ref": "#/$defs/InterventionType"
+    },
+    "payload": {
+      "additionalProperties": true,
+      "title": "Payload",
+      "type": "object"
+    },
+    "reason": {
+      "title": "Reason",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "scope": {
+      "title": "Scope",
+      "type": "string"
+    }
+  },
+  "required": [
+    "actor",
+    "intervention_type",
+    "scope",
+    "reason",
+    "checkpoint_before"
+  ],
+  "title": "HumanIntervention",
+  "type": "object"
+}

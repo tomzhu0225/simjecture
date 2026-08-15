@@ -1,0 +1,201 @@
+{
+  "policy": {
+    "required_attempt_when_available": true,
+    "scientific_evidence_eligible": false,
+    "zero_hit_or_unavailable_satisfies_attempt": true
+  },
+  "schema_version": "0.1.0",
+  "searches": [
+    {
+      "errors": [],
+      "hypothesis_sha256": "4a5c2af9bf8e1de65182eb1c973abb01af84f2b5f51dba225133573d31647d63",
+      "id": "literature_search_a2ab380e66be1e11",
+      "provider_status": {
+        "crossref": "ok:8",
+        "duckduckgo_html": "ok:0",
+        "openalex": "ok:8"
+      },
+      "purpose": "Find established benchmarks and known bounds for reconnection-rate dependence on Ti/Te, reduced mass-ratio artifacts, flux-slope diagnostic conventions, and numerical-fidelity requirements in 2D collisionless Harris-sheet PIC.",
+      "query": "kinetic PIC simulation reconnection rate depends on ion-to-electron temperature ratio Harris sheet GEM",
+      "requested_results": 8,
+      "schema_version": "0.1.0",
+      "scientific_evidence_eligible": false,
+      "searched_at": "2026-08-14T07:00:31.456117Z",
+      "sources": [
+        {
+          "abstract": "Three\u2010dimensional (3\u2010D) particle simulations are performed in a double current layer configuration to investigate the stability of current sheets and boundary layers which develop during magnetic reconnection of antiparallel fields in collisionless plasma. The strong current layers that develop near the x line remain surprisingly laminar, with no evidence of turbulence and associated anomalous resistivity or viscosity. Neither the electron shear flow instabilities nor kink\u2010like instabilities, which have been observed in these current layers in earlier simulations, are present. The sharp boundary layers which form between the inflow and outflow regions downstream of the x line are unstable to the lower hybrid drift instability. The associated fluctuations, however, do not strongly impact the rate of reconnection. As a consequence, magnetic reconnection in the 3\u2010D system remains nearly two dimensional.",
+          "authors": [
+            "A. Zeiler",
+            "D. Biskamp",
+            "J. F. Drake",
+            "B. N. Rogers",
+            "M. A. Shay",
+            "M. Scholer"
+          ],
+          "cited_by_count": 282,
+          "doi": "10.1029/2001ja000287",
+          "full_text_url": "https://content.openalex.org/works/W1970479591.grobid-xml",
+          "id": "openalex:W1970479591",
+          "kind": "paper",
+          "open_access": true,
+          "provider": "openalex",
+          "publication_year": 2002,
+          "snippet": null,
+          "source_name": "Journal of Geophysical Research Atmospheres",
+          "title": "Three\u2010dimensional particle simulations of collisionless magnetic reconnection",
+          "url": "https://doi.org/10.1029/2001ja000287"
+        },
+        {
+          "abstract": "The results of kinetic simulations of magnetic reconnection in Harris current sheets are analyzed. A range of guide fields is considered to study reconnection in plasmas characterized by different \u03b2 values, \u03b2&gt;me/mi. Both an implicit particle-in-cell (PIC) simulation method and a parallel explicit PIC code are used. Simulations with mass ratios up to the physical value are performed. The simulations show that the reconnection rate decreases with the guide field and depends weakly on the mass ratio. The off-diagonal components of the electron pressure tensor break the frozen-in condition, even in low \u03b2 plasmas. In high \u03b2 plasmas, evidence is presented that whistler waves play a key role in the fast reconnection physics, while in low \u03b2 plasmas the kinetic Alfv\u00e9n waves are important. The in-plane and the out-of-plane ion and electron motion are also considered, showing that they are influenced by the mass ratio and the plasma \u03b2.",
+          "authors": [
+            "Paolo Ricci",
+            "J. U. Brackbill",
+            "W. Daughton",
+            "Giovanni Lapenta"
+          ],
+          "cited_by_count": 204,
+          "doi": "10.1063/1.1768552",
+          "full_text_url": "https://content.openalex.org/works/W1999094467.grobid-xml",
+          "id": "openalex:W1999094467",
+          "kind": "paper",
+          "open_access": true,
+          "provider": "openalex",
+          "publication_year": 2004,
+          "snippet": null,
+          "source_name": "Physics of Plasmas",
+          "title": "Collisionless magnetic reconnection in the presence of a guide field",
+          "url": "https://doi.org/10.1063/1.1768552"
+        },
+        {
+          "abstract": "Abstract We investigate the use of artificially increased ion and electron kinetic scales in global plasma simulations. We argue that as long as the global and ion inertial scales remain well separated, (1) the overall global solution is not strongly sensitive to the value of the ion inertial scale, while (2) the ion inertial scale dynamics will also be similar to the original system, but it occurs at a larger spatial scale, and (3) structures at intermediate scales, such as magnetic islands, grow in a self\u2010similar manner. To investigate the validity and limitations of our scaling hypotheses, we carry out many simulations of a two\u2010dimensional magnetosphere with the magnetohydrodynamics with embedded particle\u2010in\u2010cell (MHD\u2010EPIC) model. The PIC model covers the dayside reconnection site. The simulation results confirm that the hypotheses are true as long as the increased ion inertial length remains less than about 5% of the magnetopause standoff distance. Since the theoretical arguments are general, we expect these results to carry over to three dimensions. The computational cost is reduced by the third and fourth powers of the scaling factor in two\u2010 and three\u2010dimensional simulations, respectively, which can be many orders of magnitude. The present results suggest that global simulations that resolve kinetic scales for reconnection are feasible. This is a crucial step for applications to the magnetospheres of Earth, Saturn, and Jupiter and to the solar corona.",
+          "authors": [
+            "G\u00e1bor T\u00f3th",
+            "Yuxi Chen",
+            "T. I. Gombosi",
+            "P. A. Cassak",
+            "Stefano Markidis",
+            "Ivy Peng"
+          ],
+          "cited_by_count": 78,
+          "doi": "10.1002/2017ja024189",
+          "full_text_url": "https://content.openalex.org/works/W2754063114.grobid-xml",
+          "id": "openalex:W2754063114",
+          "kind": "paper",
+          "open_access": true,
+          "provider": "openalex",
+          "publication_year": 2017,
+          "snippet": null,
+          "source_name": "Journal of Geophysical Research Space Physics",
+          "title": "Scaling the Ion Inertial Length and Its Implications for Modeling Reconnection in Global Simulations",
+          "url": "https://doi.org/10.1002/2017ja024189"
+        },
+        {
+          "abstract": "The dynamics of x\u2010line formation and evolution in 3D magnetic reconnection is studied using a fully kinetic approach. An x\u2010line of small length is initialized using a perturbation localized in the current direction. The electrons and ions drift diamagnetically along the current direction of the initial x\u2010line and are further accelerated by the reconnection electric field. The electron and ion motion is in opposite directions and each species extends one end of the x\u2010line. Several predictions based on this picture are formulated and studied and confirmed under parameter variation. Expansion can proceed at a significant fraction of the Alfv\u00e9n speed, in both directions.",
+          "authors": [
+            "Giovanni Lapenta",
+            "D. Krauss\u2010Varban",
+            "H. Karimabadi",
+            "J. D. Huba",
+            "L. I. Rudakov",
+            "Paolo Ricci"
+          ],
+          "cited_by_count": 56,
+          "doi": "10.1029/2005gl025124",
+          "full_text_url": "https://content.openalex.org/works/W1511617311.grobid-xml",
+          "id": "openalex:W1511617311",
+          "kind": "paper",
+          "open_access": true,
+          "provider": "openalex",
+          "publication_year": 2006,
+          "snippet": null,
+          "source_name": "Geophysical Research Letters",
+          "title": "Kinetic simulations of x\u2010line expansion in 3D reconnection",
+          "url": "https://doi.org/10.1029/2005gl025124"
+        },
+        {
+          "abstract": "Using two\u2010dimensional particle\u2010in\u2010cell (PIC) together with magnetohydrodynamic (MHD) simulations of magnetotail dynamics, we investigate the evolution toward onset of reconnection and the subsequent energy transfer and conversion. In either case, reconnection onset is preceded by a driven phase, during which magnetic flux is added to the tail at the high\u2010latitude boundaries, followed by a relaxation phase, during which the configuration continues to respond to the driving. The boundary deformation leads to the formation of thin embedded current sheets, which are bifurcated in the near tail, converging to a single sheet farther out in the MHD simulations. The thin current sheets in the PIC simulation are carried by electrons and are associated with a strong perpendicular electrostatic field, which may provide a connection to parallel potentials and auroral arcs and an ionospheric signal even prior to the onset of reconnection. The PIC simulation very well satisfies integral entropy conservation (intrinsic to ideal MHD) during this phase, supporting ideal ballooning stability. Eventually, the current intensification leads to the onset of reconnection, the formation and ejection of a plasmoid, and a collapse of the inner tail. The earthward flow shows the characteristics of a dipolarization front: enhancement of B z , associated with a thin vertical electron current sheet in the PIC simulation. Both MHD and PIC simulations show a dominance of energy conversion from incoming Poynting flux to outgoing enthalpy flux, resulting in heating of the inner tail. Localized Joule dissipation plays only a minor role.",
+          "authors": [
+            "J. Birn",
+            "M. Hesse"
+          ],
+          "cited_by_count": 50,
+          "doi": "10.1002/2013ja019354",
+          "full_text_url": "https://content.openalex.org/works/W2119895796.grobid-xml",
+          "id": "openalex:W2119895796",
+          "kind": "paper",
+          "open_access": true,
+          "provider": "openalex",
+          "publication_year": 2014,
+          "snippet": null,
+          "source_name": "Journal of Geophysical Research Space Physics",
+          "title": "Forced reconnection in the near magnetotail: Onset and energy conversion in PIC and MHD simulations",
+          "url": "https://doi.org/10.1002/2013ja019354"
+        },
+        {
+          "abstract": null,
+          "authors": [
+            "Hantao Ji",
+            "W. Daughton",
+            "Jonathan Jara-Almonte",
+            "A. L\u00ea",
+            "Adam Stanier",
+            "Jongsoo Yoo"
+          ],
+          "cited_by_count": 139,
+          "doi": "10.1038/s42254-021-00419-x",
+          "full_text_url": "https://arxiv.org/pdf/2202.09004",
+          "id": "openalex:W4210667727",
+          "kind": "paper",
+          "open_access": true,
+          "provider": "openalex",
+          "publication_year": 2022,
+          "snippet": null,
+          "source_name": "Nature Reviews Physics",
+          "title": "Magnetic reconnection in the era of exascale computing and multiscale experiments",
+          "url": "https://doi.org/10.1038/s42254-021-00419-x"
+        },
+        {
+          "abstract": "Abstract In this review we focus on the fundamental theory of magnetohydrodynamic reconnection, together with applications to understanding a wide range of dynamic processes in the solar corona, such as flares, jets, coronal mass ejections, the solar wind and coronal heating. We summarise only briefly the related topics of collisionless reconnection, non-thermal particle acceleration, and reconnection in systems other than the corona. We introduce several preliminary topics that are necessary before the subtleties of reconnection can be fully described: these include null points (Sects. 2.1\u20132.2), other topological and geometrical features such as separatrices, separators and quasi-separatrix layers (Sects. 2.3, 2.6), the conservation of magnetic flux and field lines (Sect. 3), and magnetic helicity (Sect. 4.6). Formation of current sheets in two- and three-dimensional fields is reviewed in Sect. 5. These set the scene for a discussion of the definition and properties of reconnection in three dimensions that covers the conditions for reconnection, the failure of the concept of a flux velocity, the nature of diffusion, and the differences between two-dimensional and three-dimensional reconnection (Sect. 4). Classical 2D models are briefly presented, including magnetic annihilation (Sect. 6), slow and fast regimes of steady reconnection (Sect. 7), and non-steady reconnection such as the tearing mode (Sect. 8). Then three routes to fast reconnection in a collisional or collisionless medium are described (Sect. 9). The remainder of the review is dedicated to our current understanding of how magnetic reconnection operates in three dimensions and in complex magnetic fields such as that of the Sun\u2019s corona. In Sects. 10\u201312, 14.1 the different regimes of reconnection that are possible in three dimensions are summarised, including at a null point, separator, quasi-separator or a braid. The role of 3D reconnection in solar flares (Sect. 13) is reviewed, as well as in coronal heating (Sect. 14), and the release of the solar wind (Sect. 15.2). Extensions including the role of reconnection in the magnetosphere (Sect. 15.3), the link between reconnection and turbulence (Sect. 16), and the role of reconnection in particle acceleration (Sect. 17) are briefly mentioned.",
+          "authors": [
+            "D. I. Pontin",
+            "E. R. Priest"
+          ],
+          "cited_by_count": 154,
+          "doi": "10.1007/s41116-022-00032-9",
+          "full_text_url": "https://content.openalex.org/works/W4229443067.grobid-xml",
+          "id": "openalex:W4229443067",
+          "kind": "paper",
+          "open_access": true,
+          "provider": "openalex",
+          "publication_year": 2022,
+          "snippet": null,
+          "source_name": "Living Reviews in Solar Physics",
+          "title": "Magnetic reconnection: MHD theory and modelling",
+          "url": "https://doi.org/10.1007/s41116-022-00032-9"
+        },
+        {
+          "abstract": "The Particle-In-Cell (PIC) method has been developed by Oscar Buneman, Charles Birdsall, Roger W. Hockney, and John Dawson in the 1950s and, with the advances of computing power, has been further developed for several fields such as astrophysical, magnetospheric as well as solar plasmas and recently also for atmospheric and laser-plasma physics. Currently more than 15 semi-public PIC codes are available which we discuss in this review. Its applications have grown extensively with increasing computing power available on high performance computing facilities around the world. These systems allow the study of various topics of astrophysical plasmas, such as magnetic reconnection, pulsars and black hole magnetosphere, non-relativistic and relativistic shocks, relativistic jets, and laser-plasma physics. We review a plethora of astrophysical phenomena such as relativistic jets, instabilities, magnetic reconnection, pulsars, as well as PIC simulations of laser-plasma physics (until 2021) emphasizing the physics involved in the simulations. Finally, we give an outlook of the future simulations of jets associated to neutron stars, black holes and their merging and discuss the future of PIC simulations in the light of petascale and exascale computing.",
+          "authors": [
+            "Kenichi Nishikawa",
+            "Ioana Du\u0163an",
+            "Christoph K\u00f6hn",
+            "Yosuke Mizuno"
+          ],
+          "cited_by_count": 49,
+          "doi": "10.1007/s41115-021-00012-0",
+          "full_text_url": "https://content.openalex.org/works/W3113036304.grobid-xml",
+          "id": "openalex:W3113036304",
+          "kind": "paper",
+          "open_access": true,
+          "provider": "openalex",
+          "publication_year": 2021,
+          "snippet": null,
+          "source_name": "Living Reviews in Computational Astrophysics",
+          "title": "PIC methods in astrophysics: simulations of relativistic jets and kinetic physics in astrophysical systems",
+          "url": "https://doi.org/10.1007/s41115-021-00012-0"
+        }
+      ],
+      "status": "completed"
+    }
+  ]
+}

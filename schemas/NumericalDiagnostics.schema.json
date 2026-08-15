@@ -1,0 +1,58 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "boundary_contamination": {
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Boundary Contamination",
+      "type": "number"
+    },
+    "infrastructure_error": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Infrastructure Error"
+    },
+    "nan_count": {
+      "minimum": 0,
+      "title": "Nan Count",
+      "type": "integer"
+    },
+    "numerical_damping_fraction": {
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Numerical Damping Fraction",
+      "type": "number"
+    },
+    "relative_energy_drift": {
+      "minimum": 0,
+      "title": "Relative Energy Drift",
+      "type": "number"
+    },
+    "residual": {
+      "minimum": 0,
+      "title": "Residual",
+      "type": "number"
+    },
+    "solver_converged": {
+      "title": "Solver Converged",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "solver_converged",
+    "residual",
+    "nan_count",
+    "relative_energy_drift",
+    "boundary_contamination",
+    "numerical_damping_fraction"
+  ],
+  "title": "NumericalDiagnostics",
+  "type": "object"
+}

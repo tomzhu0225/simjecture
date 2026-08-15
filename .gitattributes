@@ -1,0 +1,9 @@
+# Preserve autonomous run artifacts byte-for-byte, including model-authored
+# formatting. Generated figures likewise need not satisfy source whitespace
+# checks.
+demos/gray_scott_counterexample/record/** -whitespace
+demos/collisionless_gem_reconnection/record/** -whitespace
+docs/_static/demos/*.svg -whitespace
+
+*.npz binary
+*.png binary

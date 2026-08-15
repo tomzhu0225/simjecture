@@ -1,0 +1,88 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "action_type": {
+      "title": "Action Type",
+      "type": "string"
+    },
+    "falsification_condition": {
+      "title": "Falsification Condition",
+      "type": "string"
+    },
+    "hypothesis_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Hypothesis Ids",
+      "type": "array"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "numerical_parameters": {
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "integer"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      },
+      "title": "Numerical Parameters",
+      "type": "object"
+    },
+    "physical_parameters": {
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "integer"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      },
+      "title": "Physical Parameters",
+      "type": "object"
+    },
+    "predictions": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Predictions",
+      "type": "object"
+    },
+    "required_diagnostics": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Required Diagnostics",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "hypothesis_ids",
+    "action_type",
+    "physical_parameters",
+    "required_diagnostics",
+    "predictions",
+    "falsification_condition"
+  ],
+  "title": "ExperimentSpec",
+  "type": "object"
+}

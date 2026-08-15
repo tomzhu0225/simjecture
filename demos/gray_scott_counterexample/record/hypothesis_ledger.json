@@ -1,0 +1,148 @@
+{
+  "schema_version": "0.2.0",
+  "root_hypothesis": "At fixed reaction parameters, whether a two-dimensional Gray-Scott reaction-diffusion system develops a persistent spatial pattern is determined solely by the diffusion ratio D_u/D_v, independent of the absolute diffusion scale.",
+  "claims": [
+    {
+      "id": "claim_root",
+      "statement": "At fixed reaction parameters, whether a two-dimensional Gray-Scott reaction-diffusion system develops a persistent spatial pattern is determined solely by the diffusion ratio D_u/D_v, independent of the absolute diffusion scale.",
+      "kind": "scientific",
+      "relation": "root",
+      "parent_id": null,
+      "status": "falsified",
+      "rationale": "Immutable root hypothesis supplied by the campaign operator.",
+      "evidence_contracts": [
+        {
+          "version": 1,
+          "observable": "Pattern measure P(t)=mean((u-mean(u))^2)/mean(u)^2 at t=1000 for two pseudospectral 2D Gray-Scott runs on identical L=40 periodic domain, F=0.072,k=0.062, fixed Du/Dv=3, absolute scales (Du,Dv)=(1,1/3) and (10,10/3), from identical deterministic perturbation.",
+          "expected_outcomes": "If P_s1>1e-3 and P_s10<1e-6, pattern outcome depends on absolute scale at fixed ratio and reaction parameters, falsifying the root claim. If P_s1≈P_s10 (both >1e-3 or both <1e-6), the root claim survives this test.",
+          "decision_rule": "Root falsified iff P_s1/P_s10 > 1000 AND P_s1 > 1e-3. Root weakened/survives if margin is smaller; unresolved if near thresholds.",
+          "required_observation": "Two converged pseudospectral runs to t_end>=1000, N>=128 on L=40, dt<=0.05 with dt-refinement confirmation, identical delta<=2e-3 initial perturbation, final pattern measures recorded for both scales.",
+          "uncertainty_criterion": "No NaN/instability; decision thresholds retain at least three orders of magnitude margin above roundoff (expected P floor <1e-12); dt=0.025 rerun must reproduce P values to <1% to rule out temporal discretization artifact.",
+          "inconclusive_conditions": "NaN/overflow, unstable solver, dt-refinement disagreement >1%, or either P value within a factor 10 of its threshold.",
+          "registered_iteration": 32
+        }
+      ],
+      "evidence": [
+        {
+          "path": "simulation_results.json",
+          "note": "Evidence for supported child claim_finite_gs, which directly contradicts the root. On L=40 periodic 2D domain, F=0.072,k=0.062, Du/Dv=3 fixed, P_s1=0.0858 and P_s10=7.64e-10 at t=1000, so pattern outcome changed solely with absolute diffusion scale at fixed ratio and reaction parameters.",
+          "iteration": 30,
+          "contract_version": null,
+          "observation_sufficient": true,
+          "observation_note": "Artifact was produced under claim_finite_gs's registered evidence contract and satisfied all required observation and uncertainty conditions (N>=128, t=1000, dt<=0.05, dt=0.025 convergence, no NaN, decision margins >=8 orders of magnitude).",
+          "provenance": {
+            "sha256": "1b7d5c2efd98cd49df72a065d838e8fc2b6cb72e4f3d80956261278b6bdf4ce4",
+            "bytes": 1767,
+            "tracked": true,
+            "generated_iteration": 20,
+            "action": "run_python",
+            "action_sha256": "3fa997b40c2ffd4268086e444237f749fda4087620f9a35e71d687f1ee54f389",
+            "command_argv": [
+              "simulate_gs.py",
+              "full"
+            ],
+            "capability": null,
+            "program_path": "simulate_gs.py",
+            "program_sha256": "d2d559021728358533eada81246a59e4d1fdc1808bf292f7ca255c70a77700bb"
+          }
+        },
+        {
+          "path": "root_pattern_results.json",
+          "note": "Under claim_root evidence contract v1: F=0.072,k=0.062, Du/Dv=3, L=40 periodic, N=128, t=1000, identical delta=1e-3 perturbation. P_s1=8.3745e-2 vs P_s10=4.3280e-18; dt=0.025 rerun gives 8.3744e-2 and 4.3312e-18. Ratio=1.93e16 >> 1000 and P_s1 >> 1e-3, so pattern outcome changed solely with absolute diffusion scale at fixed ratio and reaction parameters.",
+          "iteration": 35,
+          "contract_version": 1,
+          "observation_sufficient": true,
+          "observation_note": "Required observation met: converged runs at both dt=0.05 and dt=0.025, N=128, t=1000, identical small perturbation, final measures recorded. Uncertainty criterion met: no NaN/instability, dt-refinement agreement to 5 significant figures, decision thresholds exceeded by 12+ orders of magnitude.",
+          "provenance": {
+            "sha256": "5edd832987d7e7e50870756a52e83aa9c3b570aedc78edf6f0129d381b57072e",
+            "bytes": 2469,
+            "tracked": true,
+            "generated_iteration": 34,
+            "action": "run_python",
+            "action_sha256": "63a7654c4693b5fe8c44dc07f0f402a6bfd8b3c5a35a010389a38902e05cf321",
+            "command_argv": [
+              "simulate_gs_root.py"
+            ],
+            "capability": null,
+            "program_path": "simulate_gs_root.py",
+            "program_sha256": "b2996c49173d8514e89f042acaee6d39c30037d9e41b52fb2af0a6d653ea26e1"
+          }
+        }
+      ],
+      "closed_reason": "Root-level evidence contract v1 satisfied: P_s1/P_s10=1.93e16 > 1000 and P_s1=8.3745e-2 > 1e-3. Both dt=0.05 and dt=0.025 runs agree to five significant figures and are free of NaN/instability. At fixed reaction parameters and diffusion ratio, absolute diffusion scale alone changed the final outcome from persistent pattern to homogeneous decay, directly contradicting the root claim on this finite 2D periodic domain.",
+      "created_iteration": 0,
+      "updated_iteration": 36
+    },
+    {
+      "id": "claim_finite_gs",
+      "statement": "On a fixed L=40 periodic 2D domain with reaction parameters F=0.072,k=0.062 and diffusion ratio Du/Dv=3 fixed, nonlinear Gray-Scott dynamics from a perturbed homogeneous steady state produce a persistent spatial pattern for Du=1,Dv=1/3 but not for Du=10,Dv=10/3. If confirmed, the root hypothesis is false for a finite 2D reaction-diffusion system with fixed reaction parameters.",
+      "kind": "scientific",
+      "relation": "refines",
+      "parent_id": "claim_root",
+      "status": "supported",
+      "rationale": "Linear Turing analysis on the same periodic box reveals that the admissible discrete Fourier mode q1=2π/L lies inside the unstable band for s=1 but below the band for s=10, although the ratio Du/Dv is unchanged. This gives a deterministic finite-domain experiment isolating absolute diffusion scale.",
+      "evidence_contracts": [
+        {
+          "version": 1,
+          "observable": "Pattern measure P(t) = mean((u - mean(u))^2)/mean(u)^2 at final time t_end=1000 for two pseudospectral runs on L=40 periodic grid, F=0.072,k=0.062, fixed ratio Du/Dv=3, absolute scales s=1 and s=10, from identical smooth deterministic perturbation of the homogeneous steady state.",
+          "expected_outcomes": "If P_s1(1000) > 1e-3 and P_s10(1000) < 1e-6, nonlinear dynamics confirm the finite-domain counterexample (pattern at s=1, no pattern at s=10) and thereby falsify the ratio-only root claim for finite systems. If both are large (>1e-3) or both decay (<1e-6), the finite-domain counterexample is refuted and the root's ratio-only claim survives in this regime.",
+          "decision_rule": "Child claim supported iff P_s1_final/P_s10_final > 1000 AND P_s1_final > 1e-3. Child claim refuted iff P_s1_final/P_s10_final < 10 or P_s1_final < 1e-3. Intermediate margins leave the claim unresolved.",
+          "required_observation": "Two runs to t_end>=1000 time units, spectral grid N>=128 over L=40 (grid spacing <=0.3125), time step dt<=0.05, identical initial perturbation amplitude delta<=2e-3, and final-time pattern measures recorded for both s=1 and s=10.",
+          "uncertainty_criterion": "Numerical/spectral scheme must remain stable (no NaN); machine/roundoff pattern-floor expected below 1e-12, so the decision thresholds retain at least three orders of magnitude margin. If either final P lies within a factor 10 of its threshold, the observation is inconclusive.",
+          "inconclusive_conditions": "NaN/overflow, unstable solver, dt convergence failure, or either P_s1 or P_s10 falling within a factor 10 of its decision threshold.",
+          "registered_iteration": 17
+        }
+      ],
+      "evidence": [
+        {
+          "path": "simulation_results.json",
+          "note": "Full decisive run: same F=0.072,k=0.062, Du/Dv=3, L=40 periodic, N=128, dt=0.05, t_end=1000, identical initial perturbation. P_s1=0.0858029786, P_s10=7.63960694e-10, ratio=1.1227e8. s=1 field has mean_u=0.5071, range [0.305,0.725], 99.8% spectral power at n=2; s=10 field remains within 0.006% of HSS.",
+          "iteration": 27,
+          "contract_version": 1,
+          "observation_sufficient": true,
+          "observation_note": "Required observation met: two runs to t=1000, N=128 over L=40, dt=0.05, identical delta=1e-3 initial perturbation. Uncertainty criterion met: no NaN, final pattern measures are 8 orders of magnitude apart, far inside the factor-10 margin around thresholds.",
+          "provenance": {
+            "sha256": "1b7d5c2efd98cd49df72a065d838e8fc2b6cb72e4f3d80956261278b6bdf4ce4",
+            "bytes": 1767,
+            "tracked": true,
+            "generated_iteration": 20,
+            "action": "run_python",
+            "action_sha256": "3fa997b40c2ffd4268086e444237f749fda4087620f9a35e71d687f1ee54f389",
+            "command_argv": [
+              "simulate_gs.py",
+              "full"
+            ],
+            "capability": null,
+            "program_path": "simulate_gs.py",
+            "program_sha256": "d2d559021728358533eada81246a59e4d1fdc1808bf292f7ca255c70a77700bb"
+          }
+        },
+        {
+          "path": "simulation_results_dt025.json",
+          "note": "Convergence run with dt=0.025, N=128, t=1000: P_s1=0.0858032916 vs 0.0858029786 at dt=0.05; P_s10=7.64377e-10 vs 7.63961e-10. Relative changes <5e-6, so the s=1 pattern and s=10 homogeneity are stable under temporal refinement.",
+          "iteration": 28,
+          "contract_version": 1,
+          "observation_sufficient": true,
+          "observation_note": "The uncertainty criterion is satisfied: no NaN, no solver instability, and both final pattern measures are within 0.0006% of the dt=0.05 run, far away from all decision thresholds.",
+          "provenance": {
+            "sha256": "8bf740c3206b267ede4341c8b7e04159d51d5f6bd4d0c7f13de2586f890f888e",
+            "bytes": 441,
+            "tracked": true,
+            "generated_iteration": 26,
+            "action": "run_python",
+            "action_sha256": "8798f4a71aead4909db82e1870b51f6e09f20427a01d982c873f15ddc0b95c19",
+            "command_argv": [
+              "simulate_gs_dt025.py"
+            ],
+            "capability": null,
+            "program_path": "simulate_gs_dt025.py",
+            "program_sha256": "2b918baf8210ae15e83f3d9c57e9e9377474736461dd14b3f0e916475f75f589"
+          }
+        }
+      ],
+      "closed_reason": "Evidence contract satisfied: P_s1_final/P_s10_final=1.12e8 > 1000 and P_s1_final=0.0858 > 1e-3. Temporal convergence at dt=0.025 reproduced both values, no NaN, and the s=10 field remained within 0.006% of the homogeneous steady state.",
+      "created_iteration": 14,
+      "updated_iteration": 29
+    }
+  ]
+}

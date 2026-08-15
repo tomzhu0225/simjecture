@@ -1,0 +1,145 @@
+{
+  "$defs": {
+    "CandidateResult": {
+      "additionalProperties": false,
+      "properties": {
+        "contradicting_evidence_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Contradicting Evidence Ids",
+          "type": "array"
+        },
+        "formal_specification": {
+          "additionalProperties": true,
+          "title": "Formal Specification",
+          "type": "object"
+        },
+        "hypothesis_id": {
+          "minLength": 1,
+          "title": "Hypothesis Id",
+          "type": "string"
+        },
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "limitations": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Limitations",
+          "type": "array"
+        },
+        "novelty_status": {
+          "$ref": "#/$defs/NoveltyStatus",
+          "default": "unassessed"
+        },
+        "result_class": {
+          "$ref": "#/$defs/ResearchResultClass"
+        },
+        "scope": {
+          "minLength": 1,
+          "title": "Scope",
+          "type": "string"
+        },
+        "statement": {
+          "minLength": 1,
+          "title": "Statement",
+          "type": "string"
+        },
+        "supporting_evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Supporting Evidence Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "hypothesis_id",
+        "result_class",
+        "statement",
+        "formal_specification",
+        "scope",
+        "supporting_evidence_ids",
+        "limitations"
+      ],
+      "title": "CandidateResult",
+      "type": "object"
+    },
+    "NoveltyStatus": {
+      "enum": [
+        "unassessed",
+        "known_result",
+        "candidate_new",
+        "verified_new"
+      ],
+      "title": "NoveltyStatus",
+      "type": "string"
+    },
+    "ResearchDisposition": {
+      "enum": [
+        "validated_within_tools",
+        "bounded_null",
+        "insufficient_evidence",
+        "budget_exhausted"
+      ],
+      "title": "ResearchDisposition",
+      "type": "string"
+    },
+    "ResearchResultClass": {
+      "enum": [
+        "counterexample",
+        "scaling_law",
+        "phase_boundary",
+        "closure",
+        "impossibility",
+        "bounded_null"
+      ],
+      "title": "ResearchResultClass",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "candidate": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/CandidateResult"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "disposition": {
+      "$ref": "#/$defs/ResearchDisposition"
+    },
+    "evidence_ids": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Evidence Ids",
+      "type": "array"
+    },
+    "reason": {
+      "minLength": 1,
+      "title": "Reason",
+      "type": "string"
+    }
+  },
+  "required": [
+    "disposition",
+    "reason"
+  ],
+  "title": "ResearchConclusion",
+  "type": "object"
+}

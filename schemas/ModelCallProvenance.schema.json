@@ -1,0 +1,88 @@
+{
+  "$defs": {
+    "ModelRoute": {
+      "enum": [
+        "default",
+        "escalation"
+      ],
+      "title": "ModelRoute",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "admission_errors": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Admission Errors",
+      "type": "array"
+    },
+    "attempt_number": {
+      "minimum": 1,
+      "title": "Attempt Number",
+      "type": "integer"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "finish_reason": {
+      "title": "Finish Reason",
+      "type": "string"
+    },
+    "model": {
+      "title": "Model",
+      "type": "string"
+    },
+    "output_schema_hash": {
+      "title": "Output Schema Hash",
+      "type": "string"
+    },
+    "prompt_hash": {
+      "title": "Prompt Hash",
+      "type": "string"
+    },
+    "prompt_template_version": {
+      "const": "proposal_v1",
+      "default": "proposal_v1",
+      "title": "Prompt Template Version",
+      "type": "string"
+    },
+    "request_id": {
+      "title": "Request Id",
+      "type": "string"
+    },
+    "response_hash": {
+      "title": "Response Hash",
+      "type": "string"
+    },
+    "route": {
+      "$ref": "#/$defs/ModelRoute"
+    },
+    "route_reason": {
+      "title": "Route Reason",
+      "type": "string"
+    },
+    "usage": {
+      "additionalProperties": true,
+      "title": "Usage",
+      "type": "object"
+    }
+  },
+  "required": [
+    "request_id",
+    "model",
+    "route",
+    "route_reason",
+    "finish_reason",
+    "prompt_hash",
+    "output_schema_hash",
+    "response_hash",
+    "attempt_number"
+  ],
+  "title": "ModelCallProvenance",
+  "type": "object"
+}

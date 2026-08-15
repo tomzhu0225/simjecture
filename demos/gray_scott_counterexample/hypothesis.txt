@@ -1,0 +1,1 @@
+At fixed reaction parameters, whether a two-dimensional Gray-Scott reaction-diffusion system develops a persistent spatial pattern is determined solely by the diffusion ratio D_u/D_v, independent of the absolute diffusion scale.

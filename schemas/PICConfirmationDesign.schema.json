@@ -1,0 +1,315 @@
+{
+  "$defs": {
+    "GaussianComponent": {
+      "additionalProperties": false,
+      "properties": {
+        "drift": {
+          "title": "Drift",
+          "type": "number"
+        },
+        "sigma": {
+          "exclusiveMinimum": 0,
+          "title": "Sigma",
+          "type": "number"
+        },
+        "weight": {
+          "exclusiveMinimum": 0,
+          "maximum": 1,
+          "title": "Weight",
+          "type": "number"
+        }
+      },
+      "required": [
+        "weight",
+        "drift",
+        "sigma"
+      ],
+      "title": "GaussianComponent",
+      "type": "object"
+    },
+    "GaussianMixture": {
+      "additionalProperties": false,
+      "properties": {
+        "components": {
+          "items": {
+            "$ref": "#/$defs/GaussianComponent"
+          },
+          "minItems": 1,
+          "title": "Components",
+          "type": "array"
+        }
+      },
+      "required": [
+        "components"
+      ],
+      "title": "GaussianMixture",
+      "type": "object"
+    },
+    "PICNumericalConfig": {
+      "additionalProperties": false,
+      "description": "Distribution-independent PIC discretization and validity contract.",
+      "properties": {
+        "damped_ratio_threshold": {
+          "default": 0.75,
+          "exclusiveMaximum": 1,
+          "exclusiveMinimum": 0,
+          "title": "Damped Ratio Threshold",
+          "type": "number"
+        },
+        "diagnostic_interval": {
+          "default": 0.5,
+          "exclusiveMinimum": 0,
+          "title": "Diagnostic Interval",
+          "type": "number"
+        },
+        "early_window": {
+          "default": [
+            0.0,
+            4.0
+          ],
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Early Window",
+          "type": "array"
+        },
+        "final_time": {
+          "default": 20.0,
+          "exclusiveMinimum": 0,
+          "title": "Final Time",
+          "type": "number"
+        },
+        "grid_cells": {
+          "default": 64,
+          "minimum": 32,
+          "title": "Grid Cells",
+          "type": "integer"
+        },
+        "late_window": {
+          "default": [
+            14.0,
+            18.0
+          ],
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Late Window",
+          "type": "array"
+        },
+        "maximum_gauss_residual": {
+          "default": 1e-10,
+          "exclusiveMinimum": 0,
+          "title": "Maximum Gauss Residual",
+          "type": "number"
+        },
+        "maximum_relative_energy_drift": {
+          "default": 0.001,
+          "exclusiveMinimum": 0,
+          "title": "Maximum Relative Energy Drift",
+          "type": "number"
+        },
+        "particles_per_beam": {
+          "default": 64,
+          "minimum": 32,
+          "title": "Particles Per Beam",
+          "type": "integer"
+        },
+        "perturbation_amplitude": {
+          "default": 0.01,
+          "exclusiveMaximum": 0.1,
+          "exclusiveMinimum": 0,
+          "title": "Perturbation Amplitude",
+          "type": "number"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "seed": {
+          "default": 7,
+          "minimum": 0,
+          "title": "Seed",
+          "type": "integer"
+        },
+        "time_step": {
+          "default": 0.05,
+          "exclusiveMinimum": 0,
+          "title": "Time Step",
+          "type": "number"
+        },
+        "unstable_ratio_threshold": {
+          "default": 1.5,
+          "exclusiveMinimum": 1,
+          "title": "Unstable Ratio Threshold",
+          "type": "number"
+        },
+        "velocity_beams": {
+          "default": 256,
+          "minimum": 64,
+          "title": "Velocity Beams",
+          "type": "integer"
+        },
+        "wavenumber": {
+          "default": 0.5,
+          "exclusiveMinimum": 0,
+          "title": "Wavenumber",
+          "type": "number"
+        }
+      },
+      "title": "PICNumericalConfig",
+      "type": "object"
+    },
+    "SymmetricMixtureCandidate": {
+      "additionalProperties": false,
+      "properties": {
+        "inner_drift": {
+          "exclusiveMaximum": 1,
+          "minimum": 0,
+          "title": "Inner Drift",
+          "type": "number"
+        },
+        "inner_pair_weight": {
+          "exclusiveMaximum": 1,
+          "exclusiveMinimum": 0,
+          "title": "Inner Pair Weight",
+          "type": "number"
+        },
+        "outer_drift": {
+          "exclusiveMaximum": 1,
+          "minimum": 0,
+          "title": "Outer Drift",
+          "type": "number"
+        }
+      },
+      "required": [
+        "inner_pair_weight",
+        "inner_drift",
+        "outer_drift"
+      ],
+      "title": "SymmetricMixtureCandidate",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "base_config": {
+      "$ref": "#/$defs/PICNumericalConfig",
+      "default": {
+        "damped_ratio_threshold": 0.75,
+        "diagnostic_interval": 0.5,
+        "early_window": [
+          0.0,
+          4.0
+        ],
+        "final_time": 20.0,
+        "grid_cells": 64,
+        "late_window": [
+          14.0,
+          18.0
+        ],
+        "maximum_gauss_residual": 1e-10,
+        "maximum_relative_energy_drift": 0.001,
+        "particles_per_beam": 64,
+        "perturbation_amplitude": 0.01,
+        "schema_version": "0.1.0",
+        "seed": 7,
+        "time_step": 0.05,
+        "unstable_ratio_threshold": 1.5,
+        "velocity_beams": 256,
+        "wavenumber": 0.5
+      }
+    },
+    "candidate": {
+      "$ref": "#/$defs/SymmetricMixtureCandidate"
+    },
+    "candidate_id": {
+      "title": "Candidate Id",
+      "type": "string"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "moment_tolerance": {
+      "exclusiveMinimum": 0,
+      "title": "Moment Tolerance",
+      "type": "number"
+    },
+    "outcome_tolerance": {
+      "exclusiveMinimum": 0,
+      "title": "Outcome Tolerance",
+      "type": "number"
+    },
+    "reference_distribution": {
+      "$ref": "#/$defs/GaussianMixture"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "search_request_id": {
+      "title": "Search Request Id",
+      "type": "string"
+    },
+    "seeds": {
+      "default": [
+        1,
+        7,
+        19
+      ],
+      "items": {
+        "type": "integer"
+      },
+      "minItems": 2,
+      "title": "Seeds",
+      "type": "array"
+    },
+    "selection_frozen_before_confirmation": {
+      "const": true,
+      "default": true,
+      "title": "Selection Frozen Before Confirmation",
+      "type": "boolean"
+    },
+    "velocity_beams": {
+      "default": [
+        192,
+        384
+      ],
+      "items": {
+        "type": "integer"
+      },
+      "minItems": 2,
+      "title": "Velocity Beams",
+      "type": "array"
+    }
+  },
+  "required": [
+    "id",
+    "search_request_id",
+    "candidate_id",
+    "candidate",
+    "reference_distribution",
+    "outcome_tolerance",
+    "moment_tolerance"
+  ],
+  "title": "PICConfirmationDesign",
+  "type": "object"
+}

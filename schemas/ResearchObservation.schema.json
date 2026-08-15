@@ -1,0 +1,272 @@
+{
+  "$defs": {
+    "CostEstimate": {
+      "additionalProperties": false,
+      "properties": {
+        "compute_units": {
+          "minimum": 0,
+          "title": "Compute Units",
+          "type": "number"
+        },
+        "storage_bytes": {
+          "minimum": 0,
+          "title": "Storage Bytes",
+          "type": "integer"
+        },
+        "wall_seconds": {
+          "minimum": 0,
+          "title": "Wall Seconds",
+          "type": "number"
+        }
+      },
+      "required": [
+        "compute_units",
+        "wall_seconds",
+        "storage_bytes"
+      ],
+      "title": "CostEstimate",
+      "type": "object"
+    },
+    "EvidenceRole": {
+      "enum": [
+        "discovery",
+        "confirmation",
+        "qualification"
+      ],
+      "title": "EvidenceRole",
+      "type": "string"
+    },
+    "ObservablePrediction": {
+      "additionalProperties": false,
+      "properties": {
+        "condition": {
+          "minLength": 1,
+          "title": "Condition",
+          "type": "string"
+        },
+        "exact": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Exact"
+        },
+        "hypothesis_id": {
+          "minLength": 1,
+          "title": "Hypothesis Id",
+          "type": "string"
+        },
+        "maximum": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Maximum"
+        },
+        "minimum": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Minimum"
+        },
+        "observable": {
+          "minLength": 1,
+          "title": "Observable",
+          "type": "string"
+        }
+      },
+      "required": [
+        "hypothesis_id",
+        "observable",
+        "condition"
+      ],
+      "title": "ObservablePrediction",
+      "type": "object"
+    },
+    "ResearchEvidenceStage": {
+      "enum": [
+        "exploration",
+        "qualification",
+        "confirmation",
+        "falsification"
+      ],
+      "title": "ResearchEvidenceStage",
+      "type": "string"
+    },
+    "ResearchToolResult": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_hashes": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Artifact Hashes",
+          "type": "array"
+        },
+        "completed": {
+          "title": "Completed",
+          "type": "boolean"
+        },
+        "cost": {
+          "$ref": "#/$defs/CostEstimate"
+        },
+        "diagnostics": {
+          "additionalProperties": true,
+          "title": "Diagnostics",
+          "type": "object"
+        },
+        "failure_detail": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Failure Detail"
+        },
+        "observables": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "title": "Observables",
+          "type": "object"
+        },
+        "scientific_scope": {
+          "minLength": 1,
+          "title": "Scientific Scope",
+          "type": "string"
+        },
+        "validity_checks": {
+          "additionalProperties": {
+            "type": "boolean"
+          },
+          "title": "Validity Checks",
+          "type": "object"
+        }
+      },
+      "required": [
+        "completed",
+        "cost",
+        "scientific_scope"
+      ],
+      "title": "ResearchToolResult",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "decision_id": {
+      "title": "Decision Id",
+      "type": "string"
+    },
+    "evidence_eligible": {
+      "title": "Evidence Eligible",
+      "type": "boolean"
+    },
+    "evidence_role": {
+      "$ref": "#/$defs/EvidenceRole"
+    },
+    "evidence_stage": {
+      "$ref": "#/$defs/ResearchEvidenceStage"
+    },
+    "hypothesis_ids": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Hypothesis Ids",
+      "type": "array"
+    },
+    "id": {
+      "minLength": 1,
+      "title": "Id",
+      "type": "string"
+    },
+    "independence_group": {
+      "title": "Independence Group",
+      "type": "string"
+    },
+    "iteration": {
+      "minimum": 0,
+      "title": "Iteration",
+      "type": "integer"
+    },
+    "prediction_checks": {
+      "additionalProperties": {
+        "type": "boolean"
+      },
+      "title": "Prediction Checks",
+      "type": "object"
+    },
+    "preregistered_predictions": {
+      "items": {
+        "$ref": "#/$defs/ObservablePrediction"
+      },
+      "minItems": 1,
+      "title": "Preregistered Predictions",
+      "type": "array"
+    },
+    "result": {
+      "$ref": "#/$defs/ResearchToolResult"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "tool_name": {
+      "title": "Tool Name",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "iteration",
+    "decision_id",
+    "tool_name",
+    "evidence_stage",
+    "evidence_role",
+    "independence_group",
+    "hypothesis_ids",
+    "preregistered_predictions",
+    "prediction_checks",
+    "result",
+    "evidence_eligible"
+  ],
+  "title": "ResearchObservation",
+  "type": "object"
+}

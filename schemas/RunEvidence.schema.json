@@ -1,0 +1,77 @@
+{
+  "$defs": {
+    "EvidenceRole": {
+      "enum": [
+        "discovery",
+        "confirmation",
+        "qualification"
+      ],
+      "title": "EvidenceRole",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "artifact_hashes": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Artifact Hashes",
+      "type": "array"
+    },
+    "eligibility_reason": {
+      "title": "Eligibility Reason",
+      "type": "string"
+    },
+    "eligible": {
+      "title": "Eligible",
+      "type": "boolean"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "independence_group": {
+      "title": "Independence Group",
+      "type": "string"
+    },
+    "observable_values": {
+      "additionalProperties": {
+        "type": "number"
+      },
+      "title": "Observable Values",
+      "type": "object"
+    },
+    "role": {
+      "$ref": "#/$defs/EvidenceRole"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source_attempt_id": {
+      "title": "Source Attempt Id",
+      "type": "string"
+    },
+    "uncertainties": {
+      "additionalProperties": {
+        "type": "number"
+      },
+      "title": "Uncertainties",
+      "type": "object"
+    }
+  },
+  "required": [
+    "source_attempt_id",
+    "role",
+    "eligible",
+    "eligibility_reason",
+    "observable_values",
+    "independence_group"
+  ],
+  "title": "RunEvidence",
+  "type": "object"
+}

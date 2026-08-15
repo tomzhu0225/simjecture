@@ -1,0 +1,71 @@
+{
+  "$defs": {
+    "ExternalOperation": {
+      "enum": [
+        "model_completion",
+        "simulator_submission",
+        "research_tool"
+      ],
+      "title": "ExternalOperation",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "campaign_id": {
+      "minLength": 1,
+      "title": "Campaign Id",
+      "type": "string"
+    },
+    "external_idempotency_supported": {
+      "title": "External Idempotency Supported",
+      "type": "boolean"
+    },
+    "id": {
+      "minLength": 1,
+      "title": "Id",
+      "type": "string"
+    },
+    "idempotency_key": {
+      "minLength": 1,
+      "title": "Idempotency Key",
+      "type": "string"
+    },
+    "logical_action_id": {
+      "minLength": 1,
+      "title": "Logical Action Id",
+      "type": "string"
+    },
+    "operation": {
+      "$ref": "#/$defs/ExternalOperation"
+    },
+    "payload": {
+      "additionalProperties": true,
+      "title": "Payload",
+      "type": "object"
+    },
+    "payload_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Payload Hash",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "campaign_id",
+    "operation",
+    "logical_action_id",
+    "idempotency_key",
+    "payload",
+    "payload_hash",
+    "external_idempotency_supported"
+  ],
+  "title": "OutboxIntent",
+  "type": "object"
+}

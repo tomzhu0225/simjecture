@@ -1,0 +1,63 @@
+{
+  "additionalProperties": false,
+  "description": "Domain-independent result returned to the command-line facade.",
+  "properties": {
+    "campaign_id": {
+      "title": "Campaign Id",
+      "type": "string"
+    },
+    "disposition": {
+      "title": "Disposition",
+      "type": "string"
+    },
+    "domain": {
+      "title": "Domain",
+      "type": "string"
+    },
+    "exit_code": {
+      "default": 0,
+      "maximum": 255,
+      "minimum": 0,
+      "title": "Exit Code",
+      "type": "integer"
+    },
+    "metrics": {
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "integer"
+          },
+          {
+            "type": "number"
+          },
+          {
+            "type": "boolean"
+          }
+        ]
+      },
+      "title": "Metrics",
+      "type": "object"
+    },
+    "package_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Package Hash",
+      "type": "string"
+    },
+    "package_path": {
+      "title": "Package Path",
+      "type": "string"
+    }
+  },
+  "required": [
+    "domain",
+    "campaign_id",
+    "disposition",
+    "package_hash",
+    "package_path"
+  ],
+  "title": "DomainRunSummary",
+  "type": "object"
+}

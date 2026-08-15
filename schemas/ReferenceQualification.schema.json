@@ -1,0 +1,42 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "diagnostics_hashes": {
+      "maxItems": 2,
+      "minItems": 2,
+      "prefixItems": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "string"
+        }
+      ],
+      "title": "Diagnostics Hashes",
+      "type": "array"
+    },
+    "qualification_attempt_id": {
+      "minLength": 1,
+      "title": "Qualification Attempt Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "smoke_attempt_id": {
+      "minLength": 1,
+      "title": "Smoke Attempt Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "smoke_attempt_id",
+    "qualification_attempt_id",
+    "diagnostics_hashes"
+  ],
+  "title": "ReferenceQualification",
+  "type": "object"
+}

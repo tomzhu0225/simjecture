@@ -1,0 +1,545 @@
+{
+  "$defs": {
+    "CandidateResult": {
+      "additionalProperties": false,
+      "properties": {
+        "contradicting_evidence_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Contradicting Evidence Ids",
+          "type": "array"
+        },
+        "formal_specification": {
+          "additionalProperties": true,
+          "title": "Formal Specification",
+          "type": "object"
+        },
+        "hypothesis_id": {
+          "minLength": 1,
+          "title": "Hypothesis Id",
+          "type": "string"
+        },
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "limitations": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Limitations",
+          "type": "array"
+        },
+        "novelty_status": {
+          "$ref": "#/$defs/NoveltyStatus",
+          "default": "unassessed"
+        },
+        "result_class": {
+          "$ref": "#/$defs/ResearchResultClass"
+        },
+        "scope": {
+          "minLength": 1,
+          "title": "Scope",
+          "type": "string"
+        },
+        "statement": {
+          "minLength": 1,
+          "title": "Statement",
+          "type": "string"
+        },
+        "supporting_evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Supporting Evidence Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "hypothesis_id",
+        "result_class",
+        "statement",
+        "formal_specification",
+        "scope",
+        "supporting_evidence_ids",
+        "limitations"
+      ],
+      "title": "CandidateResult",
+      "type": "object"
+    },
+    "EvidenceRole": {
+      "enum": [
+        "discovery",
+        "confirmation",
+        "qualification"
+      ],
+      "title": "EvidenceRole",
+      "type": "string"
+    },
+    "HypothesisOrigin": {
+      "enum": [
+        "human",
+        "ai",
+        "mixed"
+      ],
+      "title": "HypothesisOrigin",
+      "type": "string"
+    },
+    "NoveltyStatus": {
+      "enum": [
+        "unassessed",
+        "known_result",
+        "candidate_new",
+        "verified_new"
+      ],
+      "title": "NoveltyStatus",
+      "type": "string"
+    },
+    "ObservablePrediction": {
+      "additionalProperties": false,
+      "properties": {
+        "condition": {
+          "minLength": 1,
+          "title": "Condition",
+          "type": "string"
+        },
+        "exact": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Exact"
+        },
+        "hypothesis_id": {
+          "minLength": 1,
+          "title": "Hypothesis Id",
+          "type": "string"
+        },
+        "maximum": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Maximum"
+        },
+        "minimum": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Minimum"
+        },
+        "observable": {
+          "minLength": 1,
+          "title": "Observable",
+          "type": "string"
+        }
+      },
+      "required": [
+        "hypothesis_id",
+        "observable",
+        "condition"
+      ],
+      "title": "ObservablePrediction",
+      "type": "object"
+    },
+    "ProposedToolCall": {
+      "additionalProperties": false,
+      "properties": {
+        "arguments": {
+          "additionalProperties": true,
+          "title": "Arguments",
+          "type": "object"
+        },
+        "evidence_role": {
+          "$ref": "#/$defs/EvidenceRole"
+        },
+        "evidence_stage": {
+          "$ref": "#/$defs/ResearchEvidenceStage"
+        },
+        "falsification_condition": {
+          "minLength": 1,
+          "title": "Falsification Condition",
+          "type": "string"
+        },
+        "independence_group": {
+          "minLength": 1,
+          "title": "Independence Group",
+          "type": "string"
+        },
+        "predictions": {
+          "items": {
+            "$ref": "#/$defs/ObservablePrediction"
+          },
+          "minItems": 1,
+          "title": "Predictions",
+          "type": "array"
+        },
+        "purpose": {
+          "minLength": 1,
+          "title": "Purpose",
+          "type": "string"
+        },
+        "tool_name": {
+          "minLength": 1,
+          "title": "Tool Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "tool_name",
+        "arguments",
+        "purpose",
+        "evidence_stage",
+        "evidence_role",
+        "independence_group",
+        "predictions",
+        "falsification_condition"
+      ],
+      "title": "ProposedToolCall",
+      "type": "object"
+    },
+    "ResearchConclusion": {
+      "additionalProperties": false,
+      "properties": {
+        "candidate": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CandidateResult"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "disposition": {
+          "$ref": "#/$defs/ResearchDisposition"
+        },
+        "evidence_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "disposition",
+        "reason"
+      ],
+      "title": "ResearchConclusion",
+      "type": "object"
+    },
+    "ResearchDecisionKind": {
+      "enum": [
+        "use_tool",
+        "conclude"
+      ],
+      "title": "ResearchDecisionKind",
+      "type": "string"
+    },
+    "ResearchDisposition": {
+      "enum": [
+        "validated_within_tools",
+        "bounded_null",
+        "insufficient_evidence",
+        "budget_exhausted"
+      ],
+      "title": "ResearchDisposition",
+      "type": "string"
+    },
+    "ResearchEvidenceStage": {
+      "enum": [
+        "exploration",
+        "qualification",
+        "confirmation",
+        "falsification"
+      ],
+      "title": "ResearchEvidenceStage",
+      "type": "string"
+    },
+    "ResearchHypothesis": {
+      "additionalProperties": false,
+      "description": "Open scientific proposition whose details are authored during the run.",
+      "properties": {
+        "assumptions": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Assumptions",
+          "type": "array"
+        },
+        "coordinates": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Coordinates",
+          "type": "array"
+        },
+        "formal_specification": {
+          "additionalProperties": true,
+          "title": "Formal Specification",
+          "type": "object"
+        },
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "machine_predicate": {
+          "minLength": 1,
+          "title": "Machine Predicate",
+          "type": "string"
+        },
+        "model_family": {
+          "minLength": 1,
+          "title": "Model Family",
+          "type": "string"
+        },
+        "motivating_evidence_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Motivating Evidence Ids",
+          "type": "array"
+        },
+        "observables": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Observables",
+          "type": "array"
+        },
+        "origin": {
+          "$ref": "#/$defs/HypothesisOrigin"
+        },
+        "parent_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Parent Ids",
+          "type": "array"
+        },
+        "proposition_class": {
+          "$ref": "#/$defs/ResearchPropositionClass"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "scope": {
+          "minLength": 1,
+          "title": "Scope",
+          "type": "string"
+        },
+        "statement": {
+          "minLength": 1,
+          "title": "Statement",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "statement",
+        "machine_predicate",
+        "formal_specification",
+        "proposition_class",
+        "model_family",
+        "scope",
+        "coordinates",
+        "observables",
+        "origin"
+      ],
+      "title": "ResearchHypothesis",
+      "type": "object"
+    },
+    "ResearchPropositionClass": {
+      "enum": [
+        "contribution",
+        "sufficiency",
+        "invariance",
+        "threshold",
+        "path_dependence",
+        "scaling_law",
+        "phase_boundary",
+        "closure",
+        "auxiliary_validity"
+      ],
+      "title": "ResearchPropositionClass",
+      "type": "string"
+    },
+    "ResearchRelation": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_rule": {
+          "minLength": 1,
+          "title": "Evidence Rule",
+          "type": "string"
+        },
+        "justification": {
+          "minLength": 1,
+          "title": "Justification",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/ResearchRelationKind"
+        },
+        "source_hypothesis_id": {
+          "title": "Source Hypothesis Id",
+          "type": "string"
+        },
+        "target_hypothesis_id": {
+          "title": "Target Hypothesis Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_hypothesis_id",
+        "target_hypothesis_id",
+        "kind",
+        "evidence_rule",
+        "justification"
+      ],
+      "title": "ResearchRelation",
+      "type": "object"
+    },
+    "ResearchRelationKind": {
+      "enum": [
+        "specializes",
+        "predicted_by",
+        "tests",
+        "alternative_to",
+        "repairs",
+        "auxiliary_to",
+        "requires",
+        "incompatible_with"
+      ],
+      "title": "ResearchRelationKind",
+      "type": "string"
+    },
+    "ResearchResultClass": {
+      "enum": [
+        "counterexample",
+        "scaling_law",
+        "phase_boundary",
+        "closure",
+        "impossibility",
+        "bounded_null"
+      ],
+      "title": "ResearchResultClass",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "One model-authored transition, committed before any tool execution.",
+  "properties": {
+    "conclusion": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ResearchConclusion"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "id": {
+      "minLength": 1,
+      "title": "Id",
+      "type": "string"
+    },
+    "iteration": {
+      "minimum": 0,
+      "title": "Iteration",
+      "type": "integer"
+    },
+    "kind": {
+      "$ref": "#/$defs/ResearchDecisionKind"
+    },
+    "new_hypotheses": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/ResearchHypothesis"
+      },
+      "title": "New Hypotheses",
+      "type": "array"
+    },
+    "new_relations": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/ResearchRelation"
+      },
+      "title": "New Relations",
+      "type": "array"
+    },
+    "rationale": {
+      "minLength": 1,
+      "title": "Rationale",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "tool_call": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ProposedToolCall"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "required": [
+    "id",
+    "iteration",
+    "kind",
+    "rationale"
+  ],
+  "title": "ResearchDecision",
+  "type": "object"
+}

@@ -1,0 +1,85 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "campaign_id": {
+      "title": "Campaign Id",
+      "type": "string"
+    },
+    "candidate_action_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Candidate Action Ids",
+      "type": "array"
+    },
+    "checkpoint_id": {
+      "title": "Checkpoint Id",
+      "type": "string"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "model_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Model Id"
+    },
+    "model_route_reason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Model Route Reason"
+    },
+    "predicted_outcomes": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Predicted Outcomes",
+      "type": "object"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "selected_action_id": {
+      "title": "Selected Action Id",
+      "type": "string"
+    },
+    "validator_report": {
+      "additionalProperties": true,
+      "title": "Validator Report",
+      "type": "object"
+    }
+  },
+  "required": [
+    "campaign_id",
+    "checkpoint_id",
+    "candidate_action_ids",
+    "selected_action_id",
+    "predicted_outcomes",
+    "validator_report"
+  ],
+  "title": "DecisionRecord",
+  "type": "object"
+}

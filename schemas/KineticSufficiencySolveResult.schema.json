@@ -1,0 +1,228 @@
+{
+  "$defs": {
+    "DistributionMoments": {
+      "additionalProperties": false,
+      "properties": {
+        "density": {
+          "title": "Density",
+          "type": "number"
+        },
+        "mean_velocity": {
+          "title": "Mean Velocity",
+          "type": "number"
+        },
+        "variance": {
+          "minimum": 0,
+          "title": "Variance",
+          "type": "number"
+        }
+      },
+      "required": [
+        "density",
+        "mean_velocity",
+        "variance"
+      ],
+      "title": "DistributionMoments",
+      "type": "object"
+    },
+    "GaussianComponent": {
+      "additionalProperties": false,
+      "properties": {
+        "drift": {
+          "title": "Drift",
+          "type": "number"
+        },
+        "sigma": {
+          "exclusiveMinimum": 0,
+          "title": "Sigma",
+          "type": "number"
+        },
+        "weight": {
+          "exclusiveMinimum": 0,
+          "maximum": 1,
+          "title": "Weight",
+          "type": "number"
+        }
+      },
+      "required": [
+        "weight",
+        "drift",
+        "sigma"
+      ],
+      "title": "GaussianComponent",
+      "type": "object"
+    },
+    "GaussianMixture": {
+      "additionalProperties": false,
+      "properties": {
+        "components": {
+          "items": {
+            "$ref": "#/$defs/GaussianComponent"
+          },
+          "minItems": 1,
+          "title": "Components",
+          "type": "array"
+        }
+      },
+      "required": [
+        "components"
+      ],
+      "title": "GaussianMixture",
+      "type": "object"
+    },
+    "KineticCaseResult": {
+      "additionalProperties": false,
+      "properties": {
+        "classification": {
+          "title": "Classification",
+          "type": "string"
+        },
+        "distribution": {
+          "$ref": "#/$defs/GaussianMixture"
+        },
+        "mode": {
+          "$ref": "#/$defs/LinearMode"
+        },
+        "moments": {
+          "$ref": "#/$defs/DistributionMoments"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "distribution",
+        "moments",
+        "mode",
+        "classification"
+      ],
+      "title": "KineticCaseResult",
+      "type": "object"
+    },
+    "LinearMode": {
+      "additionalProperties": false,
+      "properties": {
+        "dielectric_residual": {
+          "minimum": 0,
+          "title": "Dielectric Residual",
+          "type": "number"
+        },
+        "frequency": {
+          "title": "Frequency",
+          "type": "number"
+        },
+        "growth_rate": {
+          "title": "Growth Rate",
+          "type": "number"
+        }
+      },
+      "required": [
+        "frequency",
+        "growth_rate",
+        "dielectric_residual"
+      ],
+      "title": "LinearMode",
+      "type": "object"
+    },
+    "SufficiencyWitness": {
+      "additionalProperties": false,
+      "properties": {
+        "coordinates_match": {
+          "title": "Coordinates Match",
+          "type": "boolean"
+        },
+        "falsifies": {
+          "title": "Falsifies",
+          "type": "boolean"
+        },
+        "hypothesis_id": {
+          "title": "Hypothesis Id",
+          "type": "string"
+        },
+        "left_evidence_id": {
+          "title": "Left Evidence Id",
+          "type": "string"
+        },
+        "outcome_separation": {
+          "title": "Outcome Separation",
+          "type": "number"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "required_separation": {
+          "title": "Required Separation",
+          "type": "number"
+        },
+        "right_evidence_id": {
+          "title": "Right Evidence Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "hypothesis_id",
+        "left_evidence_id",
+        "right_evidence_id",
+        "coordinates_match",
+        "outcome_separation",
+        "required_separation",
+        "falsifies",
+        "reason"
+      ],
+      "title": "SufficiencyWitness",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "input_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Input Hash",
+      "type": "string"
+    },
+    "left": {
+      "$ref": "#/$defs/KineticCaseResult"
+    },
+    "moments_match": {
+      "title": "Moments Match",
+      "type": "boolean"
+    },
+    "qualification_checks": {
+      "additionalProperties": {
+        "type": "boolean"
+      },
+      "title": "Qualification Checks",
+      "type": "object"
+    },
+    "qualified": {
+      "title": "Qualified",
+      "type": "boolean"
+    },
+    "right": {
+      "$ref": "#/$defs/KineticCaseResult"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "witness": {
+      "$ref": "#/$defs/SufficiencyWitness"
+    }
+  },
+  "required": [
+    "input_hash",
+    "left",
+    "right",
+    "moments_match",
+    "qualification_checks",
+    "qualified",
+    "witness"
+  ],
+  "title": "KineticSufficiencySolveResult",
+  "type": "object"
+}

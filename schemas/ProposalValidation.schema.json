@@ -1,0 +1,30 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "errors": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Errors",
+      "type": "array"
+    },
+    "valid": {
+      "title": "Valid",
+      "type": "boolean"
+    },
+    "warnings": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Warnings",
+      "type": "array"
+    }
+  },
+  "required": [
+    "valid"
+  ],
+  "title": "ProposalValidation",
+  "type": "object"
+}

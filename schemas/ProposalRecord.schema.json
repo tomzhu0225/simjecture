@@ -1,0 +1,708 @@
+{
+  "$defs": {
+    "DomainSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "assumptions": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Assumptions",
+          "type": "array"
+        },
+        "description": {
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "fixed_parameters": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "title": "Fixed Parameters",
+          "type": "object"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "model_family": {
+          "minLength": 1,
+          "title": "Model Family",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "description",
+        "model_family"
+      ],
+      "title": "DomainSpec",
+      "type": "object"
+    },
+    "EvidenceContract": {
+      "additionalProperties": false,
+      "properties": {
+        "falsifying_witness": {
+          "minLength": 1,
+          "title": "Falsifying Witness",
+          "type": "string"
+        },
+        "minimum_independent_confirmation_attempts": {
+          "default": 1,
+          "minimum": 1,
+          "title": "Minimum Independent Confirmation Attempts",
+          "type": "integer"
+        },
+        "primary_observable_id": {
+          "title": "Primary Observable Id",
+          "type": "string"
+        },
+        "primary_tolerance": {
+          "exclusiveMinimum": 0,
+          "title": "Primary Tolerance",
+          "type": "number"
+        }
+      },
+      "required": [
+        "primary_observable_id",
+        "falsifying_witness",
+        "primary_tolerance"
+      ],
+      "title": "EvidenceContract",
+      "type": "object"
+    },
+    "ExperimentSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "action_type": {
+          "title": "Action Type",
+          "type": "string"
+        },
+        "falsification_condition": {
+          "title": "Falsification Condition",
+          "type": "string"
+        },
+        "hypothesis_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Hypothesis Ids",
+          "type": "array"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "numerical_parameters": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "title": "Numerical Parameters",
+          "type": "object"
+        },
+        "physical_parameters": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "title": "Physical Parameters",
+          "type": "object"
+        },
+        "predictions": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Predictions",
+          "type": "object"
+        },
+        "required_diagnostics": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Required Diagnostics",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "hypothesis_ids",
+        "action_type",
+        "physical_parameters",
+        "required_diagnostics",
+        "predictions",
+        "falsification_condition"
+      ],
+      "title": "ExperimentSpec",
+      "type": "object"
+    },
+    "HypothesisNode": {
+      "additionalProperties": false,
+      "properties": {
+        "coordinates": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Coordinates",
+          "type": "array"
+        },
+        "domain": {
+          "$ref": "#/$defs/DomainSpec"
+        },
+        "evidence_contract": {
+          "$ref": "#/$defs/EvidenceContract"
+        },
+        "formal_predicate": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MatchedPairFormalPredicate"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "machine_predicate": {
+          "minLength": 1,
+          "title": "Machine Predicate",
+          "type": "string"
+        },
+        "motivating_evidence_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Motivating Evidence Ids",
+          "type": "array"
+        },
+        "origin": {
+          "$ref": "#/$defs/HypothesisOrigin"
+        },
+        "parent_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Parent Ids",
+          "type": "array"
+        },
+        "proposition_class": {
+          "$ref": "#/$defs/PropositionClass"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "statement": {
+          "minLength": 1,
+          "title": "Statement",
+          "type": "string"
+        }
+      },
+      "required": [
+        "statement",
+        "machine_predicate",
+        "proposition_class",
+        "domain",
+        "coordinates",
+        "evidence_contract",
+        "origin"
+      ],
+      "title": "HypothesisNode",
+      "type": "object"
+    },
+    "HypothesisOrigin": {
+      "enum": [
+        "human",
+        "ai",
+        "mixed"
+      ],
+      "title": "HypothesisOrigin",
+      "type": "string"
+    },
+    "MatchedPairFormalPredicate": {
+      "additionalProperties": false,
+      "description": "Executable semantics for a finite predictive-sufficiency witness.",
+      "properties": {
+        "coordinate_tolerance": {
+          "default": 1e-10,
+          "minimum": 0,
+          "title": "Coordinate Tolerance",
+          "type": "number"
+        },
+        "matched_coordinates": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Matched Coordinates",
+          "type": "array"
+        },
+        "maximum_outcome_difference": {
+          "exclusiveMinimum": 0,
+          "title": "Maximum Outcome Difference",
+          "type": "number"
+        },
+        "outcome_observable_id": {
+          "minLength": 1,
+          "title": "Outcome Observable Id",
+          "type": "string"
+        },
+        "predicate_type": {
+          "const": "matched_pair_predictive_sufficiency",
+          "default": "matched_pair_predictive_sufficiency",
+          "title": "Predicate Type",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "matched_coordinates",
+        "outcome_observable_id",
+        "maximum_outcome_difference"
+      ],
+      "title": "MatchedPairFormalPredicate",
+      "type": "object"
+    },
+    "ModelCallProvenance": {
+      "additionalProperties": false,
+      "properties": {
+        "admission_errors": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Admission Errors",
+          "type": "array"
+        },
+        "attempt_number": {
+          "minimum": 1,
+          "title": "Attempt Number",
+          "type": "integer"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "finish_reason": {
+          "title": "Finish Reason",
+          "type": "string"
+        },
+        "model": {
+          "title": "Model",
+          "type": "string"
+        },
+        "output_schema_hash": {
+          "title": "Output Schema Hash",
+          "type": "string"
+        },
+        "prompt_hash": {
+          "title": "Prompt Hash",
+          "type": "string"
+        },
+        "prompt_template_version": {
+          "const": "proposal_v1",
+          "default": "proposal_v1",
+          "title": "Prompt Template Version",
+          "type": "string"
+        },
+        "request_id": {
+          "title": "Request Id",
+          "type": "string"
+        },
+        "response_hash": {
+          "title": "Response Hash",
+          "type": "string"
+        },
+        "route": {
+          "$ref": "#/$defs/ModelRoute"
+        },
+        "route_reason": {
+          "title": "Route Reason",
+          "type": "string"
+        },
+        "usage": {
+          "additionalProperties": true,
+          "title": "Usage",
+          "type": "object"
+        }
+      },
+      "required": [
+        "request_id",
+        "model",
+        "route",
+        "route_reason",
+        "finish_reason",
+        "prompt_hash",
+        "output_schema_hash",
+        "response_hash",
+        "attempt_number"
+      ],
+      "title": "ModelCallProvenance",
+      "type": "object"
+    },
+    "ModelRoute": {
+      "enum": [
+        "default",
+        "escalation"
+      ],
+      "title": "ModelRoute",
+      "type": "string"
+    },
+    "ObservableSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "estimator": {
+          "minLength": 1,
+          "title": "Estimator",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "mathematical_definition": {
+          "minLength": 1,
+          "title": "Mathematical Definition",
+          "type": "string"
+        },
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "semantic_kind": {
+          "minLength": 1,
+          "title": "Semantic Kind",
+          "type": "string"
+        },
+        "tolerance": {
+          "exclusiveMinimum": 0,
+          "title": "Tolerance",
+          "type": "number"
+        },
+        "units": {
+          "default": "dimensionless",
+          "title": "Units",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "semantic_kind",
+        "mathematical_definition",
+        "estimator",
+        "tolerance"
+      ],
+      "title": "ObservableSpec",
+      "type": "object"
+    },
+    "ProposalDraft": {
+      "additionalProperties": false,
+      "properties": {
+        "declared_unknowns": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Declared Unknowns",
+          "type": "array"
+        },
+        "experiment": {
+          "$ref": "#/$defs/ExperimentSpec"
+        },
+        "hypothesis": {
+          "$ref": "#/$defs/HypothesisNode"
+        },
+        "observable": {
+          "$ref": "#/$defs/ObservableSpec"
+        },
+        "rationale": {
+          "minLength": 1,
+          "title": "Rationale",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "hypothesis",
+        "observable",
+        "experiment",
+        "rationale",
+        "declared_unknowns"
+      ],
+      "title": "ProposalDraft",
+      "type": "object"
+    },
+    "ProposalRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "additional_constraints": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Additional Constraints",
+          "type": "array"
+        },
+        "allowed_action_types": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Allowed Action Types",
+          "type": "array"
+        },
+        "allowed_model_families": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Allowed Model Families",
+          "type": "array"
+        },
+        "allowed_observable_kinds": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Allowed Observable Kinds",
+          "type": "array"
+        },
+        "allowed_proposition_classes": {
+          "items": {
+            "$ref": "#/$defs/PropositionClass"
+          },
+          "minItems": 1,
+          "title": "Allowed Proposition Classes",
+          "type": "array"
+        },
+        "available_diagnostics": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Available Diagnostics",
+          "type": "array"
+        },
+        "fixed_numerical_parameters": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "title": "Fixed Numerical Parameters",
+          "type": "object"
+        },
+        "fixed_parameters": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "title": "Fixed Parameters",
+          "type": "object"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "required_coordinates": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Required Coordinates",
+          "type": "array"
+        },
+        "required_diagnostics": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Required Diagnostics",
+          "type": "array"
+        },
+        "research_goal": {
+          "minLength": 1,
+          "title": "Research Goal",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "research_goal",
+        "allowed_model_families",
+        "allowed_action_types",
+        "allowed_proposition_classes",
+        "required_coordinates",
+        "allowed_observable_kinds",
+        "available_diagnostics"
+      ],
+      "title": "ProposalRequest",
+      "type": "object"
+    },
+    "ProposalValidation": {
+      "additionalProperties": false,
+      "properties": {
+        "errors": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Errors",
+          "type": "array"
+        },
+        "valid": {
+          "title": "Valid",
+          "type": "boolean"
+        },
+        "warnings": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Warnings",
+          "type": "array"
+        }
+      },
+      "required": [
+        "valid"
+      ],
+      "title": "ProposalValidation",
+      "type": "object"
+    },
+    "PropositionClass": {
+      "enum": [
+        "existential_contribution",
+        "universal_non_contribution",
+        "predictive_sufficiency",
+        "causal_exhaustiveness",
+        "invariance",
+        "threshold",
+        "path_dependence"
+      ],
+      "title": "PropositionClass",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "draft": {
+      "$ref": "#/$defs/ProposalDraft"
+    },
+    "model_calls": {
+      "items": {
+        "$ref": "#/$defs/ModelCallProvenance"
+      },
+      "minItems": 1,
+      "title": "Model Calls",
+      "type": "array"
+    },
+    "request": {
+      "$ref": "#/$defs/ProposalRequest"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "validation": {
+      "$ref": "#/$defs/ProposalValidation"
+    }
+  },
+  "required": [
+    "request",
+    "draft",
+    "validation",
+    "model_calls"
+  ],
+  "title": "ProposalRecord",
+  "type": "object"
+}

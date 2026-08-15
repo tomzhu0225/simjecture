@@ -1,0 +1,298 @@
+{
+  "artifacts": {
+    "analyze_results.py": {
+      "action": "write_file",
+      "action_sha256": "b52ab71f7b9d6d05ef1cdaed4875858fe45e26a2dfcb06b3c59a311c3d015abd",
+      "active_claim_id": null,
+      "bytes": 1626,
+      "capability": null,
+      "command_argv": [],
+      "generated_iteration": 23,
+      "mtime_ns": 1786419384333171905,
+      "program_path": null,
+      "program_sha256": null
+    },
+    "calc_growth.py": {
+      "action": "write_file",
+      "action_sha256": "eaff86d46da0420d44cac4dd3208897688c2ea8791f5b0bc0c18e0f05e2fa29b",
+      "active_claim_id": null,
+      "bytes": 888,
+      "capability": null,
+      "command_argv": [],
+      "generated_iteration": 15,
+      "mtime_ns": 1786419158987447236,
+      "program_path": null,
+      "program_sha256": null
+    },
+    "linear_stability.py": {
+      "action": "write_file",
+      "action_sha256": "388a94408526d6e4e5a5eaab60800f994a949e96e848299a898eb2cb4c64a492",
+      "active_claim_id": null,
+      "bytes": 3196,
+      "capability": null,
+      "command_argv": [],
+      "generated_iteration": 2,
+      "mtime_ns": 1786418352353199493,
+      "program_path": null,
+      "program_sha256": null
+    },
+    "mode_analysis.py": {
+      "action": "write_file",
+      "action_sha256": "5d545f0c2862a9a5a0c2ca52e0e356f2060ac373f107f9c5c0e80d2feee016c8",
+      "active_claim_id": null,
+      "bytes": 2088,
+      "capability": null,
+      "command_argv": [],
+      "generated_iteration": 8,
+      "mtime_ns": 1786418579870233292,
+      "program_path": null,
+      "program_sha256": null
+    },
+    "mode_analysis_results.json": {
+      "action": "run_python",
+      "action_sha256": "483373ee17135d284b7a43269335a70c0cc378af1baf0e9f10bf123b6f8628aa",
+      "active_claim_id": "claim_root",
+      "bytes": 3402,
+      "capability": null,
+      "command_argv": [
+        "mode_analysis.py"
+      ],
+      "generated_iteration": 9,
+      "mtime_ns": 1786418591614027872,
+      "program_path": "mode_analysis.py",
+      "program_sha256": "bd3a51c4de6f90c8f9b01be30b57dfdb4f1519f6e4866f20191c19a835bf7f7b"
+    },
+    "pick_regime.py": {
+      "action": "write_file",
+      "action_sha256": "d6fcfe07a9c4db25ee6a4926513bd230816a91927769115c74d92aae0f2a449a",
+      "active_claim_id": null,
+      "bytes": 2208,
+      "capability": null,
+      "command_argv": [],
+      "generated_iteration": 10,
+      "mtime_ns": 1786418636845174836,
+      "program_path": null,
+      "program_sha256": null
+    },
+    "regime_candidates.json": {
+      "action": "run_python",
+      "action_sha256": "54d621ec65ea9097ec87ffebce067615eab9edefc040f7e0d4e5eef520032cab",
+      "active_claim_id": "claim_root",
+      "bytes": 3220,
+      "capability": null,
+      "command_argv": [
+        "pick_regime.py"
+      ],
+      "generated_iteration": 12,
+      "mtime_ns": 1786418982580098404,
+      "program_path": "pick_regime.py",
+      "program_sha256": "ac1c5574336c33d36d6d78e1b2410a516b33805c08c922d8df4bbb4b20701f46"
+    },
+    "result_s1.npz": {
+      "action": "run_python",
+      "action_sha256": "3fa997b40c2ffd4268086e444237f749fda4087620f9a35e71d687f1ee54f389",
+      "active_claim_id": "claim_finite_gs",
+      "bytes": 181510,
+      "capability": null,
+      "command_argv": [
+        "simulate_gs.py",
+        "full"
+      ],
+      "generated_iteration": 20,
+      "mtime_ns": 1786419322390912712,
+      "program_path": "simulate_gs.py",
+      "program_sha256": "d2d559021728358533eada81246a59e4d1fdc1808bf292f7ca255c70a77700bb"
+    },
+    "result_s10.npz": {
+      "action": "run_python",
+      "action_sha256": "3fa997b40c2ffd4268086e444237f749fda4087620f9a35e71d687f1ee54f389",
+      "active_claim_id": "claim_finite_gs",
+      "bytes": 116475,
+      "capability": null,
+      "command_argv": [
+        "simulate_gs.py",
+        "full"
+      ],
+      "generated_iteration": 20,
+      "mtime_ns": 1786419332399983483,
+      "program_path": "simulate_gs.py",
+      "program_sha256": "d2d559021728358533eada81246a59e4d1fdc1808bf292f7ca255c70a77700bb"
+    },
+    "result_s10_dt025.npz": {
+      "action": "run_python",
+      "action_sha256": "8798f4a71aead4909db82e1870b51f6e09f20427a01d982c873f15ddc0b95c19",
+      "active_claim_id": "claim_finite_gs",
+      "bytes": 117569,
+      "capability": null,
+      "command_argv": [
+        "simulate_gs_dt025.py"
+      ],
+      "generated_iteration": 26,
+      "mtime_ns": 1786419453230896597,
+      "program_path": "simulate_gs_dt025.py",
+      "program_sha256": "2b918baf8210ae15e83f3d9c57e9e9377474736461dd14b3f0e916475f75f589"
+    },
+    "result_s1_dt025.npz": {
+      "action": "run_python",
+      "action_sha256": "8798f4a71aead4909db82e1870b51f6e09f20427a01d982c873f15ddc0b95c19",
+      "active_claim_id": "claim_finite_gs",
+      "bytes": 182394,
+      "capability": null,
+      "command_argv": [
+        "simulate_gs_dt025.py"
+      ],
+      "generated_iteration": 26,
+      "mtime_ns": 1786419428326319896,
+      "program_path": "simulate_gs_dt025.py",
+      "program_sha256": "2b918baf8210ae15e83f3d9c57e9e9377474736461dd14b3f0e916475f75f589"
+    },
+    "root_pattern_results.json": {
+      "action": "run_python",
+      "action_sha256": "63a7654c4693b5fe8c44dc07f0f402a6bfd8b3c5a35a010389a38902e05cf321",
+      "active_claim_id": "claim_root",
+      "bytes": 2469,
+      "capability": null,
+      "command_argv": [
+        "simulate_gs_root.py"
+      ],
+      "generated_iteration": 34,
+      "mtime_ns": 1786419649308503127,
+      "program_path": "simulate_gs_root.py",
+      "program_sha256": "b2996c49173d8514e89f042acaee6d39c30037d9e41b52fb2af0a6d653ea26e1"
+    },
+    "root_s10_dt0p025.npz": {
+      "action": "run_python",
+      "action_sha256": "63a7654c4693b5fe8c44dc07f0f402a6bfd8b3c5a35a010389a38902e05cf321",
+      "active_claim_id": "claim_root",
+      "bytes": 108439,
+      "capability": null,
+      "command_argv": [
+        "simulate_gs_root.py"
+      ],
+      "generated_iteration": 34,
+      "mtime_ns": 1786419649308234718,
+      "program_path": "simulate_gs_root.py",
+      "program_sha256": "b2996c49173d8514e89f042acaee6d39c30037d9e41b52fb2af0a6d653ea26e1"
+    },
+    "root_s10_dt0p05.npz": {
+      "action": "run_python",
+      "action_sha256": "63a7654c4693b5fe8c44dc07f0f402a6bfd8b3c5a35a010389a38902e05cf321",
+      "active_claim_id": "claim_root",
+      "bytes": 111216,
+      "capability": null,
+      "command_argv": [
+        "simulate_gs_root.py"
+      ],
+      "generated_iteration": 34,
+      "mtime_ns": 1786419612373601742,
+      "program_path": "simulate_gs_root.py",
+      "program_sha256": "b2996c49173d8514e89f042acaee6d39c30037d9e41b52fb2af0a6d653ea26e1"
+    },
+    "root_s1_dt0p025.npz": {
+      "action": "run_python",
+      "action_sha256": "63a7654c4693b5fe8c44dc07f0f402a6bfd8b3c5a35a010389a38902e05cf321",
+      "active_claim_id": "claim_root",
+      "bytes": 245725,
+      "capability": null,
+      "command_argv": [
+        "simulate_gs_root.py"
+      ],
+      "generated_iteration": 34,
+      "mtime_ns": 1786419634433170540,
+      "program_path": "simulate_gs_root.py",
+      "program_sha256": "b2996c49173d8514e89f042acaee6d39c30037d9e41b52fb2af0a6d653ea26e1"
+    },
+    "root_s1_dt0p05.npz": {
+      "action": "run_python",
+      "action_sha256": "63a7654c4693b5fe8c44dc07f0f402a6bfd8b3c5a35a010389a38902e05cf321",
+      "active_claim_id": "claim_root",
+      "bytes": 245721,
+      "capability": null,
+      "command_argv": [
+        "simulate_gs_root.py"
+      ],
+      "generated_iteration": 34,
+      "mtime_ns": 1786419600051810454,
+      "program_path": "simulate_gs_root.py",
+      "program_sha256": "b2996c49173d8514e89f042acaee6d39c30037d9e41b52fb2af0a6d653ea26e1"
+    },
+    "simulate_gs.py": {
+      "action": "write_file",
+      "action_sha256": "013cd2e63bb8225fc44cb72c529f0c2653f10d882f0137c1efc60cc958142a03",
+      "active_claim_id": null,
+      "bytes": 3390,
+      "capability": null,
+      "command_argv": [],
+      "generated_iteration": 18,
+      "mtime_ns": 1786419293785793538,
+      "program_path": null,
+      "program_sha256": null
+    },
+    "simulate_gs_dt025.py": {
+      "action": "write_file",
+      "action_sha256": "ac65ef6448a197ea79cdcbcaf394d9150c4005f727fe81ff5c3a08904fc2014d",
+      "active_claim_id": null,
+      "bytes": 2132,
+      "capability": null,
+      "command_argv": [],
+      "generated_iteration": 25,
+      "mtime_ns": 1786419399956639563,
+      "program_path": null,
+      "program_sha256": null
+    },
+    "simulate_gs_root.py": {
+      "action": "write_file",
+      "action_sha256": "bb71ae07748dcf5e3a206ef92fa4a120c67c340ed98eee85dba6cbcd7e30a437",
+      "active_claim_id": null,
+      "bytes": 2408,
+      "capability": null,
+      "command_argv": [],
+      "generated_iteration": 33,
+      "mtime_ns": 1786419583613636903,
+      "program_path": null,
+      "program_sha256": null
+    },
+    "simulation_results.json": {
+      "action": "run_python",
+      "action_sha256": "3fa997b40c2ffd4268086e444237f749fda4087620f9a35e71d687f1ee54f389",
+      "active_claim_id": "claim_finite_gs",
+      "bytes": 1767,
+      "capability": null,
+      "command_argv": [
+        "simulate_gs.py",
+        "full"
+      ],
+      "generated_iteration": 20,
+      "mtime_ns": 1786419332400358775,
+      "program_path": "simulate_gs.py",
+      "program_sha256": "d2d559021728358533eada81246a59e4d1fdc1808bf292f7ca255c70a77700bb"
+    },
+    "simulation_results_dt025.json": {
+      "action": "run_python",
+      "action_sha256": "8798f4a71aead4909db82e1870b51f6e09f20427a01d982c873f15ddc0b95c19",
+      "active_claim_id": "claim_finite_gs",
+      "bytes": 441,
+      "capability": null,
+      "command_argv": [
+        "simulate_gs_dt025.py"
+      ],
+      "generated_iteration": 26,
+      "mtime_ns": 1786419453231084083,
+      "program_path": "simulate_gs_dt025.py",
+      "program_sha256": "2b918baf8210ae15e83f3d9c57e9e9377474736461dd14b3f0e916475f75f589"
+    },
+    "turing_diagnostic.py": {
+      "action": "write_file",
+      "action_sha256": "51573dc576e07afa8c20e728d14ebf89830335f4534b2b3878b8e6c69cbb1e30",
+      "active_claim_id": null,
+      "bytes": 3883,
+      "capability": null,
+      "command_argv": [],
+      "generated_iteration": 5,
+      "mtime_ns": 1786418405437858103,
+      "program_path": null,
+      "program_sha256": null
+    }
+  },
+  "schema_version": "0.1.0"
+}

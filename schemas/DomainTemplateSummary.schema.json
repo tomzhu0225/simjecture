@@ -1,0 +1,39 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "domain": {
+      "title": "Domain",
+      "type": "string"
+    },
+    "metrics": {
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "integer"
+          },
+          {
+            "type": "number"
+          },
+          {
+            "type": "boolean"
+          }
+        ]
+      },
+      "title": "Metrics",
+      "type": "object"
+    },
+    "template_path": {
+      "title": "Template Path",
+      "type": "string"
+    }
+  },
+  "required": [
+    "domain",
+    "template_path"
+  ],
+  "title": "DomainTemplateSummary",
+  "type": "object"
+}

@@ -1,0 +1,932 @@
+{
+  "$defs": {
+    "ClaimDisposition": {
+      "enum": [
+        "open",
+        "supported",
+        "weakened",
+        "falsified",
+        "superseded",
+        "unresolved",
+        "instrument_limited"
+      ],
+      "title": "ClaimDisposition",
+      "type": "string"
+    },
+    "ClaimEvidenceValidationCheck": {
+      "additionalProperties": false,
+      "description": "One exact assertion over a JSON evidence summary.",
+      "properties": {
+        "aspect": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CommissioningAspect"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Commissioning aspect tested by this assertion. Instrument evidence used to unlock scientific capability execution must cover every required aspect in one prospectively registered contract."
+        },
+        "expected_value": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Expected Value"
+        },
+        "json_path": {
+          "description": "Dot-separated object keys; array indexing is deliberately unsupported",
+          "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]+)*$",
+          "title": "Json Path",
+          "type": "string"
+        }
+      },
+      "required": [
+        "json_path",
+        "expected_value"
+      ],
+      "title": "ClaimEvidenceValidationCheck",
+      "type": "object"
+    },
+    "ClaimExecutionBinding": {
+      "additionalProperties": false,
+      "description": "Prospective command identity for commissioning and later science runs.",
+      "properties": {
+        "allowed_scientific_argv": {
+          "default": [],
+          "items": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "title": "Allowed Scientific Argv",
+          "type": "array"
+        },
+        "capability": {
+          "pattern": "^[a-z][a-z0-9_.-]*$",
+          "title": "Capability",
+          "type": "string"
+        },
+        "commissioning_argv": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Commissioning Argv",
+          "type": "array"
+        },
+        "program_path": {
+          "minLength": 1,
+          "title": "Program Path",
+          "type": "string"
+        },
+        "program_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Runner-attested source identity sealed before the first bound capability execution",
+          "title": "Program Sha256"
+        }
+      },
+      "required": [
+        "capability",
+        "program_path",
+        "commissioning_argv"
+      ],
+      "title": "ClaimExecutionBinding",
+      "type": "object"
+    },
+    "ClaimKind": {
+      "enum": [
+        "scientific",
+        "instrument",
+        "diagnostic",
+        "control"
+      ],
+      "title": "ClaimKind",
+      "type": "string"
+    },
+    "ClaimRelation": {
+      "enum": [
+        "root",
+        "refines",
+        "alternate",
+        "diagnostic_of",
+        "instrument_of",
+        "control_for",
+        "succeeds"
+      ],
+      "title": "ClaimRelation",
+      "type": "string"
+    },
+    "CommissioningAspect": {
+      "description": "Domain-neutral aspects required before a scientific capability run.",
+      "enum": [
+        "interface",
+        "representation",
+        "physics_controls",
+        "boundaries",
+        "diagnostics",
+        "numerical_regime"
+      ],
+      "title": "CommissioningAspect",
+      "type": "string"
+    },
+    "MVPAuthorAndRunCapabilityAction": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "const": "author_and_run_capability",
+          "title": "Action",
+          "type": "string"
+        },
+        "active_claim_id": {
+          "anyOf": [
+            {
+              "minLength": 7,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional open claim for workbench provenance; required with a prior evidence contract when stage=evidence",
+          "title": "Active Claim Id"
+        },
+        "argv": {
+          "description": "Capability argv whose first item must equal path",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Argv",
+          "type": "array"
+        },
+        "capability": {
+          "minLength": 1,
+          "title": "Capability",
+          "type": "string"
+        },
+        "content": {
+          "title": "Content",
+          "type": "string"
+        },
+        "path": {
+          "description": "Workspace-relative program path to author before execution",
+          "minLength": 1,
+          "title": "Path",
+          "type": "string"
+        },
+        "research_note": {
+          "minLength": 1,
+          "title": "Research Note",
+          "type": "string"
+        },
+        "stage": {
+          "$ref": "#/$defs/MVPCapabilityExecutionStage",
+          "default": "evidence",
+          "description": "Use workbench while authoring and revising; use evidence only for a prospectively contracted immutable program"
+        }
+      },
+      "required": [
+        "research_note",
+        "action",
+        "path",
+        "content",
+        "capability",
+        "argv"
+      ],
+      "title": "MVPAuthorAndRunCapabilityAction",
+      "type": "object"
+    },
+    "MVPCapabilityExecutionStage": {
+      "enum": [
+        "workbench",
+        "evidence"
+      ],
+      "title": "MVPCapabilityExecutionStage",
+      "type": "string"
+    },
+    "MVPCloseClaimAction": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "const": "close_claim",
+          "title": "Action",
+          "type": "string"
+        },
+        "claim_id": {
+          "minLength": 7,
+          "title": "Claim Id",
+          "type": "string"
+        },
+        "reason": {
+          "minLength": 8,
+          "title": "Reason",
+          "type": "string"
+        },
+        "research_note": {
+          "minLength": 1,
+          "title": "Research Note",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/ClaimDisposition"
+        }
+      },
+      "required": [
+        "research_note",
+        "action",
+        "claim_id",
+        "status",
+        "reason"
+      ],
+      "title": "MVPCloseClaimAction",
+      "type": "object"
+    },
+    "MVPFinishAction": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "const": "finish",
+          "title": "Action",
+          "type": "string"
+        },
+        "final_answer": {
+          "minLength": 1,
+          "title": "Final Answer",
+          "type": "string"
+        },
+        "research_note": {
+          "minLength": 1,
+          "title": "Research Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "research_note",
+        "action",
+        "final_answer"
+      ],
+      "title": "MVPFinishAction",
+      "type": "object"
+    },
+    "MVPLinkClaimEvidenceAction": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "const": "link_claim_evidence",
+          "title": "Action",
+          "type": "string"
+        },
+        "claim_id": {
+          "minLength": 7,
+          "title": "Claim Id",
+          "type": "string"
+        },
+        "commissioning_claim_id": {
+          "anyOf": [
+            {
+              "pattern": "^claim_[a-z0-9_]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Supported instrument_of claim that qualified the capability before this scientific artifact was generated",
+          "title": "Commissioning Claim Id"
+        },
+        "note": {
+          "minLength": 1,
+          "title": "Note",
+          "type": "string"
+        },
+        "observation_note": {
+          "description": "Why required observation and uncertainty conditions were or were not met",
+          "minLength": 8,
+          "title": "Observation Note",
+          "type": "string"
+        },
+        "observation_sufficient": {
+          "description": "Whether the evidence satisfies the active evidence contract",
+          "title": "Observation Sufficient",
+          "type": "boolean"
+        },
+        "path": {
+          "description": "Workspace-relative artifact path that supports or challenges the claim",
+          "minLength": 1,
+          "title": "Path",
+          "type": "string"
+        },
+        "research_note": {
+          "minLength": 1,
+          "title": "Research Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "research_note",
+        "action",
+        "claim_id",
+        "path",
+        "note",
+        "observation_sufficient",
+        "observation_note"
+      ],
+      "title": "MVPLinkClaimEvidenceAction",
+      "type": "object"
+    },
+    "MVPListClaimsAction": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "const": "list_claims",
+          "title": "Action",
+          "type": "string"
+        },
+        "research_note": {
+          "minLength": 1,
+          "title": "Research Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "research_note",
+        "action"
+      ],
+      "title": "MVPListClaimsAction",
+      "type": "object"
+    },
+    "MVPListFilesAction": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "const": "list_files",
+          "title": "Action",
+          "type": "string"
+        },
+        "path": {
+          "minLength": 1,
+          "title": "Path",
+          "type": "string"
+        },
+        "research_note": {
+          "minLength": 1,
+          "title": "Research Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "research_note",
+        "action",
+        "path"
+      ],
+      "title": "MVPListFilesAction",
+      "type": "object"
+    },
+    "MVPListSkillsAction": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "const": "list_skills",
+          "title": "Action",
+          "type": "string"
+        },
+        "research_note": {
+          "minLength": 1,
+          "title": "Research Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "research_note",
+        "action"
+      ],
+      "title": "MVPListSkillsAction",
+      "type": "object"
+    },
+    "MVPMaterializeSkillResourceAction": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "const": "materialize_skill_resource",
+          "title": "Action",
+          "type": "string"
+        },
+        "destination_path": {
+          "description": "Workspace-relative destination for the exact resource bytes",
+          "minLength": 1,
+          "title": "Destination Path",
+          "type": "string"
+        },
+        "research_note": {
+          "minLength": 1,
+          "title": "Research Note",
+          "type": "string"
+        },
+        "skill": {
+          "minLength": 1,
+          "title": "Skill",
+          "type": "string"
+        },
+        "source_path": {
+          "description": "Contained path of the immutable skill resource to copy",
+          "minLength": 1,
+          "title": "Source Path",
+          "type": "string"
+        }
+      },
+      "required": [
+        "research_note",
+        "action",
+        "skill",
+        "source_path",
+        "destination_path"
+      ],
+      "title": "MVPMaterializeSkillResourceAction",
+      "type": "object"
+    },
+    "MVPReadFileAction": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "const": "read_file",
+          "title": "Action",
+          "type": "string"
+        },
+        "path": {
+          "minLength": 1,
+          "title": "Path",
+          "type": "string"
+        },
+        "research_note": {
+          "minLength": 1,
+          "title": "Research Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "research_note",
+        "action",
+        "path"
+      ],
+      "title": "MVPReadFileAction",
+      "type": "object"
+    },
+    "MVPReadSkillAction": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "const": "read_skill",
+          "title": "Action",
+          "type": "string"
+        },
+        "path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Path"
+        },
+        "research_note": {
+          "minLength": 1,
+          "title": "Research Note",
+          "type": "string"
+        },
+        "skill": {
+          "minLength": 1,
+          "title": "Skill",
+          "type": "string"
+        }
+      },
+      "required": [
+        "research_note",
+        "action",
+        "skill"
+      ],
+      "title": "MVPReadSkillAction",
+      "type": "object"
+    },
+    "MVPRegisterClaimAction": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "const": "register_claim",
+          "title": "Action",
+          "type": "string"
+        },
+        "claim_id": {
+          "description": "Stable claim id matching claim_[a-z0-9_]+; claim_root is reserved",
+          "minLength": 7,
+          "title": "Claim Id",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/ClaimKind"
+        },
+        "parent_id": {
+          "description": "Parent claim id; use claim_root for children of the root hypothesis",
+          "minLength": 7,
+          "title": "Parent Id",
+          "type": "string"
+        },
+        "rationale": {
+          "minLength": 8,
+          "title": "Rationale",
+          "type": "string"
+        },
+        "relation": {
+          "$ref": "#/$defs/ClaimRelation"
+        },
+        "research_note": {
+          "minLength": 1,
+          "title": "Research Note",
+          "type": "string"
+        },
+        "statement": {
+          "minLength": 8,
+          "title": "Statement",
+          "type": "string"
+        }
+      },
+      "required": [
+        "research_note",
+        "action",
+        "claim_id",
+        "statement",
+        "kind",
+        "relation",
+        "parent_id",
+        "rationale"
+      ],
+      "title": "MVPRegisterClaimAction",
+      "type": "object"
+    },
+    "MVPRegisterEvidenceContractAction": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "const": "register_evidence_contract",
+          "title": "Action",
+          "type": "string"
+        },
+        "claim_id": {
+          "minLength": 7,
+          "title": "Claim Id",
+          "type": "string"
+        },
+        "decision_rule": {
+          "description": "Prospective rule mapping observations to dispositions",
+          "minLength": 8,
+          "title": "Decision Rule",
+          "type": "string"
+        },
+        "execution_binding": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ClaimExecutionBinding"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Prospective exact capability/program/argv binding. The runner seals the program source hash before its first bound capability execution. Complete commissioning used for science must bind its commissioning command and enumerate every allowed later scientific command."
+        },
+        "expected_outcomes": {
+          "description": "Competing observable outcomes and their claim implications",
+          "minLength": 8,
+          "title": "Expected Outcomes",
+          "type": "string"
+        },
+        "inconclusive_conditions": {
+          "description": "Conditions that require unresolved or instrument-limited closure",
+          "minLength": 8,
+          "title": "Inconclusive Conditions",
+          "type": "string"
+        },
+        "observable": {
+          "description": "Quantity or event that the experiment will measure",
+          "minLength": 8,
+          "title": "Observable",
+          "type": "string"
+        },
+        "required_observation": {
+          "description": "Minimum duration, samples, regimes, or coverage needed",
+          "minLength": 8,
+          "title": "Required Observation",
+          "type": "string"
+        },
+        "research_note": {
+          "minLength": 1,
+          "title": "Research Note",
+          "type": "string"
+        },
+        "uncertainty_criterion": {
+          "description": "Noise, error, replication, or numerical-uncertainty criterion",
+          "minLength": 8,
+          "title": "Uncertainty Criterion",
+          "type": "string"
+        },
+        "validation_checks": {
+          "default": [],
+          "description": "Optional exact assertions over a JSON evidence artifact. Commissioning claims used to qualify scientific capability execution must use one contract whose checks cover representation, physics_controls, boundaries, diagnostics, and numerical_regime. Interface-only checks do not qualify.",
+          "items": {
+            "$ref": "#/$defs/ClaimEvidenceValidationCheck"
+          },
+          "title": "Validation Checks",
+          "type": "array"
+        }
+      },
+      "required": [
+        "research_note",
+        "action",
+        "claim_id",
+        "observable",
+        "expected_outcomes",
+        "decision_rule",
+        "required_observation",
+        "uncertainty_criterion",
+        "inconclusive_conditions"
+      ],
+      "title": "MVPRegisterEvidenceContractAction",
+      "type": "object"
+    },
+    "MVPRunCapabilityAction": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "const": "run_capability",
+          "title": "Action",
+          "type": "string"
+        },
+        "active_claim_id": {
+          "anyOf": [
+            {
+              "minLength": 7,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional open claim for workbench provenance; required with a prior evidence contract when stage=evidence",
+          "title": "Active Claim Id"
+        },
+        "argv": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Argv",
+          "type": "array"
+        },
+        "capability": {
+          "minLength": 1,
+          "title": "Capability",
+          "type": "string"
+        },
+        "research_note": {
+          "minLength": 1,
+          "title": "Research Note",
+          "type": "string"
+        },
+        "stage": {
+          "$ref": "#/$defs/MVPCapabilityExecutionStage",
+          "default": "evidence",
+          "description": "Use workbench for freely revisable, non-evidentiary commissioning; use evidence only after prospective claim qualification"
+        }
+      },
+      "required": [
+        "research_note",
+        "action",
+        "capability",
+        "argv"
+      ],
+      "title": "MVPRunCapabilityAction",
+      "type": "object"
+    },
+    "MVPRunPythonAction": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "const": "run_python",
+          "title": "Action",
+          "type": "string"
+        },
+        "active_claim_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional open claim this calculation is intended to challenge",
+          "title": "Active Claim Id"
+        },
+        "argv": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Argv",
+          "type": "array"
+        },
+        "research_note": {
+          "minLength": 1,
+          "title": "Research Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "research_note",
+        "action",
+        "argv"
+      ],
+      "title": "MVPRunPythonAction",
+      "type": "object"
+    },
+    "MVPSearchLiteratureAction": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "const": "search_literature",
+          "title": "Action",
+          "type": "string"
+        },
+        "max_results": {
+          "default": 8,
+          "maximum": 20,
+          "minimum": 1,
+          "title": "Max Results",
+          "type": "integer"
+        },
+        "purpose": {
+          "description": "What analogous result, benchmark, diagnostic, or boundary condition this search is intended to find",
+          "maxLength": 1000,
+          "minLength": 3,
+          "title": "Purpose",
+          "type": "string"
+        },
+        "query": {
+          "description": "Search terms chosen from the hypothesis, model, mechanism, and desired validation benchmark",
+          "maxLength": 500,
+          "minLength": 3,
+          "title": "Query",
+          "type": "string"
+        },
+        "research_note": {
+          "minLength": 1,
+          "title": "Research Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "research_note",
+        "action",
+        "query",
+        "purpose"
+      ],
+      "title": "MVPSearchLiteratureAction",
+      "type": "object"
+    },
+    "MVPWriteFileAction": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "const": "write_file",
+          "title": "Action",
+          "type": "string"
+        },
+        "content": {
+          "title": "Content",
+          "type": "string"
+        },
+        "path": {
+          "minLength": 1,
+          "title": "Path",
+          "type": "string"
+        },
+        "research_note": {
+          "minLength": 1,
+          "title": "Research Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "research_note",
+        "action",
+        "path",
+        "content"
+      ],
+      "title": "MVPWriteFileAction",
+      "type": "object"
+    }
+  },
+  "discriminator": {
+    "mapping": {
+      "author_and_run_capability": "#/$defs/MVPAuthorAndRunCapabilityAction",
+      "close_claim": "#/$defs/MVPCloseClaimAction",
+      "finish": "#/$defs/MVPFinishAction",
+      "link_claim_evidence": "#/$defs/MVPLinkClaimEvidenceAction",
+      "list_claims": "#/$defs/MVPListClaimsAction",
+      "list_files": "#/$defs/MVPListFilesAction",
+      "list_skills": "#/$defs/MVPListSkillsAction",
+      "materialize_skill_resource": "#/$defs/MVPMaterializeSkillResourceAction",
+      "read_file": "#/$defs/MVPReadFileAction",
+      "read_skill": "#/$defs/MVPReadSkillAction",
+      "register_claim": "#/$defs/MVPRegisterClaimAction",
+      "register_evidence_contract": "#/$defs/MVPRegisterEvidenceContractAction",
+      "run_capability": "#/$defs/MVPRunCapabilityAction",
+      "run_python": "#/$defs/MVPRunPythonAction",
+      "search_literature": "#/$defs/MVPSearchLiteratureAction",
+      "write_file": "#/$defs/MVPWriteFileAction"
+    },
+    "propertyName": "action"
+  },
+  "oneOf": [
+    {
+      "$ref": "#/$defs/MVPSearchLiteratureAction"
+    },
+    {
+      "$ref": "#/$defs/MVPWriteFileAction"
+    },
+    {
+      "$ref": "#/$defs/MVPReadFileAction"
+    },
+    {
+      "$ref": "#/$defs/MVPListFilesAction"
+    },
+    {
+      "$ref": "#/$defs/MVPRunPythonAction"
+    },
+    {
+      "$ref": "#/$defs/MVPListSkillsAction"
+    },
+    {
+      "$ref": "#/$defs/MVPReadSkillAction"
+    },
+    {
+      "$ref": "#/$defs/MVPMaterializeSkillResourceAction"
+    },
+    {
+      "$ref": "#/$defs/MVPRunCapabilityAction"
+    },
+    {
+      "$ref": "#/$defs/MVPAuthorAndRunCapabilityAction"
+    },
+    {
+      "$ref": "#/$defs/MVPRegisterClaimAction"
+    },
+    {
+      "$ref": "#/$defs/MVPRegisterEvidenceContractAction"
+    },
+    {
+      "$ref": "#/$defs/MVPLinkClaimEvidenceAction"
+    },
+    {
+      "$ref": "#/$defs/MVPCloseClaimAction"
+    },
+    {
+      "$ref": "#/$defs/MVPListClaimsAction"
+    },
+    {
+      "$ref": "#/$defs/MVPFinishAction"
+    }
+  ]
+}

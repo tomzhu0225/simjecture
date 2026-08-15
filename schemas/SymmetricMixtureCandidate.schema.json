@@ -1,0 +1,30 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "inner_drift": {
+      "exclusiveMaximum": 1,
+      "minimum": 0,
+      "title": "Inner Drift",
+      "type": "number"
+    },
+    "inner_pair_weight": {
+      "exclusiveMaximum": 1,
+      "exclusiveMinimum": 0,
+      "title": "Inner Pair Weight",
+      "type": "number"
+    },
+    "outer_drift": {
+      "exclusiveMaximum": 1,
+      "minimum": 0,
+      "title": "Outer Drift",
+      "type": "number"
+    }
+  },
+  "required": [
+    "inner_pair_weight",
+    "inner_drift",
+    "outer_drift"
+  ],
+  "title": "SymmetricMixtureCandidate",
+  "type": "object"
+}

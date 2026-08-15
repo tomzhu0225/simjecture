@@ -1,0 +1,375 @@
+{
+  "$defs": {
+    "NormalizedResult": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_hashes": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Artifact Hashes",
+          "type": "array"
+        },
+        "diagnostics": {
+          "additionalProperties": true,
+          "title": "Diagnostics",
+          "type": "object"
+        },
+        "experiment_id": {
+          "title": "Experiment Id",
+          "type": "string"
+        },
+        "observables": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "title": "Observables",
+          "type": "object"
+        }
+      },
+      "required": [
+        "experiment_id",
+        "observables",
+        "diagnostics"
+      ],
+      "title": "NormalizedResult",
+      "type": "object"
+    },
+    "WarpXAttemptFailureKind": {
+      "enum": [
+        "infrastructure",
+        "numerical",
+        "validity"
+      ],
+      "title": "WarpXAttemptFailureKind",
+      "type": "string"
+    },
+    "WarpXConfirmationAttempt": {
+      "additionalProperties": false,
+      "properties": {
+        "checks": {
+          "additionalProperties": {
+            "type": "boolean"
+          },
+          "title": "Checks",
+          "type": "object"
+        },
+        "confirmed": {
+          "title": "Confirmed",
+          "type": "boolean"
+        },
+        "normalized_result": {
+          "$ref": "#/$defs/NormalizedResult"
+        },
+        "resolution_id": {
+          "minLength": 1,
+          "title": "Resolution Id",
+          "type": "string"
+        },
+        "seed": {
+          "minimum": 1,
+          "title": "Seed",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "seed",
+        "resolution_id",
+        "normalized_result",
+        "checks",
+        "confirmed"
+      ],
+      "title": "WarpXConfirmationAttempt",
+      "type": "object"
+    },
+    "WarpXConfirmationDesign": {
+      "additionalProperties": false,
+      "properties": {
+        "physical": {
+          "$ref": "#/$defs/WarpXPhysicalConfig"
+        },
+        "qualification_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Qualification Hash",
+          "type": "string"
+        },
+        "resolutions": {
+          "items": {
+            "$ref": "#/$defs/WarpXConfirmationResolution"
+          },
+          "minItems": 2,
+          "title": "Resolutions",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "seeds": {
+          "default": [
+            211,
+            307,
+            401
+          ],
+          "items": {
+            "type": "integer"
+          },
+          "minItems": 3,
+          "title": "Seeds",
+          "type": "array"
+        },
+        "selection_frozen_before_confirmation": {
+          "const": true,
+          "default": true,
+          "title": "Selection Frozen Before Confirmation",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "qualification_hash",
+        "physical",
+        "resolutions"
+      ],
+      "title": "WarpXConfirmationDesign",
+      "type": "object"
+    },
+    "WarpXConfirmationDisposition": {
+      "enum": [
+        "confirmed",
+        "inconclusive"
+      ],
+      "title": "WarpXConfirmationDisposition",
+      "type": "string"
+    },
+    "WarpXConfirmationFailure": {
+      "additionalProperties": false,
+      "properties": {
+        "consumed_case_units": {
+          "const": 2,
+          "default": 2,
+          "title": "Consumed Case Units",
+          "type": "integer"
+        },
+        "detail": {
+          "minLength": 1,
+          "title": "Detail",
+          "type": "string"
+        },
+        "experiment_id": {
+          "minLength": 1,
+          "title": "Experiment Id",
+          "type": "string"
+        },
+        "external_job_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "External Job Id"
+        },
+        "kind": {
+          "$ref": "#/$defs/WarpXAttemptFailureKind"
+        },
+        "ordinal": {
+          "minimum": 1,
+          "title": "Ordinal",
+          "type": "integer"
+        },
+        "resolution_id": {
+          "minLength": 1,
+          "title": "Resolution Id",
+          "type": "string"
+        },
+        "seed": {
+          "minimum": 1,
+          "title": "Seed",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "ordinal",
+        "seed",
+        "resolution_id",
+        "experiment_id",
+        "kind",
+        "detail"
+      ],
+      "title": "WarpXConfirmationFailure",
+      "type": "object"
+    },
+    "WarpXConfirmationResolution": {
+      "additionalProperties": false,
+      "properties": {
+        "diagnostic_interval_steps": {
+          "minimum": 1,
+          "title": "Diagnostic Interval Steps",
+          "type": "integer"
+        },
+        "electron_macroparticles_per_cell": {
+          "minimum": 16,
+          "title": "Electron Macroparticles Per Cell",
+          "type": "integer"
+        },
+        "grid_cells": {
+          "minimum": 32,
+          "title": "Grid Cells",
+          "type": "integer"
+        },
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "time_step_omega_pe": {
+          "exclusiveMinimum": 0,
+          "title": "Time Step Omega Pe",
+          "type": "number"
+        }
+      },
+      "required": [
+        "id",
+        "grid_cells",
+        "electron_macroparticles_per_cell",
+        "time_step_omega_pe",
+        "diagnostic_interval_steps"
+      ],
+      "title": "WarpXConfirmationResolution",
+      "type": "object"
+    },
+    "WarpXPhysicalConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "inner_drift": {
+          "default": 0.95,
+          "exclusiveMaximum": 1,
+          "minimum": 0,
+          "title": "Inner Drift",
+          "type": "number"
+        },
+        "inner_pair_weight": {
+          "default": 0.5,
+          "exclusiveMaximum": 1,
+          "exclusiveMinimum": 0,
+          "title": "Inner Pair Weight",
+          "type": "number"
+        },
+        "outer_drift": {
+          "default": 0.95,
+          "exclusiveMaximum": 1,
+          "minimum": 0,
+          "title": "Outer Drift",
+          "type": "number"
+        },
+        "perturbation_amplitude": {
+          "default": 0.02,
+          "maximum": 0.05,
+          "minimum": 1e-07,
+          "title": "Perturbation Amplitude",
+          "type": "number"
+        },
+        "reference_density_m3": {
+          "default": 1e+18,
+          "maximum": 1e+25,
+          "minimum": 1000000000000.0,
+          "title": "Reference Density M3",
+          "type": "number"
+        },
+        "velocity_unit_m_s": {
+          "default": 1000000.0,
+          "maximum": 20000000.0,
+          "minimum": 1000.0,
+          "title": "Velocity Unit M S",
+          "type": "number"
+        },
+        "wavenumber_dimensionless": {
+          "default": 0.5,
+          "maximum": 2.0,
+          "minimum": 0.1,
+          "title": "Wavenumber Dimensionless",
+          "type": "number"
+        }
+      },
+      "title": "WarpXPhysicalConfig",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "attempts": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/WarpXConfirmationAttempt"
+      },
+      "title": "Attempts",
+      "type": "array"
+    },
+    "checks": {
+      "additionalProperties": {
+        "type": "boolean"
+      },
+      "title": "Checks",
+      "type": "object"
+    },
+    "design": {
+      "$ref": "#/$defs/WarpXConfirmationDesign"
+    },
+    "disposition": {
+      "$ref": "#/$defs/WarpXConfirmationDisposition"
+    },
+    "failures": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/WarpXConfirmationFailure"
+      },
+      "title": "Failures",
+      "type": "array"
+    },
+    "median_candidate_rates_by_resolution": {
+      "additionalProperties": {
+        "type": "number"
+      },
+      "title": "Median Candidate Rates By Resolution",
+      "type": "object"
+    },
+    "median_reference_rates_by_resolution": {
+      "additionalProperties": {
+        "type": "number"
+      },
+      "title": "Median Reference Rates By Resolution",
+      "type": "object"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "design",
+    "median_reference_rates_by_resolution",
+    "median_candidate_rates_by_resolution",
+    "checks",
+    "disposition"
+  ],
+  "title": "WarpXConfirmationReport",
+  "type": "object"
+}

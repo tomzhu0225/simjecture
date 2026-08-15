@@ -1,0 +1,55 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "attempt_id": {
+      "title": "Attempt Id",
+      "type": "string"
+    },
+    "external_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "External Id"
+    },
+    "intent_id": {
+      "title": "Intent Id",
+      "type": "string"
+    },
+    "received_at": {
+      "format": "date-time",
+      "title": "Received At",
+      "type": "string"
+    },
+    "response": {
+      "additionalProperties": true,
+      "title": "Response",
+      "type": "object"
+    },
+    "response_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Response Hash",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "intent_id",
+    "attempt_id",
+    "response",
+    "response_hash",
+    "received_at"
+  ],
+  "title": "ExternalReceipt",
+  "type": "object"
+}

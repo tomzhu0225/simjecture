@@ -1,0 +1,135 @@
+{
+  "alpha_used": 0.45607017003964534,
+  "runs": [
+    {
+      "combined_relative_drift": 0.0,
+      "expected_mu": 0.15,
+      "field_energy": "fixtures/inp/p8_t1_s20260902/reduced/field_energy.txt",
+      "label": "p8_t1_s20260902",
+      "particle_energy": "fixtures/inp/p8_t1_s20260902/reduced/particle_energy.txt",
+      "summary": "fixtures/inp/p8_t1_s20260902_summary.json"
+    },
+    {
+      "combined_relative_drift": 0.0,
+      "expected_mu": 0.15,
+      "field_energy": "fixtures/inp/p8_t1_s20260903/reduced/field_energy.txt",
+      "label": "p8_t1_s20260903",
+      "particle_energy": "fixtures/inp/p8_t1_s20260903/reduced/particle_energy.txt",
+      "summary": "fixtures/inp/p8_t1_s20260903_summary.json"
+    },
+    {
+      "combined_relative_drift": 0.0,
+      "expected_mu": 0.15,
+      "field_energy": "fixtures/inp/p8_t1_s20260904/reduced/field_energy.txt",
+      "label": "p8_t1_s20260904",
+      "particle_energy": "fixtures/inp/p8_t1_s20260904/reduced/particle_energy.txt",
+      "summary": "fixtures/inp/p8_t1_s20260904_summary.json"
+    },
+    {
+      "combined_relative_drift": 0.0,
+      "expected_mu": 0.15,
+      "field_energy": "fixtures/inp/p16_t1_s20260902/reduced/field_energy.txt",
+      "label": "p16_t1_s20260902",
+      "particle_energy": "fixtures/inp/p16_t1_s20260902/reduced/particle_energy.txt",
+      "summary": "fixtures/inp/p16_t1_s20260902_summary.json"
+    },
+    {
+      "combined_relative_drift": 0.0,
+      "expected_mu": 0.15,
+      "field_energy": "fixtures/inp/p16_t1_s20260903/reduced/field_energy.txt",
+      "label": "p16_t1_s20260903",
+      "particle_energy": "fixtures/inp/p16_t1_s20260903/reduced/particle_energy.txt",
+      "summary": "fixtures/inp/p16_t1_s20260903_summary.json"
+    },
+    {
+      "combined_relative_drift": 0.0,
+      "expected_mu": 0.15,
+      "field_energy": "fixtures/inp/p16_t1_s20260904/reduced/field_energy.txt",
+      "label": "p16_t1_s20260904",
+      "particle_energy": "fixtures/inp/p16_t1_s20260904/reduced/particle_energy.txt",
+      "summary": "fixtures/inp/p16_t1_s20260904_summary.json"
+    },
+    {
+      "combined_relative_drift": 0.0,
+      "expected_mu": 0.05,
+      "field_energy": "fixtures/inp/p8_t20_s20260902/reduced/field_energy.txt",
+      "label": "p8_t20_s20260902",
+      "particle_energy": "fixtures/inp/p8_t20_s20260902/reduced/particle_energy.txt",
+      "summary": "fixtures/inp/p8_t20_s20260902_summary.json"
+    },
+    {
+      "combined_relative_drift": 0.0,
+      "expected_mu": 0.05,
+      "field_energy": "fixtures/inp/p8_t20_s20260903/reduced/field_energy.txt",
+      "label": "p8_t20_s20260903",
+      "particle_energy": "fixtures/inp/p8_t20_s20260903/reduced/particle_energy.txt",
+      "summary": "fixtures/inp/p8_t20_s20260903_summary.json"
+    },
+    {
+      "combined_relative_drift": 0.0,
+      "expected_mu": 0.05,
+      "field_energy": "fixtures/inp/p8_t20_s20260904/reduced/field_energy.txt",
+      "label": "p8_t20_s20260904",
+      "particle_energy": "fixtures/inp/p8_t20_s20260904/reduced/particle_energy.txt",
+      "summary": "fixtures/inp/p8_t20_s20260904_summary.json"
+    },
+    {
+      "combined_relative_drift": 0.0,
+      "expected_mu": 0.05,
+      "field_energy": "fixtures/inp/p16_t20_s20260902/reduced/field_energy.txt",
+      "label": "p16_t20_s20260902",
+      "particle_energy": "fixtures/inp/p16_t20_s20260902/reduced/particle_energy.txt",
+      "summary": "fixtures/inp/p16_t20_s20260902_summary.json"
+    },
+    {
+      "combined_relative_drift": 0.0,
+      "expected_mu": 0.05,
+      "field_energy": "fixtures/inp/p16_t20_s20260903/reduced/field_energy.txt",
+      "label": "p16_t20_s20260903",
+      "particle_energy": "fixtures/inp/p16_t20_s20260903/reduced/particle_energy.txt",
+      "summary": "fixtures/inp/p16_t20_s20260903_summary.json"
+    },
+    {
+      "combined_relative_drift": 0.0,
+      "expected_mu": 0.05,
+      "field_energy": "fixtures/inp/p16_t20_s20260904/reduced/field_energy.txt",
+      "label": "p16_t20_s20260904",
+      "particle_energy": "fixtures/inp/p16_t20_s20260904/reduced/particle_energy.txt",
+      "summary": "fixtures/inp/p16_t20_s20260904_summary.json"
+    }
+  ],
+  "schema_version": "analyzer_commissioning_fixture_0.1",
+  "timeline": {
+    "duration_omegaci": 12.001293753458157,
+    "times": [
+      0.0,
+      0.4800517501383263,
+      0.9601035002766526,
+      1.4401552504149788,
+      1.9202070005533052,
+      2.4002587506916315,
+      2.8803105008299577,
+      3.3603622509682842,
+      3.8404140011066104,
+      4.320465751244937,
+      4.800517501383263,
+      5.280569251521589,
+      5.760621001659915,
+      6.240672751798241,
+      6.7207245019365685,
+      7.200776252074895,
+      7.680828002213221,
+      8.160879752351548,
+      8.640931502489874,
+      9.1209832526282,
+      9.601035002766526,
+      10.081086752904852,
+      10.561138503043178,
+      11.041190253181504,
+      11.52124200331983,
+      12.001293753458157
+    ],
+    "window_max": 12.0,
+    "window_min": 6.0
+  }
+}

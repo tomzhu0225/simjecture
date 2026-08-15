@@ -1,0 +1,267 @@
+{
+  "$defs": {
+    "DistributionMoments": {
+      "additionalProperties": false,
+      "properties": {
+        "density": {
+          "title": "Density",
+          "type": "number"
+        },
+        "mean_velocity": {
+          "title": "Mean Velocity",
+          "type": "number"
+        },
+        "variance": {
+          "minimum": 0,
+          "title": "Variance",
+          "type": "number"
+        }
+      },
+      "required": [
+        "density",
+        "mean_velocity",
+        "variance"
+      ],
+      "title": "DistributionMoments",
+      "type": "object"
+    },
+    "GaussianComponent": {
+      "additionalProperties": false,
+      "properties": {
+        "drift": {
+          "title": "Drift",
+          "type": "number"
+        },
+        "sigma": {
+          "exclusiveMinimum": 0,
+          "title": "Sigma",
+          "type": "number"
+        },
+        "weight": {
+          "exclusiveMinimum": 0,
+          "maximum": 1,
+          "title": "Weight",
+          "type": "number"
+        }
+      },
+      "required": [
+        "weight",
+        "drift",
+        "sigma"
+      ],
+      "title": "GaussianComponent",
+      "type": "object"
+    },
+    "GaussianMixture": {
+      "additionalProperties": false,
+      "properties": {
+        "components": {
+          "items": {
+            "$ref": "#/$defs/GaussianComponent"
+          },
+          "minItems": 1,
+          "title": "Components",
+          "type": "array"
+        }
+      },
+      "required": [
+        "components"
+      ],
+      "title": "GaussianMixture",
+      "type": "object"
+    },
+    "ParameterInterval": {
+      "additionalProperties": false,
+      "properties": {
+        "maximum": {
+          "title": "Maximum",
+          "type": "number"
+        },
+        "minimum": {
+          "title": "Minimum",
+          "type": "number"
+        }
+      },
+      "required": [
+        "minimum",
+        "maximum"
+      ],
+      "title": "ParameterInterval",
+      "type": "object"
+    },
+    "SearchMethod": {
+      "enum": [
+        "ai",
+        "grid",
+        "random",
+        "latin_hypercube"
+      ],
+      "title": "SearchMethod",
+      "type": "string"
+    },
+    "SymmetricMixtureSearchSpace": {
+      "additionalProperties": false,
+      "description": "Two symmetric drift pairs with a shared derived thermal width.",
+      "properties": {
+        "derived_width": {
+          "const": "sqrt(1-inner_pair_weight*inner_drift^2-(1-inner_pair_weight)*outer_drift^2)",
+          "default": "sqrt(1-inner_pair_weight*inner_drift^2-(1-inner_pair_weight)*outer_drift^2)",
+          "title": "Derived Width",
+          "type": "string"
+        },
+        "grammar": {
+          "const": "symmetric_unit_variance_gaussian_mixture_v1",
+          "default": "symmetric_unit_variance_gaussian_mixture_v1",
+          "title": "Grammar",
+          "type": "string"
+        },
+        "inner_drift": {
+          "$ref": "#/$defs/ParameterInterval",
+          "default": {
+            "maximum": 0.95,
+            "minimum": 0.0
+          }
+        },
+        "inner_pair_weight": {
+          "$ref": "#/$defs/ParameterInterval",
+          "default": {
+            "maximum": 0.9,
+            "minimum": 0.1
+          }
+        },
+        "outer_drift": {
+          "$ref": "#/$defs/ParameterInterval",
+          "default": {
+            "maximum": 0.95,
+            "minimum": 0.0
+          }
+        },
+        "required_order": {
+          "const": "inner_drift <= outer_drift",
+          "default": "inner_drift <= outer_drift",
+          "title": "Required Order",
+          "type": "string"
+        }
+      },
+      "title": "SymmetricMixtureSearchSpace",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "baseline_seed": {
+      "default": 20260809,
+      "minimum": 0,
+      "title": "Baseline Seed",
+      "type": "integer"
+    },
+    "candidate_space": {
+      "$ref": "#/$defs/SymmetricMixtureSearchSpace",
+      "default": {
+        "derived_width": "sqrt(1-inner_pair_weight*inner_drift^2-(1-inner_pair_weight)*outer_drift^2)",
+        "grammar": "symmetric_unit_variance_gaussian_mixture_v1",
+        "inner_drift": {
+          "maximum": 0.95,
+          "minimum": 0.0
+        },
+        "inner_pair_weight": {
+          "maximum": 0.9,
+          "minimum": 0.1
+        },
+        "outer_drift": {
+          "maximum": 0.95,
+          "minimum": 0.0
+        },
+        "required_order": "inner_drift <= outer_drift"
+      }
+    },
+    "comparison_methods": {
+      "default": [
+        "ai",
+        "grid",
+        "random",
+        "latin_hypercube"
+      ],
+      "items": {
+        "$ref": "#/$defs/SearchMethod"
+      },
+      "title": "Comparison Methods",
+      "type": "array"
+    },
+    "disclosure": {
+      "const": "candidate grammar and bounds only; no prior candidate evaluations or planted parameters",
+      "default": "candidate grammar and bounds only; no prior candidate evaluations or planted parameters",
+      "title": "Disclosure",
+      "type": "string"
+    },
+    "evaluations_per_method": {
+      "default": 8,
+      "maximum": 64,
+      "minimum": 2,
+      "title": "Evaluations Per Method",
+      "type": "integer"
+    },
+    "id": {
+      "default": "search_request_blinded_moment_sufficiency_v1",
+      "title": "Id",
+      "type": "string"
+    },
+    "model_family": {
+      "const": "linearized_1d_electrostatic_vlasov_poisson",
+      "default": "linearized_1d_electrostatic_vlasov_poisson",
+      "title": "Model Family",
+      "type": "string"
+    },
+    "moment_tolerance": {
+      "default": 1e-10,
+      "exclusiveMinimum": 0,
+      "title": "Moment Tolerance",
+      "type": "number"
+    },
+    "outcome_tolerance": {
+      "default": 0.02,
+      "exclusiveMinimum": 0,
+      "title": "Outcome Tolerance",
+      "type": "number"
+    },
+    "reference_distribution": {
+      "$ref": "#/$defs/GaussianMixture",
+      "default": {
+        "components": [
+          {
+            "drift": 0.0,
+            "sigma": 1.0,
+            "weight": 1.0
+          }
+        ]
+      }
+    },
+    "research_goal": {
+      "default": "Find a distribution with density=1, mean_velocity=0, and variance=1 whose dominant linear growth rate differs from the unit Maxwellian reference.",
+      "title": "Research Goal",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "target_moments": {
+      "$ref": "#/$defs/DistributionMoments",
+      "default": {
+        "density": 1.0,
+        "mean_velocity": 0.0,
+        "variance": 1.0
+      }
+    },
+    "wavenumber": {
+      "default": 0.5,
+      "exclusiveMinimum": 0,
+      "title": "Wavenumber",
+      "type": "number"
+    }
+  },
+  "title": "BlindedSearchRequest",
+  "type": "object"
+}

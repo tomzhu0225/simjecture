@@ -1,0 +1,51 @@
+{
+  "$defs": {
+    "ResearchRelationKind": {
+      "enum": [
+        "specializes",
+        "predicted_by",
+        "tests",
+        "alternative_to",
+        "repairs",
+        "auxiliary_to",
+        "requires",
+        "incompatible_with"
+      ],
+      "title": "ResearchRelationKind",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "evidence_rule": {
+      "minLength": 1,
+      "title": "Evidence Rule",
+      "type": "string"
+    },
+    "justification": {
+      "minLength": 1,
+      "title": "Justification",
+      "type": "string"
+    },
+    "kind": {
+      "$ref": "#/$defs/ResearchRelationKind"
+    },
+    "source_hypothesis_id": {
+      "title": "Source Hypothesis Id",
+      "type": "string"
+    },
+    "target_hypothesis_id": {
+      "title": "Target Hypothesis Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "source_hypothesis_id",
+    "target_hypothesis_id",
+    "kind",
+    "evidence_rule",
+    "justification"
+  ],
+  "title": "ResearchRelation",
+  "type": "object"
+}

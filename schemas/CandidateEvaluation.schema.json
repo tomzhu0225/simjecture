@@ -1,0 +1,220 @@
+{
+  "$defs": {
+    "CandidateOutcome": {
+      "enum": [
+        "valid",
+        "numerical_failure"
+      ],
+      "title": "CandidateOutcome",
+      "type": "string"
+    },
+    "CandidateProposal": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "ordinal": {
+          "minimum": 1,
+          "title": "Ordinal",
+          "type": "integer"
+        },
+        "parameters": {
+          "$ref": "#/$defs/SymmetricMixtureCandidate"
+        },
+        "rationale": {
+          "minLength": 1,
+          "title": "Rationale",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "ordinal",
+        "parameters",
+        "rationale"
+      ],
+      "title": "CandidateProposal",
+      "type": "object"
+    },
+    "DistributionMoments": {
+      "additionalProperties": false,
+      "properties": {
+        "density": {
+          "title": "Density",
+          "type": "number"
+        },
+        "mean_velocity": {
+          "title": "Mean Velocity",
+          "type": "number"
+        },
+        "variance": {
+          "minimum": 0,
+          "title": "Variance",
+          "type": "number"
+        }
+      },
+      "required": [
+        "density",
+        "mean_velocity",
+        "variance"
+      ],
+      "title": "DistributionMoments",
+      "type": "object"
+    },
+    "LinearMode": {
+      "additionalProperties": false,
+      "properties": {
+        "dielectric_residual": {
+          "minimum": 0,
+          "title": "Dielectric Residual",
+          "type": "number"
+        },
+        "frequency": {
+          "title": "Frequency",
+          "type": "number"
+        },
+        "growth_rate": {
+          "title": "Growth Rate",
+          "type": "number"
+        }
+      },
+      "required": [
+        "frequency",
+        "growth_rate",
+        "dielectric_residual"
+      ],
+      "title": "LinearMode",
+      "type": "object"
+    },
+    "SearchMethod": {
+      "enum": [
+        "ai",
+        "grid",
+        "random",
+        "latin_hypercube"
+      ],
+      "title": "SearchMethod",
+      "type": "string"
+    },
+    "SymmetricMixtureCandidate": {
+      "additionalProperties": false,
+      "properties": {
+        "inner_drift": {
+          "exclusiveMaximum": 1,
+          "minimum": 0,
+          "title": "Inner Drift",
+          "type": "number"
+        },
+        "inner_pair_weight": {
+          "exclusiveMaximum": 1,
+          "exclusiveMinimum": 0,
+          "title": "Inner Pair Weight",
+          "type": "number"
+        },
+        "outer_drift": {
+          "exclusiveMaximum": 1,
+          "minimum": 0,
+          "title": "Outer Drift",
+          "type": "number"
+        }
+      },
+      "required": [
+        "inner_pair_weight",
+        "inner_drift",
+        "outer_drift"
+      ],
+      "title": "SymmetricMixtureCandidate",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "failure_detail": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Failure Detail"
+    },
+    "falsifies": {
+      "default": false,
+      "title": "Falsifies",
+      "type": "boolean"
+    },
+    "method": {
+      "$ref": "#/$defs/SearchMethod"
+    },
+    "mode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/LinearMode"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "moments": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/DistributionMoments"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "outcome": {
+      "$ref": "#/$defs/CandidateOutcome"
+    },
+    "outcome_separation": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Outcome Separation"
+    },
+    "proposal": {
+      "$ref": "#/$defs/CandidateProposal"
+    },
+    "reference_growth_rate": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Reference Growth Rate"
+    },
+    "request_id": {
+      "title": "Request Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "request_id",
+    "method",
+    "proposal",
+    "outcome"
+  ],
+  "title": "CandidateEvaluation",
+  "type": "object"
+}

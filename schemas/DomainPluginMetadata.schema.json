@@ -1,0 +1,90 @@
+{
+  "$defs": {
+    "PropositionClass": {
+      "enum": [
+        "existential_contribution",
+        "universal_non_contribution",
+        "predictive_sufficiency",
+        "causal_exhaustiveness",
+        "invariance",
+        "threshold",
+        "path_dependence"
+      ],
+      "title": "PropositionClass",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Machine-readable declaration of one installed scientific domain.",
+  "properties": {
+    "description": {
+      "minLength": 1,
+      "title": "Description",
+      "type": "string"
+    },
+    "hypothesis_schema": {
+      "minLength": 1,
+      "title": "Hypothesis Schema",
+      "type": "string"
+    },
+    "model_families": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Model Families",
+      "type": "array"
+    },
+    "name": {
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "title": "Name",
+      "type": "string"
+    },
+    "operations": {
+      "default": [
+        "template",
+        "solve"
+      ],
+      "items": {
+        "enum": [
+          "template",
+          "solve",
+          "evolve",
+          "diagnose"
+        ],
+        "type": "string"
+      },
+      "title": "Operations",
+      "type": "array"
+    },
+    "package_schema": {
+      "minLength": 1,
+      "title": "Package Schema",
+      "type": "string"
+    },
+    "proposition_classes": {
+      "items": {
+        "$ref": "#/$defs/PropositionClass"
+      },
+      "minItems": 1,
+      "title": "Proposition Classes",
+      "type": "array"
+    },
+    "version": {
+      "minLength": 1,
+      "title": "Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "version",
+    "description",
+    "hypothesis_schema",
+    "package_schema",
+    "model_families",
+    "proposition_classes"
+  ],
+  "title": "DomainPluginMetadata",
+  "type": "object"
+}

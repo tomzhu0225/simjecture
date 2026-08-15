@@ -1,0 +1,68 @@
+{
+  "$defs": {
+    "PilotStage": {
+      "enum": [
+        "smoke",
+        "qualification",
+        "discovery",
+        "convergence"
+      ],
+      "title": "PilotStage",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "design_seed": {
+      "minimum": 0,
+      "title": "Design Seed",
+      "type": "integer"
+    },
+    "evidence_candidate": {
+      "title": "Evidence Candidate",
+      "type": "boolean"
+    },
+    "max_steps": {
+      "minimum": 1,
+      "title": "Max Steps",
+      "type": "integer"
+    },
+    "parameter_values": {
+      "additionalProperties": {
+        "type": "number"
+      },
+      "title": "Parameter Values",
+      "type": "object"
+    },
+    "parent_attempt_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Parent Attempt Id"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "stage": {
+      "$ref": "#/$defs/PilotStage"
+    }
+  },
+  "required": [
+    "stage",
+    "parameter_values",
+    "evidence_candidate",
+    "max_steps",
+    "design_seed"
+  ],
+  "title": "RunPlan",
+  "type": "object"
+}

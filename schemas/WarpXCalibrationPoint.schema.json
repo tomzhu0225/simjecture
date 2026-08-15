@@ -1,0 +1,174 @@
+{
+  "$defs": {
+    "WarpXExecutionProfile": {
+      "additionalProperties": false,
+      "description": "Identity and trust status of the process that executes a run package.",
+      "properties": {
+        "openpmd_backend": {
+          "const": "h5",
+          "default": "h5",
+          "title": "Openpmd Backend",
+          "type": "string"
+        },
+        "profile_id": {
+          "minLength": 1,
+          "title": "Profile Id",
+          "type": "string"
+        },
+        "qualification_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Qualification Hash"
+        },
+        "qualified_for_scientific_evidence": {
+          "default": false,
+          "title": "Qualified For Scientific Evidence",
+          "type": "boolean"
+        },
+        "runner_kind": {
+          "$ref": "#/$defs/WarpXRunnerKind"
+        },
+        "warpx_version": {
+          "minLength": 1,
+          "title": "Warpx Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "profile_id",
+        "runner_kind",
+        "warpx_version"
+      ],
+      "title": "WarpXExecutionProfile",
+      "type": "object"
+    },
+    "WarpXRunnerKind": {
+      "enum": [
+        "contract_fixture",
+        "local_cpu",
+        "site_scheduler"
+      ],
+      "title": "WarpXRunnerKind",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "candidate_amplitude_ratio": {
+      "exclusiveMinimum": 0,
+      "title": "Candidate Amplitude Ratio",
+      "type": "number"
+    },
+    "candidate_classification": {
+      "enum": [
+        "damped",
+        "ambiguous",
+        "unstable"
+      ],
+      "title": "Candidate Classification",
+      "type": "string"
+    },
+    "candidate_diagnostic_manifest_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Candidate Diagnostic Manifest Hash",
+      "type": "string"
+    },
+    "candidate_growth_rate": {
+      "title": "Candidate Growth Rate",
+      "type": "number"
+    },
+    "electron_macroparticles_per_cell": {
+      "minimum": 16,
+      "title": "Electron Macroparticles Per Cell",
+      "type": "integer"
+    },
+    "execution_profile": {
+      "$ref": "#/$defs/WarpXExecutionProfile"
+    },
+    "grid_cells": {
+      "minimum": 32,
+      "title": "Grid Cells",
+      "type": "integer"
+    },
+    "normalized_result_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Normalized Result Hash",
+      "type": "string"
+    },
+    "numerical_validity_passed": {
+      "title": "Numerical Validity Passed",
+      "type": "boolean"
+    },
+    "reference_amplitude_ratio": {
+      "exclusiveMinimum": 0,
+      "title": "Reference Amplitude Ratio",
+      "type": "number"
+    },
+    "reference_classification": {
+      "enum": [
+        "damped",
+        "ambiguous",
+        "unstable"
+      ],
+      "title": "Reference Classification",
+      "type": "string"
+    },
+    "reference_diagnostic_manifest_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Reference Diagnostic Manifest Hash",
+      "type": "string"
+    },
+    "reference_growth_rate": {
+      "title": "Reference Growth Rate",
+      "type": "number"
+    },
+    "resolution_id": {
+      "minLength": 1,
+      "title": "Resolution Id",
+      "type": "string"
+    },
+    "run_package_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Run Package Hash",
+      "type": "string"
+    },
+    "seed": {
+      "minimum": 1,
+      "title": "Seed",
+      "type": "integer"
+    },
+    "time_step_omega_pe": {
+      "exclusiveMinimum": 0,
+      "title": "Time Step Omega Pe",
+      "type": "number"
+    }
+  },
+  "required": [
+    "seed",
+    "resolution_id",
+    "grid_cells",
+    "electron_macroparticles_per_cell",
+    "time_step_omega_pe",
+    "run_package_hash",
+    "normalized_result_hash",
+    "execution_profile",
+    "numerical_validity_passed",
+    "reference_growth_rate",
+    "candidate_growth_rate",
+    "reference_amplitude_ratio",
+    "candidate_amplitude_ratio",
+    "reference_classification",
+    "candidate_classification",
+    "reference_diagnostic_manifest_hash",
+    "candidate_diagnostic_manifest_hash"
+  ],
+  "title": "WarpXCalibrationPoint",
+  "type": "object"
+}

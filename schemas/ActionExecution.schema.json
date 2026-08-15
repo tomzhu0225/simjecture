@@ -1,0 +1,39 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "action_id": {
+      "title": "Action Id",
+      "type": "string"
+    },
+    "artifact_hashes": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Artifact Hashes",
+      "type": "array"
+    },
+    "evidence_eligible": {
+      "title": "Evidence Eligible",
+      "type": "boolean"
+    },
+    "output": {
+      "additionalProperties": true,
+      "title": "Output",
+      "type": "object"
+    },
+    "output_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Output Hash",
+      "type": "string"
+    }
+  },
+  "required": [
+    "action_id",
+    "evidence_eligible",
+    "output",
+    "output_hash"
+  ],
+  "title": "ActionExecution",
+  "type": "object"
+}

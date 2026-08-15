@@ -1,0 +1,74 @@
+{
+  "$defs": {
+    "DispatchAttemptStatus": {
+      "enum": [
+        "started",
+        "succeeded",
+        "failed",
+        "interrupted_unknown"
+      ],
+      "title": "DispatchAttemptStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "completed_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Completed At"
+    },
+    "failure_detail": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Failure Detail"
+    },
+    "id": {
+      "minLength": 1,
+      "title": "Id",
+      "type": "string"
+    },
+    "intent_id": {
+      "minLength": 1,
+      "title": "Intent Id",
+      "type": "string"
+    },
+    "ordinal": {
+      "minimum": 1,
+      "title": "Ordinal",
+      "type": "integer"
+    },
+    "started_at": {
+      "format": "date-time",
+      "title": "Started At",
+      "type": "string"
+    },
+    "status": {
+      "$ref": "#/$defs/DispatchAttemptStatus"
+    }
+  },
+  "required": [
+    "id",
+    "intent_id",
+    "ordinal",
+    "status",
+    "started_at"
+  ],
+  "title": "DispatchAttempt",
+  "type": "object"
+}

@@ -1,0 +1,69 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "adapter_name": {
+      "title": "Adapter Name",
+      "type": "string"
+    },
+    "adapter_version": {
+      "title": "Adapter Version",
+      "type": "string"
+    },
+    "deterministic": {
+      "title": "Deterministic",
+      "type": "boolean"
+    },
+    "supported_actions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Supported Actions",
+      "type": "array"
+    },
+    "supported_coordinates": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Supported Coordinates",
+      "type": "array"
+    },
+    "supported_diagnostics": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Supported Diagnostics",
+      "type": "array"
+    },
+    "supported_models": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Supported Models",
+      "type": "array"
+    },
+    "supported_observable_kinds": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Supported Observable Kinds",
+      "type": "array"
+    },
+    "supports_checkpoint": {
+      "title": "Supports Checkpoint",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "adapter_name",
+    "adapter_version",
+    "supported_actions",
+    "supported_models",
+    "supported_diagnostics",
+    "supported_coordinates",
+    "supported_observable_kinds",
+    "supports_checkpoint",
+    "deterministic"
+  ],
+  "title": "CapabilityManifest",
+  "type": "object"
+}

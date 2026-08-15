@@ -1,0 +1,39 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "diagnostic_interval_steps": {
+      "minimum": 1,
+      "title": "Diagnostic Interval Steps",
+      "type": "integer"
+    },
+    "electron_macroparticles_per_cell": {
+      "minimum": 16,
+      "title": "Electron Macroparticles Per Cell",
+      "type": "integer"
+    },
+    "grid_cells": {
+      "minimum": 32,
+      "title": "Grid Cells",
+      "type": "integer"
+    },
+    "id": {
+      "minLength": 1,
+      "title": "Id",
+      "type": "string"
+    },
+    "time_step_omega_pe": {
+      "exclusiveMinimum": 0,
+      "title": "Time Step Omega Pe",
+      "type": "number"
+    }
+  },
+  "required": [
+    "id",
+    "grid_cells",
+    "electron_macroparticles_per_cell",
+    "time_step_omega_pe",
+    "diagnostic_interval_steps"
+  ],
+  "title": "WarpXConfirmationResolution",
+  "type": "object"
+}

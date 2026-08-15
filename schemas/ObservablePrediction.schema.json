@@ -1,0 +1,66 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "condition": {
+      "minLength": 1,
+      "title": "Condition",
+      "type": "string"
+    },
+    "exact": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Exact"
+    },
+    "hypothesis_id": {
+      "minLength": 1,
+      "title": "Hypothesis Id",
+      "type": "string"
+    },
+    "maximum": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Maximum"
+    },
+    "minimum": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Minimum"
+    },
+    "observable": {
+      "minLength": 1,
+      "title": "Observable",
+      "type": "string"
+    }
+  },
+  "required": [
+    "hypothesis_id",
+    "observable",
+    "condition"
+  ],
+  "title": "ObservablePrediction",
+  "type": "object"
+}

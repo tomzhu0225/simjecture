@@ -1,0 +1,145 @@
+{
+  "schema_version": "0.1.0",
+  "kind": "operator_audited_prior_campaign_context",
+  "evidence_eligible": false,
+  "source_campaign_id": "campaign_collisionless_gem_guided_20260814_v1",
+  "source_run": "autonomous_run_0001",
+  "source_program_sha256": "55ffac348ff4ad84fcb228fa13ffc38d97504897e78a1e8ccbf160cc5d051123",
+  "execution": {
+    "status": "completed",
+    "model_iterations": 70,
+    "fresh_simulations_completed": 8,
+    "fresh_simulations_planned": 8,
+    "workspace_artifacts": 324,
+    "interrupted_actions_recovered": 1,
+    "instrument_claim_status": "supported",
+    "scientific_child_claim_status": "unresolved",
+    "root_claim_status": "open"
+  },
+  "fresh_observations": [
+    {
+      "tag": "s3p2",
+      "box_lx_di": 3.2,
+      "nx": 32,
+      "nz": 128,
+      "seed": 20260814,
+      "late_ey_rate_median": 0.04408223617285409,
+      "late_flux_derivative_rate_median": -0.0007238611045086078,
+      "relative_total_energy_drift": 9.987779724793622e-06
+    },
+    {
+      "tag": "s6p4",
+      "box_lx_di": 6.4,
+      "nx": 64,
+      "nz": 128,
+      "seed": 20260814,
+      "late_ey_rate_median": -0.04808929450537943,
+      "late_flux_derivative_rate_median": 0.005802848811263555,
+      "relative_total_energy_drift": -2.212580963346028e-05
+    },
+    {
+      "tag": "s12p8",
+      "box_lx_di": 12.8,
+      "nx": 128,
+      "nz": 128,
+      "seed": 20260814,
+      "late_ey_rate_median": 0.08888061137570309,
+      "late_flux_derivative_rate_median": 0.07101455056354954,
+      "relative_total_energy_drift": -6.986147548103755e-05
+    },
+    {
+      "tag": "s12p8_fine",
+      "box_lx_di": 12.8,
+      "nx": 256,
+      "nz": 256,
+      "seed": 20260814,
+      "late_ey_rate_median": 0.0892894400801877,
+      "late_flux_derivative_rate_median": 0.07080028927214115,
+      "relative_total_energy_drift": -0.000245861943866066
+    },
+    {
+      "tag": "s25p6",
+      "box_lx_di": 25.6,
+      "nx": 256,
+      "nz": 128,
+      "seed": 20260814,
+      "late_ey_rate_median": -0.0036005970772580486,
+      "late_flux_derivative_rate_median": 0.012345318100452108,
+      "relative_total_energy_drift": -9.8694800476169e-05
+    },
+    {
+      "tag": "s25p6_seed2",
+      "box_lx_di": 25.6,
+      "nx": 256,
+      "nz": 128,
+      "seed": 20260815,
+      "late_ey_rate_median": 0.09264273955956662,
+      "late_flux_derivative_rate_median": 0.0785522382166284,
+      "relative_total_energy_drift": -0.0001013747221176342
+    },
+    {
+      "tag": "s38p4",
+      "box_lx_di": 38.4,
+      "nx": 384,
+      "nz": 128,
+      "seed": 20260814,
+      "late_ey_rate_median": 0.015626467973815557,
+      "late_flux_derivative_rate_median": 0.015403227505932602,
+      "relative_total_energy_drift": -9.4062743925323e-05
+    },
+    {
+      "tag": "s51p2",
+      "box_lx_di": 51.2,
+      "nx": 512,
+      "nz": 128,
+      "seed": 20260814,
+      "late_ey_rate_median": 0.02476240431720293,
+      "late_flux_derivative_rate_median": -0.00014327727139085047,
+      "relative_total_energy_drift": -6.902744177136644e-05
+    }
+  ],
+  "controls": {
+    "resolution_control": {
+      "runs": [
+        "s12p8",
+        "s12p8_fine"
+      ],
+      "late_ey_rate_medians": [
+        0.08888061137570309,
+        0.0892894400801877
+      ],
+      "late_flux_derivative_rate_medians": [
+        0.07101455056354954,
+        0.07080028927214115
+      ]
+    },
+    "seed_control": {
+      "runs": [
+        "s25p6",
+        "s25p6_seed2"
+      ],
+      "late_ey_rate_medians": [
+        -0.0036005970772580486,
+        0.09264273955956662
+      ],
+      "late_flux_derivative_rate_medians": [
+        0.012345318100452108,
+        0.0785522382166284
+      ]
+    }
+  },
+  "operator_audit": {
+    "scientific_disposition": "unresolved",
+    "disposition_reason": "No candidate subset met the prospectively declared quasi-steady rate-window criterion, and the seed control showed material variability.",
+    "energy_correction": "The autonomous final prose mislabeled field-energy decline as total-energy drift. Recomputed field-plus-particle drift is between +9.99e-6 and -2.46e-4 across fresh runs.",
+    "observable_contract_mismatch": "The prospective contract called observations.late_half_rate_median_upstream_norm a flux-derivative estimator, while the supplied program populates it from the Ey estimator. Both estimators were retained in the aggregate, but the mismatch prevents a clean supported or falsified interpretation under that contract.",
+    "anchor_reproducibility": "The same program, scientific argv, declared seed, and initial energy produced late anchor and fresh trajectories with flux-derivative medians 0.0909 and 0.0123. The cause was not established; the anchor commissions execution, not scientific reproducibility.",
+    "disposition_changed_by_audit": false
+  },
+  "reuse_policy": [
+    "This compact record is prior context and is not admissible as evidence for a new claim.",
+    "A follow-up campaign must register prospective contracts and generate fresh evidence.",
+    "Do not silently repair the earlier observable label or energy prose; use an unambiguous new contract and analysis.",
+    "The prior values may motivate follow-up controls, but they do not prescribe a parameter choice or scientific conclusion."
+  ]
+}

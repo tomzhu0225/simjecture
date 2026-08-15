@@ -1,0 +1,49 @@
+{
+  "additionalProperties": false,
+  "description": "Executable semantics for a finite predictive-sufficiency witness.",
+  "properties": {
+    "coordinate_tolerance": {
+      "default": 1e-10,
+      "minimum": 0,
+      "title": "Coordinate Tolerance",
+      "type": "number"
+    },
+    "matched_coordinates": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Matched Coordinates",
+      "type": "array"
+    },
+    "maximum_outcome_difference": {
+      "exclusiveMinimum": 0,
+      "title": "Maximum Outcome Difference",
+      "type": "number"
+    },
+    "outcome_observable_id": {
+      "minLength": 1,
+      "title": "Outcome Observable Id",
+      "type": "string"
+    },
+    "predicate_type": {
+      "const": "matched_pair_predictive_sufficiency",
+      "default": "matched_pair_predictive_sufficiency",
+      "title": "Predicate Type",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "matched_coordinates",
+    "outcome_observable_id",
+    "maximum_outcome_difference"
+  ],
+  "title": "MatchedPairFormalPredicate",
+  "type": "object"
+}

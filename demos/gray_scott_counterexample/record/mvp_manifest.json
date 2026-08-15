@@ -1,0 +1,24 @@
+{
+  "campaign_instruction": null,
+  "capability_hashes": {
+    "warpx-cpu-26.07": "d9b7f395b8a1f0abaa01ed51a864b7903d5a20456322a6c1f41b5a89ab5893cd"
+  },
+  "claim_ledger_schema_version": "0.2.0",
+  "config": {
+    "command_heartbeat_seconds": 30.0,
+    "max_command_seconds": 600.0,
+    "max_file_bytes": 67108864,
+    "max_iterations": null,
+    "max_memory_bytes": 4294967296,
+    "max_tool_output_chars": 30000,
+    "max_wall_seconds": 7200.0,
+    "max_workspace_bytes": 536870912,
+    "recent_full_turns": 12
+  },
+  "hypothesis": "At fixed reaction parameters, whether a two-dimensional Gray-Scott reaction-diffusion system develops a persistent spatial pattern is determined solely by the diffusion ratio D_u/D_v, independent of the absolute diffusion scale.",
+  "schema_version": "0.4.0",
+  "skill_hashes": {
+    "warpx": "3865f5ed72b34f8d794a3e3a6a13d84bc5de40e849c6ae740722bb5d9cd74132"
+  },
+  "system_prompt_sha256": "4f71edf3050fe438a1d25f816dac75bde40632eab59f8e1e6c8b95a3fca4948d"
+}

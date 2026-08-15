@@ -1,0 +1,682 @@
+{
+  "$defs": {
+    "AttemptOutcome": {
+      "enum": [
+        "success",
+        "infrastructure_failure",
+        "specification_failure",
+        "numerical_failure",
+        "validity_failure",
+        "interrupted"
+      ],
+      "title": "AttemptOutcome",
+      "type": "string"
+    },
+    "AttemptRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "completed_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Completed At"
+        },
+        "experiment_id": {
+          "title": "Experiment Id",
+          "type": "string"
+        },
+        "external_job_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "External Job Id"
+        },
+        "failure_detail": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Failure Detail"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "idempotency_key": {
+          "minLength": 1,
+          "title": "Idempotency Key",
+          "type": "string"
+        },
+        "outcome": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AttemptOutcome"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "started_at": {
+          "format": "date-time",
+          "title": "Started At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "experiment_id",
+        "idempotency_key"
+      ],
+      "title": "AttemptRecord",
+      "type": "object"
+    },
+    "Claim": {
+      "additionalProperties": false,
+      "properties": {
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "disposition": {
+          "$ref": "#/$defs/ClaimDisposition"
+        },
+        "evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "hypothesis_id": {
+          "title": "Hypothesis Id",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "limitations": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Limitations",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "scope": {
+          "title": "Scope",
+          "type": "string"
+        },
+        "statement": {
+          "title": "Statement",
+          "type": "string"
+        }
+      },
+      "required": [
+        "hypothesis_id",
+        "statement",
+        "disposition",
+        "scope",
+        "evidence_ids"
+      ],
+      "title": "Claim",
+      "type": "object"
+    },
+    "ClaimDisposition": {
+      "enum": [
+        "supported_within_model",
+        "refuted_within_model",
+        "unresolved"
+      ],
+      "title": "ClaimDisposition",
+      "type": "string"
+    },
+    "DomainSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "assumptions": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Assumptions",
+          "type": "array"
+        },
+        "description": {
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "fixed_parameters": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "title": "Fixed Parameters",
+          "type": "object"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "model_family": {
+          "minLength": 1,
+          "title": "Model Family",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "description",
+        "model_family"
+      ],
+      "title": "DomainSpec",
+      "type": "object"
+    },
+    "EvidenceContract": {
+      "additionalProperties": false,
+      "properties": {
+        "falsifying_witness": {
+          "minLength": 1,
+          "title": "Falsifying Witness",
+          "type": "string"
+        },
+        "minimum_independent_confirmation_attempts": {
+          "default": 1,
+          "minimum": 1,
+          "title": "Minimum Independent Confirmation Attempts",
+          "type": "integer"
+        },
+        "primary_observable_id": {
+          "title": "Primary Observable Id",
+          "type": "string"
+        },
+        "primary_tolerance": {
+          "exclusiveMinimum": 0,
+          "title": "Primary Tolerance",
+          "type": "number"
+        }
+      },
+      "required": [
+        "primary_observable_id",
+        "falsifying_witness",
+        "primary_tolerance"
+      ],
+      "title": "EvidenceContract",
+      "type": "object"
+    },
+    "EvidenceRole": {
+      "enum": [
+        "discovery",
+        "confirmation",
+        "qualification"
+      ],
+      "title": "EvidenceRole",
+      "type": "string"
+    },
+    "ExperimentSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "action_type": {
+          "title": "Action Type",
+          "type": "string"
+        },
+        "falsification_condition": {
+          "title": "Falsification Condition",
+          "type": "string"
+        },
+        "hypothesis_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Hypothesis Ids",
+          "type": "array"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "numerical_parameters": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "title": "Numerical Parameters",
+          "type": "object"
+        },
+        "physical_parameters": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "title": "Physical Parameters",
+          "type": "object"
+        },
+        "predictions": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Predictions",
+          "type": "object"
+        },
+        "required_diagnostics": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Required Diagnostics",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "hypothesis_ids",
+        "action_type",
+        "physical_parameters",
+        "required_diagnostics",
+        "predictions",
+        "falsification_condition"
+      ],
+      "title": "ExperimentSpec",
+      "type": "object"
+    },
+    "HypothesisNode": {
+      "additionalProperties": false,
+      "properties": {
+        "coordinates": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Coordinates",
+          "type": "array"
+        },
+        "domain": {
+          "$ref": "#/$defs/DomainSpec"
+        },
+        "evidence_contract": {
+          "$ref": "#/$defs/EvidenceContract"
+        },
+        "formal_predicate": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MatchedPairFormalPredicate"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "machine_predicate": {
+          "minLength": 1,
+          "title": "Machine Predicate",
+          "type": "string"
+        },
+        "motivating_evidence_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Motivating Evidence Ids",
+          "type": "array"
+        },
+        "origin": {
+          "$ref": "#/$defs/HypothesisOrigin"
+        },
+        "parent_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Parent Ids",
+          "type": "array"
+        },
+        "proposition_class": {
+          "$ref": "#/$defs/PropositionClass"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "statement": {
+          "minLength": 1,
+          "title": "Statement",
+          "type": "string"
+        }
+      },
+      "required": [
+        "statement",
+        "machine_predicate",
+        "proposition_class",
+        "domain",
+        "coordinates",
+        "evidence_contract",
+        "origin"
+      ],
+      "title": "HypothesisNode",
+      "type": "object"
+    },
+    "HypothesisOrigin": {
+      "enum": [
+        "human",
+        "ai",
+        "mixed"
+      ],
+      "title": "HypothesisOrigin",
+      "type": "string"
+    },
+    "MatchedPairFormalPredicate": {
+      "additionalProperties": false,
+      "description": "Executable semantics for a finite predictive-sufficiency witness.",
+      "properties": {
+        "coordinate_tolerance": {
+          "default": 1e-10,
+          "minimum": 0,
+          "title": "Coordinate Tolerance",
+          "type": "number"
+        },
+        "matched_coordinates": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Matched Coordinates",
+          "type": "array"
+        },
+        "maximum_outcome_difference": {
+          "exclusiveMinimum": 0,
+          "title": "Maximum Outcome Difference",
+          "type": "number"
+        },
+        "outcome_observable_id": {
+          "minLength": 1,
+          "title": "Outcome Observable Id",
+          "type": "string"
+        },
+        "predicate_type": {
+          "const": "matched_pair_predictive_sufficiency",
+          "default": "matched_pair_predictive_sufficiency",
+          "title": "Predicate Type",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "matched_coordinates",
+        "outcome_observable_id",
+        "maximum_outcome_difference"
+      ],
+      "title": "MatchedPairFormalPredicate",
+      "type": "object"
+    },
+    "NormalizedResult": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_hashes": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Artifact Hashes",
+          "type": "array"
+        },
+        "diagnostics": {
+          "additionalProperties": true,
+          "title": "Diagnostics",
+          "type": "object"
+        },
+        "experiment_id": {
+          "title": "Experiment Id",
+          "type": "string"
+        },
+        "observables": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "title": "Observables",
+          "type": "object"
+        }
+      },
+      "required": [
+        "experiment_id",
+        "observables",
+        "diagnostics"
+      ],
+      "title": "NormalizedResult",
+      "type": "object"
+    },
+    "PropositionClass": {
+      "enum": [
+        "existential_contribution",
+        "universal_non_contribution",
+        "predictive_sufficiency",
+        "causal_exhaustiveness",
+        "invariance",
+        "threshold",
+        "path_dependence"
+      ],
+      "title": "PropositionClass",
+      "type": "string"
+    },
+    "RunEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_hashes": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Artifact Hashes",
+          "type": "array"
+        },
+        "eligibility_reason": {
+          "title": "Eligibility Reason",
+          "type": "string"
+        },
+        "eligible": {
+          "title": "Eligible",
+          "type": "boolean"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "independence_group": {
+          "title": "Independence Group",
+          "type": "string"
+        },
+        "observable_values": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "title": "Observable Values",
+          "type": "object"
+        },
+        "role": {
+          "$ref": "#/$defs/EvidenceRole"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "source_attempt_id": {
+          "title": "Source Attempt Id",
+          "type": "string"
+        },
+        "uncertainties": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "title": "Uncertainties",
+          "type": "object"
+        }
+      },
+      "required": [
+        "source_attempt_id",
+        "role",
+        "eligible",
+        "eligibility_reason",
+        "observable_values",
+        "independence_group"
+      ],
+      "title": "RunEvidence",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Portable result with a hash over all scientific and provenance fields.",
+  "properties": {
+    "attempt": {
+      "$ref": "#/$defs/AttemptRecord"
+    },
+    "campaign_id": {
+      "title": "Campaign Id",
+      "type": "string"
+    },
+    "claim": {
+      "$ref": "#/$defs/Claim"
+    },
+    "evidence": {
+      "$ref": "#/$defs/RunEvidence"
+    },
+    "experiment": {
+      "$ref": "#/$defs/ExperimentSpec"
+    },
+    "generated_at": {
+      "format": "date-time",
+      "title": "Generated At",
+      "type": "string"
+    },
+    "hypothesis": {
+      "$ref": "#/$defs/HypothesisNode"
+    },
+    "normalized_result": {
+      "$ref": "#/$defs/NormalizedResult"
+    },
+    "package_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Package Hash",
+      "type": "string"
+    },
+    "provenance_event_hashes": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Provenance Event Hashes",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "campaign_id",
+    "hypothesis",
+    "experiment",
+    "attempt",
+    "evidence",
+    "claim",
+    "normalized_result",
+    "provenance_event_hashes",
+    "generated_at",
+    "package_hash"
+  ],
+  "title": "DiscoveryPackage",
+  "type": "object"
+}

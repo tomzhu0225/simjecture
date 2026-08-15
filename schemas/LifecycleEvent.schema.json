@@ -1,0 +1,37 @@
+{
+  "$defs": {
+    "LifecycleEventType": {
+      "enum": [
+        "request_pause",
+        "begin_quiescing",
+        "mark_paused",
+        "request_resume",
+        "commit_resume",
+        "detect_crash",
+        "complete_recovery",
+        "emergency_stop",
+        "require_human_review",
+        "terminate",
+        "attempt_interrupted"
+      ],
+      "title": "LifecycleEventType",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "event_type": {
+      "$ref": "#/$defs/LifecycleEventType"
+    },
+    "payload": {
+      "additionalProperties": true,
+      "title": "Payload",
+      "type": "object"
+    }
+  },
+  "required": [
+    "event_type"
+  ],
+  "title": "LifecycleEvent",
+  "type": "object"
+}

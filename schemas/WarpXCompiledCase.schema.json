@@ -1,0 +1,30 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "case_name": {
+      "enum": [
+        "unit_maxwellian_reference",
+        "symmetric_mixture_candidate"
+      ],
+      "title": "Case Name",
+      "type": "string"
+    },
+    "script": {
+      "minLength": 1,
+      "title": "Script",
+      "type": "string"
+    },
+    "script_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Script Hash",
+      "type": "string"
+    }
+  },
+  "required": [
+    "case_name",
+    "script",
+    "script_hash"
+  ],
+  "title": "WarpXCompiledCase",
+  "type": "object"
+}

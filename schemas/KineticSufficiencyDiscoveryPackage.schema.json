@@ -1,0 +1,816 @@
+{
+  "$defs": {
+    "Claim": {
+      "additionalProperties": false,
+      "properties": {
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "disposition": {
+          "$ref": "#/$defs/ClaimDisposition"
+        },
+        "evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "hypothesis_id": {
+          "title": "Hypothesis Id",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "limitations": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Limitations",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "scope": {
+          "title": "Scope",
+          "type": "string"
+        },
+        "statement": {
+          "title": "Statement",
+          "type": "string"
+        }
+      },
+      "required": [
+        "hypothesis_id",
+        "statement",
+        "disposition",
+        "scope",
+        "evidence_ids"
+      ],
+      "title": "Claim",
+      "type": "object"
+    },
+    "ClaimDisposition": {
+      "enum": [
+        "supported_within_model",
+        "refuted_within_model",
+        "unresolved"
+      ],
+      "title": "ClaimDisposition",
+      "type": "string"
+    },
+    "DistributionMoments": {
+      "additionalProperties": false,
+      "properties": {
+        "density": {
+          "title": "Density",
+          "type": "number"
+        },
+        "mean_velocity": {
+          "title": "Mean Velocity",
+          "type": "number"
+        },
+        "variance": {
+          "minimum": 0,
+          "title": "Variance",
+          "type": "number"
+        }
+      },
+      "required": [
+        "density",
+        "mean_velocity",
+        "variance"
+      ],
+      "title": "DistributionMoments",
+      "type": "object"
+    },
+    "DomainSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "assumptions": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Assumptions",
+          "type": "array"
+        },
+        "description": {
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "fixed_parameters": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "title": "Fixed Parameters",
+          "type": "object"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "model_family": {
+          "minLength": 1,
+          "title": "Model Family",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "description",
+        "model_family"
+      ],
+      "title": "DomainSpec",
+      "type": "object"
+    },
+    "EvidenceContract": {
+      "additionalProperties": false,
+      "properties": {
+        "falsifying_witness": {
+          "minLength": 1,
+          "title": "Falsifying Witness",
+          "type": "string"
+        },
+        "minimum_independent_confirmation_attempts": {
+          "default": 1,
+          "minimum": 1,
+          "title": "Minimum Independent Confirmation Attempts",
+          "type": "integer"
+        },
+        "primary_observable_id": {
+          "title": "Primary Observable Id",
+          "type": "string"
+        },
+        "primary_tolerance": {
+          "exclusiveMinimum": 0,
+          "title": "Primary Tolerance",
+          "type": "number"
+        }
+      },
+      "required": [
+        "primary_observable_id",
+        "falsifying_witness",
+        "primary_tolerance"
+      ],
+      "title": "EvidenceContract",
+      "type": "object"
+    },
+    "EvidenceRole": {
+      "enum": [
+        "discovery",
+        "confirmation",
+        "qualification"
+      ],
+      "title": "EvidenceRole",
+      "type": "string"
+    },
+    "GaussianComponent": {
+      "additionalProperties": false,
+      "properties": {
+        "drift": {
+          "title": "Drift",
+          "type": "number"
+        },
+        "sigma": {
+          "exclusiveMinimum": 0,
+          "title": "Sigma",
+          "type": "number"
+        },
+        "weight": {
+          "exclusiveMinimum": 0,
+          "maximum": 1,
+          "title": "Weight",
+          "type": "number"
+        }
+      },
+      "required": [
+        "weight",
+        "drift",
+        "sigma"
+      ],
+      "title": "GaussianComponent",
+      "type": "object"
+    },
+    "GaussianMixture": {
+      "additionalProperties": false,
+      "properties": {
+        "components": {
+          "items": {
+            "$ref": "#/$defs/GaussianComponent"
+          },
+          "minItems": 1,
+          "title": "Components",
+          "type": "array"
+        }
+      },
+      "required": [
+        "components"
+      ],
+      "title": "GaussianMixture",
+      "type": "object"
+    },
+    "HypothesisNode": {
+      "additionalProperties": false,
+      "properties": {
+        "coordinates": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Coordinates",
+          "type": "array"
+        },
+        "domain": {
+          "$ref": "#/$defs/DomainSpec"
+        },
+        "evidence_contract": {
+          "$ref": "#/$defs/EvidenceContract"
+        },
+        "formal_predicate": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MatchedPairFormalPredicate"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "machine_predicate": {
+          "minLength": 1,
+          "title": "Machine Predicate",
+          "type": "string"
+        },
+        "motivating_evidence_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Motivating Evidence Ids",
+          "type": "array"
+        },
+        "origin": {
+          "$ref": "#/$defs/HypothesisOrigin"
+        },
+        "parent_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Parent Ids",
+          "type": "array"
+        },
+        "proposition_class": {
+          "$ref": "#/$defs/PropositionClass"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "statement": {
+          "minLength": 1,
+          "title": "Statement",
+          "type": "string"
+        }
+      },
+      "required": [
+        "statement",
+        "machine_predicate",
+        "proposition_class",
+        "domain",
+        "coordinates",
+        "evidence_contract",
+        "origin"
+      ],
+      "title": "HypothesisNode",
+      "type": "object"
+    },
+    "HypothesisOrigin": {
+      "enum": [
+        "human",
+        "ai",
+        "mixed"
+      ],
+      "title": "HypothesisOrigin",
+      "type": "string"
+    },
+    "KineticCaseResult": {
+      "additionalProperties": false,
+      "properties": {
+        "classification": {
+          "title": "Classification",
+          "type": "string"
+        },
+        "distribution": {
+          "$ref": "#/$defs/GaussianMixture"
+        },
+        "mode": {
+          "$ref": "#/$defs/LinearMode"
+        },
+        "moments": {
+          "$ref": "#/$defs/DistributionMoments"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "distribution",
+        "moments",
+        "mode",
+        "classification"
+      ],
+      "title": "KineticCaseResult",
+      "type": "object"
+    },
+    "KineticSufficiencyHypothesisInput": {
+      "additionalProperties": false,
+      "description": "A bounded matched-pair hypothesis accepted by the analytic plugin.",
+      "properties": {
+        "hypothesis": {
+          "$ref": "#/$defs/HypothesisNode"
+        },
+        "left_distribution": {
+          "$ref": "#/$defs/GaussianMixture"
+        },
+        "left_name": {
+          "minLength": 1,
+          "title": "Left Name",
+          "type": "string"
+        },
+        "observable": {
+          "$ref": "#/$defs/ObservableSpec"
+        },
+        "residual_tolerance": {
+          "default": 1e-08,
+          "exclusiveMinimum": 0,
+          "maximum": 0.0001,
+          "title": "Residual Tolerance",
+          "type": "number"
+        },
+        "right_distribution": {
+          "$ref": "#/$defs/GaussianMixture"
+        },
+        "right_name": {
+          "minLength": 1,
+          "title": "Right Name",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "wavenumber": {
+          "exclusiveMinimum": 0,
+          "title": "Wavenumber",
+          "type": "number"
+        }
+      },
+      "required": [
+        "hypothesis",
+        "observable",
+        "wavenumber",
+        "left_name",
+        "left_distribution",
+        "right_name",
+        "right_distribution"
+      ],
+      "title": "KineticSufficiencyHypothesisInput",
+      "type": "object"
+    },
+    "KineticSufficiencySolveResult": {
+      "additionalProperties": false,
+      "properties": {
+        "input_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Input Hash",
+          "type": "string"
+        },
+        "left": {
+          "$ref": "#/$defs/KineticCaseResult"
+        },
+        "moments_match": {
+          "title": "Moments Match",
+          "type": "boolean"
+        },
+        "qualification_checks": {
+          "additionalProperties": {
+            "type": "boolean"
+          },
+          "title": "Qualification Checks",
+          "type": "object"
+        },
+        "qualified": {
+          "title": "Qualified",
+          "type": "boolean"
+        },
+        "right": {
+          "$ref": "#/$defs/KineticCaseResult"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "witness": {
+          "$ref": "#/$defs/SufficiencyWitness"
+        }
+      },
+      "required": [
+        "input_hash",
+        "left",
+        "right",
+        "moments_match",
+        "qualification_checks",
+        "qualified",
+        "witness"
+      ],
+      "title": "KineticSufficiencySolveResult",
+      "type": "object"
+    },
+    "LinearMode": {
+      "additionalProperties": false,
+      "properties": {
+        "dielectric_residual": {
+          "minimum": 0,
+          "title": "Dielectric Residual",
+          "type": "number"
+        },
+        "frequency": {
+          "title": "Frequency",
+          "type": "number"
+        },
+        "growth_rate": {
+          "title": "Growth Rate",
+          "type": "number"
+        }
+      },
+      "required": [
+        "frequency",
+        "growth_rate",
+        "dielectric_residual"
+      ],
+      "title": "LinearMode",
+      "type": "object"
+    },
+    "MatchedPairFormalPredicate": {
+      "additionalProperties": false,
+      "description": "Executable semantics for a finite predictive-sufficiency witness.",
+      "properties": {
+        "coordinate_tolerance": {
+          "default": 1e-10,
+          "minimum": 0,
+          "title": "Coordinate Tolerance",
+          "type": "number"
+        },
+        "matched_coordinates": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Matched Coordinates",
+          "type": "array"
+        },
+        "maximum_outcome_difference": {
+          "exclusiveMinimum": 0,
+          "title": "Maximum Outcome Difference",
+          "type": "number"
+        },
+        "outcome_observable_id": {
+          "minLength": 1,
+          "title": "Outcome Observable Id",
+          "type": "string"
+        },
+        "predicate_type": {
+          "const": "matched_pair_predictive_sufficiency",
+          "default": "matched_pair_predictive_sufficiency",
+          "title": "Predicate Type",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "matched_coordinates",
+        "outcome_observable_id",
+        "maximum_outcome_difference"
+      ],
+      "title": "MatchedPairFormalPredicate",
+      "type": "object"
+    },
+    "ObservableSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "estimator": {
+          "minLength": 1,
+          "title": "Estimator",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "mathematical_definition": {
+          "minLength": 1,
+          "title": "Mathematical Definition",
+          "type": "string"
+        },
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "semantic_kind": {
+          "minLength": 1,
+          "title": "Semantic Kind",
+          "type": "string"
+        },
+        "tolerance": {
+          "exclusiveMinimum": 0,
+          "title": "Tolerance",
+          "type": "number"
+        },
+        "units": {
+          "default": "dimensionless",
+          "title": "Units",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "semantic_kind",
+        "mathematical_definition",
+        "estimator",
+        "tolerance"
+      ],
+      "title": "ObservableSpec",
+      "type": "object"
+    },
+    "PropositionClass": {
+      "enum": [
+        "existential_contribution",
+        "universal_non_contribution",
+        "predictive_sufficiency",
+        "causal_exhaustiveness",
+        "invariance",
+        "threshold",
+        "path_dependence"
+      ],
+      "title": "PropositionClass",
+      "type": "string"
+    },
+    "RunEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_hashes": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Artifact Hashes",
+          "type": "array"
+        },
+        "eligibility_reason": {
+          "title": "Eligibility Reason",
+          "type": "string"
+        },
+        "eligible": {
+          "title": "Eligible",
+          "type": "boolean"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "independence_group": {
+          "title": "Independence Group",
+          "type": "string"
+        },
+        "observable_values": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "title": "Observable Values",
+          "type": "object"
+        },
+        "role": {
+          "$ref": "#/$defs/EvidenceRole"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "source_attempt_id": {
+          "title": "Source Attempt Id",
+          "type": "string"
+        },
+        "uncertainties": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "title": "Uncertainties",
+          "type": "object"
+        }
+      },
+      "required": [
+        "source_attempt_id",
+        "role",
+        "eligible",
+        "eligibility_reason",
+        "observable_values",
+        "independence_group"
+      ],
+      "title": "RunEvidence",
+      "type": "object"
+    },
+    "SufficiencyWitness": {
+      "additionalProperties": false,
+      "properties": {
+        "coordinates_match": {
+          "title": "Coordinates Match",
+          "type": "boolean"
+        },
+        "falsifies": {
+          "title": "Falsifies",
+          "type": "boolean"
+        },
+        "hypothesis_id": {
+          "title": "Hypothesis Id",
+          "type": "string"
+        },
+        "left_evidence_id": {
+          "title": "Left Evidence Id",
+          "type": "string"
+        },
+        "outcome_separation": {
+          "title": "Outcome Separation",
+          "type": "number"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "required_separation": {
+          "title": "Required Separation",
+          "type": "number"
+        },
+        "right_evidence_id": {
+          "title": "Right Evidence Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "hypothesis_id",
+        "left_evidence_id",
+        "right_evidence_id",
+        "coordinates_match",
+        "outcome_separation",
+        "required_separation",
+        "falsifies",
+        "reason"
+      ],
+      "title": "SufficiencyWitness",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "authorized_analysis_units": {
+      "const": 1,
+      "default": 1,
+      "title": "Authorized Analysis Units",
+      "type": "integer"
+    },
+    "campaign_id": {
+      "title": "Campaign Id",
+      "type": "string"
+    },
+    "claim": {
+      "$ref": "#/$defs/Claim"
+    },
+    "consumed_analysis_units": {
+      "const": 1,
+      "default": 1,
+      "title": "Consumed Analysis Units",
+      "type": "integer"
+    },
+    "domain_plugin": {
+      "const": "kinetic-sufficiency",
+      "default": "kinetic-sufficiency",
+      "title": "Domain Plugin",
+      "type": "string"
+    },
+    "domain_plugin_version": {
+      "const": "1.0.0",
+      "default": "1.0.0",
+      "title": "Domain Plugin Version",
+      "type": "string"
+    },
+    "evidence": {
+      "maxItems": 2,
+      "minItems": 2,
+      "prefixItems": [
+        {
+          "$ref": "#/$defs/RunEvidence"
+        },
+        {
+          "$ref": "#/$defs/RunEvidence"
+        }
+      ],
+      "title": "Evidence",
+      "type": "array"
+    },
+    "generated_at": {
+      "format": "date-time",
+      "title": "Generated At",
+      "type": "string"
+    },
+    "hypothesis_input": {
+      "$ref": "#/$defs/KineticSufficiencyHypothesisInput"
+    },
+    "package_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Package Hash",
+      "type": "string"
+    },
+    "provenance_event_hashes": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Provenance Event Hashes",
+      "type": "array"
+    },
+    "result": {
+      "$ref": "#/$defs/KineticSufficiencySolveResult"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "campaign_id",
+    "hypothesis_input",
+    "result",
+    "evidence",
+    "claim",
+    "provenance_event_hashes",
+    "generated_at",
+    "package_hash"
+  ],
+  "title": "KineticSufficiencyDiscoveryPackage",
+  "type": "object"
+}

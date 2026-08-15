@@ -1,0 +1,11 @@
+{
+  "capability_names": [
+    "warpx-cpu-26.07",
+    "warpx-cuda-openpmd-26.07"
+  ],
+  "description": "General guidance for authoring, commissioning, and diagnosing WarpX PICMI simulations",
+  "entrypoint": "SKILL.md",
+  "name": "warpx",
+  "schema_version": "0.1.0",
+  "version": "26.07.26"
+}

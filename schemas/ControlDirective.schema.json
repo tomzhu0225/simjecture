@@ -1,0 +1,76 @@
+{
+  "$defs": {
+    "InterventionType": {
+      "enum": [
+        "pause",
+        "resume",
+        "emergency_stop",
+        "action_veto",
+        "priority_update",
+        "tactical_suggestion",
+        "reviewer_challenge",
+        "evidence_injection",
+        "contract_amendment",
+        "campaign_branch"
+      ],
+      "title": "InterventionType",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "actor": {
+      "minLength": 1,
+      "title": "Actor",
+      "type": "string"
+    },
+    "campaign_id": {
+      "minLength": 1,
+      "title": "Campaign Id",
+      "type": "string"
+    },
+    "expected_revision": {
+      "minimum": 0,
+      "title": "Expected Revision",
+      "type": "integer"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "intervention_type": {
+      "$ref": "#/$defs/InterventionType"
+    },
+    "payload": {
+      "additionalProperties": true,
+      "title": "Payload",
+      "type": "object"
+    },
+    "reason": {
+      "minLength": 1,
+      "title": "Reason",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "scope": {
+      "minLength": 1,
+      "title": "Scope",
+      "type": "string"
+    }
+  },
+  "required": [
+    "campaign_id",
+    "actor",
+    "intervention_type",
+    "reason",
+    "scope",
+    "expected_revision"
+  ],
+  "title": "ControlDirective",
+  "type": "object"
+}

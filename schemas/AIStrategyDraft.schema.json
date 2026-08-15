@@ -1,0 +1,81 @@
+{
+  "$defs": {
+    "CandidateSuggestion": {
+      "additionalProperties": false,
+      "properties": {
+        "parameters": {
+          "$ref": "#/$defs/SymmetricMixtureCandidate"
+        },
+        "rationale": {
+          "minLength": 1,
+          "title": "Rationale",
+          "type": "string"
+        }
+      },
+      "required": [
+        "parameters",
+        "rationale"
+      ],
+      "title": "CandidateSuggestion",
+      "type": "object"
+    },
+    "SymmetricMixtureCandidate": {
+      "additionalProperties": false,
+      "properties": {
+        "inner_drift": {
+          "exclusiveMaximum": 1,
+          "minimum": 0,
+          "title": "Inner Drift",
+          "type": "number"
+        },
+        "inner_pair_weight": {
+          "exclusiveMaximum": 1,
+          "exclusiveMinimum": 0,
+          "title": "Inner Pair Weight",
+          "type": "number"
+        },
+        "outer_drift": {
+          "exclusiveMaximum": 1,
+          "minimum": 0,
+          "title": "Outer Drift",
+          "type": "number"
+        }
+      },
+      "required": [
+        "inner_pair_weight",
+        "inner_drift",
+        "outer_drift"
+      ],
+      "title": "SymmetricMixtureCandidate",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "candidates": {
+      "items": {
+        "$ref": "#/$defs/CandidateSuggestion"
+      },
+      "minItems": 1,
+      "title": "Candidates",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "search_rationale": {
+      "minLength": 1,
+      "title": "Search Rationale",
+      "type": "string"
+    }
+  },
+  "required": [
+    "candidates",
+    "search_rationale"
+  ],
+  "title": "AIStrategyDraft",
+  "type": "object"
+}

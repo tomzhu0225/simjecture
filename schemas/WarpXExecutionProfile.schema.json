@@ -1,0 +1,60 @@
+{
+  "$defs": {
+    "WarpXRunnerKind": {
+      "enum": [
+        "contract_fixture",
+        "local_cpu",
+        "site_scheduler"
+      ],
+      "title": "WarpXRunnerKind",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Identity and trust status of the process that executes a run package.",
+  "properties": {
+    "openpmd_backend": {
+      "const": "h5",
+      "default": "h5",
+      "title": "Openpmd Backend",
+      "type": "string"
+    },
+    "profile_id": {
+      "minLength": 1,
+      "title": "Profile Id",
+      "type": "string"
+    },
+    "qualification_hash": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Qualification Hash"
+    },
+    "qualified_for_scientific_evidence": {
+      "default": false,
+      "title": "Qualified For Scientific Evidence",
+      "type": "boolean"
+    },
+    "runner_kind": {
+      "$ref": "#/$defs/WarpXRunnerKind"
+    },
+    "warpx_version": {
+      "minLength": 1,
+      "title": "Warpx Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "profile_id",
+    "runner_kind",
+    "warpx_version"
+  ],
+  "title": "WarpXExecutionProfile",
+  "type": "object"
+}

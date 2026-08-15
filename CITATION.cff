@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the exact software version and Git commit."
+title: "Simjecture"
+type: software
+version: 0.1.0
+authors:
+  - family-names: Zhu
+    given-names: Bowen
+license: Apache-2.0
+repository-code: "https://github.com/tomzhu0225/simjecture"
+url: "https://github.com/tomzhu0225/simjecture"
+keywords:
+  - autonomous science
+  - computational physics
+  - evidence provenance
+  - hypothesis testing
+  - scientific agents

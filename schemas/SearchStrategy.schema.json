@@ -1,0 +1,204 @@
+{
+  "$defs": {
+    "CandidateProposal": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "ordinal": {
+          "minimum": 1,
+          "title": "Ordinal",
+          "type": "integer"
+        },
+        "parameters": {
+          "$ref": "#/$defs/SymmetricMixtureCandidate"
+        },
+        "rationale": {
+          "minLength": 1,
+          "title": "Rationale",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "ordinal",
+        "parameters",
+        "rationale"
+      ],
+      "title": "CandidateProposal",
+      "type": "object"
+    },
+    "ModelRoute": {
+      "enum": [
+        "default",
+        "escalation"
+      ],
+      "title": "ModelRoute",
+      "type": "string"
+    },
+    "SearchMethod": {
+      "enum": [
+        "ai",
+        "grid",
+        "random",
+        "latin_hypercube"
+      ],
+      "title": "SearchMethod",
+      "type": "string"
+    },
+    "SearchModelCallProvenance": {
+      "additionalProperties": false,
+      "properties": {
+        "admission_errors": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Admission Errors",
+          "type": "array"
+        },
+        "attempt_number": {
+          "minimum": 1,
+          "title": "Attempt Number",
+          "type": "integer"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "finish_reason": {
+          "title": "Finish Reason",
+          "type": "string"
+        },
+        "model": {
+          "title": "Model",
+          "type": "string"
+        },
+        "output_schema_hash": {
+          "title": "Output Schema Hash",
+          "type": "string"
+        },
+        "prompt_hash": {
+          "title": "Prompt Hash",
+          "type": "string"
+        },
+        "prompt_template_version": {
+          "const": "blinded_search_v1",
+          "default": "blinded_search_v1",
+          "title": "Prompt Template Version",
+          "type": "string"
+        },
+        "request_id": {
+          "title": "Request Id",
+          "type": "string"
+        },
+        "response_hash": {
+          "title": "Response Hash",
+          "type": "string"
+        },
+        "route": {
+          "$ref": "#/$defs/ModelRoute"
+        },
+        "route_reason": {
+          "title": "Route Reason",
+          "type": "string"
+        },
+        "usage": {
+          "additionalProperties": true,
+          "title": "Usage",
+          "type": "object"
+        }
+      },
+      "required": [
+        "request_id",
+        "model",
+        "route",
+        "route_reason",
+        "finish_reason",
+        "prompt_hash",
+        "output_schema_hash",
+        "response_hash",
+        "attempt_number"
+      ],
+      "title": "SearchModelCallProvenance",
+      "type": "object"
+    },
+    "SymmetricMixtureCandidate": {
+      "additionalProperties": false,
+      "properties": {
+        "inner_drift": {
+          "exclusiveMaximum": 1,
+          "minimum": 0,
+          "title": "Inner Drift",
+          "type": "number"
+        },
+        "inner_pair_weight": {
+          "exclusiveMaximum": 1,
+          "exclusiveMinimum": 0,
+          "title": "Inner Pair Weight",
+          "type": "number"
+        },
+        "outer_drift": {
+          "exclusiveMaximum": 1,
+          "minimum": 0,
+          "title": "Outer Drift",
+          "type": "number"
+        }
+      },
+      "required": [
+        "inner_pair_weight",
+        "inner_drift",
+        "outer_drift"
+      ],
+      "title": "SymmetricMixtureCandidate",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "generator": {
+      "title": "Generator",
+      "type": "string"
+    },
+    "method": {
+      "$ref": "#/$defs/SearchMethod"
+    },
+    "model_calls": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/SearchModelCallProvenance"
+      },
+      "title": "Model Calls",
+      "type": "array"
+    },
+    "proposals": {
+      "items": {
+        "$ref": "#/$defs/CandidateProposal"
+      },
+      "minItems": 1,
+      "title": "Proposals",
+      "type": "array"
+    },
+    "request_id": {
+      "title": "Request Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "request_id",
+    "method",
+    "generator",
+    "proposals"
+  ],
+  "title": "SearchStrategy",
+  "type": "object"
+}

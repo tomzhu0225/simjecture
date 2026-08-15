@@ -1,0 +1,87 @@
+{
+  "$defs": {
+    "ActionOrigin": {
+      "enum": [
+        "human",
+        "ai",
+        "deterministic",
+        "mixed"
+      ],
+      "title": "ActionOrigin",
+      "type": "string"
+    },
+    "EvidenceRole": {
+      "enum": [
+        "discovery",
+        "confirmation",
+        "qualification"
+      ],
+      "title": "EvidenceRole",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "action_type": {
+      "minLength": 1,
+      "title": "Action Type",
+      "type": "string"
+    },
+    "budget_units": {
+      "exclusiveMinimum": 0,
+      "title": "Budget Units",
+      "type": "number"
+    },
+    "dependencies": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Dependencies",
+      "type": "array"
+    },
+    "evidence_role": {
+      "$ref": "#/$defs/EvidenceRole"
+    },
+    "id": {
+      "minLength": 1,
+      "title": "Id",
+      "type": "string"
+    },
+    "independence_group": {
+      "minLength": 1,
+      "title": "Independence Group",
+      "type": "string"
+    },
+    "origin": {
+      "$ref": "#/$defs/ActionOrigin"
+    },
+    "payload": {
+      "additionalProperties": true,
+      "title": "Payload",
+      "type": "object"
+    },
+    "purpose": {
+      "minLength": 1,
+      "title": "Purpose",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "action_type",
+    "purpose",
+    "evidence_role",
+    "independence_group",
+    "origin",
+    "budget_units"
+  ],
+  "title": "CampaignAction",
+  "type": "object"
+}

@@ -1,0 +1,372 @@
+{
+  "$defs": {
+    "ClaimDisposition": {
+      "enum": [
+        "open",
+        "supported",
+        "weakened",
+        "falsified",
+        "superseded",
+        "unresolved",
+        "instrument_limited"
+      ],
+      "title": "ClaimDisposition",
+      "type": "string"
+    },
+    "ClaimEvidenceContract": {
+      "additionalProperties": false,
+      "description": "Prospective, domain-neutral rule for interpreting evidence for one claim.",
+      "properties": {
+        "decision_rule": {
+          "minLength": 8,
+          "title": "Decision Rule",
+          "type": "string"
+        },
+        "expected_outcomes": {
+          "minLength": 8,
+          "title": "Expected Outcomes",
+          "type": "string"
+        },
+        "inconclusive_conditions": {
+          "minLength": 8,
+          "title": "Inconclusive Conditions",
+          "type": "string"
+        },
+        "observable": {
+          "minLength": 8,
+          "title": "Observable",
+          "type": "string"
+        },
+        "registered_iteration": {
+          "minimum": 0,
+          "title": "Registered Iteration",
+          "type": "integer"
+        },
+        "required_observation": {
+          "minLength": 8,
+          "title": "Required Observation",
+          "type": "string"
+        },
+        "uncertainty_criterion": {
+          "minLength": 8,
+          "title": "Uncertainty Criterion",
+          "type": "string"
+        },
+        "version": {
+          "minimum": 1,
+          "title": "Version",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "version",
+        "observable",
+        "expected_outcomes",
+        "decision_rule",
+        "required_observation",
+        "uncertainty_criterion",
+        "inconclusive_conditions",
+        "registered_iteration"
+      ],
+      "title": "ClaimEvidenceContract",
+      "type": "object"
+    },
+    "ClaimEvidenceLink": {
+      "additionalProperties": false,
+      "properties": {
+        "contract_version": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Contract Version"
+        },
+        "iteration": {
+          "minimum": 0,
+          "title": "Iteration",
+          "type": "integer"
+        },
+        "note": {
+          "minLength": 1,
+          "title": "Note",
+          "type": "string"
+        },
+        "observation_note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Observation Note"
+        },
+        "observation_sufficient": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Observation Sufficient"
+        },
+        "path": {
+          "minLength": 1,
+          "title": "Path",
+          "type": "string"
+        },
+        "provenance": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ClaimEvidenceProvenance"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "path",
+        "note",
+        "iteration"
+      ],
+      "title": "ClaimEvidenceLink",
+      "type": "object"
+    },
+    "ClaimEvidenceProvenance": {
+      "additionalProperties": false,
+      "description": "Immutable identity and generating-action metadata for a workspace artifact.",
+      "properties": {
+        "action": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Action"
+        },
+        "action_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Action Sha256"
+        },
+        "bytes": {
+          "minimum": 0,
+          "title": "Bytes",
+          "type": "integer"
+        },
+        "capability": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Capability"
+        },
+        "command_argv": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Command Argv",
+          "type": "array"
+        },
+        "generated_iteration": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Generated Iteration"
+        },
+        "program_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Program Path"
+        },
+        "program_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Program Sha256"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "tracked": {
+          "title": "Tracked",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "sha256",
+        "bytes",
+        "tracked"
+      ],
+      "title": "ClaimEvidenceProvenance",
+      "type": "object"
+    },
+    "ClaimKind": {
+      "enum": [
+        "scientific",
+        "instrument",
+        "diagnostic",
+        "control"
+      ],
+      "title": "ClaimKind",
+      "type": "string"
+    },
+    "ClaimRelation": {
+      "enum": [
+        "root",
+        "refines",
+        "alternate",
+        "diagnostic_of",
+        "instrument_of",
+        "control_for",
+        "succeeds"
+      ],
+      "title": "ClaimRelation",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "closed_reason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Closed Reason"
+    },
+    "created_iteration": {
+      "minimum": 0,
+      "title": "Created Iteration",
+      "type": "integer"
+    },
+    "evidence": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/ClaimEvidenceLink"
+      },
+      "title": "Evidence",
+      "type": "array"
+    },
+    "evidence_contracts": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/ClaimEvidenceContract"
+      },
+      "title": "Evidence Contracts",
+      "type": "array"
+    },
+    "id": {
+      "pattern": "^claim_[a-z0-9_]+$",
+      "title": "Id",
+      "type": "string"
+    },
+    "kind": {
+      "$ref": "#/$defs/ClaimKind"
+    },
+    "parent_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Parent Id"
+    },
+    "rationale": {
+      "minLength": 8,
+      "title": "Rationale",
+      "type": "string"
+    },
+    "relation": {
+      "$ref": "#/$defs/ClaimRelation"
+    },
+    "statement": {
+      "minLength": 8,
+      "title": "Statement",
+      "type": "string"
+    },
+    "status": {
+      "$ref": "#/$defs/ClaimDisposition",
+      "default": "open"
+    },
+    "updated_iteration": {
+      "minimum": 0,
+      "title": "Updated Iteration",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "id",
+    "statement",
+    "kind",
+    "relation",
+    "rationale",
+    "created_iteration",
+    "updated_iteration"
+  ],
+  "title": "MVPClaim",
+  "type": "object"
+}

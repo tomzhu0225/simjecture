@@ -1,0 +1,423 @@
+{
+  "$defs": {
+    "LiteratureSearchRecord": {
+      "additionalProperties": false,
+      "description": "Immutable result of one startup or later reconnaissance attempt.",
+      "properties": {
+        "errors": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Errors",
+          "type": "array"
+        },
+        "hypothesis_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Hypothesis Sha256",
+          "type": "string"
+        },
+        "id": {
+          "pattern": "^literature_search_[0-9a-f]{16}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "provider_status": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Provider Status",
+          "type": "object"
+        },
+        "purpose": {
+          "minLength": 3,
+          "title": "Purpose",
+          "type": "string"
+        },
+        "query": {
+          "minLength": 3,
+          "title": "Query",
+          "type": "string"
+        },
+        "requested_results": {
+          "maximum": 20,
+          "minimum": 1,
+          "title": "Requested Results",
+          "type": "integer"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "scientific_evidence_eligible": {
+          "const": false,
+          "default": false,
+          "title": "Scientific Evidence Eligible",
+          "type": "boolean"
+        },
+        "searched_at": {
+          "format": "date-time",
+          "title": "Searched At",
+          "type": "string"
+        },
+        "sources": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/LiteratureSource"
+          },
+          "title": "Sources",
+          "type": "array"
+        },
+        "status": {
+          "$ref": "#/$defs/LiteratureSearchStatus"
+        }
+      },
+      "required": [
+        "id",
+        "hypothesis_sha256",
+        "query",
+        "purpose",
+        "requested_results",
+        "status",
+        "provider_status",
+        "searched_at"
+      ],
+      "title": "LiteratureSearchRecord",
+      "type": "object"
+    },
+    "LiteratureSearchStatus": {
+      "enum": [
+        "completed",
+        "unavailable"
+      ],
+      "title": "LiteratureSearchStatus",
+      "type": "string"
+    },
+    "LiteratureSource": {
+      "additionalProperties": false,
+      "description": "One bounded search hit, not evidence for the active hypothesis.",
+      "properties": {
+        "abstract": {
+          "anyOf": [
+            {
+              "maxLength": 3000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Abstract"
+        },
+        "authors": {
+          "default": [],
+          "items": {
+            "maxLength": 300,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 50,
+          "title": "Authors",
+          "type": "array"
+        },
+        "cited_by_count": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cited By Count"
+        },
+        "doi": {
+          "anyOf": [
+            {
+              "maxLength": 1000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Doi"
+        },
+        "full_text_url": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Full Text Url"
+        },
+        "id": {
+          "maxLength": 1200,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "paper",
+            "web"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "open_access": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Open Access"
+        },
+        "provider": {
+          "maxLength": 100,
+          "minLength": 1,
+          "title": "Provider",
+          "type": "string"
+        },
+        "publication_year": {
+          "anyOf": [
+            {
+              "maximum": 3000,
+              "minimum": 1400,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Publication Year"
+        },
+        "snippet": {
+          "anyOf": [
+            {
+              "maxLength": 1000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Snippet"
+        },
+        "source_name": {
+          "anyOf": [
+            {
+              "maxLength": 1000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Name"
+        },
+        "title": {
+          "maxLength": 1000,
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "url": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "provider",
+        "title",
+        "url"
+      ],
+      "title": "LiteratureSource",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "campaign_instruction": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Campaign Instruction"
+    },
+    "capability_hashes": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Capability Hashes",
+      "type": "object"
+    },
+    "capability_preflights": {
+      "additionalProperties": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "title": "Capability Preflights",
+      "type": "object"
+    },
+    "claim_ledger": {
+      "additionalProperties": true,
+      "title": "Claim Ledger",
+      "type": "object"
+    },
+    "closed_claim_ids": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Closed Claim Ids",
+      "type": "array"
+    },
+    "elapsed_wall_seconds": {
+      "minimum": 0,
+      "title": "Elapsed Wall Seconds",
+      "type": "number"
+    },
+    "final_answer": {
+      "minLength": 1,
+      "title": "Final Answer",
+      "type": "string"
+    },
+    "finish_claim_notes": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Finish Claim Notes",
+      "type": "array"
+    },
+    "finished_at": {
+      "format": "date-time",
+      "title": "Finished At",
+      "type": "string"
+    },
+    "guided_commissioning": {
+      "additionalProperties": true,
+      "title": "Guided Commissioning",
+      "type": "object"
+    },
+    "hypothesis": {
+      "minLength": 1,
+      "title": "Hypothesis",
+      "type": "string"
+    },
+    "iterations": {
+      "minimum": 0,
+      "title": "Iterations",
+      "type": "integer"
+    },
+    "literature_searches": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/LiteratureSearchRecord"
+      },
+      "title": "Literature Searches",
+      "type": "array"
+    },
+    "open_claim_ids": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Open Claim Ids",
+      "type": "array"
+    },
+    "package_kind": {
+      "const": "natural_language_sandbox_mvp",
+      "default": "natural_language_sandbox_mvp",
+      "title": "Package Kind",
+      "type": "string"
+    },
+    "schema_version": {
+      "default": "0.6.0",
+      "enum": [
+        "0.1.0",
+        "0.2.0",
+        "0.3.0",
+        "0.4.0",
+        "0.5.0",
+        "0.6.0"
+      ],
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "skill_hashes": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Skill Hashes",
+      "type": "object"
+    },
+    "started_at": {
+      "format": "date-time",
+      "title": "Started At",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "completed",
+        "budget_exhausted",
+        "provider_failed",
+        "cancelled"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "transcript_path": {
+      "title": "Transcript Path",
+      "type": "string"
+    },
+    "workspace_artifacts": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Workspace Artifacts",
+      "type": "object"
+    }
+  },
+  "required": [
+    "hypothesis",
+    "status",
+    "final_answer",
+    "iterations",
+    "elapsed_wall_seconds",
+    "workspace_artifacts",
+    "transcript_path",
+    "started_at",
+    "finished_at"
+  ],
+  "title": "MVPAgentReport",
+  "type": "object"
+}

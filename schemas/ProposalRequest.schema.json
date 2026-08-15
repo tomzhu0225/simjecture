@@ -1,0 +1,144 @@
+{
+  "$defs": {
+    "PropositionClass": {
+      "enum": [
+        "existential_contribution",
+        "universal_non_contribution",
+        "predictive_sufficiency",
+        "causal_exhaustiveness",
+        "invariance",
+        "threshold",
+        "path_dependence"
+      ],
+      "title": "PropositionClass",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "additional_constraints": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Additional Constraints",
+      "type": "array"
+    },
+    "allowed_action_types": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Allowed Action Types",
+      "type": "array"
+    },
+    "allowed_model_families": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Allowed Model Families",
+      "type": "array"
+    },
+    "allowed_observable_kinds": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Allowed Observable Kinds",
+      "type": "array"
+    },
+    "allowed_proposition_classes": {
+      "items": {
+        "$ref": "#/$defs/PropositionClass"
+      },
+      "minItems": 1,
+      "title": "Allowed Proposition Classes",
+      "type": "array"
+    },
+    "available_diagnostics": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Available Diagnostics",
+      "type": "array"
+    },
+    "fixed_numerical_parameters": {
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "integer"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      },
+      "title": "Fixed Numerical Parameters",
+      "type": "object"
+    },
+    "fixed_parameters": {
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "integer"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      },
+      "title": "Fixed Parameters",
+      "type": "object"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "required_coordinates": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Required Coordinates",
+      "type": "array"
+    },
+    "required_diagnostics": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Required Diagnostics",
+      "type": "array"
+    },
+    "research_goal": {
+      "minLength": 1,
+      "title": "Research Goal",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "research_goal",
+    "allowed_model_families",
+    "allowed_action_types",
+    "allowed_proposition_classes",
+    "required_coordinates",
+    "allowed_observable_kinds",
+    "available_diagnostics"
+  ],
+  "title": "ProposalRequest",
+  "type": "object"
+}

@@ -1,0 +1,103 @@
+{
+  "schema_version": "0.1.0",
+  "kind": "operator_audited_prior_campaign_context",
+  "evidence_eligible": false,
+  "source_campaign_id": "campaign_collisionless_gem_prospective_20260814_v3",
+  "source_run": "autonomous_run_0003",
+  "provider_context": {
+    "provider": "legacy_compshare_proxy",
+    "model": "deepseek-v4-flash-0731"
+  },
+  "execution": {
+    "status": "completed",
+    "model_iterations": 86,
+    "elapsed_wall_seconds": 6240.991587172,
+    "fresh_cuda_simulations_completed": 5,
+    "fresh_scientific_gpu_seconds": 1557.9220239490096,
+    "workspace_artifacts": 207,
+    "simulation_instrument_status": "supported",
+    "aggregation_instrument_status": "supported_after_metadata_only_recommission",
+    "scientific_child_status": "falsified_under_fixed_single_seed_protocol",
+    "root_status": "open"
+  },
+  "tested_refinement": {
+    "description": "At fixed reduced-mass-ratio-25 GEM geometry, the late-half absolute normalized flux-slope reconnection rate changes monotonically across Ti/Te = 1, 3, 5, 10, 20 with endpoint relative span at least 0.25.",
+    "fixed_regime": {
+      "nx": 128,
+      "nz": 128,
+      "ppc_per_population": 8,
+      "duration_omegaci": 10,
+      "mass_ratio": 25,
+      "density_m3": 1e24,
+      "background_fraction": 0.2,
+      "va_reference_over_c": 0.04,
+      "box_lx_di": 12.8,
+      "box_lz_di": 12.8,
+      "sheet_half_width_di": 0.5,
+      "guide_field_fraction": 0.0,
+      "perturbation_fraction": 0.1,
+      "seed": 20260814
+    },
+    "temperature_ratios": [1.0, 3.0, 5.0, 10.0, 20.0],
+    "late_half_flux_slope_rates_abs": [
+      0.07496099342161207,
+      0.04509024239951222,
+      0.04925568316362732,
+      0.03180659790942815,
+      0.03742255604861398
+    ],
+    "late_half_efield_median_rates_abs": [
+      0.17738906368276217,
+      0.05538196433015273,
+      0.049539870198863266,
+      0.10985809835314854,
+      0.03899540808107824
+    ],
+    "endpoint_relative_span_over_sweep_mean": 0.7868503264493805,
+    "observation": "Both estimators were non-monotone, so the registered monotonicity daughter was falsified. The Ti/Te=1 primary rate was about twice the Ti/Te=20 primary rate in this exploratory seed, motivating but not confirming a held-out endpoint comparison."
+  },
+  "quality_controls": {
+    "all_five_runs_passed_26_of_26_checks": true,
+    "all_five_runs_wrote_20_readable_openpmd_field_files": true,
+    "exact_header_field_plus_particle_energy_drifts": [
+      -0.0006519602112132361,
+      -0.00036455382851874275,
+      -0.00032940189975665145,
+      -0.00026261094314987264,
+      -0.00020548266744831165
+    ],
+    "same_input_tite5_control": {
+      "commission_rate": 0.05078347674097181,
+      "fresh_rate": 0.04925568316362732,
+      "relative_difference_vs_commission": 0.030084462021716527
+    }
+  },
+  "prospective_pipeline_audit": {
+    "scientific_contract_registered_iteration": 70,
+    "scientific_simulation_iterations": [71, 72, 73, 74, 75],
+    "scientific_aggregation_iteration": 82,
+    "aggregate_source_last_written_iteration": 53,
+    "simulator_program_sha256": "55ffac348ff4ad84fcb228fa13ffc38d97504897e78a1e8ccbf160cc5d051123",
+    "aggregate_program_sha256": "ea4b34bdfa25dbe5c64f3cfc2dd9c3fae387d01733d66b46c0e2f406ac74e588",
+    "scientific_contract_adapted_after_outcomes": false,
+    "assessment": "The complete simulator-to-analyzer scientific pipeline was prospectively enumerated and hash sealed. The later analyzer recommission changed only instrument aspect metadata, not source, argv, observable, or scientific decision rule."
+  },
+  "operator_audit": {
+    "infrastructure_result": "pass",
+    "scientific_disposition": "tite_monotonicity_daughter_falsified_under_fixed_single_seed_protocol",
+    "release_threshold_reached": false,
+    "qualification": "Only one seed was used per Ti/Te point and no resolution or particle-count convergence study separated numerical variability from physical endpoint structure.",
+    "report_corrections": [
+      "The whole sweep was not demonstrated reproducible; only the Ti/Te=5 configuration had one same-input repeat.",
+      "Literature searches returned records but did not establish a directly applicable quantitative benchmark for the exact sweep.",
+      "The superseded background-density rationale was an unvalidated agent assertion and must not be carried forward as fact."
+    ]
+  },
+  "reuse_policy": [
+    "This summary and every supplied run-0003 output are discovery context only and are inadmissible as evidence for a new claim.",
+    "The exploratory endpoint contrast may motivate a preregistered held-out confirmation using fresh seeds, but it cannot set or satisfy the new evidence outcome.",
+    "Seed 20260814 was used in discovery and must not be counted as fresh confirmation evidence.",
+    "The next campaign must freeze its full simulator-to-analysis pipeline before generating any claim-bearing confirmation outcome.",
+    "If the protocol changes after outcomes are visible, close nondecisively or register a successor and collect fresh observations."
+  ]
+}

@@ -1,0 +1,585 @@
+{
+  "$defs": {
+    "WarpXCalibrationPoint": {
+      "additionalProperties": false,
+      "properties": {
+        "candidate_amplitude_ratio": {
+          "exclusiveMinimum": 0,
+          "title": "Candidate Amplitude Ratio",
+          "type": "number"
+        },
+        "candidate_classification": {
+          "enum": [
+            "damped",
+            "ambiguous",
+            "unstable"
+          ],
+          "title": "Candidate Classification",
+          "type": "string"
+        },
+        "candidate_diagnostic_manifest_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Candidate Diagnostic Manifest Hash",
+          "type": "string"
+        },
+        "candidate_growth_rate": {
+          "title": "Candidate Growth Rate",
+          "type": "number"
+        },
+        "electron_macroparticles_per_cell": {
+          "minimum": 16,
+          "title": "Electron Macroparticles Per Cell",
+          "type": "integer"
+        },
+        "execution_profile": {
+          "$ref": "#/$defs/WarpXExecutionProfile"
+        },
+        "grid_cells": {
+          "minimum": 32,
+          "title": "Grid Cells",
+          "type": "integer"
+        },
+        "normalized_result_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Normalized Result Hash",
+          "type": "string"
+        },
+        "numerical_validity_passed": {
+          "title": "Numerical Validity Passed",
+          "type": "boolean"
+        },
+        "reference_amplitude_ratio": {
+          "exclusiveMinimum": 0,
+          "title": "Reference Amplitude Ratio",
+          "type": "number"
+        },
+        "reference_classification": {
+          "enum": [
+            "damped",
+            "ambiguous",
+            "unstable"
+          ],
+          "title": "Reference Classification",
+          "type": "string"
+        },
+        "reference_diagnostic_manifest_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Reference Diagnostic Manifest Hash",
+          "type": "string"
+        },
+        "reference_growth_rate": {
+          "title": "Reference Growth Rate",
+          "type": "number"
+        },
+        "resolution_id": {
+          "minLength": 1,
+          "title": "Resolution Id",
+          "type": "string"
+        },
+        "run_package_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Run Package Hash",
+          "type": "string"
+        },
+        "seed": {
+          "minimum": 1,
+          "title": "Seed",
+          "type": "integer"
+        },
+        "time_step_omega_pe": {
+          "exclusiveMinimum": 0,
+          "title": "Time Step Omega Pe",
+          "type": "number"
+        }
+      },
+      "required": [
+        "seed",
+        "resolution_id",
+        "grid_cells",
+        "electron_macroparticles_per_cell",
+        "time_step_omega_pe",
+        "run_package_hash",
+        "normalized_result_hash",
+        "execution_profile",
+        "numerical_validity_passed",
+        "reference_growth_rate",
+        "candidate_growth_rate",
+        "reference_amplitude_ratio",
+        "candidate_amplitude_ratio",
+        "reference_classification",
+        "candidate_classification",
+        "reference_diagnostic_manifest_hash",
+        "candidate_diagnostic_manifest_hash"
+      ],
+      "title": "WarpXCalibrationPoint",
+      "type": "object"
+    },
+    "WarpXExecutionProfile": {
+      "additionalProperties": false,
+      "description": "Identity and trust status of the process that executes a run package.",
+      "properties": {
+        "openpmd_backend": {
+          "const": "h5",
+          "default": "h5",
+          "title": "Openpmd Backend",
+          "type": "string"
+        },
+        "profile_id": {
+          "minLength": 1,
+          "title": "Profile Id",
+          "type": "string"
+        },
+        "qualification_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Qualification Hash"
+        },
+        "qualified_for_scientific_evidence": {
+          "default": false,
+          "title": "Qualified For Scientific Evidence",
+          "type": "boolean"
+        },
+        "runner_kind": {
+          "$ref": "#/$defs/WarpXRunnerKind"
+        },
+        "warpx_version": {
+          "minLength": 1,
+          "title": "Warpx Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "profile_id",
+        "runner_kind",
+        "warpx_version"
+      ],
+      "title": "WarpXExecutionProfile",
+      "type": "object"
+    },
+    "WarpXPhysicalConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "inner_drift": {
+          "default": 0.95,
+          "exclusiveMaximum": 1,
+          "minimum": 0,
+          "title": "Inner Drift",
+          "type": "number"
+        },
+        "inner_pair_weight": {
+          "default": 0.5,
+          "exclusiveMaximum": 1,
+          "exclusiveMinimum": 0,
+          "title": "Inner Pair Weight",
+          "type": "number"
+        },
+        "outer_drift": {
+          "default": 0.95,
+          "exclusiveMaximum": 1,
+          "minimum": 0,
+          "title": "Outer Drift",
+          "type": "number"
+        },
+        "perturbation_amplitude": {
+          "default": 0.02,
+          "maximum": 0.05,
+          "minimum": 1e-07,
+          "title": "Perturbation Amplitude",
+          "type": "number"
+        },
+        "reference_density_m3": {
+          "default": 1e+18,
+          "maximum": 1e+25,
+          "minimum": 1000000000000.0,
+          "title": "Reference Density M3",
+          "type": "number"
+        },
+        "velocity_unit_m_s": {
+          "default": 1000000.0,
+          "maximum": 20000000.0,
+          "minimum": 1000.0,
+          "title": "Velocity Unit M S",
+          "type": "number"
+        },
+        "wavenumber_dimensionless": {
+          "default": 0.5,
+          "maximum": 2.0,
+          "minimum": 0.1,
+          "title": "Wavenumber Dimensionless",
+          "type": "number"
+        }
+      },
+      "title": "WarpXPhysicalConfig",
+      "type": "object"
+    },
+    "WarpXQualificationRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "checks": {
+          "additionalProperties": {
+            "type": "boolean"
+          },
+          "title": "Checks",
+          "type": "object"
+        },
+        "compiled_case_hashes": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Compiled Case Hashes",
+          "type": "object"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "expected_warpx_version": {
+          "minLength": 1,
+          "title": "Expected Warpx Version",
+          "type": "string"
+        },
+        "host_architecture": {
+          "title": "Host Architecture",
+          "type": "string"
+        },
+        "observed_warpx_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Observed Warpx Version"
+        },
+        "package_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Package Hash",
+          "type": "string"
+        },
+        "passed": {
+          "title": "Passed",
+          "type": "boolean"
+        },
+        "profile_id": {
+          "minLength": 1,
+          "title": "Profile Id",
+          "type": "string"
+        },
+        "qualification_kind": {
+          "const": "picmi_compile_only",
+          "default": "picmi_compile_only",
+          "title": "Qualification Kind",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "scientific_evidence_eligible": {
+          "const": false,
+          "default": false,
+          "title": "Scientific Evidence Eligible",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "profile_id",
+        "package_hash",
+        "expected_warpx_version",
+        "checks",
+        "passed"
+      ],
+      "title": "WarpXQualificationRecord",
+      "type": "object"
+    },
+    "WarpXQualifiedScope": {
+      "additionalProperties": false,
+      "properties": {
+        "early_window_end_omega_pe": {
+          "default": 4.0,
+          "exclusiveMinimum": 0,
+          "title": "Early Window End Omega Pe",
+          "type": "number"
+        },
+        "early_window_start_omega_pe": {
+          "default": 0.0,
+          "minimum": 0,
+          "title": "Early Window Start Omega Pe",
+          "type": "number"
+        },
+        "late_window_end_omega_pe": {
+          "default": 18.0,
+          "exclusiveMinimum": 0,
+          "title": "Late Window End Omega Pe",
+          "type": "number"
+        },
+        "late_window_start_omega_pe": {
+          "default": 14.0,
+          "exclusiveMinimum": 0,
+          "title": "Late Window Start Omega Pe",
+          "type": "number"
+        },
+        "maximum_damped_ratio_threshold": {
+          "default": 0.75,
+          "exclusiveMaximum": 1,
+          "exclusiveMinimum": 0,
+          "title": "Maximum Damped Ratio Threshold",
+          "type": "number"
+        },
+        "maximum_diagnostic_cadence_omega_pe": {
+          "default": 0.1,
+          "exclusiveMinimum": 0,
+          "title": "Maximum Diagnostic Cadence Omega Pe",
+          "type": "number"
+        },
+        "maximum_moment_tolerance": {
+          "default": 0.05,
+          "exclusiveMinimum": 0,
+          "title": "Maximum Moment Tolerance",
+          "type": "number"
+        },
+        "maximum_poisson_relative_tolerance": {
+          "default": 1e-10,
+          "exclusiveMinimum": 0,
+          "title": "Maximum Poisson Relative Tolerance",
+          "type": "number"
+        },
+        "maximum_relative_charge_imbalance": {
+          "default": 0.01,
+          "exclusiveMinimum": 0,
+          "title": "Maximum Relative Charge Imbalance",
+          "type": "number"
+        },
+        "maximum_relative_energy_drift": {
+          "default": 0.01,
+          "exclusiveMinimum": 0,
+          "title": "Maximum Relative Energy Drift",
+          "type": "number"
+        },
+        "maximum_relative_gauss_residual": {
+          "default": 0.01,
+          "exclusiveMinimum": 0,
+          "title": "Maximum Relative Gauss Residual",
+          "type": "number"
+        },
+        "maximum_time_step_omega_pe": {
+          "default": 0.05,
+          "exclusiveMinimum": 0,
+          "title": "Maximum Time Step Omega Pe",
+          "type": "number"
+        },
+        "minimum_diagnostic_samples": {
+          "default": 50,
+          "minimum": 3,
+          "title": "Minimum Diagnostic Samples",
+          "type": "integer"
+        },
+        "minimum_electron_macroparticles_per_cell": {
+          "default": 512,
+          "minimum": 16,
+          "title": "Minimum Electron Macroparticles Per Cell",
+          "type": "integer"
+        },
+        "minimum_final_time_omega_pe": {
+          "default": 20.0,
+          "exclusiveMinimum": 0,
+          "title": "Minimum Final Time Omega Pe",
+          "type": "number"
+        },
+        "minimum_grid_cells": {
+          "default": 64,
+          "minimum": 32,
+          "title": "Minimum Grid Cells",
+          "type": "integer"
+        },
+        "minimum_ion_macroparticles_per_cell": {
+          "default": 16,
+          "minimum": 1,
+          "title": "Minimum Ion Macroparticles Per Cell",
+          "type": "integer"
+        },
+        "minimum_outcome_tolerance_omega_pe": {
+          "default": 0.02,
+          "exclusiveMinimum": 0,
+          "title": "Minimum Outcome Tolerance Omega Pe",
+          "type": "number"
+        },
+        "minimum_poisson_max_iterations": {
+          "default": 200,
+          "minimum": 10,
+          "title": "Minimum Poisson Max Iterations",
+          "type": "integer"
+        },
+        "minimum_unstable_ratio_threshold": {
+          "default": 1.5,
+          "exclusiveMinimum": 1,
+          "title": "Minimum Unstable Ratio Threshold",
+          "type": "number"
+        },
+        "minimum_window_samples": {
+          "default": 20,
+          "minimum": 3,
+          "title": "Minimum Window Samples",
+          "type": "integer"
+        },
+        "physical": {
+          "$ref": "#/$defs/WarpXPhysicalConfig"
+        }
+      },
+      "required": [
+        "physical"
+      ],
+      "title": "WarpXQualifiedScope",
+      "type": "object"
+    },
+    "WarpXRunnerKind": {
+      "enum": [
+        "contract_fixture",
+        "local_cpu",
+        "site_scheduler"
+      ],
+      "title": "WarpXRunnerKind",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "analytic_candidate_growth_rate": {
+      "title": "Analytic Candidate Growth Rate",
+      "type": "number"
+    },
+    "analytic_reference_growth_rate": {
+      "title": "Analytic Reference Growth Rate",
+      "type": "number"
+    },
+    "authorizes_scientific_evidence": {
+      "title": "Authorizes Scientific Evidence",
+      "type": "boolean"
+    },
+    "calibration_points": {
+      "items": {
+        "$ref": "#/$defs/WarpXCalibrationPoint"
+      },
+      "minItems": 1,
+      "title": "Calibration Points",
+      "type": "array"
+    },
+    "checks": {
+      "additionalProperties": {
+        "type": "boolean"
+      },
+      "title": "Checks",
+      "type": "object"
+    },
+    "compile_qualification": {
+      "$ref": "#/$defs/WarpXQualificationRecord"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "expected_candidate_classification": {
+      "const": "unstable",
+      "default": "unstable",
+      "title": "Expected Candidate Classification",
+      "type": "string"
+    },
+    "expected_reference_classification": {
+      "const": "damped",
+      "default": "damped",
+      "title": "Expected Reference Classification",
+      "type": "string"
+    },
+    "maximum_median_rate_shift": {
+      "default": 0.03,
+      "exclusiveMinimum": 0,
+      "title": "Maximum Median Rate Shift",
+      "type": "number"
+    },
+    "median_candidate_rates_by_resolution": {
+      "additionalProperties": {
+        "type": "number"
+      },
+      "title": "Median Candidate Rates By Resolution",
+      "type": "object"
+    },
+    "median_reference_rates_by_resolution": {
+      "additionalProperties": {
+        "type": "number"
+      },
+      "title": "Median Reference Rates By Resolution",
+      "type": "object"
+    },
+    "minimum_effective_rate_separation": {
+      "default": 0.1,
+      "exclusiveMinimum": 0,
+      "title": "Minimum Effective Rate Separation",
+      "type": "number"
+    },
+    "minimum_resolution_count": {
+      "default": 2,
+      "minimum": 2,
+      "title": "Minimum Resolution Count",
+      "type": "integer"
+    },
+    "minimum_seed_count": {
+      "default": 4,
+      "minimum": 2,
+      "title": "Minimum Seed Count",
+      "type": "integer"
+    },
+    "passed": {
+      "title": "Passed",
+      "type": "boolean"
+    },
+    "postprocessor_version": {
+      "const": "warpx_openpmd_v2",
+      "default": "warpx_openpmd_v2",
+      "title": "Postprocessor Version",
+      "type": "string"
+    },
+    "qualification_kind": {
+      "const": "known_mode_matrix_v2",
+      "default": "known_mode_matrix_v2",
+      "title": "Qualification Kind",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.2.0",
+      "default": "0.2.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "scope": {
+      "$ref": "#/$defs/WarpXQualifiedScope"
+    }
+  },
+  "required": [
+    "compile_qualification",
+    "calibration_points",
+    "scope",
+    "analytic_reference_growth_rate",
+    "analytic_candidate_growth_rate",
+    "median_reference_rates_by_resolution",
+    "median_candidate_rates_by_resolution",
+    "checks",
+    "passed",
+    "authorizes_scientific_evidence"
+  ],
+  "title": "WarpXPhysicsQualificationRecord",
+  "type": "object"
+}

@@ -1,0 +1,46 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "artifact_hashes": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Artifact Hashes",
+      "type": "array"
+    },
+    "diagnostics": {
+      "additionalProperties": true,
+      "title": "Diagnostics",
+      "type": "object"
+    },
+    "experiment_id": {
+      "title": "Experiment Id",
+      "type": "string"
+    },
+    "observables": {
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "boolean"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      },
+      "title": "Observables",
+      "type": "object"
+    }
+  },
+  "required": [
+    "experiment_id",
+    "observables",
+    "diagnostics"
+  ],
+  "title": "NormalizedResult",
+  "type": "object"
+}

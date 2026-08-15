@@ -1,0 +1,41 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "expected_information_gain": {
+      "minLength": 30,
+      "title": "Expected Information Gain",
+      "type": "string"
+    },
+    "held_out_random_seed": {
+      "maximum": 2147483647,
+      "minimum": 1,
+      "title": "Held Out Random Seed",
+      "type": "integer"
+    },
+    "kind": {
+      "const": "sheet_thickness",
+      "default": "sheet_thickness",
+      "title": "Kind",
+      "type": "string"
+    },
+    "rationale": {
+      "minLength": 30,
+      "title": "Rationale",
+      "type": "string"
+    },
+    "sheet_half_thickness_di": {
+      "maximum": 1.5,
+      "minimum": 0.75,
+      "title": "Sheet Half Thickness Di",
+      "type": "number"
+    }
+  },
+  "required": [
+    "held_out_random_seed",
+    "rationale",
+    "expected_information_gain",
+    "sheet_half_thickness_di"
+  ],
+  "title": "SheetThicknessIntervention",
+  "type": "object"
+}

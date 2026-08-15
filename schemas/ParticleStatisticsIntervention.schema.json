@@ -1,0 +1,41 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "expected_information_gain": {
+      "minLength": 30,
+      "title": "Expected Information Gain",
+      "type": "string"
+    },
+    "held_out_random_seed": {
+      "maximum": 2147483647,
+      "minimum": 1,
+      "title": "Held Out Random Seed",
+      "type": "integer"
+    },
+    "kind": {
+      "const": "particle_statistics",
+      "default": "particle_statistics",
+      "title": "Kind",
+      "type": "string"
+    },
+    "macroparticles_per_cell_per_species": {
+      "maximum": 8,
+      "minimum": 2,
+      "title": "Macroparticles Per Cell Per Species",
+      "type": "integer"
+    },
+    "rationale": {
+      "minLength": 30,
+      "title": "Rationale",
+      "type": "string"
+    }
+  },
+  "required": [
+    "held_out_random_seed",
+    "rationale",
+    "expected_information_gain",
+    "macroparticles_per_cell_per_species"
+  ],
+  "title": "ParticleStatisticsIntervention",
+  "type": "object"
+}

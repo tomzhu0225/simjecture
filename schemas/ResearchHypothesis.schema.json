@@ -1,0 +1,128 @@
+{
+  "$defs": {
+    "HypothesisOrigin": {
+      "enum": [
+        "human",
+        "ai",
+        "mixed"
+      ],
+      "title": "HypothesisOrigin",
+      "type": "string"
+    },
+    "ResearchPropositionClass": {
+      "enum": [
+        "contribution",
+        "sufficiency",
+        "invariance",
+        "threshold",
+        "path_dependence",
+        "scaling_law",
+        "phase_boundary",
+        "closure",
+        "auxiliary_validity"
+      ],
+      "title": "ResearchPropositionClass",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Open scientific proposition whose details are authored during the run.",
+  "properties": {
+    "assumptions": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Assumptions",
+      "type": "array"
+    },
+    "coordinates": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Coordinates",
+      "type": "array"
+    },
+    "formal_specification": {
+      "additionalProperties": true,
+      "title": "Formal Specification",
+      "type": "object"
+    },
+    "id": {
+      "minLength": 1,
+      "title": "Id",
+      "type": "string"
+    },
+    "machine_predicate": {
+      "minLength": 1,
+      "title": "Machine Predicate",
+      "type": "string"
+    },
+    "model_family": {
+      "minLength": 1,
+      "title": "Model Family",
+      "type": "string"
+    },
+    "motivating_evidence_ids": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Motivating Evidence Ids",
+      "type": "array"
+    },
+    "observables": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Observables",
+      "type": "array"
+    },
+    "origin": {
+      "$ref": "#/$defs/HypothesisOrigin"
+    },
+    "parent_ids": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Parent Ids",
+      "type": "array"
+    },
+    "proposition_class": {
+      "$ref": "#/$defs/ResearchPropositionClass"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "scope": {
+      "minLength": 1,
+      "title": "Scope",
+      "type": "string"
+    },
+    "statement": {
+      "minLength": 1,
+      "title": "Statement",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "statement",
+    "machine_predicate",
+    "formal_specification",
+    "proposition_class",
+    "model_family",
+    "scope",
+    "coordinates",
+    "observables",
+    "origin"
+  ],
+  "title": "ResearchHypothesis",
+  "type": "object"
+}

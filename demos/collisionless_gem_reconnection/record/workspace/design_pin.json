@@ -1,0 +1,55 @@
+{
+  "schema_version": "0.1.0",
+  "kind": "prospective_confirmation_design_pin",
+  "scientific_evidence_eligible": false,
+  "fixed_physical_regime": {
+    "geometry": "2D x-z Harris sheet",
+    "box_lx_di": 25.6,
+    "box_lz_di": 12.8,
+    "nx": 256,
+    "nz": 128,
+    "mass_ratio": 25,
+    "density_m3": 1e24,
+    "background_fraction": 0.2,
+    "va_reference_over_c": 0.04,
+    "sheet_half_width_di": 0.5,
+    "perturbation_fraction": 0.1,
+    "guide_field_fraction": 0.0,
+    "duration_omegaci": 12.0,
+    "diagnostic_count": 24,
+    "solver": "explicit Yee, Esirkepov, dt = 0.9 * multidimensional CFL",
+    "populations": ["sheet_electrons", "sheet_ions", "background_electrons", "background_ions"],
+    "fully_kinetic": true
+  },
+  "endpoints": {"Ti_Te_1": 1.0, "Ti_Te_20": 20.0},
+  "seeds_fresh": [20260902, 20260903, 20260904],
+  "excluded_discovery_seed": 20260814,
+  "pairing": "same seed across Ti/Te endpoints within each pair",
+  "fidelity_levels": {"production": 16, "control": 8},
+  "sample_size": "3 fresh paired seeds per endpoint per fidelity; 12 scientific simulator runs",
+  "estimator": {
+    "name": "late_window_normalized_flux_slope_rate",
+    "formula": "mu = alpha * ols_slope(flux_x_to_o_over_B0_di vs t_omegaci over t_omegaci in [6, 12])",
+    "flux_definition": "flux_x_to_o = trapezoid(Bz at z=0 from x=0 to x=Lx/2) / (B0 * di), as implemented in guided/gem_collisionless.py",
+    "normalization": "alpha = di * omega_ci / va_upstream; omega_ci = qe*B0/(mass_ratio*me); va_upstream = va_upstream_over_c * c",
+    "units": "dimensionless upstream-Alfven-normalized reconnection rate",
+    "sign_convention": "positive mu = increasing reconnected flux",
+    "minimum_window_points": 3
+  },
+  "energy_quality_gate": "per-run combined FieldEnergy total_lev0(J) + ParticleEnergy total(J) relative drift absolute value <= 2.0e-3 for a valid scientific observation",
+  "decision_rule": {
+    "valid_group": "at least 2 valid runs of 3 per (fidelity, endpoint)",
+    "R16": "mean(mu, Ti/Te=1, ppc=16) / mean(mu, Ti/Te=20, ppc=16)",
+    "R8": "mean(mu, Ti/Te=1, ppc=8) / mean(mu, Ti/Te=20, ppc=8)",
+    "supported": "all four groups valid and R16 >= 1.25 and R8 >= 1.25",
+    "falsified": "all four groups valid and R16 < 1.25",
+    "weakened": "R16 >= 1.25 with valid groups but R8 < 1.25 (persistence control not established)",
+    "unresolved_or_instrument_limited": "fewer than 2 valid runs in any group, or mean(mu, Ti/Te=20) <= 0 making the ratio ill-defined"
+  },
+  "uncertainty_report": "seed-level SD and standard error of the endpoint means; paired per-seed ratios; 100000-resample paired bootstrap 95% percentile CI on R16 and R8; energies and window point counts per run",
+  "pipeline": {
+    "simulator": "guided/gem_collisionless.py via warpx-cuda-openpmd-26.07",
+    "analyzer": "analyze_ensemble.py via capability Python (numpy), reading simulator summary JSON and exact-header reduced energy files",
+    "freeze_order": "author and stabilize analyzer before any evidence-stage simulator run; register claims, contracts, and bindings; commission both instruments; then execute all 12 scientific runs and one analyzer run"
+  }
+}

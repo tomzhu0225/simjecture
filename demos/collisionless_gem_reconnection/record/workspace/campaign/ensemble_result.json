@@ -1,0 +1,1335 @@
+{
+  "checks": {
+    "boundaries": {
+      "flux_definition_uses_guided_trapezoid": true,
+      "no_outside_window_points_used": true,
+      "window_inside_domain": true
+    },
+    "diagnostics": {
+      "all_present_run_summaries_valid": true,
+      "energy_drift_fixture_recovery_max_abs_error_le_1e-9": false,
+      "energy_rows_aligned": true,
+      "exact_header_energy_totals_selected": true
+    },
+    "numerical_regime": {
+      "bootstrap_finite_ci_or_flagged_invalid": true,
+      "decision_booleans_well_defined": true,
+      "deterministic_bootstrap_seed_recorded": 20260901,
+      "mu_fixture_recovery_max_relative_error_le_1e-6": false
+    },
+    "physics_controls": {
+      "endpoints_are_1_and_20": true,
+      "fidelity_levels_are_8_and_16": true,
+      "seed_pairing_preserved": true
+    },
+    "representation": {
+      "alpha_positive_for_all_valid": true,
+      "estimator_definition_matches_contract": true,
+      "window_points_at_least_3": true
+    }
+  },
+  "decision": {
+    "R16_ge_125": false,
+    "R8_ge_125": false,
+    "falsified": true,
+    "supported": false,
+    "unresolved": false,
+    "valid_groups_R16": true,
+    "valid_groups_R8": true,
+    "weakened_control_not_established": false
+  },
+  "groups": {
+    "TiTe1_ppc16": {
+      "n_valid": 3,
+      "rates": [
+        0.07465623900529794,
+        0.07703408492363997,
+        0.0745439365509538
+      ],
+      "valid_group": true
+    },
+    "TiTe1_ppc8": {
+      "n_valid": 3,
+      "rates": [
+        0.09524157324714336,
+        0.0013889465270183695,
+        0.06354053938733792
+      ],
+      "valid_group": true
+    },
+    "TiTe20_ppc16": {
+      "n_valid": 3,
+      "rates": [
+        0.09069550117940998,
+        0.0535923112157111,
+        0.07921105706714031
+      ],
+      "valid_group": true
+    },
+    "TiTe20_ppc8": {
+      "n_valid": 3,
+      "rates": [
+        0.05038056057188323,
+        0.09285133860364768,
+        0.004284319692413562
+      ],
+      "valid_group": true
+    }
+  },
+  "kind": "heldout_tite_endpoint_ensemble_confirmation",
+  "observable_metadata": {
+    "component_or_sign_convention": "positive mu = increasing reconnected flux; Bz component at z=0 integrated from x=0 to Lx/2 as in guided/gem_collisionless.py",
+    "energy_quality_gate_abs": 0.002,
+    "estimator_or_formula": "mu = alpha * OLS_slope(flux_x_to_o_over_B0_di versus t_omegaci) over the late window",
+    "fidelity_levels": [
+      8,
+      16
+    ],
+    "min_valid_per_group": 2,
+    "normalization": "alpha = di_m * (dt_omega_ci / dt_s) / (va_upstream_over_c * c_light)",
+    "seed_pairing": "same fresh seed across Ti/Te=1 and Ti/Te=20 within each fidelity level",
+    "time_or_window_rule": "t_omegaci in [6.0, 12.0] inclusive; OLS slope over at least 3 window points",
+    "uncertainty_rule": "paired 100000-resample bootstrap percentile 2.5-97.5 on the ratio of endpoint means; seeds resampled jointly",
+    "units": "dimensionless, normalized to B0*di flux and upstream Alfven speed",
+    "window_max_time_omegaci": 12.0,
+    "window_min_time_omegaci": 6.0
+  },
+  "ratios": {
+    "R16_mean_TiTe1_over_mean_TiTe20": 1.0122389478936142,
+    "R8_mean_TiTe1_over_mean_TiTe20": 1.0857860945099447,
+    "bootstrap_R16_95_percent_CI": {
+      "ci_high": 1.4374092696539031,
+      "ci_low": 0.8231526154490965,
+      "invalid_fraction": 0.0,
+      "resamples_used": 100000
+    },
+    "bootstrap_R8_95_percent_CI": {
+      "ci_high": 14.830951924491538,
+      "ci_low": 0.014958820711754441,
+      "invalid_fraction": 0.0,
+      "resamples_used": 100000
+    },
+    "per_seed_ratios": [
+      {
+        "ppc16": {
+          "rate_TiTe1": 0.07465623900529794,
+          "rate_TiTe20": 0.09069550117940998,
+          "ratio": 0.8231526154490965
+        },
+        "ppc8": {
+          "rate_TiTe1": 0.09524157324714336,
+          "rate_TiTe20": 0.05038056057188323,
+          "ratio": 1.8904429042875022
+        },
+        "seed": 20260902
+      },
+      {
+        "ppc16": {
+          "rate_TiTe1": 0.07703408492363997,
+          "rate_TiTe20": 0.0535923112157111,
+          "ratio": 1.4374092696539031
+        },
+        "ppc8": {
+          "rate_TiTe1": 0.0013889465270183695,
+          "rate_TiTe20": 0.09285133860364768,
+          "ratio": 0.014958820711754441
+        },
+        "seed": 20260903
+      },
+      {
+        "ppc16": {
+          "rate_TiTe1": 0.0745439365509538,
+          "rate_TiTe20": 0.07921105706714031,
+          "ratio": 0.9410799364509099
+        },
+        "ppc8": {
+          "rate_TiTe1": 0.06354053938733792,
+          "rate_TiTe20": 0.004284319692413562,
+          "ratio": 14.830951924491538
+        },
+        "seed": 20260904
+      }
+    ]
+  },
+  "runs": [
+    {
+      "alpha_di_omegaci_over_va_upstream": 0.45607017003964534,
+      "combined_relative_drift": -0.00022140222617377233,
+      "duration_omegaci": 12.001293753458157,
+      "energy_gate_abs": 0.002,
+      "energy_non_overlapping_totals": true,
+      "energy_points": 25,
+      "energy_row_alignment": true,
+      "energy_valid": true,
+      "final_combined_J": 560.22364667034,
+      "flux_coordinates_matching": [
+        0.9715404517283374,
+        0.9936082107735235,
+        1.0509042354843003,
+        1.1123271157005108,
+        1.1923277078508256,
+        1.2810761316425257,
+        1.3789835236350705,
+        1.4921650716417851,
+        1.5822779757763945,
+        1.6421890909388646,
+        1.7067135474249406,
+        1.8288841293823561
+      ],
+      "initial_combined_J": 560.347708900522,
+      "label": "p16_t1_s20260902",
+      "mass_ratio": 25.0,
+      "mu_upstream_normalized_rate": 0.07465623900529794,
+      "ols_slope_flux_over_b0di_per_omegaci": 0.16369463277725052,
+      "paths": {
+        "field_energy": "campaign/run_p16_t1_s20260902/reduced/field_energy.txt",
+        "particle_energy": "campaign/run_p16_t1_s20260902/reduced/particle_energy.txt",
+        "summary": "campaign/summaries/p16_t1_s20260902_summary.json"
+      },
+      "ppc_per_population": 16.0,
+      "present": true,
+      "program_flux_derivative_median": 0.02611826124080327,
+      "seed": 20260902,
+      "steps": 4623,
+      "summary_checks_passed": {
+        "boundaries": {
+          "perturbation_normal_field_zero_at_z_walls": true,
+          "x_fields_periodic": true,
+          "x_particles_periodic": true,
+          "z_fields_conducting": true,
+          "z_particles_reflecting": true
+        },
+        "diagnostics": {
+          "all_reported_values_finite": true,
+          "diagnostic_figure_written": true,
+          "multiple_field_times_readable": true,
+          "openpmd_hdf5_files_nonempty": true,
+          "rate_and_flux_diagnostics_present": true
+        },
+        "numerical_regime": {
+          "cuda_backend_realized": true,
+          "electron_gyroperiod_resolved": true,
+          "electron_plasma_period_resolved": true,
+          "electron_skin_depth_resolved": true,
+          "explicit_multidimensional_cfl_satisfied": true,
+          "nonrelativistic_characteristic_speeds": true,
+          "sheet_half_width_at_least_four_cells": true
+        },
+        "physics_controls": {
+          "collisionless_no_collision_operator": true,
+          "dimensionless_perturbation_declared": true,
+          "harris_ampere_drift_balance": true,
+          "harris_pressure_balance": true,
+          "no_imposed_reconnection_electric_field": true,
+          "stationary_background_populations": true
+        },
+        "representation": {
+          "fully_kinetic_electrons_and_ions": true,
+          "reduced_mass_ratio_declared": true,
+          "two_spatial_three_velocity_dimensions": true
+        }
+      },
+      "temperature_ratio_Ti_Te": 1.0,
+      "time_coordinates_matching": [
+        6.47960830816197,
+        6.97803971648205,
+        7.4764711248020665,
+        7.974902533122084,
+        8.473333941442101,
+        8.97176534976212,
+        9.470196758082137,
+        9.968628166402155,
+        10.467059574722173,
+        10.965490983042189,
+        11.463922391362207,
+        11.962353799682225
+      ],
+      "window_max_time_omegaci": 11.962353799682225,
+      "window_min_time_omegaci": 6.47960830816197,
+      "window_points": 12
+    },
+    {
+      "alpha_di_omegaci_over_va_upstream": 0.45607017003964534,
+      "combined_relative_drift": -0.00015416620828486265,
+      "duration_omegaci": 12.001293753458157,
+      "energy_gate_abs": 0.002,
+      "energy_non_overlapping_totals": true,
+      "energy_points": 25,
+      "energy_row_alignment": true,
+      "energy_valid": true,
+      "final_combined_J": 560.30161123619,
+      "flux_coordinates_matching": [
+        0.9866832981485224,
+        1.0202863312867985,
+        1.053302647823128,
+        1.0991731991871025,
+        1.175373714320625,
+        1.2597784425927905,
+        1.3642392582318343,
+        1.4644393839407088,
+        1.5773825480670476,
+        1.6602996316308607,
+        1.7677584006227827,
+        1.8720646250284663
+      ],
+      "initial_combined_J": 560.388004129955,
+      "label": "p16_t1_s20260903",
+      "mass_ratio": 25.0,
+      "mu_upstream_normalized_rate": 0.07703408492363997,
+      "ols_slope_flux_over_b0di_per_omegaci": 0.16890840485564654,
+      "paths": {
+        "field_energy": "campaign/run_p16_t1_s20260903/reduced/field_energy.txt",
+        "particle_energy": "campaign/run_p16_t1_s20260903/reduced/particle_energy.txt",
+        "summary": "campaign/summaries/p16_t1_s20260903_summary.json"
+      },
+      "ppc_per_population": 16.0,
+      "present": true,
+      "program_flux_derivative_median": 0.02288177748865295,
+      "seed": 20260903,
+      "steps": 4623,
+      "summary_checks_passed": {
+        "boundaries": {
+          "perturbation_normal_field_zero_at_z_walls": true,
+          "x_fields_periodic": true,
+          "x_particles_periodic": true,
+          "z_fields_conducting": true,
+          "z_particles_reflecting": true
+        },
+        "diagnostics": {
+          "all_reported_values_finite": true,
+          "diagnostic_figure_written": true,
+          "multiple_field_times_readable": true,
+          "openpmd_hdf5_files_nonempty": true,
+          "rate_and_flux_diagnostics_present": true
+        },
+        "numerical_regime": {
+          "cuda_backend_realized": true,
+          "electron_gyroperiod_resolved": true,
+          "electron_plasma_period_resolved": true,
+          "electron_skin_depth_resolved": true,
+          "explicit_multidimensional_cfl_satisfied": true,
+          "nonrelativistic_characteristic_speeds": true,
+          "sheet_half_width_at_least_four_cells": true
+        },
+        "physics_controls": {
+          "collisionless_no_collision_operator": true,
+          "dimensionless_perturbation_declared": true,
+          "harris_ampere_drift_balance": true,
+          "harris_pressure_balance": true,
+          "no_imposed_reconnection_electric_field": true,
+          "stationary_background_populations": true
+        },
+        "representation": {
+          "fully_kinetic_electrons_and_ions": true,
+          "reduced_mass_ratio_declared": true,
+          "two_spatial_three_velocity_dimensions": true
+        }
+      },
+      "temperature_ratio_Ti_Te": 1.0,
+      "time_coordinates_matching": [
+        6.47960830816197,
+        6.97803971648205,
+        7.4764711248020665,
+        7.974902533122084,
+        8.473333941442101,
+        8.97176534976212,
+        9.470196758082137,
+        9.968628166402155,
+        10.467059574722173,
+        10.965490983042189,
+        11.463922391362207,
+        11.962353799682225
+      ],
+      "window_max_time_omegaci": 11.962353799682225,
+      "window_min_time_omegaci": 6.47960830816197,
+      "window_points": 12
+    },
+    {
+      "alpha_di_omegaci_over_va_upstream": 0.45607017003964534,
+      "combined_relative_drift": -0.00022192720443614192,
+      "duration_omegaci": 12.001293753458157,
+      "energy_gate_abs": 0.002,
+      "energy_non_overlapping_totals": true,
+      "energy_points": 25,
+      "energy_row_alignment": true,
+      "energy_valid": true,
+      "final_combined_J": 560.303485258429,
+      "flux_coordinates_matching": [
+        0.964076404691716,
+        0.9912169699922608,
+        1.0199853563108718,
+        1.0541642644033409,
+        1.1203391680368544,
+        1.192683647407217,
+        1.287084311362419,
+        1.3941620154168206,
+        1.5099480752731766,
+        1.6192046531310444,
+        1.712115382066234,
+        1.8206568991695304
+      ],
+      "initial_combined_J": 560.4278594465641,
+      "label": "p16_t1_s20260904",
+      "mass_ratio": 25.0,
+      "mu_upstream_normalized_rate": 0.0745439365509538,
+      "ols_slope_flux_over_b0di_per_omegaci": 0.16344839335682454,
+      "paths": {
+        "field_energy": "campaign/run_p16_t1_s20260904/reduced/field_energy.txt",
+        "particle_energy": "campaign/run_p16_t1_s20260904/reduced/particle_energy.txt",
+        "summary": "campaign/summaries/p16_t1_s20260904_summary.json"
+      },
+      "ppc_per_population": 16.0,
+      "present": true,
+      "program_flux_derivative_median": 0.01980731546502602,
+      "seed": 20260904,
+      "steps": 4623,
+      "summary_checks_passed": {
+        "boundaries": {
+          "perturbation_normal_field_zero_at_z_walls": true,
+          "x_fields_periodic": true,
+          "x_particles_periodic": true,
+          "z_fields_conducting": true,
+          "z_particles_reflecting": true
+        },
+        "diagnostics": {
+          "all_reported_values_finite": true,
+          "diagnostic_figure_written": true,
+          "multiple_field_times_readable": true,
+          "openpmd_hdf5_files_nonempty": true,
+          "rate_and_flux_diagnostics_present": true
+        },
+        "numerical_regime": {
+          "cuda_backend_realized": true,
+          "electron_gyroperiod_resolved": true,
+          "electron_plasma_period_resolved": true,
+          "electron_skin_depth_resolved": true,
+          "explicit_multidimensional_cfl_satisfied": true,
+          "nonrelativistic_characteristic_speeds": true,
+          "sheet_half_width_at_least_four_cells": true
+        },
+        "physics_controls": {
+          "collisionless_no_collision_operator": true,
+          "dimensionless_perturbation_declared": true,
+          "harris_ampere_drift_balance": true,
+          "harris_pressure_balance": true,
+          "no_imposed_reconnection_electric_field": true,
+          "stationary_background_populations": true
+        },
+        "representation": {
+          "fully_kinetic_electrons_and_ions": true,
+          "reduced_mass_ratio_declared": true,
+          "two_spatial_three_velocity_dimensions": true
+        }
+      },
+      "temperature_ratio_Ti_Te": 1.0,
+      "time_coordinates_matching": [
+        6.47960830816197,
+        6.97803971648205,
+        7.4764711248020665,
+        7.974902533122084,
+        8.473333941442101,
+        8.97176534976212,
+        9.470196758082137,
+        9.968628166402155,
+        10.467059574722173,
+        10.965490983042189,
+        11.463922391362207,
+        11.962353799682225
+      ],
+      "window_max_time_omegaci": 11.962353799682225,
+      "window_min_time_omegaci": 6.47960830816197,
+      "window_points": 12
+    },
+    {
+      "alpha_di_omegaci_over_va_upstream": 0.45607017003964534,
+      "combined_relative_drift": -1.3470094435699723e-06,
+      "duration_omegaci": 12.001293753458157,
+      "energy_gate_abs": 0.002,
+      "energy_non_overlapping_totals": true,
+      "energy_points": 25,
+      "energy_row_alignment": true,
+      "energy_valid": true,
+      "final_combined_J": 640.941536263716,
+      "flux_coordinates_matching": [
+        0.9446869565239858,
+        0.9744320639096583,
+        1.022399442569094,
+        1.0887634075935138,
+        1.1781115343530117,
+        1.2953554181218445,
+        1.4121678452350575,
+        1.5334092585448345,
+        1.645190117678733,
+        1.7648303596498067,
+        1.8589578262820219,
+        1.965197331729256
+      ],
+      "initial_combined_J": 640.9423996191811,
+      "label": "p16_t20_s20260902",
+      "mass_ratio": 25.0,
+      "mu_upstream_normalized_rate": 0.09069550117940998,
+      "ols_slope_flux_over_b0di_per_omegaci": 0.19886304156118342,
+      "paths": {
+        "field_energy": "campaign/run_p16_t20_s20260902/reduced/field_energy.txt",
+        "particle_energy": "campaign/run_p16_t20_s20260902/reduced/particle_energy.txt",
+        "summary": "campaign/summaries/p16_t20_s20260902_summary.json"
+      },
+      "ppc_per_population": 16.0,
+      "present": true,
+      "program_flux_derivative_median": 0.024647254763006866,
+      "seed": 20260902,
+      "steps": 4623,
+      "summary_checks_passed": {
+        "boundaries": {
+          "perturbation_normal_field_zero_at_z_walls": true,
+          "x_fields_periodic": true,
+          "x_particles_periodic": true,
+          "z_fields_conducting": true,
+          "z_particles_reflecting": true
+        },
+        "diagnostics": {
+          "all_reported_values_finite": true,
+          "diagnostic_figure_written": true,
+          "multiple_field_times_readable": true,
+          "openpmd_hdf5_files_nonempty": true,
+          "rate_and_flux_diagnostics_present": true
+        },
+        "numerical_regime": {
+          "cuda_backend_realized": true,
+          "electron_gyroperiod_resolved": true,
+          "electron_plasma_period_resolved": true,
+          "electron_skin_depth_resolved": true,
+          "explicit_multidimensional_cfl_satisfied": true,
+          "nonrelativistic_characteristic_speeds": true,
+          "sheet_half_width_at_least_four_cells": true
+        },
+        "physics_controls": {
+          "collisionless_no_collision_operator": true,
+          "dimensionless_perturbation_declared": true,
+          "harris_ampere_drift_balance": true,
+          "harris_pressure_balance": true,
+          "no_imposed_reconnection_electric_field": true,
+          "stationary_background_populations": true
+        },
+        "representation": {
+          "fully_kinetic_electrons_and_ions": true,
+          "reduced_mass_ratio_declared": true,
+          "two_spatial_three_velocity_dimensions": true
+        }
+      },
+      "temperature_ratio_Ti_Te": 20.0,
+      "time_coordinates_matching": [
+        6.47960830816197,
+        6.97803971648205,
+        7.4764711248020665,
+        7.974902533122084,
+        8.473333941442101,
+        8.97176534976212,
+        9.470196758082137,
+        9.968628166402155,
+        10.467059574722173,
+        10.965490983042189,
+        11.463922391362207,
+        11.962353799682225
+      ],
+      "window_max_time_omegaci": 11.962353799682225,
+      "window_min_time_omegaci": 6.47960830816197,
+      "window_points": 12
+    },
+    {
+      "alpha_di_omegaci_over_va_upstream": 0.45607017003964534,
+      "combined_relative_drift": -3.685619113959029e-05,
+      "duration_omegaci": 12.001293753458157,
+      "energy_gate_abs": 0.002,
+      "energy_non_overlapping_totals": true,
+      "energy_points": 25,
+      "energy_row_alignment": true,
+      "energy_valid": true,
+      "final_combined_J": 640.799597570366,
+      "flux_coordinates_matching": [
+        0.8571773552119774,
+        0.8580748445023093,
+        0.8596648547669491,
+        0.8584552639599641,
+        0.8670816575209976,
+        0.8888060210041333,
+        0.9340186880213682,
+        1.0214402476325288,
+        1.15938612153905,
+        1.278727202650867,
+        1.3850341367173755,
+        1.4991815049940298
+      ],
+      "initial_combined_J": 640.8232158732969,
+      "label": "p16_t20_s20260903",
+      "mass_ratio": 25.0,
+      "mu_upstream_normalized_rate": 0.0535923112157111,
+      "ols_slope_flux_over_b0di_per_omegaci": 0.1175089158123462,
+      "paths": {
+        "field_energy": "campaign/run_p16_t20_s20260903/reduced/field_energy.txt",
+        "particle_energy": "campaign/run_p16_t20_s20260903/reduced/particle_energy.txt",
+        "summary": "campaign/summaries/p16_t20_s20260903_summary.json"
+      },
+      "ppc_per_population": 16.0,
+      "present": true,
+      "program_flux_derivative_median": 0.007460905156498533,
+      "seed": 20260903,
+      "steps": 4623,
+      "summary_checks_passed": {
+        "boundaries": {
+          "perturbation_normal_field_zero_at_z_walls": true,
+          "x_fields_periodic": true,
+          "x_particles_periodic": true,
+          "z_fields_conducting": true,
+          "z_particles_reflecting": true
+        },
+        "diagnostics": {
+          "all_reported_values_finite": true,
+          "diagnostic_figure_written": true,
+          "multiple_field_times_readable": true,
+          "openpmd_hdf5_files_nonempty": true,
+          "rate_and_flux_diagnostics_present": true
+        },
+        "numerical_regime": {
+          "cuda_backend_realized": true,
+          "electron_gyroperiod_resolved": true,
+          "electron_plasma_period_resolved": true,
+          "electron_skin_depth_resolved": true,
+          "explicit_multidimensional_cfl_satisfied": true,
+          "nonrelativistic_characteristic_speeds": true,
+          "sheet_half_width_at_least_four_cells": true
+        },
+        "physics_controls": {
+          "collisionless_no_collision_operator": true,
+          "dimensionless_perturbation_declared": true,
+          "harris_ampere_drift_balance": true,
+          "harris_pressure_balance": true,
+          "no_imposed_reconnection_electric_field": true,
+          "stationary_background_populations": true
+        },
+        "representation": {
+          "fully_kinetic_electrons_and_ions": true,
+          "reduced_mass_ratio_declared": true,
+          "two_spatial_three_velocity_dimensions": true
+        }
+      },
+      "temperature_ratio_Ti_Te": 20.0,
+      "time_coordinates_matching": [
+        6.47960830816197,
+        6.97803971648205,
+        7.4764711248020665,
+        7.974902533122084,
+        8.473333941442101,
+        8.97176534976212,
+        9.470196758082137,
+        9.968628166402155,
+        10.467059574722173,
+        10.965490983042189,
+        11.463922391362207,
+        11.962353799682225
+      ],
+      "window_max_time_omegaci": 11.962353799682225,
+      "window_min_time_omegaci": 6.47960830816197,
+      "window_points": 12
+    },
+    {
+      "alpha_di_omegaci_over_va_upstream": 0.45607017003964534,
+      "combined_relative_drift": -2.912723514139947e-05,
+      "duration_omegaci": 12.001293753458157,
+      "energy_gate_abs": 0.002,
+      "energy_non_overlapping_totals": true,
+      "energy_points": 25,
+      "energy_row_alignment": true,
+      "energy_valid": true,
+      "final_combined_J": 641.311538545539,
+      "flux_coordinates_matching": [
+        0.8884118231526549,
+        0.9096453200362358,
+        0.9430532507554005,
+        0.9896001280258329,
+        1.0631472650662817,
+        1.1595459728168982,
+        1.2708158734515105,
+        1.3756148818691085,
+        1.4802103560958568,
+        1.5774866710421591,
+        1.6764301050729173,
+        1.7897527475175457
+      ],
+      "initial_combined_J": 641.3302187216229,
+      "label": "p16_t20_s20260904",
+      "mass_ratio": 25.0,
+      "mu_upstream_normalized_rate": 0.07921105706714031,
+      "ols_slope_flux_over_b0di_per_omegaci": 0.1736817320463091,
+      "paths": {
+        "field_energy": "campaign/run_p16_t20_s20260904/reduced/field_energy.txt",
+        "particle_energy": "campaign/run_p16_t20_s20260904/reduced/particle_energy.txt",
+        "summary": "campaign/summaries/p16_t20_s20260904_summary.json"
+      },
+      "ppc_per_population": 16.0,
+      "present": true,
+      "program_flux_derivative_median": 0.01512968641766006,
+      "seed": 20260904,
+      "steps": 4623,
+      "summary_checks_passed": {
+        "boundaries": {
+          "perturbation_normal_field_zero_at_z_walls": true,
+          "x_fields_periodic": true,
+          "x_particles_periodic": true,
+          "z_fields_conducting": true,
+          "z_particles_reflecting": true
+        },
+        "diagnostics": {
+          "all_reported_values_finite": true,
+          "diagnostic_figure_written": true,
+          "multiple_field_times_readable": true,
+          "openpmd_hdf5_files_nonempty": true,
+          "rate_and_flux_diagnostics_present": true
+        },
+        "numerical_regime": {
+          "cuda_backend_realized": true,
+          "electron_gyroperiod_resolved": true,
+          "electron_plasma_period_resolved": true,
+          "electron_skin_depth_resolved": true,
+          "explicit_multidimensional_cfl_satisfied": true,
+          "nonrelativistic_characteristic_speeds": true,
+          "sheet_half_width_at_least_four_cells": true
+        },
+        "physics_controls": {
+          "collisionless_no_collision_operator": true,
+          "dimensionless_perturbation_declared": true,
+          "harris_ampere_drift_balance": true,
+          "harris_pressure_balance": true,
+          "no_imposed_reconnection_electric_field": true,
+          "stationary_background_populations": true
+        },
+        "representation": {
+          "fully_kinetic_electrons_and_ions": true,
+          "reduced_mass_ratio_declared": true,
+          "two_spatial_three_velocity_dimensions": true
+        }
+      },
+      "temperature_ratio_Ti_Te": 20.0,
+      "time_coordinates_matching": [
+        6.47960830816197,
+        6.97803971648205,
+        7.4764711248020665,
+        7.974902533122084,
+        8.473333941442101,
+        8.97176534976212,
+        9.470196758082137,
+        9.968628166402155,
+        10.467059574722173,
+        10.965490983042189,
+        11.463922391362207,
+        11.962353799682225
+      ],
+      "window_max_time_omegaci": 11.962353799682225,
+      "window_min_time_omegaci": 6.47960830816197,
+      "window_points": 12
+    },
+    {
+      "alpha_di_omegaci_over_va_upstream": 0.45607017003964534,
+      "combined_relative_drift": -0.00048428769046297447,
+      "duration_omegaci": 12.001293753458157,
+      "energy_gate_abs": 0.002,
+      "energy_non_overlapping_totals": true,
+      "energy_points": 25,
+      "energy_row_alignment": true,
+      "energy_valid": true,
+      "final_combined_J": 559.9940231906139,
+      "flux_coordinates_matching": [
+        0.8629114236303265,
+        0.8665532433211341,
+        0.8918196156231261,
+        0.9586368069211528,
+        1.0229377191275,
+        1.1309618799334948,
+        1.2711879115747824,
+        1.4003256354769535,
+        1.55930428960293,
+        1.6987899972615235,
+        1.7964564635262257,
+        1.9061381357785032
+      ],
+      "initial_combined_J": 560.26535280437,
+      "label": "p8_t1_s20260902",
+      "mass_ratio": 25.0,
+      "mu_upstream_normalized_rate": 0.09524157324714336,
+      "ols_slope_flux_over_b0di_per_omegaci": 0.20883096396956674,
+      "paths": {
+        "field_energy": "campaign/run_p8_t1_s20260902/reduced/field_energy.txt",
+        "particle_energy": "campaign/run_p8_t1_s20260902/reduced/particle_energy.txt",
+        "summary": "campaign/summaries/p8_t1_s20260902_summary.json"
+      },
+      "ppc_per_population": 8.0,
+      "present": true,
+      "program_flux_derivative_median": 0.014733496666678766,
+      "seed": 20260902,
+      "steps": 4623,
+      "summary_checks_passed": {
+        "boundaries": {
+          "perturbation_normal_field_zero_at_z_walls": true,
+          "x_fields_periodic": true,
+          "x_particles_periodic": true,
+          "z_fields_conducting": true,
+          "z_particles_reflecting": true
+        },
+        "diagnostics": {
+          "all_reported_values_finite": true,
+          "diagnostic_figure_written": true,
+          "multiple_field_times_readable": true,
+          "openpmd_hdf5_files_nonempty": true,
+          "rate_and_flux_diagnostics_present": true
+        },
+        "numerical_regime": {
+          "cuda_backend_realized": true,
+          "electron_gyroperiod_resolved": true,
+          "electron_plasma_period_resolved": true,
+          "electron_skin_depth_resolved": true,
+          "explicit_multidimensional_cfl_satisfied": true,
+          "nonrelativistic_characteristic_speeds": true,
+          "sheet_half_width_at_least_four_cells": true
+        },
+        "physics_controls": {
+          "collisionless_no_collision_operator": true,
+          "dimensionless_perturbation_declared": true,
+          "harris_ampere_drift_balance": true,
+          "harris_pressure_balance": true,
+          "no_imposed_reconnection_electric_field": true,
+          "stationary_background_populations": true
+        },
+        "representation": {
+          "fully_kinetic_electrons_and_ions": true,
+          "reduced_mass_ratio_declared": true,
+          "two_spatial_three_velocity_dimensions": true
+        }
+      },
+      "temperature_ratio_Ti_Te": 1.0,
+      "time_coordinates_matching": [
+        6.47960830816197,
+        6.97803971648205,
+        7.4764711248020665,
+        7.974902533122084,
+        8.473333941442101,
+        8.97176534976212,
+        9.470196758082137,
+        9.968628166402155,
+        10.467059574722173,
+        10.965490983042189,
+        11.463922391362207,
+        11.962353799682225
+      ],
+      "window_max_time_omegaci": 11.962353799682225,
+      "window_min_time_omegaci": 6.47960830816197,
+      "window_points": 12
+    },
+    {
+      "alpha_di_omegaci_over_va_upstream": 0.45607017003964534,
+      "combined_relative_drift": -0.00044696205303540096,
+      "duration_omegaci": 12.001293753458157,
+      "energy_gate_abs": 0.002,
+      "energy_non_overlapping_totals": true,
+      "energy_points": 25,
+      "energy_row_alignment": true,
+      "energy_valid": true,
+      "final_combined_J": 560.596734696933,
+      "flux_coordinates_matching": [
+        0.8115404917551773,
+        0.8130777511744892,
+        0.8169464436781253,
+        0.8288346532581113,
+        0.821663215197201,
+        0.8135161998627607,
+        0.8232468791300961,
+        0.8271017709016484,
+        0.832741729757345,
+        0.8280696348518094,
+        0.8314885209378716,
+        0.8247218097426937
+      ],
+      "initial_combined_J": 560.847412207733,
+      "label": "p8_t1_s20260903",
+      "mass_ratio": 25.0,
+      "mu_upstream_normalized_rate": 0.0013889465270183695,
+      "ols_slope_flux_over_b0di_per_omegaci": 0.0030454667247753367,
+      "paths": {
+        "field_energy": "campaign/run_p8_t1_s20260903/reduced/field_energy.txt",
+        "particle_energy": "campaign/run_p8_t1_s20260903/reduced/particle_energy.txt",
+        "summary": "campaign/summaries/p8_t1_s20260903_summary.json"
+      },
+      "ppc_per_population": 8.0,
+      "present": true,
+      "program_flux_derivative_median": -0.00020311219256580757,
+      "seed": 20260903,
+      "steps": 4623,
+      "summary_checks_passed": {
+        "boundaries": {
+          "perturbation_normal_field_zero_at_z_walls": true,
+          "x_fields_periodic": true,
+          "x_particles_periodic": true,
+          "z_fields_conducting": true,
+          "z_particles_reflecting": true
+        },
+        "diagnostics": {
+          "all_reported_values_finite": true,
+          "diagnostic_figure_written": true,
+          "multiple_field_times_readable": true,
+          "openpmd_hdf5_files_nonempty": true,
+          "rate_and_flux_diagnostics_present": true
+        },
+        "numerical_regime": {
+          "cuda_backend_realized": true,
+          "electron_gyroperiod_resolved": true,
+          "electron_plasma_period_resolved": true,
+          "electron_skin_depth_resolved": true,
+          "explicit_multidimensional_cfl_satisfied": true,
+          "nonrelativistic_characteristic_speeds": true,
+          "sheet_half_width_at_least_four_cells": true
+        },
+        "physics_controls": {
+          "collisionless_no_collision_operator": true,
+          "dimensionless_perturbation_declared": true,
+          "harris_ampere_drift_balance": true,
+          "harris_pressure_balance": true,
+          "no_imposed_reconnection_electric_field": true,
+          "stationary_background_populations": true
+        },
+        "representation": {
+          "fully_kinetic_electrons_and_ions": true,
+          "reduced_mass_ratio_declared": true,
+          "two_spatial_three_velocity_dimensions": true
+        }
+      },
+      "temperature_ratio_Ti_Te": 1.0,
+      "time_coordinates_matching": [
+        6.47960830816197,
+        6.97803971648205,
+        7.4764711248020665,
+        7.974902533122084,
+        8.473333941442101,
+        8.97176534976212,
+        9.470196758082137,
+        9.968628166402155,
+        10.467059574722173,
+        10.965490983042189,
+        11.463922391362207,
+        11.962353799682225
+      ],
+      "window_max_time_omegaci": 11.962353799682225,
+      "window_min_time_omegaci": 6.47960830816197,
+      "window_points": 12
+    },
+    {
+      "alpha_di_omegaci_over_va_upstream": 0.45607017003964534,
+      "combined_relative_drift": -0.0004588813817522079,
+      "duration_omegaci": 12.001293753458157,
+      "energy_gate_abs": 0.002,
+      "energy_non_overlapping_totals": true,
+      "energy_points": 25,
+      "energy_row_alignment": true,
+      "energy_valid": true,
+      "final_combined_J": 560.09165372122,
+      "flux_coordinates_matching": [
+        0.8629990388212875,
+        0.8562518934608182,
+        0.8639921605783222,
+        0.8761408207264537,
+        0.8975223958654084,
+        0.9380662787037708,
+        0.9879765269549995,
+        1.0755787064704296,
+        1.1952183131624212,
+        1.3585820934507582,
+        1.494932850460998,
+        1.6330715341298294
+      ],
+      "initial_combined_J": 560.348787347021,
+      "label": "p8_t1_s20260904",
+      "mass_ratio": 25.0,
+      "mu_upstream_normalized_rate": 0.06354053938733792,
+      "ols_slope_flux_over_b0di_per_omegaci": 0.13932184905190018,
+      "paths": {
+        "field_energy": "campaign/run_p8_t1_s20260904/reduced/field_energy.txt",
+        "particle_energy": "campaign/run_p8_t1_s20260904/reduced/particle_energy.txt",
+        "summary": "campaign/summaries/p8_t1_s20260904_summary.json"
+      },
+      "ppc_per_population": 8.0,
+      "present": true,
+      "program_flux_derivative_median": 0.011532767061760311,
+      "seed": 20260904,
+      "steps": 4623,
+      "summary_checks_passed": {
+        "boundaries": {
+          "perturbation_normal_field_zero_at_z_walls": true,
+          "x_fields_periodic": true,
+          "x_particles_periodic": true,
+          "z_fields_conducting": true,
+          "z_particles_reflecting": true
+        },
+        "diagnostics": {
+          "all_reported_values_finite": true,
+          "diagnostic_figure_written": true,
+          "multiple_field_times_readable": true,
+          "openpmd_hdf5_files_nonempty": true,
+          "rate_and_flux_diagnostics_present": true
+        },
+        "numerical_regime": {
+          "cuda_backend_realized": true,
+          "electron_gyroperiod_resolved": true,
+          "electron_plasma_period_resolved": true,
+          "electron_skin_depth_resolved": true,
+          "explicit_multidimensional_cfl_satisfied": true,
+          "nonrelativistic_characteristic_speeds": true,
+          "sheet_half_width_at_least_four_cells": true
+        },
+        "physics_controls": {
+          "collisionless_no_collision_operator": true,
+          "dimensionless_perturbation_declared": true,
+          "harris_ampere_drift_balance": true,
+          "harris_pressure_balance": true,
+          "no_imposed_reconnection_electric_field": true,
+          "stationary_background_populations": true
+        },
+        "representation": {
+          "fully_kinetic_electrons_and_ions": true,
+          "reduced_mass_ratio_declared": true,
+          "two_spatial_three_velocity_dimensions": true
+        }
+      },
+      "temperature_ratio_Ti_Te": 1.0,
+      "time_coordinates_matching": [
+        6.47960830816197,
+        6.97803971648205,
+        7.4764711248020665,
+        7.974902533122084,
+        8.473333941442101,
+        8.97176534976212,
+        9.470196758082137,
+        9.968628166402155,
+        10.467059574722173,
+        10.965490983042189,
+        11.463922391362207,
+        11.962353799682225
+      ],
+      "window_max_time_omegaci": 11.962353799682225,
+      "window_min_time_omegaci": 6.47960830816197,
+      "window_points": 12
+    },
+    {
+      "alpha_di_omegaci_over_va_upstream": 0.45607017003964534,
+      "combined_relative_drift": -0.00019477783256985383,
+      "duration_omegaci": 12.001293753458157,
+      "energy_gate_abs": 0.002,
+      "energy_non_overlapping_totals": true,
+      "energy_points": 25,
+      "energy_row_alignment": true,
+      "energy_valid": true,
+      "final_combined_J": 640.997029948794,
+      "flux_coordinates_matching": [
+        0.8243278393211121,
+        0.8227872991486687,
+        0.8259424763346449,
+        0.843181112388261,
+        0.8557057988544287,
+        0.8811098701420221,
+        0.9403121872920087,
+        1.0277639699069712,
+        1.120772600820415,
+        1.2102576408692995,
+        1.317507299639983,
+        1.4280695217578872
+      ],
+      "initial_combined_J": 641.121906284113,
+      "label": "p8_t20_s20260902",
+      "mass_ratio": 25.0,
+      "mu_upstream_normalized_rate": 0.05038056057188323,
+      "ols_slope_flux_over_b0di_per_omegaci": 0.11046668666688668,
+      "paths": {
+        "field_energy": "campaign/run_p8_t20_s20260902/reduced/field_energy.txt",
+        "particle_energy": "campaign/run_p8_t20_s20260902/reduced/particle_energy.txt",
+        "summary": "campaign/summaries/p8_t20_s20260902_summary.json"
+      },
+      "ppc_per_population": 8.0,
+      "present": true,
+      "program_flux_derivative_median": 0.00716438205491975,
+      "seed": 20260902,
+      "steps": 4623,
+      "summary_checks_passed": {
+        "boundaries": {
+          "perturbation_normal_field_zero_at_z_walls": true,
+          "x_fields_periodic": true,
+          "x_particles_periodic": true,
+          "z_fields_conducting": true,
+          "z_particles_reflecting": true
+        },
+        "diagnostics": {
+          "all_reported_values_finite": true,
+          "diagnostic_figure_written": true,
+          "multiple_field_times_readable": true,
+          "openpmd_hdf5_files_nonempty": true,
+          "rate_and_flux_diagnostics_present": true
+        },
+        "numerical_regime": {
+          "cuda_backend_realized": true,
+          "electron_gyroperiod_resolved": true,
+          "electron_plasma_period_resolved": true,
+          "electron_skin_depth_resolved": true,
+          "explicit_multidimensional_cfl_satisfied": true,
+          "nonrelativistic_characteristic_speeds": true,
+          "sheet_half_width_at_least_four_cells": true
+        },
+        "physics_controls": {
+          "collisionless_no_collision_operator": true,
+          "dimensionless_perturbation_declared": true,
+          "harris_ampere_drift_balance": true,
+          "harris_pressure_balance": true,
+          "no_imposed_reconnection_electric_field": true,
+          "stationary_background_populations": true
+        },
+        "representation": {
+          "fully_kinetic_electrons_and_ions": true,
+          "reduced_mass_ratio_declared": true,
+          "two_spatial_three_velocity_dimensions": true
+        }
+      },
+      "temperature_ratio_Ti_Te": 20.0,
+      "time_coordinates_matching": [
+        6.47960830816197,
+        6.97803971648205,
+        7.4764711248020665,
+        7.974902533122084,
+        8.473333941442101,
+        8.97176534976212,
+        9.470196758082137,
+        9.968628166402155,
+        10.467059574722173,
+        10.965490983042189,
+        11.463922391362207,
+        11.962353799682225
+      ],
+      "window_max_time_omegaci": 11.962353799682225,
+      "window_min_time_omegaci": 6.47960830816197,
+      "window_points": 12
+    },
+    {
+      "alpha_di_omegaci_over_va_upstream": 0.45607017003964534,
+      "combined_relative_drift": -0.00018704862789354064,
+      "duration_omegaci": 12.001293753458157,
+      "energy_gate_abs": 0.002,
+      "energy_non_overlapping_totals": true,
+      "energy_points": 25,
+      "energy_row_alignment": true,
+      "energy_valid": true,
+      "final_combined_J": 641.847154304258,
+      "flux_coordinates_matching": [
+        0.8779370559140847,
+        0.8936187246248103,
+        0.9251464511418802,
+        0.9775783969157852,
+        1.055285934639024,
+        1.172235604952137,
+        1.3117103918994208,
+        1.4447168307582652,
+        1.5666853264419758,
+        1.6908087373285507,
+        1.7977317630297438,
+        1.9026720116563318
+      ],
+      "initial_combined_J": 641.967233394417,
+      "label": "p8_t20_s20260903",
+      "mass_ratio": 25.0,
+      "mu_upstream_normalized_rate": 0.09285133860364768,
+      "ols_slope_flux_over_b0di_per_omegaci": 0.20359002781430824,
+      "paths": {
+        "field_energy": "campaign/run_p8_t20_s20260903/reduced/field_energy.txt",
+        "particle_energy": "campaign/run_p8_t20_s20260903/reduced/particle_energy.txt",
+        "summary": "campaign/summaries/p8_t20_s20260903_summary.json"
+      },
+      "ppc_per_population": 8.0,
+      "present": true,
+      "program_flux_derivative_median": 0.013593292665911475,
+      "seed": 20260903,
+      "steps": 4623,
+      "summary_checks_passed": {
+        "boundaries": {
+          "perturbation_normal_field_zero_at_z_walls": true,
+          "x_fields_periodic": true,
+          "x_particles_periodic": true,
+          "z_fields_conducting": true,
+          "z_particles_reflecting": true
+        },
+        "diagnostics": {
+          "all_reported_values_finite": true,
+          "diagnostic_figure_written": true,
+          "multiple_field_times_readable": true,
+          "openpmd_hdf5_files_nonempty": true,
+          "rate_and_flux_diagnostics_present": true
+        },
+        "numerical_regime": {
+          "cuda_backend_realized": true,
+          "electron_gyroperiod_resolved": true,
+          "electron_plasma_period_resolved": true,
+          "electron_skin_depth_resolved": true,
+          "explicit_multidimensional_cfl_satisfied": true,
+          "nonrelativistic_characteristic_speeds": true,
+          "sheet_half_width_at_least_four_cells": true
+        },
+        "physics_controls": {
+          "collisionless_no_collision_operator": true,
+          "dimensionless_perturbation_declared": true,
+          "harris_ampere_drift_balance": true,
+          "harris_pressure_balance": true,
+          "no_imposed_reconnection_electric_field": true,
+          "stationary_background_populations": true
+        },
+        "representation": {
+          "fully_kinetic_electrons_and_ions": true,
+          "reduced_mass_ratio_declared": true,
+          "two_spatial_three_velocity_dimensions": true
+        }
+      },
+      "temperature_ratio_Ti_Te": 20.0,
+      "time_coordinates_matching": [
+        6.47960830816197,
+        6.97803971648205,
+        7.4764711248020665,
+        7.974902533122084,
+        8.473333941442101,
+        8.97176534976212,
+        9.470196758082137,
+        9.968628166402155,
+        10.467059574722173,
+        10.965490983042189,
+        11.463922391362207,
+        11.962353799682225
+      ],
+      "window_max_time_omegaci": 11.962353799682225,
+      "window_min_time_omegaci": 6.47960830816197,
+      "window_points": 12
+    },
+    {
+      "alpha_di_omegaci_over_va_upstream": 0.45607017003964534,
+      "combined_relative_drift": -0.00020208059859484954,
+      "duration_omegaci": 12.001293753458157,
+      "energy_gate_abs": 0.002,
+      "energy_non_overlapping_totals": true,
+      "energy_points": 25,
+      "energy_row_alignment": true,
+      "energy_valid": true,
+      "final_combined_J": 641.530795336544,
+      "flux_coordinates_matching": [
+        0.8363996403403952,
+        0.8427011461717878,
+        0.8436842918554334,
+        0.8563898723310978,
+        0.8511815247008301,
+        0.850984227067301,
+        0.847258357113844,
+        0.8523690311261743,
+        0.8433743818310738,
+        0.8332881926786205,
+        0.8843586293399719,
+        0.936601708473484
+      ],
+      "initial_combined_J": 641.6604624668939,
+      "label": "p8_t20_s20260904",
+      "mass_ratio": 25.0,
+      "mu_upstream_normalized_rate": 0.004284319692413562,
+      "ols_slope_flux_over_b0di_per_omegaci": 0.009393992358766052,
+      "paths": {
+        "field_energy": "campaign/run_p8_t20_s20260904/reduced/field_energy.txt",
+        "particle_energy": "campaign/run_p8_t20_s20260904/reduced/particle_energy.txt",
+        "summary": "campaign/summaries/p8_t20_s20260904_summary.json"
+      },
+      "ppc_per_population": 8.0,
+      "present": true,
+      "program_flux_derivative_median": 0.0032662580487640763,
+      "seed": 20260904,
+      "steps": 4623,
+      "summary_checks_passed": {
+        "boundaries": {
+          "perturbation_normal_field_zero_at_z_walls": true,
+          "x_fields_periodic": true,
+          "x_particles_periodic": true,
+          "z_fields_conducting": true,
+          "z_particles_reflecting": true
+        },
+        "diagnostics": {
+          "all_reported_values_finite": true,
+          "diagnostic_figure_written": true,
+          "multiple_field_times_readable": true,
+          "openpmd_hdf5_files_nonempty": true,
+          "rate_and_flux_diagnostics_present": true
+        },
+        "numerical_regime": {
+          "cuda_backend_realized": true,
+          "electron_gyroperiod_resolved": true,
+          "electron_plasma_period_resolved": true,
+          "electron_skin_depth_resolved": true,
+          "explicit_multidimensional_cfl_satisfied": true,
+          "nonrelativistic_characteristic_speeds": true,
+          "sheet_half_width_at_least_four_cells": true
+        },
+        "physics_controls": {
+          "collisionless_no_collision_operator": true,
+          "dimensionless_perturbation_declared": true,
+          "harris_ampere_drift_balance": true,
+          "harris_pressure_balance": true,
+          "no_imposed_reconnection_electric_field": true,
+          "stationary_background_populations": true
+        },
+        "representation": {
+          "fully_kinetic_electrons_and_ions": true,
+          "reduced_mass_ratio_declared": true,
+          "two_spatial_three_velocity_dimensions": true
+        }
+      },
+      "temperature_ratio_Ti_Te": 20.0,
+      "time_coordinates_matching": [
+        6.47960830816197,
+        6.97803971648205,
+        7.4764711248020665,
+        7.974902533122084,
+        8.473333941442101,
+        8.97176534976212,
+        9.470196758082137,
+        9.968628166402155,
+        10.467059574722173,
+        10.965490983042189,
+        11.463922391362207,
+        11.962353799682225
+      ],
+      "window_max_time_omegaci": 11.962353799682225,
+      "window_min_time_omegaci": 6.47960830816197,
+      "window_points": 12
+    }
+  ],
+  "schema_version": "0.1.0",
+  "summary_statistics": {
+    "TiTe1_ppc16": {
+      "mean": 0.0754114201599639,
+      "n": 3,
+      "sd": 0.0014063902949643318,
+      "se": 0.0008119798153833342
+    },
+    "TiTe1_ppc8": {
+      "mean": 0.05339035305383322,
+      "n": 3,
+      "sd": 0.047742523996123505,
+      "se": 0.027564159080954075
+    },
+    "TiTe20_ppc16": {
+      "mean": 0.07449962315408713,
+      "n": 3,
+      "sd": 0.018994996275555887,
+      "se": 0.01096676621294813
+    },
+    "TiTe20_ppc8": {
+      "mean": 0.04917207295598149,
+      "n": 3,
+      "sd": 0.0442958749935484,
+      "se": 0.025574235351515182
+    }
+  }
+}

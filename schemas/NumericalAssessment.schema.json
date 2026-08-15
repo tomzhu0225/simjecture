@@ -1,0 +1,54 @@
+{
+  "$defs": {
+    "AttemptOutcome": {
+      "enum": [
+        "success",
+        "infrastructure_failure",
+        "specification_failure",
+        "numerical_failure",
+        "validity_failure",
+        "interrupted"
+      ],
+      "title": "AttemptOutcome",
+      "type": "string"
+    },
+    "RecoveryAction": {
+      "enum": [
+        "accept",
+        "retry_refined",
+        "retry_reference",
+        "human_review"
+      ],
+      "title": "RecoveryAction",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "evidence_eligible": {
+      "title": "Evidence Eligible",
+      "type": "boolean"
+    },
+    "outcome": {
+      "$ref": "#/$defs/AttemptOutcome"
+    },
+    "reasons": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Reasons",
+      "type": "array"
+    },
+    "recovery_action": {
+      "$ref": "#/$defs/RecoveryAction"
+    }
+  },
+  "required": [
+    "outcome",
+    "evidence_eligible",
+    "reasons",
+    "recovery_action"
+  ],
+  "title": "NumericalAssessment",
+  "type": "object"
+}

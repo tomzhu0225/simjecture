@@ -1,0 +1,142 @@
+{
+  "$defs": {
+    "ActionOrigin": {
+      "enum": [
+        "human",
+        "ai",
+        "deterministic",
+        "mixed"
+      ],
+      "title": "ActionOrigin",
+      "type": "string"
+    },
+    "CampaignAction": {
+      "additionalProperties": false,
+      "properties": {
+        "action_type": {
+          "minLength": 1,
+          "title": "Action Type",
+          "type": "string"
+        },
+        "budget_units": {
+          "exclusiveMinimum": 0,
+          "title": "Budget Units",
+          "type": "number"
+        },
+        "dependencies": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Dependencies",
+          "type": "array"
+        },
+        "evidence_role": {
+          "$ref": "#/$defs/EvidenceRole"
+        },
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "independence_group": {
+          "minLength": 1,
+          "title": "Independence Group",
+          "type": "string"
+        },
+        "origin": {
+          "$ref": "#/$defs/ActionOrigin"
+        },
+        "payload": {
+          "additionalProperties": true,
+          "title": "Payload",
+          "type": "object"
+        },
+        "purpose": {
+          "minLength": 1,
+          "title": "Purpose",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "action_type",
+        "purpose",
+        "evidence_role",
+        "independence_group",
+        "origin",
+        "budget_units"
+      ],
+      "title": "CampaignAction",
+      "type": "object"
+    },
+    "CampaignBudget": {
+      "additionalProperties": false,
+      "properties": {
+        "total_units": {
+          "exclusiveMinimum": 0,
+          "title": "Total Units",
+          "type": "number"
+        },
+        "unit_name": {
+          "default": "normalized_compute_unit",
+          "minLength": 1,
+          "title": "Unit Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "total_units"
+      ],
+      "title": "CampaignBudget",
+      "type": "object"
+    },
+    "EvidenceRole": {
+      "enum": [
+        "discovery",
+        "confirmation",
+        "qualification"
+      ],
+      "title": "EvidenceRole",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "actions": {
+      "items": {
+        "$ref": "#/$defs/CampaignAction"
+      },
+      "minItems": 1,
+      "title": "Actions",
+      "type": "array"
+    },
+    "budget": {
+      "$ref": "#/$defs/CampaignBudget"
+    },
+    "id": {
+      "minLength": 1,
+      "title": "Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "actions",
+    "budget"
+  ],
+  "title": "CampaignActionGraph",
+  "type": "object"
+}

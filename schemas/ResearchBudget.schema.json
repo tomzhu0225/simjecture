@@ -1,0 +1,39 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "maximum_compute_units": {
+      "exclusiveMinimum": 0,
+      "title": "Maximum Compute Units",
+      "type": "number"
+    },
+    "maximum_iterations": {
+      "minimum": 1,
+      "title": "Maximum Iterations",
+      "type": "integer"
+    },
+    "maximum_storage_bytes": {
+      "exclusiveMinimum": 0,
+      "title": "Maximum Storage Bytes",
+      "type": "integer"
+    },
+    "maximum_tool_calls": {
+      "minimum": 0,
+      "title": "Maximum Tool Calls",
+      "type": "integer"
+    },
+    "maximum_wall_seconds": {
+      "exclusiveMinimum": 0,
+      "title": "Maximum Wall Seconds",
+      "type": "number"
+    }
+  },
+  "required": [
+    "maximum_iterations",
+    "maximum_tool_calls",
+    "maximum_compute_units",
+    "maximum_wall_seconds",
+    "maximum_storage_bytes"
+  ],
+  "title": "ResearchBudget",
+  "type": "object"
+}

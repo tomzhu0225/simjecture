@@ -1,0 +1,86 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "checks": {
+      "additionalProperties": {
+        "type": "boolean"
+      },
+      "title": "Checks",
+      "type": "object"
+    },
+    "compiled_case_hashes": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Compiled Case Hashes",
+      "type": "object"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "expected_warpx_version": {
+      "minLength": 1,
+      "title": "Expected Warpx Version",
+      "type": "string"
+    },
+    "host_architecture": {
+      "title": "Host Architecture",
+      "type": "string"
+    },
+    "observed_warpx_version": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Observed Warpx Version"
+    },
+    "package_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Package Hash",
+      "type": "string"
+    },
+    "passed": {
+      "title": "Passed",
+      "type": "boolean"
+    },
+    "profile_id": {
+      "minLength": 1,
+      "title": "Profile Id",
+      "type": "string"
+    },
+    "qualification_kind": {
+      "const": "picmi_compile_only",
+      "default": "picmi_compile_only",
+      "title": "Qualification Kind",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "scientific_evidence_eligible": {
+      "const": false,
+      "default": false,
+      "title": "Scientific Evidence Eligible",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "profile_id",
+    "package_hash",
+    "expected_warpx_version",
+    "checks",
+    "passed"
+  ],
+  "title": "WarpXQualificationRecord",
+  "type": "object"
+}
