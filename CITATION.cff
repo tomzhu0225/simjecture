@@ -13,6 +13,10 @@ authors:
 license: Apache-2.0
 repository-code: "https://github.com/tomzhu0225/simjecture"
 url: "https://github.com/tomzhu0225/simjecture"
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.21945749
+    description: Archived Simjecture v0.1.0 software release
 keywords:
   - autonomous science
   - computational physics

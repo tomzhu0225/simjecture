@@ -1,5 +1,7 @@
 # Simjecture
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21945749.svg)](https://doi.org/10.5281/zenodo.21945749)
+
 **Hypothesize. Simulate. Falsify.**
 
 Simjecture is an evidence-governed autonomous experimentation and falsification
@@ -360,9 +362,10 @@ docs/                    curated documentation
 
 ## Citation and license
 
-Citation metadata is provided in [CITATION.cff](CITATION.cff). Until the
-accompanying paper receives an archival identifier, cite the exact software
-version and Git commit used for a result.
+Citation metadata is provided in [CITATION.cff](CITATION.cff). Version 0.1.0 is
+archived at [doi:10.5281/zenodo.21945749](https://doi.org/10.5281/zenodo.21945749);
+the [concept DOI](https://doi.org/10.5281/zenodo.21945748) resolves to the release
+series. Cite the exact software version and Git commit used for a result.
 
 Copyright 2026 Bowen Zhu and contributors. Licensed under the
 [Apache License 2.0](LICENSE).
