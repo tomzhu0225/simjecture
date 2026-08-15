@@ -14,6 +14,9 @@ hypothesis solving or empirical closure.
 
 ## Choose a starting point
 
+- **No-key tour:** verify and replay the
+  [recorded Gray–Scott demo](demos/gray-scott.md); it makes no model calls and
+  starts no simulations.
 - **New user:** follow [Installation](getting-started/installation.md),
   [First autonomous run](getting-started/first-run.md), and the
   [Terminal interface](getting-started/terminal-ui.md).
@@ -87,4 +90,5 @@ research/next-steps
 :caption: Development
 
 development/documentation
+development/releasing
 ```

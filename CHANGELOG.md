@@ -2,7 +2,7 @@
 
 This project follows semantic versioning. Dates use ISO 8601.
 
-## 0.1.0 — research preview
+## 0.1.0 — 2026-08-15
 
 - Added a read-only MVP run monitor and headless `status` / `watch` commands.
   A missing report is incomplete, not running. `watch` Ctrl-C stops the viewer
@@ -48,6 +48,8 @@ This project follows semantic versioning. Dates use ISO 8601.
   pandas, without exposing the host home or user site.
 - Added idempotent `install` profiles and a read-only, JSON-capable `doctor` for
   the core scientific stack and release-pinned WarpX CPU/CUDA capabilities.
+- Added self-contained, integrity-checked Gray–Scott and collisionless GEM
+  records that can be inspected without an API key or simulator runtime.
 
 This release is an auditable research prototype of the evidence harness and
 recorded campaigns. It does not claim unrestricted scientific problem solving.

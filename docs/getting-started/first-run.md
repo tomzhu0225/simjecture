@@ -1,7 +1,20 @@
 # First autonomous run
 
-Choose a bounded hypothesis whose outcome can be evaluated with ordinary Python
-before attaching an expensive simulator.
+To explore the interface before supplying an API key, replay the committed
+Gray–Scott record. This is read-only and starts neither a model call nor a
+simulation:
+
+```bash
+uv sync --frozen --extra tui
+uv run python demos/gray_scott_counterexample/verify_record.py
+uv run simjecture tui demos/gray_scott_counterexample/record
+```
+
+See [Recorded Gray–Scott demo](../demos/gray-scott.md) for the scientific result
+and the boundaries of that record.
+
+To start a new autonomous campaign, choose a bounded hypothesis whose outcome
+can be evaluated with ordinary Python before attaching an expensive simulator.
 
 ```bash
 export DEEPSEEK_API_KEY='your-process-local-key'

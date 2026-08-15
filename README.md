@@ -130,6 +130,32 @@ require prospective evidence contracts, commissioned instruments, immutable
 provenance, and guarded claim closure so that a persuasive explanation cannot
 substitute for a valid result.
 
+## Explore a completed run — no API key required
+
+The fastest way to see Simjecture is to replay the recorded Gray–Scott campaign.
+It is a real 23.8-minute autonomous run, preserved with its hypothesis tree,
+transcript, agent-written programs, numerical evidence, and provenance. Replay
+is read-only: it makes no model calls and starts no simulations.
+
+```bash
+git clone https://github.com/tomzhu0225/simjecture.git
+cd simjecture
+uv sync --frozen --extra tui
+uv run python demos/gray_scott_counterexample/verify_record.py
+uv run simjecture tui demos/gray_scott_counterexample/record
+```
+
+Inside the dashboard, select hypotheses to inspect their linked evidence and
+validation claims; press `v` for the complete typed audit ledger. For a
+non-interactive summary instead, run:
+
+```bash
+uv run simjecture status demos/gray_scott_counterexample/record
+```
+
+The dashboard is a human-readable projection. The files in the recorded run
+remain the authoritative scientific record.
+
 ## Quick start
 
 Requirements:
