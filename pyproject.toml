@@ -43,6 +43,7 @@ dependencies = [
 acs = "conjecture_solver.cli:main"
 conjecture-solver = "conjecture_solver.cli:main"
 simjecture = "conjecture_solver.cli:main"
+simjecture-mcp = "conjecture_solver.mcp_server:main"
 
 [project.urls]
 Homepage = "https://github.com/tomzhu0225/simjecture"
@@ -53,6 +54,9 @@ Issues = "https://github.com/tomzhu0225/simjecture/issues"
 [project.optional-dependencies]
 tui = [
   "textual>=2.0,<9",
+]
+dsh = [
+  "mcp>=2,<3",
 ]
 
 [dependency-groups]

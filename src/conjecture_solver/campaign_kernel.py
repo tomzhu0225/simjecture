@@ -1,0 +1,1998 @@
+"""Model-independent execution kernel for a durable MVP campaign.
+
+``MVPAgentRunner`` owns the model conversation and the report loop.  This
+module owns the boundary between a typed action and the scientific workspace.
+Keeping that boundary in a small object lets other front-ends (in particular a
+durable DSH supervisor) execute exactly the same action semantics without
+having to impersonate a model turn.
+
+The first extraction deliberately uses a host protocol rather than copying the
+large amount of existing claim/provenance code.  The host is the compatibility
+adapter supplied by ``MVPAgentRunner``; no completion client or model state is
+read by this class.  All validation and persistence still happen in the same
+order as the original runner.
+"""
+
+from __future__ import annotations
+
+import hashlib
+import json
+import math
+import os
+import sys
+import time
+from collections.abc import Callable, Mapping
+from contextlib import contextmanager, suppress
+from datetime import UTC, datetime
+from pathlib import Path
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from .mvp_agent import MVPAgentAction
+
+
+class CampaignWriterBusyError(RuntimeError):
+    """A second mutating action would race a durable campaign writer."""
+
+
+class CampaignOperationInProgressError(RuntimeError):
+    """An operation id names an action whose outcome is not yet known."""
+
+
+class CampaignOperationFailedError(RuntimeError):
+    """An idempotent operation previously failed and must not be rerun."""
+
+
+class CampaignBudgetExceededError(RuntimeError):
+    """The durable campaign action or wall-clock budget is exhausted."""
+
+
+ACTION_JOURNAL_FILE = "action_journal.json"
+BUDGET_FILE = "kernel_budget.json"
+RUNTIME_SCHEMA_VERSION = "0.1.0"
+SNAPSHOT_MAX_ARTIFACTS = 12
+SNAPSHOT_MAX_JOBS = 16
+SNAPSHOT_MAX_LITERATURE_SEARCHES = 4
+
+
+class CampaignKernel:
+    """Execute model-neutral campaign actions against an existing MVP host.
+
+    The host protocol is intentionally duck-typed to preserve the public MVP
+    imports while making the execution surface reusable.  A host supplies the
+    established manifest, guided-commissioning, literature, skill, capability,
+    artifact, and claim-ledger helpers.  ``perform`` is the only method that
+    mutates the scientific workspace; it delegates to the host's compatibility
+    implementation after applying the startup gate.  The explicit methods make
+    lifecycle/reconciliation callers independent of the model loop.
+    """
+
+    def __init__(self, host: Any) -> None:
+        if host is None:
+            raise TypeError("CampaignKernel requires an execution host")
+        self.host = host
+        self._job_supervisor: Any | None = None
+        self._writer_lock_depth = 0
+        self._writer_lock_handle: Any | None = None
+        self._authenticated_worker_jobs: set[str] = set()
+        self._memory_journal: dict[str, Any] = {
+            "schema_version": RUNTIME_SCHEMA_VERSION,
+            "next_sequence": 1,
+            "operations": {},
+        }
+
+    @classmethod
+    def open(
+        cls,
+        host: Any | None = None,
+        *,
+        workspace: str | Path | None = None,
+        root: str | Path | None = None,
+        output: str | Path | None = None,
+        campaign: str | Path | None = None,
+        hypothesis: str | None = None,
+        config: Any | Mapping[str, Any] | None = None,
+        skills: Any | None = None,
+        capabilities: Any | None = None,
+        literature_search: Any | None = None,
+        **_ignored: Any,
+    ) -> CampaignKernel:
+        """Open a kernel over a runner or durable operator campaign.
+
+        A prebuilt runner remains the most explicit form.  For model-free
+        front-ends (MCP/DSH), ``workspace``/``campaign`` points at an MVP
+        output directory containing ``operator_input/launch.json`` or
+        ``mvp_manifest.json``.  The opener reconstructs the same sandbox,
+        skills, capability registry, and claim ledger but never constructs a
+        completion client call.  A fresh directory must supply ``hypothesis``;
+        an existing durable directory supplies it from its manifest.
+        """
+
+        if host is None:
+            target = cls._resolve_target(
+                workspace=workspace,
+                root=root,
+                output=output,
+                campaign=campaign,
+            )
+            from .campaign_jobs import CampaignInterprocessLock
+
+            # Runner construction eagerly touches the claim ledger, so the
+            # lock must cover construction as well as manifest initialization.
+            with CampaignInterprocessLock(target):
+                host = cls._build_standalone_host(
+                    workspace=workspace,
+                    root=root,
+                    output=output,
+                    campaign=campaign,
+                    hypothesis=hypothesis,
+                    config=config,
+                    skills=skills,
+                    capabilities=capabilities,
+                    literature_search=literature_search,
+                )
+                kernel = cls(host)
+                kernel.initialize()
+                kernel._ensure_runtime_files()
+                kernel._persist_resource_roots()
+                return kernel
+        kernel = cls(host)
+        with kernel._writer_lock():
+            kernel.initialize()
+            kernel._ensure_runtime_files()
+            kernel._persist_resource_roots()
+        return kernel
+
+    @staticmethod
+    def _resolve_target(
+        *,
+        workspace: str | Path | None,
+        root: str | Path | None,
+        output: str | Path | None,
+        campaign: str | Path | None,
+    ) -> Path:
+        target: Path | None = None
+        if campaign is not None:
+            campaign_value = Path(campaign).expanduser()
+            if campaign_value.is_absolute() or workspace is None:
+                target = campaign_value.resolve()
+            else:
+                workspace_value = Path(workspace).expanduser().resolve()
+                direct = workspace_value / campaign_value
+                grouped = workspace_value / "campaigns" / campaign_value
+                target = (direct if direct.exists() or not grouped.exists() else grouped).resolve()
+        elif output is not None:
+            target = Path(output).expanduser().resolve()
+        elif root is not None:
+            target = Path(root).expanduser().resolve()
+        elif workspace is not None:
+            target = Path(workspace).expanduser().resolve()
+        if target is None:
+            raise ValueError("CampaignKernel.open requires workspace or output")
+        return target
+
+    @staticmethod
+    def _resource_file(root: Path) -> Path:
+        return root / "kernel_resources.json"
+
+    @classmethod
+    def _load_resource_roots(cls, root: Path) -> dict[str, str | None]:
+        path = cls._resource_file(root)
+        if not path.exists():
+            return {"skills_root": None, "capabilities_root": None}
+        if path.is_symlink() or not path.is_file():
+            raise ValueError("kernel resource configuration is not a regular file")
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as error:
+            raise ValueError("invalid kernel resource configuration") from error
+        if payload.get("schema_version") != RUNTIME_SCHEMA_VERSION:
+            raise ValueError("unsupported kernel resource configuration schema")
+        result: dict[str, str | None] = {}
+        for key in ("skills_root", "capabilities_root"):
+            value = payload.get(key)
+            if value is not None:
+                if not isinstance(value, str) or not value.strip():
+                    raise ValueError(f"kernel resource {key} must be a path or null")
+                resolved = Path(value).expanduser().resolve()
+                if not resolved.is_dir():
+                    raise ValueError(f"kernel resource {key} is unavailable: {resolved}")
+                value = str(resolved)
+            result[key] = value
+        return result
+
+    @staticmethod
+    def _build_standalone_host(
+        *,
+        workspace: str | Path | None,
+        root: str | Path | None,
+        output: str | Path | None,
+        campaign: str | Path | None,
+        hypothesis: str | None,
+        config: Any | Mapping[str, Any] | None,
+        skills: Any | None,
+        capabilities: Any | None,
+        literature_search: Any | None,
+    ) -> Any:
+        """Construct the compatibility host used by a model-free kernel."""
+
+        from .mvp_agent import BubblewrapSandbox, MVPAgentConfig, MVPAgentRunner
+        from .mvp_launch import load_launch_request
+        from .mvp_skills import discover_builtin_mvp_resources
+
+        # An explicit campaign/output is a destination, not merely one of a
+        # list of existing directories.  Falling back to an existing parent
+        # would silently create a new manifest in the bridge workspace when a
+        # requested campaign has not been created yet.
+        target = CampaignKernel._resolve_target(
+            workspace=workspace,
+            root=root,
+            output=output,
+            campaign=campaign,
+        )
+        target.mkdir(parents=True, exist_ok=True)
+        recorded_resources = CampaignKernel._load_resource_roots(target)
+        selected_skills_root = (
+            str(Path(skills).expanduser().resolve())
+            if isinstance(skills, (str, Path))
+            else recorded_resources["skills_root"]
+        )
+        selected_capabilities_root = (
+            str(Path(capabilities).expanduser().resolve())
+            if isinstance(capabilities, (str, Path))
+            else recorded_resources["capabilities_root"]
+        )
+
+        # ``load_launch_request`` is itself the durable operator-input gate.
+        # Let malformed, stale, or externally-dependent launch contracts fail
+        # loudly instead of silently falling back to a weaker manifest/default
+        # reconstruction.
+        launch = load_launch_request(target)
+        manifest: dict[str, Any] = {}
+        manifest_path = target / "mvp_manifest.json"
+        if manifest_path.is_file():
+            manifest = json.loads(manifest_path.read_text())
+
+        launch_config: Any | None = None
+        manifest_config: Any | None = None
+        if launch is not None:
+            if hypothesis is not None and hypothesis != launch.hypothesis:
+                raise ValueError(
+                    "supplied hypothesis does not match the immutable operator launch"
+                )
+            selected_hypothesis = launch.hypothesis
+            selected_instruction = launch.instruction
+            launch_config = MVPAgentConfig(
+                max_iterations=launch.max_iterations,
+                max_wall_seconds=launch.max_wall_seconds,
+                max_command_seconds=launch.max_command_seconds,
+                max_workspace_bytes=launch.max_workspace_mb * 1024 * 1024,
+                max_file_bytes=launch.max_file_mb * 1024 * 1024,
+                max_memory_bytes=launch.max_memory_mb * 1024 * 1024,
+                max_tool_output_chars=launch.max_tool_output_chars,
+                command_heartbeat_seconds=launch.command_heartbeat_seconds,
+                recent_full_turns=launch.recent_full_turns,
+                max_model_retries=launch.max_model_retries,
+                model_failover_after=launch.model_failover_after,
+            )
+            if config is None:
+                config = launch_config
+            if skills is None and launch.skills_directory:
+                from .mvp_skills import MVPSkillCatalog
+
+                skills = MVPSkillCatalog.discover(launch.skills_directory)
+                selected_skills_root = str(
+                    Path(launch.skills_directory).expanduser().resolve()
+                )
+            if capabilities is None and launch.capability_directory:
+                from .mvp_skills import MVPCapabilityRegistry
+
+                capabilities = MVPCapabilityRegistry.discover(
+                    launch.capability_directory,
+                    ignore_unavailable=False,
+                )
+                selected_capabilities_root = str(
+                    Path(launch.capability_directory).expanduser().resolve()
+                )
+        else:
+            selected_hypothesis = hypothesis or manifest.get("hypothesis")
+            selected_instruction = manifest.get("campaign_instruction")
+            if manifest.get("config"):
+                manifest_config = MVPAgentConfig.model_validate(manifest["config"])
+                if config is None:
+                    config = manifest_config
+        if not isinstance(selected_hypothesis, str) or not selected_hypothesis.strip():
+            raise ValueError(
+                "model-free CampaignKernel.open requires a hypothesis in launch.json, "
+                "mvp_manifest.json, or the hypothesis argument"
+            )
+        if config is None:
+            config = MVPAgentConfig()
+        elif isinstance(config, Mapping):
+            config = MVPAgentConfig.model_validate(config)
+        elif not isinstance(config, MVPAgentConfig):
+            # MCP BridgeConfig intentionally has a smaller host-facing shape
+            # than MVPAgentConfig.  Its output bound belongs to the bridge,
+            # not the immutable scientific run contract.  Reconstruct the
+            # durable limits from launch.json/manifest instead of silently
+            # replacing them with defaults (which would fail identity checks
+            # on the first worker reopen).
+            config = launch_config or manifest_config or MVPAgentConfig()
+
+        builtin_skills, builtin_capabilities = discover_builtin_mvp_resources()
+        if skills is None and selected_skills_root is not None:
+            from .mvp_skills import MVPSkillCatalog
+
+            skills = MVPSkillCatalog.discover(selected_skills_root)
+        if capabilities is None and selected_capabilities_root is not None:
+            from .mvp_skills import MVPCapabilityRegistry
+
+            capabilities = MVPCapabilityRegistry.discover(
+                selected_capabilities_root,
+                ignore_unavailable=False,
+            )
+        if isinstance(skills, (str, Path)):
+            from .mvp_skills import MVPSkillCatalog
+
+            skills = MVPSkillCatalog.discover(skills)
+        if isinstance(capabilities, (str, Path)):
+            from .mvp_skills import MVPCapabilityRegistry
+
+            capabilities = MVPCapabilityRegistry.discover(capabilities)
+        if selected_skills_root is None:
+            discovery_root = getattr(skills, "root", None)
+            if discovery_root is not None:
+                selected_skills_root = str(Path(discovery_root).resolve())
+        if selected_capabilities_root is None:
+            # A runtime root is not the directory containing capability JSON
+            # manifests. Persist the registry's actual discovery root instead
+            # of guessing from an installation path such as `.runtime/`.
+            discovery_root = getattr(capabilities, "root", None)
+            if discovery_root is not None:
+                selected_capabilities_root = str(Path(discovery_root).resolve())
+        skills = skills or builtin_skills
+        capabilities = capabilities or builtin_capabilities
+
+        guided = None
+        if launch is not None and launch.guided_commission:
+            from .mvp_guidance import MVPGuidedCommissioningPackage
+
+            guided = MVPGuidedCommissioningPackage.read(launch.guided_commission)
+
+        if literature_search is None:
+            recorded_identity = (manifest.get("literature_search") or {}).get("identity")
+            if isinstance(recorded_identity, dict):
+                # Reopen the configured public client when possible so a
+                # worker preserves the exact manifest identity and startup
+                # search gate.  Unknown host clients retain identity for
+                # manifest validation but cannot silently invent search hits.
+                if recorded_identity.get("name") == "public-literature-search":
+                    from .literature import PublicLiteratureSearchClient
+
+                    literature_search = PublicLiteratureSearchClient(
+                        timeout_seconds=(
+                            launch.literature_search_timeout_seconds
+                            if launch is not None
+                            else 20.0
+                        )
+                    )
+                else:
+                    class _RecordedSearch:
+                        identity = recorded_identity
+
+                        def search(self, **_kwargs: Any) -> Any:
+                            raise RuntimeError(
+                                "the recorded literature provider is unavailable "
+                                "to this model-free worker"
+                            )
+
+                    literature_search = _RecordedSearch()
+            elif not manifest_path.exists():
+                # Match the CLI's default bounded public reconnaissance client
+                # for a fresh model-free campaign.  Existing manifests with an
+                # explicit null provider retain their historical contract.
+                from .literature import PublicLiteratureSearchClient
+
+                literature_search = PublicLiteratureSearchClient(
+                    timeout_seconds=(
+                        launch.literature_search_timeout_seconds
+                        if launch is not None
+                        else 20.0
+                    )
+                )
+
+        class _NoModelCompletion:
+            def complete(self, *_args: Any, **_kwargs: Any) -> Any:
+                raise RuntimeError(
+                    "model-free CampaignKernel has no completion client; use execute"
+                )
+
+        sandbox = BubblewrapSandbox(target / "workspace", config, capabilities)
+        runner = MVPAgentRunner(
+            hypothesis=selected_hypothesis,
+            campaign_instruction=selected_instruction,
+            output_directory=target,
+            completion_client=_NoModelCompletion(),
+            sandbox=sandbox,
+            config=config,
+            skills=skills,
+            capabilities=capabilities,
+            guided_commissioning=guided,
+            literature_search=literature_search,
+        )
+        runner._kernel_resource_roots = {
+            "skills_root": selected_skills_root,
+            "capabilities_root": selected_capabilities_root,
+        }
+        return runner
+
+    @property
+    def hypothesis(self) -> str:
+        return self.host.hypothesis
+
+    @property
+    def manifest_path(self) -> Any:
+        return self.host.manifest_path
+
+    @property
+    def artifact_provenance_path(self) -> Any:
+        return self.host.artifact_provenance_path
+
+    @property
+    def claim_store(self) -> Any:
+        return self.host.claim_store
+
+    @property
+    def skills(self) -> Any:
+        return self.host.skills
+
+    @property
+    def capabilities(self) -> Any:
+        return self.host.capabilities
+
+    def initialize(self) -> None:
+        """Validate/create the immutable run manifest and guided input.
+
+        This delegates to the established implementation so old output
+        directories retain their schema compatibility and identity checks.
+        """
+
+        self.host._initialize()
+
+    @property
+    def _campaign_root(self) -> Path | None:
+        output = getattr(self.host, "output", None)
+        if output is None:
+            return None
+        return Path(output).expanduser().resolve()
+
+    @contextmanager
+    def _writer_lock(self, *, wait_seconds: float = 0.0):
+        """Hold the campaign mutation lock, re-entrant within one kernel."""
+
+        root = self._campaign_root
+        if root is None:
+            yield
+            return
+        if self._writer_lock_depth:
+            self._writer_lock_depth += 1
+            try:
+                yield
+            finally:
+                self._writer_lock_depth -= 1
+            return
+        from .campaign_jobs import (
+            CampaignInterprocessLock,
+            CampaignLockBusyError,
+        )
+
+        deadline = time.monotonic() + max(0.0, wait_seconds)
+        while True:
+            try:
+                handle = CampaignInterprocessLock(root).acquire()
+                break
+            except CampaignLockBusyError:
+                if time.monotonic() >= deadline:
+                    raise
+                time.sleep(min(0.01, max(0.0, deadline - time.monotonic())))
+        self._writer_lock_handle = handle
+        self._writer_lock_depth = 1
+        try:
+            yield
+        finally:
+            self._writer_lock_depth = 0
+            self._writer_lock_handle = None
+            handle.release()
+
+    @staticmethod
+    def _atomic_json_write(path: Path, payload: Mapping[str, Any]) -> None:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        temporary = path.with_name(f".{path.name}.tmp.{os.getpid()}")
+        encoded = json.dumps(
+            payload,
+            ensure_ascii=False,
+            allow_nan=False,
+            indent=2,
+            sort_keys=True,
+            default=str,
+        ) + "\n"
+        with temporary.open("w", encoding="utf-8") as stream:
+            stream.write(encoded)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temporary, path)
+
+    def _load_action_journal(self) -> dict[str, Any]:
+        root = self._campaign_root
+        if root is None:
+            return self._memory_journal
+        path = root / ACTION_JOURNAL_FILE
+        if not path.exists():
+            return {
+                "schema_version": RUNTIME_SCHEMA_VERSION,
+                "next_sequence": 1,
+                "operations": {},
+            }
+        if path.is_symlink() or not path.is_file():
+            raise ValueError("action journal is not a regular file")
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        if (
+            payload.get("schema_version") != RUNTIME_SCHEMA_VERSION
+            or not isinstance(payload.get("next_sequence"), int)
+            or payload["next_sequence"] < 1
+            or not isinstance(payload.get("operations"), dict)
+        ):
+            raise ValueError("invalid durable action journal")
+        sequences = [
+            record.get("sequence")
+            for record in payload["operations"].values()
+            if isinstance(record, Mapping)
+        ]
+        if any(not isinstance(sequence, int) or sequence < 1 for sequence in sequences):
+            raise ValueError("action journal contains an invalid sequence")
+        if sequences and max(sequences) >= payload["next_sequence"]:
+            raise ValueError("action journal sequence is not monotonic")
+        return payload
+
+    def _persist_action_journal(self, payload: Mapping[str, Any]) -> None:
+        root = self._campaign_root
+        if root is None:
+            self._memory_journal = dict(payload)
+            return
+        self._atomic_json_write(root / ACTION_JOURNAL_FILE, payload)
+
+    def _load_budget(self) -> dict[str, Any]:
+        root = self._campaign_root
+        config = getattr(self.host, "config", None)
+        max_actions = getattr(config, "max_iterations", None)
+        max_wall = float(getattr(config, "max_wall_seconds", 21_600.0))
+        max_command = float(getattr(config, "max_command_seconds", 600.0))
+        defaults = {
+            "schema_version": RUNTIME_SCHEMA_VERSION,
+            "max_actions": max_actions,
+            "max_wall_seconds": max_wall,
+            "max_command_seconds": max_command,
+            "action_count": 0,
+            "accumulated_active_seconds": 0.0,
+        }
+        if root is None:
+            return getattr(self, "_memory_budget", defaults)
+        path = root / BUDGET_FILE
+        if not path.exists():
+            return defaults
+        if path.is_symlink() or not path.is_file():
+            raise ValueError("kernel budget is not a regular file")
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        if payload.get("schema_version") != RUNTIME_SCHEMA_VERSION:
+            raise ValueError("invalid kernel budget schema")
+        # Early v0.2 development builds stored ``started_at`` and therefore
+        # charged calendar downtime. Migrate that unpublished shape without
+        # charging idle time; the durable budget now records cumulative tool
+        # and simulation execution only.
+        if "accumulated_active_seconds" not in payload and "started_at" in payload:
+            payload["accumulated_active_seconds"] = 0.0
+            payload.pop("started_at", None)
+        required = {
+            "max_actions",
+            "max_wall_seconds",
+            "max_command_seconds",
+            "action_count",
+            "accumulated_active_seconds",
+        }
+        if not required.issubset(payload):
+            raise ValueError("kernel budget is missing required fields")
+        if not isinstance(payload["action_count"], int) or payload["action_count"] < 0:
+            raise ValueError("kernel budget action_count is invalid")
+        active_seconds = payload["accumulated_active_seconds"]
+        if (
+            isinstance(active_seconds, bool)
+            or not isinstance(active_seconds, (int, float))
+            or not math.isfinite(float(active_seconds))
+            or float(active_seconds) < 0
+        ):
+            raise ValueError("kernel budget accumulated_active_seconds is invalid")
+        # The manifest is the immutable source of configured limits. A changed
+        # budget file must not silently widen a campaign after a restart.
+        if payload["max_actions"] != max_actions:
+            raise ValueError("kernel action budget does not match the run contract")
+        for key, expected in (
+            ("max_wall_seconds", max_wall),
+            ("max_command_seconds", max_command),
+        ):
+            if float(payload[key]) != expected:
+                raise ValueError(f"kernel budget {key} does not match the run contract")
+        return payload
+
+    def _persist_budget(self, payload: Mapping[str, Any]) -> None:
+        root = self._campaign_root
+        if root is None:
+            self._memory_budget = dict(payload)
+            return
+        self._atomic_json_write(root / BUDGET_FILE, payload)
+
+    def _ensure_runtime_files(self) -> None:
+        """Create the durable journal/budget without consuming an action."""
+
+        journal = self._load_action_journal()
+        if self._campaign_root is not None and not (
+            self._campaign_root / ACTION_JOURNAL_FILE
+        ).exists():
+            self._persist_action_journal(journal)
+        budget = self._load_budget()
+        if self._campaign_root is not None and not (self._campaign_root / BUDGET_FILE).exists():
+            self._persist_budget(budget)
+
+    def _persist_resource_roots(self) -> None:
+        root = self._campaign_root
+        if root is None:
+            return
+        raw = getattr(self.host, "_kernel_resource_roots", None)
+        if not isinstance(raw, Mapping):
+            raw = {
+                "skills_root": getattr(getattr(self.host, "skills", None), "root", None),
+                "capabilities_root": getattr(
+                    getattr(self.host, "capabilities", None), "root", None
+                ),
+            }
+        payload: dict[str, Any] = {"schema_version": RUNTIME_SCHEMA_VERSION}
+        for key in ("skills_root", "capabilities_root"):
+            value = raw.get(key)
+            if value is not None:
+                path = Path(value).expanduser().resolve()
+                if not path.is_dir():
+                    raise ValueError(f"kernel resource {key} is unavailable: {path}")
+                value = str(path)
+            payload[key] = value
+        path = self._resource_file(root)
+        if path.exists():
+            existing = self._load_resource_roots(root)
+            if existing != {key: payload[key] for key in ("skills_root", "capabilities_root")}:
+                raise ValueError("kernel resource roots changed after campaign initialization")
+            return
+        self._atomic_json_write(path, payload)
+
+    @staticmethod
+    def _canonical_action(action: Any) -> dict[str, Any]:
+        if isinstance(action, Mapping):
+            return dict(action)
+        dumped = action.model_dump(mode="json")
+        if not isinstance(dumped, dict):
+            raise TypeError("campaign action must serialize to an object")
+        return dumped
+
+    @staticmethod
+    def _operation_fingerprint(
+        action_payload: Mapping[str, Any],
+        timeout_seconds: float | None,
+    ) -> str:
+        encoded = json.dumps(
+            {
+                "action": dict(action_payload),
+                "timeout_seconds": timeout_seconds,
+            },
+            ensure_ascii=False,
+            allow_nan=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode()
+        return hashlib.sha256(encoded).hexdigest()
+
+    @staticmethod
+    def _validate_operation_id(operation_id: str) -> str:
+        if not isinstance(operation_id, str) or not operation_id.strip():
+            raise ValueError("operation_id must be a non-empty string")
+        if len(operation_id) > 256 or "\x00" in operation_id:
+            raise ValueError("operation_id is invalid")
+        return operation_id
+
+    @staticmethod
+    def _action_result_succeeded(result: Any) -> bool:
+        if not isinstance(result, dict):
+            return True
+        execution = result.get("execution_result")
+        if isinstance(execution, dict) and not CampaignKernel._action_result_succeeded(execution):
+            return False
+        return not (
+            result.get("timed_out") is True
+            or result.get("workspace_exceeded") is True
+            or (isinstance(result.get("returncode"), int) and result["returncode"] != 0)
+        )
+
+    def _remaining_wall_seconds(self, budget: Mapping[str, Any]) -> float:
+        active = float(budget.get("accumulated_active_seconds", 0.0))
+        return max(0.0, float(budget["max_wall_seconds"]) - active)
+
+    def _charge_active_seconds(self, elapsed_seconds: float) -> None:
+        """Persist actual action runtime without charging process downtime."""
+
+        elapsed = max(0.0, float(elapsed_seconds))
+        if not math.isfinite(elapsed):
+            raise ValueError("active budget charge must be finite")
+        budget = self._load_budget()
+        budget["accumulated_active_seconds"] = (
+            float(budget.get("accumulated_active_seconds", 0.0)) + elapsed
+        )
+        self._persist_budget(budget)
+
+    def _effective_timeout(
+        self,
+        requested: float | None,
+        *,
+        budget: Mapping[str, Any] | None = None,
+    ) -> float:
+        current = budget or self._load_budget()
+        remaining = self._remaining_wall_seconds(current)
+        if remaining <= 0:
+            raise CampaignBudgetExceededError("campaign wall-clock budget is exhausted")
+        max_command = float(current["max_command_seconds"])
+        selected = max_command if requested is None else float(requested)
+        if not math.isfinite(selected) or selected <= 0:
+            raise ValueError("timeout_seconds must be positive and finite")
+        return min(selected, max_command, remaining)
+
+    def _reserve_sequence(self) -> tuple[int, dict[str, Any], dict[str, Any]]:
+        journal = self._load_action_journal()
+        budget = self._load_budget()
+        max_actions = budget.get("max_actions")
+        count = int(budget.get("action_count", 0))
+        if max_actions is not None and count >= int(max_actions):
+            raise CampaignBudgetExceededError("campaign action budget is exhausted")
+        sequence = int(journal["next_sequence"])
+        journal["next_sequence"] = sequence + 1
+        budget["action_count"] = count + 1
+        return sequence, journal, budget
+
+    def _update_operation_record(
+        self,
+        journal: dict[str, Any],
+        operation_id: str,
+        *,
+        status: str | None = None,
+        result: Any = None,
+        error: str | None = None,
+        job_id: str | None = None,
+    ) -> None:
+        record = journal["operations"].get(operation_id)
+        if not isinstance(record, dict):
+            return
+        if status is not None:
+            record["status"] = status
+        if result is not None:
+            record["result"] = result
+        if error is not None:
+            record["error"] = error
+        if job_id is not None:
+            record["job_id"] = job_id
+        record["updated_at"] = datetime.now(UTC).isoformat()
+
+    def _reconcile_jobs_locked(self) -> None:
+        """Receipt terminal workers while this kernel owns the writer lock."""
+
+        if self._campaign_root is None and self._job_supervisor is None:
+            return
+        jobs = self._jobs()
+        listing = getattr(jobs, "jobs", None)
+        status_reader = getattr(jobs, "status", None)
+        if not callable(listing) or not callable(status_reader):
+            return
+        for item in tuple(listing()):
+            current = status_reader(item.job_id)
+            current = self._reconcile_worker_receipt(item.job_id, current)
+            current = self._reject_unverified_worker_success(current)
+            if getattr(current, "status", None) is not None and current.status.terminal:
+                self._refresh_durable_indexes()
+                if self._should_finalize_job(current):
+                    self._finalize_host_operation(
+                        current.operation_id,
+                        current.status.value,
+                        job_id=current.job_id,
+                    )
+                self._sync_operation_from_job(current)
+
+    def _finalize_host_operation(
+        self,
+        operation_id: str,
+        status: str,
+        *,
+        job_id: str | None,
+    ) -> None:
+        callback = getattr(self.host, "_finalize_operation_provenance", None)
+        if callable(callback):
+            callback(operation_id, status, job_id=job_id)
+
+    def _should_finalize_job(self, state: Any) -> bool:
+        """Require an authenticated receipt before promoting worker success."""
+
+        if getattr(getattr(state, "status", None), "value", None) != "succeeded":
+            return True
+        return (
+            not self._job_requires_authenticated_receipt(state)
+            or state.job_id in self._authenticated_worker_jobs
+        )
+
+    def _job_requires_authenticated_receipt(self, state: Any) -> bool:
+        try:
+            request = self._jobs().request_record(state.job_id)
+        except (AttributeError, KeyError, RuntimeError, ValueError):
+            return False
+        metadata = getattr(request, "metadata", {})
+        return all(
+            isinstance(metadata.get(key), str) and metadata.get(key)
+            for key in ("worker_request_sha256", "worker_result_path", "request_path")
+        )
+
+    def _reject_unverified_worker_success(self, state: Any) -> Any:
+        status = getattr(getattr(state, "status", None), "value", None)
+        if (
+            status != "succeeded"
+            or not self._job_requires_authenticated_receipt(state)
+            or state.job_id in self._authenticated_worker_jobs
+        ):
+            return state
+        reject = getattr(self._jobs(), "reject_unverified_success", None)
+        if not callable(reject):
+            return state
+        return reject(
+            state.job_id,
+            detail=(
+                "typed worker exited successfully without a valid authenticated "
+                "receipt; scientific outcome is unknown"
+            ),
+        )
+
+    def _sync_operation_from_job(self, state: Any) -> None:
+        operation_id = getattr(state, "operation_id", None)
+        if not isinstance(operation_id, str):
+            return
+        journal = self._load_action_journal()
+        record = journal.get("operations", {}).get(operation_id)
+        if not isinstance(record, dict):
+            return
+        status = getattr(getattr(state, "status", None), "value", None)
+        if status is None:
+            return
+        result_record = None
+        result_reader = getattr(self._jobs(), "result_record", None)
+        if callable(result_reader):
+            result_record = result_reader(state.job_id)
+        result = None
+        if result_record is not None and "result" not in record:
+            result = result_record.model_dump(mode="json")
+        self._update_operation_record(
+            journal,
+            operation_id,
+            status=status,
+            result=result,
+            job_id=state.job_id,
+        )
+        self._persist_action_journal(journal)
+
+    def recover_interrupted_action(self) -> None:
+        """Record an unreceipted action outcome before a resumed campaign runs."""
+
+        self.host._recover_interrupted_action()
+
+    def perform(
+        self,
+        action: MVPAgentAction,
+        *,
+        iteration: int,
+        timeout_seconds: float = 600.0,
+        progress_callback: Callable[[dict[str, Any]], None] | None = None,
+        _operation_id: str | None = None,
+    ) -> dict[str, Any]:
+        """Run one typed action with all existing MVP safety invariants.
+
+        The compatibility method is kept on the runner for one release so
+        existing callers which invoke ``runner._perform`` continue to work.
+        ``MVPAgentRunner._perform`` itself is a thin delegation to this method.
+        """
+
+        action = self._normalize_action(action)
+        if _operation_id is not None:
+            operation_id = self._validate_operation_id(_operation_id)
+            with self._writer_lock():
+                self._reconcile_jobs_locked()
+                try:
+                    return self._execute_operation_locked(
+                        operation_id,
+                        action,
+                        timeout_seconds=timeout_seconds,
+                        progress_callback=progress_callback,
+                        legacy_iteration=iteration,
+                    )
+                finally:
+                    self._reconcile_jobs_locked()
+
+        if self._action_mutates_campaign(action):
+            with self._writer_lock():
+                self._reconcile_jobs_locked()
+                self._assert_writer_available()
+                try:
+                    return self._run_host_action(
+                        action,
+                        iteration=iteration,
+                        timeout_seconds=timeout_seconds,
+                        progress_callback=progress_callback,
+                    )
+                finally:
+                    self._reconcile_jobs_locked()
+        return self._run_host_action(
+            action,
+            iteration=iteration,
+            timeout_seconds=timeout_seconds,
+            progress_callback=progress_callback,
+        )
+
+    @staticmethod
+    def _normalize_action(action: Any) -> Any:
+        if isinstance(action, Mapping):
+            # The MCP bridge speaks a flat JSON action while the legacy MVP
+            # runner speaks frozen Pydantic action objects.  Keep the one
+            # parser at this boundary so workers and synchronous callers share
+            # the exact action grammar.
+            from .mvp_agent import parse_mvp_action
+
+            return parse_mvp_action(json.dumps(dict(action), separators=(",", ":")))
+        return action
+
+    def _run_host_action(
+        self,
+        action: Any,
+        *,
+        iteration: int,
+        timeout_seconds: float,
+        progress_callback: Callable[[dict[str, Any]], None] | None = None,
+        operation_id: str | None = None,
+    ) -> dict[str, Any]:
+        # mvp_agent records a provisional artifact operation from this
+        # transient context. Restore the previous value even when the action
+        # raises so a reused host cannot leak provenance between operations.
+        marker = object()
+        previous = getattr(self.host, "_kernel_operation_id", marker)
+        if operation_id is not None:
+            self.host._kernel_operation_id = operation_id
+        try:
+            self.host._enforce_literature_startup(action)
+            return self.host._perform_compat(
+                action,
+                iteration=iteration,
+                timeout_seconds=timeout_seconds,
+                progress_callback=progress_callback,
+            )
+        finally:
+            if operation_id is not None:
+                if previous is marker:
+                    with suppress(AttributeError):
+                        delattr(self.host, "_kernel_operation_id")
+                else:
+                    self.host._kernel_operation_id = previous
+
+    def _execute_operation_locked(
+        self,
+        operation_id: str,
+        action: Any,
+        *,
+        timeout_seconds: float | None,
+        progress_callback: Callable[[dict[str, Any]], None] | None,
+        legacy_iteration: int | None = None,
+        job_id: str | None = None,
+        defer_provenance: bool = False,
+    ) -> dict[str, Any]:
+        action_payload = self._canonical_action(action)
+        fingerprint = self._operation_fingerprint(action_payload, timeout_seconds)
+        journal = self._load_action_journal()
+        existing = (journal.get("operations") or {}).get(operation_id)
+        if existing is not None:
+            if not isinstance(existing, Mapping) or existing.get("fingerprint") != fingerprint:
+                from .campaign_jobs import JobConflictError
+
+                raise JobConflictError(
+                    f"operation_id {operation_id!r} already names a different action"
+                )
+            existing_status = str(existing.get("status", ""))
+            if existing_status in {"succeeded", "failed", "cancelled"}:
+                if isinstance(existing.get("result"), Mapping):
+                    return dict(existing["result"])
+                if existing_status == "failed":
+                    raise CampaignOperationFailedError(
+                        str(existing.get("error") or f"operation {operation_id!r} failed")
+                    )
+                raise CampaignOperationInProgressError(
+                    f"operation {operation_id!r} has no durable replay result"
+                )
+            if existing_status == "outcome_unknown":
+                raise CampaignOperationInProgressError(
+                    f"operation {operation_id!r} has an unknown outcome and cannot rerun"
+                )
+            if job_id is None or existing.get("job_id") != job_id:
+                raise CampaignOperationInProgressError(
+                    f"operation {operation_id!r} is already {existing_status or 'in progress'}"
+                )
+            # A detached worker is the only caller allowed to claim a queued
+            # supervisor operation. It must match the durable job binding.
+            if existing_status not in {"submitted", "queued"}:
+                raise CampaignOperationInProgressError(
+                    f"operation {operation_id!r} cannot be rerun from {existing_status}"
+                )
+            sequence = int(existing["sequence"])
+            budget = self._load_budget()
+            journal["operations"][operation_id]["status"] = "running"
+            journal["operations"][operation_id]["updated_at"] = datetime.now(UTC).isoformat()
+            self._persist_action_journal(journal)
+        else:
+            if self._action_mutates_campaign(action):
+                self._assert_writer_available(exclude_operation_id=operation_id)
+            sequence, journal, budget = self._reserve_sequence()
+            effective_timeout = self._effective_timeout(timeout_seconds, budget=budget)
+            now = datetime.now(UTC).isoformat()
+            journal["operations"][operation_id] = {
+                "operation_id": operation_id,
+                "sequence": sequence,
+                "fingerprint": fingerprint,
+                "action": action_payload,
+                "requested_timeout_seconds": timeout_seconds,
+                "effective_timeout_seconds": effective_timeout,
+                "status": "running",
+                "job_id": job_id,
+                "created_at": now,
+                "updated_at": now,
+            }
+            self._persist_budget(budget)
+            self._persist_action_journal(journal)
+        if existing is not None:
+            effective_timeout = self._effective_timeout(timeout_seconds, budget=budget)
+            journal["operations"][operation_id]["effective_timeout_seconds"] = effective_timeout
+            self._persist_action_journal(journal)
+
+        call_iteration = sequence if legacy_iteration is None else legacy_iteration
+        try:
+            result = self._run_host_action(
+                action,
+                iteration=call_iteration,
+                timeout_seconds=effective_timeout,
+                progress_callback=progress_callback,
+                operation_id=operation_id,
+            )
+            status = "succeeded" if self._action_result_succeeded(result) else "failed"
+        except Exception as error:
+            detail = f"{type(error).__name__}: {error}"
+            self._update_operation_record(
+                journal,
+                operation_id,
+                status="failed",
+                error=detail,
+                job_id=job_id,
+            )
+            self._persist_action_journal(journal)
+            if job_id is None and not defer_provenance:
+                self._finalize_host_operation(operation_id, "failed", job_id=None)
+            raise
+        self._update_operation_record(
+            journal,
+            operation_id,
+            status=status,
+            result=result,
+            job_id=job_id,
+        )
+        self._persist_action_journal(journal)
+        # An async worker must leave artifacts provisional until the parent
+        # authenticates its receipt. Synchronous callers have no detached
+        # receipt boundary, so finalize their successful outcome here.
+        if job_id is None and not defer_provenance:
+            self._finalize_host_operation(operation_id, status, job_id=None)
+        return result
+
+    def _prepare_detached_operation_locked(
+        self,
+        operation_id: str,
+        action: Any,
+        *,
+        timeout_seconds: float | None,
+        job_id: str,
+    ) -> tuple[int, float, str]:
+        """Claim a supervisor-reserved operation without running it under flock."""
+
+        from .campaign_jobs import JobConflictError
+
+        action_payload = self._canonical_action(action)
+        fingerprint = self._operation_fingerprint(action_payload, timeout_seconds)
+        journal = self._load_action_journal()
+        record = journal.get("operations", {}).get(operation_id)
+        if not isinstance(record, dict):
+            raise CampaignOperationInProgressError(
+                f"detached operation {operation_id!r} has no supervisor reservation"
+            )
+        if record.get("fingerprint") != fingerprint:
+            raise JobConflictError(
+                f"operation_id {operation_id!r} already names a different action"
+            )
+        if record.get("job_id") != job_id:
+            raise CampaignOperationInProgressError(
+                f"operation {operation_id!r} is bound to a different durable job"
+            )
+        status = str(record.get("status", ""))
+        if status not in {"submitted", "queued"}:
+            if status == "failed":
+                raise CampaignOperationFailedError(
+                    str(record.get("error") or f"operation {operation_id!r} failed")
+                )
+            raise CampaignOperationInProgressError(
+                f"operation {operation_id!r} cannot start from {status or 'unknown'}"
+            )
+        sequence = record.get("sequence")
+        if not isinstance(sequence, int) or sequence < 1:
+            raise ValueError("detached operation has an invalid durable sequence")
+        budget = self._load_budget()
+        effective_timeout = self._effective_timeout(timeout_seconds, budget=budget)
+        record["status"] = "running"
+        record["effective_timeout_seconds"] = effective_timeout
+        record["updated_at"] = datetime.now(UTC).isoformat()
+        self._persist_action_journal(journal)
+        return sequence, effective_timeout, fingerprint
+
+    def _finish_detached_operation_locked(
+        self,
+        operation_id: str,
+        *,
+        fingerprint: str,
+        job_id: str,
+        status: str,
+        result: Mapping[str, Any] | None = None,
+        error: str | None = None,
+    ) -> None:
+        """Persist a detached result without overwriting concurrent control actions."""
+
+        journal = self._load_action_journal()
+        record = journal.get("operations", {}).get(operation_id)
+        if (
+            not isinstance(record, dict)
+            or record.get("fingerprint") != fingerprint
+            or record.get("job_id") != job_id
+        ):
+            raise ValueError("detached operation reservation changed during execution")
+        self._update_operation_record(
+            journal,
+            operation_id,
+            status=status,
+            result=dict(result) if result is not None else None,
+            error=error,
+            job_id=job_id,
+        )
+        self._persist_action_journal(journal)
+
+    def _execute_detached_operation(
+        self,
+        operation_id: str,
+        action: Any,
+        *,
+        timeout_seconds: float | None,
+        progress_callback: Callable[[dict[str, Any]], None] | None,
+        job_id: str,
+    ) -> dict[str, Any]:
+        """Run one leased writer job while leaving status/cancellation responsive.
+
+        The short lock sections establish and finish durable chronology. During
+        the simulation itself, the active supervisor job is the writer lease:
+        every other scientific mutation acquires the campaign lock, observes
+        that lease, and is rejected. Control-plane status and cancellation can
+        therefore remain available without allowing a second scientific writer.
+        """
+
+        with self._writer_lock(wait_seconds=30.0):
+            self._reconcile_jobs_locked()
+            self._assert_writer_available(exclude_operation_id=operation_id)
+            sequence, effective_timeout, fingerprint = (
+                self._prepare_detached_operation_locked(
+                    operation_id,
+                    action,
+                    timeout_seconds=timeout_seconds,
+                    job_id=job_id,
+                )
+            )
+        active_started = time.monotonic()
+        try:
+            result = self._run_host_action(
+                action,
+                iteration=sequence,
+                timeout_seconds=effective_timeout,
+                progress_callback=progress_callback,
+                operation_id=operation_id,
+            )
+            status = "succeeded" if self._action_result_succeeded(result) else "failed"
+        except Exception as error:
+            detail = f"{type(error).__name__}: {error}"
+            with self._writer_lock(wait_seconds=30.0):
+                self._finish_detached_operation_locked(
+                    operation_id,
+                    fingerprint=fingerprint,
+                    job_id=job_id,
+                    status="failed",
+                    error=detail,
+                )
+                self._charge_active_seconds(time.monotonic() - active_started)
+            raise
+        with self._writer_lock(wait_seconds=30.0):
+            self._finish_detached_operation_locked(
+                operation_id,
+                fingerprint=fingerprint,
+                job_id=job_id,
+                status=status,
+                result=result,
+            )
+            self._charge_active_seconds(time.monotonic() - active_started)
+        return result
+
+    def execute_operation(
+        self,
+        operation_id: str,
+        action: Any,
+        *,
+        timeout_seconds: float | None = None,
+        progress_callback: Callable[[dict[str, Any]], None] | None = None,
+        _job_id: str | None = None,
+        _defer_provenance: bool = False,
+    ) -> dict[str, Any]:
+        """Execute one idempotent kernel operation with a durable sequence.
+
+        ``operation_id`` and the canonical typed action form the immutable
+        request identity. A replay returns the recorded result; a conflicting
+        action or an unknown/in-flight outcome is rejected and never rerun.
+        Caller-supplied iteration numbers are intentionally not accepted: the
+        kernel allocates the monotonic sequence persisted in ``action_journal``.
+        """
+
+        operation_id = self._validate_operation_id(operation_id)
+        if isinstance(action, Mapping) and action.get("action") == "cancel_job":
+            return self._execute_cancel_operation(
+                operation_id,
+                action,
+                timeout_seconds=timeout_seconds,
+            )
+        action = self._normalize_action(action)
+        if _job_id is not None:
+            if not _defer_provenance:
+                raise ValueError("detached operations must defer provenance finalization")
+            return self._execute_detached_operation(
+                operation_id,
+                action,
+                timeout_seconds=timeout_seconds,
+                progress_callback=progress_callback,
+                job_id=_job_id,
+            )
+        with self._writer_lock():
+            self._reconcile_jobs_locked()
+            if self._action_mutates_campaign(action):
+                self._assert_writer_available(exclude_operation_id=operation_id)
+            active_started = time.monotonic()
+            try:
+                return self._execute_operation_locked(
+                    operation_id,
+                    action,
+                    timeout_seconds=timeout_seconds,
+                    progress_callback=progress_callback,
+                    job_id=_job_id,
+                    defer_provenance=_defer_provenance,
+                )
+            finally:
+                self._charge_active_seconds(time.monotonic() - active_started)
+                self._reconcile_jobs_locked()
+
+    def _execute_cancel_operation(
+        self,
+        operation_id: str,
+        action: Mapping[str, Any],
+        *,
+        timeout_seconds: float | None,
+    ) -> dict[str, Any]:
+        job_id = action.get("job_id")
+        if not isinstance(job_id, str) or not job_id:
+            raise ValueError("cancel_job operation requires a job_id")
+        action_payload = {"action": "cancel_job", "job_id": job_id}
+        fingerprint = self._operation_fingerprint(action_payload, timeout_seconds)
+        with self._writer_lock():
+            journal = self._load_action_journal()
+            existing = (journal.get("operations") or {}).get(operation_id)
+            if existing is not None:
+                if existing.get("fingerprint") != fingerprint:
+                    from .campaign_jobs import JobConflictError
+
+                    raise JobConflictError(
+                        f"operation_id {operation_id!r} already names a different action"
+                    )
+                if isinstance(existing.get("result"), Mapping):
+                    return dict(existing["result"])
+                if existing.get("status") == "failed":
+                    raise CampaignOperationFailedError(
+                        str(
+                            existing.get("error")
+                            or f"cancellation operation {operation_id!r} failed"
+                        )
+                    )
+                raise CampaignOperationInProgressError(
+                    f"operation {operation_id!r} is already in progress"
+                )
+            sequence, journal, budget = self._reserve_sequence()
+            effective = self._effective_timeout(timeout_seconds, budget=budget)
+            now = datetime.now(UTC).isoformat()
+            journal["operations"][operation_id] = {
+                "operation_id": operation_id,
+                "sequence": sequence,
+                "fingerprint": fingerprint,
+                "action": action_payload,
+                "requested_timeout_seconds": timeout_seconds,
+                "effective_timeout_seconds": effective,
+                "status": "running",
+                "created_at": now,
+                "updated_at": now,
+            }
+            self._persist_budget(budget)
+            self._persist_action_journal(journal)
+            active_started = time.monotonic()
+            try:
+                state = self.cancel_job(job_id)
+            except Exception as error:
+                self._update_operation_record(
+                    journal,
+                    operation_id,
+                    status="failed",
+                    error=f"{type(error).__name__}: {error}",
+                )
+                self._persist_action_journal(journal)
+                self._charge_active_seconds(time.monotonic() - active_started)
+                raise
+            result = state.model_dump(mode="json") if hasattr(state, "model_dump") else dict(state)
+            status = getattr(getattr(state, "status", None), "value", "failed")
+            operation_status = (
+                "failed"
+                if status in {"outcome_unknown", "failed"}
+                else "succeeded"
+            )
+            self._update_operation_record(
+                journal,
+                operation_id,
+                status=operation_status,
+                result=result,
+            )
+            self._persist_action_journal(journal)
+            self._charge_active_seconds(time.monotonic() - active_started)
+            return result
+
+    # Named aliases are useful to non-MVP front-ends and make the safety
+    # boundary discoverable without reaching into private host helpers.
+    execute = perform
+
+    def manifest(self) -> dict[str, Any]:
+        """Return the immutable run identity that will be persisted."""
+
+        return self.host._manifest()
+
+    def snapshot(self) -> dict[str, Any]:
+        """Return a read-only projection for supervisors and attachers.
+
+        The snapshot is assembled from the same durable stores used by the
+        runner.  It deliberately contains no model messages and does not infer
+        scientific conclusions from process liveness.
+        """
+
+        all_states: list[Any] = []
+        jobs_projection: list[dict[str, Any]] = []
+        budget = self._load_budget()
+        if self._campaign_root is not None or self._job_supervisor is not None:
+            with self._writer_lock(wait_seconds=2.0):
+                self._reconcile_jobs_locked()
+                all_states = sorted(
+                    self._jobs().jobs(),
+                    key=lambda item: (item.created_at, item.job_id),
+                )
+                active_states = [state for state in all_states if not state.status.terminal]
+                active_ids = {state.job_id for state in active_states}
+                terminal_states = [
+                    state for state in reversed(all_states) if state.job_id not in active_ids
+                ]
+                states = (
+                    active_states
+                    + terminal_states[: max(0, SNAPSHOT_MAX_JOBS - len(active_states))]
+                )[:SNAPSHOT_MAX_JOBS]
+                jobs_projection = [state.model_dump(mode="json") for state in states]
+                budget = self._load_budget()
+        max_actions = budget.get("max_actions")
+        action_count = int(budget.get("action_count", 0))
+        remaining_actions = (
+            None
+            if max_actions is None
+            else max(0, int(max_actions) - action_count)
+        )
+        raw_provenance = self.host._artifact_provenance
+        raw_artifacts = raw_provenance.get("artifacts", {})
+        artifact_items = (
+            list(raw_artifacts.items()) if isinstance(raw_artifacts, Mapping) else []
+        )
+        artifact_provenance = {
+            **{
+                key: value
+                for key, value in raw_provenance.items()
+                if key != "artifacts"
+            },
+            "artifact_count": len(artifact_items),
+            "artifacts_truncated": len(artifact_items) > SNAPSHOT_MAX_ARTIFACTS,
+            "artifacts": dict(artifact_items[-SNAPSHOT_MAX_ARTIFACTS:]),
+        }
+        literature_records: list[dict[str, Any]] = []
+        for record in self.host._literature_searches:
+            payload = record.model_dump(mode="json")
+            sources = payload.pop("sources", [])
+            payload["source_count"] = len(sources)
+            payload["sources"] = [
+                {
+                    key: source.get(key)
+                    for key in (
+                        "id",
+                        "kind",
+                        "provider",
+                        "title",
+                        "publication_year",
+                        "doi",
+                        "url",
+                    )
+                }
+                for source in sources[:5]
+            ]
+            literature_records.append(payload)
+        claim_store = self.claim_store
+        return {
+            "hypothesis": self.hypothesis,
+            "manifest": self.manifest(),
+            "claim_ledger": claim_store.ledger.compact_summary(max_claims=12),
+            "skill_hashes": dict(self.skills.hashes),
+            "capability_hashes": dict(self.capabilities.hashes),
+            "artifact_provenance": artifact_provenance,
+            "literature_search_count": len(literature_records),
+            "literature_searches_truncated": (
+                len(literature_records) > SNAPSHOT_MAX_LITERATURE_SEARCHES
+            ),
+            "literature_searches": literature_records[
+                -SNAPSHOT_MAX_LITERATURE_SEARCHES:
+            ],
+            "job_count": len(all_states),
+            "jobs_truncated": len(all_states) > len(jobs_projection),
+            "jobs": jobs_projection,
+            "budget": {
+                "max_actions": max_actions,
+                "action_count": action_count,
+                "remaining_actions": remaining_actions,
+                "max_wall_seconds": float(budget["max_wall_seconds"]),
+                "accumulated_active_seconds": float(
+                    budget.get("accumulated_active_seconds", 0.0)
+                ),
+                "remaining_wall_seconds": self._remaining_wall_seconds(budget),
+                "max_command_seconds": float(budget["max_command_seconds"]),
+            },
+        }
+
+    def enforce_startup(self, action: MVPAgentAction) -> None:
+        """Apply the literature startup gate for a prospective action."""
+
+        self.host._enforce_literature_startup(action)
+
+    @staticmethod
+    def _action_mutates_campaign(action: MVPAgentAction) -> bool:
+        """Return whether an action can write campaign or claim state."""
+
+        from .mvp_agent import MVPActionKind
+
+        return action.action in {
+            MVPActionKind.SEARCH_LITERATURE,
+            MVPActionKind.WRITE_FILE,
+            MVPActionKind.RUN_PYTHON,
+            MVPActionKind.MATERIALIZE_SKILL_RESOURCE,
+            MVPActionKind.RUN_CAPABILITY,
+            MVPActionKind.AUTHOR_AND_RUN_CAPABILITY,
+            MVPActionKind.REGISTER_CLAIM,
+            MVPActionKind.REGISTER_EVIDENCE_CONTRACT,
+            MVPActionKind.LINK_CLAIM_EVIDENCE,
+            MVPActionKind.CLOSE_CLAIM,
+        }
+
+    def _active_job_states(self, *, exclude_operation_id: str | None = None) -> tuple[Any, ...]:
+        if self._campaign_root is None and self._job_supervisor is None:
+            return ()
+        jobs = self._jobs()
+        listing = getattr(jobs, "jobs", None)
+        if not callable(listing):
+            return ()
+        return tuple(
+            state
+            for state in listing()
+            if not state.status.terminal
+            and (
+                exclude_operation_id is None
+                or state.operation_id != exclude_operation_id
+            )
+        )
+
+    def _assert_writer_available(self, *, exclude_operation_id: str | None = None) -> None:
+        active = self._active_job_states(exclude_operation_id=exclude_operation_id)
+        if active:
+            operations = ", ".join(str(state.operation_id) for state in active)
+            raise CampaignWriterBusyError(
+                "campaign has a non-terminal durable writer job "
+                f"({operations}); reconcile or cancel it before a mutating action"
+            )
+
+    def _refresh_durable_indexes(self) -> None:
+        """Reload worker-written indexes before the parent mutates or observes.
+
+        Workers write each JSON index atomically.  A parent kernel, however,
+        keeps in-memory projections for fast claim/provenance validation.  The
+        refresh is performed only after a terminal job receipt, when the
+        worker is no longer a writer and the one-writer rule makes replacing
+        these projections safe.
+        """
+
+        for attribute, loader_name in (
+            ("_artifact_provenance", "_load_artifact_provenance"),
+            ("_capability_preflights", "_load_capability_preflights"),
+            ("_literature_searches", "_load_literature_searches"),
+        ):
+            loader = getattr(self.host, loader_name, None)
+            if callable(loader):
+                setattr(self.host, attribute, loader())
+        claim_store = getattr(self.host, "claim_store", None)
+        reload_ledger = getattr(claim_store, "_load_or_create", None)
+        if callable(reload_ledger):
+            claim_store._ledger = reload_ledger()
+
+    # ---- durable action jobs ---------------------------------------------
+
+    def _jobs(self) -> Any:
+        if self._job_supervisor is None:
+            from .campaign_jobs import CampaignJobSupervisor
+
+            output = getattr(self.host, "output", None)
+            if output is None:
+                raise RuntimeError(
+                    "CampaignKernel host has no output directory for durable jobs"
+                )
+            self._job_supervisor = CampaignJobSupervisor(Path(output) / "jobs")
+        return self._job_supervisor
+
+    @staticmethod
+    def _worker_handshake_path(request_path: Path) -> Path:
+        return request_path.with_suffix(".handshake.json")
+
+    def _write_worker_handshake(self, path: Path, payload: Mapping[str, Any]) -> None:
+        self._atomic_json_write(path, payload)
+
+    def start_job(self, request: Mapping[str, Any] | Any) -> Any:
+        """Submit one typed sandbox action behind a durable worker handshake."""
+
+        from .campaign_jobs import (
+            KERNEL_WORKER_SCHEMA_VERSION,
+            CampaignJobRequest,
+            CampaignJobStatus,
+            JobConflictError,
+            kernel_worker_request_sha256,
+            kernel_worker_result_path,
+        )
+        from .mvp_agent import parse_mvp_action
+
+        if not isinstance(request, Mapping):
+            raise TypeError(
+                "CampaignKernel.start_job accepts only a typed action mapping; "
+                "use CampaignJobSupervisor directly for internal process tests"
+            )
+        payload = dict(request)
+        raw_operation_id = str(payload.pop("operation_id", "") or "")
+        if not raw_operation_id:
+            raw_operation_id = "op_" + hashlib.sha256(
+                json.dumps(
+                    {key: value for key, value in payload.items() if key != "iteration"},
+                    sort_keys=True,
+                    separators=(",", ":"),
+                ).encode()
+            ).hexdigest()[:32]
+        operation_id = self._validate_operation_id(raw_operation_id)
+        raw_argv = payload.get("argv", ())
+        if isinstance(raw_argv, (str, bytes)) or not isinstance(raw_argv, (list, tuple)):
+            raise ValueError("job request argv must be a list of strings")
+        if any(not isinstance(item, str) or not item for item in raw_argv):
+            raise ValueError("job request argv must contain non-empty strings")
+        original_argv = tuple(raw_argv)
+        if not original_argv:
+            raise ValueError("job request requires a non-empty argv")
+        kind = str(payload.get("kind", "python"))
+        if getattr(self.host, "sandbox", None) is None:
+            raise RuntimeError("typed action jobs require a sandboxed campaign host")
+        research_note = str(payload.get("research_note", f"DSH job: {kind}"))
+        if kind == "python":
+            action_payload = {
+                "action": "run_python",
+                "research_note": research_note,
+                "argv": list(original_argv),
+                "active_claim_id": payload.get("active_claim_id"),
+            }
+        elif kind == "capability":
+            action_payload = {
+                "action": "run_capability",
+                "research_note": research_note,
+                "capability": str(payload.get("capability", "")),
+                "argv": list(original_argv),
+                "stage": str(payload.get("stage", "workbench")),
+                "active_claim_id": payload.get("active_claim_id"),
+            }
+        else:
+            raise ValueError("job kind must be 'python' or 'capability'")
+        action = parse_mvp_action(json.dumps(action_payload, separators=(",", ":")))
+        raw_timeout = payload.get("timeout_seconds")
+        if raw_timeout is not None:
+            if (
+                isinstance(raw_timeout, bool)
+                or not isinstance(raw_timeout, (int, float))
+                or not math.isfinite(float(raw_timeout))
+                or float(raw_timeout) <= 0
+            ):
+                raise ValueError("job request timeout_seconds must be positive and finite")
+            requested_timeout: float | None = float(raw_timeout)
+        else:
+            requested_timeout = None
+        output = Path(self.host.output).expanduser().resolve()
+        operation_key = hashlib.sha256(operation_id.encode()).hexdigest()[:32]
+        request_directory = output / "kernel_jobs"
+        request_path = request_directory / f"{operation_key}.json"
+        handshake_path = self._worker_handshake_path(request_path)
+        worker_payload = {
+            "schema_version": KERNEL_WORKER_SCHEMA_VERSION,
+            "operation_id": operation_id,
+            "campaign": str(output),
+            "timeout_seconds": requested_timeout,
+            "action": action.model_dump(mode="json"),
+        }
+        worker_digest = kernel_worker_request_sha256(worker_payload)
+        worker_payload["worker_request_sha256"] = worker_digest
+        result_path = kernel_worker_result_path(request_path)
+        command = (
+            sys.executable,
+            "-m",
+            "conjecture_solver.kernel_worker",
+            "--request",
+            str(request_path),
+            "--campaign",
+            str(output),
+            "--handshake",
+            str(handshake_path),
+        )
+        # Caller iteration is deliberately excluded: sequence allocation is a
+        # kernel-owned durable concern, not an MCP-provided ordering hint.
+        metadata = {
+            **{key: value for key, value in payload.items() if key != "iteration"},
+            "kind": kind,
+            "action": action.model_dump(mode="json"),
+            "request_path": str(request_path),
+            "worker_request_sha256": worker_digest,
+            "worker_result_path": str(result_path),
+            "handshake_path": str(handshake_path),
+            "requested_timeout_seconds": requested_timeout,
+        }
+        with self._writer_lock():
+            jobs = self._jobs()
+            reload_operations = getattr(jobs, "_load_operation_index", None)
+            if callable(reload_operations):
+                jobs._operations = reload_operations()
+            self._reconcile_jobs_locked()
+            existing_job_id = getattr(jobs, "_operations", {}).get(operation_id)
+            if existing_job_id is not None:
+                existing_request = jobs.request_record(existing_job_id)
+                existing_metadata = existing_request.metadata
+                if (
+                    existing_metadata.get("action") != action.model_dump(mode="json")
+                    or existing_metadata.get("requested_timeout_seconds")
+                    != requested_timeout
+                ):
+                    raise JobConflictError(
+                        f"operation_id {operation_id!r} already names a different request"
+                    )
+                return self.job_status(existing_job_id)
+            journal = self._load_action_journal()
+            fingerprint = self._operation_fingerprint(
+                action.model_dump(mode="json"), requested_timeout
+            )
+            existing_record = (journal.get("operations") or {}).get(operation_id)
+            if existing_record is not None:
+                if existing_record.get("fingerprint") != fingerprint:
+                    raise JobConflictError(
+                        f"operation_id {operation_id!r} already names a different action"
+                    )
+                recorded_job = existing_record.get("job_id")
+                if isinstance(recorded_job, str) and recorded_job:
+                    return self.job_status(recorded_job)
+                raise CampaignOperationInProgressError(
+                    f"operation {operation_id!r} was durably submitted and cannot rerun"
+                )
+            self._assert_writer_available(exclude_operation_id=operation_id)
+            budget = self._load_budget()
+            effective_timeout = self._effective_timeout(requested_timeout, budget=budget)
+            sequence, journal, budget = self._reserve_sequence()
+            now = datetime.now(UTC).isoformat()
+            journal["operations"][operation_id] = {
+                "operation_id": operation_id,
+                "sequence": sequence,
+                "fingerprint": fingerprint,
+                "action": action.model_dump(mode="json"),
+                "requested_timeout_seconds": requested_timeout,
+                "effective_timeout_seconds": effective_timeout,
+                "status": "submitted",
+                "job_id": None,
+                "created_at": now,
+                "updated_at": now,
+            }
+            self._persist_budget(budget)
+            self._persist_action_journal(journal)
+            request_directory.mkdir(parents=True, exist_ok=True)
+            self._atomic_json_write(request_path, worker_payload)
+            desired_request = CampaignJobRequest(
+                operation_id=operation_id,
+                argv=command,
+                cwd=str(output),
+                timeout_seconds=effective_timeout,
+                metadata=metadata,
+            )
+            state = jobs.start(request=desired_request)
+            job_id = getattr(state, "job_id", None)
+            if job_id is None and isinstance(state, Mapping):
+                job_id = state.get("job_id")
+            status = getattr(getattr(state, "status", None), "value", None)
+            if status is None and isinstance(state, Mapping):
+                status = state.get("status")
+            journal = self._load_action_journal()
+            record = journal["operations"].get(operation_id)
+            if isinstance(record, dict):
+                record["job_id"] = job_id
+                record["status"] = status if status in {"failed", "cancelled"} else "queued"
+                record["updated_at"] = datetime.now(UTC).isoformat()
+            self._persist_action_journal(journal)
+            supervisor = (
+                getattr(jobs, "supervisor_record", lambda _job: None)(job_id)
+                if job_id
+                else None
+            )
+            if (
+                supervisor is not None
+                and status not in {"failed", "cancelled"}
+                and hasattr(supervisor, "identity")
+            ):
+                handshake = {
+                    "schema_version": KERNEL_WORKER_SCHEMA_VERSION,
+                    "job_id": job_id,
+                    "operation_id": operation_id,
+                    "request_path": str(request_path),
+                    "request_sha256": desired_request.request_sha256,
+                    "worker_request_sha256": worker_digest,
+                    "state_status": status or CampaignJobStatus.RUNNING.value,
+                    "identity": supervisor.identity.model_dump(mode="json"),
+                }
+                self._write_worker_handshake(handshake_path, handshake)
+            return state
+
+    def _reconcile_worker_receipt(self, job_id: str, state: Any) -> Any:
+        """Recover a known worker outcome after the MCP supervisor restarts."""
+
+        from .campaign_jobs import (
+            KERNEL_WORKER_SCHEMA_VERSION,
+            CampaignJobStatus,
+            kernel_worker_request_sha256,
+            kernel_worker_result_path,
+        )
+
+        if getattr(state, "status", None) not in {
+            CampaignJobStatus.OUTCOME_UNKNOWN,
+            CampaignJobStatus.SUCCEEDED,
+            CampaignJobStatus.FAILED,
+            CampaignJobStatus.CANCELLED,
+        }:
+            return state
+        jobs = self._jobs()
+        request = jobs.request_record(job_id)
+        metadata = request.metadata
+        raw_request_path = metadata.get("request_path")
+        raw_result_path = metadata.get("worker_result_path")
+        expected_digest = metadata.get("worker_request_sha256")
+        if not all(
+            isinstance(value, str) and value
+            for value in (raw_request_path, raw_result_path, expected_digest)
+        ):
+            return state
+        output = Path(self.host.output).resolve()
+        kernel_jobs = output / "kernel_jobs"
+        request_path = Path(raw_request_path).expanduser()
+        result_path = Path(raw_result_path).expanduser()
+        if request_path.is_symlink() or result_path.is_symlink():
+            return state
+        request_path = request_path.resolve()
+        result_path = result_path.resolve()
+        if (
+            not request_path.is_relative_to(kernel_jobs)
+            or not result_path.is_relative_to(kernel_jobs)
+            or result_path != kernel_worker_result_path(request_path)
+            or not request_path.is_file()
+            or not result_path.is_file()
+            or result_path.stat().st_size > 4_000_000
+        ):
+            return state
+        try:
+            worker_request = json.loads(request_path.read_text(encoding="utf-8"))
+            worker_receipt = json.loads(result_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            return state
+        if not isinstance(worker_request, dict) or not isinstance(worker_receipt, dict):
+            return state
+        action = metadata.get("action")
+        expected_action = action.get("action") if isinstance(action, Mapping) else None
+        if (
+            worker_request.get("schema_version") != KERNEL_WORKER_SCHEMA_VERSION
+            or worker_request.get("worker_request_sha256") != expected_digest
+            or kernel_worker_request_sha256(worker_request) != expected_digest
+            or worker_receipt.get("schema_version") != KERNEL_WORKER_SCHEMA_VERSION
+            or worker_receipt.get("worker_request_sha256") != expected_digest
+            or worker_receipt.get("operation_id") != request.operation_id
+            or worker_receipt.get("action") != expected_action
+            or not isinstance(worker_receipt.get("ok"), bool)
+            or not isinstance(worker_receipt.get("action_executed"), bool)
+            or (
+                worker_receipt.get("ok") is True
+                and worker_receipt.get("action_executed") is not True
+            )
+        ):
+            return state
+        self._authenticated_worker_jobs.add(job_id)
+        updated = state
+        if state.status == CampaignJobStatus.OUTCOME_UNKNOWN:
+            receipt_text = json.dumps(
+                worker_receipt,
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+                default=str,
+            )
+            updated = jobs.accept_external_result(
+                job_id,
+                returncode=0 if worker_receipt["ok"] else 1,
+                detail="reconciled from authenticated durable kernel-worker receipt",
+                receipt_text=receipt_text,
+            )
+        journal = self._load_action_journal()
+        record = journal.get("operations", {}).get(request.operation_id)
+        if isinstance(record, dict):
+            record["job_id"] = job_id
+            record["status"] = updated.status.value
+            if isinstance(worker_receipt.get("result"), Mapping):
+                record["result"] = worker_receipt["result"]
+            record["updated_at"] = datetime.now(UTC).isoformat()
+            self._persist_action_journal(journal)
+        return updated
+
+    def job_status(self, job_id: str) -> Any:
+        """Reconcile and return one durable action job."""
+
+        # Detached scientific work carries an active-job writer lease rather
+        # than holding the flock for its full runtime. Status reconciliation is
+        # therefore a short serialized mutation and remains responsive while a
+        # simulation is running.
+        with self._writer_lock(wait_seconds=2.0):
+            state = self._jobs().status(job_id)
+            state = self._reconcile_worker_receipt(job_id, state)
+            state = self._reject_unverified_worker_success(state)
+            if getattr(state, "status", None) is not None and state.status.terminal:
+                self._refresh_durable_indexes()
+                if self._should_finalize_job(state):
+                    self._finalize_host_operation(
+                        state.operation_id,
+                        state.status.value,
+                        job_id=state.job_id,
+                    )
+                self._sync_operation_from_job(state)
+        return state
+
+    @staticmethod
+    def _job_stream_summary(text: str, *, tail_chars: int = 4_000) -> dict[str, Any]:
+        """Keep failure context visible without flooding an MCP response."""
+
+        return {
+            "characters": len(text),
+            "truncated": len(text) > tail_chars,
+            "tail": text[-tail_chars:],
+        }
+
+    @classmethod
+    def _compact_job_value(cls, value: Any, *, depth: int = 0) -> Any:
+        """Bound a worker receipt while preserving status and artifact metadata."""
+
+        if depth > 8:
+            return "... depth truncated ..."
+        if isinstance(value, Mapping):
+            compact: dict[str, Any] = {}
+            for key, item in list(value.items())[:200]:
+                name = str(key)
+                if name in {"stdout", "stderr"} and isinstance(item, str):
+                    compact[name] = cls._job_stream_summary(item)
+                else:
+                    compact[name] = cls._compact_job_value(item, depth=depth + 1)
+            return compact
+        if isinstance(value, (list, tuple)):
+            return [cls._compact_job_value(item, depth=depth + 1) for item in value[:200]]
+        if isinstance(value, str) and len(value) > 4_000:
+            return cls._job_stream_summary(value)
+        if isinstance(value, Path):
+            return value.as_posix()
+        return value
+
+    def job_report(self, job_id: str) -> dict[str, Any]:
+        """Return bounded lifecycle, request identity, and diagnostic output.
+
+        ``job_status`` remains the small internal/recovery API. MCP callers need
+        enough information to diagnose a failed simulation, so this view keeps
+        the state fields at the top level and adds bounded terminal details.
+        """
+
+        jobs = self._jobs()
+        state = self.job_status(job_id)
+        request = jobs.request_record(job_id)
+        receipt = jobs.result_record(job_id)
+        report = state.model_dump(mode="json")
+        metadata = request.metadata
+        report["request"] = {
+            "request_sha256": request.request_sha256,
+            "timeout_seconds": request.timeout_seconds,
+            "kind": metadata.get("kind"),
+            "capability": metadata.get("capability"),
+            "stage": metadata.get("stage"),
+            "action": self._compact_job_value(metadata.get("action")),
+        }
+        if receipt is not None:
+            report["result"] = {
+                "status": receipt.status.value,
+                "outcome": receipt.outcome.value if receipt.outcome is not None else None,
+                "returncode": receipt.returncode,
+                "timed_out": receipt.timed_out,
+                "started_at": receipt.started_at,
+                "finished_at": receipt.finished_at,
+                "detail": receipt.detail,
+                "stdout": self._job_stream_summary(receipt.stdout),
+                "stderr": self._job_stream_summary(receipt.stderr),
+            }
+            for line in reversed(receipt.stdout.splitlines()):
+                if not line.startswith("{"):
+                    continue
+                try:
+                    worker_receipt = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                if isinstance(worker_receipt, dict) and "ok" in worker_receipt:
+                    report["worker_receipt"] = self._compact_job_value(worker_receipt)
+                    break
+        return report
+
+    def cancel_job(self, job_id: str) -> Any:
+        """Cancel one job only after its persisted process identity verifies."""
+
+        return self._jobs().cancel(job_id)

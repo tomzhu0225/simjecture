@@ -1,0 +1,25 @@
+{
+  "name": "@simjecture/dsh-bundle",
+  "version": "0.2.0-rc.1",
+  "description": "Strict DeepSeek Harness profile for Simjecture campaigns",
+  "type": "module",
+  "license": "Apache-2.0",
+  "files": [
+    "cordis.patch.yml",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/dsh": "0.1.1-rc.2"
+  },
+  "dependencies": {
+    "@deepseek-ai/dsh-mcp-client": "0.1.1-rc.2"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

@@ -7,8 +7,12 @@ action. The contract states what is observed, how outcomes map to dispositions,
 what uncertainty matters, what makes the observation inconclusive, and which
 exact program commands may generate evidence.
 
-Artifacts written while code is still being designed remain workbench records.
-They cannot be promoted retroactively.
+Agent-authored files and artifacts written while code is still being designed
+remain workbench records. They cannot be promoted retroactively. An
+execution-generated artifact is only eligible after the process succeeds and,
+for detached work, its authenticated job receipt is reconciled as succeeded.
+Failed, cancelled, or operationally unknown jobs remain non-evidence even when
+they left a plausible partial output.
 
 ## Instruments are claims too
 

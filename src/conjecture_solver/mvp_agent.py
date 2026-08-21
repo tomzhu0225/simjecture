@@ -1377,6 +1377,11 @@ software.
         self._literature_searches = self._load_literature_searches()
         self._adjudications = self._load_adjudications()
         self._literature_startup_grandfathered = False
+        # Keep model-facing orchestration in this runner while exposing the
+        # model-neutral scientific action boundary to other front-ends.
+        # CampaignKernel is re-exported at module end after all action models
+        # have been defined, so runner construction remains cycle-free.
+        self.kernel = CampaignKernel(self)
 
     def _load_adjudications(self) -> list[MVPAdjudicationRecord]:
         if not self.adjudications_path.exists():
@@ -2132,6 +2137,41 @@ software.
         )
         os.replace(temporary, self.artifact_provenance_path)
 
+    def _finalize_operation_provenance(
+        self,
+        operation_id: str,
+        status: str,
+        *,
+        job_id: str | None = None,
+    ) -> None:
+        """Bind provisional execution artifacts to a durable job outcome."""
+
+        normalized_status = getattr(status, "value", status)
+        if normalized_status not in {
+            "queued",
+            "running",
+            "cancel_requested",
+            "succeeded",
+            "failed",
+            "cancelled",
+            "outcome_unknown",
+        }:
+            raise ValueError(f"unsupported durable job status: {normalized_status!r}")
+        changed = False
+        for record in self._artifact_provenance["artifacts"].values():
+            if not isinstance(record, dict) or record.get("operation_id") != operation_id:
+                continue
+            record["job_id"] = job_id
+            record["job_status"] = normalized_status
+            record["evidence_eligible"] = bool(
+                normalized_status == "succeeded"
+                and record.get("evidence_candidate") is True
+                and record.get("execution_succeeded") is True
+            )
+            changed = True
+        if changed:
+            self._persist_artifact_provenance()
+
     def _load_capability_preflights(self) -> dict[str, dict[str, Any]]:
         if not self.capability_preflights_path.exists():
             return {}
@@ -2277,6 +2317,7 @@ software.
         program_path, program_sha256 = self._program_metadata(program_path)
         action_kind = action.action.value
         action_sha256 = self._action_sha256(action)
+        operation_id = getattr(self, "_kernel_operation_id", None)
         execution_succeeded: bool | None = None
         execution_returncode: int | None = None
         execution_timed_out: bool | None = None
@@ -2303,6 +2344,28 @@ software.
         }
         for path in changed:
             size, mtime_ns = after[path]
+            execution_action = isinstance(
+                action,
+                (
+                    MVPRunPythonAction,
+                    MVPRunCapabilityAction,
+                    MVPAuthorAndRunCapabilityAction,
+                ),
+            )
+            if skill_resource is not None or not execution_action:
+                stage_candidate = False
+            elif path in guided_paths:
+                stage_candidate = (
+                    execution_stage == MVPCapabilityExecutionStage.EVIDENCE
+                )
+            else:
+                stage_candidate = (
+                    execution_stage != MVPCapabilityExecutionStage.WORKBENCH
+                )
+            evidence_candidate = bool(
+                stage_candidate
+                and (not execution_action or execution_succeeded is True)
+            )
             record = {
                 "bytes": size,
                 "mtime_ns": mtime_ns,
@@ -2321,10 +2384,12 @@ software.
                 "execution_stage": (
                     execution_stage.value if execution_stage is not None else None
                 ),
-                "evidence_eligible": (
-                    execution_stage == MVPCapabilityExecutionStage.EVIDENCE
-                    if path in guided_paths
-                    else execution_stage != MVPCapabilityExecutionStage.WORKBENCH
+                "operation_id": operation_id,
+                "job_id": None,
+                "job_status": "running" if operation_id and execution_action else None,
+                "evidence_candidate": evidence_candidate,
+                "evidence_eligible": bool(
+                    evidence_candidate and not (operation_id and execution_action)
                 ),
             }
             if skill_resource is not None:
@@ -2367,6 +2432,9 @@ software.
                 "execution_workspace_exceeded"
             ),
             execution_stage=record.get("execution_stage"),
+            operation_id=record.get("operation_id"),
+            job_id=record.get("job_id"),
+            job_status=record.get("job_status"),
             evidence_eligible=bool(record.get("evidence_eligible", True)),
         )
 
@@ -3143,6 +3211,23 @@ software.
         timeout_seconds: float,
         progress_callback: Callable[[dict[str, Any]], None] | None = None,
     ) -> dict[str, Any]:
+        """Compatibility entry point delegating action execution to the kernel."""
+
+        return self.kernel.perform(
+            action,
+            iteration=iteration,
+            timeout_seconds=timeout_seconds,
+            progress_callback=progress_callback,
+        )
+
+    def _perform_compat(
+        self,
+        action: MVPAgentAction,
+        *,
+        iteration: int,
+        timeout_seconds: float,
+        progress_callback: Callable[[dict[str, Any]], None] | None = None,
+    ) -> dict[str, Any]:
         self._enforce_literature_startup(action)
         if isinstance(action, MVPSearchLiteratureAction):
             if self.literature_search is None:
@@ -3295,6 +3380,9 @@ software.
             result["execution_stage"] = action.stage.value
             result["scientific_evidence_eligible"] = (
                 action.stage == MVPCapabilityExecutionStage.EVIDENCE
+                and result.get("returncode") == 0
+                and result.get("timed_out") is not True
+                and result.get("workspace_exceeded") is not True
             )
             result["capability_preflight"] = preflight
             if commissioning_claim_id is not None:
@@ -3346,6 +3434,9 @@ software.
                 "execution_stage": action.stage.value,
                 "scientific_evidence_eligible": (
                     action.stage == MVPCapabilityExecutionStage.EVIDENCE
+                    and execution_result.get("returncode") == 0
+                    and execution_result.get("timed_out") is not True
+                    and execution_result.get("workspace_exceeded") is not True
                 ),
                 "capability_preflight": preflight,
             }
@@ -3788,7 +3879,7 @@ software.
                     "completed MVP report has different guided commissioning"
                 )
             return report
-        self._initialize()
+        self.kernel.initialize()
         if self._read_loop_state() is None:
             self._set_loop_state(
                 stage=MVPLoopStage.FALSIFICATION,
@@ -3797,7 +3888,7 @@ software.
                 detail="Falsifier is selecting the first prospective challenge.",
                 iteration=0,
             )
-        self._recover_interrupted_action()
+        self.kernel.recover_interrupted_action()
         clock = begin_or_resume_clock(self.output)
         messages, iterations = self._resume_messages()
         started_at = clock.started_at
@@ -3974,3 +4065,9 @@ software.
             started_at=started_at,
             elapsed=elapsed_seconds(),
         )
+
+
+# Compatibility re-export for callers that historically imported all MVP
+# runtime types from this module.  The import is safe at module end and keeps
+# CampaignKernel available as a first-class model-neutral entry point.
+from .campaign_kernel import CampaignKernel  # noqa: E402  # isort: skip

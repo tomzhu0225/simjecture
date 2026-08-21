@@ -1,0 +1,127 @@
+# Simjecture is the sole scientific execution boundary in this profile. DSH
+# owns the model/session loop; the Python kernel owns campaign state, evidence
+# policy, commissioning, sandboxing, and durable simulation jobs.
+
+- id: system-prompt
+  config:
+    persona: >-
+      You are the autonomous research agent for a Simjecture campaign. Begin by
+      reading mcp__simjecture__snapshot. Treat the operator's root hypothesis as
+      immutable. Search relevant literature when the tool is available, inspect
+      the installed scientific skills, register prospective evidence contracts,
+      and use explicit claims and subclaims to organize falsification. Use only
+      mcp__simjecture__* tools for scientific state and execution. Long numerical
+      work returns a durable job id: poll job_status, diagnose failures, and keep
+      working without asking for routine permission. Workbench outputs are not
+      evidence. Never claim support or falsification until the Python kernel has
+      accepted qualifying evidence under a prospective contract. If an outcome
+      is unknown or inconclusive, preserve that status instead of guessing.
+
+- id: tools
+  config:
+    mode: native
+
+# The isolated profile has no generic model-facing execution surface. Routine
+# scientific autonomy is governed by CampaignKernel, so DSH must not interpose
+# a second interactive approval loop around its MCP client.
+- id: approval
+  config:
+    policy: never
+
+- id: permission
+  config:
+    defaultPreset: simjecture
+    presets:
+      simjecture:
+        sandbox: workspace-write
+        approval: never
+        name: simjecture
+        description: Scientific side effects are governed by CampaignKernel.
+
+# Remove alternate model-facing execution and delegation surfaces. These rows
+# are defense in depth; CampaignKernel remains authoritative even when invoked
+# by a different MCP client.
+- id: tool-bash
+  disabled: true
+
+- id: tool-pwsh
+  disabled: true
+
+- id: tool-jobs
+  disabled: true
+
+- id: tool-fs
+  disabled: true
+
+- id: tool-fs-search
+  disabled: true
+
+- id: tool-str-replace-editor
+  disabled: true
+
+- id: agent-instructions
+  disabled: true
+
+- id: skill-filesystem
+  disabled: true
+
+- id: tool-skill
+  disabled: true
+
+- id: tool-subagent-control
+  disabled: true
+
+- id: tool-subagent-list-agents
+  disabled: true
+
+- id: tool-subagent
+  disabled: true
+
+- id: tool-subagent-fork
+  disabled: true
+
+- id: tool-subagent-report
+  disabled: true
+
+- id: workflow-worker-thread
+  disabled: true
+
+- id: tool-workflow
+  disabled: true
+
+- id: tool-ralph
+  disabled: true
+
+- id: tool-web
+  disabled: true
+
+- id: tool-todo
+  disabled: true
+
+- id: tool-goal
+  disabled: true
+
+- insert:
+    - id: mcp-simjecture
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        serverName: simjecture
+        transport: stdio
+        command: simjecture-mcp
+        args: []
+        cwd: !!js "process.env.SIMJECTURE_WORKSPACE ?? (() => { throw new Error('SIMJECTURE_WORKSPACE is required') })()"
+        env:
+          SIMJECTURE_WORKSPACE: !!js "process.env.SIMJECTURE_WORKSPACE ?? (() => { throw new Error('SIMJECTURE_WORKSPACE is required') })()"
+          SIMJECTURE_CAMPAIGN: !!js "process.env.SIMJECTURE_CAMPAIGN ?? ''"
+          SIMJECTURE_HYPOTHESIS_FILE: !!js "process.env.SIMJECTURE_HYPOTHESIS_FILE ?? (() => { throw new Error('SIMJECTURE_HYPOTHESIS_FILE is required') })()"
+          SIMJECTURE_CAPABILITIES: !!js "process.env.SIMJECTURE_CAPABILITIES ?? ''"
+          SIMJECTURE_SKILLS: !!js "process.env.SIMJECTURE_SKILLS ?? ''"
+          SIMJECTURE_MCP_MAX_OUTPUT_CHARS: !!js "process.env.SIMJECTURE_MCP_MAX_OUTPUT_CHARS ?? '30000'"
+          SIMJECTURE_MCP_TIMEOUT_SECONDS: !!js "process.env.SIMJECTURE_MCP_TIMEOUT_SECONDS ?? '600'"
+        toolCallTimeoutMs: 60000
+        failOnStartupError: true
+        reconnect:
+          enabled: true
+          initialDelayMs: 500
+          maxDelayMs: 10000
+          maxAttempts: 8

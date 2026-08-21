@@ -29,6 +29,8 @@ hypothesis solving or empirical closure.
   [Guided commissioning](how-to/guided-commissioning.md).
 - **Operator:** use [Deploy runtime profiles](how-to/deploy-runtimes.md) to
   provision and verify the core, WarpX CPU, or WarpX CUDA environment.
+- **DSH operator:** use [Run a Simjecture campaign under DSH](how-to/deepseek-harness.md)
+  to install the native MCP profile and verify its tool boundary.
 - **Reviewer:** inspect [Evaluation status](research/status.md),
   the [recorded Gray–Scott demo](demos/gray-scott.md),
   the [recorded collisionless GEM demo](demos/collisionless-gem.md),
@@ -69,6 +71,7 @@ research/limitations
 how-to/guided-commissioning
 how-to/add-a-capability
 how-to/deploy-runtimes
+how-to/deepseek-harness
 ```
 
 ```{toctree}

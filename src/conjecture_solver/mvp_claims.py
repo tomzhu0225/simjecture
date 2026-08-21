@@ -225,6 +225,17 @@ class ClaimEvidenceProvenance(StrictModel):
     execution_timed_out: bool | None = None
     execution_workspace_exceeded: bool | None = None
     execution_stage: Literal["workbench", "evidence"] | None = None
+    operation_id: str | None = Field(default=None, max_length=256)
+    job_id: str | None = Field(default=None, max_length=256)
+    job_status: Literal[
+        "queued",
+        "running",
+        "cancel_requested",
+        "succeeded",
+        "failed",
+        "cancelled",
+        "outcome_unknown",
+    ] | None = None
     evidence_eligible: bool = True
 
 
@@ -696,15 +707,16 @@ class MVPClaimLedgerStore:
                 or evidence.observation_sufficient is not True
                 or provenance is None
                 or not provenance.tracked
+                or not provenance.evidence_eligible
                 or provenance.generated_iteration is None
                 or provenance.generated_iteration < selected_contract.registered_iteration
             ):
                 continue
-            if (
-                claim.kind == ClaimKind.INSTRUMENT
-                and provenance.capability is not None
-                and provenance.execution_succeeded is not True
-            ):
+            if provenance.action in {
+                "run_python",
+                "run_capability",
+                "author_and_run_capability",
+            } and provenance.execution_succeeded is not True:
                 continue
             if selected_contract.validation_checks and evidence.validation_passed is not True:
                 continue
@@ -1154,6 +1166,22 @@ class MVPClaimLedgerStore:
                     f"cannot mark evidence sufficient for {claim_id} without a "
                     "prospective evidence contract"
                 )
+            if provenance.action in {
+                "run_python",
+                "run_capability",
+                "author_and_run_capability",
+            } and provenance.execution_succeeded is not True:
+                execution_label = (
+                    "capability execution"
+                    if provenance.capability is not None
+                    else "execution"
+                )
+                raise ValueError(
+                    "cannot mark execution-generated evidence sufficient unless "
+                    f"the runner witnessed a successful {execution_label} "
+                    "(return code zero, "
+                    "no timeout, and no workspace-limit termination)"
+                )
             if not provenance.evidence_eligible:
                 raise ValueError(
                     "cannot mark a workbench artifact sufficient; freeze and promote "
@@ -1163,7 +1191,7 @@ class MVPClaimLedgerStore:
             if (
                 not provenance.tracked
                 or provenance.generated_iteration is None
-                or provenance.generated_iteration < contract.registered_iteration
+                or provenance.generated_iteration <= contract.registered_iteration
             ):
                 raise ValueError(
                     "cannot mark evidence sufficient unless it is provenance-tracked "

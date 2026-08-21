@@ -8,11 +8,29 @@ The operator supplies the root hypothesis, operational instruction, resource
 limits, installed capabilities, and any guided commissioning package. These
 inputs are recorded before the agent begins.
 
-## Reasoning agent
+## Reasoning harness
 
 The model decides how to operationalize the hypothesis, which diagnostics to
 write, which sub-hypotheses to register, and which admissible experiment to run
-next. Its output is a typed single action, not unrestricted host code execution.
+next. The built-in runner and the DSH profile are interchangeable reasoning
+front ends; neither is the authority for scientific state or evidence.
+
+## Native tool boundary
+
+Under DeepSeek Harness, a strict MCP profile exposes only explicit Simjecture
+tools. DSH owns the provider, conversation, retry policy, and model-facing
+session. Generic shell, filesystem, workflow, web, and subagent tools are not
+part of the scientific profile. Its approval policy is non-interactive because
+CampaignKernel is the authoritative execution gate. Each tool call crosses the
+kernel boundary at most once.
+
+## Campaign kernel
+
+The model-independent Python kernel validates typed actions and owns the root
+hypothesis, hypothesis graph, claim ledger, evidence contracts, commissioning,
+skills, capability registry, provenance, and workspace policy. The legacy MVP
+runner delegates to this same kernel, so changing the reasoning harness does not
+create a second scientific implementation.
 
 The autonomous loop exposes three operational roles. The **Falsifier**
 commissions tools and searches for counterexamples. After a valid
@@ -39,9 +57,15 @@ execution.
 
 ## Durable operational state
 
-Model calls and simulator intents are journaled before dispatch. Content hashes,
-idempotency keys, cancellation records, heartbeats, and replay logic distinguish
-scientific failure from provider, scheduler, or process failure.
+The reasoning harness retains its model session. Simjecture journals simulator
+intents before dispatch and stores content hashes, operation identifiers,
+cancellation records, process identities, and authenticated worker receipts.
+Long jobs survive an MCP restart. A missing or unverifiable receipt remains an
+unknown operational outcome and cannot become scientific evidence. The bounded
+snapshot exposes durable jobs, operation bindings, and remaining budgets to a
+fresh session. One root runner/MCP process holds the campaign ownership lease;
+detached workers hold explicit active-job writer leases. Budget accounting is
+cumulative active execution time, not elapsed calendar time between sessions.
 
 ## Human interfaces
 

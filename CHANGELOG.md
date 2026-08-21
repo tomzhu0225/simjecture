@@ -2,6 +2,22 @@
 
 This project follows semantic versioning. Dates use ISO 8601.
 
+## Unreleased
+
+- Extracted a model-independent campaign kernel while preserving the existing
+  hypothesis graph, evidence contracts, commissioning, sandbox, capability,
+  provenance, and claim-closure rules.
+- Added a strict DeepSeek Harness profile backed by 18 native MCP scientific
+  tools, with generic execution and delegation surfaces disabled.
+- Added idempotent detached simulation jobs, verified cancellation, bounded
+  status reports, single-writer enforcement, and authenticated worker receipts
+  that recover known outcomes after an MCP restart without rerunning work.
+- Added a lifetime root-campaign lease, restart-discoverable jobs and budgets,
+  cumulative active-time accounting, and durable cancellation after supervisor
+  restart. Custom skill and capability discovery roots replay in workers.
+- Validated the official DSH MCP client against the Python bridge and the
+  release-pinned CUDA WarpX/openPMD capability.
+
 ## 0.1.1 — 2026-08-22
 
 - Added a dependency-free, localhost-only browser interface with an interactive

@@ -1010,6 +1010,11 @@ def test_natural_language_agent_writes_runs_reads_and_finishes(tmp_path: Path) -
     assert transcript[-1]["kind"] == "assistant"
     assert report.claim_ledger["claims"][0]["id"] == "claim_root"
     assert (output / "hypothesis_ledger.json").is_file()
+    provenance = json.loads((output / "artifact_provenance.json").read_text())[
+        "artifacts"
+    ]
+    assert provenance["experiment.py"]["evidence_eligible"] is False
+    assert provenance["result.txt"]["evidence_eligible"] is True
 
     replay_client = ScriptedCompletionClient([])
     replay = MVPAgentRunner(

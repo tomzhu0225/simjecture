@@ -71,8 +71,14 @@ class _InstalledSkill:
 class MVPSkillCatalog:
     """Discover and read immutable, host-controlled skill documentation."""
 
-    def __init__(self, installed: tuple[_InstalledSkill, ...] = ()) -> None:
+    def __init__(
+        self,
+        installed: tuple[_InstalledSkill, ...] = (),
+        *,
+        root: str | Path | None = None,
+    ) -> None:
         self._skills = {item.manifest.name: item for item in installed}
+        self._root = Path(root).expanduser().resolve() if root is not None else None
         if len(self._skills) != len(installed):
             raise ValueError("skill names must be unique")
 
@@ -95,7 +101,13 @@ class MVPSkillCatalog:
                     content_hash=_tree_hash(skill_root),
                 )
             )
-        return cls(tuple(installed))
+        return cls(tuple(installed), root=catalog_root)
+
+    @property
+    def root(self) -> Path | None:
+        """Return the manifest discovery root used for durable worker replay."""
+
+        return self._root
 
     def __contains__(self, name: str) -> bool:
         return name in self._skills
@@ -460,8 +472,14 @@ class MVPCapabilityInstallation:
 class MVPCapabilityRegistry:
     """Installed executables that can be mounted one at a time into Bubblewrap."""
 
-    def __init__(self, installed: tuple[MVPCapabilityInstallation, ...] = ()) -> None:
+    def __init__(
+        self,
+        installed: tuple[MVPCapabilityInstallation, ...] = (),
+        *,
+        root: str | Path | None = None,
+    ) -> None:
         self._capabilities = {item.manifest.name: item for item in installed}
+        self._root = Path(root).expanduser().resolve() if root is not None else None
         if len(self._capabilities) != len(installed):
             raise ValueError("capability names must be unique")
 
@@ -482,7 +500,13 @@ class MVPCapabilityRegistry:
             except FileNotFoundError:
                 if not ignore_unavailable:
                     raise
-        return cls(tuple(installed))
+        return cls(tuple(installed), root=config_root)
+
+    @property
+    def root(self) -> Path | None:
+        """Return the JSON manifest directory used for durable worker replay."""
+
+        return self._root
 
     def __contains__(self, name: str) -> bool:
         return name in self._capabilities

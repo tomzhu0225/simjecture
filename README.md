@@ -249,6 +249,28 @@ diagnostic, and control claims attached to the selected hypothesis. Press `v`
 for the complete typed audit ledger; no claim or provenance record is hidden by
 the human-first projection.
 
+## DeepSeek Harness integration
+
+The v0.2 integration moves the model-facing research loop to DeepSeek Harness
+without moving scientific authority out of Simjecture. DSH owns the provider,
+conversation, retry policy, and session. A native MCP boundary exposes 18 typed
+scientific tools; the Python campaign kernel continues to own hypotheses,
+evidence contracts, commissioning, skills, simulation capabilities, sandboxing,
+provenance, and guarded claim closure. Existing WarpX CPU/CUDA capabilities use
+the same kernel path. The isolated DSH profile has no interactive approval gate
+around those tools; CampaignKernel's typed boundary and sandbox remain the
+execution authority. Provider and model selection remain DSH configuration.
+
+The integration is a small DSH profile bundle, not a second simulator stack.
+Provision Simjecture and any desired runtime on the host, then follow
+[the DSH deployment guide](docs/how-to/deepseek-harness.md) to install and audit
+the isolated profile. Long simulations return durable job identifiers. An
+authenticated worker receipt lets a restarted DSH/MCP client recover a known
+outcome without repeating the run; an unverifiable outcome remains non-evidence.
+The first snapshot after a restart reports durable job IDs and remaining action
+and active-execution budgets, so a new model session can resume without hidden
+process state or charging stopped-process downtime.
+
 ## Core safeguards
 
 - Network-isolated writable agent workspace with no provider credentials.
