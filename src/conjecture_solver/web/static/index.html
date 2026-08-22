@@ -93,12 +93,12 @@
                 <div>
                   <p class="eyebrow">Durable claim ledger</p>
                   <h2 id="graph-title">Claim graph</h2>
-                  <p class="panel-description">Four durable claim kinds share the graph with explicit workflow stages. Drag any node to preserve a local review layout.</p>
+                  <p class="panel-description">Arrows preserve durable claim direction through explicit workflow stages. Drag nodes, scroll over the canvas to zoom at the cursor, or fit the complete graph.</p>
                 </div>
                 <div class="graph-tools" aria-label="Graph controls">
                   <button class="kind-toggle" id="claim-kind-toggle" type="button" aria-pressed="true">All claim kinds</button>
                   <button class="icon-button" id="zoom-out" type="button" aria-label="Zoom out">−</button>
-                  <button class="icon-button" id="zoom-fit" type="button" aria-label="Fit graph">Fit</button>
+                  <button class="icon-button" id="zoom-fit" type="button" aria-label="Fit every graph node">Fit all</button>
                   <button class="icon-button" id="zoom-in" type="button" aria-label="Zoom in">+</button>
                   <button class="kind-toggle" id="reset-layout" type="button">Reset layout</button>
                 </div>
@@ -114,7 +114,7 @@
                 <span><i class="open"></i>Open</span>
                 <span><i class="qualified"></i>Qualified / limited</span>
               </div>
-              <div class="graph-viewport" id="graph-viewport" tabindex="0">
+              <div class="graph-viewport" id="graph-viewport" tabindex="0" title="Scroll to zoom at the cursor; drag nodes to arrange them">
                 <svg id="claim-graph" role="img" aria-label="Typed claim relationship graph"></svg>
                 <p class="panel-placeholder" id="graph-placeholder">No claims have been registered.</p>
               </div>

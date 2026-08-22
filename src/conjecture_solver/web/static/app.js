@@ -112,11 +112,12 @@ function bindEvents() {
   ui["zoom-out"].addEventListener("click", () => changeZoom(-0.15));
   ui["zoom-fit"].addEventListener("click", fitGraph);
   ui["reset-layout"].addEventListener("click", resetGraphLayout);
+  ui["graph-viewport"].addEventListener("wheel", handleGraphWheel, { passive: false });
   for (const tab of ui.tabs) {
     tab.addEventListener("click", () => setTab(tab.dataset.tab));
   }
   window.addEventListener("resize", debounce(() => {
-    if (state.snapshot) renderGraph(true);
+    if (state.snapshot) fitGraph();
   }, 160));
 }
 
@@ -275,7 +276,7 @@ function renderSnapshot(force) {
   renderMarkdown(
     ui["root-hypothesis"],
     snapshot.identity.hypothesis || "Hypothesis not yet recorded",
-    { inline: true },
+    { inline: true, autoMath: true },
   );
   const instruction = snapshot.identity.campaign_instruction;
   ui["campaign-instruction"].hidden = !instruction;
@@ -409,7 +410,7 @@ function toggleClaimKinds() {
   ui["claim-kind-toggle"].setAttribute("aria-pressed", String(state.showAllClaims));
   ui["claim-kind-toggle"].textContent = state.showAllClaims ? "All claim kinds" : "Scientific only";
   state.graphSignature = null;
-  renderGraph(true);
+  renderGraph(false);
 }
 
 function graphData() {
@@ -424,12 +425,17 @@ function graphData() {
     };
   }
 
-  const stages = (state.snapshot.commissioning?.stages || []).map((stage) => ({
-    ...stage,
-    statement: "Capability evidence gate",
-    evidence_count: stage.claim_ids.length,
-    contract_count: stage.binding_count,
-  }));
+  const claimsById = new Map(graph.nodes.map((node) => [node.id, node]));
+  const stages = (state.snapshot.commissioning?.stages || []).map((stage) => {
+    const target = claimsById.get(stage.scientific_claim_id);
+    return {
+      ...stage,
+      statement: `Qualifies instruments for ${stage.scientific_claim_id}`,
+      scientific_target_statement: target?.statement || stage.scientific_claim_id,
+      evidence_count: stage.claim_ids.length,
+      contract_count: stage.binding_count,
+    };
+  });
   const stageByInstrument = new Map();
   for (const stage of stages) {
     for (const claimId of stage.claim_ids) stageByInstrument.set(claimId, stage);
@@ -491,9 +497,41 @@ function renderGraph(preserveScroll) {
 
   const layout = layoutClaimGraph(nodes);
   state.currentGraphLayout = layout;
+  if (!preserveScroll) state.graphZoom = fitZoomForLayout(layout);
   graph.setAttribute("viewBox", `0 0 ${layout.width} ${layout.height}`);
   graph.setAttribute("width", String(layout.width * state.graphZoom));
   graph.setAttribute("height", String(layout.height * state.graphZoom));
+
+  const definitions = svg("defs");
+  const arrow = svg("marker", {
+    id: "graph-arrow",
+    viewBox: "0 0 9 8",
+    refX: "8",
+    refY: "4",
+    markerWidth: "7",
+    markerHeight: "7",
+    orient: "auto",
+    markerUnits: "strokeWidth",
+  });
+  arrow.append(svg("path", { d: "M 0 0 L 9 4 L 0 8 z", fill: "context-stroke" }));
+  definitions.append(arrow);
+  const clipIds = new Map();
+  nodes.forEach((item, index) => {
+    const point = layout.positions.get(item.id);
+    if (!point) return;
+    const clipId = `graph-node-clip-${index}`;
+    const clip = svg("clipPath", { id: clipId, clipPathUnits: "userSpaceOnUse" });
+    clip.append(svg("rect", {
+      x: "8",
+      y: "4",
+      width: String(Math.max(1, point.width - 16)),
+      height: String(Math.max(1, point.height - 8)),
+      rx: "5",
+    }));
+    definitions.append(clip);
+    clipIds.set(item.id, clipId);
+  });
+  graph.append(definitions);
 
   const edgeLayer = svg("g", { class: "edge-layer" });
   for (const edge of edges) {
@@ -507,6 +545,7 @@ function renderGraph(preserveScroll) {
     const path = svg("path", {
       class: `graph-edge${supporting ? ` supporting ${targetKind}` : ""}`,
       d: geometry.path,
+      "marker-end": "url(#graph-arrow)",
       "data-source": edge.source,
       "data-target": edge.target,
     });
@@ -543,7 +582,7 @@ function renderGraph(preserveScroll) {
       transform: `translate(${point.x} ${point.y})`,
       "aria-label": commissioningStage
         ? `Commissioning stage for ${item.scientific_claim_id}, ${item.status}`
-        : `${kind} claim ${item.id}, ${item.status}: ${markdownPlainText(item.statement)}`,
+        : `${kind} claim ${item.id}, ${item.status}: ${scientificPreviewText(item.statement)}`,
     });
     group.append(svg("rect", {
       class: "node-body",
@@ -558,17 +597,44 @@ function renderGraph(preserveScroll) {
       y1: "12",
       y2: String(point.height - 12),
     }));
-    appendSvgText(group, commissioningStage ? "commissioning stage" : kind, 16, 21, "node-id");
-    appendSvgText(group, item.status, point.width - 14, 21, "node-status", "end");
+    const content = svg("g", {
+      class: "node-content",
+      "clip-path": `url(#${clipIds.get(item.id)})`,
+    });
+    group.append(content);
+    appendSvgText(
+      content,
+      commissioningStage ? "commissioning for scientific claim" : kind,
+      16,
+      21,
+      "node-id",
+    );
+    appendSvgText(content, item.status, point.width - 14, 21, "node-status", "end");
     const copy = commissioningStage
-      ? `${item.claim_ids.length} instrument claim${item.claim_ids.length === 1 ? "" : "s"} · ${item.binding_count} bound program${item.binding_count === 1 ? "" : "s"}`
-      : markdownPlainText(item.statement || item.id);
-    const lines = wrapText(copy, scientificClaim ? 45 : 35, scientificClaim ? 3 : 2);
-    lines.forEach((line, index) => appendSvgText(group, line, 16, 48 + index * 17, "node-copy"));
+      ? `${item.scientific_claim_id}: ${scientificPreviewText(item.scientific_target_statement)}`
+      : scientificPreviewText(item.statement || item.id);
+    const copyWidth = scientificClaim ? 43 : commissioningStage ? 42 : 31;
+    const copyLines = scientificClaim ? 3 : commissioningStage ? 3 : 2;
+    const lines = wrapText(copy, copyWidth, copyLines);
+    lines.forEach((line, index) => appendSvgText(
+      content,
+      line,
+      16,
+      48 + index * 17,
+      "node-copy",
+    ));
     const counts = commissioningStage
-      ? `${item.scientific_claim_id}${item.guided_available ? " · guided start" : ""}`
-      : `${item.id} · E${item.evidence_count}/C${item.contract_count}`;
-    appendSvgText(group, counts, 16, point.height - 12, "node-counts");
+      ? `${item.claim_ids.length} instrument claim${item.claim_ids.length === 1 ? "" : "s"} · ${item.binding_count} bound program${item.binding_count === 1 ? "" : "s"}${item.guided_available ? " · guided" : ""}`
+      : kind === "instrument" && item.owner_id
+        ? `scientific target: ${item.owner_id} · E${item.evidence_count}/C${item.contract_count}`
+        : `${item.id} · E${item.evidence_count}/C${item.contract_count}`;
+    appendSvgText(
+      content,
+      truncateText(counts, scientificClaim ? 43 : commissioningStage ? 43 : 33),
+      16,
+      point.height - 12,
+      "node-counts",
+    );
     bindGraphNode(group, item, point);
     nodeLayer.append(group);
   }
@@ -576,6 +642,8 @@ function renderGraph(preserveScroll) {
   if (preserveScroll) {
     viewport.scrollLeft = previousScroll.left;
     viewport.scrollTop = previousScroll.top;
+  } else {
+    viewport.scrollTo({ left: 0, top: 0 });
   }
 }
 
@@ -584,8 +652,8 @@ function layoutClaimGraph(nodes) {
   const scientificHeight = 126;
   const supportingWidth = 230;
   const supportingHeight = 86;
-  const stageWidth = 270;
-  const stageHeight = 106;
+  const stageWidth = 320;
+  const stageHeight = 126;
   const supportingGap = 14;
   const columnPitch = 1000;
   const marginX = 42;
@@ -686,11 +754,14 @@ function layoutClaimGraph(nodes) {
 }
 
 function graphEdgeGeometry(source, target) {
-  const x1 = source.x + source.width;
+  const sourceCenter = source.x + source.width / 2;
+  const targetCenter = target.x + target.width / 2;
+  const forward = targetCenter >= sourceCenter;
+  const x1 = forward ? source.x + source.width : source.x;
   const y1 = source.y + source.height / 2;
-  const x2 = target.x;
+  const x2 = forward ? target.x : target.x + target.width;
   const y2 = target.y + target.height / 2;
-  const direction = x2 >= x1 ? 1 : -1;
+  const direction = forward ? 1 : -1;
   const bend = Math.max(35, Math.abs(x2 - x1) * 0.46);
   return {
     path: `M ${x1} ${y1} C ${x1 + direction * bend} ${y1}, ${x2 - direction * bend} ${y2}, ${x2} ${y2}`,
@@ -846,7 +917,6 @@ function resetGraphLayout() {
   }
   state.currentGraphLayout = null;
   renderGraph(false);
-  fitGraph();
 }
 
 function selectClaim(claimId) {
@@ -905,7 +975,11 @@ function renderInspector() {
   const supporting = kind !== "scientific";
   ui["inspector-kind"].textContent = `${capitalize(kind)} claim`;
   setBadge(ui["claim-status"], detail.status, detail.status);
-  container.append(markdownBlock(detail.statement || detail.id, "claim-statement"));
+  container.append(markdownBlock(
+    detail.statement || detail.id,
+    "claim-statement",
+    { autoMath: true },
+  ));
 
   const metadata = element("div", "claim-metadata");
   for (const value of [detail.id, detail.kind, detail.relation]) {
@@ -923,13 +997,22 @@ function renderInspector() {
     parent.addEventListener("click", () => selectClaim(detail.parent_id));
     metadata.append(parent);
   }
-  if (supporting && node?.owner_id && node.owner_id !== detail.parent_id) {
-    const owner = element("button", "metadata-chip", `scientific owner: ${node.owner_id}`);
+  if (supporting && node?.owner_id) {
+    const owner = element("button", "metadata-chip", `scientific target: ${node.owner_id}`);
     owner.type = "button";
     owner.addEventListener("click", () => selectClaim(node.owner_id));
     metadata.append(owner);
   }
   container.append(metadata);
+
+  if (supporting && node?.owner_id) {
+    const target = state.snapshot.claim_details[node.owner_id];
+    if (target) {
+      const section = inspectorSection("Scientific target");
+      section.append(claimLinkCard(target, "scientific claim qualified by this record"));
+      container.append(section);
+    }
+  }
 
   if (detail.rationale) container.append(inspectorSection("Rationale", detail.rationale));
   if (detail.closed_reason) container.append(inspectorSection("Closure", detail.closed_reason));
@@ -1089,7 +1172,10 @@ function claimLinkCard(claim, label) {
   const badge = element("span", "status-badge");
   setBadge(badge, claim.status, claim.status);
   header.append(badge);
-  card.append(header, markdownBlock(claim.statement || claim.id, "linked-claim-copy"));
+  card.append(
+    header,
+    markdownBlock(claim.statement || claim.id, "linked-claim-copy", { autoMath: true }),
+  );
   card.addEventListener("click", () => selectClaim(claim.id));
   return card;
 }
@@ -1482,18 +1568,71 @@ async function controlCampaign(action) {
   }
 }
 
-function changeZoom(delta) {
-  state.graphZoom = Math.min(1.8, Math.max(0.5, state.graphZoom + delta));
+function graphZoomAnchor(clientX, clientY) {
+  const graph = ui["claim-graph"];
+  const matrix = graph.getScreenCTM();
+  if (!matrix) return null;
+  const point = graph.createSVGPoint();
+  point.x = clientX;
+  point.y = clientY;
+  return point.matrixTransform(matrix.inverse());
+}
+
+function zoomGraphAt(nextZoom, clientX, clientY) {
+  if (!state.currentGraphLayout) return;
+  const viewport = ui["graph-viewport"];
+  const graph = ui["claim-graph"];
+  const anchor = graphZoomAnchor(clientX, clientY);
+  const bounded = Math.min(3, Math.max(0.01, nextZoom));
+  if (Math.abs(bounded - state.graphZoom) < 0.0001) return;
+  state.graphZoom = bounded;
   renderGraph(true);
+  if (!anchor) return;
+  const matrix = graph.getScreenCTM();
+  if (!matrix) return;
+  const anchorPoint = graph.createSVGPoint();
+  anchorPoint.x = anchor.x;
+  anchorPoint.y = anchor.y;
+  const projected = anchorPoint.matrixTransform(matrix);
+  viewport.scrollLeft += projected.x - clientX;
+  viewport.scrollTop += projected.y - clientY;
+}
+
+function changeZoom(delta) {
+  const bounds = ui["graph-viewport"].getBoundingClientRect();
+  zoomGraphAt(
+    state.graphZoom + delta,
+    bounds.left + bounds.width / 2,
+    bounds.top + bounds.height / 2,
+  );
+}
+
+function handleGraphWheel(event) {
+  if (!state.currentGraphLayout) return;
+  event.preventDefault();
+  const unit = event.deltaMode === WheelEvent.DOM_DELTA_LINE
+    ? 16
+    : event.deltaMode === WheelEvent.DOM_DELTA_PAGE
+      ? ui["graph-viewport"].clientHeight
+      : 1;
+  const factor = Math.exp(-event.deltaY * unit * 0.0015);
+  zoomGraphAt(state.graphZoom * factor, event.clientX, event.clientY);
+}
+
+function fitZoomForLayout(layout) {
+  const viewport = ui["graph-viewport"];
+  const availableWidth = Math.max(1, viewport.clientWidth - 28);
+  const availableHeight = Math.max(1, viewport.clientHeight - 28);
+  return Math.max(
+    0.01,
+    Math.min(1, availableWidth / layout.width, availableHeight / layout.height),
+  );
 }
 
 function fitGraph() {
-  const graph = ui["claim-graph"];
-  const viewBox = graph.viewBox.baseVal;
-  if (!viewBox.width) return;
-  const available = Math.max(100, ui["graph-viewport"].clientWidth - 20);
-  state.graphZoom = Math.min(1, Math.max(0.5, available / viewBox.width));
-  renderGraph(false);
+  if (!state.currentGraphLayout) return;
+  state.graphZoom = fitZoomForLayout(state.currentGraphLayout);
+  renderGraph(true);
   ui["graph-viewport"].scrollTo({ left: 0, top: 0 });
 }
 
@@ -1559,25 +1698,49 @@ function eventSymbol(kind) {
 }
 
 function wrapText(value, width, maxLines) {
-  const words = String(value).trim().split(/\s+/);
+  const words = String(value).trim().split(/\s+/).filter(Boolean);
   const lines = [];
   let current = "";
-  for (const word of words) {
+  let index = 0;
+  let truncated = false;
+  while (index < words.length && lines.length < maxLines) {
+    const word = words[index];
+    if (word.length > width) {
+      if (current) {
+        lines.push(current);
+        current = "";
+        continue;
+      }
+      lines.push(truncateText(word, width));
+      index += 1;
+      truncated = true;
+      continue;
+    }
     const candidate = current ? `${current} ${word}` : word;
-    if (candidate.length <= width || !current) {
+    if (candidate.length <= width) {
       current = candidate;
+      index += 1;
     } else {
       lines.push(current);
-      current = word;
-      if (lines.length === maxLines - 1) break;
+      current = "";
     }
   }
   if (current && lines.length < maxLines) lines.push(current);
-  const consumed = lines.join(" ").length;
-  if (consumed < String(value).trim().length && lines.length) {
-    lines[lines.length - 1] = `${lines[lines.length - 1].replace(/[.…]+$/, "")}…`;
+  if (index < words.length) truncated = true;
+  if (truncated && lines.length) {
+    lines[lines.length - 1] = truncateText(
+      `${lines[lines.length - 1].replace(/[.…]+$/, "")}…`,
+      width,
+    );
   }
   return lines;
+}
+
+function truncateText(value, width) {
+  const copy = String(value).replace(/\s+/g, " ").trim();
+  if (copy.length <= width) return copy;
+  if (width <= 1) return "…";
+  return `${copy.slice(0, width - 1).trimEnd()}…`;
 }
 
 function appendSvgText(parent, copy, x, y, className, anchor = "start") {
@@ -1617,14 +1780,38 @@ function renderMarkdown(target, copy, options = {}) {
   return target;
 }
 
-function markdownBlock(copy, className = null) {
-  return renderMarkdown(element("div", className), copy);
+function markdownBlock(copy, className = null, options = {}) {
+  return renderMarkdown(element("div", className), copy, options);
 }
 
 function markdownPlainText(copy) {
   return window.SimjectureMarkdown
     ? window.SimjectureMarkdown.plainText(copy)
     : String(copy ?? "");
+}
+
+function scientificPreviewText(copy) {
+  const prepared = window.SimjectureMarkdown
+    ? window.SimjectureMarkdown.prepare(copy, { autoMath: true })
+    : String(copy ?? "");
+  return markdownPlainText(prepared)
+    .replace(/\\sqrt\{([^{}]+)\}/g, "√($1)")
+    .replace(/\\mathrm\{([^{}]+)\}/g, "$1")
+    .replace(/\\theta/g, "θ")
+    .replace(/\\alpha/g, "α")
+    .replace(/\\beta/g, "β")
+    .replace(/\\gamma/g, "γ")
+    .replace(/\\delta/g, "δ")
+    .replace(/\\lambda/g, "λ")
+    .replace(/\\mu/g, "μ")
+    .replace(/\\Omega/g, "Ω")
+    .replace(/\\omega/g, "ω")
+    .replace(/\\pi/g, "π")
+    .replace(/\\le\s*/g, "≤ ")
+    .replace(/\\ge\s*/g, "≥ ")
+    .replace(/\$/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function option(value, label) {

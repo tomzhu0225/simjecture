@@ -28,8 +28,11 @@ The interface has five connected projections:
   `instrument_of`, `diagnostic_of`, and `control_for`. Scientific-only mode is
   a visual filter over this graph, not a second hypothesis data structure.
   A derived commissioning-stage node sits between a scientific claim and its
-  `instrument_of` claims. It exposes the capability evidence gate and guided
-  starting point without becoming a fifth durable claim kind.
+  `instrument_of` claims. Directed arrows make the durable relationship
+  explicit as scientific claim → commissioning → qualified instruments. The
+  stage and every supporting-claim inspector name the scientific target. This
+  exposes the capability evidence gate and guided starting point without
+  becoming a fifth durable claim kind.
 - **Claim inspector:** click any of the four node kinds to see its rationale,
   parent and child relations, prospective evidence contracts, linked evidence,
   closure reason, and iteration metadata.
@@ -43,14 +46,18 @@ The interface has five connected projections:
 - **Artifacts and conclusion:** contained workspace results, generated figures,
   audit records, and the terminal answer when one exists.
 
-The graph can be zoomed and each node is keyboard-selectable. Every claim and
-stage node can also be dragged. Positions are stored under a campaign-specific
-browser key and never written into the durable run; **Reset layout** removes the
-local arrangement. The four kinds use distinct node treatments while their
-status is shown separately, so claim type is never inferred from supported or
-falsified state. Expanded contract and evidence sections remain open while the
-one-second live refresh advances. The header theme button switches between the
-high-contrast light and dark palettes and remembers the choice locally.
+The graph automatically fits every visible node on first load and whenever its
+claim set changes. Scroll over the canvas to zoom around the cursor, use **Fit
+all** to recover the complete view, or use the plus/minus controls for centered
+zoom. Each node is keyboard-selectable and draggable. Positions are stored
+under a campaign-specific browser key and never written into the durable run;
+**Reset layout** removes the local arrangement. Node copy is line-bounded,
+ellipsized, and clipped to its box. The four kinds use distinct node treatments
+while their status is shown separately, so claim type is never inferred from
+supported or falsified state. Expanded contract and evidence sections remain
+open while the one-second live refresh advances. The header theme button
+switches between the high-contrast light and dark palettes and remembers the
+choice locally.
 
 Human-facing scientific text is rendered as sanitized Markdown throughout the
 campaign heading, claim inspector, contracts, evidence assessments, research
@@ -58,7 +65,12 @@ notes, and conclusion. Inline code, fenced code, lists, tables, links, and TeX
 delimiters are supported; TeX is converted to MathML. The browser bundles its
 pinned parser, sanitizer, and math renderer locally and makes no CDN request.
 Raw HTML, images, form controls, embedded objects, and unsafe links are removed
-before display. The underlying JSON record remains unchanged.
+before display. For legacy natural-language hypotheses that predate the
+Markdown convention, a conservative display-only adapter recognizes common
+ASCII forms such as `0 < theta_0 <= 2.5 rad` and
+`T_0 = 2*pi*sqrt(L/g)` and supplies TeX delimiters before rendering. Explicit
+Markdown math and inline code are left untouched. The underlying JSON record
+remains unchanged.
 
 The built-in `scientific-markdown` skill tells the autonomous agent how to use
 this presentation layer without moving estimator definitions, units,

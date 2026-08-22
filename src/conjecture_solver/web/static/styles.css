@@ -600,14 +600,15 @@ dialog h2 {
     linear-gradient(90deg, color-mix(in srgb, var(--line) 42%, transparent) 1px, transparent 1px),
     var(--canvas);
   background-size: 30px 30px;
+  overscroll-behavior: contain;
   scrollbar-color: var(--line-strong) transparent;
 }
 
 #claim-graph {
   display: block;
-  min-width: 100%;
-  min-height: 100%;
-  transition: width 120ms ease;
+  margin: 14px auto;
+  max-width: none;
+  max-height: none;
 }
 
 .graph-edge { fill: none; stroke: var(--line-strong); stroke-width: 1.7; }
@@ -627,6 +628,7 @@ dialog h2 {
 
 .graph-node { cursor: grab; touch-action: none; user-select: none; }
 .graph-node.dragging { cursor: grabbing; }
+.graph-node .node-content { pointer-events: none; }
 .graph-node rect.node-body {
   fill: var(--surface);
   stroke: var(--line-strong);

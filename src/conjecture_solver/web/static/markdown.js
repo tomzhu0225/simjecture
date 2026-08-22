@@ -33,6 +33,58 @@
     return Boolean(global.marked && global.DOMPurify && global.renderMathInElement);
   }
 
+  const protectedMarkdownPattern = /(```[\s\S]*?```|`[^`\n]*`|\$\$[\s\S]*?\$\$|\$[^$\n]+\$|\\\[[\s\S]*?\\\]|\\\([^\n]*?\\\))/g;
+  const subscriptVariablePattern = /\b(?:theta|alpha|beta|gamma|delta|lambda|mu|omega|Omega|[A-Za-z])_[A-Za-z0-9{}]+\b/g;
+  const chainedInequalityPattern = /(^|[^\w$])([+-]?\d+(?:\.\d+)?\s*(?:<=|>=|<|>)\s*(?:theta|alpha|beta|gamma|delta|lambda|mu|omega|Omega|[A-Za-z])_[A-Za-z0-9{}]+\s*(?:<=|>=|<|>)\s*[+-]?\d+(?:\.\d+)?(?:\s*(?:rad|deg|s))?)/g;
+  const assignmentPattern = /\b((?:theta|alpha|beta|gamma|delta|lambda|mu|omega|Omega|[A-Za-z])_[A-Za-z0-9{}]+\s*=\s*(?:(?:\d+(?:\.\d+)?|pi\b|sqrt\([^()\n]+\)|[A-Za-z](?:_[A-Za-z0-9{}]+)?(?![A-Za-z])|[*/+\-^()]|\s))+)/g;
+
+  function greekIdentifier(identifier) {
+    const match = /^(theta|alpha|beta|gamma|delta|lambda|mu|omega|Omega)(.*)$/.exec(identifier);
+    return match ? `\\${match[1]}${match[2]}` : identifier;
+  }
+
+  function asciiMathToLatex(expression) {
+    let result = String(expression).trim();
+    result = result.replace(/sqrt\(([^()]*)\)/g, (_, inner) => {
+      return `\\sqrt{${asciiMathToLatex(inner)}}`;
+    });
+    result = result.replace(/\b(theta|alpha|beta|gamma|delta|lambda|mu|omega|Omega)(?=\b|_)/g, "\\$1");
+    result = result.replace(/\bpi\b/g, "\\pi");
+    result = result.replace(/<=/g, "\\le ").replace(/>=/g, "\\ge ");
+    result = result.replace(/\*/g, " ");
+    result = result.replace(/\b(rad|deg|s)\b/g, "\\mathrm{$1}");
+    return result.replace(/\s+/g, " ").trim();
+  }
+
+  function enhancePlainScientificText(value) {
+    const formulas = [];
+    const stash = (expression) => {
+      const token = `\u0000SIMJECTUREMATH${formulas.length}\u0000`;
+      formulas.push(`$${asciiMathToLatex(expression)}$`);
+      return token;
+    };
+    let result = value.replace(chainedInequalityPattern, (_, prefix, expression) => {
+      return `${prefix}${stash(expression)}`;
+    });
+    result = result.replace(assignmentPattern, (expression) => {
+      const trailingSpace = expression.match(/\s+$/)?.[0] || "";
+      return `${stash(expression.trimEnd())}${trailingSpace}`;
+    });
+    result = result.replace(subscriptVariablePattern, (identifier) => {
+      return stash(greekIdentifier(identifier));
+    });
+    return result.replace(/\u0000SIMJECTUREMATH(\d+)\u0000/g, (_, index) => formulas[Number(index)]);
+  }
+
+  function prepare(markdown, options = {}) {
+    const source = String(markdown ?? "");
+    if (!options.autoMath) return source;
+    return source
+      .split(protectedMarkdownPattern)
+      .map((part, index) => (index % 2 ? part : enhancePlainScientificText(part)))
+      .join("");
+  }
+
   function safeHtml(markdown, inline) {
     const source = String(markdown ?? "");
     const rendered = inline
@@ -65,13 +117,14 @@
     target.classList.add("markdown-body");
     if (options.inline) target.classList.add("markdown-inline");
     else target.classList.remove("markdown-inline");
+    const prepared = prepare(markdown, options);
     if (!dependenciesAvailable()) {
-      target.textContent = String(markdown ?? "");
+      target.textContent = prepared;
       return target;
     }
     try {
       const template = document.createElement("template");
-      template.innerHTML = safeHtml(markdown, Boolean(options.inline));
+      template.innerHTML = safeHtml(prepared, Boolean(options.inline));
       target.replaceChildren(template.content.cloneNode(true));
       normalizeLinks(target);
       global.renderMathInElement(target, mathOptions);
@@ -93,5 +146,5 @@
     }
   }
 
-  global.SimjectureMarkdown = Object.freeze({ plainText, render });
+  global.SimjectureMarkdown = Object.freeze({ plainText, prepare, render });
 })(window);

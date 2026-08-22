@@ -309,8 +309,21 @@ def test_web_assets_keep_live_detail_state_and_separate_operator_views() -> None
     assert "setPointerCapture" in javascript
     assert "simjecture-graph-layout-v1" in javascript
     assert "renderCommissioningInspector" in javascript
+    assert '"marker-end": "url(#graph-arrow)"' in javascript
+    assert "handleGraphWheel" in javascript
+    assert "fitZoomForLayout" in javascript
+    assert "graph-node-clip-" in javascript
+    assert "scientific target:" in javascript
+    assert "scientificPreviewText" in javascript
+    assert "autoMath: true" in javascript
     assert "DOMPurify.sanitize" in markdown
     assert 'output: "mathml"' in markdown
+    assert "chainedInequalityPattern" in markdown
+    assert "asciiMathToLatex" in markdown
+    web_docs = (
+        STATIC_ROOT.parent.parent.parent.parent / "docs/getting-started/web-interface.md"
+    ).read_text()
+    assert "2*pi*sqrt(L/g)" in web_docs
     assert (STATIC_ROOT / "vendor/marked-18.0.10.umd.js").is_file()
     assert (STATIC_ROOT / "vendor/dompurify-3.4.14.min.js").is_file()
     assert (STATIC_ROOT / "vendor/katex-0.18.4.min.js").is_file()
