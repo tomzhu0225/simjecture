@@ -102,6 +102,8 @@ def test_dsh_runner_uses_stable_resume_and_projects_no_reasoning_chunks() -> Non
     assert ".slice(0, 500)" in runner
     assert "assistant/chunk" not in runner
     assert "event.data.arguments" not in runner
+    assert "block.type === 'tool-result'" in runner
+    assert "resultBlock?.isError === true" in runner
 
 
 def test_dsh_adjudicator_uses_a_fresh_tool_free_structured_child() -> None:
@@ -116,6 +118,7 @@ def test_dsh_adjudicator_uses_a_fresh_tool_free_structured_child() -> None:
     assert "mcp__simjecture__record_adjudication" in adjudicator
     assert "chain-of-thought" in adjudicator
     assert "event.data.arguments" not in adjudicator
+    assert "prepared.truncated === true" in adjudicator
 
     runner = (BUNDLE / "runner.js").read_text()
     assert "agentCtx.tools.restrict" in runner

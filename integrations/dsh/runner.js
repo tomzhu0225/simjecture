@@ -83,10 +83,13 @@ function projectedEvent(event) {
     }
   }
   if (event.type === 'tool/result') {
+    const resultBlock = (event.data.message.content ?? [])
+      .find(block => block.type === 'tool-result')
+    const failed = event.data.error !== undefined || resultBlock?.isError === true
     return {
       ...base,
       kind: 'tool',
-      status: event.data.error === undefined ? 'succeeded' : 'failed',
+      status: failed ? 'failed' : 'succeeded',
       turn: event.data.turn,
       step: event.data.step,
       call_id: event.data.message.source.callId,

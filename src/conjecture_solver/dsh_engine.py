@@ -17,7 +17,12 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from .mvp_control import begin_or_resume_clock, pause_at_boundary
+from .mvp_control import (
+    begin_or_resume_clock,
+    elapsed_from_clock,
+    finalize_clock,
+    pause_at_boundary,
+)
 from .mvp_launch import DSH_SESSION_ID_PATTERN, ResumeError, load_launch_request
 
 DSH_PROFILE = "simjecture"
@@ -98,7 +103,11 @@ def run_dsh_campaign(
     )
     task = RESUME_TASK if resume else INITIAL_TASK
     argv = [resolved_executable, "--profile", profile, task]
-    begin_or_resume_clock(root)
+    clock = begin_or_resume_clock(root)
+    remaining_wall_seconds = max(
+        0.0,
+        request.max_wall_seconds - elapsed_from_clock(clock),
+    )
     _write_state(
         state_file,
         {
@@ -110,14 +119,52 @@ def run_dsh_campaign(
         },
     )
 
+    if remaining_wall_seconds <= 0:
+        _write_state(
+            state_file,
+            {
+                "status": "budget_exhausted",
+                "engine": "dsh",
+                "session_id": session_id,
+                "reason": "campaign wall-clock budget exhausted before DSH launch",
+                "updated_at": _utc_now(),
+            },
+        )
+        finalize_clock(root)
+        return 124
+
     try:
         completed = subprocess.run(
             argv,
             cwd=root,
             env=environment,
             check=False,
+            timeout=remaining_wall_seconds,
         )
+    except subprocess.TimeoutExpired:
+        _write_state(
+            state_file,
+            {
+                "status": "budget_exhausted",
+                "engine": "dsh",
+                "session_id": session_id,
+                "reason": "campaign wall-clock budget exhausted during DSH execution",
+                "updated_at": _utc_now(),
+            },
+        )
+        finalize_clock(root)
+        return 124
     except KeyboardInterrupt:
+        _write_state(
+            state_file,
+            {
+                "status": "cancelled",
+                "engine": "dsh",
+                "session_id": session_id,
+                "updated_at": _utc_now(),
+            },
+        )
+        finalize_clock(root)
         return 130
 
     state = _read_state(state_file)
@@ -135,6 +182,10 @@ def run_dsh_campaign(
                 "updated_at": _utc_now(),
             },
         )
+    # Bank this invocation's active harness time even when DSH ends normally.
+    # A later resume starts a new session interval from the accumulated value;
+    # calendar time between invocations is therefore never charged.
+    finalize_clock(root)
     return int(completed.returncode)
 
 
@@ -150,7 +201,11 @@ def _dsh_environment(
     resume: bool,
 ) -> dict[str, str]:
     environment = dict(os.environ)
-    executable_directory = str(Path(sys.executable).resolve().parent)
+    # Preserve the launcher path instead of resolving its final interpreter.
+    # Virtual environments commonly expose ``python`` as a symlink; resolving
+    # it would discard the environment's ``bin`` directory, which is exactly
+    # where the companion ``simjecture-mcp`` console script is installed.
+    executable_directory = str(Path(sys.executable).absolute().parent)
     current_path = environment.get("PATH", "")
     environment["PATH"] = (
         executable_directory

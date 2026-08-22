@@ -130,8 +130,10 @@ client to recover a known result without rerunning the simulation; absent or
 invalid receipts remain `outcome_unknown`. A fresh `snapshot` includes a bounded
 durable job list (with operation IDs) and remaining action/active-execution
 budget, so it is sufficient to rediscover and poll work after a process loss.
-Only actual tool and simulation execution is charged to the wall envelope;
-time while DSH and the MCP process are stopped is not.
+The campaign wall-time envelope charges time while its DSH researcher process
+is active, including model and tool waits. The kernel additionally records
+actual tool and simulation execution for durable recovery and per-command
+limits. Calendar time while DSH and the MCP process are stopped is not charged.
 
 One root MCP process owns the campaign for its lifetime. A second DSH profile or
 the legacy runner fails closed instead of alternating writes through stale

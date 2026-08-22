@@ -29,6 +29,7 @@ from ..mvp_launch import (
 from ..mvp_monitor import (
     MVPRunMonitor,
     RunPhase,
+    TokenUsageSummary,
     contained_path,
     discover_recent_runs,
     format_age,
@@ -280,7 +281,7 @@ class SimjectureWebApplication:
                 "claim_graph": {"nodes": claim_graph_nodes, "edges": claim_graph_edges},
                 "claim_details": claim_details,
                 "commissioning": commissioning,
-                "engine": _engine_projection(root),
+                "engine": _engine_projection(root, token_usage=snapshot.token_usage),
                 "executions": _execution_projection(snapshot),
                 "artifacts": artifacts,
                 "controls": controls,
@@ -569,7 +570,11 @@ def _execution_binding_count(contracts: Any) -> int:
     return len(identities)
 
 
-def _engine_projection(root: Path) -> dict[str, Any]:
+def _engine_projection(
+    root: Path,
+    *,
+    token_usage: TokenUsageSummary | None = None,
+) -> dict[str, Any]:
     launch = _safe_operator_json(root, "launch.json")
     name = str(launch.get("engine") or "native")
     if name != "dsh":
@@ -592,7 +597,11 @@ def _engine_projection(root: Path) -> dict[str, Any]:
         "recovered_fresh": state.get("recovered_fresh") is True,
         "turn_reason": state.get("turn_reason"),
         "activity": activity,
-        "token_usage": _engine_token_usage(activity),
+        "token_usage": (
+            _engine_usage_from_snapshot(token_usage)
+            if token_usage is not None
+            else _engine_token_usage(activity)
+        ),
     }
 
 
@@ -644,6 +653,17 @@ def _empty_engine_usage() -> dict[str, int]:
         "cached_tokens": 0,
         "total_tokens": 0,
         "turns": 0,
+    }
+
+
+def _engine_usage_from_snapshot(usage: TokenUsageSummary) -> dict[str, int]:
+    return {
+        "input_tokens": usage.prompt_tokens,
+        "output_tokens": usage.completion_tokens,
+        "reasoning_tokens": usage.reasoning_tokens,
+        "cached_tokens": usage.cached_tokens,
+        "total_tokens": usage.total_tokens,
+        "turns": usage.turns,
     }
 
 

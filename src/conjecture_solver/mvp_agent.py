@@ -1496,9 +1496,26 @@ software.
                     preview["read_error"] = str(error)
             previews.append(preview)
         parent = claims.get(claim.parent_id or "")
+
+        # The selected contract and its evidence are carried explicitly below.
+        # Repeating every historical contract/evidence link inside both the
+        # claim and its parent makes the internal MCP packet grow quadratically
+        # across repair cycles.  Besides wasting judge context, that can cross
+        # the bridge output bound and turn an otherwise valid packet into a
+        # generic truncation envelope.  Keep the semantic claim record intact
+        # while representing its omitted audit collections with exact counts.
+        def claim_summary(selected: Any) -> dict[str, Any]:
+            summary = selected.model_dump(
+                mode="json",
+                exclude={"evidence_contracts", "evidence"},
+            )
+            summary["evidence_contract_count"] = len(selected.evidence_contracts)
+            summary["evidence_count"] = len(selected.evidence)
+            return summary
+
         return {
-            "claim": claim.model_dump(mode="json"),
-            "parent_claim": (parent.model_dump(mode="json") if parent is not None else None),
+            "claim": claim_summary(claim),
+            "parent_claim": (claim_summary(parent) if parent is not None else None),
             "selected_contract": contract.model_dump(mode="json"),
             "selected_contract_evidence": [link.model_dump(mode="json") for link in evidence],
             "artifact_previews": previews,

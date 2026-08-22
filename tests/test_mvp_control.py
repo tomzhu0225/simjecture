@@ -36,6 +36,22 @@ def test_parse_usage_payload_accepts_openai_and_deepseek_shapes() -> None:
     assert alt["prompt_tokens"] == 10
     assert alt["completion_tokens"] == 5
     assert alt["total_tokens"] == 15
+    dsh = parse_usage_payload(
+        {
+            "inputTokens": 12,
+            "outputTokens": 7,
+            "cacheReadTokens": 80,
+            "cacheWriteTokens": 3,
+            "reasoningTokens": 5,
+        }
+    )
+    assert dsh == {
+        "prompt_tokens": 12,
+        "completion_tokens": 7,
+        "total_tokens": 102,
+        "cached_tokens": 83,
+        "reasoning_tokens": 5,
+    }
     assert parse_usage_payload(None)["total_tokens"] == 0
 
 

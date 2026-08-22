@@ -6,7 +6,9 @@ from pathlib import Path
 
 import pytest
 
+from conjecture_solver import dsh_engine
 from conjecture_solver.dsh_engine import DshEngineError, run_dsh_campaign
+from conjecture_solver.mvp_control import read_clock
 from conjecture_solver.mvp_launch import MVPLaunchRequest, materialize_operator_input
 
 
@@ -25,6 +27,7 @@ def _fake_dsh(path: Path, *, status: str = "idle") -> Path:
         "SIMJECTURE_DSH_STATE_FILE",
         "SIMJECTURE_DSH_CONTROL_FILE",
         "SIMJECTURE_DSH_RESUME",
+        "PATH",
     )
     path.write_text(
         f"#!{sys.executable}\n"
@@ -79,7 +82,27 @@ def test_dsh_process_adapter_passes_only_paths_and_reuses_session(tmp_path: Path
     assert Path(environment["SIMJECTURE_HYPOTHESIS_FILE"]) == (
         root / "operator_input" / "hypothesis.txt"
     )
-    assert (root / "operator_input" / "run_clock.json").is_file()
+    clock = read_clock(root)
+    assert clock is not None
+    assert clock.state == "finished"
+
+
+def test_dsh_environment_preserves_virtualenv_scripts_directory(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root, session_id, _hypothesis = _launch(tmp_path)
+    executable = _fake_dsh(tmp_path / "dsh")
+    virtualenv_bin = tmp_path / "venv" / "bin"
+    virtualenv_bin.mkdir(parents=True)
+    virtualenv_python = virtualenv_bin / "python"
+    virtualenv_python.symlink_to(sys.executable)
+    monkeypatch.setattr(dsh_engine.sys, "executable", str(virtualenv_python))
+
+    result = run_dsh_campaign(root, session_id=session_id, executable=str(executable))
+
+    assert result == 0
+    captured = json.loads((root / "captured_dsh.json").read_text())
+    assert captured["env"]["PATH"].split(":", 1)[0] == str(virtualenv_bin)
 
 
 def test_dsh_process_adapter_rejects_session_or_artifact_substitution(tmp_path: Path) -> None:
@@ -94,3 +117,48 @@ def test_dsh_process_adapter_rejects_session_or_artifact_substitution(tmp_path: 
     activity.symlink_to(outside)
     with pytest.raises(DshEngineError, match="must not be a symlink"):
         run_dsh_campaign(root, session_id=session_id, executable=str(executable))
+
+
+def test_dsh_process_adapter_enforces_total_wall_budget(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root, session_id, _hypothesis = _launch(tmp_path)
+    executable = _fake_dsh(tmp_path / "dsh")
+
+    def timeout(*_args: object, **kwargs: object) -> None:
+        raise dsh_engine.subprocess.TimeoutExpired(
+            cmd="dsh",
+            timeout=float(kwargs["timeout"]),
+        )
+
+    monkeypatch.setattr(dsh_engine.subprocess, "run", timeout)
+
+    result = run_dsh_campaign(root, session_id=session_id, executable=str(executable))
+
+    assert result == 124
+    state = json.loads((root / "operator_input" / "dsh_state.json").read_text())
+    assert state["status"] == "budget_exhausted"
+    clock = read_clock(root)
+    assert clock is not None
+    assert clock.state == "finished"
+
+
+def test_dsh_process_adapter_finalizes_clock_on_interrupt(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root, session_id, _hypothesis = _launch(tmp_path)
+    executable = _fake_dsh(tmp_path / "dsh")
+
+    def interrupt(*_args: object, **_kwargs: object) -> None:
+        raise KeyboardInterrupt
+
+    monkeypatch.setattr(dsh_engine.subprocess, "run", interrupt)
+
+    result = run_dsh_campaign(root, session_id=session_id, executable=str(executable))
+
+    assert result == 130
+    state = json.loads((root / "operator_input" / "dsh_state.json").read_text())
+    assert state["status"] == "cancelled"
+    clock = read_clock(root)
+    assert clock is not None
+    assert clock.state == "finished"

@@ -275,6 +275,28 @@ class MVPRunSnapshot(StrictModel):
 
 
 @dataclass
+class _UsageState:
+    prompt_tokens: int = 0
+    completion_tokens: int = 0
+    total_tokens: int = 0
+    cached_tokens: int = 0
+    reasoning_tokens: int = 0
+    usage_turns: int = 0
+    missing_usage_turns: int = 0
+    model_usage: dict[str, dict[str, int]] = field(default_factory=dict)
+
+    def reset(self) -> None:
+        self.prompt_tokens = 0
+        self.completion_tokens = 0
+        self.total_tokens = 0
+        self.cached_tokens = 0
+        self.reasoning_tokens = 0
+        self.usage_turns = 0
+        self.missing_usage_turns = 0
+        self.model_usage.clear()
+
+
+@dataclass
 class _TranscriptState:
     assistant: dict[int, dict[str, Any]] = field(default_factory=dict)
     tools: dict[int, dict[str, Any]] = field(default_factory=dict)
@@ -286,14 +308,7 @@ class _TranscriptState:
     last_route: str | None = None
     last_capability: str | None = None
     parse_warnings: list[str] = field(default_factory=list)
-    prompt_tokens: int = 0
-    completion_tokens: int = 0
-    total_tokens: int = 0
-    cached_tokens: int = 0
-    reasoning_tokens: int = 0
-    usage_turns: int = 0
-    missing_usage_turns: int = 0
-    model_usage: dict[str, dict[str, int]] = field(default_factory=dict)
+    usage: _UsageState = field(default_factory=_UsageState)
     next_event_sequence: int = 0
 
     def reset(self) -> None:
@@ -307,14 +322,7 @@ class _TranscriptState:
         self.last_route = None
         self.last_capability = None
         self.parse_warnings.clear()
-        self.prompt_tokens = 0
-        self.completion_tokens = 0
-        self.total_tokens = 0
-        self.cached_tokens = 0
-        self.reasoning_tokens = 0
-        self.usage_turns = 0
-        self.missing_usage_turns = 0
-        self.model_usage.clear()
+        self.usage.reset()
         self.next_event_sequence = 0
 
 
@@ -829,7 +837,10 @@ class MVPRunMonitor:
     def __init__(self, run_directory: str | Path) -> None:
         self.root = Path(run_directory).expanduser().resolve()
         self._cursor = TranscriptCursor()
+        self._dsh_cursor = TranscriptCursor()
         self._state = _TranscriptState()
+        self._dsh_usage = _UsageState()
+        self._dsh_model: str | None = None
         self._sidecar_cache: dict[str, tuple[int | None, dict[str, Any] | None]] = {}
 
     def snapshot(self, *, now: datetime | None = None) -> MVPRunSnapshot:
@@ -840,6 +851,7 @@ class MVPRunMonitor:
         if not self.root.is_dir():
             raise NotADirectoryError(f"run path is not a directory: {self.root}")
         warnings.extend(self._ingest_transcript(observed_at=observed_at))
+        warnings.extend(self._ingest_dsh_activity())
         manifest = self._read_sidecar("mvp_manifest.json")
         report = self._read_sidecar("mvp_report.json")
         ledger = self._read_sidecar("hypothesis_ledger.json")
@@ -855,12 +867,13 @@ class MVPRunMonitor:
         phase = self._phase(report)
         current = None if report is not None else self._current_action()
         claims = self._claims(ledger, report, current)
+        model_iterations = len(self._state.assistant) or self._dsh_usage.usage_turns
         loop_state = self._loop_state(
             loop_payload,
             phase=phase,
             claims=claims,
             current=current,
-            iterations=len(self._state.assistant),
+            iterations=model_iterations,
             observed_at=observed_at,
         )
         heartbeat = self._heartbeat(observed_at)
@@ -896,7 +909,7 @@ class MVPRunMonitor:
             configured_wall_seconds=configured,
             elapsed_wall_seconds=elapsed,
             elapsed_is_estimate=elapsed_is_estimate,
-            iterations=len(self._state.assistant),
+            iterations=model_iterations,
             action_counts=dict(self._state.action_counts),
             claims=claims,
             open_claim_ids=open_ids,
@@ -913,7 +926,7 @@ class MVPRunMonitor:
             report=terminal,
             artifacts=self._artifact_paths(),
             workspace_bytes=workspace_size,
-            last_model=self._state.last_model,
+            last_model=self._state.last_model or self._dsh_model,
             last_capability=self._state.last_capability,
             token_usage=self._token_usage(),
             pending_control=pending,
@@ -1027,6 +1040,42 @@ class MVPRunMonitor:
         for record in records:
             self._ingest_record(record, observed_at=recorded_fallback)
         return list(warnings)
+
+    def _ingest_dsh_activity(self) -> list[str]:
+        """Incrementally add provider usage from DSH's bounded event projection.
+
+        DSH model turns live in its event-sourced session rather than the legacy
+        Simjecture transcript.  The activity file contains only public event
+        metadata and usage counters, so consuming it here neither exposes nor
+        reconstructs private reasoning.  Independent-judge usage remains in the
+        scientific transcript and is combined at presentation time.
+        """
+
+        activity = self.root / OPERATOR_INPUT_DIR / "dsh_activity.jsonl"
+        if activity.is_symlink():
+            return ["DSH activity: ignored symbolic-link activity file"]
+        previous = self._dsh_cursor
+        records, cursor, warnings = read_new_transcript_records(activity, previous)
+        if previous.inode is not None and (
+            cursor.inode != previous.inode or cursor.offset < previous.offset
+        ):
+            self._dsh_usage.reset()
+            self._dsh_model = None
+        self._dsh_cursor = cursor
+        for record in records:
+            if record.get("kind") == "route" and isinstance(record.get("model"), str):
+                self._dsh_model = record["model"]
+            if isinstance(record.get("usage"), dict):
+                self._accumulate_usage(
+                    record,
+                    target=self._dsh_usage,
+                    fallback_model=self._dsh_model,
+                    count_turn=(
+                        record.get("kind") == "model"
+                        and record.get("status") == "responded"
+                    ),
+                )
+        return [f"DSH activity: {warning}" for warning in warnings]
 
     def _ingest_record(self, record: dict[str, Any], *, observed_at: datetime) -> None:
         kind = str(record.get("kind") or "unknown")
@@ -1552,31 +1601,60 @@ class MVPRunMonitor:
             return elapsed, True
         return elapsed, True
 
-    def _accumulate_usage(self, record: dict[str, Any]) -> None:
+    def _accumulate_usage(
+        self,
+        record: dict[str, Any],
+        *,
+        target: _UsageState | None = None,
+        fallback_model: str | None = None,
+        count_turn: bool = True,
+    ) -> None:
+        selected = target or self._state.usage
         usage = parse_usage_payload(record.get("usage"))
         has_usage = any(
             usage[key] for key in ("prompt_tokens", "completion_tokens", "total_tokens")
         )
         if not has_usage:
-            self._state.missing_usage_turns += 1
+            selected.missing_usage_turns += 1
             return
-        self._state.usage_turns += 1
-        self._state.prompt_tokens += usage["prompt_tokens"]
-        self._state.completion_tokens += usage["completion_tokens"]
-        self._state.total_tokens += usage["total_tokens"]
-        self._state.cached_tokens += usage["cached_tokens"]
-        self._state.reasoning_tokens += usage["reasoning_tokens"]
-        model = record.get("model") if isinstance(record.get("model"), str) else "unknown"
-        bucket = self._state.model_usage.setdefault(
+        if count_turn:
+            selected.usage_turns += 1
+        selected.prompt_tokens += usage["prompt_tokens"]
+        selected.completion_tokens += usage["completion_tokens"]
+        selected.total_tokens += usage["total_tokens"]
+        selected.cached_tokens += usage["cached_tokens"]
+        selected.reasoning_tokens += usage["reasoning_tokens"]
+        model = (
+            record.get("model")
+            if isinstance(record.get("model"), str)
+            else fallback_model or "unknown"
+        )
+        bucket = selected.model_usage.setdefault(
             model,
             {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0, "turns": 0},
         )
         bucket["prompt_tokens"] += usage["prompt_tokens"]
         bucket["completion_tokens"] += usage["completion_tokens"]
         bucket["total_tokens"] += usage["total_tokens"]
-        bucket["turns"] += 1
+        if count_turn:
+            bucket["turns"] += 1
 
     def _token_usage(self) -> TokenUsageSummary:
+        sources = (self._state.usage, self._dsh_usage)
+        model_totals: dict[str, dict[str, int]] = {}
+        for source in sources:
+            for name, values in source.model_usage.items():
+                bucket = model_totals.setdefault(
+                    name,
+                    {
+                        "prompt_tokens": 0,
+                        "completion_tokens": 0,
+                        "total_tokens": 0,
+                        "turns": 0,
+                    },
+                )
+                for key in bucket:
+                    bucket[key] += values[key]
         by_model = tuple(
             ModelTokenUsage(
                 model=name,
@@ -1585,24 +1663,31 @@ class MVPRunMonitor:
                 total_tokens=values["total_tokens"],
                 turns=values["turns"],
             )
-            for name, values in sorted(self._state.model_usage.items())
+            for name, values in sorted(model_totals.items())
         )
+        prompt_tokens = sum(source.prompt_tokens for source in sources)
+        completion_tokens = sum(source.completion_tokens for source in sources)
+        total_tokens = sum(source.total_tokens for source in sources)
+        cached_tokens = sum(source.cached_tokens for source in sources)
+        reasoning_tokens = sum(source.reasoning_tokens for source in sources)
+        turns = sum(source.usage_turns for source in sources)
+        missing_turns = sum(source.missing_usage_turns for source in sources)
         return TokenUsageSummary(
-            prompt_tokens=self._state.prompt_tokens,
-            completion_tokens=self._state.completion_tokens,
-            total_tokens=self._state.total_tokens,
-            cached_tokens=self._state.cached_tokens,
-            reasoning_tokens=self._state.reasoning_tokens,
-            turns=self._state.usage_turns,
-            turns_missing_usage=self._state.missing_usage_turns,
+            prompt_tokens=prompt_tokens,
+            completion_tokens=completion_tokens,
+            total_tokens=total_tokens,
+            cached_tokens=cached_tokens,
+            reasoning_tokens=reasoning_tokens,
+            turns=turns,
+            turns_missing_usage=missing_turns,
             by_model=by_model,
             label=format_token_counts(
-                prompt_tokens=self._state.prompt_tokens,
-                completion_tokens=self._state.completion_tokens,
-                total_tokens=self._state.total_tokens,
-                turns=self._state.usage_turns,
-                missing_turns=self._state.missing_usage_turns,
-                cached_tokens=self._state.cached_tokens,
+                prompt_tokens=prompt_tokens,
+                completion_tokens=completion_tokens,
+                total_tokens=total_tokens,
+                turns=turns,
+                missing_turns=missing_turns,
+                cached_tokens=cached_tokens,
             ),
         )
 

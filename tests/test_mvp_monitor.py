@@ -850,6 +850,71 @@ def test_token_usage_is_aggregated_from_assistant_records(tmp_path: Path) -> Non
     assert "150 in" in text
 
 
+def test_dsh_and_independent_judge_usage_are_combined_incrementally(
+    tmp_path: Path,
+) -> None:
+    root = tmp_path / "dsh-tokens"
+    root.mkdir()
+    _write(root / "mvp_manifest.json", _manifest("DSH usage remains observable."))
+    activity = root / "operator_input" / "dsh_activity.jsonl"
+    _write(
+        activity,
+        "\n".join(
+            (
+                json.dumps(
+                    {
+                        "kind": "route",
+                        "status": "selected",
+                        "model": "deepseek-v4-flash",
+                    }
+                ),
+                json.dumps(
+                    {
+                        "kind": "model",
+                        "status": "responded",
+                        "usage": {
+                            "inputTokens": 120,
+                            "outputTokens": 30,
+                            "cacheReadTokens": 40,
+                            "reasoningTokens": 20,
+                        },
+                    }
+                ),
+            )
+        )
+        + "\n",
+    )
+    _append_transcript(
+        root,
+        {
+            "kind": "adjudication",
+            "model": "deepseek-v4-flash",
+            "claim_id": "claim_child",
+            "decision": "sufficient",
+            "usage": {
+                "inputTokens": 10,
+                "outputTokens": 5,
+                "cacheReadTokens": 0,
+                "reasoningTokens": 4,
+            },
+        },
+    )
+
+    monitor = MVPRunMonitor(root)
+    first = monitor.snapshot()
+    second = monitor.snapshot()
+
+    for snapshot in (first, second):
+        assert snapshot.token_usage.prompt_tokens == 130
+        assert snapshot.token_usage.completion_tokens == 35
+        assert snapshot.token_usage.cached_tokens == 40
+        assert snapshot.token_usage.reasoning_tokens == 24
+        assert snapshot.token_usage.total_tokens == 205
+        assert snapshot.token_usage.turns == 2
+        assert snapshot.iterations == 1
+        assert snapshot.last_model == "deepseek-v4-flash"
+
+
 def test_pause_state_is_a_distinct_non_running_phase(tmp_path: Path) -> None:
     from conjecture_solver.mvp_control import pause_at_boundary
 

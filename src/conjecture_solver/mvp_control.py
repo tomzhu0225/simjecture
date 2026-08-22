@@ -238,15 +238,26 @@ def parse_usage_payload(usage: Any) -> dict[str, int]:
     }
     if not isinstance(usage, dict):
         return empty
+    dsh_shape = any(
+        key in usage
+        for key in (
+            "inputTokens",
+            "outputTokens",
+            "cacheReadTokens",
+            "cacheWriteTokens",
+            "reasoningTokens",
+        )
+    )
     prompt = _as_int(usage.get("prompt_tokens"))
     if prompt is None:
-        prompt = _as_int(usage.get("input_tokens")) or 0
+        prompt = _as_int(usage.get("input_tokens"))
+    if prompt is None:
+        prompt = _as_int(usage.get("inputTokens")) or 0
     completion = _as_int(usage.get("completion_tokens"))
     if completion is None:
-        completion = _as_int(usage.get("output_tokens")) or 0
-    total = _as_int(usage.get("total_tokens"))
-    if total is None:
-        total = prompt + completion
+        completion = _as_int(usage.get("output_tokens"))
+    if completion is None:
+        completion = _as_int(usage.get("outputTokens")) or 0
     cached = 0
     details = usage.get("prompt_tokens_details")
     if isinstance(details, dict):
@@ -256,10 +267,25 @@ def parse_usage_payload(usage: Any) -> dict[str, int]:
         or _as_int(usage.get("cached_tokens"))
         or cached
     )
+    if dsh_shape:
+        cached = (_as_int(usage.get("cacheReadTokens")) or 0) + (
+            _as_int(usage.get("cacheWriteTokens")) or 0
+        )
     reasoning = 0
     out_details = usage.get("completion_tokens_details")
     if isinstance(out_details, dict):
         reasoning = _as_int(out_details.get("reasoning_tokens")) or 0
+    if dsh_shape:
+        reasoning = _as_int(usage.get("reasoningTokens")) or reasoning
+    total = _as_int(usage.get("total_tokens"))
+    if total is None:
+        total = _as_int(usage.get("totalTokens"))
+    if total is None:
+        # DSH reports cache reads separately from uncached input, whereas the
+        # OpenAI-shaped total normally already includes its cached prompt
+        # subset. Preserve the provider-processed total without double counting
+        # either representation.
+        total = prompt + completion + (cached if dsh_shape else 0)
     return {
         "prompt_tokens": max(0, prompt),
         "completion_tokens": max(0, completion),

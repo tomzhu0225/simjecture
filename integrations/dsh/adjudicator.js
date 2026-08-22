@@ -166,6 +166,12 @@ export function apply(ctx) {
         args,
       )
       if (prepared.already_recorded === true) return prepared.result
+      if (prepared.truncated === true) {
+        throw new Error(
+          'CampaignKernel adjudication packet exceeded the internal MCP output bound; '
+          + 'shorten the case or compact the durable claim projection before retrying',
+        )
+      }
       if (
         typeof prepared.packet !== 'object'
         || prepared.packet === null

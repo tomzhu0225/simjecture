@@ -311,6 +311,10 @@ def test_model_free_kernel_adjudicates_and_finalizes_without_completion_client(
         case_for_sufficiency=case,
     )
     assert prepared["already_recorded"] is False
+    assert "evidence_contracts" not in prepared["packet"]["claim"]
+    assert "evidence" not in prepared["packet"]["claim"]
+    assert prepared["packet"]["claim"]["evidence_contract_count"] == 1
+    assert prepared["packet"]["claim"]["evidence_count"] == 1
     result = kernel.record_adjudication(
         "judge-root-v1",
         claim_id="claim_root",
