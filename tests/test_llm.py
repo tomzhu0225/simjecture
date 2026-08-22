@@ -125,6 +125,60 @@ def test_provider_omits_completion_ceiling_when_none(monkeypatch) -> None:
     assert requests[1]["max_tokens"] == 123
 
 
+def test_official_deepseek_requests_typed_json_and_explicit_thinking(monkeypatch) -> None:
+    requests: list[dict[str, object]] = []
+
+    class FakeClient:
+        def __init__(self, **_kwargs: object) -> None:
+            pass
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args: object) -> None:
+            pass
+
+        def post(self, url: str, *, headers: dict[str, str], json: dict[str, object]):
+            del headers
+            requests.append(json)
+            return httpx.Response(
+                200,
+                request=httpx.Request("POST", url),
+                json={
+                    "id": "deepseek_json",
+                    "model": DEEPSEEK_DEFAULT_MODEL,
+                    "choices": [
+                        {"message": {"content": "{}"}, "finish_reason": "stop"}
+                    ],
+                    "usage": {},
+                },
+            )
+
+    monkeypatch.setattr("conjecture_solver.llm.httpx.Client", FakeClient)
+    client = OpenAICompatibleClient(
+        api_key="test-placeholder",
+        provider_name="deepseek",
+        deepseek_thinking="disabled",
+        policy=ModelPolicy(
+            default_model=DEEPSEEK_DEFAULT_MODEL,
+            escalation_model=DEEPSEEK_ESCALATION_MODEL,
+        ),
+    )
+    client.complete([{"role": "user", "content": "Return one JSON object"}])
+
+    assert requests[0]["response_format"] == {"type": "json_object"}
+    assert requests[0]["thinking"] == {"type": "disabled"}
+
+
+def test_official_deepseek_rejects_unknown_thinking_mode(monkeypatch) -> None:
+    monkeypatch.setenv("ACS_MODEL_PROVIDER", "deepseek")
+    monkeypatch.setenv("DEEPSEEK_API_KEY", "official-process-local-placeholder")
+    monkeypatch.setenv("ACS_DEEPSEEK_THINKING", "sometimes")
+
+    with pytest.raises(ValueError, match="ACS_DEEPSEEK_THINKING"):
+        OpenAICompatibleClient.from_environment()
+
+
 def test_provider_rejects_empty_completion_content(monkeypatch) -> None:
     class FakeClient:
         def __init__(self, **_kwargs: object) -> None:

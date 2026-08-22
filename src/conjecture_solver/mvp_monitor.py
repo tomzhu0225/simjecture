@@ -29,11 +29,15 @@ from .mvp_agent import (
     MVPLinkClaimEvidenceAction,
     MVPListFilesAction,
     MVPListSkillsAction,
+    MVPLoopStage,
+    MVPLoopState,
     MVPMaterializeSkillResourceAction,
     MVPReadFileAction,
     MVPReadSkillAction,
     MVPRegisterClaimAction,
     MVPRegisterEvidenceContractAction,
+    MVPRequestAdjudicationAction,
+    MVPResearchRole,
     MVPRunCapabilityAction,
     MVPRunPythonAction,
     MVPSearchLiteratureAction,
@@ -56,6 +60,11 @@ TERMINAL_REPORT_STATUSES = frozenset(
 OPERATOR_INPUT_DIR = "operator_input"
 DEFAULT_RECENT_EVENT_LIMIT = 40
 _MAX_RETAINED_EVENTS = 80
+_MAX_CONSOLE_EXCERPT_CHARS = 12_000
+_MAX_PROJECTED_EXECUTIONS = 100
+_EXECUTION_ACTION_NAMES = frozenset(
+    {"run_python", "run_capability", "author_and_run_capability"}
+)
 
 
 class RunPhase(StrEnum):
@@ -114,6 +123,7 @@ class CurrentAction(StrictModel):
     path: str | None = None
     model: str | None = None
     route: str | None = None
+    research_note: str | None = None
     argv: tuple[str, ...] = ()
 
 
@@ -133,6 +143,44 @@ class HumanizedEvent(StrictModel):
     iteration: int | None = None
     summary: str
     action_name: str | None = None
+    research_note: str | None = None
+    model: str | None = None
+    route: str | None = None
+    research_role: str | None = None
+    outcome: str | None = None
+    capability: str | None = None
+    stage: str | None = None
+    active_claim_id: str | None = None
+    argv: tuple[str, ...] = ()
+    console_excerpt: str | None = None
+    returncode: int | None = None
+    timed_out: bool | None = None
+    elapsed_wall_seconds: float | None = None
+    stdout_bytes: int | None = None
+    stderr_bytes: int | None = None
+    workspace_bytes: int | None = None
+
+
+class ComputeExecutionSummary(StrictModel):
+    id: str
+    iteration: int = Field(ge=1)
+    action_name: str
+    description: str
+    status: str
+    capability: str | None = None
+    stage: str | None = None
+    active_claim_id: str | None = None
+    argv: tuple[str, ...] = ()
+    model: str | None = None
+    route: str | None = None
+    research_note: str | None = None
+    console_excerpt: str | None = None
+    returncode: int | None = None
+    timed_out: bool | None = None
+    elapsed_wall_seconds: float | None = None
+    stdout_bytes: int | None = None
+    stderr_bytes: int | None = None
+    workspace_bytes: int | None = None
 
 
 class ModelTokenUsage(StrictModel):
@@ -175,6 +223,8 @@ class ArtifactPaths(StrictModel):
     report: str | None = None
     claim_ledger: str | None = None
     claim_summary: str | None = None
+    loop_state: str | None = None
+    adjudications: str | None = None
     artifact_provenance: str | None = None
     workspace: str | None = None
     controller_log: str | None = None
@@ -208,8 +258,11 @@ class MVPRunSnapshot(StrictModel):
     open_claim_ids: tuple[str, ...] = ()
     closed_claim_ids: tuple[str, ...] = ()
     current_action: CurrentAction | None = None
+    loop_state: MVPLoopState
     latest_heartbeat: HeartbeatObservation | None = None
     recent_events: tuple[HumanizedEvent, ...] = ()
+    execution_total: int = Field(default=0, ge=0)
+    executions: tuple[ComputeExecutionSummary, ...] = ()
     report: TerminalReportSummary | None = None
     artifacts: ArtifactPaths
     workspace_bytes: int = Field(default=0, ge=0)
@@ -349,15 +402,10 @@ def humanize_action(action: MVPAgentAction) -> str:
             return f"Reading skill {action.skill} ({action.path})"
         return f"Reading skill {action.skill}"
     if isinstance(action, MVPMaterializeSkillResourceAction):
-        return (
-            f"Materializing {action.skill}:{action.source_path} → {action.destination_path}"
-        )
+        return f"Materializing {action.skill}:{action.source_path} → {action.destination_path}"
     if isinstance(action, MVPRunCapabilityAction):
         claim = f", claim={action.active_claim_id}" if action.active_claim_id else ""
-        return (
-            f"Running capability {action.capability} "
-            f"(stage={action.stage.value}{claim})"
-        )
+        return f"Running capability {action.capability} (stage={action.stage.value}{claim})"
     if isinstance(action, MVPAuthorAndRunCapabilityAction):
         claim = f", claim={action.active_claim_id}" if action.active_claim_id else ""
         return (
@@ -372,6 +420,8 @@ def humanize_action(action: MVPAgentAction) -> str:
         return f"Linking evidence {action.path} to {action.claim_id}"
     if isinstance(action, MVPCloseClaimAction):
         return f"Closing {action.claim_id} as {action.status.value}"
+    if isinstance(action, MVPRequestAdjudicationAction):
+        return f"Requesting independent adjudication for {action.claim_id}"
     if isinstance(action, MVPFinishAction):
         return "Finishing the campaign"
     if action.action.value == "list_claims":
@@ -408,6 +458,7 @@ def action_details(action: MVPAgentAction) -> dict[str, Any]:
             MVPRegisterEvidenceContractAction,
             MVPLinkClaimEvidenceAction,
             MVPCloseClaimAction,
+            MVPRequestAdjudicationAction,
         ),
     ):
         details["active_claim_id"] = action.claim_id
@@ -703,6 +754,75 @@ def _tool_payload(record: dict[str, Any]) -> dict[str, Any] | None:
     return tool if isinstance(tool, dict) else None
 
 
+def _console_excerpt(tool: dict[str, Any] | None) -> str | None:
+    """Return a bounded, operator-facing excerpt from a command result."""
+
+    if tool is None:
+        return None
+    result = tool.get("result")
+    if not isinstance(result, dict):
+        return None
+    execution = result.get("execution_result")
+    sources = [execution, result] if isinstance(execution, dict) else [result]
+    lines: list[str] = []
+    primary = sources[0]
+    for key in ("returncode", "timed_out", "wall_seconds", "workspace_bytes"):
+        if key in primary:
+            lines.append(f"{key}: {primary[key]}")
+    for source in sources:
+        for stream in ("stdout", "stderr"):
+            value = source.get(stream)
+            if not isinstance(value, str):
+                value = source.get(f"{stream}_head")
+            if not isinstance(value, str) or not value:
+                continue
+            if lines:
+                lines.append("")
+            lines.append(f"[{stream}]")
+            lines.append(value)
+    if not lines:
+        return None
+    excerpt = "\n".join(lines)
+    if len(excerpt) <= _MAX_CONSOLE_EXCERPT_CHARS:
+        return excerpt
+    omitted = len(excerpt) - _MAX_CONSOLE_EXCERPT_CHARS
+    return f"{excerpt[:_MAX_CONSOLE_EXCERPT_CHARS]}\n… {omitted} characters omitted"
+
+
+def _execution_metrics(tool: dict[str, Any] | None) -> dict[str, Any]:
+    if tool is None or not isinstance(tool.get("result"), dict):
+        return {}
+    result = tool["result"]
+    nested = result.get("execution_result")
+    execution = nested if isinstance(nested, dict) else result
+    metrics: dict[str, Any] = {}
+    if isinstance(execution.get("returncode"), int):
+        metrics["returncode"] = execution["returncode"]
+    if isinstance(execution.get("timed_out"), bool):
+        metrics["timed_out"] = execution["timed_out"]
+    elapsed = _as_float(execution.get("wall_seconds"))
+    if elapsed is not None:
+        metrics["elapsed_wall_seconds"] = elapsed
+    workspace = _as_int(execution.get("workspace_bytes"))
+    if workspace is not None:
+        metrics["workspace_bytes"] = workspace
+    for stream in ("stdout", "stderr"):
+        value = execution.get(stream)
+        if isinstance(value, str):
+            metrics[f"{stream}_bytes"] = len(value.encode())
+    return metrics
+
+
+def _execution_outcome(tool: dict[str, Any] | None, metrics: dict[str, Any]) -> str:
+    if tool is None:
+        return "incomplete"
+    if tool.get("ok") is not True:
+        return "failed"
+    if metrics.get("returncode") not in (None, 0) or metrics.get("timed_out") is True:
+        return "failed"
+    return "succeeded"
+
+
 class MVPRunMonitor:
     """Incrementally project a run directory into an operator-facing snapshot."""
 
@@ -723,6 +843,7 @@ class MVPRunMonitor:
         manifest = self._read_sidecar("mvp_manifest.json")
         report = self._read_sidecar("mvp_report.json")
         ledger = self._read_sidecar("hypothesis_ledger.json")
+        loop_payload = self._read_sidecar("loop_state.json")
         launch = self._read_sidecar(f"{OPERATOR_INPUT_DIR}/launch.json")
         if (self.root / "mvp_manifest.json").exists() and manifest is None:
             warnings.append("mvp_manifest.json exists but could not be parsed")
@@ -734,6 +855,14 @@ class MVPRunMonitor:
         phase = self._phase(report)
         current = None if report is not None else self._current_action()
         claims = self._claims(ledger, report, current)
+        loop_state = self._loop_state(
+            loop_payload,
+            phase=phase,
+            claims=claims,
+            current=current,
+            iterations=len(self._state.assistant),
+            observed_at=observed_at,
+        )
         heartbeat = self._heartbeat(observed_at)
         terminal = self._terminal_report(report)
         configured = None
@@ -759,11 +888,7 @@ class MVPRunMonitor:
                 closed_ids = terminal.closed_claim_ids
         warnings.extend(self._state.parse_warnings[-8:])
         control = read_control(self.root)
-        pending = (
-            control.command.value
-            if control.command is not ControlCommand.NONE
-            else None
-        )
+        pending = control.command.value if control.command is not ControlCommand.NONE else None
         return MVPRunSnapshot(
             phase=phase,
             phase_label=phase_label(phase),
@@ -777,8 +902,14 @@ class MVPRunMonitor:
             open_claim_ids=open_ids,
             closed_claim_ids=closed_ids,
             current_action=current,
+            loop_state=loop_state,
             latest_heartbeat=heartbeat,
             recent_events=tuple(self._state.events[-DEFAULT_RECENT_EVENT_LIMIT:]),
+            execution_total=sum(
+                self._state.action_counts.get(name, 0)
+                for name in _EXECUTION_ACTION_NAMES
+            ),
+            executions=self._executions(current=current, heartbeat=heartbeat),
             report=terminal,
             artifacts=self._artifact_paths(),
             workspace_bytes=workspace_size,
@@ -788,6 +919,95 @@ class MVPRunMonitor:
             pending_control=pending,
             warnings=tuple(dict.fromkeys(warnings)),
             transcript_cursor=self._cursor,
+        )
+
+    @staticmethod
+    def _loop_state(
+        payload: dict[str, Any] | None,
+        *,
+        phase: RunPhase,
+        claims: tuple[ClaimSummary, ...],
+        current: CurrentAction | None,
+        iterations: int,
+        observed_at: datetime,
+    ) -> MVPLoopState:
+        if payload is not None:
+            try:
+                return MVPLoopState.model_validate(payload)
+            except ValueError:
+                pass
+        cycle = 1 + sum(claim.relation == "repairs" for claim in claims)
+        active_claim_id = current.active_claim_id if current is not None else None
+        if phase in {
+            RunPhase.COMPLETED,
+            RunPhase.CANCELLED,
+            RunPhase.PROVIDER_FAILED,
+            RunPhase.BUDGET_EXHAUSTED,
+        }:
+            completed = phase is RunPhase.COMPLETED
+            return MVPLoopState(
+                stage=(MVPLoopStage.COMPLETE if completed else MVPLoopStage.STOPPED),
+                role=MVPResearchRole.JUDGE,
+                cycle=cycle,
+                active_claim_id=active_claim_id,
+                status="completed" if completed else "stopped",
+                iteration=iterations,
+                detail=(
+                    "Campaign completed with a bounded conclusion."
+                    if completed
+                    else f"Campaign stopped: {phase.value.replace('_', ' ')}."
+                ),
+                updated_at=observed_at,
+            )
+        if current is not None and current.action_name == "request_adjudication":
+            return MVPLoopState(
+                stage=MVPLoopStage.ADJUDICATION,
+                role=MVPResearchRole.JUDGE,
+                cycle=cycle,
+                active_claim_id=active_claim_id,
+                iteration=iterations,
+                detail="Independent judge is reviewing the evidence package.",
+                updated_at=observed_at,
+            )
+        if active_claim_id is not None:
+            active = next((claim for claim in claims if claim.id == active_claim_id), None)
+            if active is not None and active.kind == "instrument":
+                return MVPLoopState(
+                    stage=MVPLoopStage.COMMISSIONING,
+                    role=MVPResearchRole.FALSIFIER,
+                    cycle=cycle,
+                    active_claim_id=active_claim_id,
+                    iteration=iterations,
+                    detail="Commissioning the experimental pipeline.",
+                    updated_at=observed_at,
+                )
+        repair_parents = {claim.parent_id for claim in claims if claim.relation == "repairs"}
+        falsified_frontier = [
+            claim
+            for claim in claims
+            if claim.kind == "scientific"
+            and claim.status == "falsified"
+            and claim.id not in repair_parents
+        ]
+        if falsified_frontier:
+            target = falsified_frontier[-1]
+            return MVPLoopState(
+                stage=MVPLoopStage.REPAIR,
+                role=MVPResearchRole.SCIENTIST,
+                cycle=cycle,
+                active_claim_id=target.id,
+                iteration=iterations,
+                detail="Forming a minimal claim that accommodates the counterexample.",
+                updated_at=observed_at,
+            )
+        return MVPLoopState(
+            stage=MVPLoopStage.FALSIFICATION,
+            role=MVPResearchRole.FALSIFIER,
+            cycle=cycle,
+            active_claim_id=active_claim_id or "claim_root",
+            iteration=iterations,
+            detail="Searching for a counterexample under a prospective contract.",
+            updated_at=observed_at,
         )
 
     def _ingest_transcript(self, *, observed_at: datetime) -> list[str]:
@@ -822,6 +1042,7 @@ class MVPRunMonitor:
             action = _action_from_assistant(record)
             action_name = action.action.value if action is not None else None
             self._accumulate_usage(record)
+            details: dict[str, Any] = {}
             if action is not None:
                 self._state.action_counts[action.action.value] += 1
                 details = action_details(action)
@@ -839,6 +1060,40 @@ class MVPRunMonitor:
                     iteration=iteration,
                     summary=summary,
                     action_name=action_name,
+                    research_note=action.research_note if action is not None else None,
+                    model=record.get("model") if isinstance(record.get("model"), str) else None,
+                    route=record.get("route") if isinstance(record.get("route"), str) else None,
+                    research_role=(
+                        record.get("research_role")
+                        if isinstance(record.get("research_role"), str)
+                        else None
+                    ),
+                    outcome="pending",
+                    capability=details.get("capability"),
+                    stage=details.get("stage"),
+                    active_claim_id=details.get("active_claim_id"),
+                    argv=tuple(str(item) for item in details.get("argv") or ()),
+                )
+            )
+            return
+        if kind == "adjudication":
+            model = record.get("model") if isinstance(record.get("model"), str) else None
+            if model is not None:
+                self._state.last_model = model
+            self._accumulate_usage(record)
+            decision = str(record.get("decision") or "recorded")
+            claim_id = str(record.get("claim_id") or "unknown claim")
+            self._push_event(
+                HumanizedEvent(
+                    kind="adjudication",
+                    iteration=iteration,
+                    summary=(f"Independent judge found the evidence {decision} for {claim_id}"),
+                    action_name="request_adjudication",
+                    model=model,
+                    route=(record.get("route") if isinstance(record.get("route"), str) else None),
+                    research_role=MVPResearchRole.JUDGE.value,
+                    outcome=decision,
+                    active_claim_id=(claim_id if claim_id.startswith("claim_") else None),
                 )
             )
             return
@@ -847,25 +1102,44 @@ class MVPRunMonitor:
                 self._state.tools[iteration] = record
             payload = _tool_payload(record)
             action = None
+            details: dict[str, Any] = {}
             if iteration in self._state.assistant:
                 action = _action_from_assistant(self._state.assistant[iteration])
+                if action is not None:
+                    details = action_details(action)
+            execution_metrics = _execution_metrics(payload)
             if payload is None:
                 summary = f"Tool result recorded for iteration {iteration or '?'}"
+                outcome = "unknown"
             elif payload.get("ok") is True:
                 summary = (
                     f"Completed {humanize_action(action)}"
                     if action is not None
                     else f"Completed action at iteration {iteration}"
                 )
+                outcome = _execution_outcome(payload, execution_metrics)
             else:
                 error = str(payload.get("error") or "unknown error")
                 summary = f"Action failed: {error}"
+                outcome = "failed"
             self._push_event(
                 HumanizedEvent(
                     kind="tool",
                     iteration=iteration,
                     summary=summary,
                     action_name=action.action.value if action is not None else None,
+                    research_role=(
+                        self._state.assistant.get(iteration, {}).get("research_role")
+                        if iteration is not None
+                        else None
+                    ),
+                    outcome=outcome,
+                    capability=details.get("capability"),
+                    stage=details.get("stage"),
+                    active_claim_id=details.get("active_claim_id"),
+                    argv=tuple(str(item) for item in details.get("argv") or ()),
+                    console_excerpt=_console_excerpt(payload),
+                    **execution_metrics,
                 )
             )
             return
@@ -880,12 +1154,23 @@ class MVPRunMonitor:
                 parts.append(f"elapsed {format_duration(elapsed)}")
             if workspace is not None:
                 parts.append(f"workspace {format_bytes(workspace)}")
+            action = None
+            details: dict[str, Any] = {}
+            if iteration in self._state.assistant:
+                action = _action_from_assistant(self._state.assistant[iteration])
+                if action is not None:
+                    details = action_details(action)
             self._push_event(
                 HumanizedEvent(
                     kind="tool_heartbeat",
                     iteration=iteration,
                     summary=", ".join(parts),
-                    action_name=None,
+                    action_name=action.action.value if action is not None else None,
+                    outcome="running",
+                    capability=details.get("capability"),
+                    stage=details.get("stage"),
+                    active_claim_id=details.get("active_claim_id"),
+                    argv=tuple(str(item) for item in details.get("argv") or ()),
                 )
             )
             return
@@ -1069,8 +1354,66 @@ class MVPRunMonitor:
             path=details.get("path"),
             model=record.get("model") if isinstance(record.get("model"), str) else None,
             route=record.get("route") if isinstance(record.get("route"), str) else None,
+            research_note=action.research_note if action is not None else None,
             argv=tuple(str(item) for item in argv),
         )
+
+    def _executions(
+        self,
+        *,
+        current: CurrentAction | None,
+        heartbeat: HeartbeatObservation | None,
+    ) -> tuple[ComputeExecutionSummary, ...]:
+        rows: list[ComputeExecutionSummary] = []
+        for iteration in sorted(self._state.assistant, reverse=True):
+            record = self._state.assistant[iteration]
+            action = _action_from_assistant(record)
+            if action is None or action.action.value not in _EXECUTION_ACTION_NAMES:
+                continue
+            details = action_details(action)
+            tool = (
+                _tool_payload(self._state.tools[iteration])
+                if iteration in self._state.tools
+                else None
+            )
+            metrics = _execution_metrics(tool)
+            status = _execution_outcome(tool, metrics)
+            if current is not None and current.iteration == iteration:
+                status = "running"
+            if heartbeat is not None and heartbeat.iteration == iteration and status == "running":
+                if heartbeat.elapsed_wall_seconds is not None:
+                    metrics["elapsed_wall_seconds"] = heartbeat.elapsed_wall_seconds
+                if heartbeat.stdout_bytes is not None:
+                    metrics["stdout_bytes"] = heartbeat.stdout_bytes
+                if heartbeat.stderr_bytes is not None:
+                    metrics["stderr_bytes"] = heartbeat.stderr_bytes
+                if heartbeat.workspace_bytes is not None:
+                    metrics["workspace_bytes"] = heartbeat.workspace_bytes
+            rows.append(
+                ComputeExecutionSummary(
+                    id=f"iteration-{iteration}",
+                    iteration=iteration,
+                    action_name=action.action.value,
+                    description=humanize_action(action),
+                    status=status,
+                    capability=details.get("capability"),
+                    stage=details.get("stage"),
+                    active_claim_id=details.get("active_claim_id"),
+                    argv=tuple(str(item) for item in details.get("argv") or ()),
+                    model=record.get("model")
+                    if isinstance(record.get("model"), str)
+                    else None,
+                    route=record.get("route")
+                    if isinstance(record.get("route"), str)
+                    else None,
+                    research_note=action.research_note,
+                    console_excerpt=_console_excerpt(tool),
+                    **metrics,
+                )
+            )
+            if len(rows) >= _MAX_PROJECTED_EXECUTIONS:
+                break
+        return tuple(rows)
 
     def _claims(
         self,
@@ -1271,6 +1614,8 @@ class MVPRunMonitor:
             report=_existing_path(self.root / "mvp_report.json"),
             claim_ledger=_existing_path(self.root / "hypothesis_ledger.json"),
             claim_summary=_existing_path(self.root / "claim_summary.md"),
+            loop_state=_existing_path(self.root / "loop_state.json"),
+            adjudications=_existing_path(self.root / "adjudications.json"),
             artifact_provenance=_existing_path(self.root / "artifact_provenance.json"),
             workspace=_existing_path(self.root / "workspace"),
             controller_log=_existing_path(self.root / "controller.log"),
@@ -1311,6 +1656,12 @@ def format_human_status(snapshot: MVPRunSnapshot) -> str:
     )
     lines.append(f"iterations: {snapshot.iterations}")
     lines.append(snapshot.token_usage.label)
+    loop = snapshot.loop_state
+    lines.append(
+        "loop: "
+        f"cycle {loop.cycle} · {loop.stage.value} · role {loop.role.value}"
+        + (f" · {loop.active_claim_id}" if loop.active_claim_id else "")
+    )
     if snapshot.pending_control:
         lines.append(f"pending control: {snapshot.pending_control} at next action boundary")
     lines.append("")
@@ -1331,8 +1682,7 @@ def format_human_status(snapshot: MVPRunSnapshot) -> str:
         marker = claim_status_marker(claim.status)
         active = "   current" if claim.active else ""
         lines.append(
-            f"  {marker} {claim.id:<28} {claim.status:<18} "
-            f"evidence {claim.evidence_count}{active}"
+            f"  {marker} {claim.id:<28} {claim.status:<18} evidence {claim.evidence_count}{active}"
         )
     lines.append("")
     lines.append("Current action")
@@ -1433,6 +1783,9 @@ def watch_run(
                 snapshot.latest_heartbeat.age_seconds if snapshot.latest_heartbeat else None,
                 len(snapshot.claims),
                 snapshot.report.status if snapshot.report else None,
+                snapshot.loop_state.stage,
+                snapshot.loop_state.role,
+                snapshot.loop_state.cycle,
             )
             if jsonl:
                 stream.write(snapshot.model_dump_json() + "\n")

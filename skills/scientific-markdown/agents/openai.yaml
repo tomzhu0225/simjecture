@@ -1,0 +1,4 @@
+interface:
+  display_name: "Scientific Markdown"
+  short_description: "Format claims, contracts, notes, and conclusions"
+  default_prompt: "Use $scientific-markdown to write mathematically clear scientific records without weakening their machine-readable evidence contracts."

@@ -1,4 +1,10 @@
-# Terminal interface
+# Terminal interface (maintenance mode)
+
+The local [Web interface](web-interface.md) is the primary interactive client
+beginning with v0.1.1. The Textual dashboard remains supported for SSH,
+headless, and accessibility-constrained workflows, but new visualization and
+interaction work targets the browser. It is not scheduled for removal during
+the 0.1 release line.
 
 The terminal interface is a human-facing projection of durable MVP artifacts.
 It does not replace `mvp_manifest.json`, `transcript.jsonl`,
@@ -35,7 +41,7 @@ There is no fabricated “percentage scientifically solved.” The projection sh
 elapsed envelope, claim counts, heartbeats, provider token usage from assistant
 transcript rows, and completed actions.
 
-## Optional interactive dashboard
+## Optional compatibility dashboard
 
 ```bash
 uv sync --extra tui
@@ -51,7 +57,8 @@ descriptors, and reviews the contract before launch.
 The run dashboard presents three related views of the durable ledger:
 
 - **Hypothesis tree:** only scientific claims, with the immutable root followed
-  by `refines`, `alternate`, and `succeeds` daughters in parent-child order.
+  by `repairs`, `refines`, `alternate`, and `succeeds` children in parent-child
+  order.
 - **Validation claims:** instrument, diagnostic, and control claims belonging
   to the selected hypothesis, including non-scientific successor chains.
 - **Complete audit ledger:** every typed claim in durable ledger order, opened

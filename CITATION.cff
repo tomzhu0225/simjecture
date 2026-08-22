@@ -2,8 +2,8 @@ cff-version: 1.2.0
 message: "If you use this software, please cite the exact software version and Git commit."
 title: "Simjecture"
 type: software
-version: 0.1.0
-date-released: 2026-08-15
+version: 0.1.1
+date-released: 2026-08-22
 abstract: >-
   An evidence-governed runtime for autonomous computational experimentation and
   falsification over hypothesis trees.
@@ -15,8 +15,8 @@ repository-code: "https://github.com/tomzhu0225/simjecture"
 url: "https://github.com/tomzhu0225/simjecture"
 identifiers:
   - type: doi
-    value: 10.5281/zenodo.21945749
-    description: Archived Simjecture v0.1.0 software release
+    value: 10.5281/zenodo.21945748
+    description: Simjecture software release series
 keywords:
   - autonomous science
   - computational physics

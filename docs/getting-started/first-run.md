@@ -5,9 +5,9 @@ Gray–Scott record. This is read-only and starts neither a model call nor a
 simulation:
 
 ```bash
-uv sync --frozen --extra tui
+uv sync --frozen
 uv run python demos/gray_scott_counterexample/verify_record.py
-uv run simjecture tui demos/gray_scott_counterexample/record
+uv run simjecture web demos/gray_scott_counterexample/record --read-only
 ```
 
 See [Recorded Gray–Scott demo](../demos/gray-scott.md) for the scientific result
@@ -60,5 +60,6 @@ uv run simjecture resume artifacts/gray-scott-first-run
 Pause waits for the current action to finish. It does not freeze a simulator
 with SIGSTOP.
 
-The optional terminal dashboard is documented in
-[Terminal interface](terminal-ui.md). It is a projection of the same artifacts.
+The primary [Web interface](web-interface.md) shows the hypothesis graph,
+evidence, activity, and figures. The optional [Terminal interface](terminal-ui.md)
+is a projection of the same artifacts for SSH and headless machines.

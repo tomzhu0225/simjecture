@@ -1,0 +1,8 @@
+{
+  "capability_names": [],
+  "description": "Write human-facing scientific claims, evidence contracts, laboratory notes, and conclusions as restrained Markdown with readable equations and code identifiers",
+  "entrypoint": "SKILL.md",
+  "name": "scientific-markdown",
+  "schema_version": "0.1.0",
+  "version": "0.1.0"
+}

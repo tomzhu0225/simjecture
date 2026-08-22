@@ -51,7 +51,7 @@ class MVPLaunchRequest(StrictModel):
     max_tool_output_chars: int = Field(default=30_000, ge=1)
     command_heartbeat_seconds: float = Field(default=30.0, gt=0)
     literature_search_timeout_seconds: float = Field(default=20.0, gt=0)
-    recent_full_turns: int = Field(default=12, ge=1)
+    recent_full_turns: int = Field(default=8, ge=1)
     max_model_retries: int = Field(default=3, ge=0)
     model_failover_after: int = Field(default=2, ge=1)
     ledger: str | None = None
@@ -515,7 +515,7 @@ def persist_operator_launch(
     max_tool_output_chars: int = 30_000,
     command_heartbeat_seconds: float = 30.0,
     literature_search_timeout_seconds: float = 20.0,
-    recent_full_turns: int = 12,
+    recent_full_turns: int = 8,
     max_model_retries: int = 3,
     model_failover_after: int = 2,
     ledger: str | None = None,

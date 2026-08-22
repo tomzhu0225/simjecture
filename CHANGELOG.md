@@ -2,6 +2,37 @@
 
 This project follows semantic versioning. Dates use ISO 8601.
 
+## 0.1.1 — 2026-08-22
+
+- Added a dependency-free, localhost-only browser interface with an interactive
+  scientific hypothesis graph, claim/evidence inspector, live activity,
+  simulation artifacts, terminal conclusions, and token/resource summaries.
+- Added `simjecture web`, recent-campaign discovery, browser-based campaign
+  launch, and verified pause/resume/stop controls. A per-session control token,
+  same-origin checks, loopback-only binding, and contained artifact delivery
+  keep the local control surface narrow.
+- Extracted hypothesis and validation-claim projections into a shared,
+  UI-neutral module so the web interface and Textual dashboard preserve the
+  same scientific semantics.
+- Kept the durable campaign files authoritative: the browser is a live
+  projection and never treats model prose as claim status or fabricates a
+  scientific completion percentage.
+- Added the enforced Falsifier → Scientist → Judge loop: prospective evidence
+  falsifies the active claim, a typed `repairs` successor must accommodate the
+  decisive counterexample, and an independent adjudication must accept bounded
+  support before completion.
+- Kept auxiliary formulas and estimator checks out of the scientific hypothesis
+  tree by default, and strengthened continuous-domain adjudication so finite
+  grids alone cannot establish universal or strict-monotonicity claims.
+- Made direct `simjecture mvp` processes appear live in the browser through the
+  durable runner lock, not only through Web/TUI supervisor records.
+- Reduced plain-Python prompt overhead while preserving the full commissioning
+  protocol for installed capabilities, compacted old authored actions without
+  changing the durable transcript, enabled official DeepSeek JSON responses,
+  and exposed provider-coverage diagnostics for literature searches.
+- Made the Web interface the primary interactive client. The optional Textual
+  dashboard remains supported in maintenance mode for SSH and browserless use.
+
 ## 0.1.0 — 2026-08-15
 
 - Added a read-only MVP run monitor and headless `status` / `watch` commands.

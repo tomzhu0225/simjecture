@@ -34,6 +34,7 @@ class ClaimKind(StrEnum):
 
 class ClaimRelation(StrEnum):
     ROOT = "root"
+    REPAIRS = "repairs"
     REFINES = "refines"
     ALTERNATE = "alternate"
     DIAGNOSTIC_OF = "diagnostic_of"
@@ -80,11 +81,7 @@ def _validation_scalars_equal(actual: Any, expected: Any) -> bool:
     if isinstance(actual, bool) or isinstance(expected, bool):
         return type(actual) is type(expected) and actual == expected
     if isinstance(actual, (int, float)) and isinstance(expected, (int, float)):
-        return (
-            math.isfinite(actual)
-            and math.isfinite(expected)
-            and actual == expected
-        )
+        return math.isfinite(actual) and math.isfinite(expected) and actual == expected
     return type(actual) is type(expected) and actual == expected
 
 
@@ -126,8 +123,7 @@ class ClaimExecutionBinding(StrictModel):
         default=None,
         pattern=r"^[0-9a-f]{64}$",
         description=(
-            "Runner-attested source identity sealed before the first bound "
-            "capability execution"
+            "Runner-attested source identity sealed before the first bound capability execution"
         ),
     )
     commissioning_argv: tuple[str, ...] = Field(min_length=1)
@@ -248,6 +244,30 @@ class ClaimEvidenceLink(StrictModel):
     provenance: ClaimEvidenceProvenance | None = None
 
 
+class ClaimRepairContext(StrictModel):
+    """Auditable explanation of how a successor accommodates a counterexample."""
+
+    counterexample_paths: tuple[str, ...] = Field(
+        min_length=1,
+        description=(
+            "Evidence paths on the falsified parent that motivate this repair; "
+            "they motivate the child but do not support it"
+        ),
+    )
+    accommodation: str = Field(
+        min_length=8,
+        description="Why the cited counterexample is no longer outside the repaired claim",
+    )
+    semantic_change: str = Field(
+        min_length=8,
+        description="The smallest stated change from the falsified parent claim",
+    )
+    falsification_condition: str = Field(
+        min_length=8,
+        description="What future observation would falsify the repaired claim",
+    )
+
+
 class MVPClaim(StrictModel):
     id: str = Field(pattern=r"^claim_[a-z0-9_]+$")
     statement: str = Field(min_length=8)
@@ -256,9 +276,11 @@ class MVPClaim(StrictModel):
     parent_id: str | None = None
     status: ClaimDisposition = ClaimDisposition.OPEN
     rationale: str = Field(min_length=8)
+    repair: ClaimRepairContext | None = None
     evidence_contracts: tuple[ClaimEvidenceContract, ...] = ()
     evidence: tuple[ClaimEvidenceLink, ...] = ()
     closed_reason: str | None = None
+    decisive_contract_version: int | None = Field(default=None, ge=1)
     created_iteration: int = Field(ge=0)
     updated_iteration: int = Field(ge=0)
 
@@ -280,6 +302,16 @@ class MVPClaim(StrictModel):
             raise ValueError("closed claims require closed_reason")
         if self.status == ClaimDisposition.OPEN and self.closed_reason is not None:
             raise ValueError("open claims cannot carry closed_reason")
+        if self.relation == ClaimRelation.REPAIRS and self.repair is None:
+            raise ValueError("relation=repairs requires structured repair context")
+        if self.relation != ClaimRelation.REPAIRS and self.repair is not None:
+            raise ValueError("repair context is only valid with relation=repairs")
+        if self.status == ClaimDisposition.OPEN and self.decisive_contract_version is not None:
+            raise ValueError("open claims cannot carry a decisive contract version")
+        if self.decisive_contract_version is not None and self.decisive_contract_version not in {
+            contract.version for contract in self.evidence_contracts
+        }:
+            raise ValueError("decisive contract version is not registered on this claim")
         return self
 
 
@@ -293,9 +325,8 @@ class MVPClaimLedger(StrictModel):
         "0.6.0",
         "0.7.0",
         "0.8.0",
-    ] = (
-        "0.8.0"
-    )
+        "0.9.0",
+    ] = "0.9.0"
     root_hypothesis: str = Field(min_length=1)
     claims: tuple[MVPClaim, ...] = ()
 
@@ -324,8 +355,12 @@ class MVPClaimLedger(StrictModel):
                     "parent_id": claim.parent_id,
                     "status": claim.status.value,
                     "statement": claim.statement,
+                    "repair": (
+                        claim.repair.model_dump(mode="json") if claim.repair is not None else None
+                    ),
                     "evidence_contract_count": len(claim.evidence_contracts),
                     "evidence_count": len(claim.evidence),
+                    "decisive_contract_version": claim.decisive_contract_version,
                 }
                 for claim in tail
             ],
@@ -360,9 +395,11 @@ class MVPClaimLedgerStore:
             parent_id=None,
             status=ClaimDisposition.OPEN,
             rationale="Immutable root hypothesis supplied by the campaign operator.",
+            repair=None,
             evidence_contracts=(),
             evidence=(),
             closed_reason=None,
+            decisive_contract_version=None,
             created_iteration=0,
             updated_iteration=0,
         )
@@ -396,6 +433,7 @@ class MVPClaimLedgerStore:
         relation: ClaimRelation,
         parent_id: str,
         rationale: str,
+        repair: ClaimRepairContext | None = None,
         iteration: int,
     ) -> dict[str, Any]:
         claim_id = claim_id.strip().casefold()
@@ -433,16 +471,54 @@ class MVPClaimLedgerStore:
                     f"relation={relation.value} requires a {expected_kind.value} "
                     "claim whose parent is scientific"
                 )
-        elif relation in {ClaimRelation.REFINES, ClaimRelation.ALTERNATE}:
+        elif relation in {
+            ClaimRelation.REPAIRS,
+            ClaimRelation.REFINES,
+            ClaimRelation.ALTERNATE,
+        }:
             if kind != ClaimKind.SCIENTIFIC or parent.kind != ClaimKind.SCIENTIFIC:
-                raise ValueError(
-                    f"relation={relation.value} requires scientific child and parent"
-                )
+                raise ValueError(f"relation={relation.value} requires scientific child and parent")
+            if relation == ClaimRelation.REPAIRS:
+                if parent.status != ClaimDisposition.FALSIFIED:
+                    raise ValueError("relation=repairs requires a falsified scientific parent")
+                if repair is None:
+                    raise ValueError(
+                        "relation=repairs requires counterexample accommodation, "
+                        "semantic change, and a falsification condition"
+                    )
+                if " ".join(statement.casefold().split()) == " ".join(
+                    parent.statement.casefold().split()
+                ):
+                    raise ValueError(
+                        "a repair cannot repeat the falsified parent statement unchanged"
+                    )
+                parent_paths = {evidence.path for evidence in parent.evidence}
+                unknown_paths = sorted(set(repair.counterexample_paths) - parent_paths)
+                if unknown_paths:
+                    raise ValueError(
+                        "repair cites evidence not linked to its parent: "
+                        + ", ".join(unknown_paths)
+                    )
+                if parent.decisive_contract_version is not None:
+                    decisive_paths = {
+                        evidence.path
+                        for evidence in self._qualifying_contract_evidence(
+                            parent,
+                            contract_version=parent.decisive_contract_version,
+                        )
+                    }
+                    ineligible_paths = sorted(set(repair.counterexample_paths) - decisive_paths)
+                    if ineligible_paths:
+                        raise ValueError(
+                            "repair counterexamples were not decisive evidence for the "
+                            "falsified parent: " + ", ".join(ineligible_paths)
+                        )
+        elif repair is not None:
+            raise ValueError("repair context requires relation=repairs")
         elif relation == ClaimRelation.SUCCEEDS:
             if kind != parent.kind:
                 raise ValueError(
-                    "relation=succeeds requires child and predecessor to have the "
-                    "same claim kind"
+                    "relation=succeeds requires child and predecessor to have the same claim kind"
                 )
             if parent.status == ClaimDisposition.OPEN:
                 raise ValueError(
@@ -456,9 +532,11 @@ class MVPClaimLedgerStore:
             parent_id=parent_id,
             status=ClaimDisposition.OPEN,
             rationale=rationale,
+            repair=repair,
             evidence_contracts=(),
             evidence=(),
             closed_reason=None,
+            decisive_contract_version=None,
             created_iteration=iteration,
             updated_iteration=iteration,
         )
@@ -535,9 +613,11 @@ class MVPClaimLedgerStore:
             parent_id=claim.parent_id,
             status=claim.status,
             rationale=claim.rationale,
+            repair=claim.repair,
             evidence_contracts=claim.evidence_contracts + (contract,),
             evidence=claim.evidence,
             closed_reason=claim.closed_reason,
+            decisive_contract_version=claim.decisive_contract_version,
             created_iteration=claim.created_iteration,
             updated_iteration=iteration,
         )
@@ -597,19 +677,27 @@ class MVPClaimLedgerStore:
         return all(result.passed for result in frozen), frozen
 
     @staticmethod
-    def _qualifying_contract_evidence(claim: MVPClaim) -> tuple[ClaimEvidenceLink, ...]:
+    def _qualifying_contract_evidence(
+        claim: MVPClaim,
+        *,
+        contract_version: int,
+    ) -> tuple[ClaimEvidenceLink, ...]:
         contracts = {contract.version: contract for contract in claim.evidence_contracts}
+        selected_contract = contracts.get(contract_version)
+        if selected_contract is None:
+            raise ValueError(
+                f"claim {claim.id} has no evidence contract version {contract_version}"
+            )
         qualifying: list[ClaimEvidenceLink] = []
         for evidence in claim.evidence:
-            contract = contracts.get(evidence.contract_version)
             provenance = evidence.provenance
             if (
-                contract is None
+                evidence.contract_version != contract_version
                 or evidence.observation_sufficient is not True
                 or provenance is None
                 or not provenance.tracked
                 or provenance.generated_iteration is None
-                or provenance.generated_iteration < contract.registered_iteration
+                or provenance.generated_iteration < selected_contract.registered_iteration
             ):
                 continue
             if (
@@ -618,7 +706,7 @@ class MVPClaimLedgerStore:
                 and provenance.execution_succeeded is not True
             ):
                 continue
-            if contract.validation_checks and evidence.validation_passed is not True:
+            if selected_contract.validation_checks and evidence.validation_passed is not True:
                 continue
             qualifying.append(evidence)
         return tuple(qualifying)
@@ -679,7 +767,14 @@ class MVPClaimLedgerStore:
         complete_same_capability = False
         complete_same_source = False
         complete_binding_present = False
-        for evidence in self._qualifying_contract_evidence(commissioning):
+        decisive_version = (
+            commissioning.decisive_contract_version
+            or commissioning.evidence_contracts[-1].version
+        )
+        for evidence in self._qualifying_contract_evidence(
+            commissioning,
+            contract_version=decisive_version,
+        ):
             contract = contracts.get(evidence.contract_version)
             if (
                 contract is None
@@ -707,10 +802,7 @@ class MVPClaimLedgerStore:
                 ):
                     complete_same_source = True
                     binding = contract.execution_binding
-                    if (
-                        binding is None
-                        or not binding.allowed_scientific_argv
-                    ):
+                    if binding is None or not binding.allowed_scientific_argv:
                         continue
                     complete_binding_present = True
                     if (
@@ -901,10 +993,7 @@ class MVPClaimLedgerStore:
                     "does not match its sealed program source; register a new "
                     "prospective contract and recommission the changed source"
                 )
-        if (
-            claim.kind == ClaimKind.INSTRUMENT
-            and claim.relation == ClaimRelation.INSTRUMENT_OF
-        ):
+        if claim.kind == ClaimKind.INSTRUMENT and claim.relation == ClaimRelation.INSTRUMENT_OF:
             prior_interface_claims: list[str] = []
             for sibling in claims.values():
                 if (
@@ -919,7 +1008,14 @@ class MVPClaimLedgerStore:
                     contract.version: contract
                     for contract in sibling.evidence_contracts
                 }
-                for evidence in self._qualifying_contract_evidence(sibling):
+                decisive_version = (
+                    sibling.decisive_contract_version
+                    or sibling.evidence_contracts[-1].version
+                )
+                for evidence in self._qualifying_contract_evidence(
+                    sibling,
+                    contract_version=decisive_version,
+                ):
                     contract = contracts.get(evidence.contract_version)
                     provenance = evidence.provenance
                     if contract is None or provenance is None:
@@ -1084,14 +1180,18 @@ class MVPClaimLedgerStore:
                     f"failed for {failures}"
                 )
             bindings = contract.all_execution_bindings()
-            if bindings and self._matching_execution_binding(
-                contract,
-                capability=provenance.capability,
-                program_path=provenance.program_path,
-                program_sha256=provenance.program_sha256,
-                argv=provenance.command_argv,
-                instrument=claim.kind == ClaimKind.INSTRUMENT,
-            ) is None:
+            if (
+                bindings
+                and self._matching_execution_binding(
+                    contract,
+                    capability=provenance.capability,
+                    program_path=provenance.program_path,
+                    program_sha256=provenance.program_sha256,
+                    argv=provenance.command_argv,
+                    instrument=claim.kind == ClaimKind.INSTRUMENT,
+                )
+                is None
+            ):
                 raise ValueError(
                     "cannot mark evidence sufficient: artifact provenance does not "
                     "match a prospectively authorized evidence command in the "
@@ -1134,9 +1234,11 @@ class MVPClaimLedgerStore:
             parent_id=claim.parent_id,
             status=claim.status,
             rationale=claim.rationale,
+            repair=claim.repair,
             evidence_contracts=claim.evidence_contracts,
             evidence=claim.evidence + (link,),
             closed_reason=claim.closed_reason,
+            decisive_contract_version=claim.decisive_contract_version,
             created_iteration=claim.created_iteration,
             updated_iteration=iteration,
         )
@@ -1154,6 +1256,7 @@ class MVPClaimLedgerStore:
         claim_id: str,
         status: ClaimDisposition,
         reason: str,
+        contract_version: int | None = None,
         iteration: int,
     ) -> dict[str, Any]:
         claim_id = claim_id.strip().casefold()
@@ -1171,7 +1274,19 @@ class MVPClaimLedgerStore:
                     f"cannot close {claim_id} as {status.value} without a registered "
                     "evidence contract"
                 )
-            active_contract = claim.evidence_contracts[-1]
+            selected_contract_version = (
+                claim.evidence_contracts[-1].version
+                if contract_version is None
+                else contract_version
+            )
+            contracts_by_version = {
+                contract.version: contract for contract in claim.evidence_contracts
+            }
+            active_contract = contracts_by_version.get(selected_contract_version)
+            if active_contract is None:
+                raise ValueError(
+                    f"claim {claim_id} has no evidence contract version {selected_contract_version}"
+                )
             if (
                 status == ClaimDisposition.SUPPORTED
                 and claim.kind == ClaimKind.INSTRUMENT
@@ -1200,21 +1315,12 @@ class MVPClaimLedgerStore:
                         "representation, physics_controls, boundaries, diagnostics, "
                         "and numerical_regime"
                     )
-            active_contract_version = claim.evidence_contracts[-1].version
-            prior_contract_evidence = [
-                evidence
-                for evidence in claim.evidence
-                if evidence.contract_version is not None
-                and evidence.contract_version < active_contract_version
-            ]
-            if prior_contract_evidence:
-                raise ValueError(
-                    f"cannot close {claim_id} as {status.value} under an adaptive "
-                    "contract registered after evidence was already linked; close "
-                    "non-decisively or register a successor/refinement claim with a "
-                    "prospective pipeline and collect fresh observations"
+            qualifying_evidence = list(
+                self._qualifying_contract_evidence(
+                    claim,
+                    contract_version=selected_contract_version,
                 )
-            qualifying_evidence = list(self._qualifying_contract_evidence(claim))
+            )
             if claim.kind == ClaimKind.SCIENTIFIC:
                 commissioned: list[ClaimEvidenceLink] = []
                 for evidence in qualifying_evidence:
@@ -1236,7 +1342,8 @@ class MVPClaimLedgerStore:
             if not qualifying_evidence:
                 raise ValueError(
                     f"cannot close {claim_id} as {status.value}: require linked, "
-                    "provenance-tracked evidence generated under an evidence contract "
+                    "provenance-tracked evidence generated under selected contract "
+                    f"version {selected_contract_version} "
                     "and marked observation_sufficient=true; capability-generated "
                     "scientific evidence also requires prior machine-checked commissioning"
                 )
@@ -1248,9 +1355,15 @@ class MVPClaimLedgerStore:
             parent_id=claim.parent_id,
             status=status,
             rationale=claim.rationale,
+            repair=claim.repair,
             evidence_contracts=claim.evidence_contracts,
             evidence=claim.evidence,
             closed_reason=reason,
+            decisive_contract_version=(
+                selected_contract_version
+                if status in {ClaimDisposition.SUPPORTED, ClaimDisposition.FALSIFIED}
+                else None
+            ),
             created_iteration=claim.created_iteration,
             updated_iteration=iteration,
         )
@@ -1259,6 +1372,8 @@ class MVPClaimLedgerStore:
             "closed": updated.model_dump(mode="json"),
             "claim_ledger": ledger.compact_summary(),
         }
+        if status in {ClaimDisposition.SUPPORTED, ClaimDisposition.FALSIFIED}:
+            result["decisive_contract_version"] = selected_contract_version
         # Non-evidentiary dispositions remain available so a bounded campaign can
         # finish honestly even when no decisive artifact was produced.
         if not claim.evidence and claim_id != ROOT_CLAIM_ID:

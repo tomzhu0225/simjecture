@@ -623,6 +623,29 @@ def _tui(args: argparse.Namespace) -> int:
     return int(run_tui(args.run_directory))
 
 
+def _import_web():
+    from .web import run_web
+
+    return run_web
+
+
+def _web(args: argparse.Namespace) -> int:
+    run_web = _import_web()
+    scan_roots = tuple(args.scan_root or ())
+    return int(
+        run_web(
+            run_directory=args.run_directory,
+            scan_roots=scan_roots,
+            runs_root=args.runs_root,
+            host=args.host,
+            port=args.port,
+            open_browser=not args.no_open,
+            read_only=args.read_only,
+            verbose=args.verbose,
+        )
+    )
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="simjecture")
     subcommands = parser.add_subparsers(dest="command", required=True)
@@ -804,10 +827,11 @@ def build_parser() -> argparse.ArgumentParser:
     mvp.add_argument(
         "--recent-full-turns",
         type=int,
-        default=12,
+        default=8,
         help=(
             "Keep this many recent model turns fully detailed in the prompt; "
-            "older tool results are compacted while the durable transcript stays complete"
+            "older actions and tool results are compacted while the durable transcript "
+            "stays complete"
         ),
     )
     mvp.add_argument(
@@ -869,7 +893,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     tui = subcommands.add_parser(
         "tui",
-        help="Open the optional interactive terminal dashboard",
+        help="Open the optional terminal dashboard (maintenance mode)",
     )
     tui.add_argument(
         "run_directory",
@@ -877,6 +901,49 @@ def build_parser() -> argparse.ArgumentParser:
         help="Optional existing run directory to attach",
     )
     tui.set_defaults(handler=_tui)
+
+    web = subcommands.add_parser(
+        "web",
+        help="Open the primary local interface for durable MVP campaigns",
+    )
+    web.add_argument(
+        "run_directory",
+        nargs="?",
+        help="Optional existing run directory to open initially",
+    )
+    web.add_argument(
+        "--scan-root",
+        action="append",
+        help="Directory to scan for campaigns; repeat to add more roots",
+    )
+    web.add_argument(
+        "--runs-root",
+        default="artifacts",
+        help="Parent directory for campaigns launched from the browser",
+    )
+    web.add_argument("--host", default="127.0.0.1", help="Loopback address to bind")
+    web.add_argument(
+        "--port",
+        type=int,
+        default=8765,
+        help="Local HTTP port; use 0 for any free port",
+    )
+    web.add_argument(
+        "--no-open",
+        action="store_true",
+        help="Print the URL without opening a browser",
+    )
+    web.add_argument(
+        "--read-only",
+        action="store_true",
+        help="Disable launch, pause, resume, and stop controls",
+    )
+    web.add_argument(
+        "--verbose",
+        action="store_true",
+        help="Log local HTTP requests",
+    )
+    web.set_defaults(handler=_web)
 
     pause = subcommands.add_parser(
         "pause",

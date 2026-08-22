@@ -31,6 +31,12 @@ present. `ACS_MODEL_PROVIDER=deepseek` makes that choice explicit. See
 `.env.example` for non-secret configuration names; do not place a real key in
 that tracked example.
 
+Official DeepSeek campaigns retain thinking mode by default. For a
+latency-oriented demonstration, `ACS_DEEPSEEK_THINKING=disabled` selects the
+provider's non-thinking mode without changing campaign turn limits, evidence
+contracts, or audit gates. This is an explicit quality/latency tradeoff rather
+than the scientific default.
+
 ## Optional simulation runtimes
 
 The default Python sandbox supports ordinary numerical work. WarpX CPU and CUDA
@@ -67,10 +73,22 @@ Read `skills/warpx/SKILL.md` and
 Capability health preflights identify missing or incompatible local runtimes
 without granting scientific-evidence status.
 
-## Optional terminal dashboard
+## Local web interface
 
-The scientific environment does not depend on Textual. To install the
-interactive dashboard:
+The browser dashboard is included with the core installation:
+
+```bash
+uv run simjecture web
+```
+
+It binds only to localhost and can discover, launch, or attach to durable
+campaigns. See [Web interface](web-interface.md).
+
+## Optional terminal dashboard (maintenance mode)
+
+The scientific environment does not depend on Textual. The Web interface is
+the primary interactive client; install the compatibility dashboard for SSH or
+browserless operation:
 
 ```bash
 uv sync --frozen --extra tui

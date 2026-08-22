@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass
 from enum import StrEnum
-from typing import Any
+from typing import Any, Literal
 
 import httpx
 
@@ -102,6 +102,7 @@ class OpenAICompatibleClient:
         policy: ModelPolicy | None = None,
         provider_name: str = "openai-compatible",
         credential_source: str | None = None,
+        deepseek_thinking: Literal["enabled", "disabled"] | None = None,
     ) -> None:
         if not api_key:
             raise MissingCredential("API key is empty")
@@ -111,6 +112,7 @@ class OpenAICompatibleClient:
         self.policy = policy or ModelPolicy.from_environment()
         self.provider_name = provider_name
         self.credential_source = credential_source
+        self.deepseek_thinking = deepseek_thinking
 
     @classmethod
     def from_environment(
@@ -139,6 +141,13 @@ class OpenAICompatibleClient:
             escalation_model = DEEPSEEK_ESCALATION_MODEL
             provider_name = "deepseek"
             credential_source = "DEEPSEEK_API_KEY"
+            deepseek_thinking = os.getenv(
+                "ACS_DEEPSEEK_THINKING", "enabled"
+            ).strip().casefold()
+            if deepseek_thinking not in {"enabled", "disabled"}:
+                raise ValueError(
+                    "ACS_DEEPSEEK_THINKING must be 'enabled' or 'disabled'"
+                )
         else:
             if not compshare_key:
                 raise MissingCredential(
@@ -151,6 +160,7 @@ class OpenAICompatibleClient:
             escalation_model = ESCALATION_MODEL
             provider_name = "compshare"
             credential_source = "CP_API_KEY"
+            deepseek_thinking = None
         configured_timeout = float(os.getenv("ACS_MODEL_TIMEOUT_SECONDS", "300"))
         return cls(
             api_key=api_key,
@@ -166,6 +176,7 @@ class OpenAICompatibleClient:
             ),
             provider_name=provider_name,
             credential_source=credential_source,
+            deepseek_thinking=deepseek_thinking,
         )
 
     def _headers(self) -> dict[str, str]:
@@ -199,6 +210,14 @@ class OpenAICompatibleClient:
         }
         if max_tokens is not None:
             request["max_tokens"] = max_tokens
+        if self.provider_name == "deepseek":
+            # Every current Simjecture completion is a typed JSON decision. The
+            # official provider's JSON mode removes one avoidable malformed-action
+            # retry while retaining local schema validation as the authority.
+            request["response_format"] = {"type": "json_object"}
+            request["thinking"] = {
+                "type": self.deepseek_thinking or "enabled"
+            }
         with httpx.Client(timeout=self.timeout_seconds) as client:
             response = client.post(
                 f"{self.base_url}/chat/completions",

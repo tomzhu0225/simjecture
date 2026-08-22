@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <title>Simjecture</title>
+    <link rel="stylesheet" href="/assets/styles.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="/" aria-label="Simjecture home">
+          <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span>
+            <strong>Simjecture</strong>
+            <small>Computational falsification</small>
+          </span>
+        </a>
+
+        <div class="campaign-picker">
+          <label for="campaign-select">Campaign</label>
+          <select id="campaign-select" aria-label="Select campaign"></select>
+        </div>
+
+        <div class="topbar-actions">
+          <span class="sync-state" id="sync-state"><i></i><span>Connecting</span></span>
+          <button class="icon-button theme-button" id="theme-button" type="button" aria-label="Switch color theme" title="Switch color theme">◐</button>
+          <button class="button quiet" id="pause-button" type="button" disabled>Pause</button>
+          <button class="button quiet" id="resume-button" type="button" disabled>Resume</button>
+          <button class="button danger quiet" id="cancel-button" type="button" disabled>Stop</button>
+          <button class="button primary" id="new-run-button" type="button">New hypothesis</button>
+        </div>
+      </header>
+
+      <main>
+        <section class="empty-state" id="empty-state" hidden>
+          <div class="empty-orbit" aria-hidden="true"><i></i><i></i><i></i></div>
+          <p class="eyebrow">No campaign selected</p>
+          <h1>Begin with a falsifiable hypothesis.</h1>
+          <p>
+            Simjecture commissions tools, searches for counterexamples, and preserves
+            every scientific branch as durable evidence.
+          </p>
+          <button class="button primary large" id="empty-new-run" type="button">Start a campaign</button>
+        </section>
+
+        <section id="dashboard" hidden>
+          <div class="campaign-heading">
+            <div>
+              <div class="heading-meta">
+                <span class="status-badge" id="campaign-status">—</span>
+                <span id="campaign-id">—</span>
+              </div>
+              <h1 id="root-hypothesis">Loading campaign…</h1>
+              <p id="campaign-instruction" hidden></p>
+            </div>
+            <div class="current-action" id="current-action">
+              <span class="action-symbol" aria-hidden="true">◇</span>
+              <div>
+                <small>Current action</small>
+                <strong>Reading durable state</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="metric-strip" aria-label="Campaign summary">
+            <article>
+              <span>Claims</span>
+              <strong id="metric-claims">—</strong>
+              <small id="metric-claims-detail">—</small>
+            </article>
+            <article>
+              <span>Campaign time</span>
+              <strong id="metric-elapsed">—</strong>
+              <small id="metric-iterations">—</small>
+            </article>
+            <article>
+              <span>Model usage</span>
+              <strong id="metric-tokens">—</strong>
+              <small id="metric-model">—</small>
+            </article>
+            <article>
+              <span>Workspace</span>
+              <strong id="metric-workspace">—</strong>
+              <small id="metric-heartbeat">—</small>
+            </article>
+          </div>
+
+          <div class="research-grid">
+            <section class="panel graph-panel" aria-labelledby="graph-title">
+              <header class="panel-heading">
+                <div>
+                  <p class="eyebrow">Durable claim ledger</p>
+                  <h2 id="graph-title">Claim graph</h2>
+                  <p class="panel-description">Scientific arrows show hypothesis refinement; prerequisite arrows flow from validation claims through commissioning into the scientific target. Drag nodes or empty canvas, zoom at the cursor, or fit the complete graph.</p>
+                </div>
+                <div class="graph-tools" aria-label="Graph controls">
+                  <button class="kind-toggle" id="claim-kind-toggle" type="button" aria-pressed="true">All claim kinds</button>
+                  <button class="icon-button" id="zoom-out" type="button" aria-label="Zoom out">−</button>
+                  <button class="icon-button" id="zoom-fit" type="button" aria-label="Fit every graph node">Fit all</button>
+                  <button class="icon-button" id="zoom-in" type="button" aria-label="Zoom in">+</button>
+                  <button class="kind-toggle" id="reset-layout" type="button">Reset layout</button>
+                </div>
+              </header>
+              <div class="graph-legend" aria-label="Graph legend">
+                <span><i class="node-key scientific"></i>Scientific</span>
+                <span><i class="node-key instrument"></i>Instrument</span>
+                <span><i class="node-key diagnostic"></i>Diagnostic</span>
+                <span><i class="node-key control"></i>Control</span>
+                <span><i class="node-key stage"></i>Commissioning stage</span>
+                <span><i class="supported"></i>Supported</span>
+                <span><i class="falsified"></i>Falsified</span>
+                <span><i class="open"></i>Open</span>
+                <span><i class="qualified"></i>Qualified / limited</span>
+              </div>
+              <div class="graph-viewport" id="graph-viewport" tabindex="0" title="Drag empty canvas to pan; drag nodes to arrange them; scroll to zoom at the cursor">
+                <svg id="claim-graph" role="img" aria-label="Typed claim relationship graph"></svg>
+                <p class="panel-placeholder" id="graph-placeholder">No claims have been registered.</p>
+              </div>
+            </section>
+
+            <aside class="panel inspector-panel" aria-labelledby="inspector-title">
+              <header class="panel-heading inspector-heading">
+                <div>
+                  <p class="eyebrow" id="inspector-kind">Selected record</p>
+                  <h2 id="inspector-title">Record inspector</h2>
+                </div>
+                <span class="status-badge" id="claim-status">—</span>
+              </header>
+              <div id="claim-inspector" class="claim-inspector">
+                <p class="panel-placeholder">Select a claim or workflow stage to inspect it.</p>
+              </div>
+            </aside>
+          </div>
+
+          <div class="operations-grid">
+            <section class="panel execution-panel" aria-labelledby="execution-title">
+              <header class="panel-heading">
+                <div>
+                  <p class="eyebrow">Numerical work</p>
+                  <h2 id="execution-title">Execution monitor</h2>
+                  <p class="panel-description">Select one run to inspect its live heartbeat and console record.</p>
+                </div>
+                <span class="operation-summary" id="execution-summary">No executions</span>
+              </header>
+              <div class="execution-layout">
+                <div class="execution-list" id="execution-list" role="listbox" aria-label="Recent simulations and calculations"></div>
+                <div class="execution-console" id="execution-console">
+                  <div class="console-empty">No simulation or calculation has been recorded.</div>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel trace-panel" aria-labelledby="trace-title">
+              <header class="panel-heading">
+                <div>
+                  <p class="eyebrow">Auditable agent record</p>
+                  <h2 id="trace-title">Research trace</h2>
+                  <p class="panel-description">Typed decisions, laboratory notes, tool outcomes, and provider usage—not private hidden chain-of-thought.</p>
+                </div>
+              </header>
+              <div id="loop-progress" class="loop-progress" aria-live="polite" aria-label="Research loop progress"></div>
+              <div class="token-breakdown" id="token-breakdown" aria-label="Token usage"></div>
+              <div class="research-trace" id="research-trace"></div>
+            </section>
+          </div>
+
+          <section class="panel record-panel" aria-labelledby="record-title">
+            <header class="record-header">
+              <div>
+                <p class="eyebrow">Durable campaign record</p>
+                <h2 id="record-title">Evidence and conclusion</h2>
+              </div>
+              <div class="tabs" role="tablist" aria-label="Campaign record views">
+                <button role="tab" aria-selected="true" data-tab="artifacts" type="button">Artifacts</button>
+                <button role="tab" aria-selected="false" data-tab="conclusion" type="button">Conclusion</button>
+              </div>
+            </header>
+            <div class="tab-panel" id="artifacts-panel" role="tabpanel"></div>
+            <div class="tab-panel" id="conclusion-panel" role="tabpanel" hidden></div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <dialog id="new-run-dialog">
+      <form id="new-run-form">
+        <header>
+          <div>
+            <p class="eyebrow">New campaign</p>
+            <h2>Give Simjecture a hypothesis</h2>
+          </div>
+          <button class="icon-button" id="close-dialog" type="button" aria-label="Close">×</button>
+        </header>
+        <label>
+          <span>Root hypothesis <b>Required</b></span>
+          <textarea name="hypothesis" rows="7" required maxlength="20000" placeholder="State one falsifiable scientific hypothesis…"></textarea>
+        </label>
+        <label>
+          <span>Operational guidance <em>Optional</em></span>
+          <textarea name="instruction" rows="3" maxlength="20000" placeholder="Constraints, preferred tools, or commissioning material…"></textarea>
+        </label>
+        <div class="form-row">
+          <label>
+            <span>Campaign ID <em>Optional</em></span>
+            <input name="campaign_id" maxlength="128" placeholder="Generated automatically">
+          </label>
+          <label>
+            <span>Wall-time envelope</span>
+            <select name="max_wall_seconds">
+              <option value="1800">30 minutes</option>
+              <option value="7200">2 hours</option>
+              <option value="21600" selected>6 hours</option>
+              <option value="43200">12 hours</option>
+              <option value="86400">24 hours</option>
+            </select>
+          </label>
+        </div>
+        <details>
+          <summary>Execution limits</summary>
+          <div class="form-row advanced-fields">
+            <label>
+              <span>Command timeout (seconds)</span>
+              <input name="max_command_seconds" type="number" min="1" max="86400" value="600">
+            </label>
+            <label>
+              <span>Workspace (MB)</span>
+              <input name="max_workspace_mb" type="number" min="1" max="1048576" value="512">
+            </label>
+            <label>
+              <span>Memory (MB)</span>
+              <input name="max_memory_mb" type="number" min="1" max="1048576" value="4096">
+            </label>
+          </div>
+        </details>
+        <p class="form-error" id="new-run-error" role="alert" hidden></p>
+        <footer>
+          <button class="button quiet" id="cancel-dialog" type="button">Cancel</button>
+          <button class="button primary" id="launch-button" type="submit">Launch campaign</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+    <script src="/assets/vendor/marked-18.0.10.umd.js" defer></script>
+    <script src="/assets/vendor/dompurify-3.4.14.min.js" defer></script>
+    <script src="/assets/vendor/katex-0.18.4.min.js" defer></script>
+    <script src="/assets/vendor/katex-auto-render-0.18.4.min.js" defer></script>
+    <script src="/assets/vendor/dagre-2.0.0.min.js" defer></script>
+    <script src="/assets/markdown.js" defer></script>
+    <script src="/assets/app.js" defer></script>
+  </body>
+</html>
