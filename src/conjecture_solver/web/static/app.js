@@ -16,6 +16,7 @@ const state = {
   graphZoom: 1,
   graphPositions: new Map(),
   currentGraphLayout: null,
+  graphPan: null,
   graphSignature: null,
   inspectorSignature: null,
   executionSignature: null,
@@ -113,11 +114,12 @@ function bindEvents() {
   ui["zoom-fit"].addEventListener("click", fitGraph);
   ui["reset-layout"].addEventListener("click", resetGraphLayout);
   ui["graph-viewport"].addEventListener("wheel", handleGraphWheel, { passive: false });
+  bindGraphCanvasPan();
   for (const tab of ui.tabs) {
     tab.addEventListener("click", () => setTab(tab.dataset.tab));
   }
   window.addEventListener("resize", debounce(() => {
-    if (state.snapshot) fitGraph();
+    if (state.snapshot) renderGraph(false);
   }, 160));
 }
 
@@ -441,33 +443,45 @@ function graphData() {
     for (const claimId of stage.claim_ids) stageByInstrument.set(claimId, stage);
   }
   const edges = [];
-  const linkedStages = new Set();
   for (const edge of graph.edges) {
-    const stage = stageByInstrument.get(edge.target);
-    if (stage && edge.source === stage.scientific_claim_id) {
-      if (!linkedStages.has(stage.id)) {
-        edges.push({
-          source: stage.scientific_claim_id,
-          target: stage.id,
-          relation: "commissioning",
-          derived: true,
-        });
-        linkedStages.add(stage.id);
-      }
-      edges.push({ ...edge, source: stage.id });
-    } else {
-      edges.push(edge);
+    const targetStage = stageByInstrument.get(edge.target);
+    const sourceStage = stageByInstrument.get(edge.source);
+    const isCommissioningOwnership = (
+      targetStage && edge.source === targetStage.scientific_claim_id
+    ) || (
+      sourceStage && edge.target === sourceStage.scientific_claim_id
+    );
+    if (isCommissioningOwnership) continue;
+
+    const source = claimsById.get(edge.source);
+    const target = claimsById.get(edge.target);
+    const prerequisiteRelation = ["instrument_of", "diagnostic_of", "control_for"]
+      .includes(edge.relation);
+    if (
+      prerequisiteRelation
+      && isScientificClaim(source || {})
+      && !isScientificClaim(target || {})
+    ) {
+      edges.push({ ...edge, source: edge.target, target: edge.source, workflow_direction: true });
+      continue;
     }
+    edges.push(edge);
   }
   for (const stage of stages) {
-    if (!linkedStages.has(stage.id)) {
+    for (const claimId of stage.claim_ids) {
       edges.push({
-        source: stage.scientific_claim_id,
+        source: claimId,
         target: stage.id,
-        relation: "commissioning",
+        relation: "qualifies",
         derived: true,
       });
     }
+    edges.push({
+      source: stage.id,
+      target: stage.scientific_claim_id,
+      relation: "enables evidence for",
+      derived: true,
+    });
   }
   return { nodes: [...graph.nodes, ...stages], edges };
 }
@@ -495,12 +509,11 @@ function renderGraph(preserveScroll) {
   graph.hidden = scientific.length === 0;
   if (!scientific.length) return;
 
-  const layout = layoutClaimGraph(nodes);
+  const layout = layoutClaimGraph(nodes, edges);
   state.currentGraphLayout = layout;
   if (!preserveScroll) state.graphZoom = fitZoomForLayout(layout);
   graph.setAttribute("viewBox", `0 0 ${layout.width} ${layout.height}`);
-  graph.setAttribute("width", String(layout.width * state.graphZoom));
-  graph.setAttribute("height", String(layout.height * state.graphZoom));
+  applyGraphZoom();
 
   const definitions = svg("defs");
   const arrow = svg("marker", {
@@ -538,12 +551,13 @@ function renderGraph(preserveScroll) {
     const source = layout.positions.get(edge.source);
     const target = layout.positions.get(edge.target);
     if (!source || !target) continue;
+    const sourceNode = nodesById.get(edge.source);
     const targetNode = nodesById.get(edge.target);
-    const targetKind = targetNode?.kind || "scientific";
-    const supporting = !isScientificClaim(targetNode || {});
+    const edgeKind = graphEdgeKind(sourceNode, targetNode);
+    const supporting = edgeKind !== "scientific";
     const geometry = graphEdgeGeometry(source, target);
     const path = svg("path", {
-      class: `graph-edge${supporting ? ` supporting ${targetKind}` : ""}`,
+      class: `graph-edge${supporting ? ` supporting ${edgeKind}` : ""}`,
       d: geometry.path,
       "marker-end": "url(#graph-arrow)",
       "data-source": edge.source,
@@ -647,126 +661,152 @@ function renderGraph(preserveScroll) {
   }
 }
 
-function layoutClaimGraph(nodes) {
-  const scientificWidth = 300;
-  const scientificHeight = 126;
-  const supportingWidth = 230;
-  const supportingHeight = 86;
-  const stageWidth = 320;
-  const stageHeight = 126;
-  const supportingGap = 14;
-  const columnPitch = 1000;
-  const marginX = 42;
-  const marginY = 42;
-  const rowGap = 58;
-  const scientific = nodes.filter(isScientificClaim);
-  const attached = new Map(scientific.map((item) => [item.id, []]));
-  for (const item of nodes) {
-    if (!isScientificClaim(item) && attached.has(item.owner_id)) {
-      attached.get(item.owner_id).push(item);
-    }
-  }
-  const positions = new Map();
-  let cursorY = marginY;
-  let maxX = marginX + scientificWidth;
-  for (const item of scientific) {
-    const owned = attached.get(item.id) || [];
-    const stages = owned.filter(isCommissioningStage);
-    const instrumentIds = new Set(stages.flatMap((stage) => stage.claim_ids || []));
-    const instruments = owned.filter((node) => instrumentIds.has(node.id));
-    const otherClaims = owned.filter(
-      (node) => !isCommissioningStage(node) && !instrumentIds.has(node.id),
+function graphNodeSize(item) {
+  if (isCommissioningStage(item)) return { width: 310, height: 118 };
+  if (isScientificClaim(item)) return { width: 300, height: 126 };
+  return { width: 230, height: 90 };
+}
+
+function dagreLayoutCandidate(nodes, edges, rankdir) {
+  if (!window.dagre?.graphlib?.Graph || typeof window.dagre.layout !== "function") return null;
+  const engine = new window.dagre.graphlib.Graph({ multigraph: true });
+  engine.setGraph({
+    rankdir,
+    ranker: "network-simplex",
+    align: rankdir === "LR" ? "UL" : undefined,
+    nodesep: rankdir === "LR" ? 28 : 36,
+    ranksep: rankdir === "LR" ? 76 : 62,
+    edgesep: 18,
+    marginx: 34,
+    marginy: 34,
+  });
+  engine.setDefaultEdgeLabel(() => ({}));
+  for (const item of nodes) engine.setNode(item.id, graphNodeSize(item));
+  edges.forEach((edge, index) => {
+    if (!engine.hasNode(edge.source) || !engine.hasNode(edge.target)) return;
+    engine.setEdge(
+      edge.source,
+      edge.target,
+      {
+        width: Math.min(150, Math.max(38, String(edge.relation || "").length * 6)),
+        height: 16,
+      },
+      `edge-${index}`,
     );
-    const stageStack = stages.length
-      ? stages.length * stageHeight + (stages.length - 1) * supportingGap
-      : 0;
-    const otherStack = otherClaims.length
-      ? otherClaims.length * supportingHeight + (otherClaims.length - 1) * supportingGap
-      : 0;
-    const leftSupportingStack = stageStack && otherStack
-      ? stageStack + supportingGap + otherStack
-      : stageStack + otherStack;
-    const instrumentStack = instruments.length
-      ? instruments.length * supportingHeight + (instruments.length - 1) * supportingGap
-      : 0;
-    const blockHeight = Math.max(scientificHeight, leftSupportingStack, instrumentStack);
-    const x = marginX + (item.depth || 0) * columnPitch;
-    const y = cursorY + (blockHeight - scientificHeight) / 2;
+  });
+  window.dagre.layout(engine);
+  const positions = new Map();
+  for (const item of nodes) {
+    const position = engine.node(item.id);
+    const size = graphNodeSize(item);
+    if (!position) continue;
     positions.set(item.id, {
-      x,
-      y,
-      width: scientificWidth,
-      height: scientificHeight,
+      x: position.x - size.width / 2,
+      y: position.y - size.height / 2,
+      ...size,
     });
-    const supportingX = x + scientificWidth + 64;
-    stages.forEach((stage, index) => {
-      const stageY = cursorY + index * (stageHeight + supportingGap);
-      positions.set(stage.id, {
-        x: supportingX,
-        y: stageY,
-        width: stageWidth,
-        height: stageHeight,
-      });
-      maxX = Math.max(maxX, supportingX + stageWidth);
-    });
-    instruments.forEach((claim, index) => {
-      const claimX = supportingX + stageWidth + 54 + (claim.depth || 0) * 20;
-      const claimY = cursorY + index * (supportingHeight + supportingGap);
-      positions.set(claim.id, {
-        x: claimX,
-        y: claimY,
-        width: supportingWidth,
-        height: supportingHeight,
-      });
-      maxX = Math.max(maxX, claimX + supportingWidth);
-    });
-    const otherStart = cursorY + (stageStack ? stageStack + supportingGap : 0);
-    otherClaims.forEach((claim, index) => {
-      const claimX = supportingX + (claim.depth || 0) * 26;
-      const claimY = otherStart + index * (supportingHeight + supportingGap);
-      positions.set(claim.id, {
-        x: claimX,
-        y: claimY,
-        width: supportingWidth,
-        height: supportingHeight,
-      });
-      maxX = Math.max(maxX, claimX + supportingWidth);
-    });
-    maxX = Math.max(maxX, x + scientificWidth);
-    cursorY += blockHeight + rowGap;
   }
+  const dimensions = engine.graph();
+  return {
+    positions,
+    width: Math.max(1, dimensions.width || 1),
+    height: Math.max(1, dimensions.height || 1),
+    direction: rankdir,
+    engine: "dagre",
+  };
+}
+
+function fallbackClaimGraphLayout(nodes) {
+  const positions = new Map();
+  const columns = Math.max(1, Math.ceil(Math.sqrt(nodes.length)));
+  nodes.forEach((item, index) => {
+    const size = graphNodeSize(item);
+    positions.set(item.id, {
+      x: 34 + (index % columns) * 350,
+      y: 34 + Math.floor(index / columns) * 176,
+      ...size,
+    });
+  });
+  return finishGraphLayout({ positions, direction: "TB", engine: "fallback" });
+}
+
+function finishGraphLayout(layout) {
   for (const [nodeId, saved] of state.graphPositions.entries()) {
-    const point = positions.get(nodeId);
+    const point = layout.positions.get(nodeId);
     if (!point || !Number.isFinite(saved.x) || !Number.isFinite(saved.y)) continue;
     point.x = Math.max(10, saved.x);
     point.y = Math.max(10, saved.y);
   }
-  let maxY = 590;
-  for (const point of positions.values()) {
+  let maxX = 1;
+  let maxY = 1;
+  for (const point of layout.positions.values()) {
     maxX = Math.max(maxX, point.x + point.width);
     maxY = Math.max(maxY, point.y + point.height);
   }
-  return {
-    positions,
-    width: maxX + marginX,
-    height: Math.max(maxY + marginY, cursorY - rowGap + marginY),
-  };
+  return { ...layout, width: maxX + 34, height: maxY + 34 };
+}
+
+function rawFitScale(layout) {
+  const viewport = ui["graph-viewport"];
+  const availableWidth = Math.max(1, viewport.clientWidth - 28);
+  const availableHeight = Math.max(1, viewport.clientHeight - 28);
+  return Math.min(availableWidth / layout.width, availableHeight / layout.height);
+}
+
+function layoutClaimGraph(nodes, edges) {
+  const candidates = ["LR", "TB"]
+    .map((direction) => dagreLayoutCandidate(nodes, edges, direction))
+    .filter(Boolean)
+    .map(finishGraphLayout);
+  if (!candidates.length) return fallbackClaimGraphLayout(nodes);
+  candidates.sort((left, right) => rawFitScale(right) - rawFitScale(left));
+  return candidates[0];
+}
+
+function graphEdgeKind(sourceNode, targetNode) {
+  if (isCommissioningStage(sourceNode || {}) || isCommissioningStage(targetNode || {})) {
+    const instrument = [sourceNode, targetNode].find((node) => node?.kind === "instrument");
+    return instrument ? "instrument" : "stage";
+  }
+  if (sourceNode && !isScientificClaim(sourceNode)) return sourceNode.kind || "supporting";
+  if (targetNode && !isScientificClaim(targetNode)) return targetNode.kind || "supporting";
+  return "scientific";
 }
 
 function graphEdgeGeometry(source, target) {
   const sourceCenter = source.x + source.width / 2;
   const targetCenter = target.x + target.width / 2;
-  const forward = targetCenter >= sourceCenter;
-  const x1 = forward ? source.x + source.width : source.x;
-  const y1 = source.y + source.height / 2;
-  const x2 = forward ? target.x : target.x + target.width;
-  const y2 = target.y + target.height / 2;
-  const direction = forward ? 1 : -1;
-  const bend = Math.max(35, Math.abs(x2 - x1) * 0.46);
+  const sourceMiddle = source.y + source.height / 2;
+  const targetMiddle = target.y + target.height / 2;
+  const dx = targetCenter - sourceCenter;
+  const dy = targetMiddle - sourceMiddle;
+  const horizontal = Math.abs(dx) / Math.max(1, (source.width + target.width) / 2)
+    >= Math.abs(dy) / Math.max(1, (source.height + target.height) / 2);
+  if (horizontal) {
+    const forward = dx >= 0;
+    const x1 = forward ? source.x + source.width : source.x;
+    const y1 = sourceMiddle;
+    const x2 = forward ? target.x : target.x + target.width;
+    const y2 = targetMiddle;
+    const direction = forward ? 1 : -1;
+    const bend = Math.max(35, Math.abs(x2 - x1) * 0.46);
+    return {
+      path: `M ${x1} ${y1} C ${x1 + direction * bend} ${y1}, ${x2 - direction * bend} ${y2}, ${x2} ${y2}`,
+      labelX: (x1 + x2) / 2,
+      labelY: (y1 + y2) / 2 - 7,
+    };
+  }
+  const downward = dy >= 0;
+  const x1 = sourceCenter;
+  const y1 = downward ? source.y + source.height : source.y;
+  const x2 = targetCenter;
+  const y2 = downward ? target.y : target.y + target.height;
+  const direction = downward ? 1 : -1;
+  const bend = Math.max(30, Math.abs(y2 - y1) * 0.46);
   return {
-    path: `M ${x1} ${y1} C ${x1 + direction * bend} ${y1}, ${x2 - direction * bend} ${y2}, ${x2} ${y2}`,
-    labelX: (x1 + x2) / 2,
-    labelY: (y1 + y2) / 2 - 7,
+    path: `M ${x1} ${y1} C ${x1} ${y1 + direction * bend}, ${x2} ${y2 - direction * bend}, ${x2} ${y2}`,
+    labelX: (x1 + x2) / 2 + 8,
+    labelY: (y1 + y2) / 2 - 5,
   };
 }
 
@@ -867,7 +907,7 @@ function bindGraphNode(group, item, point) {
 
 function graphLayoutStorageKey() {
   return state.selectedCampaign
-    ? `simjecture-graph-layout-v1:${state.selectedCampaign}`
+    ? `simjecture-graph-layout-v2:${state.selectedCampaign}`
     : null;
 }
 
@@ -1586,7 +1626,7 @@ function zoomGraphAt(nextZoom, clientX, clientY) {
   const bounded = Math.min(3, Math.max(0.01, nextZoom));
   if (Math.abs(bounded - state.graphZoom) < 0.0001) return;
   state.graphZoom = bounded;
-  renderGraph(true);
+  applyGraphZoom();
   if (!anchor) return;
   const matrix = graph.getScreenCTM();
   if (!matrix) return;
@@ -1596,6 +1636,13 @@ function zoomGraphAt(nextZoom, clientX, clientY) {
   const projected = anchorPoint.matrixTransform(matrix);
   viewport.scrollLeft += projected.x - clientX;
   viewport.scrollTop += projected.y - clientY;
+}
+
+function applyGraphZoom() {
+  if (!state.currentGraphLayout) return;
+  const graph = ui["claim-graph"];
+  graph.setAttribute("width", String(state.currentGraphLayout.width * state.graphZoom));
+  graph.setAttribute("height", String(state.currentGraphLayout.height * state.graphZoom));
 }
 
 function changeZoom(delta) {
@@ -1619,21 +1666,45 @@ function handleGraphWheel(event) {
   zoomGraphAt(state.graphZoom * factor, event.clientX, event.clientY);
 }
 
-function fitZoomForLayout(layout) {
+function bindGraphCanvasPan() {
   const viewport = ui["graph-viewport"];
-  const availableWidth = Math.max(1, viewport.clientWidth - 28);
-  const availableHeight = Math.max(1, viewport.clientHeight - 28);
-  return Math.max(
-    0.01,
-    Math.min(1, availableWidth / layout.width, availableHeight / layout.height),
-  );
+  viewport.addEventListener("pointerdown", (event) => {
+    if (event.button !== 0 || event.target.closest?.(".graph-node")) return;
+    state.graphPan = {
+      pointerId: event.pointerId,
+      clientX: event.clientX,
+      clientY: event.clientY,
+      scrollLeft: viewport.scrollLeft,
+      scrollTop: viewport.scrollTop,
+    };
+    viewport.classList.add("panning");
+    viewport.setPointerCapture(event.pointerId);
+    event.preventDefault();
+  });
+  viewport.addEventListener("pointermove", (event) => {
+    const pan = state.graphPan;
+    if (!pan || pan.pointerId !== event.pointerId) return;
+    viewport.scrollLeft = pan.scrollLeft - (event.clientX - pan.clientX);
+    viewport.scrollTop = pan.scrollTop - (event.clientY - pan.clientY);
+    event.preventDefault();
+  });
+  const finish = (event) => {
+    if (!state.graphPan || state.graphPan.pointerId !== event.pointerId) return;
+    if (viewport.hasPointerCapture(event.pointerId)) viewport.releasePointerCapture(event.pointerId);
+    state.graphPan = null;
+    viewport.classList.remove("panning");
+  };
+  viewport.addEventListener("pointerup", finish);
+  viewport.addEventListener("pointercancel", finish);
+}
+
+function fitZoomForLayout(layout) {
+  return Math.max(0.01, Math.min(3, rawFitScale(layout)));
 }
 
 function fitGraph() {
-  if (!state.currentGraphLayout) return;
-  state.graphZoom = fitZoomForLayout(state.currentGraphLayout);
-  renderGraph(true);
-  ui["graph-viewport"].scrollTo({ left: 0, top: 0 });
+  if (!state.snapshot) return;
+  renderGraph(false);
 }
 
 function showEmptyState() {

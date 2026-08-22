@@ -24,15 +24,18 @@ The interface has five connected projections:
 
 - **Claim graph:** one view of the durable ledger, with all four claim kinds as
   first-class nodes: `scientific`, `instrument`, `diagnostic`, and `control`.
-  Edges retain their recorded relations, including `refines`, `alternate`,
-  `instrument_of`, `diagnostic_of`, and `control_for`. Scientific-only mode is
-  a visual filter over this graph, not a second hypothesis data structure.
-  A derived commissioning-stage node sits between a scientific claim and its
-  `instrument_of` claims. Directed arrows make the durable relationship
-  explicit as scientific claim → commissioning → qualified instruments. The
-  stage and every supporting-claim inspector name the scientific target. This
-  exposes the capability evidence gate and guided starting point without
-  becoming a fifth durable claim kind.
+  Claim records and inspectors retain their relations, including `refines`,
+  `alternate`, `instrument_of`, `diagnostic_of`, and `control_for`.
+  Scientific-only mode is a visual filter over this graph, not a second
+  hypothesis data structure.
+  A derived commissioning-stage node exposes the workflow dependency hidden by
+  the parent-owned ledger representation. Scientific hierarchy arrows remain
+  parent → child; prerequisite arrows point instrument claim → **qualifies** →
+  commissioning → **enables evidence for** → scientific target. Diagnostic and
+  control prerequisites likewise point into their scientific target. The stage
+  and every supporting-claim inspector name that target. This exposes the
+  capability evidence gate and guided starting point without becoming a fifth
+  durable claim kind or changing the underlying ledger.
 - **Claim inspector:** click any of the four node kinds to see its rationale,
   parent and child relations, prospective evidence contracts, linked evidence,
   closure reason, and iteration metadata.
@@ -46,18 +49,21 @@ The interface has five connected projections:
 - **Artifacts and conclusion:** contained workspace results, generated figures,
   audit records, and the terminal answer when one exists.
 
-The graph automatically fits every visible node on first load and whenever its
-claim set changes. Scroll over the canvas to zoom around the cursor, use **Fit
-all** to recover the complete view, or use the plus/minus controls for centered
-zoom. Each node is keyboard-selectable and draggable. Positions are stored
-under a campaign-specific browser key and never written into the durable run;
-**Reset layout** removes the local arrangement. Node copy is line-bounded,
-ellipsized, and clipped to its box. The four kinds use distinct node treatments
-while their status is shown separately, so claim type is never inferred from
-supported or falsified state. Expanded contract and evidence sections remain
-open while the one-second live refresh advances. The header theme button
-switches between the high-contrast light and dark palettes and remembers the
-choice locally.
+The graph uses the bundled Dagre engine to compute both left-to-right and
+top-to-bottom layered layouts, then selects the orientation that permits the
+largest on-screen text while every visible node still fits. This happens on
+first load and whenever the claim set changes. Scroll over the canvas to zoom
+around the cursor, drag empty canvas to pan, use **Fit all** to recover the
+complete view, or use the plus/minus controls for centered zoom. Each node is
+keyboard-selectable and independently draggable. Positions are stored under a
+campaign-specific browser key and never written into the durable run; **Reset
+layout** removes the local arrangement and recomputes the optimal layout. Node
+copy is line-bounded, ellipsized, and clipped to its box. The four kinds use
+distinct node treatments while their status is shown separately, so claim type
+is never inferred from supported or falsified state. Expanded contract and
+evidence sections remain open while the one-second live refresh advances. The
+header theme button switches between the high-contrast light and dark palettes
+and remembers the choice locally.
 
 Human-facing scientific text is rendered as sanitized Markdown throughout the
 campaign heading, claim inspector, contracts, evidence assessments, research

@@ -44,6 +44,7 @@ STATIC_ASSETS = frozenset(
         "app.js",
         "markdown.js",
         "styles.css",
+        "vendor/dagre-2.0.0.min.js",
         "vendor/dompurify-3.4.14.min.js",
         "vendor/katex-0.18.4.min.js",
         "vendor/katex-auto-render-0.18.4.min.js",

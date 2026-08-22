@@ -7,6 +7,9 @@ a runtime Node.js or CDN dependency.
 - DOMPurify 3.4.14 (`dompurify-3.4.14.min.js`), Apache-2.0 license.
 - KaTeX 0.18.4 (`katex-0.18.4.min.js` and
   `katex-auto-render-0.18.4.min.js`), MIT license.
+- Dagre 2.0.0 (`dagre-2.0.0.min.js`), MIT license.
 
 The corresponding upstream license texts are stored alongside the files.
 KaTeX is configured for MathML output, so its webfont bundle is not shipped.
+Dagre computes the compact directed-acyclic-graph layout; SVG rendering and
+interaction remain part of Simjecture.

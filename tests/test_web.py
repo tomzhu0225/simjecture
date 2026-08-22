@@ -307,11 +307,15 @@ def test_web_assets_keep_live_detail_state_and_separate_operator_views() -> None
     assert "expandedDetails: new Set()" in javascript
     assert "persistentDetails(" in javascript
     assert "setPointerCapture" in javascript
-    assert "simjecture-graph-layout-v1" in javascript
+    assert "simjecture-graph-layout-v2" in javascript
     assert "renderCommissioningInspector" in javascript
     assert '"marker-end": "url(#graph-arrow)"' in javascript
     assert "handleGraphWheel" in javascript
+    assert "bindGraphCanvasPan" in javascript
     assert "fitZoomForLayout" in javascript
+    assert "dagreLayoutCandidate" in javascript
+    assert 'relation: "qualifies"' in javascript
+    assert 'relation: "enables evidence for"' in javascript
     assert "graph-node-clip-" in javascript
     assert "scientific target:" in javascript
     assert "scientificPreviewText" in javascript
@@ -327,6 +331,9 @@ def test_web_assets_keep_live_detail_state_and_separate_operator_views() -> None
     assert (STATIC_ROOT / "vendor/marked-18.0.10.umd.js").is_file()
     assert (STATIC_ROOT / "vendor/dompurify-3.4.14.min.js").is_file()
     assert (STATIC_ROOT / "vendor/katex-0.18.4.min.js").is_file()
+    assert (STATIC_ROOT / "vendor/dagre-2.0.0.min.js").is_file()
+    assert (STATIC_ROOT / "vendor/LICENSE.dagre.txt").is_file()
+    assert "dagre-2.0.0.min.js" in html
     assert 'data-theme="light"' in html
     assert ':root[data-theme="dark"]' in stylesheet
 
@@ -448,6 +455,7 @@ def test_local_http_api_serves_assets_snapshot_and_protects_post(tmp_path: Path)
             assert client.get("/assets/app.js").status_code == 200
             assert client.get("/assets/markdown.js").status_code == 200
             assert client.get("/assets/vendor/marked-18.0.10.umd.js").status_code == 200
+            assert client.get("/assets/vendor/dagre-2.0.0.min.js").status_code == 200
 
             bootstrap = client.get("/api/bootstrap").json()
             token = bootstrap["selected_campaign"]

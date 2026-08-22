@@ -600,9 +600,14 @@ dialog h2 {
     linear-gradient(90deg, color-mix(in srgb, var(--line) 42%, transparent) 1px, transparent 1px),
     var(--canvas);
   background-size: 30px 30px;
+  cursor: grab;
   overscroll-behavior: contain;
   scrollbar-color: var(--line-strong) transparent;
+  touch-action: none;
 }
+
+.graph-viewport.panning { cursor: grabbing; }
+.graph-viewport.panning #claim-graph { pointer-events: none; }
 
 #claim-graph {
   display: block;
