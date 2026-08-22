@@ -154,7 +154,8 @@ class _DuckDuckGoParser(HTMLParser):
         self._active: str | None = None
         self._href: str | None = None
         self._text: list[str] = []
-        self._pending: dict[str, str] | None = None
+        # Keep result state distinct from HTMLParser._pending (Python 3.12.14+).
+        self._pending_result: dict[str, str] | None = None
 
     @staticmethod
     def _classes(attributes: list[tuple[str, str | None]]) -> set[str]:
@@ -168,9 +169,9 @@ class _DuckDuckGoParser(HTMLParser):
     ) -> None:
         classes = self._classes(attributes)
         if tag == "a" and "result__a" in classes:
-            if self._pending is not None:
-                self.results.append(self._pending)
-            self._pending = {}
+            if self._pending_result is not None:
+                self.results.append(self._pending_result)
+            self._pending_result = {}
             self._active = "title"
             self._href = next(
                 (value for name, value in attributes if name == "href" and value),
@@ -187,24 +188,24 @@ class _DuckDuckGoParser(HTMLParser):
 
     def handle_endtag(self, tag: str) -> None:
         if self._active == "title" and tag == "a":
-            assert self._pending is not None
-            self._pending["title"] = _compact_space("".join(self._text))
+            assert self._pending_result is not None
+            self._pending_result["title"] = _compact_space("".join(self._text))
             if self._href is not None:
-                self._pending["url"] = self._decode_url(self._href)
+                self._pending_result["url"] = self._decode_url(self._href)
             self._active = None
             self._text = []
             self._href = None
         elif self._active == "snippet" and tag in {"a", "div"}:
-            if self._pending is not None:
-                self._pending["snippet"] = _compact_space("".join(self._text))
+            if self._pending_result is not None:
+                self._pending_result["snippet"] = _compact_space("".join(self._text))
             self._active = None
             self._text = []
 
     def close(self) -> None:
         super().close()
-        if self._pending is not None:
-            self.results.append(self._pending)
-            self._pending = None
+        if self._pending_result is not None:
+            self.results.append(self._pending_result)
+            self._pending_result = None
 
     @staticmethod
     def _decode_url(value: str) -> str:
