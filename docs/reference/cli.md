@@ -20,6 +20,7 @@ Principal command families:
 - `watch`: follow durable MVP events until a terminal report or pause;
 - `pause`: request an action-boundary pause of a verified live runner;
 - `resume`: repeat a stored launch contract for a paused or incomplete run;
+- `web`: local browser dashboard and reviewed campaign controls;
 - `tui`: optional interactive dashboard (`uv sync --extra tui`);
 - `benchmark`: deterministic planted scientific benchmarks;
 - `campaign`: durable bounded campaign execution;
@@ -36,8 +37,9 @@ arguments so the exact operator input can be reviewed before launch.
 `--instruction-file` is accepted for the same reason. The optional TUI always
 launches through `--hypothesis-file` and never builds a shell command.
 
-`status`, `watch`, `pause`, and `resume` do not require the TUI extra. `watch`
+`web`, `status`, `watch`, `pause`, and `resume` do not require the TUI extra. `watch`
 Ctrl-C stops the viewer only. `pause` never uses SIGSTOP. `resume` replays every
 structured option only for a contained, self-contained launch contract; unsafe
 external paths are refused. See
+[Web interface](../getting-started/web-interface.md) and
 [Terminal interface](../getting-started/terminal-ui.md).

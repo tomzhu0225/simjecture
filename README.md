@@ -142,21 +142,22 @@ is read-only: it makes no model calls and starts no simulations.
 ```bash
 git clone https://github.com/tomzhu0225/simjecture.git
 cd simjecture
-uv sync --frozen --extra tui
+uv sync --frozen
 uv run python demos/gray_scott_counterexample/verify_record.py
-uv run simjecture tui demos/gray_scott_counterexample/record
+uv run simjecture web demos/gray_scott_counterexample/record --read-only
 ```
 
-Inside the dashboard, select hypotheses to inspect their linked evidence and
-validation claims; press `v` for the complete typed audit ledger. For a
-non-interactive summary instead, run:
+Inside the browser dashboard, select hypotheses in the interactive graph to
+inspect their evidence contracts, linked results, validation claims, activity,
+figures, and terminal conclusion. For a non-interactive summary instead, run:
 
 ```bash
 uv run simjecture status demos/gray_scott_counterexample/record
 ```
 
-The dashboard is a human-readable projection. The files in the recorded run
-remain the authoritative scientific record.
+The browser is a human-readable projection. The files in the recorded run
+remain the authoritative scientific record. The optional Textual interface is
+still available with `uv sync --extra tui` and `uv run simjecture tui <run>`.
 
 ## Quick start
 
@@ -213,7 +214,21 @@ boundary; `resume` repeats a self-contained stored launch contract without
 resetting its cumulative wall-time budget. External writable or configuration
 paths require the operator to repeat the reviewed original command.
 
-The optional dashboard is a projection of the same artifacts:
+The local browser interface shows the hypothesis graph, live typed activity,
+evidence, generated figures, and final conclusion. It is included in the core
+installation:
+
+```bash
+uv run simjecture web artifacts/magnetic-mirror-mvp
+```
+
+Run `simjecture web` without a path to discover recent campaigns or launch a
+new hypothesis. Version 0.1.1 binds to localhost only; `--read-only` disables
+all launch and process controls. Provider credentials remain in the launching
+terminal environment and are never entered into the browser.
+
+The optional terminal dashboard is a projection of the same artifacts for SSH
+and headless machines:
 
 ```bash
 uv sync --extra tui
@@ -277,7 +292,7 @@ found a finite-domain counterexample in 23.8 minutes.
 The package contains the exact input, complete transcript, portable hypothesis
 ledger, prospective evidence contracts, final report, source and command
 provenance, all agent-written programs, numerical arrays, integrity checker,
-and a read-only TUI replay. See
+and read-only web and TUI replays. See
 [`demos/gray_scott_counterexample/`](demos/gray_scott_counterexample/).
 
 ### Collisionless GEM reconnection ensemble
@@ -350,7 +365,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), and
 ## Repository map
 
 ```text
-src/conjecture_solver/   core models, ledgers, orchestration, sandbox, and CLI
+src/conjecture_solver/   core runtime, shared projections, CLI, web UI, and TUI
 skills/                  versioned model-readable scientific capabilities
 capabilities/            installed executable capability manifests
 demos/                   bounded demonstrations and operator examples

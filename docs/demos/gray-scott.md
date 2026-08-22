@@ -58,6 +58,7 @@ and the exact decisive program under
 ```bash
 uv run simjecture status demos/gray_scott_counterexample/record
 uv run python demos/gray_scott_counterexample/verify_record.py
+uv run simjecture web demos/gray_scott_counterexample/record --read-only
 uv sync --extra tui
 uv run simjecture tui demos/gray_scott_counterexample/record
 ```

@@ -67,6 +67,17 @@ Read `skills/warpx/SKILL.md` and
 Capability health preflights identify missing or incompatible local runtimes
 without granting scientific-evidence status.
 
+## Local web interface
+
+The browser dashboard is included with the core installation:
+
+```bash
+uv run simjecture web
+```
+
+It binds only to localhost and can discover, launch, or attach to durable
+campaigns. See [Web interface](web-interface.md).
+
 ## Optional terminal dashboard
 
 The scientific environment does not depend on Textual. To install the

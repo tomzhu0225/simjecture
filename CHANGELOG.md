@@ -2,6 +2,22 @@
 
 This project follows semantic versioning. Dates use ISO 8601.
 
+## 0.1.1 — 2026-08-22
+
+- Added a dependency-free, localhost-only browser interface with an interactive
+  scientific hypothesis graph, claim/evidence inspector, live activity,
+  simulation artifacts, terminal conclusions, and token/resource summaries.
+- Added `simjecture web`, recent-campaign discovery, browser-based campaign
+  launch, and verified pause/resume/stop controls. A per-session control token,
+  same-origin checks, loopback-only binding, and contained artifact delivery
+  keep the local control surface narrow.
+- Extracted hypothesis and validation-claim projections into a shared,
+  UI-neutral module so the web interface and Textual dashboard preserve the
+  same scientific semantics.
+- Kept the durable campaign files authoritative: the browser is a live
+  projection and never treats model prose as claim status or fabricates a
+  scientific completion percentage.
+
 ## 0.1.0 — 2026-08-15
 
 - Added a read-only MVP run monitor and headless `status` / `watch` commands.

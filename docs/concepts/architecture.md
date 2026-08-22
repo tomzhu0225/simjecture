@@ -35,6 +35,19 @@ Model calls and simulator intents are journaled before dispatch. Content hashes,
 idempotency keys, cancellation records, heartbeats, and replay logic distinguish
 scientific failure from provider, scheduler, or process failure.
 
+## Human interfaces
+
+The browser dashboard, Textual dashboard, `status`, and `watch` consume one
+UI-neutral monitor projection. That projection derives claim status, current
+typed action, token usage, heartbeats, and terminal state from durable files;
+the clients do not maintain a competing scientific database.
+
+The version 0.1.1 web server adds only a narrow localhost API around this
+projection and the existing reviewed launch/pause/resume/stop functions. Its
+hypothesis graph uses the same scientific-versus-validation claim classifier as
+the TUI. This boundary also allows a future reasoning engine to change without
+rewriting the scientific interface or campaign record.
+
 ## Trust boundary
 
 The system can establish that a declared computation ran through the expected
