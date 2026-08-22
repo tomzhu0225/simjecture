@@ -17,6 +17,21 @@ This project follows semantic versioning. Dates use ISO 8601.
 - Kept the durable campaign files authoritative: the browser is a live
   projection and never treats model prose as claim status or fabricates a
   scientific completion percentage.
+- Added the enforced Falsifier → Scientist → Judge loop: prospective evidence
+  falsifies the active claim, a typed `repairs` successor must accommodate the
+  decisive counterexample, and an independent adjudication must accept bounded
+  support before completion.
+- Kept auxiliary formulas and estimator checks out of the scientific hypothesis
+  tree by default, and strengthened continuous-domain adjudication so finite
+  grids alone cannot establish universal or strict-monotonicity claims.
+- Made direct `simjecture mvp` processes appear live in the browser through the
+  durable runner lock, not only through Web/TUI supervisor records.
+- Reduced plain-Python prompt overhead while preserving the full commissioning
+  protocol for installed capabilities, compacted old authored actions without
+  changing the durable transcript, enabled official DeepSeek JSON responses,
+  and exposed provider-coverage diagnostics for literature searches.
+- Made the Web interface the primary interactive client. The optional Textual
+  dashboard remains supported in maintenance mode for SSH and browserless use.
 
 ## 0.1.0 — 2026-08-15
 

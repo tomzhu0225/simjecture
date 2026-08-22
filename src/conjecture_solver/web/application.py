@@ -16,6 +16,7 @@ from ..mvp_launch import (
     ResumeError,
     load_supervisor_record,
     materialize_operator_input,
+    output_lock_is_held,
     prepare_resume,
     process_identity_matches,
     request_graceful_cancel,
@@ -703,7 +704,11 @@ def _execution_status(phase: RunPhase, live: bool) -> str:
 
 def _is_live(root: Path) -> bool:
     identity = load_supervisor_record(root)
-    return bool(identity and process_identity_matches(identity))
+    if identity and process_identity_matches(identity):
+        return True
+    # Direct ``simjecture mvp`` runs do not have a web/TUI supervisor record,
+    # but they hold the same verified output lock for their entire lifetime.
+    return output_lock_is_held(root)
 
 
 def _revision(snapshot: Any, *, root: Path, live: bool) -> str:

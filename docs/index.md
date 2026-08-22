@@ -20,8 +20,8 @@ hypothesis solving or empirical closure.
 - **New user:** follow [Installation](getting-started/installation.md),
   [First autonomous run](getting-started/first-run.md), and the
   [Web interface](getting-started/web-interface.md). The
-  [Terminal interface](getting-started/terminal-ui.md) remains available for
-  SSH and headless operation.
+  maintenance-mode [Terminal interface](getting-started/terminal-ui.md)
+  remains available for SSH and headless operation.
 - **Scientist:** read [System architecture](concepts/architecture.md),
   [Evidence and claims](concepts/evidence-and-claims.md), and
   [Scientific limitations](research/limitations.md).

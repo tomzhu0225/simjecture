@@ -827,10 +827,11 @@ def build_parser() -> argparse.ArgumentParser:
     mvp.add_argument(
         "--recent-full-turns",
         type=int,
-        default=12,
+        default=8,
         help=(
             "Keep this many recent model turns fully detailed in the prompt; "
-            "older tool results are compacted while the durable transcript stays complete"
+            "older actions and tool results are compacted while the durable transcript "
+            "stays complete"
         ),
     )
     mvp.add_argument(
@@ -892,7 +893,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     tui = subcommands.add_parser(
         "tui",
-        help="Open the optional interactive terminal dashboard",
+        help="Open the optional terminal dashboard (maintenance mode)",
     )
     tui.add_argument(
         "run_directory",
@@ -903,7 +904,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     web = subcommands.add_parser(
         "web",
-        help="Open the local browser interface for durable MVP campaigns",
+        help="Open the primary local interface for durable MVP campaigns",
     )
     web.add_argument(
         "run_directory",

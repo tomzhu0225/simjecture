@@ -65,6 +65,38 @@ class LiteratureSearchRecord(StrictModel):
     searched_at: datetime
     scientific_evidence_eligible: Literal[False] = False
 
+    def diagnostics(self) -> dict[str, Any]:
+        """Summarize provider coverage without overstating a zero-hit search."""
+
+        reachable = sorted(
+            name for name, value in self.provider_status.items() if value.startswith("ok:")
+        )
+        failed = sorted(
+            name
+            for name, value in self.provider_status.items()
+            if value.startswith("error:")
+        )
+        zero_hit = sorted(
+            name for name, value in self.provider_status.items() if value == "ok:0"
+        )
+        if self.sources:
+            coverage = "sources_found"
+        elif reachable and failed:
+            coverage = "zero_hits_with_provider_failures"
+        elif reachable:
+            coverage = "zero_hits"
+        else:
+            coverage = "providers_unavailable"
+        return {
+            "coverage": coverage,
+            "usable_source_count": len(self.sources),
+            "reachable_providers": reachable,
+            "failed_providers": failed,
+            "zero_hit_providers": zero_hit,
+            "partial_provider_failure": bool(reachable and failed),
+            "supports_absence_or_novelty_claim": False,
+        }
+
 
 class LiteratureSearchClient(Protocol):
     @property

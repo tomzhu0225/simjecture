@@ -150,8 +150,10 @@ It does not provide remote authentication, multi-user ownership, or a public
 deployment boundary. Use the headless commands or TUI over SSH; do not proxy the
 v0.1.1 local server onto a network.
 
-## Keep the terminal clients
+## Compatibility clients
 
 The browser, Textual dashboard, `status`, and `watch` are clients of the same
-durable projection. The TUI remains useful over SSH and on machines without a
-browser. See [Terminal interface](terminal-ui.md).
+durable projection. New interactive UX is developed for the browser. The TUI
+is maintained for SSH and machines without a browser, while `status` and
+`watch` remain the stable headless clients. See
+[Terminal interface](terminal-ui.md).

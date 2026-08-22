@@ -584,7 +584,11 @@ def test_messages_for_model_compacts_old_tool_payloads(tmp_path: Path) -> None:
     assert model_messages[-1]["role"] == "user"
     sticky = json.loads(model_messages[-1]["content"])
     assert sticky["claim_ledger"]["claim_count"] == 1
-    # First two turns (assistant/tool pairs) are compacted for tool side.
+    # First two turns (assistant/tool pairs) are compacted on both sides.
+    first_assistant = json.loads(model_messages[2]["content"])
+    assert first_assistant["compacted"] is True
+    assert first_assistant["action"] == "run_python"
+    assert first_assistant["research_note"] == "turn 1"
     first_tool = json.loads(model_messages[3]["content"])
     assert first_tool["tool_result"]["compacted"] is True
     assert first_tool["tool_result"]["result"]["stdout_chars"] == 5000
@@ -592,6 +596,29 @@ def test_messages_for_model_compacts_old_tool_payloads(tmp_path: Path) -> None:
     # Last two full turns keep full stdout.
     last_tool = json.loads(model_messages[-2]["content"])
     assert last_tool["tool_result"]["result"]["stdout"] == huge_stdout
+
+
+def test_old_authored_source_is_hashed_not_replayed_to_model() -> None:
+    source = "sensitive_or_large_source = 1\n" * 1000
+    compacted = json.loads(
+        MVPAgentRunner._compact_assistant_payload(
+            _action(
+                action="write_file",
+                research_note="Author the bounded analyzer.",
+                path="analyzer.py",
+                content=source,
+            )
+        )
+    )
+
+    assert compacted["action"] == "write_file"
+    assert compacted["path"] == "analyzer.py"
+    parsed_source = source.rstrip()
+    assert compacted["authored_content_chars"] == len(parsed_source)
+    assert compacted["authored_content_sha256"] == hashlib.sha256(
+        parsed_source.encode()
+    ).hexdigest()
+    assert "sensitive_or_large_source" not in json.dumps(compacted)
 
 
 def test_messages_for_model_pin_successfully_read_skill_resources(tmp_path: Path) -> None:
@@ -952,45 +979,17 @@ def test_natural_language_agent_writes_runs_reads_and_finishes(tmp_path: Path) -
     assert "register_claim" in first_prompt[0]["content"]
     assert initial_payload["claim_ledger"]["claim_count"] == 1
     assert initial_payload["claim_ledger"]["claims"][0]["id"] == "claim_root"
-    assert initial_payload["claim_protocol"]["capability_commissioning_gate"][
-        "required_aspects_in_one_contract"
-    ] == [
-        "boundaries",
-        "diagnostics",
-        "numerical_regime",
-        "physics_controls",
-        "representation",
-    ]
-    assert (
-        initial_payload["claim_protocol"]["capability_commissioning_gate"][
-            "runner_witnesses_execution_success"
-        ]
-        is True
-    )
-    assert (
-        initial_payload["claim_protocol"]["capability_commissioning_gate"][
-            "requires_execution_binding"
-        ]
-        is True
-    )
-    assert (
-        initial_payload["claim_protocol"]["capability_commissioning_gate"][
-            "scientific_argv_must_be_prospectively_allowed"
-        ]
-        is True
-    )
-    assert (
-        initial_payload["claim_protocol"]["capability_commissioning_gate"][
-            "one_interface_stage_per_parent_and_capability"
-        ]
-        is True
-    )
-    assert (
-        initial_payload["claim_protocol"]["capability_commissioning_gate"][
-            "scientific_program_must_match_commissioned_source"
-        ]
-        is True
-    )
+    gate = initial_payload["claim_protocol"]["capability_commissioning_gate"]
+    assert gate == {
+        "available": False,
+        "policy": "do_not_invent_unavailable_capabilities",
+    }
+    tree_policy = initial_payload["claim_protocol"]["hypothesis_tree_policy"]
+    assert tree_policy["auxiliary_formula_belongs_in_parent_contract"] is True
+    assert tree_policy["independently_audited_estimator_uses_kind"] == "diagnostic"
+    assert "Do not create a scientific refines child merely" in first_prompt[0]["content"]
+    assert "Capability work has two stages" not in first_prompt[0]["content"]
+    assert "finite grid coverage alone cannot" in first_prompt[0]["content"]
     observable_identity = initial_payload["claim_protocol"]["scientific_observable_identity"]
     assert observable_identity["use_aspectless_validation_checks"] is True
     assert observable_identity["post_hoc_relabeling_forbidden"] is True
@@ -1717,6 +1716,36 @@ def _write_test_skill_and_capability(
         MVPSkillCatalog.discover(tmp_path / "skills"),
         MVPCapabilityRegistry.discover(capability_root),
     )
+
+
+def test_installed_capability_keeps_full_commissioning_prompt(tmp_path: Path) -> None:
+    skills, capabilities = _write_test_skill_and_capability(tmp_path)
+    config = _config()
+    output = tmp_path / "capability-prompt"
+    runner = MVPAgentRunner(
+        hypothesis="An installed instrument may test a bounded physical prediction.",
+        output_directory=output,
+        completion_client=ScriptedCompletionClient([]),
+        sandbox=BubblewrapSandbox(output / "workspace", config, capabilities),
+        config=config,
+        skills=skills,
+        capabilities=capabilities,
+    )
+
+    system, initial = runner._initial_messages()
+    payload = json.loads(initial["content"])
+    gate = payload["claim_protocol"]["capability_commissioning_gate"]
+    assert "Capability work has two stages" in system["content"]
+    assert gate["available"] is True
+    assert gate["required_aspects_in_one_contract"] == [
+        "boundaries",
+        "diagnostics",
+        "numerical_regime",
+        "physics_controls",
+        "representation",
+    ]
+    assert gate["one_interface_stage_per_parent_and_capability"] is True
+    assert gate["scientific_program_must_match_commissioned_source"] is True
 
 
 def test_capability_runtime_identity_tracks_bounded_python_records(tmp_path: Path) -> None:
@@ -4061,6 +4090,8 @@ def test_insufficient_judgment_rejects_premature_finish(tmp_path: Path) -> None:
     root = {item["id"]: item for item in report.claim_ledger["claims"]}["claim_root"]
     assert root["status"] == "open"
     assert report.status == "budget_exhausted"
+    judge_system_prompt = client.calls[4]["messages"][0]["content"]
+    assert "finite grid samples alone do not support" in judge_system_prompt
 
 
 @pytest.mark.skipif(shutil.which("bwrap") is None, reason="bubblewrap is unavailable")

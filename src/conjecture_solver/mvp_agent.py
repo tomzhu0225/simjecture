@@ -453,7 +453,7 @@ class MVPAgentConfig(StrictModel):
     max_tool_output_chars: int = Field(default=30_000, ge=1)
     command_heartbeat_seconds: float = Field(default=30.0, gt=0)
     recent_full_turns: int = Field(
-        default=12,
+        default=8,
         ge=1,
         description=(
             "Number of most recent assistant/tool turns retained in full when "
@@ -1089,8 +1089,16 @@ The root hypothesis is immutable and pre-registered as claim_root. Working ideas
 not the root must be registered with register_claim before you treat them as active
 targets. Use claim kinds scientific, instrument, diagnostic, or control. Relations are
 domain-neutral: repairs, refines, alternate, diagnostic_of, instrument_of, control_for,
-or succeeds. Motivation from parent evidence is not automatic confirmation of a child
-claim. When sufficient prospective evidence falsifies a scientific claim, close that
+or succeeds. Keep the scientific hypothesis tree for propositions that change, narrow,
+repair, or compete with a physical prediction and could themselves become an active
+falsification target. Do not create a scientific refines child merely to name an
+established formula, observable definition, numerical method, implementation
+equivalence, or cross-check used to test its parent. Put those items in the parent's
+evidence contract and validation checks. If the validity of an estimator or diagnostic
+genuinely needs its own audited disposition, register kind=diagnostic with
+relation=diagnostic_of instead of adding an auxiliary hypothesis. Motivation from parent
+evidence is not automatic confirmation of a child claim. When sufficient prospective
+evidence falsifies a scientific claim, close that
 exact claim as falsified. Then act as Scientist: register the smallest useful replacement
 with relation=repairs and the falsified claim as parent. Its repair object must cite the
 parent counterexample evidence, state how the replacement accommodates that case,
@@ -1118,6 +1126,11 @@ measurement path and metadata before linking evidence. If the implementation and
 registered observable disagree, do not relabel or reinterpret the measurement after
 seeing its value; close or supersede the mismatched contract and generate fresh evidence
 under a corrected prospective contract.
+For a claim quantified over a continuous interval, finite grid coverage alone cannot
+establish words such as "throughout", "every", or strict monotonicity between samples.
+Support such a claim only with an analytic structural argument, a validated enclosure or
+bound, or a statement explicitly limited to the sampled resolution. The evidence
+contract and final answer must say which scope was actually established.
 Artifact identity and its generating action are recorded automatically. Supported and
 falsified dispositions require provenance-tracked evidence generated under a contract
 and marked observation_sufficient=true; otherwise close as weakened, superseded,
@@ -1273,6 +1286,15 @@ reread it or reverse-engineer wiring it already documents unless an actual execu
 contradicts it. Execution
 actions receive argv directly; there is no shell. Use finish only for the final bounded
 scientific account. Do not wrap JSON in a Markdown code fence."""
+
+    _CAPABILITY_GUIDANCE_START = "Capability work has two stages."
+    _CAPABILITY_GUIDANCE_END = "The initial payload may contain a campaign_instruction."
+    _NO_CAPABILITY_GUIDANCE = """No installed simulation capability or guided commission is
+present in this campaign. Use sandboxed run_python calculations where appropriate. Do
+not invent a capability or create commissioning/instrument claims for unavailable
+software.
+
+"""
 
     def __init__(
         self,
@@ -1518,7 +1540,12 @@ scientific account. Do not wrap JSON in a Markdown code fence."""
             "requires valid provenance, satisfaction of the registered observation and "
             "uncertainty criteria, meaningful coverage of the stated domain, and a "
             "credible attempt to find counterexamples. If anything material is missing, "
-            "return insufficient, name concrete evidence_gaps, and suggest one next_test. "
+            "return insufficient. In particular, finite grid samples alone do not "
+            "support a universal statement over a continuous interval or strict "
+            "monotonicity between samples; require an analytic argument, validated "
+            "enclosure, or an explicitly resolution-bounded claim. If material is "
+            "missing, "
+            "name concrete evidence_gaps and suggest one next_test. "
             "Return exactly one JSON object matching the supplied schema. Do not return "
             "private chain-of-thought."
         )
@@ -1786,7 +1813,28 @@ scientific account. Do not wrap JSON in a Markdown code fence."""
             "succeeds or the wall-time envelope ends the run as unresolved."
         )
 
+    def _effective_system_prompt(self) -> str:
+        """Return only protocol sections usable in this campaign.
+
+        Plain scientific-Python campaigns do not benefit from repeatedly sending the
+        capability commissioning manual. The durable protocol remains identical for
+        runs that actually expose an installed capability or guided commission.
+        """
+
+        if self.capabilities.descriptors() or self.guided_commissioning is not None:
+            return self.SYSTEM_PROMPT
+        prefix, marker, remainder = self.SYSTEM_PROMPT.partition(
+            self._CAPABILITY_GUIDANCE_START
+        )
+        if not marker:
+            raise RuntimeError("capability guidance start marker is missing")
+        _omitted, marker, suffix = remainder.partition(self._CAPABILITY_GUIDANCE_END)
+        if not marker:
+            raise RuntimeError("capability guidance end marker is missing")
+        return prefix + self._NO_CAPABILITY_GUIDANCE + marker + suffix
+
     def _initial_messages(self) -> list[dict[str, str]]:
+        capability_guidance_available = bool(self.capabilities.descriptors())
         payload = {
             "root_hypothesis": self.hypothesis,
             "campaign_instruction": self.campaign_instruction,
@@ -1863,39 +1911,60 @@ scientific account. Do not wrap JSON in a Markdown code fence."""
                     "mismatch_requires_new_prospective_evidence": True,
                 },
                 "capability_commissioning_gate": {
-                    "qualifying_kind": ClaimKind.INSTRUMENT.value,
-                    "qualifying_relation": ClaimRelation.INSTRUMENT_OF.value,
-                    "requires_machine_checked_json": True,
-                    "runner_witnesses_execution_success": True,
-                    "requires_execution_binding": True,
-                    "scientific_argv_must_be_prospectively_allowed": True,
-                    "must_precede_scientific_artifact": True,
-                    "requires_active_claim_contract_before_execution": True,
-                    "workbench_requires_claim_contract": False,
-                    "workbench_artifacts_evidence_eligible": False,
-                    "capability_preflight_harness_managed_and_cached": True,
-                    "one_interface_stage_per_parent_and_capability": True,
-                    "post_interface_stage_requires_complete_commissioning": True,
-                    "scientific_program_must_match_commissioned_source": True,
-                    "bound_program_source_sealed_before_first_execution": True,
-                    "bound_program_source_mutation_requires_new_contract": True,
-                    "scientific_contract_supports_multiple_bound_programs": True,
-                    "amended_contract_requires_fresh_versioned_evidence": True,
-                    "required_aspects_in_one_contract": sorted(
-                        aspect.value for aspect in REQUIRED_SCIENTIFIC_COMMISSIONING_ASPECTS
+                    **(
+                        {
+                            "available": True,
+                            "qualifying_kind": ClaimKind.INSTRUMENT.value,
+                            "qualifying_relation": ClaimRelation.INSTRUMENT_OF.value,
+                            "requires_machine_checked_json": True,
+                            "runner_witnesses_execution_success": True,
+                            "requires_execution_binding": True,
+                            "scientific_argv_must_be_prospectively_allowed": True,
+                            "must_precede_scientific_artifact": True,
+                            "requires_active_claim_contract_before_execution": True,
+                            "workbench_requires_claim_contract": False,
+                            "workbench_artifacts_evidence_eligible": False,
+                            "capability_preflight_harness_managed_and_cached": True,
+                            "one_interface_stage_per_parent_and_capability": True,
+                            "post_interface_stage_requires_complete_commissioning": True,
+                            "scientific_program_must_match_commissioned_source": True,
+                            "bound_program_source_sealed_before_first_execution": True,
+                            "bound_program_source_mutation_requires_new_contract": True,
+                            "scientific_contract_supports_multiple_bound_programs": True,
+                            "amended_contract_requires_fresh_versioned_evidence": True,
+                            "required_aspects_in_one_contract": sorted(
+                                aspect.value
+                                for aspect in REQUIRED_SCIENTIFIC_COMMISSIONING_ASPECTS
+                            ),
+                            "optional_aspects": [CommissioningAspect.INTERFACE.value],
+                        }
+                        if capability_guidance_available
+                        else {
+                            "available": False,
+                            "policy": "do_not_invent_unavailable_capabilities",
+                        }
+                    )
+                },
+                "hypothesis_tree_policy": {
+                    "scientific_nodes_are_active_falsification_targets": True,
+                    "auxiliary_formula_belongs_in_parent_contract": True,
+                    "independently_audited_estimator_uses_kind": ClaimKind.DIAGNOSTIC.value,
+                    "independently_audited_estimator_uses_relation": (
+                        ClaimRelation.DIAGNOSTIC_OF.value
                     ),
-                    "optional_aspects": [CommissioningAspect.INTERFACE.value],
                 },
             },
         }
+        system_prompt = self._effective_system_prompt()
         return [
-            {"role": "system", "content": self.SYSTEM_PROMPT},
+            {"role": "system", "content": system_prompt},
             {"role": "user", "content": json.dumps(payload, sort_keys=True)},
         ]
 
     def _manifest(self) -> dict[str, Any]:
+        system_prompt = self._effective_system_prompt()
         return {
-            "schema_version": "0.21.0",
+            "schema_version": "0.22.0",
             "hypothesis": self.hypothesis,
             "campaign_instruction": self.campaign_instruction,
             "config": self.config.model_dump(mode="json"),
@@ -1911,7 +1980,12 @@ scientific account. Do not wrap JSON in a Markdown code fence."""
                     else None
                 ),
             },
-            "system_prompt_sha256": hashlib.sha256(self.SYSTEM_PROMPT.encode()).hexdigest(),
+            "system_prompt_profile": (
+                "capability"
+                if self.capabilities.descriptors() or self.guided_commissioning is not None
+                else "scientific_python"
+            ),
+            "system_prompt_sha256": hashlib.sha256(system_prompt.encode()).hexdigest(),
         }
 
     def _initialize(self) -> None:
@@ -2692,6 +2766,75 @@ scientific account. Do not wrap JSON in a Markdown code fence."""
             compacted["tool_result"]["result"] = compacted_result
         return json.dumps(compacted, sort_keys=True)
 
+    @staticmethod
+    def _compact_assistant_payload(content: str) -> str:
+        """Summarize an old typed action without replaying authored source code.
+
+        The complete response remains in ``transcript.jsonl``. The model-facing
+        history keeps action identity and claim lineage while large file bodies and
+        repeated contract prose are recoverable through the durable workspace and
+        ``list_claims``.
+        """
+
+        try:
+            action = parse_mvp_action(content).model_dump(mode="json")
+        except ValueError:
+            return json.dumps(
+                {
+                    "compacted": True,
+                    "unparseable_assistant_action": True,
+                    "content_sha256": hashlib.sha256(content.encode()).hexdigest(),
+                    "content_chars": len(content),
+                },
+                sort_keys=True,
+            )
+        compacted: dict[str, Any] = {
+            "action": action.get("action"),
+            "compacted": True,
+        }
+        for key in (
+            "claim_id",
+            "parent_id",
+            "kind",
+            "relation",
+            "status",
+            "path",
+            "skill",
+            "capability",
+            "argv",
+            "stage",
+            "active_claim_id",
+            "contract_version",
+            "observation_sufficient",
+            "commissioning_claim_id",
+            "query",
+            "max_results",
+        ):
+            if key in action and action[key] is not None:
+                compacted[key] = action[key]
+        for key in ("statement", "rationale", "reason", "purpose", "observation_note"):
+            value = action.get(key)
+            if isinstance(value, str):
+                compacted[key] = value[:600]
+        note = action.get("research_note")
+        if isinstance(note, str):
+            compacted["research_note"] = note[:400]
+        authored = action.get("content")
+        if isinstance(authored, str):
+            compacted["authored_content_sha256"] = hashlib.sha256(
+                authored.encode()
+            ).hexdigest()
+            compacted["authored_content_chars"] = len(authored)
+        checks = action.get("validation_checks")
+        if isinstance(checks, list):
+            compacted["validation_check_count"] = len(checks)
+        if action.get("execution_binding") is not None:
+            compacted["has_execution_binding"] = True
+        additional = action.get("additional_execution_bindings")
+        if isinstance(additional, list):
+            compacted["additional_execution_binding_count"] = len(additional)
+        return json.dumps(compacted, sort_keys=True)
+
     def _messages_for_model(self, messages: list[dict[str, str]]) -> list[dict[str, str]]:
         """Build a prompt with full recent turns and compacted older tool results.
 
@@ -2715,7 +2858,16 @@ scientific account. Do not wrap JSON in a Markdown code fence."""
             if index >= keep_from:
                 compacted_history.append(message)
                 continue
-            if message.get("role") == "user" and '"tool_result"' in message.get("content", ""):
+            if message.get("role") == "assistant":
+                compacted_history.append(
+                    {
+                        "role": "assistant",
+                        "content": self._compact_assistant_payload(message["content"]),
+                    }
+                )
+            elif message.get("role") == "user" and '"tool_result"' in message.get(
+                "content", ""
+            ):
                 compacted_history.append(
                     {
                         "role": "user",
@@ -2723,7 +2875,6 @@ scientific account. Do not wrap JSON in a Markdown code fence."""
                     }
                 )
             else:
-                # Keep assistant actions intact so the model still sees what it did.
                 compacted_history.append(message)
         sticky_payload: dict[str, Any] = {
             "claim_ledger": self.claim_store.ledger.compact_summary(),
@@ -3007,6 +3158,7 @@ scientific account. Do not wrap JSON in a Markdown code fence."""
             return self._with_claim_ledger(
                 {
                     "search": record.model_dump(mode="json"),
+                    "search_diagnostics": record.diagnostics(),
                     "startup_attempt_satisfied": True,
                     "finding_applicable_sources_required": False,
                     "scientific_evidence_eligible": False,
@@ -3014,7 +3166,9 @@ scientific account. Do not wrap JSON in a Markdown code fence."""
                         "Use relevant sources to ground benchmark selection, expected "
                         "observables, and applicability limits. Record no applicable "
                         "reference when appropriate; do not treat search metadata as "
-                        "evidence for the active hypothesis."
+                        "evidence for the active hypothesis. A zero-hit or partially "
+                        "unavailable search is limited coverage and cannot support an "
+                        "absence-of-prior-work or novelty claim."
                     ),
                 }
             )

@@ -95,6 +95,15 @@ def test_public_search_deduplicates_papers_and_preserves_web_results() -> None:
     assert web.kind == "web"
     assert web.url == "https://docs.example.org/demo"
     assert not record.scientific_evidence_eligible
+    assert record.diagnostics() == {
+        "coverage": "sources_found",
+        "usable_source_count": 2,
+        "reachable_providers": ["crossref", "duckduckgo_html", "openalex"],
+        "failed_providers": [],
+        "zero_hit_providers": [],
+        "partial_provider_failure": False,
+        "supports_absence_or_novelty_claim": False,
+    }
 
 
 def test_total_provider_failure_is_a_recorded_nonblocking_outcome() -> None:
@@ -115,6 +124,36 @@ def test_total_provider_failure_is_a_recorded_nonblocking_outcome() -> None:
     assert record.sources == ()
     assert len(record.errors) == 3
     assert not record.scientific_evidence_eligible
+    assert record.diagnostics()["coverage"] == "providers_unavailable"
+    assert record.diagnostics()["failed_providers"] == [
+        "crossref",
+        "duckduckgo_html",
+        "openalex",
+    ]
+
+
+def test_partial_provider_failure_is_not_reported_as_complete_coverage() -> None:
+    def partial(request: httpx.Request) -> httpx.Response:
+        if request.url.host == "html.duckduckgo.com":
+            return httpx.Response(200, text="<html><body>No matches</body></html>")
+        raise httpx.ConnectError("provider offline")
+
+    record = PublicLiteratureSearchClient(
+        timeout_seconds=1,
+        transport=httpx.MockTransport(partial),
+    ).search(
+        hypothesis="A bounded claim requires honest reconnaissance coverage.",
+        query="bounded claim benchmark",
+        purpose="Test partial provider diagnostics.",
+        max_results=3,
+    )
+
+    diagnostics = record.diagnostics()
+    assert record.status is LiteratureSearchStatus.COMPLETED
+    assert diagnostics["coverage"] == "zero_hits_with_provider_failures"
+    assert diagnostics["reachable_providers"] == ["duckduckgo_html"]
+    assert diagnostics["failed_providers"] == ["crossref", "openalex"]
+    assert diagnostics["supports_absence_or_novelty_claim"] is False
 
 
 def test_search_record_cannot_be_reclassified_as_scientific_evidence() -> None:

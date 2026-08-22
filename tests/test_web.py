@@ -10,6 +10,7 @@ import httpx
 import pytest
 
 from conjecture_solver.cli import build_parser
+from conjecture_solver.mvp_launch import MVPOutputLock
 from conjecture_solver.web.application import (
     SimjectureWebApplication,
     WebApplicationError,
@@ -290,6 +291,28 @@ def test_web_projection_exposes_one_four_kind_claim_graph(tmp_path: Path) -> Non
     assert artifacts["workspace/result.json"]["claimed_by"] == ["claim_root"]
     assert artifacts["workspace/figure.svg"]["preview"] == "image"
     assert payload["controls"]["read_only_reason"] is None
+
+
+def test_direct_cli_output_lock_is_projected_as_live(tmp_path: Path) -> None:
+    root = _campaign(tmp_path / "direct-cli-run")
+    (root / "mvp_report.json").unlink()
+    application = SimjectureWebApplication(
+        initial_run=root,
+        scan_roots=(tmp_path,),
+        runs_root=tmp_path / "new-runs",
+    )
+    token = application.initial_campaign
+    assert token is not None
+
+    assert application.campaign_snapshot(token)["snapshot"]["execution_status"] == (
+        "inactive"
+    )
+    with MVPOutputLock(root):
+        assert application.campaign_snapshot(token)["snapshot"]["execution_status"] == (
+            "running"
+        )
+        card = next(item for item in application.campaigns() if item["id"] == token)
+        assert card["execution_status"] == "running"
 
 
 def test_web_assets_keep_live_detail_state_and_separate_operator_views() -> None:

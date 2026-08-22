@@ -162,9 +162,10 @@ figures, and terminal conclusion. For a non-interactive summary instead, run:
 uv run simjecture status demos/gray_scott_counterexample/record
 ```
 
-The browser is a human-readable projection. The files in the recorded run
-remain the authoritative scientific record. The optional Textual interface is
-still available with `uv sync --extra tui` and `uv run simjecture tui <run>`.
+The browser is the primary human-readable projection. The files in the recorded
+run remain the authoritative scientific record. The optional Textual interface
+is maintained for SSH and browserless operation with `uv sync --extra tui` and
+`uv run simjecture tui <run>`; new interactive UX targets the Web interface.
 
 ## Quick start
 
@@ -234,8 +235,8 @@ new hypothesis. Version 0.1.1 binds to localhost only; `--read-only` disables
 all launch and process controls. Provider credentials remain in the launching
 terminal environment and are never entered into the browser.
 
-The optional terminal dashboard is a projection of the same artifacts for SSH
-and headless machines:
+The maintenance-mode terminal dashboard is a projection of the same artifacts
+for SSH and headless machines:
 
 ```bash
 uv sync --extra tui
