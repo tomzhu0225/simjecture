@@ -270,6 +270,8 @@ def test_web_projection_exposes_one_four_kind_claim_graph(tmp_path: Path) -> Non
         == "workspace/result.json"
     )
     assert payload["snapshot"]["token_usage"]["total_tokens"] == 120
+    assert payload["snapshot"]["loop_state"]["stage"] == "complete"
+    assert payload["snapshot"]["loop_state"]["role"] == "judge"
     assert payload["snapshot"]["recent_events"][1]["research_note"] == (
         "Probe the child hypothesis numerically."
     )
@@ -298,6 +300,7 @@ def test_web_assets_keep_live_detail_state_and_separate_operator_views() -> None
 
     assert "Execution monitor" in html
     assert "Research trace" in html
+    assert "Research loop progress" in html
     assert "Commissioning stage" in html
     assert "All claim kinds" in html
     assert "Scientific only" in javascript
@@ -309,6 +312,8 @@ def test_web_assets_keep_live_detail_state_and_separate_operator_views() -> None
     assert "setPointerCapture" in javascript
     assert "simjecture-graph-layout-v2" in javascript
     assert "renderCommissioningInspector" in javascript
+    assert "renderLoopProgress" in javascript
+    assert "event.research_role ? `role ${event.research_role}`" in javascript
     assert '"marker-end": "url(#graph-arrow)"' in javascript
     assert "handleGraphWheel" in javascript
     assert "bindGraphCanvasPan" in javascript
@@ -336,6 +341,8 @@ def test_web_assets_keep_live_detail_state_and_separate_operator_views() -> None
     assert "dagre-2.0.0.min.js" in html
     assert 'data-theme="light"' in html
     assert ':root[data-theme="dark"]' in stylesheet
+    assert ".role-badge" in stylesheet
+    assert "@keyframes research-loop" in stylesheet
 
 
 def test_web_artifacts_are_contained_and_symlinks_are_rejected(tmp_path: Path) -> None:

@@ -879,6 +879,80 @@ dialog summary { color: var(--text-soft); font-size: 13px; font-weight: 650; }
 }
 
 .trace-panel { min-width: 0; }
+.loop-progress {
+  padding: 14px 16px 13px;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface-raised);
+}
+.loop-heading,
+.loop-title,
+.loop-detail { display: flex; gap: 9px; align-items: center; }
+.loop-heading { justify-content: space-between; }
+.loop-title { min-width: 0; }
+.loop-title strong { overflow: hidden; font-size: 14px; text-overflow: ellipsis; white-space: nowrap; }
+.role-badge {
+  flex: 0 0 auto;
+  padding: 3px 7px;
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--line));
+  border-radius: 99px;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-size: 10px;
+  font-weight: 760;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.loop-timing { flex: 0 0 auto; color: var(--muted); font-size: 11px; }
+.loop-stages {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 5px;
+  margin-top: 11px;
+}
+.loop-stage {
+  overflow: hidden;
+  padding: 5px 6px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 690;
+  text-align: center;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.loop-stage.active {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+.loop-track {
+  position: relative;
+  overflow: hidden;
+  height: 4px;
+  margin: 9px 0;
+  border-radius: 99px;
+  background: var(--surface-soft);
+}
+.loop-track::after {
+  position: absolute;
+  inset: 0;
+  width: 28%;
+  border-radius: inherit;
+  background: var(--accent);
+  content: "";
+}
+.loop-track.active::after { animation: research-loop 1.9s ease-in-out infinite; }
+.loop-track.completed::after { width: 100%; background: var(--green); }
+.loop-track.stopped::after { width: 100%; background: var(--line-strong); }
+@keyframes research-loop {
+  0% { transform: translateX(-105%); }
+  65%, 100% { transform: translateX(365%); }
+}
+.loop-detail { justify-content: space-between; color: var(--muted-bright); font-size: 11px; }
+.loop-detail span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.loop-detail code { flex: 0 0 auto; color: var(--text-soft); font-size: 10px; }
 .token-breakdown {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));

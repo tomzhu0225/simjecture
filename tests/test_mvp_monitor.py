@@ -19,6 +19,7 @@ from conjecture_solver.mvp_agent import (
     MVPReadSkillAction,
     MVPRegisterClaimAction,
     MVPRegisterEvidenceContractAction,
+    MVPRequestAdjudicationAction,
     MVPRunCapabilityAction,
     MVPRunPythonAction,
     MVPSearchLiteratureAction,
@@ -331,6 +332,20 @@ def test_humanize_every_typed_action() -> None:
             "Closing claim_child as supported",
         ),
         (
+            parse_mvp_action(
+                _action(
+                    action="request_adjudication",
+                    research_note="Ask the independent judge.",
+                    claim_id="claim_child",
+                    contract_version=1,
+                    case_for_sufficiency=(
+                        "The complete prospective ensemble found no counterexample."
+                    ),
+                )
+            ),
+            "Requesting independent adjudication for claim_child",
+        ),
+        (
             parse_mvp_action(_action(action="list_claims", research_note="Review the ledger.")),
             "Listing claims",
         ),
@@ -355,8 +370,9 @@ def test_humanize_every_typed_action() -> None:
     assert isinstance(cases[10][0], MVPRegisterClaimAction)
     assert isinstance(cases[11][0], MVPRegisterEvidenceContractAction)
     assert isinstance(cases[13][0], MVPCloseClaimAction)
-    assert isinstance(cases[14][0], MVPListClaimsAction)
-    assert isinstance(cases[15][0], MVPFinishAction)
+    assert isinstance(cases[14][0], MVPRequestAdjudicationAction)
+    assert isinstance(cases[15][0], MVPListClaimsAction)
+    assert isinstance(cases[16][0], MVPFinishAction)
     assert isinstance(cases[2][0], MVPReadFileAction)
     assert isinstance(cases[3][0], MVPListFilesAction)
     assert cases[8][0].stage.value == "workbench"
@@ -375,6 +391,8 @@ def test_manifest_only_run_is_initialized_not_running(tmp_path: Path) -> None:
     assert snapshot.phase_label == "initialized"
     assert snapshot.identity.hypothesis == hypothesis
     assert snapshot.current_action is None
+    assert snapshot.loop_state.stage.value == "falsification"
+    assert snapshot.loop_state.role.value == "falsifier"
     assert snapshot.report is None
     assert "running" not in snapshot.phase_label
     text = format_human_status(snapshot)
@@ -682,7 +700,7 @@ def test_transcript_cursor_tracks_inode_and_offset(tmp_path: Path) -> None:
     incomplete, held, _ = read_new_transcript_records(path, cursor)
     assert incomplete == []
     assert held.offset == cursor.offset
-    path.write_bytes(path.read_bytes() + b", \"iteration\": 2}\n")
+    path.write_bytes(path.read_bytes() + b', "iteration": 2}\n')
     finished, advanced, _ = read_new_transcript_records(path, held)
     assert len(finished) == 1
     assert finished[0]["event"] == "again"

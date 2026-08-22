@@ -20,11 +20,32 @@ successful process exit alone does not.
 ## Claim closure
 
 Supported and falsified dispositions require sufficient, validation-passing,
-provenance-tracked evidence from the active contract. Unresolved and
-instrument-limited dispositions remain available when a campaign cannot decide.
+provenance-tracked evidence from one selected contract version. When a contract
+is amended, earlier observations remain visible but cannot decide the new
+version; fresh evidence must be generated after that version was registered.
+Unresolved and instrument-limited dispositions remain available when a campaign
+cannot decide.
 
 The root hypothesis is immutable. A narrower operational child can close under
 its own evidence contract without silently changing or overclosing the root.
+
+## Counterexample, repair, and adjudication
+
+A qualified counterexample closes the exact scientific claim it violates. The
+Scientist role then registers a `repairs` child that cites the motivating
+counterexample, explains how the replacement accommodates it, states the
+minimal semantic change, and identifies a future falsification condition. The
+old counterexample is motivation, not evidence for the repair. The Falsifier
+role must register a fresh contract and attack the replacement again.
+
+When a meaningful search finds no counterexample, the acting model cannot
+declare its own evidence sufficient. A separate Judge context reviews the
+prospective contract, provenance, validation, uncertainty, coverage, and
+bounded artifact excerpts. An insufficient judgment returns concrete gaps and
+the falsification loop continues while wall time remains. A sufficient judgment
+still passes through the deterministic evidence gate before the claim closes as
+supported. Wall-time exhaustion remains a bounded unresolved result, not
+support.
 
 ## Auditability is not infallibility
 

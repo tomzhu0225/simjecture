@@ -73,6 +73,7 @@ def test_runner_pauses_at_action_boundary_without_a_report(tmp_path: Path) -> No
         max_workspace_bytes=16 * 1024 * 1024,
         max_file_bytes=2 * 1024 * 1024,
         max_memory_bytes=1024 * 1024 * 1024,
+        enforce_repair_loop=False,
     )
     first = PauseAfterFirstClient(
         output,
@@ -143,6 +144,7 @@ def test_resumed_runner_enforces_the_accumulated_wall_budget(tmp_path: Path) -> 
         max_workspace_bytes=8 * 1024 * 1024,
         max_file_bytes=1024 * 1024,
         max_memory_bytes=256 * 1024 * 1024,
+        enforce_repair_loop=False,
     )
     runner = MVPAgentRunner(
         hypothesis="A resume cannot replenish an exhausted wall-time envelope.",

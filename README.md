@@ -74,6 +74,13 @@ only *motivates* a repaired daughter; that daughter needs new evidence of its
 own. Falsified branches remain useful recorded knowledge rather than being
 rewritten into a success story.
 
+The running loop makes its current role explicit: a **Falsifier** commissions
+and attacks the active claim, a **Scientist** proposes the minimal repair after
+a counterexample, and an independent **Judge** reviews a bounded
+no-counterexample evidence package. If the Judge finds a gap, testing resumes;
+if wall time ends first, the result remains unresolved rather than being
+promoted to support.
+
 ## Counterexamples are first-class outputs
 
 The default scientific posture is destructive: ask what cheapest valid

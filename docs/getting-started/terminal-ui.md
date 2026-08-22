@@ -51,7 +51,8 @@ descriptors, and reviews the contract before launch.
 The run dashboard presents three related views of the durable ledger:
 
 - **Hypothesis tree:** only scientific claims, with the immutable root followed
-  by `refines`, `alternate`, and `succeeds` daughters in parent-child order.
+  by `repairs`, `refines`, `alternate`, and `succeeds` children in parent-child
+  order.
 - **Validation claims:** instrument, diagnostic, and control claims belonging
   to the selected hypothesis, including non-scientific successor chains.
 - **Complete audit ledger:** every typed claim in durable ledger order, opened

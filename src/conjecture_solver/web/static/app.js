@@ -65,6 +65,7 @@ function bindElements() {
     "claim-graph",
     "inspector-kind",
     "launch-button",
+    "loop-progress",
     "metric-claims",
     "metric-claims-detail",
     "metric-elapsed",
@@ -285,6 +286,7 @@ function renderSnapshot(force) {
   if (instruction) renderMarkdown(ui["campaign-instruction"], `**Guidance:** ${instruction}`);
 
   renderCurrentAction(snapshot);
+  renderLoopProgress(snapshot);
   renderMetrics(data);
   renderControls(data.controls);
 
@@ -342,6 +344,65 @@ function renderSnapshot(force) {
     state.conclusionSignature = conclusionSignature;
     renderConclusion();
   }
+}
+
+function renderLoopProgress(snapshot) {
+  const container = ui["loop-progress"];
+  clear(container);
+  const loop = snapshot.loop_state || {
+    stage: "falsification",
+    role: "falsifier",
+    cycle: 1,
+    status: "active",
+    active_claim_id: "claim_root",
+    detail: "Searching for a counterexample.",
+  };
+  container.dataset.stage = loop.stage;
+  container.dataset.status = loop.status;
+
+  const heading = element("div", "loop-heading");
+  const title = element("div", "loop-title");
+  title.append(
+    element("span", "role-badge", capitalize(loop.role)),
+    element("strong", null, `${capitalize(loop.stage)} · cycle ${loop.cycle || 1}`),
+  );
+  const remainingSeconds = snapshot.configured_wall_seconds == null
+    ? null
+    : Math.max(0, snapshot.configured_wall_seconds - (snapshot.elapsed_wall_seconds || 0));
+  const timing = element(
+    "span",
+    "loop-timing",
+    remainingSeconds == null ? "No wall-time estimate" : `${formatDuration(remainingSeconds)} remaining`,
+  );
+  heading.append(title, timing);
+  container.append(heading);
+
+  const stageLabels = [
+    ["commissioning", "Commission"],
+    ["falsification", "Falsify"],
+    ["repair", "Repair"],
+    ["adjudication", "Judge"],
+  ];
+  const stages = element("div", "loop-stages");
+  for (const [stage, label] of stageLabels) {
+    const item = element("span", `loop-stage${loop.stage === stage ? " active" : ""}`, label);
+    item.dataset.stage = stage;
+    stages.append(item);
+  }
+  container.append(stages);
+
+  const track = element("div", `loop-track ${loop.status || "active"}`);
+  track.setAttribute("role", "progressbar");
+  track.setAttribute("aria-label", `${loop.role} working in ${loop.stage}`);
+  if (loop.status === "active") track.setAttribute("aria-busy", "true");
+  container.append(track);
+
+  const detail = element("div", "loop-detail");
+  detail.append(
+    element("span", null, loop.detail || "Research loop active."),
+    element("code", null, loop.active_claim_id || "no active claim"),
+  );
+  container.append(detail);
 }
 
 function renderCurrentAction(snapshot) {
@@ -1455,6 +1516,7 @@ function renderResearchTrace() {
     const metadata = [
       event.iteration ? `iteration ${event.iteration}` : null,
       event.action_name || event.kind,
+      event.research_role ? `role ${event.research_role}` : null,
       event.model,
       event.route,
       event.outcome && event.kind !== "assistant" ? event.outcome : null,
@@ -1765,7 +1827,7 @@ function inspectorSection(title, copy = null) {
 }
 
 function eventSymbol(kind) {
-  return { assistant: "A", tool: "✓", tool_heartbeat: "·", control: "!" }[kind] || "◇";
+  return { assistant: "A", adjudication: "J", tool: "✓", tool_heartbeat: "·", control: "!" }[kind] || "◇";
 }
 
 function wrapText(value, width, maxLines) {

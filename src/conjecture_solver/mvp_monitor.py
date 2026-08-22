@@ -29,11 +29,15 @@ from .mvp_agent import (
     MVPLinkClaimEvidenceAction,
     MVPListFilesAction,
     MVPListSkillsAction,
+    MVPLoopStage,
+    MVPLoopState,
     MVPMaterializeSkillResourceAction,
     MVPReadFileAction,
     MVPReadSkillAction,
     MVPRegisterClaimAction,
     MVPRegisterEvidenceContractAction,
+    MVPRequestAdjudicationAction,
+    MVPResearchRole,
     MVPRunCapabilityAction,
     MVPRunPythonAction,
     MVPSearchLiteratureAction,
@@ -142,6 +146,7 @@ class HumanizedEvent(StrictModel):
     research_note: str | None = None
     model: str | None = None
     route: str | None = None
+    research_role: str | None = None
     outcome: str | None = None
     capability: str | None = None
     stage: str | None = None
@@ -218,6 +223,8 @@ class ArtifactPaths(StrictModel):
     report: str | None = None
     claim_ledger: str | None = None
     claim_summary: str | None = None
+    loop_state: str | None = None
+    adjudications: str | None = None
     artifact_provenance: str | None = None
     workspace: str | None = None
     controller_log: str | None = None
@@ -251,6 +258,7 @@ class MVPRunSnapshot(StrictModel):
     open_claim_ids: tuple[str, ...] = ()
     closed_claim_ids: tuple[str, ...] = ()
     current_action: CurrentAction | None = None
+    loop_state: MVPLoopState
     latest_heartbeat: HeartbeatObservation | None = None
     recent_events: tuple[HumanizedEvent, ...] = ()
     execution_total: int = Field(default=0, ge=0)
@@ -394,15 +402,10 @@ def humanize_action(action: MVPAgentAction) -> str:
             return f"Reading skill {action.skill} ({action.path})"
         return f"Reading skill {action.skill}"
     if isinstance(action, MVPMaterializeSkillResourceAction):
-        return (
-            f"Materializing {action.skill}:{action.source_path} → {action.destination_path}"
-        )
+        return f"Materializing {action.skill}:{action.source_path} → {action.destination_path}"
     if isinstance(action, MVPRunCapabilityAction):
         claim = f", claim={action.active_claim_id}" if action.active_claim_id else ""
-        return (
-            f"Running capability {action.capability} "
-            f"(stage={action.stage.value}{claim})"
-        )
+        return f"Running capability {action.capability} (stage={action.stage.value}{claim})"
     if isinstance(action, MVPAuthorAndRunCapabilityAction):
         claim = f", claim={action.active_claim_id}" if action.active_claim_id else ""
         return (
@@ -417,6 +420,8 @@ def humanize_action(action: MVPAgentAction) -> str:
         return f"Linking evidence {action.path} to {action.claim_id}"
     if isinstance(action, MVPCloseClaimAction):
         return f"Closing {action.claim_id} as {action.status.value}"
+    if isinstance(action, MVPRequestAdjudicationAction):
+        return f"Requesting independent adjudication for {action.claim_id}"
     if isinstance(action, MVPFinishAction):
         return "Finishing the campaign"
     if action.action.value == "list_claims":
@@ -453,6 +458,7 @@ def action_details(action: MVPAgentAction) -> dict[str, Any]:
             MVPRegisterEvidenceContractAction,
             MVPLinkClaimEvidenceAction,
             MVPCloseClaimAction,
+            MVPRequestAdjudicationAction,
         ),
     ):
         details["active_claim_id"] = action.claim_id
@@ -837,6 +843,7 @@ class MVPRunMonitor:
         manifest = self._read_sidecar("mvp_manifest.json")
         report = self._read_sidecar("mvp_report.json")
         ledger = self._read_sidecar("hypothesis_ledger.json")
+        loop_payload = self._read_sidecar("loop_state.json")
         launch = self._read_sidecar(f"{OPERATOR_INPUT_DIR}/launch.json")
         if (self.root / "mvp_manifest.json").exists() and manifest is None:
             warnings.append("mvp_manifest.json exists but could not be parsed")
@@ -848,6 +855,14 @@ class MVPRunMonitor:
         phase = self._phase(report)
         current = None if report is not None else self._current_action()
         claims = self._claims(ledger, report, current)
+        loop_state = self._loop_state(
+            loop_payload,
+            phase=phase,
+            claims=claims,
+            current=current,
+            iterations=len(self._state.assistant),
+            observed_at=observed_at,
+        )
         heartbeat = self._heartbeat(observed_at)
         terminal = self._terminal_report(report)
         configured = None
@@ -873,11 +888,7 @@ class MVPRunMonitor:
                 closed_ids = terminal.closed_claim_ids
         warnings.extend(self._state.parse_warnings[-8:])
         control = read_control(self.root)
-        pending = (
-            control.command.value
-            if control.command is not ControlCommand.NONE
-            else None
-        )
+        pending = control.command.value if control.command is not ControlCommand.NONE else None
         return MVPRunSnapshot(
             phase=phase,
             phase_label=phase_label(phase),
@@ -891,6 +902,7 @@ class MVPRunMonitor:
             open_claim_ids=open_ids,
             closed_claim_ids=closed_ids,
             current_action=current,
+            loop_state=loop_state,
             latest_heartbeat=heartbeat,
             recent_events=tuple(self._state.events[-DEFAULT_RECENT_EVENT_LIMIT:]),
             execution_total=sum(
@@ -907,6 +919,95 @@ class MVPRunMonitor:
             pending_control=pending,
             warnings=tuple(dict.fromkeys(warnings)),
             transcript_cursor=self._cursor,
+        )
+
+    @staticmethod
+    def _loop_state(
+        payload: dict[str, Any] | None,
+        *,
+        phase: RunPhase,
+        claims: tuple[ClaimSummary, ...],
+        current: CurrentAction | None,
+        iterations: int,
+        observed_at: datetime,
+    ) -> MVPLoopState:
+        if payload is not None:
+            try:
+                return MVPLoopState.model_validate(payload)
+            except ValueError:
+                pass
+        cycle = 1 + sum(claim.relation == "repairs" for claim in claims)
+        active_claim_id = current.active_claim_id if current is not None else None
+        if phase in {
+            RunPhase.COMPLETED,
+            RunPhase.CANCELLED,
+            RunPhase.PROVIDER_FAILED,
+            RunPhase.BUDGET_EXHAUSTED,
+        }:
+            completed = phase is RunPhase.COMPLETED
+            return MVPLoopState(
+                stage=(MVPLoopStage.COMPLETE if completed else MVPLoopStage.STOPPED),
+                role=MVPResearchRole.JUDGE,
+                cycle=cycle,
+                active_claim_id=active_claim_id,
+                status="completed" if completed else "stopped",
+                iteration=iterations,
+                detail=(
+                    "Campaign completed with a bounded conclusion."
+                    if completed
+                    else f"Campaign stopped: {phase.value.replace('_', ' ')}."
+                ),
+                updated_at=observed_at,
+            )
+        if current is not None and current.action_name == "request_adjudication":
+            return MVPLoopState(
+                stage=MVPLoopStage.ADJUDICATION,
+                role=MVPResearchRole.JUDGE,
+                cycle=cycle,
+                active_claim_id=active_claim_id,
+                iteration=iterations,
+                detail="Independent judge is reviewing the evidence package.",
+                updated_at=observed_at,
+            )
+        if active_claim_id is not None:
+            active = next((claim for claim in claims if claim.id == active_claim_id), None)
+            if active is not None and active.kind == "instrument":
+                return MVPLoopState(
+                    stage=MVPLoopStage.COMMISSIONING,
+                    role=MVPResearchRole.FALSIFIER,
+                    cycle=cycle,
+                    active_claim_id=active_claim_id,
+                    iteration=iterations,
+                    detail="Commissioning the experimental pipeline.",
+                    updated_at=observed_at,
+                )
+        repair_parents = {claim.parent_id for claim in claims if claim.relation == "repairs"}
+        falsified_frontier = [
+            claim
+            for claim in claims
+            if claim.kind == "scientific"
+            and claim.status == "falsified"
+            and claim.id not in repair_parents
+        ]
+        if falsified_frontier:
+            target = falsified_frontier[-1]
+            return MVPLoopState(
+                stage=MVPLoopStage.REPAIR,
+                role=MVPResearchRole.SCIENTIST,
+                cycle=cycle,
+                active_claim_id=target.id,
+                iteration=iterations,
+                detail="Forming a minimal claim that accommodates the counterexample.",
+                updated_at=observed_at,
+            )
+        return MVPLoopState(
+            stage=MVPLoopStage.FALSIFICATION,
+            role=MVPResearchRole.FALSIFIER,
+            cycle=cycle,
+            active_claim_id=active_claim_id or "claim_root",
+            iteration=iterations,
+            detail="Searching for a counterexample under a prospective contract.",
+            updated_at=observed_at,
         )
 
     def _ingest_transcript(self, *, observed_at: datetime) -> list[str]:
@@ -960,17 +1061,39 @@ class MVPRunMonitor:
                     summary=summary,
                     action_name=action_name,
                     research_note=action.research_note if action is not None else None,
-                    model=record.get("model")
-                    if isinstance(record.get("model"), str)
-                    else None,
-                    route=record.get("route")
-                    if isinstance(record.get("route"), str)
-                    else None,
+                    model=record.get("model") if isinstance(record.get("model"), str) else None,
+                    route=record.get("route") if isinstance(record.get("route"), str) else None,
+                    research_role=(
+                        record.get("research_role")
+                        if isinstance(record.get("research_role"), str)
+                        else None
+                    ),
                     outcome="pending",
                     capability=details.get("capability"),
                     stage=details.get("stage"),
                     active_claim_id=details.get("active_claim_id"),
                     argv=tuple(str(item) for item in details.get("argv") or ()),
+                )
+            )
+            return
+        if kind == "adjudication":
+            model = record.get("model") if isinstance(record.get("model"), str) else None
+            if model is not None:
+                self._state.last_model = model
+            self._accumulate_usage(record)
+            decision = str(record.get("decision") or "recorded")
+            claim_id = str(record.get("claim_id") or "unknown claim")
+            self._push_event(
+                HumanizedEvent(
+                    kind="adjudication",
+                    iteration=iteration,
+                    summary=(f"Independent judge found the evidence {decision} for {claim_id}"),
+                    action_name="request_adjudication",
+                    model=model,
+                    route=(record.get("route") if isinstance(record.get("route"), str) else None),
+                    research_role=MVPResearchRole.JUDGE.value,
+                    outcome=decision,
+                    active_claim_id=(claim_id if claim_id.startswith("claim_") else None),
                 )
             )
             return
@@ -1005,6 +1128,11 @@ class MVPRunMonitor:
                     iteration=iteration,
                     summary=summary,
                     action_name=action.action.value if action is not None else None,
+                    research_role=(
+                        self._state.assistant.get(iteration, {}).get("research_role")
+                        if iteration is not None
+                        else None
+                    ),
                     outcome=outcome,
                     capability=details.get("capability"),
                     stage=details.get("stage"),
@@ -1486,6 +1614,8 @@ class MVPRunMonitor:
             report=_existing_path(self.root / "mvp_report.json"),
             claim_ledger=_existing_path(self.root / "hypothesis_ledger.json"),
             claim_summary=_existing_path(self.root / "claim_summary.md"),
+            loop_state=_existing_path(self.root / "loop_state.json"),
+            adjudications=_existing_path(self.root / "adjudications.json"),
             artifact_provenance=_existing_path(self.root / "artifact_provenance.json"),
             workspace=_existing_path(self.root / "workspace"),
             controller_log=_existing_path(self.root / "controller.log"),
@@ -1526,6 +1656,12 @@ def format_human_status(snapshot: MVPRunSnapshot) -> str:
     )
     lines.append(f"iterations: {snapshot.iterations}")
     lines.append(snapshot.token_usage.label)
+    loop = snapshot.loop_state
+    lines.append(
+        "loop: "
+        f"cycle {loop.cycle} · {loop.stage.value} · role {loop.role.value}"
+        + (f" · {loop.active_claim_id}" if loop.active_claim_id else "")
+    )
     if snapshot.pending_control:
         lines.append(f"pending control: {snapshot.pending_control} at next action boundary")
     lines.append("")
@@ -1546,8 +1682,7 @@ def format_human_status(snapshot: MVPRunSnapshot) -> str:
         marker = claim_status_marker(claim.status)
         active = "   current" if claim.active else ""
         lines.append(
-            f"  {marker} {claim.id:<28} {claim.status:<18} "
-            f"evidence {claim.evidence_count}{active}"
+            f"  {marker} {claim.id:<28} {claim.status:<18} evidence {claim.evidence_count}{active}"
         )
     lines.append("")
     lines.append("Current action")
@@ -1648,6 +1783,9 @@ def watch_run(
                 snapshot.latest_heartbeat.age_seconds if snapshot.latest_heartbeat else None,
                 len(snapshot.claims),
                 snapshot.report.status if snapshot.report else None,
+                snapshot.loop_state.stage,
+                snapshot.loop_state.role,
+                snapshot.loop_state.cycle,
             )
             if jsonl:
                 stream.write(snapshot.model_dump_json() + "\n")

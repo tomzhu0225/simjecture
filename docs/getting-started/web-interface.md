@@ -24,8 +24,8 @@ The interface has five connected projections:
 
 - **Claim graph:** one view of the durable ledger, with all four claim kinds as
   first-class nodes: `scientific`, `instrument`, `diagnostic`, and `control`.
-  Claim records and inspectors retain their relations, including `refines`,
-  `alternate`, `instrument_of`, `diagnostic_of`, and `control_for`.
+  Claim records and inspectors retain their relations, including `repairs`,
+  `refines`, `alternate`, `instrument_of`, `diagnostic_of`, and `control_for`.
   Scientific-only mode is a visual filter over this graph, not a second
   hypothesis data structure.
   A derived commissioning-stage node exposes the workflow dependency hidden by
@@ -45,7 +45,11 @@ The interface has five connected projections:
 - **Research trace:** typed model decisions, the model-authored `research_note`,
   tool outcomes, retries, routes, and input/output/reasoning/cache token counts.
   This is an auditable laboratory trace, not a representation of a provider's
-  private hidden chain-of-thought.
+  private hidden chain-of-thought. A durable loop strip above the trace names
+  the current stage (`commissioning`, `falsification`, `repair`, or
+  `adjudication`), active role (Falsifier, Scientist, or Judge), repair cycle,
+  active claim, and remaining wall time. Its moving bar is intentionally
+  indeterminate: an open scientific search has no honest completion percentage.
 - **Artifacts and conclusion:** contained workspace results, generated figures,
   audit records, and the terminal answer when one exists.
 
