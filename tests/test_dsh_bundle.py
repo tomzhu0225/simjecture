@@ -88,6 +88,10 @@ def test_dsh_profile_declares_explicit_boundary_and_disables_bypasses() -> None:
     assert "simjecture_adjudicate" in patch
     assert "mcp__simjecture__finalize_campaign" in patch
     assert "id: compaction-basic" in patch
+    assert "provider: deepseek-official" in patch
+    assert "model: deepseek-v4-flash" in patch
+    assert "thresholdRatio: 0.1" in patch
+    assert "retainRatio: 0.03" in patch
 
 
 def test_dsh_runner_uses_stable_resume_and_projects_no_reasoning_chunks() -> None:

@@ -57,6 +57,11 @@ policy. The only remaining scientific side effects are typed MCP actions checked
 by CampaignKernel and executed in its sandbox. Provider/model choice is still a
 DSH setting and is not hard-coded by this bundle.
 
+One route-specific operational policy is included: because
+`deepseek-official/deepseek-v4-flash` advertises a one-million-token window, its
+tool-heavy campaign history compacts at 10% pressure with a 3% retained tail.
+All other provider/model routes retain DSH's stock compaction policy.
+
 Inspect the resolved profile before a campaign:
 
 ```bash

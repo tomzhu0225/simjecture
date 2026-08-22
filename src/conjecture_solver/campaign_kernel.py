@@ -47,6 +47,18 @@ class CampaignBudgetExceededError(RuntimeError):
     """The durable campaign action or wall-clock budget is exhausted."""
 
 
+def _failed_operation_replay_message(operation_id: str, error: object) -> str:
+    """Explain immutable failed receipts without inviting an unsafe replay."""
+
+    detail = str(error).strip() or "the earlier action failed"
+    return (
+        f"operation_id {operation_id!r} is a durable failed receipt and cannot be "
+        f"rerun: {detail}. Reusing this operation_id only replays that failure; "
+        "after correcting the action or changing campaign preconditions, submit "
+        "the action with a new operation_id."
+    )
+
+
 ACTION_JOURNAL_FILE = "action_journal.json"
 BUDGET_FILE = "kernel_budget.json"
 RUNTIME_SCHEMA_VERSION = "0.1.0"
@@ -1016,7 +1028,10 @@ class CampaignKernel:
                     return dict(existing["result"])
                 if existing_status == "failed":
                     raise CampaignOperationFailedError(
-                        str(existing.get("error") or f"operation {operation_id!r} failed")
+                        _failed_operation_replay_message(
+                            operation_id,
+                            existing.get("error") or "the earlier action failed",
+                        )
                     )
                 raise CampaignOperationInProgressError(
                     f"operation {operation_id!r} has no durable replay result"
@@ -1135,7 +1150,10 @@ class CampaignKernel:
         if status not in {"submitted", "queued"}:
             if status == "failed":
                 raise CampaignOperationFailedError(
-                    str(record.get("error") or f"operation {operation_id!r} failed")
+                    _failed_operation_replay_message(
+                        operation_id,
+                        record.get("error") or "the earlier action failed",
+                    )
                 )
             raise CampaignOperationInProgressError(
                 f"operation {operation_id!r} cannot start from {status or 'unknown'}"
@@ -1374,9 +1392,9 @@ class CampaignKernel:
                     }
                 if existing.get("status") == "failed":
                     raise CampaignOperationFailedError(
-                        str(
-                            existing.get("error")
-                            or f"adjudication operation {operation_id!r} failed"
+                        _failed_operation_replay_message(
+                            operation_id,
+                            existing.get("error") or "the earlier adjudication failed",
                         )
                     )
                 recovered = self._recover_recorded_adjudication(operation_id)
@@ -1450,9 +1468,9 @@ class CampaignKernel:
                     return dict(existing["result"])
                 if existing.get("status") == "failed":
                     raise CampaignOperationFailedError(
-                        str(
-                            existing.get("error")
-                            or f"adjudication operation {operation_id!r} failed"
+                        _failed_operation_replay_message(
+                            operation_id,
+                            existing.get("error") or "the earlier adjudication failed",
                         )
                     )
                 recovered = self._recover_recorded_adjudication(operation_id)
@@ -1683,9 +1701,9 @@ class CampaignKernel:
                     return dict(existing["result"])
                 if existing.get("status") == "failed":
                     raise CampaignOperationFailedError(
-                        str(
-                            existing.get("error")
-                            or f"finalization operation {operation_id!r} failed"
+                        _failed_operation_replay_message(
+                            operation_id,
+                            existing.get("error") or "the earlier finalization failed",
                         )
                     )
                 report = self._existing_terminal_report(final_answer=final_answer)
@@ -1793,9 +1811,9 @@ class CampaignKernel:
                     return dict(existing["result"])
                 if existing.get("status") == "failed":
                     raise CampaignOperationFailedError(
-                        str(
-                            existing.get("error")
-                            or f"cancellation operation {operation_id!r} failed"
+                        _failed_operation_replay_message(
+                            operation_id,
+                            existing.get("error") or "the earlier cancellation failed",
                         )
                     )
                 raise CampaignOperationInProgressError(

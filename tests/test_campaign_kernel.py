@@ -223,8 +223,10 @@ def test_failed_operation_replay_never_executes_again(tmp_path: Path) -> None:
     }
     with pytest.raises(RuntimeError, match="durable failure"):
         kernel.execute_operation("failed-operation", action)
-    with pytest.raises(CampaignOperationFailedError, match="durable failure"):
+    with pytest.raises(CampaignOperationFailedError, match="durable failure") as replay:
         kernel.execute_operation("failed-operation", action)
+    assert "new operation_id" in str(replay.value)
+    assert "cannot be rerun" in str(replay.value)
     assert calls == 1
 
 

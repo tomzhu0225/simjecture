@@ -91,6 +91,13 @@ Confirm that the native MCP client is named `simjecture`, starts
 generic tool rows are disabled. A startup or handshake failure should stop the
 scientific profile rather than silently fall back to a bypass tool.
 
+The tested `deepseek-official/deepseek-v4-flash` route advertises a one-million-
+token context window. The Simjecture profile therefore compacts that exact
+route at 10% pressure and retains a 3% verbatim tail; DSH's 80%/16% defaults
+remain in force for other routes. This earlier threshold prevents a long,
+tool-heavy scientific turn from repeatedly replaying hundreds of thousands of
+tokens before compaction becomes eligible.
+
 The bundle intentionally does not select a scientific reasoning model. Inspect
 the resolved `agent-default-model` row and configure the desired provider/model
 through DSH's profile settings or a later local patch.

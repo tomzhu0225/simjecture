@@ -11,8 +11,10 @@ from __future__ import annotations
 import json
 import os
 import shutil
+import signal
 import subprocess
 import sys
+from contextlib import contextmanager
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -50,6 +52,37 @@ RESUME_TASK = (
 
 class DshEngineError(RuntimeError):
     """The configured DSH runtime cannot safely start this campaign."""
+
+
+class _TerminationRequested(BaseException):
+    """Turn a process SIGTERM into a recoverable campaign boundary."""
+
+    def __init__(self, signum: int) -> None:
+        super().__init__(signum)
+        self.signum = signum
+
+
+@contextmanager
+def _finalizable_sigterm() -> Any:
+    """Raise on SIGTERM when installed from a main-thread CLI invocation."""
+
+    installed = False
+    previous: Any = None
+
+    def terminate(signum: int, _frame: Any) -> None:
+        raise _TerminationRequested(signum)
+
+    try:
+        previous = signal.getsignal(signal.SIGTERM)
+        signal.signal(signal.SIGTERM, terminate)
+        installed = True
+    except (AttributeError, OSError, ValueError):
+        pass
+    try:
+        yield
+    finally:
+        if installed:
+            signal.signal(signal.SIGTERM, previous)
 
 
 def run_dsh_campaign(
@@ -134,13 +167,14 @@ def run_dsh_campaign(
         return 124
 
     try:
-        completed = subprocess.run(
-            argv,
-            cwd=root,
-            env=environment,
-            check=False,
-            timeout=remaining_wall_seconds,
-        )
+        with _finalizable_sigterm():
+            completed = subprocess.run(
+                argv,
+                cwd=root,
+                env=environment,
+                check=False,
+                timeout=remaining_wall_seconds,
+            )
     except subprocess.TimeoutExpired:
         _write_state(
             state_file,
@@ -154,6 +188,20 @@ def run_dsh_campaign(
         )
         finalize_clock(root)
         return 124
+    except _TerminationRequested as termination:
+        signal_name = signal.Signals(termination.signum).name
+        _write_state(
+            state_file,
+            {
+                "status": "cancelled",
+                "engine": "dsh",
+                "session_id": session_id,
+                "reason": f"received {signal_name} during DSH execution",
+                "updated_at": _utc_now(),
+            },
+        )
+        finalize_clock(root)
+        return 128 + termination.signum
     except KeyboardInterrupt:
         _write_state(
             state_file,

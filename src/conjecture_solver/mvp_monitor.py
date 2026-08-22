@@ -857,6 +857,7 @@ class MVPRunMonitor:
         ledger = self._read_sidecar("hypothesis_ledger.json")
         loop_payload = self._read_sidecar("loop_state.json")
         launch = self._read_sidecar(f"{OPERATOR_INPUT_DIR}/launch.json")
+        dsh_state = self._read_sidecar(f"{OPERATOR_INPUT_DIR}/dsh_state.json")
         if (self.root / "mvp_manifest.json").exists() and manifest is None:
             warnings.append("mvp_manifest.json exists but could not be parsed")
         if (self.root / "mvp_report.json").exists() and report is None:
@@ -864,7 +865,7 @@ class MVPRunMonitor:
         if (self.root / "hypothesis_ledger.json").exists() and ledger is None:
             warnings.append("hypothesis_ledger.json exists but could not be parsed")
         identity = self._identity(manifest, report, ledger, launch)
-        phase = self._phase(report)
+        phase = self._phase(report, dsh_state=dsh_state)
         current = None if report is not None else self._current_action()
         claims = self._claims(ledger, report, current)
         model_iterations = len(self._state.assistant) or self._dsh_usage.usage_turns
@@ -944,11 +945,6 @@ class MVPRunMonitor:
         iterations: int,
         observed_at: datetime,
     ) -> MVPLoopState:
-        if payload is not None:
-            try:
-                return MVPLoopState.model_validate(payload)
-            except ValueError:
-                pass
         cycle = 1 + sum(claim.relation == "repairs" for claim in claims)
         active_claim_id = current.active_claim_id if current is not None else None
         if phase in {
@@ -958,6 +954,14 @@ class MVPRunMonitor:
             RunPhase.BUDGET_EXHAUSTED,
         }:
             completed = phase is RunPhase.COMPLETED
+            if active_claim_id is None:
+                open_scientific = [
+                    claim
+                    for claim in claims
+                    if claim.kind == "scientific" and claim.status == "open"
+                ]
+                if open_scientific:
+                    active_claim_id = open_scientific[-1].id
             return MVPLoopState(
                 stage=(MVPLoopStage.COMPLETE if completed else MVPLoopStage.STOPPED),
                 role=MVPResearchRole.JUDGE,
@@ -972,6 +976,11 @@ class MVPRunMonitor:
                 ),
                 updated_at=observed_at,
             )
+        if payload is not None:
+            try:
+                return MVPLoopState.model_validate(payload)
+            except ValueError:
+                pass
         if current is not None and current.action_name == "request_adjudication":
             return MVPLoopState(
                 stage=MVPLoopStage.ADJUDICATION,
@@ -1011,6 +1020,22 @@ class MVPRunMonitor:
                 active_claim_id=target.id,
                 iteration=iterations,
                 detail="Forming a minimal claim that accommodates the counterexample.",
+                updated_at=observed_at,
+            )
+        open_scientific = [
+            claim
+            for claim in claims
+            if claim.kind == "scientific" and claim.status == "open"
+        ]
+        if open_scientific:
+            target = open_scientific[-1]
+            return MVPLoopState(
+                stage=MVPLoopStage.FALSIFICATION,
+                role=MVPResearchRole.FALSIFIER,
+                cycle=cycle,
+                active_claim_id=target.id,
+                iteration=iterations,
+                detail="Searching for a counterexample under a prospective contract.",
                 updated_at=observed_at,
             )
         return MVPLoopState(
@@ -1342,7 +1367,12 @@ class MVPRunMonitor:
             capability_hashes=capability_hashes,
         )
 
-    def _phase(self, report: dict[str, Any] | None) -> RunPhase:
+    def _phase(
+        self,
+        report: dict[str, Any] | None,
+        *,
+        dsh_state: dict[str, Any] | None = None,
+    ) -> RunPhase:
         if report is not None:
             status = report.get("status")
             if status == "completed":
@@ -1355,6 +1385,15 @@ class MVPRunMonitor:
                 return RunPhase.BUDGET_EXHAUSTED
             # An unrecognized report is still a terminal document, not "running".
             return RunPhase.INCOMPLETE
+        dsh_status = dsh_state.get("status") if dsh_state is not None else None
+        if dsh_status == "cancelled":
+            return RunPhase.CANCELLED
+        if dsh_status == "budget_exhausted":
+            return RunPhase.BUDGET_EXHAUSTED
+        if dsh_status == "failed":
+            return RunPhase.PROVIDER_FAILED
+        if dsh_status == "paused":
+            return RunPhase.PAUSED
         pause = read_pause_state(self.root)
         clock = read_clock(self.root)
         if pause is not None or (clock is not None and clock.state == "paused"):
@@ -1778,7 +1817,12 @@ def format_human_status(snapshot: MVPRunSnapshot) -> str:
             RunPhase.PROVIDER_FAILED,
             RunPhase.BUDGET_EXHAUSTED,
         }:
-            lines.append("  (campaign has a terminal report)")
+            if snapshot.report is not None:
+                lines.append("  (campaign has a terminal report)")
+            else:
+                lines.append(
+                    "  (campaign stopped at an engine boundary; no scientific report was written)"
+                )
         elif snapshot.phase is RunPhase.PAUSED:
             lines.append("  (paused at an action boundary; resume to continue)")
         else:

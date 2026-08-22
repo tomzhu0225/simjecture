@@ -400,6 +400,98 @@ def test_manifest_only_run_is_initialized_not_running(tmp_path: Path) -> None:
     assert "running" not in text.lower()
 
 
+def test_open_scientific_repair_is_the_fallback_frontier(tmp_path: Path) -> None:
+    root = tmp_path / "repair-frontier"
+    root.mkdir()
+    hypothesis = "A falsified root should lead to its open scientific repair."
+    _write(root / "mvp_manifest.json", _manifest(hypothesis))
+    _write(
+        root / "hypothesis_ledger.json",
+        _ledger(
+            hypothesis,
+            [
+                _claim(
+                    "claim_root",
+                    statement=hypothesis,
+                    status="falsified",
+                    closed_reason="A prospective counterexample exceeded the threshold.",
+                ),
+                _claim(
+                    "claim_repair",
+                    statement="The bounded repair accommodates the observed counterexample.",
+                    relation="repairs",
+                    parent_id="claim_root",
+                ),
+            ],
+        ),
+    )
+
+    snapshot = load_run_snapshot(root)
+
+    assert snapshot.loop_state.stage.value == "falsification"
+    assert snapshot.loop_state.role.value == "falsifier"
+    assert snapshot.loop_state.active_claim_id == "claim_repair"
+
+
+def test_terminal_dsh_state_overrides_a_stale_active_loop(tmp_path: Path) -> None:
+    root = tmp_path / "dsh-budget"
+    root.mkdir()
+    hypothesis = "A DSH budget boundary is terminal even without an MVP report."
+    _write(root / "mvp_manifest.json", _manifest(hypothesis))
+    _write(
+        root / "hypothesis_ledger.json",
+        _ledger(
+            hypothesis,
+            [
+                _claim(
+                    "claim_root",
+                    statement=hypothesis,
+                    status="falsified",
+                    closed_reason="A prospective counterexample was linked.",
+                ),
+                _claim(
+                    "claim_repair",
+                    statement="The open repair still needs independent adjudication.",
+                    relation="repairs",
+                    parent_id="claim_root",
+                ),
+            ],
+        ),
+    )
+    _write(
+        root / "loop_state.json",
+        {
+            "schema_version": "0.1.0",
+            "stage": "falsification",
+            "role": "falsifier",
+            "cycle": 2,
+            "active_claim_id": "claim_repair",
+            "status": "active",
+            "iteration": 21,
+            "detail": "This active state is stale after the process stops.",
+            "updated_at": "2026-08-22T00:00:00Z",
+        },
+    )
+    _write(
+        root / "operator_input" / "dsh_state.json",
+        {
+            "schema_version": "0.1.0",
+            "status": "budget_exhausted",
+            "engine": "dsh",
+        },
+    )
+
+    snapshot = load_run_snapshot(root)
+
+    assert snapshot.phase is RunPhase.BUDGET_EXHAUSTED
+    assert snapshot.loop_state.stage.value == "stopped"
+    assert snapshot.loop_state.status == "stopped"
+    assert snapshot.loop_state.active_claim_id == "claim_repair"
+    text = format_human_status(snapshot)
+    assert "stopped at an engine boundary" in text
+    assert "has a terminal report" not in text
+
+
 def test_in_progress_transcript_is_incomplete_without_report(tmp_path: Path) -> None:
     root = tmp_path / "active-run"
     root.mkdir()

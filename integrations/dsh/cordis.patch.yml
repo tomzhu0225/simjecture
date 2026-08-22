@@ -34,6 +34,16 @@
 - id: compaction-basic
   config:
     auto: true
+    # This route advertises a one-million-token window. The stock 80% trigger
+    # never fires in a normal scientific campaign even after dozens of large
+    # code-writing/tool turns, so compact its tool-heavy history around 100k
+    # while retaining a 30k verbatim tail. Other model routes keep DSH defaults.
+    modelPolicies:
+      - provider: deepseek-official
+        model: deepseek-v4-flash
+        thresholdRatio: 0.1
+        retainRatio: 0.03
+        maxTokens: 4096
 
 - id: tools
   config:

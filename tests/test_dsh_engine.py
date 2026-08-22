@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import signal
 import sys
 from pathlib import Path
 
@@ -159,6 +160,32 @@ def test_dsh_process_adapter_finalizes_clock_on_interrupt(
     assert result == 130
     state = json.loads((root / "operator_input" / "dsh_state.json").read_text())
     assert state["status"] == "cancelled"
+    clock = read_clock(root)
+    assert clock is not None
+    assert clock.state == "finished"
+
+
+def test_dsh_process_adapter_finalizes_clock_on_sigterm(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root, session_id, _hypothesis = _launch(tmp_path)
+    executable = _fake_dsh(tmp_path / "dsh")
+    prior_handler = signal.getsignal(signal.SIGTERM)
+
+    def terminate(*_args: object, **_kwargs: object) -> None:
+        handler = signal.getsignal(signal.SIGTERM)
+        assert callable(handler)
+        handler(signal.SIGTERM, None)
+
+    monkeypatch.setattr(dsh_engine.subprocess, "run", terminate)
+
+    result = run_dsh_campaign(root, session_id=session_id, executable=str(executable))
+
+    assert result == 128 + signal.SIGTERM
+    assert signal.getsignal(signal.SIGTERM) is prior_handler
+    state = json.loads((root / "operator_input" / "dsh_state.json").read_text())
+    assert state["status"] == "cancelled"
+    assert "SIGTERM" in state["reason"]
     clock = read_clock(root)
     assert clock is not None
     assert clock.state == "finished"
