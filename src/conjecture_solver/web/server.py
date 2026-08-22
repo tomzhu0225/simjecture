@@ -38,6 +38,18 @@ ARTIFACT_SECURITY_HEADERS = {
     "X-Frame-Options": "DENY",
 }
 DANGEROUS_INLINE_SUFFIXES = frozenset({".htm", ".html", ".js", ".mjs", ".xhtml", ".xml"})
+STATIC_ASSETS = frozenset(
+    {
+        "index.html",
+        "app.js",
+        "markdown.js",
+        "styles.css",
+        "vendor/dompurify-3.4.14.min.js",
+        "vendor/katex-0.18.4.min.js",
+        "vendor/katex-auto-render-0.18.4.min.js",
+        "vendor/marked-18.0.10.umd.js",
+    }
+)
 
 
 class SimjectureHTTPServer(ThreadingHTTPServer):
@@ -179,7 +191,7 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
             relative = request_path.removeprefix("/assets/")
         else:
             relative = "index.html"
-        if relative not in {"index.html", "app.js", "styles.css"}:
+        if relative not in STATIC_ASSETS:
             raise WebApplicationError("static resource not found", status=404)
         path = STATIC_ROOT / relative
         if not path.is_file():

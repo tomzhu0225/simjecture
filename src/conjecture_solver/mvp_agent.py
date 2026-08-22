@@ -997,6 +997,11 @@ not the root must be registered with register_claim before you treat them as act
 targets. Use claim kinds scientific, instrument, diagnostic, or control. Relations are
 domain-neutral: refines, alternate, diagnostic_of, instrument_of, control_for, or
 succeeds. Motivation from parent evidence is not automatic confirmation of a child claim.
+Human-facing claim text, contract prose, evidence notes, research notes, closure reasons,
+and the final answer accept Markdown. When the scientific-markdown skill is available,
+read it once before registering the first non-root claim or evidence contract and follow
+its conventions for equations and code identifiers. Markdown is presentation only and
+never replaces exact JSON evidence metadata or validation checks.
 Before a decisive experiment, use register_evidence_contract on its active claim to state
 the observable, competing outcomes, decision rule, required observation, uncertainty
 criterion, and inconclusive conditions. Link existing workspace artifacts with

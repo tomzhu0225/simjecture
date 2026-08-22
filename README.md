@@ -315,6 +315,12 @@ summaries, hash-addressed provenance for 482 original artifacts, and
 representative final fields. See
 [`demos/collisionless_gem_reconnection/`](demos/collisionless_gem_reconnection/).
 
+Every campaign also exposes the built-in
+[`scientific-markdown`](skills/scientific-markdown/SKILL.md) skill. It gives the
+agent a common notation for equations, code identifiers, contracts, evidence
+notes, and conclusions while keeping decision rules and validation checks in
+their machine-readable JSON fields.
+
 ## Optional WarpX capability
 
 WarpX is the first simulation skill and executable capability, not an

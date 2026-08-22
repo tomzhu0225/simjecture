@@ -27,6 +27,9 @@ The interface has five connected projections:
   Edges retain their recorded relations, including `refines`, `alternate`,
   `instrument_of`, `diagnostic_of`, and `control_for`. Scientific-only mode is
   a visual filter over this graph, not a second hypothesis data structure.
+  A derived commissioning-stage node sits between a scientific claim and its
+  `instrument_of` claims. It exposes the capability evidence gate and guided
+  starting point without becoming a fifth durable claim kind.
 - **Claim inspector:** click any of the four node kinds to see its rationale,
   parent and child relations, prospective evidence contracts, linked evidence,
   closure reason, and iteration metadata.
@@ -40,12 +43,27 @@ The interface has five connected projections:
 - **Artifacts and conclusion:** contained workspace results, generated figures,
   audit records, and the terminal answer when one exists.
 
-The graph can be zoomed and each node is keyboard-selectable. The four kinds use
-distinct node treatments while their status is shown separately, so claim type
-is never inferred from supported or falsified state. Expanded contract and
-evidence sections remain open while the one-second live refresh advances. The
-header theme button switches between the high-contrast light and dark palettes
-and remembers the choice locally.
+The graph can be zoomed and each node is keyboard-selectable. Every claim and
+stage node can also be dragged. Positions are stored under a campaign-specific
+browser key and never written into the durable run; **Reset layout** removes the
+local arrangement. The four kinds use distinct node treatments while their
+status is shown separately, so claim type is never inferred from supported or
+falsified state. Expanded contract and evidence sections remain open while the
+one-second live refresh advances. The header theme button switches between the
+high-contrast light and dark palettes and remembers the choice locally.
+
+Human-facing scientific text is rendered as sanitized Markdown throughout the
+campaign heading, claim inspector, contracts, evidence assessments, research
+notes, and conclusion. Inline code, fenced code, lists, tables, links, and TeX
+delimiters are supported; TeX is converted to MathML. The browser bundles its
+pinned parser, sanitizer, and math renderer locally and makes no CDN request.
+Raw HTML, images, form controls, embedded objects, and unsafe links are removed
+before display. The underlying JSON record remains unchanged.
+
+The built-in `scientific-markdown` skill tells the autonomous agent how to use
+this presentation layer without moving estimator definitions, units,
+normalizations, thresholds, or validation checks out of machine-readable
+evidence artifacts.
 
 The execution monitor deliberately does not invent a percentage for an
 unbounded scientific search. A running command uses an indeterminate activity

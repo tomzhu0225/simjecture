@@ -33,6 +33,20 @@ def _campaign(root: Path) -> Path:
             "config": {"max_wall_seconds": 1800},
         },
     )
+    _write_json(
+        root / "guided_commissioning.json",
+        {
+            "available": True,
+            "name": "bounded-reference-start",
+            "description": "A **non-evidentiary** reference calculation.",
+            "policy": "operator_validated_starting_point_not_campaign_evidence",
+            "capability": "isolated-python",
+            "program_path": "guided/reference.py",
+            "operator_validation": "The reference completed with $|\\Delta E/E_0| < 10^{-4}$.",
+            "limitations": ["It does not establish the campaign conclusion."],
+            "package_sha256": "a" * 64,
+        },
+    )
     (root / "workspace").mkdir()
     (root / "workspace" / "result.json").write_text('{"pattern": true}\n')
     (root / "workspace" / "figure.svg").write_text(
@@ -215,6 +229,22 @@ def test_web_projection_exposes_one_four_kind_claim_graph(tmp_path: Path) -> Non
     assert "scientific_claim_graph" not in payload
     assert "validation_claims" not in payload
     assert "attached_claims" not in payload
+    commissioning = payload["commissioning"]
+    assert commissioning["guided"]["name"] == "bounded-reference-start"
+    assert commissioning["stages"] == [
+        {
+            "id": "stage_commissioning_claim_child",
+            "node_type": "stage",
+            "stage": "commissioning",
+            "kind": "stage",
+            "scientific_claim_id": "claim_child",
+            "owner_id": "claim_child",
+            "claim_ids": ["claim_instrument"],
+            "binding_count": 0,
+            "guided_available": True,
+            "status": "supported",
+        }
+    ]
     assert {
         "source": "claim_root",
         "target": "claim_child",
@@ -263,10 +293,12 @@ def test_web_projection_exposes_one_four_kind_claim_graph(tmp_path: Path) -> Non
 def test_web_assets_keep_live_detail_state_and_separate_operator_views() -> None:
     html = (STATIC_ROOT / "index.html").read_text()
     javascript = (STATIC_ROOT / "app.js").read_text()
+    markdown = (STATIC_ROOT / "markdown.js").read_text()
     stylesheet = (STATIC_ROOT / "styles.css").read_text()
 
     assert "Execution monitor" in html
     assert "Research trace" in html
+    assert "Commissioning stage" in html
     assert "All claim kinds" in html
     assert "Scientific only" in javascript
     for kind in ("Scientific", "Instrument", "Diagnostic", "Control"):
@@ -274,6 +306,14 @@ def test_web_assets_keep_live_detail_state_and_separate_operator_views() -> None
     assert "private hidden chain-of-thought" in html
     assert "expandedDetails: new Set()" in javascript
     assert "persistentDetails(" in javascript
+    assert "setPointerCapture" in javascript
+    assert "simjecture-graph-layout-v1" in javascript
+    assert "renderCommissioningInspector" in javascript
+    assert "DOMPurify.sanitize" in markdown
+    assert 'output: "mathml"' in markdown
+    assert (STATIC_ROOT / "vendor/marked-18.0.10.umd.js").is_file()
+    assert (STATIC_ROOT / "vendor/dompurify-3.4.14.min.js").is_file()
+    assert (STATIC_ROOT / "vendor/katex-0.18.4.min.js").is_file()
     assert 'data-theme="light"' in html
     assert ':root[data-theme="dark"]' in stylesheet
 
@@ -393,6 +433,8 @@ def test_local_http_api_serves_assets_snapshot_and_protects_post(tmp_path: Path)
             assert "Simjecture" in home.text
             assert "default-src 'self'" in home.headers["content-security-policy"]
             assert client.get("/assets/app.js").status_code == 200
+            assert client.get("/assets/markdown.js").status_code == 200
+            assert client.get("/assets/vendor/marked-18.0.10.umd.js").status_code == 200
 
             bootstrap = client.get("/api/bootstrap").json()
             token = bootstrap["selected_campaign"]

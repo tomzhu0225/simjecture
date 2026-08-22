@@ -6,6 +6,7 @@ const state = {
   campaigns: [],
   selectedCampaign: null,
   selectedClaim: null,
+  selectedStage: null,
   selectedExecution: null,
   snapshot: null,
   controlToken: null,
@@ -13,6 +14,8 @@ const state = {
   activeTab: "artifacts",
   showAllClaims: true,
   graphZoom: 1,
+  graphPositions: new Map(),
+  currentGraphLayout: null,
   graphSignature: null,
   inspectorSignature: null,
   executionSignature: null,
@@ -75,6 +78,7 @@ function bindElements() {
     "new-run-form",
     "pause-button",
     "research-trace",
+    "reset-layout",
     "resume-button",
     "root-hypothesis",
     "sync-state",
@@ -107,6 +111,7 @@ function bindEvents() {
   ui["zoom-in"].addEventListener("click", () => changeZoom(0.15));
   ui["zoom-out"].addEventListener("click", () => changeZoom(-0.15));
   ui["zoom-fit"].addEventListener("click", fitGraph);
+  ui["reset-layout"].addEventListener("click", resetGraphLayout);
   for (const tab of ui.tabs) {
     tab.addEventListener("click", () => setTab(tab.dataset.tab));
   }
@@ -154,6 +159,7 @@ async function initialize() {
     state.controlToken = bootstrap.control_token;
     state.allowMutations = Boolean(bootstrap.allow_mutations);
     state.selectedCampaign = bootstrap.selected_campaign;
+    loadGraphPositions();
     ui["new-run-button"].disabled = !state.allowMutations;
     ui["empty-new-run"].disabled = !state.allowMutations;
     renderCampaignPicker();
@@ -210,9 +216,11 @@ async function selectCampaign(token) {
   if (!token || token === state.selectedCampaign) return;
   state.selectedCampaign = token;
   state.selectedClaim = null;
+  state.selectedStage = null;
   state.selectedExecution = null;
   state.snapshot = null;
   state.graphZoom = 1;
+  loadGraphPositions();
   state.expandedDetails.clear();
   state.executionConsoleCache.clear();
   state.executionLoads.clear();
@@ -264,10 +272,14 @@ function renderSnapshot(force) {
   const displayStatus = execution === "terminal" ? snapshot.phase : execution;
   setBadge(ui["campaign-status"], displayStatus, displayStatus);
   ui["campaign-id"].textContent = data.display_name || snapshot.identity.campaign_id || "unnamed campaign";
-  ui["root-hypothesis"].textContent = snapshot.identity.hypothesis || "Hypothesis not yet recorded";
+  renderMarkdown(
+    ui["root-hypothesis"],
+    snapshot.identity.hypothesis || "Hypothesis not yet recorded",
+    { inline: true },
+  );
   const instruction = snapshot.identity.campaign_instruction;
   ui["campaign-instruction"].hidden = !instruction;
-  ui["campaign-instruction"].textContent = instruction ? `Guidance: ${instruction}` : "";
+  if (instruction) renderMarkdown(ui["campaign-instruction"], `**Guidance:** ${instruction}`);
 
   renderCurrentAction(snapshot);
   renderMetrics(data);
@@ -275,14 +287,18 @@ function renderSnapshot(force) {
 
   const claims = data.claim_graph.nodes || [];
   const scientificClaims = claims.filter(isScientificClaim);
-  if (!state.selectedClaim || !data.claim_details[state.selectedClaim]) {
+  const stages = data.commissioning?.stages || [];
+  if (state.selectedStage && !stages.some((item) => item.id === state.selectedStage)) {
+    state.selectedStage = null;
+  }
+  if (!state.selectedStage && (!state.selectedClaim || !data.claim_details[state.selectedClaim])) {
     state.selectedClaim = claims.find((item) => item.id === "claim_root")?.id
       || scientificClaims[0]?.id
       || claims[0]?.id
       || null;
   }
 
-  const graphSignature = signature([data.claim_graph, state.showAllClaims]);
+  const graphSignature = signature([data.claim_graph, data.commissioning, state.showAllClaims]);
   if (force || graphSignature !== state.graphSignature) {
     state.graphSignature = graphSignature;
     renderGraph(false);
@@ -290,8 +306,10 @@ function renderSnapshot(force) {
 
   const inspectorSignature = signature([
     state.selectedClaim,
+    state.selectedStage,
     data.claim_details[state.selectedClaim] || null,
     data.claim_graph,
+    data.commissioning,
   ]);
   if (force || inspectorSignature !== state.inspectorSignature) {
     state.inspectorSignature = inspectorSignature;
@@ -331,8 +349,8 @@ function renderCurrentAction(snapshot) {
   if (snapshot.current_action) {
     symbol.textContent = snapshot.current_action.pending ? "◈" : "◇";
     label.textContent = `Current action · iteration ${snapshot.current_action.iteration}`;
-    value.textContent = snapshot.current_action.description;
-    value.title = snapshot.current_action.description;
+    renderMarkdown(value, snapshot.current_action.description, { inline: true });
+    value.title = markdownPlainText(snapshot.current_action.description);
     return;
   }
   if (snapshot.report) {
@@ -397,17 +415,63 @@ function toggleClaimKinds() {
 function graphData() {
   if (!state.snapshot) return { nodes: [], edges: [] };
   const graph = state.snapshot.claim_graph || { nodes: [], edges: [] };
-  if (state.showAllClaims) return graph;
-  const nodes = graph.nodes.filter(isScientificClaim);
-  const ids = new Set(nodes.map((node) => node.id));
-  return {
-    nodes,
-    edges: graph.edges.filter((edge) => ids.has(edge.source) && ids.has(edge.target)),
-  };
+  if (!state.showAllClaims) {
+    const nodes = graph.nodes.filter(isScientificClaim);
+    const ids = new Set(nodes.map((node) => node.id));
+    return {
+      nodes,
+      edges: graph.edges.filter((edge) => ids.has(edge.source) && ids.has(edge.target)),
+    };
+  }
+
+  const stages = (state.snapshot.commissioning?.stages || []).map((stage) => ({
+    ...stage,
+    statement: "Capability evidence gate",
+    evidence_count: stage.claim_ids.length,
+    contract_count: stage.binding_count,
+  }));
+  const stageByInstrument = new Map();
+  for (const stage of stages) {
+    for (const claimId of stage.claim_ids) stageByInstrument.set(claimId, stage);
+  }
+  const edges = [];
+  const linkedStages = new Set();
+  for (const edge of graph.edges) {
+    const stage = stageByInstrument.get(edge.target);
+    if (stage && edge.source === stage.scientific_claim_id) {
+      if (!linkedStages.has(stage.id)) {
+        edges.push({
+          source: stage.scientific_claim_id,
+          target: stage.id,
+          relation: "commissioning",
+          derived: true,
+        });
+        linkedStages.add(stage.id);
+      }
+      edges.push({ ...edge, source: stage.id });
+    } else {
+      edges.push(edge);
+    }
+  }
+  for (const stage of stages) {
+    if (!linkedStages.has(stage.id)) {
+      edges.push({
+        source: stage.scientific_claim_id,
+        target: stage.id,
+        relation: "commissioning",
+        derived: true,
+      });
+    }
+  }
+  return { nodes: [...graph.nodes, ...stages], edges };
 }
 
 function isScientificClaim(item) {
   return item.kind === "scientific" || item.id === "claim_root";
+}
+
+function isCommissioningStage(item) {
+  return item.node_type === "stage" && item.stage === "commissioning";
 }
 
 function renderGraph(preserveScroll) {
@@ -426,6 +490,7 @@ function renderGraph(preserveScroll) {
   if (!scientific.length) return;
 
   const layout = layoutClaimGraph(nodes);
+  state.currentGraphLayout = layout;
   graph.setAttribute("viewBox", `0 0 ${layout.width} ${layout.height}`);
   graph.setAttribute("width", String(layout.width * state.graphZoom));
   graph.setAttribute("height", String(layout.height * state.graphZoom));
@@ -435,23 +500,24 @@ function renderGraph(preserveScroll) {
     const source = layout.positions.get(edge.source);
     const target = layout.positions.get(edge.target);
     if (!source || !target) continue;
-    const x1 = source.x + source.width;
-    const y1 = source.y + source.height / 2;
-    const x2 = target.x;
-    const y2 = target.y + target.height / 2;
-    const bend = Math.max(35, (x2 - x1) * 0.46);
     const targetNode = nodesById.get(edge.target);
     const targetKind = targetNode?.kind || "scientific";
     const supporting = !isScientificClaim(targetNode || {});
-    edgeLayer.append(svg("path", {
+    const geometry = graphEdgeGeometry(source, target);
+    const path = svg("path", {
       class: `graph-edge${supporting ? ` supporting ${targetKind}` : ""}`,
-      d: `M ${x1} ${y1} C ${x1 + bend} ${y1}, ${x2 - bend} ${y2}, ${x2} ${y2}`,
-    }));
+      d: geometry.path,
+      "data-source": edge.source,
+      "data-target": edge.target,
+    });
+    edgeLayer.append(path);
     const label = svg("text", {
       class: "graph-edge-label",
-      x: String((x1 + x2) / 2),
-      y: String((y1 + y2) / 2 - 7),
+      x: String(geometry.labelX),
+      y: String(geometry.labelY),
       "text-anchor": "middle",
+      "data-source": edge.source,
+      "data-target": edge.target,
     });
     label.textContent = edge.relation || "related";
     edgeLayer.append(label);
@@ -463,20 +529,27 @@ function renderGraph(preserveScroll) {
     const point = layout.positions.get(item.id);
     if (!point) continue;
     const scientificClaim = isScientificClaim(item);
+    const commissioningStage = isCommissioningStage(item);
     const kind = item.kind || "scientific";
+    const selected = commissioningStage
+      ? item.id === state.selectedStage
+      : item.id === state.selectedClaim;
     const group = svg("g", {
-      class: `graph-node ${scientificClaim ? "scientific" : `supporting ${kind}`}${item.id === state.selectedClaim ? " selected" : ""}`,
+      class: `graph-node ${scientificClaim ? "scientific" : `supporting ${kind}`}${selected ? " selected" : ""}`,
       "data-status": item.status,
+      "data-node-id": item.id,
       role: "button",
       tabindex: "0",
       transform: `translate(${point.x} ${point.y})`,
-      "aria-label": `${kind} claim ${item.id}, ${item.status}: ${item.statement}`,
+      "aria-label": commissioningStage
+        ? `Commissioning stage for ${item.scientific_claim_id}, ${item.status}`
+        : `${kind} claim ${item.id}, ${item.status}: ${markdownPlainText(item.statement)}`,
     });
     group.append(svg("rect", {
       class: "node-body",
       width: String(point.width),
       height: String(point.height),
-      rx: scientificClaim ? "10" : "8",
+      rx: scientificClaim || commissioningStage ? "10" : "8",
     }));
     group.append(svg("line", {
       class: "status-line",
@@ -485,19 +558,18 @@ function renderGraph(preserveScroll) {
       y1: "12",
       y2: String(point.height - 12),
     }));
-    appendSvgText(group, kind, 16, 21, "node-id");
+    appendSvgText(group, commissioningStage ? "commissioning stage" : kind, 16, 21, "node-id");
     appendSvgText(group, item.status, point.width - 14, 21, "node-status", "end");
-    const lines = wrapText(item.statement || item.id, scientificClaim ? 45 : 35, scientificClaim ? 3 : 2);
+    const copy = commissioningStage
+      ? `${item.claim_ids.length} instrument claim${item.claim_ids.length === 1 ? "" : "s"} · ${item.binding_count} bound program${item.binding_count === 1 ? "" : "s"}`
+      : markdownPlainText(item.statement || item.id);
+    const lines = wrapText(copy, scientificClaim ? 45 : 35, scientificClaim ? 3 : 2);
     lines.forEach((line, index) => appendSvgText(group, line, 16, 48 + index * 17, "node-copy"));
-    const counts = `${item.id} · E${item.evidence_count}/C${item.contract_count}`;
+    const counts = commissioningStage
+      ? `${item.scientific_claim_id}${item.guided_available ? " · guided start" : ""}`
+      : `${item.id} · E${item.evidence_count}/C${item.contract_count}`;
     appendSvgText(group, counts, 16, point.height - 12, "node-counts");
-    group.addEventListener("click", () => selectClaim(item.id));
-    group.addEventListener("keydown", (event) => {
-      if (event.key === "Enter" || event.key === " ") {
-        event.preventDefault();
-        selectClaim(item.id);
-      }
-    });
+    bindGraphNode(group, item, point);
     nodeLayer.append(group);
   }
   graph.append(nodeLayer);
@@ -512,8 +584,10 @@ function layoutClaimGraph(nodes) {
   const scientificHeight = 126;
   const supportingWidth = 230;
   const supportingHeight = 86;
+  const stageWidth = 270;
+  const stageHeight = 106;
   const supportingGap = 14;
-  const columnPitch = 660;
+  const columnPitch = 1000;
   const marginX = 42;
   const marginY = 42;
   const rowGap = 58;
@@ -529,10 +603,25 @@ function layoutClaimGraph(nodes) {
   let maxX = marginX + scientificWidth;
   for (const item of scientific) {
     const owned = attached.get(item.id) || [];
-    const supportingStack = owned.length
-      ? owned.length * supportingHeight + (owned.length - 1) * supportingGap
+    const stages = owned.filter(isCommissioningStage);
+    const instrumentIds = new Set(stages.flatMap((stage) => stage.claim_ids || []));
+    const instruments = owned.filter((node) => instrumentIds.has(node.id));
+    const otherClaims = owned.filter(
+      (node) => !isCommissioningStage(node) && !instrumentIds.has(node.id),
+    );
+    const stageStack = stages.length
+      ? stages.length * stageHeight + (stages.length - 1) * supportingGap
       : 0;
-    const blockHeight = Math.max(scientificHeight, supportingStack);
+    const otherStack = otherClaims.length
+      ? otherClaims.length * supportingHeight + (otherClaims.length - 1) * supportingGap
+      : 0;
+    const leftSupportingStack = stageStack && otherStack
+      ? stageStack + supportingGap + otherStack
+      : stageStack + otherStack;
+    const instrumentStack = instruments.length
+      ? instruments.length * supportingHeight + (instruments.length - 1) * supportingGap
+      : 0;
+    const blockHeight = Math.max(scientificHeight, leftSupportingStack, instrumentStack);
     const x = marginX + (item.depth || 0) * columnPitch;
     const y = cursorY + (blockHeight - scientificHeight) / 2;
     positions.set(item.id, {
@@ -541,9 +630,32 @@ function layoutClaimGraph(nodes) {
       width: scientificWidth,
       height: scientificHeight,
     });
-    owned.forEach((claim, index) => {
-      const claimX = x + scientificWidth + 64 + (claim.depth || 0) * 26;
+    const supportingX = x + scientificWidth + 64;
+    stages.forEach((stage, index) => {
+      const stageY = cursorY + index * (stageHeight + supportingGap);
+      positions.set(stage.id, {
+        x: supportingX,
+        y: stageY,
+        width: stageWidth,
+        height: stageHeight,
+      });
+      maxX = Math.max(maxX, supportingX + stageWidth);
+    });
+    instruments.forEach((claim, index) => {
+      const claimX = supportingX + stageWidth + 54 + (claim.depth || 0) * 20;
       const claimY = cursorY + index * (supportingHeight + supportingGap);
+      positions.set(claim.id, {
+        x: claimX,
+        y: claimY,
+        width: supportingWidth,
+        height: supportingHeight,
+      });
+      maxX = Math.max(maxX, claimX + supportingWidth);
+    });
+    const otherStart = cursorY + (stageStack ? stageStack + supportingGap : 0);
+    otherClaims.forEach((claim, index) => {
+      const claimX = supportingX + (claim.depth || 0) * 26;
+      const claimY = otherStart + index * (supportingHeight + supportingGap);
       positions.set(claim.id, {
         x: claimX,
         y: claimY,
@@ -555,15 +667,199 @@ function layoutClaimGraph(nodes) {
     maxX = Math.max(maxX, x + scientificWidth);
     cursorY += blockHeight + rowGap;
   }
+  for (const [nodeId, saved] of state.graphPositions.entries()) {
+    const point = positions.get(nodeId);
+    if (!point || !Number.isFinite(saved.x) || !Number.isFinite(saved.y)) continue;
+    point.x = Math.max(10, saved.x);
+    point.y = Math.max(10, saved.y);
+  }
+  let maxY = 590;
+  for (const point of positions.values()) {
+    maxX = Math.max(maxX, point.x + point.width);
+    maxY = Math.max(maxY, point.y + point.height);
+  }
   return {
     positions,
     width: maxX + marginX,
-    height: Math.max(590, cursorY - rowGap + marginY),
+    height: Math.max(maxY + marginY, cursorY - rowGap + marginY),
   };
+}
+
+function graphEdgeGeometry(source, target) {
+  const x1 = source.x + source.width;
+  const y1 = source.y + source.height / 2;
+  const x2 = target.x;
+  const y2 = target.y + target.height / 2;
+  const direction = x2 >= x1 ? 1 : -1;
+  const bend = Math.max(35, Math.abs(x2 - x1) * 0.46);
+  return {
+    path: `M ${x1} ${y1} C ${x1 + direction * bend} ${y1}, ${x2 - direction * bend} ${y2}, ${x2} ${y2}`,
+    labelX: (x1 + x2) / 2,
+    labelY: (y1 + y2) / 2 - 7,
+  };
+}
+
+function updateGraphEdges() {
+  const layout = state.currentGraphLayout;
+  if (!layout) return;
+  for (const path of ui["claim-graph"].querySelectorAll("path.graph-edge")) {
+    const source = layout.positions.get(path.dataset.source);
+    const target = layout.positions.get(path.dataset.target);
+    if (source && target) path.setAttribute("d", graphEdgeGeometry(source, target).path);
+  }
+  for (const label of ui["claim-graph"].querySelectorAll("text.graph-edge-label")) {
+    const source = layout.positions.get(label.dataset.source);
+    const target = layout.positions.get(label.dataset.target);
+    if (!source || !target) continue;
+    const geometry = graphEdgeGeometry(source, target);
+    label.setAttribute("x", String(geometry.labelX));
+    label.setAttribute("y", String(geometry.labelY));
+  }
+}
+
+function graphPointerPosition(event) {
+  const graph = ui["claim-graph"];
+  const matrix = graph.getScreenCTM();
+  if (!matrix) return null;
+  const point = graph.createSVGPoint();
+  point.x = event.clientX;
+  point.y = event.clientY;
+  return point.matrixTransform(matrix.inverse());
+}
+
+function bindGraphNode(group, item, point) {
+  let pointerId = null;
+  let start = null;
+  let origin = null;
+  let moved = false;
+  let suppressClick = false;
+
+  const activate = () => {
+    if (isCommissioningStage(item)) selectCommissioningStage(item.id);
+    else selectClaim(item.id);
+  };
+  group.addEventListener("pointerdown", (event) => {
+    if (event.button !== 0) return;
+    const position = graphPointerPosition(event);
+    if (!position) return;
+    pointerId = event.pointerId;
+    start = position;
+    origin = { x: point.x, y: point.y };
+    moved = false;
+    group.classList.add("dragging");
+    group.setPointerCapture(pointerId);
+  });
+  group.addEventListener("pointermove", (event) => {
+    if (pointerId !== event.pointerId || !start || !origin) return;
+    const position = graphPointerPosition(event);
+    if (!position) return;
+    const dx = position.x - start.x;
+    const dy = position.y - start.y;
+    if (!moved && Math.hypot(dx, dy) < 3) return;
+    moved = true;
+    event.preventDefault();
+    point.x = Math.max(10, origin.x + dx);
+    point.y = Math.max(10, origin.y + dy);
+    group.setAttribute("transform", `translate(${point.x} ${point.y})`);
+    updateGraphEdges();
+  });
+  const finishDrag = (event) => {
+    if (pointerId !== event.pointerId) return;
+    if (group.hasPointerCapture(pointerId)) group.releasePointerCapture(pointerId);
+    group.classList.remove("dragging");
+    pointerId = null;
+    if (!moved) return;
+    suppressClick = true;
+    state.graphPositions.set(item.id, {
+      x: Math.round(point.x * 10) / 10,
+      y: Math.round(point.y * 10) / 10,
+    });
+    saveGraphPositions();
+    window.setTimeout(() => renderGraph(true), 0);
+  };
+  group.addEventListener("pointerup", finishDrag);
+  group.addEventListener("pointercancel", finishDrag);
+  group.addEventListener("click", () => {
+    if (suppressClick) {
+      suppressClick = false;
+      return;
+    }
+    activate();
+  });
+  group.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      activate();
+    }
+  });
+}
+
+function graphLayoutStorageKey() {
+  return state.selectedCampaign
+    ? `simjecture-graph-layout-v1:${state.selectedCampaign}`
+    : null;
+}
+
+function loadGraphPositions() {
+  state.graphPositions = new Map();
+  const key = graphLayoutStorageKey();
+  if (!key) return;
+  try {
+    const payload = JSON.parse(window.localStorage.getItem(key) || "{}");
+    for (const [nodeId, point] of Object.entries(payload)) {
+      if (
+        point
+        && Number.isFinite(point.x)
+        && Number.isFinite(point.y)
+        && point.x >= 0
+        && point.y >= 0
+        && point.x <= 100_000
+        && point.y <= 100_000
+      ) {
+        state.graphPositions.set(nodeId, { x: point.x, y: point.y });
+      }
+    }
+  } catch (_) {
+    state.graphPositions = new Map();
+  }
+}
+
+function saveGraphPositions() {
+  const key = graphLayoutStorageKey();
+  if (!key) return;
+  try {
+    window.localStorage.setItem(key, JSON.stringify(Object.fromEntries(state.graphPositions)));
+  } catch (_) {
+    // Dragging still works for this page session when local storage is unavailable.
+  }
+}
+
+function resetGraphLayout() {
+  state.graphPositions.clear();
+  const key = graphLayoutStorageKey();
+  if (key) {
+    try {
+      window.localStorage.removeItem(key);
+    } catch (_) {
+      // The in-memory reset is still effective.
+    }
+  }
+  state.currentGraphLayout = null;
+  renderGraph(false);
+  fitGraph();
 }
 
 function selectClaim(claimId) {
   state.selectedClaim = claimId;
+  state.selectedStage = null;
+  state.inspectorSignature = null;
+  renderGraph(true);
+  renderInspector();
+}
+
+function selectCommissioningStage(stageId) {
+  state.selectedClaim = null;
+  state.selectedStage = stageId;
   state.inspectorSignature = null;
   renderGraph(true);
   renderInspector();
@@ -574,11 +870,28 @@ function claimGraphNode(claimId) {
   return (state.snapshot.claim_graph?.nodes || []).find((item) => item.id === claimId) || null;
 }
 
+function commissioningStageById(stageId) {
+  if (!state.snapshot) return null;
+  return (state.snapshot.commissioning?.stages || []).find((item) => item.id === stageId) || null;
+}
+
 function renderInspector() {
   const container = ui["claim-inspector"];
   clear(container);
-  if (!state.snapshot || !state.selectedClaim) {
-    container.append(paragraph("panel-placeholder", "Select a claim to inspect it."));
+  if (!state.snapshot) {
+    container.append(paragraph("panel-placeholder", "Select a claim or stage to inspect it."));
+    setBadge(ui["claim-status"], "", "—");
+    return;
+  }
+  if (state.selectedStage) {
+    const stage = commissioningStageById(state.selectedStage);
+    if (stage) {
+      renderCommissioningInspector(container, stage);
+      return;
+    }
+  }
+  if (!state.selectedClaim) {
+    container.append(paragraph("panel-placeholder", "Select a claim or stage to inspect it."));
     setBadge(ui["claim-status"], "", "—");
     return;
   }
@@ -592,7 +905,7 @@ function renderInspector() {
   const supporting = kind !== "scientific";
   ui["inspector-kind"].textContent = `${capitalize(kind)} claim`;
   setBadge(ui["claim-status"], detail.status, detail.status);
-  container.append(paragraph("claim-statement", detail.statement || detail.id));
+  container.append(markdownBlock(detail.statement || detail.id, "claim-statement"));
 
   const metadata = element("div", "claim-metadata");
   for (const value of [detail.id, detail.kind, detail.relation]) {
@@ -669,6 +982,105 @@ function renderInspector() {
   container.append(evidenceSection);
 }
 
+function renderCommissioningInspector(container, stage) {
+  const target = state.snapshot.claim_details[stage.scientific_claim_id];
+  const guided = state.snapshot.commissioning?.guided || { available: false };
+  ui["inspector-kind"].textContent = "Workflow stage";
+  setBadge(ui["claim-status"], stage.status, stage.status);
+  container.append(markdownBlock(
+    `Commissioning gate for \`${stage.scientific_claim_id}\``,
+    "claim-statement",
+  ));
+
+  const metadata = element("div", "claim-metadata");
+  metadata.append(
+    element("span", "metadata-chip", "commissioning"),
+    element("span", "metadata-chip", `${stage.claim_ids.length} instrument claims`),
+    element("span", "metadata-chip", `${stage.binding_count} bound programs`),
+  );
+  container.append(metadata);
+
+  if (target) {
+    const section = inspectorSection("Scientific target");
+    section.append(claimLinkCard(target, "scientific claim"));
+    container.append(section);
+  }
+
+  if (stage.guided_available && guided.available) {
+    const section = inspectorSection("Guided starting point");
+    if (guided.name) section.append(element("strong", null, guided.name));
+    if (guided.description) section.append(markdownBlock(guided.description));
+    const chips = element("div", "claim-metadata compact");
+    for (const value of [guided.capability, guided.program_path, guided.policy]) {
+      if (value) chips.append(element("span", "metadata-chip", value));
+    }
+    if (chips.childElementCount) section.append(chips);
+    if (guided.operator_validation) {
+      section.append(persistentDetails(
+        `stage:${stage.id}:operator-validation`,
+        "Operator validation",
+        guided.operator_validation,
+      ));
+    }
+    if (guided.limitations?.length) {
+      const limitations = element("ul", "markdown-list");
+      for (const limitation of guided.limitations) {
+        const item = element("li");
+        item.append(markdownBlock(limitation));
+        limitations.append(item);
+      }
+      section.append(element("h4", null, "Starting-point limitations"), limitations);
+    }
+    container.append(section);
+  }
+
+  const claimSection = inspectorSection(`Commissioning claims · ${stage.claim_ids.length}`);
+  if (stage.claim_ids.length) {
+    for (const claimId of stage.claim_ids) {
+      const claim = state.snapshot.claim_details[claimId];
+      if (claim) claimSection.append(claimLinkCard(claim, "instrument · instrument_of"));
+    }
+  } else {
+    claimSection.append(paragraph(
+      "inspector-empty",
+      "No campaign-generated instrument claim has been registered for this stage yet.",
+    ));
+  }
+  container.append(claimSection);
+
+  const executions = (state.snapshot.executions?.items || []).filter(
+    (item) => stage.claim_ids.includes(item.active_claim_id),
+  );
+  const executionSection = inspectorSection(`Bound executions · ${executions.length}`);
+  if (executions.length) {
+    for (const execution of executions) {
+      const button = element("button", "linked-claim-card");
+      button.type = "button";
+      const header = element("header");
+      header.append(element("strong", null, execution.label));
+      const badge = element("span", "status-badge");
+      setBadge(badge, execution.status, execution.status);
+      header.append(badge);
+      button.append(
+        header,
+        paragraph(null, `Iteration ${execution.iteration} · ${execution.active_claim_id}`),
+      );
+      button.addEventListener("click", () => {
+        state.selectedExecution = execution.id;
+        renderExecutions();
+        ui["execution-console"].scrollIntoView({ behavior: "smooth", block: "nearest" });
+      });
+      executionSection.append(button);
+    }
+  } else {
+    executionSection.append(paragraph(
+      "inspector-empty",
+      "No recorded capability execution is bound to these commissioning claims.",
+    ));
+  }
+  container.append(executionSection);
+}
+
 function claimLinkCard(claim, label) {
   const card = element("button", "linked-claim-card");
   card.type = "button";
@@ -677,7 +1089,7 @@ function claimLinkCard(claim, label) {
   const badge = element("span", "status-badge");
   setBadge(badge, claim.status, claim.status);
   header.append(badge);
-  card.append(header, paragraph(null, claim.statement || claim.id));
+  card.append(header, markdownBlock(claim.statement || claim.id, "linked-claim-copy"));
   card.addEventListener("click", () => selectClaim(claim.id));
   return card;
 }
@@ -702,7 +1114,7 @@ function evidenceCard(evidence, keyPrefix) {
     header.append(badge);
   }
   card.append(header);
-  if (evidence.note) card.append(paragraph(null, evidence.note));
+  if (evidence.note) card.append(markdownBlock(evidence.note));
   if (evidence.observation_note) {
     card.append(persistentDetails(`evidence:${keyPrefix}:assessment`, "Observation assessment", evidence.observation_note));
   }
@@ -715,7 +1127,7 @@ function persistentDetails(key, label, copy) {
   details.dataset.detailKey = fullKey;
   details.open = state.expandedDetails.has(fullKey);
   details.append(element("summary", null, label));
-  details.append(paragraph(null, copy));
+  details.append(markdownBlock(copy));
   details.addEventListener("toggle", () => {
     if (details.open) state.expandedDetails.add(fullKey);
     else state.expandedDetails.delete(fullKey);
@@ -913,7 +1325,7 @@ function renderResearchTrace() {
     const row = element("article", "trace-event");
     const mark = element("span", "event-mark", eventSymbol(event.kind));
     const copy = element("div", "trace-copy");
-    copy.append(paragraph(null, event.summary));
+    copy.append(markdownBlock(event.summary));
     const metadata = [
       event.iteration ? `iteration ${event.iteration}` : null,
       event.action_name || event.kind,
@@ -923,7 +1335,7 @@ function renderResearchTrace() {
     ].filter(Boolean).join(" · ");
     copy.append(element("small", null, metadata));
     if (event.research_note) {
-      copy.append(element("div", "research-note", event.research_note));
+      copy.append(markdownBlock(event.research_note, "research-note"));
     }
     row.append(mark, copy);
     panel.append(row);
@@ -981,7 +1393,10 @@ function renderConclusion() {
     return;
   }
   const conclusion = element("article", "conclusion");
-  conclusion.append(element("pre", null, report.final_answer || "No final answer was recorded."));
+  conclusion.append(markdownBlock(
+    report.final_answer || "No final answer was recorded.",
+    "conclusion-markdown",
+  ));
   panel.append(conclusion);
 }
 
@@ -1025,10 +1440,12 @@ async function launchCampaign(event) {
     await refreshCampaigns();
     state.selectedCampaign = result.campaign;
     state.selectedClaim = null;
+    state.selectedStage = null;
     state.selectedExecution = null;
     state.expandedDetails.clear();
     state.executionConsoleCache.clear();
     state.executionLoads.clear();
+    loadGraphPositions();
     resetRenderSignatures();
     renderCampaignPicker();
     await refreshSnapshot(true);
@@ -1133,7 +1550,7 @@ function setBadge(target, status, label) {
 function inspectorSection(title, copy = null) {
   const section = element("section", "inspector-section");
   section.append(element("h3", null, title));
-  if (copy) section.append(paragraph(null, copy));
+  if (copy) section.append(markdownBlock(copy));
   return section;
 }
 
@@ -1189,6 +1606,25 @@ function element(tag, className = null, text = null) {
 
 function paragraph(className, text) {
   return element("p", className, text);
+}
+
+function renderMarkdown(target, copy, options = {}) {
+  if (window.SimjectureMarkdown) {
+    window.SimjectureMarkdown.render(target, copy, options);
+  } else {
+    target.textContent = String(copy ?? "");
+  }
+  return target;
+}
+
+function markdownBlock(copy, className = null) {
+  return renderMarkdown(element("div", className), copy);
+}
+
+function markdownPlainText(copy) {
+  return window.SimjectureMarkdown
+    ? window.SimjectureMarkdown.plainText(copy)
+    : String(copy ?? "");
 }
 
 function option(value, label) {

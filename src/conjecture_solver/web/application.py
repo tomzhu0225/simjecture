@@ -244,6 +244,11 @@ class SimjectureWebApplication:
                             "relation": row.claim.relation,
                         }
                     )
+            commissioning = _commissioning_projection(
+                claim_graph_nodes,
+                claim_details=claim_details,
+                guided=_guided_commissioning_projection(root),
+            )
             artifacts = _artifact_index(root, raw_claims=raw_claims)
             controls = _control_capabilities(root, phase=snapshot.phase, live=live)
             if not self.allow_mutations:
@@ -266,6 +271,7 @@ class SimjectureWebApplication:
                 "snapshot": payload,
                 "claim_graph": {"nodes": claim_graph_nodes, "edges": claim_graph_edges},
                 "claim_details": claim_details,
+                "commissioning": commissioning,
                 "executions": _execution_projection(snapshot),
                 "artifacts": artifacts,
                 "controls": controls,
@@ -454,6 +460,114 @@ def _claim_details(raw_claims: list[dict[str, Any]], *, root: Path) -> dict[str,
             "evidence": evidence,
         }
     return details
+
+
+def _guided_commissioning_projection(root: Path) -> dict[str, Any]:
+    payload = load_json_object(root / "guided_commissioning.json")
+    if not payload:
+        return {"available": False}
+    limitations = payload.get("limitations")
+    return {
+        "available": bool(payload.get("available", True)),
+        "name": payload.get("name"),
+        "description": payload.get("description"),
+        "policy": payload.get("policy"),
+        "capability": payload.get("capability"),
+        "program_path": payload.get("program_path"),
+        "operator_validation": payload.get("operator_validation"),
+        "limitations": (
+            [str(item) for item in limitations if isinstance(item, str)]
+            if isinstance(limitations, list)
+            else []
+        ),
+        "package_sha256": payload.get("package_sha256"),
+    }
+
+
+def _commissioning_projection(
+    claim_nodes: list[dict[str, Any]],
+    *,
+    claim_details: dict[str, Any],
+    guided: dict[str, Any],
+) -> dict[str, Any]:
+    """Project capability commissioning without inventing a fifth claim kind."""
+
+    scientific = [node for node in claim_nodes if node.get("kind") == "scientific"]
+    instrument_by_parent: dict[str, list[dict[str, Any]]] = {}
+    for node in claim_nodes:
+        if node.get("kind") == "instrument" and node.get("relation") == "instrument_of":
+            parent_id = node.get("parent_id")
+            if isinstance(parent_id, str):
+                instrument_by_parent.setdefault(parent_id, []).append(node)
+
+    candidates: list[tuple[dict[str, Any], list[dict[str, Any]], int]] = []
+    for node in scientific:
+        details = claim_details.get(str(node.get("id")), {})
+        binding_count = _execution_binding_count(details.get("evidence_contracts"))
+        instruments = instrument_by_parent.get(str(node.get("id")), [])
+        if instruments or binding_count:
+            candidates.append((node, instruments, binding_count))
+
+    if guided.get("available") and not candidates and scientific:
+        root = next((node for node in scientific if node.get("id") == "claim_root"), scientific[0])
+        candidates.append((root, [], 0))
+
+    guided_owner = next(
+        (str(node.get("id")) for node, instruments, _count in candidates if instruments),
+        str(candidates[0][0].get("id")) if candidates else None,
+    )
+    stages = []
+    for node, instruments, binding_count in candidates:
+        scientific_id = str(node.get("id"))
+        statuses = [str(item.get("status") or "open") for item in instruments]
+        stages.append(
+            {
+                "id": f"stage_commissioning_{scientific_id}",
+                "node_type": "stage",
+                "stage": "commissioning",
+                "kind": "stage",
+                "scientific_claim_id": scientific_id,
+                "owner_id": scientific_id,
+                "claim_ids": [str(item["id"]) for item in instruments],
+                "binding_count": binding_count,
+                "guided_available": bool(guided.get("available"))
+                and scientific_id == guided_owner,
+                "status": _commissioning_status(statuses, binding_count=binding_count),
+            }
+        )
+    return {"guided": guided, "stages": stages}
+
+
+def _execution_binding_count(contracts: Any) -> int:
+    if not isinstance(contracts, list):
+        return 0
+    identities: set[tuple[str, str]] = set()
+    for contract in contracts:
+        if not isinstance(contract, dict):
+            continue
+        bindings = [contract.get("execution_binding")]
+        additional = contract.get("additional_execution_bindings")
+        if isinstance(additional, list):
+            bindings.extend(additional)
+        for binding in bindings:
+            if not isinstance(binding, dict):
+                continue
+            capability = binding.get("capability")
+            program = binding.get("program_path")
+            if isinstance(capability, str) and isinstance(program, str):
+                identities.add((capability, program))
+    return len(identities)
+
+
+def _commissioning_status(statuses: list[str], *, binding_count: int) -> str:
+    if any(status == "open" for status in statuses):
+        return "open"
+    if statuses and all(status == "supported" for status in statuses):
+        return "supported"
+    for status in ("instrument_limited", "unresolved", "weakened", "falsified"):
+        if status in statuses:
+            return status
+    return "open" if binding_count else "available"
 
 
 def _resolve_evidence_path(root: Path, value: str) -> str | None:

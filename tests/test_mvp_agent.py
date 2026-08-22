@@ -4359,6 +4359,16 @@ def test_builtin_warpx_skill_executes_smoke_inside_sandbox(tmp_path: Path) -> No
     }
 
 
+def test_builtin_scientific_markdown_skill_preserves_machine_readable_evidence() -> None:
+    skills, _capabilities = discover_builtin_mvp_resources(Path(__file__).resolve().parents[1])
+    assert "scientific-markdown" in skills
+    content = skills.read("scientific-markdown", None, max_chars=20_000)["content"]
+    assert "$R = \\mu_1/\\mu_{20}$" in content
+    assert "never wrap that JSON object in a Markdown" in content
+    assert "validation_checks" in content
+    assert "never replaces exact JSON evidence metadata" in MVPAgentRunner.SYSTEM_PROMPT
+
+
 def test_builtin_warpx_skill_has_no_demo_science() -> None:
     skill_root = Path(__file__).resolve().parents[1] / "skills" / "warpx"
     text = "\n".join(
