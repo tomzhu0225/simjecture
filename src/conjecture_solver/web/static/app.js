@@ -6,12 +6,22 @@ const state = {
   campaigns: [],
   selectedCampaign: null,
   selectedClaim: null,
+  selectedExecution: null,
   snapshot: null,
   controlToken: null,
   allowMutations: false,
-  activeTab: "activity",
+  activeTab: "artifacts",
+  showAllClaims: true,
   graphZoom: 1,
   graphSignature: null,
+  inspectorSignature: null,
+  executionSignature: null,
+  traceSignature: null,
+  artifactSignature: null,
+  conclusionSignature: null,
+  expandedDetails: new Set(),
+  executionConsoleCache: new Map(),
+  executionLoads: new Set(),
   pollInFlight: false,
   pollCount: 0,
   toastTimer: null,
@@ -21,13 +31,13 @@ const ui = {};
 
 document.addEventListener("DOMContentLoaded", () => {
   bindElements();
+  applyStoredTheme();
   bindEvents();
   initialize();
 });
 
 function bindElements() {
   const ids = [
-    "activity-panel",
     "artifacts-panel",
     "campaign-id",
     "campaign-instruction",
@@ -43,9 +53,13 @@ function bindElements() {
     "dashboard",
     "empty-new-run",
     "empty-state",
+    "execution-console",
+    "execution-list",
+    "execution-summary",
     "graph-placeholder",
     "graph-viewport",
-    "hypothesis-graph",
+    "claim-graph",
+    "inspector-kind",
     "launch-button",
     "metric-claims",
     "metric-claims-detail",
@@ -60,10 +74,14 @@ function bindElements() {
     "new-run-error",
     "new-run-form",
     "pause-button",
+    "research-trace",
     "resume-button",
     "root-hypothesis",
     "sync-state",
+    "theme-button",
     "toast",
+    "token-breakdown",
+    "claim-kind-toggle",
     "zoom-fit",
     "zoom-in",
     "zoom-out",
@@ -84,6 +102,8 @@ function bindEvents() {
   ui["pause-button"].addEventListener("click", () => controlCampaign("pause"));
   ui["resume-button"].addEventListener("click", () => controlCampaign("resume"));
   ui["cancel-button"].addEventListener("click", () => controlCampaign("cancel"));
+  ui["theme-button"].addEventListener("click", toggleTheme);
+  ui["claim-kind-toggle"].addEventListener("click", toggleClaimKinds);
   ui["zoom-in"].addEventListener("click", () => changeZoom(0.15));
   ui["zoom-out"].addEventListener("click", () => changeZoom(-0.15));
   ui["zoom-fit"].addEventListener("click", fitGraph);
@@ -93,6 +113,37 @@ function bindEvents() {
   window.addEventListener("resize", debounce(() => {
     if (state.snapshot) renderGraph(true);
   }, 160));
+}
+
+function applyStoredTheme() {
+  let theme = "light";
+  try {
+    const stored = window.localStorage.getItem("simjecture-theme");
+    if (stored === "light" || stored === "dark") theme = stored;
+  } catch (_) {
+    // Local storage can be unavailable in hardened browsers.
+  }
+  document.documentElement.dataset.theme = theme;
+  updateThemeButton();
+}
+
+function toggleTheme() {
+  const theme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+  document.documentElement.dataset.theme = theme;
+  try {
+    window.localStorage.setItem("simjecture-theme", theme);
+  } catch (_) {
+    // Theme still applies for this page session.
+  }
+  updateThemeButton();
+  if (state.snapshot) renderGraph(true);
+}
+
+function updateThemeButton() {
+  const dark = document.documentElement.dataset.theme === "dark";
+  ui["theme-button"].textContent = dark ? "☀" : "☾";
+  ui["theme-button"].setAttribute("aria-label", dark ? "Use light theme" : "Use dark theme");
+  ui["theme-button"].title = dark ? "Use light theme" : "Use dark theme";
 }
 
 async function initialize() {
@@ -133,11 +184,11 @@ async function refreshCampaigns() {
     state.campaigns = payload.campaigns || [];
     renderCampaignPicker();
   } catch (_) {
-    // The snapshot poll reports connectivity; campaign discovery is secondary.
+    // Snapshot polling owns the main connectivity indicator.
   }
 }
 
-async function refreshSnapshot(forceGraph) {
+async function refreshSnapshot(force) {
   if (!state.selectedCampaign) return;
   state.pollInFlight = true;
   try {
@@ -145,11 +196,11 @@ async function refreshSnapshot(forceGraph) {
       `/api/snapshot?campaign=${encodeURIComponent(state.selectedCampaign)}`,
     );
     state.snapshot = payload;
-    renderSnapshot(forceGraph);
+    renderSnapshot(force);
     setSync("online", "Live");
   } catch (error) {
     setSync("offline", "Retrying");
-    if (forceGraph) showToast(error.message, true);
+    if (force) showToast(error.message, true);
   } finally {
     state.pollInFlight = false;
   }
@@ -159,11 +210,24 @@ async function selectCampaign(token) {
   if (!token || token === state.selectedCampaign) return;
   state.selectedCampaign = token;
   state.selectedClaim = null;
+  state.selectedExecution = null;
   state.snapshot = null;
-  state.graphSignature = null;
   state.graphZoom = 1;
+  state.expandedDetails.clear();
+  state.executionConsoleCache.clear();
+  state.executionLoads.clear();
+  resetRenderSignatures();
   setSync("connecting", "Loading");
   await refreshSnapshot(true);
+}
+
+function resetRenderSignatures() {
+  state.graphSignature = null;
+  state.inspectorSignature = null;
+  state.executionSignature = null;
+  state.traceSignature = null;
+  state.artifactSignature = null;
+  state.conclusionSignature = null;
 }
 
 function renderCampaignPicker() {
@@ -190,7 +254,7 @@ function renderCampaignPicker() {
   }
 }
 
-function renderSnapshot(forceGraph) {
+function renderSnapshot(force) {
   const data = state.snapshot;
   const snapshot = data.snapshot;
   ui["empty-state"].hidden = true;
@@ -209,19 +273,54 @@ function renderSnapshot(forceGraph) {
   renderMetrics(data);
   renderControls(data.controls);
 
-  const nodes = data.hypothesis_graph.nodes || [];
+  const claims = data.claim_graph.nodes || [];
+  const scientificClaims = claims.filter(isScientificClaim);
   if (!state.selectedClaim || !data.claim_details[state.selectedClaim]) {
-    state.selectedClaim = nodes.find((item) => item.id === "claim_root")?.id || nodes[0]?.id || null;
+    state.selectedClaim = claims.find((item) => item.id === "claim_root")?.id
+      || scientificClaims[0]?.id
+      || claims[0]?.id
+      || null;
   }
-  const signature = JSON.stringify([nodes, data.hypothesis_graph.edges]);
-  if (forceGraph || signature !== state.graphSignature) {
-    state.graphSignature = signature;
+
+  const graphSignature = signature([data.claim_graph, state.showAllClaims]);
+  if (force || graphSignature !== state.graphSignature) {
+    state.graphSignature = graphSignature;
     renderGraph(false);
   }
-  renderInspector();
-  renderActivity();
-  renderArtifacts();
-  renderConclusion();
+
+  const inspectorSignature = signature([
+    state.selectedClaim,
+    data.claim_details[state.selectedClaim] || null,
+    data.claim_graph,
+  ]);
+  if (force || inspectorSignature !== state.inspectorSignature) {
+    state.inspectorSignature = inspectorSignature;
+    renderInspector();
+  }
+
+  const executionSignature = signature(data.executions || {});
+  if (force || executionSignature !== state.executionSignature) {
+    state.executionSignature = executionSignature;
+    renderExecutions();
+  }
+
+  const traceSignature = signature([snapshot.recent_events, snapshot.warnings, snapshot.token_usage]);
+  if (force || traceSignature !== state.traceSignature) {
+    state.traceSignature = traceSignature;
+    renderResearchTrace();
+  }
+
+  const artifactSignature = signature(data.artifacts || []);
+  if (force || artifactSignature !== state.artifactSignature) {
+    state.artifactSignature = artifactSignature;
+    renderArtifacts();
+  }
+
+  const conclusionSignature = signature(snapshot.report || null);
+  if (force || conclusionSignature !== state.conclusionSignature) {
+    state.conclusionSignature = conclusionSignature;
+    renderConclusion();
+  }
 }
 
 function renderCurrentAction(snapshot) {
@@ -257,14 +356,14 @@ function renderCurrentAction(snapshot) {
 
 function renderMetrics(data) {
   const snapshot = data.snapshot;
-  const scientific = data.hypothesis_graph.nodes || [];
-  const counts = countBy(scientific, (item) => item.status);
-  ui["metric-claims"].textContent = String(scientific.length);
-  ui["metric-claims-detail"].textContent = [
-    counts.open ? `${counts.open} open` : null,
-    counts.supported ? `${counts.supported} supported` : null,
-    counts.falsified ? `${counts.falsified} falsified` : null,
-  ].filter(Boolean).join(" · ") || "No registered hypotheses";
+  const claims = data.claim_graph.nodes || [];
+  const counts = countBy(claims, (item) => item.kind || "unknown");
+  ui["metric-claims"].textContent = String(claims.length);
+  ui["metric-claims-detail"].textContent = claims.length
+    ? ["scientific", "instrument", "diagnostic", "control"]
+      .map((kind) => `${counts[kind] || 0} ${kind}`)
+      .join(" · ")
+    : "No registered claims";
   ui["metric-elapsed"].textContent = data.formatted.elapsed;
   ui["metric-iterations"].textContent = `${formatInteger(snapshot.iterations)} model turns`;
   ui["metric-tokens"].textContent = compactNumber(snapshot.token_usage.total_tokens);
@@ -287,45 +386,65 @@ function renderControls(controls) {
   }
 }
 
+function toggleClaimKinds() {
+  state.showAllClaims = !state.showAllClaims;
+  ui["claim-kind-toggle"].setAttribute("aria-pressed", String(state.showAllClaims));
+  ui["claim-kind-toggle"].textContent = state.showAllClaims ? "All claim kinds" : "Scientific only";
+  state.graphSignature = null;
+  renderGraph(true);
+}
+
+function graphData() {
+  if (!state.snapshot) return { nodes: [], edges: [] };
+  const graph = state.snapshot.claim_graph || { nodes: [], edges: [] };
+  if (state.showAllClaims) return graph;
+  const nodes = graph.nodes.filter(isScientificClaim);
+  const ids = new Set(nodes.map((node) => node.id));
+  return {
+    nodes,
+    edges: graph.edges.filter((edge) => ids.has(edge.source) && ids.has(edge.target)),
+  };
+}
+
+function isScientificClaim(item) {
+  return item.kind === "scientific" || item.id === "claim_root";
+}
+
 function renderGraph(preserveScroll) {
-  const graph = ui["hypothesis-graph"];
+  const graph = ui["claim-graph"];
   const viewport = ui["graph-viewport"];
   const previousScroll = { left: viewport.scrollLeft, top: viewport.scrollTop };
   clear(graph);
   if (!state.snapshot) return;
-  const nodes = state.snapshot.hypothesis_graph.nodes || [];
-  const edges = state.snapshot.hypothesis_graph.edges || [];
-  ui["graph-placeholder"].hidden = nodes.length > 0;
-  graph.hidden = nodes.length === 0;
-  if (!nodes.length) return;
+  const data = graphData();
+  const nodes = data.nodes || [];
+  const edges = data.edges || [];
+  const scientific = nodes.filter(isScientificClaim);
+  const nodesById = new Map(nodes.map((node) => [node.id, node]));
+  ui["graph-placeholder"].hidden = scientific.length > 0;
+  graph.hidden = scientific.length === 0;
+  if (!scientific.length) return;
 
-  const nodeWidth = 258;
-  const nodeHeight = 108;
-  const xGap = 102;
-  const yGap = 34;
-  const marginX = 38;
-  const marginY = 34;
-  const positions = layoutTree(nodes, nodeWidth, nodeHeight, xGap, yGap, marginX, marginY);
-  const maxX = Math.max(...Array.from(positions.values()).map((point) => point.x));
-  const maxY = Math.max(...Array.from(positions.values()).map((point) => point.y));
-  const width = maxX + nodeWidth + marginX;
-  const height = Math.max(viewport.clientHeight || 493, maxY + nodeHeight + marginY);
-  graph.setAttribute("viewBox", `0 0 ${width} ${height}`);
-  graph.setAttribute("width", String(width * state.graphZoom));
-  graph.setAttribute("height", String(height * state.graphZoom));
+  const layout = layoutClaimGraph(nodes);
+  graph.setAttribute("viewBox", `0 0 ${layout.width} ${layout.height}`);
+  graph.setAttribute("width", String(layout.width * state.graphZoom));
+  graph.setAttribute("height", String(layout.height * state.graphZoom));
 
   const edgeLayer = svg("g", { class: "edge-layer" });
   for (const edge of edges) {
-    const source = positions.get(edge.source);
-    const target = positions.get(edge.target);
+    const source = layout.positions.get(edge.source);
+    const target = layout.positions.get(edge.target);
     if (!source || !target) continue;
-    const x1 = source.x + nodeWidth;
-    const y1 = source.y + nodeHeight / 2;
+    const x1 = source.x + source.width;
+    const y1 = source.y + source.height / 2;
     const x2 = target.x;
-    const y2 = target.y + nodeHeight / 2;
-    const bend = Math.max(35, (x2 - x1) * 0.48);
+    const y2 = target.y + target.height / 2;
+    const bend = Math.max(35, (x2 - x1) * 0.46);
+    const targetNode = nodesById.get(edge.target);
+    const targetKind = targetNode?.kind || "scientific";
+    const supporting = !isScientificClaim(targetNode || {});
     edgeLayer.append(svg("path", {
-      class: "graph-edge",
+      class: `graph-edge${supporting ? ` supporting ${targetKind}` : ""}`,
       d: `M ${x1} ${y1} C ${x1 + bend} ${y1}, ${x2 - bend} ${y2}, ${x2} ${y2}`,
     }));
     const label = svg("text", {
@@ -334,42 +453,44 @@ function renderGraph(preserveScroll) {
       y: String((y1 + y2) / 2 - 7),
       "text-anchor": "middle",
     });
-    label.textContent = edge.relation || "refines";
+    label.textContent = edge.relation || "related";
     edgeLayer.append(label);
   }
   graph.append(edgeLayer);
 
   const nodeLayer = svg("g", { class: "node-layer" });
   for (const item of nodes) {
-    const point = positions.get(item.id);
+    const point = layout.positions.get(item.id);
     if (!point) continue;
+    const scientificClaim = isScientificClaim(item);
+    const kind = item.kind || "scientific";
     const group = svg("g", {
-      class: `graph-node${item.id === state.selectedClaim ? " selected" : ""}`,
+      class: `graph-node ${scientificClaim ? "scientific" : `supporting ${kind}`}${item.id === state.selectedClaim ? " selected" : ""}`,
       "data-status": item.status,
       role: "button",
       tabindex: "0",
       transform: `translate(${point.x} ${point.y})`,
-      "aria-label": `${item.id}, ${item.status}: ${item.statement}`,
+      "aria-label": `${kind} claim ${item.id}, ${item.status}: ${item.statement}`,
     });
     group.append(svg("rect", {
       class: "node-body",
-      width: String(nodeWidth),
-      height: String(nodeHeight),
-      rx: "11",
+      width: String(point.width),
+      height: String(point.height),
+      rx: scientificClaim ? "10" : "8",
     }));
     group.append(svg("line", {
       class: "status-line",
       x1: "2",
       x2: "2",
-      y1: "13",
-      y2: String(nodeHeight - 13),
+      y1: "12",
+      y2: String(point.height - 12),
     }));
-    appendSvgText(group, item.id, 15, 20, "node-id");
-    appendSvgText(group, item.status, nodeWidth - 14, 20, "node-status", "end");
-    const lines = wrapText(item.statement || item.id, 40, 3);
-    lines.forEach((line, index) => appendSvgText(group, line, 15, 44 + index * 15, "node-copy"));
-    const counts = `${item.evidence_count} evidence · ${item.contract_count} contracts`;
-    appendSvgText(group, counts, 15, nodeHeight - 11, "node-counts");
+    appendSvgText(group, kind, 16, 21, "node-id");
+    appendSvgText(group, item.status, point.width - 14, 21, "node-status", "end");
+    const lines = wrapText(item.statement || item.id, scientificClaim ? 45 : 35, scientificClaim ? 3 : 2);
+    lines.forEach((line, index) => appendSvgText(group, line, 16, 48 + index * 17, "node-copy"));
+    const counts = `${item.id} · E${item.evidence_count}/C${item.contract_count}`;
+    appendSvgText(group, counts, 16, point.height - 12, "node-counts");
     group.addEventListener("click", () => selectClaim(item.id));
     group.addEventListener("keydown", (event) => {
       if (event.key === "Enter" || event.key === " ") {
@@ -386,54 +507,78 @@ function renderGraph(preserveScroll) {
   }
 }
 
-function layoutTree(nodes, nodeWidth, nodeHeight, xGap, yGap, marginX, marginY) {
-  const byId = new Map(nodes.map((item) => [item.id, item]));
-  const children = new Map(nodes.map((item) => [item.id, []]));
+function layoutClaimGraph(nodes) {
+  const scientificWidth = 300;
+  const scientificHeight = 126;
+  const supportingWidth = 230;
+  const supportingHeight = 86;
+  const supportingGap = 14;
+  const columnPitch = 660;
+  const marginX = 42;
+  const marginY = 42;
+  const rowGap = 58;
+  const scientific = nodes.filter(isScientificClaim);
+  const attached = new Map(scientific.map((item) => [item.id, []]));
   for (const item of nodes) {
-    if (item.parent_id && children.has(item.parent_id)) children.get(item.parent_id).push(item.id);
-  }
-  const roots = nodes.filter((item) => !item.parent_id || !byId.has(item.parent_id));
-  const positions = new Map();
-  const visited = new Set();
-  let nextY = marginY;
-
-  function place(id, depth) {
-    if (visited.has(id)) return positions.get(id)?.y ?? nextY;
-    visited.add(id);
-    const childIds = children.get(id) || [];
-    let y;
-    if (childIds.length) {
-      const childYs = childIds.map((child) => place(child, depth + 1));
-      y = childYs.reduce((sum, value) => sum + value, 0) / childYs.length;
-    } else {
-      y = nextY;
-      nextY += nodeHeight + yGap;
+    if (!isScientificClaim(item) && attached.has(item.owner_id)) {
+      attached.get(item.owner_id).push(item);
     }
-    positions.set(id, { x: marginX + depth * (nodeWidth + xGap), y });
-    return y;
   }
-
-  for (const root of roots) {
-    place(root.id, 0);
-    nextY += yGap;
+  const positions = new Map();
+  let cursorY = marginY;
+  let maxX = marginX + scientificWidth;
+  for (const item of scientific) {
+    const owned = attached.get(item.id) || [];
+    const supportingStack = owned.length
+      ? owned.length * supportingHeight + (owned.length - 1) * supportingGap
+      : 0;
+    const blockHeight = Math.max(scientificHeight, supportingStack);
+    const x = marginX + (item.depth || 0) * columnPitch;
+    const y = cursorY + (blockHeight - scientificHeight) / 2;
+    positions.set(item.id, {
+      x,
+      y,
+      width: scientificWidth,
+      height: scientificHeight,
+    });
+    owned.forEach((claim, index) => {
+      const claimX = x + scientificWidth + 64 + (claim.depth || 0) * 26;
+      const claimY = cursorY + index * (supportingHeight + supportingGap);
+      positions.set(claim.id, {
+        x: claimX,
+        y: claimY,
+        width: supportingWidth,
+        height: supportingHeight,
+      });
+      maxX = Math.max(maxX, claimX + supportingWidth);
+    });
+    maxX = Math.max(maxX, x + scientificWidth);
+    cursorY += blockHeight + rowGap;
   }
-  for (const item of nodes) {
-    if (!visited.has(item.id)) place(item.id, item.depth || 0);
-  }
-  return positions;
+  return {
+    positions,
+    width: maxX + marginX,
+    height: Math.max(590, cursorY - rowGap + marginY),
+  };
 }
 
 function selectClaim(claimId) {
   state.selectedClaim = claimId;
+  state.inspectorSignature = null;
   renderGraph(true);
   renderInspector();
+}
+
+function claimGraphNode(claimId) {
+  if (!state.snapshot) return null;
+  return (state.snapshot.claim_graph?.nodes || []).find((item) => item.id === claimId) || null;
 }
 
 function renderInspector() {
   const container = ui["claim-inspector"];
   clear(container);
   if (!state.snapshot || !state.selectedClaim) {
-    container.append(paragraph("panel-placeholder", "Select a hypothesis to inspect its evidence."));
+    container.append(paragraph("panel-placeholder", "Select a claim to inspect it."));
     setBadge(ui["claim-status"], "", "—");
     return;
   }
@@ -442,6 +587,10 @@ function renderInspector() {
     container.append(paragraph("panel-placeholder", "Claim details are not available yet."));
     return;
   }
+  const node = claimGraphNode(state.selectedClaim);
+  const kind = detail.kind || (detail.id === "claim_root" ? "scientific" : "unknown");
+  const supporting = kind !== "scientific";
+  ui["inspector-kind"].textContent = `${capitalize(kind)} claim`;
   setBadge(ui["claim-status"], detail.status, detail.status);
   container.append(paragraph("claim-statement", detail.statement || detail.id));
 
@@ -449,24 +598,50 @@ function renderInspector() {
   for (const value of [detail.id, detail.kind, detail.relation]) {
     if (value) metadata.append(element("span", "metadata-chip", value));
   }
+  if (Number.isInteger(detail.created_iteration)) {
+    metadata.append(element("span", "metadata-chip", `created: iteration ${detail.created_iteration}`));
+  }
+  if (Number.isInteger(detail.updated_iteration)) {
+    metadata.append(element("span", "metadata-chip", `updated: iteration ${detail.updated_iteration}`));
+  }
   if (detail.parent_id) {
     const parent = element("button", "metadata-chip", `parent: ${detail.parent_id}`);
     parent.type = "button";
     parent.addEventListener("click", () => selectClaim(detail.parent_id));
     metadata.append(parent);
   }
+  if (supporting && node?.owner_id && node.owner_id !== detail.parent_id) {
+    const owner = element("button", "metadata-chip", `scientific owner: ${node.owner_id}`);
+    owner.type = "button";
+    owner.addEventListener("click", () => selectClaim(node.owner_id));
+    metadata.append(owner);
+  }
   container.append(metadata);
 
   if (detail.rationale) container.append(inspectorSection("Rationale", detail.rationale));
   if (detail.closed_reason) container.append(inspectorSection("Closure", detail.closed_reason));
 
+  const childClaims = (state.snapshot.claim_graph.nodes || []).filter(
+    (item) => item.parent_id === detail.id,
+  );
+  if (childClaims.length) {
+    const section = inspectorSection(`Child claims · ${childClaims.length}`);
+    for (const child of childClaims) {
+      section.append(claimLinkCard(child, `${child.kind || "unknown"} · ${child.relation || "related"}`));
+    }
+    container.append(section);
+  }
+
+  const contractSection = inspectorSection(
+    `Evidence contracts · ${detail.evidence_contracts?.length || 0}`,
+  );
   if (detail.evidence_contracts?.length) {
-    const section = inspectorSection("Evidence contracts");
     detail.evidence_contracts.forEach((contract, index) => {
       const card = element("div", "contract-card");
       card.append(element("strong", null, `Contract v${contract.version ?? index + 1}`));
       const fields = [
         ["Observable", contract.observable],
+        ["Expected outcomes", contract.expected_outcomes],
         ["Decision rule", contract.decision_rule],
         ["Required observation", contract.required_observation],
         ["Uncertainty", contract.uncertainty_criterion],
@@ -474,44 +649,40 @@ function renderInspector() {
       ];
       for (const [label, copy] of fields) {
         if (!copy) continue;
-        const details = element("details");
-        details.append(element("summary", null, label));
-        details.append(paragraph(null, copy));
-        card.append(details);
+        card.append(persistentDetails(`contract:${detail.id}:${index}:${label}`, label, copy));
       }
-      section.append(card);
+      contractSection.append(card);
     });
-    container.append(section);
+  } else {
+    contractSection.append(paragraph("inspector-empty", "No evidence contract is recorded for this claim."));
   }
+  container.append(contractSection);
 
+  const evidenceSection = inspectorSection(`Evidence · ${detail.evidence?.length || 0}`);
   if (detail.evidence?.length) {
-    const section = inspectorSection(`Evidence · ${detail.evidence.length}`);
-    for (const evidence of detail.evidence) section.append(evidenceCard(evidence));
-    container.append(section);
+    detail.evidence.forEach((evidence, index) => {
+      evidenceSection.append(evidenceCard(evidence, `${detail.id}:${index}`));
+    });
+  } else {
+    evidenceSection.append(paragraph("inspector-empty", "No evidence is linked to this claim yet."));
   }
-
-  const validationIds = state.snapshot.validation_claims[state.selectedClaim] || [];
-  if (validationIds.length) {
-    const section = inspectorSection(`Validation claims · ${validationIds.length}`);
-    for (const id of validationIds) {
-      const validation = state.snapshot.claim_details[id];
-      if (!validation) continue;
-      const card = element("button", "validation-card");
-      card.type = "button";
-      const header = element("header");
-      header.append(element("strong", null, validation.kind || "validation"));
-      const badge = element("span", "status-badge");
-      setBadge(badge, validation.status, validation.status);
-      header.append(badge);
-      card.append(header, paragraph(null, validation.statement || id));
-      card.addEventListener("click", () => selectClaim(id));
-      section.append(card);
-    }
-    container.append(section);
-  }
+  container.append(evidenceSection);
 }
 
-function evidenceCard(evidence) {
+function claimLinkCard(claim, label) {
+  const card = element("button", "linked-claim-card");
+  card.type = "button";
+  const header = element("header");
+  header.append(element("strong", null, label));
+  const badge = element("span", "status-badge");
+  setBadge(badge, claim.status, claim.status);
+  header.append(badge);
+  card.append(header, paragraph(null, claim.statement || claim.id));
+  card.addEventListener("click", () => selectClaim(claim.id));
+  return card;
+}
+
+function evidenceCard(evidence, keyPrefix) {
   const card = element("article", "evidence-card");
   const header = element("header");
   const path = evidence.artifact_path || evidence.path;
@@ -533,44 +704,230 @@ function evidenceCard(evidence) {
   card.append(header);
   if (evidence.note) card.append(paragraph(null, evidence.note));
   if (evidence.observation_note) {
-    const details = element("details");
-    details.append(element("summary", null, "Observation assessment"));
-    details.append(paragraph(null, evidence.observation_note));
-    card.append(details);
+    card.append(persistentDetails(`evidence:${keyPrefix}:assessment`, "Observation assessment", evidence.observation_note));
   }
   return card;
 }
 
-function renderActivity() {
-  const panel = ui["activity-panel"];
+function persistentDetails(key, label, copy) {
+  const fullKey = `${state.selectedCampaign || "campaign"}:${key}`;
+  const details = element("details");
+  details.dataset.detailKey = fullKey;
+  details.open = state.expandedDetails.has(fullKey);
+  details.append(element("summary", null, label));
+  details.append(paragraph(null, copy));
+  details.addEventListener("toggle", () => {
+    if (details.open) state.expandedDetails.add(fullKey);
+    else state.expandedDetails.delete(fullKey);
+  });
+  return details;
+}
+
+function renderExecutions() {
+  const list = ui["execution-list"];
+  const consolePanel = ui["execution-console"];
+  clear(list);
+  clear(consolePanel);
+  if (!state.snapshot) return;
+  const projection = state.snapshot.executions || { items: [], total: 0, status_counts: {} };
+  const items = projection.items || [];
+  const counts = projection.status_counts || {};
+  const summary = [
+    projection.total ? `${projection.total} total` : null,
+    counts.running ? `${counts.running} running` : null,
+    counts.succeeded ? `${counts.succeeded} succeeded` : null,
+    counts.failed ? `${counts.failed} failed` : null,
+    projection.truncated ? `${projection.visible} recent shown` : null,
+  ].filter(Boolean).join(" · ");
+  ui["execution-summary"].textContent = summary || (projection.total ? `${projection.total} recorded` : "No executions");
+
+  if (!items.length) {
+    list.append(paragraph("panel-placeholder", "No numerical execution has been recorded."));
+    consolePanel.append(element("div", "console-empty", "The first simulation or calculation will appear here with its real state and heartbeat."));
+    state.selectedExecution = null;
+    return;
+  }
+  if (!state.selectedExecution || !items.some((item) => item.id === state.selectedExecution)) {
+    state.selectedExecution = projection.active_id || items[0].id;
+  }
+  for (const item of items) {
+    const button = element("button", `execution-item${item.id === state.selectedExecution ? " selected" : ""}`);
+    button.type = "button";
+    button.setAttribute("role", "option");
+    button.setAttribute("aria-selected", String(item.id === state.selectedExecution));
+    const header = element("header");
+    header.append(element("strong", null, item.label));
+    const badge = element("span", "status-badge");
+    setBadge(badge, item.status, item.status);
+    header.append(badge);
+    const metadata = [
+      `iteration ${item.iteration}`,
+      item.stage,
+      item.active_claim_id,
+    ].filter(Boolean).join(" · ");
+    button.append(header, paragraph(null, item.description), element("small", null, metadata));
+    button.addEventListener("click", () => {
+      state.selectedExecution = item.id;
+      renderExecutions();
+    });
+    list.append(button);
+  }
+  const selected = items.find((item) => item.id === state.selectedExecution) || items[0];
+  const cacheKey = executionCacheKey(selected);
+  const rendered = state.executionConsoleCache.has(cacheKey)
+    ? { ...selected, console_excerpt: state.executionConsoleCache.get(cacheKey) }
+    : selected;
+  renderExecutionConsole(consolePanel, rendered);
+  if (selected.console_available && !state.executionConsoleCache.has(cacheKey)) {
+    loadExecutionConsole(selected, cacheKey);
+  }
+}
+
+function executionCacheKey(item) {
+  return [
+    state.selectedCampaign,
+    item.id,
+    item.status,
+    item.stdout_bytes,
+    item.stderr_bytes,
+  ].join(":");
+}
+
+async function loadExecutionConsole(item, cacheKey) {
+  if (state.executionLoads.has(cacheKey)) return;
+  state.executionLoads.add(cacheKey);
+  try {
+    const query = new URLSearchParams({
+      campaign: state.selectedCampaign,
+      iteration: String(item.iteration),
+    });
+    const payload = await api(`/api/execution?${query.toString()}`);
+    state.executionConsoleCache.set(cacheKey, payload.execution.console_excerpt || null);
+    if (state.selectedExecution === item.id) renderExecutions();
+  } catch (error) {
+    state.executionConsoleCache.set(cacheKey, null);
+    showToast(`Execution console unavailable: ${error.message}`, true);
+    if (state.selectedExecution === item.id) renderExecutions();
+  } finally {
+    state.executionLoads.delete(cacheKey);
+  }
+}
+
+function renderExecutionConsole(container, item) {
+  const heading = element("div", "console-heading");
+  const copy = element("div");
+  copy.append(element("h3", null, item.label));
+  copy.append(paragraph(null, `Iteration ${item.iteration} · ${item.action_name.replaceAll("_", " ")}`));
+  const badge = element("span", "status-badge");
+  setBadge(badge, item.status, item.status);
+  heading.append(copy, badge);
+  container.append(heading);
+
+  const progress = element("div", `progress-track ${item.status}`);
+  progress.setAttribute("role", "progressbar");
+  progress.setAttribute("aria-label", `Execution ${item.status}`);
+  if (item.status !== "running") {
+    progress.setAttribute("aria-valuemin", "0");
+    progress.setAttribute("aria-valuemax", "1");
+    progress.setAttribute("aria-valuenow", item.status === "succeeded" ? "1" : "0");
+  }
+  container.append(progress);
+
+  const stats = element("div", "execution-stats");
+  const values = [
+    ["Elapsed", item.elapsed_wall_seconds == null ? "—" : formatDuration(item.elapsed_wall_seconds)],
+    ["Stdout", item.stdout_bytes == null ? "—" : formatBytes(item.stdout_bytes)],
+    ["Stderr", item.stderr_bytes == null ? "—" : formatBytes(item.stderr_bytes)],
+    ["Workspace", item.workspace_bytes == null ? "—" : formatBytes(item.workspace_bytes)],
+  ];
+  for (const [label, value] of values) {
+    const stat = element("div");
+    stat.append(element("span", null, label), element("strong", null, value));
+    stats.append(stat);
+  }
+  container.append(stats);
+
+  const binding = element("p", "execution-binding");
+  const bindingParts = [
+    item.active_claim_id ? `claim ${item.active_claim_id}` : "no claim binding",
+    item.stage ? `stage ${item.stage}` : null,
+    item.model ? `model ${item.model}` : null,
+    item.route ? `route ${item.route}` : null,
+    item.returncode == null ? null : `return code ${item.returncode}`,
+    item.timed_out ? "timed out" : null,
+  ].filter(Boolean);
+  binding.textContent = bindingParts.join(" · ");
+  container.append(binding);
+
+  let output = item.console_excerpt;
+  if (item.console_available && item.console_excerpt === undefined) {
+    output = "Loading the bounded console record…";
+  }
+  if (!output && item.status === "running") {
+    output = [
+      "$ execution in progress",
+      item.argv?.length ? `$ ${item.argv.join(" ")}` : null,
+      item.elapsed_wall_seconds == null ? "Waiting for the first command heartbeat…" : `Heartbeat received after ${formatDuration(item.elapsed_wall_seconds)}.`,
+      item.stdout_bytes == null ? null : `stdout captured: ${formatBytes(item.stdout_bytes)}`,
+      item.stderr_bytes == null ? null : `stderr captured: ${formatBytes(item.stderr_bytes)}`,
+    ].filter(Boolean).join("\n");
+  }
+  if (!output) {
+    output = item.argv?.length
+      ? `$ ${item.argv.join(" ")}\n\nNo console excerpt was retained for this execution.`
+      : "No console excerpt was retained for this execution.";
+  }
+  container.append(element("pre", "console-output", output));
+}
+
+function renderResearchTrace() {
+  const panel = ui["research-trace"];
+  const usagePanel = ui["token-breakdown"];
   clear(panel);
+  clear(usagePanel);
   if (!state.snapshot) return;
   const snapshot = state.snapshot.snapshot;
+  const usage = snapshot.token_usage || {};
+  const usageRows = [
+    ["Input", compactNumber(usage.prompt_tokens)],
+    ["Output", compactNumber(usage.completion_tokens)],
+    ["Reasoning", compactNumber(usage.reasoning_tokens)],
+    ["Cached", compactNumber(usage.cached_tokens)],
+  ];
+  for (const [label, value] of usageRows) {
+    const cell = element("div");
+    cell.append(element("span", null, label), element("strong", null, value));
+    usagePanel.append(cell);
+  }
   if (snapshot.warnings?.length) {
-    const list = element("ul", "warning-list");
-    snapshot.warnings.forEach((warning) => list.append(element("li", null, warning)));
-    panel.append(list);
+    const warnings = element("ul", "warning-list");
+    snapshot.warnings.forEach((warning) => warnings.append(element("li", null, warning)));
+    panel.append(warnings);
   }
   const events = [...(snapshot.recent_events || [])].reverse();
   if (!events.length) {
     panel.append(paragraph("panel-placeholder", "No model or tool actions have been recorded yet."));
     return;
   }
-  const list = element("div", "activity-list");
   for (const event of events) {
-    const row = element("article", "activity-event");
+    const row = element("article", "trace-event");
     const mark = element("span", "event-mark", eventSymbol(event.kind));
-    const copy = element("div");
+    const copy = element("div", "trace-copy");
     copy.append(paragraph(null, event.summary));
     const metadata = [
       event.iteration ? `iteration ${event.iteration}` : null,
       event.action_name || event.kind,
+      event.model,
+      event.route,
+      event.outcome && event.kind !== "assistant" ? event.outcome : null,
     ].filter(Boolean).join(" · ");
     copy.append(element("small", null, metadata));
+    if (event.research_note) {
+      copy.append(element("div", "research-note", event.research_note));
+    }
     row.append(mark, copy);
-    list.append(row);
+    panel.append(row);
   }
-  panel.append(list);
 }
 
 function renderArtifacts() {
@@ -631,7 +988,6 @@ function renderConclusion() {
 function setTab(name) {
   state.activeTab = name;
   for (const tab of ui.tabs) tab.setAttribute("aria-selected", String(tab.dataset.tab === name));
-  ui["activity-panel"].hidden = name !== "activity";
   ui["artifacts-panel"].hidden = name !== "artifacts";
   ui["conclusion-panel"].hidden = name !== "conclusion";
 }
@@ -669,7 +1025,11 @@ async function launchCampaign(event) {
     await refreshCampaigns();
     state.selectedCampaign = result.campaign;
     state.selectedClaim = null;
-    state.graphSignature = null;
+    state.selectedExecution = null;
+    state.expandedDetails.clear();
+    state.executionConsoleCache.clear();
+    state.executionLoads.clear();
+    resetRenderSignatures();
     renderCampaignPicker();
     await refreshSnapshot(true);
     showToast(`Launched ${result.campaign_id}`);
@@ -706,16 +1066,16 @@ async function controlCampaign(action) {
 }
 
 function changeZoom(delta) {
-  state.graphZoom = Math.min(1.8, Math.max(0.55, state.graphZoom + delta));
+  state.graphZoom = Math.min(1.8, Math.max(0.5, state.graphZoom + delta));
   renderGraph(true);
 }
 
 function fitGraph() {
-  const graph = ui["hypothesis-graph"];
+  const graph = ui["claim-graph"];
   const viewBox = graph.viewBox.baseVal;
   if (!viewBox.width) return;
   const available = Math.max(100, ui["graph-viewport"].clientWidth - 20);
-  state.graphZoom = Math.min(1, Math.max(0.55, available / viewBox.width));
+  state.graphZoom = Math.min(1, Math.max(0.5, available / viewBox.width));
   renderGraph(false);
   ui["graph-viewport"].scrollTo({ left: 0, top: 0 });
 }
@@ -850,12 +1210,40 @@ function countBy(items, key) {
   return result;
 }
 
+function signature(value) {
+  return JSON.stringify(value);
+}
+
+function capitalize(value) {
+  const text = String(value || "");
+  return text ? `${text[0].toUpperCase()}${text.slice(1)}` : text;
+}
+
 function formatInteger(value) {
   return new Intl.NumberFormat().format(value || 0);
 }
 
 function compactNumber(value) {
   return new Intl.NumberFormat(undefined, { notation: "compact", maximumFractionDigits: 1 }).format(value || 0);
+}
+
+function formatDuration(seconds) {
+  const value = Math.max(0, Number(seconds) || 0);
+  if (value < 60) return `${Math.round(value)} s`;
+  if (value < 3600) return `${Math.floor(value / 60)}m ${Math.round(value % 60)}s`;
+  return `${Math.floor(value / 3600)}h ${Math.floor((value % 3600) / 60)}m`;
+}
+
+function formatBytes(bytes) {
+  let value = Math.max(0, Number(bytes) || 0);
+  const units = ["B", "KB", "MB", "GB", "TB"];
+  let unit = 0;
+  while (value >= 1024 && unit < units.length - 1) {
+    value /= 1024;
+    unit += 1;
+  }
+  const digits = value >= 10 || unit === 0 ? 0 : 1;
+  return `${value.toFixed(digits)} ${units[unit]}`;
 }
 
 function debounce(callback, delay) {

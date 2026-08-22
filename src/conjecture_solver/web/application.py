@@ -36,7 +36,7 @@ from ..mvp_monitor import (
 )
 from ..presentation import build_hypothesis_tree, build_validation_tree
 
-API_SCHEMA_VERSION = "0.1.0"
+API_SCHEMA_VERSION = "0.2.0"
 MAX_CAMPAIGNS = 100
 MAX_ARTIFACT_BYTES = 64 * 1024 * 1024
 VISIBLE_RECORDS = frozenset(
@@ -193,29 +193,57 @@ class SimjectureWebApplication:
             live = _is_live(root)
             raw_claims = _raw_claims(root)
             claim_details = _claim_details(raw_claims, root=root)
-            hypothesis_rows = build_hypothesis_tree(snapshot.claims)
-            scientific_ids = {row.claim.id for row in hypothesis_rows}
-            graph_nodes = [
+            scientific_rows = build_hypothesis_tree(snapshot.claims)
+            scientific_ids = {row.claim.id for row in scientific_rows}
+            scientific_nodes = [
                 {
                     **row.claim.model_dump(mode="json"),
                     "depth": row.depth,
                     "orphaned": row.orphaned,
                 }
-                for row in hypothesis_rows
+                for row in scientific_rows
             ]
-            graph_edges = [
+            scientific_edges = [
                 {
                     "source": row.claim.parent_id,
                     "target": row.claim.id,
                     "relation": row.claim.relation,
                 }
-                for row in hypothesis_rows
+                for row in scientific_rows
                 if row.claim.parent_id in scientific_ids
             ]
-            validations = {
-                claim_id: [row.claim.id for row in build_validation_tree(snapshot.claims, claim_id)]
+            supporting_rows_by_owner = {
+                claim_id: build_validation_tree(snapshot.claims, claim_id)
                 for claim_id in scientific_ids
             }
+            claim_graph_nodes = [
+                {**node, "owner_id": node["id"]}
+                for node in scientific_nodes
+            ]
+            claim_graph_edges = list(scientific_edges)
+            for owner_id, rows in supporting_rows_by_owner.items():
+                supporting_ids = {row.claim.id for row in rows}
+                for row in rows:
+                    claim_graph_nodes.append(
+                        {
+                            **row.claim.model_dump(mode="json"),
+                            "depth": row.depth,
+                            "orphaned": row.orphaned,
+                            "owner_id": owner_id,
+                        }
+                    )
+                    source = (
+                        row.claim.parent_id
+                        if row.claim.parent_id in supporting_ids
+                        else owner_id
+                    )
+                    claim_graph_edges.append(
+                        {
+                            "source": source,
+                            "target": row.claim.id,
+                            "relation": row.claim.relation,
+                        }
+                    )
             artifacts = _artifact_index(root, raw_claims=raw_claims)
             controls = _control_capabilities(root, phase=snapshot.phase, live=live)
             if not self.allow_mutations:
@@ -236,9 +264,9 @@ class SimjectureWebApplication:
                 "display_name": _campaign_display_name(snapshot, root),
                 "revision": revision,
                 "snapshot": payload,
-                "hypothesis_graph": {"nodes": graph_nodes, "edges": graph_edges},
+                "claim_graph": {"nodes": claim_graph_nodes, "edges": claim_graph_edges},
                 "claim_details": claim_details,
-                "validation_claims": validations,
+                "executions": _execution_projection(snapshot),
                 "artifacts": artifacts,
                 "controls": controls,
                 "formatted": {
@@ -286,6 +314,31 @@ class SimjectureWebApplication:
             "pid": campaign.identity.pid,
             "message": "campaign launched",
         }
+
+    def execution(self, token: str, iteration: int) -> dict[str, Any]:
+        """Return one bounded execution detail without bloating the live snapshot."""
+
+        if iteration < 1:
+            raise WebApplicationError("invalid execution iteration", status=400)
+        with self._lock:
+            root = self.registry.resolve(token)
+            snapshot = self._monitor(token, root).snapshot()
+            execution = next(
+                (item for item in snapshot.executions if item.iteration == iteration),
+                None,
+            )
+            if execution is None:
+                raise WebApplicationError("execution not found", status=404)
+            payload = execution.model_dump(mode="json")
+            payload["label"] = _execution_label(
+                execution.action_name,
+                execution.capability,
+            )
+            return {
+                "schema_version": API_SCHEMA_VERSION,
+                "campaign": token,
+                "execution": payload,
+            }
 
     def control(self, token: str, action: str) -> dict[str, Any]:
         self._require_mutations()
@@ -465,6 +518,47 @@ def _artifact_index(root: Path, *, raw_claims: list[dict[str, Any]]) -> list[dic
         )
     )
     return results
+
+
+def _execution_projection(snapshot: Any) -> dict[str, Any]:
+    """Project bounded compute history as selectable runs, never fake progress."""
+
+    ordered = []
+    for execution in snapshot.executions:
+        item = execution.model_dump(mode="json")
+        console_excerpt = item.pop("console_excerpt")
+        item["console_available"] = bool(console_excerpt)
+        item["label"] = _execution_label(
+            execution.action_name,
+            execution.capability,
+        )
+        ordered.append(item)
+    status_counts: dict[str, int] = {}
+    for item in ordered:
+        status = str(item["status"])
+        status_counts[status] = status_counts.get(status, 0) + 1
+    return {
+        "items": ordered,
+        "total": snapshot.execution_total,
+        "visible": len(ordered),
+        "truncated": snapshot.execution_total > len(ordered),
+        "status_counts": status_counts,
+        "active_id": next(
+            (item["id"] for item in ordered if item["status"] == "running"),
+            ordered[0]["id"] if ordered else None,
+        ),
+        "progress_semantics": "state_and_heartbeat",
+    }
+
+
+def _execution_label(action_name: str, capability: str | None) -> str:
+    if capability:
+        return capability
+    if action_name == "run_python":
+        return "Python calculation"
+    if action_name == "author_and_run_capability":
+        return "Authored capability run"
+    return "Capability run"
 
 
 def _control_capabilities(root: Path, *, phase: RunPhase, live: bool) -> dict[str, Any]:

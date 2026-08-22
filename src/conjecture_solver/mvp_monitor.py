@@ -56,6 +56,11 @@ TERMINAL_REPORT_STATUSES = frozenset(
 OPERATOR_INPUT_DIR = "operator_input"
 DEFAULT_RECENT_EVENT_LIMIT = 40
 _MAX_RETAINED_EVENTS = 80
+_MAX_CONSOLE_EXCERPT_CHARS = 12_000
+_MAX_PROJECTED_EXECUTIONS = 100
+_EXECUTION_ACTION_NAMES = frozenset(
+    {"run_python", "run_capability", "author_and_run_capability"}
+)
 
 
 class RunPhase(StrEnum):
@@ -114,6 +119,7 @@ class CurrentAction(StrictModel):
     path: str | None = None
     model: str | None = None
     route: str | None = None
+    research_note: str | None = None
     argv: tuple[str, ...] = ()
 
 
@@ -133,6 +139,43 @@ class HumanizedEvent(StrictModel):
     iteration: int | None = None
     summary: str
     action_name: str | None = None
+    research_note: str | None = None
+    model: str | None = None
+    route: str | None = None
+    outcome: str | None = None
+    capability: str | None = None
+    stage: str | None = None
+    active_claim_id: str | None = None
+    argv: tuple[str, ...] = ()
+    console_excerpt: str | None = None
+    returncode: int | None = None
+    timed_out: bool | None = None
+    elapsed_wall_seconds: float | None = None
+    stdout_bytes: int | None = None
+    stderr_bytes: int | None = None
+    workspace_bytes: int | None = None
+
+
+class ComputeExecutionSummary(StrictModel):
+    id: str
+    iteration: int = Field(ge=1)
+    action_name: str
+    description: str
+    status: str
+    capability: str | None = None
+    stage: str | None = None
+    active_claim_id: str | None = None
+    argv: tuple[str, ...] = ()
+    model: str | None = None
+    route: str | None = None
+    research_note: str | None = None
+    console_excerpt: str | None = None
+    returncode: int | None = None
+    timed_out: bool | None = None
+    elapsed_wall_seconds: float | None = None
+    stdout_bytes: int | None = None
+    stderr_bytes: int | None = None
+    workspace_bytes: int | None = None
 
 
 class ModelTokenUsage(StrictModel):
@@ -210,6 +253,8 @@ class MVPRunSnapshot(StrictModel):
     current_action: CurrentAction | None = None
     latest_heartbeat: HeartbeatObservation | None = None
     recent_events: tuple[HumanizedEvent, ...] = ()
+    execution_total: int = Field(default=0, ge=0)
+    executions: tuple[ComputeExecutionSummary, ...] = ()
     report: TerminalReportSummary | None = None
     artifacts: ArtifactPaths
     workspace_bytes: int = Field(default=0, ge=0)
@@ -703,6 +748,75 @@ def _tool_payload(record: dict[str, Any]) -> dict[str, Any] | None:
     return tool if isinstance(tool, dict) else None
 
 
+def _console_excerpt(tool: dict[str, Any] | None) -> str | None:
+    """Return a bounded, operator-facing excerpt from a command result."""
+
+    if tool is None:
+        return None
+    result = tool.get("result")
+    if not isinstance(result, dict):
+        return None
+    execution = result.get("execution_result")
+    sources = [execution, result] if isinstance(execution, dict) else [result]
+    lines: list[str] = []
+    primary = sources[0]
+    for key in ("returncode", "timed_out", "wall_seconds", "workspace_bytes"):
+        if key in primary:
+            lines.append(f"{key}: {primary[key]}")
+    for source in sources:
+        for stream in ("stdout", "stderr"):
+            value = source.get(stream)
+            if not isinstance(value, str):
+                value = source.get(f"{stream}_head")
+            if not isinstance(value, str) or not value:
+                continue
+            if lines:
+                lines.append("")
+            lines.append(f"[{stream}]")
+            lines.append(value)
+    if not lines:
+        return None
+    excerpt = "\n".join(lines)
+    if len(excerpt) <= _MAX_CONSOLE_EXCERPT_CHARS:
+        return excerpt
+    omitted = len(excerpt) - _MAX_CONSOLE_EXCERPT_CHARS
+    return f"{excerpt[:_MAX_CONSOLE_EXCERPT_CHARS]}\n… {omitted} characters omitted"
+
+
+def _execution_metrics(tool: dict[str, Any] | None) -> dict[str, Any]:
+    if tool is None or not isinstance(tool.get("result"), dict):
+        return {}
+    result = tool["result"]
+    nested = result.get("execution_result")
+    execution = nested if isinstance(nested, dict) else result
+    metrics: dict[str, Any] = {}
+    if isinstance(execution.get("returncode"), int):
+        metrics["returncode"] = execution["returncode"]
+    if isinstance(execution.get("timed_out"), bool):
+        metrics["timed_out"] = execution["timed_out"]
+    elapsed = _as_float(execution.get("wall_seconds"))
+    if elapsed is not None:
+        metrics["elapsed_wall_seconds"] = elapsed
+    workspace = _as_int(execution.get("workspace_bytes"))
+    if workspace is not None:
+        metrics["workspace_bytes"] = workspace
+    for stream in ("stdout", "stderr"):
+        value = execution.get(stream)
+        if isinstance(value, str):
+            metrics[f"{stream}_bytes"] = len(value.encode())
+    return metrics
+
+
+def _execution_outcome(tool: dict[str, Any] | None, metrics: dict[str, Any]) -> str:
+    if tool is None:
+        return "incomplete"
+    if tool.get("ok") is not True:
+        return "failed"
+    if metrics.get("returncode") not in (None, 0) or metrics.get("timed_out") is True:
+        return "failed"
+    return "succeeded"
+
+
 class MVPRunMonitor:
     """Incrementally project a run directory into an operator-facing snapshot."""
 
@@ -779,6 +893,11 @@ class MVPRunMonitor:
             current_action=current,
             latest_heartbeat=heartbeat,
             recent_events=tuple(self._state.events[-DEFAULT_RECENT_EVENT_LIMIT:]),
+            execution_total=sum(
+                self._state.action_counts.get(name, 0)
+                for name in _EXECUTION_ACTION_NAMES
+            ),
+            executions=self._executions(current=current, heartbeat=heartbeat),
             report=terminal,
             artifacts=self._artifact_paths(),
             workspace_bytes=workspace_size,
@@ -822,6 +941,7 @@ class MVPRunMonitor:
             action = _action_from_assistant(record)
             action_name = action.action.value if action is not None else None
             self._accumulate_usage(record)
+            details: dict[str, Any] = {}
             if action is not None:
                 self._state.action_counts[action.action.value] += 1
                 details = action_details(action)
@@ -839,6 +959,18 @@ class MVPRunMonitor:
                     iteration=iteration,
                     summary=summary,
                     action_name=action_name,
+                    research_note=action.research_note if action is not None else None,
+                    model=record.get("model")
+                    if isinstance(record.get("model"), str)
+                    else None,
+                    route=record.get("route")
+                    if isinstance(record.get("route"), str)
+                    else None,
+                    outcome="pending",
+                    capability=details.get("capability"),
+                    stage=details.get("stage"),
+                    active_claim_id=details.get("active_claim_id"),
+                    argv=tuple(str(item) for item in details.get("argv") or ()),
                 )
             )
             return
@@ -847,25 +979,39 @@ class MVPRunMonitor:
                 self._state.tools[iteration] = record
             payload = _tool_payload(record)
             action = None
+            details: dict[str, Any] = {}
             if iteration in self._state.assistant:
                 action = _action_from_assistant(self._state.assistant[iteration])
+                if action is not None:
+                    details = action_details(action)
+            execution_metrics = _execution_metrics(payload)
             if payload is None:
                 summary = f"Tool result recorded for iteration {iteration or '?'}"
+                outcome = "unknown"
             elif payload.get("ok") is True:
                 summary = (
                     f"Completed {humanize_action(action)}"
                     if action is not None
                     else f"Completed action at iteration {iteration}"
                 )
+                outcome = _execution_outcome(payload, execution_metrics)
             else:
                 error = str(payload.get("error") or "unknown error")
                 summary = f"Action failed: {error}"
+                outcome = "failed"
             self._push_event(
                 HumanizedEvent(
                     kind="tool",
                     iteration=iteration,
                     summary=summary,
                     action_name=action.action.value if action is not None else None,
+                    outcome=outcome,
+                    capability=details.get("capability"),
+                    stage=details.get("stage"),
+                    active_claim_id=details.get("active_claim_id"),
+                    argv=tuple(str(item) for item in details.get("argv") or ()),
+                    console_excerpt=_console_excerpt(payload),
+                    **execution_metrics,
                 )
             )
             return
@@ -880,12 +1026,23 @@ class MVPRunMonitor:
                 parts.append(f"elapsed {format_duration(elapsed)}")
             if workspace is not None:
                 parts.append(f"workspace {format_bytes(workspace)}")
+            action = None
+            details: dict[str, Any] = {}
+            if iteration in self._state.assistant:
+                action = _action_from_assistant(self._state.assistant[iteration])
+                if action is not None:
+                    details = action_details(action)
             self._push_event(
                 HumanizedEvent(
                     kind="tool_heartbeat",
                     iteration=iteration,
                     summary=", ".join(parts),
-                    action_name=None,
+                    action_name=action.action.value if action is not None else None,
+                    outcome="running",
+                    capability=details.get("capability"),
+                    stage=details.get("stage"),
+                    active_claim_id=details.get("active_claim_id"),
+                    argv=tuple(str(item) for item in details.get("argv") or ()),
                 )
             )
             return
@@ -1069,8 +1226,66 @@ class MVPRunMonitor:
             path=details.get("path"),
             model=record.get("model") if isinstance(record.get("model"), str) else None,
             route=record.get("route") if isinstance(record.get("route"), str) else None,
+            research_note=action.research_note if action is not None else None,
             argv=tuple(str(item) for item in argv),
         )
+
+    def _executions(
+        self,
+        *,
+        current: CurrentAction | None,
+        heartbeat: HeartbeatObservation | None,
+    ) -> tuple[ComputeExecutionSummary, ...]:
+        rows: list[ComputeExecutionSummary] = []
+        for iteration in sorted(self._state.assistant, reverse=True):
+            record = self._state.assistant[iteration]
+            action = _action_from_assistant(record)
+            if action is None or action.action.value not in _EXECUTION_ACTION_NAMES:
+                continue
+            details = action_details(action)
+            tool = (
+                _tool_payload(self._state.tools[iteration])
+                if iteration in self._state.tools
+                else None
+            )
+            metrics = _execution_metrics(tool)
+            status = _execution_outcome(tool, metrics)
+            if current is not None and current.iteration == iteration:
+                status = "running"
+            if heartbeat is not None and heartbeat.iteration == iteration and status == "running":
+                if heartbeat.elapsed_wall_seconds is not None:
+                    metrics["elapsed_wall_seconds"] = heartbeat.elapsed_wall_seconds
+                if heartbeat.stdout_bytes is not None:
+                    metrics["stdout_bytes"] = heartbeat.stdout_bytes
+                if heartbeat.stderr_bytes is not None:
+                    metrics["stderr_bytes"] = heartbeat.stderr_bytes
+                if heartbeat.workspace_bytes is not None:
+                    metrics["workspace_bytes"] = heartbeat.workspace_bytes
+            rows.append(
+                ComputeExecutionSummary(
+                    id=f"iteration-{iteration}",
+                    iteration=iteration,
+                    action_name=action.action.value,
+                    description=humanize_action(action),
+                    status=status,
+                    capability=details.get("capability"),
+                    stage=details.get("stage"),
+                    active_claim_id=details.get("active_claim_id"),
+                    argv=tuple(str(item) for item in details.get("argv") or ()),
+                    model=record.get("model")
+                    if isinstance(record.get("model"), str)
+                    else None,
+                    route=record.get("route")
+                    if isinstance(record.get("route"), str)
+                    else None,
+                    research_note=action.research_note,
+                    console_excerpt=_console_excerpt(tool),
+                    **metrics,
+                )
+            )
+            if len(rows) >= _MAX_PROJECTED_EXECUTIONS:
+                break
+        return tuple(rows)
 
     def _claims(
         self,

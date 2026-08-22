@@ -20,22 +20,38 @@ This starts a local server at `http://127.0.0.1:8765/` and opens the default
 browser. Use `--no-open` to print the address without opening it, or `--port 0`
 to select an available local port automatically.
 
-The interface has four connected projections:
+The interface has five connected projections:
 
-- **Hypothesis tree:** scientific claims and their `root`, `refines`,
-  `alternate`, or `succeeds` relationships. Node color represents the durable
-  claim disposition, not an interpretation of model prose.
-- **Claim inspector:** rationale, prospective evidence contracts, linked
-  evidence, closure reason, and instrument/diagnostic/control claims belonging
-  to the selected scientific hypothesis.
-- **Live activity:** typed model actions, tool completions, heartbeats, retries,
-  token usage, elapsed envelope, and the verified execution state.
+- **Claim graph:** one view of the durable ledger, with all four claim kinds as
+  first-class nodes: `scientific`, `instrument`, `diagnostic`, and `control`.
+  Edges retain their recorded relations, including `refines`, `alternate`,
+  `instrument_of`, `diagnostic_of`, and `control_for`. Scientific-only mode is
+  a visual filter over this graph, not a second hypothesis data structure.
+- **Claim inspector:** click any of the four node kinds to see its rationale,
+  parent and child relations, prospective evidence contracts, linked evidence,
+  closure reason, and iteration metadata.
+- **Execution monitor:** recent simulations and calculations appear as separate
+  runs. Select one run to inspect its state, command binding, elapsed time,
+  heartbeat I/O, workspace size, return code, and bounded console excerpt.
+- **Research trace:** typed model decisions, the model-authored `research_note`,
+  tool outcomes, retries, routes, and input/output/reasoning/cache token counts.
+  This is an auditable laboratory trace, not a representation of a provider's
+  private hidden chain-of-thought.
 - **Artifacts and conclusion:** contained workspace results, generated figures,
   audit records, and the terminal answer when one exists.
 
-The graph can be zoomed and each node is keyboard-selectable. Validation claims
-remain outside the scientific hypothesis tree and appear in the selected
-hypothesis's inspector, matching the terminal interface.
+The graph can be zoomed and each node is keyboard-selectable. The four kinds use
+distinct node treatments while their status is shown separately, so claim type
+is never inferred from supported or falsified state. Expanded contract and
+evidence sections remain open while the one-second live refresh advances. The
+header theme button switches between the high-contrast light and dark palettes
+and remembers the choice locally.
+
+The execution monitor deliberately does not invent a percentage for an
+unbounded scientific search. A running command uses an indeterminate activity
+bar and reports only observed state, heartbeat, time, I/O, and resource values.
+When several runs exist, the left-hand list selects the one shared console view;
+the page does not create a wall of simultaneous terminals.
 
 ## Follow or control a campaign
 

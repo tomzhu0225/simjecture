@@ -14,7 +14,7 @@ from conjecture_solver.web.application import (
     SimjectureWebApplication,
     WebApplicationError,
 )
-from conjecture_solver.web.server import create_server
+from conjecture_solver.web.server import STATIC_ROOT, create_server
 
 
 def _write_json(path: Path, payload: object) -> None:
@@ -84,6 +84,26 @@ def _campaign(root: Path) -> Path:
             "evidence_contracts": [],
             "evidence": [],
         },
+        {
+            "id": "claim_instrument",
+            "statement": "The numerical instrument resolves every admitted mode.",
+            "kind": "instrument",
+            "relation": "instrument_of",
+            "parent_id": "claim_child",
+            "status": "supported",
+            "evidence_contracts": [],
+            "evidence": [],
+        },
+        {
+            "id": "claim_control",
+            "statement": "A refined-grid control preserves the separation.",
+            "kind": "control",
+            "relation": "control_for",
+            "parent_id": "claim_child",
+            "status": "supported",
+            "evidence_contracts": [],
+            "evidence": [],
+        },
     ]
     _write_json(
         root / "hypothesis_ledger.json",
@@ -93,26 +113,57 @@ def _campaign(root: Path) -> Path:
             "claims": claims,
         },
     )
-    (root / "transcript.jsonl").write_text(
-        json.dumps(
-            {
-                "kind": "assistant",
-                "iteration": 1,
-                "model": "test-model",
-                "usage": {
-                    "prompt_tokens": 100,
-                    "completion_tokens": 20,
-                    "total_tokens": 120,
-                },
-                "content": json.dumps(
-                    {
-                        "action": "list_claims",
-                        "research_note": "Inspect the hypothesis tree.",
+    transcript = [
+        {
+            "kind": "assistant",
+            "iteration": 1,
+            "model": "test-model",
+            "usage": {
+                "prompt_tokens": 100,
+                "completion_tokens": 20,
+                "total_tokens": 120,
+            },
+            "content": json.dumps(
+                {
+                    "action": "list_claims",
+                    "research_note": "Inspect the scientific claim lineage.",
+                }
+            ),
+        },
+        {
+            "kind": "assistant",
+            "iteration": 2,
+            "model": "test-model",
+            "route": "default",
+            "content": json.dumps(
+                {
+                    "action": "run_python",
+                    "research_note": "Probe the child hypothesis numerically.",
+                    "argv": ["probe.py", "--bounded"],
+                    "active_claim_id": "claim_child",
+                }
+            ),
+        },
+        {
+            "kind": "tool",
+            "iteration": 2,
+            "content": json.dumps(
+                {
+                    "tool_result": {
+                        "ok": True,
+                        "result": {
+                            "returncode": 0,
+                            "wall_seconds": 3.25,
+                            "stdout": "bounded mode separated\n",
+                            "stderr": "",
+                        },
                     }
-                ),
-            }
-        )
-        + "\n"
+                }
+            ),
+        },
+    ]
+    (root / "transcript.jsonl").write_text(
+        "".join(json.dumps(record) + "\n" for record in transcript)
     )
     _write_json(
         root / "mvp_report.json",
@@ -122,19 +173,25 @@ def _campaign(root: Path) -> Path:
             "campaign_instruction": "Use a converged finite-domain test.",
             "status": "completed",
             "final_answer": "The bounded root hypothesis is falsified.",
-            "iterations": 1,
+            "iterations": 2,
             "elapsed_wall_seconds": 42.0,
             "workspace_artifacts": {"result.json": "sha"},
             "claim_ledger": {"claims": claims},
             "open_claim_ids": [],
-            "closed_claim_ids": ["claim_root", "claim_child", "claim_diagnostic"],
+            "closed_claim_ids": [
+                "claim_root",
+                "claim_child",
+                "claim_diagnostic",
+                "claim_instrument",
+                "claim_control",
+            ],
             "finish_claim_notes": ["all claims closed"],
         },
     )
     return root
 
 
-def test_web_projection_reuses_hypothesis_and_validation_semantics(tmp_path: Path) -> None:
+def test_web_projection_exposes_one_four_kind_claim_graph(tmp_path: Path) -> None:
     root = _campaign(tmp_path / "run")
     application = SimjectureWebApplication(
         initial_run=root,
@@ -146,22 +203,79 @@ def test_web_projection_reuses_hypothesis_and_validation_semantics(tmp_path: Pat
 
     payload = application.campaign_snapshot(token)
     assert not payload["snapshot"]["identity"]["run_directory"].startswith("/")
-    graph = payload["hypothesis_graph"]
-    assert [node["id"] for node in graph["nodes"]] == ["claim_root", "claim_child"]
-    assert graph["edges"] == [
-        {"source": "claim_root", "target": "claim_child", "relation": "refines"}
-    ]
-    assert payload["validation_claims"]["claim_child"] == ["claim_diagnostic"]
+    graph = payload["claim_graph"]
+    assert {node["id"]: node["kind"] for node in graph["nodes"]} == {
+        "claim_root": "scientific",
+        "claim_child": "scientific",
+        "claim_diagnostic": "diagnostic",
+        "claim_instrument": "instrument",
+        "claim_control": "control",
+    }
+    assert "hypothesis_graph" not in payload
+    assert "scientific_claim_graph" not in payload
+    assert "validation_claims" not in payload
+    assert "attached_claims" not in payload
+    assert {
+        "source": "claim_root",
+        "target": "claim_child",
+        "relation": "refines",
+    } in graph["edges"]
+    assert {
+        "source": "claim_child",
+        "target": "claim_diagnostic",
+        "relation": "diagnostic_of",
+    } in graph["edges"]
+    assert {
+        "source": "claim_child",
+        "target": "claim_instrument",
+        "relation": "instrument_of",
+    } in graph["edges"]
+    assert {
+        "source": "claim_child",
+        "target": "claim_control",
+        "relation": "control_for",
+    } in graph["edges"]
     assert (
         payload["claim_details"]["claim_root"]["evidence"][0]["artifact_path"]
         == "workspace/result.json"
     )
     assert payload["snapshot"]["token_usage"]["total_tokens"] == 120
+    assert payload["snapshot"]["recent_events"][1]["research_note"] == (
+        "Probe the child hypothesis numerically."
+    )
+    execution = payload["executions"]["items"][0]
+    assert execution["status"] == "succeeded"
+    assert execution["active_claim_id"] == "claim_child"
+    assert execution["returncode"] == 0
+    assert execution["elapsed_wall_seconds"] == 3.25
+    assert execution["stdout_bytes"] == len(b"bounded mode separated\n")
+    assert execution["console_available"] is True
+    assert "console_excerpt" not in execution
+    execution_detail = application.execution(token, execution["iteration"])["execution"]
+    assert "bounded mode separated" in execution_detail["console_excerpt"]
     assert payload["snapshot"]["execution_status"] == "terminal"
     artifacts = {item["path"]: item for item in payload["artifacts"]}
     assert artifacts["workspace/result.json"]["claimed_by"] == ["claim_root"]
     assert artifacts["workspace/figure.svg"]["preview"] == "image"
     assert payload["controls"]["read_only_reason"] is None
+
+
+def test_web_assets_keep_live_detail_state_and_separate_operator_views() -> None:
+    html = (STATIC_ROOT / "index.html").read_text()
+    javascript = (STATIC_ROOT / "app.js").read_text()
+    stylesheet = (STATIC_ROOT / "styles.css").read_text()
+
+    assert "Execution monitor" in html
+    assert "Research trace" in html
+    assert "All claim kinds" in html
+    assert "Scientific only" in javascript
+    for kind in ("Scientific", "Instrument", "Diagnostic", "Control"):
+        assert kind in html
+    assert "private hidden chain-of-thought" in html
+    assert "expandedDetails: new Set()" in javascript
+    assert "persistentDetails(" in javascript
+    assert 'data-theme="light"' in html
+    assert ':root[data-theme="dark"]' in stylesheet
 
 
 def test_web_artifacts_are_contained_and_symlinks_are_rejected(tmp_path: Path) -> None:
@@ -286,6 +400,13 @@ def test_local_http_api_serves_assets_snapshot_and_protects_post(tmp_path: Path)
             snapshot = client.get("/api/snapshot", params={"campaign": token})
             assert snapshot.status_code == 200
             assert snapshot.json()["snapshot"]["phase"] == "completed"
+
+            execution = client.get(
+                "/api/execution",
+                params={"campaign": token, "iteration": 2},
+            )
+            assert execution.status_code == 200
+            assert "bounded mode separated" in execution.json()["execution"]["console_excerpt"]
 
             artifact = client.get(
                 "/api/artifact",

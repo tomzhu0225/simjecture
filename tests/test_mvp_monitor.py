@@ -470,6 +470,7 @@ def test_pending_action_and_heartbeat_are_projected(tmp_path: Path) -> None:
     assert snapshot.current_action.capability == "example-runtime"
     assert snapshot.current_action.stage == "evidence"
     assert snapshot.current_action.active_claim_id == "claim_rate_threshold"
+    assert snapshot.current_action.research_note == "Collect the next contracted observation."
     assert snapshot.latest_heartbeat is not None
     assert snapshot.latest_heartbeat.elapsed_wall_seconds == 184.0
     assert snapshot.workspace_bytes == 1_398_101_197
@@ -477,6 +478,14 @@ def test_pending_action_and_heartbeat_are_projected(tmp_path: Path) -> None:
     assert claim.status == "open"
     assert claim.evidence_count == 1
     assert claim.active is True
+    assistant_event = next(event for event in snapshot.recent_events if event.kind == "assistant")
+    assert assistant_event.capability == "example-runtime"
+    assert assistant_event.research_note == "Collect the next contracted observation."
+    heartbeat_event = next(
+        event for event in snapshot.recent_events if event.kind == "tool_heartbeat"
+    )
+    assert heartbeat_event.action_name == "run_capability"
+    assert heartbeat_event.outcome == "running"
     text = format_human_status(snapshot)
     assert "Running capability example-runtime" in text
     assert "evidence 1" in text

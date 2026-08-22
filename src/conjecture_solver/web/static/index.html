@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="color-scheme" content="dark">
+    <meta name="color-scheme" content="light dark">
     <title>Simjecture</title>
     <link rel="stylesheet" href="/assets/styles.css">
   </head>
@@ -25,6 +25,7 @@
 
         <div class="topbar-actions">
           <span class="sync-state" id="sync-state"><i></i><span>Connecting</span></span>
+          <button class="icon-button theme-button" id="theme-button" type="button" aria-label="Switch color theme" title="Switch color theme">◐</button>
           <button class="button quiet" id="pause-button" type="button" disabled>Pause</button>
           <button class="button quiet" id="resume-button" type="button" disabled>Resume</button>
           <button class="button danger quiet" id="cancel-button" type="button" disabled>Stop</button>
@@ -38,8 +39,8 @@
           <p class="eyebrow">No campaign selected</p>
           <h1>Begin with a falsifiable hypothesis.</h1>
           <p>
-            Simjecture will commission the tools, search for counterexamples,
-            and preserve each scientific branch as durable evidence.
+            Simjecture commissions tools, searches for counterexamples, and preserves
+            every scientific branch as durable evidence.
           </p>
           <button class="button primary large" id="empty-new-run" type="button">Start a campaign</button>
         </section>
@@ -65,12 +66,12 @@
 
           <div class="metric-strip" aria-label="Campaign summary">
             <article>
-              <span>Scientific claims</span>
+              <span>Claims</span>
               <strong id="metric-claims">—</strong>
               <small id="metric-claims-detail">—</small>
             </article>
             <article>
-              <span>Elapsed</span>
+              <span>Campaign time</span>
               <strong id="metric-elapsed">—</strong>
               <small id="metric-iterations">—</small>
             </article>
@@ -90,55 +91,90 @@
             <section class="panel graph-panel" aria-labelledby="graph-title">
               <header class="panel-heading">
                 <div>
-                  <p class="eyebrow">Scientific search space</p>
-                  <h2 id="graph-title">Hypothesis tree</h2>
+                  <p class="eyebrow">Durable claim ledger</p>
+                  <h2 id="graph-title">Claim graph</h2>
+                  <p class="panel-description">Every node is one durable claim. Color and label distinguish the four claim kinds; every edge is a recorded relation.</p>
                 </div>
-                <div class="graph-tools" aria-label="Graph zoom controls">
+                <div class="graph-tools" aria-label="Graph controls">
+                  <button class="kind-toggle" id="claim-kind-toggle" type="button" aria-pressed="true">All claim kinds</button>
                   <button class="icon-button" id="zoom-out" type="button" aria-label="Zoom out">−</button>
                   <button class="icon-button" id="zoom-fit" type="button" aria-label="Fit graph">Fit</button>
                   <button class="icon-button" id="zoom-in" type="button" aria-label="Zoom in">+</button>
                 </div>
               </header>
-              <div class="graph-legend" aria-label="Claim status legend">
+              <div class="graph-legend" aria-label="Graph legend">
+                <span><i class="node-key scientific"></i>Scientific</span>
+                <span><i class="node-key instrument"></i>Instrument</span>
+                <span><i class="node-key diagnostic"></i>Diagnostic</span>
+                <span><i class="node-key control"></i>Control</span>
                 <span><i class="supported"></i>Supported</span>
                 <span><i class="falsified"></i>Falsified</span>
                 <span><i class="open"></i>Open</span>
-                <span><i class="qualified"></i>Qualified</span>
+                <span><i class="qualified"></i>Qualified / limited</span>
               </div>
               <div class="graph-viewport" id="graph-viewport" tabindex="0">
-                <svg id="hypothesis-graph" role="img" aria-label="Hypothesis relationship graph"></svg>
-                <p class="panel-placeholder" id="graph-placeholder">No scientific claims have been registered.</p>
+                <svg id="claim-graph" role="img" aria-label="Typed claim relationship graph"></svg>
+                <p class="panel-placeholder" id="graph-placeholder">No claims have been registered.</p>
               </div>
             </section>
 
             <aside class="panel inspector-panel" aria-labelledby="inspector-title">
               <header class="panel-heading inspector-heading">
                 <div>
-                  <p class="eyebrow">Selected node</p>
+                  <p class="eyebrow" id="inspector-kind">Selected record</p>
                   <h2 id="inspector-title">Claim inspector</h2>
                 </div>
                 <span class="status-badge" id="claim-status">—</span>
               </header>
               <div id="claim-inspector" class="claim-inspector">
-                <p class="panel-placeholder">Select a hypothesis to inspect its evidence.</p>
+                <p class="panel-placeholder">Select a claim to inspect it.</p>
               </div>
             </aside>
+          </div>
+
+          <div class="operations-grid">
+            <section class="panel execution-panel" aria-labelledby="execution-title">
+              <header class="panel-heading">
+                <div>
+                  <p class="eyebrow">Numerical work</p>
+                  <h2 id="execution-title">Execution monitor</h2>
+                  <p class="panel-description">Select one run to inspect its live heartbeat and console record.</p>
+                </div>
+                <span class="operation-summary" id="execution-summary">No executions</span>
+              </header>
+              <div class="execution-layout">
+                <div class="execution-list" id="execution-list" role="listbox" aria-label="Recent simulations and calculations"></div>
+                <div class="execution-console" id="execution-console">
+                  <div class="console-empty">No simulation or calculation has been recorded.</div>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel trace-panel" aria-labelledby="trace-title">
+              <header class="panel-heading">
+                <div>
+                  <p class="eyebrow">Auditable agent record</p>
+                  <h2 id="trace-title">Research trace</h2>
+                  <p class="panel-description">Typed decisions, laboratory notes, tool outcomes, and provider usage—not private hidden chain-of-thought.</p>
+                </div>
+              </header>
+              <div class="token-breakdown" id="token-breakdown" aria-label="Token usage"></div>
+              <div class="research-trace" id="research-trace"></div>
+            </section>
           </div>
 
           <section class="panel record-panel" aria-labelledby="record-title">
             <header class="record-header">
               <div>
                 <p class="eyebrow">Durable campaign record</p>
-                <h2 id="record-title">Activity and evidence</h2>
+                <h2 id="record-title">Evidence and conclusion</h2>
               </div>
               <div class="tabs" role="tablist" aria-label="Campaign record views">
-                <button role="tab" aria-selected="true" data-tab="activity" type="button">Activity</button>
-                <button role="tab" aria-selected="false" data-tab="artifacts" type="button">Artifacts</button>
+                <button role="tab" aria-selected="true" data-tab="artifacts" type="button">Artifacts</button>
                 <button role="tab" aria-selected="false" data-tab="conclusion" type="button">Conclusion</button>
               </div>
             </header>
-            <div class="tab-panel" id="activity-panel" role="tabpanel"></div>
-            <div class="tab-panel" id="artifacts-panel" role="tabpanel" hidden></div>
+            <div class="tab-panel" id="artifacts-panel" role="tabpanel"></div>
             <div class="tab-panel" id="conclusion-panel" role="tabpanel" hidden></div>
           </section>
         </section>

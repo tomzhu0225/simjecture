@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import parse_qs, quote, urlsplit
 
-from .application import SimjectureWebApplication, WebApplicationError
+from .application import API_SCHEMA_VERSION, SimjectureWebApplication, WebApplicationError
 
 STATIC_ROOT = Path(__file__).with_name("static")
 MAX_REQUEST_BYTES = 64 * 1024
@@ -77,7 +77,7 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
             if parsed.path == "/api/campaigns":
                 self._json(
                     {
-                        "schema_version": "0.1.0",
+                        "schema_version": API_SCHEMA_VERSION,
                         "campaigns": self.server.application.campaigns(),
                     }
                 )
@@ -85,6 +85,19 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
             if parsed.path == "/api/snapshot":
                 token = self._one_query_value(parsed.query, "campaign")
                 self._json(self.server.application.campaign_snapshot(token))
+                return
+            if parsed.path == "/api/execution":
+                query = parse_qs(parsed.query, keep_blank_values=True)
+                token = self._one_value(query, "campaign")
+                raw_iteration = self._one_value(query, "iteration")
+                try:
+                    iteration = int(raw_iteration)
+                except ValueError as error:
+                    raise WebApplicationError(
+                        "execution iteration must be an integer",
+                        status=400,
+                    ) from error
+                self._json(self.server.application.execution(token, iteration))
                 return
             if parsed.path == "/api/artifact":
                 query = parse_qs(parsed.query, keep_blank_values=True)
