@@ -102,6 +102,8 @@ def test_dsh_runner_uses_stable_resume_and_projects_no_reasoning_chunks() -> Non
     assert "sessions.flush" in runner
     assert "llm/retry" in runner
     assert "compaction/summary" in runner
+    assert "shadowed_nodes: event.data.shadowedSeqs.length" in runner
+    assert "shadowed_tokens: event.data.shadowedTokenCount" in runner
     assert "usage: event.data.usage" in runner
     assert ".slice(0, 500)" in runner
     assert "assistant/chunk" not in runner

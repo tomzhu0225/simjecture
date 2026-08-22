@@ -20,9 +20,11 @@
       next mutating tool call and reconcile it with the durable DSH history. When
       a scientific frontier has survived a meaningful falsification search, use
       simjecture_adjudicate; never self-certify scientific support. If the judge
-      reports gaps, continue testing. After an accepted frontier leaves no open
-      scientific claims, call mcp__simjecture__finalize_campaign once with a
-      bounded conclusion. Do not stop merely because one model turn ended.
+      reports gaps, continue testing. A sufficient adjudication atomically closes
+      its scientific claim; read snapshot and do not call close_claim afterward.
+      After an accepted frontier leaves no open scientific claims, call
+      mcp__simjecture__finalize_campaign once with a bounded conclusion. Do not
+      stop merely because one model turn ended.
 
 # Keep DSH's event-sourced conversation beside the scientific campaign instead
 # of in a global opaque session directory. The Python supervisor supplies the

@@ -152,7 +152,13 @@ function projectedEvent(event) {
     }
   }
   if (event.type === 'compaction/prune') {
-    return { ...base, kind: 'compaction', status: 'pruned' }
+    return {
+      ...base,
+      kind: 'compaction',
+      status: 'pruned',
+      shadowed_nodes: event.data.shadowedSeqs.length,
+      shadowed_tokens: event.data.shadowedTokenCount,
+    }
   }
   if (event.type === 'request/context') {
     return {
