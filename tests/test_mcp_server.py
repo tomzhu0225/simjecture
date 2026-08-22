@@ -73,6 +73,18 @@ class _FakeKernel:
     def cancel_job(self, job_id: str) -> dict[str, Any]:
         return {"job_id": job_id, "status": "cancel_requested"}
 
+    def prepare_adjudication(self, operation_id: str, **kwargs: Any) -> dict[str, Any]:
+        return {"operation_id": operation_id, "prepared": kwargs["claim_id"]}
+
+    def record_adjudication(self, operation_id: str, **kwargs: Any) -> dict[str, Any]:
+        return {
+            "operation_id": operation_id,
+            "decision": kwargs["verdict"]["decision"],
+        }
+
+    def finalize_campaign(self, operation_id: str, **kwargs: Any) -> dict[str, Any]:
+        return {"operation_id": operation_id, "final_answer": kwargs["final_answer"]}
+
 
 def _call(bridge: CampaignMCPBridge, name: str, arguments: dict[str, Any] | None = None) -> Any:
     return asyncio.run(bridge.call_tool(name, arguments))
@@ -99,6 +111,9 @@ def test_tool_catalog_is_flat_and_uses_only_the_dsh_schema_subset() -> None:
         "run_evidence_capability",
         "job_status",
         "cancel_job",
+        "prepare_adjudication",
+        "record_adjudication",
+        "finalize_campaign",
     }
     definitions = tool_definitions()
     assert {definition["name"] for definition in definitions} == expected
@@ -113,6 +128,8 @@ def test_tool_catalog_is_flat_and_uses_only_the_dsh_schema_subset() -> None:
             assert "operation_id" in TOOL_REQUIRED[name]
             assert "operation_id" in schema["required"]
     assert "root" not in TOOL_SCHEMAS["register_claim"]["properties"]["relation"]["enum"]
+    assert "repairs" in TOOL_SCHEMAS["register_claim"]["properties"]["relation"]["enum"]
+    assert "repair" in TOOL_SCHEMAS["register_claim"]["properties"]
 
 
 def test_bridge_dispatches_claim_workspace_and_job_tools(tmp_path: Path) -> None:
@@ -240,6 +257,50 @@ def test_mutation_operation_id_is_forwarded_to_idempotent_kernel_seam(
             600.0,
         )
     ]
+
+
+def test_bridge_dispatches_isolated_adjudication_and_finalization(tmp_path: Path) -> None:
+    bridge = CampaignMCPBridge(_FakeKernel(), config=BridgeConfig(workspace=tmp_path))
+    common = {
+        "operation_id": "judge-root-v1",
+        "claim_id": "claim_root",
+        "contract_version": 1,
+        "case_for_sufficiency": (
+            "The complete prospective ensemble passed every registered check."
+        ),
+    }
+    assert _call(bridge, "prepare_adjudication", common)["prepared"] == "claim_root"
+    verdict = {
+        "claim_id": "claim_root",
+        "contract_version": 1,
+        "decision": "sufficient",
+        "rationale": "The complete bounded evidence package satisfies the contract.",
+        "evidence_gaps": [],
+        "next_test": None,
+    }
+    recorded = _call(
+        bridge,
+        "record_adjudication",
+        {
+            **common,
+            "case_sha256": "a" * 64,
+            "verdict": verdict,
+            "model": "deepseek-chat",
+            "route": "dsh-subagent:deepseek-official",
+            "judge_run_id": "judge-session-one",
+            "usage": {"totalTokens": 123},
+        },
+    )
+    assert recorded["decision"] == "sufficient"
+    finalized = _call(
+        bridge,
+        "finalize_campaign",
+        {
+            "operation_id": "finish-root-v1",
+            "final_answer": "The bounded claim is supported by the accepted package.",
+        },
+    )
+    assert finalized["operation_id"] == "finish-root-v1"
 
 
 def test_bridge_rejects_unsafe_or_unexposed_actions(tmp_path: Path) -> None:
@@ -531,7 +592,7 @@ def test_sdk_stdio_handshake_list_and_call_when_sdk_is_installed(tmp_path: Path)
             ):
                 await session.initialize()
                 listed = await session.list_tools()
-                assert len(listed.tools) == 18
+                assert len(listed.tools) == 21
                 assert {tool.name for tool in listed.tools} == set(TOOL_SCHEMAS)
                 for tool in listed.tools:
                     schema = getattr(

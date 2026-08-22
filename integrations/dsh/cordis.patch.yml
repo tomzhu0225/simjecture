@@ -15,7 +15,25 @@
       working without asking for routine permission. Workbench outputs are not
       evidence. Never claim support or falsification until the Python kernel has
       accepted qualifying evidence under a prospective contract. If an outcome
-      is unknown or inconclusive, preserve that status instead of guessing.
+      is unknown or inconclusive, preserve that status instead of guessing. After
+      a process resume or conversation compaction, read snapshot again before the
+      next mutating tool call and reconcile it with the durable DSH history. When
+      a scientific frontier has survived a meaningful falsification search, use
+      simjecture_adjudicate; never self-certify scientific support. If the judge
+      reports gaps, continue testing. After an accepted frontier leaves no open
+      scientific claims, call mcp__simjecture__finalize_campaign once with a
+      bounded conclusion. Do not stop merely because one model turn ended.
+
+# Keep DSH's event-sourced conversation beside the scientific campaign instead
+# of in a global opaque session directory. The Python supervisor supplies the
+# contained path and stable session identity.
+- id: session-persistence-jsonl
+  config:
+    root: !!js "process.env.SIMJECTURE_DSH_SESSION_ROOT ?? (() => { throw new Error('SIMJECTURE_DSH_SESSION_ROOT is required') })()"
+
+- id: compaction-basic
+  config:
+    auto: true
 
 - id: tools
   config:
@@ -101,7 +119,22 @@
 - id: tool-goal
   disabled: true
 
+# The stock headless driver creates a random session on every process start.
+# Simjecture replaces only that driver so pause/resume and crash recovery reuse
+# one durable DSH conversation.
+- id: headless-runner
+  disabled: true
+
 - insert:
+    - id: simjecture-adjudicator
+      name: '@simjecture/dsh-bundle/adjudicator'
+
+    - id: simjecture-runner
+      name: '@simjecture/dsh-bundle/runner'
+      inject: [headlessStartup]
+      config:
+        task: !!js ctx.headlessStartup.task
+
     - id: mcp-simjecture
       name: '@deepseek-ai/dsh-mcp-client'
       config:
@@ -118,7 +151,7 @@
           SIMJECTURE_SKILLS: !!js "process.env.SIMJECTURE_SKILLS ?? ''"
           SIMJECTURE_MCP_MAX_OUTPUT_CHARS: !!js "process.env.SIMJECTURE_MCP_MAX_OUTPUT_CHARS ?? '30000'"
           SIMJECTURE_MCP_TIMEOUT_SECONDS: !!js "process.env.SIMJECTURE_MCP_TIMEOUT_SECONDS ?? '600'"
-        toolCallTimeoutMs: 60000
+        toolCallTimeoutMs: !!js "Math.max(1000, Number(process.env.SIMJECTURE_MCP_TIMEOUT_SECONDS ?? '600') * 1000 + 5000)"
         failOnStartupError: true
         reconnect:
           enabled: true

@@ -75,14 +75,25 @@ without granting scientific-evidence status.
 
 ## Local web interface
 
-The browser dashboard is included with the core installation:
+The browser dashboard itself is included with the core installation. Recorded
+campaigns can be opened without Node.js or a model runtime:
+
+```bash
+uv run simjecture web demos/gray_scott_counterexample/record --read-only
+```
+
+New browser-launched campaigns use DeepSeek Harness by default. Install the
+pinned DSH profile once per machine with the
+[DSH deployment guide](../how-to/deepseek-harness.md), then use the same command:
 
 ```bash
 uv run simjecture web
 ```
 
 It binds only to localhost and can discover, launch, or attach to durable
-campaigns. See [Web interface](web-interface.md).
+campaigns. `uv run simjecture web --engine native` selects the built-in
+compatibility engine when DSH is intentionally unavailable. See
+[Web interface](web-interface.md).
 
 ## Optional terminal dashboard (maintenance mode)
 

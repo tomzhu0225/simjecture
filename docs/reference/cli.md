@@ -20,7 +20,8 @@ Principal command families:
 - `watch`: follow durable MVP events until a terminal report or pause;
 - `pause`: request an action-boundary pause of a verified live runner;
 - `resume`: repeat a stored launch contract for a paused or incomplete run;
-- `web`: local browser dashboard and reviewed campaign controls;
+- `web`: local browser dashboard and reviewed campaign controls; new launches
+  use DSH by default, with `--engine native` as the compatibility fallback;
 - `tui`: optional interactive dashboard (`uv sync --extra tui`);
 - `benchmark`: deterministic planted scientific benchmarks;
 - `campaign`: durable bounded campaign execution;

@@ -13,8 +13,18 @@ uv run simjecture web demos/gray_scott_counterexample/record --read-only
 See [Recorded Gray–Scott demo](../demos/gray-scott.md) for the scientific result
 and the boundaries of that record.
 
-To start a new autonomous campaign, choose a bounded hypothesis whose outcome
-can be evaluated with ordinary Python before attaching an expensive simulator.
+To start a new autonomous campaign, first install the pinned DSH profile, then
+choose a bounded hypothesis whose outcome can be evaluated with ordinary Python
+before attaching an expensive simulator. The primary path is the browser:
+
+```bash
+export DEEPSEEK_API_KEY='your-process-local-key'
+uv run simjecture web
+```
+
+Enter the hypothesis in **New hypothesis** and follow the DSH activity, typed
+scientific actions, simulation jobs, and hypothesis graph in one view. The
+headless built-in engine remains available as a compatibility path:
 
 ```bash
 export DEEPSEEK_API_KEY='your-process-local-key'
@@ -24,8 +34,9 @@ uv run simjecture mvp \
   --output artifacts/gray-scott-first-run
 ```
 
-The output directory contains the immutable manifest, complete transcript,
-claim ledger, artifact provenance, final report, and the agent's workspace.
+Both paths produce an output directory containing the immutable manifest,
+complete transcript or DSH activity projection, claim ledger, artifact
+provenance, final report, and the agent's workspace.
 
 Important distinctions:
 

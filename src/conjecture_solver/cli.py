@@ -642,8 +642,15 @@ def _web(args: argparse.Namespace) -> int:
             open_browser=not args.no_open,
             read_only=args.read_only,
             verbose=args.verbose,
+            engine=args.engine,
         )
     )
+
+
+def _dsh_run(args: argparse.Namespace) -> int:
+    from .dsh_engine import run_from_cli
+
+    return run_from_cli(args)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -928,10 +935,25 @@ def build_parser() -> argparse.ArgumentParser:
         default=8765,
         help="Local HTTP port; use 0 for any free port",
     )
-    web.add_argument(
+    open_group = web.add_mutually_exclusive_group()
+    open_group.add_argument(
+        "--open",
+        dest="no_open",
+        action="store_false",
+        help="Open the local interface in a browser (the default)",
+    )
+    open_group.add_argument(
         "--no-open",
+        dest="no_open",
         action="store_true",
         help="Print the URL without opening a browser",
+    )
+    web.set_defaults(no_open=False)
+    web.add_argument(
+        "--engine",
+        choices=("dsh", "native"),
+        default="dsh",
+        help="Reasoning engine for newly launched campaigns (default: dsh)",
     )
     web.add_argument(
         "--read-only",
@@ -944,6 +966,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Log local HTTP requests",
     )
     web.set_defaults(handler=_web)
+
+    dsh_run = subcommands.add_parser("dsh-run", help=argparse.SUPPRESS)
+    dsh_run.add_argument("--output", required=True)
+    dsh_run.add_argument("--session-id", required=True)
+    dsh_run.add_argument("--resume", action="store_true")
+    dsh_run.set_defaults(handler=_dsh_run)
 
     pause = subcommands.add_parser(
         "pause",

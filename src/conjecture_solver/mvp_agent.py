@@ -546,6 +546,8 @@ class MVPJudgeVerdict(StrictModel):
 class MVPAdjudicationRecord(StrictModel):
     schema_version: Literal["0.1.0"] = "0.1.0"
     iteration: int = Field(ge=1)
+    operation_id: str | None = None
+    case_sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
     requested_case: str
     verdict: MVPJudgeVerdict
     model: str
@@ -1515,26 +1517,9 @@ software.
         *,
         iteration: int,
     ) -> dict[str, Any]:
-        claim_id = action.claim_id.strip().casefold()
-        claim = self.claim_store.ledger.by_id().get(claim_id)
-        if claim is None:
-            raise ValueError(f"unknown claim_id: {claim_id}")
-        if claim.kind != ClaimKind.SCIENTIFIC or claim.status != ClaimDisposition.OPEN:
-            raise ValueError("adjudication requires an open scientific claim")
-        if not claim.evidence_contracts:
-            raise ValueError("adjudication requires a prospective evidence contract")
-        contract_version = (
-            claim.evidence_contracts[-1].version
-            if action.contract_version is None
-            else action.contract_version
-        )
-        if contract_version not in {contract.version for contract in claim.evidence_contracts}:
-            raise ValueError(
-                f"claim {claim_id} has no evidence contract version {contract_version}"
-            )
-        packet = self._adjudication_packet(
-            claim_id=claim_id,
-            contract_version=contract_version,
+        claim_id, contract_version, packet = self._prepare_adjudication_request(
+            claim_id=action.claim_id,
+            contract_version=action.contract_version,
             case_for_sufficiency=action.case_for_sufficiency,
         )
         judge_prompt = (
@@ -1549,8 +1534,7 @@ software.
             "support a universal statement over a continuous interval or strict "
             "monotonicity between samples; require an analytic argument, validated "
             "enclosure, or an explicitly resolution-bounded claim. If material is "
-            "missing, "
-            "name concrete evidence_gaps and suggest one next_test. "
+            "missing, name concrete evidence_gaps and suggest one next_test. "
             "Return exactly one JSON object matching the supplied schema. Do not return "
             "private chain-of-thought."
         )
@@ -1574,18 +1558,95 @@ software.
             temperature=0.0,
         )
         verdict = self._parse_judge_verdict(result.content)
+        return self._record_adjudication_verdict(
+            claim_id=claim_id,
+            contract_version=contract_version,
+            case_for_sufficiency=action.case_for_sufficiency,
+            verdict=verdict,
+            iteration=iteration,
+            model=result.model,
+            route=result.route.value,
+            request_id=result.request_id,
+            usage=result.usage,
+            content=result.content,
+        )
+
+    def _prepare_adjudication_request(
+        self,
+        *,
+        claim_id: str,
+        contract_version: int | None,
+        case_for_sufficiency: str,
+    ) -> tuple[str, int, dict[str, Any]]:
+        """Validate and assemble the bounded case seen by an isolated judge."""
+
+        claim_id = claim_id.strip().casefold()
+        claim = self.claim_store.ledger.by_id().get(claim_id)
+        if claim is None:
+            raise ValueError(f"unknown claim_id: {claim_id}")
+        if claim.kind != ClaimKind.SCIENTIFIC or claim.status != ClaimDisposition.OPEN:
+            raise ValueError("adjudication requires an open scientific claim")
+        if not claim.evidence_contracts:
+            raise ValueError("adjudication requires a prospective evidence contract")
+        selected_contract_version = (
+            claim.evidence_contracts[-1].version
+            if contract_version is None
+            else contract_version
+        )
+        if selected_contract_version not in {
+            contract.version for contract in claim.evidence_contracts
+        }:
+            raise ValueError(
+                f"claim {claim_id} has no evidence contract version "
+                f"{selected_contract_version}"
+            )
+        packet = self._adjudication_packet(
+            claim_id=claim_id,
+            contract_version=selected_contract_version,
+            case_for_sufficiency=case_for_sufficiency,
+        )
+        return claim_id, selected_contract_version, packet
+
+    def _record_adjudication_verdict(
+        self,
+        *,
+        claim_id: str,
+        contract_version: int,
+        case_for_sufficiency: str,
+        verdict: MVPJudgeVerdict,
+        iteration: int,
+        model: str,
+        route: str,
+        request_id: str | None,
+        usage: dict[str, Any] | None = None,
+        content: str | None = None,
+        operation_id: str | None = None,
+        case_sha256: str | None = None,
+    ) -> dict[str, Any]:
+        """Persist one already-isolated judge verdict and apply its disposition."""
+
+        claim_id = claim_id.strip().casefold()
+        # Rebuild the packet at commit time so evidence/contract changes between
+        # preparation and verdict recording are rejected by the caller's case hash.
+        self._prepare_adjudication_request(
+            claim_id=claim_id,
+            contract_version=contract_version,
+            case_for_sufficiency=case_for_sufficiency,
+        )
         if verdict.claim_id != claim_id or verdict.contract_version != contract_version:
             raise ValueError(
                 "judge verdict does not match the requested claim and contract version"
             )
         record = MVPAdjudicationRecord(
             iteration=iteration,
-            requested_case=action.case_for_sufficiency,
+            operation_id=operation_id,
+            case_sha256=case_sha256,
+            requested_case=case_for_sufficiency,
             verdict=verdict,
-            model=result.model,
-            route=result.route.value,
-            request_id=result.request_id,
-            usage=result.usage,
+            model=model,
+            route=route,
+            request_id=request_id,
+            usage=usage or {},
             recorded_at=utc_now(),
         )
         self._adjudications.append(record)
@@ -1594,11 +1655,12 @@ software.
             {
                 "kind": "adjudication",
                 "iteration": iteration,
-                "content": result.content,
-                "model": result.model,
-                "route": result.route.value,
-                "request_id": result.request_id,
-                "usage": result.usage,
+                "content": content or verdict.model_dump_json(),
+                "model": model,
+                "route": route,
+                "request_id": request_id,
+                "usage": usage or {},
+                "operation_id": operation_id,
                 "decision": verdict.decision.value,
                 "claim_id": claim_id,
                 "contract_version": contract_version,

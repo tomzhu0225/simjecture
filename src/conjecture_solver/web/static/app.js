@@ -286,7 +286,7 @@ function renderSnapshot(force) {
   if (instruction) renderMarkdown(ui["campaign-instruction"], `**Guidance:** ${instruction}`);
 
   renderCurrentAction(snapshot);
-  renderLoopProgress(snapshot);
+  renderLoopProgress(data);
   renderMetrics(data);
   renderControls(data.controls);
 
@@ -327,7 +327,12 @@ function renderSnapshot(force) {
     renderExecutions();
   }
 
-  const traceSignature = signature([snapshot.recent_events, snapshot.warnings, snapshot.token_usage]);
+  const traceSignature = signature([
+    snapshot.recent_events,
+    snapshot.warnings,
+    snapshot.token_usage,
+    data.engine,
+  ]);
   if (force || traceSignature !== state.traceSignature) {
     state.traceSignature = traceSignature;
     renderResearchTrace();
@@ -346,7 +351,9 @@ function renderSnapshot(force) {
   }
 }
 
-function renderLoopProgress(snapshot) {
+function renderLoopProgress(data) {
+  const snapshot = data.snapshot;
+  const engine = data.engine || { name: "native", status: "idle", activity: [] };
   const container = ui["loop-progress"];
   clear(container);
   const loop = snapshot.loop_state || {
@@ -362,8 +369,9 @@ function renderLoopProgress(snapshot) {
 
   const heading = element("div", "loop-heading");
   const title = element("div", "loop-title");
+  const engineLabel = engine.name === "dsh" ? "DSH · autonomous researcher" : capitalize(loop.role);
   title.append(
-    element("span", "role-badge", capitalize(loop.role)),
+    element("span", "role-badge", engineLabel),
     element("strong", null, `${capitalize(loop.stage)} · cycle ${loop.cycle || 1}`),
   );
   const remainingSeconds = snapshot.configured_wall_seconds == null
@@ -397,9 +405,14 @@ function renderLoopProgress(snapshot) {
   if (loop.status === "active") track.setAttribute("aria-busy", "true");
   container.append(track);
 
+  const currentEngineEvent = [...(engine.activity || [])].reverse().find((event) => (
+    ["running", "waiting"].includes(event.status)
+    || ["retry", "compaction", "route", "session"].includes(event.kind)
+  ));
+  const engineDetail = currentEngineEvent ? engineEventSummary(currentEngineEvent) : null;
   const detail = element("div", "loop-detail");
   detail.append(
-    element("span", null, loop.detail || "Research loop active."),
+    element("span", null, engineDetail || loop.detail || "Research loop active."),
     element("code", null, loop.active_claim_id || "no active claim"),
   );
   container.append(detail);
@@ -438,6 +451,7 @@ function renderCurrentAction(snapshot) {
 
 function renderMetrics(data) {
   const snapshot = data.snapshot;
+  const dshUsage = data.engine?.name === "dsh" ? data.engine.token_usage : null;
   const claims = data.claim_graph.nodes || [];
   const counts = countBy(claims, (item) => item.kind || "unknown");
   ui["metric-claims"].textContent = String(claims.length);
@@ -448,8 +462,10 @@ function renderMetrics(data) {
     : "No registered claims";
   ui["metric-elapsed"].textContent = data.formatted.elapsed;
   ui["metric-iterations"].textContent = `${formatInteger(snapshot.iterations)} model turns`;
-  ui["metric-tokens"].textContent = compactNumber(snapshot.token_usage.total_tokens);
-  ui["metric-model"].textContent = snapshot.last_model || "No model usage recorded";
+  ui["metric-tokens"].textContent = compactNumber(
+    dshUsage?.total_tokens ?? snapshot.token_usage.total_tokens,
+  );
+  ui["metric-model"].textContent = data.engine?.model || snapshot.last_model || "No model usage recorded";
   ui["metric-workspace"].textContent = data.formatted.workspace;
   ui["metric-heartbeat"].textContent = data.formatted.heartbeat_age
     ? `Heartbeat ${data.formatted.heartbeat_age}`
@@ -1486,7 +1502,15 @@ function renderResearchTrace() {
   clear(usagePanel);
   if (!state.snapshot) return;
   const snapshot = state.snapshot.snapshot;
-  const usage = snapshot.token_usage || {};
+  const engine = state.snapshot.engine || {};
+  const usage = engine.name === "dsh"
+    ? {
+        prompt_tokens: engine.token_usage?.input_tokens,
+        completion_tokens: engine.token_usage?.output_tokens,
+        reasoning_tokens: engine.token_usage?.reasoning_tokens,
+        cached_tokens: engine.token_usage?.cached_tokens,
+      }
+    : (snapshot.token_usage || {});
   const usageRows = [
     ["Input", compactNumber(usage.prompt_tokens)],
     ["Output", compactNumber(usage.completion_tokens)],
@@ -1503,9 +1527,30 @@ function renderResearchTrace() {
     snapshot.warnings.forEach((warning) => warnings.append(element("li", null, warning)));
     panel.append(warnings);
   }
+  const engineEvents = engine.name === "dsh"
+    ? [...(engine.activity || [])].reverse().slice(0, 30)
+    : [];
+  for (const event of engineEvents) {
+    const row = element("article", "trace-event");
+    const mark = element("span", "event-mark", eventSymbol(event.kind));
+    const copy = element("div", "trace-copy");
+    copy.append(element("p", null, engineEventSummary(event)));
+    const metadata = [
+      event.turn ? `turn ${event.turn}` : null,
+      event.step ? `step ${event.step}` : null,
+      event.tool,
+      event.provider && event.model ? `${event.provider}/${event.model}` : event.model,
+      event.status,
+    ].filter(Boolean).join(" · ");
+    copy.append(element("small", null, metadata));
+    row.append(mark, copy);
+    panel.append(row);
+  }
   const events = [...(snapshot.recent_events || [])].reverse();
   if (!events.length) {
-    panel.append(paragraph("panel-placeholder", "No model or tool actions have been recorded yet."));
+    if (!engineEvents.length) {
+      panel.append(paragraph("panel-placeholder", "No model or tool actions have been recorded yet."));
+    }
     return;
   }
   for (const event of events) {
@@ -1528,6 +1573,27 @@ function renderResearchTrace() {
     row.append(mark, copy);
     panel.append(row);
   }
+}
+
+function engineEventSummary(event) {
+  if (event.kind === "tool") {
+    return `${event.status === "running" ? "Calling" : "Tool call"} ${event.tool || event.call_id || "typed Simjecture tool"}: ${event.status}.`;
+  }
+  if (event.kind === "retry") {
+    const delay = event.delay_ms == null ? "" : ` after ${formatDuration(event.delay_ms / 1000)}`;
+    return `Model request retry ${event.retry || ""} ${event.status}${delay}.`.replace(/\s+/g, " ");
+  }
+  if (event.kind === "compaction") {
+    const size = event.shadowed_tokens == null ? "" : ` (${formatInteger(event.shadowed_tokens)} tokens condensed)`;
+    const error = event.error ? `: ${event.error}` : "";
+    return `DSH conversation compaction ${event.status}${size}${error}.`;
+  }
+  if (event.kind === "route") return `Model route selected: ${event.provider}/${event.model}.`;
+  if (event.kind === "session") return `Durable DSH session ${event.status}.`;
+  if (event.kind === "agent") return `Autonomous researcher is ${event.status}.`;
+  if (event.kind === "model") return `Model ${event.status}.`;
+  if (event.kind === "turn") return `DSH turn ${event.status}.`;
+  return `${capitalize(event.kind || "engine")} ${event.status || "updated"}.`;
 }
 
 function renderArtifacts() {

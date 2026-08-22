@@ -19,7 +19,7 @@ from collections.abc import Sequence
 from contextlib import suppress
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import IO, Any
+from typing import IO, Any, Literal
 
 from pydantic import Field, model_validator
 
@@ -35,6 +35,8 @@ INSTRUCTION_FILE_NAME = "instruction.txt"
 GUIDED_COMMISSIONING_DIR_NAME = "guided_commissioning"
 RUN_LOCK_NAME = "runner.lock"
 CAMPAIGN_ID_PATTERN = r"^[A-Za-z][A-Za-z0-9_.-]{0,127}$"
+DSH_SESSION_ID_PATTERN = r"^[A-Za-z][A-Za-z0-9_.-]{0,127}$"
+ReasoningEngine = Literal["native", "dsh"]
 
 
 class MVPLaunchRequest(StrictModel):
@@ -60,12 +62,16 @@ class MVPLaunchRequest(StrictModel):
     capability_directory: str | None = None
     use_glm: bool = False
     reason: str | None = None
+    engine: ReasoningEngine = "native"
+    dsh_session_id: str | None = Field(default=None, pattern=DSH_SESSION_ID_PATTERN)
     executable: tuple[str, ...] = ()
 
     @model_validator(mode="after")
     def validate_route(self) -> MVPLaunchRequest:
         if self.use_glm and not (self.reason and self.reason.strip()):
             raise ValueError("use_glm requires a non-empty reason")
+        if self.engine == "native" and self.dsh_session_id is not None:
+            raise ValueError("dsh_session_id requires engine='dsh'")
         return self
 
 
@@ -78,6 +84,8 @@ class MVPLaunchPlan(StrictModel):
     launch_record: str
     controller_log: str
     argv: tuple[str, ...]
+    engine: ReasoningEngine = "native"
+    dsh_session_id: str | None = None
 
 
 class ProcessIdentity(StrictModel):
@@ -116,6 +124,7 @@ def materialize_operator_input(
     request: MVPLaunchRequest,
     *,
     create_output: bool = True,
+    resume: bool = False,
 ) -> MVPLaunchPlan:
     output = Path(request.output_directory).expanduser().resolve()
     if create_output:
@@ -155,17 +164,22 @@ def materialize_operator_input(
             "capability_directory": _normalized_optional_path(
                 request.capability_directory
             ),
+            "dsh_session_id": (
+                request.dsh_session_id
+                or (_default_dsh_session_id(request) if request.engine == "dsh" else None)
+            ),
         }
     )
-    argv = build_mvp_argv(
+    argv = build_launch_argv(
         normalized,
         hypothesis_file=hypothesis_file,
         instruction_file=instruction_file,
+        resume=resume,
     )
     launch_record = operator / LAUNCH_RECORD_NAME
     blocked = _automatic_resume_blockers(normalized, output)
     record: dict[str, Any] = {
-        "schema_version": "0.2.0",
+        "schema_version": "0.3.0",
         "campaign_id": normalized.campaign_id,
         "hypothesis_file": hypothesis_file.name,
         "hypothesis_sha256": _sha256_text(hypothesis_text),
@@ -199,6 +213,8 @@ def materialize_operator_input(
         ),
         "use_glm": normalized.use_glm,
         "reason": normalized.reason,
+        "engine": normalized.engine,
+        "dsh_session_id": normalized.dsh_session_id,
         "automatic_resume_blockers": blocked,
         "argv": list(argv),
         "written_at": datetime.now(UTC).isoformat(),
@@ -212,7 +228,7 @@ def materialize_operator_input(
             hypothesis_text=hypothesis_text,
             instruction_text=instruction_text,
         )
-        if existing.get("schema_version") == "0.2.0":
+        if existing.get("schema_version") in {"0.2.0", "0.3.0"}:
             return MVPLaunchPlan(
                 request=normalized,
                 output_directory=str(output),
@@ -222,6 +238,8 @@ def materialize_operator_input(
                 launch_record=str(launch_record),
                 controller_log=str(output / CONTROLLER_LOG_NAME),
                 argv=argv,
+                engine=normalized.engine,
+                dsh_session_id=normalized.dsh_session_id,
             )
     else:
         _assert_unrecorded_output_is_compatible(
@@ -248,7 +266,52 @@ def materialize_operator_input(
         launch_record=str(launch_record),
         controller_log=str(output / CONTROLLER_LOG_NAME),
         argv=argv,
+        engine=normalized.engine,
+        dsh_session_id=normalized.dsh_session_id,
     )
+
+
+def build_launch_argv(
+    request: MVPLaunchRequest,
+    *,
+    hypothesis_file: Path,
+    instruction_file: Path | None,
+    resume: bool = False,
+) -> tuple[str, ...]:
+    """Build the reviewed native or DSH supervisor command without inline science text."""
+
+    if request.engine == "dsh":
+        return build_dsh_argv(request, resume=resume)
+    return build_mvp_argv(
+        request,
+        hypothesis_file=hypothesis_file,
+        instruction_file=instruction_file,
+    )
+
+
+def build_dsh_argv(
+    request: MVPLaunchRequest,
+    *,
+    resume: bool = False,
+) -> tuple[str, ...]:
+    """Build the stable Python supervisor command for one DSH session."""
+
+    if request.engine != "dsh" or request.dsh_session_id is None:
+        raise ValueError("a DSH launch requires a durable dsh_session_id")
+    executable = request.executable or default_mvp_executable()
+    argv = [
+        *executable,
+        "dsh-run",
+        "--output",
+        str(Path(request.output_directory).expanduser().resolve()),
+        "--session-id",
+        request.dsh_session_id,
+    ]
+    if resume:
+        argv.append("--resume")
+    if any("\x00" in item for item in argv):
+        raise ValueError("command arguments cannot contain NUL bytes")
+    return tuple(argv)
 
 
 def build_mvp_argv(
@@ -571,7 +634,7 @@ def load_launch_request(run_directory: str | Path) -> MVPLaunchRequest | None:
             "legacy launch record does not contain the complete MVP contract; "
             "repeat the reviewed original command"
         )
-    if schema_version != "0.2.0":
+    if schema_version not in {"0.2.0", "0.3.0"}:
         raise ResumeError(f"unsupported launch record schema: {schema_version!r}")
     blockers = payload.get("automatic_resume_blockers") or []
     if not isinstance(blockers, list) or not all(
@@ -671,6 +734,17 @@ def load_launch_request(run_directory: str | Path) -> MVPLaunchRequest | None:
                 if isinstance(payload.get("reason"), str)
                 else None
             ),
+            engine=(
+                str(payload.get("engine") or "native")
+                if schema_version == "0.3.0"
+                else "native"
+            ),
+            dsh_session_id=(
+                str(payload["dsh_session_id"])
+                if schema_version == "0.3.0"
+                and isinstance(payload.get("dsh_session_id"), str)
+                else None
+            ),
         )
     except ResumeError:
         raise
@@ -711,7 +785,7 @@ def prepare_resume(run_directory: str | Path) -> MVPLaunchPlan:
         raise ResumeError(
             "no operator_input/launch.json; repeat the original mvp command to resume"
         )
-    return materialize_operator_input(request)
+    return materialize_operator_input(request, resume=True)
 
 
 def request_graceful_cancel(
@@ -953,9 +1027,13 @@ _CONTRACT_KEYS = frozenset(
         "capability_directory",
         "use_glm",
         "reason",
+        "engine",
+        "dsh_session_id",
         "automatic_resume_blockers",
     }
 )
+
+_V2_CONTRACT_KEYS = _CONTRACT_KEYS - {"engine", "dsh_session_id"}
 
 
 def _assert_launch_record_matches(
@@ -967,10 +1045,21 @@ def _assert_launch_record_matches(
     instruction_text: str | None,
 ) -> None:
     schema = existing.get("schema_version")
-    if schema == "0.2.0":
+    if schema == "0.3.0":
         differences = sorted(
             key for key in _CONTRACT_KEYS if existing.get(key) != desired.get(key)
         )
+        if differences:
+            raise LaunchConflictError(
+                "output directory already contains a different launch contract "
+                f"({', '.join(differences)})"
+            )
+    elif schema == "0.2.0":
+        differences = sorted(
+            key for key in _V2_CONTRACT_KEYS if existing.get(key) != desired.get(key)
+        )
+        if desired.get("engine") != "native":
+            differences.append("engine")
         if differences:
             raise LaunchConflictError(
                 "output directory already contains a different launch contract "
@@ -1201,6 +1290,17 @@ def _sha256_text(text: str) -> str:
     return hashlib.sha256(text.encode()).hexdigest()
 
 
+def _default_dsh_session_id(request: MVPLaunchRequest) -> str:
+    identity = "\0".join(
+        (
+            request.campaign_id,
+            str(Path(request.output_directory).expanduser().resolve()),
+            _sha256_text(request.hypothesis),
+        )
+    )
+    return f"simjecture-{hashlib.sha256(identity.encode()).hexdigest()[:24]}"
+
+
 def _read_process_argv(pid: int) -> tuple[str, ...] | None:
     path = Path(f"/proc/{pid}/cmdline")
     try:
@@ -1214,10 +1314,11 @@ def _read_process_argv(pid: int) -> tuple[str, ...] | None:
 
 
 def _argv_targets_run(argv: tuple[str, ...], root: Path) -> bool:
-    if "mvp" not in argv:
+    command = next((item for item in ("mvp", "dsh-run") if item in argv), None)
+    if command is None:
         return False
-    mvp_index = argv.index("mvp")
-    prefix = argv[:mvp_index]
+    command_index = argv.index(command)
+    prefix = argv[:command_index]
     module_entry = any(
         item == "-m" and index + 1 < len(prefix) and prefix[index + 1] == "conjecture_solver"
         for index, item in enumerate(prefix)

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import mimetypes
 import threading
 import uuid
@@ -13,6 +14,7 @@ from typing import Any
 
 from ..mvp_launch import (
     MVPLaunchRequest,
+    ReasoningEngine,
     ResumeError,
     load_supervisor_record,
     materialize_operator_input,
@@ -40,6 +42,8 @@ from ..presentation import build_hypothesis_tree, build_validation_tree
 API_SCHEMA_VERSION = "0.2.0"
 MAX_CAMPAIGNS = 100
 MAX_ARTIFACT_BYTES = 64 * 1024 * 1024
+MAX_ENGINE_ACTIVITY_BYTES = 512 * 1024
+MAX_ENGINE_ACTIVITY_EVENTS = 80
 VISIBLE_RECORDS = frozenset(
     {
         "artifact_provenance.json",
@@ -132,11 +136,13 @@ class SimjectureWebApplication:
         scan_roots: tuple[str | Path, ...] = (),
         runs_root: str | Path = "artifacts",
         allow_mutations: bool = True,
+        default_engine: ReasoningEngine = "dsh",
     ) -> None:
         roots = scan_roots or (Path.cwd() / "artifacts", Path.cwd() / "demos")
         self.registry = CampaignRegistry(initial_run=initial_run, scan_roots=roots)
         self.runs_root = Path(runs_root).expanduser().resolve()
         self.allow_mutations = allow_mutations
+        self.default_engine = default_engine
         self._monitors: dict[str, MVPRunMonitor] = {}
         self._lock = threading.RLock()
 
@@ -156,6 +162,7 @@ class SimjectureWebApplication:
             "schema_version": API_SCHEMA_VERSION,
             "product": "Simjecture",
             "allow_mutations": self.allow_mutations,
+            "default_engine": self.default_engine,
             "selected_campaign": selected,
             "campaigns": campaigns,
         }
@@ -273,6 +280,7 @@ class SimjectureWebApplication:
                 "claim_graph": {"nodes": claim_graph_nodes, "edges": claim_graph_edges},
                 "claim_details": claim_details,
                 "commissioning": commissioning,
+                "engine": _engine_projection(root),
                 "executions": _execution_projection(snapshot),
                 "artifacts": artifacts,
                 "controls": controls,
@@ -303,6 +311,7 @@ class SimjectureWebApplication:
                 max_command_seconds=_bounded_float(payload, "max_command_seconds", 600, 1, 86_400),
                 max_workspace_mb=_bounded_int(payload, "max_workspace_mb", 512, 1, 1_048_576),
                 max_memory_mb=_bounded_int(payload, "max_memory_mb", 4096, 1, 1_048_576),
+                engine=self.default_engine,
             )
         except ValueError as error:
             raise WebApplicationError(str(error), status=400) from error
@@ -560,6 +569,110 @@ def _execution_binding_count(contracts: Any) -> int:
     return len(identities)
 
 
+def _engine_projection(root: Path) -> dict[str, Any]:
+    launch = _safe_operator_json(root, "launch.json")
+    name = str(launch.get("engine") or "native")
+    if name != "dsh":
+        return {
+            "name": "native",
+            "status": "running" if _is_live(root) else "idle",
+            "session_id": None,
+            "activity": [],
+            "token_usage": _empty_engine_usage(),
+        }
+    state = _safe_operator_json(root, "dsh_state.json")
+    activity = _read_engine_activity(root)
+    return {
+        "name": "dsh",
+        "status": str(state.get("status") or ("running" if _is_live(root) else "idle")),
+        "session_id": launch.get("dsh_session_id"),
+        "provider": state.get("provider"),
+        "model": state.get("model"),
+        "resumed": state.get("resumed") is True,
+        "recovered_fresh": state.get("recovered_fresh") is True,
+        "turn_reason": state.get("turn_reason"),
+        "activity": activity,
+        "token_usage": _engine_token_usage(activity),
+    }
+
+
+def _safe_operator_json(root: Path, name: str) -> dict[str, Any]:
+    path = root / "operator_input" / name
+    if path.is_symlink():
+        return {}
+    try:
+        resolved = path.resolve(strict=True)
+    except (OSError, FileNotFoundError):
+        return {}
+    if not resolved.is_relative_to(root) or not resolved.is_file():
+        return {}
+    return load_json_object(resolved)
+
+
+def _read_engine_activity(root: Path) -> list[dict[str, Any]]:
+    path = root / "operator_input" / "dsh_activity.jsonl"
+    if path.is_symlink():
+        return []
+    try:
+        resolved = path.resolve(strict=True)
+        if not resolved.is_relative_to(root) or not resolved.is_file():
+            return []
+        size = resolved.stat().st_size
+        with resolved.open("rb") as handle:
+            handle.seek(max(0, size - MAX_ENGINE_ACTIVITY_BYTES))
+            raw = handle.read(MAX_ENGINE_ACTIVITY_BYTES)
+    except OSError:
+        return []
+    if size > MAX_ENGINE_ACTIVITY_BYTES:
+        _, _, raw = raw.partition(b"\n")
+    events: list[dict[str, Any]] = []
+    for line in raw.splitlines():
+        try:
+            payload = json.loads(line)
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            continue
+        if isinstance(payload, dict):
+            events.append(payload)
+    return events[-MAX_ENGINE_ACTIVITY_EVENTS:]
+
+
+def _empty_engine_usage() -> dict[str, int]:
+    return {
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "reasoning_tokens": 0,
+        "cached_tokens": 0,
+        "total_tokens": 0,
+        "turns": 0,
+    }
+
+
+def _engine_token_usage(activity: list[dict[str, Any]]) -> dict[str, int]:
+    result = _empty_engine_usage()
+    for event in activity:
+        usage = event.get("usage")
+        if not isinstance(usage, dict):
+            continue
+        input_tokens = _nonnegative_int(usage.get("inputTokens"))
+        output_tokens = _nonnegative_int(usage.get("outputTokens"))
+        cached_tokens = _nonnegative_int(usage.get("cacheReadTokens")) + _nonnegative_int(
+            usage.get("cacheWriteTokens")
+        )
+        reasoning_tokens = _nonnegative_int(usage.get("reasoningTokens"))
+        result["input_tokens"] += input_tokens
+        result["output_tokens"] += output_tokens
+        result["cached_tokens"] += cached_tokens
+        result["reasoning_tokens"] += reasoning_tokens
+        result["total_tokens"] += input_tokens + output_tokens + cached_tokens
+        if event.get("kind") == "model" and event.get("status") == "responded":
+            result["turns"] += 1
+    return result
+
+
+def _nonnegative_int(value: Any) -> int:
+    return value if isinstance(value, int) and not isinstance(value, bool) and value >= 0 else 0
+
+
 def _commissioning_status(statuses: list[str], *, binding_count: int) -> str:
     if any(status == "open" for status in statuses):
         return "open"
@@ -718,7 +831,13 @@ def _revision(snapshot: Any, *, root: Path, live: bool) -> str:
         snapshot.phase.value,
         str(live),
     ]
-    for name in ("hypothesis_ledger.json", "mvp_report.json", "operator_input/control.json"):
+    for name in (
+        "hypothesis_ledger.json",
+        "mvp_report.json",
+        "operator_input/control.json",
+        "operator_input/dsh_activity.jsonl",
+        "operator_input/dsh_state.json",
+    ):
         try:
             pieces.append(str((root / name).stat().st_mtime_ns))
         except OSError:
@@ -734,6 +853,8 @@ def _latest_campaign_mtime(root: Path) -> datetime | None:
         "transcript.jsonl",
         "mvp_manifest.json",
         "operator_input/launch.json",
+        "operator_input/dsh_activity.jsonl",
+        "operator_input/dsh_state.json",
     ):
         try:
             stamp = (root / name).stat().st_mtime_ns

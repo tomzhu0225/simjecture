@@ -248,6 +248,125 @@ def test_kernel_open_constructs_a_real_model_free_campaign(tmp_path: Path) -> No
     assert (campaign / "workspace" / "probe.json").read_text() == '{"ok":true}'
 
 
+def test_model_free_kernel_adjudicates_and_finalizes_without_completion_client(
+    tmp_path: Path,
+) -> None:
+    campaign = tmp_path / "dsh-lifecycle"
+    kernel = CampaignKernel.open(
+        workspace=campaign,
+        hypothesis="Every member of the declared bounded ensemble passes.",
+    )
+    _prepare_startup(kernel)
+    kernel.execute_operation(
+        "contract-root-v1",
+        {
+            "action": "register_evidence_contract",
+            "research_note": "Freeze the bounded ensemble criterion prospectively.",
+            "claim_id": "claim_root",
+            "observable": "A deterministic ensemble pass flag.",
+            "expected_outcomes": "True supports the claim; false challenges it.",
+            "decision_rule": "Support exactly when ensemble_pass is true.",
+            "required_observation": "Evaluate every member of the declared ensemble.",
+            "uncertainty_criterion": "Every declared member must pass independently.",
+            "inconclusive_conditions": "Any missing ensemble member is inconclusive.",
+            "validation_checks": [
+                {"json_path": "ensemble_pass", "expected_value": True}
+            ],
+            "additional_execution_bindings": [],
+        },
+    )
+    kernel.execute_operation(
+        "write-root-evidence",
+        {
+            "action": "run_python",
+            "research_note": "Generate the complete prospective ensemble result.",
+            "argv": [
+                "-c",
+                "import json; from pathlib import Path; "
+                "Path('ensemble.json').write_text(json.dumps("
+                "{'ensemble_pass': True, 'members': 12}))",
+            ],
+            "active_claim_id": "claim_root",
+        },
+    )
+    kernel.execute_operation(
+        "link-root-evidence",
+        {
+            "action": "link_claim_evidence",
+            "research_note": "Link the complete bounded ensemble result.",
+            "claim_id": "claim_root",
+            "path": "ensemble.json",
+            "note": "All twelve prospectively declared members passed.",
+            "observation_sufficient": True,
+            "observation_note": "All declared members and the exact pass flag are present.",
+        },
+    )
+    case = (
+        "The complete twelve-member prospective ensemble passed with no missing runs."
+    )
+    prepared = kernel.prepare_adjudication(
+        "judge-root-v1",
+        claim_id="claim_root",
+        contract_version=1,
+        case_for_sufficiency=case,
+    )
+    assert prepared["already_recorded"] is False
+    result = kernel.record_adjudication(
+        "judge-root-v1",
+        claim_id="claim_root",
+        contract_version=1,
+        case_for_sufficiency=case,
+        case_sha256=prepared["case_sha256"],
+        verdict={
+            "claim_id": "claim_root",
+            "contract_version": 1,
+            "decision": "sufficient",
+            "rationale": (
+                "The complete bounded ensemble and exact validation satisfy the contract."
+            ),
+            "evidence_gaps": [],
+            "next_test": None,
+        },
+        model="deepseek-chat",
+        route="dsh-subagent:deepseek-official",
+        judge_run_id="judge-child-session",
+        usage={"totalTokens": 100},
+    )
+    assert result["closure"]["closed"]["status"] == "supported"
+    # Simulate a process loss after adjudication/closure persistence but before
+    # the final action-journal receipt. Preparation must reconcile, not spawn a
+    # second judge or leave the operation permanently in progress.
+    journal_path = campaign / "action_journal.json"
+    journal = json.loads(journal_path.read_text())
+    journal["operations"]["judge-root-v1"]["status"] = "running"
+    journal["operations"]["judge-root-v1"].pop("result")
+    journal_path.write_text(json.dumps(journal))
+    replay = kernel.prepare_adjudication(
+        "judge-root-v1",
+        claim_id="claim_root",
+        contract_version=1,
+        case_for_sufficiency=case,
+    )
+    assert replay["already_recorded"] is True
+    assert json.loads(journal_path.read_text())["operations"]["judge-root-v1"][
+        "status"
+    ] == "succeeded"
+
+    report = kernel.finalize_campaign(
+        "finish-root-v1",
+        final_answer="The declared bounded ensemble supports the root claim.",
+    )
+    assert report["status"] == "completed"
+    assert report["final_answer"].startswith("The declared bounded ensemble")
+    assert (campaign / "mvp_report.json").is_file()
+    assert kernel.finalize_campaign(
+        "finish-root-v1",
+        final_answer="The declared bounded ensemble supports the root claim.",
+    ) == report
+    adjudications = json.loads((campaign / "adjudications.json").read_text())
+    assert adjudications[0]["operation_id"] == "judge-root-v1"
+
+
 def test_kernel_worker_reopens_campaign_and_records_typed_artifact(tmp_path: Path) -> None:
     campaign = tmp_path / "campaign"
     kernel = CampaignKernel.open(

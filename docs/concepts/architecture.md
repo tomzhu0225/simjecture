@@ -18,11 +18,14 @@ front ends; neither is the authority for scientific state or evidence.
 ## Native tool boundary
 
 Under DeepSeek Harness, a strict MCP profile exposes only explicit Simjecture
-tools. DSH owns the provider, conversation, retry policy, and model-facing
+tools. DSH owns the provider, conversation, retry policy, compaction, and model-facing
 session. Generic shell, filesystem, workflow, web, and subagent tools are not
 part of the scientific profile. Its approval policy is non-interactive because
 CampaignKernel is the authoritative execution gate. Each tool call crosses the
-kernel boundary at most once.
+kernel boundary at most once. The researcher receives one composite
+adjudication tool. It freezes the current evidence case, runs a fresh tool-free
+DSH child with a strict verdict schema, and commits the verdict through two raw
+MCP endpoints hidden from the researcher's scoped tool view.
 
 ## Campaign kernel
 
@@ -39,6 +42,9 @@ bounded search finds no counterexample, an independent **Judge** sees only the
 auditable evidence package and decides whether it is sufficient or which gap
 must be tested next. Roles are explicit workflow contexts, not claims of
 different underlying model providers.
+An accepted verdict does not itself end the process: guarded finalization checks
+the entire scientific frontier and writes the report only when no open claim or
+unrepaired counterexample remains.
 
 ## Sandbox and capabilities
 
@@ -57,7 +63,10 @@ execution.
 
 ## Durable operational state
 
-The reasoning harness retains its model session. Simjecture journals simulator
+The reasoning harness retains its model session. Under DSH, a stable session ID
+and event-sourced log live inside the campaign; pause, process restart, and
+resume reopen that session instead of constructing a blank conversation.
+Simjecture journals simulator
 intents before dispatch and stores content hashes, operation identifiers,
 cancellation records, process identities, and authenticated worker receipts.
 Long jobs survive an MCP restart. A missing or unverifiable receipt remains an

@@ -73,6 +73,7 @@ _OPERATION_ID = {"operation_id": _string()}
 
 CLAIM_KINDS = ["scientific", "instrument", "diagnostic", "control"]
 CLAIM_RELATIONS = [
+    "repairs",
     "refines",
     "alternate",
     "diagnostic_of",
@@ -105,6 +106,8 @@ MUTATING_TOOLS = frozenset(
         "run_workbench_capability",
         "run_evidence_capability",
         "cancel_job",
+        "record_adjudication",
+        "finalize_campaign",
     }
 )
 
@@ -133,6 +136,24 @@ _EXECUTION_BINDING = _object(
         "allowed_scientific_argv": _array(_array(_string())),
     }
 )
+_REPAIR_CONTEXT = _object(
+    {
+        "counterexample_paths": _array(_string()),
+        "accommodation": _string(),
+        "semantic_change": _string(),
+        "falsification_condition": _string(),
+    }
+)
+_JUDGE_VERDICT = _object(
+    {
+        "claim_id": _string(),
+        "contract_version": _integer(),
+        "decision": {"enum": ["sufficient", "insufficient"]},
+        "rationale": _string(),
+        "evidence_gaps": _array(_string()),
+        "next_test": _nullable_string(),
+    }
+)
 
 
 # Only these keys are sent over the wire.  Descriptions live in TOOL_DESCRIPTIONS
@@ -147,6 +168,7 @@ TOOL_SCHEMAS: dict[str, dict[str, Any]] = {
             "relation": {"enum": CLAIM_RELATIONS},
             "parent_id": _string(),
             "rationale": _string(),
+            "repair": {"oneOf": [_REPAIR_CONTEXT, {"const": None}]},
             **_OPERATION_ID,
             **_RESEARCH_NOTE,
         }
@@ -266,6 +288,37 @@ TOOL_SCHEMAS: dict[str, dict[str, Any]] = {
     ),
     "job_status": _object({"job_id": _string()}),
     "cancel_job": _object({"job_id": _string(), **_OPERATION_ID}),
+    # These two endpoints are hidden from the researcher agent by the DSH
+    # scoped tool restriction. The composite simjecture_adjudicate tool alone
+    # uses them around a fresh, tool-free judge subagent.
+    "prepare_adjudication": _object(
+        {
+            "operation_id": _string(),
+            "claim_id": _string(),
+            "contract_version": _integer(),
+            "case_for_sufficiency": _string(),
+        }
+    ),
+    "record_adjudication": _object(
+        {
+            "operation_id": _string(),
+            "claim_id": _string(),
+            "contract_version": _integer(),
+            "case_for_sufficiency": _string(),
+            "case_sha256": _string(),
+            "verdict": _JUDGE_VERDICT,
+            "model": _string(),
+            "route": _string(),
+            "judge_run_id": _string(),
+            "usage": _free_object(),
+        }
+    ),
+    "finalize_campaign": _object(
+        {
+            "operation_id": _string(),
+            "final_answer": _string(),
+        }
+    ),
 }
 
 
@@ -314,6 +367,24 @@ TOOL_REQUIRED: dict[str, tuple[str, ...]] = {
     ),
     "job_status": ("job_id",),
     "cancel_job": ("operation_id", "job_id"),
+    "prepare_adjudication": (
+        "operation_id",
+        "claim_id",
+        "contract_version",
+        "case_for_sufficiency",
+    ),
+    "record_adjudication": (
+        "operation_id",
+        "claim_id",
+        "contract_version",
+        "case_for_sufficiency",
+        "case_sha256",
+        "verdict",
+        "model",
+        "route",
+        "judge_run_id",
+    ),
+    "finalize_campaign": ("operation_id", "final_answer"),
 }
 
 # Keep the required list in the advertised schema as well as in the Python
@@ -365,6 +436,17 @@ TOOL_DESCRIPTIONS: dict[str, str] = {
     ),
     "job_status": "Read bounded status/output metadata for one scientific job.",
     "cancel_job": "Request cancellation of one scientific job.",
+    "prepare_adjudication": (
+        "Internal DSH endpoint: freeze a bounded prospective evidence case for "
+        "an isolated judge."
+    ),
+    "record_adjudication": (
+        "Internal DSH endpoint: commit the structured verdict returned by the "
+        "isolated judge."
+    ),
+    "finalize_campaign": (
+        "Write the terminal auditable report after every scientific finish gate passes."
+    ),
 }
 
 

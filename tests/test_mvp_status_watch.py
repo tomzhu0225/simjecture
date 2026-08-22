@@ -131,6 +131,39 @@ def test_build_mvp_argv_uses_hypothesis_file_not_inline_text(tmp_path: Path) -> 
     assert rebuilt == plan.argv
 
 
+def test_dsh_launch_uses_stable_session_and_resume_command(tmp_path: Path) -> None:
+    output = tmp_path / "dsh-campaign"
+    hypothesis = "A private multiline\nhypothesis never enters the DSH process argv."
+    request = MVPLaunchRequest(
+        hypothesis=hypothesis,
+        campaign_id="campaign-dsh-001",
+        output_directory=str(output),
+        engine="dsh",
+        executable=(sys.executable, "-m", "conjecture_solver"),
+    )
+    initial = materialize_operator_input(request)
+    assert initial.engine == "dsh"
+    assert initial.dsh_session_id is not None
+    assert "dsh-run" in initial.argv
+    assert "--resume" not in initial.argv
+    assert hypothesis not in " ".join(initial.argv)
+    assert "--hypothesis-file" not in initial.argv
+
+    launch = json.loads(Path(initial.launch_record).read_text())
+    assert launch["schema_version"] == "0.3.0"
+    assert launch["engine"] == "dsh"
+    assert launch["dsh_session_id"] == initial.dsh_session_id
+
+    loaded = load_launch_request(output)
+    assert loaded is not None
+    assert loaded.engine == "dsh"
+    assert loaded.dsh_session_id == initial.dsh_session_id
+    resumed = prepare_resume(output)
+    assert resumed.dsh_session_id == initial.dsh_session_id
+    assert "--resume" in resumed.argv
+    assert resumed.argv[resumed.argv.index("--session-id") + 1] == initial.dsh_session_id
+
+
 def test_validate_campaign_id_rejects_unsafe_names() -> None:
     assert validate_campaign_id("plasma-test-001") == "plasma-test-001"
     try:

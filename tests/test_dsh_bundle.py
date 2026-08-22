@@ -7,19 +7,26 @@ from pathlib import Path
 BUNDLE = Path(__file__).parents[1] / "integrations" / "dsh"
 
 
-def test_dsh_bundle_is_patch_only_and_pins_the_native_mcp_client() -> None:
+def test_dsh_bundle_pins_the_resumable_driver_and_native_mcp_client() -> None:
     package = json.loads((BUNDLE / "package.json").read_text())
     assert package["name"] == "@simjecture/dsh-bundle"
-    assert package["version"] == "0.2.0-rc.1"
+    assert package["version"] == "0.2.0-rc.2"
     assert package["engines"]["node"] == ">=22.19.0"
     assert package["peerDependencies"] == {"@deepseek-ai/dsh": "0.1.1-rc.2"}
     assert package["dependencies"] == {
-        "@deepseek-ai/dsh-mcp-client": "0.1.1-rc.2"
+        "@deepseek-ai/dsh-agent": "0.1.1-rc.2",
+        "@deepseek-ai/dsh-llm": "0.1.1-rc.2",
+        "@deepseek-ai/dsh-mcp-client": "0.1.1-rc.2",
+        "@deepseek-ai/dsh-session": "0.1.1-rc.2",
     }
     assert "scripts" not in package
     assert "python" not in json.dumps(package).lower()
     assert "warpx" not in json.dumps(package).lower()
     assert package["dsh"]["bundle"]["patch"] == "./cordis.patch.yml"
+    assert package["exports"]["./runner"] == "./runner.js"
+    assert package["exports"]["./adjudicator"] == "./adjudicator.js"
+    assert "runner.js" in package["files"]
+    assert "adjudicator.js" in package["files"]
 
 
 def test_dsh_profile_declares_explicit_boundary_and_disables_bypasses() -> None:
@@ -44,6 +51,7 @@ def test_dsh_profile_declares_explicit_boundary_and_disables_bypasses() -> None:
         "SIMJECTURE_SKILLS",
         "SIMJECTURE_MCP_MAX_OUTPUT_CHARS",
         "SIMJECTURE_MCP_TIMEOUT_SECONDS",
+        "SIMJECTURE_DSH_SESSION_ROOT",
     ):
         assert variable in patch
     disabled_model_rows = (
@@ -74,6 +82,44 @@ def test_dsh_profile_declares_explicit_boundary_and_disables_bypasses() -> None:
             patch,
         )
     assert "mcp__simjecture__finish" not in patch
+    assert re.search(r"(?m)^- id: headless-runner\n  disabled: true$", patch)
+    assert "name: '@simjecture/dsh-bundle/runner'" in patch
+    assert "name: '@simjecture/dsh-bundle/adjudicator'" in patch
+    assert "simjecture_adjudicate" in patch
+    assert "mcp__simjecture__finalize_campaign" in patch
+    assert "id: compaction-basic" in patch
+
+
+def test_dsh_runner_uses_stable_resume_and_projects_no_reasoning_chunks() -> None:
+    runner = (BUNDLE / "runner.js").read_text()
+    assert "SIMJECTURE_DSH_SESSION_ID" in runner
+    assert "agents.resume" in runner
+    assert "agents.create" in runner
+    assert "sessions.flush" in runner
+    assert "llm/retry" in runner
+    assert "compaction/summary" in runner
+    assert "usage: event.data.usage" in runner
+    assert ".slice(0, 500)" in runner
+    assert "assistant/chunk" not in runner
+    assert "event.data.arguments" not in runner
+
+
+def test_dsh_adjudicator_uses_a_fresh_tool_free_structured_child() -> None:
+    adjudicator = (BUNDLE / "adjudicator.js").read_text()
+    assert "@deepseek-ai/dsh-tools" not in adjudicator
+    assert "defineTool" not in adjudicator
+    assert "ctx.subagents.start('spawn'" in adjudicator
+    assert "outputSchema: VERDICT_SCHEMA" in adjudicator
+    assert "toolFilter: { allow: [] }" in adjudicator
+    assert "persona: JUDGE_PERSONA" in adjudicator
+    assert "mcp__simjecture__prepare_adjudication" in adjudicator
+    assert "mcp__simjecture__record_adjudication" in adjudicator
+    assert "chain-of-thought" in adjudicator
+    assert "event.data.arguments" not in adjudicator
+
+    runner = (BUNDLE / "runner.js").read_text()
+    assert "agentCtx.tools.restrict" in runner
+    assert "INTERNAL_TOOL_NAMES" in runner
 
 
 def test_dsh_readme_documents_provisioning_pack_install_and_dump_config() -> None:

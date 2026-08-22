@@ -10,7 +10,11 @@ import httpx
 import pytest
 
 from conjecture_solver.cli import build_parser
-from conjecture_solver.mvp_launch import MVPOutputLock
+from conjecture_solver.mvp_launch import (
+    MVPLaunchRequest,
+    MVPOutputLock,
+    materialize_operator_input,
+)
 from conjecture_solver.web.application import (
     SimjectureWebApplication,
     WebApplicationError,
@@ -449,6 +453,7 @@ def test_create_campaign_uses_structured_launch_contract(
     assert request.instruction == "Prefer the installed numerical skill."
     assert request.campaign_id == "campaign-web-test"
     assert request.max_command_seconds == 120
+    assert request.engine == "dsh"
     assert captured["closed"] is True
     assert result["pid"] == 4321
     assert application.registry.resolve(result["campaign"]).name == "campaign-web-test"
@@ -467,6 +472,81 @@ def test_create_campaign_rejects_invalid_operator_fields(tmp_path: Path) -> None
             }
         )
     assert caught.value.status == 400
+
+
+def test_web_projects_bounded_dsh_engine_activity_and_usage(tmp_path: Path) -> None:
+    root = tmp_path / "dsh-run"
+    plan = materialize_operator_input(
+        MVPLaunchRequest(
+            hypothesis="A DSH activity projection is not private chain-of-thought.",
+            campaign_id="campaign-dsh-web",
+            output_directory=str(root),
+            engine="dsh",
+        )
+    )
+    _write_json(
+        root / "operator_input" / "dsh_state.json",
+        {
+            "status": "running",
+            "provider": "deepseek",
+            "model": "deepseek-reasoner",
+            "resumed": True,
+        },
+    )
+    activity = root / "operator_input" / "dsh_activity.jsonl"
+    activity.write_text(
+        json.dumps(
+            {
+                "kind": "route",
+                "status": "selected",
+                "provider": "deepseek",
+                "model": "deepseek-reasoner",
+            }
+        )
+        + "\n"
+        + json.dumps(
+            {
+                "kind": "model",
+                "status": "responded",
+                "usage": {
+                    "inputTokens": 120,
+                    "outputTokens": 30,
+                    "cacheReadTokens": 40,
+                    "reasoningTokens": 20,
+                },
+            }
+        )
+        + "\n"
+        + json.dumps(
+            {
+                "kind": "compaction",
+                "status": "summarized",
+                "usage": {
+                    "inputTokens": 50,
+                    "outputTokens": 10,
+                    "cacheReadTokens": 5,
+                    "reasoningTokens": 3,
+                },
+            }
+        )
+        + "\n"
+    )
+    application = SimjectureWebApplication(initial_run=root, scan_roots=(tmp_path,))
+    payload = application.campaign_snapshot(application.initial_campaign or "")
+    engine = payload["engine"]
+    assert engine["name"] == "dsh"
+    assert engine["session_id"] == plan.dsh_session_id
+    assert engine["status"] == "running"
+    assert engine["resumed"] is True
+    assert engine["token_usage"] == {
+        "input_tokens": 170,
+        "output_tokens": 40,
+        "reasoning_tokens": 23,
+        "cached_tokens": 45,
+        "total_tokens": 255,
+        "turns": 1,
+    }
+    assert len(engine["activity"]) == 3
 
 
 def test_local_http_api_serves_assets_snapshot_and_protects_post(tmp_path: Path) -> None:
@@ -551,6 +631,11 @@ def test_web_cli_contract() -> None:
     assert args.port == 0
     assert args.no_open is True
     assert args.read_only is True
+    assert args.engine == "dsh"
+
+    native = build_parser().parse_args(["web", "--open", "--engine", "native"])
+    assert native.no_open is False
+    assert native.engine == "native"
 
 
 def test_web_server_rejects_non_loopback_bind(tmp_path: Path) -> None:

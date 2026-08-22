@@ -1298,6 +1298,475 @@ class CampaignKernel:
                 self._charge_active_seconds(time.monotonic() - active_started)
                 self._reconcile_jobs_locked()
 
+    @staticmethod
+    def _adjudication_action_payload(
+        *,
+        claim_id: str,
+        contract_version: int,
+        case_for_sufficiency: str,
+    ) -> dict[str, Any]:
+        return {
+            "action": "record_adjudication",
+            "claim_id": claim_id.strip().casefold(),
+            "contract_version": contract_version,
+            "case_for_sufficiency": case_for_sufficiency,
+        }
+
+    @staticmethod
+    def _packet_sha256(packet: Mapping[str, Any]) -> str:
+        encoded = json.dumps(
+            dict(packet),
+            ensure_ascii=False,
+            allow_nan=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode()
+        return hashlib.sha256(encoded).hexdigest()
+
+    def prepare_adjudication(
+        self,
+        operation_id: str,
+        *,
+        claim_id: str,
+        contract_version: int,
+        case_for_sufficiency: str,
+    ) -> dict[str, Any]:
+        """Return a bounded immutable case for a fresh independent DSH judge.
+
+        This method does not call a model.  The operation id lets the DSH
+        composite tool discover a verdict that was durably recorded before a
+        transport failure, avoiding a second judge turn on retry.
+        """
+
+        operation_id = self._validate_operation_id(operation_id)
+        if not isinstance(contract_version, int) or isinstance(contract_version, bool):
+            raise ValueError("contract_version must be an integer")
+        if contract_version < 1:
+            raise ValueError("contract_version must be at least 1")
+        if (
+            not isinstance(case_for_sufficiency, str)
+            or len(case_for_sufficiency.strip()) < 16
+        ):
+            raise ValueError("case_for_sufficiency must contain at least 16 characters")
+        payload = self._adjudication_action_payload(
+            claim_id=claim_id,
+            contract_version=contract_version,
+            case_for_sufficiency=case_for_sufficiency,
+        )
+        fingerprint = self._operation_fingerprint(payload, None)
+        with self._writer_lock(wait_seconds=2.0):
+            self._reconcile_jobs_locked()
+            journal = self._load_action_journal()
+            existing = journal.get("operations", {}).get(operation_id)
+            if existing is not None:
+                if not isinstance(existing, Mapping) or existing.get("fingerprint") != fingerprint:
+                    from .campaign_jobs import JobConflictError
+
+                    raise JobConflictError(
+                        f"operation_id {operation_id!r} already names a different action"
+                    )
+                if existing.get("status") == "succeeded" and isinstance(
+                    existing.get("result"), Mapping
+                ):
+                    return {
+                        "already_recorded": True,
+                        "result": dict(existing["result"]),
+                    }
+                if existing.get("status") == "failed":
+                    raise CampaignOperationFailedError(
+                        str(
+                            existing.get("error")
+                            or f"adjudication operation {operation_id!r} failed"
+                        )
+                    )
+                recovered = self._recover_recorded_adjudication(operation_id)
+                if recovered is not None:
+                    self._update_operation_record(
+                        journal,
+                        operation_id,
+                        status="succeeded",
+                        result=recovered,
+                    )
+                    self._persist_action_journal(journal)
+                    return {"already_recorded": True, "result": recovered}
+                raise CampaignOperationInProgressError(
+                    f"adjudication operation {operation_id!r} is already in progress"
+                )
+            self._assert_writer_available()
+            selected_id, selected_version, packet = (
+                self.host._prepare_adjudication_request(
+                    claim_id=claim_id,
+                    contract_version=contract_version,
+                    case_for_sufficiency=case_for_sufficiency,
+                )
+            )
+            return {
+                "already_recorded": False,
+                "operation_id": operation_id,
+                "claim_id": selected_id,
+                "contract_version": selected_version,
+                "case_sha256": self._packet_sha256(packet),
+                "packet": packet,
+            }
+
+    def record_adjudication(
+        self,
+        operation_id: str,
+        *,
+        claim_id: str,
+        contract_version: int,
+        case_for_sufficiency: str,
+        case_sha256: str,
+        verdict: Mapping[str, Any],
+        model: str,
+        route: str,
+        judge_run_id: str,
+        usage: Mapping[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Commit a structured verdict produced by the isolated DSH judge."""
+
+        operation_id = self._validate_operation_id(operation_id)
+        payload = self._adjudication_action_payload(
+            claim_id=claim_id,
+            contract_version=contract_version,
+            case_for_sufficiency=case_for_sufficiency,
+        )
+        fingerprint = self._operation_fingerprint(payload, None)
+        with self._writer_lock():
+            self._reconcile_jobs_locked()
+            self._assert_writer_available(exclude_operation_id=operation_id)
+            journal = self._load_action_journal()
+            existing = journal.get("operations", {}).get(operation_id)
+            if existing is not None:
+                if not isinstance(existing, Mapping) or existing.get("fingerprint") != fingerprint:
+                    from .campaign_jobs import JobConflictError
+
+                    raise JobConflictError(
+                        f"operation_id {operation_id!r} already names a different action"
+                    )
+                if existing.get("status") == "succeeded" and isinstance(
+                    existing.get("result"), Mapping
+                ):
+                    return dict(existing["result"])
+                if existing.get("status") == "failed":
+                    raise CampaignOperationFailedError(
+                        str(
+                            existing.get("error")
+                            or f"adjudication operation {operation_id!r} failed"
+                        )
+                    )
+                recovered = self._recover_recorded_adjudication(operation_id)
+                if recovered is not None:
+                    self._update_operation_record(
+                        journal,
+                        operation_id,
+                        status="succeeded",
+                        result=recovered,
+                    )
+                    self._persist_action_journal(journal)
+                    return recovered
+                raise CampaignOperationInProgressError(
+                    f"adjudication operation {operation_id!r} is already in progress"
+                )
+
+            selected_id, selected_version, packet = (
+                self.host._prepare_adjudication_request(
+                    claim_id=claim_id,
+                    contract_version=contract_version,
+                    case_for_sufficiency=case_for_sufficiency,
+                )
+            )
+            if not isinstance(case_sha256, str) or case_sha256 != self._packet_sha256(packet):
+                raise ValueError(
+                    "adjudication case changed after judge preparation; prepare a fresh case"
+                )
+            from .mvp_agent import MVPJudgeVerdict
+
+            parsed_verdict = MVPJudgeVerdict.model_validate(dict(verdict))
+            sequence, journal, budget = self._reserve_sequence()
+            now = datetime.now(UTC).isoformat()
+            journal["operations"][operation_id] = {
+                "operation_id": operation_id,
+                "sequence": sequence,
+                "fingerprint": fingerprint,
+                "action": payload,
+                "requested_timeout_seconds": None,
+                "effective_timeout_seconds": None,
+                "status": "running",
+                "created_at": now,
+                "updated_at": now,
+            }
+            self._persist_budget(budget)
+            self._persist_action_journal(journal)
+            active_started = time.monotonic()
+            try:
+                result = self.host._record_adjudication_verdict(
+                    claim_id=selected_id,
+                    contract_version=selected_version,
+                    case_for_sufficiency=case_for_sufficiency,
+                    verdict=parsed_verdict,
+                    iteration=sequence,
+                    model=model,
+                    route=route,
+                    request_id=judge_run_id,
+                    usage=dict(usage or {}),
+                    operation_id=operation_id,
+                    case_sha256=case_sha256,
+                )
+                self._set_external_adjudication_loop_state(
+                    claim_id=selected_id,
+                    verdict=parsed_verdict,
+                    iteration=sequence,
+                )
+            except Exception as error:
+                self._update_operation_record(
+                    journal,
+                    operation_id,
+                    status="failed",
+                    error=f"{type(error).__name__}: {error}",
+                )
+                self._persist_action_journal(journal)
+                self._charge_active_seconds(time.monotonic() - active_started)
+                raise
+            self._update_operation_record(
+                journal,
+                operation_id,
+                status="succeeded",
+                result=result,
+            )
+            self._persist_action_journal(journal)
+            self._charge_active_seconds(time.monotonic() - active_started)
+            return result
+
+    def _recover_recorded_adjudication(
+        self,
+        operation_id: str,
+    ) -> dict[str, Any] | None:
+        """Receipt a verdict persisted just before its journal update."""
+
+        records = [
+            record
+            for record in getattr(self.host, "_adjudications", ())
+            if getattr(record, "operation_id", None) == operation_id
+        ]
+        if not records:
+            return None
+        if len(records) != 1:
+            raise ValueError("adjudication operation has duplicate durable records")
+        record = records[0]
+        claim_id = record.verdict.claim_id
+        contract_version = record.verdict.contract_version
+        claim = self.claim_store.ledger.by_id().get(claim_id)
+        if claim is None:
+            raise ValueError("recorded adjudication references an unknown claim")
+
+        from .mvp_agent import MVPJudgeDecision
+        from .mvp_claims import ClaimDisposition
+
+        response: dict[str, Any] = {
+            "adjudication": record.model_dump(mode="json"),
+        }
+        if record.verdict.decision == MVPJudgeDecision.SUFFICIENT:
+            if claim.status == ClaimDisposition.OPEN:
+                _selected_id, _selected_version, packet = (
+                    self.host._prepare_adjudication_request(
+                        claim_id=claim_id,
+                        contract_version=contract_version,
+                        case_for_sufficiency=record.requested_case,
+                    )
+                )
+                if (
+                    record.case_sha256 is not None
+                    and record.case_sha256 != self._packet_sha256(packet)
+                ):
+                    raise ValueError(
+                        "recorded adjudication case no longer matches durable evidence"
+                    )
+                response["closure"] = self.claim_store.close(
+                    claim_id=claim_id,
+                    status=ClaimDisposition.SUPPORTED,
+                    reason=(
+                        "Independent judge accepted the bounded evidence package: "
+                        + record.verdict.rationale
+                    ),
+                    contract_version=contract_version,
+                    iteration=record.iteration,
+                )
+            elif (
+                claim.status == ClaimDisposition.SUPPORTED
+                and claim.decisive_contract_version == contract_version
+            ):
+                response["closure"] = {
+                    "closed": claim.model_dump(mode="json"),
+                    "claim_ledger": self.claim_store.ledger.compact_summary(),
+                    "decisive_contract_version": contract_version,
+                }
+            else:
+                raise ValueError(
+                    "recorded sufficient adjudication conflicts with claim disposition"
+                )
+        else:
+            response["continue_required"] = True
+            response["evidence_gaps"] = list(record.verdict.evidence_gaps)
+            response["next_test"] = record.verdict.next_test
+        self._set_external_adjudication_loop_state(
+            claim_id=claim_id,
+            verdict=record.verdict,
+            iteration=record.iteration,
+        )
+        return response
+
+    def _set_external_adjudication_loop_state(
+        self,
+        *,
+        claim_id: str,
+        verdict: Any,
+        iteration: int,
+    ) -> None:
+        setter = getattr(self.host, "_set_loop_state", None)
+        if not callable(setter):
+            return
+        from .mvp_agent import (
+            MVPJudgeDecision,
+            MVPLoopStage,
+            MVPResearchRole,
+        )
+
+        if verdict.decision == MVPJudgeDecision.SUFFICIENT:
+            setter(
+                stage=MVPLoopStage.COMPLETE,
+                role=MVPResearchRole.JUDGE,
+                active_claim_id=claim_id,
+                detail="Independent judge accepted the bounded evidence package.",
+                iteration=iteration,
+                status="completed",
+            )
+        else:
+            setter(
+                stage=MVPLoopStage.FALSIFICATION,
+                role=MVPResearchRole.FALSIFIER,
+                active_claim_id=claim_id,
+                detail="Judge found evidence gaps; the Falsifier is continuing the search.",
+                iteration=iteration,
+            )
+
+    def finalize_campaign(
+        self,
+        operation_id: str,
+        *,
+        final_answer: str,
+    ) -> dict[str, Any]:
+        """Write the terminal report only after the scientific finish gate passes."""
+
+        operation_id = self._validate_operation_id(operation_id)
+        if not isinstance(final_answer, str) or not final_answer.strip():
+            raise ValueError("final_answer must be a non-empty string")
+        if len(final_answer) > 16_384:
+            raise ValueError("final_answer exceeds the 16,384-character limit")
+        payload = {"action": "finalize_campaign", "final_answer": final_answer}
+        fingerprint = self._operation_fingerprint(payload, None)
+        with self._writer_lock():
+            self._reconcile_jobs_locked()
+            self._assert_writer_available(exclude_operation_id=operation_id)
+            journal = self._load_action_journal()
+            existing = journal.get("operations", {}).get(operation_id)
+            if existing is not None:
+                if not isinstance(existing, Mapping) or existing.get("fingerprint") != fingerprint:
+                    from .campaign_jobs import JobConflictError
+
+                    raise JobConflictError(
+                        f"operation_id {operation_id!r} already names a different action"
+                    )
+                if existing.get("status") == "succeeded" and isinstance(
+                    existing.get("result"), Mapping
+                ):
+                    return dict(existing["result"])
+                if existing.get("status") == "failed":
+                    raise CampaignOperationFailedError(
+                        str(
+                            existing.get("error")
+                            or f"finalization operation {operation_id!r} failed"
+                        )
+                    )
+                report = self._existing_terminal_report(final_answer=final_answer)
+                if report is not None:
+                    self._update_operation_record(
+                        journal,
+                        operation_id,
+                        status="succeeded",
+                        result=report,
+                    )
+                    self._persist_action_journal(journal)
+                    return report
+                raise CampaignOperationInProgressError(
+                    f"finalization operation {operation_id!r} is already in progress"
+                )
+
+            prior_report = self._existing_terminal_report(final_answer=final_answer)
+            if prior_report is not None:
+                return prior_report
+            gate_error = self.host._finish_gate_error()
+            if gate_error is not None:
+                raise ValueError(gate_error)
+
+            # Finalization is an administrative commit, not a new scientific
+            # experiment.  Allocate chronology without making an exhausted
+            # action budget prevent an already-valid conclusion from being saved.
+            sequence = int(journal["next_sequence"])
+            journal["next_sequence"] = sequence + 1
+            now = datetime.now(UTC).isoformat()
+            journal["operations"][operation_id] = {
+                "operation_id": operation_id,
+                "sequence": sequence,
+                "fingerprint": fingerprint,
+                "action": payload,
+                "requested_timeout_seconds": None,
+                "effective_timeout_seconds": None,
+                "status": "running",
+                "created_at": now,
+                "updated_at": now,
+            }
+            self._persist_action_journal(journal)
+            budget = self._load_budget()
+            try:
+                report = self.host._write_report(
+                    status="completed",
+                    final_answer=final_answer,
+                    iterations=max(sequence, int(budget.get("action_count", 0))),
+                    started_at=datetime.now(UTC),
+                    elapsed=float(budget.get("accumulated_active_seconds", 0.0)),
+                ).model_dump(mode="json")
+            except Exception as error:
+                self._update_operation_record(
+                    journal,
+                    operation_id,
+                    status="failed",
+                    error=f"{type(error).__name__}: {error}",
+                )
+                self._persist_action_journal(journal)
+                raise
+            self._update_operation_record(
+                journal,
+                operation_id,
+                status="succeeded",
+                result=report,
+            )
+            self._persist_action_journal(journal)
+            return report
+
+    def _existing_terminal_report(self, *, final_answer: str) -> dict[str, Any] | None:
+        path = getattr(self.host, "report_path", None)
+        if path is None or not Path(path).is_file():
+            return None
+        from .mvp_agent import MVPAgentReport
+
+        report = MVPAgentReport.model_validate_json(Path(path).read_text(encoding="utf-8"))
+        if report.hypothesis != self.hypothesis:
+            raise ValueError("completed campaign report has a different hypothesis")
+        if report.final_answer != final_answer:
+            raise ValueError("campaign is already finalized with a different conclusion")
+        return report.model_dump(mode="json")
+
     def _execute_cancel_operation(
         self,
         operation_id: str,
@@ -1512,6 +1981,7 @@ class CampaignKernel:
             MVPActionKind.REGISTER_EVIDENCE_CONTRACT,
             MVPActionKind.LINK_CLAIM_EVIDENCE,
             MVPActionKind.CLOSE_CLAIM,
+            MVPActionKind.REQUEST_ADJUDICATION,
         }
 
     def _active_job_states(self, *, exclude_operation_id: str | None = None) -> tuple[Any, ...]:

@@ -253,13 +253,22 @@ the human-first projection.
 
 The v0.2 integration moves the model-facing research loop to DeepSeek Harness
 without moving scientific authority out of Simjecture. DSH owns the provider,
-conversation, retry policy, and session. A native MCP boundary exposes 18 typed
-scientific tools; the Python campaign kernel continues to own hypotheses,
+conversation, retry policy, compaction, and resumable session. A native MCP
+boundary implements 21 typed endpoints. The researcher sees 19 of them plus a
+single composite adjudication tool; the two raw judge prepare/commit endpoints
+are hidden from its scoped tool view. The Python campaign kernel continues to own hypotheses,
 evidence contracts, commissioning, skills, simulation capabilities, sandboxing,
 provenance, and guarded claim closure. Existing WarpX CPU/CUDA capabilities use
 the same kernel path. The isolated DSH profile has no interactive approval gate
 around those tools; CampaignKernel's typed boundary and sandbox remain the
 execution authority. Provider and model selection remain DSH configuration.
+Scientific support is reviewed by a fresh tool-free DSH child, and only the
+kernel's deterministic finish gate can write the terminal campaign report.
+
+The browser remains the primary interface. Once the pinned DSH profile is
+installed, the usual `uv run simjecture web` command launches new campaigns
+through DSH; existing campaign replay is unchanged. `--engine native` retains
+the built-in runner as an explicit compatibility and diagnosis path.
 
 The integration is a small DSH profile bundle, not a second simulator stack.
 Provision Simjecture and any desired runtime on the host, then follow
@@ -268,7 +277,8 @@ the isolated profile. Long simulations return durable job identifiers. An
 authenticated worker receipt lets a restarted DSH/MCP client recover a known
 outcome without repeating the run; an unverifiable outcome remains non-evidence.
 The first snapshot after a restart reports durable job IDs and remaining action
-and active-execution budgets, so a new model session can resume without hidden
+and active-execution budgets. The resumed DSH process reopens the same stable
+event-sourced session, reconciles that snapshot, and continues without hidden
 process state or charging stopped-process downtime.
 
 ## Core safeguards

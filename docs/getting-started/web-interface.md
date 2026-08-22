@@ -17,8 +17,9 @@ uv run simjecture web demos/gray_scott_counterexample/record
 ```
 
 This starts a local server at `http://127.0.0.1:8765/` and opens the default
-browser. Use `--no-open` to print the address without opening it, or `--port 0`
-to select an available local port automatically.
+browser. Use `--no-open` to print the address without opening it, `--open` to
+state the default explicitly, or `--port 0` to select an available local port
+automatically.
 
 The interface has five connected projections:
 
@@ -132,7 +133,23 @@ uv run simjecture web --runs-root artifacts
 
 Campaigns launched in the browser use the same structured
 `operator_input/launch.json` contract as the TUI and CLI. No shell command is
-constructed from hypothesis text.
+constructed from hypothesis text. In v0.2, new browser campaigns use the
+installed DeepSeek Harness profile by default. DSH owns provider routing,
+retries, conversation compaction, and the resumable model session; Simjecture
+continues to own the hypothesis graph, evidence rules, sandbox, capabilities,
+jobs, and durable scientific record. The DSH session is stored inside the
+campaign and reopened by **Resume** rather than replaced with a blank model
+conversation.
+
+The built-in reasoning loop remains available for compatibility and diagnosis:
+
+```bash
+uv run simjecture web --engine native
+```
+
+Viewing and controlling an already recorded campaign does not require Node.js
+or DSH. Starting a new default campaign does; follow the
+[DSH deployment guide](../how-to/deepseek-harness.md) once per machine.
 
 ## Local security boundary
 

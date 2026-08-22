@@ -62,6 +62,12 @@ class CampaignKernelProtocol(Protocol):
 
     def cancel_job(self, job_id: str) -> Any: ...
 
+    def prepare_adjudication(self, operation_id: str, **kwargs: Any) -> Any: ...
+
+    def record_adjudication(self, operation_id: str, **kwargs: Any) -> Any: ...
+
+    def finalize_campaign(self, operation_id: str, **kwargs: Any) -> Any: ...
+
 
 class MCPBridgeError(RuntimeError):
     """Base error raised for bridge setup/dispatch failures."""
@@ -717,6 +723,36 @@ class CampaignMCPBridge:
                 "cancel_job",
                 validated,
             )
+        elif name == "prepare_adjudication":
+            payload = dict(validated)
+            operation_id = payload.pop("operation_id")
+            kernel = await self._ensure_kernel()
+            method = getattr(kernel, "prepare_adjudication", None)
+            if not callable(method):
+                raise MCPBridgeError(
+                    "CampaignKernel does not implement prepare_adjudication(...)"
+                )
+            result = await _await_result(method(operation_id, **payload))
+        elif name == "record_adjudication":
+            payload = dict(validated)
+            operation_id = payload.pop("operation_id")
+            kernel = await self._ensure_kernel()
+            method = getattr(kernel, "record_adjudication", None)
+            if not callable(method):
+                raise MCPBridgeError(
+                    "CampaignKernel does not implement record_adjudication(...)"
+                )
+            result = await _await_result(method(operation_id, **payload))
+        elif name == "finalize_campaign":
+            payload = dict(validated)
+            operation_id = payload.pop("operation_id")
+            kernel = await self._ensure_kernel()
+            method = getattr(kernel, "finalize_campaign", None)
+            if not callable(method):
+                raise MCPBridgeError(
+                    "CampaignKernel does not implement finalize_campaign(...)"
+                )
+            result = await _await_result(method(operation_id, **payload))
         else:  # pragma: no cover - guarded by TOOL_SCHEMAS above
             raise MCPInputError(f"unhandled scientific MCP tool {name!r}")
         return _bound_result(result, self.config.max_output_chars)

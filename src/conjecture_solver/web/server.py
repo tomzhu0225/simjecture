@@ -278,12 +278,14 @@ def serve_web(
     open_browser: bool = True,
     read_only: bool = False,
     verbose: bool = False,
+    engine: str = "dsh",
 ) -> None:
     application = SimjectureWebApplication(
         initial_run=run_directory,
         scan_roots=scan_roots,
         runs_root=runs_root,
         allow_mutations=not read_only,
+        default_engine=engine,
     )
     server = create_server(application, host=host, port=port, verbose=verbose)
     actual_port = server.server_address[1]
