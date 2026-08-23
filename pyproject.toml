@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "simjecture"
-version = "0.1.1"
+version = "0.2.1"
 description = "Evidence-governed autonomous experimentation and falsification for computational science"
 readme = "README.md"
 license = "Apache-2.0"
@@ -79,6 +79,7 @@ packages = ["src/conjecture_solver"]
 
 [tool.hatch.build.targets.wheel.force-include]
 "skills" = "conjecture_solver/builtin_skills"
+"integrations/dsh" = "conjecture_solver/dsh_bundle"
 
 [tool.pytest.ini_options]
 addopts = "-ra --strict-markers"

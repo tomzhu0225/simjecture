@@ -11,7 +11,7 @@ import { dirname, resolve } from 'node:path'
 import { installModelSelection } from '@deepseek-ai/dsh-agent'
 import { createUserMessage } from '@deepseek-ai/dsh-llm'
 import { SessionId } from '@deepseek-ai/dsh-session'
-import { INTERNAL_TOOL_NAMES } from './adjudicator.js'
+import { LEAD_TOOL_NAMES } from './roles.js'
 
 export const name = 'simjecture-runner'
 export const inject = ['agentDefaultModel', 'agents', 'sessions', 'tools']
@@ -219,10 +219,10 @@ async function drive(ctx, task, io) {
   const setup = (agentCtx) => {
     const selected = { current: selection, assembled: undefined }
     installModelSelection(agentCtx, selected)
-    // The researcher sees only the composite adjudication tool. These raw
-    // commit endpoints remain globally callable by adjudicator.js but are not
-    // present in this agent's prompt and reject direct scoped dispatch.
-    agentCtx.tools.restrict({ deny: [...INTERNAL_TOOL_NAMES] })
+    // The persistent agent is a compact coordinator, not another experiment
+    // worker. Fresh scoped roles own scientific mutation and execution; the
+    // lead sees only durable state, delegation, adjudication, and finalization.
+    agentCtx.tools.restrict({ allow: [...LEAD_TOOL_NAMES] })
   }
 
   let resumed = false
@@ -280,7 +280,7 @@ async function drive(ctx, task, io) {
       observed_at: now(),
       kind: 'agent',
       status,
-      role: 'autonomous_researcher',
+      role: 'lead_scientist',
     })
   })
 

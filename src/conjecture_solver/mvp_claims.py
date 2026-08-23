@@ -1278,6 +1278,104 @@ class MVPClaimLedgerStore:
             "claim_ledger": ledger.compact_summary(),
         }
 
+    def validate_evidentiary_disposition(
+        self,
+        *,
+        claim_id: str,
+        status: ClaimDisposition,
+        contract_version: int | None = None,
+    ) -> int:
+        """Validate a decisive closure without mutating the claim ledger."""
+
+        claim_id = claim_id.strip().casefold()
+        if status not in {ClaimDisposition.SUPPORTED, ClaimDisposition.FALSIFIED}:
+            raise ValueError("evidentiary validation requires supported or falsified")
+        existing = self._ledger.by_id()
+        if claim_id not in existing:
+            raise ValueError(f"unknown claim_id: {claim_id}")
+        claim = existing[claim_id]
+        if claim.status != ClaimDisposition.OPEN:
+            raise ValueError(f"claim is already closed: {claim_id}")
+        if not claim.evidence_contracts:
+            raise ValueError(
+                f"cannot close {claim_id} as {status.value} without a registered "
+                "evidence contract"
+            )
+        selected_contract_version = (
+            claim.evidence_contracts[-1].version
+            if contract_version is None
+            else contract_version
+        )
+        contracts_by_version = {
+            contract.version: contract for contract in claim.evidence_contracts
+        }
+        active_contract = contracts_by_version.get(selected_contract_version)
+        if active_contract is None:
+            raise ValueError(
+                f"claim {claim_id} has no evidence contract version "
+                f"{selected_contract_version}"
+            )
+        if (
+            status == ClaimDisposition.SUPPORTED
+            and claim.kind == ClaimKind.INSTRUMENT
+            and claim.relation == ClaimRelation.INSTRUMENT_OF
+            and active_contract.execution_binding is not None
+            and active_contract.execution_binding.allowed_scientific_argv
+        ):
+            active_aspects = {
+                check.aspect
+                for check in active_contract.validation_checks
+                if check.aspect is not None
+            }
+            missing_aspects = sorted(
+                aspect.value
+                for aspect in (
+                    REQUIRED_SCIENTIFIC_COMMISSIONING_ASPECTS - active_aspects
+                )
+            )
+            if missing_aspects:
+                raise ValueError(
+                    f"cannot close capability-bound instrument claim {claim_id} "
+                    "as supported: its active contract is intended to authorize "
+                    "scientific execution but is missing required machine-checked "
+                    f"aspects {missing_aspects}; one contract must cover "
+                    "representation, physics_controls, boundaries, diagnostics, "
+                    "and numerical_regime"
+                )
+        qualifying_evidence = list(
+            self._qualifying_contract_evidence(
+                claim,
+                contract_version=selected_contract_version,
+            )
+        )
+        if claim.kind == ClaimKind.SCIENTIFIC:
+            commissioned: list[ClaimEvidenceLink] = []
+            for evidence in qualifying_evidence:
+                provenance = evidence.provenance
+                assert provenance is not None
+                if provenance.capability is None:
+                    commissioned.append(evidence)
+                    continue
+                try:
+                    self._validate_commissioning_claim(
+                        scientific_claim=claim,
+                        commissioning_claim_id=evidence.commissioning_claim_id,
+                        scientific_provenance=provenance,
+                    )
+                except ValueError:
+                    continue
+                commissioned.append(evidence)
+            qualifying_evidence = commissioned
+        if not qualifying_evidence:
+            raise ValueError(
+                f"cannot close {claim_id} as {status.value}: require linked, "
+                "provenance-tracked evidence generated under selected contract "
+                f"version {selected_contract_version} "
+                "and marked observation_sufficient=true; capability-generated "
+                "scientific evidence also requires prior machine-checked commissioning"
+            )
+        return selected_contract_version
+
     def close(
         self,
         *,
@@ -1297,84 +1395,11 @@ class MVPClaimLedgerStore:
         if claim.status != ClaimDisposition.OPEN:
             raise ValueError(f"claim is already closed: {claim_id}")
         if status in {ClaimDisposition.SUPPORTED, ClaimDisposition.FALSIFIED}:
-            if not claim.evidence_contracts:
-                raise ValueError(
-                    f"cannot close {claim_id} as {status.value} without a registered "
-                    "evidence contract"
-                )
-            selected_contract_version = (
-                claim.evidence_contracts[-1].version
-                if contract_version is None
-                else contract_version
+            selected_contract_version = self.validate_evidentiary_disposition(
+                claim_id=claim_id,
+                status=status,
+                contract_version=contract_version,
             )
-            contracts_by_version = {
-                contract.version: contract for contract in claim.evidence_contracts
-            }
-            active_contract = contracts_by_version.get(selected_contract_version)
-            if active_contract is None:
-                raise ValueError(
-                    f"claim {claim_id} has no evidence contract version {selected_contract_version}"
-                )
-            if (
-                status == ClaimDisposition.SUPPORTED
-                and claim.kind == ClaimKind.INSTRUMENT
-                and claim.relation == ClaimRelation.INSTRUMENT_OF
-                and active_contract.execution_binding is not None
-                and active_contract.execution_binding.allowed_scientific_argv
-            ):
-                active_aspects = {
-                    check.aspect
-                    for check in active_contract.validation_checks
-                    if check.aspect is not None
-                }
-                missing_aspects = sorted(
-                    aspect.value
-                    for aspect in (
-                        REQUIRED_SCIENTIFIC_COMMISSIONING_ASPECTS
-                        - active_aspects
-                    )
-                )
-                if missing_aspects:
-                    raise ValueError(
-                        f"cannot close capability-bound instrument claim {claim_id} "
-                        "as supported: its active contract is intended to authorize "
-                        "scientific execution but is missing required machine-checked "
-                        f"aspects {missing_aspects}; one contract must cover "
-                        "representation, physics_controls, boundaries, diagnostics, "
-                        "and numerical_regime"
-                    )
-            qualifying_evidence = list(
-                self._qualifying_contract_evidence(
-                    claim,
-                    contract_version=selected_contract_version,
-                )
-            )
-            if claim.kind == ClaimKind.SCIENTIFIC:
-                commissioned: list[ClaimEvidenceLink] = []
-                for evidence in qualifying_evidence:
-                    provenance = evidence.provenance
-                    assert provenance is not None
-                    if provenance.capability is None:
-                        commissioned.append(evidence)
-                        continue
-                    try:
-                        self._validate_commissioning_claim(
-                            scientific_claim=claim,
-                            commissioning_claim_id=evidence.commissioning_claim_id,
-                            scientific_provenance=provenance,
-                        )
-                    except ValueError:
-                        continue
-                    commissioned.append(evidence)
-                qualifying_evidence = commissioned
-            if not qualifying_evidence:
-                raise ValueError(
-                    f"cannot close {claim_id} as {status.value}: require linked, "
-                    "provenance-tracked evidence generated under selected contract "
-                    f"version {selected_contract_version} "
-                    "and marked observation_sufficient=true; capability-generated "
-                    "scientific evidence also requires prior machine-checked commissioning"
-                )
         updated = MVPClaim(
             id=claim.id,
             statement=claim.statement,

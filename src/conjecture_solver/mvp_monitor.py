@@ -1015,7 +1015,7 @@ class MVPRunMonitor:
             target = falsified_frontier[-1]
             return MVPLoopState(
                 stage=MVPLoopStage.REPAIR,
-                role=MVPResearchRole.SCIENTIST,
+                role=MVPResearchRole.REPAIR_SCIENTIST,
                 cycle=cycle,
                 active_claim_id=target.id,
                 iteration=iterations,

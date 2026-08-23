@@ -286,7 +286,7 @@ TOOL_SCHEMAS: dict[str, dict[str, Any]] = {
             **_RESEARCH_NOTE,
         }
     ),
-    "job_status": _object({"job_id": _string()}),
+    "job_status": _object({"job_id": _string(), "report": _boolean()}),
     "cancel_job": _object({"job_id": _string(), **_OPERATION_ID}),
     # These two endpoints are hidden from the researcher agent by the DSH
     # scoped tool restriction. The composite simjecture_adjudicate tool alone
@@ -434,7 +434,11 @@ TOOL_DESCRIPTIONS: dict[str, str] = {
     "run_evidence_capability": (
         "Start one prospectively contracted evidence capability job under a unique operation id."
     ),
-    "job_status": "Read bounded status/output metadata for one scientific job.",
+    "job_status": (
+        "Read one scientific job. Omit report (or set it true) for bounded "
+        "terminal diagnostics; harness pollers may set report=false for the "
+        "small lifecycle state."
+    ),
     "cancel_job": "Request cancellation of one scientific job.",
     "prepare_adjudication": (
         "Internal DSH endpoint: freeze a bounded prospective evidence case for "

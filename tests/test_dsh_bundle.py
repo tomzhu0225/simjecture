@@ -10,7 +10,7 @@ BUNDLE = Path(__file__).parents[1] / "integrations" / "dsh"
 def test_dsh_bundle_pins_the_resumable_driver_and_native_mcp_client() -> None:
     package = json.loads((BUNDLE / "package.json").read_text())
     assert package["name"] == "@simjecture/dsh-bundle"
-    assert package["version"] == "0.2.0-rc.2"
+    assert package["version"] == "0.2.1"
     assert package["engines"]["node"] == ">=22.19.0"
     assert package["peerDependencies"] == {"@deepseek-ai/dsh": "0.1.1-rc.2"}
     assert package["dependencies"] == {
@@ -25,8 +25,17 @@ def test_dsh_bundle_pins_the_resumable_driver_and_native_mcp_client() -> None:
     assert package["dsh"]["bundle"]["patch"] == "./cordis.patch.yml"
     assert package["exports"]["./runner"] == "./runner.js"
     assert package["exports"]["./adjudicator"] == "./adjudicator.js"
-    assert "runner.js" in package["files"]
-    assert "adjudicator.js" in package["files"]
+    assert package["exports"]["./roles"] == "./roles.js"
+    assert package["exports"]["./job-waiter"] == "./job-waiter.js"
+    assert package["exports"]["./context-elider"] == "./context-elider.js"
+    for name in (
+        "runner.js",
+        "adjudicator.js",
+        "roles.js",
+        "job-waiter.js",
+        "context-elider.js",
+    ):
+        assert name in package["files"]
 
 
 def test_dsh_profile_declares_explicit_boundary_and_disables_bypasses() -> None:
@@ -85,13 +94,22 @@ def test_dsh_profile_declares_explicit_boundary_and_disables_bypasses() -> None:
     assert re.search(r"(?m)^- id: headless-runner\n  disabled: true$", patch)
     assert "name: '@simjecture/dsh-bundle/runner'" in patch
     assert "name: '@simjecture/dsh-bundle/adjudicator'" in patch
+    assert "name: '@simjecture/dsh-bundle/roles'" in patch
+    assert "name: '@simjecture/dsh-bundle/job-waiter'" in patch
+    assert "name: '@simjecture/dsh-bundle/context-elider'" in patch
+    assert patch.index("simjecture-job-waiter") < patch.index("simjecture-runner")
+    assert patch.index("simjecture-roles") < patch.index("simjecture-runner")
     assert "simjecture_adjudicate" in patch
+    assert "simjecture_falsify" in patch
+    assert "simjecture_repair" in patch
     assert "mcp__simjecture__finalize_campaign" in patch
     assert "id: compaction-basic" in patch
     assert "provider: deepseek-official" in patch
     assert "model: deepseek-v4-flash" in patch
     assert "thresholdRatio: 0.5" in patch
     assert "retainRatio: 0.03" in patch
+    assert "Lead Scientist" in patch
+    assert re.search(r"do not run\s+experiments", patch)
 
 
 def test_dsh_runner_uses_stable_resume_and_projects_no_reasoning_chunks() -> None:
@@ -122,13 +140,86 @@ def test_dsh_adjudicator_uses_a_fresh_tool_free_structured_child() -> None:
     assert "persona: JUDGE_PERSONA" in adjudicator
     assert "mcp__simjecture__prepare_adjudication" in adjudicator
     assert "mcp__simjecture__record_adjudication" in adjudicator
+    assert "under 1,200 characters" in adjudicator
     assert "chain-of-thought" in adjudicator
     assert "event.data.arguments" not in adjudicator
     assert "prepared.truncated === true" in adjudicator
 
     runner = (BUNDLE / "runner.js").read_text()
     assert "agentCtx.tools.restrict" in runner
-    assert "INTERNAL_TOOL_NAMES" in runner
+    assert "LEAD_TOOL_NAMES" in runner
+
+
+def test_dsh_scientific_roles_are_fresh_scoped_and_durably_verified() -> None:
+    roles = (BUNDLE / "roles.js").read_text()
+    assert "ctx.subagents.start('spawn'" in roles
+    assert "start('fork'" not in roles
+    assert "continuable" not in roles
+    assert "outputSchema: role === 'falsifier' ? FALSIFIER_SCHEMA : REPAIR_SCHEMA" in roles
+    assert "const: null" not in roles
+    assert "toolFilter:" in roles
+    assert "FALSIFIER_TOOL_NAMES" in roles
+    assert "REPAIR_TOOL_NAMES" in roles
+    assert "LEAD_TOOL_NAMES" in roles
+    assert "child.ctx.tools.guard" in roles
+    assert "the Falsifier cannot register scientific claims" in roles
+    assert "one scientific repairs child" in roles
+    assert "claims-after" in roles
+    assert "verifyFalsifierResult" in roles
+    assert "verifyRepairResult" in roles
+    assert "await run.dispose()" in roles
+    assert "do not repeatedly poll" in roles
+    assert "Plain run_python is not a named capability" in roles
+    assert "reuse the durable contract, evidence, and workspace artifacts" in roles
+    assert "observation_sufficient=true" in roles
+    assert "Falsifier adjudication handoff requires durable evidence" in roles
+    assert "parent conversation" in roles
+    assert "chain-of-thought" in roles
+    assert "event.data.arguments" not in roles
+
+
+def test_dsh_job_waiter_keeps_polling_below_the_model_surface() -> None:
+    waiter = (BUNDLE / "job-waiter.js").read_text()
+    assert "ctx.on('tools/execute'" in waiter
+    assert waiter.count("await next()") == 1
+    assert "exec.parent !== undefined" in waiter
+    assert "arguments: { job_id: jobId, report }" in waiter
+    assert "readStatus(ctx, exec, jobId, serial, false)" in waiter
+    assert "readStatus(ctx, exec, jobId, serial, true)" in waiter
+    for status in (
+        "queued",
+        "running",
+        "cancel_requested",
+        "succeeded",
+        "failed",
+        "cancelled",
+        "outcome_unknown",
+    ):
+        assert f"'{status}'" in waiter
+    assert "the durable job remains attached" in waiter
+    assert "cancel_job" not in waiter
+    assert "pause_pending" in waiter
+
+
+def test_dsh_context_elision_is_age_gated_and_audit_preserving() -> None:
+    elider = (BUNDLE / "context-elider.js").read_text()
+    assert "ctx.on('agent/pre-step'" in elider
+    assert "firstSeen" in elider
+    assert "first < state.tick" in elider
+    assert "compaction/prune" in elider
+    assert "surfaceOp: { op: 'replace'" in elider
+    assert "sourceEventSeqs" in elider
+    assert "createHash('sha256')" in elider
+    assert "Full arguments and results remain in the append-only DSH log" in elider
+    assert "completed_tool_unit" in elider
+    assert "large_tool_result" in elider
+    for tool in (
+        "write_workspace_file",
+        "run_python",
+        "run_workbench_capability",
+        "run_evidence_capability",
+    ):
+        assert tool in elider
 
 
 def test_dsh_readme_documents_provisioning_pack_install_and_dump_config() -> None:

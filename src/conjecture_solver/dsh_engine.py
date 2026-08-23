@@ -62,6 +62,19 @@ class _TerminationRequested(BaseException):
         self.signum = signum
 
 
+def bundled_profile_path() -> Path:
+    """Return the packaged DSH profile directory for npm installation."""
+
+    installed = Path(__file__).resolve().parent / "dsh_bundle"
+    source_checkout = Path(__file__).resolve().parents[2] / "integrations" / "dsh"
+    for candidate in (installed, source_checkout):
+        if (candidate.is_dir() and (candidate / "package.json").is_file()):
+            return candidate
+    raise DshEngineError(
+        "the Simjecture DSH profile is missing; reinstall the complete v0.2.1 package"
+    )
+
+
 @contextmanager
 def _finalizable_sigterm() -> Any:
     """Raise on SIGTERM when installed from a main-thread CLI invocation."""
@@ -274,6 +287,9 @@ def _dsh_environment(
             "SIMJECTURE_DSH_ACTIVITY_FILE": str(activity_file),
             "SIMJECTURE_DSH_STATE_FILE": str(state_file),
             "SIMJECTURE_DSH_CONTROL_FILE": str(control_file),
+            "SIMJECTURE_DSH_JOB_HEARTBEAT_SECONDS": _format_number(
+                request.command_heartbeat_seconds
+            ),
             "SIMJECTURE_DSH_RESUME": "1" if resume else "0",
         }
     )
@@ -361,6 +377,7 @@ __all__ = [
     "DSH_SESSION_DIRECTORY",
     "DSH_STATE_FILE",
     "DshEngineError",
+    "bundled_profile_path",
     "run_dsh_campaign",
     "run_from_cli",
 ]

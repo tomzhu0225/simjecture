@@ -8,7 +8,11 @@ from pathlib import Path
 import pytest
 
 from conjecture_solver import dsh_engine
-from conjecture_solver.dsh_engine import DshEngineError, run_dsh_campaign
+from conjecture_solver.dsh_engine import (
+    DshEngineError,
+    bundled_profile_path,
+    run_dsh_campaign,
+)
 from conjecture_solver.mvp_control import read_clock
 from conjecture_solver.mvp_launch import MVPLaunchRequest, materialize_operator_input
 
@@ -27,6 +31,7 @@ def _fake_dsh(path: Path, *, status: str = "idle") -> Path:
         "SIMJECTURE_DSH_ACTIVITY_FILE",
         "SIMJECTURE_DSH_STATE_FILE",
         "SIMJECTURE_DSH_CONTROL_FILE",
+        "SIMJECTURE_DSH_JOB_HEARTBEAT_SECONDS",
         "SIMJECTURE_DSH_RESUME",
         "PATH",
     )
@@ -61,6 +66,14 @@ def _launch(tmp_path: Path) -> tuple[Path, str, str]:
     return root, plan.dsh_session_id, hypothesis
 
 
+def test_bundled_dsh_profile_is_discoverable() -> None:
+    profile = bundled_profile_path()
+    package = json.loads((profile / "package.json").read_text())
+    assert package["name"] == "@simjecture/dsh-bundle"
+    assert package["version"] == "0.2.1"
+    assert (profile / "cordis.patch.yml").is_file()
+
+
 def test_dsh_process_adapter_passes_only_paths_and_reuses_session(tmp_path: Path) -> None:
     root, session_id, hypothesis = _launch(tmp_path)
     executable = _fake_dsh(tmp_path / "dsh")
@@ -79,6 +92,7 @@ def test_dsh_process_adapter_passes_only_paths_and_reuses_session(tmp_path: Path
     assert environment["SIMJECTURE_DSH_RESUME"] == "1"
     assert environment["SIMJECTURE_MCP_TIMEOUT_SECONDS"] == "123"
     assert environment["SIMJECTURE_MCP_MAX_OUTPUT_CHARS"] == "12345"
+    assert environment["SIMJECTURE_DSH_JOB_HEARTBEAT_SECONDS"] == "30"
     assert Path(environment["SIMJECTURE_DSH_SESSION_ROOT"]).is_relative_to(root)
     assert Path(environment["SIMJECTURE_HYPOTHESIS_FILE"]) == (
         root / "operator_input" / "hypothesis.txt"

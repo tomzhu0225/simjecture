@@ -49,8 +49,11 @@ grid samples do not establish a universal continuous-domain statement or strict
 between-sample monotonicity without a validated enclosure, analytic argument,
 or explicitly resolution-bounded claim. Return sufficient only when the bounded
 claim is supported under its registered contract. Otherwise return insufficient,
-name concrete evidence gaps, and propose one next test. Return the structured
-verdict only; never expose private chain-of-thought.`
+name concrete evidence gaps, and propose one next test. Decide from the frozen
+case without re-deriving facts already established there. Keep the rationale
+under 1,200 characters, use at most four one-sentence evidence gaps, and keep
+the next test to one bounded paragraph. Return the structured verdict only;
+never expose private chain-of-thought.`
 
 function appendActivity(payload) {
   const path = process.env.SIMJECTURE_DSH_ACTIVITY_FILE

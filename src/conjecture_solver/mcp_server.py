@@ -713,7 +713,7 @@ class CampaignMCPBridge:
         elif name == "job_status":
             kernel = await self._ensure_kernel()
             reporter = getattr(kernel, "job_report", None)
-            if callable(reporter):
+            if validated.get("report", True) and callable(reporter):
                 result = await _await_result(reporter(validated["job_id"]))
             else:
                 result = await self._kernel_method("job_status", validated["job_id"])

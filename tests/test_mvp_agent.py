@@ -4767,6 +4767,19 @@ def test_builtin_scientific_markdown_skill_preserves_machine_readable_evidence()
     assert "never replaces exact JSON evidence metadata" in MVPAgentRunner.SYSTEM_PROMPT
 
 
+def test_builtin_python_experiment_skill_separates_plain_python_from_capabilities() -> None:
+    skills, _capabilities = discover_builtin_mvp_resources(Path(__file__).resolve().parents[1])
+    assert "python-experiment" in skills
+    content = skills.read("python-experiment", None, max_chars=20_000)["content"]
+    assert "There is no generic capability named `python`" in content
+    assert "omit `execution_binding`" in content
+    assert "normally omit `aspect`" in content
+    assert "only fresh evidence produced under that version" in content
+    assert "records contract compliance" in content
+    assert "python-experiment skill is available" in MVPAgentRunner.SYSTEM_PROMPT
+    assert "it is not a self-issued" in MVPAgentRunner.SYSTEM_PROMPT
+
+
 def test_builtin_warpx_skill_has_no_demo_science() -> None:
     skill_root = Path(__file__).resolve().parents[1] / "skills" / "warpx"
     text = "\n".join(

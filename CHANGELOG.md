@@ -4,11 +4,33 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+## 0.2.1 — 2026-08-23
+
 - Extracted a model-independent campaign kernel while preserving the existing
   hypothesis graph, evidence contracts, commissioning, sandbox, capability,
   provenance, and claim-closure rules.
-- Added a strict DeepSeek Harness profile backed by 18 native MCP scientific
+- Added a strict DeepSeek Harness profile backed by 21 native MCP scientific
   tools, with generic execution and delegation surfaces disabled.
+- Split the DSH reasoning loop into a persistent, compact Lead Scientist and
+  fresh claim-scoped Falsifier/Experimenter, Repair Scientist, and tool-free
+  Judge sessions. Role-specific tool filters, mutation guards, structured
+  handoffs, and kernel rechecks prevent a child from silently exceeding its
+  scientific assignment.
+- Moved durable job waiting beneath the model-facing tool call. Simulations are
+  submitted once, read-only status checks no longer consume model turns, and
+  cancellation leaves the job recoverable rather than resubmitting it.
+- Added one-step-delayed, model-free context elision for completed large tool
+  exchanges and oversized results. Deterministic receipts shrink the active
+  model surface while the full append-only DSH log and campaign artifacts remain
+  intact; semantic compaction stays at 50% for the tested DeepSeek route.
+- Added an ordinary-Python experiment skill that separates `run_python` from
+  named capability execution, records exact JSON validation checks, and avoids
+  capability-only commissioning fields in NumPy/SciPy contracts.
+- Clarified that `observation_sufficient` records contract compliance rather
+  than self-certified scientific support. Falsifier handoffs and Judge
+  preparation now require closure-eligible evidence before adjudication, which
+  prevents a sufficient verdict from being persisted against an unclosable
+  claim.
 - Added idempotent detached simulation jobs, verified cancellation, bounded
   status reports, single-writer enforcement, and authenticated worker receipts
   that recover known outcomes after an MCP restart without rerunning work.
@@ -17,6 +39,8 @@ This project follows semantic versioning. Dates use ISO 8601.
   restart. Custom skill and capability discovery roots replay in workers.
 - Validated the official DSH MCP client against the Python bridge and the
   release-pinned CUDA WarpX/openPMD capability.
+- Shipped the pinned DSH profile inside the Python wheel and added
+  `simjecture dsh-profile` so installed deployments can pack the exact bundle.
 
 ## 0.1.1 — 2026-08-22
 

@@ -194,6 +194,12 @@ def test_bridge_dispatches_claim_workspace_and_job_tools(tmp_path: Path) -> None
     report = _call(bridge, "job_status", {"job_id": "job_fake"})
     assert report["status"] == "succeeded"
     assert report["diagnostic"] == "bounded"
+    state = _call(
+        bridge,
+        "job_status",
+        {"job_id": "job_fake", "report": False},
+    )
+    assert state == {"job_id": "job_fake", "status": "succeeded"}
     assert _call(
         bridge,
         "cancel_job",

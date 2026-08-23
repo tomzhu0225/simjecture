@@ -1,7 +1,9 @@
 # Run a Simjecture campaign under DSH
 
 The DSH integration is a native-tool profile plus a small resumable driver for
-a durable Simjecture campaign.
+a durable Simjecture campaign. Version 0.2.1 uses a persistent Lead Scientist
+and fresh, claim-scoped Falsifier, Repair Scientist, and tool-free Judge
+sessions. Fresh workers see bounded kernel state rather than inherited chat.
 The Python MCP process is the only scientific tool surface: it exposes campaign
 state, claims, evidence contracts, skills, literature metadata, workspace files,
 and bounded jobs. Generic shell, filesystem bypass, and unguarded `finish` tools are
@@ -50,14 +52,15 @@ generic shell command or a host-wide absolute workspace path from a tool call.
 
 ## Pack and install the DSH profile
 
-The profile bundle lives in `integrations/dsh`. Validate and pack it with
-the DSH CLI from the repository root, then install the resulting local bundle
-into the profile you use for the harness:
+The profile bundle lives in `integrations/dsh` in a checkout and is also shipped
+inside the Python wheel. Resolve, validate, and pack that copy, then install the
+resulting local bundle into the isolated harness profile:
 
 ```bash
-npm pack ./integrations/dsh --pack-destination /tmp
+SIMJECTURE_DSH_PROFILE="$(simjecture dsh-profile)"
+npm pack "$SIMJECTURE_DSH_PROFILE" --pack-destination /tmp
 dsh plugin --profile simjecture add @deepseek-ai/dsh-headless@0.1.1-rc.2
-dsh plugin --profile simjecture add /tmp/simjecture-dsh-bundle-0.2.0-rc.2.tgz
+dsh plugin --profile simjecture add /tmp/simjecture-dsh-bundle-0.2.1.tgz
 ```
 
 For a checkout-only development install, use the directory directly when the
@@ -91,11 +94,20 @@ Confirm that the native MCP client is named `simjecture`, starts
 generic tool rows are disabled. A startup or handshake failure should stop the
 scientific profile rather than silently fall back to a bypass tool.
 
+Completed large execution and workspace-write exchanges stay fully visible for
+one model request. At a later step the profile may replace the balanced exchange
+on the model-facing surface with a deterministic receipt containing stable
+identifiers, selected status fields, sizes, and hashes. Other oversized tool
+results receive deterministic head/tail pruning. Both are model-free, and all
+original events remain in the append-only DSH log and Simjecture's durable
+artifacts.
+
 The tested `deepseek-official/deepseek-v4-flash` route advertises a one-million-
-token context window. The Simjecture profile compacts that exact
-route at 50% pressure and retains a 3% verbatim tail; DSH's 80%/16% defaults
-remain in force for other routes. This preserves a broad researcher history in
-ordinary campaigns while still bounding exceptionally long, tool-heavy sessions.
+token context window. The Simjecture profile performs semantic compaction for
+that exact route at 50% pressure and retains a 3% verbatim tail; DSH defaults
+remain in force for other routes. This is a context threshold, not a campaign
+token quota: scientific work continues until a durable stop condition or the
+operator's wall/action budget is reached.
 
 The bundle intentionally does not select a scientific reasoning model. Inspect
 the resolved `agent-default-model` row and configure the desired provider/model
@@ -125,17 +137,28 @@ simjecture-mcp --workspace "$SIMJECTURE_WORKSPACE" \
 ```
 
 That command speaks MCP over stdio and expects an MCP client; it is not a
-human-facing REPL. Use DSH's initialize/list-tools/call-tool trace to verify
-the 21 explicit MCP endpoints before submitting work. The scoped researcher
-sees 19 of these; the adjudication composite privately uses the two raw judge
-prepare/commit endpoints. Job results are bounded and must
-be checked with `job_status` before interpreting them as observations. Each
-long-running action has a caller-supplied operation identifier. The detached
-worker writes an authenticated durable receipt, allowing a restarted DSH/MCP
-client to recover a known result without rerunning the simulation; absent or
-invalid receipts remain `outcome_unknown`. A fresh `snapshot` includes a bounded
-durable job list (with operation IDs) and remaining action/active-execution
-budget, so it is sufficient to rediscover and poll work after a process loss.
+human-facing REPL. Use DSH's initialize/list-tools/call-tool trace to verify the
+21 explicit MCP endpoints before submitting work. The persistent lead sees six
+tools: two durable reads, fresh falsification and repair delegation, independent
+adjudication, and guarded finalization. Each worker receives a narrower tool
+surface plus a claim-scoped argument guard. Raw judge prepare/commit operations
+are private to the adjudication composite.
+
+`observation_sufficient=true` means that a linked artifact satisfies its
+selected prospective contract; it is not a researcher-issued support verdict.
+Falsifiers may record that contract compliance but cannot close a scientific
+claim as supported. The adjudication composite refuses to start a Judge without
+at least one qualifying link under the selected contract, and only a sufficient
+Judge verdict can pass the deterministic support gate.
+
+Long-running actions have caller-supplied operation identifiers and return
+durable jobs. Under DSH the waiter checks `job_status` below the model surface,
+so one submitted run produces one terminal tool result instead of repeated
+polling turns. An interrupted wait leaves the job durable and recoverable; it
+never resubmits. A direct MCP client must perform these status reads itself.
+Authenticated receipts let a restarted client recover known results, while
+absent or invalid receipts remain `outcome_unknown`. A fresh `snapshot` includes
+a bounded durable job list and remaining action/active-execution budget.
 The campaign wall-time envelope charges time while its DSH researcher process
 is active, including model and tool waits. The kernel additionally records
 actual tool and simulation execution for durable recovery and per-command

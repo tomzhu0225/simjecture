@@ -653,6 +653,13 @@ def _dsh_run(args: argparse.Namespace) -> int:
     return run_from_cli(args)
 
 
+def _dsh_profile(_args: argparse.Namespace) -> int:
+    from .dsh_engine import bundled_profile_path
+
+    print(bundled_profile_path())
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="simjecture")
     subcommands = parser.add_subparsers(dest="command", required=True)
@@ -966,6 +973,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Log local HTTP requests",
     )
     web.set_defaults(handler=_web)
+
+    dsh_profile = subcommands.add_parser(
+        "dsh-profile",
+        help="Print the bundled DeepSeek Harness profile directory",
+    )
+    dsh_profile.set_defaults(handler=_dsh_profile)
 
     dsh_run = subcommands.add_parser("dsh-run", help=argparse.SUPPRESS)
     dsh_run.add_argument("--output", required=True)

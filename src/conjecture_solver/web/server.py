@@ -77,7 +77,7 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
 
     server: SimjectureHTTPServer
     protocol_version = "HTTP/1.1"
-    server_version = "Simjecture/0.1.1"
+    server_version = "Simjecture/0.2.1"
 
     def do_GET(self) -> None:  # noqa: N802 - stdlib handler contract
         parsed = urlsplit(self.path)
@@ -313,9 +313,9 @@ def _validate_loopback(host: str) -> None:
     try:
         address = ipaddress.ip_address(host)
     except ValueError as error:
-        raise ValueError("v0.1.1 web sessions bind to localhost only") from error
+        raise ValueError("Simjecture web sessions bind to localhost only") from error
     if not address.is_loopback:
-        raise ValueError("v0.1.1 web sessions bind to localhost only")
+        raise ValueError("Simjecture web sessions bind to localhost only")
 
 
 __all__ = [

@@ -1,6 +1,6 @@
 {
   "name": "@simjecture/dsh-bundle",
-  "version": "0.2.0-rc.2",
+  "version": "0.2.1",
   "description": "Strict DeepSeek Harness profile for Simjecture campaigns",
   "type": "module",
   "license": "Apache-2.0",
@@ -8,11 +8,17 @@
     "cordis.patch.yml",
     "README.md",
     "runner.js",
-    "adjudicator.js"
+    "adjudicator.js",
+    "roles.js",
+    "job-waiter.js",
+    "context-elider.js"
   ],
   "exports": {
     "./runner": "./runner.js",
-    "./adjudicator": "./adjudicator.js"
+    "./adjudicator": "./adjudicator.js",
+    "./roles": "./roles.js",
+    "./job-waiter": "./job-waiter.js",
+    "./context-elider": "./context-elider.js"
   },
   "engines": {
     "node": ">=22.19.0"

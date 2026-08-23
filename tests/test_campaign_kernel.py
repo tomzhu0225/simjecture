@@ -373,6 +373,67 @@ def test_model_free_kernel_adjudicates_and_finalizes_without_completion_client(
     assert adjudications[0]["operation_id"] == "judge-root-v1"
 
 
+def test_kernel_rejects_adjudication_without_contract_satisfying_evidence(
+    tmp_path: Path,
+) -> None:
+    campaign = tmp_path / "unqualified-adjudication"
+    kernel = CampaignKernel.open(
+        workspace=campaign,
+        hypothesis="A surviving observation is not automatically sufficient evidence.",
+    )
+    _prepare_startup(kernel)
+    kernel.execute_operation(
+        "contract-root-v1",
+        {
+            "action": "register_evidence_contract",
+            "research_note": "Freeze the exact pass criterion.",
+            "claim_id": "claim_root",
+            "observable": "A deterministic pass flag.",
+            "expected_outcomes": "True survives; false challenges the claim.",
+            "decision_rule": "The observation satisfies the contract when passed is true.",
+            "required_observation": "Produce one complete JSON result.",
+            "uncertainty_criterion": "The exact Boolean has no sampling uncertainty.",
+            "inconclusive_conditions": "A missing pass flag is inconclusive.",
+            "validation_checks": [{"json_path": "passed", "expected_value": True}],
+        },
+    )
+    kernel.execute_operation(
+        "run-root-v1",
+        {
+            "action": "run_python",
+            "research_note": "Generate the prospective observation.",
+            "argv": [
+                "-c",
+                "import json; from pathlib import Path; "
+                "Path('result.json').write_text(json.dumps({'passed': True}))",
+            ],
+            "active_claim_id": "claim_root",
+        },
+    )
+    kernel.execute_operation(
+        "link-root-v1",
+        {
+            "action": "link_claim_evidence",
+            "research_note": "Link it without claiming that it meets the contract.",
+            "claim_id": "claim_root",
+            "path": "result.json",
+            "note": "The artifact exists, but the caller marked it non-qualifying.",
+            "observation_sufficient": False,
+            "observation_note": "This link is intentionally not contract-satisfying.",
+        },
+    )
+
+    with pytest.raises(ValueError, match="observation_sufficient=true"):
+        kernel.prepare_adjudication(
+            "judge-root-v1",
+            claim_id="claim_root",
+            contract_version=1,
+            case_for_sufficiency="The observation survived the attempted falsification.",
+        )
+
+    assert not (campaign / "adjudications.json").exists()
+
+
 def test_kernel_worker_reopens_campaign_and_records_typed_artifact(tmp_path: Path) -> None:
     campaign = tmp_path / "campaign"
     kernel = CampaignKernel.open(

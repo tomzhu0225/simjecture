@@ -504,6 +504,7 @@ class MVPLoopStage(StrEnum):
 
 class MVPResearchRole(StrEnum):
     SCIENTIST = "scientist"
+    REPAIR_SCIENTIST = "repair_scientist"
     FALSIFIER = "falsifier"
     JUDGE = "judge"
 
@@ -1115,10 +1116,14 @@ and the final answer accept Markdown. When the scientific-markdown skill is avai
 read it once before registering the first non-root claim or evidence contract and follow
 its conventions for equations and code identifiers. Markdown is presentation only and
 never replaces exact JSON evidence metadata or validation checks.
+When an ordinary Python/NumPy/SciPy calculation may be decisive and the
+python-experiment skill is available, read it before registering that contract.
 Before a decisive experiment, use register_evidence_contract on its active claim to state
 the observable, competing outcomes, decision rule, required observation, uncertainty
 criterion, and inconclusive conditions. Link existing workspace artifacts with
 link_claim_evidence and state honestly whether the observation satisfied that contract.
+Here observation_sufficient=true records contract compliance; it is not a self-issued
+scientific support verdict, which still requires independent adjudication.
 When the planned evidence is a JSON summary, make the observable definition itself
 machine-readable in that summary: record the estimator/formula, component or sign
 convention, units, normalization, and time/window rule as scalar metadata. Add
@@ -1617,6 +1622,17 @@ software.
                 f"claim {claim_id} has no evidence contract version "
                 f"{selected_contract_version}"
             )
+        try:
+            self.claim_store.validate_evidentiary_disposition(
+                claim_id=claim_id,
+                status=ClaimDisposition.SUPPORTED,
+                contract_version=selected_contract_version,
+            )
+        except ValueError as error:
+            raise ValueError(
+                "adjudication requires a contract-satisfying evidence link that "
+                "could pass the deterministic support gate: " + str(error)
+            ) from error
         packet = self._adjudication_packet(
             claim_id=claim_id,
             contract_version=selected_contract_version,
