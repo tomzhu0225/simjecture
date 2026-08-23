@@ -90,7 +90,7 @@ def test_dsh_profile_declares_explicit_boundary_and_disables_bypasses() -> None:
     assert "id: compaction-basic" in patch
     assert "provider: deepseek-official" in patch
     assert "model: deepseek-v4-flash" in patch
-    assert "thresholdRatio: 0.1" in patch
+    assert "thresholdRatio: 0.5" in patch
     assert "retainRatio: 0.03" in patch
 
 
