@@ -87,7 +87,8 @@ def test_reopen_marks_dead_unreceipted_job_outcome_unknown(tmp_path: Path) -> No
     )
     # Do not ask the creating supervisor for status: the durable result was
     # intentionally never receipted before this simulated restart.
-    time.sleep(0.2)
+    process = supervisor._processes[initial.job_id]
+    process.wait(timeout=5)
     reopened = CampaignJobSupervisor(tmp_path)
     state = reopened.status(initial.job_id)
     assert state.status is CampaignJobStatus.OUTCOME_UNKNOWN

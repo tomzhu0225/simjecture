@@ -461,7 +461,6 @@ class CampaignJobSupervisor:
             return self._mark_unknown(state, "missing supervisor receipt")
 
         process = self._processes.get(job_id)
-        verified = process_identity_matches(supervisor.identity)
         if process is not None:
             returncode = self._poll(process)
             if returncode is not None:
@@ -477,6 +476,17 @@ class CampaignJobSupervisor:
                     supervisor,
                     returncode,
                 )
+            if state.status not in {
+                CampaignJobStatus.RUNNING,
+                CampaignJobStatus.CANCEL_REQUESTED,
+            }:
+                state = state.model_copy(
+                    update={"status": CampaignJobStatus.RUNNING, "updated_at": utc_now()}
+                )
+                self._write_state(state)
+            return state
+
+        verified = process_identity_matches(supervisor.identity)
         if not verified:
             return self._mark_unknown(
                 state,
