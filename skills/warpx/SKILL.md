@@ -115,7 +115,8 @@ Read these resources as needed:
   normally need not repeat it. Its JSON booleans are under `checks`.
 - `examples/openpmd_xz_reader.py`: reusable strict reader helpers for scientific
   2D XZ analyzers. They normalize arrays to `(z, x)`, derive SI coordinates
-  from record metadata plus component staggering, and provide wrapped periodic
+  from record metadata plus component staggering, report hybrid density-floor
+  occupancy for a prospectively selected region, and provide wrapped periodic
   root/interpolation primitives. Read the 2D coordinate contract in
   `references/diagnostics.md` before changing or replacing them.
 - `scripts/benchmark_cpu_threads.py`: run an isolated, validated OpenMP scaling

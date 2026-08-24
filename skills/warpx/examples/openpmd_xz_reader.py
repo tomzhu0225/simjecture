@@ -66,6 +66,60 @@ def normalize_xz_array(array: Any, native_axis_labels: Sequence[str]) -> np.ndar
     return np.transpose(values, axes=axes).copy()
 
 
+def density_floor_statistics(
+    number_density_m3: Any,
+    *,
+    density_floor_m3: float,
+    region_mask: Any | None = None,
+    contact_relative_tolerance: float = 1.0e-6,
+) -> dict[str, Any]:
+    """Summarize whether a hybrid-PIC density floor controls a region.
+
+    The caller must first convert the realized ion charge-density record to
+    number density with the registered ion charge state. ``region_mask`` is an
+    optional prospectively defined scientific region; omitting it audits the
+    full mesh. A value within ``contact_relative_tolerance`` above the floor is
+    counted as floor contact so floating-point roundoff cannot hide clipping.
+    """
+
+    density = np.asarray(number_density_m3, dtype=float)
+    floor = float(density_floor_m3)
+    tolerance = float(contact_relative_tolerance)
+    if density.ndim != 2 or density.size == 0 or not np.all(np.isfinite(density)):
+        raise ValueError("number density must be a nonempty finite 2D array")
+    if not math.isfinite(floor) or floor <= 0.0:
+        raise ValueError("density floor must be positive and finite")
+    if not math.isfinite(tolerance) or tolerance < 0.0:
+        raise ValueError("floor-contact tolerance must be nonnegative and finite")
+
+    if region_mask is None:
+        selected = density.reshape(-1)
+        region = "full_mesh"
+    else:
+        mask = np.asarray(region_mask)
+        if mask.dtype != np.bool_ or mask.shape != density.shape or not np.any(mask):
+            raise ValueError("region mask must be a nonempty boolean array matching density")
+        selected = density[mask]
+        region = "masked_region"
+
+    ratios = selected / floor
+    floor_contact = ratios <= 1.0 + tolerance
+    nonpositive = selected <= 0.0
+    return {
+        "region": region,
+        "cell_count": int(selected.size),
+        "density_floor_m3": floor,
+        "minimum_density_m3": float(np.min(selected)),
+        "minimum_over_floor": float(np.min(ratios)),
+        "p01_over_floor": float(np.quantile(ratios, 0.01)),
+        "median_over_floor": float(np.median(ratios)),
+        "floor_contact_cell_count": int(np.count_nonzero(floor_contact)),
+        "floor_occupancy_fraction": float(np.mean(floor_contact)),
+        "nonpositive_cell_count": int(np.count_nonzero(nonpositive)),
+        "nonpositive_fraction": float(np.mean(nonpositive)),
+    }
+
+
 def component_coordinates_xz(record: Any, component: Any) -> dict[str, np.ndarray]:
     """Derive SI cell/component coordinates, keyed by physical axis label."""
 
@@ -232,4 +286,3 @@ def periodic_linear_interpolate(
     extended_x = np.concatenate(([x[-1] - period], x, [x[0] + period]))
     extended_y = np.concatenate(([y[-1]], y, [y[0]]))
     return float(np.interp(q, extended_x, extended_y))
-

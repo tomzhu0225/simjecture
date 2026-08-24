@@ -46,6 +46,46 @@ def test_normalizes_native_axes_and_derives_staggered_coordinates() -> None:
     assert np.allclose(coordinates["z"], [-45.0, -15.0])
 
 
+def test_density_floor_statistics_distinguish_full_and_masked_regions() -> None:
+    reader = _module()
+    density = np.asarray([[1.0, 2.0], [10.0, 20.0]]) * 1.0e24
+
+    full = reader.density_floor_statistics(
+        density,
+        density_floor_m3=1.0e24,
+    )
+    assert full["region"] == "full_mesh"
+    assert full["cell_count"] == 4
+    assert full["minimum_over_floor"] == pytest.approx(1.0)
+    assert full["floor_contact_cell_count"] == 1
+    assert full["floor_occupancy_fraction"] == pytest.approx(0.25)
+    assert full["nonpositive_cell_count"] == 0
+
+    masked = reader.density_floor_statistics(
+        density,
+        density_floor_m3=1.0e24,
+        region_mask=np.asarray([[False, False], [True, True]]),
+    )
+    assert masked["region"] == "masked_region"
+    assert masked["cell_count"] == 2
+    assert masked["minimum_over_floor"] == pytest.approx(10.0)
+    assert masked["floor_occupancy_fraction"] == 0.0
+
+
+def test_density_floor_statistics_reject_invalid_contract_inputs() -> None:
+    reader = _module()
+    with pytest.raises(ValueError, match="finite 2D"):
+        reader.density_floor_statistics([1.0, 2.0], density_floor_m3=1.0)
+    with pytest.raises(ValueError, match="positive and finite"):
+        reader.density_floor_statistics(np.ones((2, 2)), density_floor_m3=0.0)
+    with pytest.raises(ValueError, match="region mask"):
+        reader.density_floor_statistics(
+            np.ones((2, 2)),
+            density_floor_m3=1.0,
+            region_mask=np.ones((2, 2)),
+        )
+
+
 def test_periodic_crossing_does_not_fold_boundary_onto_center() -> None:
     reader = _module()
     x = np.asarray([-1.5, -0.5, 0.5, 1.5])
@@ -69,4 +109,3 @@ def test_rejects_ambiguous_or_nonuniform_axes() -> None:
         reader.normalize_xz_array(np.zeros((2, 2)), ["x", "y"])
     with pytest.raises(ValueError, match="uniform"):
         reader.periodic_domain([0.0, 1.0, 3.0])
-

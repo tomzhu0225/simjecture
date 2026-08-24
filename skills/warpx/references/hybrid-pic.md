@@ -108,3 +108,10 @@ In addition to the five-aspect WarpX commissioning contract, preserve:
 Do not copy numerical values, thresholds, expected scaling, or acceptance
 windows from an earlier demonstration. Derive them prospectively from the
 active claim, operator input, or campaign-retrieved sources.
+
+For 2D XZ diagnostics, materialize `examples/openpmd_xz_reader.py` and use its
+`density_floor_statistics` helper after converting the realized ion `rho`
+record from C m^-3 to number density with the registered charge state. Report
+the full-mesh occupancy and, when the scientific contract defines a smaller
+inference region, report that region separately. Do not interpret `rho` as an
+electron density without first confirming the hybrid diagnostic semantics.
