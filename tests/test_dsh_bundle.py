@@ -181,10 +181,12 @@ def test_dsh_scientific_roles_are_fresh_scoped_and_durably_verified() -> None:
     assert "guided_commissioning" in roles
     assert "guided/protocol.json" in roles
     assert "compactGuidedCommissioning" in roles
+    assert "assignment.guidedFilePaths.has(path)" in roles
+    assert "Agent-authored workspace source may be reread after compaction" in roles
     assert "source reads require explicit start_line and line_count" in roles
     assert "source read overlaps a prior window" in roles
-    assert "never use\nrun_python merely to print or slice a file" in roles
-    assert "do not reread overlapping" in roles
+    assert "Never use\nrun_python merely to print or slice a file" in roles
+    assert "never reread an overlapping guided-source window" in roles
     assert "reuse the durable contract, evidence, and workspace artifacts" in roles
     assert "Supported or closed commissioning claims are immutable" in roles
     assert "observation_sufficient=true" in roles

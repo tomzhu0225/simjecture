@@ -133,10 +133,11 @@ guided/protocol.json, read that concise interface once and follow its frozen
 commands; do not read supplied program sources or bulky validation artifacts
 unless the protocol omits a required interface fact or a bound execution
 fails. Guided material remains non-evidentiary. Inspect any still-necessary
-source with explicit read_workspace_file line windows of at most 200 lines;
-never reread an overlapping source window, and never use
-run_python merely to print or slice a file, and do not reread overlapping
-windows. Plain run_python is not a named capability: omit execution bindings
+supplied guided source with explicit read_workspace_file line windows of at
+most 200 lines, and never reread an overlapping guided-source window.
+Agent-authored workspace source may be reread after compaction when needed for
+debugging. Never use
+run_python merely to print or slice a file. Plain run_python is not a named capability: omit execution bindings
 and commissioning-only aspect labels from its ordinary scientific contract.
 Supported or closed commissioning claims are immutable: do not widen or
 re-close them. If a necessary command lies outside an existing supported
@@ -412,14 +413,16 @@ function installAssignmentGuard(child, assignment) {
     if (assignment.role === 'falsifier') {
       if (exec.name === `${MCP}read_workspace_file`) {
         const path = typeof args.path === 'string' ? args.path : ''
+        const guidedFile = assignment.guidedFilePaths.has(path)
         if (
           assignment.guidedProtocolPath !== undefined
           && assignment.guidedProtocolRead !== true
+          && guidedFile
           && path !== assignment.guidedProtocolPath
         ) {
           return `read ${assignment.guidedProtocolPath} before other guided files`
         }
-        if (path.endsWith('.py')) {
+        if (guidedFile && path.endsWith('.py')) {
           const start = Number.isInteger(args.start_line) ? args.start_line : undefined
           const count = Number.isInteger(args.line_count) ? args.line_count : undefined
           if (start === undefined || start < 1 || count === undefined || count < 1 || count > 200) {
@@ -732,6 +735,11 @@ export function apply(ctx) {
       guardInstalled: false,
       guidedProtocolPath: guidedProtocol === undefined ? undefined : 'guided/protocol.json',
       guidedProtocolRead: false,
+      guidedFilePaths: new Set(
+        guidedFiles
+          .map(file => file?.path)
+          .filter(path => typeof path === 'string'),
+      ),
       sourceReadRanges: new Map(),
     }
     appendActivity({
