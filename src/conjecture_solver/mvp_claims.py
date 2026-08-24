@@ -582,6 +582,32 @@ class MVPClaimLedgerStore:
         declared_aspects = {
             check.aspect for check in validation_checks if check.aspect is not None
         }
+        is_bound_instrument_contract = (
+            claim.kind == ClaimKind.INSTRUMENT
+            and claim.relation == ClaimRelation.INSTRUMENT_OF
+            and execution_binding is not None
+        )
+        is_interface_discovery = declared_aspects == {
+            CommissioningAspect.INTERFACE
+        }
+        if (
+            is_bound_instrument_contract
+            and not is_interface_discovery
+            and not REQUIRED_SCIENTIFIC_COMMISSIONING_ASPECTS.issubset(
+                declared_aspects
+            )
+        ):
+            missing = sorted(
+                aspect.value
+                for aspect in (
+                    REQUIRED_SCIENTIFIC_COMMISSIONING_ASPECTS - declared_aspects
+                )
+            )
+            raise ValueError(
+                "a bound instrument_of contract must be either interface-only "
+                "discovery or complete scientific commissioning; missing required "
+                f"aspects {missing}"
+            )
         is_complete_instrument_contract = (
             claim.kind == ClaimKind.INSTRUMENT
             and claim.relation == ClaimRelation.INSTRUMENT_OF

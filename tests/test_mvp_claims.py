@@ -7,6 +7,9 @@ import pytest
 from conjecture_solver.mvp_claims import (
     ClaimEvidenceProvenance,
     ClaimEvidenceValidationCheck,
+    ClaimExecutionBinding,
+    ClaimKind,
+    ClaimRelation,
     MVPClaimLedgerStore,
 )
 
@@ -41,6 +44,75 @@ def test_machine_validation_keeps_non_numeric_scalars_type_strict() -> None:
     assert evaluate("25", "25")
     assert not evaluate("25", 25)
     assert evaluate(None, None)
+
+
+def test_bound_partial_instrument_contract_is_rejected_at_registration(
+    tmp_path: Path,
+) -> None:
+    store = MVPClaimLedgerStore(
+        tmp_path / "claims.json",
+        root_hypothesis="A commissioned analyzer produces valid evidence.",
+    )
+    store.register(
+        claim_id="claim_analyzer",
+        statement="The analyzer is commissioned for the scientific pipeline.",
+        kind=ClaimKind.INSTRUMENT,
+        relation=ClaimRelation.INSTRUMENT_OF,
+        parent_id="claim_root",
+        rationale="Scientific analysis requires a qualified frozen program.",
+        iteration=1,
+    )
+    binding = ClaimExecutionBinding(
+        capability="isolated-python",
+        program_path="analyze.py",
+        commissioning_argv=("analyze.py", "commission"),
+        allowed_scientific_argv=(("analyze.py", "science"),),
+    )
+
+    with pytest.raises(ValueError, match="missing required aspects"):
+        store.register_evidence_contract(
+            claim_id="claim_analyzer",
+            observable="A deterministic analyzer commissioning summary.",
+            expected_outcomes="Passing checks qualify the analyzer program.",
+            decision_rule="Support only when every registered check passes.",
+            required_observation="Run the frozen analyzer commissioning command.",
+            uncertainty_criterion="Every check is an exact JSON boolean.",
+            inconclusive_conditions="A missing check leaves commissioning open.",
+            validation_checks=(
+                ClaimEvidenceValidationCheck(
+                    aspect="diagnostics",
+                    json_path="checks.diagnostics_valid",
+                    expected_value=True,
+                ),
+                ClaimEvidenceValidationCheck(
+                    aspect="numerical_regime",
+                    json_path="checks.numerics_valid",
+                    expected_value=True,
+                ),
+            ),
+            execution_binding=binding,
+            iteration=2,
+        )
+
+    registered = store.register_evidence_contract(
+        claim_id="claim_analyzer",
+        observable="A deterministic interface discovery summary.",
+        expected_outcomes="A true interface check permits later commissioning.",
+        decision_rule="Support interface discovery only when the check is true.",
+        required_observation="Run the frozen interface discovery command.",
+        uncertainty_criterion="The interface check is an exact JSON boolean.",
+        inconclusive_conditions="A missing check leaves discovery unresolved.",
+        validation_checks=(
+            ClaimEvidenceValidationCheck(
+                aspect="interface",
+                json_path="checks.interface_valid",
+                expected_value=True,
+            ),
+        ),
+        execution_binding=binding,
+        iteration=3,
+    )
+    assert registered["registered_evidence_contract"]["version"] == 1
 
 
 def test_failed_python_artifact_cannot_be_sufficient_scientific_evidence(
