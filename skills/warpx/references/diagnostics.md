@@ -62,6 +62,56 @@ series.close()
 Do not close the series before `flush()`. Converting an unflushed pending read
 can yield uninitialized values without a useful exception.
 
+## Strict 2D XZ coordinate and periodicity contract
+
+For every 2D XZ scientific analyzer, materialize
+`examples/openpmd_xz_reader.py` or implement and test the same invariants. Do
+not infer array order from a component name or expected grid shape. In the
+pinned runtime, WarpX normally writes native mesh arrays in record-declared
+`["z", "x"]` order, so an array with shape `(nz, nx)` must be indexed as
+`field[iz, ix]`. A transposed or differently labelled record must be permuted
+from `mesh_record.axis_labels` into the explicit target convention `(z, x)`.
+
+Grid metadata belongs to the mesh record; staggering and units belong to the
+record component. For each native axis `a`, construct SI coordinates as
+
+```python
+coordinate_a = (
+    record.grid_global_offset[a]
+    + record.grid_spacing[a]
+    * (np.arange(component.shape[a]) + component.position[a])
+) * record.grid_unit_SI
+```
+
+Read `axis_labels`, `grid_spacing`, and `grid_global_offset` from the record,
+not the component. Multiply field values by `component.unit_SI`, and retain the
+position of every component. Never silently treat staggered components as
+collocated. Either interpolate them onto a declared common location or assert
+that their realized coordinate arrays agree within a prospective tolerance.
+
+Periodic root finding and interpolation must unwrap the last/first cell pair
+before interpolation. If the centers span `[-L/2+dx/2, L/2-dx/2]`, add one
+period to the first coordinate when pairing it with the final coordinate,
+interpolate there, and only then wrap the result back to the physical domain.
+The ordinary arithmetic midpoint of the last and first coordinates is near
+zero and therefore turns a boundary root into a false central root.
+
+Before commissioning an analyzer, test at least:
+
+- native `["z", "x"]` and permuted `["x", "z"]` arrays;
+- realized coordinate ranges and positive uniform spacing;
+- the actual component staggering/collocation used by the estimator;
+- a synthetic periodic single-X/single-O field whose boundary O point must not
+  be selected as the central X point; and
+- a synthetic multi-island or noisy field that challenges the declared
+  topology filter.
+
+`finite`, `grid_consistent`, and `xpoint_located` booleans are insufficient if
+they merely restate that code returned values. Evidence-stage analyzer
+contracts should validate numeric coordinate bounds, native axis labels,
+component positions, the synthetic root locations, and at least one audited
+estimator value from a commissioning field.
+
 Choose outputs prospectively from the observable and falsifier. Record units,
 component names, spatial selection, mode projection, time window, filtering,
 normalization, and uncertainty calculation. A visually plausible plot is not a

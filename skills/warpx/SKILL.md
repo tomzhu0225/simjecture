@@ -113,6 +113,11 @@ Read these resources as needed:
   openPMD/HDF5 readback smoke test; it is permanently non-evidentiary and is the
   CPU and CUDA/openPMD capabilities' cached harness preflight. Campaign agents
   normally need not repeat it. Its JSON booleans are under `checks`.
+- `examples/openpmd_xz_reader.py`: reusable strict reader helpers for scientific
+  2D XZ analyzers. They normalize arrays to `(z, x)`, derive SI coordinates
+  from record metadata plus component staggering, and provide wrapped periodic
+  root/interpolation primitives. Read the 2D coordinate contract in
+  `references/diagnostics.md` before changing or replacing them.
 - `scripts/benchmark_cpu_threads.py`: run an isolated, validated OpenMP scaling
   sweep for an operator-supplied PICMI program and exact argument list. Never
   infer MPI support merely from the presence of `mpiexec`; the script queries

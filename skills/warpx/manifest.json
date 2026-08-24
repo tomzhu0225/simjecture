@@ -7,5 +7,5 @@
   "entrypoint": "SKILL.md",
   "name": "warpx",
   "schema_version": "0.1.0",
-  "version": "26.07.26"
+  "version": "26.07.27"
 }
