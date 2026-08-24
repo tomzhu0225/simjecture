@@ -120,8 +120,8 @@ parent conversation. Your first action must be snapshot; reconcile it with the
 assignment packet before any mutation. If that summary says the campaign
 instruction is truncated, call snapshot again with view=instruction before any
 mutation. Then call claims with view=role and
-claim_ids containing only the assigned claim; never request an unscoped full
-ledger. Work only on the assigned scientific
+claim_ids containing only the assigned claim. Request exactly one role claim
+per call and never request an unscoped full ledger. Work only on the assigned scientific
 claim and on non-scientific commissioning claims you create beneath it. Search
 relevant literature when available, inspect installed skills, register a
 prospective evidence contract before observations, commission unfamiliar
@@ -131,6 +131,12 @@ artifacts. Inspect source with read_workspace_file line windows; never use
 run_python merely to print or slice a file, and do not reread overlapping
 windows. Plain run_python is not a named capability: omit execution bindings
 and commissioning-only aspect labels from its ordinary scientific contract.
+Supported or closed commissioning claims are immutable: do not widen or
+re-close them. If a necessary command lies outside an existing supported
+instrument's exact binding, register a fresh instrument_of claim beneath the
+assigned scientific claim, prospectively contract all five required aspects,
+commission that exact pipeline, link its qualifying evidence, and close it as
+supported before scientific execution.
 When evidence_gaps or next_test are present, this is a follow-up:
 reuse the durable contract, evidence, and workspace artifacts, address those
 gaps directly, and do not repeat literature/skill discovery or unrelated
@@ -153,7 +159,7 @@ snapshot; reconcile it with the assignment packet before any mutation. Then
 if that summary says the campaign instruction is truncated, call snapshot again
 with view=instruction before any mutation. Then call claims with view=role and
 claim_ids containing only the assigned parent;
-never request an unscoped full ledger. Read
+request exactly one role claim per call and never request an unscoped full ledger. Read
 the decisive counterexample and create or reuse exactly one minimal scientific
 child with relation=repairs that accommodates that evidence, changes the
 parent statement semantically, and makes a new falsifiable prediction. Register
@@ -329,6 +335,21 @@ async function childClaimSummaries(ctx, exec, role, parentId) {
     }
     offset += rows.length
   }
+}
+
+async function exactRoleClaims(ctx, exec, role, suffix, claimIds) {
+  const claims = []
+  for (const [index, claimId] of claimIds.entries()) {
+    const result = await internalMcpCall(
+      ctx,
+      exec,
+      `${role}:claims-${suffix}:${index}`,
+      `${MCP}claims`,
+      { view: 'role', claim_ids: [claimId] },
+    )
+    claims.push(...claimsOf(result))
+  }
+  return { claims }
 }
 
 function asRecord(value) {
@@ -583,12 +604,12 @@ export function apply(ctx) {
       `${MCP}snapshot`,
       {},
     )
-    const claimsBefore = await internalMcpCall(
+    const claimsBefore = await exactRoleClaims(
       ctx,
       exec,
-      `${role}:claims-before`,
-      `${MCP}claims`,
-      { view: 'role', claim_ids: [targetId] },
+      role,
+      'before',
+      [targetId],
     )
     const target = claimById(claimsBefore, targetId)
     if (
@@ -681,12 +702,12 @@ export function apply(ctx) {
       ) {
         claimIdsAfter.push(result.structured.child_claim_id)
       }
-      const claimsAfter = await internalMcpCall(
+      const claimsAfter = await exactRoleClaims(
         ctx,
         exec,
-        `${role}:claims-after`,
-        `${MCP}claims`,
-        { view: 'role', claim_ids: claimIdsAfter },
+        role,
+        'after',
+        claimIdsAfter,
       )
       const verified = role === 'falsifier'
         ? verifyFalsifierResult(args, result.structured, claimsAfter)

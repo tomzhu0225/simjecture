@@ -36,7 +36,8 @@ MAX_RESULT_ITEMS = 500
 MAX_RESULT_STRING_CHARS = 16_384
 DEFAULT_CLAIM_PAGE_SIZE = 24
 MAX_CLAIM_PAGE_SIZE = 100
-MAX_ROLE_CLAIMS = 8
+MAX_ROLE_CLAIMS = 1
+MAX_FULL_CLAIMS = 8
 MAX_ROLE_CONTRACTS = 8
 MAX_ROLE_EVIDENCE = 24
 MAX_CLAIM_SUMMARY_STATEMENT_CHARS = 512
@@ -241,14 +242,28 @@ def _bound_result(value: Any, maximum: int) -> Any:
     if len(encoded) <= maximum:
         return converted
     digest = hashlib.sha256(encoded.encode()).hexdigest()
-    preview_budget = max(128, maximum - 180)
-    half = max(1, preview_budget // 2)
-    return {
-        "truncated": True,
-        "sha256": digest,
-        "bytes": len(encoded.encode()),
-        "preview": encoded[:half] + "..." + encoded[-half:],
-    }
+    preview_chars = max(0, maximum - 180)
+    while True:
+        head = preview_chars // 2
+        tail = preview_chars - head
+        preview = encoded[:head]
+        if preview_chars < len(encoded):
+            preview += "..."
+        if tail:
+            preview += encoded[-tail:]
+        bounded = {
+            "truncated": True,
+            "sha256": digest,
+            "bytes": len(encoded.encode()),
+            "preview": preview,
+        }
+        overflow = len(_compact_json(bounded)) - maximum
+        if overflow <= 0:
+            return bounded
+        if preview_chars == 0:  # pragma: no cover - BridgeConfig has a 1 KiB floor
+            bounded.pop("preview")
+            return bounded
+        preview_chars = max(0, preview_chars - max(1, overflow))
 
 
 def _clip_text(value: Any, maximum: int) -> tuple[str, bool, str]:
@@ -654,7 +669,13 @@ def _project_claims(value: Any, query: Mapping[str, Any]) -> dict[str, Any]:
     claim_ids = query.get("claim_ids")
     parent_id = query.get("parent_id")
     offset = query.get("offset", 0)
-    default_limit = MAX_ROLE_CLAIMS if view in {"role", "full"} else DEFAULT_CLAIM_PAGE_SIZE
+    default_limit = (
+        MAX_ROLE_CLAIMS
+        if view == "role"
+        else MAX_FULL_CLAIMS
+        if view == "full"
+        else DEFAULT_CLAIM_PAGE_SIZE
+    )
     limit = query.get("limit", default_limit)
 
     if not isinstance(offset, int) or isinstance(offset, bool) or offset < 0:
@@ -669,8 +690,9 @@ def _project_claims(value: Any, query: Mapping[str, Any]) -> dict[str, Any]:
     if view in {"role", "full"}:
         if not isinstance(claim_ids, list) or not claim_ids:
             raise MCPInputError(f"claims view={view} requires explicit claim_ids")
-        if len(claim_ids) > MAX_ROLE_CLAIMS:
-            raise MCPInputError(f"claims view={view} accepts at most {MAX_ROLE_CLAIMS} claim_ids")
+        maximum_ids = MAX_ROLE_CLAIMS if view == "role" else MAX_FULL_CLAIMS
+        if len(claim_ids) > maximum_ids:
+            raise MCPInputError(f"claims view={view} accepts at most {maximum_ids} claim_ids")
     if isinstance(claim_ids, list) and len(claim_ids) > MAX_CLAIM_PAGE_SIZE:
         raise MCPInputError(f"claims accepts at most {MAX_CLAIM_PAGE_SIZE} claim_ids per request")
 

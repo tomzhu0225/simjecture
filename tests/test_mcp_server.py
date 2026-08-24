@@ -372,6 +372,7 @@ def test_bridge_bounds_tool_output(tmp_path: Path) -> None:
     assert result["truncated"] is True
     assert len(result["preview"]) < 1_024
     assert len(result["sha256"]) == 64
+    assert len(json.dumps(result, separators=(",", ":"))) <= 1_024
 
 
 def test_snapshot_summary_removes_duplicated_receipt_bulk(tmp_path: Path) -> None:
@@ -617,6 +618,12 @@ def test_claim_views_project_before_the_output_bound(tmp_path: Path) -> None:
 
     with pytest.raises(MCPInputError, match="requires explicit claim_ids"):
         _call(bridge, "claims", {"view": "role"})
+    with pytest.raises(MCPInputError, match="accepts at most 1 claim_ids"):
+        _call(
+            bridge,
+            "claims",
+            {"view": "role", "claim_ids": ["claim_root", "claim_instrument"]},
+        )
     with pytest.raises(MCPInputError, match="must lie in"):
         _call(bridge, "claims", {"limit": 101})
 
