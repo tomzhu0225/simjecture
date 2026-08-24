@@ -258,16 +258,27 @@ async function drive(ctx, task, io) {
   const { agent } = handle
   let pauseHonored = false
   const disposeEvents = ctx.on('session/event', (session, event) => {
-    if (session !== agent.session) return
-    const projection = projectedEvent(event)
-    if (projection !== undefined) appendActivity(activityPath, projection)
-    if (event.type === 'tool/result' && controlRequestsPause(controlPath)) {
+    if (session === agent.session) {
+      const projection = projectedEvent(event)
+      if (projection !== undefined) appendActivity(activityPath, projection)
+    }
+    // Scientific work runs inside scoped child roles. Their completed tools
+    // are action boundaries too: waiting only for a lead-scientist tool result
+    // can leave a requested pause pending for an entire long-running role.
+    // Cancelling the lead propagates through that role tool's abort signal,
+    // while keepInbox preserves the persistent session for resume.
+    if (
+      !pauseHonored
+      && event.type === 'tool/result'
+      && controlRequestsPause(controlPath)
+    ) {
       pauseHonored = true
       atomicJson(statePath, {
         schema_version: '0.1.0',
         status: 'paused',
         engine: 'dsh',
         session_id: rawSessionId,
+        boundary_session_id: String(session.id),
         boundary_sequence: event.seq,
         updated_at: now(),
       })

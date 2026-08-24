@@ -128,6 +128,9 @@ def test_dsh_runner_uses_stable_resume_and_projects_no_reasoning_chunks() -> Non
     assert "event.data.arguments" not in runner
     assert "block.type === 'tool-result'" in runner
     assert "resultBlock?.isError === true" in runner
+    assert "if (session === agent.session)" in runner
+    assert "boundary_session_id: String(session.id)" in runner
+    assert "Their completed tools" in runner
 
 
 def test_dsh_adjudicator_uses_a_fresh_tool_free_structured_child() -> None:
