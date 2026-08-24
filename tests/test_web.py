@@ -47,6 +47,7 @@ def _campaign(root: Path) -> Path:
             "policy": "operator_validated_starting_point_not_campaign_evidence",
             "capability": "isolated-python",
             "program_path": "guided/reference.py",
+            "protocol_path": "guided/protocol.json",
             "operator_validation": "The reference completed with $|\\Delta E/E_0| < 10^{-4}$.",
             "limitations": ["It does not establish the campaign conclusion."],
             "package_sha256": "a" * 64,
@@ -236,6 +237,7 @@ def test_web_projection_exposes_one_four_kind_claim_graph(tmp_path: Path) -> Non
     assert "attached_claims" not in payload
     commissioning = payload["commissioning"]
     assert commissioning["guided"]["name"] == "bounded-reference-start"
+    assert commissioning["guided"]["protocol_path"] == "guided/protocol.json"
     assert commissioning["stages"] == [
         {
             "id": "stage_commissioning_claim_child",

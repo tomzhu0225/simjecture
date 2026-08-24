@@ -173,6 +173,9 @@ def _write_guided_commissioning(tmp_path: Path) -> Path:
     (package / "guided/validation.json").write_text(
         '{"checks":{"ran":true},"scope":"operator prerun only"}\n'
     )
+    (package / "guided/protocol.json").write_text(
+        '{"commands":{"anchor":["guided/experiment.py"]}}\n'
+    )
     manifest = package / "guided_commission.json"
     manifest.write_text(
         json.dumps(
@@ -184,9 +187,14 @@ def _write_guided_commissioning(tmp_path: Path) -> Path:
                 "program_path": "guided/experiment.py",
                 "validated_argv": ["guided/experiment.py"],
                 "validation_summary_path": "guided/validation.json",
+                "protocol_path": "guided/protocol.json",
                 "operator_validation": "The exact command exited zero and wrote the summary.",
                 "limitations": ["The supplied output is not campaign evidence."],
-                "files": ["guided/experiment.py", "guided/validation.json"],
+                "files": [
+                    "guided/experiment.py",
+                    "guided/validation.json",
+                    "guided/protocol.json",
+                ],
             },
             indent=2,
         )
@@ -4930,6 +4938,53 @@ def test_mvp_cli_accepts_guided_commission_manifest() -> None:
     assert args.guided_commission == "guided_commission.json"
 
 
+def test_optional_guided_protocol_preserves_legacy_package_identity(
+    tmp_path: Path,
+) -> None:
+    package_root = tmp_path / "legacy-guided"
+    (package_root / "guided").mkdir(parents=True)
+    files = {
+        "guided/experiment.py": b"print('legacy anchor')\n",
+        "guided/validation.json": b'{"checks":{"ran":true}}\n',
+    }
+    for relative, content in files.items():
+        (package_root / relative).write_bytes(content)
+    payload = {
+        "schema_version": "0.1.0",
+        "name": "legacy-anchor",
+        "description": "A manifest created before protocol_path was available.",
+        "capability": "isolated-python",
+        "program_path": "guided/experiment.py",
+        "validated_argv": ["guided/experiment.py"],
+        "validation_summary_path": "guided/validation.json",
+        "operator_validation": "The exact command exited zero.",
+        "limitations": [],
+        "files": list(files),
+    }
+    manifest = package_root / "guided_commission.json"
+    manifest.write_text(json.dumps(payload, indent=2) + "\n")
+
+    expected = hashlib.sha256()
+    encoded_spec = json.dumps(
+        payload,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode()
+    expected.update(len(encoded_spec).to_bytes(8, "big"))
+    expected.update(encoded_spec)
+    for relative in sorted(files):
+        name = relative.encode()
+        content = files[relative]
+        expected.update(len(name).to_bytes(8, "big"))
+        expected.update(name)
+        expected.update(len(content).to_bytes(8, "big"))
+        expected.update(content)
+
+    package = MVPGuidedCommissioningPackage.read(manifest)
+    assert package.package_sha256 == expected.hexdigest()
+    assert "protocol_path" not in package.descriptor()
+
+
 @pytest.mark.skipif(shutil.which("bwrap") is None, reason="bubblewrap is unavailable")
 def test_guided_commission_is_pinned_hashed_and_initially_nonevidentiary(
     tmp_path: Path,
@@ -4995,6 +5050,7 @@ def test_guided_commission_is_pinned_hashed_and_initially_nonevidentiary(
     assert initial["guided_commissioning"]["validated_argv"] == [
         "guided/experiment.py"
     ]
+    assert initial["guided_commissioning"]["protocol_path"] == "guided/protocol.json"
     sticky = json.loads(client.calls[-1]["messages"][-1]["content"])
     assert sticky["guided_commissioning"]["package_sha256"] == package.package_sha256
     provenance = json.loads((output / "artifact_provenance.json").read_text())
@@ -5067,4 +5123,11 @@ def test_guided_commission_rejects_traversal_and_changed_identity(
     payload["files"][0] = "../outside.py"
     manifest.write_text(json.dumps(payload))
     with pytest.raises(ValueError, match="workspace-relative"):
+        MVPGuidedCommissioningPackage.read(manifest)
+
+    manifest = _write_guided_commissioning(tmp_path / "missing-protocol")
+    payload = json.loads(manifest.read_text())
+    payload["files"].remove(payload["protocol_path"])
+    manifest.write_text(json.dumps(payload))
+    with pytest.raises(ValueError, match="protocol_path must be listed"):
         MVPGuidedCommissioningPackage.read(manifest)

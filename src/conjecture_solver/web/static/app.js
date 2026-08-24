@@ -1211,7 +1211,7 @@ function renderCommissioningInspector(container, stage) {
     if (guided.name) section.append(element("strong", null, guided.name));
     if (guided.description) section.append(markdownBlock(guided.description));
     const chips = element("div", "claim-metadata compact");
-    for (const value of [guided.capability, guided.program_path, guided.policy]) {
+    for (const value of [guided.capability, guided.program_path, guided.protocol_path, guided.policy]) {
       if (value) chips.append(element("span", "metadata-chip", value));
     }
     if (chips.childElementCount) section.append(chips);

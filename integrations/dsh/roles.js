@@ -128,8 +128,8 @@ prospective evidence contract before observations, commission unfamiliar
 capabilities, and run the smallest discriminating tests first. Durable jobs are
 waited by the harness; do not repeatedly poll them. Link only qualifying
 artifacts. When the assignment packet contains guided_commissioning, use that
-content-addressed descriptor before inspecting files. If it lists
-guided/protocol.json, read that concise interface once and follow its frozen
+content-addressed descriptor before inspecting files. If it declares
+protocol_path, read that concise interface once and follow its frozen
 commands; do not read supplied program sources or bulky validation artifacts
 unless the protocol omits a required interface fact or a bound execution
 fails. Guided material remains non-evidentiary. Inspect any still-necessary
@@ -328,6 +328,7 @@ function compactGuidedCommissioning(value) {
     program_path: value.program_path,
     validated_argv: value.validated_argv,
     validation_summary_path: value.validation_summary_path,
+    protocol_path: value.protocol_path,
     operator_validation: value.operator_validation,
     limitations: value.limitations,
     package_sha256: value.package_sha256,
@@ -724,7 +725,12 @@ export function apply(ctx) {
     const guidedFiles = Array.isArray(snapshot?.manifest?.guided_commissioning?.files)
       ? snapshot.manifest.guided_commissioning.files
       : []
-    const guidedProtocol = guidedFiles.find(file => file?.path === 'guided/protocol.json')
+    const declaredProtocolPath = typeof snapshot?.manifest?.guided_commissioning?.protocol_path === 'string'
+      ? snapshot.manifest.guided_commissioning.protocol_path
+      : undefined
+    const guidedProtocol = guidedFiles.find(file => (
+      file?.path === (declaredProtocolPath ?? 'guided/protocol.json')
+    ))
     const assignment = {
       role,
       assignmentId: args.assignment_id,
@@ -733,7 +739,7 @@ export function apply(ctx) {
       repairClaimId: undefined,
       childSessionId: undefined,
       guardInstalled: false,
-      guidedProtocolPath: guidedProtocol === undefined ? undefined : 'guided/protocol.json',
+      guidedProtocolPath: guidedProtocol?.path,
       guidedProtocolRead: false,
       guidedFilePaths: new Set(
         guidedFiles

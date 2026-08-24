@@ -180,6 +180,8 @@ def test_dsh_scientific_roles_are_fresh_scoped_and_durably_verified() -> None:
     assert "read_workspace_file line windows" in roles
     assert "guided_commissioning" in roles
     assert "guided/protocol.json" in roles
+    assert "declaredProtocolPath" in roles
+    assert "protocol_path" in roles
     assert "compactGuidedCommissioning" in roles
     assert "assignment.guidedFilePaths.has(path)" in roles
     assert "Agent-authored workspace source may be reread after compaction" in roles

@@ -485,6 +485,7 @@ def _guided_commissioning_projection(root: Path) -> dict[str, Any]:
         "policy": payload.get("policy"),
         "capability": payload.get("capability"),
         "program_path": payload.get("program_path"),
+        "protocol_path": payload.get("protocol_path"),
         "operator_validation": payload.get("operator_validation"),
         "limitations": (
             [str(item) for item in limitations if isinstance(item, str)]

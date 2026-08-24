@@ -41,6 +41,7 @@ class MVPGuidedCommissioningSpec(StrictModel):
     program_path: str = Field(min_length=1)
     validated_argv: tuple[str, ...] = Field(min_length=1)
     validation_summary_path: str = Field(min_length=1)
+    protocol_path: str | None = None
     operator_validation: str = Field(min_length=1)
     limitations: tuple[str, ...] = ()
     files: tuple[str, ...] = Field(min_length=2)
@@ -52,10 +53,17 @@ class MVPGuidedCommissioningSpec(StrictModel):
             raise ValueError("guided commissioning files must be unique")
         program_path = _workspace_relative_path(self.program_path)
         summary_path = _workspace_relative_path(self.validation_summary_path)
+        protocol_path = (
+            _workspace_relative_path(self.protocol_path)
+            if self.protocol_path is not None
+            else None
+        )
         if program_path not in normalized_files:
             raise ValueError("program_path must be listed in files")
         if summary_path not in normalized_files:
             raise ValueError("validation_summary_path must be listed in files")
+        if protocol_path is not None and protocol_path not in normalized_files:
+            raise ValueError("protocol_path must be listed in files")
         if self.validated_argv[0] != program_path:
             raise ValueError("validated_argv[0] must equal program_path")
         if any(not argument for argument in self.validated_argv):
@@ -90,7 +98,7 @@ class MVPGuidedCommissioningPackage:
         root = manifest.parent
         digest = hashlib.sha256()
         canonical_spec = json.dumps(
-            spec.model_dump(mode="json"),
+            spec.model_dump(mode="json", exclude_none=True),
             sort_keys=True,
             separators=(",", ":"),
         ).encode()
@@ -154,7 +162,7 @@ class MVPGuidedCommissioningPackage:
             raise ValueError("guided commissioning package identity changed")
 
     def descriptor(self) -> dict[str, Any]:
-        return {
+        descriptor = {
             "available": True,
             "schema_version": self.spec.schema_version,
             "name": self.spec.name,
@@ -170,3 +178,6 @@ class MVPGuidedCommissioningPackage:
             "scientific_evidence_eligible": False,
             "policy": "operator_validated_starting_point_not_campaign_evidence",
         }
+        if self.spec.protocol_path is not None:
+            descriptor["protocol_path"] = self.spec.protocol_path
+        return descriptor

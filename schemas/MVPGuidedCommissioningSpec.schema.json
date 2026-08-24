@@ -44,6 +44,18 @@
       "title": "Program Path",
       "type": "string"
     },
+    "protocol_path": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Protocol Path"
+    },
     "schema_version": {
       "const": "0.1.0",
       "default": "0.1.0",
