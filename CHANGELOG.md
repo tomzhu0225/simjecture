@@ -4,6 +4,16 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+## 0.2.2 — 2026-08-24
+
+- Fixed a process-lifecycle race where the supervisor that launched a short
+  durable job could observe the child after exit but before `Popen.poll()`
+  receipted it, incorrectly recording `outcome_unknown` instead of the known
+  terminal result.
+- Made the release workflow install the sandbox runtime and locked test
+  environment, then run lint and the full deterministic test suite before any
+  distribution can be uploaded to PyPI.
+
 ## 0.2.1 — 2026-08-23
 
 - Extracted a model-independent campaign kernel while preserving the existing

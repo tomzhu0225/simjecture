@@ -251,7 +251,7 @@ the human-first projection.
 
 ## DeepSeek Harness integration
 
-The v0.2.1 integration moves the model-facing research loop to DeepSeek Harness
+The v0.2.2 integration moves the model-facing research loop to DeepSeek Harness
 without moving scientific authority out of Simjecture. DSH owns the provider,
 conversation, retry policy, compaction, and resumable session. A native MCP
 boundary implements 21 typed endpoints. A compact persistent Lead Scientist

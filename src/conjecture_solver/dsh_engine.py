@@ -71,7 +71,7 @@ def bundled_profile_path() -> Path:
         if (candidate.is_dir() and (candidate / "package.json").is_file()):
             return candidate
     raise DshEngineError(
-        "the Simjecture DSH profile is missing; reinstall the complete v0.2.1 package"
+        "the Simjecture DSH profile is missing; reinstall the complete v0.2.2 package"
     )
 
 

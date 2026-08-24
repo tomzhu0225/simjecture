@@ -1,7 +1,7 @@
 # Run a Simjecture campaign under DSH
 
 The DSH integration is a native-tool profile plus a small resumable driver for
-a durable Simjecture campaign. Version 0.2.1 uses a persistent Lead Scientist
+a durable Simjecture campaign. Version 0.2.2 uses a persistent Lead Scientist
 and fresh, claim-scoped Falsifier, Repair Scientist, and tool-free Judge
 sessions. Fresh workers see bounded kernel state rather than inherited chat.
 The Python MCP process is the only scientific tool surface: it exposes campaign
@@ -60,7 +60,7 @@ resulting local bundle into the isolated harness profile:
 SIMJECTURE_DSH_PROFILE="$(simjecture dsh-profile)"
 npm pack "$SIMJECTURE_DSH_PROFILE" --pack-destination /tmp
 dsh plugin --profile simjecture add @deepseek-ai/dsh-headless@0.1.1-rc.2
-dsh plugin --profile simjecture add /tmp/simjecture-dsh-bundle-0.2.1.tgz
+dsh plugin --profile simjecture add /tmp/simjecture-dsh-bundle-0.2.2.tgz
 ```
 
 For a checkout-only development install, use the directory directly when the

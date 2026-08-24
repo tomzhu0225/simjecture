@@ -7,7 +7,7 @@ final response. Simjecture remains authoritative for the hypothesis DAG,
 evidence contracts, commissioning, provenance, sandbox, and durable simulation
 jobs.
 
-Version 0.2.1 separates scientific work into four scopes:
+Version 0.2.2 separates scientific work into four scopes:
 
 - a persistent, compact **Lead Scientist** reads durable state and delegates;
 - a fresh **Falsifier/Experimenter** commissions and tests exactly one open
@@ -60,7 +60,7 @@ outside the repository or remove the generated tarball after installation:
 SIMJECTURE_DSH_PROFILE="$(simjecture dsh-profile)"
 npm pack "$SIMJECTURE_DSH_PROFILE" --pack-destination /tmp
 dsh plugin --profile simjecture add @deepseek-ai/dsh-headless@0.1.1-rc.2
-dsh plugin --profile simjecture add /tmp/simjecture-dsh-bundle-0.2.1.tgz
+dsh plugin --profile simjecture add /tmp/simjecture-dsh-bundle-0.2.2.tgz
 ```
 
 The dedicated profile is important: its base/headless composition lets this

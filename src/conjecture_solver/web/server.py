@@ -77,7 +77,7 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
 
     server: SimjectureHTTPServer
     protocol_version = "HTTP/1.1"
-    server_version = "Simjecture/0.2.1"
+    server_version = "Simjecture/0.2.2"
 
     def do_GET(self) -> None:  # noqa: N802 - stdlib handler contract
         parsed = urlsplit(self.path)

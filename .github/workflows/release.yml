@@ -24,6 +24,27 @@ jobs:
           python-version: "3.12"
       - name: Install build frontend
         run: python -m pip install uv
+      - name: Install sandbox runtime
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes bubblewrap
+          if sysctl kernel.unprivileged_userns_clone > /dev/null 2>&1; then
+            sudo sysctl -w kernel.unprivileged_userns_clone=1
+          fi
+          if sysctl kernel.apparmor_restrict_unprivileged_userns > /dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+          bwrap --unshare-all --die-with-parent \
+            --ro-bind /usr /usr \
+            --ro-bind /lib /lib \
+            --ro-bind /lib64 /lib64 \
+            /usr/bin/true
+      - name: Install locked test environment
+        run: uv sync --frozen --extra tui
+      - name: Lint release source
+        run: uv run ruff check .
+      - name: Test release source
+        run: uv run pytest --cov=conjecture_solver --cov-report=term-missing
       - name: Require the release tag to match the package version
         run: |
           python - <<'PY'
