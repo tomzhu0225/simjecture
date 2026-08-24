@@ -795,24 +795,90 @@ def request_graceful_cancel(
     wait_terminate_seconds: float = 10.0,
     sleep: Any = time.sleep,
 ) -> str:
-    """Send SIGINT to a verified child, then SIGTERM if it does not exit.
+    """Cancel a verified campaign tree, then its supervisor process.
 
-    Never signals an unverified PID. Does not use SIGKILL or SIGSTOP.
+    Detached kernel workers are deliberately restart-safe, so killing only the
+    campaign supervisor can otherwise leave a simulation consuming CPU/GPU.
+    When ``run_directory`` identifies a campaign, verified non-terminal jobs
+    are cancelled before the supervisor and reconciled once more after it
+    exits. Never signals an unverified PID. Does not use SIGKILL or SIGSTOP.
     """
 
     if not process_identity_matches(identity):
         return "process identity does not match; no signal sent"
+    _cancel_active_campaign_jobs(
+        identity,
+        wait_interrupt_seconds=wait_interrupt_seconds,
+        wait_terminate_seconds=wait_terminate_seconds,
+        sleep=sleep,
+    )
     if not _signal_verified(identity, signal.SIGINT):
-        return "process already exited"
-    if _wait_for_exit(identity, wait_interrupt_seconds, sleep=sleep):
-        return "interrupted"
-    if not process_identity_matches(identity):
-        return "process identity changed after interrupt; no further signal sent"
-    if not _signal_verified(identity, signal.SIGTERM):
-        return "interrupted"
-    if _wait_for_exit(identity, wait_terminate_seconds, sleep=sleep):
-        return "terminated"
-    return "cancel requested; process still running"
+        result = "process already exited"
+    elif _wait_for_exit(identity, wait_interrupt_seconds, sleep=sleep):
+        result = "interrupted"
+    elif not process_identity_matches(identity):
+        result = "process identity changed after interrupt; no further signal sent"
+    elif not _signal_verified(identity, signal.SIGTERM):
+        result = "interrupted"
+    elif _wait_for_exit(identity, wait_terminate_seconds, sleep=sleep):
+        result = "terminated"
+    else:
+        result = "cancel requested; process still running"
+    # Close the small race in which a worker handshake became durable between
+    # the first job scan and the supervisor signal.
+    _cancel_active_campaign_jobs(
+        identity,
+        wait_interrupt_seconds=wait_interrupt_seconds,
+        wait_terminate_seconds=wait_terminate_seconds,
+        sleep=sleep,
+    )
+    return result
+
+
+def _cancel_active_campaign_jobs(
+    identity: ProcessIdentity,
+    *,
+    wait_interrupt_seconds: float,
+    wait_terminate_seconds: float,
+    sleep: Any,
+) -> tuple[str, ...]:
+    """Cancel verified durable jobs below ``identity.run_directory``.
+
+    This is intentionally a best-effort companion to supervisor cancellation:
+    malformed or absent job state must never prevent signalling the already
+    verified campaign PID. Individual job cancellation still performs its own
+    PID/start-time/argv verification immediately before every signal.
+    """
+
+    if identity.run_directory is None:
+        return ()
+    try:
+        root = Path(identity.run_directory).expanduser().resolve()
+    except OSError:
+        return ()
+    jobs_root = root / "jobs"
+    if not (jobs_root / "jobs").is_dir():
+        return ()
+    try:
+        # Local import avoids the module-level cycle: campaign_jobs reuses this
+        # verified signal primitive for each detached worker.
+        from .campaign_jobs import CampaignJobSupervisor
+
+        supervisor = CampaignJobSupervisor(jobs_root)
+        outcomes: list[str] = []
+        for state in supervisor.jobs():
+            if state.status.terminal:
+                continue
+            cancelled = supervisor.cancel(
+                state.job_id,
+                wait_interrupt_seconds=min(max(0.0, wait_interrupt_seconds), 5.0),
+                wait_terminate_seconds=min(max(0.0, wait_terminate_seconds), 2.0),
+                sleep=sleep,
+            )
+            outcomes.append(f"{state.operation_id}:{cancelled.status.value}")
+        return tuple(outcomes)
+    except Exception:  # noqa: BLE001 - parent cancellation must still proceed
+        return ()
 
 
 def _signal_verified(identity: ProcessIdentity, sig: signal.Signals) -> bool:

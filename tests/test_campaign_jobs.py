@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -13,6 +14,11 @@ from conjecture_solver.campaign_jobs import (
     CampaignJobSupervisor,
     CampaignLockBusyError,
     JobConflictError,
+)
+from conjecture_solver.mvp_launch import (
+    ProcessIdentity,
+    read_process_identity,
+    request_graceful_cancel,
 )
 
 
@@ -138,3 +144,54 @@ def test_reopened_supervisor_persists_verified_cancellation(tmp_path: Path) -> N
     assert receipt.status is CampaignJobStatus.CANCELLED
     assert "verified cancellation" in (receipt.detail or "")
     assert reopened.reopen().status(initial.job_id).status is CampaignJobStatus.CANCELLED
+
+
+def test_campaign_cancel_cascades_to_verified_detached_job(tmp_path: Path) -> None:
+    campaign = tmp_path / "campaign"
+    campaign.mkdir()
+    jobs = CampaignJobSupervisor(campaign / "jobs")
+    child = jobs.start(
+        operation_id="active-simulation",
+        argv=_command("import time; time.sleep(60)"),
+    )
+    parent_argv = _command("import time; time.sleep(60)")
+    parent = subprocess.Popen(list(parent_argv), start_new_session=True)  # noqa: S603
+    child_process = jobs._processes[child.job_id]
+    try:
+        identity = read_process_identity(
+            parent.pid,
+            parent_argv,
+            run_directory=campaign,
+        )
+        assert identity is not None
+        forged = ProcessIdentity(
+            pid=identity.pid,
+            starttime="forged-start-time",
+            argv=identity.argv,
+            launched_at=identity.launched_at,
+            run_directory=identity.run_directory,
+        )
+        assert request_graceful_cancel(
+            forged,
+            wait_interrupt_seconds=0.1,
+            wait_terminate_seconds=0.1,
+        ) == "process identity does not match; no signal sent"
+        assert child_process.poll() is None
+
+        outcome = request_graceful_cancel(
+            identity,
+            wait_interrupt_seconds=2,
+            wait_terminate_seconds=1,
+        )
+        assert outcome in {"interrupted", "terminated"}
+        parent.wait(timeout=3)
+        child_process.wait(timeout=3)
+        state = CampaignJobSupervisor(campaign / "jobs").status(child.job_id)
+        assert state.status is CampaignJobStatus.CANCELLED
+    finally:
+        if parent.poll() is None:
+            parent.terminate()
+            parent.wait(timeout=3)
+        if child_process.poll() is None:
+            child_process.terminate()
+            child_process.wait(timeout=3)
