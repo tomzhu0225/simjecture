@@ -127,7 +127,14 @@ relevant literature when available, inspect installed skills, register a
 prospective evidence contract before observations, commission unfamiliar
 capabilities, and run the smallest discriminating tests first. Durable jobs are
 waited by the harness; do not repeatedly poll them. Link only qualifying
-artifacts. Inspect source with read_workspace_file line windows; never use
+artifacts. When the assignment packet contains guided_commissioning, use that
+content-addressed descriptor before inspecting files. If it lists
+guided/protocol.json, read that concise interface once and follow its frozen
+commands; do not read supplied program sources or bulky validation artifacts
+unless the protocol omits a required interface fact or a bound execution
+fails. Guided material remains non-evidentiary. Inspect any still-necessary
+source with explicit read_workspace_file line windows of at most 200 lines;
+never reread an overlapping source window, and never use
 run_python merely to print or slice a file, and do not reread overlapping
 windows. Plain run_python is not a named capability: omit execution bindings
 and commissioning-only aspect labels from its ordinary scientific contract.
@@ -304,6 +311,32 @@ function compactCampaign(snapshot) {
       : [],
     skills: Object.keys(snapshot.skill_hashes ?? {}),
     capabilities: Object.keys(snapshot.capability_hashes ?? {}),
+    guided_commissioning: compactGuidedCommissioning(
+      snapshot.manifest?.guided_commissioning,
+    ),
+  }
+}
+
+function compactGuidedCommissioning(value) {
+  if (typeof value !== 'object' || value === null || value.available !== true) return null
+  return {
+    available: true,
+    name: value.name,
+    description: value.description,
+    capability: value.capability,
+    program_path: value.program_path,
+    validated_argv: value.validated_argv,
+    validation_summary_path: value.validation_summary_path,
+    operator_validation: value.operator_validation,
+    limitations: value.limitations,
+    package_sha256: value.package_sha256,
+    files: Array.isArray(value.files)
+      ? value.files.map(file => ({
+          path: file.path,
+          bytes: file.bytes,
+          sha256: file.sha256,
+        }))
+      : [],
   }
 }
 
@@ -377,6 +410,30 @@ function installAssignmentGuard(child, assignment) {
     const allowed = assignment.allowedClaims
 
     if (assignment.role === 'falsifier') {
+      if (exec.name === `${MCP}read_workspace_file`) {
+        const path = typeof args.path === 'string' ? args.path : ''
+        if (
+          assignment.guidedProtocolPath !== undefined
+          && assignment.guidedProtocolRead !== true
+          && path !== assignment.guidedProtocolPath
+        ) {
+          return `read ${assignment.guidedProtocolPath} before other guided files`
+        }
+        if (path.endsWith('.py')) {
+          const start = Number.isInteger(args.start_line) ? args.start_line : undefined
+          const count = Number.isInteger(args.line_count) ? args.line_count : undefined
+          if (start === undefined || start < 1 || count === undefined || count < 1 || count > 200) {
+            return 'source reads require explicit start_line and line_count between 1 and 200'
+          }
+          const end = start + count - 1
+          const ranges = assignment.sourceReadRanges.get(path) ?? []
+          if (ranges.some(([first, last]) => start <= last && end >= first)) {
+            return 'source read overlaps a prior window; use only a new non-overlapping range'
+          }
+          ranges.push([start, end])
+          assignment.sourceReadRanges.set(path, ranges)
+        }
+      }
       if (exec.name === `${MCP}register_claim`) {
         if (args.kind === 'scientific') {
           return 'the Falsifier cannot register scientific claims; delegate repair to the Repair Scientist'
@@ -602,8 +659,16 @@ export function apply(ctx) {
   ctx.on('tools/result', (exec, result) => {
     if (result.isError || exec.agent === undefined) return
     const assignment = activeBySession.get(String(exec.agent.id))
-    if (assignment === undefined || exec.name !== `${MCP}register_claim`) return
+    if (assignment === undefined) return
     const args = asRecord(exec.arguments)
+    if (
+      !result.isError
+      && exec.name === `${MCP}read_workspace_file`
+      && args.path === assignment.guidedProtocolPath
+    ) {
+      assignment.guidedProtocolRead = true
+    }
+    if (exec.name !== `${MCP}register_claim`) return
     const claimId = typeof args.claim_id === 'string' ? args.claim_id.toLowerCase() : undefined
     if (claimId === undefined) return
     if (assignment.role === 'falsifier' && args.kind !== 'scientific') {
@@ -653,6 +718,10 @@ export function apply(ctx) {
         && claim.parent_id.toLowerCase() === targetKey
       ))
       .map(claim => String(claim.id).toLowerCase())
+    const guidedFiles = Array.isArray(snapshot?.manifest?.guided_commissioning?.files)
+      ? snapshot.manifest.guided_commissioning.files
+      : []
+    const guidedProtocol = guidedFiles.find(file => file?.path === 'guided/protocol.json')
     const assignment = {
       role,
       assignmentId: args.assignment_id,
@@ -661,6 +730,9 @@ export function apply(ctx) {
       repairClaimId: undefined,
       childSessionId: undefined,
       guardInstalled: false,
+      guidedProtocolPath: guidedProtocol === undefined ? undefined : 'guided/protocol.json',
+      guidedProtocolRead: false,
+      sourceReadRanges: new Map(),
     }
     appendActivity({
       kind: 'agent',

@@ -178,6 +178,11 @@ def test_dsh_scientific_roles_are_fresh_scoped_and_durably_verified() -> None:
     assert "do not repeatedly poll" in roles
     assert "Plain run_python is not a named capability" in roles
     assert "read_workspace_file line windows" in roles
+    assert "guided_commissioning" in roles
+    assert "guided/protocol.json" in roles
+    assert "compactGuidedCommissioning" in roles
+    assert "source reads require explicit start_line and line_count" in roles
+    assert "source read overlaps a prior window" in roles
     assert "never use\nrun_python merely to print or slice a file" in roles
     assert "do not reread overlapping" in roles
     assert "reuse the durable contract, evidence, and workspace artifacts" in roles
