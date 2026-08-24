@@ -159,7 +159,11 @@ _JUDGE_VERDICT = _object(
 # Only these keys are sent over the wire.  Descriptions live in TOOL_DESCRIPTIONS
 # because descriptions are not part of the DSH-compatible schema subset.
 TOOL_SCHEMAS: dict[str, dict[str, Any]] = {
-    "snapshot": _object({}),
+    "snapshot": _object(
+        {
+            "view": {"enum": ["summary", "instruction", "full"]},
+        }
+    ),
     "register_claim": _object(
         {
             "claim_id": _string(),
@@ -408,7 +412,11 @@ for _tool_name in TOOL_SCHEMAS:
 
 
 TOOL_DESCRIPTIONS: dict[str, str] = {
-    "snapshot": "Read the bounded durable campaign snapshot and lifecycle state.",
+    "snapshot": (
+        "Read the durable campaign state. The default summary is compact; use "
+        "view=instruction when its campaign_instruction_truncated flag is true, "
+        "or view=full only for bounded diagnosis."
+    ),
     "claims": (
         "Read a bounded claim-ledger projection. The default summary is paged; "
         "use view=role with explicit claim_ids for executable contracts and "

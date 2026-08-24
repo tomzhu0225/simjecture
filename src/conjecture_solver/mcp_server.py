@@ -40,6 +40,13 @@ MAX_ROLE_CLAIMS = 8
 MAX_ROLE_CONTRACTS = 8
 MAX_ROLE_EVIDENCE = 24
 MAX_CLAIM_SUMMARY_STATEMENT_CHARS = 512
+MAX_SNAPSHOT_HYPOTHESIS_CHARS = 2_048
+MAX_SNAPSHOT_INSTRUCTION_CHARS = 8_192
+MAX_SNAPSHOT_CLAIM_STATEMENT_CHARS = 256
+MAX_SNAPSHOT_REPAIR_TEXT_CHARS = 256
+MAX_SNAPSHOT_ARTIFACTS = 8
+MAX_SNAPSHOT_JOBS = 8
+MAX_SNAPSHOT_LITERATURE_SOURCES = 3
 _T = TypeVar("_T")
 _UNSET = object()
 
@@ -241,6 +248,276 @@ def _bound_result(value: Any, maximum: int) -> Any:
         "sha256": digest,
         "bytes": len(encoded.encode()),
         "preview": encoded[:half] + "..." + encoded[-half:],
+    }
+
+
+def _clip_text(value: Any, maximum: int) -> tuple[str, bool, str]:
+    text = "" if value is None else str(value)
+    truncated = len(text) > maximum
+    return (
+        text[:maximum] + "..." if truncated else text,
+        truncated,
+        hashlib.sha256(text.encode()).hexdigest(),
+    )
+
+
+def _snapshot_repair(repair: Any) -> dict[str, Any] | None:
+    if not isinstance(repair, Mapping):
+        return None
+    projected: dict[str, Any] = {
+        "counterexample_paths": list(repair.get("counterexample_paths", []))[-8:]
+        if isinstance(repair.get("counterexample_paths"), list)
+        else [],
+    }
+    for key in ("accommodation", "semantic_change", "falsification_condition"):
+        text, truncated, digest = _clip_text(
+            repair.get(key),
+            MAX_SNAPSHOT_REPAIR_TEXT_CHARS,
+        )
+        projected[key] = text
+        projected[f"{key}_truncated"] = truncated
+        projected[f"{key}_sha256"] = digest
+    return projected
+
+
+def _snapshot_claim_ledger(value: Any) -> dict[str, Any]:
+    if not isinstance(value, Mapping):
+        return {}
+    raw_claims = value.get("claims")
+    claims = raw_claims if isinstance(raw_claims, list) else []
+    projected = []
+    for claim in claims:
+        if not isinstance(claim, Mapping):
+            continue
+        statement, truncated, digest = _clip_text(
+            claim.get("statement"),
+            MAX_SNAPSHOT_CLAIM_STATEMENT_CHARS,
+        )
+        projected.append(
+            {
+                "id": claim.get("id"),
+                "kind": claim.get("kind"),
+                "relation": claim.get("relation"),
+                "parent_id": claim.get("parent_id"),
+                "status": claim.get("status"),
+                "statement": statement,
+                "statement_truncated": truncated,
+                "statement_sha256": digest,
+                "repair": _snapshot_repair(claim.get("repair")),
+                "evidence_contract_count": claim.get("evidence_contract_count", 0),
+                "evidence_count": claim.get("evidence_count", 0),
+                "decisive_contract_version": claim.get("decisive_contract_version"),
+            }
+        )
+    return {
+        "schema_version": value.get("schema_version"),
+        "claim_count": value.get("claim_count", len(projected)),
+        "open_count": value.get("open_count"),
+        "claims": projected,
+    }
+
+
+def _snapshot_guided_commissioning(value: Any) -> dict[str, Any]:
+    if not isinstance(value, Mapping):
+        return {}
+    description, description_truncated, description_sha256 = _clip_text(
+        value.get("description"),
+        512,
+    )
+    validation, validation_truncated, validation_sha256 = _clip_text(
+        value.get("operator_validation"),
+        512,
+    )
+    files = value.get("files")
+    return {
+        "available": value.get("available"),
+        "schema_version": value.get("schema_version"),
+        "name": value.get("name"),
+        "description": description,
+        "description_truncated": description_truncated,
+        "description_sha256": description_sha256,
+        "capability": value.get("capability"),
+        "program_path": value.get("program_path"),
+        "validation_summary_path": value.get("validation_summary_path"),
+        "operator_validation": validation,
+        "operator_validation_truncated": validation_truncated,
+        "operator_validation_sha256": validation_sha256,
+        "file_count": len(files) if isinstance(files, list) else 0,
+        "files": [
+            {
+                "path": item.get("path"),
+                "bytes": item.get("bytes"),
+                "sha256": item.get("sha256"),
+            }
+            for item in (files or [])
+            if isinstance(item, Mapping)
+        ],
+        "package_sha256": value.get("package_sha256"),
+    }
+
+
+def _snapshot_artifacts(value: Any) -> dict[str, Any]:
+    if not isinstance(value, Mapping):
+        return {}
+    raw_artifacts = value.get("artifacts")
+    items = list(raw_artifacts.items()) if isinstance(raw_artifacts, Mapping) else []
+    selected = items[-MAX_SNAPSHOT_ARTIFACTS:]
+    return {
+        "schema_version": value.get("schema_version"),
+        "artifact_count": value.get("artifact_count", len(items)),
+        "artifacts_truncated": value.get("artifacts_truncated") is True
+        or len(items) > len(selected),
+        "artifacts": {
+            str(path): {
+                "bytes": record.get("bytes"),
+                "active_claim_id": record.get("active_claim_id"),
+                "evidence_candidate": record.get("evidence_candidate"),
+                "evidence_eligible": record.get("evidence_eligible"),
+                "execution_succeeded": record.get("execution_succeeded"),
+                "execution_stage": record.get("execution_stage"),
+                "capability": record.get("capability"),
+                "program_path": record.get("program_path"),
+                "program_sha256": record.get("program_sha256"),
+                "operation_id": record.get("operation_id"),
+                "job_id": record.get("job_id"),
+                "job_status": record.get("job_status"),
+            }
+            for path, record in selected
+            if isinstance(record, Mapping)
+        },
+    }
+
+
+def _snapshot_literature_search(search: Any) -> dict[str, Any] | None:
+    if not isinstance(search, Mapping):
+        return None
+    query, query_truncated, query_sha256 = _clip_text(search.get("query"), 256)
+    purpose, purpose_truncated, purpose_sha256 = _clip_text(search.get("purpose"), 384)
+    sources = search.get("sources")
+    sources = sources if isinstance(sources, list) else []
+    selected_sources = sources[:MAX_SNAPSHOT_LITERATURE_SOURCES]
+    return {
+        "id": search.get("id"),
+        "query": query,
+        "query_truncated": query_truncated,
+        "query_sha256": query_sha256,
+        "purpose": purpose,
+        "purpose_truncated": purpose_truncated,
+        "purpose_sha256": purpose_sha256,
+        "status": search.get("status"),
+        "provider_status": search.get("provider_status"),
+        "errors": search.get("errors"),
+        "searched_at": search.get("searched_at"),
+        "scientific_evidence_eligible": search.get("scientific_evidence_eligible"),
+        "source_count": search.get("source_count", len(sources)),
+        "sources_truncated": len(sources) > len(selected_sources),
+        "sources": [
+            {
+                "id": source.get("id"),
+                "kind": source.get("kind"),
+                "provider": source.get("provider"),
+                "title": _clip_text(source.get("title"), 160)[0],
+                "publication_year": source.get("publication_year"),
+                "doi": source.get("doi"),
+                "url": source.get("url"),
+            }
+            for source in selected_sources
+            if isinstance(source, Mapping)
+        ],
+    }
+
+
+def _snapshot_jobs(value: Any) -> tuple[list[dict[str, Any]], bool]:
+    jobs = value if isinstance(value, list) else []
+    active_statuses = {"queued", "running", "cancel_requested", "outcome_unknown"}
+    active = [
+        job for job in jobs if isinstance(job, Mapping) and job.get("status") in active_statuses
+    ]
+    terminal_slots = max(0, MAX_SNAPSHOT_JOBS - len(active))
+    terminal = [job for job in jobs if isinstance(job, Mapping) and job not in active]
+    selected = active + (terminal[-terminal_slots:] if terminal_slots else [])
+    return (
+        [
+            {
+                "job_id": job.get("job_id"),
+                "operation_id": job.get("operation_id"),
+                "status": job.get("status"),
+                "created_at": job.get("created_at"),
+                "updated_at": job.get("updated_at"),
+                "cancellation_requested_at": job.get("cancellation_requested_at"),
+            }
+            for job in selected
+        ],
+        len(jobs) > len(selected),
+    )
+
+
+def _project_snapshot(value: Any, query: Mapping[str, Any]) -> Any:
+    """Return a stable campaign overview without duplicating bulky receipts."""
+
+    if not isinstance(value, Mapping):
+        raise MCPBridgeError("CampaignKernel returned an invalid snapshot")
+    view = query.get("view", "summary")
+    if view == "full" or "hypothesis" not in value:
+        return value
+    manifest = value.get("manifest")
+    manifest = manifest if isinstance(manifest, Mapping) else {}
+    instruction = manifest.get("campaign_instruction")
+    if view == "instruction":
+        text, truncated, digest = _clip_text(instruction, MAX_RESULT_STRING_CHARS)
+        return {
+            "view": "instruction",
+            "campaign_instruction": text,
+            "campaign_instruction_truncated": truncated,
+            "campaign_instruction_sha256": digest,
+        }
+
+    hypothesis, hypothesis_truncated, hypothesis_sha256 = _clip_text(
+        value.get("hypothesis"),
+        MAX_SNAPSHOT_HYPOTHESIS_CHARS,
+    )
+    instruction_text, instruction_truncated, instruction_sha256 = _clip_text(
+        instruction,
+        MAX_SNAPSHOT_INSTRUCTION_CHARS,
+    )
+    raw_searches = value.get("literature_searches")
+    searches = raw_searches if isinstance(raw_searches, list) else []
+    projected_searches = [
+        projected
+        for search in searches
+        if (projected := _snapshot_literature_search(search)) is not None
+    ]
+    jobs, jobs_projected_truncated = _snapshot_jobs(value.get("jobs"))
+    return {
+        "view": "summary",
+        "hypothesis": hypothesis,
+        "hypothesis_truncated": hypothesis_truncated,
+        "hypothesis_sha256": hypothesis_sha256,
+        "manifest": {
+            "schema_version": manifest.get("schema_version"),
+            "campaign_instruction": instruction_text,
+            "campaign_instruction_truncated": instruction_truncated,
+            "campaign_instruction_sha256": instruction_sha256,
+            "config": manifest.get("config"),
+            "guided_commissioning": _snapshot_guided_commissioning(
+                manifest.get("guided_commissioning")
+            ),
+            "claim_ledger_schema_version": manifest.get("claim_ledger_schema_version"),
+            "literature_search": manifest.get("literature_search"),
+            "system_prompt_profile": manifest.get("system_prompt_profile"),
+            "system_prompt_sha256": manifest.get("system_prompt_sha256"),
+        },
+        "claim_ledger": _snapshot_claim_ledger(value.get("claim_ledger")),
+        "skill_hashes": value.get("skill_hashes"),
+        "capability_hashes": value.get("capability_hashes"),
+        "artifact_provenance": _snapshot_artifacts(value.get("artifact_provenance")),
+        "literature_search_count": value.get("literature_search_count", len(searches)),
+        "literature_searches_truncated": value.get("literature_searches_truncated") is True,
+        "literature_searches": projected_searches,
+        "job_count": value.get("job_count"),
+        "jobs_truncated": value.get("jobs_truncated") is True or jobs_projected_truncated,
+        "jobs": jobs,
+        "budget": value.get("budget"),
     }
 
 
@@ -824,7 +1101,8 @@ class CampaignMCPBridge:
             raise MCPInputError(str(error)) from error
 
         if name == "snapshot":
-            result = await self._kernel_method("snapshot")
+            snapshot = await self._kernel_method("snapshot")
+            result = _project_snapshot(snapshot, validated)
         elif name == "claims":
             # Projection arguments belong to this wire adapter, not to the
             # model-independent CampaignKernel action.  Retrieve once, then

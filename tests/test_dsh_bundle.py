@@ -169,6 +169,8 @@ def test_dsh_scientific_roles_are_fresh_scoped_and_durably_verified() -> None:
     assert "view: 'summary', parent_id: parentId" in roles
     assert "claimIdsAfter.push(result.structured.child_claim_id)" in roles
     assert "CampaignKernel claim pagination made no progress" in roles
+    assert "campaign_instruction_truncated" in roles
+    assert "view=instruction" in roles
     assert "verifyFalsifierResult" in roles
     assert "verifyRepairResult" in roles
     assert "await run.dispose()" in roles

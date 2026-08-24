@@ -117,7 +117,9 @@ export const REPAIR_SCHEMA = {
 const FALSIFIER_PERSONA = `You are the fresh Falsifier/Experimenter for one
 claim in a falsification-first computational-science campaign. You have no
 parent conversation. Your first action must be snapshot; reconcile it with the
-assignment packet before any mutation. Then call claims with view=role and
+assignment packet before any mutation. If that summary says the campaign
+instruction is truncated, call snapshot again with view=instruction before any
+mutation. Then call claims with view=role and
 claim_ids containing only the assigned claim; never request an unscoped full
 ledger. Work only on the assigned scientific
 claim and on non-scientific commissioning claims you create beneath it. Search
@@ -148,7 +150,9 @@ the required structured output; do not expose private chain-of-thought.`
 const REPAIR_PERSONA = `You are the fresh Repair Scientist for one falsified
 scientific claim. You have no parent conversation. Your first action must be
 snapshot; reconcile it with the assignment packet before any mutation. Then
-call claims with view=role and claim_ids containing only the assigned parent;
+if that summary says the campaign instruction is truncated, call snapshot again
+with view=instruction before any mutation. Then call claims with view=role and
+claim_ids containing only the assigned parent;
 never request an unscoped full ledger. Read
 the decisive counterexample and create or reuse exactly one minimal scientific
 child with relation=repairs that accommodates that evidence, changes the
@@ -276,6 +280,10 @@ function compactCampaign(snapshot) {
   return {
     hypothesis: snapshot.hypothesis,
     budget: snapshot.budget,
+    campaign_instruction: snapshot.manifest?.campaign_instruction,
+    campaign_instruction_truncated:
+      snapshot.manifest?.campaign_instruction_truncated === true,
+    campaign_instruction_sha256: snapshot.manifest?.campaign_instruction_sha256,
     jobs: Array.isArray(snapshot.jobs)
       ? snapshot.jobs.map(job => ({
           job_id: job.job_id,

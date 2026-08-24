@@ -136,6 +136,11 @@ def test_tool_catalog_is_flat_and_uses_only_the_dsh_schema_subset() -> None:
         "full",
     ]
     assert "claim_ids" in TOOL_SCHEMAS["claims"]["properties"]
+    assert TOOL_SCHEMAS["snapshot"]["properties"]["view"]["enum"] == [
+        "summary",
+        "instruction",
+        "full",
+    ]
 
 
 def test_bridge_dispatches_claim_workspace_and_job_tools(tmp_path: Path) -> None:
@@ -367,6 +372,106 @@ def test_bridge_bounds_tool_output(tmp_path: Path) -> None:
     assert result["truncated"] is True
     assert len(result["preview"]) < 1_024
     assert len(result["sha256"]) == 64
+
+
+def test_snapshot_summary_removes_duplicated_receipt_bulk(tmp_path: Path) -> None:
+    instruction = "i" * 9_000
+    hypothesis = "h" * 3_000
+
+    class _LargeCampaignSnapshot(_FakeKernel):
+        def snapshot(self) -> dict[str, Any]:
+            return {
+                "hypothesis": hypothesis,
+                "manifest": {
+                    "schema_version": "0.22.0",
+                    "hypothesis": hypothesis,
+                    "campaign_instruction": instruction,
+                    "config": {"max_wall_seconds": 21_600},
+                    "guided_commissioning": {
+                        "available": True,
+                        "name": "guided-demo",
+                        "description": "d" * 2_000,
+                        "capability": "qualified-demo",
+                        "program_path": "guided/demo.py",
+                        "operator_validation": "v" * 2_000,
+                        "files": [{"path": "guided/demo.py", "bytes": 100, "sha256": "a" * 64}],
+                        "package_sha256": "b" * 64,
+                    },
+                },
+                "claim_ledger": {
+                    "schema_version": "0.9.0",
+                    "claim_count": 1,
+                    "open_count": 1,
+                    "claims": [
+                        {
+                            "id": "claim_root",
+                            "kind": "scientific",
+                            "relation": "root",
+                            "parent_id": None,
+                            "status": "open",
+                            "statement": hypothesis,
+                            "repair": None,
+                            "evidence_contract_count": 1,
+                            "evidence_count": 1,
+                            "decisive_contract_version": None,
+                        }
+                    ],
+                },
+                "skill_hashes": {"demo": "c" * 64},
+                "capability_hashes": {"qualified-demo": "d" * 64},
+                "artifact_provenance": {
+                    "schema_version": "0.2.0",
+                    "artifact_count": 1,
+                    "artifacts_truncated": False,
+                    "artifacts": {
+                        "runs/result.json": {
+                            "bytes": 100,
+                            "evidence_eligible": True,
+                            "execution_succeeded": True,
+                            "command_argv": ["x" * 50_000],
+                            "operation_id": "run-one",
+                            "job_id": "job_one",
+                            "job_status": "succeeded",
+                        }
+                    },
+                },
+                "literature_search_count": 0,
+                "literature_searches_truncated": False,
+                "literature_searches": [],
+                "job_count": 1,
+                "jobs_truncated": False,
+                "jobs": [
+                    {
+                        "job_id": "job_one",
+                        "operation_id": "run-one",
+                        "status": "succeeded",
+                    }
+                ],
+                "budget": {"remaining_wall_seconds": 19_000},
+            }
+
+    bridge = CampaignMCPBridge(
+        _LargeCampaignSnapshot(),
+        config=BridgeConfig(workspace=tmp_path, max_output_chars=20_000),
+    )
+    summary = _call(bridge, "snapshot")
+    assert summary.get("truncated") is not True
+    assert summary["view"] == "summary"
+    assert summary["hypothesis_truncated"] is True
+    assert summary["manifest"]["campaign_instruction_truncated"] is True
+    assert summary["claim_ledger"]["claims"][0]["statement_truncated"] is True
+    artifact = summary["artifact_provenance"]["artifacts"]["runs/result.json"]
+    assert "command_argv" not in artifact
+    assert artifact["job_status"] == "succeeded"
+
+    exact_instruction = _call(bridge, "snapshot", {"view": "instruction"})
+    assert exact_instruction == {
+        "view": "instruction",
+        "campaign_instruction": instruction,
+        "campaign_instruction_truncated": False,
+        "campaign_instruction_sha256": hashlib.sha256(instruction.encode()).hexdigest(),
+    }
+    assert _call(bridge, "snapshot", {"view": "full"})["truncated"] is True
 
 
 def test_claim_views_project_before_the_output_bound(tmp_path: Path) -> None:
