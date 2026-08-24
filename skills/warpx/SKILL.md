@@ -85,6 +85,9 @@ Read these resources as needed:
 - `references/diagnostics.md`: field, particle, reduced, and openPMD outputs.
 - `references/time-integration.md`: explicit and implicit PICMI evolve schemes,
   timestep selection, and solver qualification.
+- `references/hybrid-pic.md`: required before using kinetic-ion/fluid-electron
+  hybrid PIC; model scope, PICMI units and closure, field substepping,
+  diagnostics, and qualification limits.
 - `references/numerical-risks.md`: common validity failures.
 - `references/resource-scaling.md`: controlling experiment cost.
 - `references/cpu-launch-tuning.md`: required before a long local-host CPU
