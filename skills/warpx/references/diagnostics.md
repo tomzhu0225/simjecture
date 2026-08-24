@@ -118,6 +118,14 @@ normalization, and uncertainty calculation. A visually plausible plot is not a
 defined estimator. When practical, derive the same physical quantity through
 two genuinely different diagnostic paths and test their agreement.
 
+For a reconnected-flux rate, freeze the flux orientation and expected physical
+growth direction as part of that contract. Retain the signed fitted slope and
+require it to have the predeclared transfer direction before reporting its magnitude.
+Do not apply `abs` to an unconstrained slope: decay of previously reconnected
+flux, resistive relaxation, or island collapse would otherwise be relabelled as
+positive flux transfer. Report the signed slope, direction check, fit residual,
+and the independent electric-field estimate together.
+
 Output completeness, finite values, expected iteration indices, and nonempty
 particle/mesh records are execution-health checks. Conservation, convergence,
 statistical reproducibility, and agreement with an analytic limit are
