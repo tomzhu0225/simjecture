@@ -535,6 +535,115 @@ def test_detached_worker_replays_custom_resource_roots(tmp_path: Path) -> None:
     assert "custom-python" in reopened.capabilities.hashes
 
 
+def test_default_resources_are_frozen_inside_campaign(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    source = tmp_path / "project"
+    skill = source / "skills" / "mutable-analysis"
+    skill.mkdir(parents=True)
+    (skill / "manifest.json").write_text(
+        json.dumps(
+            {
+                "name": "mutable-analysis",
+                "version": "1.0",
+                "description": "A repository skill frozen for detached workers",
+                "entrypoint": "SKILL.md",
+            }
+        )
+    )
+    entrypoint = skill / "SKILL.md"
+    entrypoint.write_text("# Original\nUse the campaign-pinned procedure.\n")
+    capability_root = source / "capabilities"
+    capability_root.mkdir(parents=True)
+
+    from conjecture_solver import mvp_skills
+    from conjecture_solver.mvp_skills import (
+        MVPCapabilityRegistry,
+        MVPSkillCatalog,
+    )
+
+    def discover_test_resources() -> tuple[MVPSkillCatalog, MVPCapabilityRegistry]:
+        return (
+            MVPSkillCatalog.discover(source / "skills"),
+            MVPCapabilityRegistry.discover(capability_root),
+        )
+
+    monkeypatch.setattr(
+        mvp_skills,
+        "discover_builtin_mvp_resources",
+        discover_test_resources,
+    )
+    campaign = tmp_path / "campaign"
+    kernel = CampaignKernel.open(
+        workspace=campaign,
+        hypothesis="Detached workers must retain their initial skill catalog.",
+    )
+    original_hashes = kernel.skills.hashes
+    resources = json.loads((campaign / "kernel_resources.json").read_text())
+    frozen_skills = Path(resources["skills_root"])
+    frozen_capabilities = Path(resources["capabilities_root"])
+    assert frozen_skills == campaign / "kernel_resource_snapshot" / "skills"
+    assert frozen_capabilities == campaign / "kernel_resource_snapshot" / "capabilities"
+
+    entrypoint.write_text("# Mutated\nThis must not alter an active campaign.\n")
+    reopened = CampaignKernel.open(workspace=campaign)
+    assert reopened.skills.hashes == original_hashes
+    assert reopened.skills.read(
+        "mutable-analysis",
+        None,
+        max_chars=1_000,
+    )["content"].startswith("# Original")
+
+
+def test_prebuilt_host_reopens_from_frozen_resources(tmp_path: Path) -> None:
+    from conjecture_solver.mvp_skills import (
+        MVPCapabilityRegistry,
+        MVPSkillCatalog,
+    )
+
+    source = tmp_path / "operator-resources"
+    skill = source / "skills" / "native-analysis"
+    skill.mkdir(parents=True)
+    (skill / "manifest.json").write_text(
+        json.dumps(
+            {
+                "name": "native-analysis",
+                "version": "1.0",
+                "description": "A native-runner resource freeze probe",
+                "entrypoint": "SKILL.md",
+            }
+        )
+    )
+    entrypoint = skill / "SKILL.md"
+    entrypoint.write_text("# Native original\n")
+    capability_root = source / "capabilities"
+    capability_root.mkdir(parents=True)
+    campaign = tmp_path / "campaign"
+    campaign.mkdir()
+
+    def host() -> _Host:
+        candidate = _Host()
+        candidate.output = campaign
+        candidate.skills = MVPSkillCatalog.discover(source / "skills")
+        candidate.capabilities = MVPCapabilityRegistry.discover(capability_root)
+        candidate.sandbox = SimpleNamespace(capabilities=candidate.capabilities)
+        return candidate
+
+    first = host()
+    CampaignKernel.open(first)
+    original_hashes = first.skills.hashes
+    assert first.skills.root == campaign / "kernel_resource_snapshot" / "skills"
+
+    entrypoint.write_text("# Native mutation\n")
+    reopened = host()
+    CampaignKernel.open(reopened)
+    assert reopened.skills.hashes == original_hashes
+    assert reopened.skills.read("native-analysis", None, max_chars=100)[
+        "content"
+    ] == "# Native original\n"
+
+
 def test_snapshot_exposes_restart_discoverable_job_and_active_budget(
     tmp_path: Path,
 ) -> None:

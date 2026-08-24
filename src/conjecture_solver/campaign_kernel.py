@@ -19,7 +19,9 @@ import hashlib
 import json
 import math
 import os
+import shutil
 import sys
+import tempfile
 import time
 from collections.abc import Callable, Mapping
 from contextlib import contextmanager, suppress
@@ -65,6 +67,8 @@ RUNTIME_SCHEMA_VERSION = "0.1.0"
 SNAPSHOT_MAX_ARTIFACTS = 12
 SNAPSHOT_MAX_JOBS = 16
 SNAPSHOT_MAX_LITERATURE_SEARCHES = 4
+RESOURCE_SNAPSHOT_DIRECTORY = "kernel_resource_snapshot"
+RESOURCE_SNAPSHOT_RECORD = "snapshot.json"
 
 
 class CampaignKernel:
@@ -186,6 +190,206 @@ class CampaignKernel:
     @staticmethod
     def _resource_file(root: Path) -> Path:
         return root / "kernel_resources.json"
+
+    @staticmethod
+    def _snapshot_default_resources(
+        root: Path,
+        *,
+        skills: Any,
+        capabilities: Any,
+    ) -> tuple[Any, Any]:
+        """Freeze repository resources before an immutable campaign starts.
+
+        Built-in skills and capability JSON files live in the checkout and can
+        legitimately change while a long simulation is running. Detached
+        workers must nevertheless reopen the exact catalog recorded by the
+        campaign manifest. Copy the small declarative inputs into the campaign
+        and retain capability runtime references as read-only symlinks; runtime
+        identity remains guarded by the existing capability hashes.
+        """
+
+        from .mvp_skills import MVPCapabilityRegistry, MVPSkillCatalog
+
+        source_skills = getattr(skills, "root", None)
+        source_capabilities = getattr(capabilities, "root", None)
+        if source_skills is None or source_capabilities is None:
+            raise ValueError("default kernel resources must have discovery roots")
+        source_skills = Path(source_skills).resolve()
+        source_capabilities = Path(source_capabilities).resolve()
+        destination = root / RESOURCE_SNAPSHOT_DIRECTORY
+        if destination.is_symlink():
+            raise ValueError("kernel resource snapshot must not be a symlink")
+
+        if not destination.exists():
+            temporary = Path(
+                tempfile.mkdtemp(
+                    prefix=f".{RESOURCE_SNAPSHOT_DIRECTORY}.",
+                    dir=root,
+                )
+            )
+            try:
+                skill_destination = temporary / "skills"
+                skill_destination.mkdir()
+                for manifest_path in sorted(
+                    source_skills.glob("*/manifest.json")
+                ):
+                    skill_root = manifest_path.parent
+                    shutil.copytree(
+                        skill_root,
+                        skill_destination / skill_root.name,
+                    )
+                capability_destination = temporary / "capabilities"
+                capability_destination.mkdir()
+                for config_path in sorted(source_capabilities.glob("*.json")):
+                    if config_path.is_symlink() or not config_path.is_file():
+                        raise ValueError(
+                            "capability configuration must be a regular file"
+                        )
+                    shutil.copy2(
+                        config_path,
+                        capability_destination / config_path.name,
+                    )
+                    payload = json.loads(config_path.read_text(encoding="utf-8"))
+                    references = [payload.get("runtime_root")]
+                    mounts = payload.get("read_only_mounts") or {}
+                    if not isinstance(mounts, Mapping):
+                        raise ValueError("capability read_only_mounts must be an object")
+                    references.extend(mounts.values())
+                    for reference in references:
+                        if not isinstance(reference, str) or not reference:
+                            continue
+                        relative = Path(reference)
+                        if relative.is_absolute():
+                            continue
+                        source = (source_capabilities / relative).resolve()
+                        if not source.is_dir():
+                            raise ValueError(
+                                f"capability resource is unavailable: {source}"
+                            )
+                        link = Path(
+                            os.path.abspath(capability_destination / relative)
+                        )
+                        if not link.is_relative_to(temporary):
+                            raise ValueError(
+                                "relative capability resource escapes its snapshot"
+                            )
+                        link.parent.mkdir(parents=True, exist_ok=True)
+                        if link.exists() or link.is_symlink():
+                            if not link.is_symlink() or link.resolve() != source:
+                                raise ValueError(
+                                    "capability snapshot references conflict"
+                                )
+                            continue
+                        link.symlink_to(source, target_is_directory=True)
+                candidate_skills = MVPSkillCatalog.discover(
+                    temporary / "skills"
+                )
+                candidate_capabilities = MVPCapabilityRegistry.discover(
+                    temporary / "capabilities",
+                    ignore_unavailable=False,
+                )
+                if candidate_skills.hashes != skills.hashes:
+                    raise ValueError(
+                        "kernel skill snapshot identity does not match its source"
+                    )
+                if candidate_capabilities.hashes != capabilities.hashes:
+                    raise ValueError(
+                        "kernel capability snapshot identity does not match its source"
+                    )
+                (temporary / RESOURCE_SNAPSHOT_RECORD).write_text(
+                    json.dumps(
+                        {
+                            "schema_version": RUNTIME_SCHEMA_VERSION,
+                            "skill_hashes": candidate_skills.hashes,
+                            "capability_hashes": candidate_capabilities.hashes,
+                        },
+                        indent=2,
+                        sort_keys=True,
+                    )
+                    + "\n",
+                    encoding="utf-8",
+                )
+                os.replace(temporary, destination)
+            except BaseException:
+                shutil.rmtree(temporary, ignore_errors=True)
+                raise
+        if not destination.is_dir() or destination.resolve() != destination:
+            raise ValueError("kernel resource snapshot is not a regular directory")
+
+        frozen_skills = MVPSkillCatalog.discover(destination / "skills")
+        frozen_capabilities = MVPCapabilityRegistry.discover(
+            destination / "capabilities",
+            ignore_unavailable=False,
+        )
+        record_path = destination / RESOURCE_SNAPSHOT_RECORD
+        if record_path.is_symlink() or not record_path.is_file():
+            raise ValueError("kernel resource snapshot has no identity record")
+        try:
+            record = json.loads(record_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as error:
+            raise ValueError("kernel resource snapshot identity is invalid") from error
+        if (
+            record.get("schema_version") != RUNTIME_SCHEMA_VERSION
+            or record.get("skill_hashes") != frozen_skills.hashes
+            or record.get("capability_hashes") != frozen_capabilities.hashes
+        ):
+            raise ValueError("kernel resource snapshot identity changed")
+        return frozen_skills, frozen_capabilities
+
+    def _prepare_host_resources(self) -> None:
+        """Install a campaign-pinned catalog before manifest validation."""
+
+        root = self._campaign_root
+        if root is None:
+            return
+        from .mvp_skills import MVPCapabilityRegistry, MVPSkillCatalog
+
+        resource_path = self._resource_file(root)
+        if resource_path.exists():
+            recorded = self._load_resource_roots(root)
+            skills = getattr(self.host, "skills", None)
+            capabilities = getattr(self.host, "capabilities", None)
+            if recorded["skills_root"] is not None:
+                skills = MVPSkillCatalog.discover(recorded["skills_root"])
+            if recorded["capabilities_root"] is not None:
+                capabilities = MVPCapabilityRegistry.discover(
+                    recorded["capabilities_root"],
+                    ignore_unavailable=False,
+                )
+            if skills is not None:
+                self.host.skills = skills
+            if capabilities is not None:
+                self.host.capabilities = capabilities
+                sandbox = getattr(self.host, "sandbox", None)
+                if sandbox is not None:
+                    sandbox.capabilities = capabilities
+            self.host._kernel_resource_roots = recorded
+            return
+
+        # Standalone construction already chose explicit or snapshotted roots.
+        if isinstance(getattr(self.host, "_kernel_resource_roots", None), Mapping):
+            return
+        skills = getattr(self.host, "skills", None)
+        capabilities = getattr(self.host, "capabilities", None)
+        if (
+            getattr(skills, "root", None) is None
+            or getattr(capabilities, "root", None) is None
+        ):
+            return
+        frozen_skills, frozen_capabilities = self._snapshot_default_resources(
+            root,
+            skills=skills,
+            capabilities=capabilities,
+        )
+        self.host.skills = frozen_skills
+        self.host.capabilities = frozen_capabilities
+        sandbox = getattr(self.host, "sandbox", None)
+        if sandbox is not None:
+            sandbox.capabilities = frozen_capabilities
+        self.host._kernel_resource_roots = {
+            "skills_root": str(frozen_skills.root),
+            "capabilities_root": str(frozen_capabilities.root),
+        }
 
     @classmethod
     def _load_resource_roots(cls, root: Path) -> dict[str, str | None]:
@@ -332,6 +536,25 @@ class CampaignKernel:
             config = launch_config or manifest_config or MVPAgentConfig()
 
         builtin_skills, builtin_capabilities = discover_builtin_mvp_resources()
+        # A fresh default campaign owns an immutable copy of the declarative
+        # resources it starts with. Explicit resource roots remain explicit:
+        # their launch contract already records that operator-managed choice.
+        if (
+            not CampaignKernel._resource_file(target).exists()
+            and skills is None
+            and capabilities is None
+            and selected_skills_root is None
+            and selected_capabilities_root is None
+        ):
+            builtin_skills, builtin_capabilities = (
+                CampaignKernel._snapshot_default_resources(
+                    target,
+                    skills=builtin_skills,
+                    capabilities=builtin_capabilities,
+                )
+            )
+            selected_skills_root = str(builtin_skills.root)
+            selected_capabilities_root = str(builtin_capabilities.root)
         if skills is None and selected_skills_root is not None:
             from .mvp_skills import MVPSkillCatalog
 
@@ -469,7 +692,9 @@ class CampaignKernel:
         directories retain their schema compatibility and identity checks.
         """
 
+        self._prepare_host_resources()
         self.host._initialize()
+        self._persist_resource_roots()
 
     @property
     def _campaign_root(self) -> Path | None:
