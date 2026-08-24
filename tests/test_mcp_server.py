@@ -166,6 +166,22 @@ def test_bridge_dispatches_claim_workspace_and_job_tools(tmp_path: Path) -> None
 
     assert _call(
         bridge,
+        "read_workspace_file",
+        {
+            "path": "guided/program.py",
+            "start_line": 81,
+            "line_count": 40,
+        },
+    ) == {
+        "accepted": "read_file",
+        "iteration": 0,
+    }
+    assert kernel.actions[-1][0]["path"] == "guided/program.py"
+    assert kernel.actions[-1][0]["start_line"] == 81
+    assert kernel.actions[-1][0]["line_count"] == 40
+
+    assert _call(
+        bridge,
         "run_python",
         {
             "operation_id": "python-probe-1",
@@ -315,6 +331,12 @@ def test_bridge_rejects_unsafe_or_unexposed_actions(tmp_path: Path) -> None:
         _call(bridge, "finish")
     with pytest.raises(MCPInputError, match="relative workspace"):
         _call(bridge, "read_workspace_file", {"path": "../outside"})
+    with pytest.raises(MCPInputError, match="start_line"):
+        _call(
+            bridge,
+            "read_workspace_file",
+            {"path": "inside", "start_line": 0, "line_count": 20},
+        )
     with pytest.raises(MCPInputError, match="1 to 256"):
         _call(
             bridge,

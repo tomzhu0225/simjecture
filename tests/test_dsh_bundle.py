@@ -170,6 +170,9 @@ def test_dsh_scientific_roles_are_fresh_scoped_and_durably_verified() -> None:
     assert "await run.dispose()" in roles
     assert "do not repeatedly poll" in roles
     assert "Plain run_python is not a named capability" in roles
+    assert "read_workspace_file line windows" in roles
+    assert "never use\nrun_python merely to print or slice a file" in roles
+    assert "do not reread overlapping" in roles
     assert "reuse the durable contract, evidence, and workspace artifacts" in roles
     assert "observation_sufficient=true" in roles
     assert "Falsifier adjudication handoff requires durable evidence" in roles

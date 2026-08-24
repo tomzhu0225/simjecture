@@ -116,6 +116,21 @@ class MVPWriteFileAction(MVPActionBase):
 class MVPReadFileAction(MVPActionBase):
     action: Literal[MVPActionKind.READ_FILE]
     path: str = Field(min_length=1)
+    start_line: int = Field(
+        default=1,
+        ge=1,
+        le=10_000_000,
+        description="One-based first line to return.",
+    )
+    line_count: int | None = Field(
+        default=None,
+        ge=1,
+        le=400,
+        description=(
+            "Optional bounded line window. Use this to inspect source files instead "
+            "of executing code that prints them."
+        ),
+    )
 
 
 class MVPListFilesAction(MVPActionBase):
@@ -671,18 +686,51 @@ class BubblewrapSandbox:
             "workspace_bytes": self.workspace_bytes(),
         }
 
-    def read_file(self, relative: str) -> dict[str, Any]:
+    def read_file(
+        self,
+        relative: str,
+        *,
+        start_line: int = 1,
+        line_count: int | None = None,
+    ) -> dict[str, Any]:
+        if start_line < 1:
+            raise ValueError("start_line must be at least 1")
+        if line_count is not None and not 1 <= line_count <= 400:
+            raise ValueError("line_count must lie in [1, 400]")
         path = self._path(relative)
         if not path.is_file():
             raise ValueError("requested sandbox path is not a file")
         if path.stat().st_size > self.config.max_file_bytes:
             raise ValueError("file exceeds the sandbox readable-file limit")
-        content = path.read_text(errors="replace")
+        encoded = path.read_bytes()
+        content = encoded.decode(errors="replace")
+        lines = content.splitlines(keepends=True)
+        selected = content
+        end_line = len(lines)
+        next_start_line: int | None = None
+        if line_count is not None or start_line != 1:
+            start_index = min(start_line - 1, len(lines))
+            end_index = (
+                len(lines)
+                if line_count is None
+                else min(start_index + line_count, len(lines))
+            )
+            selected = "".join(lines[start_index:end_index])
+            end_line = end_index
+            if line_count is not None and end_index < len(lines):
+                next_start_line = end_index + 1
+        selected_truncated = len(selected) > self.config.max_tool_output_chars
         return {
             "path": relative,
-            "content": self._truncate(content),
+            "content": self._truncate(selected),
             "bytes": path.stat().st_size,
-            "truncated": len(content) > self.config.max_tool_output_chars,
+            "sha256": hashlib.sha256(encoded).hexdigest(),
+            "start_line": start_line,
+            "end_line": end_line,
+            "total_lines": len(lines),
+            "next_start_line": next_start_line,
+            "eof": next_start_line is None,
+            "truncated": selected_truncated,
         }
 
     def list_files(self, relative: str) -> dict[str, Any]:
@@ -3364,7 +3412,13 @@ software.
                 self._with_claim_ledger(result)
             )
         if isinstance(action, MVPReadFileAction):
-            return self._with_claim_ledger(self.sandbox.read_file(action.path))
+            return self._with_claim_ledger(
+                self.sandbox.read_file(
+                    action.path,
+                    start_line=action.start_line,
+                    line_count=action.line_count,
+                )
+            )
         if isinstance(action, MVPListFilesAction):
             return self._with_claim_ledger(self.sandbox.list_files(action.path))
         if isinstance(action, MVPRunPythonAction):

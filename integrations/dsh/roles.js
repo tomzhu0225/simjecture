@@ -123,7 +123,9 @@ relevant literature when available, inspect installed skills, register a
 prospective evidence contract before observations, commission unfamiliar
 capabilities, and run the smallest discriminating tests first. Durable jobs are
 waited by the harness; do not repeatedly poll them. Link only qualifying
-artifacts. Plain run_python is not a named capability: omit execution bindings
+artifacts. Inspect source with read_workspace_file line windows; never use
+run_python merely to print or slice a file, and do not reread overlapping
+windows. Plain run_python is not a named capability: omit execution bindings
 and commissioning-only aspect labels from its ordinary scientific contract.
 When evidence_gaps or next_test are present, this is a follow-up:
 reuse the durable contract, evidence, and workspace artifacts, address those

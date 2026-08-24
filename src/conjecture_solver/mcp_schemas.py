@@ -240,6 +240,8 @@ TOOL_SCHEMAS: dict[str, dict[str, Any]] = {
     "read_workspace_file": _object(
         {
             "path": _string(),
+            "start_line": _integer(),
+            "line_count": _integer(),
             **_RESEARCH_NOTE,
         }
     ),
@@ -419,7 +421,10 @@ TOOL_DESCRIPTIONS: dict[str, str] = {
     "search_literature": (
         "Search public literature metadata; search results are never campaign evidence."
     ),
-    "read_workspace_file": "Read one bounded text file from the campaign workspace.",
+    "read_workspace_file": (
+        "Read one bounded text file or a start_line/line_count window from the "
+        "campaign workspace. Use this instead of executing code merely to print files."
+    ),
     "write_workspace_file": "Write one bounded text file in the campaign workspace.",
     "list_workspace_files": (
         "List bounded workspace paths without exposing a generic filesystem tool."
@@ -614,6 +619,10 @@ def _validate_input_bounds(name: str, value: Any, *, field: str = "arguments") -
                 raise ValueError(f"{name}.{key} must stay within the relative workspace")
         if key == "timeout_seconds" and (child <= 0 or child > 86_400):
             raise ValueError(f"{name}.timeout_seconds must lie in (0, 86400]")
+        if key == "start_line" and (child < 1 or child > 10_000_000):
+            raise ValueError(f"{name}.start_line must lie in [1, 10000000]")
+        if key == "line_count" and (child < 1 or child > 400):
+            raise ValueError(f"{name}.line_count must lie in [1, 400]")
         if key == "operation_id" and (
             not isinstance(child, str)
             or not child

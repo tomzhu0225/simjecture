@@ -1072,6 +1072,32 @@ def test_sandbox_rejects_host_path_traversal(tmp_path: Path) -> None:
         sandbox.write_file("../escape.txt", "bad")
 
 
+def test_sandbox_reads_stable_line_windows_without_execution(tmp_path: Path) -> None:
+    sandbox = BubblewrapSandbox(tmp_path / "workspace", _config())
+    source = "".join(f"line {number}\n" for number in range(1, 11))
+    sandbox.write_file("program.py", source)
+
+    first = sandbox.read_file("program.py", start_line=3, line_count=4)
+    second = sandbox.read_file(
+        "program.py",
+        start_line=first["next_start_line"],
+        line_count=4,
+    )
+
+    assert first["content"] == "line 3\nline 4\nline 5\nline 6\n"
+    assert first["start_line"] == 3
+    assert first["end_line"] == 6
+    assert first["total_lines"] == 10
+    assert first["next_start_line"] == 7
+    assert first["eof"] is False
+    assert first["truncated"] is False
+    assert first["sha256"] == hashlib.sha256(source.encode()).hexdigest()
+    assert second["content"] == "line 7\nline 8\nline 9\nline 10\n"
+    assert second["next_start_line"] is None
+    assert second["eof"] is True
+    assert not (tmp_path / "workspace/.acs").exists()
+
+
 @pytest.mark.skipif(shutil.which("bwrap") is None, reason="bubblewrap is unavailable")
 def test_sandbox_exposes_scientific_python_without_exposing_home(tmp_path: Path) -> None:
     sandbox = BubblewrapSandbox(tmp_path / "workspace", _config())

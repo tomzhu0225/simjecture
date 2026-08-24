@@ -82,16 +82,16 @@ current rather than the total current used by Ohm's law. Do not label a current
 diagnostic without checking its exact WarpX definition. Total current can be
 derived from `curl(B)/mu0` with the realized discretization; WarpX's displacement
 current diagnostic yields the electron current in this model. When a conclusion
-depends on reconnection rate, triangulate compatible estimators such as the
-out-of-plane electric field and the time derivative of magnetic flux rather
-than trusting a single ambiguous mesh record.
+depends on a topology-change or flux-transfer rate, triangulate compatible
+estimators such as the relevant electric-field component and the time derivative
+of magnetic flux rather than trusting a single ambiguous mesh record.
 
 The presence of a nonzero `plasma_resistivity` is a constitutive closure, not by
 itself proof that the simulated plasma is in a physically collisional regime.
 Derive and report the relevant dimensionless ordering within the active
-campaign. Likewise, a nominal Lundquist number is not realized evidence until
-its length, field, density, Alfvén speed, and resistivity definitions have been
-fixed and checked from outputs.
+campaign. Likewise, a nominal dimensionless transport parameter is not realized
+evidence until its length, field, density, characteristic speed, and resistivity
+definitions have been fixed and checked from outputs.
 
 ## Minimum qualification record
 
