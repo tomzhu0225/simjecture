@@ -34,6 +34,12 @@ MAX_OUTPUT_CHARS = 1_000_000
 MAX_RESULT_DEPTH = 12
 MAX_RESULT_ITEMS = 500
 MAX_RESULT_STRING_CHARS = 16_384
+DEFAULT_CLAIM_PAGE_SIZE = 24
+MAX_CLAIM_PAGE_SIZE = 100
+MAX_ROLE_CLAIMS = 8
+MAX_ROLE_CONTRACTS = 8
+MAX_ROLE_EVIDENCE = 24
+MAX_CLAIM_SUMMARY_STATEMENT_CHARS = 512
 _T = TypeVar("_T")
 _UNSET = object()
 
@@ -129,9 +135,7 @@ class BridgeConfig:
         if self.skills is not None:
             object.__setattr__(self, "skills", Path(self.skills).expanduser().resolve())
         if not 1_024 <= self.max_output_chars <= MAX_OUTPUT_CHARS:
-            raise ValueError(
-                f"max_output_chars must lie in [1024, {MAX_OUTPUT_CHARS}]"
-            )
+            raise ValueError(f"max_output_chars must lie in [1024, {MAX_OUTPUT_CHARS}]")
         if not math.isfinite(self.default_timeout_seconds) or self.default_timeout_seconds <= 0:
             raise ValueError("default_timeout_seconds must be finite and positive")
 
@@ -158,9 +162,7 @@ class BridgeConfig:
         except ValueError as error:
             raise ValueError("SIMJECTURE_MCP_MAX_OUTPUT_CHARS must be an integer") from error
         try:
-            default_timeout = float(
-                os.environ.get("SIMJECTURE_MCP_TIMEOUT_SECONDS", "600")
-            )
+            default_timeout = float(os.environ.get("SIMJECTURE_MCP_TIMEOUT_SECONDS", "600"))
         except ValueError as error:
             raise ValueError("SIMJECTURE_MCP_TIMEOUT_SECONDS must be numeric") from error
         return cls(
@@ -242,6 +244,204 @@ def _bound_result(value: Any, maximum: int) -> Any:
     }
 
 
+def _claim_summary(claim: Mapping[str, Any]) -> dict[str, Any]:
+    contracts = claim.get("evidence_contracts")
+    evidence = claim.get("evidence")
+    statement = str(claim.get("statement", ""))
+    statement_truncated = len(statement) > MAX_CLAIM_SUMMARY_STATEMENT_CHARS
+    return {
+        "id": claim.get("id"),
+        "statement": (
+            statement[:MAX_CLAIM_SUMMARY_STATEMENT_CHARS] + "..."
+            if statement_truncated
+            else statement
+        ),
+        "statement_truncated": statement_truncated,
+        "statement_sha256": hashlib.sha256(statement.encode()).hexdigest(),
+        "kind": claim.get("kind"),
+        "relation": claim.get("relation"),
+        "parent_id": claim.get("parent_id"),
+        "status": claim.get("status"),
+        "evidence_contract_count": len(contracts) if isinstance(contracts, list) else 0,
+        "evidence_count": len(evidence) if isinstance(evidence, list) else 0,
+        "decisive_contract_version": claim.get("decisive_contract_version"),
+        "updated_iteration": claim.get("updated_iteration"),
+    }
+
+
+def _tail_with_decisive_contract(
+    contracts: list[Any],
+    decisive_version: Any,
+) -> tuple[list[Any], bool]:
+    """Keep the active contract tail and any older decisive contract."""
+
+    if len(contracts) <= MAX_ROLE_CONTRACTS:
+        return contracts, False
+    selected = list(contracts[-MAX_ROLE_CONTRACTS:])
+    if isinstance(decisive_version, int) and not isinstance(decisive_version, bool):
+        decisive = next(
+            (
+                contract
+                for contract in contracts
+                if isinstance(contract, Mapping) and contract.get("version") == decisive_version
+            ),
+            None,
+        )
+        if decisive is not None and decisive not in selected:
+            selected[0] = decisive
+    return selected, True
+
+
+def _role_evidence(evidence: Mapping[str, Any]) -> dict[str, Any]:
+    provenance = evidence.get("provenance")
+    if isinstance(provenance, Mapping):
+        provenance = {
+            key: provenance.get(key)
+            for key in (
+                "sha256",
+                "bytes",
+                "tracked",
+                "evidence_eligible",
+                "execution_succeeded",
+                "execution_returncode",
+                "execution_timed_out",
+                "execution_workspace_exceeded",
+                "execution_stage",
+                "capability",
+                "command_argv",
+                "program_path",
+                "program_sha256",
+                "operation_id",
+                "job_id",
+                "job_status",
+                "generated_iteration",
+            )
+            if key in provenance
+        }
+    else:
+        provenance = None
+    return {
+        "path": evidence.get("path"),
+        "note": evidence.get("note"),
+        "contract_version": evidence.get("contract_version"),
+        "observation_sufficient": evidence.get("observation_sufficient"),
+        "observation_note": evidence.get("observation_note"),
+        "commissioning_claim_id": evidence.get("commissioning_claim_id"),
+        "validation_passed": evidence.get("validation_passed"),
+        "iteration": evidence.get("iteration"),
+        "provenance": provenance,
+    }
+
+
+def _claim_role_view(claim: Mapping[str, Any]) -> dict[str, Any]:
+    raw_contracts = claim.get("evidence_contracts")
+    contracts = list(raw_contracts) if isinstance(raw_contracts, list) else []
+    selected_contracts, contracts_truncated = _tail_with_decisive_contract(
+        contracts,
+        claim.get("decisive_contract_version"),
+    )
+    raw_evidence = claim.get("evidence")
+    evidence = list(raw_evidence) if isinstance(raw_evidence, list) else []
+    selected_evidence = evidence[-MAX_ROLE_EVIDENCE:]
+    return {
+        "id": claim.get("id"),
+        "statement": claim.get("statement"),
+        "kind": claim.get("kind"),
+        "relation": claim.get("relation"),
+        "parent_id": claim.get("parent_id"),
+        "status": claim.get("status"),
+        "rationale": claim.get("rationale"),
+        "repair": claim.get("repair"),
+        "closed_reason": claim.get("closed_reason"),
+        "decisive_contract_version": claim.get("decisive_contract_version"),
+        "created_iteration": claim.get("created_iteration"),
+        "updated_iteration": claim.get("updated_iteration"),
+        "evidence_contract_count": len(contracts),
+        "evidence_contracts_truncated": contracts_truncated,
+        "evidence_contracts": selected_contracts,
+        "evidence_count": len(evidence),
+        "evidence_truncated": len(evidence) > len(selected_evidence),
+        "evidence": [
+            _role_evidence(item) for item in selected_evidence if isinstance(item, Mapping)
+        ],
+    }
+
+
+def _project_claims(value: Any, query: Mapping[str, Any]) -> dict[str, Any]:
+    """Project a growing ledger before it crosses the bounded MCP surface."""
+
+    if not isinstance(value, Mapping) or not isinstance(value.get("claims"), list):
+        raise MCPBridgeError("CampaignKernel returned an invalid claim ledger")
+    raw_claims = [item for item in value["claims"] if isinstance(item, Mapping)]
+    view = query.get("view", "summary")
+    claim_ids = query.get("claim_ids")
+    parent_id = query.get("parent_id")
+    offset = query.get("offset", 0)
+    default_limit = MAX_ROLE_CLAIMS if view in {"role", "full"} else DEFAULT_CLAIM_PAGE_SIZE
+    limit = query.get("limit", default_limit)
+
+    if not isinstance(offset, int) or isinstance(offset, bool) or offset < 0:
+        raise MCPInputError("claims.offset must be a non-negative integer")
+    if (
+        not isinstance(limit, int)
+        or isinstance(limit, bool)
+        or limit < 1
+        or limit > MAX_CLAIM_PAGE_SIZE
+    ):
+        raise MCPInputError(f"claims.limit must lie in [1, {MAX_CLAIM_PAGE_SIZE}]")
+    if view in {"role", "full"}:
+        if not isinstance(claim_ids, list) or not claim_ids:
+            raise MCPInputError(f"claims view={view} requires explicit claim_ids")
+        if len(claim_ids) > MAX_ROLE_CLAIMS:
+            raise MCPInputError(f"claims view={view} accepts at most {MAX_ROLE_CLAIMS} claim_ids")
+    if isinstance(claim_ids, list) and len(claim_ids) > MAX_CLAIM_PAGE_SIZE:
+        raise MCPInputError(f"claims accepts at most {MAX_CLAIM_PAGE_SIZE} claim_ids per request")
+
+    requested_ids: list[str] | None = None
+    if isinstance(claim_ids, list):
+        requested_ids = []
+        for claim_id in claim_ids:
+            folded = str(claim_id).casefold()
+            if folded and folded not in requested_ids:
+                requested_ids.append(folded)
+    folded_parent = parent_id.casefold() if isinstance(parent_id, str) else None
+    matching = [
+        claim
+        for claim in raw_claims
+        if (requested_ids is None or str(claim.get("id", "")).casefold() in requested_ids)
+        and (folded_parent is None or str(claim.get("parent_id", "")).casefold() == folded_parent)
+    ]
+    page = matching[offset : offset + limit]
+    if view == "summary":
+        projected = [_claim_summary(claim) for claim in page]
+    elif view == "role":
+        projected = [_claim_role_view(claim) for claim in page]
+    else:
+        projected = list(page)
+
+    available_ids = {str(claim.get("id", "")).casefold() for claim in raw_claims}
+    ledger = value.get("claim_ledger")
+    ledger = ledger if isinstance(ledger, Mapping) else {}
+    return {
+        "view": view,
+        "claim_ledger": {
+            "schema_version": ledger.get("schema_version"),
+            "claim_count": len(raw_claims),
+            "open_count": sum(claim.get("status") == "open" for claim in raw_claims),
+        },
+        "matching_claim_count": len(matching),
+        "offset": offset,
+        "limit": limit,
+        "has_more": offset + len(page) < len(matching),
+        "missing_claim_ids": (
+            []
+            if requested_ids is None
+            else [claim_id for claim_id in requested_ids if claim_id not in available_ids]
+        ),
+        "claims": projected,
+    }
+
+
 def _maybe_await(value: _T | Awaitable[_T]) -> Awaitable[_T] | _T:
     return value
 
@@ -261,8 +461,7 @@ def _signature_parameters(
         return {}, True
     parameters = dict(signature.parameters)
     has_kwargs = any(
-        parameter.kind is inspect.Parameter.VAR_KEYWORD
-        for parameter in parameters.values()
+        parameter.kind is inspect.Parameter.VAR_KEYWORD for parameter in parameters.values()
     )
     return parameters, has_kwargs
 
@@ -345,10 +544,7 @@ class CampaignMCPBridge:
             raise
         except Exception as error:
             self.shutdown()
-            raise MCPBridgeError(
-                "CampaignKernel startup/open/snapshot failed: "
-                f"{error}"
-            ) from error
+            raise MCPBridgeError(f"CampaignKernel startup/open/snapshot failed: {error}") from error
         self._startup_snapshot = bounded
         return bounded
 
@@ -392,9 +588,7 @@ class CampaignMCPBridge:
             else:
                 direct = self.config.workspace / campaign
                 grouped = self.config.workspace / "campaigns" / campaign
-                target = (
-                    direct if direct.exists() or not grouped.exists() else grouped
-                ).resolve()
+                target = (direct if direct.exists() or not grouped.exists() else grouped).resolve()
             candidates.append(target)
         else:
             candidates.append(self.config.workspace)
@@ -422,9 +616,7 @@ class CampaignMCPBridge:
             raise MCPBridgeError(f"operator launch record is not an object: {launch_path}")
         hypothesis_name = payload.get("hypothesis_file", "hypothesis.txt")
         if hypothesis_name != "hypothesis.txt":
-            raise MCPBridgeError(
-                "operator launch record must use operator_input/hypothesis.txt"
-            )
+            raise MCPBridgeError("operator launch record must use operator_input/hypothesis.txt")
         hypothesis_path = candidate / "operator_input" / "hypothesis.txt"
         try:
             hypothesis = hypothesis_path.read_text(encoding="utf-8")
@@ -458,8 +650,7 @@ class CampaignMCPBridge:
             if launch_hypothesis is not None:
                 if existing is not None and launch_hypothesis != existing:
                     raise MCPBridgeError(
-                        "operator launch and MVP manifest contain different "
-                        "root hypotheses"
+                        "operator launch and MVP manifest contain different root hypotheses"
                     )
                 existing = launch_hypothesis
             manifest_path = candidate / "mvp_manifest.json"
@@ -635,7 +826,12 @@ class CampaignMCPBridge:
         if name == "snapshot":
             result = await self._kernel_method("snapshot")
         elif name == "claims":
-            result = await self._execute_action("list_claims", validated)
+            # Projection arguments belong to this wire adapter, not to the
+            # model-independent CampaignKernel action.  Retrieve once, then
+            # select before the generic output bound can collapse the ledger
+            # into an unusable digest/preview record.
+            ledger = await self._execute_action("list_claims", {})
+            result = _project_claims(ledger, validated)
         elif name in {
             "register_claim",
             "register_evidence_contract",
@@ -701,9 +897,7 @@ class CampaignMCPBridge:
                     "kind": "capability",
                     "capability": payload["capability"],
                     "argv": list(payload["argv"]),
-                    "stage": "evidence"
-                    if name == "run_evidence_capability"
-                    else "workbench",
+                    "stage": "evidence" if name == "run_evidence_capability" else "workbench",
                     "active_claim_id": payload.get("active_claim_id"),
                     "timeout_seconds": timeout,
                 }
@@ -729,9 +923,7 @@ class CampaignMCPBridge:
             kernel = await self._ensure_kernel()
             method = getattr(kernel, "prepare_adjudication", None)
             if not callable(method):
-                raise MCPBridgeError(
-                    "CampaignKernel does not implement prepare_adjudication(...)"
-                )
+                raise MCPBridgeError("CampaignKernel does not implement prepare_adjudication(...)")
             result = await _await_result(method(operation_id, **payload))
         elif name == "record_adjudication":
             payload = dict(validated)
@@ -739,9 +931,7 @@ class CampaignMCPBridge:
             kernel = await self._ensure_kernel()
             method = getattr(kernel, "record_adjudication", None)
             if not callable(method):
-                raise MCPBridgeError(
-                    "CampaignKernel does not implement record_adjudication(...)"
-                )
+                raise MCPBridgeError("CampaignKernel does not implement record_adjudication(...)")
             result = await _await_result(method(operation_id, **payload))
         elif name == "finalize_campaign":
             payload = dict(validated)
@@ -749,9 +939,7 @@ class CampaignMCPBridge:
             kernel = await self._ensure_kernel()
             method = getattr(kernel, "finalize_campaign", None)
             if not callable(method):
-                raise MCPBridgeError(
-                    "CampaignKernel does not implement finalize_campaign(...)"
-                )
+                raise MCPBridgeError("CampaignKernel does not implement finalize_campaign(...)")
             result = await _await_result(method(operation_id, **payload))
         else:  # pragma: no cover - guarded by TOOL_SCHEMAS above
             raise MCPInputError(f"unhandled scientific MCP tool {name!r}")
@@ -821,6 +1009,7 @@ def create_mcp_server(bridge: CampaignMCPBridge | None = None) -> Any:
 
     try:
         from mcp import types as mcp_types
+
         try:
             # MCP SDK v2 keeps the low-level server in this explicit module;
             # older initialize-era releases re-export the same class from
@@ -927,9 +1116,7 @@ async def run_stdio(
         try:
             from mcp.server.stdio import stdio_server
         except ImportError as error:  # pragma: no cover - optional dependency
-            raise MCPBridgeError(
-                "the installed MCP SDK does not provide stdio_server"
-            ) from error
+            raise MCPBridgeError("the installed MCP SDK does not provide stdio_server") from error
         async with stdio_server() as (read_stream, write_stream):
             options = server.create_initialization_options()
             await server.run(read_stream, write_stream, options)
@@ -966,9 +1153,7 @@ def main() -> None:
             workspace=args.workspace or config.workspace,
             campaign=args.campaign if args.campaign is not None else config.campaign,
             hypothesis_file=(
-                args.hypothesis_file
-                if args.hypothesis_file is not None
-                else config.hypothesis_file
+                args.hypothesis_file if args.hypothesis_file is not None else config.hypothesis_file
             ),
             max_output_chars=args.max_output_chars
             if args.max_output_chars is not None

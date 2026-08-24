@@ -130,6 +130,12 @@ def test_tool_catalog_is_flat_and_uses_only_the_dsh_schema_subset() -> None:
     assert "root" not in TOOL_SCHEMAS["register_claim"]["properties"]["relation"]["enum"]
     assert "repairs" in TOOL_SCHEMAS["register_claim"]["properties"]["relation"]["enum"]
     assert "repair" in TOOL_SCHEMAS["register_claim"]["properties"]
+    assert TOOL_SCHEMAS["claims"]["properties"]["view"]["enum"] == [
+        "summary",
+        "role",
+        "full",
+    ]
+    assert "claim_ids" in TOOL_SCHEMAS["claims"]["properties"]
 
 
 def test_bridge_dispatches_claim_workspace_and_job_tools(tmp_path: Path) -> None:
@@ -216,11 +222,14 @@ def test_bridge_dispatches_claim_workspace_and_job_tools(tmp_path: Path) -> None
         {"job_id": "job_fake", "report": False},
     )
     assert state == {"job_id": "job_fake", "status": "succeeded"}
-    assert _call(
-        bridge,
-        "cancel_job",
-        {"operation_id": "cancel-job-1", "job_id": "job_fake"},
-    )["status"] == "cancel_requested"
+    assert (
+        _call(
+            bridge,
+            "cancel_job",
+            {"operation_id": "cancel-job-1", "job_id": "job_fake"},
+        )["status"]
+        == "cancel_requested"
+    )
 
 
 def test_mutation_operation_id_is_forwarded_to_idempotent_kernel_seam(
@@ -360,6 +369,153 @@ def test_bridge_bounds_tool_output(tmp_path: Path) -> None:
     assert len(result["sha256"]) == 64
 
 
+def test_claim_views_project_before_the_output_bound(tmp_path: Path) -> None:
+    root_contract = {
+        "version": 1,
+        "observable": "A bounded observable.",
+        "expected_outcomes": "Pass or fail prospectively.",
+        "decision_rule": "Reject when the registered threshold is crossed.",
+        "required_observation": "One qualified run.",
+        "uncertainty_criterion": "Finite uncertainty below the threshold.",
+        "inconclusive_conditions": "Missing or invalid diagnostics.",
+        "validation_checks": [{"json_path": "checks.valid", "expected_value": True}],
+        "execution_binding": {
+            "capability": "qualified-simulator",
+            "program_path": "guided/sim.py",
+            "program_sha256": "a" * 64,
+            "commissioning_argv": ["guided/sim.py", "--smoke"],
+            "allowed_scientific_argv": [["guided/sim.py", "--science"]],
+        },
+        "additional_execution_bindings": [],
+        "registered_iteration": 1,
+    }
+    root = {
+        "id": "claim_root",
+        "statement": "A falsifiable root statement.",
+        "kind": "scientific",
+        "relation": "root",
+        "parent_id": None,
+        "status": "open",
+        "rationale": "Operator supplied.",
+        "repair": None,
+        "evidence_contracts": [root_contract],
+        "evidence": [
+            {
+                "path": "runs/result.json",
+                "note": "Qualified output.",
+                "contract_version": 1,
+                "observation_sufficient": True,
+                "observation_note": "All registered checks passed.",
+                "commissioning_claim_id": "claim_instrument",
+                "validation_passed": True,
+                "validation_results": [{"unbounded_kernel_detail": "x" * 50_000}],
+                "iteration": 4,
+                "provenance": {
+                    "sha256": "b" * 64,
+                    "tracked": True,
+                    "evidence_eligible": True,
+                    "execution_succeeded": True,
+                    "command_argv": ["guided/sim.py", "--science"],
+                },
+            }
+        ],
+        "closed_reason": None,
+        "decisive_contract_version": None,
+        "created_iteration": 0,
+        "updated_iteration": 4,
+    }
+    instrument = {
+        **root,
+        "id": "claim_instrument",
+        "statement": "The simulator is commissioned.",
+        "kind": "instrument",
+        "relation": "instrument_of",
+        "parent_id": "claim_root",
+        "status": "supported",
+        "evidence_contracts": [],
+        "evidence": [],
+    }
+
+    class _LargeLedger(_FakeKernel):
+        def execute(
+            self,
+            action: dict[str, Any],
+            *,
+            iteration: int = 0,
+            **_kwargs: Any,
+        ) -> dict[str, Any]:
+            self.actions.append((dict(action), iteration))
+            if action["action"] == "list_claims":
+                return {
+                    "claim_ledger": {
+                        "schema_version": "0.9.0",
+                        "claim_count": 2,
+                        "open_count": 1,
+                    },
+                    "claims": [root, instrument],
+                }
+            return {"accepted": action["action"], "iteration": iteration}
+
+    kernel = _LargeLedger()
+    bridge = CampaignMCPBridge(
+        kernel,
+        config=BridgeConfig(workspace=tmp_path, max_output_chars=4_096),
+    )
+
+    summary = _call(bridge, "claims")
+    assert summary["view"] == "summary"
+    assert summary["matching_claim_count"] == 2
+    assert summary["claims"][0]["evidence_count"] == 1
+    assert "evidence" not in summary["claims"][0]
+
+    children = _call(
+        bridge,
+        "claims",
+        {"view": "summary", "parent_id": "CLAIM_ROOT", "limit": 100},
+    )
+    assert [claim["id"] for claim in children["claims"]] == ["claim_instrument"]
+
+    role = _call(
+        bridge,
+        "claims",
+        {"view": "role", "claim_ids": ["CLAIM_ROOT"]},
+    )
+    assert role.get("truncated") is not True
+    assert (
+        role["claims"][0]["evidence_contracts"][0]["execution_binding"]
+        == (root_contract["execution_binding"])
+    )
+    assert "validation_results" not in role["claims"][0]["evidence"][0]
+    assert role["claims"][0]["evidence"][0]["provenance"]["command_argv"] == [
+        "guided/sim.py",
+        "--science",
+    ]
+
+    missing = _call(
+        bridge,
+        "claims",
+        {"view": "role", "claim_ids": ["claim_absent"]},
+    )
+    assert missing["claims"] == []
+    assert missing["missing_claim_ids"] == ["claim_absent"]
+
+    full = _call(
+        bridge,
+        "claims",
+        {"view": "full", "claim_ids": ["claim_root"]},
+    )
+    assert full["truncated"] is True
+    assert kernel.actions[-1][0] == {
+        "action": "list_claims",
+        "research_note": "DSH MCP tool: list_claims",
+    }
+
+    with pytest.raises(MCPInputError, match="requires explicit claim_ids"):
+        _call(bridge, "claims", {"view": "role"})
+    with pytest.raises(MCPInputError, match="must lie in"):
+        _call(bridge, "claims", {"limit": 101})
+
+
 def test_bridge_never_retries_a_mutating_kernel_error(tmp_path: Path) -> None:
     class _FailingMutation(_FakeKernel):
         def execute_operation(
@@ -442,9 +598,7 @@ def test_relative_campaign_root_is_exactly_guarded(tmp_path: Path) -> None:
     hypothesis_file.write_text("A conflicting host hypothesis.\n")
     campaign = tmp_path / "demo"
     campaign.mkdir()
-    (campaign / "mvp_manifest.json").write_text(
-        '{"hypothesis":"Existing immutable campaign root"}'
-    )
+    (campaign / "mvp_manifest.json").write_text('{"hypothesis":"Existing immutable campaign root"}')
 
     with pytest.raises(MCPBridgeError, match="does not exactly match"):
         _call(
@@ -463,9 +617,7 @@ def test_relative_campaign_root_is_exactly_guarded(tmp_path: Path) -> None:
 def test_named_campaign_does_not_inherit_parent_workspace_manifest(
     tmp_path: Path,
 ) -> None:
-    (tmp_path / "mvp_manifest.json").write_text(
-        '{"hypothesis":"An unrelated parent campaign"}'
-    )
+    (tmp_path / "mvp_manifest.json").write_text('{"hypothesis":"An unrelated parent campaign"}')
     hypothesis_file = tmp_path / "hypothesis.txt"
     hypothesis_file.write_text("The named campaign has its own immutable root.\n")
     seen: dict[str, Any] = {}
@@ -585,6 +737,7 @@ def test_only_one_root_bridge_can_own_a_campaign(tmp_path: Path) -> None:
     asyncio.run(second.startup())
     second.shutdown()
 
+
 def test_sdk_stdio_handshake_list_and_call_when_sdk_is_installed(tmp_path: Path) -> None:
     pytest.importorskip("mcp.client.stdio")
     from mcp import ClientSession, StdioServerParameters
@@ -632,10 +785,7 @@ def test_sdk_stdio_handshake_list_and_call_when_sdk_is_installed(tmp_path: Path)
                     if tool.name in MUTATING_TOOLS:
                         assert "operation_id" in schema["required"]
                 called = await session.call_tool("snapshot", {})
-                assert (
-                    getattr(called, "isError", getattr(called, "is_error", False))
-                    is False
-                )
+                assert getattr(called, "isError", getattr(called, "is_error", False)) is False
                 structured = getattr(
                     called,
                     "structuredContent",

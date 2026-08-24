@@ -165,6 +165,10 @@ def test_dsh_scientific_roles_are_fresh_scoped_and_durably_verified() -> None:
     assert "the Falsifier cannot register scientific claims" in roles
     assert "one scientific repairs child" in roles
     assert "claims-after" in roles
+    assert "view: 'role', claim_ids: [targetId]" in roles
+    assert "view: 'summary', parent_id: parentId" in roles
+    assert "claimIdsAfter.push(result.structured.child_claim_id)" in roles
+    assert "CampaignKernel claim pagination made no progress" in roles
     assert "verifyFalsifierResult" in roles
     assert "verifyRepairResult" in roles
     assert "await run.dispose()" in roles
@@ -177,6 +181,7 @@ def test_dsh_scientific_roles_are_fresh_scoped_and_durably_verified() -> None:
     assert "observation_sufficient=true" in roles
     assert "Falsifier adjudication handoff requires durable evidence" in roles
     assert "parent conversation" in roles
+    assert "never request an unscoped full\nledger" in roles
     assert "chain-of-thought" in roles
     assert "event.data.arguments" not in roles
 

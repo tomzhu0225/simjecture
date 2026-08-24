@@ -117,7 +117,9 @@ export const REPAIR_SCHEMA = {
 const FALSIFIER_PERSONA = `You are the fresh Falsifier/Experimenter for one
 claim in a falsification-first computational-science campaign. You have no
 parent conversation. Your first action must be snapshot; reconcile it with the
-assignment packet before any mutation. Work only on the assigned scientific
+assignment packet before any mutation. Then call claims with view=role and
+claim_ids containing only the assigned claim; never request an unscoped full
+ledger. Work only on the assigned scientific
 claim and on non-scientific commissioning claims you create beneath it. Search
 relevant literature when available, inspect installed skills, register a
 prospective evidence contract before observations, commission unfamiliar
@@ -145,7 +147,9 @@ the required structured output; do not expose private chain-of-thought.`
 
 const REPAIR_PERSONA = `You are the fresh Repair Scientist for one falsified
 scientific claim. You have no parent conversation. Your first action must be
-snapshot; reconcile it with the assignment packet before any mutation. Read
+snapshot; reconcile it with the assignment packet before any mutation. Then
+call claims with view=role and claim_ids containing only the assigned parent;
+never request an unscoped full ledger. Read
 the decisive counterexample and create or reuse exactly one minimal scientific
 child with relation=repairs that accommodates that evidence, changes the
 parent statement semantically, and makes a new falsifiable prediction. Register
@@ -296,6 +300,27 @@ function rolePacket(snapshot, claim, args, role) {
     throw new Error('role packet exceeds the bounded fresh-session handoff')
   }
   return encoded
+}
+
+async function childClaimSummaries(ctx, exec, role, parentId) {
+  const claims = []
+  let offset = 0
+  for (;;) {
+    const page = await internalMcpCall(
+      ctx,
+      exec,
+      `${role}:claim-children:${offset}`,
+      `${MCP}claims`,
+      { view: 'summary', parent_id: parentId, offset, limit: 24 },
+    )
+    const rows = claimsOf(page)
+    claims.push(...rows)
+    if (page.has_more !== true) return claims
+    if (rows.length === 0) {
+      throw new Error('CampaignKernel claim pagination made no progress')
+    }
+    offset += rows.length
+  }
 }
 
 function asRecord(value) {
@@ -555,7 +580,7 @@ export function apply(ctx) {
       exec,
       `${role}:claims-before`,
       `${MCP}claims`,
-      {},
+      { view: 'role', claim_ids: [targetId] },
     )
     const target = claimById(claimsBefore, targetId)
     if (
@@ -570,7 +595,8 @@ export function apply(ctx) {
     const parentId = String(parent.session.id)
     if (pendingByParent.has(parentId)) throw new Error('a scientific role is already starting')
     const targetKey = String(target.id).toLowerCase()
-    const commissionedClaims = claimsOf(claimsBefore)
+    const childClaims = await childClaimSummaries(ctx, exec, role, targetKey)
+    const commissionedClaims = childClaims
       .filter(claim => (
         claim?.kind !== 'scientific'
         && typeof claim?.parent_id === 'string'
@@ -640,12 +666,19 @@ export function apply(ctx) {
           + (result.diagnostic === undefined ? '' : `: ${result.diagnostic}`),
         )
       }
+      const claimIdsAfter = [targetId]
+      if (
+        role === 'repair_scientist'
+        && typeof result.structured.child_claim_id === 'string'
+      ) {
+        claimIdsAfter.push(result.structured.child_claim_id)
+      }
       const claimsAfter = await internalMcpCall(
         ctx,
         exec,
         `${role}:claims-after`,
         `${MCP}claims`,
-        {},
+        { view: 'role', claim_ids: claimIdsAfter },
       )
       const verified = role === 'falsifier'
         ? verifyFalsifierResult(args, result.structured, claimsAfter)

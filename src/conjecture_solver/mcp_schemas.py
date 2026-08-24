@@ -210,7 +210,15 @@ TOOL_SCHEMAS: dict[str, dict[str, Any]] = {
             **_RESEARCH_NOTE,
         }
     ),
-    "claims": _object({}),
+    "claims": _object(
+        {
+            "view": {"enum": ["summary", "role", "full"]},
+            "claim_ids": _array(_string()),
+            "parent_id": _nullable_string(),
+            "offset": _integer(),
+            "limit": _integer(),
+        }
+    ),
     "list_skills": _object({}),
     "read_skill": _object(
         {
@@ -402,8 +410,10 @@ for _tool_name in TOOL_SCHEMAS:
 TOOL_DESCRIPTIONS: dict[str, str] = {
     "snapshot": "Read the bounded durable campaign snapshot and lifecycle state.",
     "claims": (
-        "List the bounded claim ledger; claims are not evidence until linked "
-        "artifacts satisfy a contract."
+        "Read a bounded claim-ledger projection. The default summary is paged; "
+        "use view=role with explicit claim_ids for executable contracts and "
+        "evidence, or view=full only for bounded diagnosis. Claims are not "
+        "evidence until linked artifacts satisfy a contract."
     ),
     "register_claim": "Register a stable scientific, instrument, diagnostic, or control claim.",
     "register_evidence_contract": (
@@ -446,12 +456,10 @@ TOOL_DESCRIPTIONS: dict[str, str] = {
     ),
     "cancel_job": "Request cancellation of one scientific job.",
     "prepare_adjudication": (
-        "Internal DSH endpoint: freeze a bounded prospective evidence case for "
-        "an isolated judge."
+        "Internal DSH endpoint: freeze a bounded prospective evidence case for an isolated judge."
     ),
     "record_adjudication": (
-        "Internal DSH endpoint: commit the structured verdict returned by the "
-        "isolated judge."
+        "Internal DSH endpoint: commit the structured verdict returned by the isolated judge."
     ),
     "finalize_campaign": (
         "Write the terminal auditable report after every scientific finish gate passes."
@@ -624,14 +632,9 @@ def _validate_input_bounds(name: str, value: Any, *, field: str = "arguments") -
         if key == "line_count" and (child < 1 or child > 400):
             raise ValueError(f"{name}.line_count must lie in [1, 400]")
         if key == "operation_id" and (
-            not isinstance(child, str)
-            or not child
-            or len(child) > 256
-            or "\x00" in child
+            not isinstance(child, str) or not child or len(child) > 256 or "\x00" in child
         ):
-            raise ValueError(
-                f"{name}.operation_id must contain 1 to 256 non-NUL characters"
-            )
+            raise ValueError(f"{name}.operation_id must contain 1 to 256 non-NUL characters")
         if (key == "argv" or key.endswith("_argv")) and (
             not isinstance(child, list) or not child or len(child) > 256
         ):
