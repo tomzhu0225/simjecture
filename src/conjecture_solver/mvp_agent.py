@@ -1670,6 +1670,27 @@ software.
                 f"claim {claim_id} has no evidence contract version "
                 f"{selected_contract_version}"
             )
+        adjudicable_versions: list[int] = []
+        for registered_contract in claim.evidence_contracts:
+            try:
+                self.claim_store.validate_evidentiary_disposition(
+                    claim_id=claim_id,
+                    status=ClaimDisposition.SUPPORTED,
+                    contract_version=registered_contract.version,
+                )
+            except ValueError:
+                continue
+            adjudicable_versions.append(registered_contract.version)
+        if (
+            adjudicable_versions
+            and selected_contract_version < max(adjudicable_versions)
+        ):
+            newest = max(adjudicable_versions)
+            raise ValueError(
+                f"adjudication contract v{selected_contract_version} is stale; "
+                f"newer contract v{newest} has qualifying prospective evidence. "
+                "Adjudicate that newer evidence package instead."
+            )
         try:
             self.claim_store.validate_evidentiary_disposition(
                 claim_id=claim_id,

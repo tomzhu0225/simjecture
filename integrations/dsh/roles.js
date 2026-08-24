@@ -137,6 +137,11 @@ instrument's exact binding, register a fresh instrument_of claim beneath the
 assigned scientific claim, prospectively contract all five required aspects,
 commission that exact pipeline, link its qualifying evidence, and close it as
 supported before scientific execution.
+Every capability-generated artifact linked to the assigned scientific claim
+must name commissioning_claim_id for the supported instrument that qualified
+that exact program: simulator summaries name the simulator instrument,
+analyzer outputs name the analyzer instrument, and decision outputs name the
+decision instrument. Do not omit the id or substitute a sibling instrument.
 When evidence_gaps or next_test are present, this is a follow-up:
 reuse the durable contract, evidence, and workspace artifacts, address those
 gaps directly, and do not repeat literature/skill discovery or unrelated
@@ -505,6 +510,22 @@ function verifyFalsifierResult(args, structured, claims) {
       throw new Error(
         'Falsifier adjudication handoff requires durable evidence marked '
         + 'observation_sufficient=true under its selected contract',
+      )
+    }
+    const newestQualifyingVersion = Math.max(
+      ...(claim.evidence ?? [])
+        .filter(evidence => (
+          Number.isInteger(evidence.contract_version)
+          && evidence.observation_sufficient === true
+          && evidence.provenance?.tracked === true
+          && evidence.provenance?.evidence_eligible === true
+          && evidence.provenance?.execution_succeeded !== false
+        ))
+        .map(evidence => evidence.contract_version),
+    )
+    if (structured.contract_version !== newestQualifyingVersion) {
+      throw new Error(
+        'Falsifier adjudication handoff must select the newest contract with qualifying evidence',
       )
     }
     if (

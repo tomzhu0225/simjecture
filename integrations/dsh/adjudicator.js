@@ -121,7 +121,9 @@ export function apply(ctx) {
       'Ask a fresh, tool-free independent judge whether one open scientific '
       + 'claim has sufficient prospective evidence. The judge receives the '
       + 'kernel-frozen case rather than this conversation. Use this instead of '
-      + 'closing a scientific claim as supported yourself.',
+      + 'closing a scientific claim as supported yourself. Pass the exact '
+      + 'contract_version from the latest Falsifier handoff; stale evidence '
+      + 'packages are rejected.',
     parameters: {
       type: 'object',
       additionalProperties: false,
@@ -137,7 +139,9 @@ export function apply(ctx) {
         contract_version: {
           type: 'integer',
           minimum: 1,
-          description: 'The exact prospective evidence-contract version being judged.',
+          description:
+            'The exact version from the latest Falsifier handoff. A stale version is '
+            + 'rejected when a newer contract has qualifying prospective evidence.',
         },
         case_for_sufficiency: {
           type: 'string',

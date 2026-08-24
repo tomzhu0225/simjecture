@@ -434,6 +434,80 @@ def test_kernel_rejects_adjudication_without_contract_satisfying_evidence(
     assert not (campaign / "adjudications.json").exists()
 
 
+def test_adjudication_rejects_stale_contract_with_newer_qualifying_evidence(
+    tmp_path: Path,
+) -> None:
+    campaign = tmp_path / "stale-adjudication"
+    kernel = CampaignKernel.open(
+        workspace=campaign,
+        hypothesis="A prospectively measured value equals its declared target.",
+    )
+    _prepare_startup(kernel)
+
+    def register(version: int) -> None:
+        kernel.execute_operation(
+            f"contract-v{version}",
+            {
+                "action": "register_evidence_contract",
+                "research_note": f"Register prospective contract version {version}.",
+                "claim_id": "claim_root",
+                "observable": f"The exact integer result equals {version}.",
+                "expected_outcomes": "Equality supports; inequality challenges.",
+                "decision_rule": f"Support exactly when value equals {version}.",
+                "required_observation": "Record one fresh deterministic result.",
+                "uncertainty_criterion": "The exact integer has no sampling error.",
+                "inconclusive_conditions": "A missing result is inconclusive.",
+                "validation_checks": [
+                    {"json_path": "value", "expected_value": version}
+                ],
+                "additional_execution_bindings": [],
+            },
+        )
+        kernel.execute_operation(
+            f"write-v{version}",
+            {
+                "action": "run_python",
+                "research_note": f"Generate fresh evidence for contract {version}.",
+                "argv": [
+                    "-c",
+                    "import json; from pathlib import Path; "
+                    f"Path('value-v{version}.json').write_text(json.dumps("
+                    f"{{'value': {version}}}))",
+                ],
+                "active_claim_id": "claim_root",
+            },
+        )
+        kernel.execute_operation(
+            f"link-v{version}",
+            {
+                "action": "link_claim_evidence",
+                "research_note": f"Link fresh contract {version} evidence.",
+                "claim_id": "claim_root",
+                "path": f"value-v{version}.json",
+                "note": f"The fresh result equals {version}.",
+                "observation_sufficient": True,
+                "observation_note": "The exact prospective validation check passes.",
+            },
+        )
+
+    register(1)
+    register(2)
+    with pytest.raises(ValueError, match=r"contract v1 is stale; newer contract v2"):
+        kernel.prepare_adjudication(
+            "judge-stale-v1",
+            claim_id="claim_root",
+            contract_version=1,
+            case_for_sufficiency="The obsolete first result passed its earlier contract.",
+        )
+    prepared = kernel.prepare_adjudication(
+        "judge-current-v2",
+        claim_id="claim_root",
+        contract_version=2,
+        case_for_sufficiency="The fresh second result passed the current contract.",
+    )
+    assert prepared["contract_version"] == 2
+
+
 def test_kernel_worker_reopens_campaign_and_records_typed_artifact(tmp_path: Path) -> None:
     campaign = tmp_path / "campaign"
     kernel = CampaignKernel.open(
