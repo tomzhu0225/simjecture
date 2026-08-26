@@ -492,6 +492,28 @@ def test_terminal_dsh_state_overrides_a_stale_active_loop(tmp_path: Path) -> Non
     assert "has a terminal report" not in text
 
 
+def test_running_dsh_state_is_not_reported_as_unstarted(tmp_path: Path) -> None:
+    root = tmp_path / "dsh-running"
+    root.mkdir()
+    _write(
+        root / "mvp_manifest.json",
+        _manifest("An active DSH campaign has crossed its initialization boundary."),
+    )
+    _write(
+        root / "operator_input" / "dsh_state.json",
+        {
+            "schema_version": "0.1.0",
+            "status": "running",
+            "engine": "dsh",
+        },
+    )
+
+    snapshot = load_run_snapshot(root)
+
+    assert snapshot.phase is RunPhase.INCOMPLETE
+    assert snapshot.phase_label == "incomplete (no terminal report)"
+
+
 def test_in_progress_transcript_is_incomplete_without_report(tmp_path: Path) -> None:
     root = tmp_path / "active-run"
     root.mkdir()

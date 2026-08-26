@@ -1419,6 +1419,8 @@ class MVPRunMonitor:
             return RunPhase.PROVIDER_FAILED
         if dsh_status == "paused":
             return RunPhase.PAUSED
+        if dsh_status in {"starting", "running"}:
+            return RunPhase.INCOMPLETE
         pause = read_pause_state(self.root)
         clock = read_clock(self.root)
         if pause is not None or (clock is not None and clock.state == "paused"):
