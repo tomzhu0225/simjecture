@@ -820,6 +820,108 @@ def test_role_claim_view_balances_outcomes_without_reordering_history(
     assert len(failed["validation_results_sha256"]) == 64
 
 
+def test_role_claim_view_adapts_validation_detail_to_the_wire_budget(
+    tmp_path: Path,
+) -> None:
+    contract = {
+        "version": 1,
+        "observable": "observable " + ("o" * 900),
+        "expected_outcomes": "outcomes " + ("e" * 900),
+        "decision_rule": "decision " + ("d" * 900),
+        "required_observation": "required " + ("r" * 900),
+        "uncertainty_criterion": "uncertainty " + ("u" * 900),
+        "inconclusive_conditions": "inconclusive " + ("i" * 900),
+        "validation_checks": [
+            {"json_path": f"checks.check_{index}", "expected_value": True} for index in range(12)
+        ],
+        "execution_binding": {
+            "capability": "qualified-simulator",
+            "program_path": "guided/sim.py",
+            "program_sha256": "a" * 64,
+            "commissioning_argv": ["guided/sim.py", "--commission"],
+            "allowed_scientific_argv": [
+                ["guided/sim.py", "--science", str(index)] for index in range(7)
+            ],
+        },
+    }
+    evidence = []
+    for evidence_index in range(7):
+        evidence.append(
+            {
+                "path": f"analysis/result_{evidence_index}.json",
+                "note": "Failed prospective observation.",
+                "contract_version": 1,
+                "observation_sufficient": False,
+                "observation_note": "The registered observation was incomplete.",
+                "validation_passed": False,
+                "validation_results": [
+                    {
+                        "aspect": "diagnostics",
+                        "json_path": f"checks.check_{check_index}",
+                        "expected_value": True,
+                        "actual_value": False,
+                        "passed": False,
+                        "error": "registered diagnostic mismatch " + ("x" * 200),
+                    }
+                    for check_index in range(12)
+                ],
+                "iteration": evidence_index,
+                "provenance": {
+                    "sha256": f"{evidence_index:064x}",
+                    "tracked": True,
+                    "evidence_eligible": True,
+                    "execution_succeeded": True,
+                    "command_argv": ["guided/sim.py", "--science", str(evidence_index)],
+                },
+            }
+        )
+    root = {
+        "id": "claim_root",
+        "statement": "A claim with a large prospective contract and repeated failed checks.",
+        "kind": "scientific",
+        "relation": "root",
+        "parent_id": None,
+        "status": "open",
+        "rationale": "Operator supplied.",
+        "repair": None,
+        "evidence_contracts": [contract],
+        "evidence": evidence,
+        "closed_reason": None,
+        "decisive_contract_version": None,
+        "created_iteration": 0,
+        "updated_iteration": 7,
+    }
+
+    class _GrowingLedger(_FakeKernel):
+        def execute(
+            self,
+            action: dict[str, Any],
+            *,
+            iteration: int = 0,
+            **_kwargs: Any,
+        ) -> dict[str, Any]:
+            del iteration, _kwargs
+            if action["action"] == "list_claims":
+                return {"claim_ledger": {"schema_version": "0.9.0"}, "claims": [root]}
+            return {"accepted": action["action"]}
+
+    bridge = CampaignMCPBridge(
+        _GrowingLedger(),
+        config=BridgeConfig(workspace=tmp_path, max_output_chars=30_000),
+    )
+    role = _call(bridge, "claims", {"view": "role", "claim_ids": ["claim_root"]})
+    encoded = json.dumps(role, separators=(",", ":"))
+    claim = role["claims"][0]
+
+    assert role.get("truncated") is not True
+    assert len(encoded) <= 30_000
+    assert claim["evidence_contracts"] == [contract]
+    assert len(claim["evidence"]) == 7
+    assert all(item["validation_result_count"] == 12 for item in claim["evidence"])
+    assert all(item["validation_results_omitted_count"] > 0 for item in claim["evidence"])
+    assert all(len(item["validation_results_sha256"]) == 64 for item in claim["evidence"])
+
+
 def test_bridge_never_retries_a_mutating_kernel_error(tmp_path: Path) -> None:
     class _FailingMutation(_FakeKernel):
         def execute_operation(

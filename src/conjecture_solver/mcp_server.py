@@ -38,7 +38,7 @@ DEFAULT_CLAIM_PAGE_SIZE = 24
 MAX_CLAIM_PAGE_SIZE = 100
 MAX_ROLE_CLAIMS = 1
 MAX_FULL_CLAIMS = 8
-MAX_ROLE_CONTRACTS = 8
+MAX_ROLE_CONTRACTS = 2
 MAX_ROLE_EVIDENCE = 8
 MAX_ROLE_NOTE_CHARS = 400
 MAX_ROLE_VALIDATION_RESULTS = 8
@@ -566,12 +566,14 @@ def _claim_summary(claim: Mapping[str, Any]) -> dict[str, Any]:
 def _tail_with_decisive_contract(
     contracts: list[Any],
     decisive_version: Any,
+    *,
+    maximum: int = MAX_ROLE_CONTRACTS,
 ) -> tuple[list[Any], bool]:
     """Keep the active contract tail and any older decisive contract."""
 
-    if len(contracts) <= MAX_ROLE_CONTRACTS:
+    if len(contracts) <= maximum:
         return contracts, False
-    selected = list(contracts[-MAX_ROLE_CONTRACTS:])
+    selected = list(contracts[-maximum:])
     if isinstance(decisive_version, int) and not isinstance(decisive_version, bool):
         decisive = next(
             (
@@ -612,6 +614,7 @@ def _select_role_evidence(
     evidence: list[Mapping[str, Any]],
     *,
     decisive_contract_version: Any,
+    maximum: int = MAX_ROLE_EVIDENCE,
 ) -> tuple[list[Mapping[str, Any]], dict[str, int]]:
     """Select a bounded, chronologically ordered and outcome-balanced view."""
 
@@ -641,12 +644,14 @@ def _select_role_evidence(
     # Preserve the newest representative of every semantically important
     # category before filling the remaining budget from the chronological tail.
     for name in ("decisive", "sufficient", "failed", "non_sufficient"):
+        if len(selected) >= maximum:
+            break
         if categories[name]:
             selected.add(categories[name][-1])
-    if evidence:
+    if evidence and len(selected) < maximum:
         selected.add(len(evidence) - 1)
     for index in range(len(evidence) - 1, -1, -1):
-        if len(selected) >= MAX_ROLE_EVIDENCE:
+        if len(selected) >= maximum:
             break
         selected.add(index)
 
@@ -662,12 +667,16 @@ def _select_role_evidence(
     return selected_evidence, counts
 
 
-def _compact_validation_results(value: Any) -> dict[str, Any]:
+def _compact_validation_results(
+    value: Any,
+    *,
+    maximum: int = MAX_ROLE_VALIDATION_RESULTS,
+) -> dict[str, Any]:
     raw = [item for item in value if isinstance(item, Mapping)] if isinstance(value, list) else []
     failed = [index for index, item in enumerate(raw) if item.get("passed") is False]
-    selected: set[int] = set(failed[-MAX_ROLE_VALIDATION_RESULTS:])
+    selected: set[int] = set(failed[-maximum:]) if maximum else set()
     for index in range(len(raw) - 1, -1, -1):
-        if len(selected) >= MAX_ROLE_VALIDATION_RESULTS:
+        if len(selected) >= maximum:
             break
         selected.add(index)
     projected = []
@@ -696,7 +705,11 @@ def _compact_validation_results(value: Any) -> dict[str, Any]:
     }
 
 
-def _role_evidence(evidence: Mapping[str, Any]) -> dict[str, Any]:
+def _role_evidence(
+    evidence: Mapping[str, Any],
+    *,
+    maximum_validation_results: int = MAX_ROLE_VALIDATION_RESULTS,
+) -> dict[str, Any]:
     provenance = evidence.get("provenance")
     if isinstance(provenance, Mapping):
         provenance = {
@@ -735,16 +748,28 @@ def _role_evidence(evidence: Mapping[str, Any]) -> dict[str, Any]:
         "iteration": evidence.get("iteration"),
         "provenance": provenance,
     }
-    projected.update(_compact_validation_results(evidence.get("validation_results")))
+    projected.update(
+        _compact_validation_results(
+            evidence.get("validation_results"),
+            maximum=maximum_validation_results,
+        )
+    )
     return projected
 
 
-def _claim_role_view(claim: Mapping[str, Any]) -> dict[str, Any]:
+def _claim_role_view(
+    claim: Mapping[str, Any],
+    *,
+    maximum_contracts: int = MAX_ROLE_CONTRACTS,
+    maximum_evidence: int = MAX_ROLE_EVIDENCE,
+    maximum_validation_results: int = MAX_ROLE_VALIDATION_RESULTS,
+) -> dict[str, Any]:
     raw_contracts = claim.get("evidence_contracts")
     contracts = list(raw_contracts) if isinstance(raw_contracts, list) else []
     selected_contracts, contracts_truncated = _tail_with_decisive_contract(
         contracts,
         claim.get("decisive_contract_version"),
+        maximum=maximum_contracts,
     )
     raw_evidence = claim.get("evidence")
     evidence = (
@@ -755,6 +780,7 @@ def _claim_role_view(claim: Mapping[str, Any]) -> dict[str, Any]:
     selected_evidence, evidence_selection = _select_role_evidence(
         evidence,
         decisive_contract_version=claim.get("decisive_contract_version"),
+        maximum=maximum_evidence,
     )
     return {
         "id": claim.get("id"),
@@ -781,12 +807,22 @@ def _claim_role_view(claim: Mapping[str, Any]) -> dict[str, Any]:
             if key.endswith("_omitted") and key != "omitted"
         },
         "evidence": [
-            _role_evidence(item) for item in selected_evidence if isinstance(item, Mapping)
+            _role_evidence(
+                item,
+                maximum_validation_results=maximum_validation_results,
+            )
+            for item in selected_evidence
+            if isinstance(item, Mapping)
         ],
     }
 
 
-def _project_claims(value: Any, query: Mapping[str, Any]) -> dict[str, Any]:
+def _project_claims(
+    value: Any,
+    query: Mapping[str, Any],
+    *,
+    maximum_output_chars: int | None = None,
+) -> dict[str, Any]:
     """Project a growing ledger before it crosses the bounded MCP surface."""
 
     if not isinstance(value, Mapping) or not isinstance(value.get("claims"), list):
@@ -838,34 +874,62 @@ def _project_claims(value: Any, query: Mapping[str, Any]) -> dict[str, Any]:
         and (folded_parent is None or str(claim.get("parent_id", "")).casefold() == folded_parent)
     ]
     page = matching[offset : offset + limit]
-    if view == "summary":
-        projected = [_claim_summary(claim) for claim in page]
-    elif view == "role":
-        projected = [_claim_role_view(claim) for claim in page]
-    else:
-        projected = list(page)
-
     available_ids = {str(claim.get("id", "")).casefold() for claim in raw_claims}
     ledger = value.get("claim_ledger")
     ledger = ledger if isinstance(ledger, Mapping) else {}
-    return {
-        "view": view,
-        "claim_ledger": {
-            "schema_version": ledger.get("schema_version"),
-            "claim_count": len(raw_claims),
-            "open_count": sum(claim.get("status") == "open" for claim in raw_claims),
-        },
-        "matching_claim_count": len(matching),
-        "offset": offset,
-        "limit": limit,
-        "has_more": offset + len(page) < len(matching),
-        "missing_claim_ids": (
-            []
-            if requested_ids is None
-            else [claim_id for claim_id in requested_ids if claim_id not in available_ids]
-        ),
-        "claims": projected,
-    }
+
+    def result_with(projected: list[Any]) -> dict[str, Any]:
+        return {
+            "view": view,
+            "claim_ledger": {
+                "schema_version": ledger.get("schema_version"),
+                "claim_count": len(raw_claims),
+                "open_count": sum(claim.get("status") == "open" for claim in raw_claims),
+            },
+            "matching_claim_count": len(matching),
+            "offset": offset,
+            "limit": limit,
+            "has_more": offset + len(page) < len(matching),
+            "missing_claim_ids": (
+                []
+                if requested_ids is None
+                else [claim_id for claim_id in requested_ids if claim_id not in available_ids]
+            ),
+            "claims": projected,
+        }
+
+    if view == "summary":
+        return result_with([_claim_summary(claim) for claim in page])
+    if view != "role":
+        return result_with(list(page))
+
+    # A role projection is a control-plane object, not a bulky archival view.
+    # It must retain its shape so DSH can continue a fresh role even after a
+    # claim has accumulated many failed observations. First retain the active
+    # contract (and an older decisive contract when applicable), then reduce
+    # repeated per-evidence validation detail until the configured wire budget
+    # is met. Counts and hashes still expose every omitted record.
+    validation_limits = (MAX_ROLE_VALIDATION_RESULTS, 4, 2, 1, 0)
+    last_result: dict[str, Any] | None = None
+    for evidence_limit in range(MAX_ROLE_EVIDENCE, 0, -1):
+        for validation_limit in validation_limits:
+            candidate = result_with(
+                [
+                    _claim_role_view(
+                        claim,
+                        maximum_evidence=evidence_limit,
+                        maximum_validation_results=validation_limit,
+                    )
+                    for claim in page
+                ]
+            )
+            last_result = candidate
+            if (
+                maximum_output_chars is None
+                or len(_compact_json(candidate)) <= maximum_output_chars
+            ):
+                return candidate
+    return last_result if last_result is not None else result_with([])
 
 
 def _maybe_await(value: _T | Awaitable[_T]) -> Awaitable[_T] | _T:
@@ -1258,7 +1322,11 @@ class CampaignMCPBridge:
             # select before the generic output bound can collapse the ledger
             # into an unusable digest/preview record.
             ledger = await self._execute_action("list_claims", {})
-            result = _project_claims(ledger, validated)
+            result = _project_claims(
+                ledger,
+                validated,
+                maximum_output_chars=self.config.max_output_chars,
+            )
         elif name in {
             "register_claim",
             "register_evidence_contract",
