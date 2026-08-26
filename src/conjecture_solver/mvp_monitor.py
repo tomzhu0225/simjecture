@@ -123,6 +123,8 @@ class CurrentAction(StrictModel):
     route: str | None = None
     research_note: str | None = None
     argv: tuple[str, ...] = ()
+    durable_job_id: str | None = None
+    wait_elapsed_seconds: float | None = Field(default=None, ge=0)
 
 
 class HeartbeatObservation(StrictModel):
@@ -837,6 +839,7 @@ class MVPRunMonitor:
         self._state = _TranscriptState()
         self._dsh_usage = _UsageState()
         self._dsh_model: str | None = None
+        self._dsh_active_jobs: dict[str, dict[str, Any]] = {}
         self._sidecar_cache: dict[str, tuple[int | None, dict[str, Any] | None]] = {}
 
     def snapshot(self, *, now: datetime | None = None) -> MVPRunSnapshot:
@@ -862,7 +865,9 @@ class MVPRunMonitor:
             warnings.append("hypothesis_ledger.json exists but could not be parsed")
         identity = self._identity(manifest, report, ledger, launch)
         phase = self._phase(report, dsh_state=dsh_state)
-        current = None if report is not None else self._current_action()
+        current = None
+        if report is None:
+            current = self._current_action() or self._current_dsh_job(loop_payload)
         claims = self._claims(ledger, report, current)
         model_iterations = len(self._state.assistant) or self._dsh_usage.usage_turns
         loop_state = self._loop_state(
@@ -1079,6 +1084,7 @@ class MVPRunMonitor:
         ):
             self._dsh_usage.reset()
             self._dsh_model = None
+            self._dsh_active_jobs.clear()
         self._dsh_cursor = cursor
         for record in records:
             if record.get("kind") == "route" and isinstance(record.get("model"), str):
@@ -1092,7 +1098,20 @@ class MVPRunMonitor:
                         record.get("kind") == "model" and record.get("status") == "responded"
                     ),
                 )
+            self._ingest_dsh_job(record)
         return [f"DSH activity: {warning}" for warning in warnings]
+
+    def _ingest_dsh_job(self, record: dict[str, Any]) -> None:
+        if record.get("kind") != "job":
+            return
+        job_id = record.get("job_id")
+        status = record.get("status")
+        if not isinstance(job_id, str) or not isinstance(status, str):
+            return
+        if status in {"waiting", "queued", "running", "cancel_requested"}:
+            self._dsh_active_jobs[job_id] = dict(record)
+        else:
+            self._dsh_active_jobs.pop(job_id, None)
 
     def _ingest_record(self, record: dict[str, Any], *, observed_at: datetime) -> None:
         kind = str(record.get("kind") or "unknown")
@@ -1446,6 +1465,47 @@ class MVPRunMonitor:
             route=record.get("route") if isinstance(record.get("route"), str) else None,
             research_note=action.research_note if action is not None else None,
             argv=tuple(str(item) for item in argv),
+        )
+
+    def _current_dsh_job(self, loop_payload: dict[str, Any] | None) -> CurrentAction | None:
+        if not self._dsh_active_jobs:
+            return None
+        record = next(reversed(self._dsh_active_jobs.values()))
+        tool = str(record.get("tool") or "")
+        if tool.endswith("run_evidence_capability"):
+            action_name = "run_capability"
+            stage = "evidence"
+            description = "Running a durable evidence capability job"
+        elif tool.endswith("run_workbench_capability"):
+            action_name = "run_capability"
+            stage = "workbench"
+            description = "Running a durable workbench capability job"
+        elif tool.endswith("run_python"):
+            action_name = "run_python"
+            stage = None
+            description = "Running a durable Python calculation job"
+        else:
+            action_name = tool.rsplit("__", 1)[-1] or None
+            stage = None
+            description = "Waiting for a durable scientific job"
+        active_claim_id = None
+        if isinstance(loop_payload, dict) and isinstance(
+            loop_payload.get("active_claim_id"), str
+        ):
+            active_claim_id = loop_payload["active_claim_id"]
+        wait_elapsed = record.get("wait_elapsed_seconds")
+        return CurrentAction(
+            iteration=max(1, self._dsh_usage.usage_turns),
+            action_name=action_name,
+            description=description,
+            pending=True,
+            stage=stage,
+            active_claim_id=active_claim_id,
+            model=self._dsh_model,
+            durable_job_id=str(record["job_id"]),
+            wait_elapsed_seconds=(
+                float(wait_elapsed) if isinstance(wait_elapsed, (int, float)) else None
+            ),
         )
 
     def _executions(
@@ -1817,7 +1877,14 @@ def format_human_status(snapshot: MVPRunSnapshot) -> str:
         details: list[str] = [f"iteration={action.iteration}"]
         if action.stage:
             details.append(f"stage={action.stage}")
-        if snapshot.latest_heartbeat and snapshot.latest_heartbeat.elapsed_wall_seconds is not None:
+        if action.durable_job_id:
+            details.append(f"job={action.durable_job_id}")
+        if action.wait_elapsed_seconds is not None:
+            details.append(f"job wait={int(action.wait_elapsed_seconds)} s")
+        elif (
+            snapshot.latest_heartbeat
+            and snapshot.latest_heartbeat.elapsed_wall_seconds is not None
+        ):
             details.append(f"elapsed={int(snapshot.latest_heartbeat.elapsed_wall_seconds)} s")
         details.append(f"workspace={format_bytes(snapshot.workspace_bytes)}")
         lines.append("  " + ", ".join(details))

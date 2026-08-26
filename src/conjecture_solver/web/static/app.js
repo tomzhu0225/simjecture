@@ -425,7 +425,13 @@ function renderCurrentAction(snapshot) {
   const value = container.querySelector("strong");
   if (snapshot.current_action) {
     symbol.textContent = snapshot.current_action.pending ? "◈" : "◇";
-    label.textContent = `Current action · iteration ${snapshot.current_action.iteration}`;
+    const wait = snapshot.current_action.wait_elapsed_seconds == null
+      ? ""
+      : ` · ${formatDuration(snapshot.current_action.wait_elapsed_seconds)}`;
+    const job = snapshot.current_action.durable_job_id
+      ? `job ${snapshot.current_action.durable_job_id.slice(0, 12)}${wait}`
+      : `iteration ${snapshot.current_action.iteration}`;
+    label.textContent = `Current action · ${job}`;
     renderMarkdown(value, snapshot.current_action.description, { inline: true });
     value.title = markdownPlainText(snapshot.current_action.description);
     return;
@@ -1576,6 +1582,19 @@ function renderResearchTrace() {
 }
 
 function engineEventSummary(event) {
+  if (event.kind === "job") {
+    const stage = String(event.tool || "").includes("run_evidence_capability")
+      ? "Evidence capability"
+      : String(event.tool || "").includes("run_workbench_capability")
+        ? "Workbench capability"
+        : String(event.tool || "").includes("run_python")
+          ? "Python calculation"
+          : "Scientific";
+    const elapsed = event.wait_elapsed_seconds == null
+      ? ""
+      : ` for ${formatDuration(event.wait_elapsed_seconds)}`;
+    return `${stage} job ${event.status}${elapsed}.`;
+  }
   if (event.kind === "tool") {
     return `${event.status === "running" ? "Calling" : "Tool call"} ${event.tool || event.call_id || "typed Simjecture tool"}: ${event.status}.`;
   }

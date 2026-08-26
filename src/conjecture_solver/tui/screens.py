@@ -669,7 +669,14 @@ class DashboardScreen(Screen[None]):
         details = [f"iteration={action.iteration}"]
         if action.stage:
             details.append(f"stage={action.stage}")
-        if snapshot.latest_heartbeat and snapshot.latest_heartbeat.elapsed_wall_seconds is not None:
+        if action.durable_job_id:
+            details.append(f"job={action.durable_job_id}")
+        if action.wait_elapsed_seconds is not None:
+            details.append(f"job wait={int(action.wait_elapsed_seconds)} s")
+        elif (
+            snapshot.latest_heartbeat
+            and snapshot.latest_heartbeat.elapsed_wall_seconds is not None
+        ):
             details.append(f"elapsed={int(snapshot.latest_heartbeat.elapsed_wall_seconds)} s")
         details.append(f"workspace={format_bytes(snapshot.workspace_bytes)}")
         return f"{action.description}\n" + ", ".join(details)

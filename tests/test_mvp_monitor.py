@@ -1007,6 +1007,72 @@ def test_dsh_and_independent_judge_usage_are_combined_incrementally(
         assert snapshot.last_model == "deepseek-v4-flash"
 
 
+def test_dsh_durable_job_is_projected_as_current_action(tmp_path: Path) -> None:
+    root = tmp_path / "dsh-job"
+    root.mkdir()
+    _write(root / "mvp_manifest.json", _manifest("A durable job remains operator-visible."))
+    activity = root / "operator_input" / "dsh_activity.jsonl"
+    _write(
+        activity,
+        "\n".join(
+            (
+                json.dumps(
+                    {
+                        "kind": "route",
+                        "status": "selected",
+                        "model": "deepseek-v4-flash",
+                    }
+                ),
+                json.dumps(
+                    {
+                        "kind": "model",
+                        "status": "responded",
+                        "usage": {"inputTokens": 100, "outputTokens": 20},
+                    }
+                ),
+                json.dumps(
+                    {
+                        "kind": "job",
+                        "status": "running",
+                        "job_id": "job-evidence-1",
+                        "tool": "mcp__simjecture__run_evidence_capability",
+                        "wait_elapsed_seconds": 42.5,
+                    }
+                ),
+            )
+        )
+        + "\n",
+    )
+
+    monitor = MVPRunMonitor(root)
+    running = monitor.snapshot()
+
+    assert running.current_action is not None
+    assert running.current_action.action_name == "run_capability"
+    assert running.current_action.stage == "evidence"
+    assert running.current_action.model == "deepseek-v4-flash"
+    assert running.current_action.durable_job_id == "job-evidence-1"
+    assert running.current_action.wait_elapsed_seconds == 42.5
+    assert "durable evidence" in running.current_action.description
+    assert "no pending action" not in format_human_status(running)
+
+    with activity.open("a") as handle:
+        handle.write(
+            json.dumps(
+                {
+                    "kind": "job",
+                    "status": "succeeded",
+                    "job_id": "job-evidence-1",
+                    "tool": "mcp__simjecture__run_evidence_capability",
+                }
+            )
+            + "\n"
+        )
+
+    finished = monitor.snapshot()
+    assert finished.current_action is None
+
+
 def test_adjudication_event_separates_record_completeness_from_disposition(
     tmp_path: Path,
 ) -> None:
