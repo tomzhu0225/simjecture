@@ -617,6 +617,19 @@ class MVPClaimLedgerStore:
                     "least one provenance-tracked attempt linked under an earlier "
                     "claim_decision contract"
                 )
+        bindings = tuple(
+            binding
+            for binding in (execution_binding, *additional_execution_bindings)
+            if binding is not None
+        )
+        if any(
+            binding.commissioning_argv in binding.allowed_scientific_argv
+            for binding in bindings
+        ):
+            raise ValueError(
+                "commissioning_argv is reserved for instrument qualification and "
+                "cannot also appear in allowed_scientific_argv"
+            )
         declared_aspects = {check.aspect for check in validation_checks if check.aspect is not None}
         is_bound_instrument_contract = (
             claim.kind == ClaimKind.INSTRUMENT

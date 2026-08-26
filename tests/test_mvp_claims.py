@@ -50,6 +50,42 @@ def test_machine_validation_keeps_non_numeric_scalars_type_strict() -> None:
     assert evaluate(None, None)
 
 
+def test_execution_binding_reserves_commissioning_command_from_science(
+    tmp_path: Path,
+) -> None:
+    binding = ClaimExecutionBinding(
+        capability="isolated-python",
+        program_path="analyze.py",
+        commissioning_argv=("analyze.py", "--output", "commissioning.json"),
+        allowed_scientific_argv=(
+            ("analyze.py", "--output", "commissioning.json"),
+            ("analyze.py", "--output", "science.json"),
+        ),
+    )
+    # Historical ledgers admitted before this invariant must remain readable.
+    assert ClaimExecutionBinding.model_validate(binding.model_dump()).commissioning_argv == (
+        "analyze.py",
+        "--output",
+        "commissioning.json",
+    )
+    store = MVPClaimLedgerStore(
+        tmp_path / "claims.json",
+        root_hypothesis="A prospective analysis command produces valid evidence.",
+    )
+    with pytest.raises(ValueError, match="commissioning_argv is reserved"):
+        store.register_evidence_contract(
+            claim_id="claim_root",
+            observable="A deterministic analysis result is recorded.",
+            expected_outcomes="The scientific result differs from qualification.",
+            decision_rule="The reported result decides the bounded claim.",
+            required_observation="Run the prospectively bound analysis command.",
+            uncertainty_criterion="The deterministic result is reported exactly.",
+            inconclusive_conditions="A missing result remains inconclusive.",
+            execution_binding=binding,
+            iteration=1,
+        )
+
+
 def test_bound_partial_instrument_contract_is_rejected_at_registration(
     tmp_path: Path,
 ) -> None:
