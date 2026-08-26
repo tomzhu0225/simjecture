@@ -35,6 +35,7 @@ from .mvp_claims import (
     ClaimEvidenceProvenance,
     ClaimEvidenceValidationCheck,
     ClaimExecutionBinding,
+    ClaimInputArtifactProvenance,
     ClaimKind,
     ClaimRelation,
     ClaimRepairContext,
@@ -85,6 +86,38 @@ class MVPActionBase(StrictModel):
     """Fields shared by every admitted model action."""
 
     research_note: str = Field(min_length=1)
+
+
+class MVPArtifactInput(StrictModel):
+    """Exact pre-existing data artifact consumed by one execution action."""
+
+    path: str = Field(min_length=1)
+    sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+    @model_validator(mode="after")
+    def path_stays_in_workspace(self) -> MVPArtifactInput:
+        requested = Path(self.path)
+        if requested.is_absolute() or ".." in requested.parts or "\x00" in self.path:
+            raise ValueError("input artifact path must stay within the relative workspace")
+        return self
+
+
+class MVPExecutionActionBase(MVPActionBase):
+    input_artifacts: tuple[MVPArtifactInput, ...] | None = Field(
+        default=None,
+        description=(
+            "Exact pre-existing data artifacts consumed by this execution. New "
+            "actions should provide [] when the calculation is self-contained; "
+            "None is retained only for legacy persisted actions."
+        ),
+    )
+
+    @model_validator(mode="after")
+    def input_artifact_paths_are_unique(self) -> MVPExecutionActionBase:
+        paths = tuple(item.path for item in self.input_artifacts or ())
+        if len(paths) != len(set(paths)):
+            raise ValueError("execution input artifact paths must be unique")
+        return self
 
 
 class MVPSearchLiteratureAction(MVPActionBase):
@@ -139,7 +172,7 @@ class MVPListFilesAction(MVPActionBase):
     path: str = Field(min_length=1)
 
 
-class MVPRunPythonAction(MVPActionBase):
+class MVPRunPythonAction(MVPExecutionActionBase):
     action: Literal[MVPActionKind.RUN_PYTHON]
     argv: tuple[str, ...] = Field(min_length=1)
     active_claim_id: str | None = Field(
@@ -171,7 +204,7 @@ class MVPMaterializeSkillResourceAction(MVPActionBase):
     )
 
 
-class MVPRunCapabilityAction(MVPActionBase):
+class MVPRunCapabilityAction(MVPExecutionActionBase):
     action: Literal[MVPActionKind.RUN_CAPABILITY]
     capability: str = Field(min_length=1)
     argv: tuple[str, ...] = Field(min_length=1)
@@ -198,7 +231,7 @@ class MVPRunCapabilityAction(MVPActionBase):
         return self
 
 
-class MVPAuthorAndRunCapabilityAction(MVPActionBase):
+class MVPAuthorAndRunCapabilityAction(MVPExecutionActionBase):
     action: Literal[MVPActionKind.AUTHOR_AND_RUN_CAPABILITY]
     path: str = Field(
         min_length=1,
@@ -1243,6 +1276,12 @@ establish words such as "throughout", "every", or strict monotonicity between sa
 Support such a claim only with an analytic structural argument, a validated enclosure or
 bound, or a statement explicitly limited to the sampled resolution. The evidence
 contract and final answer must say which scope was actually established.
+Every execution action must declare each pre-existing workspace data artifact it reads
+in input_artifacts with the exact content hash; use [] only for a genuinely self-contained
+calculation. Program source at argv[0] is sealed separately and is not a data input.
+Missing or changed inputs are rejected. An output derived from any untracked,
+workbench, guided-commissioning, or otherwise non-evidentiary input remains
+non-evidentiary; analysis cannot promote its source.
 Artifact identity and its generating action are recorded automatically. Supported and
 falsified dispositions require provenance-tracked evidence generated under a contract
 and marked observation_sufficient=true. Keep an open scientific claim for independent
@@ -2468,6 +2507,22 @@ software.
             if existing == manifest:
                 self._install_or_verify_guided_commissioning()
                 return
+            # DSH supplies its own role prompts and uses this runner only as a
+            # model-free scientific kernel.  Consequently, changes to the
+            # native MVP prompt must not strand a paused DSH campaign when
+            # every scientific and runtime contract field is unchanged.  A
+            # native campaign still requires an exact prompt identity match.
+            from .mvp_launch import load_launch_request
+
+            launch = load_launch_request(self.output)
+            if launch is not None and launch.engine == "dsh":
+                comparable_existing = dict(existing)
+                comparable_manifest = dict(manifest)
+                comparable_existing.pop("system_prompt_sha256", None)
+                comparable_manifest.pop("system_prompt_sha256", None)
+                if comparable_existing == comparable_manifest:
+                    self._install_or_verify_guided_commissioning()
+                    return
             if (
                 existing.get("schema_version") in {"0.17.0", "0.18.0"}
                 and self.guided_commissioning is None
@@ -2619,6 +2674,7 @@ software.
                 normalized_status == "succeeded"
                 and record.get("evidence_candidate") is True
                 and record.get("execution_succeeded") is True
+                and record.get("input_lineage_eligible", True) is True
             )
             changed = True
         if changed:
@@ -2714,7 +2770,12 @@ software.
 
     @staticmethod
     def _action_sha256(action: MVPAgentAction) -> str:
-        encoded = action.model_dump_json().encode()
+        excluded = (
+            {"input_artifacts"}
+            if getattr(action, "input_artifacts", None) is None
+            else None
+        )
+        encoded = action.model_dump_json(exclude=excluded).encode()
         return hashlib.sha256(encoded).hexdigest()
 
     def _program_metadata(self, relative: str | None) -> tuple[str | None, str | None]:
@@ -2725,6 +2786,56 @@ software.
         except ValueError:
             return None, None
         return str(metadata["path"]), str(metadata["sha256"])
+
+    def _resolve_input_artifacts(
+        self,
+        action: MVPAgentAction,
+    ) -> tuple[tuple[ClaimInputArtifactProvenance, ...], bool, tuple[str, ...]]:
+        declared = getattr(action, "input_artifacts", None)
+        if not declared:
+            return (), True, ()
+        resolved: list[ClaimInputArtifactProvenance] = []
+        issues: list[str] = []
+        artifacts = self._artifact_provenance["artifacts"]
+        for item in declared:
+            try:
+                metadata = self.sandbox.artifact_metadata(item.path)
+            except ValueError as error:
+                raise ValueError(
+                    f"declared input artifact {item.path!r} is unavailable: {error}"
+                ) from error
+            if metadata["sha256"] != item.sha256:
+                raise ValueError(
+                    f"declared input artifact {item.path!r} changed: expected "
+                    f"sha256={item.sha256}, observed sha256={metadata['sha256']}"
+                )
+            record = artifacts.get(metadata["path"])
+            tracked = bool(
+                isinstance(record, dict)
+                and record.get("bytes") == metadata["bytes"]
+                and record.get("mtime_ns") == metadata["mtime_ns"]
+            )
+            if not tracked:
+                record = {}
+            eligible = bool(tracked and record.get("evidence_eligible") is True)
+            if not tracked:
+                issues.append(f"input provenance is untracked: {metadata['path']}")
+            elif not eligible:
+                issues.append(f"input is not evidence eligible: {metadata['path']}")
+            resolved.append(
+                ClaimInputArtifactProvenance(
+                    path=metadata["path"],
+                    sha256=metadata["sha256"],
+                    bytes=metadata["bytes"],
+                    tracked=tracked,
+                    evidence_eligible=eligible,
+                    generated_iteration=record.get("generated_iteration"),
+                    action=record.get("action"),
+                    action_sha256=record.get("action_sha256"),
+                    operation_id=record.get("operation_id"),
+                )
+            )
+        return tuple(resolved), not issues, tuple(issues)
 
     def _record_artifact_changes(
         self,
@@ -2737,6 +2848,9 @@ software.
         execution_result: dict[str, Any] | None = None,
         skill_resource: dict[str, str] | None = None,
         execution_stage: MVPCapabilityExecutionStage | None = None,
+        input_artifacts: tuple[ClaimInputArtifactProvenance, ...] = (),
+        input_lineage_eligible: bool = True,
+        input_lineage_issues: tuple[str, ...] = (),
     ) -> dict[str, Any]:
         after = self.sandbox.artifact_inventory()
         changed = sorted(path for path, identity in after.items() if before.get(path) != identity)
@@ -2826,9 +2940,19 @@ software.
                 "operation_id": operation_id,
                 "job_id": None,
                 "job_status": "running" if operation_id and execution_action else None,
+                "input_artifacts_declared": bool(
+                    getattr(action, "input_artifacts", None) is not None
+                ),
+                "input_artifacts": [
+                    item.model_dump(mode="json") for item in input_artifacts
+                ],
+                "input_lineage_eligible": input_lineage_eligible,
+                "input_lineage_issues": list(input_lineage_issues),
                 "evidence_candidate": evidence_candidate,
                 "evidence_eligible": bool(
-                    evidence_candidate and not (operation_id and execution_action)
+                    evidence_candidate
+                    and input_lineage_eligible
+                    and not (operation_id and execution_action)
                 ),
             }
             if skill_resource is not None:
@@ -2872,6 +2996,10 @@ software.
             operation_id=record.get("operation_id"),
             job_id=record.get("job_id"),
             job_status=record.get("job_status"),
+            input_artifacts_declared=bool(record.get("input_artifacts_declared", False)),
+            input_artifacts=tuple(record.get("input_artifacts") or ()),
+            input_lineage_eligible=bool(record.get("input_lineage_eligible", True)),
+            input_lineage_issues=tuple(record.get("input_lineage_issues") or ()),
             evidence_eligible=bool(record.get("evidence_eligible", True)),
         )
 
@@ -3222,6 +3350,10 @@ software.
                 "artifact_provenance",
                 "artifact_changes",
                 "adaptive_contract_warning",
+                "input_artifacts_declared",
+                "input_artifact_count",
+                "input_lineage_eligible",
+                "input_lineage_issues",
             ):
                 if key in result:
                     summary[key] = result[key]
@@ -3705,6 +3837,9 @@ software.
             return self._with_claim_ledger(self.sandbox.list_files(action.path))
         if isinstance(action, MVPRunPythonAction):
             active_claim_id = self._validate_active_claim(action.active_claim_id)
+            input_artifacts, input_lineage_eligible, input_lineage_issues = (
+                self._resolve_input_artifacts(action)
+            )
             before = self.sandbox.artifact_inventory()
             preserved_program = self._preserve_inline_python(
                 action,
@@ -3722,9 +3857,16 @@ software.
                 active_claim_id=active_claim_id,
                 preserved_program=preserved_program,
                 execution_result=result,
+                input_artifacts=input_artifacts,
+                input_lineage_eligible=input_lineage_eligible,
+                input_lineage_issues=input_lineage_issues,
             )
             if preserved_program is not None:
                 result["preserved_program"] = preserved_program
+            result["input_artifacts_declared"] = action.input_artifacts is not None
+            result["input_artifact_count"] = len(input_artifacts)
+            result["input_lineage_eligible"] = input_lineage_eligible
+            result["input_lineage_issues"] = list(input_lineage_issues)
             return self._bind_active_claim(
                 result,
                 active_claim_id=active_claim_id,
@@ -3776,6 +3918,9 @@ software.
         if isinstance(action, MVPRunCapabilityAction):
             _program_path, program_sha256 = self._program_metadata(action.argv[0])
             active_claim_id = self._validate_active_claim(action.active_claim_id)
+            input_artifacts, input_lineage_eligible, input_lineage_issues = (
+                self._resolve_input_artifacts(action)
+            )
             commissioning_claim_id: str | None = None
             if action.stage == MVPCapabilityExecutionStage.EVIDENCE:
                 assert action.active_claim_id is not None
@@ -3805,14 +3950,22 @@ software.
                 active_claim_id=active_claim_id,
                 execution_result=result,
                 execution_stage=action.stage,
+                input_artifacts=input_artifacts,
+                input_lineage_eligible=input_lineage_eligible,
+                input_lineage_issues=input_lineage_issues,
             )
             result["execution_stage"] = action.stage.value
             result["scientific_evidence_eligible"] = (
                 action.stage == MVPCapabilityExecutionStage.EVIDENCE
+                and input_lineage_eligible
                 and result.get("returncode") == 0
                 and result.get("timed_out") is not True
                 and result.get("workspace_exceeded") is not True
             )
+            result["input_artifacts_declared"] = action.input_artifacts is not None
+            result["input_artifact_count"] = len(input_artifacts)
+            result["input_lineage_eligible"] = input_lineage_eligible
+            result["input_lineage_issues"] = list(input_lineage_issues)
             result["capability_preflight"] = preflight
             if commissioning_claim_id is not None:
                 result["execution_commissioning_claim_id"] = commissioning_claim_id
@@ -3823,6 +3976,9 @@ software.
         if isinstance(action, MVPAuthorAndRunCapabilityAction):
             program_sha256 = hashlib.sha256(action.content.encode()).hexdigest()
             active_claim_id = self._validate_active_claim(action.active_claim_id)
+            input_artifacts, input_lineage_eligible, input_lineage_issues = (
+                self._resolve_input_artifacts(action)
+            )
             commissioning_claim_id: str | None = None
             if action.stage == MVPCapabilityExecutionStage.EVIDENCE:
                 assert action.active_claim_id is not None
@@ -3855,6 +4011,9 @@ software.
                 active_claim_id=active_claim_id,
                 execution_result=execution_result,
                 execution_stage=action.stage,
+                input_artifacts=input_artifacts,
+                input_lineage_eligible=input_lineage_eligible,
+                input_lineage_issues=input_lineage_issues,
             )
             result = {
                 "write_result": write_result,
@@ -3863,10 +4022,15 @@ software.
                 "execution_stage": action.stage.value,
                 "scientific_evidence_eligible": (
                     action.stage == MVPCapabilityExecutionStage.EVIDENCE
+                    and input_lineage_eligible
                     and execution_result.get("returncode") == 0
                     and execution_result.get("timed_out") is not True
                     and execution_result.get("workspace_exceeded") is not True
                 ),
+                "input_artifacts_declared": action.input_artifacts is not None,
+                "input_artifact_count": len(input_artifacts),
+                "input_lineage_eligible": input_lineage_eligible,
+                "input_lineage_issues": list(input_lineage_issues),
                 "capability_preflight": preflight,
             }
             if commissioning_claim_id is not None:

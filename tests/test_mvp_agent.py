@@ -2176,6 +2176,185 @@ def test_workbench_capability_allows_free_revision_but_cannot_support_claim(
 
 
 @pytest.mark.skipif(shutil.which("bwrap") is None, reason="bubblewrap is unavailable")
+def test_run_python_cannot_launder_declared_workbench_input(tmp_path: Path) -> None:
+    skills, capabilities = _write_test_skill_and_capability(tmp_path)
+    anchor = "workbench observation\n"
+    client = ScriptedCompletionClient(
+        [
+            _action(
+                action="author_and_run_capability",
+                stage="workbench",
+                research_note="Create a deliberately non-evidentiary workbench observation.",
+                path="anchor.py",
+                content=(
+                    "from pathlib import Path\n"
+                    f"Path('anchor.txt').write_text({anchor!r})\n"
+                ),
+                capability="isolated-python",
+                argv=["anchor.py"],
+                input_artifacts=[],
+            ),
+            _action(
+                action="run_python",
+                research_note="Analyze the declared workbench input without promoting it.",
+                argv=[
+                    "-c",
+                    "from pathlib import Path; "
+                    "Path('derived.txt').write_text(Path('anchor.txt').read_text())",
+                ],
+                input_artifacts=[
+                    {
+                        "path": "anchor.txt",
+                        "sha256": hashlib.sha256(anchor.encode()).hexdigest(),
+                    }
+                ],
+            ),
+            _action(
+                action="finish",
+                research_note="Finish after verifying direct-input taint propagation.",
+                final_answer="The derived workbench analysis remains non-evidentiary.",
+            ),
+        ]
+    )
+    output = tmp_path / "workbench-lineage"
+    config = _config(max_iterations=4)
+    report = MVPAgentRunner(
+        hypothesis="A derived analysis cannot promote workbench data into evidence.",
+        output_directory=output,
+        completion_client=client,
+        sandbox=BubblewrapSandbox(output / "workspace", config, capabilities),
+        config=config,
+        skills=skills,
+        capabilities=capabilities,
+    ).run()
+
+    assert report.status == "completed"
+    provenance = json.loads((output / "artifact_provenance.json").read_text())["artifacts"]
+    anchor_record = provenance["anchor.txt"]
+    derived = provenance["derived.txt"]
+    assert anchor_record["execution_stage"] == "workbench"
+    assert anchor_record["evidence_eligible"] is False
+    assert derived["input_artifacts_declared"] is True
+    assert derived["input_lineage_eligible"] is False
+    assert derived["evidence_candidate"] is True
+    assert derived["evidence_eligible"] is False
+    assert derived["input_artifacts"] == [
+        {
+            "action": "author_and_run_capability",
+            "action_sha256": anchor_record["action_sha256"],
+            "bytes": len(anchor.encode()),
+            "evidence_eligible": False,
+            "generated_iteration": 1,
+            "operation_id": None,
+            "path": "anchor.txt",
+            "sha256": hashlib.sha256(anchor.encode()).hexdigest(),
+            "tracked": True,
+        }
+    ]
+
+
+@pytest.mark.skipif(shutil.which("bwrap") is None, reason="bubblewrap is unavailable")
+def test_run_python_preserves_eligible_declared_input_lineage(tmp_path: Path) -> None:
+    source = "qualified observation\n"
+    client = ScriptedCompletionClient(
+        [
+            _action(
+                action="run_python",
+                research_note="Generate a fresh self-contained source observation.",
+                argv=[
+                    "-c",
+                    f"from pathlib import Path; Path('source.txt').write_text({source!r})",
+                ],
+                input_artifacts=[],
+            ),
+            _action(
+                action="run_python",
+                research_note="Derive a result from the exact eligible source observation.",
+                argv=[
+                    "-c",
+                    "from pathlib import Path; "
+                    "Path('derived.txt').write_text(Path('source.txt').read_text())",
+                ],
+                input_artifacts=[
+                    {
+                        "path": "source.txt",
+                        "sha256": hashlib.sha256(source.encode()).hexdigest(),
+                    }
+                ],
+            ),
+            _action(
+                action="finish",
+                research_note="Finish after verifying eligible lineage propagation.",
+                final_answer="The content-addressed eligible lineage was preserved.",
+            ),
+        ]
+    )
+    output = tmp_path / "eligible-lineage"
+    config = _config(max_iterations=4)
+    report = MVPAgentRunner(
+        hypothesis="Eligible direct inputs remain eligible through a successful analysis.",
+        output_directory=output,
+        completion_client=client,
+        sandbox=BubblewrapSandbox(output / "workspace", config),
+        config=config,
+    ).run()
+
+    assert report.status == "completed"
+    provenance = json.loads((output / "artifact_provenance.json").read_text())["artifacts"]
+    assert provenance["source.txt"]["evidence_eligible"] is True
+    assert provenance["derived.txt"]["input_lineage_eligible"] is True
+    assert provenance["derived.txt"]["input_artifacts"][0]["evidence_eligible"] is True
+    assert provenance["derived.txt"]["evidence_eligible"] is True
+
+
+@pytest.mark.skipif(shutil.which("bwrap") is None, reason="bubblewrap is unavailable")
+def test_execution_rejects_changed_declared_input_before_side_effects(tmp_path: Path) -> None:
+    client = ScriptedCompletionClient(
+        [
+            _action(
+                action="write_file",
+                research_note="Create a tracked input whose declared digest will be wrong.",
+                path="input.txt",
+                content="actual\n",
+            ),
+            _action(
+                action="run_python",
+                research_note="Attempt execution against a mismatched content address.",
+                argv=[
+                    "-c",
+                    "from pathlib import Path; Path('should_not_exist.txt').write_text('bad')",
+                ],
+                input_artifacts=[{"path": "input.txt", "sha256": "0" * 64}],
+            ),
+            _action(
+                action="finish",
+                research_note="Finish after the pre-execution mismatch rejection.",
+                final_answer="The changed input was rejected before execution.",
+            ),
+        ]
+    )
+    output = tmp_path / "changed-input"
+    config = _config(max_iterations=4)
+    report = MVPAgentRunner(
+        hypothesis="Changed declared inputs are rejected before execution.",
+        output_directory=output,
+        completion_client=client,
+        sandbox=BubblewrapSandbox(output / "workspace", config),
+        config=config,
+    ).run()
+
+    assert report.status == "completed"
+    assert not (output / "workspace/should_not_exist.txt").exists()
+    tool_rows = [
+        json.loads(json.loads(line)["content"])["tool_result"]
+        for line in (output / "transcript.jsonl").read_text().splitlines()
+        if json.loads(line)["kind"] == "tool"
+    ]
+    assert tool_rows[1]["ok"] is False
+    assert "declared input artifact 'input.txt' changed" in tool_rows[1]["error"]
+
+
+@pytest.mark.skipif(shutil.which("bwrap") is None, reason="bubblewrap is unavailable")
 def test_capability_preflight_is_shared_across_campaigns(tmp_path: Path) -> None:
     skills, capabilities = _write_test_skill_and_capability(tmp_path)
     cache = tmp_path / "preflight-cache"

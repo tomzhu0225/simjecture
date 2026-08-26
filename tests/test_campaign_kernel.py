@@ -29,9 +29,12 @@ from conjecture_solver.literature import LiteratureSearchRecord, LiteratureSearc
 from conjecture_solver.models import utc_now
 from conjecture_solver.mvp_agent import (
     MVPActionKind,
+    MVPAgentRunner,
     MVPListSkillsAction,
     MVPWriteFileAction,
+    parse_mvp_action,
 )
+from conjecture_solver.mvp_launch import MVPLaunchRequest, materialize_operator_input
 
 
 class _OfflineLiterature:
@@ -182,6 +185,53 @@ def test_existing_worker_open_refuses_an_incomplete_campaign(tmp_path: Path) -> 
     campaign = tmp_path / "partial"
     campaign.mkdir()
     with pytest.raises(ValueError, match="missing initialized file"):
+        CampaignKernel.open_existing(workspace=campaign)
+
+
+def test_existing_dsh_campaign_ignores_only_native_prompt_hash_drift(
+    tmp_path: Path,
+) -> None:
+    campaign = tmp_path / "dsh-campaign"
+    materialize_operator_input(
+        MVPLaunchRequest(
+            campaign_id="dsh_prompt_compatibility",
+            hypothesis="DSH role prompts are external to the native runner prompt.",
+            output_directory=str(campaign),
+            engine="dsh",
+        )
+    )
+    CampaignKernel.open(workspace=campaign)
+    manifest_path = campaign / "mvp_manifest.json"
+    manifest = json.loads(manifest_path.read_text())
+    manifest["system_prompt_sha256"] = "0" * 64
+    manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
+
+    reopened = CampaignKernel.open_existing(workspace=campaign)
+
+    assert reopened.hypothesis == (
+        "DSH role prompts are external to the native runner prompt."
+    )
+
+
+def test_existing_native_campaign_rejects_native_prompt_hash_drift(
+    tmp_path: Path,
+) -> None:
+    campaign = tmp_path / "native-campaign"
+    materialize_operator_input(
+        MVPLaunchRequest(
+            campaign_id="native_prompt_compatibility",
+            hypothesis="Native campaigns retain an exact prompt identity.",
+            output_directory=str(campaign),
+            engine="native",
+        )
+    )
+    CampaignKernel.open(workspace=campaign)
+    manifest_path = campaign / "mvp_manifest.json"
+    manifest = json.loads(manifest_path.read_text())
+    manifest["system_prompt_sha256"] = "0" * 64
+    manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
+
+    with pytest.raises(ValueError, match="different run contract"):
         CampaignKernel.open_existing(workspace=campaign)
 
 
@@ -850,8 +900,30 @@ def test_typed_job_request_is_a_worker_command_not_raw_simulation_argv(
     assert request.argv[1:4] == ("-m", "conjecture_solver.kernel_worker", "--request")
     assert "--handshake" in request.argv
     assert request.metadata["action"]["action"] == "run_python"
+    assert "input_artifacts" not in request.metadata["action"]
     worker_request = json.loads(Path(request.metadata["request_path"]).read_text())
     assert "iteration" not in worker_request
+    assert "input_artifacts" not in worker_request["action"]
+
+
+def test_legacy_parent_action_keeps_fingerprint_after_new_worker_parse() -> None:
+    parent_payload = {
+        "action": "run_python",
+        "research_note": "Legacy parent request without an input sentinel.",
+        "argv": ["-c", "print('legacy')"],
+        "active_claim_id": None,
+    }
+    parsed_by_new_worker = parse_mvp_action(json.dumps(parent_payload))
+    canonical = CampaignKernel._canonical_action(parsed_by_new_worker)
+
+    assert canonical == parent_payload
+    assert "input_artifacts" not in canonical
+    assert CampaignKernel._operation_fingerprint(canonical, 30.0) == (
+        CampaignKernel._operation_fingerprint(parent_payload, 30.0)
+    )
+    assert MVPAgentRunner._action_sha256(parsed_by_new_worker) == (
+        "b82f43330e47266326a30d1bbeab426adb2866fcf57c6e8df0deb1841d7b2f97"
+    )
 
 
 def test_real_typed_async_action_reopens_kernel_and_persists_provenance(
@@ -878,8 +950,8 @@ def test_real_typed_async_action_reopens_kernel_and_persists_provenance(
         if state.status.terminal:
             break
         time.sleep(0.02)
-    assert state.status is CampaignJobStatus.SUCCEEDED
     report = kernel.job_report(state.job_id)
+    assert state.status is CampaignJobStatus.SUCCEEDED, report
     assert report["status"] == CampaignJobStatus.SUCCEEDED.value
     assert report["request"]["kind"] == "python"
     assert report["worker_receipt"]["ok"] is True
@@ -895,6 +967,61 @@ def test_real_typed_async_action_reopens_kernel_and_persists_provenance(
 
     reopened = CampaignKernel.open(workspace=campaign)
     assert reopened.job_status(state.job_id).status is CampaignJobStatus.SUCCEEDED
+
+
+def test_durable_job_finalization_preserves_ineligible_input_lineage(tmp_path: Path) -> None:
+    campaign = tmp_path / "campaign"
+    kernel = CampaignKernel.open(
+        workspace=campaign,
+        hypothesis="A durable analysis cannot promote a non-evidentiary input.",
+    )
+    _prepare_startup(kernel)
+    source = "non-evidentiary operator datum"
+    kernel.execute_operation(
+        "write-lineage-source",
+        {
+            "action": "write_file",
+            "research_note": "Create a tracked but non-evidentiary source artifact.",
+            "path": "source.txt",
+            "content": source,
+        },
+    )
+    state = kernel.start_job(
+        {
+            "operation_id": "durable-lineage-analysis",
+            "kind": "python",
+            "argv": [
+                "-c",
+                "from pathlib import Path; "
+                "Path('derived.txt').write_text(Path('source.txt').read_text())",
+            ],
+            "input_artifacts": [
+                {
+                    "path": "source.txt",
+                    "sha256": hashlib.sha256(source.encode()).hexdigest(),
+                }
+            ],
+            "timeout_seconds": 30,
+        }
+    )
+    deadline = time.monotonic() + 10
+    while time.monotonic() < deadline:
+        state = kernel.job_status(state.job_id)
+        if state.status.terminal:
+            break
+        time.sleep(0.02)
+
+    report = kernel.job_report(state.job_id)
+    assert state.status is CampaignJobStatus.SUCCEEDED, report
+    assert report["worker_receipt"]["ok"] is True
+    provenance = json.loads((campaign / "artifact_provenance.json").read_text())["artifacts"]
+    derived = provenance["derived.txt"]
+    assert derived["job_status"] == CampaignJobStatus.SUCCEEDED.value
+    assert derived["execution_succeeded"] is True
+    assert derived["input_lineage_eligible"] is False
+    assert derived["evidence_candidate"] is True
+    assert derived["evidence_eligible"] is False
+    assert report["request"]["action"]["input_artifacts"][0]["path"] == "source.txt"
 
 
 def test_typed_async_action_failure_is_not_reported_as_success(tmp_path: Path) -> None:

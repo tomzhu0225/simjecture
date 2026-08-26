@@ -183,6 +183,9 @@ def test_dsh_scientific_roles_are_fresh_scoped_and_durably_verified() -> None:
     assert "CampaignKernel claim pagination made no progress" in roles
     assert "campaign_instruction_truncated" in roles
     assert "view=instruction" in roles
+    assert "declare every pre-existing workspace data artifact" in roles
+    assert "Use input_artifacts=[] only when" in roles
+    assert "analysis cannot promote its source" in roles
     assert "verifyFalsifierResult" in roles
     assert "verifyRepairResult" in roles
     assert "await run.dispose()" in roles

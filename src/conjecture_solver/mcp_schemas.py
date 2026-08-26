@@ -137,6 +137,13 @@ _EXECUTION_BINDING = _object(
         "allowed_scientific_argv": _array(_array(_string())),
     }
 )
+_ARTIFACT_INPUT = _object(
+    {
+        "path": _string(),
+        "sha256": _string(),
+    }
+)
+_ARTIFACT_INPUT["required"] = ["path", "sha256"]
 _REPAIR_CONTEXT = _object(
     {
         "counterexample_paths": _array(_string()),
@@ -302,6 +309,7 @@ TOOL_SCHEMAS: dict[str, dict[str, Any]] = {
     "run_python": _object(
         {
             "argv": _array(_string()),
+            "input_artifacts": _array(_ARTIFACT_INPUT),
             **_OPERATION_ID,
             **_ACTIVE_CLAIM,
             "timeout_seconds": {"oneOf": [_integer(), {"type": "number"}]},
@@ -312,6 +320,7 @@ TOOL_SCHEMAS: dict[str, dict[str, Any]] = {
         {
             "capability": _string(),
             "argv": _array(_string()),
+            "input_artifacts": _array(_ARTIFACT_INPUT),
             **_OPERATION_ID,
             **_ACTIVE_CLAIM,
             "timeout_seconds": {"oneOf": [_integer(), {"type": "number"}]},
@@ -322,6 +331,7 @@ TOOL_SCHEMAS: dict[str, dict[str, Any]] = {
         {
             "capability": _string(),
             "argv": _array(_string()),
+            "input_artifacts": _array(_ARTIFACT_INPUT),
             **_OPERATION_ID,
             "active_claim_id": _string(),
             "timeout_seconds": {"oneOf": [_integer(), {"type": "number"}]},
@@ -400,13 +410,19 @@ TOOL_REQUIRED: dict[str, tuple[str, ...]] = {
     "read_workspace_file": ("path",),
     "write_workspace_file": ("operation_id", "path", "content"),
     "list_workspace_files": (),
-    "run_python": ("operation_id", "argv"),
-    "run_workbench_capability": ("operation_id", "capability", "argv"),
+    "run_python": ("operation_id", "argv", "input_artifacts"),
+    "run_workbench_capability": (
+        "operation_id",
+        "capability",
+        "argv",
+        "input_artifacts",
+    ),
     "run_evidence_capability": (
         "operation_id",
         "capability",
         "argv",
         "active_claim_id",
+        "input_artifacts",
     ),
     "job_status": ("job_id",),
     "cancel_job": ("operation_id", "job_id"),
@@ -479,13 +495,17 @@ TOOL_DESCRIPTIONS: dict[str, str] = {
     ),
     "run_python": (
         "Start one sandboxed Python job under a caller-chosen operation id and "
-        "return its durable job id. Reuse replays; conflicting reuse is rejected."
+        "return its durable job id. Declare every pre-existing data input by path "
+        "and SHA-256, or [] only when self-contained. Reuse replays; conflicting "
+        "reuse is rejected."
     ),
     "run_workbench_capability": (
-        "Start one non-evidentiary capability workbench job under a unique operation id."
+        "Start one non-evidentiary capability workbench job under a unique operation id, "
+        "with every pre-existing data input declared by path and SHA-256."
     ),
     "run_evidence_capability": (
-        "Start one prospectively contracted evidence capability job under a unique operation id."
+        "Start one prospectively contracted evidence capability job under a unique operation "
+        "id, with every pre-existing data input declared by path and SHA-256."
     ),
     "job_status": (
         "Read one scientific job. Omit report (or set it true) for bounded "
@@ -677,6 +697,16 @@ def _validate_input_bounds(name: str, value: Any, *, field: str = "arguments") -
             not isinstance(child, list) or not child or len(child) > 256
         ):
             raise ValueError(f"{name}.{key} must contain 1 to 256 arguments")
+        if key == "input_artifacts" and (
+            not isinstance(child, list) or len(child) > 256
+        ):
+            raise ValueError(f"{name}.input_artifacts must contain at most 256 entries")
+        if key == "sha256" and (
+            not isinstance(child, str)
+            or len(child) != 64
+            or any(character not in "0123456789abcdef" for character in child)
+        ):
+            raise ValueError(f"{name}.sha256 must be 64 lowercase hexadecimal characters")
         _validate_input_bounds(name, child, field=child_field)
 
 

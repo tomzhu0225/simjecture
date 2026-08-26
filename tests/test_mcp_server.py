@@ -143,11 +143,19 @@ def test_tool_catalog_is_flat_and_uses_only_the_dsh_schema_subset() -> None:
         "instruction",
         "full",
     ]
+    for name in (
+        "run_python",
+        "run_workbench_capability",
+        "run_evidence_capability",
+    ):
+        assert "input_artifacts" in TOOL_REQUIRED[name]
+        assert "input_artifacts" in TOOL_SCHEMAS[name]["required"]
 
 
 def test_bridge_dispatches_claim_workspace_and_job_tools(tmp_path: Path) -> None:
     kernel = _FakeKernel()
     bridge = CampaignMCPBridge(kernel, config=BridgeConfig(workspace=tmp_path))
+    input_artifact = {"path": "runs/source.json", "sha256": "a" * 64}
 
     assert _call(bridge, "snapshot") == {"campaign": "fake", "claims": []}
     claim_result = _call(
@@ -199,13 +207,29 @@ def test_bridge_dispatches_claim_workspace_and_job_tools(tmp_path: Path) -> None
         {
             "operation_id": "python-probe-1",
             "argv": ["-c", "print('ok')"],
+            "input_artifacts": [input_artifact],
             "timeout_seconds": 12,
         },
     ) == {"job_id": "job_fake", "status": "queued"}
     assert kernel.jobs[-1]["kind"] == "python"
     assert kernel.jobs[-1]["operation_id"] == "python-probe-1"
     assert kernel.jobs[-1]["argv"] == ["-c", "print('ok')"]
+    assert kernel.jobs[-1]["input_artifacts"] == [input_artifact]
     assert kernel.jobs[-1]["timeout_seconds"] == 12
+
+    _call(
+        bridge,
+        "run_workbench_capability",
+        {
+            "operation_id": "workbench-probe-1",
+            "capability": "demo",
+            "argv": ["demo.py"],
+            "input_artifacts": [input_artifact],
+        },
+    )
+    assert kernel.jobs[-1]["kind"] == "capability"
+    assert kernel.jobs[-1]["stage"] == "workbench"
+    assert kernel.jobs[-1]["input_artifacts"] == [input_artifact]
 
     _call(
         bridge,
@@ -215,6 +239,7 @@ def test_bridge_dispatches_claim_workspace_and_job_tools(tmp_path: Path) -> None
             "capability": "demo",
             "argv": ["demo.py"],
             "active_claim_id": "claim_demo",
+            "input_artifacts": [],
         },
     )
     assert kernel.jobs[-1]["kind"] == "capability"
@@ -375,7 +400,23 @@ def test_bridge_rejects_unsafe_or_unexposed_actions(tmp_path: Path) -> None:
         _call(
             bridge,
             "run_python",
-            {"operation_id": "empty-python", "argv": []},
+            {"operation_id": "empty-python", "argv": [], "input_artifacts": []},
+        )
+    with pytest.raises(MCPInputError, match="missing required argument.*input_artifacts"):
+        _call(
+            bridge,
+            "run_python",
+            {"operation_id": "missing-inputs", "argv": ["-c", "print('x')"]},
+        )
+    with pytest.raises(MCPInputError, match="64 lowercase hexadecimal"):
+        _call(
+            bridge,
+            "run_python",
+            {
+                "operation_id": "bad-input-hash",
+                "argv": ["-c", "print('x')"],
+                "input_artifacts": [{"path": "input.json", "sha256": "A" * 64}],
+            },
         )
 
 
@@ -453,6 +494,18 @@ def test_snapshot_summary_removes_duplicated_receipt_bulk(tmp_path: Path) -> Non
                             "operation_id": "run-one",
                             "job_id": "job_one",
                             "job_status": "succeeded",
+                            "input_artifacts_declared": True,
+                            "input_artifacts": [
+                                {
+                                    "path": "runs/source.json",
+                                    "sha256": "e" * 64,
+                                    "evidence_eligible": False,
+                                }
+                            ],
+                            "input_lineage_eligible": False,
+                            "input_lineage_issues": [
+                                "input 'runs/source.json' is ineligible"
+                            ],
                         }
                     },
                 },
@@ -484,6 +537,13 @@ def test_snapshot_summary_removes_duplicated_receipt_bulk(tmp_path: Path) -> Non
     artifact = summary["artifact_provenance"]["artifacts"]["runs/result.json"]
     assert "command_argv" not in artifact
     assert artifact["job_status"] == "succeeded"
+    assert artifact["input_artifacts_declared"] is True
+    assert artifact["input_artifact_count"] == 1
+    assert artifact["input_lineage_eligible"] is False
+    assert artifact["input_lineage_issues"] == [
+        "input 'runs/source.json' is ineligible"
+    ]
+    assert "input_artifacts" not in artifact
 
     exact_instruction = _call(bridge, "snapshot", {"view": "instruction"})
     assert exact_instruction == {
@@ -542,6 +602,16 @@ def test_claim_views_project_before_the_output_bound(tmp_path: Path) -> None:
                     "evidence_eligible": True,
                     "execution_succeeded": True,
                     "command_argv": ["guided/sim.py", "--science"],
+                    "input_artifacts_declared": True,
+                    "input_artifacts": [
+                        {
+                            "path": "runs/source.json",
+                            "sha256": "c" * 64,
+                            "evidence_eligible": True,
+                        }
+                    ],
+                    "input_lineage_eligible": True,
+                    "input_lineage_issues": [],
                 },
             }
         ],
@@ -619,6 +689,9 @@ def test_claim_views_project_before_the_output_bound(tmp_path: Path) -> None:
         "guided/sim.py",
         "--science",
     ]
+    assert projected_evidence["provenance"]["input_artifact_count"] == 1
+    assert projected_evidence["provenance"]["input_lineage_eligible"] is True
+    assert "input_artifacts" not in projected_evidence["provenance"]
 
     missing = _call(
         bridge,

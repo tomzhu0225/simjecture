@@ -398,6 +398,10 @@ def _snapshot_artifacts(value: Any) -> dict[str, Any]:
                 "operation_id": record.get("operation_id"),
                 "job_id": record.get("job_id"),
                 "job_status": record.get("job_status"),
+                "input_artifacts_declared": record.get("input_artifacts_declared"),
+                "input_artifact_count": len(record.get("input_artifacts") or ()),
+                "input_lineage_eligible": record.get("input_lineage_eligible"),
+                "input_lineage_issues": list(record.get("input_lineage_issues") or ())[:5],
             }
             for path, record in selected
             if isinstance(record, Mapping)
@@ -712,6 +716,7 @@ def _role_evidence(
 ) -> dict[str, Any]:
     provenance = evidence.get("provenance")
     if isinstance(provenance, Mapping):
+        input_artifacts = provenance.get("input_artifacts")
         provenance = {
             key: provenance.get(key)
             for key in (
@@ -732,9 +737,17 @@ def _role_evidence(
                 "job_id",
                 "job_status",
                 "generated_iteration",
+                "input_artifacts_declared",
+                "input_lineage_eligible",
+                "input_lineage_issues",
             )
             if key in provenance
         }
+        provenance["input_artifact_count"] = (
+            len(input_artifacts) if isinstance(input_artifacts, list) else 0
+        )
+        if isinstance(provenance.get("input_lineage_issues"), list):
+            provenance["input_lineage_issues"] = provenance["input_lineage_issues"][:5]
     else:
         provenance = None
     projected = {
@@ -1384,6 +1397,7 @@ class CampaignMCPBridge:
                     "kind": "python",
                     "argv": list(payload["argv"]),
                     "active_claim_id": payload.get("active_claim_id"),
+                    "input_artifacts": list(payload["input_artifacts"]),
                     "timeout_seconds": timeout,
                 }
             else:
@@ -1394,6 +1408,7 @@ class CampaignMCPBridge:
                     "argv": list(payload["argv"]),
                     "stage": "evidence" if name == "run_evidence_capability" else "workbench",
                     "active_claim_id": payload.get("active_claim_id"),
+                    "input_artifacts": list(payload["input_artifacts"]),
                     "timeout_seconds": timeout,
                 }
             if research_note is not None:

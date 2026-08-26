@@ -147,6 +147,13 @@ debugging. Never use
 run_python merely to print or slice a file. Plain run_python is not a named capability:
 omit execution bindings and commissioning-only aspect labels from
 its ordinary scientific contract.
+For every run_python, run_workbench_capability, or run_evidence_capability call,
+declare every pre-existing workspace data artifact the program reads in
+input_artifacts with its exact SHA-256. Use input_artifacts=[] only when the
+calculation reads no pre-existing workspace data beyond its separately sealed
+program source. Missing or changed inputs are rejected. Outputs derived from
+untracked, guided-commissioning, workbench, or otherwise non-evidentiary data
+remain non-evidentiary; analysis cannot promote its source.
 Supported or closed commissioning claims are immutable: do not widen or re-close them.
 If a necessary command lies outside
 an existing supported instrument's exact binding, register a fresh

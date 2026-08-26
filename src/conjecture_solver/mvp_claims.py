@@ -213,6 +213,20 @@ class ClaimEvidenceContract(StrictModel):
         return (self.execution_binding, *self.additional_execution_bindings)
 
 
+class ClaimInputArtifactProvenance(StrictModel):
+    """Content-addressed direct input recorded for one generating execution."""
+
+    path: str = Field(min_length=1)
+    sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    bytes: int = Field(ge=0)
+    tracked: bool
+    evidence_eligible: bool
+    generated_iteration: int | None = Field(default=None, ge=0)
+    action: str | None = None
+    action_sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
+    operation_id: str | None = Field(default=None, max_length=256)
+
+
 class ClaimEvidenceProvenance(StrictModel):
     """Immutable identity and generating-action metadata for a workspace artifact."""
 
@@ -248,6 +262,10 @@ class ClaimEvidenceProvenance(StrictModel):
         ]
         | None
     ) = None
+    input_artifacts_declared: bool = False
+    input_artifacts: tuple[ClaimInputArtifactProvenance, ...] = ()
+    input_lineage_eligible: bool = True
+    input_lineage_issues: tuple[str, ...] = ()
     evidence_eligible: bool = True
 
 
@@ -1279,9 +1297,10 @@ class MVPClaimLedgerStore:
                 )
             if not provenance.evidence_eligible:
                 raise ValueError(
-                    "cannot mark a workbench artifact sufficient; freeze and promote "
-                    "the program through prospective commissioning, then generate a "
-                    "fresh evidence-stage artifact"
+                    "cannot mark a workbench artifact or a derived artifact sufficient "
+                    "when it or one of its declared inputs is not evidence eligible; "
+                    "freeze and promote the program through prospective commissioning, "
+                    "then generate a fresh evidence-stage artifact"
                 )
             if (
                 not provenance.tracked

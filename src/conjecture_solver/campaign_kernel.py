@@ -954,11 +954,13 @@ class CampaignKernel:
 
     @staticmethod
     def _canonical_action(action: Any) -> dict[str, Any]:
-        if isinstance(action, Mapping):
-            return dict(action)
-        dumped = action.model_dump(mode="json")
+        dumped = (
+            dict(action) if isinstance(action, Mapping) else action.model_dump(mode="json")
+        )
         if not isinstance(dumped, dict):
             raise TypeError("campaign action must serialize to an object")
+        if dumped.get("input_artifacts") is None:
+            dumped.pop("input_artifacts", None)
         return dumped
 
     @staticmethod
@@ -2421,7 +2423,10 @@ class CampaignKernel:
             }
         else:
             raise ValueError("job kind must be 'python' or 'capability'")
+        if "input_artifacts" in payload:
+            action_payload["input_artifacts"] = payload["input_artifacts"]
         action = parse_mvp_action(json.dumps(action_payload, separators=(",", ":")))
+        canonical_action = self._canonical_action(action)
         raw_timeout = payload.get("timeout_seconds")
         if raw_timeout is not None:
             if (
@@ -2444,7 +2449,7 @@ class CampaignKernel:
             "operation_id": operation_id,
             "campaign": str(output),
             "timeout_seconds": requested_timeout,
-            "action": action.model_dump(mode="json"),
+            "action": canonical_action,
         }
         worker_digest = kernel_worker_request_sha256(worker_payload)
         worker_payload["worker_request_sha256"] = worker_digest
@@ -2465,7 +2470,7 @@ class CampaignKernel:
         metadata = {
             **{key: value for key, value in payload.items() if key != "iteration"},
             "kind": kind,
-            "action": action.model_dump(mode="json"),
+            "action": canonical_action,
             "request_path": str(request_path),
             "worker_request_sha256": worker_digest,
             "worker_result_path": str(result_path),
@@ -2483,7 +2488,7 @@ class CampaignKernel:
                 existing_request = jobs.request_record(existing_job_id)
                 existing_metadata = existing_request.metadata
                 if (
-                    existing_metadata.get("action") != action.model_dump(mode="json")
+                    existing_metadata.get("action") != canonical_action
                     or existing_metadata.get("requested_timeout_seconds") != requested_timeout
                 ):
                     raise JobConflictError(
@@ -2492,7 +2497,7 @@ class CampaignKernel:
                 return self.job_status(existing_job_id)
             journal = self._load_action_journal()
             fingerprint = self._operation_fingerprint(
-                action.model_dump(mode="json"), requested_timeout
+                canonical_action, requested_timeout
             )
             existing_record = (journal.get("operations") or {}).get(operation_id)
             if existing_record is not None:
@@ -2515,7 +2520,7 @@ class CampaignKernel:
                 "operation_id": operation_id,
                 "sequence": sequence,
                 "fingerprint": fingerprint,
-                "action": action.model_dump(mode="json"),
+                "action": canonical_action,
                 "requested_timeout_seconds": requested_timeout,
                 "effective_timeout_seconds": effective_timeout,
                 "status": "submitted",
