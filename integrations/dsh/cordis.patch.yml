@@ -19,7 +19,16 @@
       disposition. Support, falsification, instrument limitation, and unresolved
       closure remain distinct; a falsified claim returns to the repair loop. For
       an insufficient record, start another fresh Falsifier with the judge's
-      evidence gaps and next test. Preserve unknown, inconclusive, and blocked
+      evidence gaps and next test. A raw blocked Falsifier handoff is resolved
+      below the Lead surface by a fresh Blocker Resolver. If simjecture_falsify
+      returns inconclusive with required_transition=continue_falsification, send
+      its exact evidence gaps and executable next test to a fresh Falsifier. If
+      it returns ready_for_adjudication with
+      required_transition=independent_adjudication, send its exact terminal
+      contract and sufficiency case to the Judge. Use
+      simjecture_resolve_blocker only to resume a durable pre-upgrade blocker or
+      retry the exact blocker-resolution assignment. Never call finalize while
+      any scientific claim remains open. Preserve unknown and inconclusive
       outcomes instead of guessing. After process
       resume or semantic compaction, read snapshot before continuing and
       reconcile every durable claim and job. Reuse assignment and operation IDs

@@ -9,6 +9,7 @@
  * that worker.
  */
 
+import { createHash } from 'node:crypto'
 import { appendFileSync } from 'node:fs'
 import { CallId } from '@deepseek-ai/dsh-llm'
 
@@ -21,6 +22,7 @@ export const LEAD_TOOL_NAMES = Object.freeze([
   `${MCP}snapshot`,
   `${MCP}claims`,
   'simjecture_falsify',
+  'simjecture_resolve_blocker',
   'simjecture_repair',
   'simjecture_adjudicate',
   `${MCP}finalize_campaign`,
@@ -57,6 +59,14 @@ export const REPAIR_TOOL_NAMES = Object.freeze([
   `${MCP}list_workspace_files`,
   `${MCP}register_claim`,
   `${MCP}register_evidence_contract`,
+])
+
+export const BLOCKER_RESOLVER_TOOL_NAMES = Object.freeze([
+  `${MCP}snapshot`,
+  `${MCP}claims`,
+  `${MCP}register_evidence_contract`,
+  `${MCP}record_terminal_observation`,
+  `${MCP}link_claim_evidence`,
 ])
 
 export const FALSIFIER_SCHEMA = {
@@ -121,6 +131,42 @@ export const REPAIR_SCHEMA = {
   ],
 }
 
+export const BLOCKER_RESOLUTION_SCHEMA = {
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    assignment_id: { type: 'string' },
+    claim_id: { type: 'string' },
+    outcome: { type: 'string', enum: ['feasible_test', 'ready_for_adjudication'] },
+    contract_version: { oneOf: [{ type: 'integer' }, { type: 'null' }] },
+    evidence_purpose: {
+      oneOf: [
+        { type: 'string', enum: ['terminal_record'] },
+        { type: 'null' },
+      ],
+    },
+    decisive_evidence_paths: { type: 'array', items: { type: 'string' } },
+    case_for_sufficiency: { oneOf: [{ type: 'string' }, { type: 'null' }] },
+    alternatives_considered: { type: 'array', items: { type: 'string' } },
+    feasibility_assessment: { type: 'string' },
+    evidence_gaps: { type: 'array', items: { type: 'string' } },
+    next_test: { oneOf: [{ type: 'string' }, { type: 'null' }] },
+  },
+  required: [
+    'assignment_id',
+    'claim_id',
+    'outcome',
+    'contract_version',
+    'evidence_purpose',
+    'decisive_evidence_paths',
+    'case_for_sufficiency',
+    'alternatives_considered',
+    'feasibility_assessment',
+    'evidence_gaps',
+    'next_test',
+  ],
+}
+
 const FALSIFIER_PERSONA = `You are the fresh Falsifier/Experimenter for one
 claim in a falsification-first computational-science campaign. You have no
 parent conversation. Your first action must be snapshot; reconcile it with the
@@ -175,23 +221,26 @@ the active contract; that records contract compliance and does not declare
 scientific support. Never replace a claim_decision contract with a contract
 whose success condition is merely failure to realize the claim's antecedent,
 failure of a tool, or documentation of a blocker. If such a blocker prevents a
-valid scientific test, register a prospective successor contract with
-evidence_purpose=terminal_record, collect fresh observations under it, and use
-that record only to request an instrument_limited or unresolved disposition.
+valid scientific test or leaves feasibility uncertain, do not manufacture a
+terminal record yourself. Return blocked with the concrete obstacle, relevant
+durable paths, evidence gaps, and best next test so the fresh Blocker Resolver
+can audit feasibility independently.
 You may close the assigned scientific claim only as falsified when a contracted
 counterexample is accepted by the kernel. Never declare scientific support,
 instrument_limited, or unresolved yourself and never create a repaired
 scientific hypothesis. ready_for_adjudication means a complete terminal record
 for independent judgment; it does not mean the claim is supported. Return it
-for a complete claim_decision record or a complete terminal_record blocker
-record, with case_for_sufficiency arguing only record completeness. Return
-blocked only when you cannot produce even a complete auditable terminal record;
-otherwise preserve the record for the independent judge. Keep working until
+for a complete claim_decision package, or for a qualifying terminal_record
+package that was already durable when this assignment began. Return blocked only
+when a durable tool, numerical, resource, or realization obstacle prevents you
+from deciding whether a feasible discriminating test remains. The harness sends
+blocked to a fresh Blocker Resolver; blocked never authorizes finalization by
+the Lead or an immediate scientific disposition. Keep working until
 one declared outcome is true or a durable blocker is reached. Use operation IDs
 beginning with the assignment id. End only through the required structured
 output. In that output, set evidence_purpose to the exact purpose of the selected
-contract for falsified or ready_for_adjudication, and otherwise to the purpose
-of a cited contract or null. Do not expose private chain-of-thought.`
+contract for falsified, ready_for_adjudication, or blocked, and otherwise to the
+purpose of a cited contract or null. Do not expose private chain-of-thought.`
 
 const REPAIR_PERSONA = `You are the fresh Repair Scientist for one falsified
 scientific claim. You have no parent conversation. Your first action must be
@@ -207,6 +256,33 @@ its prospective evidence contract. Do not run simulations, link evidence,
 close claims, adjudicate, or finalize; the next fresh Falsifier will test the
 child. Use operation IDs beginning with the assignment id. End only through the
 required structured output; do not expose private chain-of-thought.`
+
+const BLOCKER_RESOLVER_PERSONA = `You are the fresh Blocker Resolver for one
+open scientific claim. You have no parent conversation. Your first action must
+be snapshot; reconcile the durable budget and authenticated job states with the
+blocked Falsifier handoff. Then call claims with view=role and claim_ids
+containing only the assigned claim. Decide exactly one question: does a concrete
+feasible discriminating test remain under the campaign's actual tools, budget,
+and prior results? Do not equate inconvenience, an earlier failed setup, or a
+researcher's assertion with infeasibility.
+
+If a feasible test remains, make no mutation and return outcome=feasible_test
+with concrete evidence_gaps and one executable next_test. If no feasible
+alternative remains, register a new prospective contract with
+evidence_purpose=terminal_record, newer than every existing contract on the
+assigned claim. Its observation and
+uncertainty rules must distinguish an
+authenticated durable blocker from ordinary model failure. Then call
+mcp__simjecture__record_terminal_observation with the exact new contract, a
+non-empty set of relevant durable job_ids, a fresh JSON path in its path field,
+alternatives_considered, and your bounded feasibility_assessment. Link the
+returned artifact to the same contract with observation_sufficient=true. Return
+outcome=ready_for_adjudication only after that durable link exists, cite its
+path, and provide a bounded case_for_sufficiency about terminal-record
+completeness only. Never run a simulation, write an ordinary workspace file,
+close a claim, assign a scientific disposition, or finalize the campaign. Use
+operation IDs beginning with the assignment id. End only through the required
+structured output and do not expose private chain-of-thought.`
 
 function now() {
   return new Date().toISOString()
@@ -286,6 +362,58 @@ function contractByVersion(claim, version) {
 
 function contractPurpose(contract) {
   return contract?.evidence_purpose ?? 'claim_decision'
+}
+
+function qualifyingContractEvidence(claim, contractVersion) {
+  return (claim.evidence ?? []).filter(evidence => (
+    evidence.contract_version === contractVersion
+    && evidence.observation_sufficient === true
+    && evidence.provenance?.tracked === true
+    && evidence.provenance?.evidence_eligible === true
+    && evidence.provenance?.execution_succeeded !== false
+  ))
+}
+
+function verifyAdjudicationHandoff(structured, claim, requiredPurpose) {
+  const selectedContract = contractByVersion(claim, structured.contract_version)
+  if (claim.status !== 'open' || selectedContract === undefined) {
+    throw new Error('Falsifier adjudication handoff has no matching open contracted claim')
+  }
+  if (structured.evidence_purpose !== contractPurpose(selectedContract)) {
+    throw new Error('Falsifier adjudication handoff misstates its contract evidence_purpose')
+  }
+  if (requiredPurpose !== undefined && structured.evidence_purpose !== requiredPurpose) {
+    throw new Error(`Falsifier ${structured.outcome} handoff requires a ${requiredPurpose} contract`)
+  }
+  if (qualifyingContractEvidence(claim, structured.contract_version).length === 0) {
+    throw new Error(
+      'Falsifier adjudication handoff requires durable evidence marked '
+      + 'observation_sufficient=true under its selected contract',
+    )
+  }
+  const qualifyingVersions = (claim.evidence ?? [])
+    .filter(evidence => (
+      Number.isInteger(evidence.contract_version)
+      && evidence.observation_sufficient === true
+      && evidence.provenance?.tracked === true
+      && evidence.provenance?.evidence_eligible === true
+      && evidence.provenance?.execution_succeeded !== false
+    ))
+    .map(evidence => evidence.contract_version)
+  const newestQualifyingVersion = Math.max(...qualifyingVersions)
+  if (structured.contract_version !== newestQualifyingVersion) {
+    throw new Error(
+      'Falsifier adjudication handoff must select the newest contract with qualifying evidence',
+    )
+  }
+  if (
+    typeof structured.case_for_sufficiency !== 'string'
+    || structured.case_for_sufficiency.length < 16
+  ) {
+    throw new Error(
+      'Falsifier adjudication handoff requires a bounded case for terminal record completeness',
+    )
+  }
 }
 
 function compactClaim(claim) {
@@ -515,6 +643,20 @@ function installAssignmentGuard(child, assignment) {
       return undefined
     }
 
+    if (assignment.role === 'blocker_resolver') {
+      if (exec.name === `${MCP}snapshot` || exec.name === `${MCP}claims`) return undefined
+      if (claimId !== assignment.targetId) {
+        return 'the Blocker Resolver may mutate only its assigned scientific claim'
+      }
+      if (
+        exec.name === `${MCP}register_evidence_contract`
+        && args.evidence_purpose !== 'terminal_record'
+      ) {
+        return 'the Blocker Resolver may register only a terminal_record contract'
+      }
+      return undefined
+    }
+
     if (exec.name === `${MCP}register_claim`) {
       const parentId = typeof args.parent_id === 'string' ? args.parent_id.toLowerCase() : ''
       const candidateId = typeof args.claim_id === 'string' ? args.claim_id.toLowerCase() : ''
@@ -602,49 +744,16 @@ function verifyFalsifierResult(args, structured, claims) {
       throw new Error('Falsification requires a claim_decision contract handoff')
     }
   } else if (structured.outcome === 'ready_for_adjudication') {
-    const selectedContract = contractByVersion(claim, structured.contract_version)
-    if (claim.status !== 'open' || selectedContract === undefined) {
-      throw new Error('Falsifier adjudication handoff has no matching open contracted claim')
-    }
-    if (structured.evidence_purpose !== contractPurpose(selectedContract)) {
-      throw new Error('Falsifier adjudication handoff misstates its contract evidence_purpose')
-    }
-    const qualifying = (claim.evidence ?? []).filter(evidence => (
-      evidence.contract_version === structured.contract_version
-      && evidence.observation_sufficient === true
-      && evidence.provenance?.tracked === true
-      && evidence.provenance?.evidence_eligible === true
-      && evidence.provenance?.execution_succeeded !== false
-    ))
-    if (qualifying.length === 0) {
-      throw new Error(
-        'Falsifier adjudication handoff requires durable evidence marked '
-        + 'observation_sufficient=true under its selected contract',
-      )
-    }
-    const newestQualifyingVersion = Math.max(
-      ...(claim.evidence ?? [])
-        .filter(evidence => (
-          Number.isInteger(evidence.contract_version)
-          && evidence.observation_sufficient === true
-          && evidence.provenance?.tracked === true
-          && evidence.provenance?.evidence_eligible === true
-          && evidence.provenance?.execution_succeeded !== false
-        ))
-        .map(evidence => evidence.contract_version),
-    )
-    if (structured.contract_version !== newestQualifyingVersion) {
-      throw new Error(
-        'Falsifier adjudication handoff must select the newest contract with qualifying evidence',
-      )
-    }
+    verifyAdjudicationHandoff(structured, claim)
+  } else if (structured.outcome === 'blocked') {
     if (
-      typeof structured.case_for_sufficiency !== 'string'
-      || structured.case_for_sufficiency.length < 16
-    ) {
-      throw new Error(
-        'Falsifier adjudication handoff requires a bounded case for terminal record completeness',
+      claim.status !== 'open'
+      || (
+        structured.evidence_gaps.length === 0
+        && (typeof structured.next_test !== 'string' || structured.next_test.length < 8)
       )
+    ) {
+      throw new Error('Falsifier blocker must preserve an open claim and identify its obstacle')
     }
   }
   return { ...structured, durable_claim_status: claim.status }
@@ -682,6 +791,67 @@ function verifyRepairResult(args, structured, claims) {
     throw new Error('Repair Scientist handoff does not match a durable open contracted repair child')
   }
   return { ...structured, durable_claim_status: child.status }
+}
+
+function verifyBlockerResolutionResult(args, structured, claims) {
+  if (structured.assignment_id !== args.assignment_id || structured.claim_id !== args.claim_id) {
+    throw new Error('Blocker Resolver returned a result for a different assignment or claim')
+  }
+  const claim = claimById(claims, args.claim_id)
+  if (claim === undefined || claim.status !== 'open') {
+    throw new Error('Blocker Resolver requires the assigned scientific claim to remain open')
+  }
+  if (
+    !Array.isArray(structured.alternatives_considered)
+    || structured.alternatives_considered.length === 0
+    || typeof structured.feasibility_assessment !== 'string'
+    || structured.feasibility_assessment.length < 16
+  ) {
+    throw new Error('Blocker Resolver must provide a bounded feasibility audit')
+  }
+  if (structured.outcome === 'feasible_test') {
+    if (
+      structured.evidence_gaps.length === 0
+      || typeof structured.next_test !== 'string'
+      || structured.next_test.length < 8
+      || structured.contract_version !== null
+      || structured.evidence_purpose !== null
+      || structured.decisive_evidence_paths.length !== 0
+      || structured.case_for_sufficiency !== null
+    ) {
+      throw new Error('feasible_test must return one concrete unadjudicated continuation')
+    }
+  } else {
+    verifyAdjudicationHandoff(structured, claim, 'terminal_record')
+    if (structured.evidence_gaps.length !== 0 || structured.next_test !== null) {
+      throw new Error('a complete terminal record cannot retain a feasible evidence gap')
+    }
+  }
+  return { ...structured, durable_claim_status: claim.status }
+}
+
+function blockerResolutionAssignment(args, blocked) {
+  const identity = createHash('sha256')
+    .update(JSON.stringify([
+      args.assignment_id,
+      args.claim_id,
+      blocked.contract_version,
+      blocked.decisive_evidence_paths,
+      blocked.evidence_gaps,
+      blocked.next_test,
+    ]))
+    .digest('hex')
+    .slice(0, 24)
+  return {
+    assignment_id: `resolve-blocker-${identity}`,
+    claim_id: args.claim_id,
+    blocker_summary: blocked.counterexample_summary
+      ?? 'The Falsifier reported a durable obstacle before reaching a disposition.',
+    prior_contract_version: blocked.contract_version,
+    prior_evidence_paths: blocked.decisive_evidence_paths,
+    evidence_gaps: blocked.evidence_gaps,
+    next_test: blocked.next_test,
+  }
 }
 
 export function apply(ctx) {
@@ -737,7 +907,7 @@ export function apply(ctx) {
   async function runRole(role, args, exec) {
     const parent = exec.agent
     if (parent === undefined) throw new Error(`${role} requires a calling lead scientist`)
-    const targetId = role === 'falsifier' ? args.claim_id : args.parent_claim_id
+    const targetId = role === 'repair_scientist' ? args.parent_claim_id : args.claim_id
     const snapshot = await internalMcpCall(
       ctx,
       exec,
@@ -757,6 +927,7 @@ export function apply(ctx) {
       target === undefined
       || target.kind !== 'scientific'
       || (role === 'falsifier' && target.status !== 'open')
+      || (role === 'blocker_resolver' && target.status !== 'open')
       || (role === 'repair_scientist' && target.status !== 'falsified')
     ) {
       throw new Error(`${role} assignment target has an incompatible durable state`)
@@ -810,20 +981,30 @@ export function apply(ctx) {
     pendingByParent.set(parentId, assignment)
     let run
     try {
+      const roleLabel = role === 'falsifier'
+        ? 'Falsify'
+        : role === 'blocker_resolver' ? 'Resolve blocker' : 'Repair'
+      const outputSchema = role === 'falsifier'
+        ? FALSIFIER_SCHEMA
+        : role === 'blocker_resolver' ? BLOCKER_RESOLUTION_SCHEMA : REPAIR_SCHEMA
+      const toolNames = role === 'falsifier'
+        ? FALSIFIER_TOOL_NAMES
+        : role === 'blocker_resolver' ? BLOCKER_RESOLVER_TOOL_NAMES : REPAIR_TOOL_NAMES
+      const persona = role === 'falsifier'
+        ? FALSIFIER_PERSONA
+        : role === 'blocker_resolver' ? BLOCKER_RESOLVER_PERSONA : REPAIR_PERSONA
       run = await ctx.subagents.start('spawn', {
-        label: `${role === 'falsifier' ? 'Falsify' : 'Repair'} ${targetId}`,
+        label: `${roleLabel} ${targetId}`,
         prompt: [{
           type: 'text',
           text: rolePacket(snapshot, target, args, role),
         }],
         parent,
         signal: exec.signal,
-        outputSchema: role === 'falsifier' ? FALSIFIER_SCHEMA : REPAIR_SCHEMA,
+        outputSchema,
         maxDepth: 1,
-        toolFilter: {
-          allow: role === 'falsifier' ? FALSIFIER_TOOL_NAMES : REPAIR_TOOL_NAMES,
-        },
-        persona: role === 'falsifier' ? FALSIFIER_PERSONA : REPAIR_PERSONA,
+        toolFilter: { allow: toolNames },
+        persona,
       })
     } finally {
       pendingByParent.delete(parentId)
@@ -869,7 +1050,9 @@ export function apply(ctx) {
       )
       const verified = role === 'falsifier'
         ? verifyFalsifierResult(args, result.structured, claimsAfter)
-        : verifyRepairResult(args, result.structured, claimsAfter)
+        : role === 'blocker_resolver'
+          ? verifyBlockerResolutionResult(args, result.structured, claimsAfter)
+          : verifyRepairResult(args, result.structured, claimsAfter)
       appendActivity({
         kind: 'agent',
         status: 'completed',
@@ -880,7 +1063,30 @@ export function apply(ctx) {
         outcome: result.structured.outcome,
         evidence_purpose: result.structured.evidence_purpose,
       })
-      return { ...verified, role_run_id: String(run.id) }
+      const roleResult = { ...verified, role_run_id: String(run.id) }
+      if (role !== 'falsifier' || verified.outcome !== 'blocked') return roleResult
+
+      const resolution = await runRole(
+        'blocker_resolver',
+        blockerResolutionAssignment(args, verified),
+        exec,
+      )
+      const resolverOutcome = resolution.outcome
+      return {
+        ...resolution,
+        assignment_id: args.assignment_id,
+        outcome: resolverOutcome === 'feasible_test'
+          ? 'inconclusive'
+          : 'ready_for_adjudication',
+        resolver_outcome: resolverOutcome,
+        reported_outcome: 'blocked',
+        blocker_resolution_assignment_id: resolution.assignment_id,
+        blocker_role_run_id: String(run.id),
+        resolver_role_run_id: resolution.role_run_id,
+        required_transition: resolverOutcome === 'feasible_test'
+          ? 'continue_falsification'
+          : 'independent_adjudication',
+      }
     } finally {
       activeBySession.delete(String(run.id))
       await run.dispose()
@@ -893,7 +1099,7 @@ export function apply(ctx) {
       'Start a fresh claim-scoped Falsifier/Experimenter. It commissions and '
       + 'tests one open scientific claim, then returns either a kernel-accepted '
       + 'counterexample, a complete terminal record for the independent judge, '
-      + 'or a durable blocker that could not be recorded completely.',
+      + 'or a harness-resolved continuation after a durable blocker.',
     parameters: {
       type: 'object',
       additionalProperties: false,
@@ -911,6 +1117,41 @@ export function apply(ctx) {
       render: (_args, value) => [{ type: 'text', text: JSON.stringify(value) }],
     },
     execute: (args, exec) => runRole('falsifier', args, exec),
+  })
+
+  ctx.tools.register({
+    name: 'simjecture_resolve_blocker',
+    description:
+      'Start a fresh Blocker Resolver for an open scientific claim. It either '
+      + 'returns one concrete feasible continuation without mutation, or builds '
+      + 'a prospective authenticated terminal record for independent judgment.',
+    parameters: {
+      type: 'object',
+      additionalProperties: false,
+      properties: {
+        assignment_id: { type: 'string' },
+        claim_id: { type: 'string' },
+        blocker_summary: { type: 'string' },
+        prior_contract_version: { oneOf: [{ type: 'integer' }, { type: 'null' }] },
+        prior_evidence_paths: { type: 'array', items: { type: 'string' } },
+        evidence_gaps: { type: 'array', items: { type: 'string' } },
+        next_test: { oneOf: [{ type: 'string' }, { type: 'null' }] },
+      },
+      required: [
+        'assignment_id',
+        'claim_id',
+        'blocker_summary',
+        'prior_contract_version',
+        'prior_evidence_paths',
+        'evidence_gaps',
+        'next_test',
+      ],
+    },
+    output: {
+      schema: {},
+      render: (_args, value) => [{ type: 'text', text: JSON.stringify(value) }],
+    },
+    execute: (args, exec) => runRole('blocker_resolver', args, exec),
   })
 
   ctx.tools.register({

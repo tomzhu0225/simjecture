@@ -101,6 +101,7 @@ def test_dsh_profile_declares_explicit_boundary_and_disables_bypasses() -> None:
     assert patch.index("simjecture-roles") < patch.index("simjecture-runner")
     assert "simjecture_adjudicate" in patch
     assert "simjecture_falsify" in patch
+    assert "simjecture_resolve_blocker" in patch
     assert "simjecture_repair" in patch
     assert "mcp__simjecture__finalize_campaign" in patch
     assert "id: compaction-basic" in patch
@@ -110,6 +111,9 @@ def test_dsh_profile_declares_explicit_boundary_and_disables_bypasses() -> None:
     assert "retainRatio: 0.03" in patch
     assert "Lead Scientist" in patch
     assert re.search(r"do not run\s+experiments", patch)
+    assert "required_transition=continue_falsification" in patch
+    assert "required_transition=independent_adjudication" in patch
+    assert "Never call finalize while" in patch
 
 
 def test_dsh_runner_uses_stable_resume_and_projects_no_reasoning_chunks() -> None:
@@ -166,7 +170,9 @@ def test_dsh_scientific_roles_are_fresh_scoped_and_durably_verified() -> None:
     assert "ctx.subagents.start('spawn'" in roles
     assert "start('fork'" not in roles
     assert "continuable" not in roles
-    assert "outputSchema: role === 'falsifier' ? FALSIFIER_SCHEMA : REPAIR_SCHEMA" in roles
+    assert "BLOCKER_RESOLUTION_SCHEMA" in roles
+    assert "BLOCKER_RESOLVER_TOOL_NAMES" in roles
+    assert "outputSchema," in roles
     assert "const: null" not in roles
     assert "toolFilter:" in roles
     assert "FALSIFIER_TOOL_NAMES" in roles
@@ -188,6 +194,17 @@ def test_dsh_scientific_roles_are_fresh_scoped_and_durably_verified() -> None:
     assert "analysis cannot promote its source" in roles
     assert "verifyFalsifierResult" in roles
     assert "verifyRepairResult" in roles
+    assert "verifyBlockerResolutionResult" in roles
+    assert "runRole('blocker_resolver'" in roles
+    assert "blockerResolutionAssignment" in roles
+    assert "mcp__simjecture__record_terminal_observation" in roles
+    assert "the Blocker Resolver may register only a terminal_record contract" in roles
+    assert "reported_outcome: 'blocked'" in roles
+    assert "resolver_outcome: resolverOutcome" in roles
+    assert "required_transition: resolverOutcome === 'feasible_test'" in roles
+    assert "'continue_falsification'" in roles
+    assert "'independent_adjudication'" in roles
+    assert "simjecture_resolve_blocker" in roles
     assert "await run.dispose()" in roles
     assert "do not repeatedly poll" in roles
     assert "Plain run_python is not a named capability" in roles
