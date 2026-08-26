@@ -883,7 +883,10 @@ class MVPClaimLedgerStore:
         ):
             raise ValueError(
                 "commissioning claim must be kind=instrument, relation=instrument_of, "
-                f"and parent_id={scientific_claim.id}"
+                f"and parent_id={scientific_claim.id}; for a repaired or child "
+                "scientific claim, register and commission a separate successor "
+                "instrument claim parented to that claim instead of reusing a "
+                "root-claim analyzer"
             )
         if commissioning.status != ClaimDisposition.SUPPORTED:
             raise ValueError(f"commissioning claim {commissioning_claim_id} is not supported")
@@ -1319,7 +1322,11 @@ class MVPClaimLedgerStore:
                     "cannot mark a workbench artifact or a derived artifact sufficient "
                     "when it or one of its declared inputs is not evidence eligible; "
                     "freeze and promote the program through prospective commissioning, "
-                    "then generate a fresh evidence-stage artifact"
+                    "then generate a fresh evidence-stage artifact. For a derived "
+                    "analyzer, declare every file beneath each argv input directory "
+                    "(including sidecars) or stage a provenance-tracked flat input; "
+                    "for a child claim, use an instrument_of analyzer claim parented "
+                    "to that child"
                 )
             if (
                 not provenance.tracked

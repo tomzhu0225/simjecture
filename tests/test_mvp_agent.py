@@ -2565,7 +2565,7 @@ def test_existing_explicit_action_with_uncovered_argv_directory_cannot_link_suff
             observation_note="The scalar is present but its argv inputs were uncovered.",
         )
     )
-    with pytest.raises(ValueError, match="derived artifact sufficient"):
+    with pytest.raises(ValueError, match="derived artifact sufficient.*sidecars"):
         runner._perform_compat(link, iteration=3, timeout_seconds=1)
 
 

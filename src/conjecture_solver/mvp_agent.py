@@ -3194,7 +3194,9 @@ software.
                 suffix = " ..." if len(uncovered) > 3 else ""
                 issues.append(
                     "argv workspace path is not covered by declared inputs: "
-                    f"{relative.as_posix()} ({preview}{suffix})"
+                    f"{relative.as_posix()} ({preview}{suffix}); declare every "
+                    "file beneath an input directory, including sidecars, or "
+                    "stage a provenance-tracked flat input directory"
                 )
         return not issues, tuple(issues)
 
