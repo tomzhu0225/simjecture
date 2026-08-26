@@ -2404,13 +2404,33 @@ def test_explicit_input_view_hides_omitted_file_and_directory(tmp_path: Path) ->
         program_path="analysis/analyze.py",
         program_sha256=program_sha256,
     )
+    directory_metadata = sandbox.artifact_metadata("evidence/run/out")
+    declared_whole_directory = sandbox.run_python(
+        (
+            "analysis/analyze.py",
+            "evidence/run/out",
+            "analysis/declared-whole-directory-result.json",
+        ),
+        input_artifacts=(
+            MVPArtifactInput(
+                path="evidence/run/out",
+                sha256=directory_metadata["sha256"],
+            ),
+        ),
+        program_path="analysis/analyze.py",
+        program_sha256=program_sha256,
+    )
 
     assert omitted_file.returncode != 0
     assert omitted_directory.returncode != 0
     assert declared_directory.returncode == 0, declared_directory.stderr
+    assert declared_whole_directory.returncode == 0, declared_whole_directory.stderr
     assert not (sandbox.root / "analysis/file-result.json").exists()
     assert not (sandbox.root / "analysis/directory-result.json").exists()
     assert (sandbox.root / "analysis/declared-directory-result.json").read_text() == (
+        "hidden-directory"
+    )
+    assert (sandbox.root / "analysis/declared-whole-directory-result.json").read_text() == (
         "hidden-directory"
     )
 
@@ -2523,6 +2543,26 @@ def test_existing_explicit_action_with_uncovered_argv_directory_cannot_link_suff
     assert provenance.argv_input_coverage_eligible is False
     assert provenance.evidence_eligible is False
     assert "evidence/repair_s2000r512/out" in provenance.argv_input_coverage_issues[0]
+    covered, coverage_issues = runner._argv_input_coverage(
+        command_argv=tuple(
+            [
+                "analysis/analyze_case.py",
+                "evidence/repair_s2000r512/out",
+                "--output",
+                "analysis/probe_s2000r512_partial.json",
+            ]
+        ),
+        artifact_path=metadata["path"],
+        input_artifacts_declared=True,
+        input_artifacts=[
+            {
+                "path": "evidence/repair_s2000r512/out",
+                "sha256": "0" * 64,
+            }
+        ],
+    )
+    assert covered is True
+    assert coverage_issues == ()
     followup = MVPAgentRunner._parse_action(
         _action(
             action="run_python",

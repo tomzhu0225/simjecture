@@ -116,10 +116,16 @@ class MVPActionBase(StrictModel):
 
 
 class MVPArtifactInput(StrictModel):
-    """Exact pre-existing data artifact consumed by one execution action."""
+    """Exact pre-existing file or recursively sealed data directory."""
 
     path: str = Field(min_length=1)
-    sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    sha256: str = Field(
+        pattern=r"^[0-9a-f]{64}$",
+        description=(
+            "SHA-256 of the file, or of the deterministic directory manifest "
+            "returned by the sandbox artifact metadata"
+        ),
+    )
 
     @model_validator(mode="after")
     def path_stays_in_workspace(self) -> MVPArtifactInput:
@@ -900,10 +906,20 @@ class BubblewrapSandbox:
         return inventory
 
     def artifact_metadata(self, relative: str) -> dict[str, Any]:
-        """Resolve and hash one existing regular workspace artifact."""
+        """Resolve and hash one existing workspace file or input directory."""
         path = self._path(relative)
+        if path.is_dir() and not path.is_symlink():
+            entries = self._directory_file_metadata(path)
+            return {
+                "path": path.relative_to(self.root).as_posix(),
+                "kind": "directory",
+                "bytes": sum(int(item["bytes"]) for item in entries),
+                "mtime_ns": max((int(item["mtime_ns"]) for item in entries), default=0),
+                "sha256": self._directory_sha256(entries),
+                "entries": entries,
+            }
         if not path.is_file() or path.is_symlink():
-            raise ValueError(f"evidence path {relative!r} is not a workspace file")
+            raise ValueError(f"evidence path {relative!r} is not a workspace file or directory")
         digest = hashlib.sha256()
         with path.open("rb") as stream:
             for chunk in iter(lambda: stream.read(1024 * 1024), b""):
@@ -914,6 +930,7 @@ class BubblewrapSandbox:
             "bytes": stat.st_size,
             "mtime_ns": stat.st_mtime_ns,
             "sha256": digest.hexdigest(),
+            "kind": "file",
         }
 
     def read_json_artifact(self, relative: str) -> Any:
@@ -1007,8 +1024,13 @@ class BubblewrapSandbox:
             "1",
         ]
 
-    def _regular_workspace_file(self, relative: str) -> tuple[Path, str]:
-        """Resolve one regular file without traversing workspace symlinks."""
+    def _regular_workspace_file(
+        self,
+        relative: str,
+        *,
+        allow_directory: bool = False,
+    ) -> tuple[Path, str]:
+        """Resolve one regular file or explicitly permitted input directory."""
 
         requested = Path(relative)
         if requested.is_absolute() or ".." in requested.parts or "\x00" in relative:
@@ -1025,8 +1047,11 @@ class BubblewrapSandbox:
             resolved = lexical.resolve(strict=True)
         except FileNotFoundError as error:
             raise ValueError(f"isolated workspace file {relative!r} is unavailable") from error
-        if not resolved.is_relative_to(self.root) or not resolved.is_file():
-            raise ValueError(f"isolated workspace path {relative!r} is not a regular file")
+        if not resolved.is_relative_to(self.root) or not (
+            resolved.is_file() or (allow_directory and resolved.is_dir())
+        ):
+            suffix = " file or directory" if allow_directory else " regular file"
+            raise ValueError(f"isolated workspace path {relative!r} is not a{suffix}")
         return resolved, resolved.relative_to(self.root).as_posix()
 
     @staticmethod
@@ -1037,6 +1062,40 @@ class BubblewrapSandbox:
                 digest.update(chunk)
         return digest.hexdigest()
 
+    def _directory_file_metadata(self, root: Path) -> list[dict[str, Any]]:
+        """Return deterministic identities for every regular file below ``root``."""
+
+        entries: list[dict[str, Any]] = []
+        for path in sorted(root.rglob("*")):
+            if path.is_symlink():
+                raise ValueError(
+                    "workspace input directory cannot contain symlinks: "
+                    f"{path.relative_to(self.root).as_posix()}"
+                )
+            if not path.is_file():
+                continue
+            stat = path.stat()
+            entries.append(
+                {
+                    "path": path.relative_to(self.root).as_posix(),
+                    "bytes": stat.st_size,
+                    "mtime_ns": stat.st_mtime_ns,
+                    "sha256": self._file_sha256(path),
+                }
+            )
+        return entries
+
+    @staticmethod
+    def _directory_sha256(entries: list[dict[str, Any]]) -> str:
+        """Hash a directory manifest without depending on directory mtimes."""
+
+        digest = hashlib.sha256(b"simjecture-directory-v1\n")
+        for entry in entries:
+            digest.update(
+                f"{entry['path']}\0{entry['bytes']}\0{entry['sha256']}\n".encode()
+            )
+        return digest.hexdigest()
+
     def _prepare_declared_input_view(
         self,
         view: Path,
@@ -1044,7 +1103,7 @@ class BubblewrapSandbox:
         input_artifacts: tuple[MVPArtifactInput, ...],
         program_path: str | None,
         program_sha256: str | None,
-    ) -> tuple[list[str], dict[str, tuple[Path, str]]]:
+    ) -> tuple[list[str], dict[str, tuple[Path, str, bool]]]:
         """Create mount points for a sealed program and exact read-only inputs."""
 
         requested: list[tuple[str, str | None, str]] = [
@@ -1052,10 +1111,18 @@ class BubblewrapSandbox:
         ]
         if program_path is not None:
             requested.append((program_path, program_sha256, "sealed program"))
-        mounts: dict[str, tuple[Path, str]] = {}
+        mounts: dict[str, tuple[Path, str, bool]] = {}
         for relative, expected_sha256, label in requested:
-            source, canonical = self._regular_workspace_file(relative)
-            observed_sha256 = self._file_sha256(source)
+            source, canonical = self._regular_workspace_file(
+                relative,
+                allow_directory=label == "declared input",
+            )
+            is_directory = source.is_dir()
+            observed_sha256 = (
+                self._directory_sha256(self._directory_file_metadata(source))
+                if is_directory
+                else self._file_sha256(source)
+            )
             if expected_sha256 is not None and observed_sha256 != expected_sha256:
                 raise ValueError(
                     f"{label} {relative!r} changed before isolated execution: expected "
@@ -1066,24 +1133,36 @@ class BubblewrapSandbox:
                 if existing[1] != observed_sha256:
                     raise ValueError(f"conflicting sealed identities for {canonical!r}")
                 continue
-            mounts[canonical] = (source, observed_sha256)
+            mounts[canonical] = (source, observed_sha256, is_directory)
 
         arguments: list[str] = []
-        for relative, (source, _digest) in sorted(mounts.items()):
+        for relative, (source, _digest, is_directory) in sorted(mounts.items()):
             target = view / relative
-            target.parent.mkdir(parents=True, exist_ok=True)
-            target.touch(exist_ok=False)
+            if is_directory:
+                target.mkdir(parents=True, exist_ok=True)
+            else:
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.touch(exist_ok=False)
             arguments.extend(("--ro-bind", str(source), f"/work/{relative}"))
         return arguments, mounts
 
-    def _verify_sealed_mounts(self, mounts: dict[str, tuple[Path, str]]) -> None:
-        for relative, (source, expected_sha256) in mounts.items():
-            if not source.is_file() or source.is_symlink():
-                raise ValueError(f"sealed workspace file {relative!r} became unavailable")
-            observed_sha256 = self._file_sha256(source)
+    def _verify_sealed_mounts(self, mounts: dict[str, tuple[Path, str, bool]]) -> None:
+        for relative, (source, expected_sha256, is_directory) in mounts.items():
+            unavailable = source.is_symlink() or (
+                not source.is_dir() if is_directory else not source.is_file()
+            )
+            if unavailable:
+                label = "directory" if is_directory else "file"
+                raise ValueError(f"sealed workspace {label} {relative!r} became unavailable")
+            observed_sha256 = (
+                self._directory_sha256(self._directory_file_metadata(source))
+                if is_directory
+                else self._file_sha256(source)
+            )
             if observed_sha256 != expected_sha256:
+                label = "directory" if is_directory else "file"
                 raise ValueError(
-                    f"sealed workspace file {relative!r} changed during execution: expected "
+                    f"sealed workspace {label} {relative!r} changed during execution: expected "
                     f"sha256={expected_sha256}, observed sha256={observed_sha256}"
                 )
 
@@ -1119,7 +1198,11 @@ class BubblewrapSandbox:
         for source in sorted(view.rglob("*")):
             relative = source.relative_to(view)
             canonical = relative.as_posix()
-            if canonical in protected_paths:
+            if any(
+                canonical == protected
+                or relative.is_relative_to(Path(protected))
+                for protected in protected_paths
+            ):
                 continue
             if source.is_symlink():
                 raise ValueError(f"generated output {canonical!r} cannot be a symlink")
@@ -3063,6 +3146,86 @@ software.
                     f"declared input artifact {item.path!r} changed: expected "
                     f"sha256={item.sha256}, observed sha256={metadata['sha256']}"
                 )
+            if metadata.get("kind") == "directory":
+                entries = list(metadata.get("entries") or ())
+                child_records: list[tuple[dict[str, Any], dict[str, Any]]] = []
+                directory_issues: list[str] = []
+                for child in entries:
+                    record = artifacts.get(str(child["path"]))
+                    if not isinstance(record, dict):
+                        directory_issues.append(
+                            f"input provenance is untracked: {child['path']}"
+                        )
+                        continue
+                    current = (
+                        record.get("bytes") == child["bytes"]
+                        and record.get("mtime_ns") == child["mtime_ns"]
+                    )
+                    if not current:
+                        directory_issues.append(
+                            f"input provenance is stale: {child['path']}"
+                        )
+                    child_records.append((child, record))
+                    if record.get("evidence_eligible") is not True:
+                        directory_issues.append(
+                            f"input is not evidence eligible: {child['path']}"
+                        )
+                if not entries:
+                    directory_issues.append(
+                        f"input directory contains no regular files: {metadata['path']}"
+                    )
+                tracked = bool(entries) and not any(
+                    issue.startswith(("input provenance is untracked", "input provenance is stale"))
+                    for issue in directory_issues
+                )
+                eligible = tracked and not directory_issues
+                if directory_issues:
+                    issues.extend(directory_issues)
+                generated_iterations = [
+                    int(record["generated_iteration"])
+                    for _child, record in child_records
+                    if record.get("generated_iteration") is not None
+                ]
+                resolved.append(
+                    ClaimInputArtifactProvenance(
+                        path=metadata["path"],
+                        sha256=metadata["sha256"],
+                        bytes=metadata["bytes"],
+                        tracked=tracked,
+                        evidence_eligible=eligible,
+                        generated_iteration=(
+                            max(generated_iterations) if generated_iterations else None
+                        ),
+                        action=(
+                            child_records[0][1].get("action")
+                            if child_records
+                            and all(record.get("action") == child_records[0][1].get("action")
+                                    for _child, record in child_records)
+                            else None
+                        ),
+                        action_sha256=(
+                            child_records[0][1].get("action_sha256")
+                            if child_records
+                            and all(
+                                record.get("action_sha256")
+                                == child_records[0][1].get("action_sha256")
+                                for _child, record in child_records
+                            )
+                            else None
+                        ),
+                        operation_id=(
+                            child_records[0][1].get("operation_id")
+                            if child_records
+                            and all(
+                                record.get("operation_id")
+                                == child_records[0][1].get("operation_id")
+                                for _child, record in child_records
+                            )
+                            else None
+                        ),
+                    )
+                )
+                continue
             record = artifacts.get(metadata["path"])
             tracked = bool(
                 isinstance(record, dict)
@@ -3122,6 +3285,9 @@ software.
             str(item.path if isinstance(item, ClaimInputArtifactProvenance) else item["path"])
             for item in input_artifacts
         }
+        declared_directories = {
+            Path(path) for path in declared_paths if (self.sandbox.root / path).is_dir()
+        }
         output = Path(artifact_path)
         # Parse output-bearing options before walking existing argv paths.  A
         # command may create an output directory before writing its first
@@ -3170,6 +3336,12 @@ software.
             if candidate.is_symlink():
                 issues.append(f"argv workspace path traverses a symlink: {relative.as_posix()}")
                 continue
+            if any(
+                relative == declared_directory
+                or relative.is_relative_to(declared_directory)
+                for declared_directory in declared_directories
+            ):
+                continue
             if candidate.is_file():
                 uncovered = () if relative.as_posix() in declared_paths else (relative.as_posix(),)
             elif candidate.is_dir():
@@ -3181,7 +3353,20 @@ software.
                         continue
                     if child.is_file():
                         children.append(child.relative_to(self.sandbox.root).as_posix())
-                uncovered = tuple(sorted(set(children) - declared_paths))
+                uncovered = tuple(
+                    sorted(
+                        set(children)
+                        - declared_paths
+                        - {
+                            child
+                            for child in children
+                            if any(
+                                Path(child).is_relative_to(directory)
+                                for directory in declared_directories
+                            )
+                        }
+                    )
+                )
                 if unsafe_child:
                     issues.append(
                         "argv workspace directory contains an undeclarable symlink: "
