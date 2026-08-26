@@ -1,0 +1,42 @@
+{
+  "environment": {
+    "FLASH_EXECUTABLE": "/opt/acs-capabilities/flash-island-coalescence-resistive-mhd-4.8/bin/flash4",
+    "FLASH_MPI_LAUNCHER": "/usr/bin/orterun",
+    "FLASH_MPI_RANKS": "4",
+    "FLASH_PREFLIGHT_PARFILE": "/opt/acs-capabilities/flash-island-coalescence-resistive-mhd-4.8/share/preflight/flash.par",
+    "OMPI_MCA_btl": "self,vader",
+    "OMPI_MCA_pml": "ob1",
+    "OMP_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONPATH": "/opt/acs-capabilities/flash-island-coalescence-resistive-mhd-4.8/lib/python3.12/site-packages"
+  },
+  "executable": "bin/flash-python",
+  "identity_files": [
+    "bin/flash4",
+    "share/build-record.json",
+    "share/preflight/flash.par"
+  ],
+  "manifest": {
+    "description": "Operator-supplied FLASH 4.8 MPI/HDF5 runtime compiled for a 2D compressible resistive-MHD island-coalescence application",
+    "executable_kind": "python-flash-application-mpi-hdf5",
+    "name": "flash-island-coalescence-resistive-mhd-4.8",
+    "preflight_checks": [
+      "checks.completed",
+      "checks.environment_valid",
+      "checks.executable_present",
+      "checks.mpi_launcher_present",
+      "checks.parameter_file_present",
+      "checks.parameter_file_copied",
+      "checks.process_completed",
+      "checks.return_code_zero",
+      "checks.hdf5_output_created",
+      "checks.hdf5_output_readable"
+    ],
+    "preflight_resource": "examples/runtime_smoke.py",
+    "preflight_result": "flash_mhd_capability_smoke.json",
+    "schema_version": "0.1.0",
+    "skill": "flash-mhd",
+    "version": "4.8.local.1"
+  },
+  "runtime_root": "../.runtime/flash-island-coalescence-resistive-mhd-4.8"
+}

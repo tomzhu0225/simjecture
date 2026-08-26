@@ -26,11 +26,13 @@ from .mvp_skills import (
 
 WARPX_CPU_CAPABILITY = "warpx-cpu-26.07"
 WARPX_CUDA_CAPABILITY = "warpx-cuda-openpmd-26.07"
+FLASH_MHD_CAPABILITY = "flash-island-coalescence-resistive-mhd-4.8"
 PINNED_WARPX_REVISION = "312d507407a1bf6f01ae43fb41b5c3a3700d053c"
 
 _CAPABILITY_CONFIGS = {
     WARPX_CPU_CAPABILITY: "warpx-cpu-26.07.json",
     WARPX_CUDA_CAPABILITY: "warpx-cuda-openpmd-26.07.json",
+    FLASH_MHD_CAPABILITY: "flash-island-coalescence-resistive-mhd-4.8.json",
 }
 _CORE_DISTRIBUTIONS = (
     "simjecture",
@@ -47,11 +49,13 @@ class DeploymentProfile(StrEnum):
     CORE = "core"
     WARPX_CPU = "warpx-cpu"
     WARPX_CUDA = "warpx-cuda"
+    FLASH = "flash"
 
 
 _PROFILE_BY_CAPABILITY = {
     WARPX_CPU_CAPABILITY: DeploymentProfile.WARPX_CPU,
     WARPX_CUDA_CAPABILITY: DeploymentProfile.WARPX_CUDA,
+    FLASH_MHD_CAPABILITY: DeploymentProfile.FLASH,
 }
 
 
@@ -380,6 +384,18 @@ class DeploymentManager:
         try:
             installation = MVPCapabilityInstallation.read(config_path)
         except (OSError, ValueError) as error:
+            if capability == FLASH_MHD_CAPABILITY:
+                remedy = (
+                    "Obtain FLASH from the official FLASH Center under its license, "
+                    "build and register the application-specific local runtime described "
+                    "by `skills/flash-mhd/references/local-deployment.md`, then rerun "
+                    "`simjecture doctor --profile flash`."
+                )
+            else:
+                remedy = (
+                    "Run `simjecture install "
+                    f"{_PROFILE_BY_CAPABILITY[capability].value}`."
+                )
             return (
                 [
                     _check(
@@ -387,10 +403,7 @@ class DeploymentManager:
                         status_on_failure,
                         str(error),
                         required=required,
-                        remedy=(
-                            "Run `simjecture install "
-                            f"{_PROFILE_BY_CAPABILITY[capability].value}`."
-                        ),
+                        remedy=remedy,
                     )
                 ],
                 None,
@@ -414,10 +427,15 @@ class DeploymentManager:
                     remedy = (
                         "Inspect the runtime and rerun the CPU profile installer with --repair."
                     )
-                else:
+                elif capability == WARPX_CUDA_CAPABILITY:
                     remedy = (
                         "Preserve or move the CUDA runtime and dependency roots, then perform "
                         "a fresh audited installation."
+                    )
+                else:
+                    remedy = (
+                        "Preserve the operator-supplied FLASH runtime, inspect its build "
+                        "record and preflight input, and follow the flash-mhd deployment guide."
                     )
                 checks.append(
                     _check(
@@ -454,10 +472,13 @@ class DeploymentManager:
             capabilities = ((WARPX_CPU_CAPABILITY, True),)
         elif profile == DeploymentProfile.WARPX_CUDA:
             capabilities = ((WARPX_CUDA_CAPABILITY, True),)
+        elif profile == DeploymentProfile.FLASH:
+            capabilities = ((FLASH_MHD_CAPABILITY, True),)
         elif profile == "all":
             capabilities = (
                 (WARPX_CPU_CAPABILITY, False),
                 (WARPX_CUDA_CAPABILITY, False),
+                (FLASH_MHD_CAPABILITY, False),
             )
         else:
             capabilities = ()
@@ -828,6 +849,11 @@ class DeploymentManager:
                 environment_manager=environment_manager,
                 capture_output=capture_output,
             )
+        if profile is DeploymentProfile.FLASH:
+            report = self.doctor(DeploymentProfile.FLASH, probe=True)
+            if not dry_run:
+                self._write_report(report)
+            return report
         if repair:
             checks = self._core_checks(probe=True)
             checks.append(

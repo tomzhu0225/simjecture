@@ -1,0 +1,49 @@
+{
+  "schema_version": "0.1.0",
+  "name": "flash-resistive-mhd-island-coalescence-v1",
+  "description": "A license-safe guided starting point for a two-dimensional compressible resistive-MHD island-coalescence scaling campaign using an operator-supplied FLASH 4.8 executable.",
+  "capability": "flash-island-coalescence-resistive-mhd-4.8",
+  "program_path": "guided/island_coalescence.py",
+  "validated_argv": [
+    "guided/island_coalescence.py",
+    "--eta",
+    "0.001",
+    "--nx",
+    "128",
+    "--ny",
+    "128",
+    "--alpha",
+    "20",
+    "--tmax",
+    "1.2",
+    "--plot-interval",
+    "0.05",
+    "--ranks",
+    "4",
+    "--iprocs",
+    "2",
+    "--jprocs",
+    "2",
+    "--output",
+    "guided/anchor_run",
+    "--summary",
+    "guided/anchor_validation.json",
+    "--overwrite"
+  ],
+  "validation_summary_path": "guided/anchor_validation.json",
+  "operator_validation": "The exact application command completed through the Simjecture capability sandbox on four MPI ranks, wrote 24 readable HDF5 states, realized the explicit uniform-resistivity path, and passed representation, physics-control, boundary, diagnostic, and numerical-regime checks. A separate force-free magnetic-diffusion manufactured solution reproduced analytic resistive decay to 4.27e-5 relative amplitude error. Both records are permanently non-evidentiary.",
+  "limitations": [
+    "The supplied anchor, output, metrics, manufactured-solution result, and literature notes are permanently non-evidentiary context; the campaign must collect fresh prospective observations.",
+    "This is a normalized two-dimensional compressible single-fluid resistive-MHD analogue of island coalescence, not an exact reproduction of an isothermal reduced-MHD benchmark.",
+    "S_eta = 1/eta is a nominal inverse-resistivity control; a scientific analysis must record its normalization and must not silently relabel it as a dimensional Lundquist number.",
+    "The compiled application exposes explicit uniform resistivity and does not contain kinetic electron physics.",
+    "The known-runnable anchor uses one grid, one resistivity, and one finite flux window; it cannot establish a scaling or convergence.",
+    "No FLASH source, binary, component, or modification is redistributed. The operator must obtain and build FLASH under its upstream license."
+  ],
+  "files": [
+    "guided/island_coalescence.py",
+    "guided/anchor_validation.json",
+    "guided/operator_validation.json",
+    "literature_basis.md"
+  ]
+}

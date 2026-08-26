@@ -56,6 +56,14 @@ def _project(tmp_path: Path) -> Path:
             )
         )
     )
+    (root / "capabilities/flash-island-coalescence-resistive-mhd-4.8.json").write_text(
+        json.dumps(
+            _capability_payload(
+                "flash-island-coalescence-resistive-mhd-4.8",
+                "../.runtime/flash-island-coalescence-resistive-mhd-4.8",
+            )
+        )
+    )
     bootstrap = root / "skills/warpx/scripts/bootstrap_local_cuda.sh"
     bootstrap.write_text("#!/usr/bin/env bash\nexit 0\n")
     bootstrap.chmod(0o755)
@@ -104,6 +112,9 @@ def test_cli_parses_install_and_doctor_profiles() -> None:
     assert doctor.skip_probes is True
     assert doctor.json is True
 
+    flash = build_parser().parse_args(["doctor", "--profile", "flash", "--json"])
+    assert flash.profile == "flash"
+
 
 def test_doctor_treats_uninstalled_optional_capabilities_as_warnings(
     tmp_path: Path,
@@ -116,8 +127,27 @@ def test_doctor_treats_uninstalled_optional_capabilities_as_warnings(
 
     assert report.ready is True
     warnings = [item for item in report.checks if item.status is DeploymentCheckStatus.WARNING]
-    assert len(warnings) == 2
+    assert len(warnings) == 3
     assert all(not item.required for item in warnings)
+
+
+def test_flash_install_is_verification_only_and_never_provisions(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root = _project(tmp_path)
+    manager = DeploymentManager(root)
+    monkeypatch.setattr(DeploymentManager, "_core_checks", _passing_core)
+
+    report = manager.install(DeploymentProfile.FLASH, dry_run=True)
+
+    assert report.profile == "flash"
+    assert report.ready is False
+    assert report.planned is False
+    assert report.command == ()
+    assert not (root / ".runtime").exists()
+    failure = next(item for item in report.checks if item.name.startswith("capability.flash"))
+    assert "official FLASH Center" in (failure.remedy or "")
 
 
 def test_core_doctor_enforces_locked_direct_dependency_versions(

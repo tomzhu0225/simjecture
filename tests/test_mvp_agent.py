@@ -1802,6 +1802,166 @@ def test_capability_runtime_identity_tracks_bounded_python_records(tmp_path: Pat
         installed.assert_runtime_identity()
 
 
+def test_capability_runtime_identity_tracks_declared_sibling_files(tmp_path: Path) -> None:
+    runtime = tmp_path / "runtime"
+    executable = runtime / "bin/python"
+    executable.parent.mkdir(parents=True)
+    executable.write_text("#!/bin/sh\nexit 0\n")
+    executable.chmod(0o755)
+    simulator = runtime / "bin/simulator"
+    simulator.write_bytes(b"simulator-v1")
+    build_record = runtime / "share/build-record.json"
+    build_record.parent.mkdir(parents=True)
+    build_record.write_text('{"build":"v1"}\n')
+    untracked = runtime / "share/operator-note.txt"
+    untracked.write_text("first\n")
+
+    capability_root = tmp_path / "capabilities"
+    capability_root.mkdir()
+    config = capability_root / "composite-runtime.json"
+    config.write_text(
+        json.dumps(
+            {
+                "manifest": {
+                    "name": "composite-runtime",
+                    "version": "1.0",
+                    "description": "A launcher with explicitly bound sibling files",
+                    "skill": "simulation-tool",
+                    "executable_kind": "python-simulator",
+                },
+                "runtime_root": "../runtime",
+                "executable": "bin/python",
+                "identity_files": ["share/build-record.json", "bin/simulator"],
+            }
+        )
+    )
+
+    installed = MVPCapabilityInstallation.read(config)
+    assert installed.identity_files == (build_record, simulator)
+    installed.assert_runtime_identity()
+    untracked.write_text("changed but deliberately unbound\n")
+    installed.assert_runtime_identity()
+    simulator.write_bytes(b"simulator-v2")
+    with pytest.raises(RuntimeError, match="changed after campaign discovery"):
+        installed.assert_runtime_identity()
+
+
+def test_empty_capability_identity_files_preserve_legacy_runtime_hash(tmp_path: Path) -> None:
+    runtime = tmp_path / "runtime"
+    executable = runtime / "bin/tool"
+    executable.parent.mkdir(parents=True)
+    executable.write_text("#!/bin/sh\nexit 0\n")
+    executable.chmod(0o755)
+    capability_root = tmp_path / "capabilities"
+    capability_root.mkdir()
+    base = {
+        "manifest": {
+            "name": "legacy-runtime",
+            "version": "1.0",
+            "description": "A legacy executable-only identity",
+            "skill": "simulation-tool",
+            "executable_kind": "fixture",
+        },
+        "runtime_root": "../runtime",
+        "executable": "bin/tool",
+    }
+    omitted = capability_root / "omitted.json"
+    omitted.write_text(json.dumps(base))
+    explicit = capability_root / "explicit.json"
+    explicit.write_text(json.dumps({**base, "identity_files": []}))
+
+    legacy = MVPCapabilityInstallation.read(omitted)
+    empty = MVPCapabilityInstallation.read(explicit)
+    assert legacy.identity_files == ()
+    assert empty.identity_files == ()
+    assert empty.runtime_identity == legacy.runtime_identity
+
+
+@pytest.mark.parametrize(
+    ("identity_files", "message"),
+    [
+        (["../outside"], "contained relative path"),
+        (["/outside"], "contained relative path"),
+        (["share/record.json", "share/record.json"], "must be unique"),
+        (["bin/tool"], "executable is already part"),
+    ],
+)
+def test_capability_identity_file_configuration_rejects_ambiguous_paths(
+    tmp_path: Path,
+    identity_files: list[str],
+    message: str,
+) -> None:
+    runtime = tmp_path / "runtime"
+    executable = runtime / "bin/tool"
+    executable.parent.mkdir(parents=True)
+    executable.write_text("#!/bin/sh\nexit 0\n")
+    executable.chmod(0o755)
+    record = runtime / "share/record.json"
+    record.parent.mkdir(parents=True)
+    record.write_text("{}\n")
+    capability_root = tmp_path / "capabilities"
+    capability_root.mkdir()
+    config = capability_root / "invalid-identity.json"
+    config.write_text(
+        json.dumps(
+            {
+                "manifest": {
+                    "name": "invalid-identity",
+                    "version": "1.0",
+                    "description": "An invalid identity fixture",
+                    "skill": "simulation-tool",
+                    "executable_kind": "fixture",
+                },
+                "runtime_root": "../runtime",
+                "executable": "bin/tool",
+                "identity_files": identity_files,
+            }
+        )
+    )
+
+    with pytest.raises(ValueError, match=message):
+        MVPCapabilityInstallation.read(config)
+
+
+def test_capability_identity_files_must_be_available_regular_files(tmp_path: Path) -> None:
+    runtime = tmp_path / "runtime"
+    executable = runtime / "bin/tool"
+    executable.parent.mkdir(parents=True)
+    executable.write_text("#!/bin/sh\nexit 0\n")
+    executable.chmod(0o755)
+    share = runtime / "share"
+    share.mkdir()
+    record = share / "record.json"
+    record.write_text("{}\n")
+    alias = share / "record-link.json"
+    alias.symlink_to(record)
+    capability_root = tmp_path / "capabilities"
+    capability_root.mkdir()
+    base = {
+        "manifest": {
+            "name": "invalid-identity-file",
+            "version": "1.0",
+            "description": "An invalid identity-file fixture",
+            "skill": "simulation-tool",
+            "executable_kind": "fixture",
+        },
+        "runtime_root": "../runtime",
+        "executable": "bin/tool",
+    }
+
+    for index, (relative, error_type, message) in enumerate(
+        (
+            ("share/missing.json", FileNotFoundError, "is unavailable"),
+            ("share", ValueError, "not a regular file"),
+            ("share/record-link.json", ValueError, "cannot be symlinks"),
+        )
+    ):
+        config = capability_root / f"invalid-{index}.json"
+        config.write_text(json.dumps({**base, "identity_files": [relative]}))
+        with pytest.raises(error_type, match=message):
+            MVPCapabilityInstallation.read(config)
+
+
 def test_skill_catalog_is_hashed_and_rejects_traversal(tmp_path: Path) -> None:
     skills, _capabilities = _write_test_skill_and_capability(tmp_path)
     descriptor = skills.descriptors()[0]
@@ -5007,6 +5167,105 @@ def test_builtin_warpx_skill_has_no_demo_science() -> None:
     for phrase in forbidden:
         assert phrase.casefold() not in text.casefold()
     assert "demos/" not in text
+
+
+def test_builtin_flash_skill_has_no_campaign_science_or_flash_distribution() -> None:
+    project_root = Path(__file__).resolve().parents[1]
+    skill_root = project_root / "skills" / "flash-mhd"
+    text = "\n".join(
+        path.read_text(errors="replace")
+        for path in sorted(skill_root.rglob("*"))
+        if path.is_file() and path.suffix in {".md", ".py", ".sh", ".yaml", ".json"}
+    )
+    forbidden = (
+        "GEM",
+        "Sweet-Parker",
+        "Sweet–Parker",
+        "Harris",
+        "Z-pinch",
+        "zpinch",
+        "Lundquist",
+        "delta_SP",
+        "island coalescence",
+        "plasmoid threshold",
+    )
+    for phrase in forbidden:
+        assert phrase.casefold() not in text.casefold()
+    assert "demos/" not in text
+    assert not any(path.suffix.casefold() in {".f", ".f90"} for path in skill_root.rglob("*"))
+    assert not any(
+        path.name == "flash4"
+        for path in project_root.rglob("*")
+        if ".runtime" not in path.parts
+    )
+
+
+def test_flash_guided_commission_is_self_contained_and_nonevidentiary() -> None:
+    project_root = Path(__file__).resolve().parents[1]
+    package = MVPGuidedCommissioningPackage.read(
+        project_root
+        / "demos/resistive_mhd_island_coalescence/guided_commission.json"
+    )
+    descriptor = package.descriptor()
+
+    assert package.spec.capability == "flash-island-coalescence-resistive-mhd-4.8"
+    assert descriptor["scientific_evidence_eligible"] is False
+    assert all(record.bytes > 0 for record in package.file_records)
+    assert not any("anchor_run" in record.path for record in package.file_records)
+    package.assert_identity()
+
+    anchor = json.loads(
+        package.read_file("guided/anchor_validation.json").decode()
+    )
+    operator = json.loads(
+        package.read_file("guided/operator_validation.json").decode()
+    )
+    assert anchor["scientific_status"] == "permanently_non_evidentiary"
+    assert anchor["checks"]["scientific_evidence_eligible"] is False
+    assert operator["scientific_status"] == "permanently_non_evidentiary"
+    assert operator["checks"]["scientific_evidence_eligible"] is False
+
+
+@pytest.mark.skipif(
+    not (
+        Path(__file__).resolve().parents[1]
+        / ".runtime/flash-island-coalescence-resistive-mhd-4.8/bin/flash4"
+    ).is_file(),
+    reason="the operator-supplied FLASH runtime is unavailable",
+)
+def test_builtin_flash_skill_executes_neutral_smoke_inside_sandbox(tmp_path: Path) -> None:
+    project_root = Path(__file__).resolve().parents[1]
+    skills, capabilities = discover_builtin_mvp_resources(project_root)
+    capability = "flash-island-coalescence-resistive-mhd-4.8"
+    assert "flash-mhd" in skills
+    assert capability in capabilities
+    assert "compiled simulation unit" in skills.read(
+        "flash-mhd",
+        "references/execution-output.md",
+        max_chars=30_000,
+    )["content"]
+    example = skills.read(
+        "flash-mhd",
+        "examples/runtime_smoke.py",
+        max_chars=100_000,
+    )["content"]
+    config = _config(
+        max_command_seconds=120,
+        max_workspace_bytes=128 * 1024 * 1024,
+        max_file_bytes=64 * 1024 * 1024,
+        max_memory_bytes=4 * 1024 * 1024 * 1024,
+    )
+    sandbox = BubblewrapSandbox(tmp_path / "flash-smoke", config, capabilities)
+    sandbox.write_file("runtime_smoke.py", example)
+    result = sandbox.run_capability(capability, ("runtime_smoke.py",))
+    assert result.returncode == 0, result.stderr
+    observed = json.loads(
+        (tmp_path / "flash-smoke/flash_mhd_capability_smoke.json").read_text()
+    )
+    assert observed["scientific_status"] == "permanently_non_evidentiary"
+    assert observed["checks"]["completed"] is True
+    assert observed["checks"]["hdf5_output_readable"] is True
+    assert observed["return_code"] == 0
 
 
 @pytest.mark.skipif(

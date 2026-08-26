@@ -267,6 +267,13 @@ class MVPCapabilityConfig(StrictModel):
     manifest: MVPCapabilityManifest
     runtime_root: str = Field(min_length=1)
     executable: str = Field(min_length=1)
+    identity_files: tuple[str, ...] = Field(
+        default=(),
+        description=(
+            "Additional runtime-relative regular files whose contents are bound "
+            "into the capability identity"
+        ),
+    )
     environment: dict[str, str] = Field(default_factory=dict)
     read_only_mounts: dict[str, str] = Field(
         default_factory=dict,
@@ -282,7 +289,14 @@ class MVPCapabilityConfig(StrictModel):
 
     @model_validator(mode="after")
     def contained_executable(self) -> MVPCapabilityConfig:
-        _relative_path(self.executable, label="capability executable")
+        executable = _relative_path(self.executable, label="capability executable")
+        identity_files = tuple(
+            _relative_path(value, label="capability identity file") for value in self.identity_files
+        )
+        if len(identity_files) != len(set(identity_files)):
+            raise ValueError("capability identity files must be unique")
+        if executable in identity_files:
+            raise ValueError("capability executable is already part of runtime identity")
         if any("\x00" in key or "\x00" in value for key, value in self.environment.items()):
             raise ValueError("capability environment cannot contain NUL bytes")
         reserved = {"HOME", "PATH"}.intersection(self.environment)
@@ -334,13 +348,24 @@ def _python_distribution_records(runtime_root: Path) -> tuple[Path, ...]:
     return tuple(sorted({path for pattern in patterns for path in runtime_root.glob(pattern)}))
 
 
-def _runtime_identity(runtime_root: Path, executable: Path) -> str:
+def _runtime_identity(
+    runtime_root: Path,
+    executable: Path,
+    identity_files: tuple[Path, ...] = (),
+) -> str:
     """Bind the executable and package-manager records without hashing a whole runtime."""
 
     digest = hashlib.sha256()
     relative = executable.relative_to(runtime_root).as_posix().encode()
     digest.update(relative)
     digest.update(executable.read_bytes())
+    for path in sorted(identity_files, key=lambda item: item.relative_to(runtime_root).as_posix()):
+        relative_identity = path.relative_to(runtime_root).as_posix().encode()
+        content = path.read_bytes()
+        digest.update(len(relative_identity).to_bytes(8, "big"))
+        digest.update(relative_identity)
+        digest.update(len(content).to_bytes(8, "big"))
+        digest.update(content)
     metadata = runtime_root / "conda-meta"
     if metadata.is_dir():
         for path in sorted(metadata.glob("*.json")):
@@ -379,6 +404,7 @@ class MVPCapabilityInstallation:
     manifest: MVPCapabilityManifest
     runtime_root: Path
     executable: Path
+    identity_files: tuple[Path, ...]
     environment: dict[str, str]
     read_only_mounts: tuple[tuple[Path, str], ...]
     dependency_identities: tuple[tuple[str, str], ...]
@@ -416,7 +442,11 @@ class MVPCapabilityInstallation:
         }
 
     def assert_runtime_identity(self) -> None:
-        observed = _runtime_identity(self.runtime_root, self.executable)
+        observed = _runtime_identity(
+            self.runtime_root,
+            self.executable,
+            self.identity_files,
+        )
         if observed != self.runtime_identity:
             raise RuntimeError(
                 f"capability {self.manifest.name!r} changed after campaign discovery"
@@ -441,6 +471,26 @@ class MVPCapabilityInstallation:
             raise ValueError("capability executable escapes its runtime")
         if not executable.is_file() or not os.access(executable, os.X_OK):
             raise ValueError("capability executable is unavailable or not executable")
+        identity_files: list[Path] = []
+        for relative in config.identity_files:
+            relative_path = Path(relative)
+            identity_file = (runtime_root / relative_path).absolute()
+            component = runtime_root
+            for part in relative_path.parts:
+                component /= part
+                if component.is_symlink():
+                    raise ValueError("capability identity files cannot be symlinks")
+            try:
+                resolved_identity = identity_file.resolve(strict=True)
+            except FileNotFoundError as error:
+                raise FileNotFoundError(
+                    f"capability identity file is unavailable: {identity_file}"
+                ) from error
+            if not resolved_identity.is_relative_to(runtime_root):
+                raise ValueError("capability identity file escapes its runtime")
+            if not identity_file.is_file():
+                raise ValueError("capability identity path is not a regular file")
+            identity_files.append(identity_file)
         mounts: list[tuple[Path, str]] = []
         dependency_identities: list[tuple[str, str]] = []
         for destination, relative_source in sorted(config.read_only_mounts.items()):
@@ -460,12 +510,17 @@ class MVPCapabilityInstallation:
             manifest=config.manifest,
             runtime_root=runtime_root,
             executable=executable,
+            identity_files=tuple(identity_files),
             environment=dict(config.environment),
             read_only_mounts=tuple(mounts),
             dependency_identities=tuple(dependency_identities),
             device_paths=config.device_paths,
             config_hash=hashlib.sha256(raw).hexdigest(),
-            runtime_identity=_runtime_identity(runtime_root, executable),
+            runtime_identity=_runtime_identity(
+                runtime_root,
+                executable,
+                tuple(identity_files),
+            ),
         )
 
 

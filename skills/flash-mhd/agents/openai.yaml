@@ -1,0 +1,4 @@
+interface:
+  display_name: "FLASH MHD"
+  short_description: "Commission user-installed FLASH plasma simulations"
+  default_prompt: "Use $flash-mhd to assess and commission an available FLASH MHD capability for this hypothesis."

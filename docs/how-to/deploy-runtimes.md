@@ -55,12 +55,39 @@ CUDA repair is deliberately not performed in place. Move an unhealthy runtime
 and its dependency prefixes aside so their previous identity remains available
 for audit, then perform a fresh build.
 
+## FLASH MHD
+
+FLASH is operator-supplied. Obtain the source from the
+[official FLASH Center](https://flash.rochester.edu/site/flashcode/coderequest.html),
+review its license, and build the required application outside the Simjecture
+repository. Simjecture does not download FLASH or redistribute its source,
+modified units, or binaries.
+
+Register the local application-specific executable under the Git-ignored
+runtime path named by its capability descriptor. Include a build record, an
+operator-prepared inexpensive parameter file, and all sibling binaries or
+records in `identity_files`. The generic deployment procedure and required
+operator tests are documented in
+`skills/flash-mhd/references/local-deployment.md`.
+
+Once the local runtime exists, verify it without changing it:
+
+```bash
+uv run simjecture doctor --profile flash
+```
+
+The cached probe exercises the exact MPI launcher and reads a fresh HDF5 file.
+It is permanently non-evidentiary. The campaign must still commission its
+actual compiled model, initial state, boundaries, diagnostics, and numerical
+regime prospectively.
+
 ## Inspect without installing
 
 ```bash
 uv run simjecture doctor
 uv run simjecture doctor --profile warpx-cpu
 uv run simjecture doctor --profile warpx-cuda --json
+uv run simjecture doctor --profile flash --json
 uv run simjecture install warpx-cpu --dry-run
 ```
 

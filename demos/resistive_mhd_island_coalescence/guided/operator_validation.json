@@ -1,0 +1,36 @@
+{
+  "schema_version": "0.1.0",
+  "kind": "flash_resistive_operator_manufactured_solution",
+  "scientific_status": "permanently_non_evidentiary",
+  "scope": "Independent operator-side validation of the FLASH 4.8 explicit magnetic-resistivity path; it is not an observation of island coalescence and does not qualify the campaign executable identity.",
+  "model": {
+    "initial_field": "B_y = sin(2*pi*x), B_z = cos(2*pi*x)",
+    "analytic_amplitude": "exp[-eta*(2*pi)^2*t]",
+    "force_balance": "curl(B) is parallel to B, so J cross B is zero",
+    "eta": 0.01,
+    "grid": [64, 8],
+    "solver": "explicit",
+    "final_time": 0.20215332182299361
+  },
+  "checks": {
+    "process_completed": true,
+    "explicit_resistivity_realized": true,
+    "analytic_decay_reproduced": true,
+    "divergence_controlled": true,
+    "spurious_flow_small": true,
+    "scientific_evidence_eligible": false
+  },
+  "metrics": {
+    "expected_final_amplitude": 0.9232945872741266,
+    "observed_final_amplitude": 0.9233339666715038,
+    "relative_amplitude_error": 4.265095660687654e-05,
+    "max_abs_divb": 0.0,
+    "max_abs_velocity": 7.68931954553409e-07
+  },
+  "provenance": {
+    "flash_version": "4.8",
+    "validation_executable_sha256": "f78094ca96a09d178ffe5d75fb2310cdc1ed7162f3a3e75422da26ce069805b2",
+    "relationship_to_campaign_capability": "A separately compiled manufactured-solution application using the same FLASH resistive-MHD solver family; the application-specific campaign executable is validated independently by anchor_validation.json.",
+    "redistribution": "No FLASH-owned source, binary, component, or modification is included in this repository."
+  }
+}

@@ -12,6 +12,12 @@ shell authority.
    scientific-command binding.
 6. Regenerate public schemas if an action model changed.
 
+When the configured executable is a launcher or interpreter that invokes
+sibling scientific binaries, declare those binaries and build records through
+`identity_files`. Simjecture hashes the declared regular files at discovery and
+checks them again before every execution. Paths must remain inside the runtime;
+missing files, directories, symlinks, traversal, and duplicates are rejected.
+
 Capability availability, commissioning, and scientific validity are different
 states. A healthy runtime may execute workbench code. It may produce scientific
 evidence only after a suitable instrument claim is supported and the scientific

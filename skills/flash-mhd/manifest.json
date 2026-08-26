@@ -1,0 +1,10 @@
+{
+  "capability_names": [
+    "flash-island-coalescence-resistive-mhd-4.8"
+  ],
+  "description": "General guidance for commissioning, running, and assessing user-installed FLASH MHD and extended-MHD simulations",
+  "entrypoint": "SKILL.md",
+  "name": "flash-mhd",
+  "schema_version": "0.1.0",
+  "version": "0.1.0"
+}

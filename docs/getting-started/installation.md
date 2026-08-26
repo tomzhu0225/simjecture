@@ -39,9 +39,9 @@ than the scientific default.
 
 ## Optional simulation runtimes
 
-The default Python sandbox supports ordinary numerical work. WarpX CPU and CUDA
-capabilities are optional, local, release-pinned installations. They are mounted
-read-only and are not downloaded by `uv sync`.
+The default Python sandbox supports ordinary numerical work. WarpX and FLASH
+capabilities are optional local instruments. They are mounted read-only and are
+not downloaded by `uv sync`.
 
 The CPU profile is provisioned and checked in one command:
 
@@ -72,6 +72,25 @@ Read `skills/warpx/SKILL.md` and
 `skills/warpx/references/local-cuda-deployment.md` before provisioning WarpX.
 Capability health preflights identify missing or incompatible local runtimes
 without granting scientific-evidence status.
+
+FLASH uses a different deployment boundary. Its source is obtained directly
+from the [FLASH Center code-request page](https://flash.rochester.edu/site/flashcode/coderequest.html)
+under the upstream license, which restricts redistribution. Simjecture therefore
+ships only the generic `flash-mhd` skill and an application-specific capability
+interface; it never downloads, accepts a license for, or redistributes FLASH
+source or binaries. After the operator builds and registers the local runtime,
+verify its exact executable, MPI launch, and HDF5 readback with:
+
+```bash
+uv run simjecture doctor --profile flash
+```
+
+`simjecture install flash` is intentionally a verification alias: it does not
+provision or modify FLASH. Follow
+`skills/flash-mhd/references/local-deployment.md` for the local layout and
+qualification boundary. A FLASH executable is compiled for a selected
+application and physics configuration; it must not be treated as a universal
+MHD binary.
 
 ## Local web interface
 
