@@ -57,6 +57,33 @@ from .mvp_launch import MVPOutputLock
 from .mvp_skills import MVPCapabilityRegistry, MVPSkillCatalog
 
 
+# Values passed to these options are produced by the command rather than
+# pre-existing data consumed by it.  They must not be treated as undeclared
+# inputs by the argv lineage audit.  In particular, a self-contained
+# commissioning run commonly writes both an output directory and a summary
+# file; the old audit inspected the contents of the output directory and then
+# rejected the otherwise valid commissioning evidence.
+_ARGV_OUTPUT_PATH_FLAGS = frozenset(
+    {
+        "--checkpoint",
+        "--checkpoint-dir",
+        "--checkpoint_dir",
+        "--out",
+        "--output",
+        "--output-dir",
+        "--output_dir",
+        "--plot-dir",
+        "--plot_dir",
+        "--result",
+        "--results",
+        "--summary",
+        "--work-dir",
+        "--work_dir",
+        "--workdir",
+    }
+)
+
+
 class MVPActionKind(StrEnum):
     SEARCH_LITERATURE = "search_literature"
     WRITE_FILE = "write_file"
@@ -3096,8 +3123,33 @@ software.
             for item in input_artifacts
         }
         output = Path(artifact_path)
+        # Parse output-bearing options before walking existing argv paths.  A
+        # command may create an output directory before writing its first
+        # artifact, so checking only ``candidate.exists()`` cannot tell an
+        # output from an input after the fact.  Keep positional paths and
+        # non-output option values subject to the explicit input declaration.
+        output_paths: set[Path] = set()
+        output_value_indices: set[int] = set()
+        index = 1  # argv[0] is the sealed program path
+        while index < len(command_argv):
+            token = command_argv[index]
+            flag, separator, value = token.partition("=")
+            if flag in _ARGV_OUTPUT_PATH_FLAGS:
+                if separator:
+                    output_value_indices.add(index)
+                    if value:
+                        output_paths.add(Path(value))
+                elif index + 1 < len(command_argv):
+                    output_value_indices.add(index + 1)
+                    output_value = command_argv[index + 1]
+                    if output_value:
+                        output_paths.add(Path(output_value))
+                    index += 1
+            index += 1
         issues: list[str] = []
-        for raw in command_argv[1:]:
+        for index, raw in enumerate(command_argv[1:], start=1):
+            if index in output_value_indices:
+                continue
             requested = Path(raw)
             if requested.is_absolute() or ".." in requested.parts or "\x00" in raw:
                 continue
@@ -3108,7 +3160,12 @@ software.
             if not candidate.exists():
                 continue
             relative = candidate.relative_to(self.sandbox.root)
+            # ``output`` is the changed artifact currently being audited.  An
+            # output option may name either that file or its containing
+            # directory; both forms are legitimate produced paths.
             if relative == output or relative in output.parents:
+                continue
+            if any(path == relative or path in relative.parents for path in output_paths):
                 continue
             if candidate.is_symlink():
                 issues.append(f"argv workspace path traverses a symlink: {relative.as_posix()}")

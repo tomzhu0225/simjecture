@@ -2570,6 +2570,37 @@ def test_existing_explicit_action_with_uncovered_argv_directory_cannot_link_suff
 
 
 @pytest.mark.skipif(shutil.which("bwrap") is None, reason="bubblewrap is unavailable")
+def test_output_argv_paths_are_not_treated_as_uncovered_inputs(tmp_path: Path) -> None:
+    output = tmp_path / "argv-output-coverage"
+    config = _config(max_iterations=2)
+    sandbox = BubblewrapSandbox(output / "workspace", config)
+    runner = MVPAgentRunner(
+        hypothesis="A self-contained commissioning run has auditable output lineage.",
+        output_directory=output,
+        completion_client=ScriptedCompletionClient([]),
+        sandbox=sandbox,
+        config=config,
+    )
+    sandbox.write_file("evidence/run/out/diagnostic.json", '{"ok": true}\n')
+    sandbox.write_file("evidence/run/summary.json", '{"checks": {"ok": true}}\n')
+
+    eligible, issues = runner._argv_input_coverage(
+        command_argv=(
+            "guided/simulator.py",
+            "--output",
+            "evidence/run/out",
+            "--summary=evidence/run/summary.json",
+        ),
+        artifact_path="evidence/run/out/diagnostic.json",
+        input_artifacts_declared=True,
+        input_artifacts=[],
+    )
+
+    assert eligible is True
+    assert issues == ()
+
+
+@pytest.mark.skipif(shutil.which("bwrap") is None, reason="bubblewrap is unavailable")
 def test_capability_preflight_is_shared_across_campaigns(tmp_path: Path) -> None:
     skills, capabilities = _write_test_skill_and_capability(tmp_path)
     cache = tmp_path / "preflight-cache"
