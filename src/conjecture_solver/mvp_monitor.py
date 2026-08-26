@@ -105,6 +105,7 @@ class ClaimSummary(StrictModel):
     parent_id: str | None = None
     statement: str = ""
     evidence_count: int = Field(default=0, ge=0)
+    sufficient_evidence_count: int = Field(default=0, ge=0)
     contract_count: int = Field(default=0, ge=0)
     closed_reason: str | None = None
     active: bool = False
@@ -1629,6 +1630,14 @@ class MVPRunMonitor:
                 continue
             evidence = item.get("evidence") or []
             contracts = item.get("evidence_contracts") or []
+            sufficient_evidence_count = (
+                sum(
+                    isinstance(link, dict) and link.get("observation_sufficient") is True
+                    for link in evidence
+                )
+                if isinstance(evidence, list)
+                else 0
+            )
             summaries.append(
                 ClaimSummary(
                     id=claim_id,
@@ -1642,6 +1651,7 @@ class MVPRunMonitor:
                     ),
                     statement=str(item.get("statement") or ""),
                     evidence_count=len(evidence) if isinstance(evidence, list) else 0,
+                    sufficient_evidence_count=sufficient_evidence_count,
                     contract_count=len(contracts) if isinstance(contracts, list) else 0,
                     closed_reason=(
                         str(item["closed_reason"])
@@ -1893,7 +1903,9 @@ def format_human_status(snapshot: MVPRunSnapshot) -> str:
         marker = claim_status_marker(claim.status)
         active = "   current" if claim.active else ""
         lines.append(
-            f"  {marker} {claim.id:<28} {claim.status:<18} evidence {claim.evidence_count}{active}"
+            f"  {marker} {claim.id:<28} {claim.status:<18} "
+            f"evidence {claim.evidence_count} (sufficient {claim.sufficient_evidence_count})"
+            f"{active}"
         )
     lines.append("")
     lines.append("Current action")

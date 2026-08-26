@@ -119,6 +119,7 @@ def _claim_detail_body(claim: ClaimSummary) -> str:
             f"status: {claim.status}",
             f"evidence contracts: {claim.contract_count}",
             f"linked evidence: {claim.evidence_count}",
+            f"marked sufficient: {claim.sufficient_evidence_count}",
             f"closed reason: {reason}",
             "",
             claim.statement or "(empty statement)",

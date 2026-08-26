@@ -98,6 +98,7 @@ def _claim(
     relation: str = "root",
     parent_id: str | None = None,
     evidence: int = 0,
+    sufficient_evidence: int = 0,
     closed_reason: str | None = None,
 ) -> dict[str, Any]:
     return {
@@ -114,6 +115,7 @@ def _claim(
                 "path": f"artifact_{index}.json",
                 "note": "linked test artifact",
                 "iteration": index,
+                "observation_sufficient": index < sufficient_evidence,
             }
             for index in range(evidence)
         ],
@@ -643,6 +645,7 @@ def test_open_and_closed_claims_are_read_from_the_ledger(tmp_path: Path) -> None
                     relation="instrument_of",
                     parent_id="claim_root",
                     evidence=2,
+                    sufficient_evidence=1,
                     closed_reason="Machine-checked commissioning passed.",
                 ),
                 _claim(
@@ -663,6 +666,7 @@ def test_open_and_closed_claims_are_read_from_the_ledger(tmp_path: Path) -> None
     assert by_id["claim_root"].status == "open"
     assert by_id["claim_instrument"].status == "supported"
     assert by_id["claim_instrument"].evidence_count == 2
+    assert by_id["claim_instrument"].sufficient_evidence_count == 1
     assert by_id["claim_population_result"].status == "unresolved"
     assert "claim_root" in snapshot.open_claim_ids
     assert "claim_instrument" in snapshot.closed_claim_ids

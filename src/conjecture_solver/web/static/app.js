@@ -723,8 +723,8 @@ function renderGraph(preserveScroll) {
     const counts = commissioningStage
       ? `${item.claim_ids.length} instrument claim${item.claim_ids.length === 1 ? "" : "s"} · ${item.binding_count} bound program${item.binding_count === 1 ? "" : "s"}${item.guided_available ? " · guided" : ""}`
       : kind === "instrument" && item.owner_id
-        ? `scientific target: ${item.owner_id} · E${item.evidence_count}/C${item.contract_count}`
-        : `${item.id} · E${item.evidence_count}/C${item.contract_count}`;
+        ? `scientific target: ${item.owner_id} · E${item.evidence_count}/S${item.sufficient_evidence_count}/C${item.contract_count}`
+        : `${item.id} · E${item.evidence_count}/S${item.sufficient_evidence_count}/C${item.contract_count}`;
     appendSvgText(
       content,
       truncateText(counts, scientificClaim ? 43 : commissioningStage ? 43 : 33),
