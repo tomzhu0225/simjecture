@@ -1191,10 +1191,24 @@ class MVPClaimLedgerStore:
             instrument=False,
         )
         if active_contract.all_execution_bindings() and matched_binding is None:
+            allowed_command_count = sum(
+                1
+                for binding in active_contract.all_execution_bindings()
+                if binding.capability == capability
+                and binding.program_path == argv[0]
+                for _command in binding.allowed_scientific_argv
+            )
             raise ValueError(
                 f"capability execution for scientific claim {claim_id} does not "
-                "match an allowed_scientific_argv command in its active prospective "
-                "execution_binding pipeline"
+                f"match an allowed_scientific_argv command in active contract "
+                f"v{active_contract.version}; this exact command is not in the "
+                "prospective pipeline. Do not retry it unchanged. If a supported "
+                "instrument claim has a newer binding, register a new prospective "
+                "claim-decision contract on this still-open scientific claim with "
+                "the exact fresh command/output path (and recommission any new "
+                "instrument binding) before executing. Matching capability/source "
+                "alone is insufficient. Existing same-program pipeline entries "
+                f"count={allowed_command_count}."
             )
         if matched_binding is not None:
             binding_index, binding = matched_binding
@@ -1242,7 +1256,10 @@ class MVPClaimLedgerStore:
             "numerical_regime for the "
             "same program source and a prospective execution_binding that allows "
             "this exact scientific argv; bind scouting and commissioning runs to "
-            "an instrument claim"
+            "an instrument claim. If a supported instrument exists but its binding "
+            "does not allow this exact command, register a successor instrument "
+            "claim with a fresh commissioning contract and exact allowed scientific "
+            "argv; do not retry the rejected command or relink an older run."
         )
 
     def link_evidence(
