@@ -43,15 +43,20 @@ diagnostics, acceptance thresholds, or conclusion.
    [runtime smoke](examples/runtime_smoke.py) checks an operator-supplied test
    parameter file, MPI execution, and HDF5 readback; it never qualifies a
    scientific calculation.
-4. Commission the actual representation prospectively. Check geometry,
+4. Before freezing an expensive evidence command, run short, distinct,
+   non-evidentiary timing pilots at representative resolution. Separate fixed
+   startup/checkpoint cost from marginal evolution cost, benchmark plausible
+   MPI/OpenMP topologies, and leave enough wall-time and workspace margin for
+   the complete output transaction. Do not assume that more ranks are faster.
+5. Commission the actual representation prospectively. Check geometry,
    coordinates, units, initialization, boundaries, active physical terms,
    diagnostics, and numerical regime. Preserve quantitative metrics behind
    every qualification boolean.
-5. Freeze the commissioned input-producing source and parameterized command
+6. Freeze the commissioned input-producing source and parameterized command
    interface. Generate fresh evidence with that identity, retain raw FLASH
    outputs, and perform analysis from recorded files rather than terminal
    prose.
-6. Challenge the result with applicable controls and refinement studies before
+7. Challenge the result with applicable controls and refinement studies before
    adjudication. If the required scale or closure leaves the model's validity
    domain, record the limitation and use a more appropriate instrument.
 

@@ -29,6 +29,18 @@ standard error, the FLASH log, the exact parameter file, and the realized
 output inventory. Bound workbench attempts with a timeout and stop retrying an
 unchanged deterministic failure.
 
+Before registering a long evidence command, use at least one shorter
+non-evidentiary pilot at the intended resolution and process topology. When
+startup, checkpoint, or first-output cost is significant, use two short pilot
+durations to estimate both fixed cost and marginal cost per unit simulated
+time. Check the estimate against the command timeout, campaign wall budget, and
+workspace ceiling with explicit safety margin. A pilot may qualify feasibility
+or document a resource blocker, but its measurements do not become scientific
+evidence. If the complete prospective command cannot finish within the hard
+limit, record a resource/instrument limitation rather than treating partial
+output as a physical counterexample or silently shortening the protocol after
+seeing results.
+
 Use `examples/runtime_smoke.py` only through a capability that provides
 `FLASH_EXECUTABLE`, `FLASH_MPI_LAUNCHER`, `FLASH_PREFLIGHT_PARFILE`, and
 `FLASH_MPI_RANKS`. The script copies the operator-prepared parameter file into

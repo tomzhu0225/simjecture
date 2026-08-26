@@ -33,14 +33,24 @@ needed for the campaign.
 5. Run a small MPI/HDF5 write-and-read round trip with the exact launcher that
    the capability will use. Verify that all ranks terminate and that the output
    metadata can be read independently.
-6. Expose the runtime to Simjecture only through a local capability descriptor
+6. Benchmark a representative non-evidentiary problem at several process
+   topologies. Start with one rank and several counts no larger than the
+   available physical cores. If simultaneous multithreading is available, test
+   higher logical-thread counts separately; use them only when measured
+   end-to-end wall time improves. Record MPI rank count, process grid, OpenMP
+   thread count, CPU binding, elapsed time, and peak workspace growth. A host
+   advertising 20 logical threads does not establish that a 20-rank FLASH run
+   is faster or even launcher-valid.
+7. Expose the runtime to Simjecture only through a local capability descriptor
    that identifies this skill, pins the executable and relevant identity files,
    declares required mounts and environment, and has no network or credentials.
 
 Do not make a generic capability claim for a binary whose initialization is
 compiled for one fixed problem. Name such a capability after what it can
 actually execute. Rebuild and requalify after compiler, MPI, HDF5, FLASH source,
-setup-unit, or relevant source changes.
+setup-unit, or relevant source changes. Keep machine-specific rank and binding
+choices in local deployment records or capability metadata, not in the
+scientific skill or hypothesis.
 
 Official references:
 
