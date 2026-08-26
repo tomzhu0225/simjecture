@@ -1065,6 +1065,23 @@ def test_dsh_durable_job_is_projected_as_current_action(tmp_path: Path) -> None:
         )
         + "\n",
     )
+    _write(
+        root / "jobs" / "jobs" / "job-evidence-1" / "request.json",
+        json.dumps(
+            {
+                "metadata": {
+                    "action": {
+                        "action": "run_capability",
+                        "active_claim_id": "claim_child",
+                        "argv": ["guided/sim.py", "--eta", "0.001"],
+                        "capability": "flash-mhd",
+                        "research_note": "Collect the next fresh scaling point.",
+                        "stage": "evidence",
+                    }
+                }
+            }
+        ),
+    )
 
     monitor = MVPRunMonitor(root)
     running = monitor.snapshot()
@@ -1072,11 +1089,19 @@ def test_dsh_durable_job_is_projected_as_current_action(tmp_path: Path) -> None:
     assert running.current_action is not None
     assert running.current_action.action_name == "run_capability"
     assert running.current_action.stage == "evidence"
+    assert running.current_action.capability == "flash-mhd"
+    assert running.current_action.active_claim_id == "claim_child"
+    assert running.current_action.argv == ("guided/sim.py", "--eta", "0.001")
+    assert running.current_action.research_note == "Collect the next fresh scaling point."
     assert running.current_action.model == "deepseek-v4-flash"
     assert running.current_action.durable_job_id == "job-evidence-1"
     assert running.current_action.wait_elapsed_seconds == 42.5
     assert "durable evidence" in running.current_action.description
-    assert "no pending action" not in format_human_status(running)
+    status = format_human_status(running)
+    assert "no pending action" not in status
+    assert "capability=flash-mhd" in status
+    assert "claim=claim_child" in status
+    assert "Collect the next fresh scaling point." in status
 
     with activity.open("a") as handle:
         handle.write(

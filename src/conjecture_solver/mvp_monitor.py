@@ -1473,6 +1473,13 @@ class MVPRunMonitor:
         if not self._dsh_active_jobs:
             return None
         record = next(reversed(self._dsh_active_jobs.values()))
+        job_id = str(record["job_id"])
+        request = self._dsh_job_request(job_id)
+        metadata = request.get("metadata") if request is not None else None
+        details: dict[str, Any] = metadata if isinstance(metadata, dict) else {}
+        requested_action = details.get("action")
+        if isinstance(requested_action, dict):
+            details = {**details, **requested_action}
         tool = str(record.get("tool") or "")
         if tool.endswith("run_evidence_capability"):
             action_name = "run_capability"
@@ -1495,20 +1502,54 @@ class MVPRunMonitor:
             loop_payload.get("active_claim_id"), str
         ):
             active_claim_id = loop_payload["active_claim_id"]
+        if isinstance(details.get("active_claim_id"), str):
+            active_claim_id = details["active_claim_id"]
+        requested_stage = details.get("stage")
+        if isinstance(requested_stage, str):
+            stage = requested_stage
+        requested_argv = details.get("argv")
+        argv = (
+            tuple(requested_argv)
+            if isinstance(requested_argv, list)
+            and all(isinstance(item, str) for item in requested_argv)
+            else ()
+        )
         wait_elapsed = record.get("wait_elapsed_seconds")
         return CurrentAction(
             iteration=max(1, self._dsh_usage.usage_turns),
             action_name=action_name,
             description=description,
             pending=True,
+            capability=(
+                details["capability"] if isinstance(details.get("capability"), str) else None
+            ),
             stage=stage,
             active_claim_id=active_claim_id,
             model=self._dsh_model,
-            durable_job_id=str(record["job_id"]),
+            research_note=(
+                details["research_note"]
+                if isinstance(details.get("research_note"), str)
+                else None
+            ),
+            argv=argv,
+            durable_job_id=job_id,
             wait_elapsed_seconds=(
                 float(wait_elapsed) if isinstance(wait_elapsed, (int, float)) else None
             ),
         )
+
+    def _dsh_job_request(self, job_id: str) -> dict[str, Any] | None:
+        """Read immutable public job metadata without following paths outside the run."""
+
+        if not job_id or Path(job_id).name != job_id or job_id in {".", ".."}:
+            return None
+        request_path = contained_path(
+            self.root,
+            Path("jobs") / "jobs" / job_id / "request.json",
+        )
+        if request_path is None:
+            return None
+        return load_json_object(request_path)
 
     def _executions(
         self,
@@ -1879,6 +1920,10 @@ def format_human_status(snapshot: MVPRunSnapshot) -> str:
         details: list[str] = [f"iteration={action.iteration}"]
         if action.stage:
             details.append(f"stage={action.stage}")
+        if action.capability:
+            details.append(f"capability={action.capability}")
+        if action.active_claim_id:
+            details.append(f"claim={action.active_claim_id}")
         if action.durable_job_id:
             details.append(f"job={action.durable_job_id}")
         if action.wait_elapsed_seconds is not None:
@@ -1890,6 +1935,8 @@ def format_human_status(snapshot: MVPRunSnapshot) -> str:
             details.append(f"elapsed={int(snapshot.latest_heartbeat.elapsed_wall_seconds)} s")
         details.append(f"workspace={format_bytes(snapshot.workspace_bytes)}")
         lines.append("  " + ", ".join(details))
+        if action.research_note:
+            lines.append(f"  {action.research_note}")
     lines.append("")
     lines.append("Recent activity")
     events = snapshot.recent_events[-8:]

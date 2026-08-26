@@ -669,6 +669,10 @@ class DashboardScreen(Screen[None]):
         details = [f"iteration={action.iteration}"]
         if action.stage:
             details.append(f"stage={action.stage}")
+        if action.capability:
+            details.append(f"capability={action.capability}")
+        if action.active_claim_id:
+            details.append(f"claim={action.active_claim_id}")
         if action.durable_job_id:
             details.append(f"job={action.durable_job_id}")
         if action.wait_elapsed_seconds is not None:
@@ -679,7 +683,8 @@ class DashboardScreen(Screen[None]):
         ):
             details.append(f"elapsed={int(snapshot.latest_heartbeat.elapsed_wall_seconds)} s")
         details.append(f"workspace={format_bytes(snapshot.workspace_bytes)}")
-        return f"{action.description}\n" + ", ".join(details)
+        note = f"\n{action.research_note}" if action.research_note else ""
+        return f"{action.description}\n" + ", ".join(details) + note
 
     def action_leave(self) -> None:
         _app(self).detach_managed()
