@@ -1429,6 +1429,16 @@ class CampaignMCPBridge:
                 result = await _await_result(reporter(validated["job_id"]))
             else:
                 result = await self._kernel_method("job_status", validated["job_id"])
+        elif name == "record_terminal_observation":
+            payload = dict(validated)
+            operation_id = payload.pop("operation_id")
+            kernel = await self._ensure_kernel()
+            method = getattr(kernel, "record_terminal_observation", None)
+            if not callable(method):
+                raise MCPBridgeError(
+                    "CampaignKernel does not implement record_terminal_observation(...)"
+                )
+            result = await _await_result(method(operation_id, **payload))
         elif name == "cancel_job":
             result = await self._execute_mutation(
                 validated["operation_id"],

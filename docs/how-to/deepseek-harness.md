@@ -138,9 +138,9 @@ simjecture-mcp --workspace "$SIMJECTURE_WORKSPACE" \
 
 That command speaks MCP over stdio and expects an MCP client; it is not a
 human-facing REPL. Use DSH's initialize/list-tools/call-tool trace to verify the
-21 explicit MCP endpoints before submitting work. The persistent lead sees six
-tools: two durable reads, fresh falsification and repair delegation, independent
-adjudication, and guarded finalization. Each worker receives a narrower tool
+22 explicit MCP endpoints before submitting work. The persistent lead sees seven
+tools: two durable reads, fresh falsification, blocker resolution, and repair
+delegation, independent adjudication, and guarded finalization. Each worker receives a narrower tool
 surface plus a claim-scoped argument guard. Raw judge prepare/commit operations
 are private to the adjudication composite.
 

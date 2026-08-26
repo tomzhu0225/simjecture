@@ -462,6 +462,138 @@ def test_model_free_kernel_adjudicates_and_finalizes_without_completion_client(
     assert adjudications[0]["operation_id"] == "judge-root-v1"
 
 
+def test_kernel_materializes_receipt_backed_terminal_observation(
+    tmp_path: Path,
+) -> None:
+    campaign = tmp_path / "terminal-observation"
+    kernel = CampaignKernel.open(
+        workspace=campaign,
+        hypothesis="A bounded scientific execution produces the required observation.",
+    )
+    _prepare_startup(kernel)
+    kernel.execute_operation(
+        "contract-root-v1",
+        {
+            "action": "register_evidence_contract",
+            "research_note": "Freeze the scientific decision attempt.",
+            "claim_id": "claim_root",
+            "observable": "A complete bounded result.",
+            "expected_outcomes": "A complete result decides; failure is inconclusive.",
+            "decision_rule": "Decide only from a complete successful result.",
+            "required_observation": "One complete successful result.",
+            "uncertainty_criterion": "The result must contain every declared field.",
+            "inconclusive_conditions": "Execution failure is inconclusive.",
+            "validation_checks": [],
+        },
+    )
+    state = kernel.start_job(
+        {
+            "operation_id": "failed-root-attempt",
+            "kind": "python",
+            "argv": [
+                "-c",
+                "from pathlib import Path; "
+                "Path('failed_attempt.json').write_text('{\"complete\":false}'); "
+                "raise SystemExit(7)",
+            ],
+            "active_claim_id": "claim_root",
+            "input_artifacts": [],
+            "timeout_seconds": 30,
+        }
+    )
+    deadline = time.monotonic() + 10
+    while time.monotonic() < deadline:
+        state = kernel.job_status(state.job_id)
+        if state.status.terminal:
+            break
+        time.sleep(0.02)
+    assert state.status is CampaignJobStatus.FAILED
+    kernel.execute_operation(
+        "link-failed-root-attempt",
+        {
+            "action": "link_claim_evidence",
+            "research_note": "Record the failed prospective attempt without deciding science.",
+            "claim_id": "claim_root",
+            "path": "failed_attempt.json",
+            "note": "The prospective execution failed before the required observation.",
+            "observation_sufficient": False,
+            "observation_note": "This is an attempt record, not a scientific result.",
+        },
+    )
+    kernel.execute_operation(
+        "contract-root-terminal-v2",
+        {
+            "action": "register_evidence_contract",
+            "research_note": "Prospectively freeze the terminal receipt record.",
+            "claim_id": "claim_root",
+            "evidence_purpose": "terminal_record",
+            "observable": "A kernel-authenticated terminal execution record.",
+            "expected_outcomes": "A complete record permits independent terminal review.",
+            "decision_rule": "Accept only a complete record tied to the failed job receipt.",
+            "required_observation": "One receipt-backed terminal JSON record.",
+            "uncertainty_criterion": "Job and receipt identities must be kernel verified.",
+            "inconclusive_conditions": "Missing receipt identity is incomplete.",
+            "validation_checks": [
+                {"json_path": "record_complete", "expected_value": True},
+                {
+                    "json_path": "kernel_verified.selected_jobs_all_terminal",
+                    "expected_value": True,
+                },
+            ],
+        },
+    )
+    result = kernel.record_terminal_observation(
+        "record-root-terminal-v2",
+        claim_id="claim_root",
+        contract_version=2,
+        job_ids=[state.job_id],
+        path="evidence/terminal_root_v2.json",
+        alternatives_considered=[
+            "A smaller execution would not realize the required complete observation."
+        ],
+        feasibility_assessment=(
+            "No admissible alternative has yet been shown to realize the exact observation."
+        ),
+    )
+    assert result["terminal_cause"] == "execution_or_instrument_failure"
+    document = json.loads(
+        (campaign / "workspace/evidence/terminal_root_v2.json").read_text()
+    )
+    assert document["record_complete"] is True
+    assert document["kernel_verified"]["attempts"][0]["job_id"] == state.job_id
+    assert document["kernel_verified"]["attempts"][0]["job_report_sha256"]
+    assert document["researcher_assessment"]["verified_by_kernel"] is False
+    provenance = json.loads((campaign / "artifact_provenance.json").read_text())[
+        "artifacts"
+    ]["evidence/terminal_root_v2.json"]
+    assert provenance["action"] == "run_python"
+    assert provenance["execution_succeeded"] is True
+    assert provenance["evidence_eligible"] is True
+    kernel.execute_operation(
+        "link-root-terminal-v2",
+        {
+            "action": "link_claim_evidence",
+            "research_note": "Link the prospective terminal observation for judgment.",
+            "claim_id": "claim_root",
+            "path": "evidence/terminal_root_v2.json",
+            "note": "Kernel-authenticated job receipts and limits are complete.",
+            "observation_sufficient": True,
+            "observation_note": "The terminal record satisfies both registered checks.",
+        },
+    )
+    prepared = kernel.prepare_adjudication(
+        "judge-root-terminal-v2",
+        claim_id="claim_root",
+        contract_version=2,
+        case_for_sufficiency=(
+            "The fresh terminal record preserves the failed job receipt for review."
+        ),
+    )
+    assert prepared["packet"]["selected_contract_evidence"][0]["path"] == (
+        "evidence/terminal_root_v2.json"
+    )
+
+
 def test_kernel_rejects_adjudication_without_contract_satisfying_evidence(
     tmp_path: Path,
 ) -> None:

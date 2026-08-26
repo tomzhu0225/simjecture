@@ -106,6 +106,7 @@ MUTATING_TOOLS = frozenset(
         "run_python",
         "run_workbench_capability",
         "run_evidence_capability",
+        "record_terminal_observation",
         "cancel_job",
         "record_adjudication",
         "finalize_campaign",
@@ -339,6 +340,17 @@ TOOL_SCHEMAS: dict[str, dict[str, Any]] = {
         }
     ),
     "job_status": _object({"job_id": _string(), "report": _boolean()}),
+    "record_terminal_observation": _object(
+        {
+            "operation_id": _string(),
+            "claim_id": _string(),
+            "contract_version": _integer(),
+            "job_ids": _array(_string()),
+            "path": _string(),
+            "alternatives_considered": _array(_string()),
+            "feasibility_assessment": _string(),
+        }
+    ),
     "cancel_job": _object({"job_id": _string(), **_OPERATION_ID}),
     # These two endpoints are hidden from the researcher agent by the DSH
     # scoped tool restriction. The composite simjecture_adjudicate tool alone
@@ -425,6 +437,15 @@ TOOL_REQUIRED: dict[str, tuple[str, ...]] = {
         "input_artifacts",
     ),
     "job_status": ("job_id",),
+    "record_terminal_observation": (
+        "operation_id",
+        "claim_id",
+        "contract_version",
+        "job_ids",
+        "path",
+        "alternatives_considered",
+        "feasibility_assessment",
+    ),
     "cancel_job": ("operation_id", "job_id"),
     "prepare_adjudication": (
         "operation_id",
@@ -511,6 +532,12 @@ TOOL_DESCRIPTIONS: dict[str, str] = {
         "Read one scientific job. Omit report (or set it true) for bounded "
         "terminal diagnostics; harness pollers may set report=false for the "
         "small lifecycle state."
+    ),
+    "record_terminal_observation": (
+        "Materialize a fresh kernel-authenticated terminal observation from durable "
+        "job receipts already linked to the same scientific claim. Use only after "
+        "registering a terminal_record contract. Researcher-supplied feasibility "
+        "claims are labelled separately from kernel-verified receipt facts."
     ),
     "cancel_job": "Request cancellation of one scientific job.",
     "prepare_adjudication": (

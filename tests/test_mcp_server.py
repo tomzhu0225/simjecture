@@ -72,6 +72,15 @@ class _FakeKernel:
     def job_report(self, job_id: str) -> dict[str, Any]:
         return {"job_id": job_id, "status": "succeeded", "diagnostic": "bounded"}
 
+    def record_terminal_observation(
+        self, operation_id: str, **kwargs: Any
+    ) -> dict[str, Any]:
+        return {
+            "operation_id": operation_id,
+            "path": kwargs["path"],
+            "job_ids": kwargs["job_ids"],
+        }
+
     def cancel_job(self, job_id: str) -> dict[str, Any]:
         return {"job_id": job_id, "status": "cancel_requested"}
 
@@ -112,6 +121,7 @@ def test_tool_catalog_is_flat_and_uses_only_the_dsh_schema_subset() -> None:
         "run_workbench_capability",
         "run_evidence_capability",
         "job_status",
+        "record_terminal_observation",
         "cancel_job",
         "prepare_adjudication",
         "record_adjudication",
@@ -382,6 +392,31 @@ def test_bridge_dispatches_isolated_adjudication_and_finalization(tmp_path: Path
         },
     )
     assert finalized["operation_id"] == "finish-root-v1"
+
+
+def test_bridge_dispatches_kernel_authenticated_terminal_observation(
+    tmp_path: Path,
+) -> None:
+    bridge = CampaignMCPBridge(_FakeKernel(), config=BridgeConfig(workspace=tmp_path))
+    result = _call(
+        bridge,
+        "record_terminal_observation",
+        {
+            "operation_id": "terminal-root-v2",
+            "claim_id": "claim_root",
+            "contract_version": 2,
+            "job_ids": ["job_timeout"],
+            "path": "evidence/terminal_root_v2.json",
+            "alternatives_considered": [
+                "A smaller bounded rerun would not realize the required observation."
+            ],
+            "feasibility_assessment": (
+                "No admissible alternative realizes the frozen observation within the cap."
+            ),
+        },
+    )
+    assert result["operation_id"] == "terminal-root-v2"
+    assert result["job_ids"] == ["job_timeout"]
 
 
 def test_bridge_rejects_unsafe_or_unexposed_actions(tmp_path: Path) -> None:
@@ -1263,7 +1298,7 @@ def test_sdk_stdio_handshake_list_and_call_when_sdk_is_installed(tmp_path: Path)
             ):
                 await session.initialize()
                 listed = await session.list_tools()
-                assert len(listed.tools) == 21
+                assert len(listed.tools) == 22
                 assert {tool.name for tool in listed.tools} == set(TOOL_SCHEMAS)
                 for tool in listed.tools:
                     schema = getattr(

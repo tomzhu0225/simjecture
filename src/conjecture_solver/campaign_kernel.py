@@ -2780,6 +2780,306 @@ class CampaignKernel:
                     break
         return report
 
+    def record_terminal_observation(
+        self,
+        operation_id: str,
+        *,
+        claim_id: str,
+        contract_version: int,
+        job_ids: list[str],
+        path: str,
+        alternatives_considered: list[str],
+        feasibility_assessment: str,
+    ) -> dict[str, Any]:
+        """Materialize a receipt-backed observation for a terminal contract.
+
+        Failed scientific jobs cannot be treated as successful scientific
+        evidence, but their authenticated receipts are exactly the facts an
+        independent judge needs to distinguish an instrument/resource limit
+        from an unresolved scientific result.  This boundary copies only
+        kernel-verified lifecycle facts into a fresh, successful sandbox
+        artifact.  Researcher judgments about alternative tests remain
+        explicitly labelled and are never presented as kernel-verified facts.
+        """
+
+        from .mvp_claims import ClaimDisposition, ClaimKind, EvidencePurpose
+
+        operation_id = self._validate_operation_id(operation_id)
+        normalized_claim_id = claim_id.strip().casefold()
+        if not normalized_claim_id:
+            raise ValueError("claim_id must be non-empty")
+        if (
+            not isinstance(contract_version, int)
+            or isinstance(contract_version, bool)
+            or contract_version < 1
+        ):
+            raise ValueError("contract_version must be a positive integer")
+        if not job_ids or len(job_ids) > 16 or len(set(job_ids)) != len(job_ids):
+            raise ValueError("job_ids must contain 1 to 16 unique durable job ids")
+        if any(not isinstance(job_id, str) or not job_id for job_id in job_ids):
+            raise ValueError("job_ids must contain non-empty strings")
+        if not alternatives_considered or len(alternatives_considered) > 16:
+            raise ValueError("alternatives_considered must contain 1 to 16 entries")
+        if any(
+            not isinstance(item, str) or not item.strip() or len(item) > 2_000
+            for item in alternatives_considered
+        ):
+            raise ValueError(
+                "alternatives_considered entries must contain 1 to 2,000 characters"
+            )
+        if (
+            not isinstance(feasibility_assessment, str)
+            or len(feasibility_assessment.strip()) < 16
+            or len(feasibility_assessment) > 8_000
+        ):
+            raise ValueError(
+                "feasibility_assessment must contain 16 to 8,000 characters"
+            )
+
+        # Reconcile each receipt before taking the campaign writer lock.  The
+        # terminal reports are immutable after reconciliation, while avoiding
+        # recursive lock acquisition through job_status().
+        reports = {job_id: self.job_report(job_id) for job_id in job_ids}
+        terminal_statuses = {"succeeded", "failed", "cancelled", "outcome_unknown"}
+        nonterminal = [
+            job_id
+            for job_id, report in reports.items()
+            if report.get("status") not in terminal_statuses
+        ]
+        if nonterminal:
+            raise ValueError(
+                "terminal observations require terminal durable jobs; still active: "
+                + ", ".join(nonterminal)
+            )
+
+        with self._writer_lock():
+            self._reconcile_jobs_locked()
+            self._assert_writer_available(exclude_operation_id=operation_id)
+            claim = self.claim_store.ledger.by_id().get(normalized_claim_id)
+            if claim is None:
+                raise ValueError(f"unknown claim_id: {normalized_claim_id}")
+            if claim.kind != ClaimKind.SCIENTIFIC:
+                raise ValueError("terminal observations are valid only for scientific claims")
+            contracts = {contract.version: contract for contract in claim.evidence_contracts}
+            selected_contract = contracts.get(contract_version)
+            if selected_contract is None:
+                raise ValueError(
+                    f"claim {normalized_claim_id} has no evidence contract "
+                    f"version {contract_version}"
+                )
+            if selected_contract.evidence_purpose != EvidencePurpose.TERMINAL_RECORD:
+                raise ValueError(
+                    "record_terminal_observation requires a terminal_record contract"
+                )
+
+            journal = self._load_action_journal()
+            is_replay = operation_id in (journal.get("operations") or {})
+            if not is_replay:
+                if claim.status != ClaimDisposition.OPEN:
+                    raise ValueError(f"claim is already closed: {normalized_claim_id}")
+                if claim.evidence_contracts[-1].version != contract_version:
+                    raise ValueError(
+                        "terminal observations require the newest active evidence contract"
+                    )
+                try:
+                    self.host.sandbox.artifact_metadata(path)
+                except ValueError:
+                    pass
+                else:
+                    raise ValueError(
+                        "terminal observation path already exists; use a fresh path"
+                    )
+
+            linked_attempts: dict[str, tuple[Any, Any]] = {}
+            for evidence in claim.evidence:
+                provenance = evidence.provenance
+                prior_contract = contracts.get(evidence.contract_version)
+                if (
+                    provenance is None
+                    or provenance.job_id not in reports
+                    or prior_contract is None
+                    or prior_contract.evidence_purpose != EvidencePurpose.CLAIM_DECISION
+                    or not provenance.tracked
+                    or provenance.generated_iteration is None
+                    or provenance.generated_iteration <= prior_contract.registered_iteration
+                ):
+                    continue
+                linked_attempts[provenance.job_id] = (evidence, prior_contract)
+            missing_links = sorted(set(job_ids) - set(linked_attempts))
+            if missing_links:
+                raise ValueError(
+                    "terminal jobs must already be linked as prospective attempts "
+                    "under a prior claim_decision contract: "
+                    + ", ".join(missing_links)
+                )
+
+            attempts: list[dict[str, Any]] = []
+            any_failed = False
+            any_timed_out = False
+            for job_id in job_ids:
+                evidence, prior_contract = linked_attempts[job_id]
+                provenance = evidence.provenance
+                assert provenance is not None
+                report = reports[job_id]
+                canonical_report = json.dumps(
+                    report,
+                    ensure_ascii=False,
+                    allow_nan=False,
+                    sort_keys=True,
+                    separators=(",", ":"),
+                    default=str,
+                )
+                result = report.get("result")
+                result = result if isinstance(result, Mapping) else {}
+                timed_out = bool(
+                    result.get("timed_out") is True
+                    or provenance.execution_timed_out is True
+                )
+                execution_succeeded = provenance.execution_succeeded is True
+                any_timed_out = any_timed_out or timed_out
+                any_failed = any_failed or not execution_succeeded
+                attempts.append(
+                    {
+                        "evidence_path": evidence.path,
+                        "decision_contract_version": prior_contract.version,
+                        "observation_sufficient": evidence.observation_sufficient,
+                        "job_id": job_id,
+                        "operation_id": provenance.operation_id,
+                        "job_report_sha256": hashlib.sha256(
+                            canonical_report.encode()
+                        ).hexdigest(),
+                        "status": report.get("status"),
+                        "request": report.get("request"),
+                        "result": {
+                            "status": result.get("status"),
+                            "outcome": result.get("outcome"),
+                            "returncode": result.get("returncode"),
+                            "timed_out": result.get("timed_out"),
+                            "started_at": result.get("started_at"),
+                            "finished_at": result.get("finished_at"),
+                            "detail": result.get("detail"),
+                        },
+                        "linked_provenance": {
+                            "tracked": provenance.tracked,
+                            "evidence_eligible": provenance.evidence_eligible,
+                            "execution_succeeded": provenance.execution_succeeded,
+                            "execution_returncode": provenance.execution_returncode,
+                            "execution_timed_out": provenance.execution_timed_out,
+                            "execution_workspace_exceeded": (
+                                provenance.execution_workspace_exceeded
+                            ),
+                            "execution_stage": provenance.execution_stage,
+                            "capability": provenance.capability,
+                            "program_path": provenance.program_path,
+                            "program_sha256": provenance.program_sha256,
+                            "command_argv": list(provenance.command_argv),
+                        },
+                    }
+                )
+
+            if any_timed_out:
+                terminal_cause = "resource_or_command_cap"
+            elif any_failed:
+                terminal_cause = "execution_or_instrument_failure"
+            else:
+                terminal_cause = "completed_but_scientifically_indecisive"
+            budget = self._load_budget()
+            document = {
+                "schema_version": "0.1.0",
+                "record_kind": "kernel_authenticated_terminal_observation",
+                "record_complete": True,
+                "claim_id": normalized_claim_id,
+                "terminal_contract_version": contract_version,
+                "prior_decision_contract_versions": sorted(
+                    {item[1].version for item in linked_attempts.values()}
+                ),
+                "kernel_verified": {
+                    "selected_jobs_all_terminal": True,
+                    "attempt_count": len(attempts),
+                    "terminal_cause": terminal_cause,
+                    "required_observation_complete": not any_failed,
+                    "claim_tested": False if any_failed else None,
+                    "attempts": attempts,
+                    "configured_limits": {
+                        "max_actions": (
+                            None
+                            if budget["max_actions"] is None
+                            else int(budget["max_actions"])
+                        ),
+                        "max_wall_seconds": float(budget["max_wall_seconds"]),
+                        "max_command_seconds": float(budget["max_command_seconds"]),
+                    },
+                },
+                "researcher_assessment": {
+                    "verified_by_kernel": False,
+                    "alternatives_considered": [
+                        item.strip() for item in alternatives_considered
+                    ],
+                    "feasibility_assessment": feasibility_assessment.strip(),
+                },
+                "scientific_disposition": None,
+                "judge_required": True,
+            }
+            encoded = json.dumps(
+                document,
+                ensure_ascii=False,
+                allow_nan=False,
+                indent=2,
+                sort_keys=True,
+                default=str,
+            ) + "\n"
+            program = (
+                "from pathlib import Path\n"
+                f"target = Path({path!r})\n"
+                "target.parent.mkdir(parents=True, exist_ok=True)\n"
+                f"target.write_text({encoded!r}, encoding='utf-8')\n"
+            )
+            action = {
+                "action": "run_python",
+                "research_note": (
+                    "Materialize the kernel-authenticated terminal observation "
+                    "after its prospective terminal_record contract."
+                ),
+                "argv": ["-c", program],
+                "active_claim_id": normalized_claim_id,
+                "input_artifacts": [],
+            }
+            result = self._execute_operation_locked(
+                operation_id,
+                self._normalize_action(action),
+                timeout_seconds=30.0,
+                progress_callback=None,
+            )
+            metadata = self.host.sandbox.artifact_metadata(path)
+            provenance = self.host._evidence_provenance(metadata)
+            if not (
+                provenance.tracked
+                and provenance.evidence_eligible
+                and provenance.execution_succeeded is True
+                and provenance.generated_iteration is not None
+                and provenance.generated_iteration > selected_contract.registered_iteration
+            ):
+                raise ValueError(
+                    "kernel-generated terminal observation did not retain fresh "
+                    "evidence-eligible provenance"
+                )
+            return {
+                "path": path,
+                "sha256": metadata["sha256"],
+                "bytes": metadata["bytes"],
+                "claim_id": normalized_claim_id,
+                "contract_version": contract_version,
+                "terminal_cause": terminal_cause,
+                "job_ids": list(job_ids),
+                "execution": {
+                    "returncode": result.get("returncode"),
+                    "timed_out": result.get("timed_out"),
+                    "scientific_evidence_eligible": result.get(
+                        "scientific_evidence_eligible"
+                    ),
+                },
+            }
+
     def cancel_job(self, job_id: str) -> Any:
         """Cancel one job only after its persisted process identity verifies."""
 

@@ -254,9 +254,9 @@ the human-first projection.
 The v0.2.2 integration moves the model-facing research loop to DeepSeek Harness
 without moving scientific authority out of Simjecture. DSH owns the provider,
 conversation, retry policy, compaction, and resumable session. A native MCP
-boundary implements 21 typed endpoints. A compact persistent Lead Scientist
-sees six coordination tools and delegates claim work to fresh, scoped
-Falsifier/Experimenter and Repair Scientist sessions. A separate fresh,
+boundary implements 22 typed endpoints. A compact persistent Lead Scientist
+sees seven coordination tools and delegates claim work to fresh, scoped
+Falsifier/Experimenter, Blocker Resolver, and Repair Scientist sessions. A separate fresh,
 tool-free Judge reviews surviving claims. The Python campaign kernel continues to own hypotheses,
 evidence contracts, commissioning, skills, simulation capabilities, sandboxing,
 provenance, and guarded claim closure. Existing WarpX CPU/CUDA capabilities use

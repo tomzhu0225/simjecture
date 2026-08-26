@@ -125,7 +125,7 @@ invalid receipt remains `outcome_unknown` and cannot become evidence.
 
 `simjecture-mcp` speaks MCP over standard input/output and is not a human REPL.
 Use an MCP client to perform initialize, list-tools, and call-tool. A healthy
-server advertises 21 explicit endpoints. The persistent lead sees six tools;
+server advertises 22 explicit endpoints. The persistent lead sees seven tools;
 the fresh role composites expose narrower task-specific subsets, while raw
 judge operations stay private. A direct MCP client must still reconcile a job
 with `job_status`; the DSH profile performs that wait automatically.
