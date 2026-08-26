@@ -506,6 +506,10 @@ def test_snapshot_summary_removes_duplicated_receipt_bulk(tmp_path: Path) -> Non
                             "input_lineage_issues": [
                                 "input 'runs/source.json' is ineligible"
                             ],
+                            "argv_input_coverage_eligible": False,
+                            "argv_input_coverage_issues": [
+                                "argv path 'runs/raw' is uncovered"
+                            ],
                         }
                     },
                 },
@@ -542,6 +546,10 @@ def test_snapshot_summary_removes_duplicated_receipt_bulk(tmp_path: Path) -> Non
     assert artifact["input_lineage_eligible"] is False
     assert artifact["input_lineage_issues"] == [
         "input 'runs/source.json' is ineligible"
+    ]
+    assert artifact["argv_input_coverage_eligible"] is False
+    assert artifact["argv_input_coverage_issues"] == [
+        "argv path 'runs/raw' is uncovered"
     ]
     assert "input_artifacts" not in artifact
 
@@ -612,6 +620,8 @@ def test_claim_views_project_before_the_output_bound(tmp_path: Path) -> None:
                     ],
                     "input_lineage_eligible": True,
                     "input_lineage_issues": [],
+                    "argv_input_coverage_eligible": True,
+                    "argv_input_coverage_issues": [],
                 },
             }
         ],
@@ -691,6 +701,7 @@ def test_claim_views_project_before_the_output_bound(tmp_path: Path) -> None:
     ]
     assert projected_evidence["provenance"]["input_artifact_count"] == 1
     assert projected_evidence["provenance"]["input_lineage_eligible"] is True
+    assert projected_evidence["provenance"]["argv_input_coverage_eligible"] is True
     assert "input_artifacts" not in projected_evidence["provenance"]
 
     missing = _call(

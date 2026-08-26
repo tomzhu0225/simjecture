@@ -266,6 +266,8 @@ class ClaimEvidenceProvenance(StrictModel):
     input_artifacts: tuple[ClaimInputArtifactProvenance, ...] = ()
     input_lineage_eligible: bool = True
     input_lineage_issues: tuple[str, ...] = ()
+    argv_input_coverage_eligible: bool = True
+    argv_input_coverage_issues: tuple[str, ...] = ()
     evidence_eligible: bool = True
 
 

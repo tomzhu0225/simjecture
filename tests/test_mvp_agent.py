@@ -18,6 +18,7 @@ from conjecture_solver.mvp_agent import (
     BubblewrapSandbox,
     MVPAgentConfig,
     MVPAgentRunner,
+    MVPArtifactInput,
     MVPJudgeDecision,
     MVPJudgeVerdict,
 )
@@ -2352,6 +2353,220 @@ def test_execution_rejects_changed_declared_input_before_side_effects(tmp_path: 
     ]
     assert tool_rows[1]["ok"] is False
     assert "declared input artifact 'input.txt' changed" in tool_rows[1]["error"]
+
+
+@pytest.mark.skipif(shutil.which("bwrap") is None, reason="bubblewrap is unavailable")
+def test_explicit_input_view_hides_omitted_file_and_directory(tmp_path: Path) -> None:
+    sandbox = BubblewrapSandbox(tmp_path / "workspace", _config())
+    program = (
+        "import sys\n"
+        "from pathlib import Path\n"
+        "source = Path(sys.argv[1])\n"
+        "if source.is_file():\n"
+        "    payload = source.read_text()\n"
+        "else:\n"
+        "    payload = next(source.glob('*.h5')).read_text()\n"
+        "Path(sys.argv[2]).write_text(payload)\n"
+    )
+    sandbox.write_file("analysis/analyze.py", program)
+    sandbox.write_file("hidden.txt", "hidden-file")
+    sandbox.write_file("evidence/run/out/chk_0001.h5", "hidden-directory")
+    program_sha256 = hashlib.sha256(program.encode()).hexdigest()
+
+    omitted_file = sandbox.run_python(
+        ("analysis/analyze.py", "hidden.txt", "analysis/file-result.json"),
+        input_artifacts=(),
+        program_path="analysis/analyze.py",
+        program_sha256=program_sha256,
+    )
+    omitted_directory = sandbox.run_python(
+        (
+            "analysis/analyze.py",
+            "evidence/run/out",
+            "analysis/directory-result.json",
+        ),
+        input_artifacts=(),
+        program_path="analysis/analyze.py",
+        program_sha256=program_sha256,
+    )
+    declared_directory = sandbox.run_python(
+        (
+            "analysis/analyze.py",
+            "evidence/run/out",
+            "analysis/declared-directory-result.json",
+        ),
+        input_artifacts=(
+            MVPArtifactInput(
+                path="evidence/run/out/chk_0001.h5",
+                sha256=hashlib.sha256(b"hidden-directory").hexdigest(),
+            ),
+        ),
+        program_path="analysis/analyze.py",
+        program_sha256=program_sha256,
+    )
+
+    assert omitted_file.returncode != 0
+    assert omitted_directory.returncode != 0
+    assert declared_directory.returncode == 0, declared_directory.stderr
+    assert not (sandbox.root / "analysis/file-result.json").exists()
+    assert not (sandbox.root / "analysis/directory-result.json").exists()
+    assert (sandbox.root / "analysis/declared-directory-result.json").read_text() == (
+        "hidden-directory"
+    )
+
+
+@pytest.mark.skipif(shutil.which("bwrap") is None, reason="bubblewrap is unavailable")
+def test_explicit_input_view_mounts_input_read_only_and_collects_nested_output(
+    tmp_path: Path,
+) -> None:
+    sandbox = BubblewrapSandbox(tmp_path / "workspace", _config())
+    program = (
+        "from pathlib import Path\n"
+        "source = Path('inputs/source.txt')\n"
+        "Path('results/nested/result.txt').parent.mkdir(parents=True)\n"
+        "Path('results/nested/result.txt').write_text(source.read_text().upper())\n"
+    )
+    source = "qualified input\n"
+    sandbox.write_file("analysis/analyze.py", program)
+    sandbox.write_file("inputs/source.txt", source)
+    result = sandbox.run_python(
+        ("analysis/analyze.py",),
+        input_artifacts=(
+            MVPArtifactInput(
+                path="inputs/source.txt",
+                sha256=hashlib.sha256(source.encode()).hexdigest(),
+            ),
+        ),
+        program_path="analysis/analyze.py",
+        program_sha256=hashlib.sha256(program.encode()).hexdigest(),
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert (sandbox.root / "results/nested/result.txt").read_text() == source.upper()
+    assert (sandbox.root / "inputs/source.txt").read_text() == source
+
+    overwrite = sandbox.run_python(
+        ("-c", "from pathlib import Path; Path('inputs/source.txt').write_text('bad')"),
+        input_artifacts=(
+            MVPArtifactInput(
+                path="inputs/source.txt",
+                sha256=hashlib.sha256(source.encode()).hexdigest(),
+            ),
+        ),
+    )
+    assert overwrite.returncode != 0
+    assert (sandbox.root / "inputs/source.txt").read_text() == source
+
+
+@pytest.mark.skipif(shutil.which("bwrap") is None, reason="bubblewrap is unavailable")
+def test_legacy_absent_input_field_keeps_full_workspace_visibility(tmp_path: Path) -> None:
+    sandbox = BubblewrapSandbox(tmp_path / "workspace", _config())
+    sandbox.write_file("legacy-input.txt", "legacy-visible")
+    result = sandbox.run_python(
+        (
+            "-c",
+            "from pathlib import Path; "
+            "Path('legacy-result.txt').write_text(Path('legacy-input.txt').read_text())",
+        )
+    )
+
+    assert result.returncode == 0
+    assert (sandbox.root / "legacy-result.txt").read_text() == "legacy-visible"
+
+
+@pytest.mark.skipif(shutil.which("bwrap") is None, reason="bubblewrap is unavailable")
+def test_existing_explicit_action_with_uncovered_argv_directory_cannot_link_sufficient(
+    tmp_path: Path,
+) -> None:
+    output = tmp_path / "argv-coverage"
+    config = _config(max_iterations=2)
+    sandbox = BubblewrapSandbox(output / "workspace", config)
+    runner = MVPAgentRunner(
+        hypothesis="A pre-upgrade artifact must retain auditable argv input coverage.",
+        output_directory=output,
+        completion_client=ScriptedCompletionClient([]),
+        sandbox=sandbox,
+        config=config,
+    )
+    sandbox.write_file("analysis/analyze_case.py", "print('sealed program')\n")
+    sandbox.write_file("evidence/repair_s2000r512/out/chk_0001.h5", "hidden input")
+    sandbox.write_file("analysis/probe_s2000r512_partial.json", '{"value": 1}')
+    metadata = sandbox.artifact_metadata("analysis/probe_s2000r512_partial.json")
+    runner._artifact_provenance["artifacts"][metadata["path"]] = {
+        "bytes": metadata["bytes"],
+        "mtime_ns": metadata["mtime_ns"],
+        "generated_iteration": 1,
+        "action": "run_python",
+        "action_sha256": "a" * 64,
+        "command_argv": [
+            "analysis/analyze_case.py",
+            "evidence/repair_s2000r512/out",
+            "--output",
+            "analysis/probe_s2000r512_partial.json",
+        ],
+        "program_path": "analysis/analyze_case.py",
+        "program_sha256": hashlib.sha256(b"print('sealed program')\n").hexdigest(),
+        "execution_succeeded": True,
+        "execution_returncode": 0,
+        "execution_timed_out": False,
+        "execution_workspace_exceeded": False,
+        "input_artifacts_declared": True,
+        "input_artifacts": [],
+        "input_lineage_eligible": True,
+        "input_lineage_issues": [],
+        "evidence_candidate": True,
+        "evidence_eligible": True,
+    }
+    runner._persist_artifact_provenance()
+
+    provenance = runner._evidence_provenance(metadata)
+    assert provenance.argv_input_coverage_eligible is False
+    assert provenance.evidence_eligible is False
+    assert "evidence/repair_s2000r512/out" in provenance.argv_input_coverage_issues[0]
+    followup = MVPAgentRunner._parse_action(
+        _action(
+            action="run_python",
+            research_note="Attempt a new analysis of the pre-upgrade artifact.",
+            argv=["-c", "print('bounded followup')"],
+            input_artifacts=[
+                {
+                    "path": metadata["path"],
+                    "sha256": metadata["sha256"],
+                }
+            ],
+        )
+    )
+    _parents, lineage_eligible, lineage_issues = runner._resolve_input_artifacts(followup)
+    assert lineage_eligible is False
+    assert any("argv workspace path is not covered" in issue for issue in lineage_issues)
+
+    contract = MVPAgentRunner._parse_action(
+        _action(
+            action="register_evidence_contract",
+            research_note="Register a prospective root decision contract.",
+            claim_id="claim_root",
+            observable="The bounded scalar stored in the JSON artifact.",
+            expected_outcomes="One supports the claim and zero falsifies it.",
+            decision_rule="Accept only a qualifying fresh artifact with value one.",
+            required_observation="One qualifying fresh observation is required.",
+            uncertainty_criterion="The deterministic scalar has no sampling uncertainty.",
+            inconclusive_conditions="Uncovered inputs make the observation inconclusive.",
+        )
+    )
+    runner._perform_compat(contract, iteration=2, timeout_seconds=1)
+    link = MVPAgentRunner._parse_action(
+        _action(
+            action="link_claim_evidence",
+            research_note="Attempt to link the pre-upgrade artifact.",
+            claim_id="claim_root",
+            path="analysis/probe_s2000r512_partial.json",
+            note="The result appears numerically complete.",
+            observation_sufficient=True,
+            observation_note="The scalar is present but its argv inputs were uncovered.",
+        )
+    )
+    with pytest.raises(ValueError, match="derived artifact sufficient"):
+        runner._perform_compat(link, iteration=3, timeout_seconds=1)
 
 
 @pytest.mark.skipif(shutil.which("bwrap") is None, reason="bubblewrap is unavailable")

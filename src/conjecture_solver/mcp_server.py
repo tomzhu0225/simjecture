@@ -402,6 +402,10 @@ def _snapshot_artifacts(value: Any) -> dict[str, Any]:
                 "input_artifact_count": len(record.get("input_artifacts") or ()),
                 "input_lineage_eligible": record.get("input_lineage_eligible"),
                 "input_lineage_issues": list(record.get("input_lineage_issues") or ())[:5],
+                "argv_input_coverage_eligible": record.get("argv_input_coverage_eligible"),
+                "argv_input_coverage_issues": list(record.get("argv_input_coverage_issues") or ())[
+                    :5
+                ],
             }
             for path, record in selected
             if isinstance(record, Mapping)
@@ -740,6 +744,8 @@ def _role_evidence(
                 "input_artifacts_declared",
                 "input_lineage_eligible",
                 "input_lineage_issues",
+                "argv_input_coverage_eligible",
+                "argv_input_coverage_issues",
             )
             if key in provenance
         }
@@ -748,6 +754,8 @@ def _role_evidence(
         )
         if isinstance(provenance.get("input_lineage_issues"), list):
             provenance["input_lineage_issues"] = provenance["input_lineage_issues"][:5]
+        if isinstance(provenance.get("argv_input_coverage_issues"), list):
+            provenance["argv_input_coverage_issues"] = provenance["argv_input_coverage_issues"][:5]
     else:
         provenance = None
     projected = {

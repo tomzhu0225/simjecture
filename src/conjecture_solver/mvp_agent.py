@@ -742,15 +742,19 @@ class BubblewrapSandbox:
             raise ValueError("sandbox path escapes the workspace")
         return resolved
 
-    def workspace_bytes(self) -> int:
+    @staticmethod
+    def _tree_bytes(root: Path) -> int:
         total = 0
-        for path in self.root.rglob("*"):
+        for path in root.rglob("*"):
             if path.is_file() and not path.is_symlink():
                 try:
                     total += path.stat().st_size
                 except FileNotFoundError:
                     continue
         return total
+
+    def workspace_bytes(self) -> int:
+        return self._tree_bytes(self.root)
 
     def write_file(self, relative: str, content: str) -> dict[str, Any]:
         return self.write_bytes(relative, content.encode())
@@ -921,7 +925,8 @@ class BubblewrapSandbox:
         )
         resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
 
-    def _base_command(self) -> list[str]:
+    def _base_command(self, workspace_root: Path | None = None) -> list[str]:
+        workspace_root = self.root if workspace_root is None else workspace_root
         return [
             self.executable,
             "--unshare-all",
@@ -948,7 +953,7 @@ class BubblewrapSandbox:
             "--dir",
             "/work",
             "--bind",
-            str(self.root),
+            str(workspace_root),
             "/work",
             "--chdir",
             "/work",
@@ -974,6 +979,195 @@ class BubblewrapSandbox:
             "OPENBLAS_NUM_THREADS",
             "1",
         ]
+
+    def _regular_workspace_file(self, relative: str) -> tuple[Path, str]:
+        """Resolve one regular file without traversing workspace symlinks."""
+
+        requested = Path(relative)
+        if requested.is_absolute() or ".." in requested.parts or "\x00" in relative:
+            raise ValueError("isolated workspace paths must stay relative and contained")
+        lexical = self.root / requested
+        component = self.root
+        for part in requested.parts:
+            if part in {"", "."}:
+                continue
+            component /= part
+            if component.is_symlink():
+                raise ValueError(f"isolated workspace path {relative!r} traverses a symlink")
+        try:
+            resolved = lexical.resolve(strict=True)
+        except FileNotFoundError as error:
+            raise ValueError(f"isolated workspace file {relative!r} is unavailable") from error
+        if not resolved.is_relative_to(self.root) or not resolved.is_file():
+            raise ValueError(f"isolated workspace path {relative!r} is not a regular file")
+        return resolved, resolved.relative_to(self.root).as_posix()
+
+    @staticmethod
+    def _file_sha256(path: Path) -> str:
+        digest = hashlib.sha256()
+        with path.open("rb") as stream:
+            for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                digest.update(chunk)
+        return digest.hexdigest()
+
+    def _prepare_declared_input_view(
+        self,
+        view: Path,
+        *,
+        input_artifacts: tuple[MVPArtifactInput, ...],
+        program_path: str | None,
+        program_sha256: str | None,
+    ) -> tuple[list[str], dict[str, tuple[Path, str]]]:
+        """Create mount points for a sealed program and exact read-only inputs."""
+
+        requested: list[tuple[str, str | None, str]] = [
+            (item.path, item.sha256, "declared input") for item in input_artifacts
+        ]
+        if program_path is not None:
+            requested.append((program_path, program_sha256, "sealed program"))
+        mounts: dict[str, tuple[Path, str]] = {}
+        for relative, expected_sha256, label in requested:
+            source, canonical = self._regular_workspace_file(relative)
+            observed_sha256 = self._file_sha256(source)
+            if expected_sha256 is not None and observed_sha256 != expected_sha256:
+                raise ValueError(
+                    f"{label} {relative!r} changed before isolated execution: expected "
+                    f"sha256={expected_sha256}, observed sha256={observed_sha256}"
+                )
+            existing = mounts.get(canonical)
+            if existing is not None:
+                if existing[1] != observed_sha256:
+                    raise ValueError(f"conflicting sealed identities for {canonical!r}")
+                continue
+            mounts[canonical] = (source, observed_sha256)
+
+        arguments: list[str] = []
+        for relative, (source, _digest) in sorted(mounts.items()):
+            target = view / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.touch(exist_ok=False)
+            arguments.extend(("--ro-bind", str(source), f"/work/{relative}"))
+        return arguments, mounts
+
+    def _verify_sealed_mounts(self, mounts: dict[str, tuple[Path, str]]) -> None:
+        for relative, (source, expected_sha256) in mounts.items():
+            if not source.is_file() or source.is_symlink():
+                raise ValueError(f"sealed workspace file {relative!r} became unavailable")
+            observed_sha256 = self._file_sha256(source)
+            if observed_sha256 != expected_sha256:
+                raise ValueError(
+                    f"sealed workspace file {relative!r} changed during execution: expected "
+                    f"sha256={expected_sha256}, observed sha256={observed_sha256}"
+                )
+
+    def _output_destination(self, relative: Path) -> Path:
+        if relative.is_absolute() or ".." in relative.parts:
+            raise ValueError("generated output path escapes the workspace")
+        component = self.root
+        for part in relative.parts[:-1]:
+            component /= part
+            if component.is_symlink():
+                raise ValueError(
+                    f"generated output path {relative.as_posix()!r} traverses a symlink"
+                )
+            if component.exists() and not component.is_dir():
+                raise ValueError(
+                    "generated output parent "
+                    f"{component.relative_to(self.root)!s} is not a directory"
+                )
+        destination = self.root / relative
+        if destination.is_symlink() or destination.is_dir():
+            raise ValueError(
+                f"generated output destination {relative.as_posix()!r} is not a regular-file path"
+            )
+        return destination
+
+    def _collect_declared_view_outputs(
+        self,
+        view: Path,
+        *,
+        protected_paths: frozenset[str],
+    ) -> None:
+        outputs: list[tuple[Path, Path, int]] = []
+        for source in sorted(view.rglob("*")):
+            relative = source.relative_to(view)
+            canonical = relative.as_posix()
+            if canonical in protected_paths:
+                continue
+            if source.is_symlink():
+                raise ValueError(f"generated output {canonical!r} cannot be a symlink")
+            if source.is_dir():
+                continue
+            if not source.is_file():
+                raise ValueError(f"generated output {canonical!r} is not a regular file")
+            size = source.stat().st_size
+            if size > self.config.max_file_bytes:
+                raise ValueError(f"generated output {canonical!r} exceeds the per-file limit")
+            outputs.append((source, self._output_destination(relative), size))
+
+        current_size = self.workspace_bytes()
+        replaced_size = sum(
+            destination.stat().st_size
+            for _source, destination, _size in outputs
+            if destination.is_file()
+        )
+        projected_size = current_size - replaced_size + sum(item[2] for item in outputs)
+        if projected_size > self.config.max_workspace_bytes:
+            raise ValueError("generated outputs would exceed the sandbox workspace limit")
+
+        for source, destination, _size in outputs:
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            descriptor, temporary_name = tempfile.mkstemp(
+                prefix=f".{destination.name}.isolated-output-",
+                dir=destination.parent,
+            )
+            os.close(descriptor)
+            temporary = Path(temporary_name)
+            try:
+                shutil.copyfile(source, temporary)
+                os.chmod(temporary, source.stat().st_mode & 0o777)
+                os.replace(temporary, destination)
+            finally:
+                with suppress(FileNotFoundError):
+                    temporary.unlink()
+
+    def _run_with_declared_input_view(
+        self,
+        build_command: Callable[[Path, list[str]], list[str]],
+        *,
+        input_artifacts: tuple[MVPArtifactInput, ...],
+        program_path: str | None,
+        program_sha256: str | None,
+        timeout_seconds: float | None,
+        progress_callback: Callable[[dict[str, Any]], None] | None,
+    ) -> SandboxCommandResult:
+        starting_workspace_bytes = self.workspace_bytes()
+        with tempfile.TemporaryDirectory(prefix="simjecture-declared-work-") as temporary:
+            view = Path(temporary) / "work"
+            view.mkdir()
+            mount_arguments, mounts = self._prepare_declared_input_view(
+                view,
+                input_artifacts=input_artifacts,
+                program_path=program_path,
+                program_sha256=program_sha256,
+            )
+
+            def measured_workspace_bytes() -> int:
+                return starting_workspace_bytes + self._tree_bytes(view)
+
+            result = self._run_command(
+                build_command(view, mount_arguments),
+                timeout_seconds=timeout_seconds,
+                progress_callback=progress_callback,
+                workspace_measure=measured_workspace_bytes,
+            )
+            self._verify_sealed_mounts(mounts)
+            if not result.workspace_exceeded:
+                self._collect_declared_view_outputs(
+                    view,
+                    protected_paths=frozenset(mounts),
+                )
+            return result.model_copy(update={"workspace_bytes": self.workspace_bytes()})
 
     @staticmethod
     def _terminate(process: subprocess.Popen[bytes]) -> None:
@@ -1013,6 +1207,7 @@ class BubblewrapSandbox:
         *,
         timeout_seconds: float | None = None,
         progress_callback: Callable[[dict[str, Any]], None] | None = None,
+        workspace_measure: Callable[[], int] | None = None,
     ) -> SandboxCommandResult:
         timeout = min(
             self.config.max_command_seconds,
@@ -1024,6 +1219,7 @@ class BubblewrapSandbox:
         timed_out = False
         workspace_exceeded = False
         heartbeat_count = 0
+        measure_workspace = workspace_measure or self.workspace_bytes
         with tempfile.TemporaryFile() as stdout, tempfile.TemporaryFile() as stderr:
             process = subprocess.Popen(
                 command,
@@ -1041,7 +1237,7 @@ class BubblewrapSandbox:
                         self._terminate(process)
                         break
                     if now >= next_workspace_check:
-                        if self.workspace_bytes() > self.config.max_workspace_bytes:
+                        if measure_workspace() > self.config.max_workspace_bytes:
                             workspace_exceeded = True
                             self._terminate(process)
                             break
@@ -1054,7 +1250,7 @@ class BubblewrapSandbox:
                                     "elapsed_wall_seconds": now - started,
                                     "stdout_bytes": os.fstat(stdout.fileno()).st_size,
                                     "stderr_bytes": os.fstat(stderr.fileno()).st_size,
-                                    "workspace_bytes": self.workspace_bytes(),
+                                    "workspace_bytes": measure_workspace(),
                                 }
                             )
                         next_heartbeat = now + self.config.command_heartbeat_seconds
@@ -1063,7 +1259,7 @@ class BubblewrapSandbox:
                 self._terminate(process)
                 raise
             process.wait()
-            workspace_bytes = self.workspace_bytes()
+            workspace_bytes = measure_workspace()
             workspace_exceeded = (
                 workspace_exceeded or workspace_bytes > self.config.max_workspace_bytes
             )
@@ -1092,47 +1288,64 @@ class BubblewrapSandbox:
         self,
         argv: tuple[str, ...],
         *,
+        input_artifacts: tuple[MVPArtifactInput, ...] | None = None,
+        program_path: str | None = None,
+        program_sha256: str | None = None,
         timeout_seconds: float | None = None,
         progress_callback: Callable[[dict[str, Any]], None] | None = None,
     ) -> SandboxCommandResult:
         self._validate_argv(argv)
-        command = self._base_command()
-        command.extend(
-            [
-                "--ro-bind",
-                str(self.python_runtime_root),
-                "/opt/acs-python-runtime",
-                "--setenv",
-                "PYTHONHOME",
-                "/opt/acs-python-runtime",
-                "--setenv",
-                "PYTHONNOUSERSITE",
-                "1",
-                "--setenv",
-                "PATH",
-                "/opt/acs-python-runtime/bin:/usr/local/bin:/usr/bin",
-                "--setenv",
-                "LD_LIBRARY_PATH",
-                "/opt/acs-python-runtime/lib:/opt/acs-python-runtime/lib64",
-            ]
-        )
-        if self.python_packages:
-            command.extend(("--dir", "/opt/acs-python-packages"))
-            mounted_packages: list[str] = []
-            for index, source in enumerate(self.python_packages):
-                destination = f"/opt/acs-python-packages/{index}"
-                command.extend(("--ro-bind", str(source), destination))
-                mounted_packages.append(destination)
+
+        def build_command(workspace_root: Path, workspace_mounts: list[str]) -> list[str]:
+            command = self._base_command(workspace_root)
+            command.extend(workspace_mounts)
             command.extend(
                 [
+                    "--ro-bind",
+                    str(self.python_runtime_root),
+                    "/opt/acs-python-runtime",
                     "--setenv",
-                    "PYTHONPATH",
-                    ":".join(mounted_packages),
+                    "PYTHONHOME",
+                    "/opt/acs-python-runtime",
+                    "--setenv",
+                    "PYTHONNOUSERSITE",
+                    "1",
+                    "--setenv",
+                    "PATH",
+                    "/opt/acs-python-runtime/bin:/usr/local/bin:/usr/bin",
+                    "--setenv",
+                    "LD_LIBRARY_PATH",
+                    "/opt/acs-python-runtime/lib:/opt/acs-python-runtime/lib64",
                 ]
             )
-        command.extend((self.python_executable, *argv))
+            if self.python_packages:
+                command.extend(("--dir", "/opt/acs-python-packages"))
+                mounted_packages: list[str] = []
+                for index, source in enumerate(self.python_packages):
+                    destination = f"/opt/acs-python-packages/{index}"
+                    command.extend(("--ro-bind", str(source), destination))
+                    mounted_packages.append(destination)
+                command.extend(
+                    [
+                        "--setenv",
+                        "PYTHONPATH",
+                        ":".join(mounted_packages),
+                    ]
+                )
+            command.extend((self.python_executable, *argv))
+            return command
+
+        if input_artifacts is not None:
+            return self._run_with_declared_input_view(
+                build_command,
+                input_artifacts=input_artifacts,
+                program_path=program_path,
+                program_sha256=program_sha256,
+                timeout_seconds=timeout_seconds,
+                progress_callback=progress_callback,
+            )
         return self._run_command(
-            command,
+            build_command(self.root, []),
             timeout_seconds=timeout_seconds,
             progress_callback=progress_callback,
         )
@@ -1142,39 +1355,56 @@ class BubblewrapSandbox:
         name: str,
         argv: tuple[str, ...],
         *,
+        input_artifacts: tuple[MVPArtifactInput, ...] | None = None,
+        program_path: str | None = None,
+        program_sha256: str | None = None,
         timeout_seconds: float | None = None,
         progress_callback: Callable[[dict[str, Any]], None] | None = None,
     ) -> SandboxCommandResult:
         self._validate_argv(argv)
         installed = self.capabilities.get(name)
         installed.assert_runtime_identity()
-        command = self._base_command()
-        command.extend(
-            [
-                "--dir",
-                "/opt/acs-capabilities",
-                "--ro-bind",
-                str(installed.runtime_root),
-                installed.container_root,
-            ]
-        )
-        for source, destination in installed.read_only_mounts:
-            command.extend(("--ro-bind", str(source), destination))
-        for device in installed.device_paths:
-            command.extend(("--dev-bind", device, device))
-        for key, value in sorted(installed.environment.items()):
-            command.extend(("--setenv", key, value))
-        command.extend(
-            (
-                "--setenv",
-                "PATH",
-                f"{installed.container_root}/bin:/usr/bin",
-                installed.container_executable,
-                *argv,
+
+        def build_command(workspace_root: Path, workspace_mounts: list[str]) -> list[str]:
+            command = self._base_command(workspace_root)
+            command.extend(workspace_mounts)
+            command.extend(
+                [
+                    "--dir",
+                    "/opt/acs-capabilities",
+                    "--ro-bind",
+                    str(installed.runtime_root),
+                    installed.container_root,
+                ]
             )
-        )
+            for source, destination in installed.read_only_mounts:
+                command.extend(("--ro-bind", str(source), destination))
+            for device in installed.device_paths:
+                command.extend(("--dev-bind", device, device))
+            for key, value in sorted(installed.environment.items()):
+                command.extend(("--setenv", key, value))
+            command.extend(
+                (
+                    "--setenv",
+                    "PATH",
+                    f"{installed.container_root}/bin:/usr/bin",
+                    installed.container_executable,
+                    *argv,
+                )
+            )
+            return command
+
+        if input_artifacts is not None:
+            return self._run_with_declared_input_view(
+                build_command,
+                input_artifacts=input_artifacts,
+                program_path=program_path,
+                program_sha256=program_sha256,
+                timeout_seconds=timeout_seconds,
+                progress_callback=progress_callback,
+            )
         return self._run_command(
-            command,
+            build_command(self.root, []),
             timeout_seconds=timeout_seconds,
             progress_callback=progress_callback,
         )
@@ -2675,6 +2905,7 @@ software.
                 and record.get("evidence_candidate") is True
                 and record.get("execution_succeeded") is True
                 and record.get("input_lineage_eligible", True) is True
+                and record.get("argv_input_coverage_eligible", True) is True
             )
             changed = True
         if changed:
@@ -2770,11 +3001,7 @@ software.
 
     @staticmethod
     def _action_sha256(action: MVPAgentAction) -> str:
-        excluded = (
-            {"input_artifacts"}
-            if getattr(action, "input_artifacts", None) is None
-            else None
-        )
+        excluded = {"input_artifacts"} if getattr(action, "input_artifacts", None) is None else None
         encoded = action.model_dump_json(exclude=excluded).encode()
         return hashlib.sha256(encoded).hexdigest()
 
@@ -2817,11 +3044,26 @@ software.
             )
             if not tracked:
                 record = {}
-            eligible = bool(tracked and record.get("evidence_eligible") is True)
+            argv_input_coverage_eligible, argv_input_coverage_issues = (
+                self._argv_input_coverage(
+                    command_argv=tuple(record.get("command_argv") or ()),
+                    artifact_path=metadata["path"],
+                    input_artifacts_declared=bool(
+                        record.get("input_artifacts_declared", False)
+                    ),
+                    input_artifacts=list(record.get("input_artifacts") or ()),
+                )
+            )
+            eligible = bool(
+                tracked
+                and record.get("evidence_eligible") is True
+                and argv_input_coverage_eligible
+            )
             if not tracked:
                 issues.append(f"input provenance is untracked: {metadata['path']}")
             elif not eligible:
                 issues.append(f"input is not evidence eligible: {metadata['path']}")
+                issues.extend(argv_input_coverage_issues)
             resolved.append(
                 ClaimInputArtifactProvenance(
                     path=metadata["path"],
@@ -2836,6 +3078,68 @@ software.
                 )
             )
         return tuple(resolved), not issues, tuple(issues)
+
+    def _argv_input_coverage(
+        self,
+        *,
+        command_argv: tuple[str, ...],
+        artifact_path: str,
+        input_artifacts_declared: bool,
+        input_artifacts: tuple[ClaimInputArtifactProvenance, ...] | list[dict[str, Any]],
+    ) -> tuple[bool, tuple[str, ...]]:
+        """Audit existing argv paths not covered by explicit direct inputs."""
+
+        if not input_artifacts_declared:
+            return True, ()
+        declared_paths = {
+            str(item.path if isinstance(item, ClaimInputArtifactProvenance) else item["path"])
+            for item in input_artifacts
+        }
+        output = Path(artifact_path)
+        issues: list[str] = []
+        for raw in command_argv[1:]:
+            requested = Path(raw)
+            if requested.is_absolute() or ".." in requested.parts or "\x00" in raw:
+                continue
+            try:
+                candidate = self.sandbox._path(raw)
+            except ValueError:
+                continue
+            if not candidate.exists():
+                continue
+            relative = candidate.relative_to(self.sandbox.root)
+            if relative == output or relative in output.parents:
+                continue
+            if candidate.is_symlink():
+                issues.append(f"argv workspace path traverses a symlink: {relative.as_posix()}")
+                continue
+            if candidate.is_file():
+                uncovered = () if relative.as_posix() in declared_paths else (relative.as_posix(),)
+            elif candidate.is_dir():
+                children: list[str] = []
+                unsafe_child = False
+                for child in candidate.rglob("*"):
+                    if child.is_symlink():
+                        unsafe_child = True
+                        continue
+                    if child.is_file():
+                        children.append(child.relative_to(self.sandbox.root).as_posix())
+                uncovered = tuple(sorted(set(children) - declared_paths))
+                if unsafe_child:
+                    issues.append(
+                        "argv workspace directory contains an undeclarable symlink: "
+                        f"{relative.as_posix()}"
+                    )
+            else:
+                uncovered = (relative.as_posix(),)
+            if uncovered:
+                preview = ", ".join(uncovered[:3])
+                suffix = " ..." if len(uncovered) > 3 else ""
+                issues.append(
+                    "argv workspace path is not covered by declared inputs: "
+                    f"{relative.as_posix()} ({preview}{suffix})"
+                )
+        return not issues, tuple(issues)
 
     def _record_artifact_changes(
         self,
@@ -2921,6 +3225,13 @@ software.
             evidence_candidate = bool(
                 stage_candidate and (not execution_action or execution_succeeded is True)
             )
+            input_artifacts_declared = bool(getattr(action, "input_artifacts", None) is not None)
+            argv_input_coverage_eligible, argv_input_coverage_issues = self._argv_input_coverage(
+                command_argv=command_argv,
+                artifact_path=path,
+                input_artifacts_declared=input_artifacts_declared,
+                input_artifacts=input_artifacts,
+            )
             record = {
                 "bytes": size,
                 "mtime_ns": mtime_ns,
@@ -2940,18 +3251,17 @@ software.
                 "operation_id": operation_id,
                 "job_id": None,
                 "job_status": "running" if operation_id and execution_action else None,
-                "input_artifacts_declared": bool(
-                    getattr(action, "input_artifacts", None) is not None
-                ),
-                "input_artifacts": [
-                    item.model_dump(mode="json") for item in input_artifacts
-                ],
+                "input_artifacts_declared": input_artifacts_declared,
+                "input_artifacts": [item.model_dump(mode="json") for item in input_artifacts],
                 "input_lineage_eligible": input_lineage_eligible,
                 "input_lineage_issues": list(input_lineage_issues),
+                "argv_input_coverage_eligible": argv_input_coverage_eligible,
+                "argv_input_coverage_issues": list(argv_input_coverage_issues),
                 "evidence_candidate": evidence_candidate,
                 "evidence_eligible": bool(
                     evidence_candidate
                     and input_lineage_eligible
+                    and argv_input_coverage_eligible
                     and not (operation_id and execution_action)
                 ),
             }
@@ -2977,6 +3287,14 @@ software.
         )
         if not tracked:
             record = {}
+        command_argv = tuple(record.get("command_argv") or ())
+        input_artifacts = tuple(record.get("input_artifacts") or ())
+        argv_input_coverage_eligible, argv_input_coverage_issues = self._argv_input_coverage(
+            command_argv=command_argv,
+            artifact_path=metadata["path"],
+            input_artifacts_declared=bool(record.get("input_artifacts_declared", False)),
+            input_artifacts=list(input_artifacts),
+        )
         return ClaimEvidenceProvenance(
             sha256=metadata["sha256"],
             bytes=metadata["bytes"],
@@ -2984,7 +3302,7 @@ software.
             generated_iteration=record.get("generated_iteration"),
             action=record.get("action"),
             action_sha256=record.get("action_sha256"),
-            command_argv=tuple(record.get("command_argv") or ()),
+            command_argv=command_argv,
             capability=record.get("capability"),
             program_path=record.get("program_path"),
             program_sha256=record.get("program_sha256"),
@@ -2997,10 +3315,14 @@ software.
             job_id=record.get("job_id"),
             job_status=record.get("job_status"),
             input_artifacts_declared=bool(record.get("input_artifacts_declared", False)),
-            input_artifacts=tuple(record.get("input_artifacts") or ()),
+            input_artifacts=input_artifacts,
             input_lineage_eligible=bool(record.get("input_lineage_eligible", True)),
             input_lineage_issues=tuple(record.get("input_lineage_issues") or ()),
-            evidence_eligible=bool(record.get("evidence_eligible", True)),
+            argv_input_coverage_eligible=argv_input_coverage_eligible,
+            argv_input_coverage_issues=argv_input_coverage_issues,
+            evidence_eligible=bool(
+                record.get("evidence_eligible", True) and argv_input_coverage_eligible
+            ),
         )
 
     def _with_claim_ledger(self, result: dict[str, Any]) -> dict[str, Any]:
@@ -3840,6 +4162,9 @@ software.
             input_artifacts, input_lineage_eligible, input_lineage_issues = (
                 self._resolve_input_artifacts(action)
             )
+            program_path, program_sha256 = self._program_metadata(
+                action.argv[0] if not action.argv[0].startswith("-") else None
+            )
             before = self.sandbox.artifact_inventory()
             preserved_program = self._preserve_inline_python(
                 action,
@@ -3847,6 +4172,9 @@ software.
             )
             result = self.sandbox.run_python(
                 action.argv,
+                input_artifacts=action.input_artifacts,
+                program_path=program_path,
+                program_sha256=program_sha256,
                 timeout_seconds=timeout_seconds,
                 progress_callback=progress_callback,
             ).model_dump(mode="json")
@@ -3916,7 +4244,7 @@ software.
             )
             return self._attach_evidence_gap_reminder(self._with_claim_ledger(result))
         if isinstance(action, MVPRunCapabilityAction):
-            _program_path, program_sha256 = self._program_metadata(action.argv[0])
+            program_path, program_sha256 = self._program_metadata(action.argv[0])
             active_claim_id = self._validate_active_claim(action.active_claim_id)
             input_artifacts, input_lineage_eligible, input_lineage_issues = (
                 self._resolve_input_artifacts(action)
@@ -3940,6 +4268,9 @@ software.
             result = self.sandbox.run_capability(
                 action.capability,
                 action.argv,
+                input_artifacts=action.input_artifacts,
+                program_path=program_path,
+                program_sha256=program_sha256,
                 timeout_seconds=timeout_seconds,
                 progress_callback=progress_callback,
             ).model_dump(mode="json")
@@ -4001,6 +4332,9 @@ software.
             execution_result = self.sandbox.run_capability(
                 action.capability,
                 action.argv,
+                input_artifacts=action.input_artifacts,
+                program_path=action.path,
+                program_sha256=program_sha256,
                 timeout_seconds=timeout_seconds,
                 progress_callback=progress_callback,
             ).model_dump(mode="json")
