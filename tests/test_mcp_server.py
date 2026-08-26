@@ -9,6 +9,7 @@ from typing import Any
 
 import pytest
 
+from conjecture_solver.campaign_jobs import CampaignLockBusyError
 from conjecture_solver.mcp_schemas import (
     MUTATING_TOOLS,
     TOOL_REQUIRED,
@@ -22,6 +23,7 @@ from conjecture_solver.mcp_server import (
     CampaignMCPBridge,
     MCPBridgeError,
     MCPInputError,
+    _mcp_error_payload,
 )
 
 
@@ -295,6 +297,21 @@ def test_mutation_operation_id_is_forwarded_to_idempotent_kernel_seam(
     ]
 
 
+def test_mcp_lock_contention_has_a_stable_retry_code() -> None:
+    payload = _mcp_error_payload(
+        CampaignLockBusyError("campaign writer lock is held"),
+        tool="job_status",
+    )
+
+    assert payload == {
+        "error": {
+            "code": "campaign_writer_busy",
+            "message": "campaign writer lock is held",
+        },
+        "tool": "job_status",
+    }
+
+
 def test_bridge_dispatches_isolated_adjudication_and_finalization(tmp_path: Path) -> None:
     bridge = CampaignMCPBridge(_FakeKernel(), config=BridgeConfig(workspace=tmp_path))
     common = {
@@ -310,6 +327,9 @@ def test_bridge_dispatches_isolated_adjudication_and_finalization(tmp_path: Path
         "claim_id": "claim_root",
         "contract_version": 1,
         "decision": "sufficient",
+        "scientific_disposition": "supported",
+        "claim_tested": True,
+        "contract_preserves_claim_semantics": True,
         "rationale": "The complete bounded evidence package satisfies the contract.",
         "evidence_gaps": [],
         "next_test": None,
@@ -591,7 +611,10 @@ def test_claim_views_project_before_the_output_bound(tmp_path: Path) -> None:
         role["claims"][0]["evidence_contracts"][0]["execution_binding"]
         == (root_contract["execution_binding"])
     )
-    assert "validation_results" not in role["claims"][0]["evidence"][0]
+    projected_evidence = role["claims"][0]["evidence"][0]
+    assert projected_evidence["validation_result_count"] == 1
+    assert projected_evidence["validation_results_omitted_count"] == 0
+    assert len(projected_evidence["validation_results_sha256"]) == 64
     assert role["claims"][0]["evidence"][0]["provenance"]["command_argv"] == [
         "guided/sim.py",
         "--science",
@@ -626,6 +649,175 @@ def test_claim_views_project_before_the_output_bound(tmp_path: Path) -> None:
         )
     with pytest.raises(MCPInputError, match="must lie in"):
         _call(bridge, "claims", {"limit": 101})
+
+
+def test_role_claim_view_keeps_a_long_evidence_tail_under_the_output_bound(
+    tmp_path: Path,
+) -> None:
+    evidence = [
+        {
+            "path": f"runs/result_{index:02d}.json",
+            "note": "Qualified output. " + ("n" * 800),
+            "contract_version": 3,
+            "observation_sufficient": index >= 18,
+            "observation_note": "All registered checks passed. " + ("x" * 800),
+            "commissioning_claim_id": None,
+            "validation_passed": True,
+            "validation_results": [{"detail": "y" * 2_000}],
+            "iteration": index,
+            "provenance": {
+                "sha256": "b" * 64,
+                "tracked": True,
+                "evidence_eligible": True,
+                "execution_succeeded": True,
+                "command_argv": ["guided/sim.py", "--science", str(index)],
+            },
+        }
+        for index in range(20)
+    ]
+    root = {
+        "id": "claim_root",
+        "statement": "A falsifiable root statement.",
+        "kind": "scientific",
+        "relation": "root",
+        "parent_id": None,
+        "status": "open",
+        "rationale": "Operator supplied.",
+        "repair": None,
+        "evidence_contracts": [
+            {
+                "version": 3,
+                "observable": "A bounded observable.",
+                "decision_rule": "Reject when the registered threshold is crossed.",
+                "validation_checks": [
+                    {"json_path": "S_input", "expected_value": 100},
+                    {"json_path": "n_dumps", "expected_value": 7},
+                    {"json_path": "n_rows", "expected_value": 7},
+                ],
+                "execution_binding": {},
+            }
+        ],
+        "evidence": evidence,
+        "closed_reason": None,
+        "decisive_contract_version": None,
+        "created_iteration": 0,
+        "updated_iteration": 20,
+    }
+
+    class _LongLedger(_FakeKernel):
+        def execute(
+            self,
+            action: dict[str, Any],
+            *,
+            iteration: int = 0,
+            **_kwargs: Any,
+        ) -> dict[str, Any]:
+            del iteration, _kwargs
+            if action["action"] == "list_claims":
+                return {"claim_ledger": {"schema_version": "0.9.0"}, "claims": [root]}
+            return {"accepted": action["action"]}
+
+    bridge = CampaignMCPBridge(
+        _LongLedger(),
+        config=BridgeConfig(workspace=tmp_path, max_output_chars=30_000),
+    )
+    role = _call(bridge, "claims", {"view": "role", "claim_ids": ["claim_root"]})
+    encoded = json.dumps(role, separators=(",", ":"))
+    assert role.get("truncated") is not True
+    assert len(encoded) <= 30_000
+    assert role["claims"][0]["evidence_count"] == 20
+    assert role["claims"][0]["evidence_truncated"] is True
+    paths = [item["path"] for item in role["claims"][0]["evidence"]]
+    assert "runs/result_18.json" in paths
+    assert "runs/result_19.json" in paths
+    assert all(len(item["observation_note"]) <= 403 for item in role["claims"][0]["evidence"])
+
+
+def test_role_claim_view_balances_outcomes_without_reordering_history(
+    tmp_path: Path,
+) -> None:
+    evidence = []
+    for index in range(20):
+        sufficient = index not in {1, 19}
+        contract_version = 1 if index == 0 else 2
+        evidence.append(
+            {
+                "path": f"runs/result_{index:02d}.json",
+                "note": f"Observation {index}.",
+                "contract_version": contract_version,
+                "observation_sufficient": sufficient,
+                "observation_note": "qualified" if sufficient else "contradictory",
+                "validation_passed": index != 1,
+                "validation_results": [
+                    {
+                        "json_path": "checks.valid",
+                        "expected_value": True,
+                        "actual_value": index != 1,
+                        "passed": index != 1,
+                    }
+                ],
+                "iteration": index,
+                "provenance": {
+                    "sha256": f"{index:064x}",
+                    "tracked": True,
+                    "evidence_eligible": True,
+                    "execution_succeeded": index != 1,
+                    "job_status": "failed" if index == 1 else "succeeded",
+                },
+            }
+        )
+    root = {
+        "id": "claim_root",
+        "statement": "A bounded claim with mixed evidence.",
+        "kind": "scientific",
+        "relation": "root",
+        "parent_id": None,
+        "status": "supported",
+        "rationale": "Operator supplied.",
+        "repair": None,
+        "evidence_contracts": [
+            {"version": 1, "observable": "Initial decisive observation."},
+            {"version": 2, "observable": "Later observations."},
+        ],
+        "evidence": evidence,
+        "closed_reason": "Contract one was decisive.",
+        "decisive_contract_version": 1,
+        "created_iteration": 0,
+        "updated_iteration": 19,
+    }
+
+    class _MixedLedger(_FakeKernel):
+        def execute(
+            self,
+            action: dict[str, Any],
+            *,
+            iteration: int = 0,
+            **_kwargs: Any,
+        ) -> dict[str, Any]:
+            del iteration, _kwargs
+            if action["action"] == "list_claims":
+                return {"claim_ledger": {"schema_version": "0.9.0"}, "claims": [root]}
+            return {"accepted": action["action"]}
+
+    bridge = CampaignMCPBridge(
+        _MixedLedger(),
+        config=BridgeConfig(workspace=tmp_path, max_output_chars=30_000),
+    )
+    role = _call(bridge, "claims", {"view": "role", "claim_ids": ["claim_root"]})
+    claim = role["claims"][0]
+    selected = claim["evidence"]
+    iterations = [item["iteration"] for item in selected]
+
+    assert len(selected) == 8
+    assert iterations == sorted(iterations)
+    assert 0 in iterations  # decisive evidence cannot disappear behind a long tail
+    assert 1 in iterations  # failed/contradictory evidence remains visible
+    assert 19 in iterations  # the newest observation remains visible
+    assert claim["evidence_omitted_count"] == 12
+    assert claim["evidence_selection_omissions"]["failed"] == 0
+    failed = next(item for item in selected if item["iteration"] == 1)
+    assert failed["validation_results"][0]["passed"] is False
+    assert len(failed["validation_results_sha256"]) == 64
 
 
 def test_bridge_never_retries_a_mutating_kernel_error(tmp_path: Path) -> None:

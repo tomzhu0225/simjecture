@@ -39,12 +39,19 @@ The autonomous loop exposes three operational roles. The **Falsifier**
 commissions tools and searches for counterexamples. After a valid
 falsification, the **Scientist** proposes a minimal `repairs` successor. When a
 bounded search finds no counterexample, an independent **Judge** sees only the
-auditable evidence package and decides whether it is sufficient or which gap
-must be tested next. Roles are explicit workflow contexts, not claims of
-different underlying model providers.
-An accepted verdict does not itself end the process: guarded finalization checks
+auditable evidence package. The Judge reports two separate facts: whether the
+record is complete enough for a terminal decision (`sufficient` or
+`insufficient`), and, when it is sufficient, the scientific disposition such as
+`supported`, `instrument_limited`, or `unresolved`. Record completeness never
+implies support. Roles are explicit workflow contexts, not claims of different
+underlying model providers.
+
+An accepted verdict does not itself end the process. Guarded finalization checks
 the entire scientific frontier and writes the report only when no open claim or
-unrepaired counterexample remains.
+unrepaired counterexample remains. A falsified scientific frontier therefore
+requires a minimal repair child; an honestly documented instrument limit may
+terminate as `instrument_limited`, and an irreducible bounded ambiguity may
+terminate as `unresolved`.
 
 ## Sandbox and capabilities
 
@@ -59,7 +66,12 @@ The claim ledger stores root, scientific, instrument, diagnostic, and control
 claims with explicit lineage and disposition. Evidence contracts freeze the
 observable, decision rule, uncertainty criterion, inconclusive conditions,
 machine validations, source identity, and allowed commands before decisive
-execution.
+execution. A `claim_decision` contract is allowed to support or falsify its
+claim. A `terminal_record` contract documents why a bounded campaign cannot
+decide the scientific proposition and may only end as `instrument_limited` or
+`unresolved`. This distinction prevents a contract written to recognize a
+failed antecedent or blocked instrument from being treated as positive evidence
+for the hypothesis.
 
 ## Durable operational state
 
@@ -96,3 +108,8 @@ The system can establish that a declared computation ran through the expected
 instrument and satisfied registered gates. It cannot make an imperfect
 diagnostic scientifically correct, turn a simulation result into empirical
 truth, or eliminate the need for independent interpretation.
+
+Campaign ledgers, reports, transcripts, and adjudications are immutable audit
+artifacts. If later review finds a semantic or scientific error, Simjecture
+preserves the original bytes and attaches a corrective audit record instead of
+rewriting history.

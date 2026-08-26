@@ -90,6 +90,7 @@ CLAIM_STATUSES = [
     "instrument_limited",
 ]
 CAPABILITY_STAGES = ["workbench", "evidence"]
+EVIDENCE_PURPOSES = ["claim_decision", "terminal_record"]
 
 # These calls change durable campaign state.  Every one carries an explicit
 # caller-owned id so a DSH retry can replay the same operation safely.
@@ -149,11 +150,37 @@ _JUDGE_VERDICT = _object(
         "claim_id": _string(),
         "contract_version": _integer(),
         "decision": {"enum": ["sufficient", "insufficient"]},
+        "scientific_disposition": {
+            "oneOf": [
+                {
+                    "enum": [
+                        "supported",
+                        "falsified",
+                        "instrument_limited",
+                        "unresolved",
+                    ]
+                },
+                {"const": None},
+            ]
+        },
+        "claim_tested": _boolean(),
+        "contract_preserves_claim_semantics": _boolean(),
         "rationale": _string(),
         "evidence_gaps": _array(_string()),
         "next_test": _nullable_string(),
     }
 )
+_JUDGE_VERDICT["required"] = [
+    "claim_id",
+    "contract_version",
+    "decision",
+    "scientific_disposition",
+    "claim_tested",
+    "contract_preserves_claim_semantics",
+    "rationale",
+    "evidence_gaps",
+    "next_test",
+]
 
 
 # Only these keys are sent over the wire.  Descriptions live in TOOL_DESCRIPTIONS
@@ -180,6 +207,7 @@ TOOL_SCHEMAS: dict[str, dict[str, Any]] = {
     "register_evidence_contract": _object(
         {
             "claim_id": _string(),
+            "evidence_purpose": {"enum": EVIDENCE_PURPOSES},
             "observable": _string(),
             "expected_outcomes": _string(),
             "decision_rule": _string(),
@@ -349,6 +377,7 @@ TOOL_REQUIRED: dict[str, tuple[str, ...]] = {
     "register_evidence_contract": (
         "operation_id",
         "claim_id",
+        "evidence_purpose",
         "observable",
         "expected_outcomes",
         "decision_rule",
@@ -425,7 +454,8 @@ TOOL_DESCRIPTIONS: dict[str, str] = {
     ),
     "register_claim": "Register a stable scientific, instrument, diagnostic, or control claim.",
     "register_evidence_contract": (
-        "Register a prospective evidence contract before linking an observation."
+        "Register a prospective claim_decision or terminal_record evidence contract "
+        "before linking an observation."
     ),
     "link_claim_evidence": (
         "Link one workspace artifact to a claim and record sufficiency/provenance."

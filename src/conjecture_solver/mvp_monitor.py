@@ -62,9 +62,7 @@ DEFAULT_RECENT_EVENT_LIMIT = 40
 _MAX_RETAINED_EVENTS = 80
 _MAX_CONSOLE_EXCERPT_CHARS = 12_000
 _MAX_PROJECTED_EXECUTIONS = 100
-_EXECUTION_ACTION_NAMES = frozenset(
-    {"run_python", "run_capability", "author_and_run_capability"}
-)
+_EXECUTION_ACTION_NAMES = frozenset({"run_python", "run_capability", "author_and_run_capability"})
 
 
 class RunPhase(StrEnum):
@@ -609,9 +607,7 @@ def list_contained_artifacts(
             else:
                 continue
             relative = path.relative_to(root).as_posix()
-            entries.append(
-                ContainedArtifact(relative_path=relative, bytes=size, kind=kind)
-            )
+            entries.append(ContainedArtifact(relative_path=relative, bytes=size, kind=kind))
             if len(entries) >= max_entries:
                 return tuple(entries)
     return tuple(entries)
@@ -920,8 +916,7 @@ class MVPRunMonitor:
             latest_heartbeat=heartbeat,
             recent_events=tuple(self._state.events[-DEFAULT_RECENT_EVENT_LIMIT:]),
             execution_total=sum(
-                self._state.action_counts.get(name, 0)
-                for name in _EXECUTION_ACTION_NAMES
+                self._state.action_counts.get(name, 0) for name in _EXECUTION_ACTION_NAMES
             ),
             executions=self._executions(current=current, heartbeat=heartbeat),
             report=terminal,
@@ -1023,9 +1018,7 @@ class MVPRunMonitor:
                 updated_at=observed_at,
             )
         open_scientific = [
-            claim
-            for claim in claims
-            if claim.kind == "scientific" and claim.status == "open"
+            claim for claim in claims if claim.kind == "scientific" and claim.status == "open"
         ]
         if open_scientific:
             target = open_scientific[-1]
@@ -1096,8 +1089,7 @@ class MVPRunMonitor:
                     target=self._dsh_usage,
                     fallback_model=self._dsh_model,
                     count_turn=(
-                        record.get("kind") == "model"
-                        and record.get("status") == "responded"
+                        record.get("kind") == "model" and record.get("status") == "responded"
                     ),
                 )
         return [f"DSH activity: {warning}" for warning in warnings]
@@ -1157,16 +1149,31 @@ class MVPRunMonitor:
             self._accumulate_usage(record)
             decision = str(record.get("decision") or "recorded")
             claim_id = str(record.get("claim_id") or "unknown claim")
+            raw_disposition = record.get("scientific_disposition")
+            if not isinstance(raw_disposition, str):
+                raw_disposition = record.get("disposition")
+            scientific_disposition = raw_disposition if isinstance(raw_disposition, str) else None
+            if scientific_disposition is not None:
+                summary = (
+                    f"Independent judge: record {decision}; disposition "
+                    f"{scientific_disposition} for {claim_id}"
+                )
+                outcome = scientific_disposition
+            else:
+                summary = f"Independent judge: record {decision} for {claim_id}"
+                if decision == "sufficient":
+                    summary += " (legacy record; no explicit scientific disposition)"
+                outcome = decision
             self._push_event(
                 HumanizedEvent(
                     kind="adjudication",
                     iteration=iteration,
-                    summary=(f"Independent judge found the evidence {decision} for {claim_id}"),
+                    summary=summary,
                     action_name="request_adjudication",
                     model=model,
                     route=(record.get("route") if isinstance(record.get("route"), str) else None),
                     research_role=MVPResearchRole.JUDGE.value,
-                    outcome=decision,
+                    outcome=outcome,
                     active_claim_id=(claim_id if claim_id.startswith("claim_") else None),
                 )
             )
@@ -1335,8 +1342,7 @@ class MVPRunMonitor:
                 }
             if isinstance(source.get("capability_hashes"), dict):
                 capability_hashes = {
-                    str(key): str(value)
-                    for key, value in source["capability_hashes"].items()
+                    str(key): str(value) for key, value in source["capability_hashes"].items()
                 }
         if report:
             if hypothesis is None and isinstance(report.get("hypothesis"), str):
@@ -1413,9 +1419,7 @@ class MVPRunMonitor:
 
     def _current_action(self) -> CurrentAction | None:
         pending_iterations = [
-            iteration
-            for iteration in self._state.assistant
-            if iteration not in self._state.tools
+            iteration for iteration in self._state.assistant if iteration not in self._state.tools
         ]
         if not pending_iterations:
             return None
@@ -1431,9 +1435,7 @@ class MVPRunMonitor:
         argv = details.get("argv") or ()
         return CurrentAction(
             iteration=iteration,
-            action_name=details.get("action_name")
-            if action is not None
-            else None,
+            action_name=details.get("action_name") if action is not None else None,
             description=description,
             pending=True,
             capability=details.get("capability"),
@@ -1488,12 +1490,8 @@ class MVPRunMonitor:
                     stage=details.get("stage"),
                     active_claim_id=details.get("active_claim_id"),
                     argv=tuple(str(item) for item in details.get("argv") or ()),
-                    model=record.get("model")
-                    if isinstance(record.get("model"), str)
-                    else None,
-                    route=record.get("route")
-                    if isinstance(record.get("route"), str)
-                    else None,
+                    model=record.get("model") if isinstance(record.get("model"), str) else None,
+                    route=record.get("route") if isinstance(record.get("route"), str) else None,
                     research_note=action.research_note,
                     console_excerpt=_console_excerpt(tool),
                     **metrics,
@@ -1534,14 +1532,10 @@ class MVPRunMonitor:
                     status=str(item.get("status") or "open"),
                     kind=str(item["kind"]) if isinstance(item.get("kind"), str) else None,
                     relation=(
-                        str(item["relation"])
-                        if isinstance(item.get("relation"), str)
-                        else None
+                        str(item["relation"]) if isinstance(item.get("relation"), str) else None
                     ),
                     parent_id=(
-                        str(item["parent_id"])
-                        if isinstance(item.get("parent_id"), str)
-                        else None
+                        str(item["parent_id"]) if isinstance(item.get("parent_id"), str) else None
                     ),
                     statement=str(item.get("statement") or ""),
                     evidence_count=len(evidence) if isinstance(evidence, list) else 0,
@@ -1577,9 +1571,7 @@ class MVPRunMonitor:
             age_seconds=age,
         )
 
-    def _terminal_report(
-        self, report: dict[str, Any] | None
-    ) -> TerminalReportSummary | None:
+    def _terminal_report(self, report: dict[str, Any] | None) -> TerminalReportSummary | None:
         if not report:
             return None
         status = report.get("status")
@@ -1587,15 +1579,9 @@ class MVPRunMonitor:
             return None
         artifacts = report.get("workspace_artifacts")
         artifact_count = len(artifacts) if isinstance(artifacts, dict) else 0
-        open_ids = tuple(
-            str(item) for item in report.get("open_claim_ids") or [] if item
-        )
-        closed_ids = tuple(
-            str(item) for item in report.get("closed_claim_ids") or [] if item
-        )
-        notes = tuple(
-            str(item) for item in report.get("finish_claim_notes") or [] if item
-        )
+        open_ids = tuple(str(item) for item in report.get("open_claim_ids") or [] if item)
+        closed_ids = tuple(str(item) for item in report.get("closed_claim_ids") or [] if item)
+        notes = tuple(str(item) for item in report.get("finish_claim_notes") or [] if item)
         return TerminalReportSummary(
             status=status,
             final_answer=str(report.get("final_answer") or ""),
@@ -1775,9 +1761,7 @@ def format_human_status(snapshot: MVPRunSnapshot) -> str:
     capability = snapshot.last_capability
     if snapshot.current_action and snapshot.current_action.capability:
         capability = snapshot.current_action.capability
-    lines.append(
-        f"model: {model or '-'}                 capability: {capability or '-'}"
-    )
+    lines.append(f"model: {model or '-'}                 capability: {capability or '-'}")
     lines.append(f"iterations: {snapshot.iterations}")
     lines.append(snapshot.token_usage.label)
     loop = snapshot.loop_state
@@ -1834,9 +1818,7 @@ def format_human_status(snapshot: MVPRunSnapshot) -> str:
         if action.stage:
             details.append(f"stage={action.stage}")
         if snapshot.latest_heartbeat and snapshot.latest_heartbeat.elapsed_wall_seconds is not None:
-            details.append(
-                f"elapsed={int(snapshot.latest_heartbeat.elapsed_wall_seconds)} s"
-            )
+            details.append(f"elapsed={int(snapshot.latest_heartbeat.elapsed_wall_seconds)} s")
         details.append(f"workspace={format_bytes(snapshot.workspace_bytes)}")
         lines.append("  " + ", ".join(details))
     lines.append("")
@@ -1897,9 +1879,7 @@ def watch_run(
                 last_event_sequence = 0
             last_cursor = cursor
             events = snapshot.recent_events
-            new_events = tuple(
-                event for event in events if event.sequence > last_event_sequence
-            )
+            new_events = tuple(event for event in events if event.sequence > last_event_sequence)
             if events:
                 last_event_sequence = max(
                     last_event_sequence,

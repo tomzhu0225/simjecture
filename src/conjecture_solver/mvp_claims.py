@@ -53,6 +53,13 @@ class ClaimDisposition(StrEnum):
     INSTRUMENT_LIMITED = "instrument_limited"
 
 
+class EvidencePurpose(StrEnum):
+    """The scientific role a prospective evidence contract may serve."""
+
+    CLAIM_DECISION = "claim_decision"
+    TERMINAL_RECORD = "terminal_record"
+
+
 class CommissioningAspect(StrEnum):
     """Domain-neutral aspects required before a scientific capability run."""
 
@@ -144,14 +151,10 @@ class ClaimExecutionBinding(StrictModel):
             if not argv:
                 raise ValueError("execution binding commands cannot be empty")
             if argv[0] != self.program_path:
-                raise ValueError(
-                    "every bound command must use program_path as argv[0]"
-                )
+                raise ValueError("every bound command must use program_path as argv[0]")
             if any("\x00" in item for item in argv):
                 raise ValueError("execution binding arguments cannot contain NUL bytes")
-        if len(set(self.allowed_scientific_argv)) != len(
-            self.allowed_scientific_argv
-        ):
+        if len(set(self.allowed_scientific_argv)) != len(self.allowed_scientific_argv):
             raise ValueError("allowed_scientific_argv cannot contain duplicates")
         return self
 
@@ -167,6 +170,14 @@ class ClaimEvidenceContract(StrictModel):
     """Prospective, domain-neutral rule for interpreting evidence for one claim."""
 
     version: int = Field(ge=1)
+    evidence_purpose: EvidencePurpose = Field(
+        default=EvidencePurpose.CLAIM_DECISION,
+        description=(
+            "Whether this contract may decide the scientific claim or only document "
+            "a terminal unresolved/instrument-limited outcome. The default preserves "
+            "the meaning of contracts written before this field existed."
+        ),
+    )
     observable: str = Field(min_length=8)
     expected_outcomes: str = Field(min_length=8)
     decision_rule: str = Field(min_length=8)
@@ -181,9 +192,7 @@ class ClaimEvidenceContract(StrictModel):
     @model_validator(mode="after")
     def execution_pipeline_is_unambiguous(self) -> ClaimEvidenceContract:
         if self.additional_execution_bindings and self.execution_binding is None:
-            raise ValueError(
-                "additional_execution_bindings require a primary execution_binding"
-            )
+            raise ValueError("additional_execution_bindings require a primary execution_binding")
         seen_commands: set[tuple[str, tuple[str, ...]]] = set()
         for binding in self.all_execution_bindings():
             for argv in binding.allowed_scientific_argv:
@@ -227,15 +236,18 @@ class ClaimEvidenceProvenance(StrictModel):
     execution_stage: Literal["workbench", "evidence"] | None = None
     operation_id: str | None = Field(default=None, max_length=256)
     job_id: str | None = Field(default=None, max_length=256)
-    job_status: Literal[
-        "queued",
-        "running",
-        "cancel_requested",
-        "succeeded",
-        "failed",
-        "cancelled",
-        "outcome_unknown",
-    ] | None = None
+    job_status: (
+        Literal[
+            "queued",
+            "running",
+            "cancel_requested",
+            "succeeded",
+            "failed",
+            "cancelled",
+            "outcome_unknown",
+        ]
+        | None
+    ) = None
     evidence_eligible: bool = True
 
 
@@ -323,6 +335,25 @@ class MVPClaim(StrictModel):
             contract.version for contract in self.evidence_contracts
         }:
             raise ValueError("decisive contract version is not registered on this claim")
+        if self.decisive_contract_version is not None:
+            decisive_contract = next(
+                contract
+                for contract in self.evidence_contracts
+                if contract.version == self.decisive_contract_version
+            )
+            if (
+                self.status in {ClaimDisposition.SUPPORTED, ClaimDisposition.FALSIFIED}
+                and decisive_contract.evidence_purpose != EvidencePurpose.CLAIM_DECISION
+            ):
+                raise ValueError("supported or falsified claims require a claim_decision contract")
+            if (
+                self.status in {ClaimDisposition.INSTRUMENT_LIMITED, ClaimDisposition.UNRESOLVED}
+                and decisive_contract.evidence_purpose != EvidencePurpose.TERMINAL_RECORD
+            ):
+                raise ValueError(
+                    "contract-backed unresolved or instrument-limited claims require "
+                    "a terminal_record contract"
+                )
         return self
 
 
@@ -337,7 +368,8 @@ class MVPClaimLedger(StrictModel):
         "0.7.0",
         "0.8.0",
         "0.9.0",
-    ] = "0.9.0"
+        "0.10.0",
+    ] = "0.10.0"
     root_hypothesis: str = Field(min_length=1)
     claims: tuple[MVPClaim, ...] = ()
 
@@ -345,9 +377,7 @@ class MVPClaimLedger(StrictModel):
         return {claim.id: claim for claim in self.claims}
 
     def open_claims(self) -> tuple[MVPClaim, ...]:
-        return tuple(
-            claim for claim in self.claims if claim.status == ClaimDisposition.OPEN
-        )
+        return tuple(claim for claim in self.claims if claim.status == ClaimDisposition.OPEN)
 
     def compact_summary(self, *, max_claims: int = 24) -> dict[str, Any]:
         """Short ledger view safe to inject into tool results / context."""
@@ -532,9 +562,7 @@ class MVPClaimLedgerStore:
                     "relation=succeeds requires child and predecessor to have the same claim kind"
                 )
             if parent.status == ClaimDisposition.OPEN:
-                raise ValueError(
-                    "relation=succeeds requires a closed predecessor claim"
-                )
+                raise ValueError("relation=succeeds requires a closed predecessor claim")
         claim = MVPClaim(
             id=claim_id,
             statement=statement,
@@ -567,6 +595,7 @@ class MVPClaimLedgerStore:
         required_observation: str,
         uncertainty_criterion: str,
         inconclusive_conditions: str,
+        evidence_purpose: EvidencePurpose = EvidencePurpose.CLAIM_DECISION,
         validation_checks: tuple[ClaimEvidenceValidationCheck, ...] = (),
         execution_binding: ClaimExecutionBinding | None = None,
         additional_execution_bindings: tuple[ClaimExecutionBinding, ...] = (),
@@ -579,29 +608,30 @@ class MVPClaimLedgerStore:
         claim = existing[claim_id]
         if claim.status != ClaimDisposition.OPEN:
             raise ValueError(f"claim is already closed: {claim_id}")
-        declared_aspects = {
-            check.aspect for check in validation_checks if check.aspect is not None
-        }
+        if evidence_purpose == EvidencePurpose.TERMINAL_RECORD:
+            if claim.kind != ClaimKind.SCIENTIFIC:
+                raise ValueError("terminal_record contracts are valid only for scientific claims")
+            if not self._claim_decision_attempt_evidence(claim):
+                raise ValueError(
+                    "a terminal_record contract on a scientific claim requires at "
+                    "least one provenance-tracked attempt linked under an earlier "
+                    "claim_decision contract"
+                )
+        declared_aspects = {check.aspect for check in validation_checks if check.aspect is not None}
         is_bound_instrument_contract = (
             claim.kind == ClaimKind.INSTRUMENT
             and claim.relation == ClaimRelation.INSTRUMENT_OF
             and execution_binding is not None
         )
-        is_interface_discovery = declared_aspects == {
-            CommissioningAspect.INTERFACE
-        }
+        is_interface_discovery = declared_aspects == {CommissioningAspect.INTERFACE}
         if (
             is_bound_instrument_contract
             and not is_interface_discovery
-            and not REQUIRED_SCIENTIFIC_COMMISSIONING_ASPECTS.issubset(
-                declared_aspects
-            )
+            and not REQUIRED_SCIENTIFIC_COMMISSIONING_ASPECTS.issubset(declared_aspects)
         ):
             missing = sorted(
                 aspect.value
-                for aspect in (
-                    REQUIRED_SCIENTIFIC_COMMISSIONING_ASPECTS - declared_aspects
-                )
+                for aspect in (REQUIRED_SCIENTIFIC_COMMISSIONING_ASPECTS - declared_aspects)
             )
             raise ValueError(
                 "a bound instrument_of contract must be either interface-only "
@@ -611,13 +641,10 @@ class MVPClaimLedgerStore:
         is_complete_instrument_contract = (
             claim.kind == ClaimKind.INSTRUMENT
             and claim.relation == ClaimRelation.INSTRUMENT_OF
-            and REQUIRED_SCIENTIFIC_COMMISSIONING_ASPECTS.issubset(
-                declared_aspects
-            )
+            and REQUIRED_SCIENTIFIC_COMMISSIONING_ASPECTS.issubset(declared_aspects)
         )
         if is_complete_instrument_contract and (
-            execution_binding is None
-            or not execution_binding.allowed_scientific_argv
+            execution_binding is None or not execution_binding.allowed_scientific_argv
         ):
             raise ValueError(
                 "complete instrument commissioning requires a prospective "
@@ -631,6 +658,7 @@ class MVPClaimLedgerStore:
             )
         contract = ClaimEvidenceContract(
             version=len(claim.evidence_contracts) + 1,
+            evidence_purpose=evidence_purpose,
             observable=observable,
             expected_outcomes=expected_outcomes,
             decision_rule=decision_rule,
@@ -664,12 +692,59 @@ class MVPClaimLedgerStore:
             "claim_ledger": ledger.compact_summary(),
         }
         if claim.evidence:
+            allowed_dispositions = (
+                "supported or falsified"
+                if evidence_purpose == EvidencePurpose.CLAIM_DECISION
+                else "contract-backed unresolved or instrument-limited"
+            )
             result["adaptive_contract_warning"] = (
                 "This contract was registered after evidence was already linked. "
                 "Only evidence generated under this contract can justify a new "
-                "supported or falsified disposition."
+                f"{allowed_dispositions} disposition."
             )
         return result
+
+    @staticmethod
+    def _claim_decision_attempt_evidence(
+        claim: MVPClaim,
+    ) -> tuple[ClaimEvidenceLink, ...]:
+        """Return prospective, tracked attempts made under decision contracts.
+
+        An attempt need not have produced a sufficient observation: failed or
+        inconclusive attempts are precisely what a later terminal record may need to
+        document. It must still come from a fresh, tracked evidence-stage execution,
+        so a workbench artifact or merely registering and replacing a contract cannot
+        manufacture eligibility for terminal closure.
+        """
+
+        decision_contracts = {
+            contract.version: contract
+            for contract in claim.evidence_contracts
+            if contract.evidence_purpose == EvidencePurpose.CLAIM_DECISION
+        }
+        attempts: list[ClaimEvidenceLink] = []
+        for evidence in claim.evidence:
+            if evidence.contract_version is None:
+                continue
+            contract = decision_contracts.get(evidence.contract_version)
+            provenance = evidence.provenance
+            if (
+                contract is None
+                or provenance is None
+                or not provenance.tracked
+                or provenance.generated_iteration is None
+                or provenance.generated_iteration <= contract.registered_iteration
+                or provenance.action
+                not in {
+                    "run_python",
+                    "run_capability",
+                    "author_and_run_capability",
+                }
+                or provenance.execution_stage == "workbench"
+            ):
+                continue
+            attempts.append(evidence)
+        return tuple(attempts)
 
     @staticmethod
     def _evaluate_validation_checks(
@@ -697,9 +772,7 @@ class MVPClaimLedgerStore:
             ):
                 error = f"JSON path is not a scalar: {check.json_path}"
                 actual = None
-            passed = error is None and _validation_scalars_equal(
-                actual, check.expected_value
-            )
+            passed = error is None and _validation_scalars_equal(actual, check.expected_value)
             results.append(
                 ClaimEvidenceValidationResult(
                     aspect=check.aspect,
@@ -738,11 +811,15 @@ class MVPClaimLedgerStore:
                 or provenance.generated_iteration < selected_contract.registered_iteration
             ):
                 continue
-            if provenance.action in {
-                "run_python",
-                "run_capability",
-                "author_and_run_capability",
-            } and provenance.execution_succeeded is not True:
+            if (
+                provenance.action
+                in {
+                    "run_python",
+                    "run_capability",
+                    "author_and_run_capability",
+                }
+                and provenance.execution_succeeded is not True
+            ):
                 continue
             if selected_contract.validation_checks and evidence.validation_passed is not True:
                 continue
@@ -776,9 +853,7 @@ class MVPClaimLedgerStore:
                 f"and parent_id={scientific_claim.id}"
             )
         if commissioning.status != ClaimDisposition.SUPPORTED:
-            raise ValueError(
-                f"commissioning claim {commissioning_claim_id} is not supported"
-            )
+            raise ValueError(f"commissioning claim {commissioning_claim_id} is not supported")
         if not commissioning.evidence_contracts or not any(
             contract.validation_checks for contract in commissioning.evidence_contracts
         ):
@@ -797,17 +872,14 @@ class MVPClaimLedgerStore:
                 f"commissioning claim {commissioning_claim_id} must be supported before "
                 "the scientific artifact is generated"
             )
-        contracts = {
-            contract.version: contract for contract in commissioning.evidence_contracts
-        }
+        contracts = {contract.version: contract for contract in commissioning.evidence_contracts}
         qualifying: list[ClaimEvidenceLink] = []
         observed_aspects: set[CommissioningAspect] = set()
         complete_same_capability = False
         complete_same_source = False
         complete_binding_present = False
         decisive_version = (
-            commissioning.decisive_contract_version
-            or commissioning.evidence_contracts[-1].version
+            commissioning.decisive_contract_version or commissioning.evidence_contracts[-1].version
         )
         for evidence in self._qualifying_contract_evidence(
             commissioning,
@@ -826,17 +898,14 @@ class MVPClaimLedgerStore:
             ):
                 continue
             contract_aspects = {
-                check.aspect
-                for check in contract.validation_checks
-                if check.aspect is not None
+                check.aspect for check in contract.validation_checks if check.aspect is not None
             }
             observed_aspects.update(contract_aspects)
             if contract_aspects >= REQUIRED_SCIENTIFIC_COMMISSIONING_ASPECTS:
                 complete_same_capability = True
                 if (
                     evidence.provenance is not None
-                    and evidence.provenance.program_sha256
-                    == scientific_provenance.program_sha256
+                    and evidence.provenance.program_sha256 == scientific_provenance.program_sha256
                 ):
                     complete_same_source = True
                     binding = contract.execution_binding
@@ -845,15 +914,12 @@ class MVPClaimLedgerStore:
                     complete_binding_present = True
                     if (
                         scientific_provenance.capability != binding.capability
-                        or scientific_provenance.program_path
-                        != binding.program_path
+                        or scientific_provenance.program_path != binding.program_path
                         or (
                             binding.program_sha256 is not None
-                            and scientific_provenance.program_sha256
-                            != binding.program_sha256
+                            and scientific_provenance.program_sha256 != binding.program_sha256
                         )
-                        or scientific_provenance.command_argv
-                        not in binding.allowed_scientific_argv
+                        or scientific_provenance.command_argv not in binding.allowed_scientific_argv
                     ):
                         continue
                     qualifying.append(evidence)
@@ -911,10 +977,7 @@ class MVPClaimLedgerStore:
                 capability == binding.capability
                 and program_path == binding.program_path
                 and binding.allows_evidence_argv(argv, instrument=instrument)
-                and (
-                    binding.program_sha256 is None
-                    or binding.program_sha256 == program_sha256
-                )
+                and (binding.program_sha256 is None or binding.program_sha256 == program_sha256)
             ):
                 return index, binding
         return None
@@ -934,9 +997,7 @@ class MVPClaimLedgerStore:
         binding = bindings[binding_index]
         if binding.program_sha256 is not None:
             return claim
-        bindings[binding_index] = binding.model_copy(
-            update={"program_sha256": program_sha256}
-        )
+        bindings[binding_index] = binding.model_copy(update={"program_sha256": program_sha256})
         updated_contract = contract.model_copy(
             update={
                 "execution_binding": bindings[0],
@@ -971,9 +1032,7 @@ class MVPClaimLedgerStore:
             raise ValueError(f"unknown active_claim_id: {claim_id}")
         claim = claims[claim_id]
         if claim.status != ClaimDisposition.OPEN:
-            raise ValueError(
-                f"active_claim_id {claim_id} is not open ({claim.status.value})"
-            )
+            raise ValueError(f"active_claim_id {claim_id} is not open ({claim.status.value})")
         if not claim.evidence_contracts:
             raise ValueError(
                 f"cannot execute capability {capability!r} for claim {claim_id}: "
@@ -991,8 +1050,7 @@ class MVPClaimLedgerStore:
             claim.kind == ClaimKind.INSTRUMENT
             and active_binding is not None
             and (
-                active_binding.capability != capability
-                or active_binding.commissioning_argv != argv
+                active_binding.capability != capability or active_binding.commissioning_argv != argv
             )
         ):
             raise ValueError(
@@ -1042,13 +1100,9 @@ class MVPClaimLedgerStore:
                     or sibling.status != ClaimDisposition.SUPPORTED
                 ):
                     continue
-                contracts = {
-                    contract.version: contract
-                    for contract in sibling.evidence_contracts
-                }
+                contracts = {contract.version: contract for contract in sibling.evidence_contracts}
                 decisive_version = (
-                    sibling.decisive_contract_version
-                    or sibling.evidence_contracts[-1].version
+                    sibling.decisive_contract_version or sibling.evidence_contracts[-1].version
                 )
                 for evidence in self._qualifying_contract_evidence(
                     sibling,
@@ -1192,15 +1246,17 @@ class MVPClaimLedgerStore:
                     f"cannot mark evidence sufficient for {claim_id} without a "
                     "prospective evidence contract"
                 )
-            if provenance.action in {
-                "run_python",
-                "run_capability",
-                "author_and_run_capability",
-            } and provenance.execution_succeeded is not True:
+            if (
+                provenance.action
+                in {
+                    "run_python",
+                    "run_capability",
+                    "author_and_run_capability",
+                }
+                and provenance.execution_succeeded is not True
+            ):
                 execution_label = (
-                    "capability execution"
-                    if provenance.capability is not None
-                    else "execution"
+                    "capability execution" if provenance.capability is not None else "execution"
                 )
                 raise ValueError(
                     "cannot mark execution-generated evidence sufficient unless "
@@ -1224,11 +1280,7 @@ class MVPClaimLedgerStore:
                     "and generated after the active contract"
                 )
             if contract.validation_checks and validation_passed is not True:
-                failures = [
-                    result.json_path
-                    for result in validation_results
-                    if not result.passed
-                ]
+                failures = [result.json_path for result in validation_results if not result.passed]
                 raise ValueError(
                     "cannot mark evidence sufficient: machine-checkable validation "
                     f"failed for {failures}"
@@ -1311,11 +1363,22 @@ class MVPClaimLedgerStore:
         status: ClaimDisposition,
         contract_version: int | None = None,
     ) -> int:
-        """Validate a decisive closure without mutating the claim ledger."""
+        """Validate a contract-backed closure without mutating the claim ledger."""
 
         claim_id = claim_id.strip().casefold()
-        if status not in {ClaimDisposition.SUPPORTED, ClaimDisposition.FALSIFIED}:
-            raise ValueError("evidentiary validation requires supported or falsified")
+        decision_dispositions = {
+            ClaimDisposition.SUPPORTED,
+            ClaimDisposition.FALSIFIED,
+        }
+        terminal_dispositions = {
+            ClaimDisposition.INSTRUMENT_LIMITED,
+            ClaimDisposition.UNRESOLVED,
+        }
+        if status not in decision_dispositions | terminal_dispositions:
+            raise ValueError(
+                "contract-backed validation requires supported, falsified, "
+                "instrument_limited, or unresolved"
+            )
         existing = self._ledger.by_id()
         if claim_id not in existing:
             raise ValueError(f"unknown claim_id: {claim_id}")
@@ -1324,22 +1387,32 @@ class MVPClaimLedgerStore:
             raise ValueError(f"claim is already closed: {claim_id}")
         if not claim.evidence_contracts:
             raise ValueError(
-                f"cannot close {claim_id} as {status.value} without a registered "
-                "evidence contract"
+                f"cannot close {claim_id} as {status.value} without a registered evidence contract"
             )
         selected_contract_version = (
-            claim.evidence_contracts[-1].version
-            if contract_version is None
-            else contract_version
+            claim.evidence_contracts[-1].version if contract_version is None else contract_version
         )
-        contracts_by_version = {
-            contract.version: contract for contract in claim.evidence_contracts
-        }
+        contracts_by_version = {contract.version: contract for contract in claim.evidence_contracts}
         active_contract = contracts_by_version.get(selected_contract_version)
         if active_contract is None:
             raise ValueError(
-                f"claim {claim_id} has no evidence contract version "
-                f"{selected_contract_version}"
+                f"claim {claim_id} has no evidence contract version {selected_contract_version}"
+            )
+        required_purpose = (
+            EvidencePurpose.CLAIM_DECISION
+            if status in decision_dispositions
+            else EvidencePurpose.TERMINAL_RECORD
+        )
+        if active_contract.evidence_purpose != required_purpose:
+            if active_contract.evidence_purpose == EvidencePurpose.TERMINAL_RECORD:
+                raise ValueError(
+                    f"cannot close {claim_id} as {status.value} under terminal_record "
+                    "contract; terminal records cannot support or falsify a claim"
+                )
+            raise ValueError(
+                f"cannot close {claim_id} as {status.value} under claim_decision "
+                "contract; use a terminal_record contract for a contract-backed "
+                "unresolved or instrument-limited disposition"
             )
         if (
             status == ClaimDisposition.SUPPORTED
@@ -1355,9 +1428,7 @@ class MVPClaimLedgerStore:
             }
             missing_aspects = sorted(
                 aspect.value
-                for aspect in (
-                    REQUIRED_SCIENTIFIC_COMMISSIONING_ASPECTS - active_aspects
-                )
+                for aspect in (REQUIRED_SCIENTIFIC_COMMISSIONING_ASPECTS - active_aspects)
             )
             if missing_aspects:
                 raise ValueError(
@@ -1368,30 +1439,10 @@ class MVPClaimLedgerStore:
                     "representation, physics_controls, boundaries, diagnostics, "
                     "and numerical_regime"
                 )
-        qualifying_evidence = list(
-            self._qualifying_contract_evidence(
-                claim,
-                contract_version=selected_contract_version,
-            )
+        qualifying_evidence = self._contract_satisfying_evidence(
+            claim,
+            contract_version=selected_contract_version,
         )
-        if claim.kind == ClaimKind.SCIENTIFIC:
-            commissioned: list[ClaimEvidenceLink] = []
-            for evidence in qualifying_evidence:
-                provenance = evidence.provenance
-                assert provenance is not None
-                if provenance.capability is None:
-                    commissioned.append(evidence)
-                    continue
-                try:
-                    self._validate_commissioning_claim(
-                        scientific_claim=claim,
-                        commissioning_claim_id=evidence.commissioning_claim_id,
-                        scientific_provenance=provenance,
-                    )
-                except ValueError:
-                    continue
-                commissioned.append(evidence)
-            qualifying_evidence = commissioned
         if not qualifying_evidence:
             raise ValueError(
                 f"cannot close {claim_id} as {status.value}: require linked, "
@@ -1401,6 +1452,38 @@ class MVPClaimLedgerStore:
                 "scientific evidence also requires prior machine-checked commissioning"
             )
         return selected_contract_version
+
+    def _contract_satisfying_evidence(
+        self,
+        claim: MVPClaim,
+        *,
+        contract_version: int,
+    ) -> tuple[ClaimEvidenceLink, ...]:
+        """Apply the common prospective, provenance, and commissioning gates."""
+
+        qualifying_evidence = self._qualifying_contract_evidence(
+            claim,
+            contract_version=contract_version,
+        )
+        if claim.kind != ClaimKind.SCIENTIFIC:
+            return qualifying_evidence
+        commissioned: list[ClaimEvidenceLink] = []
+        for evidence in qualifying_evidence:
+            provenance = evidence.provenance
+            assert provenance is not None
+            if provenance.capability is None:
+                commissioned.append(evidence)
+                continue
+            try:
+                self._validate_commissioning_claim(
+                    scientific_claim=claim,
+                    commissioning_claim_id=evidence.commissioning_claim_id,
+                    scientific_provenance=provenance,
+                )
+            except ValueError:
+                continue
+            commissioned.append(evidence)
+        return tuple(commissioned)
 
     def close(
         self,
@@ -1420,11 +1503,27 @@ class MVPClaimLedgerStore:
         claim = existing[claim_id]
         if claim.status != ClaimDisposition.OPEN:
             raise ValueError(f"claim is already closed: {claim_id}")
-        if status in {ClaimDisposition.SUPPORTED, ClaimDisposition.FALSIFIED}:
+        contract_backed_statuses = {
+            ClaimDisposition.SUPPORTED,
+            ClaimDisposition.FALSIFIED,
+            ClaimDisposition.INSTRUMENT_LIMITED,
+            ClaimDisposition.UNRESOLVED,
+        }
+        selected_contract_version: int | None = None
+        if status in {ClaimDisposition.SUPPORTED, ClaimDisposition.FALSIFIED} or (
+            status in {ClaimDisposition.INSTRUMENT_LIMITED, ClaimDisposition.UNRESOLVED}
+            and contract_version is not None
+        ):
             selected_contract_version = self.validate_evidentiary_disposition(
                 claim_id=claim_id,
                 status=status,
                 contract_version=contract_version,
+            )
+        elif contract_version is not None:
+            raise ValueError(
+                f"contract_version is not valid for status={status.value}; "
+                "contract-backed closure is limited to supported, falsified, "
+                "instrument_limited, or unresolved"
             )
         updated = MVPClaim(
             id=claim.id,
@@ -1438,11 +1537,7 @@ class MVPClaimLedgerStore:
             evidence_contracts=claim.evidence_contracts,
             evidence=claim.evidence,
             closed_reason=reason,
-            decisive_contract_version=(
-                selected_contract_version
-                if status in {ClaimDisposition.SUPPORTED, ClaimDisposition.FALSIFIED}
-                else None
-            ),
+            decisive_contract_version=selected_contract_version,
             created_iteration=claim.created_iteration,
             updated_iteration=iteration,
         )
@@ -1451,7 +1546,7 @@ class MVPClaimLedgerStore:
             "closed": updated.model_dump(mode="json"),
             "claim_ledger": ledger.compact_summary(),
         }
-        if status in {ClaimDisposition.SUPPORTED, ClaimDisposition.FALSIFIED}:
+        if status in contract_backed_statuses and selected_contract_version is not None:
             result["decisive_contract_version"] = selected_contract_version
         # Non-evidentiary dispositions remain available so a bounded campaign can
         # finish honestly even when no decisive artifact was produced.

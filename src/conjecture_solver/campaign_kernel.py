@@ -159,6 +159,74 @@ class CampaignKernel:
             kernel._persist_resource_roots()
         return kernel
 
+    @classmethod
+    def open_existing(
+        cls,
+        *,
+        workspace: str | Path | None = None,
+        root: str | Path | None = None,
+        output: str | Path | None = None,
+        campaign: str | Path | None = None,
+    ) -> CampaignKernel:
+        """Reopen an initialized campaign without locking during reconstruction.
+
+        Detached workers start only after the parent has durably created the
+        manifest, ledgers, runtime files, resource identity, and worker
+        handshake.  Those files are replaced atomically, so rebuilding the
+        in-memory host from them is read-only and does not need to monopolize
+        the campaign writer lock.  A short lock still protects final contract
+        validation before the returned kernel may execute its leased action.
+
+        This deliberately refuses incomplete campaigns.  Fresh campaign
+        creation and recovery continue to use :meth:`open`, whose lock covers
+        all potentially creating initialization paths.
+        """
+
+        target = cls._resolve_target(
+            workspace=workspace,
+            root=root,
+            output=output,
+            campaign=campaign,
+        )
+        required_files = (
+            "mvp_manifest.json",
+            "hypothesis_ledger.json",
+            ACTION_JOURNAL_FILE,
+            BUDGET_FILE,
+            cls._resource_file(target).name,
+        )
+        for name in required_files:
+            path = target / name
+            if path.is_symlink() or not path.is_file():
+                raise ValueError(f"existing campaign is missing initialized file: {name}")
+
+        # The expensive claim/provenance/resource reconstruction is read-only
+        # for a fully initialized campaign and all of its inputs are atomic
+        # snapshots.  Keep it outside the cross-process writer lock so status
+        # polling remains responsive while a worker starts.
+        host = cls._build_standalone_host(
+            workspace=target,
+            root=None,
+            output=None,
+            campaign=None,
+            hypothesis=None,
+            config=None,
+            skills=None,
+            capabilities=None,
+            literature_search=None,
+        )
+        kernel = cls(host)
+
+        from .campaign_jobs import CampaignInterprocessLock
+
+        # Existing-only preconditions make these verification calls
+        # non-creating.  The lock prevents a control-plane mutation from
+        # interleaving with the final immutable-contract checks.
+        with CampaignInterprocessLock(target):
+            kernel.initialize()
+            kernel._persist_resource_roots()
+        return kernel
+
     @staticmethod
     def _resolve_target(
         *,
@@ -230,9 +298,7 @@ class CampaignKernel:
             try:
                 skill_destination = temporary / "skills"
                 skill_destination.mkdir()
-                for manifest_path in sorted(
-                    source_skills.glob("*/manifest.json")
-                ):
+                for manifest_path in sorted(source_skills.glob("*/manifest.json")):
                     skill_root = manifest_path.parent
                     shutil.copytree(
                         skill_root,
@@ -242,9 +308,7 @@ class CampaignKernel:
                 capability_destination.mkdir()
                 for config_path in sorted(source_capabilities.glob("*.json")):
                     if config_path.is_symlink() or not config_path.is_file():
-                        raise ValueError(
-                            "capability configuration must be a regular file"
-                        )
+                        raise ValueError("capability configuration must be a regular file")
                     shutil.copy2(
                         config_path,
                         capability_destination / config_path.name,
@@ -263,35 +327,23 @@ class CampaignKernel:
                             continue
                         source = (source_capabilities / relative).resolve()
                         if not source.is_dir():
-                            raise ValueError(
-                                f"capability resource is unavailable: {source}"
-                            )
-                        link = Path(
-                            os.path.abspath(capability_destination / relative)
-                        )
+                            raise ValueError(f"capability resource is unavailable: {source}")
+                        link = Path(os.path.abspath(capability_destination / relative))
                         if not link.is_relative_to(temporary):
-                            raise ValueError(
-                                "relative capability resource escapes its snapshot"
-                            )
+                            raise ValueError("relative capability resource escapes its snapshot")
                         link.parent.mkdir(parents=True, exist_ok=True)
                         if link.exists() or link.is_symlink():
                             if not link.is_symlink() or link.resolve() != source:
-                                raise ValueError(
-                                    "capability snapshot references conflict"
-                                )
+                                raise ValueError("capability snapshot references conflict")
                             continue
                         link.symlink_to(source, target_is_directory=True)
-                candidate_skills = MVPSkillCatalog.discover(
-                    temporary / "skills"
-                )
+                candidate_skills = MVPSkillCatalog.discover(temporary / "skills")
                 candidate_capabilities = MVPCapabilityRegistry.discover(
                     temporary / "capabilities",
                     ignore_unavailable=False,
                 )
                 if candidate_skills.hashes != skills.hashes:
-                    raise ValueError(
-                        "kernel skill snapshot identity does not match its source"
-                    )
+                    raise ValueError("kernel skill snapshot identity does not match its source")
                 if candidate_capabilities.hashes != capabilities.hashes:
                     raise ValueError(
                         "kernel capability snapshot identity does not match its source"
@@ -371,10 +423,7 @@ class CampaignKernel:
             return
         skills = getattr(self.host, "skills", None)
         capabilities = getattr(self.host, "capabilities", None)
-        if (
-            getattr(skills, "root", None) is None
-            or getattr(capabilities, "root", None) is None
-        ):
+        if getattr(skills, "root", None) is None or getattr(capabilities, "root", None) is None:
             return
         frozen_skills, frozen_capabilities = self._snapshot_default_resources(
             root,
@@ -473,9 +522,7 @@ class CampaignKernel:
         manifest_config: Any | None = None
         if launch is not None:
             if hypothesis is not None and hypothesis != launch.hypothesis:
-                raise ValueError(
-                    "supplied hypothesis does not match the immutable operator launch"
-                )
+                raise ValueError("supplied hypothesis does not match the immutable operator launch")
             selected_hypothesis = launch.hypothesis
             selected_instruction = launch.instruction
             launch_config = MVPAgentConfig(
@@ -497,9 +544,7 @@ class CampaignKernel:
                 from .mvp_skills import MVPSkillCatalog
 
                 skills = MVPSkillCatalog.discover(launch.skills_directory)
-                selected_skills_root = str(
-                    Path(launch.skills_directory).expanduser().resolve()
-                )
+                selected_skills_root = str(Path(launch.skills_directory).expanduser().resolve())
             if capabilities is None and launch.capability_directory:
                 from .mvp_skills import MVPCapabilityRegistry
 
@@ -546,12 +591,10 @@ class CampaignKernel:
             and selected_skills_root is None
             and selected_capabilities_root is None
         ):
-            builtin_skills, builtin_capabilities = (
-                CampaignKernel._snapshot_default_resources(
-                    target,
-                    skills=builtin_skills,
-                    capabilities=builtin_capabilities,
-                )
+            builtin_skills, builtin_capabilities = CampaignKernel._snapshot_default_resources(
+                target,
+                skills=builtin_skills,
+                capabilities=builtin_capabilities,
             )
             selected_skills_root = str(builtin_skills.root)
             selected_capabilities_root = str(builtin_capabilities.root)
@@ -606,12 +649,11 @@ class CampaignKernel:
 
                     literature_search = PublicLiteratureSearchClient(
                         timeout_seconds=(
-                            launch.literature_search_timeout_seconds
-                            if launch is not None
-                            else 20.0
+                            launch.literature_search_timeout_seconds if launch is not None else 20.0
                         )
                     )
                 else:
+
                     class _RecordedSearch:
                         identity = recorded_identity
 
@@ -630,9 +672,7 @@ class CampaignKernel:
 
                 literature_search = PublicLiteratureSearchClient(
                     timeout_seconds=(
-                        launch.literature_search_timeout_seconds
-                        if launch is not None
-                        else 20.0
+                        launch.literature_search_timeout_seconds if launch is not None else 20.0
                     )
                 )
 
@@ -745,14 +785,17 @@ class CampaignKernel:
     def _atomic_json_write(path: Path, payload: Mapping[str, Any]) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
         temporary = path.with_name(f".{path.name}.tmp.{os.getpid()}")
-        encoded = json.dumps(
-            payload,
-            ensure_ascii=False,
-            allow_nan=False,
-            indent=2,
-            sort_keys=True,
-            default=str,
-        ) + "\n"
+        encoded = (
+            json.dumps(
+                payload,
+                ensure_ascii=False,
+                allow_nan=False,
+                indent=2,
+                sort_keys=True,
+                default=str,
+            )
+            + "\n"
+        )
         with temporary.open("w", encoding="utf-8") as stream:
             stream.write(encoded)
             stream.flush()
@@ -871,9 +914,10 @@ class CampaignKernel:
         """Create the durable journal/budget without consuming an action."""
 
         journal = self._load_action_journal()
-        if self._campaign_root is not None and not (
-            self._campaign_root / ACTION_JOURNAL_FILE
-        ).exists():
+        if (
+            self._campaign_root is not None
+            and not (self._campaign_root / ACTION_JOURNAL_FILE).exists()
+        ):
             self._persist_action_journal(journal)
         budget = self._load_budget()
         if self._campaign_root is not None and not (self._campaign_root / BUDGET_FILE).exists():
@@ -1445,13 +1489,11 @@ class CampaignKernel:
         with self._writer_lock(wait_seconds=30.0):
             self._reconcile_jobs_locked()
             self._assert_writer_available(exclude_operation_id=operation_id)
-            sequence, effective_timeout, fingerprint = (
-                self._prepare_detached_operation_locked(
-                    operation_id,
-                    action,
-                    timeout_seconds=timeout_seconds,
-                    job_id=job_id,
-                )
+            sequence, effective_timeout, fingerprint = self._prepare_detached_operation_locked(
+                operation_id,
+                action,
+                timeout_seconds=timeout_seconds,
+                job_id=job_id,
             )
         active_started = time.monotonic()
         try:
@@ -1586,10 +1628,7 @@ class CampaignKernel:
             raise ValueError("contract_version must be an integer")
         if contract_version < 1:
             raise ValueError("contract_version must be at least 1")
-        if (
-            not isinstance(case_for_sufficiency, str)
-            or len(case_for_sufficiency.strip()) < 16
-        ):
+        if not isinstance(case_for_sufficiency, str) or len(case_for_sufficiency.strip()) < 16:
             raise ValueError("case_for_sufficiency must contain at least 16 characters")
         payload = self._adjudication_action_payload(
             claim_id=claim_id,
@@ -1636,12 +1675,10 @@ class CampaignKernel:
                     f"adjudication operation {operation_id!r} is already in progress"
                 )
             self._assert_writer_available()
-            selected_id, selected_version, packet = (
-                self.host._prepare_adjudication_request(
-                    claim_id=claim_id,
-                    contract_version=contract_version,
-                    case_for_sufficiency=case_for_sufficiency,
-                )
+            selected_id, selected_version, packet = self.host._prepare_adjudication_request(
+                claim_id=claim_id,
+                contract_version=contract_version,
+                case_for_sufficiency=case_for_sufficiency,
             )
             return {
                 "already_recorded": False,
@@ -1712,12 +1749,10 @@ class CampaignKernel:
                     f"adjudication operation {operation_id!r} is already in progress"
                 )
 
-            selected_id, selected_version, packet = (
-                self.host._prepare_adjudication_request(
-                    claim_id=claim_id,
-                    contract_version=contract_version,
-                    case_for_sufficiency=case_for_sufficiency,
-                )
+            selected_id, selected_version, packet = self.host._prepare_adjudication_request(
+                claim_id=claim_id,
+                contract_version=contract_version,
+                case_for_sufficiency=case_for_sufficiency,
             )
             if not isinstance(case_sha256, str) or case_sha256 != self._packet_sha256(packet):
                 raise ValueError(
@@ -1810,34 +1845,46 @@ class CampaignKernel:
             "adjudication": record.model_dump(mode="json"),
         }
         if record.verdict.decision == MVPJudgeDecision.SUFFICIENT:
-            if claim.status == ClaimDisposition.OPEN:
-                _selected_id, _selected_version, packet = (
-                    self.host._prepare_adjudication_request(
-                        claim_id=claim_id,
-                        contract_version=contract_version,
-                        case_for_sufficiency=record.requested_case,
+            disposition = record.verdict.scientific_disposition
+            if disposition is None:
+                # Version 0.1 persisted "sufficient" without an independent
+                # scientific disposition. It is safe to replay only when that old
+                # verdict was already applied to the matching supported claim.
+                if not (
+                    record.schema_version == "0.1.0"
+                    and claim.status == ClaimDisposition.SUPPORTED
+                    and claim.decisive_contract_version == contract_version
+                ):
+                    raise ValueError(
+                        "legacy sufficient adjudication has no scientific disposition; "
+                        "an open claim requires a fresh explicit adjudication"
                     )
+                disposition = ClaimDisposition.SUPPORTED
+            if claim.status == ClaimDisposition.OPEN:
+                _selected_id, _selected_version, packet = self.host._prepare_adjudication_request(
+                    claim_id=claim_id,
+                    contract_version=contract_version,
+                    case_for_sufficiency=record.requested_case,
                 )
-                if (
-                    record.case_sha256 is not None
-                    and record.case_sha256 != self._packet_sha256(packet)
+                if record.case_sha256 is not None and record.case_sha256 != self._packet_sha256(
+                    packet
                 ):
                     raise ValueError(
                         "recorded adjudication case no longer matches durable evidence"
                     )
                 response["closure"] = self.claim_store.close(
                     claim_id=claim_id,
-                    status=ClaimDisposition.SUPPORTED,
+                    status=disposition,
                     reason=(
-                        "Independent judge accepted the bounded evidence package: "
+                        "Independent judge accepted a complete terminal record and "
+                        f"assigned scientific disposition {disposition.value}: "
                         + record.verdict.rationale
                     ),
                     contract_version=contract_version,
                     iteration=record.iteration,
                 )
             elif (
-                claim.status == ClaimDisposition.SUPPORTED
-                and claim.decisive_contract_version == contract_version
+                claim.status == disposition and claim.decisive_contract_version == contract_version
             ):
                 response["closure"] = {
                     "closed": claim.model_dump(mode="json"),
@@ -1846,7 +1893,7 @@ class CampaignKernel:
                 }
             else:
                 raise ValueError(
-                    "recorded sufficient adjudication conflicts with claim disposition"
+                    "recorded adjudication scientific disposition conflicts with claim"
                 )
         else:
             response["continue_required"] = True
@@ -1874,13 +1921,51 @@ class CampaignKernel:
             MVPLoopStage,
             MVPResearchRole,
         )
+        from .mvp_claims import ClaimDisposition, ClaimKind
 
         if verdict.decision == MVPJudgeDecision.SUFFICIENT:
+            disposition = verdict.scientific_disposition
+            if disposition == ClaimDisposition.FALSIFIED:
+                setter(
+                    stage=MVPLoopStage.REPAIR,
+                    role=MVPResearchRole.SCIENTIST,
+                    active_claim_id=claim_id,
+                    detail=(
+                        "Judge accepted the counterexample record; the Scientist is "
+                        "forming the smallest repair claim."
+                    ),
+                    iteration=iteration,
+                )
+                return
+            open_scientific = [
+                claim
+                for claim in self.claim_store.ledger.claims
+                if claim.kind == ClaimKind.SCIENTIFIC and claim.status == ClaimDisposition.OPEN
+            ]
+            if open_scientific:
+                target = max(
+                    open_scientific,
+                    key=lambda claim: (claim.updated_iteration, claim.id),
+                )
+                setter(
+                    stage=MVPLoopStage.FALSIFICATION,
+                    role=MVPResearchRole.FALSIFIER,
+                    active_claim_id=target.id,
+                    detail=(
+                        "One branch reached an adjudicated terminal disposition; open "
+                        "scientific work remains."
+                    ),
+                    iteration=iteration,
+                )
+                return
             setter(
                 stage=MVPLoopStage.COMPLETE,
                 role=MVPResearchRole.JUDGE,
                 active_claim_id=claim_id,
-                detail="Independent judge accepted the bounded evidence package.",
+                detail=(
+                    "Independent judge accepted a complete terminal record with "
+                    f"disposition {getattr(disposition, 'value', disposition)}."
+                ),
                 iteration=iteration,
                 status="completed",
             )
@@ -2075,11 +2160,7 @@ class CampaignKernel:
                 raise
             result = state.model_dump(mode="json") if hasattr(state, "model_dump") else dict(state)
             status = getattr(getattr(state, "status", None), "value", "failed")
-            operation_status = (
-                "failed"
-                if status in {"outcome_unknown", "failed"}
-                else "succeeded"
-            )
+            operation_status = "failed" if status in {"outcome_unknown", "failed"} else "succeeded"
             self._update_operation_record(
                 journal,
                 operation_id,
@@ -2130,22 +2211,12 @@ class CampaignKernel:
                 budget = self._load_budget()
         max_actions = budget.get("max_actions")
         action_count = int(budget.get("action_count", 0))
-        remaining_actions = (
-            None
-            if max_actions is None
-            else max(0, int(max_actions) - action_count)
-        )
+        remaining_actions = None if max_actions is None else max(0, int(max_actions) - action_count)
         raw_provenance = self.host._artifact_provenance
         raw_artifacts = raw_provenance.get("artifacts", {})
-        artifact_items = (
-            list(raw_artifacts.items()) if isinstance(raw_artifacts, Mapping) else []
-        )
+        artifact_items = list(raw_artifacts.items()) if isinstance(raw_artifacts, Mapping) else []
         artifact_provenance = {
-            **{
-                key: value
-                for key, value in raw_provenance.items()
-                if key != "artifacts"
-            },
+            **{key: value for key, value in raw_provenance.items() if key != "artifacts"},
             "artifact_count": len(artifact_items),
             "artifacts_truncated": len(artifact_items) > SNAPSHOT_MAX_ARTIFACTS,
             "artifacts": dict(artifact_items[-SNAPSHOT_MAX_ARTIFACTS:]),
@@ -2183,9 +2254,7 @@ class CampaignKernel:
             "literature_searches_truncated": (
                 len(literature_records) > SNAPSHOT_MAX_LITERATURE_SEARCHES
             ),
-            "literature_searches": literature_records[
-                -SNAPSHOT_MAX_LITERATURE_SEARCHES:
-            ],
+            "literature_searches": literature_records[-SNAPSHOT_MAX_LITERATURE_SEARCHES:],
             "job_count": len(all_states),
             "jobs_truncated": len(all_states) > len(jobs_projection),
             "jobs": jobs_projection,
@@ -2194,9 +2263,7 @@ class CampaignKernel:
                 "action_count": action_count,
                 "remaining_actions": remaining_actions,
                 "max_wall_seconds": float(budget["max_wall_seconds"]),
-                "accumulated_active_seconds": float(
-                    budget.get("accumulated_active_seconds", 0.0)
-                ),
+                "accumulated_active_seconds": float(budget.get("accumulated_active_seconds", 0.0)),
                 "remaining_wall_seconds": self._remaining_wall_seconds(budget),
                 "max_command_seconds": float(budget["max_command_seconds"]),
             },
@@ -2238,10 +2305,7 @@ class CampaignKernel:
             state
             for state in listing()
             if not state.status.terminal
-            and (
-                exclude_operation_id is None
-                or state.operation_id != exclude_operation_id
-            )
+            and (exclude_operation_id is None or state.operation_id != exclude_operation_id)
         )
 
     def _assert_writer_available(self, *, exclude_operation_id: str | None = None) -> None:
@@ -2284,9 +2348,7 @@ class CampaignKernel:
 
             output = getattr(self.host, "output", None)
             if output is None:
-                raise RuntimeError(
-                    "CampaignKernel host has no output directory for durable jobs"
-                )
+                raise RuntimeError("CampaignKernel host has no output directory for durable jobs")
             self._job_supervisor = CampaignJobSupervisor(Path(output) / "jobs")
         return self._job_supervisor
 
@@ -2318,13 +2380,16 @@ class CampaignKernel:
         payload = dict(request)
         raw_operation_id = str(payload.pop("operation_id", "") or "")
         if not raw_operation_id:
-            raw_operation_id = "op_" + hashlib.sha256(
-                json.dumps(
-                    {key: value for key, value in payload.items() if key != "iteration"},
-                    sort_keys=True,
-                    separators=(",", ":"),
-                ).encode()
-            ).hexdigest()[:32]
+            raw_operation_id = (
+                "op_"
+                + hashlib.sha256(
+                    json.dumps(
+                        {key: value for key, value in payload.items() if key != "iteration"},
+                        sort_keys=True,
+                        separators=(",", ":"),
+                    ).encode()
+                ).hexdigest()[:32]
+            )
         operation_id = self._validate_operation_id(raw_operation_id)
         raw_argv = payload.get("argv", ())
         if isinstance(raw_argv, (str, bytes)) or not isinstance(raw_argv, (list, tuple)):
@@ -2419,8 +2484,7 @@ class CampaignKernel:
                 existing_metadata = existing_request.metadata
                 if (
                     existing_metadata.get("action") != action.model_dump(mode="json")
-                    or existing_metadata.get("requested_timeout_seconds")
-                    != requested_timeout
+                    or existing_metadata.get("requested_timeout_seconds") != requested_timeout
                 ):
                     raise JobConflictError(
                         f"operation_id {operation_id!r} already names a different request"
@@ -2485,9 +2549,7 @@ class CampaignKernel:
                 record["updated_at"] = datetime.now(UTC).isoformat()
             self._persist_action_journal(journal)
             supervisor = (
-                getattr(jobs, "supervisor_record", lambda _job: None)(job_id)
-                if job_id
-                else None
+                getattr(jobs, "supervisor_record", lambda _job: None)(job_id) if job_id else None
             )
             if (
                 supervisor is not None
@@ -2607,11 +2669,19 @@ class CampaignKernel:
     def job_status(self, job_id: str) -> Any:
         """Reconcile and return one durable action job."""
 
-        # Detached scientific work carries an active-job writer lease rather
-        # than holding the flock for its full runtime. Status reconciliation is
-        # therefore a short serialized mutation and remains responsive while a
-        # simulation is running.
+        # A non-terminal supervisor state is a small control-plane record and
+        # does not mutate any scientific campaign index.  Reading it before the
+        # campaign lock keeps ordinary polling responsive while another process
+        # performs a short startup/finalization mutation.  Terminal transitions
+        # still take the lock before authenticating receipts and refreshing
+        # scientific state.
+        state = self._jobs().status(job_id)
+        if not state.status.terminal:
+            return state
+
         with self._writer_lock(wait_seconds=2.0):
+            # Re-read after acquiring the lock: another reconciler may have
+            # completed or corrected the durable lifecycle meanwhile.
             state = self._jobs().status(job_id)
             state = self._reconcile_worker_receipt(job_id, state)
             state = self._reject_unverified_worker_success(state)

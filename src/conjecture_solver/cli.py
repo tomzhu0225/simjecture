@@ -29,6 +29,7 @@ from .benchmarks.kinetic_sufficiency import run_kinetic_sufficiency_benchmark
 from .campaign import CampaignRunner, planted_campaign_problem
 from .confirmation import PICConfirmationRunner, confirmation_design_from_search
 from .control import CampaignControl
+from .corrective_audit import append_corrective_audit
 from .deployment import (
     DeploymentManager,
     DeploymentProfile,
@@ -411,9 +412,7 @@ def _mvp(args: argparse.Namespace) -> int:
     if args.use_glm and not args.reason:
         raise ValueError("--use-glm requires --reason")
     hypothesis = (
-        args.hypothesis
-        if args.hypothesis is not None
-        else Path(args.hypothesis_file).read_text()
+        args.hypothesis if args.hypothesis is not None else Path(args.hypothesis_file).read_text()
     )
     if args.instruction is not None and args.instruction_file is not None:
         raise ValueError("use only one of --instruction or --instruction-file")
@@ -570,6 +569,21 @@ def _status(args: argparse.Namespace) -> int:
         print(snapshot.model_dump_json(indent=2))
     else:
         print(format_human_status(snapshot), end="")
+    return 0
+
+
+def _corrective_audit(args: argparse.Namespace) -> int:
+    record = append_corrective_audit(
+        args.run_directory,
+        reviewer=args.reviewer,
+        finding=args.finding,
+        corrected_interpretation=args.corrected_interpretation,
+        artifacts=tuple(args.artifact),
+    )
+    if args.json:
+        print(record.model_dump_json(indent=2))
+    else:
+        print(f"recorded {record.record_id} ({record.record_sha256})")
     return 0
 
 
@@ -886,6 +900,23 @@ def build_parser() -> argparse.ArgumentParser:
         help="Print the typed snapshot as JSON and exit",
     )
     status.set_defaults(handler=_status)
+
+    corrective_audit = subcommands.add_parser(
+        "corrective-audit",
+        help="Append a hash-chained review without rewriting campaign artifacts",
+    )
+    corrective_audit.add_argument("run_directory")
+    corrective_audit.add_argument("--reviewer", required=True)
+    corrective_audit.add_argument("--finding", required=True)
+    corrective_audit.add_argument("--corrected-interpretation", required=True)
+    corrective_audit.add_argument(
+        "--artifact",
+        action="append",
+        required=True,
+        help="Campaign-relative immutable artifact to hash; repeat as needed",
+    )
+    corrective_audit.add_argument("--json", action="store_true")
+    corrective_audit.set_defaults(handler=_corrective_audit)
 
     watch = subcommands.add_parser(
         "watch",

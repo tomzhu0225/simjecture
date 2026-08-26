@@ -39,7 +39,9 @@ MAX_CLAIM_PAGE_SIZE = 100
 MAX_ROLE_CLAIMS = 1
 MAX_FULL_CLAIMS = 8
 MAX_ROLE_CONTRACTS = 8
-MAX_ROLE_EVIDENCE = 24
+MAX_ROLE_EVIDENCE = 8
+MAX_ROLE_NOTE_CHARS = 400
+MAX_ROLE_VALIDATION_RESULTS = 8
 MAX_CLAIM_SUMMARY_STATEMENT_CHARS = 512
 MAX_SNAPSHOT_HYPOTHESIS_CHARS = 2_048
 MAX_SNAPSHOT_INSTRUCTION_CHARS = 8_192
@@ -584,6 +586,116 @@ def _tail_with_decisive_contract(
     return selected, True
 
 
+def _clip_role_text(value: Any, maximum: int = MAX_ROLE_NOTE_CHARS) -> str | None:
+    if value is None:
+        return None
+    text = str(value)
+    if len(text) <= maximum:
+        return text
+    return text[:maximum] + "..."
+
+
+def _evidence_execution_failed(evidence: Mapping[str, Any]) -> bool:
+    provenance = evidence.get("provenance")
+    if not isinstance(provenance, Mapping):
+        provenance = {}
+    return bool(
+        evidence.get("validation_passed") is False
+        or provenance.get("execution_succeeded") is False
+        or provenance.get("execution_timed_out") is True
+        or provenance.get("execution_workspace_exceeded") is True
+        or provenance.get("job_status") in {"failed", "cancelled", "outcome_unknown"}
+    )
+
+
+def _select_role_evidence(
+    evidence: list[Mapping[str, Any]],
+    *,
+    decisive_contract_version: Any,
+) -> tuple[list[Mapping[str, Any]], dict[str, int]]:
+    """Select a bounded, chronologically ordered and outcome-balanced view."""
+
+    categories = {
+        "decisive": [
+            index
+            for index, item in enumerate(evidence)
+            if decisive_contract_version is not None
+            and item.get("contract_version") == decisive_contract_version
+            and item.get("observation_sufficient") is True
+        ],
+        "sufficient": [
+            index
+            for index, item in enumerate(evidence)
+            if item.get("observation_sufficient") is True
+        ],
+        "non_sufficient": [
+            index
+            for index, item in enumerate(evidence)
+            if item.get("observation_sufficient") is not True
+        ],
+        "failed": [
+            index for index, item in enumerate(evidence) if _evidence_execution_failed(item)
+        ],
+    }
+    selected: set[int] = set()
+    # Preserve the newest representative of every semantically important
+    # category before filling the remaining budget from the chronological tail.
+    for name in ("decisive", "sufficient", "failed", "non_sufficient"):
+        if categories[name]:
+            selected.add(categories[name][-1])
+    if evidence:
+        selected.add(len(evidence) - 1)
+    for index in range(len(evidence) - 1, -1, -1):
+        if len(selected) >= MAX_ROLE_EVIDENCE:
+            break
+        selected.add(index)
+
+    selected_indices = sorted(selected)
+    selected_evidence = [evidence[index] for index in selected_indices]
+    counts: dict[str, int] = {
+        "selected": len(selected_indices),
+        "omitted": len(evidence) - len(selected_indices),
+    }
+    for name, indices in categories.items():
+        retained = sum(index in selected for index in indices)
+        counts[f"{name}_omitted"] = len(indices) - retained
+    return selected_evidence, counts
+
+
+def _compact_validation_results(value: Any) -> dict[str, Any]:
+    raw = [item for item in value if isinstance(item, Mapping)] if isinstance(value, list) else []
+    failed = [index for index, item in enumerate(raw) if item.get("passed") is False]
+    selected: set[int] = set(failed[-MAX_ROLE_VALIDATION_RESULTS:])
+    for index in range(len(raw) - 1, -1, -1):
+        if len(selected) >= MAX_ROLE_VALIDATION_RESULTS:
+            break
+        selected.add(index)
+    projected = []
+    for index in sorted(selected):
+        item = raw[index]
+        projected.append(
+            {
+                key: (_clip_role_text(item.get(key)) if key == "error" else item.get(key))
+                for key in (
+                    "aspect",
+                    "json_path",
+                    "expected_value",
+                    "actual_value",
+                    "passed",
+                    "error",
+                )
+                if key in item
+            }
+        )
+    canonical = json.dumps(raw, sort_keys=True, separators=(",", ":"), default=str)
+    return {
+        "validation_results": projected,
+        "validation_result_count": len(raw),
+        "validation_results_omitted_count": len(raw) - len(projected),
+        "validation_results_sha256": hashlib.sha256(canonical.encode()).hexdigest(),
+    }
+
+
 def _role_evidence(evidence: Mapping[str, Any]) -> dict[str, Any]:
     provenance = evidence.get("provenance")
     if isinstance(provenance, Mapping):
@@ -612,17 +724,19 @@ def _role_evidence(evidence: Mapping[str, Any]) -> dict[str, Any]:
         }
     else:
         provenance = None
-    return {
+    projected = {
         "path": evidence.get("path"),
-        "note": evidence.get("note"),
+        "note": _clip_role_text(evidence.get("note")),
         "contract_version": evidence.get("contract_version"),
         "observation_sufficient": evidence.get("observation_sufficient"),
-        "observation_note": evidence.get("observation_note"),
+        "observation_note": _clip_role_text(evidence.get("observation_note")),
         "commissioning_claim_id": evidence.get("commissioning_claim_id"),
         "validation_passed": evidence.get("validation_passed"),
         "iteration": evidence.get("iteration"),
         "provenance": provenance,
     }
+    projected.update(_compact_validation_results(evidence.get("validation_results")))
+    return projected
 
 
 def _claim_role_view(claim: Mapping[str, Any]) -> dict[str, Any]:
@@ -633,8 +747,15 @@ def _claim_role_view(claim: Mapping[str, Any]) -> dict[str, Any]:
         claim.get("decisive_contract_version"),
     )
     raw_evidence = claim.get("evidence")
-    evidence = list(raw_evidence) if isinstance(raw_evidence, list) else []
-    selected_evidence = evidence[-MAX_ROLE_EVIDENCE:]
+    evidence = (
+        [item for item in raw_evidence if isinstance(item, Mapping)]
+        if isinstance(raw_evidence, list)
+        else []
+    )
+    selected_evidence, evidence_selection = _select_role_evidence(
+        evidence,
+        decisive_contract_version=claim.get("decisive_contract_version"),
+    )
     return {
         "id": claim.get("id"),
         "statement": claim.get("statement"),
@@ -652,7 +773,13 @@ def _claim_role_view(claim: Mapping[str, Any]) -> dict[str, Any]:
         "evidence_contracts_truncated": contracts_truncated,
         "evidence_contracts": selected_contracts,
         "evidence_count": len(evidence),
-        "evidence_truncated": len(evidence) > len(selected_evidence),
+        "evidence_truncated": evidence_selection["omitted"] > 0,
+        "evidence_omitted_count": evidence_selection["omitted"],
+        "evidence_selection_omissions": {
+            key.removesuffix("_omitted"): value
+            for key, value in evidence_selection.items()
+            if key.endswith("_omitted") and key != "omitted"
+        },
         "evidence": [
             _role_evidence(item) for item in selected_evidence if isinstance(item, Mapping)
         ],
@@ -1300,6 +1427,28 @@ def _sdk_result(types_module: Any, result: Any, *, error: bool = False) -> Any:
     )
 
 
+def _mcp_error_payload(error: Exception, *, tool: str) -> dict[str, Any]:
+    """Return a bounded stable error envelope for retry-aware MCP clients."""
+
+    from .campaign_jobs import CampaignLockBusyError
+
+    if isinstance(error, CampaignLockBusyError):
+        code = "campaign_writer_busy"
+    elif isinstance(error, MCPInputError):
+        code = "invalid_tool_arguments"
+    elif isinstance(error, MCPBridgeError):
+        code = "mcp_bridge_error"
+    else:
+        code = "scientific_tool_failed"
+    return {
+        "error": {
+            "code": code,
+            "message": str(error)[:2_000],
+        },
+        "tool": tool,
+    }
+
+
 def create_mcp_server(bridge: CampaignMCPBridge | None = None) -> Any:
     """Construct an official Python MCP SDK server lazily.
 
@@ -1359,7 +1508,7 @@ def create_mcp_server(bridge: CampaignMCPBridge | None = None) -> Any:
         except Exception as error:
             return _sdk_result(
                 mcp_types,
-                {"error": str(error), "tool": name},
+                _mcp_error_payload(error, tool=name),
                 error=True,
             )
 

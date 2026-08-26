@@ -70,6 +70,12 @@ export const FALSIFIER_SCHEMA = {
       enum: ['falsified', 'ready_for_adjudication', 'inconclusive', 'blocked'],
     },
     contract_version: { oneOf: [{ type: 'integer' }, { type: 'null' }] },
+    evidence_purpose: {
+      oneOf: [
+        { type: 'string', enum: ['claim_decision', 'terminal_record'] },
+        { type: 'null' },
+      ],
+    },
     decisive_evidence_paths: { type: 'array', items: { type: 'string' } },
     counterexample_summary: { oneOf: [{ type: 'string' }, { type: 'null' }] },
     case_for_sufficiency: { oneOf: [{ type: 'string' }, { type: 'null' }] },
@@ -81,6 +87,7 @@ export const FALSIFIER_SCHEMA = {
     'claim_id',
     'outcome',
     'contract_version',
+    'evidence_purpose',
     'decisive_evidence_paths',
     'counterexample_summary',
     'case_for_sufficiency',
@@ -119,52 +126,65 @@ claim in a falsification-first computational-science campaign. You have no
 parent conversation. Your first action must be snapshot; reconcile it with the
 assignment packet before any mutation. If that summary says the campaign
 instruction is truncated, call snapshot again with view=instruction before any
-mutation. Then call claims with view=role and
-claim_ids containing only the assigned claim. Request exactly one role claim
-per call and never request an unscoped full ledger. Work only on the assigned scientific
-claim and on non-scientific commissioning claims you create beneath it. Search
-relevant literature when available, inspect installed skills, register a
-prospective evidence contract before observations, commission unfamiliar
+mutation. Then call claims with view=role and claim_ids containing only the
+assigned claim. Request exactly one role claim per call and never request an
+unscoped full ledger. Work only on the assigned scientific claim and on
+non-scientific commissioning claims you create beneath it. Search relevant
+literature when available, inspect installed skills, register a prospective
+claim_decision evidence contract before observations, commission unfamiliar
 capabilities, and run the smallest discriminating tests first. Durable jobs are
 waited by the harness; do not repeatedly poll them. Link only qualifying
 artifacts. When the assignment packet contains guided_commissioning, use that
 content-addressed descriptor before inspecting files. If it declares
-protocol_path, read that concise interface once and follow its frozen
-commands; do not read supplied program sources or bulky validation artifacts
-unless the protocol omits a required interface fact or a bound execution
-fails. Guided material remains non-evidentiary. Inspect any still-necessary
-supplied guided source with explicit read_workspace_file line windows of at
-most 200 lines, and never reread an overlapping guided-source window.
+protocol_path, read that concise interface once and follow its frozen commands;
+do not read supplied program sources or bulky validation artifacts unless the
+protocol omits a required interface fact or a bound execution fails. Guided
+material remains non-evidentiary. Inspect any still-necessary supplied guided
+source with explicit read_workspace_file line windows of at most 200 lines,
+and never reread an overlapping guided-source window.
 Agent-authored workspace source may be reread after compaction when needed for
 debugging. Never use
-run_python merely to print or slice a file. Plain run_python is not a named capability: omit execution bindings
-and commissioning-only aspect labels from its ordinary scientific contract.
-Supported or closed commissioning claims are immutable: do not widen or
-re-close them. If a necessary command lies outside an existing supported
-instrument's exact binding, register a fresh instrument_of claim beneath the
-assigned scientific claim, prospectively contract all five required aspects,
-commission that exact pipeline, link its qualifying evidence, and close it as
-supported before scientific execution.
+run_python merely to print or slice a file. Plain run_python is not a named capability:
+omit execution bindings and commissioning-only aspect labels from
+its ordinary scientific contract.
+Supported or closed commissioning claims are immutable: do not widen or re-close them.
+If a necessary command lies outside
+an existing supported instrument's exact binding, register a fresh
+instrument_of claim beneath the assigned scientific claim, prospectively
+contract all five required aspects, commission that exact pipeline, link its
+qualifying evidence, and close it as supported before scientific execution.
 Every capability-generated artifact linked to the assigned scientific claim
 must name commissioning_claim_id for the supported instrument that qualified
 that exact program: simulator summaries name the simulator instrument,
 analyzer outputs name the analyzer instrument, and decision outputs name the
 decision instrument. Do not omit the id or substitute a sibling instrument.
 When evidence_gaps or next_test are present, this is a follow-up:
-reuse the durable contract, evidence, and workspace artifacts, address those
-gaps directly, and do not repeat literature/skill discovery or unrelated
+reuse the durable contract, evidence, and workspace artifacts, address those gaps
+directly, and do not repeat literature/skill discovery or unrelated
 commissioning unless the requested test truly depends on it. Prefer a focused
 extension or small new script over rewriting an existing artifact, and keep
 tool arguments bounded. Set observation_sufficient=true when an artifact meets
 the active contract; that records contract compliance and does not declare
-scientific support. You may close the assigned scientific claim only as
-falsified when a contracted counterexample is accepted by the kernel. Never
-declare scientific
-support and never create a repaired scientific hypothesis. If a meaningful
-counterexample search survives, return a bounded case for the independent
-judge. Keep working until one declared outcome is true or a durable blocker is
-reached. Use operation IDs beginning with the assignment id. End only through
-the required structured output; do not expose private chain-of-thought.`
+scientific support. Never replace a claim_decision contract with a contract
+whose success condition is merely failure to realize the claim's antecedent,
+failure of a tool, or documentation of a blocker. If such a blocker prevents a
+valid scientific test, register a prospective successor contract with
+evidence_purpose=terminal_record, collect fresh observations under it, and use
+that record only to request an instrument_limited or unresolved disposition.
+You may close the assigned scientific claim only as falsified when a contracted
+counterexample is accepted by the kernel. Never declare scientific support,
+instrument_limited, or unresolved yourself and never create a repaired
+scientific hypothesis. ready_for_adjudication means a complete terminal record
+for independent judgment; it does not mean the claim is supported. Return it
+for a complete claim_decision record or a complete terminal_record blocker
+record, with case_for_sufficiency arguing only record completeness. Return
+blocked only when you cannot produce even a complete auditable terminal record;
+otherwise preserve the record for the independent judge. Keep working until
+one declared outcome is true or a durable blocker is reached. Use operation IDs
+beginning with the assignment id. End only through the required structured
+output. In that output, set evidence_purpose to the exact purpose of the selected
+contract for falsified or ready_for_adjudication, and otherwise to the purpose
+of a cited contract or null. Do not expose private chain-of-thought.`
 
 const REPAIR_PERSONA = `You are the fresh Repair Scientist for one falsified
 scientific claim. You have no parent conversation. Your first action must be
@@ -248,8 +268,17 @@ function claimById(payload, claimId) {
 }
 
 function contractExists(claim, version) {
-  return Number.isInteger(version) && (claim?.evidence_contracts ?? [])
-    .some(contract => contract?.version === version)
+  return contractByVersion(claim, version) !== undefined
+}
+
+function contractByVersion(claim, version) {
+  if (!Number.isInteger(version)) return undefined
+  return (claim?.evidence_contracts ?? [])
+    .find(contract => contract?.version === version)
+}
+
+function contractPurpose(contract) {
+  return contract?.evidence_purpose ?? 'claim_decision'
 }
 
 function compactClaim(claim) {
@@ -265,7 +294,9 @@ function compactClaim(claim) {
     decisive_contract_version: claim.decisive_contract_version,
     evidence_contracts: (claim.evidence_contracts ?? []).map(contract => ({
       version: contract.version,
+      evidence_purpose: contract.evidence_purpose ?? 'claim_decision',
       observable: contract.observable,
+      expected_outcomes: contract.expected_outcomes,
       decision_rule: contract.decision_rule,
       required_observation: contract.required_observation,
       uncertainty_criterion: contract.uncertainty_criterion,
@@ -458,8 +489,8 @@ function installAssignmentGuard(child, assignment) {
         if (claimId === undefined || !allowed.has(claimId)) {
           return 'the Falsifier may close only its assigned or commissioned claims'
         }
-        if (claimId === assignment.targetId && args.status === 'supported') {
-          return 'scientific support requires the independent adjudicator'
+        if (claimId === assignment.targetId && args.status !== 'falsified') {
+          return 'scientific dispositions other than falsified require the independent adjudicator'
         }
       }
       if (
@@ -556,9 +587,20 @@ function verifyFalsifierResult(args, structured, claims) {
     ) {
       throw new Error('Falsifier result does not cite durable evidence on the falsified claim')
     }
+    const decisiveContract = contractByVersion(claim, claim.decisive_contract_version)
+    if (
+      contractPurpose(decisiveContract) !== 'claim_decision'
+      || structured.evidence_purpose !== 'claim_decision'
+    ) {
+      throw new Error('Falsification requires a claim_decision contract handoff')
+    }
   } else if (structured.outcome === 'ready_for_adjudication') {
-    if (claim.status !== 'open' || !contractExists(claim, structured.contract_version)) {
+    const selectedContract = contractByVersion(claim, structured.contract_version)
+    if (claim.status !== 'open' || selectedContract === undefined) {
       throw new Error('Falsifier adjudication handoff has no matching open contracted claim')
+    }
+    if (structured.evidence_purpose !== contractPurpose(selectedContract)) {
+      throw new Error('Falsifier adjudication handoff misstates its contract evidence_purpose')
     }
     const qualifying = (claim.evidence ?? []).filter(evidence => (
       evidence.contract_version === structured.contract_version
@@ -593,7 +635,9 @@ function verifyFalsifierResult(args, structured, claims) {
       typeof structured.case_for_sufficiency !== 'string'
       || structured.case_for_sufficiency.length < 16
     ) {
-      throw new Error('Falsifier adjudication handoff requires a bounded sufficiency case')
+      throw new Error(
+        'Falsifier adjudication handoff requires a bounded case for terminal record completeness',
+      )
     }
   }
   return { ...structured, durable_claim_status: claim.status }
@@ -827,6 +871,7 @@ export function apply(ctx) {
         claim_id: targetId,
         child_session_id: String(run.id),
         outcome: result.structured.outcome,
+        evidence_purpose: result.structured.evidence_purpose,
       })
       return { ...verified, role_run_id: String(run.id) }
     } finally {
@@ -840,7 +885,8 @@ export function apply(ctx) {
     description:
       'Start a fresh claim-scoped Falsifier/Experimenter. It commissions and '
       + 'tests one open scientific claim, then returns either a kernel-accepted '
-      + 'counterexample, a case for the independent judge, or a durable blocker.',
+      + 'counterexample, a complete terminal record for the independent judge, '
+      + 'or a durable blocker that could not be recorded completely.',
     parameters: {
       type: 'object',
       additionalProperties: false,

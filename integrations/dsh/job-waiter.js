@@ -25,6 +25,7 @@ const INTERMEDIATE = new Set(['queued', 'running', 'cancel_requested'])
 const TERMINAL = new Set(['succeeded', 'failed', 'cancelled', 'outcome_unknown'])
 const POLL_SECONDS = 1
 const MAX_READ_RETRIES = 3
+const WRITER_BUSY_CODE = 'campaign_writer_busy'
 
 function now() {
   return new Date().toISOString()
@@ -47,6 +48,11 @@ function appendActivity(payload) {
 function heartbeatSeconds() {
   const parsed = Number(process.env.SIMJECTURE_DSH_JOB_HEARTBEAT_SECONDS ?? '30')
   return Number.isFinite(parsed) && parsed > 0 ? Math.max(1, parsed) : 30
+}
+
+function lockBusySeconds() {
+  const parsed = Number(process.env.SIMJECTURE_DSH_LOCK_BUSY_SECONDS ?? '15')
+  return Number.isFinite(parsed) && parsed > 0 ? Math.max(1, parsed) : 15
 }
 
 function pausePending() {
@@ -84,11 +90,30 @@ function jobState(result) {
 
 function boundedFailure(result) {
   if (!result.isError) return undefined
-  const code = typeof result.error?.code === 'string' ? result.error.code : undefined
+  const structured = structuredContent(result)
+  const envelope = typeof structured?.error === 'object' && structured.error !== null
+    ? structured.error
+    : undefined
+  const code = typeof result.error?.code === 'string'
+    ? result.error.code
+    : typeof envelope?.code === 'string'
+      ? envelope.code
+      : undefined
   const message = typeof result.error?.message === 'string'
     ? result.error.message.slice(0, 500)
-    : undefined
+    : typeof envelope?.message === 'string'
+      ? envelope.message.slice(0, 500)
+      : undefined
   return { code, message }
+}
+
+function writerLockBusy(result) {
+  const failure = boundedFailure(result)
+  if (failure?.code?.toLowerCase() === WRITER_BUSY_CODE) return true
+  const message = failure?.message ?? ''
+  // Older Simjecture MCP bundles expose only the exception text. Retain this
+  // compatibility fallback while preferring the stable code above.
+  return message.includes('campaign writer lock is held')
 }
 
 function abortError(signal) {
@@ -150,6 +175,7 @@ async function waitForTerminal(ctx, exec, initial, toolName) {
   let status = initialState.status
   let lastProjected = 0
   let lastStatus
+  let lockBusyStarted
   if (!TERMINAL.has(status)) {
     appendActivity({
       kind: 'job',
@@ -166,6 +192,12 @@ async function waitForTerminal(ctx, exec, initial, toolName) {
       const result = await readStatus(ctx, exec, jobId, serial, false)
       polls += 1
       if (result.isError) {
+        if (writerLockBusy(result)) {
+          lockBusyStarted ??= Date.now()
+          if ((Date.now() - lockBusyStarted) / 1000 < lockBusySeconds()) continue
+        } else {
+          lockBusyStarted = undefined
+        }
         const failure = boundedFailure(result)
         appendActivity({
           kind: 'job',
@@ -179,6 +211,7 @@ async function waitForTerminal(ctx, exec, initial, toolName) {
         })
         return result
       }
+      lockBusyStarted = undefined
       const observed = jobState(result)
       if (observed.jobId !== jobId || observed.status === undefined) {
         throw new Error('job_status returned a mismatched or malformed durable state')
@@ -210,7 +243,13 @@ async function waitForTerminal(ctx, exec, initial, toolName) {
     // The small terminal state is authoritative, but the model receives one
     // bounded report containing diagnostics and the authenticated worker
     // receipt. A failure here is returned as a tool error, never guessed.
-    const detailed = await readStatus(ctx, exec, jobId, serial, true)
+    const lockBusyDeadline = Date.now() + lockBusySeconds() * 1000
+    let detailed
+    do {
+      detailed = await readStatus(ctx, exec, jobId, serial, true)
+      if (!writerLockBusy(detailed) || Date.now() >= lockBusyDeadline) break
+      await delay(POLL_SECONDS * 1000, exec.signal)
+    } while (true)
     if (detailed.isError) {
       const failure = boundedFailure(detailed)
       appendActivity({

@@ -14,6 +14,17 @@ for detached work, its authenticated job receipt is reconciled as succeeded.
 Failed, cancelled, or operationally unknown jobs remain non-evidence even when
 they left a plausible partial output.
 
+Every contract also declares its purpose. A `claim_decision` contract tests the
+claim's predicted outcome and may support or falsify it. A `terminal_record`
+contract records a bounded failure to decide—for example, an unavailable
+instrument, an unrealized physical antecedent, or uncertainty that cannot be
+reduced within the campaign. Completing that record can justify
+`instrument_limited` or `unresolved`; it cannot justify `supported` or
+`falsified`. A scientific claim can register a terminal record only after a
+tracked prospective attempt under a claim-decision contract, so an agent cannot
+skip the scientific test and commission only an excuse for stopping. If the scientific prediction changes, the agent must register a
+successor claim rather than rewrite the contract to make failure satisfy it.
+
 ## Instruments are claims too
 
 A simulator or analyzer must establish representation, physics controls,
@@ -24,11 +35,12 @@ successful process exit alone does not.
 ## Claim closure
 
 Supported and falsified dispositions require sufficient, validation-passing,
-provenance-tracked evidence from one selected contract version. When a contract
-is amended, earlier observations remain visible but cannot decide the new
-version; fresh evidence must be generated after that version was registered.
-Unresolved and instrument-limited dispositions remain available when a campaign
-cannot decide.
+provenance-tracked evidence from one selected `claim_decision` contract version.
+When a contract is amended, earlier observations remain visible but cannot
+decide the new version; fresh evidence must be generated after that version was
+registered. `Unresolved` and `instrument_limited` require a complete prospective
+`terminal_record`, so stopping honestly remains auditable without converting a
+blocked experiment into support.
 
 The root hypothesis is immutable. A narrower operational child can close under
 its own evidence contract without silently changing or overclosing the root.
@@ -62,9 +74,16 @@ declare its own evidence sufficient. A separate Judge context reviews the
 prospective contract, provenance, validation, uncertainty, coverage, and
 bounded artifact excerpts. An insufficient judgment returns concrete gaps and
 the falsification loop continues while wall time remains. A sufficient judgment
-still passes through the deterministic evidence gate before the claim closes as
-supported. Wall-time exhaustion remains a bounded unresolved result, not
-support.
+means that the record is complete enough for the Judge's explicit scientific
+disposition; it does not mean “supported.” The deterministic gate then checks
+that the disposition matches the contract purpose. A complete
+`claim_decision` case may close as supported, while a complete blocker record
+closes as `instrument_limited` or `unresolved`.
+
+A falsified scientific claim is not a finished frontier by itself. It requires a
+minimal `repairs` child that accommodates the counterexample and becomes the
+next falsification target. Wall-time exhaustion may bound an open investigation,
+but it never becomes support.
 
 ## Auditability is not infallibility
 
@@ -72,3 +91,14 @@ The ledger preserves exactly what rule the agent chose and how it applied that
 rule. A scientist can still choose an underpowered uncertainty design or
 overstate the interpretation. The independently reviewable record makes that
 error visible and prevents it from being confused with missing provenance.
+
+Historical campaign artifacts are immutable. Later software may continue to
+read legacy adjudications that lack an explicit scientific disposition, but it
+must label them as legacy records and must not infer support in the user
+interface. A correction is appended as a separate audit record with hashes of
+the original artifacts; the original ledger and report are never silently
+rewritten.
+
+Use `simjecture corrective-audit RUN --reviewer NAME --finding TEXT
+--corrected-interpretation TEXT --artifact mvp_report.json --artifact
+hypothesis_ledger.json` to append that hash-chained record.

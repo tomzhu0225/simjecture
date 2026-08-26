@@ -18,8 +18,17 @@ from conjecture_solver.mvp_agent import (
     BubblewrapSandbox,
     MVPAgentConfig,
     MVPAgentRunner,
+    MVPJudgeDecision,
+    MVPJudgeVerdict,
 )
-from conjecture_solver.mvp_claims import ClaimDisposition, ClaimKind, ClaimRelation
+from conjecture_solver.mvp_claims import (
+    ClaimDisposition,
+    ClaimEvidenceProvenance,
+    ClaimEvidenceValidationCheck,
+    ClaimKind,
+    ClaimRelation,
+    EvidencePurpose,
+)
 from conjecture_solver.mvp_guidance import MVPGuidedCommissioningPackage
 from conjecture_solver.mvp_skills import (
     MVPCapabilityInstallation,
@@ -253,10 +262,7 @@ def test_startup_requires_one_search_attempt_but_not_a_hit(
     assert not (output / "workspace" / "premature.py").exists()
     search_index = json.loads((output / "literature_searches.json").read_text())
     assert search_index["policy"]["zero_hit_or_unavailable_satisfies_attempt"] is True
-    records = [
-        json.loads(line)
-        for line in (output / "transcript.jsonl").read_text().splitlines()
-    ]
+    records = [json.loads(line) for line in (output / "transcript.jsonl").read_text().splitlines()]
     first_tool = next(item for item in records if item["kind"] == "tool")
     assert "startup reconnaissance has not been attempted" in first_tool["content"]
 
@@ -285,9 +291,7 @@ def test_existing_017_campaign_is_not_retroactively_search_gated(
         completion_client=ScriptedCompletionClient([]),
         sandbox=BubblewrapSandbox(output / "workspace", config),
         config=config,
-        literature_search=DeterministicLiteratureSearch(
-            status=LiteratureSearchStatus.COMPLETED
-        ),
+        literature_search=DeterministicLiteratureSearch(status=LiteratureSearchStatus.COMPLETED),
     )
     resumed._initialize()
 
@@ -323,10 +327,7 @@ def test_transient_model_timeout_is_recorded_and_retried(
     assert report.status == "completed"
     assert report.iterations == 1
     assert client.attempts == 2
-    records = [
-        json.loads(line)
-        for line in (output / "transcript.jsonl").read_text().splitlines()
-    ]
+    records = [json.loads(line) for line in (output / "transcript.jsonl").read_text().splitlines()]
     assert records[0]["kind"] == "control"
     assert records[0]["event"] == "model_completion_retry"
     assert records[0]["attempt"] == 1
@@ -393,9 +394,7 @@ def test_resume_records_dangling_action_as_interrupted_once(tmp_path: Path) -> N
     assert report.status == "completed"
     records = [json.loads(line) for line in resumed.transcript.read_text().splitlines()]
     recoveries = [
-        record
-        for record in records
-        if record.get("event") == "interrupted_action_recovered"
+        record for record in records if record.get("event") == "interrupted_action_recovered"
     ]
     assert len(recoveries) == 1
     recovered_tools = [
@@ -444,10 +443,7 @@ def test_repeated_timeouts_fail_over_to_alternate_route(
         ModelRoute.ESCALATION,
     ]
     assert "automatic recovery" in client.calls[-1]["kwargs"]["escalation_reason"]
-    records = [
-        json.loads(line)
-        for line in (output / "transcript.jsonl").read_text().splitlines()
-    ]
+    records = [json.loads(line) for line in (output / "transcript.jsonl").read_text().splitlines()]
     retries = [record for record in records if record.get("event") == "model_completion_retry"]
     assert retries[0]["failover"] is False
     assert retries[1]["failover"] is True
@@ -474,10 +470,7 @@ def test_empty_completion_is_retried_without_consuming_a_turn(
 
     assert report.status == "completed"
     assert report.iterations == 1
-    records = [
-        json.loads(line)
-        for line in (output / "transcript.jsonl").read_text().splitlines()
-    ]
+    records = [json.loads(line) for line in (output / "transcript.jsonl").read_text().splitlines()]
     assert records[0]["event"] == "model_completion_retry"
     assert records[0]["error_type"] == "IncompleteCompletion"
     assert sum(record["kind"] == "assistant" for record in records) == 1
@@ -512,10 +505,7 @@ def test_cross_route_retry_exhaustion_has_distinct_terminal_status(
         ModelRoute.ESCALATION,
         ModelRoute.ESCALATION,
     ]
-    records = [
-        json.loads(line)
-        for line in (output / "transcript.jsonl").read_text().splitlines()
-    ]
+    records = [json.loads(line) for line in (output / "transcript.jsonl").read_text().splitlines()]
     assert records[-1]["event"] == "model_completion_failed"
     assert records[-1]["failure_count"] == 4
     assert "no provider failure is scientific evidence" in report.final_answer
@@ -623,9 +613,9 @@ def test_old_authored_source_is_hashed_not_replayed_to_model() -> None:
     assert compacted["path"] == "analyzer.py"
     parsed_source = source.rstrip()
     assert compacted["authored_content_chars"] == len(parsed_source)
-    assert compacted["authored_content_sha256"] == hashlib.sha256(
-        parsed_source.encode()
-    ).hexdigest()
+    assert (
+        compacted["authored_content_sha256"] == hashlib.sha256(parsed_source.encode()).hexdigest()
+    )
     assert "sensitive_or_large_source" not in json.dumps(compacted)
 
 
@@ -793,9 +783,7 @@ def test_claim_relation_rejects_cross_kind_successor(tmp_path: Path) -> None:
     ]
     assert tool_rows[0]["tool_result"]["ok"] is False
     assert "same claim kind" in tool_rows[0]["tool_result"]["error"]
-    assert [claim["id"] for claim in report.claim_ledger["claims"]] == [
-        "claim_root"
-    ]
+    assert [claim["id"] for claim in report.claim_ledger["claims"]] == ["claim_root"]
 
 
 @pytest.mark.skipif(shutil.which("bwrap") is None, reason="bubblewrap is unavailable")
@@ -1010,17 +998,14 @@ def test_natural_language_agent_writes_runs_reads_and_finishes(tmp_path: Path) -
     ]
     assert "do not relabel or reinterpret" in first_prompt[0]["content"]
     transcript = [
-        json.loads(line)
-        for line in (output / "transcript.jsonl").read_text().splitlines()
+        json.loads(line) for line in (output / "transcript.jsonl").read_text().splitlines()
     ]
     assert len(transcript) == 7
     assert transcript[0]["kind"] == "assistant"
     assert transcript[-1]["kind"] == "assistant"
     assert report.claim_ledger["claims"][0]["id"] == "claim_root"
     assert (output / "hypothesis_ledger.json").is_file()
-    provenance = json.loads((output / "artifact_provenance.json").read_text())[
-        "artifacts"
-    ]
+    provenance = json.loads((output / "artifact_provenance.json").read_text())["artifacts"]
     assert provenance["experiment.py"]["evidence_eligible"] is False
     assert provenance["result.txt"]["evidence_eligible"] is True
 
@@ -1200,9 +1185,7 @@ def test_link_claim_evidence_rejects_missing_path(tmp_path: Path) -> None:
         "open non-root claims remain at finish: claim_pending_file" in note
         for note in report.finish_claim_notes
     )
-    assert any(
-        "completed with open claims" in note for note in report.finish_claim_notes
-    )
+    assert any("completed with open claims" in note for note in report.finish_claim_notes)
 
 
 @pytest.mark.skipif(shutil.which("bwrap") is None, reason="bubblewrap is unavailable")
@@ -1623,9 +1606,7 @@ def test_claim_ledger_registers_links_closes_and_survives_in_report(
                 path="mu_error.txt",
                 note="Relative error 0.4% is inside the one-percent bound.",
                 observation_sufficient=True,
-                observation_note=(
-                    "All ten periods were represented and 0.004 is below 0.01."
-                ),
+                observation_note=("All ten periods were represented and 0.004 is below 0.01."),
             ),
             _action(
                 action="close_claim",
@@ -1675,9 +1656,7 @@ def test_claim_ledger_registers_links_closes_and_survives_in_report(
     assert len(evidence["provenance"]["sha256"]) == 64
     assert "claim_mu_bounded" in report.closed_claim_ids
     assert "claim_root" in report.open_claim_ids
-    assert any(
-        "claim_root remains open at finish" in note for note in report.finish_claim_notes
-    )
+    assert any("claim_root remains open at finish" in note for note in report.finish_claim_notes)
     assert any("closed_claim_count=1" in note for note in report.finish_claim_notes)
     assert any("open_claim_count=1" in note for note in report.finish_claim_notes)
     durable = json.loads((output / "hypothesis_ledger.json").read_text())
@@ -1883,16 +1862,13 @@ def test_agent_materializes_exact_hashed_skill_resource(tmp_path: Path) -> None:
     assert copied.read_bytes() == expected
 
     transcript = [
-        json.loads(line)
-        for line in (output / "transcript.jsonl").read_text().splitlines()
+        json.loads(line) for line in (output / "transcript.jsonl").read_text().splitlines()
     ]
     result = json.loads(transcript[1]["content"])["tool_result"]["result"]
     assert result["scientific_evidence_eligible"] is False
     assert result["source_skill_resource"]["skill"] == "python-tool"
     assert result["source_skill_resource"]["path"] == "examples/audit.py"
-    assert result["source_skill_resource"]["content_sha256"] == hashlib.sha256(
-        expected
-    ).hexdigest()
+    assert result["source_skill_resource"]["content_sha256"] == hashlib.sha256(expected).hexdigest()
     assert result["sha256"] == result["source_skill_resource"]["content_sha256"]
     provenance = json.loads((output / "artifact_provenance.json").read_text())
     record = provenance["artifacts"]["trusted/audit.py"]
@@ -1931,8 +1907,7 @@ def test_executable_skill_read_pins_exact_reuse_action(tmp_path: Path) -> None:
 
     assert report.status == "completed"
     transcript = [
-        json.loads(line)
-        for line in (output / "transcript.jsonl").read_text().splitlines()
+        json.loads(line) for line in (output / "transcript.jsonl").read_text().splitlines()
     ]
     result = json.loads(transcript[1]["content"])["tool_result"]["result"]
     exact_reuse = result["exact_reuse"]
@@ -2118,8 +2093,7 @@ def test_operator_skill_scripts_are_not_exact_reuse_targets(tmp_path: Path) -> N
 
     assert report.status == "completed"
     transcript = [
-        json.loads(line)
-        for line in (output / "transcript.jsonl").read_text().splitlines()
+        json.loads(line) for line in (output / "transcript.jsonl").read_text().splitlines()
     ]
     result = json.loads(transcript[1]["content"])["tool_result"]["result"]
     assert "exact_reuse" not in result
@@ -2190,13 +2164,10 @@ def test_materialized_skill_resource_cannot_be_sufficient_evidence(
     ).run()
 
     assert report.status == "completed"
-    claim = {
-        item["id"]: item for item in report.claim_ledger["claims"]
-    }["claim_trusted_copy"]
+    claim = {item["id"]: item for item in report.claim_ledger["claims"]}["claim_trusted_copy"]
     assert not claim["evidence"]
     transcript = [
-        json.loads(line)
-        for line in (output / "transcript.jsonl").read_text().splitlines()
+        json.loads(line) for line in (output / "transcript.jsonl").read_text().splitlines()
     ]
     failed_link = json.loads(transcript[7]["content"])["tool_result"]
     assert failed_link["ok"] is False
@@ -2272,8 +2243,7 @@ def test_agent_reads_skill_and_runs_generic_capability(tmp_path: Path) -> None:
     assert initial_payload["available_skills"][0]["name"] == "python-tool"
     assert initial_payload["available_capabilities"][0]["name"] == "isolated-python"
     transcript = [
-        json.loads(line)
-        for line in (output / "transcript.jsonl").read_text().splitlines()
+        json.loads(line) for line in (output / "transcript.jsonl").read_text().splitlines()
     ]
     capability_result = json.loads(transcript[9]["content"])["tool_result"]["result"]
     assert capability_result["returncode"] == 0
@@ -2345,8 +2315,7 @@ def test_agent_atomically_authors_and_runs_capability_program(tmp_path: Path) ->
     assert "probe.py" in report.workspace_artifacts
     assert "atomic.txt" in report.workspace_artifacts
     transcript = [
-        json.loads(line)
-        for line in (output / "transcript.jsonl").read_text().splitlines()
+        json.loads(line) for line in (output / "transcript.jsonl").read_text().splitlines()
     ]
     combined_result = json.loads(transcript[5]["content"])["tool_result"]["result"]
     assert combined_result["write_result"]["path"] == "probe.py"
@@ -2410,9 +2379,7 @@ def test_capability_execution_requires_prior_contract_before_side_effects(
     ]
     assert report.status == "completed"
     assert tool_rows[1]["tool_result"]["ok"] is False
-    assert "register a prospective evidence contract" in tool_rows[1]["tool_result"][
-        "error"
-    ]
+    assert "register a prospective evidence contract" in tool_rows[1]["tool_result"]["error"]
     assert not (output / "workspace/uncontracted.py").exists()
     assert not (output / "workspace/uncontracted_result.txt").exists()
 
@@ -2465,16 +2432,10 @@ def test_evidence_contract_rejects_unavailable_capability_at_registration(
         for line in (output / "transcript.jsonl").read_text().splitlines()
         if json.loads(line)["kind"] == "tool"
     ]
-    root = {item["id"]: item for item in report.claim_ledger["claims"]}[
-        "claim_root"
-    ]
+    root = {item["id"]: item for item in report.claim_ledger["claims"]}["claim_root"]
     assert tool_rows[0]["tool_result"]["ok"] is False
-    assert "unknown or unavailable capabilities ['python']" in tool_rows[0][
-        "tool_result"
-    ]["error"]
-    assert "available_capabilities ['isolated-python']" in tool_rows[0][
-        "tool_result"
-    ]["error"]
+    assert "unknown or unavailable capabilities ['python']" in tool_rows[0]["tool_result"]["error"]
+    assert "available_capabilities ['isolated-python']" in tool_rows[0]["tool_result"]["error"]
     assert root["evidence_contracts"] == []
 
 
@@ -2574,14 +2535,10 @@ def test_capability_bound_instrument_cannot_be_supported_without_five_aspects(
         for line in (output / "transcript.jsonl").read_text().splitlines()
         if json.loads(line)["kind"] == "tool"
     ]
-    claim = {item["id"]: item for item in report.claim_ledger["claims"]}[
-        "claim_incomplete_bound"
-    ]
+    claim = {item["id"]: item for item in report.claim_ledger["claims"]}["claim_incomplete_bound"]
     assert tool_rows[3]["tool_result"]["ok"] is True
     assert tool_rows[4]["tool_result"]["ok"] is False
-    assert "missing required machine-checked aspects" in tool_rows[4][
-        "tool_result"
-    ]["error"]
+    assert "missing required machine-checked aspects" in tool_rows[4]["tool_result"]["error"]
     assert claim["status"] == "open"
 
 
@@ -2663,9 +2620,7 @@ def test_bound_commissioning_contract_rejects_scouting_command(
     assert "commissioning_argv" in tool_rows[2]["tool_result"]["error"]
     assert not (output / "workspace/scout.py").exists()
     assert not (output / "workspace/scout_ran.txt").exists()
-    claim = {
-        item["id"]: item for item in report.claim_ledger["claims"]
-    }["claim_bound_instrument"]
+    claim = {item["id"]: item for item in report.claim_ledger["claims"]}["claim_bound_instrument"]
     assert claim["status"] == "open"
     assert claim["evidence"] == []
 
@@ -2761,13 +2716,9 @@ def test_bound_commissioning_contract_seals_source_before_first_execution(
     assert (output / "workspace/experiment.py").read_text() == original_program
     assert (output / "workspace/first_execution.txt").read_text() == "ran"
     assert not (output / "workspace/source_mutation_ran.txt").exists()
-    claim = {
-        item["id"]: item for item in report.claim_ledger["claims"]
-    }["claim_source_bound"]
+    claim = {item["id"]: item for item in report.claim_ledger["claims"]}["claim_source_bound"]
     binding = claim["evidence_contracts"][0]["execution_binding"]
-    assert binding["program_sha256"] == hashlib.sha256(
-        original_program.encode()
-    ).hexdigest()
+    assert binding["program_sha256"] == hashlib.sha256(original_program.encode()).hexdigest()
 
 
 @pytest.mark.skipif(shutil.which("bwrap") is None, reason="bubblewrap is unavailable")
@@ -2870,9 +2821,7 @@ def test_machine_validation_rejects_false_commissioning_summary(
     ]
     assert tool_rows[3]["tool_result"]["ok"] is False
     assert "machine-checkable validation failed" in tool_rows[3]["tool_result"]["error"]
-    claim = {
-        item["id"]: item for item in report.claim_ledger["claims"]
-    }["claim_instrument_invalid"]
+    claim = {item["id"]: item for item in report.claim_ledger["claims"]}["claim_instrument_invalid"]
     assert claim["status"] == "instrument_limited"
     assert len(claim["evidence"]) == 1
     assert claim["evidence"][0]["observation_sufficient"] is False
@@ -3209,9 +3158,7 @@ def test_capability_scientific_evidence_requires_prior_commissioning(
     claims = {item["id"]: item for item in report.claim_ledger["claims"]}
     assert claims["claim_capability_ready"]["status"] == "supported"
     assert claims["claim_capability_ready"]["evidence"][0]["validation_passed"] is True
-    commissioning_provenance = claims["claim_capability_ready"]["evidence"][0][
-        "provenance"
-    ]
+    commissioning_provenance = claims["claim_capability_ready"]["evidence"][0]["provenance"]
     assert commissioning_provenance["execution_succeeded"] is True
     assert commissioning_provenance["execution_returncode"] == 0
     assert claims["claim_root"]["status"] == "supported"
@@ -3463,9 +3410,7 @@ def test_one_scientific_contract_accepts_a_preregistered_program_pipeline(
                 required_observation="Run both frozen programs in their declared order.",
                 uncertainty_criterion="The deterministic result must be exactly eight.",
                 inconclusive_conditions="A missing stage or output is inconclusive.",
-                validation_checks=[
-                    {"json_path": "checks.complete", "expected_value": True}
-                ],
+                validation_checks=[{"json_path": "checks.complete", "expected_value": True}],
                 execution_binding={
                     "capability": "isolated-python",
                     "program_path": "simulate.py",
@@ -4007,6 +3952,9 @@ def test_independent_judge_can_accept_and_close_a_bounded_claim(
                     "claim_id": "claim_root",
                     "contract_version": 1,
                     "decision": "sufficient",
+                    "scientific_disposition": "supported",
+                    "claim_tested": True,
+                    "contract_preserves_claim_semantics": True,
                     "rationale": (
                         "The complete prospective ensemble, exact validation, and "
                         "provenance satisfy the bounded contract."
@@ -4041,6 +3989,93 @@ def test_independent_judge_can_accept_and_close_a_bounded_claim(
     loop = json.loads((output / "loop_state.json").read_text())
     assert loop["stage"] == "complete"
     assert loop["role"] == "judge"
+
+
+@pytest.mark.skipif(shutil.which("bwrap") is None, reason="bubblewrap is unavailable")
+def test_adjudication_packet_keeps_failed_and_newest_evidence_with_previews(
+    tmp_path: Path,
+) -> None:
+    output = tmp_path / "balanced-adjudication-packet"
+    config = _config(max_tool_output_chars=10_000)
+    sandbox = BubblewrapSandbox(output / "workspace", config)
+    runner = MVPAgentRunner(
+        hypothesis="Every bounded observation passes the declared check.",
+        output_directory=output,
+        completion_client=ScriptedCompletionClient([]),
+        sandbox=sandbox,
+        config=config,
+    )
+    validation_checks = tuple(
+        ClaimEvidenceValidationCheck(
+            json_path=f"checks.check_{index}",
+            expected_value=True,
+        )
+        for index in range(10)
+    )
+    runner.claim_store.register_evidence_contract(
+        claim_id="claim_root",
+        observable="Ten deterministic checks over twelve bounded observations.",
+        expected_outcomes="Passing observations support; failures challenge.",
+        decision_rule="Judge all prospectively generated observations.",
+        required_observation="Twelve observations including failed attempts.",
+        uncertainty_criterion="All checks are deterministic booleans.",
+        inconclusive_conditions="Missing observations are inconclusive.",
+        validation_checks=validation_checks,
+        iteration=0,
+    )
+    for index in range(12):
+        values = {f"check_{check}": True for check in range(10)}
+        if index == 1:
+            values["check_0"] = False
+        content = json.dumps({"checks": values})
+        path = f"result_{index:02d}.json"
+        sandbox.write_file(path, content)
+        sufficient = index not in {1, 11}
+        runner.claim_store.link_evidence(
+            claim_id="claim_root",
+            path=path,
+            note=f"Bounded observation {index}.",
+            observation_sufficient=sufficient,
+            observation_note=(
+                "All checks passed." if sufficient else "A failed or adverse observation."
+            ),
+            provenance=ClaimEvidenceProvenance(
+                sha256=hashlib.sha256(content.encode()).hexdigest(),
+                bytes=len(content.encode()),
+                tracked=True,
+                generated_iteration=index + 1,
+                action="run_python",
+                execution_succeeded=index != 1,
+                execution_returncode=1 if index == 1 else 0,
+                evidence_eligible=True,
+            ),
+            evidence_document={"checks": values},
+            iteration=index + 1,
+        )
+
+    packet = runner._adjudication_packet(
+        claim_id="claim_root",
+        contract_version=1,
+        case_for_sufficiency="The bounded record contains all declared observations.",
+    )
+    selected = packet["selected_contract_evidence"]
+    iterations = [item["iteration"] for item in selected]
+    preview_by_path = {item["path"]: item for item in packet["artifact_previews"]}
+
+    assert len(selected) == 8
+    assert iterations == sorted(iterations)
+    assert 2 in iterations  # the early failed observation survives the long tail
+    assert 12 in iterations  # the newest non-sufficient observation survives
+    assert any(item["observation_sufficient"] is True for item in selected)
+    assert packet["selected_contract_evidence_omitted_count"] == 4
+    assert packet["selected_contract_evidence_selection_omissions"]["failed"] == 0
+    assert "content_excerpt" in preview_by_path["result_01.json"]
+    assert "content_excerpt" in preview_by_path["result_11.json"]
+    failed = next(item for item in selected if item["iteration"] == 2)
+    assert failed["validation_result_count"] == 10
+    assert failed["validation_results_omitted_count"] == 2
+    assert any(result["passed"] is False for result in failed["validation_results"])
+    assert len(failed["validation_results_sha256"]) == 64
 
 
 def test_insufficient_judgment_rejects_premature_finish(tmp_path: Path) -> None:
@@ -4091,6 +4126,9 @@ def test_insufficient_judgment_rejects_premature_finish(tmp_path: Path) -> None:
                     "claim_id": "claim_root",
                     "contract_version": 1,
                     "decision": "insufficient",
+                    "scientific_disposition": None,
+                    "claim_tested": True,
+                    "contract_preserves_claim_semantics": True,
                     "rationale": (
                         "The registered contract requires three regimes and independent "
                         "replicas, but only one regime is present."
@@ -4131,6 +4169,150 @@ def test_insufficient_judgment_rejects_premature_finish(tmp_path: Path) -> None:
     assert report.status == "budget_exhausted"
     judge_system_prompt = client.calls[4]["messages"][0]["content"]
     assert "finite grid samples alone do not support" in judge_system_prompt
+
+
+def _terminal_record_runner(tmp_path: Path, name: str) -> MVPAgentRunner:
+    output = tmp_path / name
+    config = _config(enforce_repair_loop=True)
+    sandbox = BubblewrapSandbox(output / "workspace", config)
+    runner = MVPAgentRunner(
+        hypothesis="The declared experiment realizes and tests the bounded prediction.",
+        output_directory=output,
+        completion_client=ScriptedCompletionClient([]),
+        sandbox=sandbox,
+        config=config,
+    )
+    runner.claim_store.register_evidence_contract(
+        claim_id="claim_root",
+        observable="A scalar outcome from the prospectively attempted experiment.",
+        expected_outcomes="One outcome supports while the other falsifies the claim.",
+        decision_rule="Apply the frozen threshold to the realized scientific outcome.",
+        required_observation="One complete prospective scientific execution attempt.",
+        uncertainty_criterion="Report numerical uncertainty around the frozen threshold.",
+        inconclusive_conditions="Failure to realize the antecedent is inconclusive.",
+        iteration=1,
+    )
+    failed = '{"execution":"failed before antecedent realization"}'
+    sandbox.write_file("failed_attempt.json", failed)
+    runner.claim_store.link_evidence(
+        claim_id="claim_root",
+        path="failed_attempt.json",
+        note="The registered scientific test was attempted but not realized.",
+        observation_sufficient=False,
+        observation_note="This is an attempted test, not a scientific outcome.",
+        provenance=ClaimEvidenceProvenance(
+            sha256=hashlib.sha256(failed.encode()).hexdigest(),
+            bytes=len(failed.encode()),
+            tracked=True,
+            generated_iteration=2,
+            action="run_python",
+            command_argv=("-c", "attempt_test()"),
+            execution_succeeded=False,
+            execution_returncode=1,
+            evidence_eligible=True,
+        ),
+        iteration=2,
+    )
+    runner.claim_store.register_evidence_contract(
+        claim_id="claim_root",
+        evidence_purpose=EvidencePurpose.TERMINAL_RECORD,
+        observable="A structured record of the bounded experimental blocker.",
+        expected_outcomes="The record distinguishes limitation from unresolved science.",
+        decision_rule="Classify only the documented terminal status, not the claim.",
+        required_observation="One fresh complete record of the failed realization.",
+        uncertainty_criterion="State the scientific uncertainty that remains unresolved.",
+        inconclusive_conditions="Missing blocker details leave the record incomplete.",
+        iteration=3,
+    )
+    terminal = '{"record_complete":true,"claim_tested":false}'
+    sandbox.write_file("terminal_record.json", terminal)
+    runner.claim_store.link_evidence(
+        claim_id="claim_root",
+        path="terminal_record.json",
+        note="Fresh terminal record documents why the claim was not tested.",
+        observation_sufficient=True,
+        observation_note="All prospectively required blocker fields are present.",
+        provenance=ClaimEvidenceProvenance(
+            sha256=hashlib.sha256(terminal.encode()).hexdigest(),
+            bytes=len(terminal.encode()),
+            tracked=True,
+            generated_iteration=4,
+            action="run_python",
+            command_argv=("-c", "write_terminal_record()"),
+            execution_succeeded=True,
+            execution_returncode=0,
+            evidence_eligible=True,
+        ),
+        iteration=4,
+    )
+    return runner
+
+
+@pytest.mark.parametrize(
+    "disposition",
+    [ClaimDisposition.INSTRUMENT_LIMITED, ClaimDisposition.UNRESOLVED],
+)
+def test_explicit_terminal_adjudication_finishes_without_claim_support(
+    tmp_path: Path,
+    disposition: ClaimDisposition,
+) -> None:
+    runner = _terminal_record_runner(tmp_path, disposition.value)
+    result = runner._record_adjudication_verdict(
+        claim_id="claim_root",
+        contract_version=2,
+        case_for_sufficiency="The prospective terminal record completely documents the blocker.",
+        verdict=MVPJudgeVerdict(
+            claim_id="claim_root",
+            contract_version=2,
+            decision=MVPJudgeDecision.SUFFICIENT,
+            scientific_disposition=disposition,
+            claim_tested=False,
+            contract_preserves_claim_semantics=True,
+            rationale=("The terminal record is complete and preserves the untested claim."),
+            evidence_gaps=(),
+            next_test=None,
+        ),
+        iteration=5,
+        model="test-judge",
+        route="isolated",
+        request_id="judge-terminal",
+    )
+
+    assert result["closure"]["closed"]["status"] == disposition.value
+    assert result["closure"]["closed"]["decisive_contract_version"] == 2
+    assert runner._finish_gate_error() is None
+
+
+def test_terminal_record_cannot_be_laundered_into_support(tmp_path: Path) -> None:
+    runner = _terminal_record_runner(tmp_path, "reject-terminal-support")
+
+    with pytest.raises(ValueError, match="cannot support or falsify"):
+        runner._record_adjudication_verdict(
+            claim_id="claim_root",
+            contract_version=2,
+            case_for_sufficiency="The terminal record documents only the failed realization.",
+            verdict=MVPJudgeVerdict(
+                claim_id="claim_root",
+                contract_version=2,
+                decision=MVPJudgeDecision.SUFFICIENT,
+                scientific_disposition=ClaimDisposition.SUPPORTED,
+                claim_tested=True,
+                contract_preserves_claim_semantics=True,
+                rationale=(
+                    "This deliberately invalid verdict attempts to convert a blocker "
+                    "record into scientific support."
+                ),
+                evidence_gaps=(),
+                next_test=None,
+            ),
+            iteration=5,
+            model="test-judge",
+            route="isolated",
+            request_id="judge-invalid",
+        )
+
+    assert runner.claim_store.ledger.by_id()["claim_root"].status == ClaimDisposition.OPEN
+    assert not runner.adjudications_path.exists()
 
 
 @pytest.mark.skipif(shutil.which("bwrap") is None, reason="bubblewrap is unavailable")
@@ -4248,8 +4430,7 @@ def test_interface_only_commissioning_cannot_unlock_scientific_execution(
     assert tool_rows[6]["tool_result"]["ok"] is False
     assert (
         "representation, physics_controls, boundaries, diagnostics, and "
-        "numerical_regime"
-        in tool_rows[6]["tool_result"]["error"]
+        "numerical_regime" in tool_rows[6]["tool_result"]["error"]
     )
     assert not (output / "workspace/blocked_science.py").exists()
     assert not (output / "workspace/blocked_science.json").exists()
@@ -4450,9 +4631,7 @@ def test_supported_interface_stage_forces_next_sibling_to_complete_commissioning
     ]
     assert report.status == "completed"
     assert tool_rows[7]["tool_result"]["ok"] is False
-    assert "supported interface discovery already exists" in tool_rows[7][
-        "tool_result"
-    ]["error"]
+    assert "supported interface discovery already exists" in tool_rows[7]["tool_result"]["error"]
     assert not (output / "workspace/second_interface.py").exists()
     assert not (output / "workspace/second_interface.json").exists()
     assert tool_rows[9]["tool_result"]["ok"] is True
@@ -4649,8 +4828,7 @@ def test_cancelled_action_writes_terminal_report(
     assert report.status == "cancelled"
     assert (output / "mvp_report.json").is_file()
     transcript = [
-        json.loads(line)
-        for line in (output / "transcript.jsonl").read_text().splitlines()
+        json.loads(line) for line in (output / "transcript.jsonl").read_text().splitlines()
     ]
     assert transcript[-1]["kind"] == "control"
     assert transcript[-1]["event"] == "campaign_cancelled"
@@ -4739,13 +4917,9 @@ def test_builtin_warpx_skill_executes_smoke_inside_sandbox(tmp_path: Path) -> No
         "examples/implicit_em_smoke.py",
         max_chars=100_000,
     )["content"]
-    implicit_sandbox = BubblewrapSandbox(
-        tmp_path / "warpx-implicit", config, capabilities
-    )
+    implicit_sandbox = BubblewrapSandbox(tmp_path / "warpx-implicit", config, capabilities)
     implicit_sandbox.write_file("implicit_em_smoke.py", implicit_example)
-    implicit_result = implicit_sandbox.run_capability(
-        "warpx-cpu-26.07", ("implicit_em_smoke.py",)
-    )
+    implicit_result = implicit_sandbox.run_capability("warpx-cpu-26.07", ("implicit_em_smoke.py",))
     assert implicit_result.returncode == 0, implicit_result.stderr
     implicit_observed = json.loads(
         (tmp_path / "warpx-implicit/implicit_capability_smoke.json").read_text()
@@ -4764,13 +4938,9 @@ def test_builtin_warpx_skill_executes_smoke_inside_sandbox(tmp_path: Path) -> No
         "examples/openpmd_field_smoke.py",
         max_chars=100_000,
     )["content"]
-    openpmd_sandbox = BubblewrapSandbox(
-        tmp_path / "warpx-openpmd", config, capabilities
-    )
+    openpmd_sandbox = BubblewrapSandbox(tmp_path / "warpx-openpmd", config, capabilities)
     openpmd_sandbox.write_file("openpmd_field_smoke.py", openpmd_example)
-    openpmd_result = openpmd_sandbox.run_capability(
-        "warpx-cpu-26.07", ("openpmd_field_smoke.py",)
-    )
+    openpmd_result = openpmd_sandbox.run_capability("warpx-cpu-26.07", ("openpmd_field_smoke.py",))
     assert openpmd_result.returncode == 0, openpmd_result.stderr
     openpmd_observed = json.loads(
         (tmp_path / "warpx-openpmd/openpmd_capability_smoke.json").read_text()
@@ -4786,9 +4956,7 @@ def test_builtin_warpx_skill_executes_smoke_inside_sandbox(tmp_path: Path) -> No
             "scientific_evidence_eligible": False,
         }
     }
-    assert observed == {
-        "checks": {"completed": True, "scientific_evidence_eligible": False}
-    }
+    assert observed == {"checks": {"completed": True, "scientific_evidence_eligible": False}}
 
 
 def test_builtin_scientific_markdown_skill_preserves_machine_readable_evidence() -> None:
@@ -4851,14 +5019,10 @@ def test_builtin_warpx_skill_has_no_demo_science() -> None:
 def test_builtin_warpx_cuda_openpmd_executes_inside_sandbox(
     tmp_path: Path,
 ) -> None:
-    skills, capabilities = discover_builtin_mvp_resources(
-        Path(__file__).resolve().parents[1]
-    )
+    skills, capabilities = discover_builtin_mvp_resources(Path(__file__).resolve().parents[1])
     assert "warpx-cuda-openpmd-26.07" in capabilities
     descriptor = next(
-        item
-        for item in capabilities.descriptors()
-        if item["name"] == "warpx-cuda-openpmd-26.07"
+        item for item in capabilities.descriptors() if item["name"] == "warpx-cuda-openpmd-26.07"
     )
     assert descriptor["executable_kind"] == "python-picmi-cuda-openpmd"
     example = skills.read(
@@ -4890,13 +5054,9 @@ def test_builtin_warpx_cuda_openpmd_executes_inside_sandbox(
         "backend": "CUDA",
         "dxg": True,
     }
-    result = sandbox.run_capability(
-        "warpx-cuda-openpmd-26.07", ("openpmd_field_smoke.py",)
-    )
+    result = sandbox.run_capability("warpx-cuda-openpmd-26.07", ("openpmd_field_smoke.py",))
     assert result.returncode == 0, result.stderr
-    observed = json.loads(
-        (tmp_path / "warpx-cuda/openpmd_capability_smoke.json").read_text()
-    )
+    observed = json.loads((tmp_path / "warpx-cuda/openpmd_capability_smoke.json").read_text())
     assert all(observed["checks"].values()) is False
     assert observed["checks"] == {
         "completed": True,
@@ -4990,9 +5150,7 @@ def test_guided_commission_is_pinned_hashed_and_initially_nonevidentiary(
     tmp_path: Path,
 ) -> None:
     skills, capabilities = _write_test_skill_and_capability(tmp_path)
-    package = MVPGuidedCommissioningPackage.read(
-        _write_guided_commissioning(tmp_path)
-    )
+    package = MVPGuidedCommissioningPackage.read(_write_guided_commissioning(tmp_path))
     client = ScriptedCompletionClient(
         [
             _action(
@@ -5047,9 +5205,7 @@ def test_guided_commission_is_pinned_hashed_and_initially_nonevidentiary(
     assert report.guided_commissioning["scientific_evidence_eligible"] is False
     initial = json.loads(client.calls[0]["messages"][1]["content"])
     assert initial["guided_commissioning"]["available"] is True
-    assert initial["guided_commissioning"]["validated_argv"] == [
-        "guided/experiment.py"
-    ]
+    assert initial["guided_commissioning"]["validated_argv"] == ["guided/experiment.py"]
     assert initial["guided_commissioning"]["protocol_path"] == "guided/protocol.json"
     sticky = json.loads(client.calls[-1]["messages"][-1]["content"])
     assert sticky["guided_commissioning"]["package_sha256"] == package.package_sha256
@@ -5059,8 +5215,7 @@ def test_guided_commission_is_pinned_hashed_and_initially_nonevidentiary(
     assert record["execution_stage"] == "workbench"
     assert record["evidence_eligible"] is False
     transcript = [
-        json.loads(line)
-        for line in (output / "transcript.jsonl").read_text().splitlines()
+        json.loads(line) for line in (output / "transcript.jsonl").read_text().splitlines()
     ]
     failed_link = [item for item in transcript if item["kind"] == "tool"][1]
     assert json.loads(failed_link["content"])["tool_result"]["ok"] is False
@@ -5074,9 +5229,7 @@ def test_guided_commission_resume_does_not_overwrite_agent_revision(
     tmp_path: Path,
 ) -> None:
     skills, capabilities = _write_test_skill_and_capability(tmp_path)
-    package = MVPGuidedCommissioningPackage.read(
-        _write_guided_commissioning(tmp_path)
-    )
+    package = MVPGuidedCommissioningPackage.read(_write_guided_commissioning(tmp_path))
     output = tmp_path / "guided-resume"
     config = _config()
     first = MVPAgentRunner(

@@ -1007,6 +1007,58 @@ def test_dsh_and_independent_judge_usage_are_combined_incrementally(
         assert snapshot.last_model == "deepseek-v4-flash"
 
 
+def test_adjudication_event_separates_record_completeness_from_disposition(
+    tmp_path: Path,
+) -> None:
+    root = tmp_path / "adjudication-semantics"
+    root.mkdir()
+    _write(root / "mvp_manifest.json", _manifest("A bounded search may hit an instrument wall."))
+    _append_transcript(
+        root,
+        {
+            "kind": "adjudication",
+            "iteration": 4,
+            "claim_id": "claim_root",
+            "decision": "sufficient",
+            "scientific_disposition": "instrument_limited",
+        },
+    )
+
+    snapshot = MVPRunMonitor(root).snapshot()
+
+    event = snapshot.recent_events[-1]
+    assert event.summary == (
+        "Independent judge: record sufficient; disposition instrument_limited for claim_root"
+    )
+    assert event.outcome == "instrument_limited"
+
+
+def test_legacy_sufficient_adjudication_is_not_displayed_as_support(
+    tmp_path: Path,
+) -> None:
+    root = tmp_path / "legacy-adjudication"
+    root.mkdir()
+    _write(root / "mvp_manifest.json", _manifest("An old campaign remains readable."))
+    _append_transcript(
+        root,
+        {
+            "kind": "adjudication",
+            "iteration": 2,
+            "claim_id": "claim_root",
+            "decision": "sufficient",
+        },
+    )
+
+    snapshot = MVPRunMonitor(root).snapshot()
+
+    event = snapshot.recent_events[-1]
+    assert event.summary == (
+        "Independent judge: record sufficient for claim_root "
+        "(legacy record; no explicit scientific disposition)"
+    )
+    assert "supported" not in event.summary
+
+
 def test_pause_state_is_a_distinct_non_running_phase(tmp_path: Path) -> None:
     from conjecture_solver.mvp_control import pause_at_boundary
 
@@ -1064,9 +1116,7 @@ def test_watch_keeps_emitting_after_the_recent_event_window_fills(
                 {
                     "kind": "tool",
                     "iteration": iteration,
-                    "content": json.dumps(
-                        {"tool_result": {"ok": True, "result": {}}}
-                    ),
+                    "content": json.dumps({"tool_result": {"ok": True, "result": {}}}),
                 },
             ]
         )
@@ -1088,9 +1138,7 @@ def test_watch_keeps_emitting_after_the_recent_event_window_fills(
             {
                 "kind": "tool",
                 "iteration": 21,
-                "content": json.dumps(
-                    {"tool_result": {"ok": True, "result": {}}}
-                ),
+                "content": json.dumps({"tool_result": {"ok": True, "result": {}}}),
             },
         )
         advanced["done"] = True

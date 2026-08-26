@@ -147,6 +147,14 @@ def test_dsh_adjudicator_uses_a_fresh_tool_free_structured_child() -> None:
     assert "chain-of-thought" in adjudicator
     assert "event.data.arguments" not in adjudicator
     assert "prepared.truncated === true" in adjudicator
+    assert "scientific_disposition" in adjudicator
+    assert "claim_tested" in adjudicator
+    assert "contract_preserves_claim_semantics" in adjudicator
+    assert "record_sufficiency: result.structured.decision" in adjudicator
+    assert "scientific_disposition: result.structured.scientific_disposition" in adjudicator
+    assert "A terminal_record contract" in adjudicator
+    assert "it never means scientific support by itself" in adjudicator
+    assert "scientific_disposition=null" in adjudicator
 
     runner = (BUNDLE / "runner.js").read_text()
     assert "agentCtx.tools.restrict" in runner
@@ -196,6 +204,16 @@ def test_dsh_scientific_roles_are_fresh_scoped_and_durably_verified() -> None:
     assert "Supported or closed commissioning claims are immutable" in roles
     assert "observation_sufficient=true" in roles
     assert "Falsifier adjudication handoff requires durable evidence" in roles
+    assert "evidence_purpose=terminal_record" in roles
+    assert "ready_for_adjudication means a complete terminal record" in roles
+    assert "it does not mean the claim is supported" in roles
+    assert "scientific dispositions other than falsified" in roles
+    assert "case for terminal record completeness" in roles
+    assert "Falsification requires a claim_decision contract handoff" in roles
+    assert "handoff misstates its contract evidence_purpose" in roles
+    assert "evidence_purpose: result.structured.evidence_purpose" in roles
+    assert "expected_outcomes: contract.expected_outcomes" in roles
+    assert "repair: claim.repair" in roles
     assert "parent conversation" in roles
     assert "never request an unscoped full ledger" in " ".join(roles.split())
     assert "chain-of-thought" in roles
@@ -223,6 +241,14 @@ def test_dsh_job_waiter_keeps_polling_below_the_model_surface() -> None:
     assert "the durable job remains attached" in waiter
     assert "cancel_job" not in waiter
     assert "pause_pending" in waiter
+    assert "campaign writer lock is held" in waiter
+    assert "writerLockBusy" in waiter
+    assert "campaign_writer_busy" in waiter
+    assert "structured?.error" in waiter
+    assert "envelope?.code" in waiter
+    assert "SIMJECTURE_DSH_LOCK_BUSY_SECONDS" in waiter
+    assert "Date.now() >= lockBusyDeadline" in waiter
+    assert "while (writerLockBusy(detailed))" not in waiter
 
 
 def test_dsh_context_elision_is_age_gated_and_audit_preserving() -> None:

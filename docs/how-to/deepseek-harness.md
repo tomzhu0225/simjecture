@@ -148,8 +148,16 @@ are private to the adjudication composite.
 selected prospective contract; it is not a researcher-issued support verdict.
 Falsifiers may record that contract compliance but cannot close a scientific
 claim as supported. The adjudication composite refuses to start a Judge without
-at least one qualifying link under the selected contract, and only a sufficient
-Judge verdict can pass the deterministic support gate.
+at least one qualifying link under the selected contract.
+
+The Judge returns record completeness and scientific disposition separately.
+For example, `decision=sufficient` with
+`scientific_disposition=instrument_limited` means that the blocker record is
+complete; it does **not** support the hypothesis. A `claim_decision` contract can
+admit a supported or falsified disposition. A `terminal_record` contract can
+admit only `instrument_limited` or `unresolved`. An insufficient record names
+the missing evidence and returns the campaign to the falsification loop while
+wall time remains.
 
 Long-running actions have caller-supplied operation identifiers and return
 durable jobs. Under DSH the waiter checks `job_status` below the model surface,
@@ -175,6 +183,11 @@ Register a prospective evidence contract before linking an observation. Skill
 materialization, literature results, workbench jobs, and partial jobs are
 guidance or process metadata, not evidence. After a meaningful falsification
 search, use the isolated adjudicator instead of self-certifying support. A
-rejected package returns evidence gaps; an accepted package may close the claim,
-but `finalize_campaign` writes a conclusion only after the global finish gate
-passes. Preserve the durable campaign directory as the hand-off artifact.
+rejected package returns evidence gaps. An accepted package may close the claim
+under its explicit scientific disposition, but `finalize_campaign` writes a
+conclusion only after the global finish gate passes. A falsified frontier needs
+a `repairs` child; an honestly complete blocker may close as
+`instrument_limited` or `unresolved`. Preserve the durable campaign directory as
+the immutable hand-off artifact. If later review finds an error, append a
+corrective audit record rather than editing the original ledger, transcript, or
+report.

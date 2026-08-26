@@ -38,12 +38,12 @@ def _open_campaign_after_handshake(
     *,
     timeout_seconds: float = 30.0,
 ) -> CampaignKernel:
-    """Wait for the spawning supervisor to release its short writer lock."""
+    """Rebuild an initialized campaign, then await its short validation lock."""
 
     deadline = time.monotonic() + max(0.1, timeout_seconds)
     while True:
         try:
-            return CampaignKernel.open(workspace=campaign_root)
+            return CampaignKernel.open_existing(workspace=campaign_root)
         except CampaignLockBusyError:
             if time.monotonic() >= deadline:
                 raise TimeoutError(

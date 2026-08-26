@@ -14,10 +14,13 @@
       that falsified claim. The Repair Scientist creates one minimal contracted
       repairs child; send that child to a new Falsifier. If a Falsifier returns
       ready_for_adjudication, call simjecture_adjudicate using its exact contract
-      and bounded sufficiency case. A sufficient judge verdict atomically closes
-      the scientific claim. For an insufficient verdict, start another fresh
-      Falsifier with the judge's evidence gaps and next test. Preserve unknown,
-      inconclusive, and blocked outcomes instead of guessing. After process
+      and bounded sufficiency case. The Judge separately decides whether the
+      terminal record is sufficient and assigns an explicit scientific
+      disposition. Support, falsification, instrument limitation, and unresolved
+      closure remain distinct; a falsified claim returns to the repair loop. For
+      an insufficient record, start another fresh Falsifier with the judge's
+      evidence gaps and next test. Preserve unknown, inconclusive, and blocked
+      outcomes instead of guessing. After process
       resume or semantic compaction, read snapshot before continuing and
       reconcile every durable claim and job. Reuse assignment and operation IDs
       only for an exact retry. When no open scientific frontier remains, call

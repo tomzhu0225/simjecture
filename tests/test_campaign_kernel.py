@@ -12,6 +12,7 @@ import pytest
 
 from conjecture_solver.campaign_jobs import (
     KERNEL_WORKER_SCHEMA_VERSION,
+    CampaignInterprocessLock,
     CampaignJobStatus,
     CampaignJobSupervisor,
     JobConflictError,
@@ -148,6 +149,42 @@ def test_kernel_recovery_is_explicit_and_does_not_invoke_model() -> None:
     assert not host.compat_calls
 
 
+def test_existing_worker_open_reconstructs_before_taking_writer_lock(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    campaign = tmp_path / "campaign"
+    CampaignKernel.open(
+        workspace=campaign,
+        hypothesis="Worker reconstruction must not block campaign status.",
+    )
+    original = CampaignKernel._build_standalone_host
+    observed = {"construction_lock_available": False}
+
+    def checked_build(**kwargs: Any) -> Any:
+        # This would fail if open_existing still held its outer campaign lock
+        # around the expensive host/ledger reconstruction.
+        with CampaignInterprocessLock(campaign):
+            observed["construction_lock_available"] = True
+        return original(**kwargs)
+
+    monkeypatch.setattr(
+        CampaignKernel,
+        "_build_standalone_host",
+        staticmethod(checked_build),
+    )
+    reopened = CampaignKernel.open_existing(workspace=campaign)
+    assert reopened.hypothesis == "Worker reconstruction must not block campaign status."
+    assert observed["construction_lock_available"] is True
+
+
+def test_existing_worker_open_refuses_an_incomplete_campaign(tmp_path: Path) -> None:
+    campaign = tmp_path / "partial"
+    campaign.mkdir()
+    with pytest.raises(ValueError, match="missing initialized file"):
+        CampaignKernel.open_existing(workspace=campaign)
+
+
 def test_execute_operation_allocates_sequence_replays_exactly_and_enforces_budget(
     tmp_path: Path,
 ) -> None:
@@ -271,9 +308,7 @@ def test_model_free_kernel_adjudicates_and_finalizes_without_completion_client(
             "required_observation": "Evaluate every member of the declared ensemble.",
             "uncertainty_criterion": "Every declared member must pass independently.",
             "inconclusive_conditions": "Any missing ensemble member is inconclusive.",
-            "validation_checks": [
-                {"json_path": "ensemble_pass", "expected_value": True}
-            ],
+            "validation_checks": [{"json_path": "ensemble_pass", "expected_value": True}],
             "additional_execution_bindings": [],
         },
     )
@@ -303,9 +338,7 @@ def test_model_free_kernel_adjudicates_and_finalizes_without_completion_client(
             "observation_note": "All declared members and the exact pass flag are present.",
         },
     )
-    case = (
-        "The complete twelve-member prospective ensemble passed with no missing runs."
-    )
+    case = "The complete twelve-member prospective ensemble passed with no missing runs."
     prepared = kernel.prepare_adjudication(
         "judge-root-v1",
         claim_id="claim_root",
@@ -327,6 +360,9 @@ def test_model_free_kernel_adjudicates_and_finalizes_without_completion_client(
             "claim_id": "claim_root",
             "contract_version": 1,
             "decision": "sufficient",
+            "scientific_disposition": "supported",
+            "claim_tested": True,
+            "contract_preserves_claim_semantics": True,
             "rationale": (
                 "The complete bounded ensemble and exact validation satisfy the contract."
             ),
@@ -354,9 +390,9 @@ def test_model_free_kernel_adjudicates_and_finalizes_without_completion_client(
         case_for_sufficiency=case,
     )
     assert replay["already_recorded"] is True
-    assert json.loads(journal_path.read_text())["operations"]["judge-root-v1"][
-        "status"
-    ] == "succeeded"
+    assert (
+        json.loads(journal_path.read_text())["operations"]["judge-root-v1"]["status"] == "succeeded"
+    )
 
     report = kernel.finalize_campaign(
         "finish-root-v1",
@@ -365,10 +401,13 @@ def test_model_free_kernel_adjudicates_and_finalizes_without_completion_client(
     assert report["status"] == "completed"
     assert report["final_answer"].startswith("The declared bounded ensemble")
     assert (campaign / "mvp_report.json").is_file()
-    assert kernel.finalize_campaign(
-        "finish-root-v1",
-        final_answer="The declared bounded ensemble supports the root claim.",
-    ) == report
+    assert (
+        kernel.finalize_campaign(
+            "finish-root-v1",
+            final_answer="The declared bounded ensemble supports the root claim.",
+        )
+        == report
+    )
     adjudications = json.loads((campaign / "adjudications.json").read_text())
     assert adjudications[0]["operation_id"] == "judge-root-v1"
 
@@ -457,9 +496,7 @@ def test_adjudication_rejects_stale_contract_with_newer_qualifying_evidence(
                 "required_observation": "Record one fresh deterministic result.",
                 "uncertainty_criterion": "The exact integer has no sampling error.",
                 "inconclusive_conditions": "A missing result is inconclusive.",
-                "validation_checks": [
-                    {"json_path": "value", "expected_value": version}
-                ],
+                "validation_checks": [{"json_path": "value", "expected_value": version}],
                 "additional_execution_bindings": [],
             },
         )
@@ -713,9 +750,10 @@ def test_prebuilt_host_reopens_from_frozen_resources(tmp_path: Path) -> None:
     reopened = host()
     CampaignKernel.open(reopened)
     assert reopened.skills.hashes == original_hashes
-    assert reopened.skills.read("native-analysis", None, max_chars=100)[
-        "content"
-    ] == "# Native original\n"
+    assert (
+        reopened.skills.read("native-analysis", None, max_chars=100)["content"]
+        == "# Native original\n"
+    )
 
 
 def test_snapshot_exposes_restart_discoverable_job_and_active_budget(
@@ -812,9 +850,7 @@ def test_typed_job_request_is_a_worker_command_not_raw_simulation_argv(
     assert request.argv[1:4] == ("-m", "conjecture_solver.kernel_worker", "--request")
     assert "--handshake" in request.argv
     assert request.metadata["action"]["action"] == "run_python"
-    worker_request = json.loads(
-        Path(request.metadata["request_path"]).read_text()
-    )
+    worker_request = json.loads(Path(request.metadata["request_path"]).read_text())
     assert "iteration" not in worker_request
 
 
@@ -853,10 +889,7 @@ def test_real_typed_async_action_reopens_kernel_and_persists_provenance(
     assert receipt is not None
     assert '"action": "run_python"' in receipt.stdout
     provenance = json.loads((campaign / "artifact_provenance.json").read_text())
-    assert any(
-        record.get("action") == "run_python"
-        for record in provenance["artifacts"].values()
-    )
+    assert any(record.get("action") == "run_python" for record in provenance["artifacts"].values())
     refreshed = kernel.snapshot()["artifact_provenance"]["artifacts"]
     assert any(record.get("action") == "run_python" for record in refreshed.values())
 
@@ -950,9 +983,7 @@ def test_unverified_worker_success_is_downgraded_to_unknown(tmp_path: Path) -> N
     )
     supervisor = kernel._jobs()
     assert supervisor._processes[state.job_id].wait(timeout=10) == 0
-    result_path = Path(
-        supervisor.request_record(state.job_id).metadata["worker_result_path"]
-    )
+    result_path = Path(supervisor.request_record(state.job_id).metadata["worker_result_path"])
     result_path.write_text("{}\n")
 
     reconciled = kernel.job_status(state.job_id)
@@ -1008,6 +1039,34 @@ def test_running_job_can_be_cancelled_without_admitting_a_second_writer(
     assert not (campaign / "workspace" / "must-not-exist.txt").exists()
     journal = json.loads((campaign / "action_journal.json").read_text())
     assert journal["operations"]["cancel-long-running-writer"]["status"] == "succeeded"
+
+
+def test_nonterminal_job_status_does_not_wait_for_campaign_writer_lock(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    kernel = CampaignKernel.open(
+        workspace=tmp_path / "campaign",
+        hypothesis="Status polling stays responsive during worker startup.",
+    )
+    running = SimpleNamespace(
+        job_id="job_running",
+        operation_id="running-operation",
+        status=CampaignJobStatus.RUNNING,
+    )
+
+    class _RunningJobs:
+        @staticmethod
+        def status(job_id: str) -> Any:
+            assert job_id == running.job_id
+            return running
+
+    def unexpected_lock(**_kwargs: Any) -> Any:
+        raise AssertionError("non-terminal status must not acquire the campaign lock")
+
+    kernel._job_supervisor = _RunningJobs()
+    monkeypatch.setattr(kernel, "_writer_lock", unexpected_lock)
+    assert kernel.job_status(running.job_id) is running
 
 
 def test_nonterminal_job_is_the_single_campaign_writer(tmp_path: Path) -> None:
