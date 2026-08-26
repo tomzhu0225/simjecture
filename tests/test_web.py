@@ -559,7 +559,7 @@ def test_local_http_api_serves_assets_snapshot_and_protects_post(tmp_path: Path)
     thread.start()
     base = f"http://127.0.0.1:{server.server_address[1]}"
     try:
-        with httpx.Client(base_url=base, timeout=5) as client:
+        with httpx.Client(base_url=base, timeout=5, trust_env=False) as client:
             home = client.get("/")
             assert home.status_code == 200
             assert "Simjecture" in home.text
@@ -598,7 +598,7 @@ def test_local_http_api_serves_assets_snapshot_and_protects_post(tmp_path: Path)
             assert html_artifact.status_code == 200
             assert html_artifact.headers["content-disposition"].startswith("attachment;")
 
-        with httpx.Client(base_url=base, timeout=5) as client:
+        with httpx.Client(base_url=base, timeout=5, trust_env=False) as client:
             rejected = client.post(
                 "/api/campaigns",
                 headers={"Content-Type": "application/json"},

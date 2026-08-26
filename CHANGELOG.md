@@ -4,6 +4,14 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+## 0.3.0 — 2026-08-27
+
+- Added FLASH 4.8 2D compressible resistive-MHD application capability, commissioning protocol, and rank/timing calibrations.
+- Added sealed directory inputs in execution sandbox with recursive deterministic manifest hashing and read-only container mounting.
+- Clarified child claim evidence lineage and stale scientific execution binding protections.
+- Added 2D Resistive-MHD Island Coalescence Sweet-Parker falsification demonstration, complete with multi-field visualizations, internal layer microphysics profiles, and Web UI case study.
+- Enhanced Web UI test suite with proxy isolation.
+
 ## 0.2.2 — 2026-08-24
 
 - Fixed a process-lifecycle race where the supervisor that launched a short
