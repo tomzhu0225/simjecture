@@ -13,16 +13,18 @@ writes its own experiments and diagnostics, and searches deliberately for the
 simplest result that survives independent verification. The harness controls
 what may count as evidence.
 
-> **Research preview:** version 0.1 validates the infrastructure and records real
-> autonomous simulation campaigns. It does not claim to solve arbitrary
+> **Research preview:** version 0.3 extends the infrastructure with a
+> license-safe FLASH resistive-MHD capability and an explicitly bounded
+> island-coalescence audit. It does not claim to solve arbitrary
 > scientific prose, establish truth about nature from one simulator, or replace
 > independent scientific review.
 
 The project began as an autonomous conjecture-solving harness for computational
 plasma physics. The same claim ledger, sandbox, commissioning rules, and
 capability framework are now ready to extend to other simulation-gated fields
-that have a sharp question and a checkable instrument. Version 0.1 records
-both the origin domain and that generalization.
+that have a sharp question and a checkable instrument. The 0.3 preview records
+both the origin domain and that generalization, and adds a fluid-MHD campaign
+whose unresolved repair state is preserved rather than hidden.
 
 ## The core idea: AI low-hanging fruit
 
@@ -307,6 +309,7 @@ process state or charging stopped-process downtime.
 | Magnetic mirror and nonlinear Landau MVPs | Completed plasma research runs | Natural-language operation on origin-domain problems |
 | Gray–Scott MVP | Completed research run | Same harness on a non-plasma, agent-authored instrument |
 | [Collisionless GEM held-out campaign 0004](demos/collisionless_gem_reconnection/) | 12 fresh CUDA runs completed | Guided autonomous commissioning, execution, analysis, and guarded claim handling |
+| [FLASH resistive-MHD island-coalescence audit](demos/resistive_mhd_island_coalescence/) | Root interval falsified; repair branch open | Actual guided FLASH fields, bounded root counterexample, and an honest unresolved child state |
 
 Run 0004 produced a finite-sample point-estimate falsification of its operational
 child claim, while its three-seed uncertainty interval still crossed the proposed
@@ -314,7 +317,7 @@ population threshold. The immutable root remained open. This is documented as a
 real autonomous run and an example of why machine provenance does not remove the
 need for independent scientific audit.
 
-Version 0.1 ships that harness. The next step is to use it: apply the same
+The 0.3 preview ships that harness. The next step is to use it: apply the same
 claim ledger, sandbox, commissioning rules, and capability framework to more
 simulation-gated problems, and hunt independently confirmed new results — a
 compact law, a matched counterexample, or a scoped impossibility — in the
@@ -322,8 +325,10 @@ origin domain and beyond.
 
 ## Recorded autonomous demos
 
-The repository includes two inspectable release demonstrations rather than only
-descriptions of past runs.
+The repository includes three inspectable release demonstrations rather than
+only descriptions of past runs. Gray–Scott and GEM are portable recorded
+campaigns; the FLASH demo is an operator-dependent anchor plus a clearly
+labelled audit extract because its repair branch did not close.
 
 ### Gray–Scott finite-domain counterexample
 
@@ -359,6 +364,24 @@ package preserves the exact autonomous transcript and claim ledger, all 12 run
 summaries, hash-addressed provenance for 482 original artifacts, and
 representative final fields. See
 [`demos/collisionless_gem_reconnection/`](demos/collisionless_gem_reconnection/).
+
+### FLASH resistive-MHD island-coalescence audit
+
+The FLASH demo starts from one natural-language Sweet–Parker-like scaling
+hypothesis. Its actual guided anchor produces the HDF5 field states and
+reconnection diagnostics used in the figures. A local six-hour autonomous
+campaign falsified the specified root exponent interval (`p = -0.406453`,
+95% CI `[-0.423266, -0.389641]`), then ran out of budget while a repaired
+child remained open. The high-resolution child output and analyzer lineage did
+not satisfy the final closure-eligibility rules, so the repository does not
+call that branch verified.
+
+![FLASH island-coalescence anchor](demos/resistive_mhd_island_coalescence/figures/island_coalescence_evolution.png)
+
+See [`demos/resistive_mhd_island_coalescence/`](demos/resistive_mhd_island_coalescence/)
+for the exact hypothesis, guided commissioning manifest, audit extract,
+actual web capture, limitations, and figure-generation script. FLASH itself is
+operator-supplied and is not redistributed.
 
 Every campaign also exposes the built-in
 [`scientific-markdown`](skills/scientific-markdown/SKILL.md) skill. It gives the

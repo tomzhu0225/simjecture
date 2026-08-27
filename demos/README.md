@@ -1,9 +1,11 @@
 # Demonstrations
 
 Release demonstrations are recorded scientific runs, not hand-written examples
-that merely exercise an API. A recorded demo should include the exact natural-
+that merely exercise an API. Portable recorded runs include the exact natural-
 language input, durable claim ledger, transcript, final report, generated
 programs, numerical outputs, provenance, and figures made from those outputs.
+Operator-dependent demos state clearly which inputs are local and which claims
+remain unresolved.
 
 ## Recorded autonomous runs
 
@@ -17,7 +19,8 @@ programs, numerical outputs, provenance, and figures made from those outputs.
   operational child under a frozen rule, and correctly left the population root
   open.
 - [`resistive_mhd_island_coalescence/`](resistive_mhd_island_coalescence/) is the
-  primary fluid plasma MHD demo. Testing classical Sweet-Parker reconnection
-  in 2D compressible MHD island coalescence across $S_\eta \in [250, 4000]$, the agent
-  discovered a decisive empirical counterexample ($p \approx -0.406 \ne -0.500$),
-  falsified the Sweet-Parker root hypothesis, and formulated a verified repair branch.
+  fluid-plasma MHD demo. It bundles an operator-validated, non-evidentiary
+  FLASH anchor and an audit extract from a six-hour autonomous campaign. The
+  campaign falsified the specified root interval ($p \approx -0.406$), while
+  its repair branch remains explicitly open because the final analyzer lineage
+  was not closure-eligible.

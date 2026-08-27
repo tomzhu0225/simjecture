@@ -1,0 +1,64 @@
+{
+  "schema_version": "0.1.0",
+  "source_campaign": "artifacts/resistive-mhd-island-coalescence-dsh-0001",
+  "captured": "2026-08-27",
+  "evidence_scope": "Local campaign audit extract. The source campaign is not bundled as a portable evidence record; these values must not be presented as a completed repair-claim verdict.",
+  "root": {
+    "claim_id": "claim_root",
+    "status": "falsified",
+    "target_interval": [-0.6, -0.4],
+    "fit": {
+      "p_hat": -0.4064533957316092,
+      "se_p": 0.006055359125627794,
+      "ci_95": [-0.4232657679361733, -0.3896410235270451],
+      "r2": 0.9991129810655915,
+      "intercept": 0.9697318186784727,
+      "n_admissible": 6,
+      "monotone_decreasing": true
+    },
+    "points": [
+      {"S_eta": 250.0, "R": 1.0055860377519663, "grid": "256^2"},
+      {"S_eta": 500.0, "R": 0.7335448454536055, "grid": "256^2"},
+      {"S_eta": 1000.0, "R": 0.5554766682737228, "grid": "256^2"},
+      {"S_eta": 2000.0, "R": 0.4269267651466941, "grid": "256^2"},
+      {"S_eta": 3000.0, "R": 0.3633705282435853, "grid": "256^2"},
+      {"S_eta": 4000.0, "R": 0.3199539126743645, "grid": "256^2"}
+    ],
+    "interpretation": "The specified root interval is falsified because the reported 95% CI upper edge is above -0.40. This does not falsify Sweet-Parker theory in every model or regime."
+  },
+  "root_refinement": {
+    "claim_id": "claim_root",
+    "point": {"S_eta": 250.0, "R": 0.9686217845871428, "grid": "512^2"},
+    "fit": {
+      "p_hat": -0.39633754634829954,
+      "ci_95": [-0.40364136057113054, -0.38903373212546855],
+      "r2": 0.9998238128264716,
+      "intercept": 0.9358690223291068
+    },
+    "status": "context_only"
+  },
+  "repair": {
+    "claim_id": "claim_repair_root_v1",
+    "status": "open",
+    "target_interval": [-0.45, -0.38],
+    "fit": {
+      "p_hat": -0.39096097505035926,
+      "se_p": 0.006310481006347127,
+      "ci_95": [-0.4084816791518754, -0.37344027094884313],
+      "r2": 0.9989589639973915,
+      "intercept": 0.9190215471081571,
+      "n_admissible": 6,
+      "monotone_decreasing": true
+    },
+    "points": [
+      {"S_eta": 350.0, "R": 0.8564877202380711, "grid": "256^2"},
+      {"S_eta": 700.0, "R": 0.6387669908427052, "grid": "256^2"},
+      {"S_eta": 1500.0, "R": 0.47600759335915516, "grid": "256^2"},
+      {"S_eta": 2500.0, "R": 0.3921255150893602, "grid": "256^2"},
+      {"S_eta": 3500.0, "R": 0.33977281131345066, "grid": "256^2"},
+      {"S_eta": 350.0, "R": 0.8250326717167455, "grid": "512^2", "label": "actual refinement run"}
+    ],
+    "evidence_eligible": false,
+    "reason": "The executed 512^2 run was S_eta=350 rather than the original S_eta=2000 child contract, and the downstream analyzer/fit lineage did not pass the sealed-input coverage check. The durable campaign therefore stopped at budget exhaustion without a repair verdict."
+  }
+}

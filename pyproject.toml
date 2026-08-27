@@ -58,6 +58,9 @@ tui = [
 dsh = [
   "mcp>=2,<3",
 ]
+flash-demo = [
+  "h5py>=3.10,<4",
+]
 
 [dependency-groups]
 dev = [

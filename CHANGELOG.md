@@ -9,7 +9,12 @@ This project follows semantic versioning. Dates use ISO 8601.
 - Added FLASH 4.8 2D compressible resistive-MHD application capability, commissioning protocol, and rank/timing calibrations.
 - Added sealed directory inputs in execution sandbox with recursive deterministic manifest hashing and read-only container mounting.
 - Clarified child claim evidence lineage and stale scientific execution binding protections.
-- Added 2D Resistive-MHD Island Coalescence Sweet-Parker falsification demonstration, complete with multi-field visualizations, internal layer microphysics profiles, and Web UI case study.
+- Added a FLASH 2D Resistive-MHD island-coalescence demonstration with figures
+  generated from the guided HDF5 anchor, a real Web UI capture, and an
+  explicitly labelled campaign audit. The root interval is falsified; the
+  repair branch remains open because its evidence lineage did not close.
+- Added the `flash-demo` optional dependency for HDF5-backed figure
+  regeneration.
 - Enhanced Web UI test suite with proxy isolation.
 
 ## 0.2.2 — 2026-08-24

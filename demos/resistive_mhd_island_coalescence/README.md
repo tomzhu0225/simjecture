@@ -1,87 +1,174 @@
-# Demonstration: 2D Resistive-MHD Island Coalescence & Sweet-Parker Falsification
+# Demonstration: 2D resistive-MHD island coalescence with FLASH
 
-This demonstration showcases an autonomous computational falsification campaign executed by **Simjecture** on the 2D compressible resistive-MHD island-coalescence instability across Lundquist numbers $S_\eta = 1/\eta \in [250, 4000]$.
+This demo has two deliberately separate layers:
 
-![Simjecture Web Dashboard](figures/simjecture_web_dashboard.png)
+1. a known-runnable, operator-validated FLASH 4.8 anchor used to commission an
+   instrument and make field figures; and
+2. an audit extract from a local Simjecture/DeepSeek campaign that tested a
+   scaling hypothesis.
 
----
+The anchor is not scientific evidence, and the campaign extract is not a
+portable completed evidence record. The distinction is part of the demo: a
+plausible simulation and a fitted curve are not, by themselves, a closed
+scientific claim.
 
-## 1. Scientific Objective
+![Actual Simjecture web record](figures/simjecture_web_dashboard.png)
 
-The campaign investigates whether the two-dimensional, uniform-resistivity, compressible-MHD island-coalescence system conforms to the classical Sweet-Parker reconnection scaling law:
-$$R \propto S_\eta^p \quad \text{with} \quad p \in [-0.60, -0.40]$$
-where $R$ is the normalized reconnection rate $R = (d\psi/dt) / (B_{\text{up},0} V_{A,\text{up},0})$ measured during the linear reconnection window ($\psi_{\text{rec}} \in [0.01, 0.05]$).
+*Actual read-only browser capture of the local campaign after its six-hour
+budget was exhausted. This is a UI projection, not scientific evidence.*
 
----
+## Scientific question
 
-## 2. Platform & Autonomous Workflow
+The supplied root hypothesis asks whether the two-dimensional,
+uniform-resistivity, compressible single-fluid MHD island-coalescence model
+has one pre-plasmoid Sweet–Parker-like branch over the nominal control range
 
-Simjecture autonomously executed:
-1. **Instrument Registration & Commissioning**: Validated FLASH 4.8 2D compressible MHD solver and downstream OLS power-law fitting pipelines under frozen prospective contracts.
-2. **Durable Hypothesis Ledger**: Formulated root claim `claim_root` ($p \in [-0.60, -0.40]$) and minimal repair `claim_repair_root_v1` ($p \in [-0.45, -0.38]$).
-3. **Decisive Counterexample Discovery**: Accepted formal counterexample C1 when base OLS fit yielded $\hat{p} = -0.40645 \pm 0.00606$ ($95\%\text{ CI} = [-0.42327, -0.38964]$), whose upper CI bound exceeds $-0.40$.
-4. **Out-of-Sample Verification**: Certified 6 fresh out-of-sample simulation runs (including a $512^2$ resolution refinement) demonstrating a persistent, universal scaling branch $p \approx -0.391$.
+\[
+S_\eta = 1/\eta \in [250,4000], \qquad
+R \propto S_\eta^p, \qquad -0.60 \le p \le -0.40,
+\]
 
----
+with the inferred exponent persisting under a spatial-resolution refinement.
+Here `S_eta` is a normalized inverse-resistivity control, not a dimensional
+Lundquist number. The observable is the normalized reconnection rate defined
+in the frozen campaign protocol; the fit uses only cases that reach the flux
+window, resolve the sheet, remain pre-plasmoid, and pass the linearity check.
 
-## 3. Multi-Field Reconnection Dynamics
+This is a statement about one explicitly bounded numerical model. A result
+here is not a universal disproof of Sweet–Parker theory, and this FLASH
+single-fluid capability cannot answer kinetic electron-scale questions.
 
-The multi-field time evolution from initial Fadeev equilibrium to fully merged single-island relaxation is visualized below across 4 representative stages ($t=0.00, 0.35, 0.70, 1.20$):
+## What is in the repository
 
-![2D Multi-Field Evolution](figures/sim_fields_timesteps.png)
+| Path | Purpose |
+| --- | --- |
+| [`hypothesis.txt`](hypothesis.txt) | Exact natural-language root hypothesis |
+| [`campaign_instruction.txt`](campaign_instruction.txt) | Operational constraints given to the autonomous campaign |
+| [`guided/island_coalescence.py`](guided/island_coalescence.py) | Contained launcher and validator for the operator-supplied FLASH executable |
+| [`guided_commission.json`](guided_commission.json) | Frozen guided-commission manifest and limitations |
+| [`guided/anchor_validation.json`](guided/anchor_validation.json) | Checked-in validation summary; permanently non-evidentiary |
+| [`guided/operator_validation.json`](guided/operator_validation.json) | Separate manufactured-solution/operator check; permanently non-evidentiary |
+| [`campaign_audit.json`](campaign_audit.json) | Small, explicitly labelled extract of the local campaign results |
+| [`plot_results.py`](plot_results.py) | Generates the field, profile, and scaling figures from real inputs |
+| [`figures/README.md`](figures/README.md) | Figure provenance and capture notes |
 
-* **Stage 1 ($t=0.00$) Equilibrium**: Two distinct magnetic O-point island cores carrying parallel Amperian current $J_z$, separated by an initial horizontal current sheet.
-* **Stage 2 ($t=0.35$) Driven Inflow**: Lorentz attraction ($\mathbf{J} \times \mathbf{B}$) accelerates the two island cores toward $y=0$, initiating strong vertical inflow.
-* **Stage 3 ($t=0.70$) Peak Reconnection**: Current sheet narrows to a resistive layer of thickness $\delta \approx 0.04$; magnetic field lines sever and reconnect at the central X-point ($x=0, y=0$), launching symmetric Alfvénic outflow jets ($v_x \to \pm 0.77$).
-* **Stage 4 ($t=1.20$) Merged Relaxation**: Majority of flux reconnected; islands coalesce into a single macro-island with quadrupolar circulation vortices.
+The raw `guided/anchor_run/` directory is ignored by Git because FLASH output
+is large and depends on the operator's installation. Run the anchor locally,
+then run `plot_results.py` to regenerate the first three figures. The
+dashboard image is a captured view of the actual local record; it is not a
+mock-up.
 
----
+## Guided FLASH anchor
 
-## 4. Reconnection Layer Microphysics
+The bundled manifest records the exact validated starting command. In its
+realized run it used:
 
-High-resolution 1D profiles extracted during peak reconnection ($t = 0.70$) illustrate the internal structure of the diffusion layer:
+| Quantity | Realized value |
+| --- | --- |
+| Model | 2D compressible single-fluid resistive MHD |
+| Resistivity | explicit, uniform, `eta = 0.001` |
+| Nominal control | `S_eta = 1000` |
+| Grid | `128 x 128` |
+| MPI layout | 4 ranks (`2 x 2`) |
+| End time | `tmax = 1.2` |
+| Plot states | 24 HDF5 files |
+| Flux window | `psi_rec = 0.01` to `0.05` reached |
+| Maximum recorded `|div B|` | `9.36e-13` |
+| Anchor status | `permanently_non_evidentiary` |
 
-![Internal Microphysics Profiles](figures/reconnection_microphysics_profiles.png)
+The anchor demonstrates that the supplied capability can run, write readable
+states, expose the requested resistive path, and produce the declared
+diagnostics. It does not establish a scaling, convergence, or physical law.
 
-1. **Current Sheet Profile (a)**: Transverse cut across $y$ at $x=0$ shows $B_x(y)$ reversing sharply across the central current density peak $J_z \approx 18$.
-2. **Outflow Jet Acceleration (b)**: Longitudinal cut along $y=0$ shows plasma accelerating outward from the central stagnation point to Alfvénic exhaust velocities $v_x \approx \pm 0.77$.
-3. **Linear Flux Ramp (c)**: Time series of reconnected magnetic flux $\psi_{\text{rec}}(t)$ confirms steady-state reconnection within the prospective observation window $\psi_{\text{rec}} \in [0.01, 0.05]$.
+The operator must obtain and build FLASH under its upstream license. No FLASH
+source, binary, or modification is redistributed here. Set the launcher and
+executable explicitly, then run the contained program from the repository
+root:
 
----
-
-## 5. Quantitative Falsification Results
-
-![Scaling Law Discovery](figures/scaling_law_discovery.png)
-
-| Sample / Hypothesis | Grid | Scaling Exponent $\hat{p}$ | 95% Confidence Interval | $R^2$ Score | Adjudication |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **Base Dataset ($S_\eta \in [250, 4000]$)** | $256^2$ | **$-0.40645 \pm 0.00606$** | **$[-0.42327, -0.38964]$** | **0.9991** | **FALSIFIED** (Upper CI > $-0.40$) |
-| **Doubled Grid Refinement ($S_\eta = 250$)** | $512^2$ | **$-0.39634$** | $[-0.40364, -0.38903]$ | — | Exponent Persists ($|\Delta p| \le 0.05$) |
-| **Repair Out-of-Sample ($S_\eta \in [350, 3500]$)** | $256^2$ & $512^2$ | **$-0.39096 \pm 0.00631$** | **$[-0.40848, -0.37344]$** | **0.9990** | **FALSIFIED** (Upper CI > $-0.38$) |
-| **Classical Sweet-Parker Theory** | Theory | **$-0.50000$** | Exact theoretical limit | — | **Statistically Excluded** ($>15\sigma$) |
-
----
-
-## 6. Physical Reason for Sweet-Parker Breakdown
-
-1. **Macroscopic Lorentz Driving & Sheet Shortening ($L = L(S_\eta)$)**: Coalescence is driven by macroscopic attractive forces, dynamically shortening the current sheet length $L$ at lower resistivities, preventing $\delta/L$ from dropping as steep as $S_\eta^{-1/2}$.
-2. **Plasma Compressibility**: Upstream plasma dynamically compresses into the colliding cores ($\rho > \rho_0$), altering the mass-flow aspect ratio.
-3. **Magnetic Flux Pile-up**: Inward convection compresses magnetic field immediately upstream ($B_{\text{up,local}} > B_0$), elevating the local Alfvén speed and driving reconnection faster than passive Sweet-Parker layers.
-
----
-
-## 7. How to Run & Inspect
-
-### Launch or Resume Campaign
 ```bash
-# Doctor check
-uv run simjecture doctor --profile flash
+uv sync --extra flash-demo
 
-# Run or resume
-uv run simjecture resume artifacts/resistive-mhd-island-coalescence-dsh-0001
+export FLASH_EXECUTABLE=/path/to/flash4
+export FLASH_MPI_LAUNCHER=/path/to/orterun
+
+uv run python demos/resistive_mhd_island_coalescence/guided/island_coalescence.py \
+  --eta 0.001 --nx 128 --ny 128 --alpha 20 --tmax 1.2 \
+  --plot-interval 0.05 --ranks 4 --iprocs 2 --jprocs 2 \
+  --output demos/resistive_mhd_island_coalescence/guided/anchor_run \
+  --summary demos/resistive_mhd_island_coalescence/guided/anchor_validation.json \
+  --overwrite
+
+uv run python demos/resistive_mhd_island_coalescence/plot_results.py
 ```
 
-### Launch Interactive Web Interface
+The command rewrites only the marked anchor directory. The validation summary
+records the executable and parameter-file hashes so the operator can audit
+which local FLASH build produced the states.
+
+## What the autonomous campaign actually established
+
+The local campaign record is
+`artifacts/resistive-mhd-island-coalescence-dsh-0001`. It ended with
+`status=budget_exhausted` after six hours and 328 model turns. The durable
+claim ledger, rather than the model's prose, is authoritative.
+
+| Branch | Fresh-data result | Durable disposition |
+| --- | --- | --- |
+| `claim_root` | Six `256²` cases gave `p = -0.406453`; 95% CI `[-0.423266, -0.389641]`, whose upper edge is above `-0.40` | **Falsified** for the stated bounded root claim |
+| Root refinement | The `S_eta=250`, `512²` context point gave a refined fit `p = -0.396338`; CI `[-0.403641, -0.389034]` | Context for the root branch; not evidence for the repair |
+| `claim_repair_root_v1` | Audit fit over five `256²` cases plus the actual `S_eta=350`, `512²` run gave `p = -0.390961`; CI `[-0.408482, -0.373440]` | **Open**, not supported or falsified |
+
+The root counterexample is meaningful: it rejects the particular exponent
+interval in the particular model and protocol. The repair line is shown so a
+reader can see what the campaign explored, not to claim a second discovery.
+The original child contract requested a `S_eta=2000` refinement; the executed
+high-resolution run was instead `S_eta=350`. In addition, the analyzer/fit
+inputs did not pass the final sealed-input coverage check. Because the evidence
+lineage was not closure-eligible, the harness correctly left the repair claim
+open rather than promoting a curve to a verdict.
+
+## Figures
+
+The field and profile figures are generated from the actual guided anchor:
+
+- [`island_coalescence_evolution.png`](figures/island_coalescence_evolution.png)
+  shows four HDF5 states at the nearest recorded times to `0`, `0.35`, `0.70`,
+  and the final state, with `J_z`, magnetic-flux contours, and field lines.
+- [`reconnection_layer_physics.png`](figures/reconnection_layer_physics.png)
+  shows `J_z`, density/pressure contours, and velocity at the recorded state
+  nearest `t=0.70`.
+- [`reconnection_microphysics_profiles.png`](figures/reconnection_microphysics_profiles.png)
+  shows centerline cuts and the recorded flux-window/divergence history.
+
+[`scaling_law_discovery.png`](figures/scaling_law_discovery.png) uses only the
+checked-in audit extract. It is labelled as an audit view and leaves the
+repair branch open. [`simjecture_web_dashboard.png`](figures/simjecture_web_dashboard.png)
+is the actual browser capture described above.
+
+## Launching a fresh campaign
+
+After installing and commissioning FLASH on the local machine, a fresh
+campaign can start from the same natural-language inputs:
+
 ```bash
-uv run simjecture web artifacts/resistive-mhd-island-coalescence-dsh-0001 --port 8080
+uv run simjecture mvp \
+  --hypothesis-file demos/resistive_mhd_island_coalescence/hypothesis.txt \
+  --instruction-file demos/resistive_mhd_island_coalescence/campaign_instruction.txt \
+  --guided-commission demos/resistive_mhd_island_coalescence/guided_commission.json \
+  --output artifacts/my-resistive-mhd-campaign
 ```
+
+Do not reuse the audit extract as evidence. Let the new campaign register and
+commission its simulator and analyzer prospectively, freeze its contracts,
+collect fresh outputs, and leave any unresolved branch explicitly open.
+
+To inspect the local campaign shown in the screenshot without starting work:
+
+```bash
+uv run simjecture status artifacts/resistive-mhd-island-coalescence-dsh-0001
+uv run simjecture web artifacts/resistive-mhd-island-coalescence-dsh-0001 \
+  --read-only --port 8080
+```
+
+The web page is a projection of the durable ledger and activity record. It
+does not turn the anchor, a plot, or model prose into scientific evidence.
