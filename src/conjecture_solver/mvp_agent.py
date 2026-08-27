@@ -56,7 +56,6 @@ from .mvp_guidance import MVPGuidedCommissioningPackage
 from .mvp_launch import MVPOutputLock
 from .mvp_skills import MVPCapabilityRegistry, MVPSkillCatalog
 
-
 # Values passed to these options are produced by the command rather than
 # pre-existing data consumed by it.  They must not be treated as undeclared
 # inputs by the argv lineage audit.  In particular, a self-contained
