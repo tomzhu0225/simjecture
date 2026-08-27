@@ -129,21 +129,44 @@ open rather than promoting a curve to a verdict.
 
 ## Figures
 
-The field and profile figures are generated from the actual guided anchor:
+The field and profile figures are generated from the actual guided anchor and
+are embedded here so that the demo can be inspected without opening each asset
+separately. They remain reproducibility artifacts, not scientific evidence.
 
-- [`island_coalescence_evolution.png`](figures/island_coalescence_evolution.png)
-  shows four HDF5 states at the nearest recorded times to `0`, `0.35`, `0.70`,
-  and the final state, with `J_z`, magnetic-flux contours, and field lines.
-- [`reconnection_layer_physics.png`](figures/reconnection_layer_physics.png)
-  shows `J_z`, density/pressure contours, and velocity at the recorded state
-  nearest `t=0.70`.
-- [`reconnection_microphysics_profiles.png`](figures/reconnection_microphysics_profiles.png)
-  shows centerline cuts and the recorded flux-window/divergence history.
+### Guided-anchor field evolution
 
-[`scaling_law_discovery.png`](figures/scaling_law_discovery.png) uses only the
-checked-in audit extract. It is labelled as an audit view and leaves the
-repair branch open. [`simjecture_web_dashboard.png`](figures/simjecture_web_dashboard.png)
-is the actual browser capture described above.
+![Four guided FLASH states showing current density, flux contours, and field lines](figures/island_coalescence_evolution.png)
+
+The four panels use the recorded states nearest to `t=0`, `0.35`, `0.70`, and
+the final time. The source asset is
+[`island_coalescence_evolution.png`](figures/island_coalescence_evolution.png).
+
+### Reconnection-layer diagnostics
+
+![Current density, density, pressure, and velocity diagnostics near the reconnection layer](figures/reconnection_layer_physics.png)
+
+This view uses the recorded state nearest `t=0.70`. The source asset is
+[`reconnection_layer_physics.png`](figures/reconnection_layer_physics.png).
+
+### Centerline profiles and run history
+
+![Centerline profiles with flux-window and divergence history](figures/reconnection_microphysics_profiles.png)
+
+These profiles and histories are read from the anchor HDF5 output. The source
+asset is
+[`reconnection_microphysics_profiles.png`](figures/reconnection_microphysics_profiles.png).
+
+### Campaign audit and interface
+
+![Audit view of the scaling fit and open repair branch](figures/scaling_law_discovery.png)
+
+The scaling view uses only the checked-in audit extract. It records the valid
+root falsification and leaves the repair branch open; it is not a portable
+evidence record. The source asset is
+[`scaling_law_discovery.png`](figures/scaling_law_discovery.png).
+
+The actual browser capture is embedded at the top of this README and is also
+available as [`simjecture_web_dashboard.png`](figures/simjecture_web_dashboard.png).
 
 ## Launching a fresh campaign
 
