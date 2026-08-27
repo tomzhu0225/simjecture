@@ -849,6 +849,22 @@ def test_default_resources_are_frozen_inside_campaign(
     entrypoint.write_text("# Original\nUse the campaign-pinned procedure.\n")
     capability_root = source / "capabilities"
     capability_root.mkdir(parents=True)
+    (capability_root / "optional-runtime.json").write_text(
+        json.dumps(
+            {
+                "manifest": {
+                    "name": "optional-runtime",
+                    "version": "1.0",
+                    "description": "An operator-managed capability absent in CI",
+                    "skill": "mutable-analysis",
+                    "executable_kind": "python",
+                },
+                "runtime_root": "../missing-runtime",
+                "executable": "bin/python",
+                "environment": {},
+            }
+        )
+    )
 
     from conjecture_solver import mvp_skills
     from conjecture_solver.mvp_skills import (
@@ -859,7 +875,7 @@ def test_default_resources_are_frozen_inside_campaign(
     def discover_test_resources() -> tuple[MVPSkillCatalog, MVPCapabilityRegistry]:
         return (
             MVPSkillCatalog.discover(source / "skills"),
-            MVPCapabilityRegistry.discover(capability_root),
+            MVPCapabilityRegistry.discover(capability_root, ignore_unavailable=True),
         )
 
     monkeypatch.setattr(
@@ -878,6 +894,7 @@ def test_default_resources_are_frozen_inside_campaign(
     frozen_capabilities = Path(resources["capabilities_root"])
     assert frozen_skills == campaign / "kernel_resource_snapshot" / "skills"
     assert frozen_capabilities == campaign / "kernel_resource_snapshot" / "capabilities"
+    assert tuple(frozen_capabilities.glob("*.json")) == ()
 
     entrypoint.write_text("# Mutated\nThis must not alter an active campaign.\n")
     reopened = CampaignKernel.open(workspace=campaign)

@@ -306,14 +306,31 @@ class CampaignKernel:
                     )
                 capability_destination = temporary / "capabilities"
                 capability_destination.mkdir()
+                # ``discover_builtin_mvp_resources`` intentionally omits
+                # optional capabilities whose operator-managed runtimes are
+                # not installed on this host.  Do not turn those declarative
+                # manifests back into hard requirements while freezing a
+                # default campaign.  Explicit capability roots still use the
+                # strict discovery path above and therefore retain their
+                # fail-fast contract.
+                available_capabilities = {
+                    descriptor["name"] for descriptor in capabilities.descriptors()
+                }
                 for config_path in sorted(source_capabilities.glob("*.json")):
                     if config_path.is_symlink() or not config_path.is_file():
                         raise ValueError("capability configuration must be a regular file")
+                    payload = json.loads(config_path.read_text(encoding="utf-8"))
+                    manifest = payload.get("manifest")
+                    if not isinstance(manifest, Mapping) or not isinstance(
+                        manifest.get("name"), str
+                    ):
+                        raise ValueError("capability configuration has no manifest name")
+                    if manifest["name"] not in available_capabilities:
+                        continue
                     shutil.copy2(
                         config_path,
                         capability_destination / config_path.name,
                     )
-                    payload = json.loads(config_path.read_text(encoding="utf-8"))
                     references = [payload.get("runtime_root")]
                     mounts = payload.get("read_only_mounts") or {}
                     if not isinstance(mounts, Mapping):
