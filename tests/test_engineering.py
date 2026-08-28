@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import json
 import subprocess
 import sys
 from pathlib import Path
@@ -18,6 +20,13 @@ from conjecture_solver.engineering import (
     EngineeringHoldoutContract,
     EngineeringPatchStatus,
 )
+from conjecture_solver.engineering_agent import (
+    EngineeringAgentConfig,
+    EngineeringAgentRunner,
+    EngineeringFileEdit,
+    EngineeringPatchProposal,
+)
+from conjecture_solver.llm import CompletionResult, ModelRoute
 
 
 def _git(root: Path, *args: str) -> str:
@@ -387,3 +396,108 @@ def test_validation_rejects_a_check_that_moves_worktree_head(tmp_path: Path) -> 
     result = campaign.validate_patch("patch-001", commit_message="candidate")
     assert result.status is EngineeringPatchStatus.REJECTED
     assert "changed the worktree HEAD" in (result.failure_reason or "")
+
+
+class _ProposalClient:
+    def __init__(self, proposals: list[EngineeringPatchProposal]) -> None:
+        self.proposals = proposals
+        self.calls: list[list[dict[str, str]]] = []
+
+    def complete(self, messages: list[dict[str, str]], **_kwargs: object) -> CompletionResult:
+        self.calls.append(messages)
+        proposal = self.proposals.pop(0)
+        return CompletionResult(
+            request_id=f"fixture-{len(self.calls)}",
+            model="fixture-model",
+            content=proposal.model_dump_json(),
+            finish_reason="stop",
+            usage={"prompt_tokens": 10, "completion_tokens": 10},
+            route=ModelRoute.DEFAULT,
+            route_reason="fixture",
+        )
+
+
+def _write_proposal(snapshot: str, value: int) -> EngineeringPatchProposal:
+    return EngineeringPatchProposal(
+        diagnosis=f"The current implementation contains the wrong value before attempt {value}.",
+        prediction=f"Replacing the value with {value} will satisfy the visible contract.",
+        commit_message=f"set value to {value}",
+        edits=(
+            EngineeringFileEdit(
+                path="src/value.py",
+                content=f"VALUE = {value}\n",
+                expected_sha256=hashlib.sha256(snapshot.encode()).hexdigest(),
+            ),
+        ),
+    )
+
+
+def test_engineering_agent_runs_structured_edit_loop_to_acceptance(tmp_path: Path) -> None:
+    repository = _target_repository(tmp_path)
+    campaign = EngineeringCampaign.create(_contract(repository), tmp_path / "campaign")
+    client = _ProposalClient([_write_proposal("VALUE = 1\n", 2)])
+
+    report = EngineeringAgentRunner(
+        campaign,
+        client,
+        config=EngineeringAgentConfig(max_attempts=2, max_wall_seconds=30),
+    ).run(holdout=_holdout(campaign))
+
+    assert report.status.value == "accepted"
+    assert report.selected_patch_id == "patch-001"
+    assert report.attempts[0].status.value == "accepted"
+    assert campaign.status()["agent"]["status"] == "accepted"
+    prompt = json.loads(client.calls[0][1]["content"])
+    assert prompt["source_snapshot"]["src/value.py"] == "VALUE = 1\n"
+    assert prompt["source_snapshot_sha256"]["src/value.py"] == hashlib.sha256(
+        b"VALUE = 1\n"
+    ).hexdigest()
+    assert "hidden-value-case" not in client.calls[0][1]["content"]
+    assert (campaign.output / "agent.json").is_file()
+    with pytest.raises(EngineeringError, match="different holdout"):
+        EngineeringAgentRunner(campaign, client).run(
+            holdout=_holdout(campaign, expected="VALUE = 99\n")
+        )
+
+
+def test_engineering_agent_uses_a_visible_counterexample_to_make_a_child(
+    tmp_path: Path,
+) -> None:
+    repository = _target_repository(tmp_path)
+    campaign = EngineeringCampaign.create(_contract(repository), tmp_path / "campaign")
+    client = _ProposalClient(
+        [
+            _write_proposal("VALUE = 1\n", 3),
+            _write_proposal("VALUE = 3\n", 2),
+        ]
+    )
+
+    report = EngineeringAgentRunner(
+        campaign,
+        client,
+        config=EngineeringAgentConfig(max_attempts=3, max_wall_seconds=30),
+    ).run(holdout=_holdout(campaign))
+
+    assert report.status.value == "accepted"
+    assert [item.patch_id for item in report.attempts] == ["patch-001", "patch-002"]
+    assert [item.status.value for item in report.attempts] == [
+        "counterexample",
+        "accepted",
+    ]
+    child = campaign.status()["patches"][1]
+    assert child["parent_patch_id"] == "patch-001"
+    second_prompt = json.loads(client.calls[1][1]["content"])
+    assert second_prompt["source_snapshot"]["src/value.py"] == "VALUE = 3\n"
+
+
+def test_engineering_agent_rejects_unsafe_edit_paths() -> None:
+    with pytest.raises(ValueError, match="safe POSIX-relative"):
+        EngineeringFileEdit(path="../secret.py", content="SECRET = 1\n")
+
+
+def test_engineering_agent_cli_parser_accepts_agent_run() -> None:
+    parsed = build_parser().parse_args(
+        ["engineering", "agent-run", "campaign", "--max-attempts", "3"]
+    )
+    assert parsed.engineering_action == "agent-run"
+    assert parsed.max_attempts == 3

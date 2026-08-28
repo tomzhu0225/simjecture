@@ -437,6 +437,48 @@ class GitRepository:
         result = self._run(("diff", "--binary", "--no-renames", revision), cwd=worktree, text=False)
         return _sha256(result.stdout)
 
+    def text_snapshot(
+        self,
+        revision: str,
+        patterns: Sequence[str],
+        *,
+        max_chars: int,
+    ) -> tuple[dict[str, str], bool]:
+        """Read a bounded text snapshot from an exact committed revision."""
+
+        paths_result = self._run(
+            ("ls-tree", "-r", "--name-only", revision),
+            cwd=self.root,
+        )
+        snapshot: dict[str, str] = {}
+        consumed = 0
+        truncated = False
+        for raw_path in paths_result.stdout.splitlines():
+            path = raw_path.strip()
+            if (
+                not path
+                or _generated_path(path)
+                or not _matches_path(path, patterns)
+            ):
+                continue
+            try:
+                raw = self._run(
+                    ("show", f"{revision}:{path}"),
+                    cwd=self.root,
+                    text=False,
+                ).stdout
+                content = raw.decode("utf-8")
+            except (UnicodeDecodeError, EngineeringError):
+                continue
+            if "\x00" in content:
+                continue
+            if consumed + len(content) > max_chars:
+                truncated = True
+                break
+            snapshot[path] = content
+            consumed += len(content)
+        return snapshot, truncated
+
 
 def _check_result(
     check: EngineeringCheck,
@@ -878,6 +920,34 @@ class EngineeringCampaign:
         )
         return updated
 
+    def reject_patch(self, patch_id: str, *, reason: str) -> EngineeringPatchRecord:
+        """Persist a host-side rejection for a proposal that never reached CI."""
+
+        record = self._load_patch(patch_id)
+        if record.status is not EngineeringPatchStatus.CREATED:
+            raise EngineeringError(
+                f"patch {patch_id!r} is already terminal: {record.status.value}"
+            )
+        self._assert_patch_identity(record)
+        rejected = record.model_copy(
+            update={
+                "status": EngineeringPatchStatus.REJECTED,
+                "failure_reason": reason,
+                "validated_at": utc_now(),
+            }
+        )
+        self._write_patch(rejected)
+        _write_json(
+            self.output / EVIDENCE_DIRECTORY / f"{record.patch_id}.json",
+            {
+                "schema_version": ENGINEERING_SCHEMA_VERSION,
+                "campaign_id": self.contract.campaign_id,
+                "contract_sha256": self.contract_hash,
+                "patch": rejected.model_dump(mode="json"),
+            },
+        )
+        return rejected
+
     def adjudicate_patch(
         self,
         patch_id: str,
@@ -1009,6 +1079,10 @@ class EngineeringCampaign:
         commission_path = self.output / "commission.json"
         if commission_path.exists():
             commission = _read_json(commission_path)
+        agent = None
+        agent_path = self.output / "agent.json"
+        if agent_path.exists():
+            agent = _read_json(agent_path)
         adjudications = [
             EngineeringAdjudicationRecord.model_validate(_read_json(path))
             for path in sorted(
@@ -1022,6 +1096,7 @@ class EngineeringCampaign:
             "base_commit": self.contract.base_commit,
             "contract_sha256": self.contract_hash,
             "commission": commission,
+            "agent": agent,
             "patches": [record.model_dump(mode="json") for record in records],
             "adjudications": [record.model_dump(mode="json") for record in adjudications],
         }

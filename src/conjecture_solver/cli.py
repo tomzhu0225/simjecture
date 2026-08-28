@@ -44,7 +44,12 @@ from .engineering import (
     PATCH_DIRECTORY,
     EngineeringCampaign,
     EngineeringContract,
+    EngineeringError,
     EngineeringHoldoutContract,
+)
+from .engineering_agent import (
+    EngineeringAgentConfig,
+    EngineeringAgentRunner,
 )
 from .ledger import SQLiteEventLedger
 from .literature import PublicLiteratureSearchClient
@@ -231,11 +236,25 @@ def _engineering_patch_validate(args: argparse.Namespace) -> int:
     return 0
 
 
+def _load_engineering_holdout(
+    campaign: EngineeringCampaign,
+    path: str,
+) -> EngineeringHoldoutContract:
+    source = Path(path).expanduser().resolve()
+    if source == campaign.repository.root or source.is_relative_to(campaign.repository.root):
+        raise EngineeringError(
+            "holdout contract must be outside the target repository and its worktrees"
+        )
+    if source == campaign.output or source.is_relative_to(campaign.output):
+        raise EngineeringError(
+            "holdout contract must be outside the campaign output"
+        )
+    return EngineeringHoldoutContract.model_validate_json(source.read_text())
+
+
 def _engineering_adjudicate(args: argparse.Namespace) -> int:
     campaign = EngineeringCampaign.load(args.campaign)
-    holdout = EngineeringHoldoutContract.model_validate_json(
-        Path(args.holdout).read_text()
-    )
+    holdout = _load_engineering_holdout(campaign, args.holdout)
     record = campaign.adjudicate_patch(
         args.patch_id,
         holdout,
@@ -256,6 +275,37 @@ def _engineering_adjudicate(args: argparse.Namespace) -> int:
     if args.assert_accepted and record.status.value != "accepted":
         return 1
     return 0
+
+
+def _engineering_agent_run(args: argparse.Namespace) -> int:
+    campaign = EngineeringCampaign.load(args.campaign)
+    holdout = None
+    if args.holdout is not None:
+        holdout = _load_engineering_holdout(campaign, args.holdout)
+    client = OpenAICompatibleClient.from_environment(
+        timeout_seconds=args.model_timeout_seconds,
+    )
+    runner = EngineeringAgentRunner(
+        campaign,
+        client,
+        config=EngineeringAgentConfig(
+            max_attempts=args.max_attempts,
+            max_wall_seconds=args.max_wall_seconds,
+            max_snapshot_chars=args.max_snapshot_chars,
+            max_edit_chars=args.max_edit_chars,
+            max_model_tokens=args.max_model_tokens,
+        ),
+        route=ModelRoute(args.route),
+        escalation_reason=args.reason,
+    )
+    report = runner.run(holdout=holdout)
+    print(f"campaign={report.campaign_id}")
+    print(f"status={report.status.value}")
+    print(f"attempts={len(report.attempts)}")
+    print(f"selected_patch={report.selected_patch_id or '-'}")
+    print(f"detail={report.detail}")
+    print(f"record={campaign.output / 'agent.json'}")
+    return int(args.assert_accepted and report.status.value != "accepted")
 
 
 def _engineering_status(args: argparse.Namespace) -> int:
@@ -975,6 +1025,37 @@ def build_parser() -> argparse.ArgumentParser:
         help="Return a non-zero exit code unless the holdout is accepted",
     )
     engineering_adjudicate.set_defaults(handler=_engineering_adjudicate)
+
+    engineering_agent = engineering_actions.add_parser(
+        "agent-run",
+        help="Run the host-controlled model patch loop",
+    )
+    engineering_agent.add_argument("campaign")
+    engineering_agent.add_argument(
+        "--holdout",
+        help="Optional external holdout contract, never sent to the model",
+    )
+    engineering_agent.add_argument(
+        "--route",
+        choices=tuple(route.value for route in ModelRoute),
+        default=ModelRoute.DEFAULT.value,
+    )
+    engineering_agent.add_argument(
+        "--reason",
+        help="Required when --route=escalation",
+    )
+    engineering_agent.add_argument("--max-attempts", type=int)
+    engineering_agent.add_argument("--max-wall-seconds", type=float, default=21_600.0)
+    engineering_agent.add_argument("--max-snapshot-chars", type=int, default=120_000)
+    engineering_agent.add_argument("--max-edit-chars", type=int, default=1_000_000)
+    engineering_agent.add_argument("--max-model-tokens", type=int)
+    engineering_agent.add_argument("--model-timeout-seconds", type=float)
+    engineering_agent.add_argument(
+        "--assert-accepted",
+        action="store_true",
+        help="Return a non-zero exit code unless a holdout-adjudicated patch is accepted",
+    )
+    engineering_agent.set_defaults(handler=_engineering_agent_run)
 
     engineering_status = engineering_actions.add_parser(
         "status",

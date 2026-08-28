@@ -1,0 +1,114 @@
+{
+  "$defs": {
+    "EngineeringEditOperation": {
+      "enum": [
+        "write",
+        "replace"
+      ],
+      "title": "EngineeringEditOperation",
+      "type": "string"
+    },
+    "EngineeringFileEdit": {
+      "additionalProperties": false,
+      "description": "One text edit admitted into a candidate worktree.",
+      "properties": {
+        "content": {
+          "title": "Content",
+          "type": "string"
+        },
+        "expected_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Hash of the existing file bytes, required for overwrites.",
+          "title": "Expected Sha256"
+        },
+        "old_text": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Old Text"
+        },
+        "operation": {
+          "$ref": "#/$defs/EngineeringEditOperation",
+          "default": "write"
+        },
+        "path": {
+          "minLength": 1,
+          "title": "Path",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "content"
+      ],
+      "title": "EngineeringFileEdit",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "The only model output accepted by the automatic engineering loop.",
+  "properties": {
+    "commit_message": {
+      "maxLength": 200,
+      "minLength": 3,
+      "title": "Commit Message",
+      "type": "string"
+    },
+    "diagnosis": {
+      "maxLength": 20000,
+      "minLength": 8,
+      "title": "Diagnosis",
+      "type": "string"
+    },
+    "edits": {
+      "items": {
+        "$ref": "#/$defs/EngineeringFileEdit"
+      },
+      "maxItems": 128,
+      "minItems": 1,
+      "title": "Edits",
+      "type": "array"
+    },
+    "prediction": {
+      "maxLength": 20000,
+      "minLength": 8,
+      "title": "Prediction",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "diagnosis",
+    "prediction",
+    "commit_message",
+    "edits"
+  ],
+  "title": "EngineeringPatchProposal",
+  "type": "object"
+}

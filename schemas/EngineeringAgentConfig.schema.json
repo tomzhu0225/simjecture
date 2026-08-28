@@ -1,0 +1,56 @@
+{
+  "additionalProperties": false,
+  "description": "Safety and prompt-size limits for the model-facing loop.",
+  "properties": {
+    "max_attempts": {
+      "anyOf": [
+        {
+          "maximum": 10000,
+          "minimum": 1,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Max Attempts"
+    },
+    "max_edit_chars": {
+      "default": 1000000,
+      "maximum": 10000000,
+      "minimum": 1000,
+      "title": "Max Edit Chars",
+      "type": "integer"
+    },
+    "max_model_tokens": {
+      "anyOf": [
+        {
+          "maximum": 2000000,
+          "minimum": 1,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Max Model Tokens"
+    },
+    "max_snapshot_chars": {
+      "default": 120000,
+      "maximum": 2000000,
+      "minimum": 1000,
+      "title": "Max Snapshot Chars",
+      "type": "integer"
+    },
+    "max_wall_seconds": {
+      "default": 21600.0,
+      "exclusiveMinimum": 0,
+      "title": "Max Wall Seconds",
+      "type": "number"
+    }
+  },
+  "title": "EngineeringAgentConfig",
+  "type": "object"
+}

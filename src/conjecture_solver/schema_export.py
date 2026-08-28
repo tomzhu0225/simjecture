@@ -73,6 +73,13 @@ from .engineering import (
     EngineeringHoldoutContract,
     EngineeringPatchRecord,
 )
+from .engineering_agent import (
+    EngineeringAgentAttempt,
+    EngineeringAgentConfig,
+    EngineeringAgentReport,
+    EngineeringFileEdit,
+    EngineeringPatchProposal,
+)
 from .lifecycle import CampaignState, LifecycleEvent
 from .models import (
     AttemptRecord,
@@ -179,6 +186,11 @@ PUBLIC_MODELS: tuple[ModelType, ...] = (
     EngineeringPatchRecord,
     EngineeringDiffReview,
     EngineeringAdjudicationRecord,
+    EngineeringFileEdit,
+    EngineeringPatchProposal,
+    EngineeringAgentAttempt,
+    EngineeringAgentReport,
+    EngineeringAgentConfig,
     ProposalRequest,
     ProposalDraft,
     ProposalValidation,

@@ -1,0 +1,228 @@
+{
+  "$defs": {
+    "EngineeringAgentAttempt": {
+      "additionalProperties": false,
+      "description": "Durable provenance for one model proposal or host rejection.",
+      "properties": {
+        "attempt": {
+          "minimum": 1,
+          "title": "Attempt",
+          "type": "integer"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "failure_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Failure Reason"
+        },
+        "model": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Model"
+        },
+        "patch_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Patch Id"
+        },
+        "prompt_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Prompt Sha256"
+        },
+        "request_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Request Id"
+        },
+        "response_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Response Sha256"
+        },
+        "route": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Route"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/EngineeringAgentAttemptStatus"
+        },
+        "usage": {
+          "additionalProperties": true,
+          "title": "Usage",
+          "type": "object"
+        }
+      },
+      "required": [
+        "attempt",
+        "status"
+      ],
+      "title": "EngineeringAgentAttempt",
+      "type": "object"
+    },
+    "EngineeringAgentAttemptStatus": {
+      "enum": [
+        "validated",
+        "accepted",
+        "counterexample",
+        "rejected",
+        "proposal_error",
+        "provider_error"
+      ],
+      "title": "EngineeringAgentAttemptStatus",
+      "type": "string"
+    },
+    "EngineeringAgentStatus": {
+      "enum": [
+        "running",
+        "validated",
+        "accepted",
+        "exhausted",
+        "provider_failed",
+        "rejected"
+      ],
+      "title": "EngineeringAgentStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Durable summary of the host-controlled automatic coding loop.",
+  "properties": {
+    "attempts": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/EngineeringAgentAttempt"
+      },
+      "title": "Attempts",
+      "type": "array"
+    },
+    "campaign_id": {
+      "title": "Campaign Id",
+      "type": "string"
+    },
+    "detail": {
+      "title": "Detail",
+      "type": "string"
+    },
+    "elapsed_wall_seconds": {
+      "minimum": 0,
+      "title": "Elapsed Wall Seconds",
+      "type": "number"
+    },
+    "finished_at": {
+      "format": "date-time",
+      "title": "Finished At",
+      "type": "string"
+    },
+    "holdout_contract_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Holdout Contract Sha256"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "selected_patch_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Selected Patch Id"
+    },
+    "started_at": {
+      "format": "date-time",
+      "title": "Started At",
+      "type": "string"
+    },
+    "status": {
+      "$ref": "#/$defs/EngineeringAgentStatus"
+    }
+  },
+  "required": [
+    "campaign_id",
+    "status",
+    "detail",
+    "started_at",
+    "elapsed_wall_seconds"
+  ],
+  "title": "EngineeringAgentReport",
+  "type": "object"
+}

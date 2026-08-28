@@ -7,10 +7,11 @@ counterexample to that patch hypothesis; a passing command supports the patch
 only within the declared contract.
 
 The current MVP provides deterministic campaign primitives. It does not yet
-ask an LLM to edit the repository or open a pull request. An operator or a
-future coding agent edits the worktree between `patch-create` and
-`patch-validate`. A final adjudication stage is now available for an external
-holdout contract and an independent deterministic diff review.
+open a pull request. It can now run a host-controlled model loop: the model
+returns a typed edit proposal, while the host writes only approved files in an
+isolated worktree. An operator can still edit the worktree between
+`patch-create` and `patch-validate`. A final adjudication stage is available
+for an external holdout contract and an independent deterministic diff review.
 
 ## Contract
 
@@ -107,6 +108,26 @@ uv run simjecture engineering adjudicate \
 uv run simjecture engineering status \
   /tmp/simjecture-engineering/warpx-radiation-transport
 ```
+
+The automatic loop uses the same campaign contract and never receives the
+holdout object:
+
+```bash
+uv run simjecture engineering agent-run \
+  /tmp/simjecture-engineering/warpx-radiation-transport \
+  --holdout /secure/holdouts/warpx-radiation-held-out-v1.json \
+  --assert-accepted
+```
+
+The model response is not a shell command. It is one JSON
+`EngineeringPatchProposal` containing a diagnosis, a falsifiable prediction,
+a commit message, and text edits. Existing files require the exact SHA-256
+provided beside the source snapshot; replacement edits also require one
+unambiguous anchor. The host rejects absolute paths, traversal, symlinks, protected files,
+duplicate paths, stale hashes, and oversized edits before anything is written.
+After a visible counterexample, the next proposal is created as a child of
+that exact candidate commit. A visible pass without a holdout is reported as
+`validated`, not `accepted`.
 
 If a check fails, the patch record is marked `counterexample`, and its exact
 commit, diff hash, command output, and failure reason are retained. A refined
