@@ -27,6 +27,9 @@ hypothesis solving or empirical closure.
   [Scientific limitations](research/limitations.md).
 - **Tool author:** start with [Add a capability](how-to/add-a-capability.md) and
   [Guided commissioning](how-to/guided-commissioning.md).
+- **Software engineer:** use the [Engineering campaign](how-to/engineering-campaign.md)
+  guide to freeze a repository contract and iterate through auditable patch
+  hypotheses.
 - **Operator:** use [Deploy runtime profiles](how-to/deploy-runtimes.md) to
   provision and verify the core, WarpX CPU, or WarpX CUDA environment.
 - **DSH operator:** use [Run a Simjecture campaign under DSH](how-to/deepseek-harness.md)
@@ -72,6 +75,7 @@ how-to/guided-commissioning
 how-to/add-a-capability
 how-to/deploy-runtimes
 how-to/deepseek-harness
+how-to/engineering-campaign
 ```
 
 ```{toctree}

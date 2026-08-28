@@ -1,0 +1,157 @@
+{
+  "$defs": {
+    "EngineeringCheck": {
+      "additionalProperties": false,
+      "description": "One shell-free command in the immutable acceptance contract.",
+      "properties": {
+        "command": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Command",
+          "type": "array"
+        },
+        "environment": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Environment",
+          "type": "object"
+        },
+        "name": {
+          "pattern": "^[a-z][a-z0-9_.-]*$",
+          "title": "Name",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "stage": {
+          "$ref": "#/$defs/EngineeringCheckStage",
+          "default": "full"
+        },
+        "timeout_seconds": {
+          "default": 900.0,
+          "exclusiveMinimum": 0,
+          "maximum": 86400,
+          "title": "Timeout Seconds",
+          "type": "number"
+        }
+      },
+      "required": [
+        "name",
+        "command"
+      ],
+      "title": "EngineeringCheck",
+      "type": "object"
+    },
+    "EngineeringCheckStage": {
+      "enum": [
+        "commissioning",
+        "targeted",
+        "full",
+        "holdout"
+      ],
+      "title": "EngineeringCheckStage",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Frozen goal, repository identity, path policy, and validation commands.",
+  "properties": {
+    "base_commit": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Base Commit"
+    },
+    "campaign_id": {
+      "pattern": "^[a-z0-9][a-z0-9_.-]*$",
+      "title": "Campaign Id",
+      "type": "string"
+    },
+    "checks": {
+      "items": {
+        "$ref": "#/$defs/EngineeringCheck"
+      },
+      "minItems": 1,
+      "title": "Checks",
+      "type": "array"
+    },
+    "editable_paths": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Editable Paths",
+      "type": "array"
+    },
+    "goal": {
+      "minLength": 1,
+      "title": "Goal",
+      "type": "string"
+    },
+    "max_output_chars": {
+      "default": 30000,
+      "maximum": 2000000,
+      "minimum": 1000,
+      "title": "Max Output Chars",
+      "type": "integer"
+    },
+    "max_patch_attempts": {
+      "default": 32,
+      "maximum": 10000,
+      "minimum": 1,
+      "title": "Max Patch Attempts",
+      "type": "integer"
+    },
+    "protected_paths": {
+      "default": [
+        "tests/**",
+        ".github/**",
+        "pyproject.toml",
+        "uv.lock"
+      ],
+      "items": {
+        "type": "string"
+      },
+      "title": "Protected Paths",
+      "type": "array"
+    },
+    "repository": {
+      "minLength": 1,
+      "title": "Repository",
+      "type": "string"
+    },
+    "require_clean_repository": {
+      "default": true,
+      "title": "Require Clean Repository",
+      "type": "boolean"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "campaign_id",
+    "goal",
+    "repository",
+    "editable_paths",
+    "checks"
+  ],
+  "title": "EngineeringContract",
+  "type": "object"
+}

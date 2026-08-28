@@ -26,6 +26,8 @@ Principal command families:
 - `benchmark`: deterministic planted scientific benchmarks;
 - `campaign`: durable bounded campaign execution;
 - `orchestrate`: fixed-DAG multi-action research campaigns;
+- `engineering`: freeze a repository contract, create isolated patch
+  worktrees, run fixed checks, and record patch counterexamples;
 - `package verify`: independently verify a discovery package;
 - `schemas`: export or check public JSON Schemas.
 

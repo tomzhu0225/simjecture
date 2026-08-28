@@ -38,6 +38,12 @@ from .deployment import (
 )
 from .discovery import DiscoveryPackage
 from .domains import installed_domain_plugins
+from .engineering import (
+    EVIDENCE_DIRECTORY,
+    PATCH_DIRECTORY,
+    EngineeringCampaign,
+    EngineeringContract,
+)
 from .ledger import SQLiteEventLedger
 from .literature import PublicLiteratureSearchClient
 from .llm import MissingCredential, ModelRoute, OpenAICompatibleClient
@@ -159,6 +165,88 @@ def _doctor(args: argparse.Namespace) -> int:
     report = manager.doctor(args.profile, probe=not args.skip_probes)
     print_deployment_report(report, as_json=args.json)
     return int(not report.ready)
+
+
+def _engineering_create(args: argparse.Namespace) -> int:
+    contract = EngineeringContract.model_validate_json(Path(args.contract).read_text())
+    campaign = EngineeringCampaign.create(contract, args.output)
+    print(f"campaign={campaign.contract.campaign_id}")
+    print(f"repository={campaign.contract.repository}")
+    print(f"base_commit={campaign.contract.base_commit}")
+    print(f"contract_sha256={campaign.contract_hash}")
+    print(f"output={campaign.output}")
+    return 0
+
+
+def _engineering_commission(args: argparse.Namespace) -> int:
+    campaign = EngineeringCampaign.load(args.campaign)
+    results = campaign.commission()
+    status = (
+        "passed"
+        if all(item.status.value == "passed" for item in results)
+        else "counterexample"
+    )
+    print(f"campaign={campaign.contract.campaign_id}")
+    print("stage=commissioning")
+    print(f"status={status}")
+    for result in results:
+        print(f"check={result.name} status={result.status.value} exit_code={result.exit_code}")
+    print(f"record={campaign.output / 'commission.json'}")
+    return 0
+
+
+def _engineering_patch_create(args: argparse.Namespace) -> int:
+    campaign = EngineeringCampaign.load(args.campaign)
+    record = campaign.create_patch(
+        args.patch_id,
+        diagnosis=args.diagnosis,
+        prediction=args.prediction,
+        parent_patch_id=args.parent,
+    )
+    print(f"campaign={campaign.contract.campaign_id}")
+    print(f"patch={record.patch_id}")
+    print(f"branch={record.branch}")
+    print(f"parent_commit={record.parent_commit}")
+    print(f"worktree={record.worktree}")
+    print(f"record={campaign.output / PATCH_DIRECTORY / (record.patch_id + '.json')}")
+    return 0
+
+
+def _engineering_patch_validate(args: argparse.Namespace) -> int:
+    campaign = EngineeringCampaign.load(args.campaign)
+    record = campaign.validate_patch(args.patch_id, commit_message=args.message)
+    print(f"campaign={campaign.contract.campaign_id}")
+    print(f"patch={record.patch_id}")
+    print(f"status={record.status.value}")
+    print(f"commit={record.commit or '-'}")
+    if record.failure_reason:
+        print(f"failure_reason={record.failure_reason}")
+    for result in record.checks:
+        print(f"check={result.name} status={result.status.value} exit_code={result.exit_code}")
+    print(f"evidence={campaign.output / EVIDENCE_DIRECTORY / (record.patch_id + '.json')}")
+    if args.assert_passed and record.status.value != "validated":
+        return 1
+    return 0
+
+
+def _engineering_status(args: argparse.Namespace) -> int:
+    campaign = EngineeringCampaign.load(args.campaign)
+    snapshot = campaign.status()
+    if args.json:
+        print(json.dumps(snapshot, indent=2))
+        return 0
+    print(f"campaign={snapshot['campaign_id']}")
+    print(f"goal={snapshot['goal']}")
+    print(f"base_commit={snapshot['base_commit']}")
+    commission = snapshot.get("commission")
+    if commission is not None:
+        print(f"commission={commission.get('status', 'unknown')}")
+    for patch in snapshot["patches"]:
+        print(
+            f"patch={patch['patch_id']} status={patch['status']} "
+            f"commit={patch.get('commit') or '-'}"
+        )
+    return 0
 
 
 def _campaign(args: argparse.Namespace) -> int:
@@ -788,6 +876,62 @@ def build_parser() -> argparse.ArgumentParser:
     domains = subcommands.add_parser("domains")
     domains.add_argument("--json", action="store_true")
     domains.set_defaults(handler=_domains)
+
+    engineering = subcommands.add_parser(
+        "engineering",
+        help="Run an evidence-governed software-engineering patch campaign",
+    )
+    engineering_actions = engineering.add_subparsers(
+        dest="engineering_action",
+        required=True,
+    )
+    engineering_create = engineering_actions.add_parser(
+        "create",
+        help="Freeze an engineering contract and repository base commit",
+    )
+    engineering_create.add_argument("contract")
+    engineering_create.add_argument("--output", required=True)
+    engineering_create.set_defaults(handler=_engineering_create)
+
+    engineering_commission = engineering_actions.add_parser(
+        "commission",
+        help="Run the frozen checks on the base commit",
+    )
+    engineering_commission.add_argument("campaign")
+    engineering_commission.set_defaults(handler=_engineering_commission)
+
+    engineering_patch_create = engineering_actions.add_parser(
+        "patch-create",
+        help="Create an isolated worktree for a patch hypothesis",
+    )
+    engineering_patch_create.add_argument("campaign")
+    engineering_patch_create.add_argument("patch_id")
+    engineering_patch_create.add_argument("--diagnosis", required=True)
+    engineering_patch_create.add_argument("--prediction", required=True)
+    engineering_patch_create.add_argument("--parent")
+    engineering_patch_create.set_defaults(handler=_engineering_patch_create)
+
+    engineering_patch_validate = engineering_actions.add_parser(
+        "patch-validate",
+        help="Commit and run the frozen checks for one patch hypothesis",
+    )
+    engineering_patch_validate.add_argument("campaign")
+    engineering_patch_validate.add_argument("patch_id")
+    engineering_patch_validate.add_argument("--message", required=True)
+    engineering_patch_validate.add_argument(
+        "--assert-passed",
+        action="store_true",
+        help="Return a non-zero exit code when the patch is not validated",
+    )
+    engineering_patch_validate.set_defaults(handler=_engineering_patch_validate)
+
+    engineering_status = engineering_actions.add_parser(
+        "status",
+        help="Show patch hypotheses, checks, and counterexamples",
+    )
+    engineering_status.add_argument("campaign")
+    engineering_status.add_argument("--json", action="store_true")
+    engineering_status.set_defaults(handler=_engineering_status)
 
     research = subcommands.add_parser(
         "research",

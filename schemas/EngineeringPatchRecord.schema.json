@@ -1,0 +1,241 @@
+{
+  "$defs": {
+    "EngineeringCheckResult": {
+      "additionalProperties": false,
+      "description": "Bounded receipt for one command execution.",
+      "properties": {
+        "command": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Command",
+          "type": "array"
+        },
+        "duration_seconds": {
+          "minimum": 0,
+          "title": "Duration Seconds",
+          "type": "number"
+        },
+        "exit_code": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Exit Code"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "stage": {
+          "$ref": "#/$defs/EngineeringCheckStage"
+        },
+        "status": {
+          "$ref": "#/$defs/EngineeringCheckStatus"
+        },
+        "stderr": {
+          "title": "Stderr",
+          "type": "string"
+        },
+        "stderr_sha256": {
+          "title": "Stderr Sha256",
+          "type": "string"
+        },
+        "stdout": {
+          "title": "Stdout",
+          "type": "string"
+        },
+        "stdout_sha256": {
+          "title": "Stdout Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "stage",
+        "command",
+        "status",
+        "exit_code",
+        "duration_seconds",
+        "stdout",
+        "stderr",
+        "stdout_sha256",
+        "stderr_sha256"
+      ],
+      "title": "EngineeringCheckResult",
+      "type": "object"
+    },
+    "EngineeringCheckStage": {
+      "enum": [
+        "commissioning",
+        "targeted",
+        "full",
+        "holdout"
+      ],
+      "title": "EngineeringCheckStage",
+      "type": "string"
+    },
+    "EngineeringCheckStatus": {
+      "enum": [
+        "passed",
+        "failed",
+        "timed_out"
+      ],
+      "title": "EngineeringCheckStatus",
+      "type": "string"
+    },
+    "EngineeringPatchStatus": {
+      "enum": [
+        "created",
+        "validated",
+        "counterexample",
+        "rejected"
+      ],
+      "title": "EngineeringPatchStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "A patch hypothesis and the evidence attached to its exact commit.",
+  "properties": {
+    "branch": {
+      "title": "Branch",
+      "type": "string"
+    },
+    "changed_paths": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Changed Paths",
+      "type": "array"
+    },
+    "checks": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/EngineeringCheckResult"
+      },
+      "title": "Checks",
+      "type": "array"
+    },
+    "commit": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Commit"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "diagnosis": {
+      "minLength": 1,
+      "title": "Diagnosis",
+      "type": "string"
+    },
+    "diff_sha256": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Diff Sha256"
+    },
+    "failure_reason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Failure Reason"
+    },
+    "parent_commit": {
+      "title": "Parent Commit",
+      "type": "string"
+    },
+    "parent_patch_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Parent Patch Id"
+    },
+    "patch_id": {
+      "pattern": "^[a-z0-9][a-z0-9_.-]*$",
+      "title": "Patch Id",
+      "type": "string"
+    },
+    "prediction": {
+      "minLength": 1,
+      "title": "Prediction",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "status": {
+      "$ref": "#/$defs/EngineeringPatchStatus",
+      "default": "created"
+    },
+    "validated_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Validated At"
+    },
+    "worktree": {
+      "title": "Worktree",
+      "type": "string"
+    }
+  },
+  "required": [
+    "patch_id",
+    "diagnosis",
+    "prediction",
+    "branch",
+    "worktree",
+    "parent_commit"
+  ],
+  "title": "EngineeringPatchRecord",
+  "type": "object"
+}

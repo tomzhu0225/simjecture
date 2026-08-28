@@ -64,6 +64,12 @@ from .domains.kinetic_sufficiency import (
     KineticSufficiencyHypothesisInput,
     KineticSufficiencySolveResult,
 )
+from .engineering import (
+    EngineeringCheck,
+    EngineeringCheckResult,
+    EngineeringContract,
+    EngineeringPatchRecord,
+)
 from .lifecycle import CampaignState, LifecycleEvent
 from .models import (
     AttemptRecord,
@@ -163,6 +169,10 @@ PUBLIC_MODELS: tuple[ModelType, ...] = (
     KineticSufficiencyHypothesisInput,
     KineticSufficiencySolveResult,
     KineticSufficiencyDiscoveryPackage,
+    EngineeringCheck,
+    EngineeringCheckResult,
+    EngineeringContract,
+    EngineeringPatchRecord,
     ProposalRequest,
     ProposalDraft,
     ProposalValidation,

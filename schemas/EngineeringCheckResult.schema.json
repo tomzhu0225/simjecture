@@ -1,0 +1,96 @@
+{
+  "$defs": {
+    "EngineeringCheckStage": {
+      "enum": [
+        "commissioning",
+        "targeted",
+        "full",
+        "holdout"
+      ],
+      "title": "EngineeringCheckStage",
+      "type": "string"
+    },
+    "EngineeringCheckStatus": {
+      "enum": [
+        "passed",
+        "failed",
+        "timed_out"
+      ],
+      "title": "EngineeringCheckStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Bounded receipt for one command execution.",
+  "properties": {
+    "command": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Command",
+      "type": "array"
+    },
+    "duration_seconds": {
+      "minimum": 0,
+      "title": "Duration Seconds",
+      "type": "number"
+    },
+    "exit_code": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Exit Code"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "stage": {
+      "$ref": "#/$defs/EngineeringCheckStage"
+    },
+    "status": {
+      "$ref": "#/$defs/EngineeringCheckStatus"
+    },
+    "stderr": {
+      "title": "Stderr",
+      "type": "string"
+    },
+    "stderr_sha256": {
+      "title": "Stderr Sha256",
+      "type": "string"
+    },
+    "stdout": {
+      "title": "Stdout",
+      "type": "string"
+    },
+    "stdout_sha256": {
+      "title": "Stdout Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "stage",
+    "command",
+    "status",
+    "exit_code",
+    "duration_seconds",
+    "stdout",
+    "stderr",
+    "stdout_sha256",
+    "stderr_sha256"
+  ],
+  "title": "EngineeringCheckResult",
+  "type": "object"
+}
