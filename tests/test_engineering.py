@@ -8,12 +8,14 @@ import pytest
 
 from conjecture_solver.cli import build_parser
 from conjecture_solver.engineering import (
+    EngineeringAdjudicationStatus,
     EngineeringCampaign,
     EngineeringCheck,
     EngineeringCheckStage,
     EngineeringCheckStatus,
     EngineeringContract,
     EngineeringError,
+    EngineeringHoldoutContract,
     EngineeringPatchStatus,
 )
 
@@ -157,6 +159,19 @@ def test_contract_and_cli_keep_engineering_commands_structured(tmp_path: Path) -
     )
     assert parsed.engineering_action == "patch-validate"
     assert parsed.assert_passed is False
+    adjudicate = build_parser().parse_args(
+        [
+            "engineering",
+            "adjudicate",
+            "campaign",
+            "patch-001",
+            "--holdout",
+            "holdout.json",
+            "--assert-accepted",
+        ]
+    )
+    assert adjudicate.engineering_action == "adjudicate"
+    assert adjudicate.assert_accepted is True
 
     with pytest.raises(ValueError, match="editable and protected"):
         EngineeringContract(
@@ -198,3 +213,177 @@ def test_campaign_cannot_be_started_inside_target_repository(tmp_path: Path) -> 
     repository = _target_repository(tmp_path)
     with pytest.raises(EngineeringError, match="must not be inside"):
         EngineeringCampaign.create(_contract(repository), repository / ".simjecture")
+
+
+def _holdout(
+    campaign: EngineeringCampaign,
+    *,
+    expected: str = "VALUE = 2\n",
+) -> EngineeringHoldoutContract:
+    return EngineeringHoldoutContract(
+        holdout_id="hidden-value-case",
+        campaign_id=campaign.contract.campaign_id,
+        repository=campaign.contract.repository,
+        base_commit=campaign.contract.base_commit or "",
+        checks=(
+            EngineeringCheck(
+                name="hidden-value-contract",
+                stage=EngineeringCheckStage.HOLDOUT,
+                command=(
+                    sys.executable,
+                    "-c",
+                    (
+                        "from pathlib import Path; "
+                        "raise SystemExit(0 if Path('src/value.py').read_text() "
+                        f"== {expected!r} else 1)"
+                    ),
+                ),
+                timeout_seconds=10,
+            ),
+        ),
+    )
+
+
+def test_external_holdout_and_diff_judge_accept_only_the_exact_candidate(
+    tmp_path: Path,
+) -> None:
+    repository = _target_repository(tmp_path)
+    campaign = EngineeringCampaign.create(_contract(repository), tmp_path / "campaign")
+    patch = campaign.create_patch(
+        "patch-001",
+        diagnosis="The implementation returns the old constant.",
+        prediction="Changing the constant to two satisfies the visible contract.",
+    )
+    Path(patch.worktree, "src/value.py").write_text("VALUE = 2\n")
+    visible = campaign.validate_patch("patch-001", commit_message="fix value contract")
+    assert visible.status is EngineeringPatchStatus.VALIDATED
+
+    adjudication = campaign.adjudicate_patch("patch-001", _holdout(campaign))
+    assert adjudication.status is EngineeringAdjudicationStatus.ACCEPTED
+    assert adjudication.diff_review.status.value == "accepted"
+    assert adjudication.checks[0].status is EngineeringCheckStatus.PASSED
+    assert campaign.status()["patches"][0]["status"] == "accepted"
+    assert campaign.status()["adjudications"][0]["status"] == "accepted"
+
+    with pytest.raises(EngineeringError, match="already has an adjudication"):
+        campaign.adjudicate_patch("patch-001", _holdout(campaign))
+
+
+def test_holdout_failure_becomes_a_counterexample(tmp_path: Path) -> None:
+    repository = _target_repository(tmp_path)
+    campaign = EngineeringCampaign.create(_contract(repository), tmp_path / "campaign")
+    patch = campaign.create_patch(
+        "patch-001",
+        diagnosis="Try the visible-contract candidate.",
+        prediction="The visible pass generalizes to the withheld case.",
+    )
+    Path(patch.worktree, "src/value.py").write_text("VALUE = 2\n")
+    assert campaign.validate_patch("patch-001", commit_message="visible candidate").status == (
+        EngineeringPatchStatus.VALIDATED
+    )
+
+    adjudication = campaign.adjudicate_patch(
+        "patch-001",
+        _holdout(campaign, expected="VALUE = 99\n"),
+    )
+    assert adjudication.status is EngineeringAdjudicationStatus.COUNTEREXAMPLE
+    assert adjudication.failure_reason == "holdout check failed: hidden-value-contract (failed)"
+    assert campaign.status()["patches"][0]["status"] == "counterexample"
+
+
+def test_diff_judge_rejects_mutation_after_visible_validation(tmp_path: Path) -> None:
+    repository = _target_repository(tmp_path)
+    campaign = EngineeringCampaign.create(_contract(repository), tmp_path / "campaign")
+    patch = campaign.create_patch(
+        "patch-001",
+        diagnosis="Apply the candidate implementation.",
+        prediction="The candidate remains unchanged while it is reviewed.",
+    )
+    Path(patch.worktree, "src/value.py").write_text("VALUE = 2\n")
+    assert campaign.validate_patch("patch-001", commit_message="candidate").status == (
+        EngineeringPatchStatus.VALIDATED
+    )
+    # Simulate a compromised or stale worker changing the worktree after CI.
+    Path(patch.worktree, "src/value.py").write_text("VALUE = 3\n")
+
+    adjudication = campaign.adjudicate_patch("patch-001", _holdout(campaign))
+    assert adjudication.status is EngineeringAdjudicationStatus.REJECTED
+    assert not adjudication.checks
+    assert "worktree is not clean" in (adjudication.failure_reason or "")
+
+
+def test_holdout_contract_is_external_and_stage_restricted(tmp_path: Path) -> None:
+    repository = _target_repository(tmp_path)
+    contract = _contract(repository)
+    with pytest.raises(ValueError, match="holdout checks must be supplied"):
+        EngineeringContract(
+            campaign_id=contract.campaign_id,
+            goal=contract.goal,
+            repository=contract.repository,
+            editable_paths=contract.editable_paths,
+            protected_paths=contract.protected_paths,
+            checks=(
+                EngineeringCheck(
+                    name="visible-but-hidden",
+                    stage=EngineeringCheckStage.HOLDOUT,
+                    command=("true",),
+                ),
+            ),
+        )
+    with pytest.raises(ValueError, match="every external holdout"):
+        EngineeringHoldoutContract(
+            holdout_id="bad-holdout",
+            campaign_id="engineering-test",
+            repository=str(repository),
+            base_commit=_git(repository, "rev-parse", "HEAD"),
+            checks=(contract.checks[0],),
+        )
+
+
+def test_validation_rejects_a_check_that_moves_worktree_head(tmp_path: Path) -> None:
+    repository = _target_repository(tmp_path)
+    contract = _contract(repository).model_copy(
+        update={
+            "checks": (
+                EngineeringCheck(
+                    name="sneaky-commit",
+                    command=(
+                        sys.executable,
+                        "-c",
+                        "from pathlib import Path; Path('src/value.py').write_text('VALUE = 4\\n')",
+                    ),
+                ),
+                EngineeringCheck(
+                    name="sneaky-commit-2",
+                    command=(
+                        "git",
+                        "add",
+                        "src/value.py",
+                    ),
+                ),
+                EngineeringCheck(
+                    name="sneaky-commit-3",
+                    command=(
+                        "git",
+                        "-c",
+                        "user.name=check",
+                        "-c",
+                        "user.email=check@example.invalid",
+                        "commit",
+                        "-m",
+                        "sneaky",
+                    ),
+                ),
+            )
+        }
+    )
+    campaign = EngineeringCampaign.create(contract, tmp_path / "campaign")
+    patch = campaign.create_patch(
+        "patch-001",
+        diagnosis="Exercise commit-integrity protection.",
+        prediction="A validation command must not replace the candidate commit.",
+    )
+    Path(patch.worktree, "src/value.py").write_text("VALUE = 2\n")
+    result = campaign.validate_patch("patch-001", commit_message="candidate")
+    assert result.status is EngineeringPatchStatus.REJECTED
+    assert "changed the worktree HEAD" in (result.failure_reason or "")

@@ -27,7 +27,8 @@ Principal command families:
 - `campaign`: durable bounded campaign execution;
 - `orchestrate`: fixed-DAG multi-action research campaigns;
 - `engineering`: freeze a repository contract, create isolated patch
-  worktrees, run fixed checks, and record patch counterexamples;
+  worktrees, run fixed checks, adjudicate external holdouts, and record patch
+  counterexamples;
 - `package verify`: independently verify a discovery package;
 - `schemas`: export or check public JSON Schemas.
 

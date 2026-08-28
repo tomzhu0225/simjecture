@@ -35,6 +35,7 @@ CONTRACT_FILE = "contract.json"
 CAMPAIGN_FILE = "campaign.json"
 PATCH_DIRECTORY = "patches"
 EVIDENCE_DIRECTORY = "evidence"
+ADJUDICATION_DIRECTORY = "adjudications"
 WORKTREE_DIRECTORY = "worktrees"
 
 
@@ -58,6 +59,18 @@ class EngineeringCheckStatus(StrEnum):
 class EngineeringPatchStatus(StrEnum):
     CREATED = "created"
     VALIDATED = "validated"
+    ACCEPTED = "accepted"
+    COUNTEREXAMPLE = "counterexample"
+    REJECTED = "rejected"
+
+
+class EngineeringDiffReviewStatus(StrEnum):
+    ACCEPTED = "accepted"
+    REJECTED = "rejected"
+
+
+class EngineeringAdjudicationStatus(StrEnum):
+    ACCEPTED = "accepted"
     COUNTEREXAMPLE = "counterexample"
     REJECTED = "rejected"
 
@@ -124,8 +137,40 @@ class EngineeringContract(StrictModel):
         names = [check.name for check in self.checks]
         if len(names) != len(set(names)):
             raise ValueError("engineering check names must be unique")
+        if any(check.stage is EngineeringCheckStage.HOLDOUT for check in self.checks):
+            raise ValueError(
+                "holdout checks must be supplied in an external "
+                "EngineeringHoldoutContract, not the visible campaign contract"
+            )
         if self.base_commit == "":
             raise ValueError("base_commit must be null or a non-empty revision")
+        return self
+
+
+class EngineeringHoldoutContract(StrictModel):
+    """A host-controlled validation suite withheld from the patch proposer.
+
+    This object is deliberately separate from EngineeringContract.  The
+    campaign records only its content hash and execution receipt after the
+    candidate has passed the visible checks.  The caller must keep the JSON
+    file and its path outside the agent's worktree and prompt surface.
+    """
+
+    schema_version: Literal["0.1.0"] = ENGINEERING_SCHEMA_VERSION
+    holdout_id: str = Field(pattern=r"^[a-z0-9][a-z0-9_.-]*$")
+    campaign_id: str = Field(pattern=r"^[a-z0-9][a-z0-9_.-]*$")
+    repository: str = Field(min_length=1)
+    base_commit: str = Field(pattern=r"^[0-9a-f]{40,64}$")
+    checks: tuple[EngineeringCheck, ...] = Field(min_length=1)
+    max_output_chars: int = Field(default=30_000, ge=1_000, le=2_000_000)
+
+    @model_validator(mode="after")
+    def validate_holdout(self) -> EngineeringHoldoutContract:
+        names = [check.name for check in self.checks]
+        if len(names) != len(set(names)):
+            raise ValueError("holdout check names must be unique")
+        if any(check.stage is not EngineeringCheckStage.HOLDOUT for check in self.checks):
+            raise ValueError("every external holdout check must use stage='holdout'")
         return self
 
 
@@ -164,6 +209,39 @@ class EngineeringPatchRecord(StrictModel):
     failure_reason: str | None = None
     created_at: datetime = Field(default_factory=utc_now)
     validated_at: datetime | None = None
+
+
+class EngineeringDiffReview(StrictModel):
+    """A deterministic review of the exact committed patch, independent of CI."""
+
+    schema_version: Literal["0.1.0"] = ENGINEERING_SCHEMA_VERSION
+    patch_id: str
+    commit: str = Field(pattern=r"^[0-9a-f]{40,64}$")
+    parent_commit: str = Field(pattern=r"^[0-9a-f]{40,64}$")
+    diff_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    changed_paths: tuple[str, ...]
+    status: EngineeringDiffReviewStatus
+    violations: tuple[str, ...] = ()
+    reviewer: str = Field(min_length=1)
+    reviewed_at: datetime = Field(default_factory=utc_now)
+
+
+class EngineeringAdjudicationRecord(StrictModel):
+    """Final host-side verdict combining hidden checks and diff review."""
+
+    schema_version: Literal["0.1.0"] = ENGINEERING_SCHEMA_VERSION
+    campaign_id: str
+    patch_id: str
+    patch_commit: str = Field(pattern=r"^[0-9a-f]{40,64}$")
+    holdout_id: str
+    holdout_contract_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    holdout_base_commit: str = Field(pattern=r"^[0-9a-f]{40,64}$")
+    diff_review: EngineeringDiffReview
+    checks: tuple[EngineeringCheckResult, ...] = ()
+    status: EngineeringAdjudicationStatus
+    failure_reason: str | None = None
+    reviewer: str = Field(min_length=1)
+    created_at: datetime = Field(default_factory=utc_now)
 
 
 def _canonical_json(payload: Mapping[str, Any]) -> bytes:
@@ -277,6 +355,11 @@ class GitRepository:
 
     def head_commit(self) -> str:
         return self.resolve_commit("HEAD")
+
+    def worktree_head_commit(self, worktree: Path) -> str:
+        """Resolve the commit actually checked out in an isolated worktree."""
+
+        return self._run(("rev-parse", "--verify", "HEAD^{commit}"), cwd=worktree).stdout.strip()
 
     def is_clean(self) -> bool:
         result = self._run(
@@ -417,6 +500,81 @@ def _check_result(
     )
 
 
+class EngineeringDiffJudge:
+    """Review patch identity and policy without consulting its check results."""
+
+    @staticmethod
+    def review(
+        record: EngineeringPatchRecord,
+        *,
+        contract: EngineeringContract,
+        repository: GitRepository,
+        reviewer: str,
+    ) -> EngineeringDiffReview:
+        if record.commit is None:
+            raise EngineeringError("a diff review requires a committed patch")
+        worktree = (Path(record.worktree)).resolve()
+        if not worktree.is_dir():
+            raise EngineeringError(f"patch worktree is unavailable: {worktree}")
+        violations: list[str] = []
+        current_head = repository.worktree_head_commit(worktree)
+        if current_head != record.commit:
+            violations.append(
+                "worktree HEAD does not match the patch record: "
+                f"{record.commit} -> {current_head}"
+            )
+        try:
+            actual_parent = repository.resolve_commit(f"{record.commit}^")
+        except EngineeringError:
+            actual_parent = ""
+        if actual_parent != record.parent_commit:
+            violations.append(
+                "patch commit parent does not match the recorded parent: "
+                f"{record.parent_commit} -> {actual_parent or '<missing>'}"
+            )
+        dirty = tuple(
+            path
+            for path in repository.unstaged_paths(worktree)
+            if not _generated_path(path)
+        )
+        if dirty:
+            violations.append(
+                "worktree is not clean after validation: " + ", ".join(dirty)
+            )
+        changed = tuple(
+            path
+            for path in repository.changed_paths(worktree, record.parent_commit)
+            if not _generated_path(path)
+        )
+        protected = tuple(
+            path for path in changed if _matches_path(path, contract.protected_paths)
+        )
+        outside = tuple(
+            path for path in changed if not _matches_path(path, contract.editable_paths)
+        )
+        if protected:
+            violations.append("protected paths changed: " + ", ".join(protected))
+        if outside:
+            violations.append("paths outside editable policy: " + ", ".join(outside))
+        if not changed:
+            violations.append("committed patch contains no editable changes")
+        diff_sha256 = repository.diff_hash(worktree, record.parent_commit)
+        return EngineeringDiffReview(
+            patch_id=record.patch_id,
+            commit=record.commit,
+            parent_commit=record.parent_commit,
+            diff_sha256=diff_sha256,
+            changed_paths=changed,
+            status=(
+                EngineeringDiffReviewStatus.REJECTED
+                if violations
+                else EngineeringDiffReviewStatus.ACCEPTED
+            ),
+            violations=tuple(violations),
+            reviewer=reviewer,
+        )
+
+
 class EngineeringCampaign:
     """Create and validate an immutable patch-hypothesis campaign."""
 
@@ -477,6 +635,7 @@ class EngineeringCampaign:
         )
         (target / PATCH_DIRECTORY).mkdir()
         (target / EVIDENCE_DIRECTORY).mkdir()
+        (target / ADJUDICATION_DIRECTORY).mkdir()
         return campaign
 
     @classmethod
@@ -504,8 +663,33 @@ class EngineeringCampaign:
     def _write_patch(self, record: EngineeringPatchRecord) -> None:
         _write_json(self._patch_path(record.patch_id), record.model_dump(mode="json"))
 
+    def _adjudication_path(self, patch_id: str) -> Path:
+        return (
+            self.output
+            / ADJUDICATION_DIRECTORY
+            / f"{_safe_patch_id(patch_id)}.json"
+        )
+
     def _branch_name(self, patch_id: str) -> str:
         return f"simj/{self.contract.campaign_id}/{_safe_patch_id(patch_id)}"
+
+    def _expected_worktree(self, patch_id: str) -> Path:
+        return (self.output / WORKTREE_DIRECTORY / _safe_patch_id(patch_id)).resolve()
+
+    def _assert_patch_identity(self, record: EngineeringPatchRecord) -> Path:
+        """Reject mutable record fields that could redirect host execution."""
+
+        expected_worktree = self._expected_worktree(record.patch_id)
+        worktree = Path(record.worktree).resolve()
+        if worktree != expected_worktree:
+            raise EngineeringError(
+                f"patch {record.patch_id!r} worktree does not match its campaign path"
+            )
+        if record.branch != self._branch_name(record.patch_id):
+            raise EngineeringError(
+                f"patch {record.patch_id!r} branch does not match its campaign branch"
+            )
+        return worktree
 
     def commission(self) -> tuple[EngineeringCheckResult, ...]:
         """Run the frozen checks once on the base commit in a disposable worktree."""
@@ -568,7 +752,7 @@ class EngineeringCampaign:
             parent_commit = parent.commit
         assert parent_commit is not None
         branch = self._branch_name(patch_id)
-        worktree = self.output / WORKTREE_DIRECTORY / patch_id
+        worktree = self._expected_worktree(patch_id)
         self.repository.worktree_add(worktree, parent_commit, branch=branch)
         record = EngineeringPatchRecord(
             patch_id=patch_id,
@@ -586,9 +770,13 @@ class EngineeringCampaign:
         record = self._load_patch(patch_id)
         if record.status is not EngineeringPatchStatus.CREATED:
             raise EngineeringError(f"patch {patch_id!r} is already terminal: {record.status.value}")
-        worktree = Path(record.worktree).resolve()
+        worktree = self._assert_patch_identity(record)
         if not worktree.is_dir():
             raise EngineeringError(f"patch worktree is unavailable: {worktree}")
+        if self.repository.worktree_head_commit(worktree) != record.parent_commit:
+            raise EngineeringError(
+                f"patch {patch_id!r} worktree no longer starts at its recorded parent commit"
+            )
         changed = self.repository.changed_paths(worktree, self.contract.base_commit or "HEAD")
         relevant = tuple(path for path in changed if not _generated_path(path))
         protected = tuple(
@@ -630,7 +818,14 @@ class EngineeringCampaign:
             for path in self.repository.unstaged_paths(worktree)
             if not _generated_path(path)
         )
-        if post_check_changes:
+        post_check_head = self.repository.worktree_head_commit(worktree)
+        if post_check_head != commit:
+            status = EngineeringPatchStatus.REJECTED
+            failure_reason = (
+                "validation commands changed the worktree HEAD after the candidate commit: "
+                f"{commit} -> {post_check_head}"
+            )
+        elif post_check_changes:
             status = EngineeringPatchStatus.REJECTED
             failure_reason = (
                 "validation commands modified the worktree after commit: "
@@ -683,6 +878,128 @@ class EngineeringCampaign:
         )
         return updated
 
+    def adjudicate_patch(
+        self,
+        patch_id: str,
+        holdout: EngineeringHoldoutContract,
+        *,
+        reviewer: str = "simjecture-diff-judge/v1",
+    ) -> EngineeringAdjudicationRecord:
+        """Run withheld checks and an independent diff review exactly once."""
+
+        record = self._load_patch(patch_id)
+        adjudication_path = self._adjudication_path(record.patch_id)
+        if adjudication_path.exists():
+            raise EngineeringError(
+                f"patch {record.patch_id!r} already has an adjudication record"
+            )
+        if record.status is not EngineeringPatchStatus.VALIDATED:
+            raise EngineeringError(
+                f"patch {patch_id!r} must pass visible checks before adjudication; "
+                f"current status is {record.status.value}"
+            )
+        self._assert_patch_identity(record)
+        if holdout.campaign_id != self.contract.campaign_id:
+            raise EngineeringError(
+                "holdout campaign_id does not match the engineering campaign"
+            )
+        holdout_repository = Path(holdout.repository).expanduser().resolve()
+        if holdout_repository != self.repository.root:
+            raise EngineeringError(
+                "holdout repository does not match the frozen campaign repository"
+            )
+        if holdout.base_commit != self.contract.base_commit:
+            raise EngineeringError(
+                "holdout base_commit does not match the frozen campaign base commit"
+            )
+        holdout_hash = _sha256(_canonical_json(holdout.model_dump(mode="json")))
+        diff_review = EngineeringDiffJudge.review(
+            record,
+            contract=self.contract,
+            repository=self.repository,
+            reviewer=reviewer,
+        )
+        checks: tuple[EngineeringCheckResult, ...] = ()
+        status: EngineeringAdjudicationStatus
+        failure_reason: str | None
+        if diff_review.status is EngineeringDiffReviewStatus.REJECTED:
+            status = EngineeringAdjudicationStatus.REJECTED
+            failure_reason = "; ".join(diff_review.violations)
+        else:
+            worktree = self._assert_patch_identity(record)
+            checks = tuple(
+                _check_result(
+                    check,
+                    worktree=worktree,
+                    max_output_chars=holdout.max_output_chars,
+                )
+                for check in holdout.checks
+            )
+            # A holdout is an observer, not an editor. Re-review after it runs
+            # so a check cannot silently commit or modify the candidate.
+            diff_review = EngineeringDiffJudge.review(
+                record,
+                contract=self.contract,
+                repository=self.repository,
+                reviewer=reviewer,
+            )
+            failed = next(
+                (
+                    item
+                    for item in checks
+                    if item.status is not EngineeringCheckStatus.PASSED
+                ),
+                None,
+            )
+            if diff_review.status is EngineeringDiffReviewStatus.REJECTED:
+                status = EngineeringAdjudicationStatus.REJECTED
+                failure_reason = "; ".join(diff_review.violations)
+            elif failed is not None:
+                status = EngineeringAdjudicationStatus.COUNTEREXAMPLE
+                failure_reason = f"holdout check failed: {failed.name} ({failed.status.value})"
+            else:
+                status = EngineeringAdjudicationStatus.ACCEPTED
+                failure_reason = None
+        patch_status = {
+            EngineeringAdjudicationStatus.ACCEPTED: EngineeringPatchStatus.ACCEPTED,
+            EngineeringAdjudicationStatus.COUNTEREXAMPLE: (
+                EngineeringPatchStatus.COUNTEREXAMPLE
+            ),
+            EngineeringAdjudicationStatus.REJECTED: EngineeringPatchStatus.REJECTED,
+        }[status]
+        self._write_patch(
+            record.model_copy(
+                update={
+                    "status": patch_status,
+                    "failure_reason": failure_reason,
+                }
+            )
+        )
+        adjudication = EngineeringAdjudicationRecord(
+            campaign_id=self.contract.campaign_id,
+            patch_id=record.patch_id,
+            patch_commit=record.commit or "",
+            holdout_id=holdout.holdout_id,
+            holdout_contract_sha256=holdout_hash,
+            holdout_base_commit=holdout.base_commit,
+            diff_review=diff_review,
+            checks=checks,
+            status=status,
+            failure_reason=failure_reason,
+            reviewer=reviewer,
+        )
+        _write_json(adjudication_path, adjudication.model_dump(mode="json"))
+        _write_json(
+            self.output / EVIDENCE_DIRECTORY / f"{record.patch_id}-adjudication.json",
+            {
+                "schema_version": ENGINEERING_SCHEMA_VERSION,
+                "campaign_id": self.contract.campaign_id,
+                "contract_sha256": self.contract_hash,
+                "adjudication": adjudication.model_dump(mode="json"),
+            },
+        )
+        return adjudication
+
     def status(self) -> dict[str, Any]:
         records = [
             EngineeringPatchRecord.model_validate(_read_json(path))
@@ -692,6 +1009,12 @@ class EngineeringCampaign:
         commission_path = self.output / "commission.json"
         if commission_path.exists():
             commission = _read_json(commission_path)
+        adjudications = [
+            EngineeringAdjudicationRecord.model_validate(_read_json(path))
+            for path in sorted(
+                (self.output / ADJUDICATION_DIRECTORY).glob("*.json")
+            )
+        ]
         return {
             "campaign_id": self.contract.campaign_id,
             "goal": self.contract.goal,
@@ -700,4 +1023,5 @@ class EngineeringCampaign:
             "contract_sha256": self.contract_hash,
             "commission": commission,
             "patches": [record.model_dump(mode="json") for record in records],
+            "adjudications": [record.model_dump(mode="json") for record in adjudications],
         }

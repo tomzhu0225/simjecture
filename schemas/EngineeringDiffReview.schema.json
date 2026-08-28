@@ -1,0 +1,80 @@
+{
+  "$defs": {
+    "EngineeringDiffReviewStatus": {
+      "enum": [
+        "accepted",
+        "rejected"
+      ],
+      "title": "EngineeringDiffReviewStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "A deterministic review of the exact committed patch, independent of CI.",
+  "properties": {
+    "changed_paths": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Changed Paths",
+      "type": "array"
+    },
+    "commit": {
+      "pattern": "^[0-9a-f]{40,64}$",
+      "title": "Commit",
+      "type": "string"
+    },
+    "diff_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Diff Sha256",
+      "type": "string"
+    },
+    "parent_commit": {
+      "pattern": "^[0-9a-f]{40,64}$",
+      "title": "Parent Commit",
+      "type": "string"
+    },
+    "patch_id": {
+      "title": "Patch Id",
+      "type": "string"
+    },
+    "reviewed_at": {
+      "format": "date-time",
+      "title": "Reviewed At",
+      "type": "string"
+    },
+    "reviewer": {
+      "minLength": 1,
+      "title": "Reviewer",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "status": {
+      "$ref": "#/$defs/EngineeringDiffReviewStatus"
+    },
+    "violations": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Violations",
+      "type": "array"
+    }
+  },
+  "required": [
+    "patch_id",
+    "commit",
+    "parent_commit",
+    "diff_sha256",
+    "changed_paths",
+    "status",
+    "reviewer"
+  ],
+  "title": "EngineeringDiffReview",
+  "type": "object"
+}

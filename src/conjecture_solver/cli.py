@@ -39,10 +39,12 @@ from .deployment import (
 from .discovery import DiscoveryPackage
 from .domains import installed_domain_plugins
 from .engineering import (
+    ADJUDICATION_DIRECTORY,
     EVIDENCE_DIRECTORY,
     PATCH_DIRECTORY,
     EngineeringCampaign,
     EngineeringContract,
+    EngineeringHoldoutContract,
 )
 from .ledger import SQLiteEventLedger
 from .literature import PublicLiteratureSearchClient
@@ -225,6 +227,33 @@ def _engineering_patch_validate(args: argparse.Namespace) -> int:
         print(f"check={result.name} status={result.status.value} exit_code={result.exit_code}")
     print(f"evidence={campaign.output / EVIDENCE_DIRECTORY / (record.patch_id + '.json')}")
     if args.assert_passed and record.status.value != "validated":
+        return 1
+    return 0
+
+
+def _engineering_adjudicate(args: argparse.Namespace) -> int:
+    campaign = EngineeringCampaign.load(args.campaign)
+    holdout = EngineeringHoldoutContract.model_validate_json(
+        Path(args.holdout).read_text()
+    )
+    record = campaign.adjudicate_patch(
+        args.patch_id,
+        holdout,
+        reviewer=args.reviewer,
+    )
+    print(f"campaign={campaign.contract.campaign_id}")
+    print(f"patch={record.patch_id}")
+    print(f"status={record.status.value}")
+    print(f"holdout={record.holdout_id}")
+    print(f"diff_review={record.diff_review.status.value}")
+    for result in record.checks:
+        print(f"check={result.name} status={result.status.value} exit_code={result.exit_code}")
+    if record.failure_reason:
+        print(f"failure_reason={record.failure_reason}")
+    print(
+        f"record={campaign.output / ADJUDICATION_DIRECTORY / (record.patch_id + '.json')}"
+    )
+    if args.assert_accepted and record.status.value != "accepted":
         return 1
     return 0
 
@@ -924,6 +953,28 @@ def build_parser() -> argparse.ArgumentParser:
         help="Return a non-zero exit code when the patch is not validated",
     )
     engineering_patch_validate.set_defaults(handler=_engineering_patch_validate)
+
+    engineering_adjudicate = engineering_actions.add_parser(
+        "adjudicate",
+        help="Run an external holdout and independent diff review",
+    )
+    engineering_adjudicate.add_argument("campaign")
+    engineering_adjudicate.add_argument("patch_id")
+    engineering_adjudicate.add_argument(
+        "--holdout",
+        required=True,
+        help="External holdout contract kept outside the agent worktree",
+    )
+    engineering_adjudicate.add_argument(
+        "--reviewer",
+        default="simjecture-diff-judge/v1",
+    )
+    engineering_adjudicate.add_argument(
+        "--assert-accepted",
+        action="store_true",
+        help="Return a non-zero exit code unless the holdout is accepted",
+    )
+    engineering_adjudicate.set_defaults(handler=_engineering_adjudicate)
 
     engineering_status = engineering_actions.add_parser(
         "status",

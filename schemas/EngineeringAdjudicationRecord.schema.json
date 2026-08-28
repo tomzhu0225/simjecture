@@ -1,5 +1,14 @@
 {
   "$defs": {
+    "EngineeringAdjudicationStatus": {
+      "enum": [
+        "accepted",
+        "counterexample",
+        "rejected"
+      ],
+      "title": "EngineeringAdjudicationStatus",
+      "type": "string"
+    },
     "EngineeringCheckResult": {
       "additionalProperties": false,
       "description": "Bounded receipt for one command execution.",
@@ -94,32 +103,91 @@
       "title": "EngineeringCheckStatus",
       "type": "string"
     },
-    "EngineeringPatchStatus": {
+    "EngineeringDiffReview": {
+      "additionalProperties": false,
+      "description": "A deterministic review of the exact committed patch, independent of CI.",
+      "properties": {
+        "changed_paths": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Changed Paths",
+          "type": "array"
+        },
+        "commit": {
+          "pattern": "^[0-9a-f]{40,64}$",
+          "title": "Commit",
+          "type": "string"
+        },
+        "diff_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Diff Sha256",
+          "type": "string"
+        },
+        "parent_commit": {
+          "pattern": "^[0-9a-f]{40,64}$",
+          "title": "Parent Commit",
+          "type": "string"
+        },
+        "patch_id": {
+          "title": "Patch Id",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "format": "date-time",
+          "title": "Reviewed At",
+          "type": "string"
+        },
+        "reviewer": {
+          "minLength": 1,
+          "title": "Reviewer",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/EngineeringDiffReviewStatus"
+        },
+        "violations": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Violations",
+          "type": "array"
+        }
+      },
+      "required": [
+        "patch_id",
+        "commit",
+        "parent_commit",
+        "diff_sha256",
+        "changed_paths",
+        "status",
+        "reviewer"
+      ],
+      "title": "EngineeringDiffReview",
+      "type": "object"
+    },
+    "EngineeringDiffReviewStatus": {
       "enum": [
-        "created",
-        "validated",
         "accepted",
-        "counterexample",
         "rejected"
       ],
-      "title": "EngineeringPatchStatus",
+      "title": "EngineeringDiffReviewStatus",
       "type": "string"
     }
   },
   "additionalProperties": false,
-  "description": "A patch hypothesis and the evidence attached to its exact commit.",
+  "description": "Final host-side verdict combining hidden checks and diff review.",
   "properties": {
-    "branch": {
-      "title": "Branch",
+    "campaign_id": {
+      "title": "Campaign Id",
       "type": "string"
-    },
-    "changed_paths": {
-      "default": [],
-      "items": {
-        "type": "string"
-      },
-      "title": "Changed Paths",
-      "type": "array"
     },
     "checks": {
       "default": [],
@@ -129,39 +197,13 @@
       "title": "Checks",
       "type": "array"
     },
-    "commit": {
-      "anyOf": [
-        {
-          "type": "string"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null,
-      "title": "Commit"
-    },
     "created_at": {
       "format": "date-time",
       "title": "Created At",
       "type": "string"
     },
-    "diagnosis": {
-      "minLength": 1,
-      "title": "Diagnosis",
-      "type": "string"
-    },
-    "diff_sha256": {
-      "anyOf": [
-        {
-          "type": "string"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null,
-      "title": "Diff Sha256"
+    "diff_review": {
+      "$ref": "#/$defs/EngineeringDiffReview"
     },
     "failure_reason": {
       "anyOf": [
@@ -175,30 +217,32 @@
       "default": null,
       "title": "Failure Reason"
     },
-    "parent_commit": {
-      "title": "Parent Commit",
+    "holdout_base_commit": {
+      "pattern": "^[0-9a-f]{40,64}$",
+      "title": "Holdout Base Commit",
       "type": "string"
     },
-    "parent_patch_id": {
-      "anyOf": [
-        {
-          "type": "string"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null,
-      "title": "Parent Patch Id"
+    "holdout_contract_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Holdout Contract Sha256",
+      "type": "string"
+    },
+    "holdout_id": {
+      "title": "Holdout Id",
+      "type": "string"
+    },
+    "patch_commit": {
+      "pattern": "^[0-9a-f]{40,64}$",
+      "title": "Patch Commit",
+      "type": "string"
     },
     "patch_id": {
-      "pattern": "^[a-z0-9][a-z0-9_.-]*$",
       "title": "Patch Id",
       "type": "string"
     },
-    "prediction": {
+    "reviewer": {
       "minLength": 1,
-      "title": "Prediction",
+      "title": "Reviewer",
       "type": "string"
     },
     "schema_version": {
@@ -208,35 +252,20 @@
       "type": "string"
     },
     "status": {
-      "$ref": "#/$defs/EngineeringPatchStatus",
-      "default": "created"
-    },
-    "validated_at": {
-      "anyOf": [
-        {
-          "format": "date-time",
-          "type": "string"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null,
-      "title": "Validated At"
-    },
-    "worktree": {
-      "title": "Worktree",
-      "type": "string"
+      "$ref": "#/$defs/EngineeringAdjudicationStatus"
     }
   },
   "required": [
+    "campaign_id",
     "patch_id",
-    "diagnosis",
-    "prediction",
-    "branch",
-    "worktree",
-    "parent_commit"
+    "patch_commit",
+    "holdout_id",
+    "holdout_contract_sha256",
+    "holdout_base_commit",
+    "diff_review",
+    "status",
+    "reviewer"
   ],
-  "title": "EngineeringPatchRecord",
+  "title": "EngineeringAdjudicationRecord",
   "type": "object"
 }

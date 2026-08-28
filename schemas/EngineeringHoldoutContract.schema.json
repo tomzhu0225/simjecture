@@ -1,0 +1,117 @@
+{
+  "$defs": {
+    "EngineeringCheck": {
+      "additionalProperties": false,
+      "description": "One shell-free command in the immutable acceptance contract.",
+      "properties": {
+        "command": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Command",
+          "type": "array"
+        },
+        "environment": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Environment",
+          "type": "object"
+        },
+        "name": {
+          "pattern": "^[a-z][a-z0-9_.-]*$",
+          "title": "Name",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "stage": {
+          "$ref": "#/$defs/EngineeringCheckStage",
+          "default": "full"
+        },
+        "timeout_seconds": {
+          "default": 900.0,
+          "exclusiveMinimum": 0,
+          "maximum": 86400,
+          "title": "Timeout Seconds",
+          "type": "number"
+        }
+      },
+      "required": [
+        "name",
+        "command"
+      ],
+      "title": "EngineeringCheck",
+      "type": "object"
+    },
+    "EngineeringCheckStage": {
+      "enum": [
+        "commissioning",
+        "targeted",
+        "full",
+        "holdout"
+      ],
+      "title": "EngineeringCheckStage",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "A host-controlled validation suite withheld from the patch proposer.\n\nThis object is deliberately separate from EngineeringContract.  The\ncampaign records only its content hash and execution receipt after the\ncandidate has passed the visible checks.  The caller must keep the JSON\nfile and its path outside the agent's worktree and prompt surface.",
+  "properties": {
+    "base_commit": {
+      "pattern": "^[0-9a-f]{40,64}$",
+      "title": "Base Commit",
+      "type": "string"
+    },
+    "campaign_id": {
+      "pattern": "^[a-z0-9][a-z0-9_.-]*$",
+      "title": "Campaign Id",
+      "type": "string"
+    },
+    "checks": {
+      "items": {
+        "$ref": "#/$defs/EngineeringCheck"
+      },
+      "minItems": 1,
+      "title": "Checks",
+      "type": "array"
+    },
+    "holdout_id": {
+      "pattern": "^[a-z0-9][a-z0-9_.-]*$",
+      "title": "Holdout Id",
+      "type": "string"
+    },
+    "max_output_chars": {
+      "default": 30000,
+      "maximum": 2000000,
+      "minimum": 1000,
+      "title": "Max Output Chars",
+      "type": "integer"
+    },
+    "repository": {
+      "minLength": 1,
+      "title": "Repository",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "holdout_id",
+    "campaign_id",
+    "repository",
+    "base_commit",
+    "checks"
+  ],
+  "title": "EngineeringHoldoutContract",
+  "type": "object"
+}

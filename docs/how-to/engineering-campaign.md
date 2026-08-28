@@ -9,7 +9,8 @@ only within the declared contract.
 The current MVP provides deterministic campaign primitives. It does not yet
 ask an LLM to edit the repository or open a pull request. An operator or a
 future coding agent edits the worktree between `patch-create` and
-`patch-validate`.
+`patch-validate`. A final adjudication stage is now available for an external
+holdout contract and an independent deterministic diff review.
 
 ## Contract
 
@@ -47,6 +48,29 @@ checks with the target project's actual acceptance contract.
 }
 ```
 
+The visible contract must not contain checks with stage: "holdout". Keep
+those in a separate holdout file that is readable by the host adjudicator but
+not by the coding agent. For example:
+
+```json
+{
+  "schema_version": "0.1.0",
+  "holdout_id": "warpx-radiation-held-out-v1",
+  "campaign_id": "warpx-radiation-transport",
+  "repository": "/absolute/path/to/warpx",
+  "base_commit": "0123456789abcdef0123456789abcdef01234567",
+  "checks": [
+    {
+      "name": "held-out-parameter-case",
+      "stage": "holdout",
+      "command": ["ctest", "--test-dir", "build", "-R", "radiation-held-out"],
+      "timeout_seconds": 1800
+    }
+  ],
+  "max_output_chars": 30000
+}
+```
+
 The campaign resolves `base_commit` to a full commit ID when it is created.
 The target repository must be clean, and the campaign output must be outside
 that repository. This prevents a local experiment directory from becoming an
@@ -75,6 +99,11 @@ uv run simjecture engineering patch-validate \
   /tmp/simjecture-engineering/warpx-radiation-transport patch-001 \
   --message "connect radiation transport source term"
 
+uv run simjecture engineering adjudicate \
+  /tmp/simjecture-engineering/warpx-radiation-transport patch-001 \
+  --holdout /secure/holdouts/warpx-radiation-held-out-v1.json \
+  --assert-accepted
+
 uv run simjecture engineering status \
   /tmp/simjecture-engineering/warpx-radiation-transport
 ```
@@ -93,7 +122,9 @@ uv run simjecture engineering patch-create \
 
 The resulting campaign has a patch DAG rather than an overwritten edit
 history. `status --json` is suitable for the Web UI integration planned for a
-later increment.
+later increment. A patch that passes the visible checks is only `validated`;
+`adjudicate` can promote it to `accepted`, mark it as a holdout
+`counterexample`, or reject it for a diff-integrity violation.
 
 ## What this MVP does and does not prove
 
@@ -102,9 +133,21 @@ Validation commands are run in the candidate worktree without a shell, and a
 command that modifies tracked files after the candidate commit is rejected.
 The evidence record is therefore tied to an exact commit and diff.
 
-The checks in the JSON contract are still visible to the implementer. They are
-not a hidden holdout suite. For a release-quality campaign, add an external
-protected validation layer with held-out parameter cases, property or
+The checks in the visible JSON contract are visible to the implementer. The
+external holdout file is the protected validation layer: keep it outside the
+target repository, campaign output, agent prompt, and agent-readable
+filesystem. The command records only its content hash and post-run receipts,
+so the candidate cannot edit the acceptance boundary after seeing evidence.
+This is an operational secrecy boundary, not a cryptographic claim that a
+same-user process cannot discover every host file.
+
+The deterministic diff judge independently recomputes the candidate commit,
+parent commit, changed paths, policy violations, and worktree cleanliness. It
+does not decide whether the implementation is semantically correct; the
+holdout commands and, later, an optional model or human reviewer provide that
+separate judgment.
+
+For a release-quality campaign, add held-out parameter cases, property or
 metamorphic tests, independent numerical benchmarks, and a clean-room run.
 The engineering campaign should treat a passing CI as bounded evidence, not as
 proof that the implementation is universally correct.
