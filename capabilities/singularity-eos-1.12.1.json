@@ -1,0 +1,29 @@
+{
+  "environment": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "SINGULARITY_EOS_QUERY": "/opt/acs-capabilities/singularity-eos-1.12.1/bin/eos-query"
+  },
+  "executable": "bin/python",
+  "identity_files": [
+    "bin/eos-query",
+    "share/build-record.json"
+  ],
+  "manifest": {
+    "description": "Operator-supplied Singularity-EOS 1.12 query runtime for named analytic closures",
+    "executable_kind": "python-singularity-eos-query",
+    "name": "singularity-eos-1.12.1",
+    "preflight_checks": [
+      "checks.completed",
+      "checks.environment_valid",
+      "checks.evaluation_completed",
+      "checks.pressure_finite",
+      "checks.ideal_gas_pressure_matches_formula"
+    ],
+    "preflight_resource": "examples/singularity_runtime_smoke.py",
+    "preflight_result": "singularity_eos_capability_smoke.json",
+    "schema_version": "0.1.0",
+    "skill": "eos",
+    "version": "1.12.1"
+  },
+  "runtime_root": "../.runtime/singularity-eos-1.12.1"
+}

@@ -31,7 +31,8 @@ hypothesis solving or empirical closure.
   guide to freeze a repository contract and iterate through auditable patch
   hypotheses.
 - **Operator:** use [Deploy runtime profiles](how-to/deploy-runtimes.md) to
-  provision and verify the core, WarpX CPU, or WarpX CUDA environment.
+  provision and verify the core, WarpX, FLASH, equation-of-state, or opacity
+  environment.
 - **DSH operator:** use [Run a Simjecture campaign under DSH](how-to/deepseek-harness.md)
   to install the native MCP profile and verify its tool boundary.
 - **Reviewer:** inspect [Evaluation status](research/status.md),

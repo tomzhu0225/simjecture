@@ -411,6 +411,29 @@ revision before invoking the existing build and openPMD probe.
 See [`skills/warpx/SKILL.md`](skills/warpx/SKILL.md) and the deployment reference
 in [`skills/warpx/references/local-cuda-deployment.md`](skills/warpx/references/local-cuda-deployment.md).
 
+## Optional EOS and opacity capabilities
+
+Equation-of-state and opacity-table generators are optional instruments, not
+architectural dependencies. The installer clones and builds pinned upstream
+revisions into Git-ignored runtimes, then runs a non-evidentiary health probe:
+
+```bash
+uv run simjecture install atomec
+uv run simjecture install singularity-eos
+uv run simjecture install m-aneos
+uv run simjecture install optab
+```
+
+Repeating a command against a healthy runtime performs no installation. Use
+`--dry-run` to inspect the bootstrap command and `--repair` to replace an
+installer-managed prefix. The `eos` and `opacity` skills describe each code's
+interface and validity limits; they do not choose a material or scientific
+claim. An EOS evaluation is not an opacity table, and Optab consumes an
+external abundance table rather than solving an equation of state.
+
+See [`skills/eos/SKILL.md`](skills/eos/SKILL.md) and
+[`skills/opacity/SKILL.md`](skills/opacity/SKILL.md).
+
 ## Documentation
 
 The curated documentation uses Sphinx, MyST Markdown, and the PyData Sphinx

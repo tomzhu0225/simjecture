@@ -45,6 +45,18 @@ needed for the campaign.
    that identifies this skill, pins the executable and relevant identity files,
    declares required mounts and environment, and has no network or credentials.
 
+If you keep a licensed FLASH tree in a Git remote you control, install it
+without embedding that URL in Simjecture:
+
+```bash
+uv run simjecture install flash --repository git@github.com:<you>/<private-flash>.git
+```
+
+Set `FLASH_SETUP_ARGS`, `FLASH_OBJDIR`, and `FLASH_PREFLIGHT_PARFILE` in the
+environment. For a reusable local default, attach an overlay as described in
+[private-install.md](private-install.md). Simjecture still has no built-in
+FLASH download.
+
 Do not make a generic capability claim for a binary whose initialization is
 compiled for one fixed problem. Name such a capability after what it can
 actually execute. Rebuild and requalify after compiler, MPI, HDF5, FLASH source,

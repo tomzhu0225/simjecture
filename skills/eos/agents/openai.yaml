@@ -1,0 +1,4 @@
+interface:
+  display_name: "Equation of state"
+  short_description: "Commission user-installed EOS generators and evaluators"
+  default_prompt: "Use $eos to assess and commission an available equation-of-state capability for this hypothesis."

@@ -5665,6 +5665,130 @@ def test_builtin_flash_skill_has_no_campaign_science_or_flash_distribution() -> 
     )
 
 
+_MATERIAL_SKILL_FORBIDDEN = (
+    "hohlraum",
+    "holhraum",
+    "tungsten",
+    "CH foam",
+    "CH-foam",
+    "IONMIX",
+    "tomzhu",
+    "material-physics-deps",
+    "opacity-generator-audit",
+    "W52",
+    "Z-pinch",
+    "z-pinch",
+    "zpinch",
+    "QDSMC",
+    "dynamic hohlraum",
+)
+
+
+def _skill_text(skill_root: Path) -> str:
+    return "\n".join(
+        path.read_text(errors="replace")
+        for path in sorted(skill_root.rglob("*"))
+        if path.is_file()
+        and path.suffix in {".md", ".py", ".sh", ".yaml", ".json", ".cpp", ".f90"}
+    )
+
+
+def test_builtin_eos_skill_states_model_limits_without_campaign_science() -> None:
+    project_root = Path(__file__).resolve().parents[1]
+    skill_root = project_root / "skills" / "eos"
+    skills, _capabilities = discover_builtin_mvp_resources(project_root)
+    content = _skill_text(skill_root)
+    for phrase in _MATERIAL_SKILL_FORBIDDEN:
+        assert phrase.casefold() not in content.casefold()
+    assert "demos/" not in content
+    assert "eos" in skills
+    entry = skills.read("eos", None, max_chars=40_000)["content"]
+    assert "single-element ion-sphere" in entry
+    assert "complete material EOS" in entry
+    assert r"P_e=\rho\,\bar{Z}\,k_B T/(\bar{A}\,m_p)" in entry
+    assert "not a stable electron-EOS API" in entry
+    assert "not an opacity table" in entry
+    descriptors = {item["name"]: item for item in skills.descriptors()}
+    assert descriptors["eos"]["capability_names"] == [
+        "atomec-1.4.0",
+        "singularity-eos-1.12.1",
+        "m-aneos-1.0",
+    ]
+
+
+def test_builtin_opacity_skill_states_model_limits_without_campaign_science() -> None:
+    project_root = Path(__file__).resolve().parents[1]
+    skill_root = project_root / "skills" / "opacity"
+    skills, _capabilities = discover_builtin_mvp_resources(project_root)
+    content = _skill_text(skill_root)
+    for phrase in _MATERIAL_SKILL_FORBIDDEN:
+        assert phrase.casefold() not in content.casefold()
+    assert "demos/" not in content
+    assert "opacity" in skills
+    entry = skills.read("opacity", None, max_chars=40_000)["content"]
+    assert "solve chemical equilibrium or ionization" in entry
+    assert "hydrogen through zinc" in entry
+    assert "Atomic-structure codes" in entry
+    descriptors = {item["name"]: item for item in skills.descriptors()}
+    assert descriptors["opacity"]["capability_names"] == ["optab-1.3.1"]
+
+
+@pytest.mark.skipif(
+    not (Path(__file__).resolve().parents[1] / ".runtime/atomec-1.4.0/bin/python").is_file(),
+    reason="the operator-supplied atoMEC runtime is unavailable",
+)
+def test_builtin_atomec_skill_executes_neutral_smoke_inside_sandbox(tmp_path: Path) -> None:
+    project_root = Path(__file__).resolve().parents[1]
+    skills, capabilities = discover_builtin_mvp_resources(project_root)
+    capability = "atomec-1.4.0"
+    assert "eos" in skills
+    assert capability in capabilities
+    example = skills.read("eos", "examples/atomec_runtime_smoke.py", max_chars=100_000)["content"]
+    sandbox = BubblewrapSandbox(
+        tmp_path / "atomec-smoke",
+        _config(
+            max_command_seconds=120,
+            max_workspace_bytes=128 * 1024 * 1024,
+            max_file_bytes=64 * 1024 * 1024,
+            max_memory_bytes=4 * 1024 * 1024 * 1024,
+        ),
+        capabilities,
+    )
+    sandbox.write_file("atomec_runtime_smoke.py", example)
+    result = sandbox.run_capability(capability, ("atomec_runtime_smoke.py",))
+    assert result.returncode == 0, result.stderr
+    observed = json.loads((tmp_path / "atomec-smoke/atomec_capability_smoke.json").read_text())
+    assert observed["scientific_status"] == "permanently_non_evidentiary"
+    assert observed["checks"]["completed"] is True
+
+
+@pytest.mark.skipif(
+    not (
+        Path(__file__).resolve().parents[1] / ".runtime/singularity-eos-1.12.1/bin/python"
+    ).is_file(),
+    reason="the operator-supplied Singularity-EOS runtime is unavailable",
+)
+def test_builtin_singularity_eos_skill_executes_neutral_smoke_inside_sandbox(
+    tmp_path: Path,
+) -> None:
+    project_root = Path(__file__).resolve().parents[1]
+    skills, capabilities = discover_builtin_mvp_resources(project_root)
+    capability = "singularity-eos-1.12.1"
+    assert capability in capabilities
+    example = skills.read(
+        "eos", "examples/singularity_runtime_smoke.py", max_chars=100_000
+    )["content"]
+    sandbox = BubblewrapSandbox(tmp_path / "singularity-smoke", _config(), capabilities)
+    sandbox.write_file("singularity_runtime_smoke.py", example)
+    result = sandbox.run_capability(capability, ("singularity_runtime_smoke.py",))
+    assert result.returncode == 0, result.stderr
+    observed = json.loads(
+        (tmp_path / "singularity-smoke/singularity_eos_capability_smoke.json").read_text()
+    )
+    assert observed["scientific_status"] == "permanently_non_evidentiary"
+    assert observed["checks"]["completed"] is True
+
+
 def test_flash_guided_commission_is_self_contained_and_nonevidentiary() -> None:
     project_root = Path(__file__).resolve().parents[1]
     package = MVPGuidedCommissioningPackage.read(

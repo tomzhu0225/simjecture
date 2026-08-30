@@ -162,6 +162,8 @@ def _install(args: argparse.Namespace) -> int:
         jobs=args.jobs,
         arch=args.arch,
         capture_output=args.json,
+        repository=args.repository,
+        git_ref=args.git_ref,
     )
     print_deployment_report(report, as_json=args.json)
     return int(not (report.ready or report.planned))
@@ -877,9 +879,28 @@ def build_parser() -> argparse.ArgumentParser:
     )
     install.add_argument(
         "--source",
-        help="Audited WarpX source checkout required for a new CUDA build",
+        help=(
+            "Audited local source checkout: required for WarpX CUDA; optional "
+            "for EOS, opacity, and FLASH"
+        ),
     )
-    install.add_argument("--jobs", type=int, default=8, help="CUDA compilation jobs")
+    install.add_argument(
+        "--repository",
+        help=(
+            "Operator-owned Git remote to clone for FLASH; Simjecture never "
+            "supplies a default FLASH URL"
+        ),
+    )
+    install.add_argument(
+        "--git-ref",
+        help="Git tag, branch, or commit for --repository",
+    )
+    install.add_argument(
+        "--jobs",
+        type=int,
+        default=8,
+        help="Build jobs for WarpX CUDA and EOS/opacity bootstraps",
+    )
     install.add_argument(
         "--arch",
         help="CUDA compute capability digits, such as 89; omitted means auto-detect",
@@ -887,7 +908,10 @@ def build_parser() -> argparse.ArgumentParser:
     install.add_argument(
         "--repair",
         action="store_true",
-        help="Update an existing Conda-managed WarpX CPU prefix",
+        help=(
+            "Update a Conda-managed WarpX CPU prefix, or replace an "
+            "installer-managed EOS or opacity runtime"
+        ),
     )
     install.add_argument(
         "--dry-run",

@@ -18,6 +18,13 @@ review the current license, and keep acquired source, modified source, and built
 binaries outside this source distribution. Simjecture's `flash-mhd` skill and
 capability metadata do not relicense FLASH.
 
+Optional equation-of-state and opacity packages (atoMEC, Singularity-EOS,
+M-ANEOS, and Optab) are obtained under their upstream licenses. The
+operator-triggered installer may clone and build pinned revisions into a
+Git-ignored runtime; this repository still does not relicense those packages or
+commit their source, binaries, or atomic databases. Consult each upstream
+distribution for its license and required notices.
+
 Model providers, literature services, and externally supplied guided
 commissioning packages are services or inputs rather than sublicensed parts of
 this source distribution. Run artifacts must retain the provenance and license

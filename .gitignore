@@ -17,3 +17,4 @@ dist/
 *.sqlite3-wal
 artifacts/
 data/
+.private/

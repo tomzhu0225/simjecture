@@ -1,0 +1,41 @@
+{
+  "environment": {
+    "OMPI_MCA_btl": "self,vader",
+    "OMPI_MCA_pml": "ob1",
+    "OMP_NUM_THREADS": "1",
+    "OPTAB_EXECUTABLE": "/opt/acs-capabilities/optab-1.3.1/bin/optab",
+    "OPTAB_MPI_LAUNCHER": "/opt/acs-capabilities/optab-1.3.1/bin/mpi-launcher",
+    "OPTAB_MPI_RANKS": "1",
+    "OPTAB_PREFLIGHT_INPUT": "/opt/acs-capabilities/optab-1.3.1/share/preflight",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "executable": "bin/python",
+  "identity_files": [
+    "bin/optab",
+    "bin/mpi-launcher",
+    "share/build-record.json"
+  ],
+  "manifest": {
+    "description": "Operator-supplied Optab 1.3 MPI/HDF5 opacity-table generator",
+    "executable_kind": "python-optab-mpi-hdf5",
+    "name": "optab-1.3.1",
+    "preflight_checks": [
+      "checks.completed",
+      "checks.environment_valid",
+      "checks.executable_present",
+      "checks.mpi_launcher_present",
+      "checks.input_present",
+      "checks.input_copied",
+      "checks.process_completed",
+      "checks.return_code_zero",
+      "checks.hdf5_output_created",
+      "checks.hdf5_output_readable"
+    ],
+    "preflight_resource": "examples/optab_runtime_smoke.py",
+    "preflight_result": "optab_capability_smoke.json",
+    "schema_version": "0.1.0",
+    "skill": "opacity",
+    "version": "1.3.1"
+  },
+  "runtime_root": "../.runtime/optab-1.3.1"
+}

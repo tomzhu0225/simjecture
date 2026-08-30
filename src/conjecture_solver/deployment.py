@@ -10,6 +10,7 @@ import subprocess
 import sys
 import tempfile
 import tomllib
+from dataclasses import dataclass
 from enum import StrEnum
 from pathlib import Path
 from typing import Literal
@@ -27,12 +28,26 @@ from .mvp_skills import (
 WARPX_CPU_CAPABILITY = "warpx-cpu-26.07"
 WARPX_CUDA_CAPABILITY = "warpx-cuda-openpmd-26.07"
 FLASH_MHD_CAPABILITY = "flash-island-coalescence-resistive-mhd-4.8"
+ATOMEC_CAPABILITY = "atomec-1.4.0"
+SINGULARITY_EOS_CAPABILITY = "singularity-eos-1.12.1"
+M_ANEOS_CAPABILITY = "m-aneos-1.0"
+OPTAB_CAPABILITY = "optab-1.3.1"
 PINNED_WARPX_REVISION = "312d507407a1bf6f01ae43fb41b5c3a3700d053c"
+PINNED_ATOMEC_REVISION = "4b05849a1bcf6a9d682673c360ec2ebfb4eceab3"
+PINNED_SINGULARITY_EOS_REVISION = "760ac3f8e106addc13dad8a47b9d4ad75e44ea48"
+PINNED_MANEOS_REVISION = "58d75bc499a371c98de28d5bd7f772b43f97037f"
+PINNED_OPTAB_REVISION = "2d95b7c1a944e15d80605afee783c22eed441ae1"
+PRIVATE_ROOT_ENV = "SIMJECTURE_PRIVATE_ROOT"
+FLASH_BOOTSTRAP_SCRIPT = "skills/flash-mhd/scripts/bootstrap_flash.sh"
 
 _CAPABILITY_CONFIGS = {
     WARPX_CPU_CAPABILITY: "warpx-cpu-26.07.json",
     WARPX_CUDA_CAPABILITY: "warpx-cuda-openpmd-26.07.json",
     FLASH_MHD_CAPABILITY: "flash-island-coalescence-resistive-mhd-4.8.json",
+    ATOMEC_CAPABILITY: "atomec-1.4.0.json",
+    SINGULARITY_EOS_CAPABILITY: "singularity-eos-1.12.1.json",
+    M_ANEOS_CAPABILITY: "m-aneos-1.0.json",
+    OPTAB_CAPABILITY: "optab-1.3.1.json",
 }
 _CORE_DISTRIBUTIONS = (
     "simjecture",
@@ -50,12 +65,116 @@ class DeploymentProfile(StrEnum):
     WARPX_CPU = "warpx-cpu"
     WARPX_CUDA = "warpx-cuda"
     FLASH = "flash"
+    ATOMEC = "atomec"
+    SINGULARITY_EOS = "singularity-eos"
+    M_ANEOS = "m-aneos"
+    OPTAB = "optab"
 
 
 _PROFILE_BY_CAPABILITY = {
     WARPX_CPU_CAPABILITY: DeploymentProfile.WARPX_CPU,
     WARPX_CUDA_CAPABILITY: DeploymentProfile.WARPX_CUDA,
     FLASH_MHD_CAPABILITY: DeploymentProfile.FLASH,
+    ATOMEC_CAPABILITY: DeploymentProfile.ATOMEC,
+    SINGULARITY_EOS_CAPABILITY: DeploymentProfile.SINGULARITY_EOS,
+    M_ANEOS_CAPABILITY: DeploymentProfile.M_ANEOS,
+    OPTAB_CAPABILITY: DeploymentProfile.OPTAB,
+}
+_MISSING_RUNTIME_REMEDY = {
+    FLASH_MHD_CAPABILITY: (
+        "Obtain FLASH from the official FLASH Center under its license, "
+        "register the local runtime described by "
+        "`skills/flash-mhd/references/local-deployment.md`, or add a private "
+        "overlay bootstrap as described by "
+        "`skills/flash-mhd/references/private-install.md`, then rerun "
+        "`simjecture doctor --profile flash`."
+    ),
+    ATOMEC_CAPABILITY: (
+        "Run `simjecture install atomec` to provision the pinned atoMEC runtime "
+        "described by `skills/eos/references/local-deployment.md`."
+    ),
+    SINGULARITY_EOS_CAPABILITY: (
+        "Run `simjecture install singularity-eos` to provision the pinned "
+        "Singularity-EOS runtime described by "
+        "`skills/eos/references/local-deployment.md`."
+    ),
+    M_ANEOS_CAPABILITY: (
+        "Run `simjecture install m-aneos` to provision the pinned M-ANEOS "
+        "runtime described by `skills/eos/references/local-deployment.md`."
+    ),
+    OPTAB_CAPABILITY: (
+        "Run `simjecture install optab` to provision the pinned Optab runtime "
+        "described by `skills/opacity/references/local-deployment.md`."
+    ),
+}
+_PREFLIGHT_REMEDY = {
+    WARPX_CPU_CAPABILITY: (
+        "Inspect the runtime and rerun the CPU profile installer with --repair."
+    ),
+    WARPX_CUDA_CAPABILITY: (
+        "Preserve or move the CUDA runtime and dependency roots, then perform "
+        "a fresh audited installation."
+    ),
+    FLASH_MHD_CAPABILITY: (
+        "Preserve the operator-supplied FLASH runtime, inspect its build "
+        "record and preflight input, and follow the flash-mhd deployment guide."
+    ),
+    ATOMEC_CAPABILITY: (
+        "Inspect the atoMEC runtime and rerun `simjecture install atomec --repair`."
+    ),
+    SINGULARITY_EOS_CAPABILITY: (
+        "Inspect the Singularity-EOS runtime and rerun "
+        "`simjecture install singularity-eos --repair`."
+    ),
+    M_ANEOS_CAPABILITY: (
+        "Inspect the M-ANEOS runtime and rerun `simjecture install m-aneos --repair`."
+    ),
+    OPTAB_CAPABILITY: (
+        "Inspect the Optab runtime and rerun `simjecture install optab --repair`."
+    ),
+}
+
+
+@dataclass(frozen=True)
+class _BootstrapSpec:
+    capability: str
+    script: str
+    managed_marker: str
+    pinned_revision: str
+    source_label: str
+    source_required: bool = False
+    verify_revision: bool = True
+
+
+_BOOTSTRAP_SPECS = {
+    DeploymentProfile.ATOMEC: _BootstrapSpec(
+        capability=ATOMEC_CAPABILITY,
+        script="skills/eos/scripts/bootstrap_atomec.sh",
+        managed_marker="pyvenv.cfg",
+        pinned_revision=PINNED_ATOMEC_REVISION,
+        source_label="atoMEC",
+    ),
+    DeploymentProfile.SINGULARITY_EOS: _BootstrapSpec(
+        capability=SINGULARITY_EOS_CAPABILITY,
+        script="skills/eos/scripts/bootstrap_singularity_eos.sh",
+        managed_marker="share/build-record.json",
+        pinned_revision=PINNED_SINGULARITY_EOS_REVISION,
+        source_label="Singularity-EOS",
+    ),
+    DeploymentProfile.M_ANEOS: _BootstrapSpec(
+        capability=M_ANEOS_CAPABILITY,
+        script="skills/eos/scripts/bootstrap_maneos.sh",
+        managed_marker="share/build-record.json",
+        pinned_revision=PINNED_MANEOS_REVISION,
+        source_label="M-ANEOS",
+    ),
+    DeploymentProfile.OPTAB: _BootstrapSpec(
+        capability=OPTAB_CAPABILITY,
+        script="skills/opacity/scripts/bootstrap_optab.sh",
+        managed_marker="share/build-record.json",
+        pinned_revision=PINNED_OPTAB_REVISION,
+        source_label="Optab",
+    ),
 }
 
 
@@ -83,6 +202,24 @@ class DeploymentReport(StrictModel):
     changed: bool = False
     command: tuple[str, ...] = ()
     checks: tuple[DeploymentCheck, ...]
+
+
+def _git_remote(value: str | Path | None) -> str | None:
+    """Return a Git remote if *value* is a URL rather than a local directory."""
+
+    if value is None:
+        return None
+    text = str(value).strip()
+    if not text:
+        return None
+    expanded = Path(text).expanduser()
+    if expanded.is_dir():
+        return None
+    if text.startswith(("git@", "ssh://", "https://", "http://", "git://")):
+        return text
+    if text.endswith(".git"):
+        return text
+    return None
 
 
 def resolve_project_root(explicit: str | Path | None = None) -> Path:
@@ -384,18 +521,13 @@ class DeploymentManager:
         try:
             installation = MVPCapabilityInstallation.read(config_path)
         except (OSError, ValueError) as error:
-            if capability == FLASH_MHD_CAPABILITY:
-                remedy = (
-                    "Obtain FLASH from the official FLASH Center under its license, "
-                    "build and register the application-specific local runtime described "
-                    "by `skills/flash-mhd/references/local-deployment.md`, then rerun "
-                    "`simjecture doctor --profile flash`."
-                )
-            else:
-                remedy = (
+            remedy = _MISSING_RUNTIME_REMEDY.get(
+                capability,
+                (
                     "Run `simjecture install "
                     f"{_PROFILE_BY_CAPABILITY[capability].value}`."
-                )
+                ),
+            )
             return (
                 [
                     _check(
@@ -423,20 +555,13 @@ class DeploymentManager:
             try:
                 detail = self._probe_capability(installation)
             except (OSError, ValueError, KeyError, RuntimeError, json.JSONDecodeError) as error:
-                if capability == WARPX_CPU_CAPABILITY:
-                    remedy = (
-                        "Inspect the runtime and rerun the CPU profile installer with --repair."
-                    )
-                elif capability == WARPX_CUDA_CAPABILITY:
-                    remedy = (
-                        "Preserve or move the CUDA runtime and dependency roots, then perform "
-                        "a fresh audited installation."
-                    )
-                else:
-                    remedy = (
-                        "Preserve the operator-supplied FLASH runtime, inspect its build "
-                        "record and preflight input, and follow the flash-mhd deployment guide."
-                    )
+                remedy = _PREFLIGHT_REMEDY.get(
+                    capability,
+                    (
+                        "Inspect the operator-supplied runtime, its build record, and the "
+                        "matching skill deployment guide."
+                    ),
+                )
                 checks.append(
                     _check(
                         f"capability.{capability}.preflight",
@@ -468,20 +593,20 @@ class DeploymentManager:
             raise ValueError(f"unknown deployment profile {profile!r}")
         checks = self._core_checks(probe=probe)
         capabilities: tuple[tuple[str, bool], ...]
-        if profile == DeploymentProfile.WARPX_CPU:
-            capabilities = ((WARPX_CPU_CAPABILITY, True),)
-        elif profile == DeploymentProfile.WARPX_CUDA:
-            capabilities = ((WARPX_CUDA_CAPABILITY, True),)
-        elif profile == DeploymentProfile.FLASH:
-            capabilities = ((FLASH_MHD_CAPABILITY, True),)
-        elif profile == "all":
-            capabilities = (
-                (WARPX_CPU_CAPABILITY, False),
-                (WARPX_CUDA_CAPABILITY, False),
-                (FLASH_MHD_CAPABILITY, False),
+        if profile == "all":
+            capabilities = tuple(
+                (capability, False) for capability in _PROFILE_BY_CAPABILITY
             )
-        else:
+        elif profile == DeploymentProfile.CORE:
             capabilities = ()
+        else:
+            selected = DeploymentProfile(profile)
+            capability_name = next(
+                name
+                for name, mapped in _PROFILE_BY_CAPABILITY.items()
+                if mapped is selected
+            )
+            capabilities = ((capability_name, True),)
         for capability, required in capabilities:
             capability_checks, _ = self._capability_checks(
                 capability,
@@ -648,21 +773,28 @@ class DeploymentManager:
         self._write_report(report)
         return report
 
-    def _source_revision_check(self, source: Path) -> DeploymentCheck:
+    def _source_revision_check(
+        self,
+        source: Path,
+        *,
+        expected: str = PINNED_WARPX_REVISION,
+        label: str = "WarpX",
+        check_name: str = "install.warpx-cuda.source",
+    ) -> DeploymentCheck:
         git = shutil.which("git")
         if not source.is_dir():
             return _check(
-                "install.warpx-cuda.source",
+                check_name,
                 DeploymentCheckStatus.FAIL,
-                f"WarpX source directory is unavailable: {source}",
-                remedy=f"Check out WarpX revision {PINNED_WARPX_REVISION}.",
+                f"{label} source directory is unavailable: {source}",
+                remedy=f"Check out {label} revision {expected}.",
             )
         if not git:
             return _check(
-                "install.warpx-cuda.source",
+                check_name,
                 DeploymentCheckStatus.FAIL,
-                "git is unavailable, so the WarpX source revision cannot be verified",
-                remedy="Install Git and use the audited WarpX source checkout.",
+                f"git is unavailable, so the {label} source revision cannot be verified",
+                remedy=f"Install Git and use the audited {label} source checkout.",
             )
         result = subprocess.run(
             (git, "-C", str(source), "rev-parse", "HEAD"),
@@ -671,18 +803,193 @@ class DeploymentManager:
             text=True,
         )
         observed = result.stdout.strip()
-        if result.returncode != 0 or observed != PINNED_WARPX_REVISION:
+        if result.returncode != 0 or observed != expected:
             return _check(
-                "install.warpx-cuda.source",
+                check_name,
                 DeploymentCheckStatus.FAIL,
                 f"observed source revision={observed or 'unavailable'}",
-                remedy=f"Use the audited WarpX revision {PINNED_WARPX_REVISION}.",
+                remedy=f"Use the audited {label} revision {expected}.",
             )
         return _check(
-            "install.warpx-cuda.source",
+            check_name,
             DeploymentCheckStatus.PASS,
-            f"WarpX source revision={observed}",
+            f"{label} source revision={observed}",
         )
+
+    def _discover_private_bootstrap(self, profile: DeploymentProfile) -> Path | None:
+        """Return an operator-owned bootstrap, never a public FLASH/download script."""
+
+        relative = Path(profile.value) / "bootstrap.sh"
+        candidates: list[Path] = []
+        overlay = os.environ.get(PRIVATE_ROOT_ENV, "").strip()
+        if overlay:
+            candidates.append(Path(overlay).expanduser() / relative)
+        candidates.append(self.project_root / ".private" / relative)
+        for path in candidates:
+            if path.is_file() and os.access(path, os.X_OK):
+                return path.resolve()
+        return None
+
+    def _install_bootstrap(
+        self,
+        profile: DeploymentProfile,
+        *,
+        dry_run: bool,
+        repair: bool,
+        source: str | Path | None,
+        jobs: int,
+        capture_output: bool,
+        spec: _BootstrapSpec | None = None,
+        git_url: str | None = None,
+        git_ref: str | None = None,
+    ) -> DeploymentReport:
+        spec = spec or _BOOTSTRAP_SPECS[profile]
+        ready = self._already_ready(profile)
+        if ready is not None:
+            self._write_report(ready)
+            return ready
+        checks = self._core_checks(probe=True)
+        prefix = self._configured_runtime_root(spec.capability)
+        marker = prefix / spec.managed_marker
+        check_prefix = f"install.{profile.value}"
+        if prefix.exists() and not repair:
+            checks.append(
+                _check(
+                    f"{check_prefix}.existing_runtime",
+                    DeploymentCheckStatus.FAIL,
+                    f"an existing but unhealthy runtime was left unchanged at {prefix}",
+                    remedy=(
+                        "Inspect it, then rerun with --repair to replace an "
+                        "installer-managed prefix."
+                    ),
+                )
+            )
+        if prefix.exists() and repair and not marker.is_file():
+            checks.append(
+                _check(
+                    f"{check_prefix}.existing_runtime",
+                    DeploymentCheckStatus.FAIL,
+                    f"refusing to modify a directory that is not installer-managed at {prefix}",
+                    remedy="Move the directory aside and run the installer again.",
+                )
+            )
+        if jobs < 1:
+            checks.append(
+                _check(
+                    f"{check_prefix}.jobs",
+                    DeploymentCheckStatus.FAIL,
+                    f"jobs={jobs}",
+                    remedy="Choose at least one build job.",
+                )
+            )
+        if spec.source_required and source is None:
+            checks.append(
+                _check(
+                    f"{check_prefix}.source",
+                    DeploymentCheckStatus.FAIL,
+                    f"--source is required for {spec.source_label}",
+                    remedy=(
+                        f"Supply a {spec.source_label} tree you obtained under "
+                        "its upstream license. Simjecture will not download it."
+                    ),
+                )
+            )
+        if source is not None and spec.verify_revision:
+            checks.append(
+                self._source_revision_check(
+                    Path(source).resolve(),
+                    expected=spec.pinned_revision,
+                    label=spec.source_label,
+                    check_name=f"{check_prefix}.source",
+                )
+            )
+        elif source is not None:
+            source_path = Path(source).expanduser().resolve()
+            if not source_path.is_dir():
+                checks.append(
+                    _check(
+                        f"{check_prefix}.source",
+                        DeploymentCheckStatus.FAIL,
+                        f"{spec.source_label} source directory is unavailable: {source_path}",
+                        remedy=f"Supply a local {spec.source_label} source tree.",
+                    )
+                )
+        script_path = Path(spec.script)
+        bootstrap = (
+            script_path if script_path.is_absolute() else self.project_root / script_path
+        )
+        if not bootstrap.is_file() or not os.access(bootstrap, os.X_OK):
+            checks.append(
+                _check(
+                    f"{check_prefix}.bootstrap",
+                    DeploymentCheckStatus.FAIL,
+                    f"bootstrap is unavailable or not executable: {bootstrap}",
+                    remedy="Restore the versioned skill scripts.",
+                )
+            )
+        if not self._ready(checks):
+            return DeploymentReport(
+                profile=profile,
+                project_root=str(self.project_root),
+                ready=False,
+                checks=tuple(checks),
+            )
+        command = (
+            str(bootstrap),
+            "--prefix",
+            str(prefix),
+            "--project-root",
+            str(self.project_root),
+            "--jobs",
+            str(jobs),
+            *(("--source", str(Path(source).resolve())) if source is not None else ()),
+            *(("--git-url", git_url) if git_url else ()),
+            *(("--git-ref", git_ref) if git_ref else ()),
+            *(("--repair",) if repair else ()),
+        )
+        if dry_run:
+            checks.append(
+                _check(
+                    f"{check_prefix}.command",
+                    DeploymentCheckStatus.PLANNED,
+                    " ".join(command),
+                )
+            )
+            return DeploymentReport(
+                profile=profile,
+                project_root=str(self.project_root),
+                ready=False,
+                planned=True,
+                command=command,
+                checks=tuple(checks),
+            )
+        result = subprocess.run(
+            command,
+            check=False,
+            text=True,
+            capture_output=capture_output,
+        )
+        if result.returncode != 0:
+            detail = result.stderr.strip() if capture_output else "bootstrap failed"
+            checks.append(
+                _check(
+                    f"{check_prefix}.command",
+                    DeploymentCheckStatus.FAIL,
+                    detail or "bootstrap failed without diagnostic output",
+                    remedy="Preserve the build log and inspect the skill deployment guide.",
+                )
+            )
+            return DeploymentReport(
+                profile=profile,
+                project_root=str(self.project_root),
+                ready=False,
+                command=command,
+                checks=tuple(checks),
+            )
+        report = self.doctor(profile.value, probe=True)
+        report = report.model_copy(update={"changed": True, "command": command})
+        self._write_report(report)
+        return report
 
     def _install_cuda(
         self,
@@ -836,12 +1143,50 @@ class DeploymentManager:
         jobs: int = 8,
         arch: str | None = None,
         capture_output: bool = False,
+        repository: str | None = None,
+        git_ref: str | None = None,
     ) -> DeploymentReport:
         if profile is DeploymentProfile.CORE:
-            report = self.doctor(DeploymentProfile.CORE, probe=True)
+            report = self.doctor(profile.value, probe=True)
             if not dry_run:
                 self._write_report(report)
             return report
+        if profile is DeploymentProfile.FLASH:
+            git_url = repository or _git_remote(source)
+            local_source = None if git_url else source
+            overlay = self._discover_private_bootstrap(profile)
+            has_fetch = bool(
+                git_url or local_source or os.environ.get("FLASH_GIT_URL", "").strip()
+            )
+            if overlay is None and not has_fetch:
+                report = self.doctor(profile.value, probe=True)
+                if not dry_run:
+                    self._write_report(report)
+                return report
+            script = (
+                str(overlay)
+                if overlay is not None
+                else FLASH_BOOTSTRAP_SCRIPT
+            )
+            return self._install_bootstrap(
+                profile,
+                dry_run=dry_run,
+                repair=repair,
+                source=local_source,
+                jobs=jobs,
+                capture_output=capture_output,
+                git_url=git_url,
+                git_ref=git_ref,
+                spec=_BootstrapSpec(
+                    capability=FLASH_MHD_CAPABILITY,
+                    script=script,
+                    managed_marker="share/build-record.json",
+                    pinned_revision="",
+                    source_label="FLASH",
+                    source_required=False,
+                    verify_revision=False,
+                ),
+            )
         if profile is DeploymentProfile.WARPX_CPU:
             return self._install_cpu(
                 dry_run=dry_run,
@@ -849,11 +1194,15 @@ class DeploymentManager:
                 environment_manager=environment_manager,
                 capture_output=capture_output,
             )
-        if profile is DeploymentProfile.FLASH:
-            report = self.doctor(DeploymentProfile.FLASH, probe=True)
-            if not dry_run:
-                self._write_report(report)
-            return report
+        if profile in _BOOTSTRAP_SPECS:
+            return self._install_bootstrap(
+                profile,
+                dry_run=dry_run,
+                repair=repair,
+                source=source,
+                jobs=jobs,
+                capture_output=capture_output,
+            )
         if repair:
             checks = self._core_checks(probe=True)
             checks.append(

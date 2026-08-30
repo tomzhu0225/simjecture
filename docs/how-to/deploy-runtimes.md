@@ -76,10 +76,61 @@ Once the local runtime exists, verify it without changing it:
 uv run simjecture doctor --profile flash
 ```
 
+`simjecture install flash` never contains a FLASH download URL. Pass **your**
+licensed copy:
+
+```bash
+uv run simjecture install flash \
+  --repository git@github.com:<you>/<your-private-flash>.git \
+  --git-ref <tag-or-commit>
+```
+
+or `--source /absolute/path/to/FLASH`. Set `FLASH_SETUP_ARGS`, `FLASH_OBJDIR`,
+and `FLASH_PREFLIGHT_PARFILE` in the environment. A Git-ignored overlay can
+store those defaults. See `skills/flash-mhd/references/private-install.md`.
+
 The cached probe exercises the exact MPI launcher and reads a fresh HDF5 file.
 It is permanently non-evidentiary. The campaign must still commission its
 actual compiled model, initial state, boundaries, diagnostics, and numerical
 regime prospectively.
+
+## Equation of state
+
+atoMEC, Singularity-EOS, and M-ANEOS are optional instruments. The installer
+clones the pinned upstream revision into a Git-ignored runtime, compiles any
+query driver, and runs a non-evidentiary probe. Host prerequisites are Git and
+Python 3.12 or 3.11; Singularity-EOS also needs `g++`, and M-ANEOS needs
+`gfortran` and `make`.
+
+```bash
+uv run simjecture install atomec
+uv run simjecture install singularity-eos
+uv run simjecture install m-aneos
+```
+
+Repeating a command against a healthy runtime performs no installation. It will
+not overwrite an unhealthy existing directory; `--repair` is accepted only for
+an installer-managed prefix. `--source` may supply an already cloned tree at
+the pinned revision. The generic procedure is documented in
+`skills/eos/references/local-deployment.md`. A campaign must still commission
+the named model, composition, units, and estimator.
+
+## Opacity tables
+
+Optab is optional and GPL-3.0 licensed. The installer clones the pinned
+revision, builds the MPI/HDF5 executable, fetches the Gaunt-factor and NIST
+databases required by the doctor probe, and writes a one-zone continuum
+hydrogen input. Host prerequisites are Git, Python 3.12 or 3.11, `h5pfc`, and
+an MPI launcher.
+
+```bash
+uv run simjecture install optab
+```
+
+The probe copies the prepared input tree, launches Optab, and reads HDF5. It
+does not qualify a production opacity table. Optab consumes an external
+abundance file; it is not an equation-of-state solver. See
+`skills/opacity/references/local-deployment.md`.
 
 ## Inspect without installing
 
@@ -88,10 +139,12 @@ uv run simjecture doctor
 uv run simjecture doctor --profile warpx-cpu
 uv run simjecture doctor --profile warpx-cuda --json
 uv run simjecture doctor --profile flash --json
+uv run simjecture doctor --profile atomec --json
+uv run simjecture doctor --profile optab --json
 uv run simjecture install warpx-cpu --dry-run
 ```
 
-The default doctor treats missing WarpX profiles as optional warnings and fails
+The default doctor treats missing optional profiles as warnings and fails
 only when the core is unusable. Selecting a profile makes that capability
 required. `--skip-probes` checks files, manifests, devices, and runtime identity
 without executing the declared smoke programs.

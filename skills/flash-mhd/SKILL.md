@@ -68,6 +68,8 @@ Read these resources as needed:
   qualification checks, including the limits of FLASH Hall physics.
 - [Local deployment](references/local-deployment.md): operator-side acquisition,
   build, validation, and license-safe capability exposure.
+- [Private install overlay](references/private-install.md): host-local bootstrap
+  for `simjecture install flash --source` without publishing FLASH.
 - [Runtime smoke](examples/runtime_smoke.py): a materializable, permanently
   non-evidentiary executable/hash/output health check for an already prepared
   FLASH test input.

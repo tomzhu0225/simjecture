@@ -39,9 +39,9 @@ than the scientific default.
 
 ## Optional simulation runtimes
 
-The default Python sandbox supports ordinary numerical work. WarpX and FLASH
-capabilities are optional local instruments. They are mounted read-only and are
-not downloaded by `uv sync`.
+The default Python sandbox supports ordinary numerical work. WarpX, FLASH,
+equation-of-state, and opacity capabilities are optional local instruments.
+They are mounted read-only and are not downloaded by `uv sync`.
 
 The CPU profile is provisioned and checked in one command:
 
@@ -85,12 +85,32 @@ verify its exact executable, MPI launch, and HDF5 readback with:
 uv run simjecture doctor --profile flash
 ```
 
-`simjecture install flash` is intentionally a verification alias: it does not
-provision or modify FLASH. Follow
-`skills/flash-mhd/references/local-deployment.md` for the local layout and
-qualification boundary. A FLASH executable is compiled for a selected
-application and physics configuration; it must not be treated as a universal
-MHD binary.
+`simjecture install flash` does not download FLASH. Follow
+`skills/flash-mhd/references/local-deployment.md` for the local layout. A FLASH
+executable is compiled for a selected application and physics configuration; it
+must not be treated as a universal MHD binary. For a private one-command rebuild of a tree you already obtained, or a clone of
+a remote only you configured, attach an overlay as described in
+`skills/flash-mhd/references/private-install.md`. The public tree still contains
+no FLASH download URL.
+
+Equation-of-state and opacity-table generators use the same installer path as
+WarpX CPU. The command clones a pinned upstream revision into `.runtime/` and
+runs a non-evidentiary probe:
+
+```bash
+uv run simjecture install atomec
+uv run simjecture install singularity-eos
+uv run simjecture install m-aneos
+uv run simjecture install optab
+```
+
+Use `--dry-run` to inspect a new provisioning command. An unhealthy
+installer-managed prefix is preserved unless `--repair` is explicit. Follow
+`skills/eos/references/local-deployment.md` and
+`skills/opacity/references/local-deployment.md`. An EOS capability is not an
+opacity table; Optab consumes an external abundance table rather than solving
+thermodynamic closure. FLASH remains operator-supplied because its license
+restricts redistribution.
 
 ## Local web interface
 
