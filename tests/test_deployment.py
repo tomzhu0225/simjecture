@@ -15,6 +15,7 @@ from conjecture_solver.deployment import (
     DeploymentProfile,
     resolve_project_root,
 )
+from conjecture_solver.mvp_skills import MVPCapabilityConfig
 
 
 def _capability_payload(name: str, runtime_root: str) -> dict[str, object]:
@@ -64,9 +65,29 @@ def _project(tmp_path: Path) -> Path:
             )
         )
     )
+    for name, runtime in (
+        ("atomec-1.4.0", "../.runtime/atomec-1.4.0"),
+        ("singularity-eos-1.12.1", "../.runtime/singularity-eos-1.12.1"),
+        ("m-aneos-1.0", "../.runtime/m-aneos-1.0"),
+        ("optab-1.3.1", "../.runtime/optab-1.3.1"),
+    ):
+        (root / "capabilities" / f"{name}.json").write_text(
+            json.dumps(_capability_payload(name, runtime))
+        )
     bootstrap = root / "skills/warpx/scripts/bootstrap_local_cuda.sh"
     bootstrap.write_text("#!/usr/bin/env bash\nexit 0\n")
     bootstrap.chmod(0o755)
+    for relative in (
+        "skills/eos/scripts/bootstrap_atomec.sh",
+        "skills/eos/scripts/bootstrap_singularity_eos.sh",
+        "skills/eos/scripts/bootstrap_maneos.sh",
+        "skills/opacity/scripts/bootstrap_optab.sh",
+        "skills/flash-mhd/scripts/bootstrap_flash.sh",
+    ):
+        script = root / relative
+        script.parent.mkdir(parents=True, exist_ok=True)
+        script.write_text("#!/usr/bin/env bash\nexit 0\n")
+        script.chmod(0o755)
     return root
 
 
@@ -115,6 +136,25 @@ def test_cli_parses_install_and_doctor_profiles() -> None:
     flash = build_parser().parse_args(["doctor", "--profile", "flash", "--json"])
     assert flash.profile == "flash"
 
+    atomec = build_parser().parse_args(["doctor", "--profile", "atomec", "--json"])
+    assert atomec.profile == "atomec"
+    optab = build_parser().parse_args(["install", "optab", "--dry-run"])
+    assert optab.profile == "optab"
+    assert optab.dry_run is True
+
+    flash_remote = build_parser().parse_args(
+        [
+            "install",
+            "flash",
+            "--repository",
+            "git@github.com:example/flash.git",
+            "--git-ref",
+            "v4.8",
+        ]
+    )
+    assert flash_remote.repository == "git@github.com:example/flash.git"
+    assert flash_remote.git_ref == "v4.8"
+
 
 def test_doctor_treats_uninstalled_optional_capabilities_as_warnings(
     tmp_path: Path,
@@ -127,7 +167,7 @@ def test_doctor_treats_uninstalled_optional_capabilities_as_warnings(
 
     assert report.ready is True
     warnings = [item for item in report.checks if item.status is DeploymentCheckStatus.WARNING]
-    assert len(warnings) == 3
+    assert len(warnings) == 7
     assert all(not item.required for item in warnings)
 
 
@@ -135,6 +175,7 @@ def test_flash_install_is_verification_only_and_never_provisions(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    monkeypatch.delenv("SIMJECTURE_PRIVATE_ROOT", raising=False)
     root = _project(tmp_path)
     manager = DeploymentManager(root)
     monkeypatch.setattr(DeploymentManager, "_core_checks", _passing_core)
@@ -148,6 +189,153 @@ def test_flash_install_is_verification_only_and_never_provisions(
     assert not (root / ".runtime").exists()
     failure = next(item for item in report.checks if item.name.startswith("capability.flash"))
     assert "official FLASH Center" in (failure.remedy or "")
+    assert "private" in (failure.remedy or "")
+
+
+def test_flash_install_clones_operator_repository_without_overlay(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.delenv("SIMJECTURE_PRIVATE_ROOT", raising=False)
+    root = _project(tmp_path)
+    manager = DeploymentManager(root)
+    monkeypatch.setattr(DeploymentManager, "_core_checks", _passing_core)
+
+    report = manager.install(
+        DeploymentProfile.FLASH,
+        dry_run=True,
+        repository="git@github.com:example/flash.git",
+        git_ref="abc123",
+    )
+
+    assert report.planned is True
+    assert report.command[0] == str(
+        root / "skills/flash-mhd/scripts/bootstrap_flash.sh"
+    )
+    assert report.command[report.command.index("--git-url") + 1] == (
+        "git@github.com:example/flash.git"
+    )
+    assert report.command[report.command.index("--git-ref") + 1] == "abc123"
+    assert "--source" not in report.command
+    assert not (root / ".runtime").exists()
+
+
+def test_flash_install_uses_private_overlay_without_public_source(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root = _project(tmp_path)
+    overlay = root / ".private/flash"
+    overlay.mkdir(parents=True)
+    bootstrap = overlay / "bootstrap.sh"
+    bootstrap.write_text("#!/usr/bin/env bash\nexit 0\n")
+    bootstrap.chmod(0o755)
+    manager = DeploymentManager(root)
+    monkeypatch.setattr(DeploymentManager, "_core_checks", _passing_core)
+
+    remote = manager.install(DeploymentProfile.FLASH, dry_run=True, jobs=2)
+    assert remote.planned is True
+    assert remote.command[0] == str(bootstrap.resolve())
+    assert "--source" not in remote.command
+    assert not (root / ".runtime").exists()
+
+    source = tmp_path / "flash-source"
+    source.mkdir()
+    planned = manager.install(
+        DeploymentProfile.FLASH,
+        dry_run=True,
+        source=source,
+        jobs=2,
+    )
+    assert planned.planned is True
+    assert "--source" in planned.command
+    assert str(source.resolve()) in planned.command
+
+
+def test_flash_private_overlay_env_overrides_checkout_dot_private(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root = _project(tmp_path)
+    checkout_overlay = root / ".private/flash"
+    checkout_overlay.mkdir(parents=True)
+    ignored = checkout_overlay / "bootstrap.sh"
+    ignored.write_text("#!/usr/bin/env bash\nexit 1\n")
+    ignored.chmod(0o755)
+    env_root = tmp_path / "overlay"
+    env_overlay = env_root / "flash"
+    env_overlay.mkdir(parents=True)
+    bootstrap = env_overlay / "bootstrap.sh"
+    bootstrap.write_text("#!/usr/bin/env bash\nexit 0\n")
+    bootstrap.chmod(0o755)
+    monkeypatch.setenv("SIMJECTURE_PRIVATE_ROOT", str(env_root))
+    manager = DeploymentManager(root)
+    monkeypatch.setattr(DeploymentManager, "_core_checks", _passing_core)
+    source = tmp_path / "flash-source"
+    source.mkdir()
+
+    planned = manager.install(
+        DeploymentProfile.FLASH,
+        dry_run=True,
+        source=source,
+    )
+    assert planned.command[0] == str(bootstrap.resolve())
+
+
+@pytest.mark.parametrize(
+    ("profile", "script", "runtime"),
+    (
+        ("atomec", "skills/eos/scripts/bootstrap_atomec.sh", "atomec-1.4.0"),
+        (
+            "singularity-eos",
+            "skills/eos/scripts/bootstrap_singularity_eos.sh",
+            "singularity-eos-1.12.1",
+        ),
+        ("m-aneos", "skills/eos/scripts/bootstrap_maneos.sh", "m-aneos-1.0"),
+        ("optab", "skills/opacity/scripts/bootstrap_optab.sh", "optab-1.3.1"),
+    ),
+)
+def test_eos_opacity_install_dry_run_is_non_mutating_and_exact(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    profile: str,
+    script: str,
+    runtime: str,
+) -> None:
+    root = _project(tmp_path)
+    manager = DeploymentManager(root)
+    monkeypatch.setattr(DeploymentManager, "_core_checks", _passing_core)
+
+    report = manager.install(DeploymentProfile(profile), dry_run=True, jobs=4)
+
+    assert report.profile == profile
+    assert report.planned is True
+    assert report.ready is False
+    assert report.command[0] == str(root / script)
+    assert report.command[1:7] == (
+        "--prefix",
+        str((root / ".runtime" / runtime).resolve()),
+        "--project-root",
+        str(root),
+        "--jobs",
+        "4",
+    )
+    assert not (root / ".runtime").exists()
+
+
+def test_eos_install_refuses_unmanaged_existing_directory(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root = _project(tmp_path)
+    (root / ".runtime/atomec-1.4.0").mkdir(parents=True)
+    manager = DeploymentManager(root)
+    monkeypatch.setattr(DeploymentManager, "_core_checks", _passing_core)
+
+    report = manager.install(DeploymentProfile.ATOMEC, repair=True)
+
+    assert report.ready is False
+    assert any(item.name == "install.atomec.existing_runtime" for item in report.checks)
 
 
 def test_core_doctor_enforces_locked_direct_dependency_versions(
@@ -325,3 +513,22 @@ def test_cuda_repair_is_structured_refusal(
 
     assert report.ready is False
     assert any(item.name == "install.warpx-cuda.repair" for item in report.checks)
+
+
+def test_committed_eos_and_opacity_capability_configs_parse() -> None:
+    root = Path(__file__).resolve().parents[1] / "capabilities"
+    expected = {
+        "atomec-1.4.0": "eos",
+        "singularity-eos-1.12.1": "eos",
+        "m-aneos-1.0": "eos",
+        "optab-1.3.1": "opacity",
+    }
+    for name, skill in expected.items():
+        config = MVPCapabilityConfig.model_validate_json(
+            (root / f"{name}.json").read_bytes()
+        )
+        assert config.manifest.name == name
+        assert config.manifest.skill == skill
+        assert config.manifest.preflight_resource is not None
+        assert config.manifest.preflight_resource.startswith("examples/")
+        assert config.executable == "bin/python"

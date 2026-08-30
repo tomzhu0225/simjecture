@@ -1,0 +1,28 @@
+{
+  "environment": {
+    "MPLBACKEND": "Agg",
+    "OMP_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "executable": "bin/python",
+  "identity_files": [
+    "share/build-record.json"
+  ],
+  "manifest": {
+    "description": "Operator-supplied atoMEC 1.4 finite-temperature Kohn-Sham average-atom runtime",
+    "executable_kind": "python-atomec",
+    "name": "atomec-1.4.0",
+    "preflight_checks": [
+      "checks.completed",
+      "checks.import_succeeded",
+      "checks.energy_finite",
+      "checks.mean_ionization_in_range"
+    ],
+    "preflight_resource": "examples/atomec_runtime_smoke.py",
+    "preflight_result": "atomec_capability_smoke.json",
+    "schema_version": "0.1.0",
+    "skill": "eos",
+    "version": "1.4.0"
+  },
+  "runtime_root": "../.runtime/atomec-1.4.0"
+}

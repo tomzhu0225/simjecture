@@ -4,6 +4,13 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+## 0.3.1 — 2026-08-30
+
+- Added equation-of-state capabilities for atoMEC, Singularity-EOS, and M-ANEOS, with a shared `eos` skill that records each code's model limits.
+- Added an Optab opacity-table capability and `opacity` skill. Optab is documented as an abundance-consuming table generator, not an EOS solver.
+- Added `simjecture install` bootstraps for the EOS and opacity profiles, matching the WarpX CPU provisioning path.
+- FLASH install accepts an operator-owned `--repository` Git remote. Simjecture never ships a FLASH URL; a Git-ignored overlay can store local setup defaults.
+
 ## 0.3.0 — 2026-08-27
 
 - Added FLASH 4.8 2D compressible resistive-MHD application capability, commissioning protocol, and rank/timing calibrations.

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Opacity tables"
+  short_description: "Commission user-installed opacity-table generators"
+  default_prompt: "Use $opacity to assess and commission an available opacity-table capability for this hypothesis."
