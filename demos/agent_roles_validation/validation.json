@@ -1,0 +1,35 @@
+{
+  "kind": "live_agent_integration_validation",
+  "date": "2026-09-08T00:52:54.828928Z",
+  "campaign_id": "live-euler-1788827038552",
+  "compute": "Local Linux CPU through a real ephemeral loopback SSH server and Bubblewrap",
+  "agents": {
+    "falsifier": "Grok CLI / grok-4.6",
+    "repair_scientist": "Codex CLI / gpt-6-astra",
+    "confirmation": "Fresh Grok CLI / grok-4.6",
+    "judge": "Fresh Codex CLI / gpt-6-astra"
+  },
+  "root_disposition": "falsified",
+  "repair_claim_id": "claim_repair_euler_bound_002",
+  "repair_disposition": "supported",
+  "open_claim_ids": [],
+  "judge_verdict": {
+    "claim_id": "claim_repair_euler_bound_002",
+    "contract_version": 1,
+    "decision": "sufficient",
+    "scientific_disposition": "supported",
+    "claim_tested": true,
+    "contract_preserves_claim_semantics": true,
+    "rationale": "The fresh post-contract claim_decision execution tests the repaired claim without changing its parameters or scope. Eligible provenance, passing arithmetic and parameter validation, commissioning attribution, and the eleven-state hexadecimal trajectory support the specified finite computation. The independent alternating-series reference and outward-rounded error enclosure [0.019201001071442167, 0.01920100107144217] place the absolute error wholly below 0.02, with width below 1e-12. Support rests on this prospective observation and justified enclosure, not on parent evidence, record completeness, or a universal inference.",
+    "evidence_gaps": [],
+    "next_test": null
+  },
+  "recovery": {
+    "separate_supervisor_processes": true,
+    "operation_id": "confirm-1:register-instrument-contract",
+    "identical_successful_replies": 2,
+    "identical_result_on_retry": true
+  },
+  "remote_readiness": "Both configured GPU containers rejected Bubblewrap namespaces; their failed runs were not promoted to evidence.",
+  "scope": "Intentionally false finite Euler-error claim; validates integration, not a new discovery. This is an audit extract, not a resumable campaign backup."
+}

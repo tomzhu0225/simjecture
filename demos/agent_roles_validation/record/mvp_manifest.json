@@ -1,0 +1,47 @@
+{
+  "campaign_instruction": null,
+  "capability_hashes": {},
+  "claim_ledger_schema_version": "0.10.0",
+  "config": {
+    "command_heartbeat_seconds": 30.0,
+    "enforce_repair_loop": true,
+    "max_command_seconds": 600.0,
+    "max_file_bytes": 67108864,
+    "max_iterations": null,
+    "max_memory_bytes": 4294967296,
+    "max_model_retries": 3,
+    "max_tool_output_chars": 30000,
+    "max_wall_seconds": 21600.0,
+    "max_workspace_bytes": 536870912,
+    "model_failover_after": 2,
+    "recent_full_turns": 8
+  },
+  "guided_commissioning": {},
+  "hypothesis": "Starting from x_0 = 1, ten explicit Euler steps x_(n+1) = 0.9*x_n approximate exp(-1) with absolute error at most 0.001, when evaluated in IEEE-754 binary64 arithmetic.",
+  "literature_search": {
+    "identity": {
+      "credentials_required": false,
+      "name": "public-literature-search",
+      "network_location": "host",
+      "providers": [
+        "openalex",
+        "crossref",
+        "duckduckgo_html"
+      ],
+      "sandbox_network_enabled": false,
+      "version": "1"
+    },
+    "required_when_available": true
+  },
+  "schema_version": "0.22.0",
+  "skill_hashes": {
+    "eos": "d356de6d25bbe7553a223a6318f64076cf182ab3291d1cc4180847945169b497",
+    "flash-mhd": "fb31d010cb2fa84fee2e7a615b27a02c145d4adc3b980a7cfa1d1d5c3bc01cdc",
+    "opacity": "03670cdcbe3ef59b13b84d4743215fb72d992b46deb67cd27479299bf9231310",
+    "python-experiment": "84a584d5983720d305d44420214fe8f26ff549e01c1a7298b0017f4d9ead0937",
+    "scientific-markdown": "781854d4ce97c9c9f49679dfda600b2dc7738fd09aa683141b99f38581a0946f",
+    "warpx": "cda970289b4f2b895760e48a71751aa1157c045df4613a96b2eebbc4ab0db35c"
+  },
+  "system_prompt_profile": "scientific_python",
+  "system_prompt_sha256": "cad089b598ba0937dff8b30a6cf8598a08f8291f86cc8fa73a87f8ba009b7b60"
+}

@@ -4,6 +4,23 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+## 0.3.2 — 2026-09-09
+
+- Added `simjecture-call`, a one-shot JSON transport for trusted supervisors,
+  including Simote's SSH bridge, with sandbox readiness probing and durable
+  campaign recovery.
+- Added persistent, claim-scoped scientific role assignments with tool filters,
+  operation budgets, idempotent retries, session tracking, and validated handoffs.
+  Independent adjudication continues to use the existing evidence and claim gates.
+- Documented the optional Simote campaign workspace and Codex/Grok role workflow.
+- Included a hashed audit extract and offline verifier for a live Codex/Grok
+  integration campaign. This validates the transport and scientific role workflow
+  on a finite Euler error-bound claim; it is not a new scientific discovery.
+- Bundled built-in capability descriptors in wheels and discover them alongside
+  packaged skills, so installed deployments can use the same resource catalog.
+- Clarified the distinction between authored Python source and upstream
+  observation data when declaring experiment inputs.
+
 ## 0.3.1 — 2026-08-30
 
 - Added equation-of-state capabilities for atoMEC, Singularity-EOS, and M-ANEOS, with a shared `eos` skill that records each code's model limits.

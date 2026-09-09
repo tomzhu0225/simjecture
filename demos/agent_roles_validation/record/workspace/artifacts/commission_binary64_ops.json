@@ -1,0 +1,23 @@
+{
+  "metrics": {
+    "commissioning_passed": true,
+    "decimal_ref_exp_m1": 0.36787944117144233,
+    "exp0": 1.0,
+    "exp0_error": 0.0,
+    "exp_m1_ulps": 0,
+    "float_mant_dig": 53,
+    "float_radix": 2,
+    "half_pow10": 0.0009765625,
+    "half_pow10_error": 0.0,
+    "lib_exp_m1": 0.36787944117144233,
+    "two_pow10": 1024.0,
+    "two_pow10_error": 0.0
+  },
+  "reference": {
+    "decimal_exp_m1_text": "0.36787944117144232159552377016146086744581113103177",
+    "exp0_expected": 1.0,
+    "half_expected": 0.0009765625,
+    "source": "Independent of the Euler claim: exact binary64 dyadic products 0.5**10 and 2**10, math.exp(0)==1, and Decimal(-1).exp() as an independent e^{-1} reference.",
+    "two_expected": 1024.0
+  }
+}

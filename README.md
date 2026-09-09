@@ -290,6 +290,12 @@ process state or charging stopped-process downtime.
 
 ## Core safeguards
 
+Codex and Grok CLI agents can also work on a shared campaign through Simote's
+claim-scoped role tasks. See [Simote agent roles](docs/how-to/simote-agent-roles.md)
+for assignment, independent judging, and restart recovery.
+The [completed live Codex/Grok validation](demos/agent_roles_validation/) includes
+a hashed audit extract and an offline numerical verifier.
+
 - Network-isolated writable agent workspace with no provider credentials.
 - Typed, single-action model protocol and bounded tool outputs.
 - Prospective evidence contracts with machine-checkable JSON assertions.

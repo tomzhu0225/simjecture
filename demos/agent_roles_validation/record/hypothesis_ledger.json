@@ -1,0 +1,837 @@
+{
+  "schema_version": "0.10.0",
+  "root_hypothesis": "Starting from x_0 = 1, ten explicit Euler steps x_(n+1) = 0.9*x_n approximate exp(-1) with absolute error at most 0.001, when evaluated in IEEE-754 binary64 arithmetic.",
+  "claims": [
+    {
+      "id": "claim_root",
+      "statement": "Starting from x_0 = 1, ten explicit Euler steps x_(n+1) = 0.9*x_n approximate exp(-1) with absolute error at most 0.001, when evaluated in IEEE-754 binary64 arithmetic.",
+      "kind": "scientific",
+      "relation": "root",
+      "parent_id": null,
+      "status": "falsified",
+      "rationale": "Immutable root hypothesis supplied by the campaign operator.",
+      "repair": null,
+      "evidence_contracts": [
+        {
+          "version": 1,
+          "evidence_purpose": "claim_decision",
+          "observable": "The absolute error `metrics.abs_error` = |x_10 - exp(-1)| where x_0 = 1, x_{n+1} = 0.9 * x_n for ten IEEE-754 binary64 multiplies, and exp(-1) is math.exp(-1).",
+          "expected_outcomes": "Either metrics.abs_error is at most metrics.threshold (0.001), in which case this test does not falsify the claim, or metrics.abs_error exceeds 0.001, which is a contracted counterexample.",
+          "decision_rule": "If metrics.n_steps is 10, metrics.x0 is 1.0, metrics.threshold is 0.001, and metrics.abs_error > 0.001, close claim_root as falsified. If those setup fields match and metrics.abs_error <= 0.001, the observation does not falsify; leave the scientific claim open for independent adjudication. Do not treat a nonzero process return code as scientific evidence.",
+          "required_observation": "A JSON summary at artifacts/euler_ten_step_error.json from a fresh self-contained run_python of scripts/euler_ten_step_error.py containing metrics.n_steps, metrics.x0, metrics.multiplier, metrics.x10, metrics.reference_exp_m1, metrics.abs_error, metrics.threshold, and metrics.error_at_most_threshold.",
+          "uncertainty_criterion": "The claimed bound 0.001 is about 4e12 binary64 ulps of exp(-1) (~2e-16). Rounding in ten multiplies by 0.9 cannot move abs_error across 0.001 unless the true Euler error is already within a few ulps of the bound. Commissioned math.exp(-1) agrees with Decimal(-1).exp() to 0 ulp.",
+          "inconclusive_conditions": "Inconclusive if the process fails, JSON is missing required metrics, n_steps is not 10, x0 is not 1.0, the instrument is not commissioned, or abs_error is so close to 0.001 that binary64 rounding could flip the inequality.",
+          "validation_checks": [
+            {
+              "aspect": null,
+              "json_path": "metrics.n_steps",
+              "expected_value": 10
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.x0",
+              "expected_value": 1
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.threshold",
+              "expected_value": 0.001
+            }
+          ],
+          "execution_binding": null,
+          "additional_execution_bindings": [],
+          "registered_iteration": 13
+        }
+      ],
+      "evidence": [
+        {
+          "path": "artifacts/euler_ten_step_error.json",
+          "note": "Contracted counterexample: ten binary64 Euler steps give `metrics.x10=0.34867844010000015` versus `metrics.reference_exp_m1=0.36787944117144233`.",
+          "iteration": 16,
+          "contract_version": 1,
+          "observation_sufficient": true,
+          "observation_note": "Setup checks match contract v1 (`metrics.n_steps=10`, `metrics.x0=1.0`, `metrics.threshold=0.001`). `metrics.abs_error=0.01920100107144218` exceeds 0.001 by about 0.0182, far beyond binary64 rounding, so the decision rule falsifies `claim_root`.",
+          "validation_passed": true,
+          "validation_results": [
+            {
+              "aspect": null,
+              "json_path": "metrics.n_steps",
+              "expected_value": 10,
+              "actual_value": 10,
+              "passed": true,
+              "error": null
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.x0",
+              "expected_value": 1,
+              "actual_value": 1.0,
+              "passed": true,
+              "error": null
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.threshold",
+              "expected_value": 0.001,
+              "actual_value": 0.001,
+              "passed": true,
+              "error": null
+            }
+          ],
+          "commissioning_claim_id": "claim_instrument_binary64_euler",
+          "provenance": {
+            "sha256": "93c24f30c503b63cd837a72999736706f9a43d475e03074b9798ddefa41af41e",
+            "bytes": 586,
+            "tracked": true,
+            "generated_iteration": 15,
+            "action": "run_python",
+            "action_sha256": "626830457356fadce8c511d2eb43a0b782a10a1485dc6d795610e1bfe0f60e13",
+            "command_argv": [
+              "scripts/euler_ten_step_error.py"
+            ],
+            "capability": null,
+            "program_path": "scripts/euler_ten_step_error.py",
+            "program_sha256": "bbb727b065c2c71fdf79242eb2acae124ad0277b968f8685b676c391b98461e4",
+            "execution_succeeded": true,
+            "execution_returncode": 0,
+            "execution_timed_out": false,
+            "execution_workspace_exceeded": false,
+            "execution_stage": null,
+            "operation_id": "falsify-1:run-euler-ten-step",
+            "job_id": "job_505e300d5731b62fb2baadbd4d0a50cd",
+            "job_status": "succeeded",
+            "input_artifacts_declared": true,
+            "input_artifacts": [],
+            "input_lineage_eligible": true,
+            "input_lineage_issues": [],
+            "argv_input_coverage_eligible": true,
+            "argv_input_coverage_issues": [],
+            "evidence_eligible": true
+          }
+        }
+      ],
+      "closed_reason": "Contract v1 is satisfied by `artifacts/euler_ten_step_error.json`: ten binary64 steps `x_{n+1}=0.9*x_n` from `x_0=1` yield `x_10=0.34867844010000015` versus `exp(-1)=0.36787944117144233`, so `abs_error=0.01920100107144218` exceeds the claimed bound 0.001. The gap is far larger than binary64 rounding.",
+      "decisive_contract_version": 1,
+      "created_iteration": 0,
+      "updated_iteration": 17
+    },
+    {
+      "id": "claim_instrument_binary64_euler",
+      "statement": "Python IEEE-754 binary64 `float` multiplication and `math.exp` reproduce independent known references: ten multiplies by `0.5` from `1.0` equal $2^{-10}$ exactly, ten multiplies by `2.0` from `1.0` equal $1024$ exactly, `math.exp(0)` equals `1.0` exactly, and `math.exp(-1)` agrees with `Decimal(-1).exp()` to within 1 ulp.",
+      "kind": "instrument",
+      "relation": "instrument_of",
+      "parent_id": "claim_root",
+      "status": "supported",
+      "rationale": "The root claim compares ten binary64 Euler factors `0.9*x_n` to `exp(-1)`. Commission those two operations against dyadic identities and an independent `Decimal` exponential before any Euler observation is used as evidence.",
+      "repair": null,
+      "evidence_contracts": [
+        {
+          "version": 1,
+          "evidence_purpose": "claim_decision",
+          "observable": "IEEE-754 binary64 identity of ten multiplies by 0.5 and by 2.0 from 1.0, exactness of math.exp(0), and ulp distance between math.exp(-1) and Decimal(-1).exp() converted to binary64.",
+          "expected_outcomes": "Commissioning succeeds if float_mant_dig is 53, float_radix is 2, half_pow10_error is 0, two_pow10_error is 0, exp0_error is 0, and exp_m1_ulps is at most 1, so commissioning_passed is true. Otherwise commissioning fails.",
+          "decision_rule": "If metrics.commissioning_passed is true and the named identity errors are exactly 0, accept the instrument as commissioned. If any identity fails or exp_m1_ulps exceeds 1, close the instrument as instrument_limited and do not use it for the Euler claim.",
+          "required_observation": "A JSON summary at artifacts/commission_binary64_ops.json from a fresh run_python of scripts/commission_binary64_ops.py containing metrics.float_mant_dig, metrics.float_radix, metrics.half_pow10_error, metrics.two_pow10_error, metrics.exp0_error, metrics.exp_m1_ulps, and metrics.commissioning_passed.",
+          "uncertainty_criterion": "Dyadic products 0.5**10 and 2**10 are exact in binary64, so a nonzero identity error is an instrument failure rather than rounding noise. Agreement of math.exp(-1) with Decimal(-1).exp() is required within 1 ulp; a larger discrepancy is treated as an independent-reference mismatch, not as Euler truncation.",
+          "inconclusive_conditions": "The observation is inconclusive if the process fails, the JSON is missing required metrics, Python float is not binary64, or Decimal(-1).exp() cannot be formed.",
+          "validation_checks": [
+            {
+              "aspect": null,
+              "json_path": "metrics.float_mant_dig",
+              "expected_value": 53
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.float_radix",
+              "expected_value": 2
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.half_pow10_error",
+              "expected_value": 0
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.two_pow10_error",
+              "expected_value": 0
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.exp0_error",
+              "expected_value": 0
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.commissioning_passed",
+              "expected_value": true
+            }
+          ],
+          "execution_binding": null,
+          "additional_execution_bindings": [],
+          "registered_iteration": 5
+        }
+      ],
+      "evidence": [
+        {
+          "path": "artifacts/commission_binary64_ops.json",
+          "note": "Workbench commissioning JSON. Independent dyadic products and Decimal exp(-1) matched binary64 multiply and math.exp; marked not sufficient until the program is evidence-eligible and a fresh evidence-stage artifact exists.",
+          "iteration": 8,
+          "contract_version": 1,
+          "observation_sufficient": false,
+          "observation_note": "The job succeeded and metrics match the commissioning identities, but the script input is not evidence-eligible, so this workbench artifact cannot yet decide the instrument claim.",
+          "validation_passed": true,
+          "validation_results": [
+            {
+              "aspect": null,
+              "json_path": "metrics.float_mant_dig",
+              "expected_value": 53,
+              "actual_value": 53,
+              "passed": true,
+              "error": null
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.float_radix",
+              "expected_value": 2,
+              "actual_value": 2,
+              "passed": true,
+              "error": null
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.half_pow10_error",
+              "expected_value": 0,
+              "actual_value": 0.0,
+              "passed": true,
+              "error": null
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.two_pow10_error",
+              "expected_value": 0,
+              "actual_value": 0.0,
+              "passed": true,
+              "error": null
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.exp0_error",
+              "expected_value": 0,
+              "actual_value": 0.0,
+              "passed": true,
+              "error": null
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.commissioning_passed",
+              "expected_value": true,
+              "actual_value": true,
+              "passed": true,
+              "error": null
+            }
+          ],
+          "commissioning_claim_id": null,
+          "provenance": {
+            "sha256": "1b7b23eca01f04f419af9798bce1c915d75a3b0a8c02de40061a9bdc6520f6e2",
+            "bytes": 732,
+            "tracked": true,
+            "generated_iteration": 6,
+            "action": "run_python",
+            "action_sha256": "84f6afd17334bf703a4ac788dbdc9edf8592480305a1cc974d12b872a0647c71",
+            "command_argv": [
+              "scripts/commission_binary64_ops.py"
+            ],
+            "capability": null,
+            "program_path": "scripts/commission_binary64_ops.py",
+            "program_sha256": "5d0c9bafbfc77eff322f173d2891fea9ce21f7cc0c51956550ca4bebe04163ca",
+            "execution_succeeded": true,
+            "execution_returncode": 0,
+            "execution_timed_out": false,
+            "execution_workspace_exceeded": false,
+            "execution_stage": null,
+            "operation_id": "falsify-1:run-commission-binary64",
+            "job_id": "job_0ae28bf9665b211f4a4d4634b69f8bc3",
+            "job_status": "succeeded",
+            "input_artifacts_declared": true,
+            "input_artifacts": [
+              {
+                "path": "scripts/commission_binary64_ops.py",
+                "sha256": "5d0c9bafbfc77eff322f173d2891fea9ce21f7cc0c51956550ca4bebe04163ca",
+                "bytes": 2892,
+                "tracked": true,
+                "evidence_eligible": false,
+                "generated_iteration": 3,
+                "action": "write_file",
+                "action_sha256": "a4cb5e51cbedd9e6c9019b884d05ae15820bbaf425dd54f62dad8de867f90bf2",
+                "operation_id": "falsify-1:write-commission-script"
+              }
+            ],
+            "input_lineage_eligible": false,
+            "input_lineage_issues": [
+              "input is not evidence eligible: scripts/commission_binary64_ops.py"
+            ],
+            "argv_input_coverage_eligible": true,
+            "argv_input_coverage_issues": [],
+            "evidence_eligible": false
+          }
+        },
+        {
+          "path": "artifacts/commission_binary64_ops.json",
+          "note": "Self-contained commissioning JSON: ten dyadic multiplies and `Decimal(-1).exp()` independently confirm binary64 `float` multiply and `math.exp`.",
+          "iteration": 12,
+          "contract_version": 1,
+          "observation_sufficient": true,
+          "observation_note": "Fresh self-contained run has eligible lineage. Contract checks pass: `metrics.float_mant_dig=53`, `metrics.float_radix=2`, identity errors are 0, `metrics.exp_m1_ulps=0`, and `metrics.commissioning_passed` is true.",
+          "validation_passed": true,
+          "validation_results": [
+            {
+              "aspect": null,
+              "json_path": "metrics.float_mant_dig",
+              "expected_value": 53,
+              "actual_value": 53,
+              "passed": true,
+              "error": null
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.float_radix",
+              "expected_value": 2,
+              "actual_value": 2,
+              "passed": true,
+              "error": null
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.half_pow10_error",
+              "expected_value": 0,
+              "actual_value": 0.0,
+              "passed": true,
+              "error": null
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.two_pow10_error",
+              "expected_value": 0,
+              "actual_value": 0.0,
+              "passed": true,
+              "error": null
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.exp0_error",
+              "expected_value": 0,
+              "actual_value": 0.0,
+              "passed": true,
+              "error": null
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.commissioning_passed",
+              "expected_value": true,
+              "actual_value": true,
+              "passed": true,
+              "error": null
+            }
+          ],
+          "commissioning_claim_id": null,
+          "provenance": {
+            "sha256": "1b7b23eca01f04f419af9798bce1c915d75a3b0a8c02de40061a9bdc6520f6e2",
+            "bytes": 732,
+            "tracked": true,
+            "generated_iteration": 11,
+            "action": "run_python",
+            "action_sha256": "12f3a6d2e52563bc2e2f30017354f912558c5df2a9ce5366f4cd8c4ada7f3b5b",
+            "command_argv": [
+              "scripts/commission_binary64_ops.py"
+            ],
+            "capability": null,
+            "program_path": "scripts/commission_binary64_ops.py",
+            "program_sha256": "5d0c9bafbfc77eff322f173d2891fea9ce21f7cc0c51956550ca4bebe04163ca",
+            "execution_succeeded": true,
+            "execution_returncode": 0,
+            "execution_timed_out": false,
+            "execution_workspace_exceeded": false,
+            "execution_stage": null,
+            "operation_id": "falsify-1:run-commission-selfcontained",
+            "job_id": "job_91c7ce244416797b436e49c478ca1e21",
+            "job_status": "succeeded",
+            "input_artifacts_declared": true,
+            "input_artifacts": [],
+            "input_lineage_eligible": true,
+            "input_lineage_issues": [],
+            "argv_input_coverage_eligible": true,
+            "argv_input_coverage_issues": [],
+            "evidence_eligible": true
+          }
+        }
+      ],
+      "closed_reason": "Prospective commissioning contract v1 is satisfied by `artifacts/commission_binary64_ops.json`: binary64 identities `0.5**10` and `2**10` are exact, `math.exp(0)` is exact, and `math.exp(-1)` matches `Decimal(-1).exp()` to 0 ulp. This closes only the instrument claim, not `claim_root`.",
+      "decisive_contract_version": 1,
+      "created_iteration": 4,
+      "updated_iteration": 14
+    },
+    {
+      "id": "claim_repair_euler_bound_002",
+      "statement": "Starting from x_0 = 1, ten explicit Euler steps x_(n+1) = 0.9*x_n approximate exp(-1) with absolute error at most 0.02, when evaluated in IEEE-754 binary64 arithmetic.",
+      "kind": "scientific",
+      "relation": "repairs",
+      "parent_id": "claim_root",
+      "status": "supported",
+      "rationale": "Minimal one-parameter repair: retain the initial value, multiplier, number of steps, reference, and arithmetic, and change only the absolute-error bound from 0.001 to 0.02. The durable parent counterexample reports error 0.01920100107144218, leaving approximately 0.000799 below the proposed bound, far above binary64 rounding scales. This motivates a prospective finite-computation claim, not a support verdict or a general Euler error guarantee.",
+      "repair": {
+        "counterexample_paths": [
+          "artifacts/euler_ten_step_error.json"
+        ],
+        "accommodation": "Relax the absolute-error bound to 0.02 for exactly this finite computation.",
+        "semantic_change": "Only replace the bound 0.001 with 0.02; retain all other scope and computation parameters.",
+        "falsification_condition": "A valid commissioned observation for this exact ten-step binary64 computation has an absolute-error interval wholly above 0.02."
+      },
+      "evidence_contracts": [
+        {
+          "version": 1,
+          "evidence_purpose": "claim_decision",
+          "observable": "Absolute error of exactly ten sequential IEEE-754 binary64 multiplications by float(0.9), starting from 1.0, relative to exp(-1). Report metrics.abs_error and a certified enclosing interval metrics.error_lower through metrics.error_upper.",
+          "expected_outcomes": "An error interval wholly at or below 0.02 is eligible for independent adjudicator review for support of this finite computation only. An interval wholly above 0.02 is a counterexample. An interval crossing the threshold is inconclusive.",
+          "decision_rule": "Require a successful fresh post-contract execution, all setup validation checks passing, finite results, commissioned instruments, and a justified error enclosure. If metrics.error_lower > 0.02 the repair is falsified. If metrics.error_upper <= 0.02 refer to the independent adjudicator, the only role allowed to support this scientific claim. Otherwise leave unresolved. Historical parent data motivates the bound and must not substitute for the prospective observation.",
+          "required_observation": "A fresh self-contained ordinary run_python, with input_artifacts: [] and no capability execution_binding, produces artifacts/euler_bound_002_prospective.json. Include metrics.n_steps=10, metrics.x0=1.0, metrics.multiplier=0.9, metrics.threshold=0.02, metrics.binary64_verified=true, the eleven-state trajectory as exact float hex encodings, metrics.x10, metrics.reference_exp_m1, metrics.abs_error, metrics.error_lower, metrics.error_upper, and a documented reference/enclosure method. Verify binary64 radix, precision, round-to-nearest behavior, and sequential multiplication. Use the supported commissioning claim claim_instrument_binary64_euler where applicable; any additional interval/reference instrument must be commissioned before scientific use. Declare real upstream observation artifacts if any are consumed rather than using the self-contained empty list; source hashes are tracked separately.",
+          "uncertainty_criterion": "Bound the mathematical exp(-1) independently, for example with rigorously outward-rounded rational bounds from the alternating exponential series and its next-term remainder, and combine with the exact rational value of the observed binary64 x10 to enclose absolute error. Report outward-rounded endpoints and justify their construction; require interval width <= 1e-12 and non-overlap with the threshold for a decisive outcome. Do not infer correctness from numerical agreement alone.",
+          "inconclusive_conditions": "Process failure, timeout, nonfinite values, missing fields, mismatched parameters, unverified arithmetic or trajectory, uncommissioned instruments, ineligible provenance, invalid enclosure, interval width above 1e-12, or an interval straddling 0.02 are inconclusive and cannot count as scientific evidence.",
+          "validation_checks": [
+            {
+              "aspect": null,
+              "json_path": "metrics.n_steps",
+              "expected_value": 10
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.x0",
+              "expected_value": 1
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.multiplier",
+              "expected_value": 0.9
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.threshold",
+              "expected_value": 0.02
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.binary64_verified",
+              "expected_value": true
+            }
+          ],
+          "execution_binding": null,
+          "additional_execution_bindings": [],
+          "registered_iteration": 19
+        }
+      ],
+      "evidence": [
+        {
+          "path": "artifacts/euler_bound_002_prospective.json",
+          "note": "Fresh post-contract self-contained run `confirm-1:run-euler-bound-002-prospective`. Ten sequential binary64 multiplies by `0.9` from `1.0` yield `x10=0x1.650bf60432fdap-2`. The Leibniz enclosure of $\\exp(-1)$ combined with the exact rational of `x10` gives `metrics.error_lower=0.019201001071442167` and `metrics.error_upper=0.01920100107144217`, width $3.47\\times10^{-18}$. The interval is wholly at or below 0.02 and is not wholly above 0.02, so this is not a contracted counterexample.",
+          "iteration": 36,
+          "contract_version": 1,
+          "observation_sufficient": true,
+          "observation_note": "Validation fields match the active contract (`n_steps=10`, `x0=1.0`, `multiplier=0.9`, `threshold=0.02`, `binary64_verified=true`). The error interval is finite, width $\\le 10^{-12}$, and `error_upper\\le 0.02`. Contract compliance is recorded; a falsifier cannot support this scientific claim.",
+          "validation_passed": true,
+          "validation_results": [
+            {
+              "aspect": null,
+              "json_path": "metrics.n_steps",
+              "expected_value": 10,
+              "actual_value": 10,
+              "passed": true,
+              "error": null
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.x0",
+              "expected_value": 1,
+              "actual_value": 1.0,
+              "passed": true,
+              "error": null
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.multiplier",
+              "expected_value": 0.9,
+              "actual_value": 0.9,
+              "passed": true,
+              "error": null
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.threshold",
+              "expected_value": 0.02,
+              "actual_value": 0.02,
+              "passed": true,
+              "error": null
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.binary64_verified",
+              "expected_value": true,
+              "actual_value": true,
+              "passed": true,
+              "error": null
+            }
+          ],
+          "commissioning_claim_id": "claim_instrument_exp_series_round_003",
+          "provenance": {
+            "sha256": "5092bc545f028cb8d8150f02aff1d6b73128fa2d817e2f6b095422660c517f13",
+            "bytes": 1813,
+            "tracked": true,
+            "generated_iteration": 35,
+            "action": "run_python",
+            "action_sha256": "62f8a11febadba6ed0e7454bd8c53a5740aacee8f91fa02677444d0f1ad7781a",
+            "command_argv": [
+              "scripts/euler_bound_002_prospective.py"
+            ],
+            "capability": null,
+            "program_path": "scripts/euler_bound_002_prospective.py",
+            "program_sha256": "db23372bc313ea46d00362fc004883009d18c098f083b72ef8cce34cb34824e1",
+            "execution_succeeded": true,
+            "execution_returncode": 0,
+            "execution_timed_out": false,
+            "execution_workspace_exceeded": false,
+            "execution_stage": null,
+            "operation_id": "confirm-1:run-euler-bound-002-prospective",
+            "job_id": "job_f6e6b3124589bd84968dc6393cb4dd8b",
+            "job_status": "succeeded",
+            "input_artifacts_declared": true,
+            "input_artifacts": [],
+            "input_lineage_eligible": true,
+            "input_lineage_issues": [],
+            "argv_input_coverage_eligible": true,
+            "argv_input_coverage_issues": [],
+            "evidence_eligible": true
+          }
+        }
+      ],
+      "closed_reason": "Independent judge accepted a complete terminal record and assigned scientific disposition supported: The fresh post-contract claim_decision execution tests the repaired claim without changing its parameters or scope. Eligible provenance, passing arithmetic and parameter validation, commissioning attribution, and the eleven-state hexadecimal trajectory support the specified finite computation. The independent alternating-series reference and outward-rounded error enclosure [0.019201001071442167, 0.01920100107144217] place the absolute error wholly below 0.02, with width below 1e-12. Support rests on this prospective observation and justified enclosure, not on parent evidence, record completeness, or a universal inference.",
+      "decisive_contract_version": 1,
+      "created_iteration": 18,
+      "updated_iteration": 37
+    },
+    {
+      "id": "claim_instrument_exp_series_round_002",
+      "statement": "Python IEEE-754 binary64 `float` has radix 2, 53-bit precision, and round-to-nearest ties-to-even. Ten sequential multiplies by `0.5` from `1.0` equal the independent dyadic $2^{-10}$ exactly, and ten sequential multiplies by `2.0` equal `1024` exactly. Ten sequential multiplies by the binary64 value of `0.9` agree with `math.pow(0.9, 10)` to within 16 ulps; sequential multiplication need not be bit-identical to `pow`. The alternating Taylor series for $\\exp(-1)$ with the next-term remainder yields a rational enclosure of width at most $10^{-15}$ that contains both `Decimal(-1).exp()` and `math.exp(-1)`.",
+      "kind": "instrument",
+      "relation": "instrument_of",
+      "parent_id": "claim_repair_euler_bound_002",
+      "status": "superseded",
+      "rationale": "Commission binary64 identity, an explicit sequential-versus-`pow` rounding tolerance, and an independent series enclosure of $\\exp(-1)$ before using them on the repaired finite Euler claim. The existing supported instrument `claim_instrument_binary64_euler` covers dyadic products and a 1-ulp `math.exp` check; this additional instrument adds round-to-nearest verification, the non-bit-identical `pow` tolerance, and a Leibniz remainder enclosure that the repaired claim's uncertainty criterion requires.",
+      "repair": null,
+      "evidence_contracts": [
+        {
+          "version": 1,
+          "evidence_purpose": "claim_decision",
+          "observable": "Binary64 identity, round-to-nearest ties-to-even at 1.0 and 2.0, ten sequential multiplies by 0.5 and 2.0 versus the independent dyadic values 2^{-10} and 1024, ten sequential multiplies by binary64 0.9 versus math.pow(0.9, 10) with an explicit 16-ulp tolerance, and a Leibniz next-term rational enclosure of exp(-1) that contains Decimal(-1).exp() and math.exp(-1).",
+          "expected_outcomes": "metrics.commissioning_passed is true only if radix is 2, precision is 53, round-to-nearest checks pass, dyadic sequential products are exact, sequential-versus-pow ulp distance is at most 16, and the series enclosure of width at most 1e-15 contains both independent exp(-1) references. Any failed check is a commissioning failure, not scientific evidence about the Euler bound.",
+          "decision_rule": "Support this instrument claim if a fresh post-contract self-contained run_python writes artifacts/commission_series_round_002.json, all validation checks pass, and metrics.commissioning_passed is true. Otherwise leave the instrument unsupported. Sequential multiplication need not be bit-identical to pow.",
+          "required_observation": "A fresh self-contained ordinary run_python with input_artifacts: [] and no capability execution_binding produces artifacts/commission_series_round_002.json from scripts/commission_series_round_002.py.",
+          "uncertainty_criterion": "Dyadic products must match independent exact values with zero error. The sequential-versus-pow comparison uses an explicit 16-ulp binary64 rounding tolerance. The exp(-1) enclosure is the closed interval between consecutive alternating Taylor partial sums S_24 and S_25, whose width is the next-term remainder 1/25!, required to be at most 1e-15, and must contain both Decimal(-1).exp() and the binary64 math.exp(-1) interpreted as exact rationals.",
+          "inconclusive_conditions": "Process failure, timeout, nonfinite values, missing fields, failed validation checks, series width above 1e-15, or an enclosure that misses either independent reference cannot commission the instrument.",
+          "validation_checks": [
+            {
+              "aspect": null,
+              "json_path": "metrics.commissioning_passed",
+              "expected_value": true
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.float_radix",
+              "expected_value": 2
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.float_mant_dig",
+              "expected_value": 53
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.round_nearest_verified",
+              "expected_value": true
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.seq_vs_pow_within_tolerance",
+              "expected_value": true
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.series_contains_decimal",
+              "expected_value": true
+            }
+          ],
+          "execution_binding": null,
+          "additional_execution_bindings": [],
+          "registered_iteration": 23
+        }
+      ],
+      "evidence": [
+        {
+          "path": "artifacts/commission_series_round_002.json",
+          "note": "Post-contract commissioning run `confirm-1:run-commission-series-round`. Dyadic products, round-to-nearest, Decimal containment, and the 16-ulp sequential-versus-`pow` tolerance all passed. `metrics.commissioning_passed` is false solely because `math.exp(-1)` as an exact rational lies outside the $6.4\\times10^{-26}$ series enclosure of the real $e^{-1}$.",
+          "iteration": 27,
+          "contract_version": 1,
+          "observation_sufficient": false,
+          "observation_note": "Does not satisfy the support contract: `metrics.commissioning_passed` is false. This is a specification error in requiring a sub-ulp series interval to contain a binary64 library value, not a failure of radix, precision, rounding, or the 16-ulp `pow` tolerance.",
+          "validation_passed": false,
+          "validation_results": [
+            {
+              "aspect": null,
+              "json_path": "metrics.commissioning_passed",
+              "expected_value": true,
+              "actual_value": false,
+              "passed": false,
+              "error": null
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.float_radix",
+              "expected_value": 2,
+              "actual_value": 2,
+              "passed": true,
+              "error": null
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.float_mant_dig",
+              "expected_value": 53,
+              "actual_value": 53,
+              "passed": true,
+              "error": null
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.round_nearest_verified",
+              "expected_value": true,
+              "actual_value": true,
+              "passed": true,
+              "error": null
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.seq_vs_pow_within_tolerance",
+              "expected_value": true,
+              "actual_value": true,
+              "passed": true,
+              "error": null
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.series_contains_decimal",
+              "expected_value": true,
+              "actual_value": true,
+              "passed": true,
+              "error": null
+            }
+          ],
+          "commissioning_claim_id": null,
+          "provenance": {
+            "sha256": "69b12b2334ff6f059306fa2d15e220272096a27cb9e28c799ec3812e10a83e24",
+            "bytes": 1404,
+            "tracked": true,
+            "generated_iteration": 24,
+            "action": "run_python",
+            "action_sha256": "d97be630374e7c2c7661f41241e2a66c0fb3a34f74f1a50cfa0379dbac00ae25",
+            "command_argv": [
+              "scripts/commission_series_round_002.py"
+            ],
+            "capability": null,
+            "program_path": "scripts/commission_series_round_002.py",
+            "program_sha256": "8b8c9af02d5d9a6182f0514ff5eddc1a91af96a8b131b61e6799cd371381a9a6",
+            "execution_succeeded": true,
+            "execution_returncode": 0,
+            "execution_timed_out": false,
+            "execution_workspace_exceeded": false,
+            "execution_stage": null,
+            "operation_id": "confirm-1:run-commission-series-round",
+            "job_id": "job_962a1f549ce362bb9954c0220a2d7df5",
+            "job_status": "succeeded",
+            "input_artifacts_declared": true,
+            "input_artifacts": [],
+            "input_lineage_eligible": true,
+            "input_lineage_issues": [],
+            "argv_input_coverage_eligible": true,
+            "argv_input_coverage_issues": [],
+            "evidence_eligible": true
+          }
+        }
+      ],
+      "closed_reason": "The instrument required a Leibniz enclosure of width $6.4\\times10^{-26}$ to contain the exact rational of binary64 `math.exp(-1)`. The commissioning observation `artifacts/commission_series_round_002.json` shows that condition fails while radix, precision, round-to-nearest, Decimal containment, and the 16-ulp sequential-versus-`pow` tolerance pass. Successor `claim_instrument_exp_series_round_003` restates the library comparison with an explicit 1-ulp rounding tolerance.",
+      "decisive_contract_version": null,
+      "created_iteration": 21,
+      "updated_iteration": 29
+    },
+    {
+      "id": "claim_instrument_exp_series_round_003",
+      "statement": "Python IEEE-754 binary64 `float` has radix 2, 53-bit precision, and round-to-nearest ties-to-even. Ten sequential multiplies by `0.5` from `1.0` equal the independent dyadic $2^{-10}$ exactly, and ten sequential multiplies by `2.0` equal `1024` exactly. Ten sequential multiplies by the binary64 value of `0.9` agree with `math.pow(0.9, 10)` to within 16 ulps; sequential multiplication need not be bit-identical to `pow`. The alternating Taylor series for $\\exp(-1)$ with the next-term remainder yields a rational enclosure of width at most $10^{-15}$ that contains `Decimal(-1).exp()`. The binary64 value `math.exp(-1)` lies within 1 ulp of that enclosure; it need not lie inside a sub-ulp series interval.",
+      "kind": "instrument",
+      "relation": "instrument_of",
+      "parent_id": "claim_repair_euler_bound_002",
+      "status": "supported",
+      "rationale": "Replace the over-strict parent instrument `claim_instrument_exp_series_round_002`, which required the exact rational of `math.exp(-1)` to lie inside a $6.4\\times10^{-26}$ Leibniz enclosure. This instrument keeps independent dyadic references, the explicit 16-ulp sequential-versus-`pow` tolerance, Decimal containment of the series enclosure, and a 1-ulp binary64 rounding tolerance for the library exponential.",
+      "repair": null,
+      "evidence_contracts": [
+        {
+          "version": 1,
+          "evidence_purpose": "claim_decision",
+          "observable": "Binary64 identity, round-to-nearest ties-to-even at 1.0 and 2.0, ten sequential multiplies by 0.5 and 2.0 versus the independent dyadic values 2^{-10} and 1024, ten sequential multiplies by binary64 0.9 versus math.pow(0.9, 10) with an explicit 16-ulp tolerance, a Leibniz next-term rational enclosure of exp(-1) that contains Decimal(-1).exp(), and math.exp(-1) within 1 ulp of that enclosure.",
+          "expected_outcomes": "metrics.commissioning_passed is true only if radix is 2, precision is 53, round-to-nearest checks pass, dyadic sequential products are exact, sequential-versus-pow ulp distance is at most 16, the series enclosure of width at most 1e-15 contains Decimal(-1).exp(), and math.exp(-1) is within 1 ulp of the outward-rounded series interval. Any failed check is a commissioning failure, not scientific evidence about the Euler bound.",
+          "decision_rule": "Support this instrument claim if a fresh post-contract self-contained run_python writes artifacts/commission_series_round_003.json, all validation checks pass, and metrics.commissioning_passed is true. Otherwise leave the instrument unsupported. Sequential multiplication need not be bit-identical to pow.",
+          "required_observation": "A fresh self-contained ordinary run_python with input_artifacts: [] and no capability execution_binding produces artifacts/commission_series_round_003.json from scripts/commission_series_round_003.py.",
+          "uncertainty_criterion": "Dyadic products must match independent exact values with zero error. The sequential-versus-pow comparison uses an explicit 16-ulp binary64 rounding tolerance. The exp(-1) enclosure is the closed interval between consecutive alternating Taylor partial sums S_24 and S_25, width 1/25!, required to be at most 1e-15, and must contain Decimal(-1).exp() as an exact rational. math.exp(-1) must lie within 1 ulp of the outward-rounded series interval; it is not required to lie inside the sub-ulp rational enclosure.",
+          "inconclusive_conditions": "Process failure, timeout, nonfinite values, missing fields, failed validation checks, series width above 1e-15, Decimal outside the enclosure, or library exp more than 1 ulp from the enclosure cannot commission the instrument.",
+          "validation_checks": [
+            {
+              "aspect": null,
+              "json_path": "metrics.commissioning_passed",
+              "expected_value": true
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.float_radix",
+              "expected_value": 2
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.float_mant_dig",
+              "expected_value": 53
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.round_nearest_verified",
+              "expected_value": true
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.seq_vs_pow_within_tolerance",
+              "expected_value": true
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.series_contains_decimal",
+              "expected_value": true
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.series_lib_exp_within_1_ulp",
+              "expected_value": true
+            }
+          ],
+          "execution_binding": null,
+          "additional_execution_bindings": [],
+          "registered_iteration": 31
+        }
+      ],
+      "evidence": [
+        {
+          "path": "artifacts/commission_series_round_003.json",
+          "note": "Post-contract commissioning run `confirm-1:run-commission-series-round-003`. Independent dyadic products match exactly; round-to-nearest ties-to-even holds; sequential `0.9` multiplies differ from `math.pow` by 1 ulp (within the explicit 16-ulp tolerance, not bit-identical); `Decimal(-1).exp()` lies in the Leibniz enclosure; `math.exp(-1)` is 0 ulps from the outward-rounded series interval.",
+          "iteration": 33,
+          "contract_version": 1,
+          "observation_sufficient": true,
+          "observation_note": "All contract validation checks pass and `metrics.commissioning_passed` is true. This commissions the arithmetic and enclosure instruments; it is not evidence for or against the Euler 0.02 bound.",
+          "validation_passed": true,
+          "validation_results": [
+            {
+              "aspect": null,
+              "json_path": "metrics.commissioning_passed",
+              "expected_value": true,
+              "actual_value": true,
+              "passed": true,
+              "error": null
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.float_radix",
+              "expected_value": 2,
+              "actual_value": 2,
+              "passed": true,
+              "error": null
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.float_mant_dig",
+              "expected_value": 53,
+              "actual_value": 53,
+              "passed": true,
+              "error": null
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.round_nearest_verified",
+              "expected_value": true,
+              "actual_value": true,
+              "passed": true,
+              "error": null
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.seq_vs_pow_within_tolerance",
+              "expected_value": true,
+              "actual_value": true,
+              "passed": true,
+              "error": null
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.series_contains_decimal",
+              "expected_value": true,
+              "actual_value": true,
+              "passed": true,
+              "error": null
+            },
+            {
+              "aspect": null,
+              "json_path": "metrics.series_lib_exp_within_1_ulp",
+              "expected_value": true,
+              "actual_value": true,
+              "passed": true,
+              "error": null
+            }
+          ],
+          "commissioning_claim_id": null,
+          "provenance": {
+            "sha256": "64398155203f71c3db53029f966f7f52c29787a5d5ebcf2740e7da3ad4fe0a3b",
+            "bytes": 1526,
+            "tracked": true,
+            "generated_iteration": 32,
+            "action": "run_python",
+            "action_sha256": "7a9984b2680cb27ecfb51a2eba1020081ab14707b08e79a68b9f39fc272259b3",
+            "command_argv": [
+              "scripts/commission_series_round_003.py"
+            ],
+            "capability": null,
+            "program_path": "scripts/commission_series_round_003.py",
+            "program_sha256": "0b72f46fb4fe67cea09584cb627127ccafa835558d133359ec3a4562083127a8",
+            "execution_succeeded": true,
+            "execution_returncode": 0,
+            "execution_timed_out": false,
+            "execution_workspace_exceeded": false,
+            "execution_stage": null,
+            "operation_id": "confirm-1:run-commission-series-round-003",
+            "job_id": "job_7f79819c8e13ba3cd1352938cfed77d3",
+            "job_status": "succeeded",
+            "input_artifacts_declared": true,
+            "input_artifacts": [],
+            "input_lineage_eligible": true,
+            "input_lineage_issues": [],
+            "argv_input_coverage_eligible": true,
+            "argv_input_coverage_issues": [],
+            "evidence_eligible": true
+          }
+        }
+      ],
+      "closed_reason": "Contracted commissioning artifact `artifacts/commission_series_round_003.json` passed every validation check: binary64 radix 2 and 53-bit precision, round-to-nearest ties-to-even, exact dyadic sequential products, sequential-versus-`pow` distance 1 ulp within the explicit 16-ulp tolerance, `Decimal(-1).exp()` inside the Leibniz enclosure, and `math.exp(-1)` within 1 ulp of that enclosure. This supports the instrument only, not the Euler 0.02 bound.",
+      "decisive_contract_version": 1,
+      "created_iteration": 28,
+      "updated_iteration": 34
+    }
+  ]
+}

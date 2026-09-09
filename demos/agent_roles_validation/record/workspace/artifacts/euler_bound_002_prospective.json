@@ -1,0 +1,53 @@
+{
+  "enclosure_method": "exp(-1) is enclosed by consecutive alternating Taylor partial sums S_24 and S_25 (Leibniz next-term remainder 1/25!). The observed x10 is converted to an exact rational via as_integer_ratio. Absolute-error endpoints are outward-rounded to binary64. math.exp(-1) is a commissioned library reference, not the enclosure source.",
+  "metrics": {
+    "abs_error": 0.01920100107144218,
+    "binary64_verified": true,
+    "error_lower": 0.019201001071442167,
+    "error_upper": 0.01920100107144217,
+    "float_mant_dig": 53,
+    "float_radix": 2,
+    "interval_width": 3.469446951953614e-18,
+    "multiplier": 0.9,
+    "n_steps": 10,
+    "reference_exp_m1": 0.36787944117144233,
+    "series_last_index": 24,
+    "threshold": 0.02,
+    "wholly_above_threshold": false,
+    "wholly_at_or_below_threshold": true,
+    "x0": 1.0,
+    "x10": 0.34867844010000015
+  },
+  "series_enclosure": {
+    "error_hi_rational": "1112324675463788254701140609539/57930556397820284960621199360000",
+    "error_lo_rational": "71065187599075360717017078111253/3701118880971851539150798848000000",
+    "exp_m1_hi": "9923922230666898717143/26976017466662584320000",
+    "exp_m1_lo": "79253545592131482810517/215433472824041472000000"
+  },
+  "trajectory": [
+    1.0,
+    0.9,
+    0.81,
+    0.7290000000000001,
+    0.6561000000000001,
+    0.5904900000000002,
+    0.5314410000000002,
+    0.47829690000000014,
+    0.43046721000000016,
+    0.38742048900000015,
+    0.34867844010000015
+  ],
+  "trajectory_hex": [
+    "0x1.0000000000000p+0",
+    "0x1.ccccccccccccdp-1",
+    "0x1.9eb851eb851ecp-1",
+    "0x1.753f7ced91688p-1",
+    "0x1.4fec56d5cfaaep-1",
+    "0x1.2e54b48d3ae6ap-1",
+    "0x1.101908e581cf9p-1",
+    "0x1.e9c6a99d1cdc0p-2",
+    "0x1.b8cc6573cd2c7p-2",
+    "0x1.8cb7f4e838a80p-2",
+    "0x1.650bf60432fdap-2"
+  ]
+}

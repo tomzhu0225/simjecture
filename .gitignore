@@ -7,6 +7,7 @@ __pycache__/
 .ruff_cache/
 .hypothesis/
 .coverage
+.coverage.*
 htmlcov/
 docs/_build/
 build/
@@ -16,5 +17,7 @@ dist/
 *.sqlite3-shm
 *.sqlite3-wal
 artifacts/
+!demos/agent_roles_validation/record/workspace/artifacts/
+!demos/agent_roles_validation/record/workspace/artifacts/*.json
 data/
 .private/

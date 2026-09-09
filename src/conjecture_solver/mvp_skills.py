@@ -599,14 +599,20 @@ def discover_builtin_mvp_resources(
         else Path(__file__).resolve().parents[2]
     )
     packaged_skills = Path(__file__).resolve().parent / "builtin_skills"
+    packaged_capabilities = Path(__file__).resolve().parent / "builtin_capabilities"
     skill_root = (
         packaged_skills
         if project_root is None and packaged_skills.is_dir()
         else root / "skills"
     )
+    capability_root = (
+        packaged_capabilities
+        if project_root is None and packaged_capabilities.is_dir()
+        else root / "capabilities"
+    )
     skills = MVPSkillCatalog.discover(skill_root)
     capabilities = MVPCapabilityRegistry.discover(
-        root / "capabilities",
+        capability_root,
         ignore_unavailable=True,
     )
     for descriptor in capabilities.descriptors():

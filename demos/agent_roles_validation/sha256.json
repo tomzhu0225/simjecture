@@ -1,0 +1,17 @@
+{
+  "record/artifact_provenance.json": "8f3ac9ddb089a0b6abf37ff87784f76f3c3effadd49a33b7841b0d70a6f2fc9a",
+  "record/hypothesis_ledger.json": "d4a62967260a80b0e00581c468e6b7521f6192c1c5247e0bac3c8d21905910ae",
+  "record/mvp_manifest.json": "d1f611c9657f5af1d36d6bb4a887f84d8fc39f68bc1284ed3b6f23bd08f3cd0c",
+  "record/mvp_report.json": "249049e631739ba7c393588cef00058290a5f7165003fcb93b4a4b78b73dd3e9",
+  "record/workspace/artifacts/commission_binary64_ops.json": "1b7b23eca01f04f419af9798bce1c915d75a3b0a8c02de40061a9bdc6520f6e2",
+  "record/workspace/artifacts/commission_series_round_002.json": "69b12b2334ff6f059306fa2d15e220272096a27cb9e28c799ec3812e10a83e24",
+  "record/workspace/artifacts/commission_series_round_003.json": "64398155203f71c3db53029f966f7f52c29787a5d5ebcf2740e7da3ad4fe0a3b",
+  "record/workspace/artifacts/euler_bound_002_prospective.json": "5092bc545f028cb8d8150f02aff1d6b73128fa2d817e2f6b095422660c517f13",
+  "record/workspace/artifacts/euler_ten_step_error.json": "93c24f30c503b63cd837a72999736706f9a43d475e03074b9798ddefa41af41e",
+  "record/workspace/scripts/commission_binary64_ops.py": "5d0c9bafbfc77eff322f173d2891fea9ce21f7cc0c51956550ca4bebe04163ca",
+  "record/workspace/scripts/commission_series_round_002.py": "8b8c9af02d5d9a6182f0514ff5eddc1a91af96a8b131b61e6799cd371381a9a6",
+  "record/workspace/scripts/commission_series_round_003.py": "0b72f46fb4fe67cea09584cb627127ccafa835558d133359ec3a4562083127a8",
+  "record/workspace/scripts/euler_bound_002_prospective.py": "db23372bc313ea46d00362fc004883009d18c098f083b72ef8cce34cb34824e1",
+  "record/workspace/scripts/euler_ten_step_error.py": "bbb727b065c2c71fdf79242eb2acae124ad0277b968f8685b676c391b98461e4",
+  "validation.json": "78fed7e8be4b5396a98c4af66020307f99c47b58089ee83fdac1d23a67801c7b"
+}

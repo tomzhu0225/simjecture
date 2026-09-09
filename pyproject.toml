@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "simjecture"
-version = "0.3.1"
+version = "0.3.2"
 description = "Evidence-governed autonomous experimentation and falsification for computational science"
 readme = "README.md"
 license = "Apache-2.0"
@@ -44,6 +44,7 @@ acs = "conjecture_solver.cli:main"
 conjecture-solver = "conjecture_solver.cli:main"
 simjecture = "conjecture_solver.cli:main"
 simjecture-mcp = "conjecture_solver.mcp_server:main"
+simjecture-call = "conjecture_solver.oneshot:main"
 
 [project.urls]
 Homepage = "https://github.com/tomzhu0225/simjecture"
@@ -82,6 +83,7 @@ packages = ["src/conjecture_solver"]
 
 [tool.hatch.build.targets.wheel.force-include]
 "skills" = "conjecture_solver/builtin_skills"
+"capabilities" = "conjecture_solver/builtin_capabilities"
 "integrations/dsh" = "conjecture_solver/dsh_bundle"
 
 [tool.pytest.ini_options]
@@ -92,6 +94,7 @@ testpaths = ["tests"]
 line-length = 100
 target-version = "py311"
 extend-exclude = [
+  "demos/agent_roles_validation/record",
   "demos/gray_scott_counterexample/record",
   "demos/collisionless_gem_reconnection/guided",
   "demos/collisionless_gem_reconnection/record",

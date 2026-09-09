@@ -1,0 +1,33 @@
+{
+  "metrics": {
+    "commissioning_passed": true,
+    "exp0_error": 0.0,
+    "float_mant_dig": 53,
+    "float_radix": 2,
+    "half_pow10_error": 0.0,
+    "lib_exp_ulps_from_series": 0,
+    "round_nearest_verified": true,
+    "seq_pow_bit_identical": false,
+    "seq_vs_pow_ulp_tolerance": 16,
+    "seq_vs_pow_ulps": 1,
+    "seq_vs_pow_within_tolerance": true,
+    "series_contains_decimal": true,
+    "series_last_index": 24,
+    "series_lib_exp_within_1_ulp": true,
+    "series_width": 6.446950284384474e-26,
+    "two_pow10_error": 0.0
+  },
+  "reference": {
+    "decimal_exp_m1_text": "0.36787944117144232159552377016146086744581113103177",
+    "dist_seq09_minus_nine_tenths_pow10": "13475717/87960930222080000000000",
+    "exact_nine_tenths_pow10": "3486784401/10000000000",
+    "exp0_expected": 1.0,
+    "half_expected": 0.0009765625,
+    "lib_exp_ulp_tolerance": 1,
+    "seq_vs_pow_note": "Sequential binary64 multiplication by 0.9 need not be bit-identical to math.pow; explicit tolerance is 16 ulps.",
+    "series_hi_text": "9923922230666898717143/26976017466662584320000",
+    "series_lo_text": "79253545592131482810517/215433472824041472000000",
+    "source": "Independent known references: exact dyadic products 0.5**10 and 2**10; math.exp(0)==1; Decimal(-1).exp() inside the Leibniz enclosure of exp(-1). Sequential 0.9 multiplies compared to pow with an explicit 16-ulp binary64 rounding tolerance. math.exp(-1) compared to the series enclosure with an explicit 1-ulp tolerance.",
+    "two_expected": 1024.0
+  }
+}

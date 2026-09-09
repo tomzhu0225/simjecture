@@ -6,7 +6,7 @@ It accepts a natural-language hypothesis, lets an agent commission and use
 computational instruments, and preserves an independently inspectable path from
 proposal to claim disposition.
 
-This documentation describes version 0.1, a research preview. The project
+This documentation describes version 0.3.2, a research preview. The project
 began in computational plasma physics. The same evidence harness is now ready
 to extend to other simulation-gated fields. The software has completed real
 autonomous CPU and CUDA campaigns, but it does not claim unrestricted
@@ -32,6 +32,8 @@ hypothesis solving or empirical closure.
   environment.
 - **DSH operator:** use [Run a Simjecture campaign under DSH](how-to/deepseek-harness.md)
   to install the native MCP profile and verify its tool boundary.
+- **Simote operator:** use [Simote agent roles](how-to/simote-agent-roles.md)
+  to run claim-scoped CLI agents on shared campaigns.
 - **Reviewer:** inspect [Evaluation status](research/status.md),
   the [recorded Gray–Scott demo](demos/gray-scott.md),
   the [recorded collisionless GEM demo](demos/collisionless-gem.md),
@@ -73,6 +75,7 @@ how-to/guided-commissioning
 how-to/add-a-capability
 how-to/deploy-runtimes
 how-to/deepseek-harness
+how-to/simote-agent-roles
 ```
 
 ```{toctree}

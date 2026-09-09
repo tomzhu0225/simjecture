@@ -31,6 +31,12 @@ result.
   not a free-form label.
 - Give every mutation and execution a stable assignment-prefixed
   `operation_id`. Reuse an ID only for an exact retry.
+- Supply `input_artifacts: []` for a self-contained script. The harness records
+  program source hashes separately; do not list your authored Python source as
+  upstream observation data. Declare actual upstream data artifacts when they
+  are read, and retain their provenance. Declaring workbench source files as
+  data inputs makes their derived output non-evidence; removing real data inputs
+  to evade that rule is not valid.
 - Set `observation_sufficient=true` when a linked artifact actually satisfies
   the active contract. This flag records contract compliance; it does not let
   the Falsifier declare the scientific claim supported. A surviving claim still
