@@ -115,6 +115,7 @@ def test_tool_catalog_is_flat_and_uses_only_the_dsh_schema_subset() -> None:
         "materialize_skill",
         "search_literature",
         "read_workspace_file",
+        "read_workspace_image",
         "write_workspace_file",
         "list_workspace_files",
         "run_python",
@@ -1298,7 +1299,7 @@ def test_sdk_stdio_handshake_list_and_call_when_sdk_is_installed(tmp_path: Path)
             ):
                 await session.initialize()
                 listed = await session.list_tools()
-                assert len(listed.tools) == 22
+                assert len(listed.tools) == 23
                 assert {tool.name for tool in listed.tools} == set(TOOL_SCHEMAS)
                 for tool in listed.tools:
                     schema = getattr(

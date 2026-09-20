@@ -24,12 +24,15 @@ READ_TOOLS = frozenset(
         "list_skills",
         "read_skill",
         "read_workspace_file",
+        "read_workspace_image",
         "list_workspace_files",
         "job_status",
     }
 )
 ROLE_TOOLS = {
-    "lead_scientist": frozenset({"snapshot", "claims", "finalize_campaign"}),
+    "lead_scientist": frozenset(
+        {"snapshot", "claims", "read_workspace_image", "finalize_campaign"}
+    ),
     "falsifier": READ_TOOLS
     | {
         "register_claim",

@@ -4,6 +4,30 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+## 0.4.0 — 2026-09-20
+
+- Updated the bundled DSH integration to the tested `0.1.5-rc.2` runtime,
+  including current session, tool-call, prompt and structured-output APIs.
+  The Python release and DSH bundle now share version `0.4.0`.
+- Enabled native web search, page retrieval, shell, filesystem, skills,
+  workflows and configured plugins for research agents. Scientific calls retain
+  role restrictions; independent judges retain their frozen-case isolation.
+- Separated the native research workspace from authoritative campaign files.
+  Upgrades start a fresh `.research-v1` conversation, reconcile existing kernel
+  state, and preserve older conversations. Built-in DSH file/shell policies
+  protect records; arbitrary installed plugins remain trusted process code.
+- Added `read_workspace_image` for bounded PNG, JPEG and WebP image inspection
+  through MCP, with dimensions and content hashes. Inspection is not evidence
+  acceptance and requires a vision-capable model.
+- Extended the Simote scientific tool catalog for image reads. Matching Simote
+  changes add AGY workers and judges; Simote remains a separate optional app.
+- Added real-runtime DSH tests for role isolation, context pruning, V2/V3 log
+  migration, durable-job recovery and complete CLI/MCP pause/resume behavior.
+- Verified native search, fetch, file writing and image inspection with real
+  DeepSeek API calls on non-simulation research tasks.
+- Added a Linux launch bundle containing the wheel, source distribution,
+  matching DSH profile, setup/launch scripts and SHA-256 checksums.
+
 ## 0.3.2 — 2026-09-09
 
 - Added `simjecture-call`, a one-shot JSON transport for trusted supervisors,

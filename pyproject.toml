@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "simjecture"
-version = "0.3.2"
+version = "0.4.0"
 description = "Evidence-governed autonomous experimentation and falsification for computational science"
 readme = "README.md"
 license = "Apache-2.0"
@@ -35,6 +35,7 @@ dependencies = [
   "matplotlib>=3.8,<4",
   "numpy>=1.26,<3",
   "pandas>=2.2,<4",
+  "pillow>=10,<13",
   "pydantic>=2.9,<3",
   "scipy>=1.12,<2",
 ]
@@ -84,7 +85,15 @@ packages = ["src/conjecture_solver"]
 [tool.hatch.build.targets.wheel.force-include]
 "skills" = "conjecture_solver/builtin_skills"
 "capabilities" = "conjecture_solver/builtin_capabilities"
-"integrations/dsh" = "conjecture_solver/dsh_bundle"
+"integrations/dsh/package.json" = "conjecture_solver/dsh_bundle/package.json"
+"integrations/dsh/cordis.patch.yml" = "conjecture_solver/dsh_bundle/cordis.patch.yml"
+"integrations/dsh/README.md" = "conjecture_solver/dsh_bundle/README.md"
+"integrations/dsh/research-tools.js" = "conjecture_solver/dsh_bundle/research-tools.js"
+"integrations/dsh/runner.js" = "conjecture_solver/dsh_bundle/runner.js"
+"integrations/dsh/adjudicator.js" = "conjecture_solver/dsh_bundle/adjudicator.js"
+"integrations/dsh/roles.js" = "conjecture_solver/dsh_bundle/roles.js"
+"integrations/dsh/job-waiter.js" = "conjecture_solver/dsh_bundle/job-waiter.js"
+"integrations/dsh/context-elider.js" = "conjecture_solver/dsh_bundle/context-elider.js"
 
 [tool.pytest.ini_options]
 addopts = "-ra --strict-markers"

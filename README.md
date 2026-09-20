@@ -13,7 +13,7 @@ writes its own experiments and diagnostics, and searches deliberately for the
 simplest result that survives independent verification. The harness controls
 what may count as evidence.
 
-> **Research preview:** version 0.3 extends the infrastructure with a
+> **Research preview:** version 0.4 extends the infrastructure with a
 > license-safe FLASH resistive-MHD capability and an explicitly bounded
 > island-coalescence audit. It does not claim to solve arbitrary
 > scientific prose, establish truth about nature from one simulator, or replace
@@ -253,11 +253,11 @@ the human-first projection.
 
 ## DeepSeek Harness integration
 
-The v0.2.2 integration moves the model-facing research loop to DeepSeek Harness
+The v0.4.0 integration moves the model-facing research loop to DeepSeek Harness
 without moving scientific authority out of Simjecture. DSH owns the provider,
 conversation, retry policy, compaction, and resumable session. A native MCP
-boundary implements 22 typed endpoints. A compact persistent Lead Scientist
-sees seven coordination tools and delegates claim work to fresh, scoped
+boundary implements 23 typed endpoints. A compact persistent Lead Scientist
+sees eight scientific coordination/inspection tools plus native research tools and delegates claim work to fresh, scoped
 Falsifier/Experimenter, Blocker Resolver, and Repair Scientist sessions. A separate fresh,
 tool-free Judge reviews surviving claims. The Python campaign kernel continues to own hypotheses,
 evidence contracts, commissioning, skills, simulation capabilities, sandboxing,

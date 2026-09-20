@@ -11,7 +11,8 @@
 
 import { createHash } from 'node:crypto'
 import { appendFileSync } from 'node:fs'
-import { CallId } from '@deepseek-ai/dsh-llm'
+import { ToolCallId } from '@deepseek-ai/dsh-llm'
+import { researchToolFilter, restrictScientificTools } from './research-tools.js'
 
 export const name = 'simjecture-roles'
 export const inject = ['agents', 'subagents', 'tools']
@@ -21,6 +22,7 @@ const MCP = 'mcp__simjecture__'
 export const LEAD_TOOL_NAMES = Object.freeze([
   `${MCP}snapshot`,
   `${MCP}claims`,
+  `${MCP}read_workspace_image`,
   'simjecture_falsify',
   'simjecture_resolve_blocker',
   'simjecture_repair',
@@ -31,6 +33,7 @@ export const LEAD_TOOL_NAMES = Object.freeze([
 export const FALSIFIER_TOOL_NAMES = Object.freeze([
   `${MCP}snapshot`,
   `${MCP}claims`,
+  `${MCP}read_workspace_image`,
   `${MCP}list_skills`,
   `${MCP}read_skill`,
   `${MCP}materialize_skill`,
@@ -52,6 +55,7 @@ export const FALSIFIER_TOOL_NAMES = Object.freeze([
 export const REPAIR_TOOL_NAMES = Object.freeze([
   `${MCP}snapshot`,
   `${MCP}claims`,
+  `${MCP}read_workspace_image`,
   `${MCP}list_skills`,
   `${MCP}read_skill`,
   `${MCP}search_literature`,
@@ -64,6 +68,7 @@ export const REPAIR_TOOL_NAMES = Object.freeze([
 export const BLOCKER_RESOLVER_TOOL_NAMES = Object.freeze([
   `${MCP}snapshot`,
   `${MCP}claims`,
+  `${MCP}read_workspace_image`,
   `${MCP}register_evidence_contract`,
   `${MCP}record_terminal_observation`,
   `${MCP}link_claim_evidence`,
@@ -328,7 +333,7 @@ function structuredValue(result, name) {
 
 async function internalMcpCall(ctx, exec, suffix, name, args) {
   const result = await ctx.tools.execute({
-    callId: CallId(`${String(exec.callId)}:simjecture-role:${suffix}`),
+    callId: ToolCallId(`${String(exec.callId)}:simjecture-role:${suffix}`),
     rootCallId: exec.rootCallId,
     name,
     arguments: args,
@@ -531,6 +536,7 @@ async function childClaimSummaries(ctx, exec, role, parentId) {
       exec,
       `${role}:claim-children:${offset}`,
       `${MCP}claims`,
+  `${MCP}read_workspace_image`,
       { view: 'summary', parent_id: parentId, offset, limit: 24 },
     )
     const rows = claimsOf(page)
@@ -551,6 +557,7 @@ async function exactRoleClaims(ctx, exec, role, suffix, claimIds) {
       exec,
       `${role}:claims-${suffix}:${index}`,
       `${MCP}claims`,
+  `${MCP}read_workspace_image`,
       { view: 'role', claim_ids: [claimId] },
     )
     claims.push(...claimsOf(result))
@@ -570,9 +577,12 @@ function claimIdFrom(args) {
 }
 
 function installAssignmentGuard(child, assignment) {
-  if (assignment.guardInstalled) return
-  assignment.guardInstalled = true
+  assignment.guardedAgents ??= new WeakSet()
+  if (assignment.guardedAgents.has(child)) return
+  assignment.guardedAgents.add(child)
   child.ctx.tools.guard((exec) => {
+    // DSH's schema-validated handoff is not a scientific mutation.
+    if (!exec.name.startsWith(MCP)) return undefined
     const args = asRecord(exec.arguments)
     const claimId = claimIdFrom(args)
     const allowed = assignment.allowedClaims
@@ -644,7 +654,7 @@ function installAssignmentGuard(child, assignment) {
     }
 
     if (assignment.role === 'blocker_resolver') {
-      if (exec.name === `${MCP}snapshot` || exec.name === `${MCP}claims`) return undefined
+      if ([`${MCP}snapshot`, `${MCP}claims`, `${MCP}read_workspace_image`].includes(exec.name)) return undefined
       if (claimId !== assignment.targetId) {
         return 'the Blocker Resolver may mutate only its assigned scientific claim'
       }
@@ -858,13 +868,21 @@ export function apply(ctx) {
   const pendingByParent = new Map()
   const activeBySession = new Map()
 
-  ctx.on('subagent/start', (info) => {
-    const child = ctx.agents.get(info.id)
+  // Install claim guards during publication, before the spawn driver can
+  // enqueue its first prompt. subagent/start is emitted after driving begins.
+  ctx.on('agent/created', ({ agent: child }) => {
     const parentId = child?.session?.header?.parentSession
-    const assignment = parentId === undefined ? undefined : pendingByParent.get(String(parentId))
-    if (child === undefined || assignment === undefined) return
-    assignment.childSessionId = String(info.id)
-    activeBySession.set(String(info.id), assignment)
+    if (parentId === undefined) return
+    const assignment = pendingByParent.get(String(parentId)) ?? activeBySession.get(String(parentId))
+    if (assignment === undefined) {
+      restrictScientificTools(child.ctx, LEAD_TOOL_NAMES)
+      return
+    }
+    const allowed = assignment.role === 'falsifier' ? FALSIFIER_TOOL_NAMES
+      : assignment.role === 'repair_scientist' ? REPAIR_TOOL_NAMES : BLOCKER_RESOLVER_TOOL_NAMES
+    restrictScientificTools(child.ctx, allowed)
+    assignment.childSessionId = String(child.session.id)
+    activeBySession.set(String(child.session.id), assignment)
     installAssignmentGuard(child, assignment)
     appendActivity({
       kind: 'agent',
@@ -872,9 +890,11 @@ export function apply(ctx) {
       role: assignment.role,
       assignment_id: assignment.assignmentId,
       claim_id: assignment.targetId,
-      child_session_id: String(info.id),
+      child_session_id: String(child.session.id),
     })
   })
+
+  ctx.on('agent/disposed', ({ agent }) => activeBySession.delete(String(agent.session.id)))
 
   ctx.on('session/event', (session, event) => {
     const assignment = activeBySession.get(String(session.id))
@@ -1003,7 +1023,7 @@ export function apply(ctx) {
         signal: exec.signal,
         outputSchema,
         maxDepth: 1,
-        toolFilter: { allow: toolNames },
+        toolFilter: researchToolFilter(ctx, toolNames),
         persona,
       })
     } finally {

@@ -6,7 +6,7 @@ It accepts a natural-language hypothesis, lets an agent commission and use
 computational instruments, and preserves an independently inspectable path from
 proposal to claim disposition.
 
-This documentation describes version 0.3.2, a research preview. The project
+This documentation describes version 0.4.0, a research preview. The project
 began in computational plasma physics. The same evidence harness is now ready
 to extend to other simulation-gated fields. The software has completed real
 autonomous CPU and CUDA campaigns, but it does not claim unrestricted
@@ -75,6 +75,7 @@ how-to/guided-commissioning
 how-to/add-a-capability
 how-to/deploy-runtimes
 how-to/deepseek-harness
+how-to/dsh-upgrade-assessment
 how-to/simote-agent-roles
 ```
 

@@ -1,6 +1,6 @@
 # Scientific roles with Simote agent sessions
 
-Simote can run Codex and Grok CLI agents as claim-scoped Simjecture workers.
+Simote can run Codex, Grok, and AGY (Antigravity) CLI agents as claim-scoped Simjecture workers.
 Simjecture remains the authority for evidence, claim disposition, jobs, budgets,
 and campaign finalization. The native API runner and DSH profile remain available.
 
@@ -18,7 +18,7 @@ and role launches; existing assigned work can finish and records are preserved.
 ## Run a shared campaign
 
 1. Configure a campaign-owner bot and one or more worker bots in the same Simote
-   team section, using the same named SSH compute machine. Select Codex or Grok
+   team section, using the same named SSH compute machine. Select Codex, Grok, or AGY
    agent engines for the workers, with their existing local logins.
 2. Ask the owner to use `simjecture_open_campaign`. The owner keeps the campaign
    under its workspace. Scientific worker tasks share that campaign; they do not
@@ -49,7 +49,7 @@ and role launches; existing assigned work can finish and records are preserved.
 5. For independent review, the owner or assigned lead calls
    `simjecture_adjudicate` with `campaign_id`, `judge_bot_id`, `operation_id`,
    `claim_id`, `contract_version`, and `case_for_sufficiency`. The selected
-   Codex/Grok instance receives a fresh session, empty working directory, no
+   Codex/Grok/AGY instance receives a fresh session, empty working directory, no
    conversation history or Simote integrations, and only the frozen case.
    Tool activity invalidates the review. Only a successful text-only response
    reaches Simjecture's existing verdict validation and scientific gates.
@@ -63,6 +63,13 @@ hypothesis graph, claim contracts, linked evidence previews, jobs, role tasks,
 and the final report. You can create or attach a campaign, assign workers,
 request independent review, cancel jobs, and finalize through the same kernel
 gates. The existing Simjecture web dashboard is also available.
+
+AGY workers require the instance's full-auto setting, because its headless CLI
+cannot approve MCP calls interactively. Simote mounts named scientific MCP tools
+for each turn and removes them before a tool-free judge starts. AGY uses a global
+MCP configuration, so Simote serializes AGY child lifetimes to prevent one task
+from receiving another task's credentials. User-configured MCP entries remain
+preserved; any observed judge tool use rejects the review, as for other engines.
 
 ## Recovery and boundaries
 

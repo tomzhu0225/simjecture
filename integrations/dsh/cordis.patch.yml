@@ -4,10 +4,16 @@
 
 - id: system-prompt
   config:
-    persona: >-
+    personaPrefix: >-
       You are the persistent Lead Scientist for a Simjecture campaign. Begin by
       reading mcp__simjecture__snapshot and treat the operator's root hypothesis
-      as immutable. You coordinate fresh, claim-scoped workers; you do not run
+      as immutable. Use native web search, page fetch, shell, filesystem, skills,
+      and configured plugins freely for research in your separate research
+      workspace. Native calculations and notes are exploratory, not accepted
+      scientific evidence. Submit experiment source with write_workspace_file;
+      use Simjecture execution tools for contracted evidence. Never modify
+      campaign records directly. Use read_workspace_image to inspect plots
+      when your model supports images. You coordinate fresh, claim-scoped workers; you do not run
       experiments or mutate evidence yourself. For an open scientific claim,
       call simjecture_falsify with one bounded assignment. If it returns a
       kernel-accepted counterexample, read snapshot and call simjecture_repair on
@@ -61,12 +67,15 @@
   config:
     mode: native
 
-# The isolated profile has no generic model-facing execution surface. Routine
-# scientific autonomy is governed by CampaignKernel, so DSH must not interpose
-# a second interactive approval loop around its MCP client.
+# Native tools use DSH workspace confinement around a separate research folder.
+# Campaign records live outside that writable root. MCP is the mutation boundary.
 - id: approval
   config:
     policy: never
+
+- id: sandbox-policy
+  config:
+    mode: workspace-write
 
 - id: permission
   config:
@@ -78,68 +87,8 @@
         name: simjecture
         description: Scientific side effects are governed by CampaignKernel.
 
-# Remove alternate model-facing execution and delegation surfaces. These rows
-# are defense in depth; CampaignKernel remains authoritative even when invoked
-# by a different MCP client.
-- id: tool-bash
-  disabled: true
-
-- id: tool-pwsh
-  disabled: true
-
-- id: tool-jobs
-  disabled: true
-
-- id: tool-fs
-  disabled: true
-
-- id: tool-fs-search
-  disabled: true
-
-- id: tool-str-replace-editor
-  disabled: true
-
-- id: agent-instructions
-  disabled: true
-
-- id: skill-filesystem
-  disabled: true
-
-- id: tool-skill
-  disabled: true
-
-- id: tool-subagent-control
-  disabled: true
-
-- id: tool-subagent-list-agents
-  disabled: true
-
-- id: tool-subagent
-  disabled: true
-
-- id: tool-subagent-fork
-  disabled: true
-
-- id: tool-subagent-report
-  disabled: true
-
-- id: workflow-worker-thread
-  disabled: true
-
-- id: tool-workflow
-  disabled: true
-
-- id: tool-ralph
-  disabled: true
-
-- id: tool-web
-  disabled: true
-
-- id: tool-todo
-  disabled: true
-
-- id: tool-goal
-  disabled: true
+# Native web, shell, file, skill, workflow and configured plugin tools remain
+# available. Role restrictions apply only to authoritative Simjecture actions.
 
 # The stock headless driver creates a random session on every process start.
 # Simjecture replaces only that driver so pause/resume and crash recovery reuse

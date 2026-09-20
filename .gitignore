@@ -21,3 +21,5 @@ artifacts/
 !demos/agent_roles_validation/record/workspace/artifacts/*.json
 data/
 .private/
+
+integrations/dsh/node_modules/

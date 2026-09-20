@@ -8,7 +8,7 @@
  */
 
 import { appendFileSync } from 'node:fs'
-import { CallId } from '@deepseek-ai/dsh-llm'
+import { ToolCallId } from '@deepseek-ai/dsh-llm'
 
 export const name = 'simjecture-adjudicator'
 export const inject = ['agentDefaultModel', 'subagents', 'tools']
@@ -40,25 +40,6 @@ const VERDICT_SCHEMA = {
     evidence_gaps: { type: 'array', items: { type: 'string' } },
     next_test: { oneOf: [{ type: 'string' }, { type: 'null' }] },
   },
-  oneOf: [
-    {
-      properties: {
-        decision: { type: 'string', enum: ['sufficient'] },
-        scientific_disposition: {
-          type: 'string',
-          enum: ['supported', 'falsified', 'instrument_limited', 'unresolved'],
-        },
-      },
-      required: ['decision', 'scientific_disposition'],
-    },
-    {
-      properties: {
-        decision: { type: 'string', enum: ['insufficient'] },
-        scientific_disposition: { type: 'null' },
-      },
-      required: ['decision', 'scientific_disposition'],
-    },
-  ],
   required: [
     'claim_id',
     'contract_version',
@@ -135,7 +116,7 @@ function errorText(result) {
 
 async function internalMcpCall(ctx, exec, suffix, name, args) {
   const result = await ctx.tools.execute({
-    callId: CallId(`${String(exec.callId)}:simjecture:${suffix}`),
+    callId: ToolCallId(`${String(exec.callId)}:simjecture:${suffix}`),
     rootCallId: exec.rootCallId,
     name,
     arguments: args,
@@ -159,7 +140,7 @@ async function internalMcpCall(ctx, exec, suffix, name, args) {
 
 function usageFrom(run) {
   const totals = {}
-  for (const event of run.localAgent?.session?.events ?? []) {
+  for (const event of run.localAgent?.session.snapshotEvents() ?? []) {
     if (event.type !== 'assistant/message' || event.data.usage === undefined) continue
     for (const [key, value] of Object.entries(event.data.usage)) {
       if (typeof value === 'number' && Number.isFinite(value)) {
@@ -289,6 +270,12 @@ export function apply(ctx) {
         )
       }
 
+      // DSH's structured-output subset disallows type + oneOf at the same
+      // schema node. Preserve the cross-field invariant before kernel commit.
+      const verdict = result.structured
+      if ((verdict.decision === 'insufficient') !== (verdict.scientific_disposition === null)) {
+        throw new Error('independent judge returned an inconsistent decision and scientific disposition')
+      }
       const selection = ctx.agentDefaultModel.currentSelection()
       const recorded = await internalMcpCall(
         ctx,

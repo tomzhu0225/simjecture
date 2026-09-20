@@ -1375,6 +1375,10 @@ class CampaignMCPBridge:
                 "search_literature",
                 validated,
             )
+        elif name == "read_workspace_image":
+            # Images have an independent byte/pixel limit; the generic JSON
+            # text truncation would corrupt their base64 payload.
+            return await self._kernel_method("read_workspace_image", validated["path"])
         elif name == "read_workspace_file":
             result = await self._execute_action(
                 "read_file",
@@ -1514,7 +1518,21 @@ def _sdk_text(types_module: Any, text: str) -> Any:
     return _model(types_module.TextContent, type="text", text=text)
 
 
-def _sdk_result(types_module: Any, result: Any, *, error: bool = False) -> Any:
+def _sdk_result(
+    types_module: Any, result: Any, *, error: bool = False, image: bool = False
+) -> Any:
+    if image and not error:
+        metadata = {key: value for key, value in result.items() if key != "data"}
+        return _model(
+            types_module.CallToolResult,
+            content=[
+                _sdk_text(types_module, _compact_json(metadata)),
+                _model(types_module.ImageContent, type="image", data=result["data"],
+                       mimeType=result["mime_type"]),
+            ],
+            structuredContent=metadata,
+            isError=False,
+        )
     text = _compact_json(result)
     # The MCP structured-content field is an object in both the legacy and v2
     # SDK models.  Preserve the complete JSON value in text content while
@@ -1605,7 +1623,7 @@ def create_mcp_server(bridge: CampaignMCPBridge | None = None) -> Any:
             arguments = kwargs.get("arguments") or {}
         try:
             result = await active_bridge.call_tool(name, arguments)
-            return _sdk_result(mcp_types, result)
+            return _sdk_result(mcp_types, result, image=name == "read_workspace_image")
         except Exception as error:
             return _sdk_result(
                 mcp_types,

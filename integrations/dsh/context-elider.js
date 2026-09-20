@@ -127,7 +127,7 @@ function parseObject(text) {
 }
 
 function currentSurfaceEvents(session) {
-  return [...session.surface.nodes].map(seq => session.events[seq])
+  return [...session.surface.nodes].map(seq => session.eventAt(seq))
 }
 
 function completedUnits(session) {
@@ -246,7 +246,7 @@ function collapseUnit(ctx, session, unit) {
     'user/message',
     receiptFor(unit),
     {
-      surfaceOp: { op: 'replace', start: first, end: last },
+      surfaceOp: { op: 'replace', startSeq: first, endSeq: last },
       sourceEventSeqs: seqs,
     },
   )
@@ -291,7 +291,7 @@ function pruneResult(ctx, session, event) {
     'tool/result',
     { ...event.data, message },
     {
-      surfaceOp: { op: 'replace', start: event.seq, end: event.seq },
+      surfaceOp: { op: 'replace', startSeq: event.seq, endSeq: event.seq },
       sourceEventSeqs: [event.seq],
     },
   )

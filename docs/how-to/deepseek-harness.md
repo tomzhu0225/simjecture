@@ -1,16 +1,21 @@
 # Run a Simjecture campaign under DSH
 
 The DSH integration is a native-tool profile plus a small resumable driver for
-a durable Simjecture campaign. Version 0.2.2 uses a persistent Lead Scientist
+a durable Simjecture campaign. Version 0.4.0 uses a persistent Lead Scientist
 and fresh, claim-scoped Falsifier, Repair Scientist, and tool-free Judge
 sessions. Fresh workers see bounded kernel state rather than inherited chat.
-The Python MCP process is the only scientific tool surface: it exposes campaign
-state, claims, evidence contracts, skills, literature metadata, workspace files,
-and bounded jobs. Generic shell, filesystem bypass, and unguarded `finish` tools are
-disabled by the profile wherever the host DSH version supports disabling them.
-The profile also sets DSH's approval policy to `never`: all remaining scientific
-side effects already cross the typed CampaignKernel policy and Bubblewrap
-boundary, so no second routine permission loop is inserted around MCP calls.
+Native web search, page fetch, shell, filesystem, skills, workflows and configured
+plugins remain available to research agents. Only authoritative Simjecture tools
+are filtered by scientific role. The Python MCP process governs campaign state,
+contracts, evidence acceptance, and tracked experiments. Its image endpoint
+returns bounded PNG/JPEG/WebP pixels for vision-capable models.
+
+The profile uses DSH's `workspace-write` file policy around a separate research
+directory and approval `never` (no prompts; escalation requests are rejected).
+Experiment execution retains Simjecture's separate Bubblewrap sandbox.
+
+For the upstream version review and migration requirements, see the
+[DSH upgrade assessment](dsh-upgrade-assessment.md).
 
 ## Provision the two runtimes
 
@@ -59,8 +64,8 @@ resulting local bundle into the isolated harness profile:
 ```bash
 SIMJECTURE_DSH_PROFILE="$(simjecture dsh-profile)"
 npm pack "$SIMJECTURE_DSH_PROFILE" --pack-destination /tmp
-dsh plugin --profile simjecture add @deepseek-ai/dsh-headless@0.1.1-rc.2
-dsh plugin --profile simjecture add /tmp/simjecture-dsh-bundle-0.2.2.tgz
+dsh plugin --profile simjecture add @deepseek-ai/dsh-headless@0.1.5-rc.2
+dsh plugin --profile simjecture add /tmp/simjecture-dsh-bundle-0.4.0.tgz
 ```
 
 For a checkout-only development install, use the directory directly when the
@@ -71,11 +76,13 @@ dsh plugin --profile simjecture add "$PWD/integrations/dsh"
 ```
 
 The bundle pins the tested DSH prerelease and MCP-client prerelease in its
-`package.json`. Keep the lockfile produced by `npm pack`/the DSH plugin manager
-with the deployment artifact; do not silently widen either range.
+`package.json`. The source bundle includes a `package-lock.json` for `npm ci` and runtime tests.
+Keep the separate lockfile produced by the DSH plugin manager with the
+deployment artifact; `npm pack` does not create a lockfile. Do not widen the pins.
 
-DSH `0.1.1-rc.2` requires Node.js `^22.19.0` or `>=24.0.0`. Install the DSH CLI
-according to its upstream instructions and verify that `dsh` is on `PATH`
+DSH `0.1.5-rc.2` requires Node.js `^22.19.0` or `>=24.0.0`. Install the DSH CLI
+at that exact version (`npm install -g @deepseek-ai/dsh@0.1.5-rc.2`)
+and verify that `dsh` is on `PATH`
 before installing this isolated profile.
 
 ## Inspect the resolved configuration
@@ -91,8 +98,8 @@ Confirm that the native MCP client is named `simjecture`, starts
 `simjecture-mcp`, carries the `SIMJECTURE_*` environment, and has
 `failOnStartupError: true`. Also confirm `approval.policy: never`, the
 `simjecture` permission preset (`workspace-write` plus `never`), and that the
-generic tool rows are disabled. A startup or handshake failure should stop the
-scientific profile rather than silently fall back to a bypass tool.
+native research tools remain enabled. A startup or handshake failure must stop
+the profile before its first model request.
 
 Completed large execution and workspace-write exchanges stay fully visible for
 one model request. At a later step the profile may replace the balanced exchange
@@ -138,11 +145,12 @@ simjecture-mcp --workspace "$SIMJECTURE_WORKSPACE" \
 
 That command speaks MCP over stdio and expects an MCP client; it is not a
 human-facing REPL. Use DSH's initialize/list-tools/call-tool trace to verify the
-22 explicit MCP endpoints before submitting work. The persistent lead sees seven
-tools: two durable reads, fresh falsification, blocker resolution, and repair
-delegation, independent adjudication, and guarded finalization. Each worker receives a narrower tool
-surface plus a claim-scoped argument guard. Raw judge prepare/commit operations
-are private to the adjudication composite.
+23 explicit MCP endpoints before submitting work. The lead has eight scientific
+coordination/inspection tools alongside native research tools. Workers receive
+role-specific scientific subsets and claim guards, while retaining native tools.
+Native delegated children inherit their parent's scientific restrictions. The
+independent judge sees only its frozen case and DSH's structured-output handoff;
+raw judge prepare/commit operations remain private to the composite.
 
 `observation_sufficient=true` means that a linked artifact satisfies its
 selected prospective contract; it is not a researcher-issued support verdict.
@@ -191,3 +199,65 @@ a `repairs` child; an honestly complete blocker may close as
 the immutable hand-off artifact. If later review finds an error, append a
 corrective audit record rather than editing the original ledger, transcript, or
 report.
+
+## Upgrade an existing deployment
+
+Stop its campaign supervisor and back up the entire campaign directory, including
+`operator_input/dsh_sessions`, before upgrading the CLI and isolated profile.
+Install DSH `0.1.5-rc.2`, replace the headless bundle with the matching version,
+and install Simjecture's `0.4.0` profile using the commands above. Inspect
+`--dump-config` before resuming. Do not mix the `0.1.6` alpha packages into this
+profile. Provider/model selection stays in your DSH configuration.
+
+DSH publishes a new V3 session generation when opening an older supported log
+for writing; it retains the older generation. A rollback must use the complete
+pre-upgrade campaign backup and the matching older runtime/profile. Do not point
+an older DSH runtime at a campaign that has continued under the newer version.
+
+To reproduce adapter validation from this checkout:
+
+```bash
+uv sync --extra dsh
+npm ci --prefix integrations/dsh
+SIMJECTURE_MCP_EXECUTABLE="$PWD/.venv/bin/simjecture-mcp" npm test --prefix integrations/dsh
+uv run pytest -q tests/test_dsh_bundle.py tests/test_dsh_engine.py
+```
+
+The JavaScript tests use the pinned real DSH agent loop, tools, child runtime,
+and persistence, with a deterministic model adapter. The CLI test also starts
+the real Python MCP server and exercises snapshot, finalization refusal,
+pause/resume, and mandatory-startup failure. It skips when the Python executable
+is unavailable. These tests make no paid model requests and run no scientific
+simulation. The test profile uses filesystem polling to avoid host inotify
+limits; this is a test setting, not a change to deployed profiles.
+
+## Research workspace and record boundary
+
+The runner creates a native research directory outside `SIMJECTURE_WORKSPACE`.
+Its default is the sibling `.simjecture-research/<session-id>` directory;
+`SIMJECTURE_DSH_RESEARCH_ROOT` can select another directory. Overlapping research
+and campaign roots are rejected. Native DSH file and shell tools may write in
+this research directory; they cannot directly overwrite campaign files under
+the configured file policy. Network tools remain enabled. Copy experiment source
+into the scientific workspace using `write_workspace_file` before submitting a
+contracted run. Native notes and calculations do not automatically become evidence.
+
+Bundle 0.4.0 uses the deterministic `<launch-session-id>.research-v1` DSH identity.
+This deliberately avoids resuming pre-0.4.0 sessions whose immutable working
+directory was the campaign itself. On first upgrade, the researcher starts a
+fresh conversation and reconciles the existing kernel snapshot; previous logs
+are retained. Later pause/resume uses the new stable identity normally.
+
+This is a boundary for DSH's enforcing built-in tools, not an OS security boundary
+around arbitrary plugin code. Installed extensions are trusted code with the
+DSH process's authority; upstream 0.1.5 workflow workers likewise are not a
+security sandbox. Deploy the scientific service under a separate account or on
+another host if protection against hostile extensions is required. This profile
+does not install that account/service separation.
+
+`read_workspace_image(path)` accepts campaign-relative PNG, JPEG, and WebP files
+up to 4 MiB and 16 megapixels. MCP clients receive actual image content plus
+path, dimensions, byte count and SHA-256 metadata. A vision-capable model is
+required to interpret the pixels. Image reading is non-mutating and does not
+promote an artifact to scientific evidence. The independent judge still receives
+only its frozen adjudication packet, not unrestricted browsing or image tools.

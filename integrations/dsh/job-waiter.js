@@ -9,7 +9,7 @@
  */
 
 import { appendFileSync, readFileSync } from 'node:fs'
-import { CallId } from '@deepseek-ai/dsh-llm'
+import { ToolCallId } from '@deepseek-ai/dsh-llm'
 
 export const name = 'simjecture-job-waiter'
 export const inject = ['tools']
@@ -139,7 +139,7 @@ function delay(milliseconds, signal) {
 
 async function statusCall(ctx, exec, jobId, report, serial) {
   return ctx.tools.execute({
-    callId: CallId(`${String(exec.callId)}:job-wait:${serial}`),
+    callId: ToolCallId(`${String(exec.callId)}:job-wait:${serial}`),
     rootCallId: exec.rootCallId,
     name: STATUS_TOOL,
     arguments: { job_id: jobId, report },

@@ -285,6 +285,7 @@ TOOL_SCHEMAS: dict[str, dict[str, Any]] = {
             **_RESEARCH_NOTE,
         }
     ),
+    "read_workspace_image": _object({"path": _string(), **_RESEARCH_NOTE}),
     "read_workspace_file": _object(
         {
             "path": _string(),
@@ -419,6 +420,7 @@ TOOL_REQUIRED: dict[str, tuple[str, ...]] = {
     "read_skill": ("skill",),
     "materialize_skill": ("operation_id", "skill", "source_path", "destination_path"),
     "search_literature": ("operation_id", "query", "purpose"),
+    "read_workspace_image": ("path",),
     "read_workspace_file": ("path",),
     "write_workspace_file": ("operation_id", "path", "content"),
     "list_workspace_files": (),
@@ -505,6 +507,11 @@ TOOL_DESCRIPTIONS: dict[str, str] = {
     ),
     "search_literature": (
         "Search public literature metadata; search results are never campaign evidence."
+    ),
+    "read_workspace_image": (
+        "Inspect a PNG, JPEG or WebP image from the campaign workspace. "
+        "Returns image content for vision-capable models plus its hash and dimensions. "
+        "Maximum 4 MiB and 16 megapixels; inspection does not accept evidence."
     ),
     "read_workspace_file": (
         "Read one bounded text file or a start_line/line_count window from the "

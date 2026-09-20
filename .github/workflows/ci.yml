@@ -50,7 +50,16 @@ jobs:
       - name: Install uv
         run: python -m pip install uv
       - name: Install locked environment
-        run: uv sync --frozen --extra tui
+        run: uv sync --frozen --extra tui --extra dsh
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.23.1"
+          cache: npm
+          cache-dependency-path: integrations/dsh/package-lock.json
+      - name: Install pinned DSH test runtime
+        run: npm ci --prefix integrations/dsh
+      - name: Test DSH adapter and real MCP profile
+        run: SIMJECTURE_MCP_EXECUTABLE="$PWD/.venv/bin/simjecture-mcp" npm test --prefix integrations/dsh
       - name: Lint
         run: uv run ruff check .
       - name: Test

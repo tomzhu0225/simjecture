@@ -1192,6 +1192,12 @@ class CampaignKernel:
 
         self.host._recover_interrupted_action()
 
+    def read_workspace_image(self, path: str) -> dict[str, Any]:
+        """Return a bounded image for inspection without changing evidence state."""
+        from .workspace_images import read_workspace_image
+
+        return read_workspace_image(self.host.sandbox.root, path)
+
     def perform(
         self,
         action: MVPAgentAction,

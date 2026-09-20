@@ -6,12 +6,13 @@
  * projection, and one autonomous follow-up turn per supervised invocation.
  */
 
-import { appendFileSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
-import { dirname, resolve } from 'node:path'
+import { appendFileSync, readFileSync, renameSync, writeFileSync, mkdirSync, realpathSync } from 'node:fs'
+import { dirname, resolve, relative, isAbsolute, sep } from 'node:path'
 import { installModelSelection } from '@deepseek-ai/dsh-agent'
 import { createUserMessage } from '@deepseek-ai/dsh-llm'
 import { SessionId } from '@deepseek-ai/dsh-session'
 import { LEAD_TOOL_NAMES } from './roles.js'
+import { restrictScientificTools } from './research-tools.js'
 
 export const name = 'simjecture-runner'
 export const inject = ['agentDefaultModel', 'agents', 'sessions', 'tools']
@@ -210,19 +211,37 @@ async function drive(ctx, task, io) {
 
   const rawSessionId = requiredEnvironment('SIMJECTURE_DSH_SESSION_ID')
   if (!SESSION_ID.test(rawSessionId)) throw new Error('SIMJECTURE_DSH_SESSION_ID is invalid')
-  const sessionId = SessionId(rawSessionId)
+  // A new runtime session avoids reusing old immutable cwd metadata that
+  // granted write access to campaign records. Scientific state is reconciled
+  // from the kernel; all previous conversations remain on disk.
+  const sessionId = SessionId(`${rawSessionId}.research-v1`)
   const activityPath = requiredEnvironment('SIMJECTURE_DSH_ACTIVITY_FILE')
   const statePath = requiredEnvironment('SIMJECTURE_DSH_STATE_FILE')
   const controlPath = requiredEnvironment('SIMJECTURE_DSH_CONTROL_FILE')
   const resumeRequested = process.env.SIMJECTURE_DSH_RESUME === '1'
+  const campaignRoot = realpathSync(requiredEnvironment('SIMJECTURE_WORKSPACE'))
+  const researchRoot = resolve(process.env.SIMJECTURE_DSH_RESEARCH_ROOT
+    ?? resolve(dirname(campaignRoot), '.simjecture-research', rawSessionId))
+  mkdirSync(researchRoot, { recursive: true, mode: 0o700 })
+  const researchDirectory = realpathSync(researchRoot)
+  const contains = (parent, child) => {
+    const path = relative(parent, child)
+    return path === '' || (!path.startsWith('..' + sep) && path !== '..' && !isAbsolute(path))
+  }
+  if (contains(researchDirectory, campaignRoot) || contains(campaignRoot, researchDirectory)) {
+    throw new Error('research workspace and campaign records must be disjoint directories')
+  }
   const selection = defaultModel.currentSelection()
-  const setup = (agentCtx) => {
+  const setup = (agentCtx, agent) => {
+    if (agent.session.header.cwd !== researchDirectory) {
+      throw new Error('legacy DSH session has an unsafe workspace; start a new DSH session with a distinct research directory')
+    }
     const selected = { current: selection, assembled: undefined }
     installModelSelection(agentCtx, selected)
     // The persistent agent is a compact coordinator, not another experiment
     // worker. Fresh scoped roles own scientific mutation and execution; the
-    // lead sees only durable state, delegation, adjudication, and finalization.
-    agentCtx.tools.restrict({ allow: [...LEAD_TOOL_NAMES] })
+    // scientific mutations stay role-scoped; native research tools stay available.
+    restrictScientificTools(agentCtx, LEAD_TOOL_NAMES)
   }
 
   let resumed = false
@@ -237,10 +256,10 @@ async function drive(ctx, task, io) {
       })
       resumed = true
     } catch (error) {
-      if (!isMissingSession(error, rawSessionId)) throw error
+      if (!isMissingSession(error, String(sessionId))) throw error
       handle = await agents.create({
         sessionId,
-        meta: { cwd: process.cwd() },
+        meta: { cwd: researchDirectory },
         agentOptions: { provider: selection.provider, model: selection.model },
         setup,
       })
@@ -249,7 +268,7 @@ async function drive(ctx, task, io) {
   } else {
     handle = await agents.create({
       sessionId,
-      meta: { cwd: process.cwd() },
+      meta: { cwd: researchDirectory },
       agentOptions: { provider: selection.provider, model: selection.model },
       setup,
     })
@@ -322,7 +341,7 @@ async function drive(ctx, task, io) {
   await agent.whenIdle()
   await sessions.flush(agent.session)
   if (!pauseHonored && controlRequestsPause(controlPath)) pauseHonored = true
-  const outcome = summarize(agent.session.events, firstSeq)
+  const outcome = summarize(agent.session.snapshotEvents(), firstSeq)
   atomicJson(statePath, {
     schema_version: '0.1.0',
     status: pauseHonored ? 'paused' : 'idle',

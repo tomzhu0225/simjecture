@@ -10,16 +10,16 @@ BUNDLE = Path(__file__).parents[1] / "integrations" / "dsh"
 def test_dsh_bundle_pins_the_resumable_driver_and_native_mcp_client() -> None:
     package = json.loads((BUNDLE / "package.json").read_text())
     assert package["name"] == "@simjecture/dsh-bundle"
-    assert package["version"] == "0.2.2"
-    assert package["engines"]["node"] == ">=22.19.0"
-    assert package["peerDependencies"] == {"@deepseek-ai/dsh": "0.1.1-rc.2"}
+    assert package["version"] == "0.4.0"
+    assert package["engines"]["node"] == "^22.19.0 || >=24.0.0"
+    assert package["peerDependencies"] == {"@deepseek-ai/dsh": "0.1.5-rc.2"}
     assert package["dependencies"] == {
-        "@deepseek-ai/dsh-agent": "0.1.1-rc.2",
-        "@deepseek-ai/dsh-llm": "0.1.1-rc.2",
-        "@deepseek-ai/dsh-mcp-client": "0.1.1-rc.2",
-        "@deepseek-ai/dsh-session": "0.1.1-rc.2",
+        "@deepseek-ai/dsh-agent": "0.1.5-rc.2",
+        "@deepseek-ai/dsh-llm": "0.1.5-rc.2",
+        "@deepseek-ai/dsh-mcp-client": "0.1.5-rc.2",
+        "@deepseek-ai/dsh-session": "0.1.5-rc.2",
     }
-    assert "scripts" not in package
+    assert package["scripts"] == {"test": "node --test tests/*.test.js"}
     assert "python" not in json.dumps(package).lower()
     assert "warpx" not in json.dumps(package).lower()
     assert package["dsh"]["bundle"]["patch"] == "./cordis.patch.yml"
@@ -63,33 +63,8 @@ def test_dsh_profile_declares_explicit_boundary_and_disables_bypasses() -> None:
         "SIMJECTURE_DSH_SESSION_ROOT",
     ):
         assert variable in patch
-    disabled_model_rows = (
-        "tool-bash",
-        "tool-pwsh",
-        "tool-jobs",
-        "tool-fs",
-        "tool-fs-search",
-        "tool-str-replace-editor",
-        "agent-instructions",
-        "skill-filesystem",
-        "tool-skill",
-        "tool-subagent-control",
-        "tool-subagent-list-agents",
-        "tool-subagent",
-        "tool-subagent-fork",
-        "tool-subagent-report",
-        "workflow-worker-thread",
-        "tool-workflow",
-        "tool-ralph",
-        "tool-web",
-        "tool-todo",
-        "tool-goal",
-    )
-    for tool_id in disabled_model_rows:
-        assert re.search(
-            rf"(?m)^- id: {re.escape(tool_id)}\n  disabled: true$",
-            patch,
-        )
+    for tool_id in ("tool-bash", "tool-fs", "tool-web", "tool-skill", "tool-subagent"):
+        assert f"- id: {tool_id}\n  disabled: true" not in patch
     assert "mcp__simjecture__finish" not in patch
     assert re.search(r"(?m)^- id: headless-runner\n  disabled: true$", patch)
     assert "name: '@simjecture/dsh-bundle/runner'" in patch
@@ -109,6 +84,7 @@ def test_dsh_profile_declares_explicit_boundary_and_disables_bypasses() -> None:
     assert "model: deepseek-v4-flash" in patch
     assert "thresholdRatio: 0.5" in patch
     assert "retainRatio: 0.03" in patch
+    assert "personaPrefix:" in patch
     assert "Lead Scientist" in patch
     assert re.search(r"do not run\s+experiments", patch)
     assert "required_transition=continue_falsification" in patch
@@ -161,7 +137,7 @@ def test_dsh_adjudicator_uses_a_fresh_tool_free_structured_child() -> None:
     assert "scientific_disposition=null" in adjudicator
 
     runner = (BUNDLE / "runner.js").read_text()
-    assert "agentCtx.tools.restrict" in runner
+    assert "restrictScientificTools" in runner
     assert "LEAD_TOOL_NAMES" in runner
 
 

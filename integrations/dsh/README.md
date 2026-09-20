@@ -7,7 +7,7 @@ final response. Simjecture remains authoritative for the hypothesis DAG,
 evidence contracts, commissioning, provenance, sandbox, and durable simulation
 jobs.
 
-Version 0.2.2 separates scientific work into four scopes:
+Version 0.4.0 targets DSH 0.1.5-rc.2 and separates scientific work into four scopes:
 
 - a persistent, compact **Lead Scientist** reads durable state and delegates;
 - a fresh **Falsifier/Experimenter** commissions and tests exactly one open
@@ -52,26 +52,24 @@ the hypothesis file must exactly match the immutable root stored there.
 
 ## Pack and install an isolated profile
 
-The integration is pinned to DSH `0.1.1-rc.2`. `simjecture dsh-profile` resolves
+The integration is pinned to DSH `0.1.5-rc.2`. `simjecture dsh-profile` resolves
 the same bundle from either a source checkout or an installed wheel. Pack it
 outside the repository or remove the generated tarball after installation:
 
 ```bash
 SIMJECTURE_DSH_PROFILE="$(simjecture dsh-profile)"
 npm pack "$SIMJECTURE_DSH_PROFILE" --pack-destination /tmp
-dsh plugin --profile simjecture add @deepseek-ai/dsh-headless@0.1.1-rc.2
-dsh plugin --profile simjecture add /tmp/simjecture-dsh-bundle-0.2.2.tgz
+dsh plugin --profile simjecture add @deepseek-ai/dsh-headless@0.1.5-rc.2
+dsh plugin --profile simjecture add /tmp/simjecture-dsh-bundle-0.4.0.tgz
 ```
 
-The dedicated profile is important: its base/headless composition lets this
-bundle disable generic shell, filesystem, web, skill, workflow, and subagent
-tools. Installing only the host row into DSH's standard Web agent preset would
-also leave that preset's coding tools available.
-
-The profile sets DSH approval to `never`; this does not bypass Simjecture's
-policy. The only remaining scientific side effects are typed MCP actions checked
-by CampaignKernel and executed in its sandbox. Provider/model choice is still a
-DSH setting and is not hard-coded by this bundle.
+The dedicated profile composes DSH's native research tools with Simjecture's
+scientific tools. Web, shell, files, skills, workflows, and configured plugins
+remain available. Role restrictions apply to scientific calls, and ordinary
+native file/shell operations are confined to a separate research workspace.
+Approval `never` disables prompts and rejects privilege escalation. Experiment
+execution and evidence acceptance remain governed by CampaignKernel.
+Provider/model choice remains a DSH setting.
 
 Two context policies are included. Completed large tool exchanges remain
 verbatim for one model request and may then be replaced on the model-facing
@@ -90,7 +88,7 @@ dsh --profile simjecture --dump-config
 
 The dump must show `mode: native`, `approval.policy: never`, the matching
 `simjecture` permission preset, `mcp-simjecture`, the explicit `SIMJECTURE_*`
-environment, and the bypass rows as disabled. Missing workspace or hypothesis
+environment, and native research tools as enabled. Missing workspace or hypothesis
 variables fail profile activation.
 
 After installation, let Simjecture create the immutable launch contract and
@@ -107,10 +105,9 @@ log beside the campaign, and reopens the same session on **Resume**.
 
 The MCP child exposes no generic shell and no unguarded `finish` tool. Its
 `finalize_campaign` endpoint can write a report only after CampaignKernel's
-scientific finish gate passes. The lead sees only snapshot, claims, the three
-role composites, and finalization. Each child receives only the tools required
-for its assignment; the two raw judge prepare/commit endpoints remain private
-to the adjudication composite.
+scientific finish gate passes. Research roles retain native tools alongside
+role-scoped scientific operations, including image inspection. The two raw
+judge prepare/commit endpoints remain private to the adjudication composite.
 
 Capability jobs, including configured WarpX capabilities, still return a
 durable job ID immediately at the kernel boundary. The DSH waiter performs the
@@ -125,7 +122,7 @@ invalid receipt remains `outcome_unknown` and cannot become evidence.
 
 `simjecture-mcp` speaks MCP over standard input/output and is not a human REPL.
 Use an MCP client to perform initialize, list-tools, and call-tool. A healthy
-server advertises 22 explicit endpoints. The persistent lead sees seven tools;
+server advertises 23 explicit endpoints. The persistent lead sees eight scientific tools plus native research tools;
 the fresh role composites expose narrower task-specific subsets, while raw
 judge operations stay private. A direct MCP client must still reconcile a job
 with `job_status`; the DSH profile performs that wait automatically.
@@ -135,3 +132,22 @@ its selected contract; it does not declare scientific support. The Falsifier
 can make that bounded statement, but only the fresh Judge can authorize support.
 Adjudication is rejected before a Judge is started when no qualifying link could
 pass the kernel's deterministic closure gate.
+
+## Adapter validation
+
+From the checkout, run `npm ci --prefix integrations/dsh` and
+`npm test --prefix integrations/dsh`. Tests exercise the real pinned DSH runtime
+with a deterministic model adapter, including V2-to-V3 history migration,
+pruning, role isolation, and durable-job reconciliation. The full CLI/MCP test
+requires the repository's Python environment with the `dsh` extra; set
+`SIMJECTURE_MCP_EXECUTABLE` to its `simjecture-mcp` executable if needed.
+Back up campaigns before upgrading an existing deployment and retain matching
+CLI/headless/profile versions for rollback.
+
+Native research files live outside campaign records (`SIMJECTURE_DSH_RESEARCH_ROOT`
+can override the default sibling directory). Version 0.4.0 starts a new
+`.research-v1` conversation when upgrading from older campaign-root sessions;
+existing scientific state is reconciled and old logs remain available. DSH's
+built-in file/shell policies protect records from ordinary native writes.
+Installed plugins remain trusted process code; separate-account isolation against
+hostile extensions is not provided by this profile.
