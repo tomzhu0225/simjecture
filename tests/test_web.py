@@ -444,6 +444,7 @@ def test_create_campaign_uses_structured_launch_contract(
             "hypothesis": "A bounded hypothesis is falsifiable.",
             "instruction": "Prefer the installed numerical skill.",
             "campaign_id": "campaign-web-test",
+            "capability_directory": "/operator/installed-capabilities",
             "max_wall_seconds": 1800,
             "max_command_seconds": 120,
             "max_workspace_mb": 256,
@@ -458,6 +459,7 @@ def test_create_campaign_uses_structured_launch_contract(
     assert request.engine == "native"
     assert request.mode == "minimal"
     assert request.backend == "codex-glm"
+    assert request.capability_directory == "/operator/installed-capabilities"
     assert captured["closed"] is True
     assert result["pid"] == 4321
     assert application.registry.resolve(result["campaign"]).name == "campaign-web-test"

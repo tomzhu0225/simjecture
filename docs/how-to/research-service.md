@@ -46,7 +46,9 @@ review = lab.review_status(request["id"])
 `run` returns immediately. You may keep working while jobs execute, or end the model turn; the host then waits for a recorded job to finish before resuming the agent. The service snapshots source and declared local inputs,
 records their hashes and arguments, and runs the experiment inside Simjecture's
 existing Bubblewrap numerical sandbox. An installed capability can be selected
-with `capability=NAME`. Its identity is bound to the receipt. Native tools are
+with `capability=NAME`. Supply its manifest directory using `--capabilities` or
+the numerical instrument registry field in the browser/TUI. With no registry,
+minimal exposes only the Python numerical sandbox. Its identity is bound to the receipt. Native tools are
 available for exploration; execution success alone does not accept a claim.
 
 Identical requests reuse the same receipt. Change `key` for an intentional

@@ -1,0 +1,362 @@
+{
+  "package": "0.5.0",
+  "requested_model": "glm-5.3",
+  "candidate_wheel_sha256": "cb2c20c3394e1a3422e8a8bfc6a798514b5074d5da0d0243d3ca05ec6a5bd433",
+  "elapsed_seconds": 3601.511299610138,
+  "returncode": 124,
+  "internal_status": "budget_exhausted",
+  "scientific_completion": false,
+  "experiments": [
+    {
+      "id": "exp_1ae1a956a5c04aeb1f4bd545",
+      "status": "succeeded",
+      "timeout": 1400,
+      "returncode": 0,
+      "timed_out": false
+    },
+    {
+      "id": "exp_1dfa7ac5da0fe5cbe1b53449",
+      "status": "succeeded",
+      "timeout": 1400,
+      "returncode": 0,
+      "timed_out": false
+    },
+    {
+      "id": "exp_2a2bc63b5d7a54b641687f15",
+      "status": "failed",
+      "timeout": 500,
+      "returncode": null,
+      "timed_out": true
+    },
+    {
+      "id": "exp_3861b07f63f12033badbbe55",
+      "status": "succeeded",
+      "timeout": 818.4085178375244,
+      "returncode": 0,
+      "timed_out": false
+    },
+    {
+      "id": "exp_39916dc898f8e39d8834fb2c",
+      "status": "succeeded",
+      "timeout": 1400,
+      "returncode": 0,
+      "timed_out": false
+    },
+    {
+      "id": "exp_594c0167b2e64a03e84f2c2d",
+      "status": "succeeded",
+      "timeout": 1400,
+      "returncode": 0,
+      "timed_out": false
+    },
+    {
+      "id": "exp_6c723551b81d6733a04e462e",
+      "status": "succeeded",
+      "timeout": 1400,
+      "returncode": 0,
+      "timed_out": false
+    },
+    {
+      "id": "exp_9bc57e6509fadd1f5e3bdbc1",
+      "status": "succeeded",
+      "timeout": 500,
+      "returncode": 0,
+      "timed_out": false
+    },
+    {
+      "id": "exp_9fe436b10f0b4b70ae3de56a",
+      "status": "succeeded",
+      "timeout": 784.342027425766,
+      "returncode": 0,
+      "timed_out": false
+    },
+    {
+      "id": "exp_b5d25ffaacb7ffe8fa4e51d1",
+      "status": "failed",
+      "timeout": 1254.9582726955414,
+      "returncode": 143,
+      "timed_out": false
+    },
+    {
+      "id": "exp_c2cb2ace7c01085b3c819ad9",
+      "status": "succeeded",
+      "timeout": 500,
+      "returncode": 0,
+      "timed_out": false
+    },
+    {
+      "id": "exp_d2c4aed220fdc725d24d3e4f",
+      "status": "succeeded",
+      "timeout": 1400,
+      "returncode": 0,
+      "timed_out": false
+    },
+    {
+      "id": "exp_d4bd1b76c9e36ab17a94f7ac",
+      "status": "succeeded",
+      "timeout": 1400,
+      "returncode": 0,
+      "timed_out": false
+    },
+    {
+      "id": "exp_d6e99678068a2c63f1f86e17",
+      "status": "succeeded",
+      "timeout": 500,
+      "returncode": 0,
+      "timed_out": false
+    },
+    {
+      "id": "exp_dd56ee2db821d3b14b87a525",
+      "status": "succeeded",
+      "timeout": 1400,
+      "returncode": 0,
+      "timed_out": false
+    },
+    {
+      "id": "exp_ddeebf42307aa74b315b286f",
+      "status": "succeeded",
+      "timeout": 1400,
+      "returncode": 0,
+      "timed_out": false
+    },
+    {
+      "id": "exp_e1cc74a5254ae8f23b260f96",
+      "status": "succeeded",
+      "timeout": 1400,
+      "returncode": 0,
+      "timed_out": false
+    }
+  ],
+  "usage": {
+    "input_tokens": 12302765,
+    "cached_input_tokens": 12026496,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 47090,
+    "reasoning_output_tokens": 18025,
+    "total_tokens": 12349855
+  },
+  "usage_categories": {
+    "worker": {
+      "reported_usage": {
+        "input_tokens": 12302765,
+        "cached_input_tokens": 12026496,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 47090,
+        "reasoning_output_tokens": 18025,
+        "total_tokens": 12349855
+      },
+      "unique_threads": 1,
+      "invocations": 2,
+      "invocations_without_turn_completed": 1,
+      "invocations_without_thread_id": 0,
+      "threads_without_usage": 0,
+      "threads_with_counter_regressions": 0
+    },
+    "reviewer": {
+      "reported_usage": null,
+      "unique_threads": 0,
+      "invocations": 0,
+      "invocations_without_turn_completed": 0,
+      "invocations_without_thread_id": 0,
+      "threads_without_usage": 0,
+      "threads_with_counter_regressions": 0
+    }
+  },
+  "independent_checks": {
+    "required_evidence_complete": false,
+    "missing": [
+      {
+        "kind": "time refinement pair"
+      }
+    ],
+    "controls": [
+      {
+        "n": 64,
+        "eta": 0.02,
+        "relative_amplitude_error": 4.496546770837995e-05,
+        "passed": true
+      },
+      {
+        "n": 128,
+        "eta": 0.02,
+        "relative_amplitude_error": 1.578900827414742e-05,
+        "passed": true
+      },
+      {
+        "n": 128,
+        "eta": 0.0,
+        "relative_amplitude_error": 5.990082337814506e-06,
+        "passed": true
+      }
+    ],
+    "completed_required_cases": 15,
+    "required_case_count": 17,
+    "partial_grid_checks": [
+      {
+        "eta": 0.001,
+        "A": 0.0,
+        "relative_D_grid_change": 0.059701176482793716,
+        "passed": false
+      },
+      {
+        "eta": 0.001,
+        "A": 0.2,
+        "relative_D_grid_change": 0.05831541534940632,
+        "passed": false
+      },
+      {
+        "eta": 0.002,
+        "A": 0.0,
+        "relative_D_grid_change": 0.04399848137215079,
+        "passed": true
+      },
+      {
+        "eta": 0.002,
+        "A": 0.2,
+        "relative_D_grid_change": 0.04064082829493998,
+        "passed": true
+      },
+      {
+        "eta": 0.004,
+        "A": 0.0,
+        "relative_D_grid_change": 0.01957796753393959,
+        "passed": true
+      },
+      {
+        "eta": 0.004,
+        "A": 0.2,
+        "relative_D_grid_change": 0.018907698188727284,
+        "passed": true
+      }
+    ],
+    "independently_decidable": false,
+    "disposition": "unresolved",
+    "reported_integral_checks": {
+      "comparisons": [
+        {
+          "path": "campaign/research/benchmark-result.json.rows[0]",
+          "relative_error": 0.0,
+          "passed": true
+        },
+        {
+          "path": "campaign/research/benchmark-result.json.rows[1]",
+          "relative_error": 0.0,
+          "passed": true
+        },
+        {
+          "path": "campaign/research/benchmark-result.json.rows[2]",
+          "relative_error": 0.0,
+          "passed": true
+        },
+        {
+          "path": "campaign/research/benchmark-result.json.rows[3]",
+          "relative_error": 0.0,
+          "passed": true
+        },
+        {
+          "path": "campaign/research/benchmark-result.json.rows[4]",
+          "relative_error": 0.0,
+          "passed": true
+        },
+        {
+          "path": "campaign/research/benchmark-result.json.rows[5]",
+          "relative_error": 0.0,
+          "passed": true
+        },
+        {
+          "path": "campaign/research/benchmark-result.json.rows[6]",
+          "relative_error": 0.0,
+          "passed": true
+        },
+        {
+          "path": "campaign/research/benchmark-result.json.rows[7]",
+          "relative_error": 1.244925002621344e-16,
+          "passed": true
+        },
+        {
+          "path": "campaign/research/benchmark-result.json.rows[9]",
+          "relative_error": 1.6352658550518393e-16,
+          "passed": true
+        },
+        {
+          "path": "campaign/research/benchmark-result.json.rows[10]",
+          "relative_error": 0.0,
+          "passed": true
+        },
+        {
+          "path": "campaign/research/benchmark-result.json.rows[11]",
+          "relative_error": 0.0,
+          "passed": true
+        },
+        {
+          "path": "campaign/research/benchmark-result.json.rows[12]",
+          "relative_error": 2.3127462379353123e-16,
+          "passed": true
+        }
+      ],
+      "all_compared_values_agree": true,
+      "relative_tolerance": 0.001
+    }
+  },
+  "external_assessment": {
+    "mathematics_correct": true,
+    "scientific_completion": false,
+    "prospective_repair_valid": null,
+    "provenance_sufficient": true,
+    "reason": "The reconstruction and diagnostic mathematics are sound: leaf blocks are reconstructed from bounding boxes and metadata, array orientation and field identities are handled correctly, centered second-order differences are used within the core, and trapezoidal integration uses actual snapshot times. Independent raw-field and integral checks reproduce the reported D values, and all three periodic resistivity controls pass. Provenance is adequate through executable and launcher hashes, parameter records, raw outputs, execution receipts, and analyzer source. However, the investigation is not complete: the required eta=.002, n=384, CFL=.2, interval=.05 temporal-refinement pair is incomplete, and the eta=.001 paired D384/D256 ratios of about 1.0597 and 1.0583 fail the predeclared 5% convergence gate. The unresolved disposition is therefore correct. No qualified falsification occurred, so no prospective repair was attempted; repair validity is null. The agent did recognize these measured convergence and incomplete-refinement limitations rather than treating uncertainty as support.",
+    "required_followup": [
+      "Complete both eta=.002, n=384, A=0 and A=.2 temporal-refinement cases through t=2 at CFL=.2 and interval=.05, with full qualification checks.",
+      "Resolve the eta=.001 spatial-convergence failure using additional qualified refinement or a substantiated numerical diagnosis; do not count the current >5% D change as support.",
+      "Recompute the conservative spatial-plus-temporal margins and support/falsification decision only after every required case and control is qualified.",
+      "If the completed evidence falsifies H0, first commit a meaningful bounded repair and exact prospective validation plan, preserving the failed cases, before running fresh validation."
+    ],
+    "recognized_numerical_limitation": true
+  },
+  "source_comparison": [
+    {
+      "module": "research_service.py",
+      "candidate_sha256": "503cff72a0cf7cba91767917211da05da554a7940f8bff0636faed58cb89a819",
+      "final_sha256": "503cff72a0cf7cba91767917211da05da554a7940f8bff0636faed58cb89a819",
+      "same_ast": true
+    },
+    {
+      "module": "research_supervisor.py",
+      "candidate_sha256": "871bc2cb5dcb20fd0c5d730876a6269a0d73d35be0729cad8e69d82a0ea91f96",
+      "final_sha256": "7a97524b6eb8931c7b02f5eaf376d03cda551be5ec850f14e505c4bb05088791",
+      "same_ast": false
+    },
+    {
+      "module": "agent_supervisor.py",
+      "candidate_sha256": "24c66d8f8bb861d0bc831c12e58d174146224400d0156f959f54325269cdae10",
+      "final_sha256": "b92f49b1d0646f99884309a7b534a5337519cfc1a8716469c3a3b31b4002786b",
+      "same_ast": false
+    },
+    {
+      "module": "study.py",
+      "candidate_sha256": "f8b9707733fe43b8d639872283911fe2129d73ffd6b4553020115ea33ab66bfc",
+      "final_sha256": "8305038418be40876229510a8f8f17d99a7261a5968670785036c84887271de4",
+      "same_ast": false
+    },
+    {
+      "module": "study_status.py",
+      "candidate_sha256": "26f27ecab45a0937a04b24a46dad13b385f6e0f3a75d0ccfd26ae7d08f5a259f",
+      "final_sha256": "cfc44a68d2131ab5ec6960d7c5819a4eed4c8f17e8da847a13c0898330548f74",
+      "same_ast": false
+    },
+    {
+      "module": "study_launch.py",
+      "candidate_sha256": "d9414cad3cba58102a7e767fe738cba6c0b0bfa8555c8a184394d98905fb35c9",
+      "final_sha256": "24cc289f9b04783084ba6b9258934c83fda2c8a275aa15c4e905db7cbe65d3c4",
+      "same_ast": false
+    }
+  ],
+  "accounting": "Last cumulative native usage once per thread; cached input is part of input. Reasoning output is part of output. Missing counters are not zero. No billing or implementation-assistant usage is inferred.",
+  "external_grading_usage": {
+    "input_tokens": 140484,
+    "cached_input_tokens": 2688,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 2058,
+    "reasoning_output_tokens": 1663,
+    "total_tokens": 142542
+  }
+}

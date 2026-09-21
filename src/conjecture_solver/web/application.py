@@ -7,6 +7,7 @@ import json
 import mimetypes
 import threading
 import uuid
+from contextlib import suppress
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path, PurePosixPath
@@ -333,6 +334,7 @@ class SimjectureWebApplication:
                 **extra,
                 hypothesis=hypothesis,
                 instruction=instruction,
+                capability_directory=_optional_text(payload, "capability_directory", maximum=4096),
                 campaign_id=campaign_id,
                 output_directory=str(self.runs_root / campaign_id),
                 max_wall_seconds=_bounded_float(payload, "max_wall_seconds", 21_600, 1, 604_800),
@@ -942,6 +944,11 @@ def _revision(snapshot: Any, *, root: Path, live: bool) -> str:
             pieces.append(str((root / name).stat().st_mtime_ns))
         except OSError:
             pieces.append("-")
+    if (root / "study-launch.json").exists():
+        from ..study_status import supervisor_directory
+
+        with suppress(OSError):
+            pieces.append(str((supervisor_directory(root) / "state.json").stat().st_mtime_ns))
     return hashlib.sha256("|".join(pieces).encode()).hexdigest()[:20]
 
 

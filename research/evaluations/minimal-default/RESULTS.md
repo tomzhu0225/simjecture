@@ -1,5 +1,8 @@
 # Minimal default follow-up: stronger scientific rules, mixed efficiency
 
+Historical evaluation snapshot: see [v0.5.0 release validation](../release-0.5.0/RESULTS.md) for the subsequent interface and packaging work.
+
+
 Minimal is now the default for new native-agent studies, with structured and
 frontier selectable. This follows the operator's preferred design; it is not a
 claim of proven superiority. The [design note](DESIGN.md) describes changes,

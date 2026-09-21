@@ -299,7 +299,12 @@ class NewRunScreen(Screen[None]):
             yield Input(value="512", id="max-workspace-mb", type="number")
             yield Label("Legacy memory limit (MB)", classes="form-label")
             yield Input(value="4096", id="max-memory-mb", type="number")
-            yield Label("Installed capabilities", classes="form-label")
+            yield Label("Numerical instrument registry (optional)", classes="form-label")
+            yield Input(
+                placeholder="Capability manifest directory; blank = Python for minimal",
+                id="capability-directory",
+            )
+            yield Label("Capabilities discoverable on this host", classes="form-label")
             yield Static(self._capability_text(), id="capabilities", classes="panel")
             yield Static("", id="form-error", classes="form-error")
             with Horizontal(classes="toolbar"):
@@ -413,6 +418,8 @@ class NewRunScreen(Screen[None]):
             **extra,
             hypothesis=hypothesis,
             instruction=instruction or None,
+            capability_directory=self.query_one("#capability-directory", Input).value.strip()
+            or None,
             campaign_id=campaign,
             output_directory=str(Path(output).expanduser()),
             max_wall_seconds=wall,

@@ -268,3 +268,21 @@ def test_native_modes_project_live_backend_and_jobs(tmp_path, mode):
     assert snapshot.current_action.description == "Reviewing evidence"
     assert snapshot.token_usage.total_tokens == 168
     assert snapshot.executions[0].status == "running"
+
+
+def test_browser_revision_tracks_custom_supervisor_directory(tmp_path):
+    root = tmp_path / "study"
+    ResearchService.create(root, "A custom-state monitoring fixture.")
+    directory = tmp_path / "separate-supervisor"
+    directory.mkdir()
+    put(
+        root / "study-launch.json",
+        dict(state_dir=str(directory), backend="codex-glm", model="fixture"),
+    )
+    put(directory / "state.json", dict(status="running", round=1, activity="Agent working"))
+    app = SimjectureWebApplication(initial_run=root, scan_roots=(tmp_path,), allow_mutations=False)
+    first = app.campaign_snapshot(app.initial_campaign)
+    put(directory / "state.json", dict(status="running", round=1, activity="Reviewing evidence"))
+    second = app.campaign_snapshot(app.initial_campaign)
+    assert first["revision"] != second["revision"]
+    assert second["snapshot"]["current_action"]["description"] == "Reviewing evidence"

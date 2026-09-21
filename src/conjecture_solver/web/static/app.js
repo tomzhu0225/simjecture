@@ -1715,6 +1715,7 @@ async function launchCampaign(event) {
     mode: form.get("mode"),
     backend: form.get("backend"),
     model: form.get("model") || null,
+    capability_directory: form.get("capability_directory") || null,
     hypothesis: form.get("hypothesis"),
     instruction: form.get("instruction") || null,
     campaign_id: form.get("campaign_id") || null,

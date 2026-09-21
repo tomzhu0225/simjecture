@@ -1,5 +1,8 @@
 # Research service: implementation and real benchmark results
 
+Historical evaluation snapshot: see [v0.5.0 release validation](../release-0.5.0/RESULTS.md) for the subsequent interface and packaging work.
+
+
 The smaller service is implemented and remains opt-in. It removes much of the
 mandatory planning and instrument bookkeeping, preserves native tools, records
 experiments and reviews, and lets the agent own its investigation. The simple
