@@ -356,7 +356,7 @@ function renderLoopProgress(data) {
   const engine = data.engine || { name: "native", status: "idle", activity: [] };
   const container = ui["loop-progress"];
   clear(container);
-  if (engine.mode === "minimal") {
+  if (["minimal", "frontier"].includes(engine.mode)) {
     const heading = element("div", "loop-heading");
     heading.append(element("strong", null, "Agent-owned investigation"),
       element("span", "role-badge", engine.status || "initialized"));

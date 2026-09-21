@@ -36,8 +36,10 @@ def study_status(root):
         or ("minimal" if (root / "research.json").exists() else state.get("workflow", "structured"))
     )
     experiments = [read(p) for p in sorted((root / "experiments").glob("*.json"))]
+    if mode != "minimal":
+        experiments = [read(p) for p in sorted((root / "jobs/jobs").glob("*/state.json"))]
     reviews = [read(p) for p in sorted((root / "reviews").glob("*.json"))]
-    experiments.sort(key=lambda e: e.get("created_at", 0))
+    experiments.sort(key=lambda e: str(e.get("created_at", "")))
     reviews.sort(key=lambda r: r.get("created_at", 0))
     now = time.time()
     started = manifest.get("created_at") or state.get("started_at", now)
@@ -50,6 +52,8 @@ def study_status(root):
         activity = "Running numerical experiments"
     if status != "running":
         activity = status.replace("_", " ")
+        if status == "paused_external_error" and state.get("last_error"):
+            activity += ": " + state["last_error"]
     counters = list(state.get("usage_by_thread", {}).values())
     usage = {
         k: sum(u.get(k, 0) for u in counters)
@@ -305,4 +309,83 @@ def minimal_snapshot(root):
             if status["usage_available"]
             else ("No completed-turn provider usage is available for this record.",)
         ),
+    )
+
+
+def native_snapshot_overlay(root, snapshot):
+    """Keep the legacy scientific ledger, overlay the actual native supervisor activity."""
+    from .mvp_monitor import (
+        ComputeExecutionSummary,
+        CurrentAction,
+        HeartbeatObservation,
+        RunPhase,
+        TokenUsageSummary,
+    )
+
+    status = study_status(root)
+    phase = snapshot.phase
+    if status["status"] == "paused":
+        phase = RunPhase.PAUSED
+    elif status["status"] == "paused_external_error":
+        phase = RunPhase.PROVIDER_FAILED
+    elif status["status"] in ["cancelled", "budget_exhausted"]:
+        phase = RunPhase(status["status"])
+    usage = status["usage"]
+    jobs = []
+    for number, job in enumerate(status["experiments"], 1):
+        identifier = job.get("job_id")
+        if not identifier:
+            continue
+        request = read(Path(root) / "jobs/jobs" / identifier / "request.json")
+        meta = request.get("metadata", {})
+        jobs.append(
+            ComputeExecutionSummary(
+                id=identifier,
+                iteration=number,
+                status=job["status"],
+                action_name=meta.get("action", "run_python"),
+                description=meta.get("research_note") or "Recorded numerical job",
+                capability=meta.get("capability"),
+                active_claim_id=meta.get("active_claim_id"),
+                argv=tuple(meta.get("argv", [])),
+                stage=meta.get("stage"),
+            )
+        )
+    return snapshot.model_copy(
+        update=dict(
+            identity=snapshot.identity.model_copy(
+                update={
+                    "config": snapshot.identity.config
+                    | dict(mode=status["mode"], backend=status["backend"], model=status["model"])
+                }
+            ),
+            phase=phase,
+            phase_label=status["status"].replace("_", " ").title(),
+            elapsed_wall_seconds=status["elapsed"],
+            configured_wall_seconds=status["budget"],
+            iterations=status["round"],
+            last_model=status["model"],
+            current_action=CurrentAction(
+                iteration=max(1, status["round"]),
+                description=status["activity"],
+                pending=status["status"] == "running",
+                model=status["model"],
+                route=status["backend"],
+            ),
+            latest_heartbeat=HeartbeatObservation(
+                iteration=max(1, status["round"]),
+                age_seconds=max(0, time.time() - status["state"].get("heartbeat_at", time.time())),
+            ),
+            executions=tuple(jobs) or snapshot.executions,
+            execution_total=len(jobs) or snapshot.execution_total,
+            token_usage=TokenUsageSummary(
+                prompt_tokens=usage["input_tokens"],
+                completion_tokens=usage["output_tokens"],
+                total_tokens=usage["input_tokens"] + usage["output_tokens"],
+                cached_tokens=usage["cached_input_tokens"],
+                label=f"Reported: {usage['input_tokens']:,} in / {usage['output_tokens']:,} out"
+                if status["usage_available"]
+                else "Usage pending",
+            ),
+        )
     )

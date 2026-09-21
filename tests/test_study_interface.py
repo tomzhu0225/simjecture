@@ -231,3 +231,40 @@ def test_verified_identity_recognizes_native_entrypoints(tmp_path, entry):
     assert _argv_targets_run(tuple(entry + ["--campaign", str(tmp_path)]), tmp_path)
     assert not _argv_targets_run(tuple(entry + ["--campaign", str(tmp_path / "other")]), tmp_path)
     assert not _argv_targets_run(("python", "unrelated.py", "--campaign", str(tmp_path)), tmp_path)
+
+
+@pytest.mark.parametrize("mode", ["structured", "frontier"])
+def test_native_modes_project_live_backend_and_jobs(tmp_path, mode):
+    from conjecture_solver.mvp_monitor import MVPRunMonitor
+
+    request = NativeStudyRequest(
+        hypothesis="A finite test.",
+        campaign_id="study",
+        output_directory=str(tmp_path / "study"),
+        mode=mode,
+        agent_executable=sys.executable,
+    )
+    plan = materialize_operator_input(request)
+    root = Path(plan.output_directory)
+    (root / "supervisor").mkdir(exist_ok=True)
+    put(
+        root / "supervisor/state.json",
+        dict(
+            status="running",
+            workflow=mode,
+            round=3,
+            started_at=time.time(),
+            deadline=time.time() + 60,
+            activity="Reviewing evidence",
+            usage_by_thread={"example": dict(input_tokens=123, output_tokens=45)},
+        ),
+    )
+    job = root / "jobs/jobs/job_example"
+    job.mkdir(parents=True, exist_ok=True)
+    put(job / "state.json", dict(job_id="job_example", status="running"))
+    put(job / "request.json", dict(metadata={"action": "run_python", "argv": ["calc.py"]}))
+    snapshot = MVPRunMonitor(root).snapshot()
+    assert snapshot.identity.config["mode"] == mode
+    assert snapshot.current_action.description == "Reviewing evidence"
+    assert snapshot.token_usage.total_tokens == 168
+    assert snapshot.executions[0].status == "running"

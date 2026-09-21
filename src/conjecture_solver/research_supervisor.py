@@ -240,6 +240,7 @@ Do not edit service records or other studies. Resume from lab.status() and your 
                         failures = 0
                     except Exception as error:
                         failures += 1
+                        self.state["last_error"] = str(error)[:500]
                         self.event("supervisor_error", error=str(error))
                         if failures >= 3:
                             self.state["status"] = "paused_external_error"

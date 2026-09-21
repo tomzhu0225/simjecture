@@ -915,7 +915,7 @@ class MVPRunMonitor:
         warnings.extend(self._state.parse_warnings[-8:])
         control = read_control(self.root)
         pending = control.command.value if control.command is not ControlCommand.NONE else None
-        return MVPRunSnapshot(
+        snapshot = MVPRunSnapshot(
             phase=phase,
             phase_label=phase_label(phase),
             identity=identity,
@@ -945,6 +945,12 @@ class MVPRunMonitor:
             warnings=tuple(dict.fromkeys(warnings)),
             transcript_cursor=self._cursor,
         )
+
+        if (self.root / "study-launch.json").exists():
+            from .study_status import native_snapshot_overlay
+
+            return native_snapshot_overlay(self.root, snapshot)
+        return snapshot
 
     @staticmethod
     def _loop_state(
