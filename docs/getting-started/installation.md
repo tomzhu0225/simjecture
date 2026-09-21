@@ -17,7 +17,15 @@ uv run simjecture install core
 uv run simjecture doctor --profile core
 ```
 
-## Model credentials
+## Native agent login
+
+New studies default to minimal mode. Install and log in with Codex GLM, Codex,
+Grok or AGY independently, then choose that backend and model in the launcher.
+Simjecture does not redistribute those CLIs or subscriptions. Native tools remain
+available; numerical execution still uses the Bubblewrap sandbox. No DeepSeek
+API key or DSH install is required for native-agent studies.
+
+## Legacy API credentials
 
 Credentials are process-local harness inputs. They are never mounted into the
 agent workspace.

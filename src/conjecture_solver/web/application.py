@@ -53,6 +53,9 @@ VISIBLE_RECORDS = frozenset(
         "hypothesis_ledger.json",
         "mvp_manifest.json",
         "mvp_report.json",
+        "research.json",
+        "research_report.json",
+        "study-mode.json",
     }
 )
 IMAGE_SUFFIXES = frozenset({".apng", ".gif", ".jpeg", ".jpg", ".png", ".svg", ".webp"})
@@ -164,6 +167,9 @@ class SimjectureWebApplication:
             "product": "Simjecture",
             "allow_mutations": self.allow_mutations,
             "default_engine": self.default_engine,
+            "default_mode": "minimal",
+            "default_backend": "codex-glm",
+            "modes": ["minimal", "structured", "frontier", "legacy"],
             "selected_campaign": selected,
             "campaigns": campaigns,
         }
@@ -225,10 +231,7 @@ class SimjectureWebApplication:
                 claim_id: build_validation_tree(snapshot.claims, claim_id)
                 for claim_id in scientific_ids
             }
-            claim_graph_nodes = [
-                {**node, "owner_id": node["id"]}
-                for node in scientific_nodes
-            ]
+            claim_graph_nodes = [{**node, "owner_id": node["id"]} for node in scientific_nodes]
             claim_graph_edges = list(scientific_edges)
             for owner_id, rows in supporting_rows_by_owner.items():
                 supporting_ids = {row.claim.id for row in rows}
@@ -242,9 +245,7 @@ class SimjectureWebApplication:
                         }
                     )
                     source = (
-                        row.claim.parent_id
-                        if row.claim.parent_id in supporting_ids
-                        else owner_id
+                        row.claim.parent_id if row.claim.parent_id in supporting_ids else owner_id
                     )
                     claim_graph_edges.append(
                         {
@@ -303,7 +304,33 @@ class SimjectureWebApplication:
         supplied_id = _optional_text(payload, "campaign_id", maximum=128)
         try:
             campaign_id = validate_campaign_id(supplied_id or _default_campaign_id())
-            request = MVPLaunchRequest(
+            from ..study_launch import NativeStudyRequest
+
+            mode = payload.get("mode", "minimal")
+            backend = payload.get("backend") or (
+                ("dsh" if self.default_engine == "dsh" else "api")
+                if mode == "legacy"
+                else "codex-glm"
+            )
+            if mode not in ["minimal", "structured", "frontier", "legacy"]:
+                raise ValueError("Unknown study mode")
+            if mode != "legacy" and backend in ["dsh", "api"]:
+                raise ValueError("DSH/API currently require explicit legacy mode")
+            if mode == "legacy" and backend not in ["dsh", "api"]:
+                raise ValueError("Legacy mode requires DSH or API backend")
+            factory = MVPLaunchRequest if mode == "legacy" else NativeStudyRequest
+            extra = (
+                {}
+                if mode == "legacy"
+                else dict(
+                    mode=mode,
+                    backend=backend,
+                    model=payload.get("model") or None,
+                    judge_model=payload.get("judge_model") or None,
+                )
+            )
+            request = factory(
+                **extra,
                 hypothesis=hypothesis,
                 instruction=instruction,
                 campaign_id=campaign_id,
@@ -312,7 +339,7 @@ class SimjectureWebApplication:
                 max_command_seconds=_bounded_float(payload, "max_command_seconds", 600, 1, 86_400),
                 max_workspace_mb=_bounded_int(payload, "max_workspace_mb", 512, 1, 1_048_576),
                 max_memory_mb=_bounded_int(payload, "max_memory_mb", 4096, 1, 1_048_576),
-                engine=self.default_engine,
+                engine=("dsh" if mode == "legacy" and backend == "dsh" else "native"),
             )
         except ValueError as error:
             raise WebApplicationError(str(error), status=400) from error
@@ -428,6 +455,35 @@ class SimjectureWebApplication:
 
 
 def _raw_claims(root: Path) -> list[dict[str, Any]]:
+    if (root / "research.json").exists():
+        from ..study_status import minimal_snapshot, read, study_status
+
+        status = study_status(root)
+        experiments = {e["id"]: e for e in status["experiments"]}
+        rows = []
+        for claim in minimal_snapshot(root).claims:
+            row = claim.model_dump(mode="json")
+            if claim.id != "root":
+                commitment = read(root / "commitments" / (claim.id + ".json"))
+                row["rationale"] = commitment.get("rationale")
+            row["evidence"] = []
+            for review in status["reviews"]:
+                if review.get("claim") != claim.id:
+                    continue
+                for identifier in review.get("experiments", []):
+                    experiment = experiments.get(identifier, {})
+                    for output in experiment.get("outputs", []):
+                        row["evidence"].append(
+                            dict(
+                                path=f"experiments/{identifier}/workspace/{output}",
+                                note=review.get("conclusion"),
+                                observation_sufficient=(
+                                    review.get("verdict", {}).get("decision") == "approved"
+                                ),
+                            )
+                        )
+            rows.append(row)
+        return rows
     ledger = load_json_object(root / "hypothesis_ledger.json")
     if ledger and isinstance(ledger.get("claims"), list):
         return [item for item in ledger["claims"] if isinstance(item, dict)]
@@ -542,8 +598,7 @@ def _commissioning_projection(
                 "owner_id": scientific_id,
                 "claim_ids": [str(item["id"]) for item in instruments],
                 "binding_count": binding_count,
-                "guided_available": bool(guided.get("available"))
-                and scientific_id == guided_owner,
+                "guided_available": bool(guided.get("available")) and scientific_id == guided_owner,
                 "status": _commissioning_status(statuses, binding_count=binding_count),
             }
         )
@@ -576,6 +631,21 @@ def _engine_projection(
     *,
     token_usage: TokenUsageSummary | None = None,
 ) -> dict[str, Any]:
+    if (root / "study-launch.json").exists() or (root / "research.json").exists():
+        from ..study_status import study_status
+
+        status = study_status(root)
+        return dict(
+            name=status["backend"],
+            mode=status["mode"],
+            model=status["model"],
+            status=status["status"],
+            activity=[],
+            token_usage=_empty_engine_usage(),
+            usage_available=status["usage_available"],
+            remaining_seconds=status["remaining"],
+            current_activity=status["activity"],
+        )
     launch = _safe_operator_json(root, "launch.json")
     name = str(launch.get("engine") or "native")
     if name != "dsh":
@@ -737,7 +807,12 @@ def _artifact_index(root: Path, *, raw_claims: list[dict[str, Any]]) -> list[dic
         relative = artifact.relative_path
         if artifact.kind != "file":
             continue
-        if not (relative.startswith("workspace/") or relative in VISIBLE_RECORDS):
+        if not (
+            relative.startswith(
+                ("workspace/", "research/", "experiments/", "commitments/", "reviews/")
+            )
+            or relative in VISIBLE_RECORDS
+        ):
             continue
         if "/__pycache__/" in relative or "/." in relative:
             continue
@@ -811,8 +886,10 @@ def _execution_label(action_name: str, capability: str | None) -> str:
 
 
 def _control_capabilities(root: Path, *, phase: RunPhase, live: bool) -> dict[str, Any]:
-    terminal = (root / "mvp_report.json").is_file()
-    launch = (root / "operator_input" / "launch.json").is_file()
+    terminal = phase in {RunPhase.COMPLETED, RunPhase.CANCELLED, RunPhase.BUDGET_EXHAUSTED}
+    launch = (root / "operator_input" / "launch.json").is_file() or (
+        root / "study-launch.json"
+    ).is_file()
     return {
         "can_pause": live and phase is not RunPhase.PAUSED,
         "can_resume": not live and not terminal and launch,
@@ -855,6 +932,8 @@ def _revision(snapshot: Any, *, root: Path, live: bool) -> str:
     for name in (
         "hypothesis_ledger.json",
         "mvp_report.json",
+        "research_report.json",
+        "supervisor/state.json",
         "operator_input/control.json",
         "operator_input/dsh_activity.jsonl",
         "operator_input/dsh_state.json",
@@ -870,6 +949,9 @@ def _latest_campaign_mtime(root: Path) -> datetime | None:
     newest: int | None = None
     for name in (
         "mvp_report.json",
+        "research.json",
+        "research_report.json",
+        "supervisor/state.json",
         "hypothesis_ledger.json",
         "transcript.jsonl",
         "mvp_manifest.json",

@@ -13,64 +13,56 @@ uv run simjecture web demos/gray_scott_counterexample/record --read-only
 See [Recorded Gray–Scott demo](../demos/gray-scott.md) for the scientific result
 and the boundaries of that record.
 
-To start a new autonomous campaign, first install the pinned DSH profile, then
-choose a bounded hypothesis whose outcome can be evaluated with ordinary Python
-before attaching an expensive simulator. The primary path is the browser:
+To start a new study, install and log in to a supported native agent CLI
+(Codex GLM, Codex, Grok or AGY), then open the browser:
 
 ```bash
-export DEEPSEEK_API_KEY='your-process-local-key'
 uv run simjecture web
 ```
 
-Enter the hypothesis in **New hypothesis** and follow the DSH activity, typed
-scientific actions, simulation jobs, and hypothesis graph in one view. The
-headless built-in engine remains available as a compatibility path:
+In **New hypothesis**, choose mode, backend and model separately. **Minimal** is
+the default. It keeps the agent's native tools and planning freedom while recording
+experiments, counterexample searches, hypothesis repairs and independent reviews.
+Structured and frontier modes remain selectable. DSH and direct API routes are
+explicit legacy choices and require their separate provider configuration.
+
+For a terminal run, write a bounded statement in `hypothesis.txt` and its test
+scope, resource constraints and acceptance criteria in `instructions.md`:
 
 ```bash
-export DEEPSEEK_API_KEY='your-process-local-key'
-
-uv run simjecture mvp \
-  --hypothesis "For this specified Gray–Scott reaction-diffusion model, increasing feed rate monotonically increases the late-time spatial variance over the declared interval." \
-  --output artifacts/gray-scott-first-run
+uv run simjecture study --campaign artifacts/first-study \
+  --hypothesis-file hypothesis.txt --instructions-file instructions.md \
+  --backend codex-glm --model glm-5.3 --wall-seconds 3600
 ```
 
-Both paths produce an output directory containing the immutable manifest,
-complete transcript or DSH activity projection, claim ledger, artifact
-provenance, final report, and the agent's workspace.
+The terminal shows current activity, elapsed/remaining time and experiment/review
+counts. Use `--quiet` to suppress progress. Select `--mode structured` or
+`--mode frontier` when starting a new directory. Existing mode, backend and wall
+deadline are retained on resume.
 
-Important distinctions:
+Minimal records include `research.json`, immutable experiment snapshots,
+prospective repair commitments, independent review receipts and a final
+`research_report.json`. A clean agent exit is only a checkpoint. A supported root
+or an accepted falsification followed by a supported repair completes the study;
+uncertainty stays unresolved. Numerical convergence and physical validity remain
+scientific obligations. See [minimal research](../how-to/research-service.md).
 
-- `workbench` executions may inform design but can never become evidence.
-- `evidence` executions must match a prospectively registered program and exact
-  command.
-- an installed capability must be commissioned before producing scientific
-  evidence.
-- `unresolved` is a valid result when the observation or instrument is
-  insufficient.
-
-Repeating a completed command against the same durable ledger returns the stored
-result rather than silently starting another campaign.
-
-Inspect the durable directory without starting another campaign:
+Inspect or control the same directory:
 
 ```bash
-uv run simjecture status artifacts/gray-scott-first-run
-uv run simjecture watch artifacts/gray-scott-first-run
+uv run simjecture status artifacts/first-study
+uv run simjecture watch artifacts/first-study
+uv run simjecture web artifacts/first-study
+uv run simjecture pause artifacts/first-study
+uv run simjecture resume artifacts/first-study
 ```
 
-`status` and `watch` are headless. They do not report a campaign as running
-merely because `mvp_report.json` is absent, and they do not invent a scientific
-completion percentage. They also show provider token usage from the transcript
-when those fields were recorded.
+Pause stops the native agent at the supervisor boundary. Already recorded jobs
+may finish within their existing limits; the wall deadline continues. Cancel or
+deadline exhaustion terminates active recorded jobs. A provider outage pauses
+with the evidence intact rather than inventing a scientific conclusion.
 
-```bash
-uv run simjecture pause artifacts/gray-scott-first-run
-uv run simjecture resume artifacts/gray-scott-first-run
-```
-
-Pause waits for the current action to finish. It does not freeze a simulator
-with SIGSTOP.
-
-The primary [Web interface](web-interface.md) shows the hypothesis graph,
-evidence, activity, and figures. The optional [Terminal interface](terminal-ui.md)
-is a projection of the same artifacts for SSH and headless machines.
+The optional [Terminal interface](terminal-ui.md) offers the same mode/backend
+selection and a dashboard for SSH and headless machines. The legacy `simjecture
+mvp` and [DSH](../how-to/deepseek-harness.md) entry points remain available; their
+workbench/commissioning contracts are unchanged.

@@ -13,9 +13,9 @@ writes its own experiments and diagnostics, and searches deliberately for the
 simplest result that survives independent verification. The harness controls
 what may count as evidence.
 
-> **Research preview:** version 0.4 extends the infrastructure with a
-> license-safe FLASH resistive-MHD capability and an explicitly bounded
-> island-coalescence audit. It does not claim to solve arbitrary
+> **Research preview:** version 0.5 defaults native-agent studies to minimal mode,
+> adds live terminal progress and shared browser/TUI mode selection, and retains
+> the license-safe FLASH capability and bounded scientific audits. It does not claim to solve arbitrary
 > scientific prose, establish truth about nature from one simulator, or replace
 > independent scientific review.
 
@@ -25,6 +25,23 @@ capability framework are now ready to extend to other simulation-gated fields
 that have a sharp question and a checkable instrument. The 0.3 preview records
 both the origin domain and that generalization, and adds a fluid-MHD campaign
 whose unresolved repair state is preserved rather than hidden.
+
+## Start an agent-owned study
+
+New native-agent studies default to **minimal**: the agent chooses its approach,
+while Simjecture preserves evidence, counterexamples and hypothesis ancestry.
+
+```bash
+simjecture study --campaign ./runs/my-study \
+  --hypothesis-file hypothesis.txt --instructions-file instructions.md \
+  --backend codex-glm --model glm-5.3 --wall-seconds 3600
+```
+
+Use `--mode structured` or `--mode frontier` to select another workflow. Resuming
+keeps the recorded mode and deadline. See [minimal-mode usage](docs/how-to/research-service.md)
+for the scientific rules, backend choices and explicit legacy DSH/API routes.
+The measured hard-task benchmark does not establish a completion advantage over
+a plain agent; this default reflects the preferred agent-owned design.
 
 ## The core idea: AI low-hanging fruit
 

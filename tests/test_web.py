@@ -455,7 +455,9 @@ def test_create_campaign_uses_structured_launch_contract(
     assert request.instruction == "Prefer the installed numerical skill."
     assert request.campaign_id == "campaign-web-test"
     assert request.max_command_seconds == 120
-    assert request.engine == "dsh"
+    assert request.engine == "native"
+    assert request.mode == "minimal"
+    assert request.backend == "codex-glm"
     assert captured["closed"] is True
     assert result["pid"] == 4321
     assert application.registry.resolve(result["campaign"]).name == "campaign-web-test"

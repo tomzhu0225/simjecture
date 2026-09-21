@@ -2187,10 +2187,7 @@ def test_run_python_cannot_launder_declared_workbench_input(tmp_path: Path) -> N
                 stage="workbench",
                 research_note="Create a deliberately non-evidentiary workbench observation.",
                 path="anchor.py",
-                content=(
-                    "from pathlib import Path\n"
-                    f"Path('anchor.txt').write_text({anchor!r})\n"
-                ),
+                content=(f"from pathlib import Path\nPath('anchor.txt').write_text({anchor!r})\n"),
                 capability="isolated-python",
                 argv=["anchor.py"],
                 input_artifacts=[],
@@ -4877,7 +4874,7 @@ def _terminal_record_runner(tmp_path: Path, name: str) -> MVPAgentRunner:
     "disposition",
     [ClaimDisposition.INSTRUMENT_LIMITED, ClaimDisposition.UNRESOLVED],
 )
-def test_explicit_terminal_adjudication_finishes_without_claim_support(
+def test_explicit_terminal_adjudication_continues_without_closing_claim(
     tmp_path: Path,
     disposition: ClaimDisposition,
 ) -> None:
@@ -4901,11 +4898,19 @@ def test_explicit_terminal_adjudication_finishes_without_claim_support(
         model="test-judge",
         route="isolated",
         request_id="judge-terminal",
+        operation_id="checkpoint-review",
     )
 
-    assert result["closure"]["closed"]["status"] == disposition.value
-    assert result["closure"]["closed"]["decisive_contract_version"] == 2
-    assert runner._finish_gate_error() is None
+    assert "closure" not in result
+    assert result["continue_required"] is True
+    assert result["required_transition"] == "continue_falsification"
+    assert runner.claim_store.ledger.by_id()["claim_root"].status == ClaimDisposition.OPEN
+    assert "open scientific claims remain" in runner._finish_gate_error()
+
+    replay = runner.kernel._recover_recorded_adjudication("checkpoint-review")
+    assert replay["continue_required"] is True
+    assert "closure" not in replay
+    assert runner.claim_store.ledger.by_id()["claim_root"].status == ClaimDisposition.OPEN
 
 
 def test_terminal_record_cannot_be_laundered_into_support(tmp_path: Path) -> None:
@@ -5659,9 +5664,7 @@ def test_builtin_flash_skill_has_no_campaign_science_or_flash_distribution() -> 
     assert "demos/" not in text
     assert not any(path.suffix.casefold() in {".f", ".f90"} for path in skill_root.rglob("*"))
     assert not any(
-        path.name == "flash4"
-        for path in project_root.rglob("*")
-        if ".runtime" not in path.parts
+        path.name == "flash4" for path in project_root.rglob("*") if ".runtime" not in path.parts
     )
 
 
@@ -5688,8 +5691,7 @@ def _skill_text(skill_root: Path) -> str:
     return "\n".join(
         path.read_text(errors="replace")
         for path in sorted(skill_root.rglob("*"))
-        if path.is_file()
-        and path.suffix in {".md", ".py", ".sh", ".yaml", ".json", ".cpp", ".f90"}
+        if path.is_file() and path.suffix in {".md", ".py", ".sh", ".yaml", ".json", ".cpp", ".f90"}
     )
 
 
@@ -5775,9 +5777,9 @@ def test_builtin_singularity_eos_skill_executes_neutral_smoke_inside_sandbox(
     skills, capabilities = discover_builtin_mvp_resources(project_root)
     capability = "singularity-eos-1.12.1"
     assert capability in capabilities
-    example = skills.read(
-        "eos", "examples/singularity_runtime_smoke.py", max_chars=100_000
-    )["content"]
+    example = skills.read("eos", "examples/singularity_runtime_smoke.py", max_chars=100_000)[
+        "content"
+    ]
     sandbox = BubblewrapSandbox(tmp_path / "singularity-smoke", _config(), capabilities)
     sandbox.write_file("singularity_runtime_smoke.py", example)
     result = sandbox.run_capability(capability, ("singularity_runtime_smoke.py",))
@@ -5792,8 +5794,7 @@ def test_builtin_singularity_eos_skill_executes_neutral_smoke_inside_sandbox(
 def test_flash_guided_commission_is_self_contained_and_nonevidentiary() -> None:
     project_root = Path(__file__).resolve().parents[1]
     package = MVPGuidedCommissioningPackage.read(
-        project_root
-        / "demos/resistive_mhd_island_coalescence/guided_commission.json"
+        project_root / "demos/resistive_mhd_island_coalescence/guided_commission.json"
     )
     descriptor = package.descriptor()
 
@@ -5803,12 +5804,8 @@ def test_flash_guided_commission_is_self_contained_and_nonevidentiary() -> None:
     assert not any("anchor_run" in record.path for record in package.file_records)
     package.assert_identity()
 
-    anchor = json.loads(
-        package.read_file("guided/anchor_validation.json").decode()
-    )
-    operator = json.loads(
-        package.read_file("guided/operator_validation.json").decode()
-    )
+    anchor = json.loads(package.read_file("guided/anchor_validation.json").decode())
+    operator = json.loads(package.read_file("guided/operator_validation.json").decode())
     assert anchor["scientific_status"] == "permanently_non_evidentiary"
     assert anchor["checks"]["scientific_evidence_eligible"] is False
     assert operator["scientific_status"] == "permanently_non_evidentiary"
@@ -5828,11 +5825,14 @@ def test_builtin_flash_skill_executes_neutral_smoke_inside_sandbox(tmp_path: Pat
     capability = "flash-island-coalescence-resistive-mhd-4.8"
     assert "flash-mhd" in skills
     assert capability in capabilities
-    assert "compiled simulation unit" in skills.read(
-        "flash-mhd",
-        "references/execution-output.md",
-        max_chars=30_000,
-    )["content"]
+    assert (
+        "compiled simulation unit"
+        in skills.read(
+            "flash-mhd",
+            "references/execution-output.md",
+            max_chars=30_000,
+        )["content"]
+    )
     example = skills.read(
         "flash-mhd",
         "examples/runtime_smoke.py",
@@ -5848,9 +5848,7 @@ def test_builtin_flash_skill_executes_neutral_smoke_inside_sandbox(tmp_path: Pat
     sandbox.write_file("runtime_smoke.py", example)
     result = sandbox.run_capability(capability, ("runtime_smoke.py",))
     assert result.returncode == 0, result.stderr
-    observed = json.loads(
-        (tmp_path / "flash-smoke/flash_mhd_capability_smoke.json").read_text()
-    )
+    observed = json.loads((tmp_path / "flash-smoke/flash_mhd_capability_smoke.json").read_text())
     assert observed["scientific_status"] == "permanently_non_evidentiary"
     assert observed["checks"]["completed"] is True
     assert observed["checks"]["hdf5_output_readable"] is True

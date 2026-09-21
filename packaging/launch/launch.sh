@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 package_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-if [[ ! -x "$package_root/.venv/bin/simjecture" || ! -x "$package_root/run-state/dsh-runtime/node_modules/.bin/dsh" ]]; then
+if [[ ! -x "$package_root/.venv/bin/simjecture" ]]; then
   echo 'Run ./setup.sh first (see INSTALL.md).' >&2
   exit 1
 fi

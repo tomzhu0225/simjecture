@@ -562,6 +562,13 @@ class MVPAgentConfig(StrictModel):
             "alternate model route"
         ),
     )
+    require_independent_contract_review: bool = Field(
+        default=False,
+        description=(
+            "Host-reviewed contract and instrument qualification; "
+            "required by persistent supervisors"
+        ),
+    )
     enforce_repair_loop: bool = Field(
         default=True,
         description=(
@@ -1090,9 +1097,7 @@ class BubblewrapSandbox:
 
         digest = hashlib.sha256(b"simjecture-directory-v1\n")
         for entry in entries:
-            digest.update(
-                f"{entry['path']}\0{entry['bytes']}\0{entry['sha256']}\n".encode()
-            )
+            digest.update(f"{entry['path']}\0{entry['bytes']}\0{entry['sha256']}\n".encode())
         return digest.hexdigest()
 
     def _prepare_declared_input_view(
@@ -1198,8 +1203,7 @@ class BubblewrapSandbox:
             relative = source.relative_to(view)
             canonical = relative.as_posix()
             if any(
-                canonical == protected
-                or relative.is_relative_to(Path(protected))
+                canonical == protected or relative.is_relative_to(Path(protected))
                 for protected in protected_paths
             ):
                 continue
@@ -1599,8 +1603,9 @@ immutable claim. If the attempted decision pipeline cannot realize or test the c
 do not rewrite its success condition after observing that failure. Preserve the failed
 attempt and, after at least one such decision attempt, register a new
 evidence_purpose=terminal_record contract to prospectively document whether the bounded
-run is instrument_limited or unresolved. A terminal record can close a campaign honestly
-but can never support or falsify the scientific claim.
+run is instrument_limited or unresolved. A terminal record documents a checkpoint;
+it never closes the scientific claim
+or completes the campaign. Continue resolving its gaps while wall time remains.
 When the planned evidence is a JSON summary, make the observable definition itself
 machine-readable in that summary: record the estimator/formula, component or sign
 convention, units, normalization, and time/window rule as scalar metadata. Add
@@ -1636,8 +1641,10 @@ scientific disposition (supported, falsified, instrument_limited, or unresolved)
 insufficient record returns evidence gaps and requires further falsification work while
 wall time remains. A sufficient record applies its explicit disposition through the
 matching deterministic evidence gate; it never implies support by itself. Falsification
-still requires a minimal repair child before normal completion. Use finish only after an
-honest adjudicated terminal disposition; exhausting wall time produces an unresolved
+still requires a minimal repair child before normal completion. Use finish only after
+independently adjudicated support for the original claim
+or its tested repair frontier; unresolved and instrument_limited are continuation
+checkpoints; exhausting wall time produces an unresolved
 bounded run rather than support. The final answer must account for open and closed claims, including
 instrument and diagnostic claims that changed what counts as evidence.
 
@@ -2262,6 +2269,10 @@ software.
                 return ClaimDisposition.UNRESOLVED
             return ClaimDisposition.SUPPORTED
 
+        if self.config.require_independent_contract_review:
+            from .scientific_review import ScientificReviews
+
+            ScientificReviews(self).require(claim_id, "contract")
         newest = max(contract.version for contract in claim.evidence_contracts)
         if selected_contract_version < newest:
             raise ValueError(
@@ -2393,7 +2404,14 @@ software.
         response: dict[str, Any] = {
             "adjudication": record.model_dump(mode="json"),
         }
-        if verdict.decision == MVPJudgeDecision.SUFFICIENT:
+        if self._adjudication_continues(claim_id, disposition):
+            response["continue_required"] = True
+            response["required_transition"] = "continue_falsification"
+            response["evidence_gaps"] = list(verdict.evidence_gaps) or [verdict.rationale]
+            response["next_test"] = verdict.next_test or (
+                "Resolve the documented limitation and resume the original scientific test."
+            )
+        elif verdict.decision == MVPJudgeDecision.SUFFICIENT:
             assert disposition is not None  # checked by require_explicit()
             response["closure"] = self.claim_store.close(
                 claim_id=claim_id,
@@ -2598,6 +2616,16 @@ software.
                 )
         return accepted
 
+    def _adjudication_continues(self, claim_id: str, disposition: Any) -> bool:
+        """A complete limitation record is a checkpoint, not scientific completion."""
+        claim = self.claim_store.ledger.by_id().get(claim_id)
+        return bool(
+            self.config.enforce_repair_loop
+            and claim is not None
+            and claim.kind == ClaimKind.SCIENTIFIC
+            and disposition in {ClaimDisposition.UNRESOLVED, ClaimDisposition.INSTRUMENT_LIMITED}
+        )
+
     def _finish_gate_error(self) -> str | None:
         if not self.config.enforce_repair_loop:
             return None
@@ -2614,6 +2642,16 @@ software.
                 + "). Continue falsification, or request independent adjudication "
                 "after a meaningful no-counterexample search."
             )
+        root = self.claim_store.ledger.by_id().get("claim_root")
+        if root is not None and root.status not in {
+            ClaimDisposition.SUPPORTED,
+            ClaimDisposition.FALSIFIED,
+        }:
+            return (
+                "finish rejected: the original conjecture must be independently supported "
+                "or falsified with a supported repair; administrative dispositions cannot "
+                "replace the original conjecture."
+            )
         repair_parents = {
             claim.parent_id for claim in scientific if claim.relation == ClaimRelation.REPAIRS
         }
@@ -2629,11 +2667,19 @@ software.
                 + "). Register a minimal relation=repairs child that accommodates its "
                 "counterexample, then collect fresh prospective evidence."
             )
-        adjudicable_terminal = {
-            ClaimDisposition.SUPPORTED,
-            ClaimDisposition.INSTRUMENT_LIMITED,
-            ClaimDisposition.UNRESOLVED,
-        }
+        unresolved_frontier = [
+            claim.id
+            for claim in frontier
+            if claim.status in {ClaimDisposition.INSTRUMENT_LIMITED, ClaimDisposition.UNRESOLVED}
+        ]
+        if unresolved_frontier:
+            return (
+                "finish rejected: unresolved or instrument-limited claims are checkpoints, "
+                "not scientific completion (" + ", ".join(unresolved_frontier) + "). "
+                "Continue qualification and testing; only the host wall-time limit or "
+                "operator control may end an unresolved run."
+            )
+        adjudicable_terminal = {ClaimDisposition.SUPPORTED}
         unjudged = [
             claim.id
             for claim in frontier
@@ -2843,6 +2889,8 @@ software.
         manifest = self._manifest()
         if self.manifest_path.exists():
             existing = json.loads(self.manifest_path.read_text())
+            # Absent in historical manifests: those campaigns retain legacy policy.
+            existing.get("config", {}).setdefault("require_independent_contract_review", False)
             if existing == manifest:
                 self._install_or_verify_guided_commissioning()
                 return
@@ -2854,7 +2902,9 @@ software.
             from .mvp_launch import load_launch_request
 
             launch = load_launch_request(self.output)
-            if launch is not None and launch.engine == "dsh":
+            if (launch is not None and launch.engine == "dsh") or getattr(
+                self, "_external_prompt_owner", False
+            ):
                 comparable_existing = dict(existing)
                 comparable_manifest = dict(manifest)
                 comparable_existing.pop("system_prompt_sha256", None)
@@ -3152,23 +3202,17 @@ software.
                 for child in entries:
                     record = artifacts.get(str(child["path"]))
                     if not isinstance(record, dict):
-                        directory_issues.append(
-                            f"input provenance is untracked: {child['path']}"
-                        )
+                        directory_issues.append(f"input provenance is untracked: {child['path']}")
                         continue
                     current = (
                         record.get("bytes") == child["bytes"]
                         and record.get("mtime_ns") == child["mtime_ns"]
                     )
                     if not current:
-                        directory_issues.append(
-                            f"input provenance is stale: {child['path']}"
-                        )
+                        directory_issues.append(f"input provenance is stale: {child['path']}")
                     child_records.append((child, record))
                     if record.get("evidence_eligible") is not True:
-                        directory_issues.append(
-                            f"input is not evidence eligible: {child['path']}"
-                        )
+                        directory_issues.append(f"input is not evidence eligible: {child['path']}")
                 if not entries:
                     directory_issues.append(
                         f"input directory contains no regular files: {metadata['path']}"
@@ -3198,8 +3242,10 @@ software.
                         action=(
                             child_records[0][1].get("action")
                             if child_records
-                            and all(record.get("action") == child_records[0][1].get("action")
-                                    for _child, record in child_records)
+                            and all(
+                                record.get("action") == child_records[0][1].get("action")
+                                for _child, record in child_records
+                            )
                             else None
                         ),
                         action_sha256=(
@@ -3233,20 +3279,14 @@ software.
             )
             if not tracked:
                 record = {}
-            argv_input_coverage_eligible, argv_input_coverage_issues = (
-                self._argv_input_coverage(
-                    command_argv=tuple(record.get("command_argv") or ()),
-                    artifact_path=metadata["path"],
-                    input_artifacts_declared=bool(
-                        record.get("input_artifacts_declared", False)
-                    ),
-                    input_artifacts=list(record.get("input_artifacts") or ()),
-                )
+            argv_input_coverage_eligible, argv_input_coverage_issues = self._argv_input_coverage(
+                command_argv=tuple(record.get("command_argv") or ()),
+                artifact_path=metadata["path"],
+                input_artifacts_declared=bool(record.get("input_artifacts_declared", False)),
+                input_artifacts=list(record.get("input_artifacts") or ()),
             )
             eligible = bool(
-                tracked
-                and record.get("evidence_eligible") is True
-                and argv_input_coverage_eligible
+                tracked and record.get("evidence_eligible") is True and argv_input_coverage_eligible
             )
             if not tracked:
                 issues.append(f"input provenance is untracked: {metadata['path']}")
@@ -3336,8 +3376,7 @@ software.
                 issues.append(f"argv workspace path traverses a symlink: {relative.as_posix()}")
                 continue
             if any(
-                relative == declared_directory
-                or relative.is_relative_to(declared_directory)
+                relative == declared_directory or relative.is_relative_to(declared_directory)
                 for declared_directory in declared_directories
             ):
                 continue

@@ -1,0 +1,637 @@
+{
+  "runs": [
+    {
+      "run": "euler-frontier",
+      "categories": {
+        "worker": {
+          "reported_usage": {
+            "input_tokens": 1422719,
+            "cached_input_tokens": 1299840,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 16543,
+            "reasoning_output_tokens": 5372,
+            "total_tokens": 1439262
+          },
+          "unique_threads": 1,
+          "invocations": 2,
+          "invocations_without_turn_completed": 1,
+          "invocations_without_thread_id": 0,
+          "threads_without_usage": 0,
+          "threads_with_counter_regressions": 0
+        },
+        "reviewer": {
+          "reported_usage": {
+            "input_tokens": 77130,
+            "cached_input_tokens": 73344,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1571,
+            "reasoning_output_tokens": 1303,
+            "total_tokens": 78701
+          },
+          "unique_threads": 2,
+          "invocations": 2,
+          "invocations_without_turn_completed": 0,
+          "invocations_without_thread_id": 0,
+          "threads_without_usage": 0,
+          "threads_with_counter_regressions": 0
+        }
+      },
+      "combined_reported_usage": {
+        "input_tokens": 1499849,
+        "cached_input_tokens": 1373184,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 18114,
+        "reasoning_output_tokens": 6675,
+        "total_tokens": 1517963
+      },
+      "threads": {
+        "01a0beec-0455-78a3-813c-0c245b63f637": {
+          "category": "reviewer",
+          "invocations": 1,
+          "session_file_count": 1,
+          "usage": {
+            "input_tokens": 38530,
+            "cached_input_tokens": 36544,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1218,
+            "reasoning_output_tokens": 1034,
+            "total_tokens": 39748
+          },
+          "usage_events": 1,
+          "last_usage_timestamp": "2026-09-20T13:06:15.928Z",
+          "counter_regressions": [],
+          "source": "native_cumulative_session_usage"
+        },
+        "01a0beec-fa7b-7731-8f8e-9be9482921d1": {
+          "category": "reviewer",
+          "invocations": 1,
+          "session_file_count": 1,
+          "usage": {
+            "input_tokens": 38600,
+            "cached_input_tokens": 36800,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 353,
+            "reasoning_output_tokens": 269,
+            "total_tokens": 38953
+          },
+          "usage_events": 1,
+          "last_usage_timestamp": "2026-09-20T13:07:07.938Z",
+          "counter_regressions": [],
+          "source": "native_cumulative_session_usage"
+        },
+        "01a0bee2-5ee2-7940-8517-f52353d32834": {
+          "category": "worker",
+          "invocations": 2,
+          "session_file_count": 1,
+          "usage": {
+            "input_tokens": 1422719,
+            "cached_input_tokens": 1299840,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 16543,
+            "reasoning_output_tokens": 5372,
+            "total_tokens": 1439262
+          },
+          "usage_events": 48,
+          "last_usage_timestamp": "2026-09-20T13:09:37.994Z",
+          "counter_regressions": [],
+          "source": "native_cumulative_session_usage"
+        }
+      },
+      "invocations": [
+        {
+          "path": "supervisor/review-queue/0e22e4ba293345f880086fc45e742847/independent-judge-contract-1-0/response.json",
+          "category": "reviewer",
+          "thread_ids": [
+            "01a0beec-0455-78a3-813c-0c245b63f637"
+          ],
+          "turn_completed": true,
+          "completed_turn_usage": {
+            "input_tokens": 38530,
+            "cached_input_tokens": 36544,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1218,
+            "reasoning_output_tokens": 1034
+          }
+        },
+        {
+          "path": "supervisor/review-queue/0e22e4ba293345f880086fc45e742847/independent-judge-contract-1-1/response.json",
+          "category": "reviewer",
+          "thread_ids": [
+            "01a0beec-fa7b-7731-8f8e-9be9482921d1"
+          ],
+          "turn_completed": true,
+          "completed_turn_usage": {
+            "input_tokens": 38600,
+            "cached_input_tokens": 36800,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 353,
+            "reasoning_output_tokens": 269
+          }
+        },
+        {
+          "path": "supervisor/turn-00001/response.json",
+          "category": "worker",
+          "thread_ids": [
+            "01a0bee2-5ee2-7940-8517-f52353d32834"
+          ],
+          "turn_completed": true,
+          "completed_turn_usage": {
+            "input_tokens": 981188,
+            "cached_input_tokens": 903872,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 13543,
+            "reasoning_output_tokens": 4797
+          }
+        },
+        {
+          "path": "supervisor/turn-00002/response.json",
+          "category": "worker",
+          "thread_ids": [
+            "01a0bee2-5ee2-7940-8517-f52353d32834"
+          ],
+          "turn_completed": false,
+          "completed_turn_usage": null
+        }
+      ]
+    },
+    {
+      "run": "euler-structured",
+      "categories": {
+        "worker": {
+          "reported_usage": {
+            "input_tokens": 1136754,
+            "cached_input_tokens": 1040064,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 13690,
+            "reasoning_output_tokens": 4606,
+            "total_tokens": 1150444
+          },
+          "unique_threads": 5,
+          "invocations": 5,
+          "invocations_without_turn_completed": 5,
+          "invocations_without_thread_id": 0,
+          "threads_without_usage": 0,
+          "threads_with_counter_regressions": 0
+        },
+        "reviewer": {
+          "reported_usage": null,
+          "unique_threads": 0,
+          "invocations": 0,
+          "invocations_without_turn_completed": 0,
+          "invocations_without_thread_id": 0,
+          "threads_without_usage": 0,
+          "threads_with_counter_regressions": 0
+        }
+      },
+      "combined_reported_usage": {
+        "input_tokens": 1136754,
+        "cached_input_tokens": 1040064,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 13690,
+        "reasoning_output_tokens": 4606,
+        "total_tokens": 1150444
+      },
+      "threads": {
+        "01a0bee2-5ee2-7be0-ad78-14af0e24e4df": {
+          "category": "worker",
+          "invocations": 1,
+          "session_file_count": 1,
+          "usage": {
+            "input_tokens": 201676,
+            "cached_input_tokens": 184640,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 3989,
+            "reasoning_output_tokens": 1748,
+            "total_tokens": 205665
+          },
+          "usage_events": 10,
+          "last_usage_timestamp": "2026-09-20T12:57:58.722Z",
+          "counter_regressions": [],
+          "source": "native_cumulative_session_usage"
+        },
+        "01a0bee5-1e8d-78a0-a479-4e5fde3e29f0": {
+          "category": "worker",
+          "invocations": 1,
+          "session_file_count": 1,
+          "usage": {
+            "input_tokens": 217424,
+            "cached_input_tokens": 199360,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 2709,
+            "reasoning_output_tokens": 911,
+            "total_tokens": 220133
+          },
+          "usage_events": 11,
+          "last_usage_timestamp": "2026-09-20T13:00:43.644Z",
+          "counter_regressions": [],
+          "source": "native_cumulative_session_usage"
+        },
+        "01a0bee7-dddd-7031-8f0b-2b49b2c9af7e": {
+          "category": "worker",
+          "invocations": 1,
+          "session_file_count": 1,
+          "usage": {
+            "input_tokens": 290917,
+            "cached_input_tokens": 268288,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 2814,
+            "reasoning_output_tokens": 753,
+            "total_tokens": 293731
+          },
+          "usage_events": 14,
+          "last_usage_timestamp": "2026-09-20T13:04:00.695Z",
+          "counter_regressions": [],
+          "source": "native_cumulative_session_usage"
+        },
+        "01a0beea-9dee-7e03-a222-3befee6a9a86": {
+          "category": "worker",
+          "invocations": 1,
+          "session_file_count": 1,
+          "usage": {
+            "input_tokens": 187037,
+            "cached_input_tokens": 168768,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 2045,
+            "reasoning_output_tokens": 428,
+            "total_tokens": 189082
+          },
+          "usage_events": 9,
+          "last_usage_timestamp": "2026-09-20T13:06:20.313Z",
+          "counter_regressions": [],
+          "source": "native_cumulative_session_usage"
+        },
+        "01a0beed-5db2-7270-905b-a4ad0d4d9c12": {
+          "category": "worker",
+          "invocations": 1,
+          "session_file_count": 1,
+          "usage": {
+            "input_tokens": 239700,
+            "cached_input_tokens": 219008,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 2133,
+            "reasoning_output_tokens": 766,
+            "total_tokens": 241833
+          },
+          "usage_events": 11,
+          "last_usage_timestamp": "2026-09-20T13:09:36.609Z",
+          "counter_regressions": [],
+          "source": "native_cumulative_session_usage"
+        }
+      },
+      "invocations": [
+        {
+          "path": "supervisor/turn-00001/response.json",
+          "category": "worker",
+          "thread_ids": [
+            "01a0bee2-5ee2-7be0-ad78-14af0e24e4df"
+          ],
+          "turn_completed": false,
+          "completed_turn_usage": null
+        },
+        {
+          "path": "supervisor/turn-00002/response.json",
+          "category": "worker",
+          "thread_ids": [
+            "01a0bee5-1e8d-78a0-a479-4e5fde3e29f0"
+          ],
+          "turn_completed": false,
+          "completed_turn_usage": null
+        },
+        {
+          "path": "supervisor/turn-00003/response.json",
+          "category": "worker",
+          "thread_ids": [
+            "01a0bee7-dddd-7031-8f0b-2b49b2c9af7e"
+          ],
+          "turn_completed": false,
+          "completed_turn_usage": null
+        },
+        {
+          "path": "supervisor/turn-00004/response.json",
+          "category": "worker",
+          "thread_ids": [
+            "01a0beea-9dee-7e03-a222-3befee6a9a86"
+          ],
+          "turn_completed": false,
+          "completed_turn_usage": null
+        },
+        {
+          "path": "supervisor/turn-00005/response.json",
+          "category": "worker",
+          "thread_ids": [
+            "01a0beed-5db2-7270-905b-a4ad0d4d9c12"
+          ],
+          "turn_completed": false,
+          "completed_turn_usage": null
+        }
+      ]
+    },
+    {
+      "run": "midpoint-frontier",
+      "categories": {
+        "worker": {
+          "reported_usage": {
+            "input_tokens": 1634854,
+            "cached_input_tokens": 1513024,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 20340,
+            "reasoning_output_tokens": 7814,
+            "total_tokens": 1655194
+          },
+          "unique_threads": 1,
+          "invocations": 5,
+          "invocations_without_turn_completed": 1,
+          "invocations_without_thread_id": 0,
+          "threads_without_usage": 0,
+          "threads_with_counter_regressions": 0
+        },
+        "reviewer": {
+          "reported_usage": null,
+          "unique_threads": 0,
+          "invocations": 0,
+          "invocations_without_turn_completed": 0,
+          "invocations_without_thread_id": 0,
+          "threads_without_usage": 0,
+          "threads_with_counter_regressions": 0
+        }
+      },
+      "combined_reported_usage": {
+        "input_tokens": 1634854,
+        "cached_input_tokens": 1513024,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 20340,
+        "reasoning_output_tokens": 7814,
+        "total_tokens": 1655194
+      },
+      "threads": {
+        "01a0bef0-224c-7e21-b433-a399927ebf61": {
+          "category": "worker",
+          "invocations": 5,
+          "session_file_count": 1,
+          "usage": {
+            "input_tokens": 1634854,
+            "cached_input_tokens": 1513024,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 20340,
+            "reasoning_output_tokens": 7814,
+            "total_tokens": 1655194
+          },
+          "usage_events": 43,
+          "last_usage_timestamp": "2026-09-20T13:24:58.792Z",
+          "counter_regressions": [],
+          "source": "native_cumulative_session_usage"
+        }
+      },
+      "invocations": [
+        {
+          "path": "supervisor/turn-00001/response.json",
+          "category": "worker",
+          "thread_ids": [
+            "01a0bef0-224c-7e21-b433-a399927ebf61"
+          ],
+          "turn_completed": true,
+          "completed_turn_usage": {
+            "input_tokens": 854720,
+            "cached_input_tokens": 808384,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 16854,
+            "reasoning_output_tokens": 5792
+          }
+        },
+        {
+          "path": "supervisor/turn-00002/response.json",
+          "category": "worker",
+          "thread_ids": [
+            "01a0bef0-224c-7e21-b433-a399927ebf61"
+          ],
+          "turn_completed": true,
+          "completed_turn_usage": {
+            "input_tokens": 1076841,
+            "cached_input_tokens": 978048,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 17743,
+            "reasoning_output_tokens": 6289
+          }
+        },
+        {
+          "path": "supervisor/turn-00003/response.json",
+          "category": "worker",
+          "thread_ids": [
+            "01a0bef0-224c-7e21-b433-a399927ebf61"
+          ],
+          "turn_completed": true,
+          "completed_turn_usage": {
+            "input_tokens": 1285569,
+            "cached_input_tokens": 1178688,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 18993,
+            "reasoning_output_tokens": 6973
+          }
+        },
+        {
+          "path": "supervisor/turn-00004/response.json",
+          "category": "worker",
+          "thread_ids": [
+            "01a0bef0-224c-7e21-b433-a399927ebf61"
+          ],
+          "turn_completed": true,
+          "completed_turn_usage": {
+            "input_tokens": 1537406,
+            "cached_input_tokens": 1419712,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 19748,
+            "reasoning_output_tokens": 7350
+          }
+        },
+        {
+          "path": "supervisor/turn-00005/response.json",
+          "category": "worker",
+          "thread_ids": [
+            "01a0bef0-224c-7e21-b433-a399927ebf61"
+          ],
+          "turn_completed": false,
+          "completed_turn_usage": null
+        }
+      ]
+    },
+    {
+      "run": "midpoint-structured",
+      "categories": {
+        "worker": {
+          "reported_usage": {
+            "input_tokens": 941154,
+            "cached_input_tokens": 861440,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 14428,
+            "reasoning_output_tokens": 7105,
+            "total_tokens": 955582
+          },
+          "unique_threads": 5,
+          "invocations": 5,
+          "invocations_without_turn_completed": 5,
+          "invocations_without_thread_id": 0,
+          "threads_without_usage": 0,
+          "threads_with_counter_regressions": 0
+        },
+        "reviewer": {
+          "reported_usage": null,
+          "unique_threads": 0,
+          "invocations": 0,
+          "invocations_without_turn_completed": 0,
+          "invocations_without_thread_id": 0,
+          "threads_without_usage": 0,
+          "threads_with_counter_regressions": 0
+        }
+      },
+      "combined_reported_usage": {
+        "input_tokens": 941154,
+        "cached_input_tokens": 861440,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 14428,
+        "reasoning_output_tokens": 7105,
+        "total_tokens": 955582
+      },
+      "threads": {
+        "01a0bef0-21be-7a23-8cb0-935972e95bff": {
+          "category": "worker",
+          "invocations": 1,
+          "session_file_count": 1,
+          "usage": {
+            "input_tokens": 160821,
+            "cached_input_tokens": 148416,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1607,
+            "reasoning_output_tokens": 627,
+            "total_tokens": 162428
+          },
+          "usage_events": 8,
+          "last_usage_timestamp": "2026-09-20T13:12:47.497Z",
+          "counter_regressions": [],
+          "source": "native_cumulative_session_usage"
+        },
+        "01a0bef2-e119-7a02-84c4-d9e2b0d5b32d": {
+          "category": "worker",
+          "invocations": 1,
+          "session_file_count": 1,
+          "usage": {
+            "input_tokens": 178718,
+            "cached_input_tokens": 162816,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 2727,
+            "reasoning_output_tokens": 1337,
+            "total_tokens": 181445
+          },
+          "usage_events": 9,
+          "last_usage_timestamp": "2026-09-20T13:15:34.425Z",
+          "counter_regressions": [],
+          "source": "native_cumulative_session_usage"
+        },
+        "01a0bef5-a0c4-76f0-80a0-3942d71ce6e2": {
+          "category": "worker",
+          "invocations": 1,
+          "session_file_count": 1,
+          "usage": {
+            "input_tokens": 224642,
+            "cached_input_tokens": 207040,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 2535,
+            "reasoning_output_tokens": 440,
+            "total_tokens": 227177
+          },
+          "usage_events": 11,
+          "last_usage_timestamp": "2026-09-20T13:18:46.335Z",
+          "counter_regressions": [],
+          "source": "native_cumulative_session_usage"
+        },
+        "01a0bef8-604e-7873-afc7-7f683fa08d97": {
+          "category": "worker",
+          "invocations": 1,
+          "session_file_count": 1,
+          "usage": {
+            "input_tokens": 148882,
+            "cached_input_tokens": 133632,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 4548,
+            "reasoning_output_tokens": 3643,
+            "total_tokens": 153430
+          },
+          "usage_events": 7,
+          "last_usage_timestamp": "2026-09-20T13:21:45.138Z",
+          "counter_regressions": [],
+          "source": "native_cumulative_session_usage"
+        },
+        "01a0befb-1f9d-75f2-b365-0638a4303b7c": {
+          "category": "worker",
+          "invocations": 1,
+          "session_file_count": 1,
+          "usage": {
+            "input_tokens": 228091,
+            "cached_input_tokens": 209536,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 3011,
+            "reasoning_output_tokens": 1058,
+            "total_tokens": 231102
+          },
+          "usage_events": 11,
+          "last_usage_timestamp": "2026-09-20T13:24:21.840Z",
+          "counter_regressions": [],
+          "source": "native_cumulative_session_usage"
+        }
+      },
+      "invocations": [
+        {
+          "path": "supervisor/turn-00001/response.json",
+          "category": "worker",
+          "thread_ids": [
+            "01a0bef0-21be-7a23-8cb0-935972e95bff"
+          ],
+          "turn_completed": false,
+          "completed_turn_usage": null
+        },
+        {
+          "path": "supervisor/turn-00002/response.json",
+          "category": "worker",
+          "thread_ids": [
+            "01a0bef2-e119-7a02-84c4-d9e2b0d5b32d"
+          ],
+          "turn_completed": false,
+          "completed_turn_usage": null
+        },
+        {
+          "path": "supervisor/turn-00003/response.json",
+          "category": "worker",
+          "thread_ids": [
+            "01a0bef5-a0c4-76f0-80a0-3942d71ce6e2"
+          ],
+          "turn_completed": false,
+          "completed_turn_usage": null
+        },
+        {
+          "path": "supervisor/turn-00004/response.json",
+          "category": "worker",
+          "thread_ids": [
+            "01a0bef8-604e-7873-afc7-7f683fa08d97"
+          ],
+          "turn_completed": false,
+          "completed_turn_usage": null
+        },
+        {
+          "path": "supervisor/turn-00005/response.json",
+          "category": "worker",
+          "thread_ids": [
+            "01a0befb-1f9d-75f2-b365-0638a4303b7c"
+          ],
+          "turn_completed": false,
+          "completed_turn_usage": null
+        }
+      ]
+    }
+  ],
+  "accounting": "Last cumulative usage per unique thread, including workers and reviewers.",
+  "limitations": [
+    "Provider requests interrupted before emitting usage are not measured.",
+    "Cached input is a subset of input; reasoning output is a subset of output.",
+    "No subscription-credit or monetary cost is inferred.",
+    "Missing usage is null, never zero. Counter regressions require investigation."
+  ]
+}

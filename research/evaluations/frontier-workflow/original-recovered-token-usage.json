@@ -1,0 +1,658 @@
+{
+  "runs": [
+    {
+      "run": "euler-frontier",
+      "categories": {
+        "worker": {
+          "reported_usage": {
+            "input_tokens": 1663490,
+            "cached_input_tokens": 1448384,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 12171,
+            "reasoning_output_tokens": 4583,
+            "total_tokens": 1675661
+          },
+          "unique_threads": 1,
+          "invocations": 3,
+          "invocations_without_turn_completed": 1,
+          "invocations_without_thread_id": 0,
+          "threads_without_usage": 0,
+          "threads_with_counter_regressions": 0
+        },
+        "reviewer": {
+          "reported_usage": {
+            "input_tokens": 38017,
+            "cached_input_tokens": 2304,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 3612,
+            "reasoning_output_tokens": 3492,
+            "total_tokens": 41629
+          },
+          "unique_threads": 2,
+          "invocations": 2,
+          "invocations_without_turn_completed": 1,
+          "invocations_without_thread_id": 0,
+          "threads_without_usage": 1,
+          "threads_with_counter_regressions": 0
+        }
+      },
+      "combined_reported_usage": {
+        "input_tokens": 1701507,
+        "cached_input_tokens": 1450688,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 15783,
+        "reasoning_output_tokens": 8075,
+        "total_tokens": 1717290
+      },
+      "threads": {
+        "01a0beb9-34e7-7481-8385-563750b2427a": {
+          "category": "reviewer",
+          "invocations": 1,
+          "session_file_count": 0,
+          "usage": null,
+          "usage_events": 0,
+          "counter_regressions": [],
+          "source": "completed_turn_fallback"
+        },
+        "01a0beb1-38c6-71c0-981c-71c8a4ccbde9": {
+          "category": "reviewer",
+          "invocations": 1,
+          "session_file_count": 0,
+          "usage": {
+            "input_tokens": 38017,
+            "cached_input_tokens": 2304,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 3612,
+            "reasoning_output_tokens": 3492
+          },
+          "usage_events": 0,
+          "counter_regressions": [],
+          "source": "completed_turn_fallback"
+        },
+        "01a0beab-c5b8-7760-9759-6c2c8772f6d2": {
+          "category": "worker",
+          "invocations": 3,
+          "session_file_count": 1,
+          "usage": {
+            "input_tokens": 1663490,
+            "cached_input_tokens": 1448384,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 12171,
+            "reasoning_output_tokens": 4583,
+            "total_tokens": 1675661
+          },
+          "usage_events": 34,
+          "last_usage_timestamp": "2026-09-20T12:09:42.797Z",
+          "counter_regressions": [],
+          "source": "native_cumulative_session_usage"
+        }
+      },
+      "invocations": [
+        {
+          "path": "supervisor/review-queue/fce5e96048a644f08f98686908acf2e2/independent-judge-contract-3-0/response.json",
+          "category": "reviewer",
+          "thread_ids": [
+            "01a0beb9-34e7-7481-8385-563750b2427a"
+          ],
+          "turn_completed": false,
+          "completed_turn_usage": null
+        },
+        {
+          "path": "supervisor/review-queue/fd8eed9390ca462fbad516d7503bb11a/independent-judge-contract-1-0/response.json",
+          "category": "reviewer",
+          "thread_ids": [
+            "01a0beb1-38c6-71c0-981c-71c8a4ccbde9"
+          ],
+          "turn_completed": true,
+          "completed_turn_usage": {
+            "input_tokens": 38017,
+            "cached_input_tokens": 2304,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 3612,
+            "reasoning_output_tokens": 3492
+          }
+        },
+        {
+          "path": "supervisor/turn-00001/response.json",
+          "category": "worker",
+          "thread_ids": [
+            "01a0beab-c5b8-7760-9759-6c2c8772f6d2"
+          ],
+          "turn_completed": true,
+          "completed_turn_usage": {
+            "input_tokens": 1179400,
+            "cached_input_tokens": 1075072,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 8307,
+            "reasoning_output_tokens": 3444
+          }
+        },
+        {
+          "path": "supervisor/turn-00002/response.json",
+          "category": "worker",
+          "thread_ids": [
+            "01a0beab-c5b8-7760-9759-6c2c8772f6d2"
+          ],
+          "turn_completed": false,
+          "completed_turn_usage": null
+        },
+        {
+          "path": "supervisor/turn-00003/response.json",
+          "category": "worker",
+          "thread_ids": [
+            "01a0beab-c5b8-7760-9759-6c2c8772f6d2"
+          ],
+          "turn_completed": true,
+          "completed_turn_usage": {
+            "input_tokens": 1663490,
+            "cached_input_tokens": 1448384,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 12171,
+            "reasoning_output_tokens": 4583
+          }
+        }
+      ]
+    },
+    {
+      "run": "euler-structured",
+      "categories": {
+        "worker": {
+          "reported_usage": {
+            "input_tokens": 1734164,
+            "cached_input_tokens": 1542656,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 13466,
+            "reasoning_output_tokens": 6167,
+            "total_tokens": 1747630
+          },
+          "unique_threads": 5,
+          "invocations": 5,
+          "invocations_without_turn_completed": 5,
+          "invocations_without_thread_id": 0,
+          "threads_without_usage": 0,
+          "threads_with_counter_regressions": 0
+        },
+        "reviewer": {
+          "reported_usage": null,
+          "unique_threads": 0,
+          "invocations": 0,
+          "invocations_without_turn_completed": 0,
+          "invocations_without_thread_id": 0,
+          "threads_without_usage": 0,
+          "threads_with_counter_regressions": 0
+        }
+      },
+      "combined_reported_usage": {
+        "input_tokens": 1734164,
+        "cached_input_tokens": 1542656,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 13466,
+        "reasoning_output_tokens": 6167,
+        "total_tokens": 1747630
+      },
+      "threads": {
+        "01a0beab-c5f0-7ce2-8696-dc6d6877f5c0": {
+          "category": "worker",
+          "invocations": 1,
+          "session_file_count": 1,
+          "usage": {
+            "input_tokens": 635079,
+            "cached_input_tokens": 615680,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 5757,
+            "reasoning_output_tokens": 2911,
+            "total_tokens": 640836
+          },
+          "usage_events": 13,
+          "last_usage_timestamp": "2026-09-20T11:58:21.660Z",
+          "counter_regressions": [],
+          "source": "native_cumulative_session_usage"
+        },
+        "01a0beae-8581-7eb2-828e-1499c706f168": {
+          "category": "worker",
+          "invocations": 1,
+          "session_file_count": 1,
+          "usage": {
+            "input_tokens": 455339,
+            "cached_input_tokens": 439616,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1994,
+            "reasoning_output_tokens": 505,
+            "total_tokens": 457333
+          },
+          "usage_events": 10,
+          "last_usage_timestamp": "2026-09-20T12:00:28.923Z",
+          "counter_regressions": [],
+          "source": "native_cumulative_session_usage"
+        },
+        "01a0beb1-44fa-7e80-810d-85673dc3d9b4": {
+          "category": "worker",
+          "invocations": 1,
+          "session_file_count": 1,
+          "usage": {
+            "input_tokens": 361233,
+            "cached_input_tokens": 259520,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 3225,
+            "reasoning_output_tokens": 2013,
+            "total_tokens": 364458
+          },
+          "usage_events": 11,
+          "last_usage_timestamp": "2026-09-20T12:04:18.482Z",
+          "counter_regressions": [],
+          "source": "native_cumulative_session_usage"
+        },
+        "01a0beb4-0481-7521-a5a9-efee54494e7b": {
+          "category": "worker",
+          "invocations": 1,
+          "session_file_count": 1,
+          "usage": {
+            "input_tokens": 80351,
+            "cached_input_tokens": 42880,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 418,
+            "reasoning_output_tokens": 173,
+            "total_tokens": 80769
+          },
+          "usage_events": 2,
+          "last_usage_timestamp": "2026-09-20T12:04:57.589Z",
+          "counter_regressions": [],
+          "source": "native_cumulative_session_usage"
+        },
+        "01a0beb6-c3fe-7131-ab6e-01a8ba973c5a": {
+          "category": "worker",
+          "invocations": 1,
+          "session_file_count": 1,
+          "usage": {
+            "input_tokens": 202162,
+            "cached_input_tokens": 184960,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 2072,
+            "reasoning_output_tokens": 565,
+            "total_tokens": 204234
+          },
+          "usage_events": 10,
+          "last_usage_timestamp": "2026-09-20T12:10:05.395Z",
+          "counter_regressions": [],
+          "source": "native_cumulative_session_usage"
+        }
+      },
+      "invocations": [
+        {
+          "path": "supervisor/turn-00001/response.json",
+          "category": "worker",
+          "thread_ids": [
+            "01a0beab-c5f0-7ce2-8696-dc6d6877f5c0"
+          ],
+          "turn_completed": false,
+          "completed_turn_usage": null
+        },
+        {
+          "path": "supervisor/turn-00002/response.json",
+          "category": "worker",
+          "thread_ids": [
+            "01a0beae-8581-7eb2-828e-1499c706f168"
+          ],
+          "turn_completed": false,
+          "completed_turn_usage": null
+        },
+        {
+          "path": "supervisor/turn-00003/response.json",
+          "category": "worker",
+          "thread_ids": [
+            "01a0beb1-44fa-7e80-810d-85673dc3d9b4"
+          ],
+          "turn_completed": false,
+          "completed_turn_usage": null
+        },
+        {
+          "path": "supervisor/turn-00004/response.json",
+          "category": "worker",
+          "thread_ids": [
+            "01a0beb4-0481-7521-a5a9-efee54494e7b"
+          ],
+          "turn_completed": false,
+          "completed_turn_usage": null
+        },
+        {
+          "path": "supervisor/turn-00005/response.json",
+          "category": "worker",
+          "thread_ids": [
+            "01a0beb6-c3fe-7131-ab6e-01a8ba973c5a"
+          ],
+          "turn_completed": false,
+          "completed_turn_usage": null
+        }
+      ]
+    },
+    {
+      "run": "midpoint-frontier",
+      "categories": {
+        "worker": {
+          "reported_usage": {
+            "input_tokens": 1611059,
+            "cached_input_tokens": 1513088,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 19032,
+            "reasoning_output_tokens": 6834,
+            "total_tokens": 1630091
+          },
+          "unique_threads": 1,
+          "invocations": 2,
+          "invocations_without_turn_completed": 1,
+          "invocations_without_thread_id": 0,
+          "threads_without_usage": 0,
+          "threads_with_counter_regressions": 0
+        },
+        "reviewer": {
+          "reported_usage": {
+            "input_tokens": 77115,
+            "cached_input_tokens": 72384,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 3941,
+            "reasoning_output_tokens": 3618,
+            "total_tokens": 81056
+          },
+          "unique_threads": 2,
+          "invocations": 2,
+          "invocations_without_turn_completed": 0,
+          "invocations_without_thread_id": 0,
+          "threads_without_usage": 0,
+          "threads_with_counter_regressions": 0
+        }
+      },
+      "combined_reported_usage": {
+        "input_tokens": 1688174,
+        "cached_input_tokens": 1585472,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 22973,
+        "reasoning_output_tokens": 10452,
+        "total_tokens": 1711147
+      },
+      "threads": {
+        "01a0bec2-d74b-7e51-8f7e-a22b2a68aecd": {
+          "category": "reviewer",
+          "invocations": 1,
+          "session_file_count": 0,
+          "usage": {
+            "input_tokens": 38522,
+            "cached_input_tokens": 36160,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 2250,
+            "reasoning_output_tokens": 2083
+          },
+          "usage_events": 0,
+          "counter_regressions": [],
+          "source": "completed_turn_fallback"
+        },
+        "01a0bec4-331f-7e61-abfd-af346dbf72ce": {
+          "category": "reviewer",
+          "invocations": 1,
+          "session_file_count": 0,
+          "usage": {
+            "input_tokens": 38593,
+            "cached_input_tokens": 36224,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1691,
+            "reasoning_output_tokens": 1535
+          },
+          "usage_events": 0,
+          "counter_regressions": [],
+          "source": "completed_turn_fallback"
+        },
+        "01a0beb9-87ca-7123-92ab-9c568bd036e4": {
+          "category": "worker",
+          "invocations": 2,
+          "session_file_count": 1,
+          "usage": {
+            "input_tokens": 1611059,
+            "cached_input_tokens": 1513088,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 19032,
+            "reasoning_output_tokens": 6834,
+            "total_tokens": 1630091
+          },
+          "usage_events": 48,
+          "last_usage_timestamp": "2026-09-20T12:25:20.589Z",
+          "counter_regressions": [],
+          "source": "native_cumulative_session_usage"
+        }
+      },
+      "invocations": [
+        {
+          "path": "supervisor/review-queue/258f0b6b611a4c32951894ab24fa219b/independent-judge-contract-1-0/response.json",
+          "category": "reviewer",
+          "thread_ids": [
+            "01a0bec2-d74b-7e51-8f7e-a22b2a68aecd"
+          ],
+          "turn_completed": true,
+          "completed_turn_usage": {
+            "input_tokens": 38522,
+            "cached_input_tokens": 36160,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 2250,
+            "reasoning_output_tokens": 2083
+          }
+        },
+        {
+          "path": "supervisor/review-queue/258f0b6b611a4c32951894ab24fa219b/independent-judge-contract-1-1/response.json",
+          "category": "reviewer",
+          "thread_ids": [
+            "01a0bec4-331f-7e61-abfd-af346dbf72ce"
+          ],
+          "turn_completed": true,
+          "completed_turn_usage": {
+            "input_tokens": 38593,
+            "cached_input_tokens": 36224,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1691,
+            "reasoning_output_tokens": 1535
+          }
+        },
+        {
+          "path": "supervisor/turn-00001/response.json",
+          "category": "worker",
+          "thread_ids": [
+            "01a0beb9-87ca-7123-92ab-9c568bd036e4"
+          ],
+          "turn_completed": true,
+          "completed_turn_usage": {
+            "input_tokens": 990032,
+            "cached_input_tokens": 944704,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 17214,
+            "reasoning_output_tokens": 6388
+          }
+        },
+        {
+          "path": "supervisor/turn-00002/response.json",
+          "category": "worker",
+          "thread_ids": [
+            "01a0beb9-87ca-7123-92ab-9c568bd036e4"
+          ],
+          "turn_completed": false,
+          "completed_turn_usage": null
+        }
+      ]
+    },
+    {
+      "run": "midpoint-structured",
+      "categories": {
+        "worker": {
+          "reported_usage": {
+            "input_tokens": 1174995,
+            "cached_input_tokens": 1081728,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 14863,
+            "reasoning_output_tokens": 5294,
+            "total_tokens": 1189858
+          },
+          "unique_threads": 5,
+          "invocations": 5,
+          "invocations_without_turn_completed": 5,
+          "invocations_without_thread_id": 0,
+          "threads_without_usage": 0,
+          "threads_with_counter_regressions": 0
+        },
+        "reviewer": {
+          "reported_usage": null,
+          "unique_threads": 0,
+          "invocations": 0,
+          "invocations_without_turn_completed": 0,
+          "invocations_without_thread_id": 0,
+          "threads_without_usage": 0,
+          "threads_with_counter_regressions": 0
+        }
+      },
+      "combined_reported_usage": {
+        "input_tokens": 1174995,
+        "cached_input_tokens": 1081728,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 14863,
+        "reasoning_output_tokens": 5294,
+        "total_tokens": 1189858
+      },
+      "threads": {
+        "01a0beb9-877c-7663-ad89-f348b1135878": {
+          "category": "worker",
+          "invocations": 1,
+          "session_file_count": 1,
+          "usage": {
+            "input_tokens": 188269,
+            "cached_input_tokens": 173824,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 2035,
+            "reasoning_output_tokens": 437,
+            "total_tokens": 190304
+          },
+          "usage_events": 10,
+          "last_usage_timestamp": "2026-09-20T12:13:17.264Z",
+          "counter_regressions": [],
+          "source": "native_cumulative_session_usage"
+        },
+        "01a0bebc-4703-72a1-a150-995d1858d0b2": {
+          "category": "worker",
+          "invocations": 1,
+          "session_file_count": 1,
+          "usage": {
+            "input_tokens": 236949,
+            "cached_input_tokens": 219840,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 2237,
+            "reasoning_output_tokens": 837,
+            "total_tokens": 239186
+          },
+          "usage_events": 13,
+          "last_usage_timestamp": "2026-09-20T12:16:02.494Z",
+          "counter_regressions": [],
+          "source": "native_cumulative_session_usage"
+        },
+        "01a0bebf-0688-7533-9d32-2826e6caa2fa": {
+          "category": "worker",
+          "invocations": 1,
+          "session_file_count": 1,
+          "usage": {
+            "input_tokens": 292333,
+            "cached_input_tokens": 267712,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 6085,
+            "reasoning_output_tokens": 2857,
+            "total_tokens": 298418
+          },
+          "usage_events": 12,
+          "last_usage_timestamp": "2026-09-20T12:19:22.421Z",
+          "counter_regressions": [],
+          "source": "native_cumulative_session_usage"
+        },
+        "01a0bec1-c5e4-7b82-b37b-8bd21a4ae8d7": {
+          "category": "worker",
+          "invocations": 1,
+          "session_file_count": 1,
+          "usage": {
+            "input_tokens": 251594,
+            "cached_input_tokens": 232704,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 2605,
+            "reasoning_output_tokens": 773,
+            "total_tokens": 254199
+          },
+          "usage_events": 13,
+          "last_usage_timestamp": "2026-09-20T12:22:10.590Z",
+          "counter_regressions": [],
+          "source": "native_cumulative_session_usage"
+        },
+        "01a0bec4-8573-79e3-a8cc-dcc3b5bee719": {
+          "category": "worker",
+          "invocations": 1,
+          "session_file_count": 1,
+          "usage": {
+            "input_tokens": 205850,
+            "cached_input_tokens": 187648,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1901,
+            "reasoning_output_tokens": 390,
+            "total_tokens": 207751
+          },
+          "usage_events": 10,
+          "last_usage_timestamp": "2026-09-20T12:24:17.667Z",
+          "counter_regressions": [],
+          "source": "native_cumulative_session_usage"
+        }
+      },
+      "invocations": [
+        {
+          "path": "supervisor/turn-00001/response.json",
+          "category": "worker",
+          "thread_ids": [
+            "01a0beb9-877c-7663-ad89-f348b1135878"
+          ],
+          "turn_completed": false,
+          "completed_turn_usage": null
+        },
+        {
+          "path": "supervisor/turn-00002/response.json",
+          "category": "worker",
+          "thread_ids": [
+            "01a0bebc-4703-72a1-a150-995d1858d0b2"
+          ],
+          "turn_completed": false,
+          "completed_turn_usage": null
+        },
+        {
+          "path": "supervisor/turn-00003/response.json",
+          "category": "worker",
+          "thread_ids": [
+            "01a0bebf-0688-7533-9d32-2826e6caa2fa"
+          ],
+          "turn_completed": false,
+          "completed_turn_usage": null
+        },
+        {
+          "path": "supervisor/turn-00004/response.json",
+          "category": "worker",
+          "thread_ids": [
+            "01a0bec1-c5e4-7b82-b37b-8bd21a4ae8d7"
+          ],
+          "turn_completed": false,
+          "completed_turn_usage": null
+        },
+        {
+          "path": "supervisor/turn-00005/response.json",
+          "category": "worker",
+          "thread_ids": [
+            "01a0bec4-8573-79e3-a8cc-dcc3b5bee719"
+          ],
+          "turn_completed": false,
+          "completed_turn_usage": null
+        }
+      ]
+    }
+  ],
+  "accounting": "Last native cumulative usage once per unique thread; workers plus reviewers.",
+  "limitations": [
+    "Provider requests interrupted before emitting usage are not measured.",
+    "Cached input is a subset of input; reasoning output is a subset of output.",
+    "No subscription-credit or monetary cost is inferred.",
+    "Missing usage is null, never zero. Counter regressions require investigation."
+  ]
+}

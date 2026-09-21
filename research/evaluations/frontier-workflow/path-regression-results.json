@@ -1,0 +1,57 @@
+{
+  "kind": "replay_of_recorded_failed_validation",
+  "original_contract_version": 1,
+  "original_run_outcome_not_changed": true,
+  "new_checker_passed": true,
+  "checks": [
+    {
+      "aspect": null,
+      "json_path": "task",
+      "expected_value": "euler",
+      "actual_value": "euler",
+      "passed": true,
+      "error": null
+    },
+    {
+      "aspect": null,
+      "json_path": "row_count",
+      "expected_value": 4,
+      "actual_value": 4,
+      "passed": true,
+      "error": null
+    },
+    {
+      "aspect": null,
+      "json_path": "rows.0.N",
+      "expected_value": 16,
+      "actual_value": 16,
+      "passed": true,
+      "error": null
+    },
+    {
+      "aspect": null,
+      "json_path": "rows.1.N",
+      "expected_value": 32,
+      "actual_value": 32,
+      "passed": true,
+      "error": null
+    },
+    {
+      "aspect": null,
+      "json_path": "rows.2.N",
+      "expected_value": 64,
+      "actual_value": 64,
+      "passed": true,
+      "error": null
+    },
+    {
+      "aspect": null,
+      "json_path": "rows.3.N",
+      "expected_value": 128,
+      "actual_value": 128,
+      "passed": true,
+      "error": null
+    }
+  ],
+  "scientific_status": "This is a checker regression, not retroactive scientific acceptance."
+}

@@ -4,6 +4,22 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+## 0.5.0 — 2026-09-21
+
+- Default new native-agent studies to minimal, with structured and frontier
+  selectable in the CLI, browser and TUI. Mode and backend are separate choices;
+  DSH/API remain explicitly labelled legacy routes. Existing records retain their mode.
+- Preserve active counterexample search, minimal-change repair rationale,
+  branching hypothesis ancestry and fresh prospective validation in the smaller service.
+- Add live terminal activity, job/review counts and remaining budget; project
+  minimal evidence and hypothesis trees into the browser and terminal interface.
+- Preserve deadlines across pause/resume, surface provider failures as resumable
+  states, and verify numerical-worker identity before cancellation.
+- Make the launch package usable with native agent logins without installing DSH;
+  retain an optional `setup.sh --with-dsh` path.
+- Retain measured limitations: simple-task follow-ups completed faster but used
+  more tokens; the previous hard FLASH trial did not establish superiority to a plain agent.
+
 ## 0.4.0 — 2026-09-20
 
 - Updated the bundled DSH integration to the tested `0.1.5-rc.2` runtime,

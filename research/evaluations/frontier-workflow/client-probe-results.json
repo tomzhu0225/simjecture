@@ -1,0 +1,29 @@
+{
+  "requested_model": "glm-5.3",
+  "kind": "live_client_interface_probe",
+  "scientific_evidence": false,
+  "elapsed_seconds": 118.14391684532166,
+  "returncode": 0,
+  "client_result": {
+    "exercise": "Simjecture Python client interface test",
+    "first_job_id": "job_c300f1d4b4a52a1f50efd9c8c874e2d6",
+    "repeat_job_id": "job_c300f1d4b4a52a1f50efd9c8c874e2d6",
+    "job_ids_match": true,
+    "actual_errors": [],
+    "client_observations": {
+      "manual_operation_id_supplied": false,
+      "manual_active_claim_id_supplied": false,
+      "operation_id_returned": true,
+      "claim_binding_returned": true
+    }
+  },
+  "arithmetic_check": {
+    "passed": true,
+    "max_absolute_reference_error": 1.545430450278218e-13,
+    "scope": "numerical consistency only; repair semantics require independent review"
+  },
+  "root_status": "open",
+  "limitations": [
+    "This is a targeted interface exercise, not an A/B comparison or accepted scientific conclusion."
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "requested_model": "glm-5.3",
+  "wall_seconds_per_run": 900,
+  "session_seconds": 180,
+  "implementation_hashes": {
+    "agent_supervisor.py": "4202ca5b5145ca1f0ddc880f8e5eb102fee9bb9576ea6aeaa43c158e484fcab3",
+    "role_assignments.py": "5b02f59086f472d4f9653a0bb73f22fc2fd7169fa0f04afc7424227228176ce3",
+    "scientific_review.py": "ba27c8bb298caa44e76d896d12d4ecb08303434c2bcdf725d46e377d4d5fad50",
+    "campaign_kernel.py": "4d9710f2897c5475c4126c6af160f896eb541516abcf70ed4b726fd72414052a"
+  },
+  "task_script_sha256": "014a0be80f66fdede59f8718ec4057a85f4cd3b27dcd78526ae0c9c0c4e6a420",
+  "task_instructions_match_original": {
+    "euler-frontier/instructions.txt": true,
+    "euler-structured/instructions.txt": true,
+    "midpoint-frontier/instructions.txt": true,
+    "midpoint-structured/instructions.txt": true
+  },
+  "reviewer_change": "Remove --ephemeral only, to retain incremental session usage; no thread resume for judges.",
+  "wrapper_sha256": "cc20968d72a42b45c77abf02f872d9edbdcdf9cb483977f2501f868015da4d68",
+  "runs": [
+    {
+      "task": "euler",
+      "workflow": "frontier",
+      "launched_at": 1789908900.9774866,
+      "returncode": 124,
+      "finished_at": 1789909802.835161
+    },
+    {
+      "task": "euler",
+      "workflow": "structured",
+      "launched_at": 1789908901.0472178,
+      "returncode": 124,
+      "finished_at": 1789909802.8353481
+    },
+    {
+      "task": "midpoint",
+      "workflow": "structured",
+      "launched_at": 1789909802.9303246,
+      "returncode": 124,
+      "finished_at": 1789910704.5831196
+    },
+    {
+      "task": "midpoint",
+      "workflow": "frontier",
+      "launched_at": 1789909803.013064,
+      "returncode": 124,
+      "finished_at": 1789910704.5832953
+    }
+  ]
+}

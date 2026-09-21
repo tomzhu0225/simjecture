@@ -54,8 +54,12 @@ def main() -> None:
         (output / "packages").mkdir(exist_ok=True)
         for artifact in packages.iterdir():
             shutil.copy2(artifact, output / "packages" / artifact.name)
+        release_assets = [archive, *sorted((output / "packages").iterdir())]
         (output / "SHA256SUMS").write_text(
-            f"{hashlib.sha256(archive.read_bytes()).hexdigest()}  {archive.name}\n"
+            "".join(
+                f"{hashlib.sha256(asset.read_bytes()).hexdigest()}  {asset.name}\n"
+                for asset in release_assets
+            )
         )
         print(archive)
 

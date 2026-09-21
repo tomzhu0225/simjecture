@@ -114,8 +114,7 @@ def validate_campaign_id(value: str) -> str:
     candidate = value.strip()
     if not re.fullmatch(CAMPAIGN_ID_PATTERN, candidate):
         raise ValueError(
-            "campaign id must start with a letter and use only letters, digits, "
-            "'_', '.', or '-'"
+            "campaign id must start with a letter and use only letters, digits, '_', '.', or '-'"
         )
     return candidate
 
@@ -126,15 +125,17 @@ def materialize_operator_input(
     create_output: bool = True,
     resume: bool = False,
 ) -> MVPLaunchPlan:
+    from .study_launch import NativeStudyRequest, materialize_native
+
+    if isinstance(request, NativeStudyRequest):
+        return materialize_native(request, resume=resume)
     output = Path(request.output_directory).expanduser().resolve()
     if create_output:
         output.mkdir(parents=True, exist_ok=True)
     if not output.is_dir():
         raise NotADirectoryError(f"output path is not a directory: {output}")
     if output_lock_is_held(output):
-        raise RunAlreadyActiveError(
-            f"another runner owns the output directory: {output}"
-        )
+        raise RunAlreadyActiveError(f"another runner owns the output directory: {output}")
     operator = _secure_operator_directory(output, create=True)
     hypothesis_file = operator / HYPOTHESIS_FILE_NAME
     hypothesis_text = request.hypothesis
@@ -161,9 +162,7 @@ def materialize_operator_input(
             "ledger": _normalized_optional_path(request.ledger),
             "guided_commission": str(guided_file) if guided_file else None,
             "skills_directory": _normalized_optional_path(request.skills_directory),
-            "capability_directory": _normalized_optional_path(
-                request.capability_directory
-            ),
+            "capability_directory": _normalized_optional_path(request.capability_directory),
             "dsh_session_id": (
                 request.dsh_session_id
                 or (_default_dsh_session_id(request) if request.engine == "dsh" else None)
@@ -200,17 +199,13 @@ def materialize_operator_input(
         "max_iterations": normalized.max_iterations,
         "max_tool_output_chars": normalized.max_tool_output_chars,
         "command_heartbeat_seconds": normalized.command_heartbeat_seconds,
-        "literature_search_timeout_seconds": (
-            normalized.literature_search_timeout_seconds
-        ),
+        "literature_search_timeout_seconds": (normalized.literature_search_timeout_seconds),
         "recent_full_turns": normalized.recent_full_turns,
         "max_model_retries": normalized.max_model_retries,
         "model_failover_after": normalized.model_failover_after,
         "ledger": _recorded_path(normalized.ledger, output),
         "skills_directory": _recorded_path(normalized.skills_directory, output),
-        "capability_directory": _recorded_path(
-            normalized.capability_directory, output
-        ),
+        "capability_directory": _recorded_path(normalized.capability_directory, output),
         "use_glm": normalized.use_glm,
         "reason": normalized.reason,
         "engine": normalized.engine,
@@ -401,9 +396,7 @@ def read_process_identity(
         argv=actual_argv,
         launched_at=datetime.now(UTC).isoformat(),
         run_directory=(
-            str(Path(run_directory).expanduser().resolve())
-            if run_directory is not None
-            else None
+            str(Path(run_directory).expanduser().resolve()) if run_directory is not None else None
         ),
     )
 
@@ -550,7 +543,10 @@ def start_managed_campaign(
             launched_at=datetime.now(UTC).isoformat(),
             run_directory=plan.output_directory,
         )
-    write_supervisor_record(plan.output_directory, identity)
+    # Native launchers register themselves after obtaining the study-wide lock.
+    # A losing concurrent resume must not overwrite the actual owner's identity.
+    if not (Path(plan.output_directory) / "study-launch.json").exists():
+        write_supervisor_record(plan.output_directory, identity)
     return ManagedCampaign(
         plan=plan,
         process=process,
@@ -637,9 +633,7 @@ def load_launch_request(run_directory: str | Path) -> MVPLaunchRequest | None:
     if schema_version not in {"0.2.0", "0.3.0"}:
         raise ResumeError(f"unsupported launch record schema: {schema_version!r}")
     blockers = payload.get("automatic_resume_blockers") or []
-    if not isinstance(blockers, list) or not all(
-        isinstance(item, str) for item in blockers
-    ):
+    if not isinstance(blockers, list) or not all(isinstance(item, str) for item in blockers):
         raise ResumeError("launch record has invalid automatic_resume_blockers")
     if blockers:
         raise ResumeError(
@@ -711,9 +705,7 @@ def load_launch_request(run_directory: str | Path) -> MVPLaunchRequest | None:
                 else None
             ),
             max_tool_output_chars=int(payload.get("max_tool_output_chars", 30_000)),
-            command_heartbeat_seconds=float(
-                payload.get("command_heartbeat_seconds", 30.0)
-            ),
+            command_heartbeat_seconds=float(payload.get("command_heartbeat_seconds", 30.0)),
             literature_search_timeout_seconds=float(
                 payload.get("literature_search_timeout_seconds", 20.0)
             ),
@@ -729,20 +721,13 @@ def load_launch_request(run_directory: str | Path) -> MVPLaunchRequest | None:
                 payload.get("capability_directory"), root, "capability directory"
             ),
             use_glm=payload.get("use_glm") is True,
-            reason=(
-                str(payload["reason"])
-                if isinstance(payload.get("reason"), str)
-                else None
-            ),
+            reason=(str(payload["reason"]) if isinstance(payload.get("reason"), str) else None),
             engine=(
-                str(payload.get("engine") or "native")
-                if schema_version == "0.3.0"
-                else "native"
+                str(payload.get("engine") or "native") if schema_version == "0.3.0" else "native"
             ),
             dsh_session_id=(
                 str(payload["dsh_session_id"])
-                if schema_version == "0.3.0"
-                and isinstance(payload.get("dsh_session_id"), str)
+                if schema_version == "0.3.0" and isinstance(payload.get("dsh_session_id"), str)
                 else None
             ),
         )
@@ -760,6 +745,10 @@ def request_verified_pause(
 ) -> str:
     """Ask a verified live runner to pause after the current action."""
 
+    if (Path(run_directory) / "study-launch.json").exists():
+        from .study_launch import control_native
+
+        return control_native(run_directory, "pause")
     record = load_supervisor_record(run_directory)
     if record is None or not process_identity_matches(record):
         return "no verified running process; nothing to pause"
@@ -769,12 +758,14 @@ def request_verified_pause(
 
 def prepare_resume(run_directory: str | Path) -> MVPLaunchPlan:
     root = Path(run_directory).expanduser().resolve()
+    if (root / "study-launch.json").exists():
+        from .study_launch import resume_native
+
+        return resume_native(root)
     if not root.is_dir():
         raise ResumeError(f"run directory does not exist: {root}")
     if (root / "mvp_report.json").is_file():
-        raise ResumeError(
-            "a terminal report exists; repeating the original mvp command replays it"
-        )
+        raise ResumeError("a terminal report exists; repeating the original mvp command replays it")
     if output_lock_is_held(root):
         raise ResumeError("a runner already owns this output directory; attach instead")
     record = load_supervisor_record(root)
@@ -856,6 +847,10 @@ def _cancel_active_campaign_jobs(
         root = Path(identity.run_directory).expanduser().resolve()
     except OSError:
         return ()
+    if (root / "research.json").exists():
+        from .research_service import ResearchService
+
+        ResearchService(root).cancel_active()
     jobs_root = root / "jobs"
     if not (jobs_root / "jobs").is_dir():
         return ()
@@ -1112,9 +1107,7 @@ def _assert_launch_record_matches(
 ) -> None:
     schema = existing.get("schema_version")
     if schema == "0.3.0":
-        differences = sorted(
-            key for key in _CONTRACT_KEYS if existing.get(key) != desired.get(key)
-        )
+        differences = sorted(key for key in _CONTRACT_KEYS if existing.get(key) != desired.get(key))
         if differences:
             raise LaunchConflictError(
                 "output directory already contains a different launch contract "
@@ -1143,9 +1136,7 @@ def _assert_launch_record_matches(
             "max_memory_mb",
             "max_iterations",
         }
-        differences = sorted(
-            key for key in legacy_keys if existing.get(key) != desired.get(key)
-        )
+        differences = sorted(key for key in legacy_keys if existing.get(key) != desired.get(key))
         advanced_defaults = all(
             desired.get(key) == value
             for key, value in {
@@ -1164,9 +1155,7 @@ def _assert_launch_record_matches(
             }.items()
         )
         if differences or not advanced_defaults:
-            raise LaunchConflictError(
-                "legacy launch record does not match the requested contract"
-            )
+            raise LaunchConflictError("legacy launch record does not match the requested contract")
     else:
         raise LaunchConflictError(f"unsupported existing launch schema: {schema!r}")
 
@@ -1194,9 +1183,7 @@ def _assert_launch_record_matches(
     expected_guided_sha = desired.get("guided_commission_sha256")
     if expected_guided_sha is None:
         if guided_manifest.exists() or guided_manifest.is_symlink():
-            raise LaunchConflictError(
-                "unexpected guided commissioning in output directory"
-            )
+            raise LaunchConflictError("unexpected guided commissioning in output directory")
     else:
         contained_guided = _contained_regular_file(
             output,
@@ -1207,9 +1194,7 @@ def _assert_launch_record_matches(
 
         package = MVPGuidedCommissioningPackage.read(contained_guided)
         if package.package_sha256 != expected_guided_sha:
-            raise LaunchConflictError(
-                "guided commissioning differs from the requested contract"
-            )
+            raise LaunchConflictError("guided commissioning differs from the requested contract")
 
 
 def _assert_unrecorded_output_is_compatible(
@@ -1250,9 +1235,10 @@ def _assert_unrecorded_output_is_compatible(
     if manifest_path.exists() and manifest is None:
         raise LaunchConflictError("existing MVP manifest is malformed or unsafe")
     if manifest is not None:
-        if manifest.get("hypothesis") != request.hypothesis or manifest.get(
-            "campaign_instruction"
-        ) != request.instruction:
+        if (
+            manifest.get("hypothesis") != request.hypothesis
+            or manifest.get("campaign_instruction") != request.instruction
+        ):
             raise LaunchConflictError("MVP manifest belongs to a different hypothesis")
         config = manifest.get("config")
         expected_config = {
@@ -1279,9 +1265,7 @@ def _assert_unrecorded_output_is_compatible(
             else None
         )
         if existing_guided_sha != guided_commission_sha256:
-            raise LaunchConflictError(
-                "MVP manifest has different guided commissioning"
-            )
+            raise LaunchConflictError("MVP manifest has different guided commissioning")
         from .mvp_skills import (
             MVPCapabilityRegistry,
             MVPSkillCatalog,
@@ -1292,22 +1276,15 @@ def _assert_unrecorded_output_is_compatible(
         if request.skills_directory:
             skills = MVPSkillCatalog.discover(request.skills_directory)
         if request.capability_directory:
-            capabilities = MVPCapabilityRegistry.discover(
-                request.capability_directory
-            )
-        if manifest.get("skill_hashes") != skills.hashes or manifest.get(
-            "capability_hashes"
-        ) != capabilities.hashes:
-            raise LaunchConflictError(
-                "MVP manifest has different skill or capability identities"
-            )
+            capabilities = MVPCapabilityRegistry.discover(request.capability_directory)
+        if (
+            manifest.get("skill_hashes") != skills.hashes
+            or manifest.get("capability_hashes") != capabilities.hashes
+        ):
+            raise LaunchConflictError("MVP manifest has different skill or capability identities")
         return
 
-    allowed_operator = {
-        path.name
-        for path in (hypothesis_path, instruction_path)
-        if path.exists()
-    }
+    allowed_operator = {path.name for path in (hypothesis_path, instruction_path) if path.exists()}
     unexpected_operator = {
         path.name for path in operator.iterdir() if path.name not in allowed_operator
     }
@@ -1380,27 +1357,33 @@ def _read_process_argv(pid: int) -> tuple[str, ...] | None:
 
 
 def _argv_targets_run(argv: tuple[str, ...], root: Path) -> bool:
-    command = next((item for item in ("mvp", "dsh-run") if item in argv), None)
-    if command is None:
-        return False
-    command_index = argv.index(command)
-    prefix = argv[:command_index]
-    module_entry = any(
-        item == "-m" and index + 1 < len(prefix) and prefix[index + 1] == "conjecture_solver"
-        for index, item in enumerate(prefix)
-    )
-    console_entry = any(
-        Path(item).name in {"acs", "conjecture-solver", "simjecture"}
-        for item in prefix
-    )
-    if not module_entry and not console_entry:
-        return False
-    output_value: str | None = None
+    native_modules = {
+        "conjecture_solver.study",
+        "conjecture_solver.agent_supervisor",
+        "conjecture_solver.research_supervisor",
+    }
+    native_aliases = {"simjecture-supervise", "simjecture-research"}
+    module = argv[2] if len(argv) > 2 and argv[1] == "-m" else None
+    native = module in native_modules or any(Path(item).name in native_aliases for item in argv[:2])
+    if not native:
+        command = next((item for item in ("study", "mvp", "dsh-run") if item in argv), None)
+        if command is None:
+            return False
+        prefix = argv[: argv.index(command)]
+        module_entry = module == "conjecture_solver"
+        console_entry = any(
+            Path(item).name in {"acs", "conjecture-solver", "simjecture"} for item in prefix[:2]
+        )
+        if not module_entry and not console_entry:
+            return False
+        native = command == "study"
+    flag = "--campaign" if native else "--output"
+    output_value = None
     for index, item in enumerate(argv):
-        if item == "--output" and index + 1 < len(argv):
+        if item == flag and index + 1 < len(argv):
             output_value = argv[index + 1]
             break
-        if item.startswith("--output="):
+        if item.startswith(flag + "="):
             output_value = item.split("=", 1)[1]
             break
     if not output_value:

@@ -1,0 +1,288 @@
+[
+  {
+    "evaluation": "original-recovered-token-usage.json",
+    "run": "euler-frontier",
+    "category": "worker",
+    "thread_id": "01a0beab-c5b8-7760-9759-6c2c8772f6d2",
+    "base_characters": 0,
+    "provenance": {
+      "type": "model",
+      "model": "glm-5.3"
+    }
+  },
+  {
+    "evaluation": "original-recovered-token-usage.json",
+    "run": "euler-structured",
+    "category": "worker",
+    "thread_id": "01a0beab-c5f0-7ce2-8696-dc6d6877f5c0",
+    "base_characters": 0,
+    "provenance": {
+      "type": "model",
+      "model": "glm-5.3"
+    }
+  },
+  {
+    "evaluation": "original-recovered-token-usage.json",
+    "run": "euler-structured",
+    "category": "worker",
+    "thread_id": "01a0beae-8581-7eb2-828e-1499c706f168",
+    "base_characters": 0,
+    "provenance": {
+      "type": "model",
+      "model": "glm-5.3"
+    }
+  },
+  {
+    "evaluation": "original-recovered-token-usage.json",
+    "run": "euler-structured",
+    "category": "worker",
+    "thread_id": "01a0beb1-44fa-7e80-810d-85673dc3d9b4",
+    "base_characters": 0,
+    "provenance": {
+      "type": "model",
+      "model": "glm-5.3"
+    }
+  },
+  {
+    "evaluation": "original-recovered-token-usage.json",
+    "run": "euler-structured",
+    "category": "worker",
+    "thread_id": "01a0beb4-0481-7521-a5a9-efee54494e7b",
+    "base_characters": 0,
+    "provenance": {
+      "type": "model",
+      "model": "glm-5.3"
+    }
+  },
+  {
+    "evaluation": "original-recovered-token-usage.json",
+    "run": "euler-structured",
+    "category": "worker",
+    "thread_id": "01a0beb6-c3fe-7131-ab6e-01a8ba973c5a",
+    "base_characters": 0,
+    "provenance": {
+      "type": "model",
+      "model": "glm-5.3"
+    }
+  },
+  {
+    "evaluation": "original-recovered-token-usage.json",
+    "run": "midpoint-frontier",
+    "category": "worker",
+    "thread_id": "01a0beb9-87ca-7123-92ab-9c568bd036e4",
+    "base_characters": 0,
+    "provenance": {
+      "type": "model",
+      "model": "glm-5.3"
+    }
+  },
+  {
+    "evaluation": "original-recovered-token-usage.json",
+    "run": "midpoint-structured",
+    "category": "worker",
+    "thread_id": "01a0beb9-877c-7663-ad89-f348b1135878",
+    "base_characters": 0,
+    "provenance": {
+      "type": "model",
+      "model": "glm-5.3"
+    }
+  },
+  {
+    "evaluation": "original-recovered-token-usage.json",
+    "run": "midpoint-structured",
+    "category": "worker",
+    "thread_id": "01a0bebc-4703-72a1-a150-995d1858d0b2",
+    "base_characters": 0,
+    "provenance": {
+      "type": "model",
+      "model": "glm-5.3"
+    }
+  },
+  {
+    "evaluation": "original-recovered-token-usage.json",
+    "run": "midpoint-structured",
+    "category": "worker",
+    "thread_id": "01a0bebf-0688-7533-9d32-2826e6caa2fa",
+    "base_characters": 0,
+    "provenance": {
+      "type": "model",
+      "model": "glm-5.3"
+    }
+  },
+  {
+    "evaluation": "original-recovered-token-usage.json",
+    "run": "midpoint-structured",
+    "category": "worker",
+    "thread_id": "01a0bec1-c5e4-7b82-b37b-8bd21a4ae8d7",
+    "base_characters": 0,
+    "provenance": {
+      "type": "model",
+      "model": "glm-5.3"
+    }
+  },
+  {
+    "evaluation": "original-recovered-token-usage.json",
+    "run": "midpoint-structured",
+    "category": "worker",
+    "thread_id": "01a0bec4-8573-79e3-a8cc-dcc3b5bee719",
+    "base_characters": 0,
+    "provenance": {
+      "type": "model",
+      "model": "glm-5.3"
+    }
+  },
+  {
+    "evaluation": "token-repeat-usage.json",
+    "run": "euler-frontier",
+    "category": "reviewer",
+    "thread_id": "01a0beec-0455-78a3-813c-0c245b63f637",
+    "base_characters": 0,
+    "provenance": {
+      "type": "model",
+      "model": "glm-5.3"
+    }
+  },
+  {
+    "evaluation": "token-repeat-usage.json",
+    "run": "euler-frontier",
+    "category": "reviewer",
+    "thread_id": "01a0beec-fa7b-7731-8f8e-9be9482921d1",
+    "base_characters": 0,
+    "provenance": {
+      "type": "model",
+      "model": "glm-5.3"
+    }
+  },
+  {
+    "evaluation": "token-repeat-usage.json",
+    "run": "euler-frontier",
+    "category": "worker",
+    "thread_id": "01a0bee2-5ee2-7940-8517-f52353d32834",
+    "base_characters": 0,
+    "provenance": {
+      "type": "model",
+      "model": "glm-5.3"
+    }
+  },
+  {
+    "evaluation": "token-repeat-usage.json",
+    "run": "euler-structured",
+    "category": "worker",
+    "thread_id": "01a0bee2-5ee2-7be0-ad78-14af0e24e4df",
+    "base_characters": 0,
+    "provenance": {
+      "type": "model",
+      "model": "glm-5.3"
+    }
+  },
+  {
+    "evaluation": "token-repeat-usage.json",
+    "run": "euler-structured",
+    "category": "worker",
+    "thread_id": "01a0bee5-1e8d-78a0-a479-4e5fde3e29f0",
+    "base_characters": 0,
+    "provenance": {
+      "type": "model",
+      "model": "glm-5.3"
+    }
+  },
+  {
+    "evaluation": "token-repeat-usage.json",
+    "run": "euler-structured",
+    "category": "worker",
+    "thread_id": "01a0bee7-dddd-7031-8f0b-2b49b2c9af7e",
+    "base_characters": 0,
+    "provenance": {
+      "type": "model",
+      "model": "glm-5.3"
+    }
+  },
+  {
+    "evaluation": "token-repeat-usage.json",
+    "run": "euler-structured",
+    "category": "worker",
+    "thread_id": "01a0beea-9dee-7e03-a222-3befee6a9a86",
+    "base_characters": 0,
+    "provenance": {
+      "type": "model",
+      "model": "glm-5.3"
+    }
+  },
+  {
+    "evaluation": "token-repeat-usage.json",
+    "run": "euler-structured",
+    "category": "worker",
+    "thread_id": "01a0beed-5db2-7270-905b-a4ad0d4d9c12",
+    "base_characters": 0,
+    "provenance": {
+      "type": "model",
+      "model": "glm-5.3"
+    }
+  },
+  {
+    "evaluation": "token-repeat-usage.json",
+    "run": "midpoint-frontier",
+    "category": "worker",
+    "thread_id": "01a0bef0-224c-7e21-b433-a399927ebf61",
+    "base_characters": 0,
+    "provenance": {
+      "type": "model",
+      "model": "glm-5.3"
+    }
+  },
+  {
+    "evaluation": "token-repeat-usage.json",
+    "run": "midpoint-structured",
+    "category": "worker",
+    "thread_id": "01a0bef0-21be-7a23-8cb0-935972e95bff",
+    "base_characters": 0,
+    "provenance": {
+      "type": "model",
+      "model": "glm-5.3"
+    }
+  },
+  {
+    "evaluation": "token-repeat-usage.json",
+    "run": "midpoint-structured",
+    "category": "worker",
+    "thread_id": "01a0bef2-e119-7a02-84c4-d9e2b0d5b32d",
+    "base_characters": 0,
+    "provenance": {
+      "type": "model",
+      "model": "glm-5.3"
+    }
+  },
+  {
+    "evaluation": "token-repeat-usage.json",
+    "run": "midpoint-structured",
+    "category": "worker",
+    "thread_id": "01a0bef5-a0c4-76f0-80a0-3942d71ce6e2",
+    "base_characters": 0,
+    "provenance": {
+      "type": "model",
+      "model": "glm-5.3"
+    }
+  },
+  {
+    "evaluation": "token-repeat-usage.json",
+    "run": "midpoint-structured",
+    "category": "worker",
+    "thread_id": "01a0bef8-604e-7873-afc7-7f683fa08d97",
+    "base_characters": 0,
+    "provenance": {
+      "type": "model",
+      "model": "glm-5.3"
+    }
+  },
+  {
+    "evaluation": "token-repeat-usage.json",
+    "run": "midpoint-structured",
+    "category": "worker",
+    "thread_id": "01a0befb-1f9d-75f2-b365-0638a4303b7c",
+    "base_characters": 0,
+    "provenance": {
+      "type": "model",
+      "model": "glm-5.3"
+    }
+  }
+]

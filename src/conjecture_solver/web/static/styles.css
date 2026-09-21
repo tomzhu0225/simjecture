@@ -1151,3 +1151,10 @@ dialog footer { justify-content: flex-end; gap: 8px; padding-top: 3px; }
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Native studies keep scientific context available without hiding live progress. */
+#guidance-details { margin-top: 12px; max-width: 72ch; color: var(--muted); }
+#guidance-details summary, .review-detail summary { cursor: pointer; font-size: 13px; }
+#guidance-details[open] { max-height: 250px; overflow-y: auto; }
+.review-detail { margin-top: 8px; }
+#study-route { max-width: 100%; white-space: normal; }
