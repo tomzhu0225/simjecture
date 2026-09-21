@@ -260,7 +260,7 @@ class AgentSupervisor:
                 "--model",
                 self.args.judge_model if judge else self.args.model,
                 "--output-format",
-                "streaming-messages-json" if judge else "json",
+                "streaming-messages-json",
             ]
             if judge:
                 command += [
@@ -289,7 +289,7 @@ class AgentSupervisor:
                 "--print-timeout",
                 "0",
                 "--output-format",
-                "stream-json" if judge else "json",
+                "stream-json",
             ]
             if not judge:
                 command += ["--dangerously-skip-permissions", "--add-dir", str(directory)]

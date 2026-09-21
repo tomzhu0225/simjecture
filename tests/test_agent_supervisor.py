@@ -286,3 +286,33 @@ def test_large_codex_case_uses_stdin_without_changing_prompt(tmp_path):
         json.loads((directory / "response.json").read_text())["sha256"]
         == hashlib.sha256(prompt.encode()).hexdigest()
     )
+
+
+@pytest.mark.parametrize(
+    "backend,output_format", [("grok", "streaming-messages-json"), ("agy", "stream-json")]
+)
+def test_native_backends_stream_activity_for_watchdog(tmp_path, backend, output_format):
+    import sys
+
+    root = tmp_path / "campaign"
+    root.mkdir()
+    executable = tmp_path / "transport-fixture"
+    executable.write_text(f"#!{sys.executable}\nimport json,sys\nprint(json.dumps(sys.argv[1:]))\n")
+    executable.chmod(0o755)
+    args = argparse.Namespace(
+        campaign=root,
+        state_dir=root / "supervisor",
+        wall_seconds=30,
+        turn_seconds=5,
+        backend=backend,
+        model="fixture",
+        judge_model="fixture",
+        executable=str(executable),
+        workflow="frontier",
+    )
+    supervisor = AgentSupervisor(args)
+    directory = supervisor.directory / "turn-00001"
+    directory.mkdir()
+    assert supervisor.launch(directory, "Transport fixture; no model call.") == 0
+    argv = json.loads((directory / "response.json").read_text())
+    assert argv[argv.index("--output-format") + 1] == output_format
