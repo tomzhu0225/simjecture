@@ -346,11 +346,13 @@ def test_tui_launch_uses_hypothesis_file(tmp_path: Path, monkeypatch) -> None:
         form.query_one("#output-directory", Input).value = str(output)
         request = form.validate()
         assert request is not None
+        # The UI routing test must not depend on an installed model subscription CLI.
+        request = request.model_copy(update={"agent_executable": sys.executable})
         await app.push_screen(ContractReviewScreen(request))
         assert isinstance(app.screen, ContractReviewScreen)
         app.screen.action_launch()
         await pilot.pause()
-        assert "plan" in captured
+        assert "plan" in captured, app.screen.last_error
         plan = captured["plan"]
         assert "--hypothesis-file" in plan.argv
         assert "--hypothesis" not in plan.argv

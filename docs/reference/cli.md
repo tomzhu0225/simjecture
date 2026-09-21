@@ -45,3 +45,16 @@ structured option only for a contained, self-contained launch contract; unsafe
 external paths are refused. See
 [Web interface](../getting-started/web-interface.md) and
 [Terminal interface](../getting-started/terminal-ui.md).
+
+
+## Native-agent studies
+
+`simjecture study --campaign DIR --hypothesis-file H --instructions-file I`
+starts minimal mode by default. Add `--mode structured` or `--mode frontier` for
+another workflow. `--backend` selects `codex-glm`, `codex`, `grok` or `agy`;
+non-GLM backends require an explicit `--model`. Native tools remain available.
+`--wall-seconds` fixes the study budget and `--turn-seconds` controls the native
+session allowance/watchdog. Resume with the same campaign and instructions;
+mode and deadline are preserved. `simjecture-supervise` and `simjecture-research`
+are equivalent launchers. The browser and TUI share the same native mode choices. Legacy `mvp` and DSH/API
+remain explicit legacy routes. See [the guide](../how-to/research-service.md).

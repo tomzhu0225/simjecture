@@ -44,6 +44,11 @@ def _fake_dsh(path: Path, *, status: str = "idle") -> Path:
         "Path('captured_dsh.json').write_text(json.dumps(captured))\n"
         "state = Path(os.environ['SIMJECTURE_DSH_STATE_FILE'])\n"
         f"state.write_text(json.dumps({{'status': {status!r}, 'engine': 'dsh'}}))\n"
+        + (
+            "Path('mvp_report.json').write_text(json.dumps({'status':'completed'}))\n"
+            if status == "idle"
+            else ""
+        )
     )
     path.chmod(0o700)
     return path
@@ -70,7 +75,7 @@ def test_bundled_dsh_profile_is_discoverable() -> None:
     profile = bundled_profile_path()
     package = json.loads((profile / "package.json").read_text())
     assert package["name"] == "@simjecture/dsh-bundle"
-    assert package["version"] == "0.4.0"
+    assert package["version"] == "0.5.0"
     assert (profile / "cordis.patch.yml").is_file()
 
 
@@ -203,3 +208,17 @@ def test_dsh_process_adapter_finalizes_clock_on_sigterm(
     clock = read_clock(root)
     assert clock is not None
     assert clock.state == "finished"
+
+
+def test_clean_session_exit_without_report_is_resumed(tmp_path: Path) -> None:
+    root, session_id, _ = _launch(tmp_path)
+    executable = tmp_path / "checkpoint-dsh"
+    executable.write_text(
+        f"#!{sys.executable}\n"
+        "import json\nfrom pathlib import Path\n"
+        'p=Path("attempts"); n=int(p.read_text())+1 if p.exists() else 1; p.write_text(str(n))\n'
+        'if n==2: Path("mvp_report.json").write_text(json.dumps({"status":"completed"}))\n'
+    )
+    executable.chmod(0o700)
+    assert run_dsh_campaign(root, session_id=session_id, executable=str(executable)) == 0
+    assert (root / "attempts").read_text() == "2"

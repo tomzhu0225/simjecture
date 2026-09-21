@@ -66,6 +66,10 @@ ROLE_TOOLS = {
     "judge": frozenset(),
 }
 
+# One researcher may organize descendants and repairs without role handoffs.
+# Scientific approval and finalization remain host-only.
+ROLE_TOOLS["researcher"] = ROLE_TOOLS["falsifier"]
+
 
 def identifier(value: Any) -> str:
     if not isinstance(value, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,127}", value):
@@ -155,7 +159,12 @@ class AssignmentStore:
                 raise ValueError("request one assigned claim with view=role")
         if name == "register_claim":
             parent = str(args.get("parent_id", "")).casefold()
-            if role == "falsifier":
+            if role == "researcher":
+                if parent not in allowed or claim == target:
+                    raise ValueError(
+                        "researcher may register only descendants of its assigned root"
+                    )
+            elif role == "falsifier":
                 if args.get("kind") == "scientific" or parent not in allowed:
                     raise ValueError("falsifier may register only commissioning descendants")
             elif (
@@ -249,11 +258,11 @@ class AssignmentStore:
         if target is None:
             raise ValueError("assigned claim is missing")
         if result["outcome"] == "falsified" and (
-            spec["role"] != "falsifier" or target["status"] != "falsified"
+            spec["role"] not in {"falsifier", "researcher"} or target["status"] != "falsified"
         ):
             raise ValueError("falsification handoff requires a kernel-accepted counterexample")
         if result["outcome"] == "registered" and (
-            spec["role"] != "repair_scientist" or not record["children"]
+            spec["role"] not in {"repair_scientist", "researcher"} or not record["children"]
         ):
             raise ValueError("repair handoff requires a registered repairs child")
         evidence = {item["path"] for claim in claims for item in claim.get("evidence", [])}

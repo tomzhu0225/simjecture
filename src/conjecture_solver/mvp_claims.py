@@ -19,6 +19,7 @@ from typing import Any, Literal
 
 from pydantic import Field, model_validator
 
+from .evidence_paths import EVIDENCE_PATH_PATTERN, evidence_value
 from .models import StrictModel
 
 CLAIM_ID_PATTERN = re.compile(r"^claim_[a-z0-9_]+$")
@@ -104,8 +105,9 @@ class ClaimEvidenceValidationCheck(StrictModel):
         ),
     )
     json_path: str = Field(
-        pattern=r"^[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*$",
-        description="Dot-separated object keys; array indexing is deliberately unsupported",
+        pattern=EVIDENCE_PATH_PATTERN,
+        max_length=1024,
+        description="Object keys and nonnegative array indices: rows.0.N, rows[0].N or $.rows[0].N",
     )
     expected_value: str | int | float | bool | None
 
@@ -643,8 +645,7 @@ class MVPClaimLedgerStore:
             if binding is not None
         )
         if any(
-            binding.commissioning_argv in binding.allowed_scientific_argv
-            for binding in bindings
+            binding.commissioning_argv in binding.allowed_scientific_argv for binding in bindings
         ):
             raise ValueError(
                 "commissioning_argv is reserved for instrument qualification and "
@@ -793,12 +794,11 @@ class MVPClaimLedgerStore:
             actual: Any = evidence_document
             error = evidence_document_error
             if error is None:
-                for key in check.json_path.split("."):
-                    if not isinstance(actual, dict) or key not in actual:
-                        error = f"JSON path is missing: {check.json_path}"
-                        actual = None
-                        break
-                    actual = actual[key]
+                try:
+                    actual = evidence_value(actual, check.json_path)
+                except (KeyError, ValueError):
+                    error = f"JSON path is missing: {check.json_path}"
+                    actual = None
             if error is None and not isinstance(
                 actual,
                 (str, int, float, bool, type(None)),
@@ -1197,8 +1197,7 @@ class MVPClaimLedgerStore:
             allowed_command_count = sum(
                 1
                 for binding in active_contract.all_execution_bindings()
-                if binding.capability == capability
-                and binding.program_path == argv[0]
+                if binding.capability == capability and binding.program_path == argv[0]
                 for _command in binding.allowed_scientific_argv
             )
             raise ValueError(

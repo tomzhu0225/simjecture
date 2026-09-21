@@ -680,6 +680,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="simjecture")
     subcommands = parser.add_subparsers(dest="command", required=True)
 
+    from .study import configure_parser
+
+    configure_parser(subcommands.add_parser(
+        "study", help="Launch a native-agent study (default mode: minimal)"
+    ))
+
     benchmark = subcommands.add_parser("benchmark")
     benchmark.add_argument(
         "name",
@@ -1015,7 +1021,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--engine",
         choices=("dsh", "native"),
         default="dsh",
-        help="Reasoning engine for newly launched campaigns (default: dsh)",
+        help="Engine for explicitly selected legacy campaigns (default: dsh)",
     )
     web.add_argument(
         "--read-only",
@@ -1119,6 +1125,11 @@ def build_parser() -> argparse.ArgumentParser:
 def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
+    if args.command == "study":
+        try:
+            return int(args.handler(args))
+        except ValueError as error:
+            parser.error(str(error))
     return int(args.handler(args))
 
 

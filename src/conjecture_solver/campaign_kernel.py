@@ -712,6 +712,9 @@ class CampaignKernel:
             guided_commissioning=guided,
             literature_search=literature_search,
         )
+        # External one-shot/MCP campaigns have no native completion prompt.
+        # Explicit native launch contracts still retain exact prompt identity.
+        runner._external_prompt_owner = launch is None
         runner._kernel_resource_roots = {
             "skills_root": selected_skills_root,
             "capabilities_root": selected_capabilities_root,
@@ -971,9 +974,7 @@ class CampaignKernel:
 
     @staticmethod
     def _canonical_action(action: Any) -> dict[str, Any]:
-        dumped = (
-            dict(action) if isinstance(action, Mapping) else action.model_dump(mode="json")
-        )
+        dumped = dict(action) if isinstance(action, Mapping) else action.model_dump(mode="json")
         if not isinstance(dumped, dict):
             raise TypeError("campaign action must serialize to an object")
         if dumped.get("input_artifacts") is None:
@@ -1280,6 +1281,12 @@ class CampaignKernel:
             self.host._kernel_operation_id = operation_id
         try:
             self.host._enforce_literature_startup(action)
+            if getattr(
+                getattr(self.host, "config", None), "require_independent_contract_review", False
+            ):
+                from .scientific_review import ScientificReviews
+
+                ScientificReviews(self.host).guard(action)
             return self.host._perform_compat(
                 action,
                 iteration=iteration,
@@ -1885,6 +1892,21 @@ class CampaignKernel:
                         "an open claim requires a fresh explicit adjudication"
                     )
                 disposition = ClaimDisposition.SUPPORTED
+            if self.host._adjudication_continues(claim_id, disposition):
+                response["continue_required"] = True
+                response["required_transition"] = "continue_falsification"
+                response["evidence_gaps"] = list(record.verdict.evidence_gaps) or [
+                    record.verdict.rationale
+                ]
+                response["next_test"] = record.verdict.next_test or (
+                    "Resolve the documented limitation and resume the original scientific test."
+                )
+                self._set_external_adjudication_loop_state(
+                    claim_id=claim_id,
+                    verdict=record.verdict,
+                    iteration=record.iteration,
+                )
+                return response
             if claim.status == ClaimDisposition.OPEN:
                 _selected_id, _selected_version, packet = self.host._prepare_adjudication_request(
                     claim_id=claim_id,
@@ -2519,9 +2541,7 @@ class CampaignKernel:
                     )
                 return self.job_status(existing_job_id)
             journal = self._load_action_journal()
-            fingerprint = self._operation_fingerprint(
-                canonical_action, requested_timeout
-            )
+            fingerprint = self._operation_fingerprint(canonical_action, requested_timeout)
             existing_record = (journal.get("operations") or {}).get(operation_id)
             if existing_record is not None:
                 if existing_record.get("fingerprint") != fingerprint:
@@ -2847,17 +2867,13 @@ class CampaignKernel:
             not isinstance(item, str) or not item.strip() or len(item) > 2_000
             for item in alternatives_considered
         ):
-            raise ValueError(
-                "alternatives_considered entries must contain 1 to 2,000 characters"
-            )
+            raise ValueError("alternatives_considered entries must contain 1 to 2,000 characters")
         if (
             not isinstance(feasibility_assessment, str)
             or len(feasibility_assessment.strip()) < 16
             or len(feasibility_assessment) > 8_000
         ):
-            raise ValueError(
-                "feasibility_assessment must contain 16 to 8,000 characters"
-            )
+            raise ValueError("feasibility_assessment must contain 16 to 8,000 characters")
 
         # Reconcile each receipt before taking the campaign writer lock.  The
         # terminal reports are immutable after reconciliation, while avoiding
@@ -2891,9 +2907,7 @@ class CampaignKernel:
                     f"version {contract_version}"
                 )
             if selected_contract.evidence_purpose != EvidencePurpose.TERMINAL_RECORD:
-                raise ValueError(
-                    "record_terminal_observation requires a terminal_record contract"
-                )
+                raise ValueError("record_terminal_observation requires a terminal_record contract")
 
             journal = self._load_action_journal()
             is_replay = operation_id in (journal.get("operations") or {})
@@ -2909,9 +2923,7 @@ class CampaignKernel:
                 except ValueError:
                     pass
                 else:
-                    raise ValueError(
-                        "terminal observation path already exists; use a fresh path"
-                    )
+                    raise ValueError("terminal observation path already exists; use a fresh path")
 
             linked_attempts: dict[str, tuple[Any, Any]] = {}
             for evidence in claim.evidence:
@@ -2932,8 +2944,7 @@ class CampaignKernel:
             if missing_links:
                 raise ValueError(
                     "terminal jobs must already be linked as prospective attempts "
-                    "under a prior claim_decision contract: "
-                    + ", ".join(missing_links)
+                    "under a prior claim_decision contract: " + ", ".join(missing_links)
                 )
 
             attempts: list[dict[str, Any]] = []
@@ -2955,8 +2966,7 @@ class CampaignKernel:
                 result = report.get("result")
                 result = result if isinstance(result, Mapping) else {}
                 timed_out = bool(
-                    result.get("timed_out") is True
-                    or provenance.execution_timed_out is True
+                    result.get("timed_out") is True or provenance.execution_timed_out is True
                 )
                 execution_succeeded = provenance.execution_succeeded is True
                 any_timed_out = any_timed_out or timed_out
@@ -2968,9 +2978,7 @@ class CampaignKernel:
                         "observation_sufficient": evidence.observation_sufficient,
                         "job_id": job_id,
                         "operation_id": provenance.operation_id,
-                        "job_report_sha256": hashlib.sha256(
-                            canonical_report.encode()
-                        ).hexdigest(),
+                        "job_report_sha256": hashlib.sha256(canonical_report.encode()).hexdigest(),
                         "status": report.get("status"),
                         "request": report.get("request"),
                         "result": {
@@ -3025,9 +3033,7 @@ class CampaignKernel:
                     "attempts": attempts,
                     "configured_limits": {
                         "max_actions": (
-                            None
-                            if budget["max_actions"] is None
-                            else int(budget["max_actions"])
+                            None if budget["max_actions"] is None else int(budget["max_actions"])
                         ),
                         "max_wall_seconds": float(budget["max_wall_seconds"]),
                         "max_command_seconds": float(budget["max_command_seconds"]),
@@ -3035,22 +3041,23 @@ class CampaignKernel:
                 },
                 "researcher_assessment": {
                     "verified_by_kernel": False,
-                    "alternatives_considered": [
-                        item.strip() for item in alternatives_considered
-                    ],
+                    "alternatives_considered": [item.strip() for item in alternatives_considered],
                     "feasibility_assessment": feasibility_assessment.strip(),
                 },
                 "scientific_disposition": None,
                 "judge_required": True,
             }
-            encoded = json.dumps(
-                document,
-                ensure_ascii=False,
-                allow_nan=False,
-                indent=2,
-                sort_keys=True,
-                default=str,
-            ) + "\n"
+            encoded = (
+                json.dumps(
+                    document,
+                    ensure_ascii=False,
+                    allow_nan=False,
+                    indent=2,
+                    sort_keys=True,
+                    default=str,
+                )
+                + "\n"
+            )
             program = (
                 "from pathlib import Path\n"
                 f"target = Path({path!r})\n"
@@ -3097,9 +3104,7 @@ class CampaignKernel:
                 "execution": {
                     "returncode": result.get("returncode"),
                     "timed_out": result.get("timed_out"),
-                    "scientific_evidence_eligible": result.get(
-                        "scientific_evidence_eligible"
-                    ),
+                    "scientific_evidence_eligible": result.get("scientific_evidence_eligible"),
                 },
             }
 

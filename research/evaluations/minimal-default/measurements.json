@@ -1,0 +1,271 @@
+{
+  "model": "glm-5.3",
+  "runs": [
+    {
+      "task": "euler",
+      "wall_seconds": 358.2238802909851,
+      "independent_assessment": {
+        "mathematics_correct": true,
+        "scientific_completion": true,
+        "prospective_repair_valid": true,
+        "provenance_sufficient": true,
+        "reason": "The executable high-precision calculation and independent numerical checks correctly falsify the original [3.5,4.5] claim at all four required N values, with ratios near 2. The [1.9,2.1] repair is a reasoned first-order interval rather than a fitted data-extrema bound, was recorded and committed before the separate validation execution, preserved the original failures, and passed all four original N values. The result explicitly limits the conclusion to this finite set and claims no universal theorem. Source, outputs, ordered plan/commitment, execution receipts, hashes, and observer records provide adequate provenance.",
+        "required_followup": [],
+        "recognized_numerical_limitation": true
+      },
+      "internal_status": "completed",
+      "usage": {
+        "input_tokens": 1105760,
+        "cached_input_tokens": 902784,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 12756,
+        "reasoning_output_tokens": 5713,
+        "total_tokens": 1118516
+      },
+      "categories": {
+        "worker": {
+          "reported_usage": {
+            "input_tokens": 1015630,
+            "cached_input_tokens": 860928,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 10825,
+            "reasoning_output_tokens": 4300,
+            "total_tokens": 1026455
+          },
+          "unique_threads": 1,
+          "invocations": 2,
+          "invocations_without_turn_completed": 0,
+          "invocations_without_thread_id": 0,
+          "threads_without_usage": 0,
+          "threads_with_counter_regressions": 0
+        },
+        "reviewer": {
+          "reported_usage": {
+            "input_tokens": 90130,
+            "cached_input_tokens": 41856,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1931,
+            "reasoning_output_tokens": 1413,
+            "total_tokens": 92061
+          },
+          "unique_threads": 2,
+          "invocations": 2,
+          "invocations_without_turn_completed": 0,
+          "invocations_without_thread_id": 0,
+          "threads_without_usage": 0,
+          "threads_with_counter_regressions": 0
+        }
+      },
+      "worker_prompt_bytes": [
+        5744,
+        428
+      ],
+      "reviews": [
+        {
+          "claim": "root",
+          "disposition": "falsified",
+          "challenge": {
+            "strategy": "Exhaustively compute all four specified finite-domain cases and seek any boundary violation; success requires every ratio in [3.5,4.5].",
+            "experiments": [
+              "exp_f9222c70b6021fc92f153171"
+            ],
+            "outcome": "Every one of the four ratios was below 3.5 (and hence outside [3.5,4.5]), providing exhaustive counterexamples."
+          },
+          "verdict": {
+            "claim_id": "root",
+            "decision": "approved",
+            "disposition": "falsified",
+            "rationale": "The target is a finite-domain claim over exactly N={16,32,64,128}, and the provided computation exhaustively tests every case. It evaluates y_N=(1-1/N)^N at 100-digit working precision, computes E_N=|y_N-exp(-1)| and the corresponding E_2N, and reports ratios 2.0269578973361315, 2.0132454754200646, 2.0065660421281226, and 2.003269048832305. Every ratio is far below the lower boundary 3.5, so the assertion that all lie in [3.5,4.5] is false. These values are also consistent with the known first-order error behavior of explicit Euler; numerical roundoff is many orders too small to affect the boundary comparison. The test directly challenges the complete stated domain, so the falsification is sufficient for this original claim.",
+            "evidence_gaps": [],
+            "next_test": null
+          }
+        },
+        {
+          "claim": "commit_57238784149be8ac10beb3d2",
+          "disposition": "supported",
+          "challenge": {
+            "strategy": "After the commitment, exhaustively execute the exact planned high-precision validation on every one of N=16,32,64,128, check both repaired boundaries, require exactly the four original cases, and retain all original failures.",
+            "experiments": [
+              "exp_8a72c4c274e2521baa8a48c2"
+            ],
+            "outcome": "The experiment succeeded with exactly four rows and no dropped cases; every ratio was strictly within [1.9,2.1] and each validation row passed. The same rows show every original ratio below 3.5, preserving the root falsification."
+          },
+          "verdict": {
+            "claim_id": "commit_57238784149be8ac10beb3d2",
+            "decision": "approved",
+            "disposition": "supported",
+            "rationale": "The repair was prospectively committed with exact acceptance criteria and then freshly executed on exactly the unchanged finite domain N={16,32,64,128}. The source correctly evaluates the explicit-Euler recurrence, computes E_N=|y_N-exp(-1)| and E_2N at 100-digit working precision, and compares full-precision ratios to both boundaries. The reported ratios are 2.0269578973361315, 2.0132454754200646, 2.0065660421281226, and 2.003269048832305, all strictly inside [1.9,2.1]; the corresponding p_N values are also inside the equivalent interval. This is exhaustive testing of the entire finite domain, with no dropped, substituted, or added cases. The [1.9,2.1] interval is an a-priori first-order tolerance around factor 2 rather than bounds fitted to the observed extrema. The repair preserves the original model and cases while keeping all original failures visible; its finite-scope limitation is explicitly stated.",
+            "evidence_gaps": [],
+            "next_test": null
+          }
+        }
+      ]
+    },
+    {
+      "task": "midpoint",
+      "wall_seconds": 176.1079318523407,
+      "independent_assessment": {
+        "mathematics_correct": true,
+        "scientific_completion": true,
+        "prospective_repair_valid": null,
+        "provenance_sufficient": true,
+        "reason": "The executable source implements the specified implicit-midpoint update with old q and p used simultaneously, evaluates the exact binary64 energy diagnostic after every step, and exhaustively covers h=0.2, 0.1, and 0.05 for 100, 200, and 400 steps through T=20. The recorded maxima are all below 1e-11, the result contains exactly the three requested rows, and the conclusion is appropriately restricted to the finite domain and CPython binary64 arithmetic. Source hashes, execution output receipts, and an independent finite-domain numerical consistency check provide sufficient provenance. No repair was required.",
+        "required_followup": [],
+        "recognized_numerical_limitation": true
+      },
+      "internal_status": "completed",
+      "usage": {
+        "input_tokens": 402566,
+        "cached_input_tokens": 266112,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 8152,
+        "reasoning_output_tokens": 5008,
+        "total_tokens": 410718
+      },
+      "categories": {
+        "worker": {
+          "reported_usage": {
+            "input_tokens": 307725,
+            "cached_input_tokens": 229312,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 6109,
+            "reasoning_output_tokens": 3165,
+            "total_tokens": 313834
+          },
+          "unique_threads": 1,
+          "invocations": 1,
+          "invocations_without_turn_completed": 0,
+          "invocations_without_thread_id": 0,
+          "threads_without_usage": 0,
+          "threads_with_counter_regressions": 0
+        },
+        "reviewer": {
+          "reported_usage": {
+            "input_tokens": 94841,
+            "cached_input_tokens": 36800,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 2043,
+            "reasoning_output_tokens": 1843,
+            "total_tokens": 96884
+          },
+          "unique_threads": 1,
+          "invocations": 1,
+          "invocations_without_turn_completed": 0,
+          "invocations_without_thread_id": 0,
+          "threads_without_usage": 0,
+          "threads_with_counter_regressions": 0
+        }
+      },
+      "worker_prompt_bytes": [
+        5921
+      ],
+      "reviews": [
+        {
+          "claim": "root",
+          "disposition": "supported",
+          "challenge": {
+            "strategy": "Seek a threshold violation by exhaustively traversing the entire claimed finite domain, including every post-step diagnostic through each nominal T=20 endpoint, rather than sampling.",
+            "experiments": [
+              "exp_8754d69e410addac54f5728c"
+            ],
+            "outcome": "All 700 post-update diagnostics were finite and the global maximum absolute energy error was 3.430589146091734e-14 at h=0.05, about 291.5 times below the 1e-11 threshold; no counterexample occurred."
+          },
+          "verdict": {
+            "claim_id": "root",
+            "decision": "approved",
+            "disposition": "supported",
+            "rationale": "The executable source correctly implements the stated update using the old q and p simultaneously, initializes at (1,0), fixes the three h values and exact step counts, and evaluates the specified energy diagnostic after every computed step. The exhaustive finite-domain run tested all 100, 200, and 400 steps, with retained per-step states and consistent source/output provenance. Observed maxima were 5.551115123125783e-16, 2.098321516541546e-14, and 3.430589146091734e-14, each finite and below 1e-11. This supports the finite binary64 claim for the stated operation sequence; it does not generalize to unrelated oscillators, endpoints, step sizes, or other floating-point implementations.",
+            "evidence_gaps": [],
+            "next_test": null
+          }
+        }
+      ]
+    }
+  ],
+  "frozen_source_sha256": {
+    "conjecture_solver/mvp_monitor.py": "26e342441ed8f1f012b049886b3610a02f2e9c4e760c120ead85951beac3c123",
+    "conjecture_solver/literature.py": "15a97b84cdd975eb8820c47213b68c4c52efc6490f465ee843aa7c96059c2f40",
+    "conjecture_solver/__main__.py": "76fa916e93e0ae1a6c1bb51dcc0bcf289c014e9f760a47165f8a84401ccf41d7",
+    "conjecture_solver/models.py": "33d5e4327b6571a988aa12e414f94963de604824f6018da4787b743d0e021b75",
+    "conjecture_solver/role_assignments.py": "5b02f59086f472d4f9653a0bb73f22fc2fd7169fa0f04afc7424227228176ce3",
+    "conjecture_solver/schema_export.py": "c6cf4a7c2b0030826910703123c64f9c927875ca97b36b32ca13db2a9c518752",
+    "conjecture_solver/presentation.py": "79b4ca42ed0534afc23991a820c99cdbe93c8fd534296054ab69685c60360173",
+    "conjecture_solver/oneshot.py": "f3f47b2e62f2fe821aa693532219d77ea0163d485e9d4fdd1f6d5a2e138241d3",
+    "conjecture_solver/research_client.py": "6dd1d51ee8c64963439de95b3355d7a82a5e02022f3f1d38ef278e887ecac4a9",
+    "conjecture_solver/mcp_server.py": "61e263b63941ca7c0d10a38d3052c315c8e1f6ff57046c54800d9e0d94d8ff5c",
+    "conjecture_solver/campaign_jobs.py": "bea2ca13c8e033a6ea1c937305da9ffd2ef146098a8d485da7522e7ba8893645",
+    "conjecture_solver/warpx_campaign.py": "686c6eecbb62306f3107a0655f8a83da371f7e9780142f4580472aa770ac43b4",
+    "conjecture_solver/evidence_paths.py": "0c4ccd671238d6921068350dd089eac0d178a06b13a665e9b268da61468c815b",
+    "conjecture_solver/mvp_control.py": "a1ba791855ea162c69f1d51c721166dcebbdd407cd8da41eb0228f85e1994b96",
+    "conjecture_solver/deployment.py": "49b996cfdfbfb3b5775736bfdca3db5367fd51296ca0982db32c366687fbc2db",
+    "conjecture_solver/scientific_review.py": "1c62707ec241dcae01d9e67658f119adcaaaeb3802602cd694232fb5965ae7e0",
+    "conjecture_solver/campaign_kernel.py": "4d9710f2897c5475c4126c6af160f896eb541516abcf70ed4b726fd72414052a",
+    "conjecture_solver/mvp_guidance.py": "bfe276f9af857924e0681babea2f77d61643ccf90e4dc130a873e05f74d74d9d",
+    "conjecture_solver/research_service.py": "76317f9c1ee325c0778bdfe83a72c7ecba10895210e4cab14833659041b4399b",
+    "conjecture_solver/control.py": "f524bbe58a55ee75809be12dc8631ef399f66d6ef12597bd37fd172e7ab79f66",
+    "conjecture_solver/ledger.py": "cfca0e0818d068bcabc8cc94b1ff9cc4fb7da070827b937852b58ea4b61474fe",
+    "conjecture_solver/discovery.py": "720dfec5e013fe4f9a0226ae4a4e142ca635c685a965e53dabf27ac23a54a16b",
+    "conjecture_solver/dsh_engine.py": "e5624ebe4ecbf9dbb6a29221a6395b11cb9173e8ebf6eb95fae7229cf8cae86a",
+    "conjecture_solver/autonomous_research.py": "dc7105dcee705daf35cb07e795f1c9273ed9e7cba1584adcfa306a126972c77d",
+    "conjecture_solver/action_handlers.py": "7952aedd798b6584c786316f1b6c6fa7bcbce9bdb04eed9190ee6cc64f1c9fc4",
+    "conjecture_solver/confirmation.py": "da5fb15aa814c656ae1137a82625d889bb885e072f40af7bfec6891ff5bbb4be",
+    "conjecture_solver/orchestration.py": "148aeaf15250f08854ee8b9e96e74525efcba16f478e6908662ce93fdfc46f42",
+    "conjecture_solver/corrective_audit.py": "85b135d3802784c8e82cdf29de74dcb06e7d7c52d60c06c21528fa9ee60ade20",
+    "conjecture_solver/parameters.py": "ed68c7cb6caf828dc0527b221030ffdfd3c066710d11a6890b2035e99fd267f5",
+    "conjecture_solver/mvp_agent.py": "be8c56d532a61a9a2fc6ba7c45dce8ca7f683910eaa9c1d2d68158c85d373f51",
+    "conjecture_solver/mcp_schemas.py": "959b732200ab31a3a1e1f7b9e532d26037f5a9aa4e4ecd17a75f35ac1fe43f2a",
+    "conjecture_solver/research_supervisor.py": "b559ab3dba1808b9f35c16f6925c8b0758f9768cb86ef500b39aa4c14e5c420d",
+    "conjecture_solver/research_tools.py": "d8ffccac35d584359a9b1e6061e83f87e0b3eeba5f634cb790dc6066e0d9c55b",
+    "conjecture_solver/mvp_skills.py": "5a8ab1e1a97056d14c778ee5d510d06646248f78fd7171a2d04261a8226201f7",
+    "conjecture_solver/mvp_claims.py": "037ba703fb2bc46789cda49638b4292a947680de9a176d37ba0f86108118760e",
+    "conjecture_solver/kernel_worker.py": "62d6dbe2547d2bb96ea78bf6967476f6d7f844cb169ff6797e49261a127a2bf8",
+    "conjecture_solver/llm.py": "fa1f37694be567f290ae744902034378ab89e839be64a4798f76c87ae58f86d0",
+    "conjecture_solver/mvp_launch.py": "8ac0fd36776ceb587240bcb2b863d29279baf85f7ea1c13f54cc90c7e4ffcc1d",
+    "conjecture_solver/outbox.py": "fa4c5efc91f7ea18336b1ec12120c8ee396577630e081488cb5793093af295f2",
+    "conjecture_solver/semantics.py": "b115a7c02e440cd4b28f7df03ebdb07143687c398b053adde63bd91dfc771292",
+    "conjecture_solver/warpx_confirmation.py": "bcdf3233f1f38196ee1fc2869d5140aac17007c0a5ade62f67092f998a77f6f5",
+    "conjecture_solver/warpx_analysis.py": "fe71757fef3fc56eb9412dfa4388e58ca4a5fdfd4da5d66746f8061f5af8df96",
+    "conjecture_solver/lifecycle.py": "1ab1eb162e2160c09637e0a011937c8847888df8783a2f2658ba0ba408106c27",
+    "conjecture_solver/workspace_images.py": "55fe3c8d52fb9dee4204b793ab51a48367bca6b31a1f7d2fae563c6de8893edb",
+    "conjecture_solver/proposals.py": "361f9c2b1202942cc07c73bed7e2fad951493b86f4d3ae022df17d8214c53318",
+    "conjecture_solver/search.py": "2b0ac6fd97faf64eaeba410a0071258400b30128d6ce864075d10ca01dbd4838",
+    "conjecture_solver/cli.py": "0c1ad08cb717281696af5293c642cdabb52d1bea67bc304b809bddd05d87ddfe",
+    "conjecture_solver/__init__.py": "277577c5aeff0e8f1e4e31e8f9702091d1eb498666f6d62fcb2dd09526b1e89a",
+    "conjecture_solver/agent_supervisor.py": "896bc05ba0939dcdd5e61ed4c648a269c296fe579df02e478c79e74e0518fa44",
+    "conjecture_solver/study.py": "7275fb8261bfdcccf0f7505a64afc367b84f04647b5930c4b9be9d86e2361ad5",
+    "conjecture_solver/campaign.py": "59ee3086636e4b809fd2262332fee7d1dd7bdb54ea1f52a8deb19ec50489a5ff",
+    "conjecture_solver/benchmarks/electrostatic_pic.py": "91dc7c0378721a10fa200fbc713295c67f8776fd652439853239a6a4fa75e7a6",
+    "conjecture_solver/benchmarks/__init__.py": "4c695289832398969962faf52ffe4d76d2ad2728b0453bb8726de0bb7363a7bc",
+    "conjecture_solver/benchmarks/kinetic_sufficiency.py": "12c4b9566dc1195be4cb6b5e7d3f9833435827964ed1935beb1c44d212a20c83",
+    "conjecture_solver/web/server.py": "038352d333d33649ecc2e566b6ee54092ace62b13d2b647e76cfd045e9407e47",
+    "conjecture_solver/web/application.py": "1aa0fa76ac978c4f96b3115400d752881a355f257d6622cdbad7818da82f95fb",
+    "conjecture_solver/web/__init__.py": "1611b19629a8071ba6b7c718a320cdf7cd00d7c4d514e5292c7cfd42f61c2d5d",
+    "conjecture_solver/adapters/fake.py": "0322d18a40fee7abd302c01419dc8e4021035f2ae51ffc9f8ff3b5bdfc8dcbac",
+    "conjecture_solver/adapters/pic.py": "fdaf70c92c3f741827e163b4b3ef20566c10011edfaf67d6a5e8e0b05fa4101c",
+    "conjecture_solver/adapters/warpx.py": "68272e6b9f895c81cb3491a57a0a0f5191544bd52aabcc6010ec05fd3118de22",
+    "conjecture_solver/adapters/base.py": "6a490dc535343d7f503edf1bbc80988c88dcdce78b06f70b165c6f0d6794a8a7",
+    "conjecture_solver/adapters/__init__.py": "77e7eb9a9be361afd6cff5c9065279dcedd7ae6174eafdcb83b334da93a50208",
+    "conjecture_solver/domains/base.py": "e4bc70d074e3fcb268612353fa6a5905df15db5e924480d9bb1781d14eb7a2e2",
+    "conjecture_solver/domains/__init__.py": "ca7d99f95838202194d86c876d4e9b087c2547876007fd3cadd7990217320e7b",
+    "conjecture_solver/domains/kinetic_sufficiency.py": "4934655c4253238939d2af79b363a34b6c0f8d6044e1d8f1e825aabfce1a5b74",
+    "conjecture_solver/tui/claim_views.py": "ac8989d9f1a11dfc7ff10383219b530e6733c051228f477a66af4405c01f5a06",
+    "conjecture_solver/tui/app.py": "30c874b9fd9eb330697ef3e7727be6e034b6306aec30a0cba4d6158a6f85dcc8",
+    "conjecture_solver/tui/__init__.py": "4c4faa629762f74d615ae5815fe87d96bfc4b2b2f44137794d619a159e0482de",
+    "conjecture_solver/tui/screens.py": "b9a5c92b32b0a347050b837106ac0ae2e432e2b62a19c2a88c496d30a9268ece"
+  },
+  "external_grading_usage": {
+    "input_tokens": 87301,
+    "cached_input_tokens": 74304,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 2351,
+    "reasoning_output_tokens": 1997,
+    "total_tokens": 89652
+  },
+  "external_threads_without_usage": 0,
+  "limitations": [
+    "One trial per task; no causal attribution to individual changes.",
+    "Counters count cumulative usage once per thread, not billing.",
+    "Cached input is a subset of input; reasoning output a subset of output.",
+    "Interrupted requests without counters and implementation-assistant usage excluded."
+  ]
+}

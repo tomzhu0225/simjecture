@@ -1,0 +1,224 @@
+{
+  "requested_model": "glm-5.3",
+  "runs": [
+    {
+      "task": "euler",
+      "elapsed_seconds": 295.1240539550781,
+      "returncode": 0,
+      "source_sha256": "1fcbf85779ac23c1d3093de155ab577b6f5fe464b87347774cc169485ccdb510",
+      "numerical_check": {
+        "passed": true,
+        "max_absolute_reference_error": 1.545430450278218e-13,
+        "scope": "numerical consistency only; repair semantics require independent review"
+      },
+      "source_rerun_reproduces_rows": true,
+      "strict_original_row_schema": {
+        "passed": false,
+        "reason": "'N'"
+      },
+      "extra_diagnostic_rows": 4,
+      "prompt_verification": [
+        {
+          "thread_id": "01a0bf10-cee5-7050-8e15-f0819f4667d3",
+          "base_instructions": {
+            "text": "",
+            "provenance": {
+              "type": "model",
+              "model": "glm-5.3"
+            }
+          },
+          "developer_characters": 5544,
+          "developer_sha256": "ff4db9f93a609b0fedfff053670e46abd8d2dd984d19447d74678e2f56960ed7"
+        }
+      ],
+      "token_accounting": {
+        "run": "euler-plain",
+        "categories": {
+          "worker": {
+            "reported_usage": {
+              "input_tokens": 278687,
+              "cached_input_tokens": 224896,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 9975,
+              "reasoning_output_tokens": 5760,
+              "total_tokens": 288662
+            },
+            "unique_threads": 1,
+            "invocations": 1,
+            "invocations_without_turn_completed": 0,
+            "invocations_without_thread_id": 0,
+            "threads_without_usage": 0,
+            "threads_with_counter_regressions": 0
+          },
+          "reviewer": {
+            "reported_usage": null,
+            "unique_threads": 0,
+            "invocations": 0,
+            "invocations_without_turn_completed": 0,
+            "invocations_without_thread_id": 0,
+            "threads_without_usage": 0,
+            "threads_with_counter_regressions": 0
+          }
+        },
+        "combined_reported_usage": {
+          "input_tokens": 278687,
+          "cached_input_tokens": 224896,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 9975,
+          "reasoning_output_tokens": 5760,
+          "total_tokens": 288662
+        },
+        "threads": {
+          "01a0bf10-cee5-7050-8e15-f0819f4667d3": {
+            "category": "worker",
+            "invocations": 1,
+            "session_file_count": 1,
+            "usage": {
+              "input_tokens": 278687,
+              "cached_input_tokens": 224896,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 9975,
+              "reasoning_output_tokens": 5760,
+              "total_tokens": 288662
+            },
+            "usage_events": 14,
+            "last_usage_timestamp": "2026-09-20T13:50:04.466Z",
+            "counter_regressions": [],
+            "source": "native_cumulative_session_usage"
+          }
+        },
+        "invocations": [
+          {
+            "path": "supervisor/turn-00001/response.json",
+            "category": "worker",
+            "thread_ids": [
+              "01a0bf10-cee5-7050-8e15-f0819f4667d3"
+            ],
+            "turn_completed": true,
+            "completed_turn_usage": {
+              "input_tokens": 278687,
+              "cached_input_tokens": 224896,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 9975,
+              "reasoning_output_tokens": 5760
+            }
+          }
+        ]
+      },
+      "repair_assessment": "Post-hoc min/max interval contains the same data used to define it. Correct first-order interpretation and asymptotic explanation, but no independent prospective repair test.",
+      "kernel_accepted": false
+    },
+    {
+      "task": "midpoint",
+      "elapsed_seconds": 187.07747077941895,
+      "returncode": 0,
+      "source_sha256": "8b86374a381c0170a98e1f555dbbb213807cc7ad5e4c00a110ecc9e01b0bbe35",
+      "numerical_check": {
+        "passed": true,
+        "scope": "finite-domain error-bound consistency, not source verification"
+      },
+      "source_rerun_reproduces_rows": true,
+      "strict_original_row_schema": {
+        "passed": false,
+        "reason": "'h'"
+      },
+      "extra_diagnostic_rows": 3,
+      "prompt_verification": [
+        {
+          "thread_id": "01a0bf10-cedc-7bd3-ac93-9eff0c7a54a8",
+          "base_instructions": {
+            "text": "",
+            "provenance": {
+              "type": "model",
+              "model": "glm-5.3"
+            }
+          },
+          "developer_characters": 5544,
+          "developer_sha256": "ff4db9f93a609b0fedfff053670e46abd8d2dd984d19447d74678e2f56960ed7"
+        }
+      ],
+      "token_accounting": {
+        "run": "midpoint-plain",
+        "categories": {
+          "worker": {
+            "reported_usage": {
+              "input_tokens": 95422,
+              "cached_input_tokens": 51136,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 6308,
+              "reasoning_output_tokens": 3549,
+              "total_tokens": 101730
+            },
+            "unique_threads": 1,
+            "invocations": 1,
+            "invocations_without_turn_completed": 0,
+            "invocations_without_thread_id": 0,
+            "threads_without_usage": 0,
+            "threads_with_counter_regressions": 0
+          },
+          "reviewer": {
+            "reported_usage": null,
+            "unique_threads": 0,
+            "invocations": 0,
+            "invocations_without_turn_completed": 0,
+            "invocations_without_thread_id": 0,
+            "threads_without_usage": 0,
+            "threads_with_counter_regressions": 0
+          }
+        },
+        "combined_reported_usage": {
+          "input_tokens": 95422,
+          "cached_input_tokens": 51136,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 6308,
+          "reasoning_output_tokens": 3549,
+          "total_tokens": 101730
+        },
+        "threads": {
+          "01a0bf10-cedc-7bd3-ac93-9eff0c7a54a8": {
+            "category": "worker",
+            "invocations": 1,
+            "session_file_count": 1,
+            "usage": {
+              "input_tokens": 95422,
+              "cached_input_tokens": 51136,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 6308,
+              "reasoning_output_tokens": 3549,
+              "total_tokens": 101730
+            },
+            "usage_events": 6,
+            "last_usage_timestamp": "2026-09-20T13:48:15.882Z",
+            "counter_regressions": [],
+            "source": "native_cumulative_session_usage"
+          }
+        },
+        "invocations": [
+          {
+            "path": "supervisor/turn-00001/response.json",
+            "category": "worker",
+            "thread_ids": [
+              "01a0bf10-cedc-7bd3-ac93-9eff0c7a54a8"
+            ],
+            "turn_completed": true,
+            "completed_turn_usage": {
+              "input_tokens": 95422,
+              "cached_input_tokens": 51136,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 6308,
+              "reasoning_output_tokens": 3549
+            }
+          }
+        ]
+      },
+      "repair_assessment": "Not applicable: finite-domain claim supported by the checked recurrence.",
+      "kernel_accepted": false
+    }
+  ],
+  "limitations": [
+    "Native tools and injected skills/permission guidance retained. Only the configured model base is empty.",
+    "This is a native-tools mathematical baseline, not a prompt-removal A/B test or kernel-accepted completion.",
+    "Mixed task schema wording led both agents to add unrelated diagnostic rows; numerical checks select and separately report the requested rows.",
+    "Euler repair is descriptive and post-hoc; do not count it as a completed prospective repair cycle."
+  ]
+}

@@ -656,6 +656,8 @@ def _default_run_roots() -> list[Path]:
 
 
 def _candidate_manifests(root: Path) -> list[Path]:
+    if (root / "research.json").is_file():
+        return [root / "research.json"]
     if (root / "mvp_manifest.json").is_file():
         return [root / "mvp_manifest.json"]
     matches: list[Path] = []
@@ -666,7 +668,9 @@ def _candidate_manifests(root: Path) -> list[Path]:
     for child in children:
         if not child.is_dir() or child.name.startswith("."):
             continue
-        manifest = child / "mvp_manifest.json"
+        manifest = child / (
+            "research.json" if (child / "research.json").is_file() else "mvp_manifest.json"
+        )
         if manifest.is_file():
             matches.append(manifest)
             continue
@@ -675,7 +679,9 @@ def _candidate_manifests(root: Path) -> list[Path]:
         except OSError:
             continue
         for grandchild in grandchildren:
-            nested = grandchild / "mvp_manifest.json"
+            nested = grandchild / (
+                "research.json" if (grandchild / "research.json").is_file() else "mvp_manifest.json"
+            )
             if grandchild.is_dir() and nested.is_file():
                 matches.append(nested)
     return matches
@@ -844,6 +850,10 @@ class MVPRunMonitor:
         self._sidecar_cache: dict[str, tuple[int | None, dict[str, Any] | None]] = {}
 
     def snapshot(self, *, now: datetime | None = None) -> MVPRunSnapshot:
+        if (self.root / "research.json").is_file():
+            from .study_status import minimal_snapshot
+
+            return minimal_snapshot(self.root)
         observed_at = now or utc_now()
         warnings: list[str] = []
         if not self.root.exists():
@@ -905,7 +915,7 @@ class MVPRunMonitor:
         warnings.extend(self._state.parse_warnings[-8:])
         control = read_control(self.root)
         pending = control.command.value if control.command is not ControlCommand.NONE else None
-        return MVPRunSnapshot(
+        snapshot = MVPRunSnapshot(
             phase=phase,
             phase_label=phase_label(phase),
             identity=identity,
@@ -935,6 +945,12 @@ class MVPRunMonitor:
             warnings=tuple(dict.fromkeys(warnings)),
             transcript_cursor=self._cursor,
         )
+
+        if (self.root / "study-launch.json").exists():
+            from .study_status import native_snapshot_overlay
+
+            return native_snapshot_overlay(self.root, snapshot)
+        return snapshot
 
     @staticmethod
     def _loop_state(
@@ -1499,9 +1515,7 @@ class MVPRunMonitor:
             stage = None
             description = "Waiting for a durable scientific job"
         active_claim_id = None
-        if isinstance(loop_payload, dict) and isinstance(
-            loop_payload.get("active_claim_id"), str
-        ):
+        if isinstance(loop_payload, dict) and isinstance(loop_payload.get("active_claim_id"), str):
             active_claim_id = loop_payload["active_claim_id"]
         if isinstance(details.get("active_claim_id"), str):
             active_claim_id = details["active_claim_id"]
@@ -1528,9 +1542,7 @@ class MVPRunMonitor:
             active_claim_id=active_claim_id,
             model=self._dsh_model,
             research_note=(
-                details["research_note"]
-                if isinstance(details.get("research_note"), str)
-                else None
+                details["research_note"] if isinstance(details.get("research_note"), str) else None
             ),
             argv=argv,
             durable_job_id=job_id,
@@ -1941,8 +1953,7 @@ def format_human_status(snapshot: MVPRunSnapshot) -> str:
         if action.wait_elapsed_seconds is not None:
             details.append(f"job wait={int(action.wait_elapsed_seconds)} s")
         elif (
-            snapshot.latest_heartbeat
-            and snapshot.latest_heartbeat.elapsed_wall_seconds is not None
+            snapshot.latest_heartbeat and snapshot.latest_heartbeat.elapsed_wall_seconds is not None
         ):
             details.append(f"elapsed={int(snapshot.latest_heartbeat.elapsed_wall_seconds)} s")
         details.append(f"workspace={format_bytes(snapshot.workspace_bytes)}")

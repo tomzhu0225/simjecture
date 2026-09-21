@@ -39,7 +39,7 @@
           <p class="eyebrow">No campaign selected</p>
           <h1>Begin with a falsifiable hypothesis.</h1>
           <p>
-            Simjecture commissions tools, searches for counterexamples, and preserves
+            Simjecture tests hypotheses, searches for counterexamples, and preserves
             every scientific branch as durable evidence.
           </p>
           <button class="button primary large" id="empty-new-run" type="button">Start a campaign</button>
@@ -51,9 +51,10 @@
               <div class="heading-meta">
                 <span class="status-badge" id="campaign-status">—</span>
                 <span id="campaign-id">—</span>
+                <span class="status-badge" id="study-route">—</span>
               </div>
               <h1 id="root-hypothesis">Loading campaign…</h1>
-              <p id="campaign-instruction" hidden></p>
+              <details id="guidance-details"><summary>Operational guidance</summary><p id="campaign-instruction" hidden></p></details>
             </div>
             <div class="current-action" id="current-action">
               <span class="action-symbol" aria-hidden="true">◇</span>
@@ -193,6 +194,23 @@
           </div>
           <button class="icon-button" id="close-dialog" type="button" aria-label="Close">×</button>
         </header>
+        <div class="form-row">
+          <label><span>Mode</span><select name="mode" id="launch-mode">
+            <option value="minimal" selected>Minimal — agent-owned research</option>
+            <option value="structured">Structured — guided stages</option>
+            <option value="frontier">Frontier — agent-owned, full ledger</option>
+            <option value="legacy">Legacy — DSH / API</option>
+          </select></label>
+          <label><span>Backend</span><select name="backend" id="launch-backend">
+            <option value="codex-glm">Codex GLM</option><option value="codex">Codex</option>
+            <option value="grok">Grok</option><option value="agy">AGY</option>
+            <option value="dsh">DSH (legacy mode)</option><option value="api">API (legacy mode)</option>
+          </select></label>
+        </div>
+        <label><span>Model <em>Uses your existing backend login</em></span>
+          <input name="model" id="launch-model" placeholder="glm-5.3 (Codex GLM default)">
+        </label>
+        <p class="panel-description" id="launch-route-note">Minimal keeps native tools available and records experiments and independent reviews.</p>
         <label>
           <span>Root hypothesis <b>Required</b></span>
           <textarea name="hypothesis" rows="7" required maxlength="20000" placeholder="State one falsifiable scientific hypothesis…"></textarea>
@@ -217,6 +235,10 @@
             </select>
           </label>
         </div>
+        <label><span>Numerical instrument registry <em>Optional</em></span>
+          <input name="capability_directory" placeholder="Directory containing installed capability manifests">
+          <small>Minimal uses the Python sandbox when this is blank. Supply a registry to expose installed solvers.</small>
+        </label>
         <details>
           <summary>Execution limits</summary>
           <div class="form-row advanced-fields">

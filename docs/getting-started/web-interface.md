@@ -2,9 +2,17 @@
 
 The local web interface is the primary human-facing view of a Simjecture
 campaign. It makes the scientific structure visible without replacing the
-durable record. `mvp_manifest.json`, `transcript.jsonl`,
+durable record. New native studies default to minimal; mode, backend and model
+are separate launch choices. Minimal reads `research.json`, experiment snapshots,
+commitments and reviews. Legacy `mvp_manifest.json`, `transcript.jsonl`,
 `hypothesis_ledger.json`, `mvp_report.json`, and artifact provenance remain the
 sources of truth.
+
+Minimal studies show actual agent activity instead of the fixed-stage role strip.
+The header shows mode/backend/model and remaining budget. Long guidance and review
+rationales fold away, with failed reviews expanded. Usage is pending/unavailable
+when the backend has not supplied counters, never assumed to be zero. DSH/API
+remain explicitly labelled legacy routes; incompatible combinations are disabled.
 
 ## Open a recorded campaign
 

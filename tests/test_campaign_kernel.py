@@ -208,9 +208,7 @@ def test_existing_dsh_campaign_ignores_only_native_prompt_hash_drift(
 
     reopened = CampaignKernel.open_existing(workspace=campaign)
 
-    assert reopened.hypothesis == (
-        "DSH role prompts are external to the native runner prompt."
-    )
+    assert reopened.hypothesis == ("DSH role prompts are external to the native runner prompt.")
 
 
 def test_existing_native_campaign_rejects_native_prompt_hash_drift(
@@ -556,16 +554,14 @@ def test_kernel_materializes_receipt_backed_terminal_observation(
         ),
     )
     assert result["terminal_cause"] == "execution_or_instrument_failure"
-    document = json.loads(
-        (campaign / "workspace/evidence/terminal_root_v2.json").read_text()
-    )
+    document = json.loads((campaign / "workspace/evidence/terminal_root_v2.json").read_text())
     assert document["record_complete"] is True
     assert document["kernel_verified"]["attempts"][0]["job_id"] == state.job_id
     assert document["kernel_verified"]["attempts"][0]["job_report_sha256"]
     assert document["researcher_assessment"]["verified_by_kernel"] is False
-    provenance = json.loads((campaign / "artifact_provenance.json").read_text())[
-        "artifacts"
-    ]["evidence/terminal_root_v2.json"]
+    provenance = json.loads((campaign / "artifact_provenance.json").read_text())["artifacts"][
+        "evidence/terminal_root_v2.json"
+    ]
     assert provenance["action"] == "run_python"
     assert provenance["execution_succeeded"] is True
     assert provenance["evidence_eligible"] is True
@@ -1380,3 +1376,18 @@ def test_nonterminal_job_is_the_single_campaign_writer(tmp_path: Path) -> None:
                 "iteration": 1,
             }
         )
+
+
+def test_external_campaign_resume_ignores_only_unused_native_prompt(tmp_path: Path) -> None:
+    campaign = tmp_path / "external"
+    CampaignKernel.open(workspace=campaign, hypothesis="External agent owns its own prompt.")
+    path = campaign / "mvp_manifest.json"
+    manifest = json.loads(path.read_text())
+    manifest["system_prompt_sha256"] = "0" * 64
+    path.write_text(json.dumps(manifest))
+    assert CampaignKernel.open_existing(root=campaign).hypothesis == manifest["hypothesis"]
+    assert json.loads(path.read_text())["system_prompt_sha256"] == "0" * 64
+    manifest["capability_hashes"] = {"unexpected": "0" * 64}
+    path.write_text(json.dumps(manifest))
+    with pytest.raises(ValueError, match="different run contract"):
+        CampaignKernel.open_existing(root=campaign)

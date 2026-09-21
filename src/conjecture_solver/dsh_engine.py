@@ -14,6 +14,7 @@ import shutil
 import signal
 import subprocess
 import sys
+import time
 from contextlib import contextmanager
 from datetime import UTC, datetime
 from pathlib import Path
@@ -39,13 +40,15 @@ INITIAL_TASK = (
     "commission the available methods, test the root hypothesis, register and "
     "evaluate falsifiable subhypotheses, and preserve every scientific conclusion "
     "through prospective evidence contracts. Continue until the current evidence "
-    "supports a defensible stopping point or a durable budget prevents further work."
+    "supports the original claim or its tested repairs through independent adjudication, "
+    "or the campaign wall-time limit is reached. An inconclusive handoff is a "
+    "continuation checkpoint, never completion."
 )
 RESUME_TASK = (
     "Resume the same durable Simjecture campaign. Before any mutation, call "
     "mcp__simjecture__snapshot and reconcile its authoritative claims, jobs, "
     "receipts, and remaining budgets with this DSH session. Then continue the "
-    "autonomous falsification loop until a defensible stopping point or durable "
+    "autonomous falsification loop until independently adjudicated support or durable "
     "budget boundary is reached."
 )
 
@@ -68,7 +71,7 @@ def bundled_profile_path() -> Path:
     installed = Path(__file__).resolve().parent / "dsh_bundle"
     source_checkout = Path(__file__).resolve().parents[2] / "integrations" / "dsh"
     for candidate in (installed, source_checkout):
-        if (candidate.is_dir() and (candidate / "package.json").is_file()):
+        if candidate.is_dir() and (candidate / "package.json").is_file():
             return candidate
     raise DshEngineError(
         "the Simjecture DSH profile is missing; reinstall the complete v0.2.2 package"
@@ -181,13 +184,46 @@ def run_dsh_campaign(
 
     try:
         with _finalizable_sigterm():
-            completed = subprocess.run(
-                argv,
-                cwd=root,
-                env=environment,
-                check=False,
-                timeout=remaining_wall_seconds,
-            )
+            deadline = time.monotonic() + remaining_wall_seconds
+            while True:
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    raise subprocess.TimeoutExpired(argv, remaining_wall_seconds)
+                completed = subprocess.run(
+                    argv,
+                    cwd=root,
+                    env=environment,
+                    check=False,
+                    timeout=remaining,
+                )
+                state = _read_state(state_file)
+                report = _read_state(root / "mvp_report.json")
+                if (
+                    report.get("status") == "completed"
+                    or state.get("status")
+                    in {
+                        "paused",
+                        "cancelled",
+                        "budget_exhausted",
+                    }
+                    or completed.returncode != 0
+                ):
+                    break
+                # A successful model/session exit is only a checkpoint. Resume
+                # the same ledger and session under the SAME wall-time deadline.
+                environment["SIMJECTURE_DSH_RESUME"] = "1"
+                argv = [resolved_executable, "--profile", profile, RESUME_TASK]
+                _write_state(
+                    state_file,
+                    {
+                        "status": "continuing",
+                        "engine": "dsh",
+                        "session_id": session_id,
+                        "reason": "model session ended without scientific completion",
+                        "updated_at": _utc_now(),
+                    },
+                )
+                time.sleep(min(1.0, max(0.0, deadline - time.monotonic())))
     except subprocess.TimeoutExpired:
         _write_state(
             state_file,

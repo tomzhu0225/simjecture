@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "simjecture"
-version = "0.4.0"
+version = "0.5.0"
 description = "Evidence-governed autonomous experimentation and falsification for computational science"
 readme = "README.md"
 license = "Apache-2.0"
@@ -46,6 +46,8 @@ conjecture-solver = "conjecture_solver.cli:main"
 simjecture = "conjecture_solver.cli:main"
 simjecture-mcp = "conjecture_solver.mcp_server:main"
 simjecture-call = "conjecture_solver.oneshot:main"
+simjecture-supervise = "conjecture_solver.agent_supervisor:main"
+simjecture-research = "conjecture_solver.research_supervisor:main"
 
 [project.urls]
 Homepage = "https://github.com/tomzhu0225/simjecture"

@@ -33,6 +33,7 @@ def main() -> None:
             cwd=ROOT,
             check=True,
         )
+        (packages / ".gitignore").unlink(missing_ok=True)  # uv's build-directory marker
         for source in (ROOT / "packaging/launch").iterdir():
             shutil.copy2(source, launch / source.name)
         for name in ("CHANGELOG.md", "LICENSE", "CITATION.cff"):
@@ -54,8 +55,19 @@ def main() -> None:
         (output / "packages").mkdir(exist_ok=True)
         for artifact in packages.iterdir():
             shutil.copy2(artifact, output / "packages" / artifact.name)
+        release_assets = [
+            archive,
+            *sorted(
+                p
+                for p in (output / "packages").iterdir()
+                if p.name.endswith((".whl", ".tar.gz", ".tgz"))
+            ),
+        ]
         (output / "SHA256SUMS").write_text(
-            f"{hashlib.sha256(archive.read_bytes()).hexdigest()}  {archive.name}\n"
+            "".join(
+                f"{hashlib.sha256(asset.read_bytes()).hexdigest()}  {asset.name}\n"
+                for asset in release_assets
+            )
         )
         print(archive)
 

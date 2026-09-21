@@ -356,6 +356,13 @@ function renderLoopProgress(data) {
   const engine = data.engine || { name: "native", status: "idle", activity: [] };
   const container = ui["loop-progress"];
   clear(container);
+  if (["minimal", "frontier"].includes(engine.mode)) {
+    const heading = element("div", "loop-heading");
+    heading.append(element("strong", null, "Agent-owned investigation"),
+      element("span", "role-badge", engine.status || "initialized"));
+    container.append(heading, paragraph("loop-detail", engine.current_activity || "Reading durable state"));
+    return;
+  }
   const loop = snapshot.loop_state || {
     stage: "falsification",
     role: "falsifier",
@@ -467,10 +474,13 @@ function renderMetrics(data) {
       .join(" · ")
     : "No registered claims";
   ui["metric-elapsed"].textContent = data.formatted.elapsed;
-  ui["metric-iterations"].textContent = `${formatInteger(snapshot.iterations)} model turns`;
+  ui["metric-iterations"].textContent = `${formatInteger(snapshot.iterations)} model turns` +
+    (data.engine?.remaining_seconds != null ? ` · ${Math.ceil(data.engine.remaining_seconds / 60)}m left` : "");
   ui["metric-tokens"].textContent = compactNumber(
     dshUsage?.total_tokens ?? snapshot.token_usage.total_tokens,
   );
+  if (data.engine?.usage_available === false) ui["metric-tokens"].textContent =
+    data.engine.status === "running" ? "Pending" : "Unavailable";
   ui["metric-model"].textContent = data.engine?.model || snapshot.last_model || "No model usage recorded";
   ui["metric-workspace"].textContent = data.formatted.workspace;
   ui["metric-heartbeat"].textContent = data.formatted.heartbeat_age
@@ -1509,6 +1519,8 @@ function renderResearchTrace() {
   if (!state.snapshot) return;
   const snapshot = state.snapshot.snapshot;
   const engine = state.snapshot.engine || {};
+  const route = document.getElementById("study-route");
+  if (route) route.textContent = `${engine.mode || "legacy"} · ${engine.name || "native"}${engine.model ? " / " + engine.model : ""}`;
   const usage = engine.name === "dsh"
     ? {
         prompt_tokens: engine.token_usage?.input_tokens,
@@ -1525,7 +1537,8 @@ function renderResearchTrace() {
   ];
   for (const [label, value] of usageRows) {
     const cell = element("div");
-    cell.append(element("span", null, label), element("strong", null, value));
+    cell.append(element("span", null, label), element("strong", null,
+      engine.usage_available === false ? "—" : value));
     usagePanel.append(cell);
   }
   if (snapshot.warnings?.length) {
@@ -1574,7 +1587,11 @@ function renderResearchTrace() {
     ].filter(Boolean).join(" · ");
     copy.append(element("small", null, metadata));
     if (event.research_note) {
-      copy.append(markdownBlock(event.research_note, "research-note"));
+      const details = element("details", "review-detail");
+      details.append(element("summary", null, "Review rationale"),
+        markdownBlock(event.research_note, "research-note"));
+      details.open = event.outcome === "needs_revision" || event.outcome === "failed";
+      copy.append(details);
     }
     row.append(mark, copy);
     panel.append(row);
@@ -1695,6 +1712,10 @@ async function launchCampaign(event) {
   event.preventDefault();
   const form = new FormData(ui["new-run-form"]);
   const payload = {
+    mode: form.get("mode"),
+    backend: form.get("backend"),
+    model: form.get("model") || null,
+    capability_directory: form.get("capability_directory") || null,
     hypothesis: form.get("hypothesis"),
     instruction: form.get("instruction") || null,
     campaign_id: form.get("campaign_id") || null,
@@ -2094,3 +2115,27 @@ function debounce(callback, delay) {
     timer = window.setTimeout(() => callback(...args), delay);
   };
 }
+
+
+// Keep unsupported routes explicit; never silently change the selected mode.
+function updateLaunchRoute() {
+  const mode = document.getElementById("launch-mode");
+  const backend = document.getElementById("launch-backend");
+  const model = document.getElementById("launch-model");
+  const legacy = mode.value === "legacy";
+  for (const option of backend.options) {
+    option.disabled = legacy !== ["dsh", "api"].includes(option.value);
+  }
+  if (backend.selectedOptions[0]?.disabled) backend.value = legacy ? "dsh" : "codex-glm";
+  model.required = !legacy && backend.value !== "codex-glm";
+  model.disabled = legacy;
+  model.placeholder = backend.value === "codex-glm" ? "glm-5.3 (default)" : "Enter the backend model ID";
+  document.getElementById("launch-route-note").textContent = legacy
+    ? "DSH and API use the legacy evidence workflow. Minimal support for these routes is not available yet."
+    : "Uses your existing backend login. Native tools remain available. Minimal studies include recorded experiments, counterexample search and independent review.";
+  const limits = document.querySelector("#new-run-form details");
+  if (limits) limits.hidden = !legacy;
+}
+document.getElementById("launch-mode").addEventListener("change", updateLaunchRoute);
+document.getElementById("launch-backend").addEventListener("change", updateLaunchRoute);
+updateLaunchRoute();

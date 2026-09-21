@@ -10,7 +10,7 @@ BUNDLE = Path(__file__).parents[1] / "integrations" / "dsh"
 def test_dsh_bundle_pins_the_resumable_driver_and_native_mcp_client() -> None:
     package = json.loads((BUNDLE / "package.json").read_text())
     assert package["name"] == "@simjecture/dsh-bundle"
-    assert package["version"] == "0.4.0"
+    assert package["version"] == "0.5.0"
     assert package["engines"]["node"] == "^22.19.0 || >=24.0.0"
     assert package["peerDependencies"] == {"@deepseek-ai/dsh": "0.1.5-rc.2"}
     assert package["dependencies"] == {

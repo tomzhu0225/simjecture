@@ -18,6 +18,7 @@ from textual.widgets import (
     Input,
     ListItem,
     ListView,
+    Select,
     TextArea,
 )
 from textual.widgets import (
@@ -142,20 +143,14 @@ def _sync_list_labels(
     items = tuple(listing.children)
     shared_count = min(len(items), len(labels))
     for index in range(shared_count):
-        if (
-            previous is None
-            or index >= len(previous)
-            or previous[index] != labels[index]
-        ):
+        if previous is None or index >= len(previous) or previous[index] != labels[index]:
             items[index].query_one(Label).update(labels[index])
 
     if len(items) > len(labels):
         for item in items[len(labels) :]:
             item.remove()
     elif len(items) < len(labels):
-        listing.extend(
-            ListItem(Label(label)) for label in labels[len(items) :]
-        )
+        listing.extend(ListItem(Label(label)) for label in labels[len(items) :])
     return labels
 
 
@@ -265,6 +260,22 @@ class NewRunScreen(Screen[None]):
                 "optional operational constraint and does not change claim identity.",
                 id="form-intro",
             )
+            yield Label("Mode", classes="form-label")
+            yield Select(
+                [(x.title(), x) for x in ["minimal", "structured", "frontier", "legacy"]],
+                value="minimal",
+                allow_blank=False,
+                id="study-mode",
+            )
+            yield Label("Backend", classes="form-label")
+            yield Select(
+                [(x, x) for x in ["codex-glm", "codex", "grok", "agy", "dsh", "api"]],
+                value="codex-glm",
+                allow_blank=False,
+                id="study-backend",
+            )
+            yield Label("Model (required except for codex-glm)", classes="form-label")
+            yield Input(value="", placeholder="glm-5.3 for codex-glm", id="study-model")
             yield Label("Root hypothesis", classes="form-label")
             yield TextArea(id="hypothesis-input")
             yield Label("Optional operational instruction", classes="form-label")
@@ -278,13 +289,22 @@ class NewRunScreen(Screen[None]):
             )
             yield Label("Maximum wall time (seconds)", classes="form-label")
             yield Input(value="21600", id="max-wall-seconds", type="number")
-            yield Label("Maximum command time (seconds)", classes="form-label")
+            yield Label("Agent watchdog / legacy command time (seconds)", classes="form-label")
             yield Input(value="600", id="max-command-seconds", type="number")
-            yield Label("Workspace limit (MB)", classes="form-label")
+            yield Static(
+                "Workspace/memory fields below apply only to legacy mode. "
+                "Minimal uses 4 GiB per experiment / 8 GiB recorded storage."
+            )
+            yield Label("Legacy workspace limit (MB)", classes="form-label")
             yield Input(value="512", id="max-workspace-mb", type="number")
-            yield Label("Memory limit (MB)", classes="form-label")
+            yield Label("Legacy memory limit (MB)", classes="form-label")
             yield Input(value="4096", id="max-memory-mb", type="number")
-            yield Label("Installed capabilities", classes="form-label")
+            yield Label("Numerical instrument registry (optional)", classes="form-label")
+            yield Input(
+                placeholder="Capability manifest directory; blank = Python for minimal",
+                id="capability-directory",
+            )
+            yield Label("Capabilities discoverable on this host", classes="form-label")
             yield Static(self._capability_text(), id="capabilities", classes="panel")
             yield Static("", id="form-error", classes="form-error")
             with Horizontal(classes="toolbar"):
@@ -377,9 +397,29 @@ class NewRunScreen(Screen[None]):
             return None
         self.last_error = ""
         error_widget.update("")
-        return MVPLaunchRequest(
+        from ..study_launch import NativeStudyRequest
+
+        backend = str(self.query_one("#study-backend", Select).value)
+        model = self.query_one("#study-model", Input).value.strip() or None
+        mode = str(self.query_one("#study-mode", Select).value)
+        if (mode == "legacy") != (backend in ["dsh", "api"]):
+            error_widget.update("DSH/API require legacy mode; native agents use the other modes.")
+            return None
+        if mode != "legacy" and backend != "codex-glm" and model is None:
+            error_widget.update("Choose the model for the selected backend.")
+            return None
+        factory = MVPLaunchRequest if mode == "legacy" else NativeStudyRequest
+        extra = (
+            dict(engine="dsh" if backend == "dsh" else "native")
+            if mode == "legacy"
+            else dict(mode=mode, backend=backend, model=model)
+        )
+        return factory(
+            **extra,
             hypothesis=hypothesis,
             instruction=instruction or None,
+            capability_directory=self.query_one("#capability-directory", Input).value.strip()
+            or None,
             campaign_id=campaign,
             output_directory=str(Path(output).expanduser()),
             max_wall_seconds=wall,
@@ -416,12 +456,19 @@ class ContractReviewScreen(Screen[None]):
         return "\n".join(
             [
                 f"Campaign: {request.campaign_id}",
+                f"Mode: {getattr(request, 'mode', 'legacy')} · Backend: "
+                f"{getattr(request, 'backend', request.engine)} · Model: "
+                f"{getattr(request, 'model', None) or 'backend default'}",
                 f"Output: {Path(request.output_directory).expanduser()}",
                 (
                     f"Envelope: wall {format_duration(request.max_wall_seconds)}, "
                     f"command {int(request.max_command_seconds)} s, "
-                    f"workspace {request.max_workspace_mb} MB, "
-                    f"memory {request.max_memory_mb} MB"
+                    + (
+                        f"workspace {request.max_workspace_mb} MB, "
+                        f"memory {request.max_memory_mb} MB"
+                        if not hasattr(request, "mode")
+                        else "native mode's recorded experiment limits"
+                    )
                 ),
                 "",
                 "Root hypothesis",
@@ -527,7 +574,9 @@ class DashboardScreen(Screen[None]):
         phase_text = "RUNNING" if live else snapshot.phase_label
         campaign = snapshot.identity.campaign_id or self.run_directory.name
         status = self.query_one("#status-line", Static)
-        status.update(f"Campaign: {campaign}       {phase_text}")
+        mode = snapshot.identity.config.get("mode", "legacy")
+        backend = snapshot.identity.config.get("backend", "")
+        status.update(f"Campaign: {campaign}       {phase_text} · {mode} {backend}")
         status.set_class(False, "phase-running")
         status.set_classes(_phase_class(phase_text))
         elapsed = format_duration(snapshot.elapsed_wall_seconds)
@@ -590,9 +639,7 @@ class DashboardScreen(Screen[None]):
                 labels = (f"(claim ledger not initialized)  {hypothesis}",)
                 selected_index = 0
             else:
-                labels = tuple(
-                    hypothesis_row_label(row) for row in self.hypothesis_rows
-                )
+                labels = tuple(hypothesis_row_label(row) for row in self.hypothesis_rows)
                 selected_index = next(
                     (
                         index
@@ -632,9 +679,7 @@ class DashboardScreen(Screen[None]):
                 labels = ("(no linked validation claims)",)
                 selected_index = 0
             else:
-                labels = tuple(
-                    validation_row_label(row) for row in self.validation_rows
-                )
+                labels = tuple(validation_row_label(row) for row in self.validation_rows)
                 selected_index = next(
                     (
                         index
@@ -679,8 +724,7 @@ class DashboardScreen(Screen[None]):
         if action.wait_elapsed_seconds is not None:
             details.append(f"job wait={int(action.wait_elapsed_seconds)} s")
         elif (
-            snapshot.latest_heartbeat
-            and snapshot.latest_heartbeat.elapsed_wall_seconds is not None
+            snapshot.latest_heartbeat and snapshot.latest_heartbeat.elapsed_wall_seconds is not None
         ):
             details.append(f"elapsed={int(snapshot.latest_heartbeat.elapsed_wall_seconds)} s")
         details.append(f"workspace={format_bytes(snapshot.workspace_bytes)}")
@@ -812,18 +856,14 @@ class DashboardScreen(Screen[None]):
         if self._rendering_claim_views or event.list_view.index is None:
             return
         index = event.list_view.index
-        if event.list_view.id == "hypothesis-tree" and index < len(
-            self.hypothesis_rows
-        ):
+        if event.list_view.id == "hypothesis-tree" and index < len(self.hypothesis_rows):
             selected = self.hypothesis_rows[index].claim.id
             if selected != self.selected_hypothesis_id:
                 self.selected_hypothesis_id = selected
                 self.selected_validation_id = None
                 if self.snapshot is not None:
                     self._render_validation_claims(self.snapshot)
-        elif event.list_view.id == "validation-claims" and index < len(
-            self.validation_rows
-        ):
+        elif event.list_view.id == "validation-claims" and index < len(self.validation_rows):
             self.selected_validation_id = self.validation_rows[index].claim.id
 
 
@@ -916,9 +956,7 @@ class AuditLedgerScreen(ModalScreen[None]):
         index = listing.index
         if index is None or index >= len(self.claims):
             return
-        self.query_one("#audit-claim-detail", Static).update(
-            _claim_detail_body(self.claims[index])
-        )
+        self.query_one("#audit-claim-detail", Static).update(_claim_detail_body(self.claims[index]))
 
     def action_close(self) -> None:
         self.app.pop_screen()
@@ -972,12 +1010,7 @@ class ArtifactsScreen(ModalScreen[None]):
         yield Static("Run artifacts (contained paths only)", classes="panel-title")
         items = (
             [
-                ListItem(
-                    Label(
-                        f"{entry.relative_path}  {format_bytes(entry.bytes)}  "
-                        f"{entry.kind}"
-                    )
-                )
+                ListItem(Label(f"{entry.relative_path}  {format_bytes(entry.bytes)}  {entry.kind}"))
                 for entry in self.entries
             ]
             if self.entries
