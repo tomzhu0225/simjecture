@@ -72,6 +72,7 @@ research/limitations
 :caption: How-to guides
 
 how-to/guided-commissioning
+how-to/restricted-containers
 how-to/add-a-capability
 how-to/deploy-runtimes
 how-to/deepseek-harness

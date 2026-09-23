@@ -152,7 +152,7 @@ def test_real_process_pause_resume_and_deadline(tmp_path):
             process.wait(timeout=10)
 
 
-@pytest.mark.parametrize("message", ["network interrupted", "quota exhausted"])
+@pytest.mark.parametrize("message", ["quota exhausted", "401 unauthorized"])
 def test_provider_failure_pauses_without_scientific_completion(tmp_path, message):
     root = tmp_path / "study"
     process = start_fixture(
@@ -161,7 +161,7 @@ def test_provider_failure_pauses_without_scientific_completion(tmp_path, message
     try:
         assert process.wait(timeout=20) == 1
         state = wait_state(root, lambda s: s.get("status") == "paused_external_error")
-        assert state["round"] == 3
+        assert state["round"] == 1
         assert not ResearchService(root).status()["completed"]
         assert prepare_resume(root).argv
     finally:
@@ -286,3 +286,23 @@ def test_browser_revision_tracks_custom_supervisor_directory(tmp_path):
     second = app.campaign_snapshot(app.initial_campaign)
     assert first["revision"] != second["revision"]
     assert second["snapshot"]["current_action"]["description"] == "Reviewing evidence"
+
+
+def test_network_failure_retries_until_absolute_deadline(tmp_path):
+    root = tmp_path / "study"
+    process = start_fixture(
+        tmp_path,
+        root,
+        "import sys\nprint('network interrupted',file=sys.stderr)\nsys.exit(1)\n",
+        wall=10,
+    )
+    try:
+        assert process.wait(timeout=20) == 124
+        state = wait_state(root, lambda s: s.get("status") == "budget_exhausted")
+        assert state["provider_retry_count"] >= 2
+        assert state["provider_wait_seconds"] > 0
+        assert not ResearchService(root).status()["completed"]
+    finally:
+        if process.poll() is None:
+            process.terminate()
+            process.wait(timeout=10)

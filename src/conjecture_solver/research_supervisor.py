@@ -9,6 +9,7 @@ import time
 from pathlib import Path
 
 from .agent_supervisor import AgentSupervisor, parse_judge_stream
+from .provider_retry import ProviderFailure, provider_failure, provider_recovered, wait_for_provider
 from .research_service import ResearchService, ResearchVerdict, fingerprint, put
 
 
@@ -163,8 +164,11 @@ Do not edit service records or other studies. Resume from lab.status() and your 
             body = self.service.review_body(request)
             packet = self.service.packet(body)
             for attempt in range(2):
-                directory = (
-                    self.directory / f"judge-{request['id']}-{self.state['round']}-{attempt}"
+                self.state["review_launch_count"] = self.state.get("review_launch_count", 0) + 1
+                self.save()
+                directory = self.directory / (
+                    f"judge-{request['id']}-{self.state['round']}-{attempt}-"
+                    f"{self.state['review_launch_count']}"
                 )
                 directory.mkdir()
                 put(directory / "packet.json", packet)
@@ -198,6 +202,8 @@ Do not edit service records or other studies. Resume from lab.status() and your 
         with (self.directory / "supervisor.lock").open("a") as lock:
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
             failures = 0
+            self.state["status"] = "running"
+            self.save()
             try:
                 while not self.boundary():
                     try:
@@ -228,7 +234,7 @@ Do not edit service records or other studies. Resume from lab.status() and your 
                         rc = self.launch(directory, self.prompt())
                         self.event("worker_exit_checkpoint", returncode=rc)
                         if rc not in [0, 124]:
-                            raise RuntimeError(f"Worker exited with {rc}")
+                            raise provider_failure(directory, rc) or ProviderFailure(returncode=rc)
                         after = self.service.status()
                         if not any(r["status"] == "queued" for r in after["reviews"]):
                             self.state["waiting_for"] = [
@@ -238,6 +244,10 @@ Do not edit service records or other studies. Resume from lab.status() and your 
                             ]
                             self.save()
                         failures = 0
+                        provider_recovered(self)
+                    except ProviderFailure as error:
+                        if not wait_for_provider(self, error):
+                            return 1
                     except Exception as error:
                         failures += 1
                         self.state["last_error"] = str(error)[:500]

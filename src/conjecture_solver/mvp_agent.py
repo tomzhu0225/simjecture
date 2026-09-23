@@ -526,6 +526,7 @@ class ModelCompletionRetriesExhausted(RuntimeError):
 
 
 class MVPAgentConfig(StrictModel):
+    execution_backend: Literal["bubblewrap", "proot-cooperative"] = "bubblewrap"
     max_iterations: int | None = Field(
         default=None,
         ge=1,
@@ -703,6 +704,7 @@ class MVPAdjudicationRecord(StrictModel):
 
 
 class SandboxCommandResult(StrictModel):
+    isolation_backend: str = "bubblewrap"
     returncode: int | None
     stdout: str
     stderr: str
@@ -748,7 +750,21 @@ class BubblewrapSandbox:
         config: MVPAgentConfig,
         capabilities: MVPCapabilityRegistry | None = None,
     ) -> None:
-        executable = shutil.which("bwrap")
+        self.isolation_backend = config.execution_backend
+        if self.isolation_backend == "proot-cooperative":
+            if os.geteuid() == 0:
+                raise RuntimeError("Cooperative process execution requires an unprivileged account")
+            if shutil.which("proot") is None:
+                raise RuntimeError("Install proot for the explicitly selected cooperative backend")
+            try:
+                import psutil  # noqa: F401
+            except ImportError as error:
+                raise RuntimeError(
+                    "Install simjecture[process] for cooperative execution"
+                ) from error
+            executable = sys.executable
+        else:
+            executable = shutil.which("bwrap")
         if executable is None:
             raise RuntimeError("bubblewrap (bwrap) is required for the MVP sandbox")
         self.executable = executable
@@ -967,7 +983,9 @@ class BubblewrapSandbox:
         resource.setrlimit(resource.RLIMIT_CPU, (cpu, cpu))
         resource.setrlimit(
             resource.RLIMIT_AS,
-            (self.config.max_memory_bytes, self.config.max_memory_bytes),
+            ((1 << 47), (1 << 47))
+            if self.isolation_backend == "proot-cooperative"
+            else (self.config.max_memory_bytes, self.config.max_memory_bytes),
         )
         resource.setrlimit(
             resource.RLIMIT_FSIZE,
@@ -979,6 +997,11 @@ class BubblewrapSandbox:
         workspace_root = self.root if workspace_root is None else workspace_root
         return [
             self.executable,
+            *(
+                ["-m", "conjecture_solver.process_runner"]
+                if self.isolation_backend == "proot-cooperative"
+                else []
+            ),
             "--unshare-all",
             "--die-with-parent",
             "--new-session",
@@ -1339,6 +1362,7 @@ class BubblewrapSandbox:
                 stdout=stdout,
                 stderr=stderr,
                 preexec_fn=self._limits,
+                env={**os.environ, "SIMJECTURE_PROCESS_MAX_RSS": str(self.config.max_memory_bytes)},
             )
             next_workspace_check = started
             next_heartbeat = started + self.config.command_heartbeat_seconds
@@ -1380,6 +1404,7 @@ class BubblewrapSandbox:
             stderr_text, stderr_truncated = self._bounded_stream(stderr)
             elapsed = time.monotonic() - started
             return SandboxCommandResult(
+                isolation_backend=self.isolation_backend,
                 returncode=(None if timed_out or workspace_exceeded else process.returncode),
                 stdout=stdout_text,
                 stderr=stderr_text,

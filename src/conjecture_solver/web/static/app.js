@@ -163,6 +163,10 @@ async function initialize() {
     state.controlToken = bootstrap.control_token;
     state.allowMutations = Boolean(bootstrap.allow_mutations);
     state.selectedCampaign = bootstrap.selected_campaign;
+    document.getElementById("launch-execution-backend").value = bootstrap.default_execution_backend || "bubblewrap";
+    document.getElementById("launch-backend").value = bootstrap.default_backend || "codex-glm";
+    document.getElementById("launch-model").value = bootstrap.default_model || "";
+    document.querySelector('[name="capability_directory"]').value = bootstrap.default_capabilities || "";
     loadGraphPositions();
     ui["new-run-button"].disabled = !state.allowMutations;
     ui["empty-new-run"].disabled = !state.allowMutations;
@@ -1520,7 +1524,7 @@ function renderResearchTrace() {
   const snapshot = state.snapshot.snapshot;
   const engine = state.snapshot.engine || {};
   const route = document.getElementById("study-route");
-  if (route) route.textContent = `${engine.mode || "legacy"} · ${engine.name || "native"}${engine.model ? " / " + engine.model : ""}`;
+  if (route) route.textContent = `${engine.mode || "legacy"} · ${engine.name || "native"}${engine.model ? " / " + engine.model : ""}${engine.execution_backend ? " · " + engine.execution_backend : ""}`;
   const usage = engine.name === "dsh"
     ? {
         prompt_tokens: engine.token_usage?.input_tokens,
@@ -1715,6 +1719,7 @@ async function launchCampaign(event) {
     mode: form.get("mode"),
     backend: form.get("backend"),
     model: form.get("model") || null,
+    execution_backend: form.get("execution_backend") || "bubblewrap",
     capability_directory: form.get("capability_directory") || null,
     hypothesis: form.get("hypothesis"),
     instruction: form.get("instruction") || null,
@@ -2127,6 +2132,7 @@ function updateLaunchRoute() {
     option.disabled = legacy !== ["dsh", "api"].includes(option.value);
   }
   if (backend.selectedOptions[0]?.disabled) backend.value = legacy ? "dsh" : "codex-glm";
+  document.getElementById("launch-execution-backend").disabled = legacy;
   model.required = !legacy && backend.value !== "codex-glm";
   model.disabled = legacy;
   model.placeholder = backend.value === "codex-glm" ? "glm-5.3 (default)" : "Enter the backend model ID";

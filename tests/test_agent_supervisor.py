@@ -316,3 +316,26 @@ def test_native_backends_stream_activity_for_watchdog(tmp_path, backend, output_
     assert supervisor.launch(directory, "Transport fixture; no model call.") == 0
     argv = json.loads((directory / "response.json").read_text())
     assert argv[argv.index("--output-format") + 1] == output_format
+
+
+def test_codex_startup_diagnostic_is_not_judge_tool_use(tmp_path):
+    path = tmp_path / "response.json"
+    events = [
+        {"type": "item.completed", "item": {"type": "error", "message": "Ignored setting"}},
+        {
+            "type": "item.completed",
+            "item": {"type": "agent_message", "text": '{"decision":"approved"}'},
+        },
+        {"type": "turn.completed"},
+    ]
+    path.write_text("\n".join(json.dumps(e) for e in events))
+    assert parse_judge_stream(path, "codex") == {"decision": "approved"}
+    events[-1] = {"type": "turn.failed", "error": {"message": "connection lost"}}
+    path.write_text("\n".join(json.dumps(e) for e in events))
+    with pytest.raises(ValueError, match="successful complete"):
+        parse_judge_stream(path, "codex")
+    events[-1] = {"type": "turn.completed"}
+    events.insert(1, {"type": "item.completed", "item": {"type": "command_execution"}})
+    path.write_text("\n".join(json.dumps(e) for e in events))
+    with pytest.raises(ValueError, match="used a tool"):
+        parse_judge_stream(path, "codex")

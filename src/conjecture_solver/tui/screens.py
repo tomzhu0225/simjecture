@@ -267,6 +267,16 @@ class NewRunScreen(Screen[None]):
                 allow_blank=False,
                 id="study-mode",
             )
+            yield Label("Experiment execution", classes="form-label")
+            yield Select(
+                [
+                    ("Bubblewrap (kernel isolation)", "bubblewrap"),
+                    ("Cooperative PRoot (no kernel/network isolation)", "proot-cooperative"),
+                ],
+                value="bubblewrap",
+                allow_blank=False,
+                id="execution-backend",
+            )
             yield Label("Backend", classes="form-label")
             yield Select(
                 [(x, x) for x in ["codex-glm", "codex", "grok", "agy", "dsh", "api"]],
@@ -408,11 +418,19 @@ class NewRunScreen(Screen[None]):
         if mode != "legacy" and backend != "codex-glm" and model is None:
             error_widget.update("Choose the model for the selected backend.")
             return None
+        if mode == "legacy" and self.query_one("#execution-backend", Select).value != "bubblewrap":
+            error_widget.update("Cooperative execution requires a native study mode.")
+            return None
         factory = MVPLaunchRequest if mode == "legacy" else NativeStudyRequest
         extra = (
             dict(engine="dsh" if backend == "dsh" else "native")
             if mode == "legacy"
-            else dict(mode=mode, backend=backend, model=model)
+            else dict(
+                mode=mode,
+                backend=backend,
+                model=model,
+                execution_backend=str(self.query_one("#execution-backend", Select).value),
+            )
         )
         return factory(
             **extra,

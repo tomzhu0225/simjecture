@@ -20,6 +20,7 @@ from .study_status import read, supervisor_directory
 
 
 class NativeStudyRequest(MVPLaunchRequest):
+    execution_backend: Literal["bubblewrap", "proot-cooperative"] = "bubblewrap"
     mode: Literal["minimal", "structured", "frontier"] = "minimal"
     backend: Literal["codex-glm", "codex", "grok", "agy"] = "codex-glm"
     model: str | None = None
@@ -42,10 +43,16 @@ def materialize_native(request, *, resume=False):
     identity = load_supervisor_record(root) if root.exists() else None
     if identity and process_identity_matches(identity):
         raise ResumeError("Study is already running; attach to its status")
-    if existing and existing.get("request") != request.model_dump(mode="json"):
+    saved_request = existing.get("request", {})
+    if saved_request:
+        saved_request = NativeStudyRequest.model_validate(saved_request).model_dump(mode="json")
+    if existing and saved_request != request.model_dump(mode="json"):
         raise ValueError("Existing study launch contract differs")
     if resume and not existing:
         raise ResumeError("No saved native launch contract")
+    from .execution import require_execution_backend
+
+    execution_probe = require_execution_backend(request.execution_backend)
     protocol = (
         request.instruction or "Investigate the stated hypothesis within its scientific scope."
     )
@@ -58,6 +65,7 @@ def materialize_native(request, *, resume=False):
                 request.hypothesis,
                 wall_seconds=request.max_wall_seconds,
                 capabilities=request.capability_directory,
+                execution_backend=request.execution_backend,
             )
             service.freeze_protocol(protocol)
         else:
@@ -69,6 +77,7 @@ def materialize_native(request, *, resume=False):
                 workspace=root,
                 hypothesis=request.hypothesis,
                 config=MVPAgentConfig(
+                    execution_backend=request.execution_backend,
                     max_wall_seconds=request.max_wall_seconds,
                     require_independent_contract_review=True,
                 ),
@@ -107,6 +116,8 @@ def materialize_native(request, *, resume=False):
         str(instructions),
         "--mode",
         request.mode,
+        "--execution-backend",
+        request.execution_backend,
         "--backend",
         request.backend,
         "--model",
@@ -129,6 +140,8 @@ def materialize_native(request, *, resume=False):
             backend=request.backend,
             model=model,
             mode=request.mode,
+            execution_backend=request.execution_backend,
+            execution_preflight=execution_probe,
             state_dir=str(directory),
             argv=argv,
         ),

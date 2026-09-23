@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import mimetypes
+import os
 import threading
 import uuid
 from contextlib import suppress
@@ -169,7 +170,12 @@ class SimjectureWebApplication:
             "allow_mutations": self.allow_mutations,
             "default_engine": self.default_engine,
             "default_mode": "minimal",
-            "default_backend": "codex-glm",
+            "default_backend": os.environ.get("SIMJECTURE_DEFAULT_BACKEND", "codex-glm"),
+            "default_model": os.environ.get("SIMJECTURE_DEFAULT_MODEL", ""),
+            "default_execution_backend": os.environ.get(
+                "SIMJECTURE_DEFAULT_EXECUTION_BACKEND", "bubblewrap"
+            ),
+            "default_capabilities": os.environ.get("SIMJECTURE_DEFAULT_CAPABILITIES", ""),
             "modes": ["minimal", "structured", "frontier", "legacy"],
             "selected_campaign": selected,
             "campaigns": campaigns,
@@ -317,6 +323,8 @@ class SimjectureWebApplication:
                 raise ValueError("Unknown study mode")
             if mode != "legacy" and backend in ["dsh", "api"]:
                 raise ValueError("DSH/API currently require explicit legacy mode")
+            if mode == "legacy" and payload.get("execution_backend", "bubblewrap") != "bubblewrap":
+                raise ValueError("Cooperative execution requires a native study mode")
             if mode == "legacy" and backend not in ["dsh", "api"]:
                 raise ValueError("Legacy mode requires DSH or API backend")
             factory = MVPLaunchRequest if mode == "legacy" else NativeStudyRequest
@@ -325,6 +333,7 @@ class SimjectureWebApplication:
                 if mode == "legacy"
                 else dict(
                     mode=mode,
+                    execution_backend=payload.get("execution_backend", "bubblewrap"),
                     backend=backend,
                     model=payload.get("model") or None,
                     judge_model=payload.get("judge_model") or None,
@@ -645,6 +654,10 @@ def _engine_projection(
             activity=[],
             token_usage=_empty_engine_usage(),
             usage_available=status["usage_available"],
+            execution_backend=status["execution_backend"],
+            provider_retry_count=status["provider_retry_count"],
+            provider_wait_seconds=status["provider_wait_seconds"],
+            failed_provider_turn_seconds=status["failed_provider_turn_seconds"],
             remaining_seconds=status["remaining"],
             current_activity=status["activity"],
         )

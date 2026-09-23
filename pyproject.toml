@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "simjecture"
-version = "0.5.0"
+version = "0.5.1.dev0"
 description = "Evidence-governed autonomous experimentation and falsification for computational science"
 readme = "README.md"
 license = "Apache-2.0"
@@ -56,6 +56,7 @@ Repository = "https://github.com/tomzhu0225/simjecture"
 Issues = "https://github.com/tomzhu0225/simjecture/issues"
 
 [project.optional-dependencies]
+process = ["psutil>=6,<8"]
 tui = [
   "textual>=2.0,<9",
 ]

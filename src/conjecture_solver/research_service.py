@@ -75,14 +75,24 @@ class ResearchService:
         self.work = self.root / "research"
 
     @classmethod
-    def create(cls, root, hypothesis, *, wall_seconds=3600, capabilities=None):
+    def create(
+        cls, root, hypothesis, *, wall_seconds=3600, capabilities=None, execution_backend=None
+    ):
         root = Path(root).resolve()
         root.mkdir(parents=True, exist_ok=True)
         if (root / "research.json").exists():
             existing = cls(root)
             if existing.manifest["hypothesis"] != hypothesis:
                 raise ValueError("Original hypothesis is immutable")
+            if (
+                execution_backend
+                and existing.manifest.get("execution_backend", "bubblewrap") != execution_backend
+            ):
+                raise ValueError("Execution backend is immutable within a study")
             return existing
+        execution_backend = execution_backend or "bubblewrap"
+        if execution_backend not in {"bubblewrap", "proot-cooperative"}:
+            raise ValueError("Unknown execution backend")
         if any(root.iterdir()):
             raise ValueError(
                 "New minimal study requires an empty directory; never convert a campaign"
@@ -102,6 +112,7 @@ class ResearchService:
             dict(
                 schema_version=2,
                 workflow="minimal",
+                execution_backend=execution_backend,
                 hypothesis=hypothesis,
                 created_at=now,
                 deadline=now + wall_seconds,
@@ -345,6 +356,7 @@ class ResearchService:
             sandbox = BubblewrapSandbox(
                 workspace,
                 MVPAgentConfig(
+                    execution_backend=self.manifest.get("execution_backend", "bubblewrap"),
                     max_command_seconds=timeout,
                     max_workspace_bytes=record.get(
                         "workspace_limit_bytes", self.manifest["max_experiment_bytes"]

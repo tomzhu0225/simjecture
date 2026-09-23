@@ -157,6 +157,12 @@ def _install(args: argparse.Namespace) -> int:
 
 
 def _doctor(args: argparse.Namespace) -> int:
+    if getattr(args, "execution_backend", None):
+        from .execution import probe_execution_backend
+
+        report = probe_execution_backend(args.execution_backend)
+        print(json.dumps(report, indent=2))
+        return 0 if report["available"] else 1
     manager = DeploymentManager(resolve_project_root(args.project_root))
     report = manager.doctor(args.profile, probe=not args.skip_probes)
     print_deployment_report(report, as_json=args.json)
@@ -682,9 +688,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     from .study import configure_parser
 
-    configure_parser(subcommands.add_parser(
-        "study", help="Launch a native-agent study (default mode: minimal)"
-    ))
+    configure_parser(
+        subcommands.add_parser("study", help="Launch a native-agent study (default mode: minimal)")
+    )
 
     benchmark = subcommands.add_parser("benchmark")
     benchmark.add_argument(
@@ -778,6 +784,7 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Inspect runtime manifests and files without executing capability smokes",
     )
+    doctor.add_argument("--execution-backend", choices=("bubblewrap", "proot-cooperative"))
     doctor.add_argument("--json", action="store_true")
     doctor.set_defaults(handler=_doctor)
 

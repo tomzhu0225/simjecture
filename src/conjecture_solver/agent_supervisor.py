@@ -20,6 +20,7 @@ from typing import Any
 
 from .campaign_kernel import CampaignKernel
 from .mvp_launch import MVPOutputLock
+from .provider_retry import ProviderFailure, provider_failure, provider_recovered, wait_for_provider
 from .role_assignments import AssignmentStore
 
 GROK_JUDGE_DISABLED_TOOLS = ",".join(
@@ -93,7 +94,7 @@ def parse_judge_stream(path: Path, backend: str = "agy") -> dict[str, Any]:
             response = payload.get("response")
         elif backend in {"codex", "codex-glm"}:
             item = event.get("item", {})
-            if item and item.get("type") not in {"agent_message", "reasoning"}:
+            if item and item.get("type") not in {"agent_message", "reasoning", "error"}:
                 raise ValueError("Independent judge used a tool; verdict rejected")
             if item.get("type") == "agent_message":
                 response_text = item.get("text", "")
@@ -305,6 +306,7 @@ class AgentSupervisor:
             (directory / "response.json").open("w") as out,
             (directory / "stderr.log").open("w") as err,
         ):
+            provider_started = time.monotonic()
             child = subprocess.Popen(
                 command,
                 cwd=work_directory,
@@ -390,6 +392,14 @@ class AgentSupervisor:
                         reason="inactivity" if self.workflow == "frontier" else "turn_allowance",
                     )
                     return 124
+                failure = provider_failure(directory, returncode)
+                if failure and not self.boundary():
+                    self.state["failed_provider_turn_seconds"] = (
+                        self.state.get("failed_provider_turn_seconds", 0)
+                        + time.monotonic()
+                        - provider_started
+                    )
+                    raise failure
                 return returncode
             finally:
                 if child.poll() is None:
@@ -616,7 +626,12 @@ Host feedback: {self.state.get("next_test") or "No previous review."}
         backend = getattr(self.args, "backend", "agy")
         error = None
         for attempt in range(2):
-            judge = directory / f"independent-judge-{purpose}-{self.state['round']}-{attempt}"
+            self.state["review_launch_count"] = self.state.get("review_launch_count", 0) + 1
+            self.save()
+            judge = directory / (
+                f"independent-judge-{purpose}-{self.state['round']}-{attempt}-"
+                f"{self.state['review_launch_count']}"
+            )
             judge.mkdir()
             prompt = (
                 "Independent scientific reviewer. Use NO tools, filesystem, or browsing. "
@@ -872,13 +887,19 @@ Host feedback: {self.state.get("next_test") or "No previous review."}
                     elif not self.boundary():
                         try:
                             self.review(research, record)
+                        except ProviderFailure:
+                            raise
                         except Exception as error:
                             self.state["next_test"] = f"Review rejected; resolve: {error}"
                             self.event("review_rejected", error=str(error))
                     # Exit 0 and handoffs never imply campaign completion.
                     if rc not in {0, 124}:
-                        raise RuntimeError(f"Provider process failed with exit status {rc}")
+                        raise provider_failure(directory, rc) or ProviderFailure(returncode=rc)
                     failures = 0
+                    provider_recovered(self)
+                except ProviderFailure as error:
+                    if not wait_for_provider(self, error):
+                        return 1
                 except Exception as error:
                     failures += 1
                     self.event("supervisor_error", error=str(error))

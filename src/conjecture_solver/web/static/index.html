@@ -210,6 +210,13 @@
         <label><span>Model <em>Uses your existing backend login</em></span>
           <input name="model" id="launch-model" placeholder="glm-5.3 (Codex GLM default)">
         </label>
+        <label><span>Experiment execution</span>
+          <select name="execution_backend" id="launch-execution-backend">
+            <option value="bubblewrap">Bubblewrap — kernel isolation</option>
+            <option value="proot-cooperative">Cooperative PRoot — restricted containers</option>
+          </select>
+          <small>The cooperative backend shares host networking and is not a security sandbox.</small>
+        </label>
         <p class="panel-description" id="launch-route-note">Minimal keeps native tools available and records experiments and independent reviews.</p>
         <label>
           <span>Root hypothesis <b>Required</b></span>

@@ -54,12 +54,27 @@ def study_status(root):
         activity = status.replace("_", " ")
         if status == "paused_external_error" and state.get("last_error"):
             activity += ": " + state["last_error"]
+    if state.get("provider_next_retry_at") and status == "running":
+        activity = (
+            f"Reconnecting provider (attempt {state.get('provider_retry_count', 0)}, "
+            f"{max(0, state['provider_next_retry_at'] - now):.0f}s to retry)"
+        )
     counters = list(state.get("usage_by_thread", {}).values())
     usage = {
         k: sum(u.get(k, 0) for u in counters)
         for k in ["input_tokens", "output_tokens", "cached_input_tokens", "reasoning_output_tokens"]
     }
     return dict(
+        execution_backend=launch.get(
+            "execution_backend",
+            manifest.get(
+                "execution_backend",
+                manifest.get("config", {}).get("execution_backend", "bubblewrap"),
+            ),
+        ),
+        provider_retry_count=state.get("provider_retry_count", 0),
+        provider_wait_seconds=state.get("provider_wait_seconds", 0),
+        failed_provider_turn_seconds=state.get("failed_provider_turn_seconds", 0),
         usage=usage,
         usage_available=bool(counters),
         mode=mode,
@@ -86,7 +101,8 @@ def study_status(root):
 def status_line(status):
     counts = status["experiment_counts"]
     return (
-        f"{status['mode']} · {status['backend']}/{status['model']} | "
+        f"{status['mode']} · {status['backend']}/{status['model']} · "
+        f"{status.get('execution_backend', 'bubblewrap')} | "
         f"{status['activity']} | {int(status['elapsed']) // 60:02d}:"
         f"{int(status['elapsed']) % 60:02d} elapsed · {int(status['remaining']) // 60}m left | "
         f"jobs {counts.get('running', 0)} running / {counts.get('succeeded', 0)} done / "
@@ -259,7 +275,14 @@ def minimal_snapshot(root):
             campaign_id=root.name,
             hypothesis=status["hypothesis"],
             campaign_instruction=manifest.get("operator_protocol"),
-            config=dict(mode="minimal", backend=status["backend"], model=status["model"]),
+            config=dict(
+                mode="minimal",
+                backend=status["backend"],
+                model=status["model"],
+                execution_backend=status["execution_backend"],
+                provider_retry_count=status["provider_retry_count"],
+                provider_wait_seconds=status["provider_wait_seconds"],
+            ),
             capability_hashes=manifest.get("capability_hashes", {}),
         ),
         configured_wall_seconds=status["budget"],
@@ -356,7 +379,14 @@ def native_snapshot_overlay(root, snapshot):
             identity=snapshot.identity.model_copy(
                 update={
                     "config": snapshot.identity.config
-                    | dict(mode=status["mode"], backend=status["backend"], model=status["model"])
+                    | dict(
+                        mode=status["mode"],
+                        backend=status["backend"],
+                        model=status["model"],
+                        execution_backend=status["execution_backend"],
+                        provider_retry_count=status["provider_retry_count"],
+                        provider_wait_seconds=status["provider_wait_seconds"],
+                    )
                 }
             ),
             phase=phase,

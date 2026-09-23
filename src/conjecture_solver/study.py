@@ -28,6 +28,11 @@ def configure_parser(parser):
         choices=MODES,
         help="New studies default to minimal; resumes preserve their mode",
     )
+    parser.add_argument(
+        "--execution-backend",
+        choices=("bubblewrap", "proot-cooperative"),
+        help="Experiment execution; default bubblewrap, immutable on resume",
+    )
     parser.add_argument("--state-dir", type=Path)
     parser.add_argument("--capabilities", type=Path)
     parser.add_argument("--wall-seconds", type=float, default=3600)
@@ -91,6 +96,21 @@ def _run(args):
     if saved_state and args.state_dir != saved_state.resolve():
         raise ValueError("State directory is part of the saved launch contract")
     mode = selected_mode(args.campaign, args.mode, args.state_dir)
+    saved_execution = previous.get("execution_backend")
+    if not saved_execution and (args.campaign / "research.json").exists():
+        saved_execution = read(args.campaign / "research.json").get(
+            "execution_backend", "bubblewrap"
+        )
+    if not saved_execution and (args.campaign / "mvp_manifest.json").exists():
+        saved_execution = (
+            read(args.campaign / "mvp_manifest.json")
+            .get("config", {})
+            .get("execution_backend", "bubblewrap")
+        )
+    requested_execution = getattr(args, "execution_backend", None)
+    if saved_execution and requested_execution and saved_execution != requested_execution:
+        raise ValueError("Execution backend is immutable on resume")
+    args.execution_backend = requested_execution or saved_execution or "bubblewrap"
     if not 0 < args.turn_seconds <= args.wall_seconds:
         raise ValueError("Require 0 < turn-seconds <= wall-seconds")
     # Validate inputs before materializing any study state.
@@ -113,6 +133,9 @@ def _run(args):
             f"Backend executable {args.executable!r} not found; install and log in "
             "to that CLI, or choose another backend"
         )
+    from .execution import require_execution_backend
+
+    execution_probe = require_execution_backend(args.execution_backend)
     hypothesis = args.hypothesis_file.read_text() if args.hypothesis_file else None
     if mode == "minimal":
         if not (args.campaign / "research.json").exists() and hypothesis is None:
@@ -123,6 +146,7 @@ def _run(args):
                 hypothesis,
                 wall_seconds=args.wall_seconds,
                 capabilities=args.capabilities,
+                execution_backend=args.execution_backend,
             )
             if hypothesis is not None
             else ResearchService(args.campaign)
@@ -143,7 +167,9 @@ def _run(args):
                 workspace=args.campaign,
                 hypothesis=hypothesis,
                 config=MVPAgentConfig(
-                    max_wall_seconds=args.wall_seconds, require_independent_contract_review=True
+                    execution_backend=args.execution_backend,
+                    max_wall_seconds=args.wall_seconds,
+                    require_independent_contract_review=True,
                 ),
                 capabilities=(
                     MVPCapabilityRegistry.discover(args.capabilities) if args.capabilities else None
@@ -159,7 +185,13 @@ def _run(args):
     from .study_status import TerminalProgress
 
     record = read(args.campaign / "study-launch.json")
-    record.update(mode=mode, backend=args.backend, model=args.model, state_dir=str(args.state_dir))
+    record.update(
+        mode=mode,
+        backend=args.backend,
+        model=args.model,
+        state_dir=str(args.state_dir),
+        execution_backend=args.execution_backend,
+    )
     if "request" not in record:
         from .study_launch import NativeStudyRequest
 
@@ -176,6 +208,7 @@ def _run(args):
             max_wall_seconds=args.wall_seconds,
             max_command_seconds=args.turn_seconds,
             mode=mode,
+            execution_backend=args.execution_backend,
             backend=args.backend,
             model=args.model,
             judge_model=args.judge_model,
@@ -186,7 +219,11 @@ def _run(args):
         operator.mkdir(exist_ok=True)
         (operator / "hypothesis.txt").write_text(record["request"]["hypothesis"])
         (operator / "instruction.txt").write_text(args.instructions_file.read_text())
-    record.update(judge_model=args.judge_model, protocol_sha256=protocol_hash)
+    record.update(
+        judge_model=args.judge_model,
+        protocol_sha256=protocol_hash,
+        execution_preflight=execution_probe,
+    )
     put(args.campaign / "study-launch.json", record)
     identity = read_process_identity(os.getpid())
     if identity:
