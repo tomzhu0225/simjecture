@@ -306,3 +306,23 @@ def test_network_failure_retries_until_absolute_deadline(tmp_path):
         if process.poll() is None:
             process.terminate()
             process.wait(timeout=10)
+
+
+def test_cancel_interrupts_provider_reconnect_wait(tmp_path):
+    root = tmp_path / "study"
+    process = start_fixture(
+        tmp_path, root, "import sys\nprint('network interrupted',file=sys.stderr)\nsys.exit(1)\n"
+    )
+    try:
+        wait_state(root, lambda s: s.get("provider_next_retry_at") is not None)
+        started = time.monotonic()
+        put(root / "supervisor/control.json", {"command": "cancel"})
+        assert process.wait(timeout=5) == 0
+        assert time.monotonic() - started < 5
+        state = wait_state(root, lambda s: s.get("status") == "cancelled")
+        assert state["provider_retry_count"] >= 1
+        assert not ResearchService(root).status()["completed"]
+    finally:
+        if process.poll() is None:
+            process.terminate()
+            process.wait(timeout=10)
