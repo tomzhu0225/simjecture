@@ -74,6 +74,7 @@ research/limitations
 how-to/guided-commissioning
 how-to/restricted-containers
 how-to/minimal-oversight
+how-to/research-memory
 how-to/add-a-capability
 how-to/deploy-runtimes
 how-to/deepseek-harness

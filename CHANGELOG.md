@@ -4,6 +4,11 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+- Add optional evidence-linked research notes, preserved corrections, discriminating
+  test plans and experiment lineage, informed by autoresearch/AIDE source inspection.
+- Resume from a bounded research brief and generate a machine-readable attempt ledger;
+  compare hash-verified result metrics without replacing missing values with zeros.
+
 - Add source-bound methods review for new instrument-backed minimal studies,
   optional immutable instrument requirements, and append-only registration of new builds.
 - Recover native sessions that repeat intentions without work; add independent progress

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import csv
 import json
 from collections import Counter
 from pathlib import Path
@@ -120,9 +121,11 @@ def write_report(service, state):
     from .research_service import put
 
     snapshot = service.status()
+    brief = service.write_brief()
     report = dict(
         status=state["status"],
         **snapshot,
+        research_brief=brief,
         supervision={
             k: state.get(k)
             for k in (
@@ -146,12 +149,13 @@ def write_report(service, state):
         "",
         "Execution success is not scientific acceptance. Worker notes are separate.",
         "",
-        "| Experiment | Stage | Execution | Method |",
-        "|---|---|---|---|",
+        "| Experiment | Purpose | Parent | Stage | Execution | Method |",
+        "|---|---|---|---|---|---|",
     ]
     for e in sorted(snapshot["experiments"], key=lambda e: e["created_at"]):
         rows.append(
-            f"| {e['id']} | {e.get('stage', 'evidence')} | {e['status']} | "
+            f"| {e['id']} | {e.get('purpose') or 'unspecified'} | "
+            f"{e.get('parent_experiment') or '—'} | {e.get('stage', 'evidence')} | {e['status']} | "
             f"{e.get('method') or 'unreviewed'} |"
         )
     rows += ["", "## Outstanding planned cases", ""]
@@ -170,3 +174,39 @@ def write_report(service, state):
     temp = path.with_suffix(".tmp")
     temp.write_text("\n".join(rows) + "\n")
     temp.replace(path)
+    # Small machine-readable ledger for comparison scripts; failed attempts stay visible.
+    table = service.root / "experiments.tsv"
+    temp = table.with_suffix(".tmp")
+    with temp.open("w", newline="") as stream:
+        writer = csv.writer(stream, delimiter="\t")
+        writer.writerow(
+            [
+                "id",
+                "purpose",
+                "parent",
+                "plan",
+                "stage",
+                "execution",
+                "capability",
+                "source_sha256",
+                "wall_seconds",
+                "args",
+            ]
+        )
+        for e in sorted(snapshot["experiments"], key=lambda e: e["created_at"]):
+            b = e["binding"]
+            writer.writerow(
+                [
+                    e["id"],
+                    e.get("purpose"),
+                    e.get("parent_experiment"),
+                    e.get("plan"),
+                    e.get("stage", "evidence"),
+                    e["status"],
+                    b.get("capability"),
+                    b.get("inputs", {}).get(b.get("source")),
+                    e.get("execution", {}).get("wall_seconds"),
+                    json.dumps(b.get("args", [])),
+                ]
+            )
+    temp.replace(table)

@@ -26,6 +26,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from .mvp_agent import BubblewrapSandbox, MVPAgentConfig, MVPArtifactInput
 from .mvp_skills import MVPCapabilityRegistry
 from .research_methods import MethodService
+from .research_notebook import NotebookService
 
 
 class ResearchVerdict(BaseModel):
@@ -69,7 +70,7 @@ def put(path, value):
     os.replace(temp, path)
 
 
-class ResearchService(MethodService):
+class ResearchService(MethodService, NotebookService):
     def __init__(self, root):
         self.root = Path(root).resolve(strict=True)
         self.manifest = json.loads((self.root / "research.json").read_text())
@@ -250,6 +251,9 @@ class ResearchService(MethodService):
         stage="evidence",
         method=None,
         review_documents=None,
+        parent_experiment=None,
+        purpose=None,
+        plan=None,
     ):
         """Snapshot inputs, launch a bounded experiment, return an immediate receipt."""
         if not outputs or timeout <= 0:
@@ -265,6 +269,7 @@ class ResearchService(MethodService):
         ):
             raise ValueError("review_documents must be nonempty declared outputs")
         self.check_method(binding, method, stage)
+        self.validate_experiment_context(parent_experiment, purpose, plan)
         sizes = [self._source(p).stat().st_size for p in binding["inputs"]]
         if sum(sizes) > self.manifest["max_experiment_bytes"] or max(sizes) > 512 * 1024**2:
             raise ValueError("Declared inputs exceed experiment storage limits")
@@ -276,6 +281,8 @@ class ResearchService(MethodService):
         # Preserve legacy idempotency identities for calls without the new options.
         if stage != "evidence" or method is not None or review_documents is not None:
             identity.update(stage=stage, method=method, review_documents=review_documents)
+        if parent_experiment is not None or purpose is not None or plan is not None:
+            identity.update(parent_experiment=parent_experiment, purpose=purpose, plan=plan)
         identifier = "exp_" + fingerprint(identity)[:24]
         with self.lock():
             path = self.root / "experiments" / (identifier + ".json")
@@ -689,13 +696,17 @@ class ResearchService(MethodService):
 
         if compact:
             snapshot["methods"] = [
-                {k: m.get(k) for k in ["id", "status", "binding", "verdict"]}
+                {k: m.get(k) for k in ["id", "created_at", "status", "binding", "verdict"]}
                 for m in snapshot["methods"]
             ]
             snapshot["experiments"] = [
                 dict(
                     id=e["id"],
+                    created_at=e["created_at"],
                     status=e["status"],
+                    parent_experiment=e.get("parent_experiment"),
+                    purpose=e.get("purpose"),
+                    plan=e.get("plan"),
                     commitment=e.get("commitment"),
                     outputs=e["outputs"],
                     stage=e.get("stage", "evidence"),
@@ -713,7 +724,7 @@ class ResearchService(MethodService):
                 for c in snapshot["commitments"]
             ]
             snapshot["reviews"] = [
-                {k: r.get(k) for k in ["id", "claim", "status", "verdict"]}
+                {k: r.get(k) for k in ["id", "created_at", "claim", "status", "verdict"]}
                 for r in snapshot["reviews"]
             ]
         return snapshot
@@ -760,6 +771,18 @@ class Lab:
     def register_capability(self, name):
         return self._service.register_capability(name)
 
+    def note(self, statement, **kwargs):
+        return self._service.note(statement, **kwargs)
+
+    def notes(self, **kwargs):
+        return self._service.notes(**kwargs)
+
+    def brief(self, **kwargs):
+        return self._service.brief(**kwargs)
+
+    def compare(self, experiments, metrics):
+        return self._service.compare(experiments, metrics)
+
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
@@ -776,6 +799,10 @@ def main():
             "review_status",
             "method",
             "register_capability",
+            "note",
+            "notes",
+            "brief",
+            "compare",
         ],
     )
     a = parser.parse_args()

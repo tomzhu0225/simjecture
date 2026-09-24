@@ -98,9 +98,15 @@ class Client:
     def review_status(self, identifier): return self._call('review_status', identifier=identifier)
     def method(self, **kw): return self._call('method', **kw)
     def register_capability(self, name): return self._call('register_capability', name=name)
+    def note(self, statement, **kw): return self._call('note', statement=statement, **kw)
+    def notes(self, **kw): return self._call('notes', **kw)
+    def brief(self, **kw): return self._call('brief', **kw)
+    def compare(self, experiments, metrics):
+        return self._call('compare', experiments=experiments, metrics=metrics)
 lab = Client()
 """)
         self._full_prompt()  # Durable instructions also exist when resuming older sessions.
+        self.service.write_brief()
 
     def prompt(self):
         feedback = (
@@ -118,7 +124,8 @@ lab = Client()
         if self.state.get("worker_cursor"):
             return (
                 f"Continue your investigation in {self.service.work}. "
-                "Use lab.status() for compact current receipts and review gaps; "
+                "Read RESEARCH_BRIEF.md for bounded current state; lab.brief() refreshes it. "
+                "Use lab.status() for receipts and review gaps; "
                 "read RESEARCH_GUIDE.md if you need the API or scientific rules. "
                 f"Remaining wall budget: {max(0, self.state['deadline'] - time.time()):.0f}s. "
                 "Choose a useful next test; uncertainty or ending a turn is not completion. "
@@ -128,7 +135,9 @@ lab = Client()
 
     def _full_prompt(self):
         header = f"""You own this investigation. Choose your plan and use your native tools freely.
-Your working directory is {self.service.work}. The original hypothesis is immutable:
+Your working directory is {self.service.work}. Read RESEARCH_BRIEF.md to recover the
+current investigation without rereading the whole transcript. It links to full receipts.
+The original hypothesis is immutable:
 {self.service.manifest["hypothesis"]}
 The small evidence service is available with `from lab import lab` in Python.
 Write source normally here. All recorded numerical experiments use the existing sandbox.
@@ -157,6 +166,22 @@ Write source normally here. All recorded numerical experiments use the existing 
   review_documents=['result.json']. Reviewers see compact documents and raw file hashes,
   not binary contents. Use strict JSON (null plus an explicit reason for undefined values),
   numeric arrays rather than pickle/object arrays, and periodic on-disk checkpoints.
+- Optional memory: lab.note('what was observed', kind='observation', experiments=['exp_ID']).
+  Use kind='interpretation' for explanations, 'implementation' for code corrections,
+  and 'question' for unresolved issues. Correct a note with supersedes='note_ID'; history
+  stays available through lab.notes(limit=20, offset=0). Notes never approve a claim.
+- Before an expensive or ambiguous test, consider a next_test note with alternatives:
+  lab.note('Refine to distinguish numerical diffusion from a physical barrier',
+  kind='next_test', alternatives={{'numerical diffusion':'onset changes with resolution',
+  'physical barrier':'onset converges while the pressure barrier persists'}},
+  estimated_seconds=600). These are predictions to test, not established facts.
+  lab.run(..., plan='note_ID', parent_experiment='exp_ID', purpose='diagnostic') links
+  the attempt; purpose can also be baseline/debug/comparison/validation. These optional
+  labels impose no stage order and never turn debugging into a scientific falsification.
+- lab.compare(['exp_ID', ...], {{'onset':['result.json','onset.time']}}) extracts scalar
+  metrics from hash-verified outputs. Failed/missing/undefined results remain explicit;
+  no best scientific result is inferred from a scalar score. Record binary-data analysis
+  first. Use the cheapest discriminating test, and retain unsuccessful attempts.
 - lab.status() returns compact experiment receipts, reviews, commitments and remaining
   wall time; use lab.status(compact=False) for full metadata. Experiment files are under
   {self.root}/experiments/ID/workspace/.
@@ -263,6 +288,7 @@ Do not edit service records or other studies. Resume from lab.status() and your 
                         self.process_methods()
                         self.process_reviews()
                         snapshot = self.service.status()
+                        self.state.pop("last_error", None)
                         if snapshot["completed"]:
                             self.service.cancel_active()
                             snapshot = self.service.status()

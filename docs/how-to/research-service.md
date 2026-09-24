@@ -26,7 +26,10 @@ checkout's `src` on `PYTHONPATH`. The backend uses its existing login. Codex/GLM
 resume the same native thread; other configured CLI backends preserve the working
 folder and evidence state. The wall deadline survives process restarts. Operator instructions are frozen before experiments and included in every reviewer packet; changing them requires a new study.
 
-The generated `research/lab.py` offers five operations:
+The generated `research/lab.py` offers a small evidence API. Optional
+[research memory and comparison helpers](research-memory.md) keep observations,
+interpretations and attempts traceable. Instrument-backed studies also use
+[methods review](minimal-oversight.md). Core operations include:
 
 ```python
 from lab import lab

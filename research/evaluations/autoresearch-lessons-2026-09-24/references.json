@@ -1,0 +1,32 @@
+[
+  {
+    "project": "autoresearch",
+    "url": "https://github.com/karpathy/autoresearch",
+    "revision": "228791fb499afffb54b46200aca536f79142f117",
+    "inspected_files": [
+      "program.md",
+      "prepare.py"
+    ],
+    "source_reused": false
+  },
+  {
+    "project": "aide",
+    "url": "https://github.com/WecoAI/aideml",
+    "revision": "60b3978ddf65b71f86eb7c64506965048a1398cf",
+    "inspected_files": [
+      "aide/journal.py",
+      "aide/agent.py"
+    ],
+    "source_reused": false
+  },
+  {
+    "project": "ai-scientist-v2",
+    "url": "https://github.com/SakanaAI/AI-Scientist-v2",
+    "revision": "96bd51617cfdbb494a9fc283af00fe090edfae48",
+    "inspected_files": [
+      "ai_scientist/treesearch/journal.py",
+      "ai_scientist/treesearch/agent_manager.py"
+    ],
+    "source_reused": false
+  }
+]

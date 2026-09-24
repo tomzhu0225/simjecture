@@ -1,0 +1,201 @@
+{
+  "archive_replay": {
+    "compact_status_bytes": 18986,
+    "briefs": [
+      {
+        "budget": 2048,
+        "actual_bytes": 1924,
+        "counts": {
+          "experiments": 24,
+          "notes": 0,
+          "execution": {
+            "succeeded": 20,
+            "cancelled": 1,
+            "failed": 3
+          }
+        },
+        "omitted": {
+          "recent_experiments": 20,
+          "methods": 0,
+          "recent_reviews": 0,
+          "notes": 0,
+          "missing_cases": 0,
+          "accepted_claims": 0,
+          "active_experiments": 0
+        }
+      },
+      {
+        "budget": 4096,
+        "actual_bytes": 3649,
+        "counts": {
+          "experiments": 24,
+          "notes": 0,
+          "execution": {
+            "succeeded": 20,
+            "cancelled": 1,
+            "failed": 3
+          }
+        },
+        "omitted": {
+          "recent_experiments": 12,
+          "methods": 0,
+          "recent_reviews": 0,
+          "notes": 0,
+          "missing_cases": 0,
+          "accepted_claims": 0,
+          "active_experiments": 0
+        }
+      },
+      {
+        "budget": 16000,
+        "actual_bytes": 4224,
+        "counts": {
+          "experiments": 24,
+          "notes": 0,
+          "execution": {
+            "succeeded": 20,
+            "cancelled": 1,
+            "failed": 3
+          }
+        },
+        "omitted": {
+          "recent_experiments": 12,
+          "methods": 0,
+          "recent_reviews": 0,
+          "notes": 0,
+          "missing_cases": 0,
+          "accepted_claims": 0,
+          "active_experiments": 0
+        }
+      }
+    ],
+    "legacy_comparison_states": [
+      {
+        "value": null,
+        "status": "unavailable",
+        "output": "result.json",
+        "path": "onset.reconnection_onset",
+        "sha256": "fba036dee68a0d327dd6ce115a92a8c7559cae565a12a48b03b264796994cd16",
+        "reason": "Non-finite JSON constant: NaN"
+      },
+      {
+        "value": null,
+        "status": "unavailable",
+        "output": "result.json",
+        "path": "onset.reconnection_onset",
+        "reason": "Experiment execution is failed"
+      }
+    ],
+    "original_records_unchanged": true
+  },
+  "remote_tests": {
+    "passed": 32
+  },
+  "local_tests": {
+    "passed": 629,
+    "skipped": 9
+  },
+  "docs_build": "passed, warnings treated as errors",
+  "live_mimo": {
+    "status": "completed",
+    "elapsed_seconds": 143.2809760570526,
+    "rounds": 1,
+    "api_commands": {
+      "note": 1,
+      "brief": 1,
+      "compare": 2,
+      "run": 1,
+      "review": 1
+    },
+    "notes": [
+      {
+        "id": "note_06419ae09a90b325d1c4c0c0",
+        "kind": "implementation",
+        "experiments": [
+          "exp_4385245b58f861af1cf4cf99"
+        ],
+        "alternatives": {}
+      },
+      {
+        "id": "note_c474fd4b144f1f0826c56eec",
+        "kind": "observation",
+        "experiments": [
+          "exp_4385245b58f861af1cf4cf99"
+        ],
+        "alternatives": {}
+      },
+      {
+        "id": "note_1fd94c8c2942ec27cd169542",
+        "kind": "next_test",
+        "experiments": [],
+        "alternatives": {
+          "inclusive implementation restores the identity": "mismatch_count=0 across all n=0..12",
+          "identity remains mismatched after correction": "mismatch_count is greater than 0 and the failing n values are retained"
+        }
+      }
+    ],
+    "experiments": [
+      {
+        "id": "exp_4385245b58f861af1cf4cf99",
+        "status": "succeeded",
+        "stage": "exploration",
+        "purpose": "baseline",
+        "parent_experiment": null,
+        "plan": null
+      },
+      {
+        "id": "exp_d4a6f3a8fe4140c783ee9811",
+        "status": "succeeded",
+        "stage": "evidence",
+        "purpose": "debug",
+        "parent_experiment": "exp_4385245b58f861af1cf4cf99",
+        "plan": "note_1fd94c8c2942ec27cd169542"
+      }
+    ],
+    "reviews": [
+      {
+        "id": "review_5ade23e0950f89493fd956cd",
+        "status": "resolved",
+        "created_at": 1790213640.5863283,
+        "experiments": [
+          "exp_d4a6f3a8fe4140c783ee9811"
+        ],
+        "conclusion": "Scope: exactly every integer n=0 through 12. For each case, the corrected computation of the inclusive sum 0+1+...+n equals n*(n+1)//2, with raw per-case sums, formula values, and differences retained in result.json and mismatch_count=0. The earlier exp_4385245b58f861af1cf4cf99 is retained only as a baseline implementation-defect record and is not submitted as claim evidence. Limitation: this finite enumeration supports only n=0..12 and does not establish the identity for integers outside that domain.",
+        "claim": "root",
+        "disposition": "supported",
+        "challenge": {
+          "strategy": "Complete finite-domain counterexample search: exhaustively enumerate every required integer n=0,1,...,12 and directly compare the inclusive sum 0+1+...+n against n*(n+1)//2, including the boundary n=0 and every failure-prone endpoint in the stated domain.",
+          "experiments": [
+            "exp_d4a6f3a8fe4140c783ee9811"
+          ],
+          "outcome": "All 13 required cases were evaluated. The inclusive computed sums equal the formula values in every case, the difference array is zero throughout, and mismatch_count=0; no counterexample exists in the complete specified finite domain."
+        },
+        "verdict": {
+          "claim_id": "root",
+          "decision": "approved",
+          "disposition": "supported",
+          "rationale": "The submitted corrected.py correctly computes the inclusive integer sum and the stated triangular-number formula for every n=0 through 12. The retained result.json is valid and shows the complete per-case outputs [0,1,3,6,10,15,21,28,36,45,55,66,78] on both sides, an all-zero difference array, no missing outputs, and mismatch_count=0. This is an exhaustive counterexample search over the target's entire finite domain, including both boundary cases, so it directly challenges the claim rather than merely asserting support. The baseline off-by-one mismatch is correctly excluded as an implementation defect. Evidence is sufficient for the stated n=0..12 domain only and is not extrapolated beyond it.",
+          "evidence_gaps": [],
+          "next_test": null
+        },
+        "packet_sha256": "b117c22ffb8d2123a7e6f8689d309d656ad87d4a09333dc5a33790e6b281290a",
+        "resolved_at": 1790213668.6568546
+      }
+    ],
+    "usage_by_thread": {
+      "01a0d10c-6a78-7863-a268-f7743ad69ded": {
+        "input_tokens": 9640,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 303,
+        "reasoning_output_tokens": 109
+      }
+    },
+    "usage_incomplete_turns": 1,
+    "error_found_and_fixed": "'NoneType' object has no attribute 'get'"
+  },
+  "installed_code_check": {
+    "modules": 5,
+    "mismatches": []
+  }
+}

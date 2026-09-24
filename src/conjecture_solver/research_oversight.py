@@ -79,7 +79,7 @@ def durable_signature(service):
             p.is_file()
             and not p.is_symlink()
             and p.suffix in {".py", ".F90", ".f90", ".par", ".json", ".md"}
-            and p.name not in {"lab.py", "RESEARCH_GUIDE.md"}
+            and p.name not in {"lab.py", "RESEARCH_GUIDE.md", "RESEARCH_BRIEF.md"}
             and p.stat().st_size <= 131072
         ):
             from .research_service import sha
@@ -93,6 +93,7 @@ def durable_signature(service):
             experiments=snapshot["experiments"],
             commitments=snapshot["commitments"],
             reviews=snapshot["reviews"],
+            notebook=[n["id"] for n in service.notes(limit=100)["notes"]],
         )
     )
 
@@ -168,20 +169,15 @@ SCHEMA:
         # Cheap checks every turn; model review only at meaningful intervals or recovery.
         if method is None and not (now - last >= 900 or (streak >= 3 and now - last >= 120)):
             return
-        snapshot = self.service.status(compact=True)
         packet = dict(
             original_hypothesis=self.service.manifest["hypothesis"],
             operator_protocol=self.service.manifest.get("operator_protocol"),
             requirements=self.service.manifest.get("requirements", {}),
             method=method,
-            snapshot=snapshot,
+            snapshot=self.service.brief(),
             recent_activity=self.state.get("last_turn_trace"),
             no_progress_streak=streak,
         )
-        # Completed methods include frozen source; status needs only identity and verdict.
-        packet["snapshot"]["methods"] = [
-            {k: m.get(k) for k in ("id", "status", "verdict")} for m in snapshot["methods"]
-        ]
         self.state["oversight_count"] = self.state.get("oversight_count", 0) + 1
         d = self.directory / f"oversight-{self.state['oversight_count']:05d}"
         d.mkdir(exist_ok=True)
