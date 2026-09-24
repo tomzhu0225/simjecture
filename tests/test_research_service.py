@@ -418,8 +418,9 @@ def test_resumed_agent_has_durable_guide_and_short_prompt(tmp_path):
     supervisor.save()
     (s.work / "RESEARCH_GUIDE.md").unlink()
     reopened = ResearchSupervisor(args)
-    assert (s.work / "RESEARCH_GUIDE.md").read_text() == full
-    assert len(reopened.prompt()) < len(full) / 4
+    assert (s.work / "RESEARCH_GUIDE.md").read_text() in full
+    assert "CURRENT RESEARCH STATE" in reopened.prompt()
+    assert len(reopened.prompt().encode()) <= 8000
     assert "RESEARCH_GUIDE.md" in reopened.prompt()
 
 

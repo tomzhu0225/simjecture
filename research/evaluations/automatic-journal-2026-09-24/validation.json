@@ -1,0 +1,143 @@
+{
+  "local_tests": {
+    "passed": 639,
+    "skipped": 9
+  },
+  "remote_tests": {
+    "passed": 42
+  },
+  "targeted_tests": {
+    "passed": 47
+  },
+  "docs": "passed with warnings treated as errors",
+  "live_summary": {
+    "attempts": [
+      {
+        "id": "exp_4c082a9e8180a4f23cbf4531",
+        "key": "baseline",
+        "status": "succeeded",
+        "purpose": null,
+        "parent_experiment": null,
+        "plan": null
+      },
+      {
+        "id": "exp_f5db90d9345924ede04f7943",
+        "key": "crash",
+        "status": "failed",
+        "purpose": null,
+        "parent_experiment": null,
+        "plan": null
+      },
+      {
+        "id": "exp_28c93cd87dea63186c1d2b5e",
+        "key": "corrected",
+        "status": "succeeded",
+        "purpose": null,
+        "parent_experiment": null,
+        "plan": null
+      }
+    ],
+    "worker_notes": 0,
+    "automatic_entries": 3,
+    "summary_files": 1,
+    "summary_seconds": 31.0246474700034,
+    "summary_error": null,
+    "usage_by_thread": {
+      "01a0d11f-76d2-7ea1-bc60-02b506abc982": {
+        "input_tokens": 8748,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 736,
+        "reasoning_output_tokens": 183
+      }
+    },
+    "completed": false
+  },
+  "recovery": [
+    {
+      "variant": "plain",
+      "returncode": 0,
+      "elapsed_seconds": 69.19085915599862,
+      "prompt_bytes": 715,
+      "correct_fields": 7,
+      "total_fields": 7,
+      "answer": {
+        "total_attempts": 3,
+        "failed_executions": 1,
+        "first_mismatch": 12,
+        "last_mismatch": 0,
+        "independently_accepted": false,
+        "failure_is_mathematical_counterexample": false,
+        "implementation_changed": true
+      },
+      "usage": {
+        "input_tokens": 55674,
+        "cached_input_tokens": 14336,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 1637,
+        "reasoning_output_tokens": 1010
+      },
+      "commands": 4
+    },
+    {
+      "variant": "previous_minimal",
+      "returncode": 0,
+      "elapsed_seconds": 118.26741714400123,
+      "prompt_bytes": 814,
+      "correct_fields": 7,
+      "total_fields": 7,
+      "answer": {
+        "total_attempts": 3,
+        "failed_executions": 1,
+        "first_mismatch": 12,
+        "last_mismatch": 0,
+        "independently_accepted": false,
+        "failure_is_mathematical_counterexample": false,
+        "implementation_changed": true
+      },
+      "usage": {
+        "input_tokens": 69376,
+        "cached_input_tokens": 22528,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 2731,
+        "reasoning_output_tokens": 1459
+      },
+      "commands": 11
+    },
+    {
+      "variant": "automatic_journal",
+      "returncode": 0,
+      "elapsed_seconds": 16.363144702998397,
+      "prompt_bytes": 5995,
+      "correct_fields": 7,
+      "total_fields": 7,
+      "answer": {
+        "total_attempts": 3,
+        "failed_executions": 1,
+        "first_mismatch": 12,
+        "last_mismatch": 0,
+        "independently_accepted": false,
+        "failure_is_mathematical_counterexample": false,
+        "implementation_changed": true
+      },
+      "usage": {
+        "input_tokens": 8946,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 164,
+        "reasoning_output_tokens": 115
+      },
+      "commands": 0
+    }
+  ],
+  "invalid_trial_excluded": "native read-only sandbox unavailable; corrected execution matches actual studies",
+  "synthesis_plus_recovery": {
+    "seconds": 47.3877921730018,
+    "reported_tokens": 18594
+  },
+  "published": false,
+  "installed_code_check": {
+    "checked_modules": 5,
+    "mismatches": []
+  }
+}

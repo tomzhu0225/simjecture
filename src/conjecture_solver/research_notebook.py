@@ -182,7 +182,15 @@ class NotebookService:
         """Bounded recovery context without code/log duplication or invented summaries."""
         if not isinstance(max_bytes, int) or not 2048 <= max_bytes <= 64000:
             raise ValueError("Brief budget must be 2048..64000 bytes")
+        from .research_journal import journal_entries
+
         snapshot = self.status(compact=True)
+        journal = journal_entries(self)
+        summaries = sorted(
+            (json.loads(p.read_text()) for p in (self.root / "journal/summaries").glob("*.json")),
+            key=lambda s: s["created_at"],
+            reverse=True,
+        )
         experiments = sorted(snapshot["experiments"], key=lambda e: e["created_at"], reverse=True)
         notebook = sorted(
             self._all("notebook"), key=lambda n: (n["created_at"], n["id"]), reverse=True
@@ -220,6 +228,30 @@ class NotebookService:
                 notebook="lab.notes(limit=20, offset=0)",
             ),
             budget_warning=snapshot["audit"].get("budget_warning"),
+            automatic_journal=[
+                {
+                    k: e.get(k)
+                    for k in (
+                        "id",
+                        "execution",
+                        "source",
+                        "args",
+                        "implementation",
+                        "preceding_attempt_same_entrypoint",
+                        "implementation_changed",
+                        "explicit_parent",
+                        "results",
+                        "error",
+                        "execution_details",
+                        "input_mutations",
+                    )
+                }
+                for e in journal[:8]
+            ],
+            controller_summaries=[
+                dict(authority=s["authority"], notes=s["notes"], packet_sha256=s["packet_sha256"])
+                for s in summaries[:2]
+            ],
             accepted_claims=[
                 dict(id=r["id"], claim=r["claim"], disposition=r["verdict"]["disposition"])
                 for r in snapshot["reviews"]
@@ -302,8 +334,10 @@ class NotebookService:
         priority = (
             "recent_experiments",
             "methods",
-            "recent_reviews",
+            "automatic_journal",
+            "controller_summaries",
             "notes",
+            "recent_reviews",
             "missing_cases",
             "accepted_claims",
             "active_experiments",
@@ -314,6 +348,8 @@ class NotebookService:
                 raise ValueError("Brief header exceeds requested budget")
             brief[removable].pop()
         totals = dict(
+            automatic_journal=len(journal),
+            controller_summaries=len(summaries),
             recent_experiments=len(experiments),
             methods=len(snapshot["methods"]),
             recent_reviews=len(snapshot["reviews"]),

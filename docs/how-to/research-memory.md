@@ -1,8 +1,41 @@
 # Research memory and experimental comparisons
 
-Minimal mode provides optional research memory, a bounded recovery brief, and scalar
-comparisons over recorded outputs. Native tools remain available. These helpers impose
-no experiment ordering and do not add an approval step.
+Minimal mode automatically maintains an experiment journal and supplies a bounded
+journal view directly in every research prompt, including fresh and recovered sessions.
+This follows the controller-managed journal pattern used by AIDE. The researcher need
+not invoke a recording helper or open a file to receive current history. Native tools
+remain available; no experiment ordering or additional approval step is introduced.
+
+## Automatic controller work
+
+For every recorded attempt the host retains source/input and runtime identities, command
+arguments, execution outcome and timing, bounded failure diagnostics, and hash-checked
+scalar result excerpts. Excerpts are reported values, not scientifically validated facts.
+The original receipts and full artifacts remain authoritative. Full projections live in
+`journal/attempts/`; retained checkpoint summaries live in `journal/summaries/`.
+
+Attempts sharing an entrypoint are linked chronologically, and implementation changes
+are detected from source/dependency/runtime hashes. These links are explicitly labelled
+as chronology rather than inferred causal or hypothesis relationships. Explicit worker
+parent links remain distinct.
+
+After a batch of results, an implementation change or session recovery, the controller
+may run a short tool-free synthesis using the configured reviewer model. It records
+observations, provisional interpretations, open questions and useful next tests with
+validated receipt references. This is **unreviewed memory**, not scientific adjudication.
+It cannot accept or falsify claims and does not write authoritative hypothesis records.
+
+Synthesis is limited to 45 seconds per invocation, at least five minutes between attempts,
+and a cumulative budget of the lesser of 300 seconds or 3% of the study's wall budget.
+A minimum 15-second allowance and 90 seconds of remaining wall time are required before
+launch. Small tasks use deterministic journal entries alone. Claim/method reviews take
+precedence. Provider, format or citation failures defer synthesis; they never discard the
+journal or stop the researcher. Existing process-shutdown grace still applies.
+
+The worker-facing context is capped at 6,000 UTF-8 bytes, with omissions and full-record
+retrieval paths visible. The separately generated brief defaults to 16,000 bytes. Neither
+requires the agent to choose a memory tool. The following optional helpers enrich this
+automatically maintained record.
 
 ## Preserve the distinction between measurements and explanations
 
@@ -83,7 +116,7 @@ full records remain accessible. Long hypotheses are labelled as abridged and rem
 the original guide/manifest. Notes remain labelled as unreviewed.
 
 The host writes `research/RESEARCH_BRIEF.md` and `research_brief.json` at checkpoints.
-New/recovered native sessions are directed to the brief instead of the full transcript.
+New/recovered native sessions receive bounded current state directly in their prompt.
 Updating this generated file does not count as research progress. Full receipt status
 remains available through `lab.status()`, and history through
 `lab.notes(limit=20, offset=0, kind="observation")`.

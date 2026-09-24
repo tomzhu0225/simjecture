@@ -1,0 +1,63 @@
+[
+  {
+    "variant": "plain",
+    "returncode": 0,
+    "elapsed_seconds": 37.20777827299753,
+    "prompt_bytes": 715,
+    "correct_fields": 3,
+    "total_fields": 7,
+    "answer": {
+      "total_attempts": 0,
+      "failed_executions": 0,
+      "first_mismatch": 0,
+      "last_mismatch": 0,
+      "independently_accepted": false,
+      "failure_is_mathematical_counterexample": false,
+      "implementation_changed": false
+    },
+    "usage": {
+      "input_tokens": 21755,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 711,
+      "reasoning_output_tokens": 467
+    },
+    "commands": 2
+  },
+  {
+    "variant": "previous_minimal",
+    "returncode": 124,
+    "elapsed_seconds": 120.03789993499959,
+    "prompt_bytes": 814,
+    "correct_fields": 0,
+    "total_fields": 7,
+    "answer": null,
+    "usage": null,
+    "commands": 4
+  },
+  {
+    "variant": "automatic_journal",
+    "returncode": 0,
+    "elapsed_seconds": 22.57749821500329,
+    "prompt_bytes": 5994,
+    "correct_fields": 7,
+    "total_fields": 7,
+    "answer": {
+      "total_attempts": 3,
+      "failed_executions": 1,
+      "first_mismatch": 12,
+      "last_mismatch": 0,
+      "independently_accepted": false,
+      "failure_is_mathematical_counterexample": false,
+      "implementation_changed": true
+    },
+    "usage": {
+      "input_tokens": 18214,
+      "cached_input_tokens": 2048,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 297,
+      "reasoning_output_tokens": 136
+    },
+    "commands": 1
+  }
+]

@@ -4,6 +4,10 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+- Make experiment journaling and bounded context delivery automatic in minimal mode,
+  following AIDE's controller-managed pattern. Add budget-limited checkpoint synthesis
+  with receipt-bound citations and no authority over scientific acceptance.
+
 - Add optional evidence-linked research notes, preserved corrections, discriminating
   test plans and experiment lineage, informed by autoresearch/AIDE source inspection.
 - Resume from a bounded research brief and generate a machine-readable attempt ledger;

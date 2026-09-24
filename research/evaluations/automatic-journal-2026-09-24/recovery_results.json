@@ -1,0 +1,77 @@
+[
+  {
+    "variant": "plain",
+    "returncode": 0,
+    "elapsed_seconds": 69.19085915599862,
+    "prompt_bytes": 715,
+    "correct_fields": 7,
+    "total_fields": 7,
+    "answer": {
+      "total_attempts": 3,
+      "failed_executions": 1,
+      "first_mismatch": 12,
+      "last_mismatch": 0,
+      "independently_accepted": false,
+      "failure_is_mathematical_counterexample": false,
+      "implementation_changed": true
+    },
+    "usage": {
+      "input_tokens": 55674,
+      "cached_input_tokens": 14336,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 1637,
+      "reasoning_output_tokens": 1010
+    },
+    "commands": 4
+  },
+  {
+    "variant": "previous_minimal",
+    "returncode": 0,
+    "elapsed_seconds": 118.26741714400123,
+    "prompt_bytes": 814,
+    "correct_fields": 7,
+    "total_fields": 7,
+    "answer": {
+      "total_attempts": 3,
+      "failed_executions": 1,
+      "first_mismatch": 12,
+      "last_mismatch": 0,
+      "independently_accepted": false,
+      "failure_is_mathematical_counterexample": false,
+      "implementation_changed": true
+    },
+    "usage": {
+      "input_tokens": 69376,
+      "cached_input_tokens": 22528,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 2731,
+      "reasoning_output_tokens": 1459
+    },
+    "commands": 11
+  },
+  {
+    "variant": "automatic_journal",
+    "returncode": 0,
+    "elapsed_seconds": 16.363144702998397,
+    "prompt_bytes": 5995,
+    "correct_fields": 7,
+    "total_fields": 7,
+    "answer": {
+      "total_attempts": 3,
+      "failed_executions": 1,
+      "first_mismatch": 12,
+      "last_mismatch": 0,
+      "independently_accepted": false,
+      "failure_is_mathematical_counterexample": false,
+      "implementation_changed": true
+    },
+    "usage": {
+      "input_tokens": 8946,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 164,
+      "reasoning_output_tokens": 115
+    },
+    "commands": 0
+  }
+]

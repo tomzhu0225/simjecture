@@ -316,7 +316,13 @@ class AgentSupervisor:
                 stdin=prompt_stream if prompt_on_stdin else subprocess.DEVNULL,
             )
             self.state["child_pid"] = child.pid
-            self.state["activity"] = "Reviewing evidence" if judge else "Agent working"
+            self.state["activity"] = (
+                "Summarizing research journal"
+                if judge and directory.name.startswith("journal-summary-")
+                else "Reviewing evidence"
+                if judge
+                else "Agent working"
+            )
             self.state["last_activity_at"] = time.time()
             self.save()
             self.event(

@@ -1,0 +1,43 @@
+{
+  "attempts": [
+    {
+      "id": "exp_4c082a9e8180a4f23cbf4531",
+      "key": "baseline",
+      "status": "succeeded",
+      "purpose": null,
+      "parent_experiment": null,
+      "plan": null
+    },
+    {
+      "id": "exp_f5db90d9345924ede04f7943",
+      "key": "crash",
+      "status": "failed",
+      "purpose": null,
+      "parent_experiment": null,
+      "plan": null
+    },
+    {
+      "id": "exp_28c93cd87dea63186c1d2b5e",
+      "key": "corrected",
+      "status": "succeeded",
+      "purpose": null,
+      "parent_experiment": null,
+      "plan": null
+    }
+  ],
+  "worker_notes": 0,
+  "automatic_entries": 3,
+  "summary_files": 1,
+  "summary_seconds": 31.0246474700034,
+  "summary_error": null,
+  "usage_by_thread": {
+    "01a0d11f-76d2-7ea1-bc60-02b506abc982": {
+      "input_tokens": 8748,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 736,
+      "reasoning_output_tokens": 183
+    }
+  },
+  "completed": false
+}

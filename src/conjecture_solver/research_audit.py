@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import csv
 import json
+import math
 from collections import Counter
 from pathlib import Path
 
@@ -14,7 +15,13 @@ def strict_json(text):
     def reject(value):
         raise ValueError(f"Non-finite JSON constant: {value}")
 
-    return json.loads(text, parse_constant=reject)
+    def finite_float(value):
+        number = float(value)
+        if not math.isfinite(number):
+            raise ValueError("Non-finite JSON number")
+        return number
+
+    return json.loads(text, parse_constant=reject, parse_float=finite_float)
 
 
 def output_findings(workspace, outputs):
@@ -118,9 +125,11 @@ def study_findings(snapshot, manifest):
 
 
 def write_report(service, state):
+    from .research_journal import sync_journal
     from .research_service import put
 
     snapshot = service.status()
+    sync_journal(service)
     brief = service.write_brief()
     report = dict(
         status=state["status"],
@@ -137,6 +146,9 @@ def write_report(service, state):
                 "usage_by_thread",
                 "usage_incomplete_turns",
                 "provider_retry_count",
+                "journal_summary_count",
+                "journal_summary_seconds",
+                "journal_summary_error",
             )
         },
     )
