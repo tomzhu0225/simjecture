@@ -33,6 +33,11 @@ def configure_parser(parser):
         choices=("bubblewrap", "proot-cooperative"),
         help="Experiment execution; default bubblewrap, immutable on resume",
     )
+    parser.add_argument(
+        "--requirements-file",
+        type=Path,
+        help="Optional immutable JSON instrument/method requirements (minimal mode)",
+    )
     parser.add_argument("--state-dir", type=Path)
     parser.add_argument("--capabilities", type=Path)
     parser.add_argument("--wall-seconds", type=float, default=3600)
@@ -96,6 +101,8 @@ def _run(args):
     if saved_state and args.state_dir != saved_state.resolve():
         raise ValueError("State directory is part of the saved launch contract")
     mode = selected_mode(args.campaign, args.mode, args.state_dir)
+    if mode != "minimal" and getattr(args, "requirements_file", None):
+        raise ValueError("--requirements-file is supported in minimal mode only")
     saved_execution = previous.get("execution_backend")
     if not saved_execution and (args.campaign / "research.json").exists():
         saved_execution = read(args.campaign / "research.json").get(
@@ -152,6 +159,8 @@ def _run(args):
             else ResearchService(args.campaign)
         )
         service.freeze_protocol(args.instructions_file.read_text())
+        if getattr(args, "requirements_file", None):
+            service.freeze_requirements(json.loads(args.requirements_file.read_text()))
         supervisor = ResearchSupervisor(args)
     else:
         from .campaign_kernel import CampaignKernel

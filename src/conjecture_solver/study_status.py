@@ -59,6 +59,8 @@ def study_status(root):
             f"Reconnecting provider (attempt {state.get('provider_retry_count', 0)}, "
             f"{max(0, state['provider_next_retry_at'] - now):.0f}s to retry)"
         )
+    if status == "running" and state.get("no_progress_streak", 0) >= 2:
+        activity += f" · {state['no_progress_streak']} turns without observed progress"
     counters = list(state.get("usage_by_thread", {}).values())
     usage = {
         k: sum(u.get(k, 0) for u in counters)
@@ -75,8 +77,14 @@ def study_status(root):
         provider_retry_count=state.get("provider_retry_count", 0),
         provider_wait_seconds=state.get("provider_wait_seconds", 0),
         failed_provider_turn_seconds=state.get("failed_provider_turn_seconds", 0),
+        oversight_count=state.get("oversight_count", 0),
+        oversight_feedback=state.get("oversight_feedback"),
+        no_progress_streak=state.get("no_progress_streak", 0),
+        session_recoveries=state.get("session_recoveries", 0),
+        methods=[read(p) for p in sorted((root / "methods").glob("*.json"))],
         usage=usage,
         usage_available=bool(counters),
+        usage_incomplete_turns=state.get("usage_incomplete_turns", 0),
         mode=mode,
         backend=launch.get("backend", state.get("backend", "unknown")),
         model=launch.get("model", state.get("model", "unknown")),
@@ -107,7 +115,8 @@ def status_line(status):
         f"{int(status['elapsed']) % 60:02d} elapsed · {int(status['remaining']) // 60}m left | "
         f"jobs {counts.get('running', 0)} running / {counts.get('succeeded', 0)} done / "
         f"{counts.get('failed', 0)} failed | "
-        f"reviews {sum(r.get('status') == 'queued' for r in status['reviews'])} queued"
+        f"reviews {sum(r.get('status') == 'queued' for r in status['reviews'])} queued · "
+        f"oversight {status.get('oversight_count', 0)}"
     )
 
 

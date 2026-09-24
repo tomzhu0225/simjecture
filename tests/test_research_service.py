@@ -58,7 +58,10 @@ def test_real_execution_and_durable_review(tmp_path, monkeypatch):
     reopened = ResearchService(s.root)
     assert reopened.review_status(request["id"]) == request
     assert not reopened.status()["completed"]
-    assert approve(reopened, request)["completed"]
+    approved = approve(reopened, request)
+    assert approved["completed"]
+    assert approved["experiments"][0]["scientific_status"] == "reviewed"
+    assert approved["experiments"][0]["review_ids"] == [request["id"]]
 
 
 def test_mutated_evidence_is_rejected(tmp_path):
@@ -418,3 +421,55 @@ def test_resumed_agent_has_durable_guide_and_short_prompt(tmp_path):
     assert (s.work / "RESEARCH_GUIDE.md").read_text() == full
     assert len(reopened.prompt()) < len(full) / 4
     assert "RESEARCH_GUIDE.md" in reopened.prompt()
+
+
+def test_binary_outputs_are_retained_but_not_decoded_by_reviewer(tmp_path):
+    s = service(tmp_path)
+    (s.work / "calc.py").write_text(
+        "from pathlib import Path\n"
+        "Path('result.json').write_text('{\"value\":4}')\n"
+        "Path('snapshots.npz').write_bytes(b'\\x00\\xff' * 200000)\n"
+    )
+    r = s.run("calc.py", outputs=["result.json", "snapshots.npz"])
+    deadline = time.time() + 20
+    while time.time() < deadline:
+        r = s._read("experiments", r["id"])
+        if r["status"] not in ["queued", "running"]:
+            break
+        time.sleep(0.05)
+    assert r["status"] == "succeeded"
+    req = s.review([r["id"]], "The compact numerical summary accompanies the raw data.")
+    p = s.packet(s.review_body(req))["experiments"][0]
+    assert set(p["documents"]) == {"result.json"}
+    assert p["raw_artifacts"]["snapshots.npz"]["sha256"]
+    (s.root / "experiments" / r["id"] / "workspace/snapshots.npz").write_bytes(b"changed")
+    with pytest.raises(ValueError, match="changed"):
+        s.packet(s.review_body(req))
+
+
+def test_exploration_cannot_be_relabelled_as_claim_evidence(tmp_path):
+    s = service(tmp_path)
+    r = completed(s, stage="exploration")
+    with pytest.raises(ValueError, match="Exploration"):
+        s.review([r["id"]], "A commissioning result is not scientific evidence.")
+    fresh = completed(s, stage="evidence")
+    assert fresh["id"] != r["id"]
+
+
+def test_recorded_source_mutation_is_an_execution_failure(tmp_path):
+    s = service(tmp_path)
+    (s.work / "calc.py").write_text(
+        "from pathlib import Path\n"
+        "Path('calc.py').write_text('print(4)')\n"
+        "Path('result.json').write_text('{\"value\":4}')\n"
+    )
+    r = s.run("calc.py", outputs=["result.json"])
+    until = time.time() + 20
+    while time.time() < until:
+        r = s._read("experiments", r["id"])
+        if r["status"] not in ["queued", "running"]:
+            break
+        time.sleep(0.05)
+    assert r["status"] == "failed"
+    # Sandboxed read-only inputs may reject the write before the host mutation check.
+    assert r.get("input_mutations") or r["execution"]["returncode"] != 0

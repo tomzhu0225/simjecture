@@ -4,6 +4,17 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+- Add source-bound methods review for new instrument-backed minimal studies,
+  optional immutable instrument requirements, and append-only registration of new builds.
+- Recover native sessions that repeat intentions without work; add independent progress
+  review, bounded host checkpoints and immediate handoff of durable review requests.
+- Separate exploration from evidence and compact review documents from hashed binary
+  outputs; detect changed inputs, dead workers and questionable result fields.
+- Generate a live host evidence ledger with missing-case coverage, budget warnings,
+  review status and incomplete token-accounting indicators.
+- Support operator-authorized read-only solver-source inspection and useful build
+  diagnostics. Record the reconnection-run audit and live MiMo validation results.
+
 ## 0.5.0 — 2026-09-21
 
 - Default new native-agent studies to minimal, with structured and frontier

@@ -324,12 +324,18 @@ class AgentSupervisor:
                 pid=child.pid,
                 directory=str(directory),
             )
+            slice_limit = (
+                time.monotonic() + self.worker_slice_seconds
+                if not judge and getattr(self, "worker_slice_seconds", None)
+                else float("inf")
+            )
             limit = time.monotonic() + duration
             turn_timed_out = False
             activity = None
             observed_bytes = 0
             stream_offset = 0
             pending_line = ""
+            handoff_since = None
             try:
                 while child.poll() is None:
                     size = (directory / "response.json").stat().st_size
@@ -375,7 +381,12 @@ class AgentSupervisor:
                             activity = observed
                             limit = time.monotonic() + self.args.turn_seconds
                     boundary = self.boundary()
-                    if boundary or time.monotonic() >= limit:
+                    handoff = (
+                        not judge and getattr(self, "worker_checkpoint_requested", lambda: False)()
+                    )
+                    handoff_since = (handoff_since or time.monotonic()) if handoff else None
+                    handoff = handoff_since is not None and time.monotonic() - handoff_since >= 2
+                    if boundary or handoff or time.monotonic() >= min(limit, slice_limit):
                         turn_timed_out = boundary is None
                         os.killpg(child.pid, signal.SIGTERM)
                         try:
@@ -389,7 +400,15 @@ class AgentSupervisor:
                     self.event(
                         "worker_turn_timeout",
                         duration_seconds=duration,
-                        reason="inactivity" if self.workflow == "frontier" else "turn_allowance",
+                        reason=(
+                            "review_handoff"
+                            if handoff
+                            else "host_checkpoint"
+                            if time.monotonic() >= slice_limit
+                            else "inactivity"
+                            if self.workflow == "frontier"
+                            else "turn_allowance"
+                        ),
                     )
                     return 124
                 failure = provider_failure(directory, returncode)
@@ -418,6 +437,10 @@ class AgentSupervisor:
                             usage = event.get("usage")
                     if thread_id and not judge:
                         self.state["worker_cursor"] = thread_id
+                    if not usage:
+                        self.state["usage_incomplete_turns"] = (
+                            self.state.get("usage_incomplete_turns", 0) + 1
+                        )
                     if thread_id and usage:
                         self.state.setdefault("usage_by_thread", {})[thread_id] = usage
                         self.state["usage_updated_at"] = time.time()
@@ -545,7 +568,8 @@ supervisor: your handoff or text ending is a checkpoint and a successor will con
 Read snapshot first with {sys.executable} {script} snapshot. Use that adapter with
 TOOL arguments.json for ALL campaign writes/experiments. Tool schemas: {directory}/catalog.json.
 Native research tools remain available in this separate folder; do not write campaign
-internals or inspect licensed FLASH source. Operation IDs start {spec["assignment_id"]}:.
+internals. Inspect operator-authorized solver source read-only; keep edits in your workspace.
+Operation IDs start {spec["assignment_id"]}:.
 Assigned role {spec["role"]}, claim {spec["claim_id"]}. Read scientific skills via tools.
 Use workbench to resolve qualification; register prospective contracts and generate
 fresh evidence only after qualification. Never recycle workbench into evidence.

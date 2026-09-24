@@ -26,8 +26,12 @@ diagnostics, acceptance thresholds, or conclusion.
   and command set under the harness evidence rules.
 - Treat a zero process exit status as execution success only. It does not
   establish physical validity, numerical convergence, or support for a claim.
-- Do not expose, copy, quote, or reconstruct FLASH source through the model.
-  The public skill contains no FLASH-owned source or binary.
+- Follow the operator's source-access authorization. When inspection through the
+  configured model provider is authorized, read the installed source to understand
+  interfaces and numerical implementation. Protect the reference with filesystem
+  permissions; write problem files or experimental patches in a separate workspace.
+  Source inspection is not permission to publish or redistribute it. The public
+  skill contains no FLASH-owned source or binary.
 
 ## Recommended use
 

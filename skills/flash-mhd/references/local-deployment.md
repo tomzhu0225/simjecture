@@ -14,9 +14,11 @@ use requires the upstream permission described by the current license.
 
 The public Simjecture skill and capability metadata must remain independently
 written. Keep the acquired source and built runtime outside version control.
-Avoid sending FLASH source to a model or external service; expose only the
-bounded executable interface, operator-owned inputs, and generated outputs
-needed for the campaign.
+Configure source access according to the operator's authorization, including use
+through the selected model provider. Authorized agents can inspect a read-only
+reference tree and full compiler diagnostics while writing problem files separately.
+Enforce reference permissions at the filesystem, and record source/build provenance.
+This does not authorize publication or redistribution of the acquired source.
 
 ## Build and verify locally
 

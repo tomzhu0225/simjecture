@@ -1,0 +1,126 @@
+{
+  "original_run_trace_replay": {
+    "turns": 397,
+    "message_only_turns": 345,
+    "longest_message_only_streak": 63,
+    "first_recovery_trigger": "turn-00007"
+  },
+  "original_artifacts_checked": 121,
+  "original_hash_mismatches": 0,
+  "local_tests": {
+    "passed": 616,
+    "skipped": 9
+  },
+  "remote_tests": {
+    "passed": 19
+  },
+  "live_method_reviews": [
+    {
+      "case": "inadequate_mhd",
+      "status": "resolved",
+      "verdict": {
+        "decision": "revise",
+        "rationale": "The method substitutes a custom one-dimensional NumPy Laplacian test for the required FLASH resistive-MHD evolution without attempting the installed working FLASH build helper or providing substantive physics justification. The code does not implement the stated geometry, physical parameters, evolution solver, reconnection diagnostics, conservation or floor accounting, and therefore cannot establish the method or test the hypothesis; its numerical pass is only a finite-difference operator unit check, not an evolution benchmark.",
+        "findings": [
+          "The only successful run executes a periodic one-dimensional second-derivative error test in 0.76 seconds; it evolves no MHD state and compares no finite-height-end geometry or reconnection delay.",
+          "The label 'Analytic diffusion commissioning passed' overstates the evidence: no time integration or diffusion solution is computed, so the result validates only a discrete Laplacian action on one sine mode.",
+          "The rationale cites anticipated Fortran failure but records no FLASH build or run attempt and no source-derived obstacle justifying solver replacement, contrary to the binding requirement to use FLASH first.",
+          "No 3D colliding-inflow setup, finite y-boundary implementation, resistivity or other model parameters, onset definition, convergence check, conservation budgets, or floor/flux accounting is present.",
+          "The sole experiment is unreviewed, no required comparison cases exist, and the method remains queued with roughly 179 seconds initially available; any later source repair will require fresh qualification."
+        ],
+        "next_action": "Using the installed working FLASH build helper, run one small closed-and-open-end resistive-MHD commissioning evolution with explicit geometry, parameters, conservation/floor totals, and an onset diagnostic before any production matrix."
+      },
+      "usage_by_thread": {
+        "01a0d0e4-bed7-7a52-a82a-60a6f7a80433": {
+          "input_tokens": 9162,
+          "cached_input_tokens": 0,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 460,
+          "reasoning_output_tokens": 116
+        }
+      },
+      "scientific_completed": false
+    },
+    {
+      "case": "qualified_arithmetic",
+      "status": "resolved",
+      "verdict": {
+        "decision": "continue",
+        "rationale": "The supplied source uses exact Python integer arithmetic over range(21), which exhaustively covers the required integers 0 through 20 and contains no solver substitution or unimplemented parameters. The observed run exited 0, its bound source hash matches the method source hash, and the reported result lists all 21 cases with matching values. This supports continuing evidence collection but does not itself accept the scientific claim because the run is still exploration-stage and unreviewed.",
+        "findings": [
+          "Observed: calculation.py evaluates n+n and 2*n separately for every n in range(21), matching the finite hypothesis domain exactly.",
+          "Observed: the successful run used the same calculation.py SHA-256 as the method binding, with no missing outputs, input mutations, timeout, or truncation reported.",
+          "Observed: result.json contains 21 rows from n=0 through n=20 and all_equal=true; raw artifacts were not independently inspected.",
+          "Method fit: exact integer arithmetic is substantively justified for this bounded arithmetic task, so no plasma solver, geometry, conservation/floor accounting, or artificial instrument hierarchy is required.",
+          "Progress: only one fast exhaustive run has been recorded; no repeated polling or failed case is reported, and approximately 178 seconds remained, but the experiment is labeled exploration, method-null, and scientific_status=unreviewed.",
+          "No observed arithmetic failure is present, and no missing prerequisite or censored outcome is being treated as falsification."
+        ],
+        "next_action": "Run or register the same hash-bound 21-case calculation once as the method-linked validation record, then perform an independent equality check and qualify the unchanged method."
+      },
+      "usage_by_thread": {
+        "01a0d0e5-293e-74c1-bd83-6b444ffd1d1e": {
+          "input_tokens": 9532,
+          "cached_input_tokens": 0,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 932,
+          "reasoning_output_tokens": 589
+        }
+      },
+      "scientific_completed": false
+    }
+  ],
+  "live_agent_run": {
+    "status": "completed",
+    "elapsed_seconds": 95.20481157302856,
+    "wall_budget_seconds": 300,
+    "rounds": 1,
+    "usage_by_thread": {
+      "01a0d0ec-f035-7083-bc7e-0eed0292ed6b": {
+        "input_tokens": 9987,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 247,
+        "reasoning_output_tokens": 61
+      }
+    },
+    "usage_incomplete_turns": 1,
+    "reviews": [
+      {
+        "id": "review_9510a13adaa8e1f6cd96507a",
+        "status": "resolved",
+        "created_at": 1790211581.5446665,
+        "experiments": [
+          "exp_b2b680ab307b812658f30077"
+        ],
+        "conclusion": "Scope is exactly every integer n in the inclusive finite domain [-8,8]. Recorded experiment exp_b2b680ab307b812658f30077 computed exact integer n*n for all 17 declared values, including both endpoints and zero, and emitted the complete JSON table. The observed squares range from 0 to 64 and the falsifying condition square < 0 occurs for no listed integer. The claim is therefore supported on this finite domain only; this result makes no assertion about integers outside [-8,8]. Exact Python integer arithmetic leaves no rounding uncertainty.",
+        "claim": "root",
+        "disposition": "supported",
+        "challenge": {
+          "strategy": "Exhaustive finite-domain counterexample search: enumerate every integer from -8 through 8 inclusive, compute n*n with exact integer arithmetic, and reject the claim if any resulting square is negative; explicitly check the endpoints -8 and 8 and the boundary case 0, then independently re-parse the recorded JSON and compare every table row with expected exact values.",
+          "experiments": [
+            "exp_b2b680ab307b812658f30077"
+          ],
+          "outcome": "All 17 cases were present and matched exact integer values: squares 64, 49, 36, 25, 16, 9, 4, 1, 0, 1, 4, 9, 16, 25, 36, 49, 64. The minimum square was 0 and no counterexample was found."
+        },
+        "verdict": {
+          "claim_id": "root",
+          "decision": "approved",
+          "disposition": "supported",
+          "rationale": "The recorded calculation uses exact Python integer arithmetic and exhaustively evaluates every integer in the inclusive domain [-8,8]. Its source enumerates all 17 integers, and the emitted JSON contains each expected square exactly: 64, 49, 36, 25, 16, 9, 4, 1, 0, 1, 4, 9, 16, 25, 36, 49, 64. No square is negative, so the explicit counterexample condition is not met. The challenge was a genuine exhaustive counterexample search over the complete finite domain and independently compared every row with the exact expected values. The result is valid only for the stated finite domain.",
+          "evidence_gaps": [],
+          "next_test": null
+        },
+        "packet_sha256": "451d4cba0cd62aea07c1c66d92a81c122f02158f888a2c8f114715d1ea2c625f",
+        "resolved_at": 1790211602.7507188
+      }
+    ]
+  },
+  "reference_source_readable": true,
+  "reference_source_write_open_denied": true,
+  "compiler_failure_log_readable": true,
+  "docs_build": "passed with warnings treated as errors",
+  "installed_code_check": {
+    "checked_modules": 8,
+    "mismatches": []
+  }
+}

@@ -25,6 +25,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from .mvp_agent import BubblewrapSandbox, MVPAgentConfig, MVPArtifactInput
 from .mvp_skills import MVPCapabilityRegistry
+from .research_methods import MethodService
 
 
 class ResearchVerdict(BaseModel):
@@ -68,7 +69,7 @@ def put(path, value):
     os.replace(temp, path)
 
 
-class ResearchService:
+class ResearchService(MethodService):
     def __init__(self, root):
         self.root = Path(root).resolve(strict=True)
         self.manifest = json.loads((self.root / "research.json").read_text())
@@ -110,7 +111,8 @@ class ResearchService:
         put(
             root / "research.json",
             dict(
-                schema_version=2,
+                schema_version=3,
+                methods_required=bool(registry.hashes),
                 workflow="minimal",
                 execution_backend=execution_backend,
                 hypothesis=hypothesis,
@@ -174,7 +176,7 @@ class ResearchService:
         if capability:
             registry = MVPCapabilityRegistry.discover(self.manifest["capabilities"])
             runtime = registry.get(capability).contract_hash
-            if runtime != self.manifest["capability_hashes"].get(capability):
+            if runtime != self.capability_hashes().get(capability):
                 raise ValueError("Capability identity changed since study creation")
         return dict(
             source=source,
@@ -245,6 +247,9 @@ class ResearchService:
         commitment=None,
         timeout=600,
         key=None,
+        stage="evidence",
+        method=None,
+        review_documents=None,
     ):
         """Snapshot inputs, launch a bounded experiment, return an immediate receipt."""
         if not outputs or timeout <= 0:
@@ -253,6 +258,13 @@ class ResearchService:
             if Path(p).is_absolute() or ".." in Path(p).parts:
                 raise ValueError("Result paths must stay inside the experiment workspace")
         binding = self._binding(source, args, inputs, capability)
+        if stage not in {"exploration", "evidence"}:
+            raise ValueError("stage must be exploration or evidence")
+        if review_documents is not None and (
+            not review_documents or any(p not in outputs for p in review_documents)
+        ):
+            raise ValueError("review_documents must be nonempty declared outputs")
+        self.check_method(binding, method, stage)
         sizes = [self._source(p).stat().st_size for p in binding["inputs"]]
         if sum(sizes) > self.manifest["max_experiment_bytes"] or max(sizes) > 512 * 1024**2:
             raise ValueError("Declared inputs exceed experiment storage limits")
@@ -261,6 +273,9 @@ class ResearchService:
             if binding not in frozen["bindings"]:
                 raise ValueError("Execution differs from the prospective commitment")
         identity = dict(binding=binding, outputs=list(outputs), commitment=commitment, key=key)
+        # Preserve legacy idempotency identities for calls without the new options.
+        if stage != "evidence" or method is not None or review_documents is not None:
+            identity.update(stage=stage, method=method, review_documents=review_documents)
         identifier = "exp_" + fingerprint(identity)[:24]
         with self.lock():
             path = self.root / "experiments" / (identifier + ".json")
@@ -389,12 +404,22 @@ class ResearchService:
                     )
             absent = [p for p in record["outputs"] if p not in record["artifacts"]]
             record["missing_outputs"] = absent
+            record["input_mutations"] = [
+                p
+                for p, expected in b["inputs"].items()
+                if record["artifacts"].get(p, {}).get("sha256") != expected
+            ]
             ok = (
-                result.returncode == 0
+                not record["input_mutations"]
+                and result.returncode == 0
                 and not result.timed_out
                 and not result.workspace_exceeded
                 and not absent
             )
+            from .research_audit import output_findings
+
+            record["output_findings"] = output_findings(workspace, record["outputs"])
+            record["scientific_status"] = "unreviewed"
             record["status"] = "succeeded" if ok else "failed"
         except Exception as error:
             record.update(status="failed", error=str(error))
@@ -470,6 +495,7 @@ class ResearchService:
             original_hypothesis=self.manifest["hypothesis"],
             operator_protocol=self.manifest.get("operator_protocol"),
             protocol_sha256=self.manifest.get("protocol_sha256"),
+            requirements=self.manifest.get("requirements", {}),
             request=request,
             commitment=commitment,
             experiments=[],
@@ -496,6 +522,9 @@ class ResearchService:
             record = self._read("experiments", identifier)
             if record["status"] != "succeeded":
                 raise ValueError(f"{identifier} is not a successful recorded experiment")
+            if record.get("stage", "evidence") != "evidence":
+                raise ValueError("Exploration is not claim evidence; run fresh evidence")
+            self.check_method(record["binding"], record.get("method"), "evidence")
             if commitment and (
                 record["commitment"] != claim or record["created_at"] < commitment["created_at"]
             ):
@@ -512,16 +541,18 @@ class ResearchService:
                     raise ValueError("Review requires complete source files of at most 128 KiB")
                 if code or (p.endswith((".json", ".txt", ".par")) and size <= 131072):
                     sources[p] = (workspace / p).read_text()
-            documents = {
-                p: (workspace / p).read_text()
-                for p in record["outputs"]
-                if (workspace / p).stat().st_size <= 262144
-            }
-            if len(documents) != len(record["outputs"]):
-                raise ValueError(
-                    "Supply compact result documents for review; retain raw data separately"
+            from .research_audit import review_documents
+
+            documents, raw_artifacts, findings = review_documents(workspace, record)
+            packet["experiments"].append(
+                dict(
+                    record=record,
+                    sources=sources,
+                    documents=documents,
+                    raw_artifacts=raw_artifacts,
+                    output_findings=findings,
                 )
-            packet["experiments"].append(dict(record=record, sources=sources, documents=documents))
+            )
         if commitment:
             tested = [e["record"]["binding"] for e in packet["experiments"]]
             if any(b not in tested for b in commitment["bindings"]):
@@ -596,7 +627,26 @@ class ResearchService:
             put(self.root / "reviews" / (identifier + ".json"), request)
         return self.status()
 
+    def reconcile_workers(self):
+        """A dead experiment process is a recorded failure, never an eternal wait."""
+        from .mvp_launch import ProcessIdentity, process_identity_matches
+
+        with self.lock():
+            for record in self._all("experiments"):
+                identity = record.get("worker_identity")
+                if record["status"] not in {"queued", "running"} or not identity:
+                    continue
+                if process_identity_matches(ProcessIdentity.model_validate(identity)):
+                    continue
+                record.update(
+                    status="failed",
+                    finished_at=time.time(),
+                    error="Experiment worker disappeared before writing a terminal receipt",
+                )
+                put(self.root / "experiments" / (record["id"] + ".json"), record)
+
     def status(self, *, compact=False):
+        self.reconcile_workers()
         reviews = self._all("reviews")
         accepted = [r for r in reviews if r.get("verdict", {}).get("decision") == "approved"]
         original_supported = any(
@@ -620,15 +670,39 @@ class ResearchService:
             experiments=self._all("experiments"),
             commitments=self._all("commitments"),
             reviews=reviews,
+            methods=self._all("methods"),
+            capability_additions=self._all("capability_additions"),
         )
+        for experiment in snapshot["experiments"]:
+            linked = [r for r in reviews if experiment["id"] in r.get("experiments", [])]
+            experiment["review_ids"] = [r["id"] for r in linked]
+            experiment["scientific_status"] = (
+                "reviewed"
+                if any(r["status"] == "resolved" for r in linked)
+                else "review_pending"
+                if linked
+                else "unreviewed"
+            )
+        from .research_audit import study_findings
+
+        snapshot["audit"] = study_findings(snapshot, self.manifest)
 
         if compact:
+            snapshot["methods"] = [
+                {k: m.get(k) for k in ["id", "status", "binding", "verdict"]}
+                for m in snapshot["methods"]
+            ]
             snapshot["experiments"] = [
                 dict(
                     id=e["id"],
                     status=e["status"],
                     commitment=e.get("commitment"),
                     outputs=e["outputs"],
+                    stage=e.get("stage", "evidence"),
+                    method=e.get("method"),
+                    scientific_status=e.get("scientific_status", "unreviewed"),
+                    review_ids=e.get("review_ids", []),
+                    output_findings=e.get("output_findings", []),
                     workspace=str(self.root / "experiments" / e["id"] / "workspace"),
                     receipt=str(self.root / "experiments" / (e["id"] + ".json")),
                 )
@@ -680,13 +754,30 @@ class Lab:
     def review_status(self, identifier):
         return self._service.review_status(identifier)
 
+    def method(self, **kwargs):
+        return self._service.method(**kwargs)
+
+    def register_capability(self, name):
+        return self._service.register_capability(name)
+
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, required=True)
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--execute")
-    group.add_argument("--call", choices=["run", "status", "commit", "review", "review_status"])
+    group.add_argument(
+        "--call",
+        choices=[
+            "run",
+            "status",
+            "commit",
+            "review",
+            "review_status",
+            "method",
+            "register_capability",
+        ],
+    )
     a = parser.parse_args()
     service = ResearchService(a.root)
     if a.execute:
