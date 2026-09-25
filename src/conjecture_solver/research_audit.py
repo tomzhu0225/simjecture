@@ -37,7 +37,11 @@ def output_findings(workspace, outputs):
             continue
         if isinstance(obj, dict):
             failed = (
-                [k for k, v in obj.get("checks", {}).items() if v is False]
+                [
+                    k
+                    for k, v in obj.get("checks", {}).items()
+                    if v is False and k != "scientific_evidence_eligible"
+                ]
                 if isinstance(obj.get("checks"), dict)
                 else []
             )

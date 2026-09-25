@@ -97,6 +97,7 @@ class Client:
         return self._call('review', experiments=experiments, conclusion=conclusion, **kw)
     def status(self, compact=True): return self._call('status', compact=compact)
     def review_status(self, identifier): return self._call('review_status', identifier=identifier)
+    def reproduce_anchor(self, **kw): return self._call('reproduce_anchor', **kw)
     def method(self, **kw): return self._call('method', **kw)
     def register_capability(self, name): return self._call('register_capability', name=name)
     def note(self, statement, **kw): return self._call('note', statement=statement, **kw)
@@ -128,6 +129,18 @@ lab = Client()
         )
         if self.state.get("budget_warning"):
             feedback += "\nBudget: " + self.state["budget_warning"]
+        guided = self.service.manifest.get("guided_commissioning")
+        if guided:
+            feedback += "\nGuided starting instrument (not hypothesis evidence): " + json.dumps(
+                guided
+            )
+            feedback += (
+                "\nFirst call lab.reproduce_anchor(timeout=600) to reproduce the exact anchor "
+                "in exploration before adapting it or requesting a methods review. "
+                "Reuse its reader and diagnostics within their declared scope; "
+                "collect fresh hypothesis evidence. Original files are in "
+                "../guided_commissioning_input.\n"
+            )
         if self.state.get("worker_cursor"):
             return (
                 (
@@ -171,7 +184,10 @@ Write source normally here. All recorded numerical experiments use the existing 
   validation_experiments=['exp_ID'], blockers=[]). End the turn for independent review.
   On approval, pass method='method_ID' to lab.run(stage='evidence', ...).
   Relevant source/runtime changes require a revised method; exploration stays unrestricted.
-  A method approval permits evidence collection; it does not establish the hypothesis.
+  Use scope="instrument" for a bounded readiness checkpoint: validate a reusable solver/reader/
+  diagnostic before attempting the full research campaign. Its approval does NOT permit evidence.
+  scope="production" (default) qualifies the hypothesis measurement for evidence collection;
+  it does not establish the hypothesis. Build on working anchors and change one component at a time.
   Exact operator requirements cannot be waived. Ordinary calculations without installed
   instruments need no methods checkpoint unless explicitly required by the operator.
 - After building a new instrument, add its descriptor to the configured capability

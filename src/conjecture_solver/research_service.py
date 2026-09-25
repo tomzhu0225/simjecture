@@ -25,6 +25,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from .mvp_agent import BubblewrapSandbox, MVPAgentConfig, MVPArtifactInput
 from .mvp_skills import MVPCapabilityRegistry
+from .research_guidance import GuidedResearch
 from .research_methods import MethodService
 from .research_notebook import NotebookService
 
@@ -70,11 +71,12 @@ def put(path, value):
     os.replace(temp, path)
 
 
-class ResearchService(MethodService, NotebookService):
+class ResearchService(GuidedResearch, MethodService, NotebookService):
     def __init__(self, root):
         self.root = Path(root).resolve(strict=True)
         self.manifest = json.loads((self.root / "research.json").read_text())
         self.work = self.root / "research"
+        self.verify_guidance()
 
     @classmethod
     def create(
@@ -268,6 +270,8 @@ class ResearchService(MethodService, NotebookService):
             not review_documents or any(p not in outputs for p in review_documents)
         ):
             raise ValueError("review_documents must be nonempty declared outputs")
+        if set(outputs) & set(binding["inputs"]):
+            raise ValueError("Declared outputs cannot also be supplied inputs")
         self.check_method(binding, method, stage)
         self.validate_experiment_context(parent_experiment, purpose, plan)
         sizes = [self._source(p).stat().st_size for p in binding["inputs"]]
@@ -503,6 +507,7 @@ class ResearchService(MethodService, NotebookService):
             operator_protocol=self.manifest.get("operator_protocol"),
             protocol_sha256=self.manifest.get("protocol_sha256"),
             requirements=self.manifest.get("requirements", {}),
+            guided_commissioning=self.manifest.get("guided_commissioning"),
             request=request,
             commitment=commitment,
             experiments=[],
@@ -540,6 +545,20 @@ class ResearchService(MethodService, NotebookService):
             for relative, meta in record["artifacts"].items():
                 if sha(workspace / relative) != meta["sha256"]:
                     raise ValueError("Recorded artifact was changed after execution")
+            for name in record["outputs"]:
+                output = workspace / name
+                if output.suffix == ".json" and output.stat().st_size <= 262144:
+                    from .research_audit import strict_json
+
+                    value = strict_json(output.read_text())
+                    if isinstance(value, dict) and (
+                        value.get("scientific_evidence_eligible") is False
+                        or (
+                            isinstance(value.get("checks"), dict)
+                            and value["checks"].get("scientific_evidence_eligible") is False
+                        )
+                    ):
+                        raise ValueError("Output explicitly marked non-evidentiary")
             sources = {}
             for p in record["binding"]["inputs"]:
                 code = p == record["binding"]["source"] or p.endswith((".py", ".sh"))
@@ -753,6 +772,9 @@ class Lab:
     def run(self, source, args=(), **kwargs):
         return self._service.run(source, args, **kwargs)
 
+    def reproduce_anchor(self, **kwargs):
+        return self._service.reproduce_anchor(**kwargs)
+
     def status(self, *, compact=True):
         return self._service.status(compact=compact)
 
@@ -793,6 +815,7 @@ def main():
         "--call",
         choices=[
             "run",
+            "reproduce_anchor",
             "status",
             "commit",
             "review",

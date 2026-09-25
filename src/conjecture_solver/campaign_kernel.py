@@ -111,6 +111,7 @@ class CampaignKernel:
         skills: Any | None = None,
         capabilities: Any | None = None,
         literature_search: Any | None = None,
+        guided_commissioning: Any | None = None,
         **_ignored: Any,
     ) -> CampaignKernel:
         """Open a kernel over a runner or durable operator campaign.
@@ -133,6 +134,11 @@ class CampaignKernel:
             )
             from .campaign_jobs import CampaignInterprocessLock
 
+            if (
+                guided_commissioning is not None
+                and "package.json" in guided_commissioning.spec.files
+            ):
+                raise ValueError("Guided package uses reserved snapshot manifest path package.json")
             # Runner construction eagerly touches the claim ledger, so the
             # lock must cover construction as well as manifest initialization.
             with CampaignInterprocessLock(target):
@@ -146,9 +152,13 @@ class CampaignKernel:
                     skills=skills,
                     capabilities=capabilities,
                     literature_search=literature_search,
+                    guided_commissioning=guided_commissioning,
                 )
                 kernel = cls(host)
                 kernel.initialize()
+                if guided_commissioning is not None:
+                    spec_path = target / "guided_commissioning_input" / "package.json"
+                    spec_path.write_text(guided_commissioning.spec.model_dump_json(indent=2))
                 kernel._ensure_runtime_files()
                 kernel._persist_resource_roots()
                 return kernel
@@ -495,6 +505,7 @@ class CampaignKernel:
         skills: Any | None,
         capabilities: Any | None,
         literature_search: Any | None,
+        guided_commissioning: Any | None = None,
     ) -> Any:
         """Construct the compatibility host used by a model-free kernel."""
 
@@ -648,7 +659,12 @@ class CampaignKernel:
         skills = skills or builtin_skills
         capabilities = capabilities or builtin_capabilities
 
-        guided = None
+        guided = guided_commissioning
+        saved_guided = target / "guided_commissioning_input" / "package.json"
+        if guided is None and saved_guided.exists():
+            from .mvp_guidance import MVPGuidedCommissioningPackage
+
+            guided = MVPGuidedCommissioningPackage.read(saved_guided)
         if launch is not None and launch.guided_commission:
             from .mvp_guidance import MVPGuidedCommissioningPackage
 

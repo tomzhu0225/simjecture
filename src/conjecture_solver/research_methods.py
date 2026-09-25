@@ -81,6 +81,8 @@ class MethodService:
             record = self._read("methods", method)
             if record["binding"] != self.method_binding(binding):
                 raise ValueError("Method source/runtime changed; submit the revised method")
+            if stage == "evidence" and record.get("scope", "production") != "production":
+                raise ValueError("Instrument readiness does not authorize hypothesis evidence")
             if stage == "evidence" and record.get("verdict", {}).get("decision") != "continue":
                 raise ValueError("Method needs independent review; end this turn for the host")
         elif stage == "evidence" and self.manifest.get("methods_required", False):
@@ -102,11 +104,15 @@ class MethodService:
         capability=None,
         validation_experiments=(),
         blockers=(),
+        scope="production",
     ):
         """Freeze the method and actual commissioning evidence for host-triggered review."""
         from .research_service import fingerprint, put
 
+        if scope not in {"instrument", "production"}:
+            raise ValueError("Method scope must be instrument or production")
         fields = dict(
+            scope=scope,
             model=model,
             geometry=geometry,
             observable=observable,
@@ -166,6 +172,21 @@ class MethodService:
                     output_findings=findings,
                 )
             )
+        if scope == "instrument":
+            validated = [
+                e["record"]
+                for e in evidence
+                if e["record"]["id"] in validation_experiments
+                and e["record"]["status"] == "succeeded"
+            ]
+            if not validated:
+                raise ValueError(
+                    "Instrument readiness requires a successful recorded validation first"
+                )
+            if not any(self.method_binding(r["binding"]) == binding for r in validated):
+                raise ValueError(
+                    "Instrument readiness requires validation of the current source/runtime"
+                )
         body = dict(
             binding=binding,
             sources=sources,

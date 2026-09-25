@@ -1,0 +1,51 @@
+{
+  "readiness": {
+    "experiment": "exp_39f13b549ce8888cbd64c8ab",
+    "status": "succeeded",
+    "package_sha256": "8cd0062066592513c23f48b4a0b531a1e5386a882aac4a65d0e33d2f85d0bc80",
+    "scientific_evidence_eligible": false,
+    "scope": "Anchor reproduction only; no hypothesis or new geometry qualification",
+    "elapsed_seconds": 20.0936222076416
+  },
+  "binding": {
+    "source": "guided/island_coalescence.py",
+    "args": [
+      "--eta",
+      "0.001",
+      "--nx",
+      "128",
+      "--ny",
+      "128",
+      "--alpha",
+      "20",
+      "--tmax",
+      "1.2",
+      "--plot-interval",
+      "0.05",
+      "--ranks",
+      "4",
+      "--iprocs",
+      "2",
+      "--jprocs",
+      "2",
+      "--output",
+      "guided/anchor_run",
+      "--summary",
+      "guided/anchor_validation.json",
+      "--overwrite"
+    ],
+    "inputs": {
+      "guided/island_coalescence.py": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b",
+      "guided/operator_validation.json": "08ac3d4b43a6cafdabbf6f078c3fb3dfce542082a10f08852de267e5d70f537d",
+      "literature_basis.md": "b3837a433a90125145174939e149ac059e3af5982ccc567ad7ba7e491bc886a9"
+    },
+    "capability": "flash-island-coalescence-resistive-mhd-4.8",
+    "runtime_sha256": "9756d2c040bb5a9e6efdac96e7a9f54806df1494fad1709081bb28ab0c84d2d5"
+  },
+  "execution": {
+    "returncode": 0,
+    "wall_seconds": 19.782416585999727,
+    "isolation_backend": "bubblewrap"
+  },
+  "model_tokens": 0
+}

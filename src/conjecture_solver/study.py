@@ -38,6 +38,11 @@ def configure_parser(parser):
         type=Path,
         help="Optional immutable JSON instrument/method requirements (minimal mode)",
     )
+    parser.add_argument(
+        "--guided-commission",
+        type=Path,
+        help="Validated starting package; supplied outputs are not evidence",
+    )
     parser.add_argument("--state-dir", type=Path)
     parser.add_argument("--capabilities", type=Path)
     parser.add_argument("--wall-seconds", type=float, default=3600)
@@ -101,6 +106,13 @@ def _run(args):
     if saved_state and args.state_dir != saved_state.resolve():
         raise ValueError("State directory is part of the saved launch contract")
     mode = selected_mode(args.campaign, args.mode, args.state_dir)
+    from .mvp_guidance import MVPGuidedCommissioningPackage
+
+    guided = (
+        MVPGuidedCommissioningPackage.read(args.guided_commission)
+        if getattr(args, "guided_commission", None)
+        else None
+    )
     if mode != "minimal" and getattr(args, "requirements_file", None):
         raise ValueError("--requirements-file is supported in minimal mode only")
     saved_execution = previous.get("execution_backend")
@@ -161,6 +173,8 @@ def _run(args):
         service.freeze_protocol(args.instructions_file.read_text())
         if getattr(args, "requirements_file", None):
             service.freeze_requirements(json.loads(args.requirements_file.read_text()))
+        if getattr(args, "guided_commission", None):
+            service.install_guidance(args.guided_commission)
         supervisor = ResearchSupervisor(args)
     else:
         from .campaign_kernel import CampaignKernel
@@ -175,6 +189,7 @@ def _run(args):
             CampaignKernel.open(
                 workspace=args.campaign,
                 hypothesis=hypothesis,
+                guided_commissioning=guided,
                 config=MVPAgentConfig(
                     execution_backend=args.execution_backend,
                     max_wall_seconds=args.wall_seconds,
@@ -184,9 +199,23 @@ def _run(args):
                     MVPCapabilityRegistry.discover(args.capabilities) if args.capabilities else None
                 ),
             )
-        elif hypothesis is not None:
-            if CampaignKernel.open_existing(args.campaign).hypothesis != hypothesis:
-                raise ValueError("Original hypothesis is immutable")
+        elif guided is not None:
+            from .mvp_guidance import MVPGuidedCommissioningPackage
+
+            saved = MVPGuidedCommissioningPackage.read(
+                args.campaign / "guided_commissioning_input" / "package.json"
+            )
+            if saved.package_sha256 != guided.package_sha256:
+                raise ValueError("Guided commissioning is immutable on resume")
+        if (
+            (args.campaign / "mvp_manifest.json").exists()
+            and hypothesis is not None
+            and (
+                CampaignKernel.open_existing(workspace=args.campaign).hypothesis
+                != hypothesis.strip()
+            )
+        ):
+            raise ValueError("Original hypothesis is immutable")
         args.workflow = mode
         supervisor = AgentSupervisor(args)
     put(args.campaign / "study-mode.json", dict(mode=mode, schema_version=1))

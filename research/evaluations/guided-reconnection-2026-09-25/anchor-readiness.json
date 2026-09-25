@@ -1,0 +1,82 @@
+{
+  "readiness": {
+    "experiment": "exp_5f82861f773f28d989ea5a29",
+    "status": "succeeded",
+    "package_sha256": "8cd0062066592513c23f48b4a0b531a1e5386a882aac4a65d0e33d2f85d0bc80",
+    "scientific_evidence_eligible": false,
+    "scope": "Anchor reproduction only; no hypothesis or new geometry qualification",
+    "elapsed_seconds": 19.837319135665894
+  },
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": 0,
+    "wall_seconds": 19.383618006999995,
+    "timed_out": false
+  },
+  "binding": {
+    "source": "guided/island_coalescence.py",
+    "args": [
+      "--eta",
+      "0.001",
+      "--nx",
+      "128",
+      "--ny",
+      "128",
+      "--alpha",
+      "20",
+      "--tmax",
+      "1.2",
+      "--plot-interval",
+      "0.05",
+      "--ranks",
+      "4",
+      "--iprocs",
+      "2",
+      "--jprocs",
+      "2",
+      "--output",
+      "guided/anchor_run",
+      "--summary",
+      "guided/anchor_validation.json",
+      "--overwrite"
+    ],
+    "inputs": {
+      "guided/island_coalescence.py": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b",
+      "guided/operator_validation.json": "08ac3d4b43a6cafdabbf6f078c3fb3dfce542082a10f08852de267e5d70f537d",
+      "literature_basis.md": "b3837a433a90125145174939e149ac059e3af5982ccc567ad7ba7e491bc886a9"
+    },
+    "capability": "flash-island-coalescence-resistive-mhd-4.8",
+    "runtime_sha256": "04cec3c7287e023054caccec163cc30d1c5fb221f2e36eae4343f344bc0a67df"
+  },
+  "checks": {
+    "boundaries": true,
+    "completed": true,
+    "diagnostics": true,
+    "flux_window_reached": true,
+    "numerical_regime": true,
+    "physics_controls": true,
+    "representation": true,
+    "scientific_evidence_eligible": false
+  },
+  "metrics": {
+    "flux_high": 0.05,
+    "flux_high_crossing_time": 1.0763841963235288,
+    "flux_low": 0.01,
+    "flux_low_crossing_time": 0.26033823854649724,
+    "flux_path_max_abs_mismatch": 4.657228519738127e-05,
+    "initial_sheet_cells": 6.4,
+    "l_over_eta_nominal": 1000.0,
+    "max_abs_divb": 9.36140054363932e-13,
+    "max_boundary_normal_fraction": 0.031049113904913106,
+    "normalized_flux_slope": 0.0490168471748367,
+    "plot_file_count": 24,
+    "reconnection_time": 0.8160459577770316
+  },
+  "flash_executable_sha256": "40cf57b987e85f9befc01abae4e89f27c230d1eb42391ba3abea8655a0f7024b",
+  "agent_tokens": 0,
+  "limitations": [
+    "unchanged historical anchor; not hypothesis evidence",
+    "direct host rerun also passed before the sandbox preflight",
+    "first private capability wrapper misconfigured; preflight-v2 failed before FLASH; preserved locally"
+  ]
+}

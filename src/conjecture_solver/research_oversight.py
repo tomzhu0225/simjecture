@@ -147,6 +147,12 @@ conservation/floor accounting, diagnostic interpretation, and changes to numeric
 Missing prerequisites or censored outcomes are not falsification. Separate implementation
 repairs from hypothesis changes. Require fresh qualification after relevant source changes.
 Raw artifacts are listed but not inspected; do not assert their contents are verified.
+Review the explicit method scope. For scope=instrument, judge ONLY the declared model,
+geometry, observable and validation capability. Do not demand the future production matrix
+or unrelated diagnostics. Approval records limited instrument readiness and NEVER authorizes
+hypothesis evidence. Name its limitations. For scope=production (including legacy proposals),
+require the implemented hypothesis measurement and relevant commissioning, but do not demand
+the completed hypothesis experiment matrix before permitting evidence collection.
 For an incomplete method with no evolution benchmark, require a small commissioning run,
 not an entire production matrix. Ordinary analysis need not undergo a rigid hierarchy.
 For progress review, address repeated intentions, repeated polling, missing required cases,
@@ -173,6 +179,7 @@ SCHEMA:
             original_hypothesis=self.service.manifest["hypothesis"],
             operator_protocol=self.service.manifest.get("operator_protocol"),
             requirements=self.service.manifest.get("requirements", {}),
+            guided_commissioning=self.service.manifest.get("guided_commissioning"),
             method=method,
             snapshot=self.service.brief(),
             recent_activity=self.state.get("last_turn_trace"),

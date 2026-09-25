@@ -1,0 +1,282 @@
+{
+  "arms": [
+    {
+      "arm": "minimal-fixed",
+      "status": "budget_exhausted",
+      "rounds": 4,
+      "seconds_to_first_success": 194.16511487960815,
+      "reported_usage": {
+        "input_tokens": 1491886,
+        "cached_input_tokens": 1264256,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 21446,
+        "reasoning_output_tokens": 11307,
+        "total_tokens": 1513332
+      },
+      "usage_categories": {
+        "worker": {
+          "reported_usage": {
+            "input_tokens": 1380748,
+            "cached_input_tokens": 1189312,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 16681,
+            "reasoning_output_tokens": 7201,
+            "total_tokens": 1397429
+          },
+          "unique_threads": 1,
+          "invocations": 4,
+          "invocations_without_turn_completed": 4,
+          "invocations_without_thread_id": 0,
+          "threads_without_usage": 0,
+          "threads_with_counter_regressions": 0
+        },
+        "reviewer": {
+          "reported_usage": {
+            "input_tokens": 111138,
+            "cached_input_tokens": 74944,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 4765,
+            "reasoning_output_tokens": 4106,
+            "total_tokens": 115903
+          },
+          "unique_threads": 3,
+          "invocations": 3,
+          "invocations_without_turn_completed": 1,
+          "invocations_without_thread_id": 0,
+          "threads_without_usage": 1,
+          "threads_with_counter_regressions": 0
+        }
+      },
+      "included_in_comparison": true,
+      "usage_incomplete_turns": 5,
+      "experiment_status": {
+        "failed": 1,
+        "succeeded": 1
+      },
+      "claims": [],
+      "kernel_jobs": [],
+      "methods": [
+        {
+          "id": "method_6ae2859e31c79748b5d5e84d",
+          "scope": "production",
+          "status": "resolved",
+          "verdict": {
+            "decision": "revise",
+            "rationale": "The production method is aligned in model, geometry, observable, resistivity sampling, and refinement, but its registered analyzer does not fully implement the declared numerical controls or falsification rule. These are repairable method defects that should be corrected before fresh claim-bearing outputs.",
+            "findings": [
+              "The unchanged FLASH solver/reader was commissioned by an end-to-end anchor evolution, and the wrapper carries forward the intended 2D geometry, uniform eta, grids, four-rank limit, and dual-flux observable; the anchor itself remains permanently non-evidentiary and cannot support scaling.",
+              "campaign_case.py records max divB, mass and energy drift, and minimum density/pressure, but applies no decision thresholds to them and omits helper numerical_regime from its failure checks; conservation and floor accounting is therefore not admissibility-bearing as declared.",
+              "analyze_only states a two-sided residual-bootstrap 95% falsification rule but implements no bootstrap, so the declared whole-interval falsifier cannot be executed as written.",
+              "The newly changed downstream wrapper has not itself completed a fresh end-to-end qualification run; a small commissioning case is required after the relevant source change, not the full eight-case production matrix.",
+              "No fresh production case has yet run, no experiment is active, and there is no repeated polling or missing-case concealment. With about 137 seconds remaining versus a 170-second protocol estimate, completing the full campaign and review is unlikely; partial outcomes must be reported honestly rather than extrapolated."
+            ],
+            "next_action": "Patch the analyzer to enforce the declared numerical-regime, conservation, and floor thresholds and implement or explicitly restate the bootstrap rule, then run one fresh 128x128 base case as wrapper commissioning; if time expires, record the result as unresolved with exact receipts."
+          }
+        },
+        {
+          "id": "method_cda50a53a9a79dedd277a799",
+          "scope": "instrument",
+          "status": "queued",
+          "verdict": null
+        },
+        {
+          "id": "method_ef7a2210564508af1a61d74c",
+          "scope": "instrument",
+          "status": "resolved",
+          "verdict": {
+            "decision": "continue",
+            "rationale": "The registered method is a properly narrow instrument-readiness commissioning of the exact supplied solver and reader. No fresh run has yet completed, and the remaining time is sufficient for this small required validation; approval would establish only instrument readiness, never scaling evidence.",
+            "findings": [
+              "The declared model, geometry, four-rank decomposition, explicit uniform resistivity path, and exact anchor command match the supplied instrument scope; this review does not authorize any claim about the exponent or Sweet-Parker branch.",
+              "The implemented diagnostic checks both flux-line paths, fixed crossing thresholds, realized eta and grid, state finiteness and positivity, divB, boundary contamination, path mismatch, and initial sheet-cell resolution, with explicit numerical thresholds.",
+              "The earlier reproduce-anchor command exited with status 1 before the run; this is an observed invocation/harness failure, not evidence of a FLASH physics failure, and subsequent inspection and method registration followed without repeated polling.",
+              "The snapshot reports zero fresh experiments, so operator validation and prior anchor labels remain non-evidentiary and do not establish current readiness.",
+              "The instrument limitation remains material: one resistivity, one 128x128 grid, one finite flux window, no refinement, no plasmoid/topology diagnostic, and no scaling measurement."
+            ],
+            "next_action": "Execute the registered instrument as one fresh experiment using the exact supplied anchor command, then inspect the generated machine checks and receipt before treating the instrument as commissioned."
+          }
+        }
+      ]
+    },
+    {
+      "arm": "structured-fixed",
+      "status": "budget_exhausted",
+      "rounds": 2,
+      "seconds_to_first_success": 489.09569811820984,
+      "reported_usage": {
+        "input_tokens": 3362992,
+        "cached_input_tokens": 3266688,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 16120,
+        "reasoning_output_tokens": 7651,
+        "total_tokens": 3379112
+      },
+      "usage_categories": {
+        "worker": {
+          "reported_usage": {
+            "input_tokens": 3362992,
+            "cached_input_tokens": 3266688,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 16120,
+            "reasoning_output_tokens": 7651,
+            "total_tokens": 3379112
+          },
+          "unique_threads": 2,
+          "invocations": 2,
+          "invocations_without_turn_completed": 2,
+          "invocations_without_thread_id": 0,
+          "threads_without_usage": 0,
+          "threads_with_counter_regressions": 0
+        },
+        "reviewer": {
+          "reported_usage": null,
+          "unique_threads": 0,
+          "invocations": 0,
+          "invocations_without_turn_completed": 0,
+          "invocations_without_thread_id": 0,
+          "threads_without_usage": 0,
+          "threads_with_counter_regressions": 0
+        }
+      },
+      "included_in_comparison": true,
+      "usage_incomplete_turns": 2,
+      "experiment_status": {},
+      "claims": [
+        {
+          "id": "claim_root",
+          "status": "open",
+          "statement": "In the supplied two-dimensional, uniform-resistivity, compressible-MHD island-coalescence system, every spatially resolved, pre-plasmoid case over the nominal inverse-resistivity interval S_eta = 1/eta in [250, 4000] belongs to one unbroken Sweet-Parker-like branch: the normalized reconnection rate follows R proportional to S_eta^p with -0.60 <= p <= -0.40, and the inferred exponent persists under at least one spatial-resolution refinement."
+        }
+      ],
+      "kernel_jobs": [
+        {
+          "job_id": "job_9b7d342cd532d93ef97fc8f8069f83f2",
+          "status": "succeeded",
+          "returncode": 0
+        },
+        {
+          "job_id": "job_e5637dce20c14a26ea8e810fa9e10d13",
+          "status": "failed",
+          "returncode": 1
+        }
+      ],
+      "methods": []
+    },
+    {
+      "arm": "minimal",
+      "status": "cancelled",
+      "rounds": 2,
+      "seconds_to_first_success": 100.00916028022766,
+      "reported_usage": {
+        "input_tokens": 2494308,
+        "cached_input_tokens": 2289024,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 19848,
+        "reasoning_output_tokens": 8810,
+        "total_tokens": 2514156
+      },
+      "usage_categories": {
+        "worker": {
+          "reported_usage": {
+            "input_tokens": 2494308,
+            "cached_input_tokens": 2289024,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 19848,
+            "reasoning_output_tokens": 8810,
+            "total_tokens": 2514156
+          },
+          "unique_threads": 1,
+          "invocations": 2,
+          "invocations_without_turn_completed": 2,
+          "invocations_without_thread_id": 0,
+          "threads_without_usage": 0,
+          "threads_with_counter_regressions": 0
+        },
+        "reviewer": {
+          "reported_usage": null,
+          "unique_threads": 0,
+          "invocations": 0,
+          "invocations_without_turn_completed": 0,
+          "invocations_without_thread_id": 0,
+          "threads_without_usage": 0,
+          "threads_with_counter_regressions": 0
+        }
+      },
+      "included_in_comparison": false,
+      "usage_incomplete_turns": 2,
+      "experiment_status": {
+        "succeeded": 5
+      },
+      "claims": [],
+      "kernel_jobs": [],
+      "methods": []
+    },
+    {
+      "arm": "structured-v2",
+      "status": "cancelled",
+      "rounds": 2,
+      "seconds_to_first_success": null,
+      "reported_usage": {
+        "input_tokens": 2965140,
+        "cached_input_tokens": 2876672,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 11162,
+        "reasoning_output_tokens": 3108,
+        "total_tokens": 2976302
+      },
+      "usage_categories": {
+        "worker": {
+          "reported_usage": {
+            "input_tokens": 2965140,
+            "cached_input_tokens": 2876672,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 11162,
+            "reasoning_output_tokens": 3108,
+            "total_tokens": 2976302
+          },
+          "unique_threads": 2,
+          "invocations": 2,
+          "invocations_without_turn_completed": 2,
+          "invocations_without_thread_id": 0,
+          "threads_without_usage": 0,
+          "threads_with_counter_regressions": 0
+        },
+        "reviewer": {
+          "reported_usage": null,
+          "unique_threads": 0,
+          "invocations": 0,
+          "invocations_without_turn_completed": 0,
+          "invocations_without_thread_id": 0,
+          "threads_without_usage": 0,
+          "threads_with_counter_regressions": 0
+        }
+      },
+      "included_in_comparison": false,
+      "usage_incomplete_turns": 2,
+      "experiment_status": {},
+      "claims": [
+        {
+          "id": "claim_root",
+          "status": "open",
+          "statement": "In the supplied two-dimensional, uniform-resistivity, compressible-MHD island-coalescence system, every spatially resolved, pre-plasmoid case over the nominal inverse-resistivity interval S_eta = 1/eta in [250, 4000] belongs to one unbroken Sweet-Parker-like branch: the normalized reconnection rate follows R proportional to S_eta^p with -0.60 <= p <= -0.40, and the inferred exponent persists under at least one spatial-resolution refinement."
+        }
+      ],
+      "kernel_jobs": [
+        {
+          "job_id": "job_7ac435684308c2f4fc1b0dfcaf2d05e4",
+          "status": "failed",
+          "returncode": 1
+        }
+      ],
+      "methods": []
+    }
+  ],
+  "accounting": "Latest reported cumulative receipt per unique native thread; workers and reviewers included when emitted. Interrupted/unreported usage can be missing. Cached input is a subset of input. These are tokens, not billed cost.",
+  "limitations": [
+    "one trial per mode",
+    "shared host and provider",
+    "staggered starts",
+    "first pair excluded: missing private runtime preflight parameter file; stopped and preserved",
+    "10-minute pilot, not repeat of six-hour campaign"
+  ]
+}
