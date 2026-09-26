@@ -491,3 +491,83 @@ def test_native_reasoning_effort_is_in_frozen_launch_contract(tmp_path, monkeypa
     assert load(tmp_path / "study/study-launch.json")["request"]["reasoning_effort"] == "high"
     with pytest.raises(ValueError, match="differs"):
         materialize_native(request.model_copy(update={"reasoning_effort": "low"}), resume=True)
+
+
+def test_invalid_legacy_pair_is_not_a_default_or_an_agy_model(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+
+    import conjecture_solver.web.workspace as module
+
+    monkeypatch.setattr(module.shutil, "which", lambda name: "/bin/true")
+    monkeypatch.setattr(
+        module.subprocess,
+        "run",
+        lambda *a, **kw: SimpleNamespace(
+            returncode=0,
+            stdout=(
+                "Fetching available models...\ngemini-test\tGemini Test\nclaude-test\tClaude Test\n"
+            ),
+        ),
+    )
+    workspace = Workspace(tmp_path / ".workspace")
+    private_json(workspace.settings_path, dict(backend="agy", model="grok-4.7"))
+    assert workspace.default_agent()["backend"] != "agy"
+    models = workspace.models("agy")
+    assert [m["id"] for m in models["models"]] == ["gemini-test", "claude-test"]
+    with pytest.raises(ValueError, match="different agent"):
+        workspace.select_agent(None, dict(backend="agy", model="grok-4.7"))
+    selected = workspace.select_agent(None, dict(backend="grok", model="grok-4.7"))
+    assert workspace.default_agent() == selected
+    project = workspace.create({"name": "Preserve the conversation"})
+    path = workspace.directory(project["id"]) / "project.json"
+    record = load(path)
+    record["agent"] = dict(backend="agy", model="grok-4.7", reasoning_effort="")
+    put(path, record)
+    assert workspace.project(project["id"])["agent"] == dict(
+        backend="agy", model="", reasoning_effort=""
+    )
+
+
+def test_flash_inventory_finds_existing_application_variants(tmp_path, monkeypatch):
+    import conjecture_solver.deployment as deployment
+    import conjecture_solver.web.workspace as module
+    from conjecture_solver.web.inventory import discover_installed
+
+    monkeypatch.setattr(deployment, "resolve_project_root", lambda *a: tmp_path)
+    (tmp_path / "capabilities").mkdir()
+    configs = []
+    for revision in (1, 2):
+        runtime = tmp_path / ".runtime" / f"flash-driven-sheet-r{revision}"
+        (runtime / "bin").mkdir(parents=True)
+        binary = runtime / "bin/flash4"
+        binary.write_text("#!/bin/sh\nexit 0\n")
+        binary.chmod(0o700)
+        directory = tmp_path / ".private" / "existing-study" / f"capabilities-r{revision}"
+        directory.mkdir(parents=True)
+        path = directory / "flash-driven-sheet.json"
+        config = dict(
+            runtime_root=str(runtime),
+            executable="bin/flash4",
+            manifest=dict(
+                name="flash-driven-sheet",
+                version=f"4.8.local.{revision}",
+                description="Driven-sheet MHD; commissioning only",
+                skill="flash-mhd",
+                executable_kind="application",
+            ),
+        )
+        put(path, config)
+        configs.append(path)
+    installed = discover_installed(tmp_path)
+    assert len(installed) == 2
+    assert {v["path"] for v in installed} == {str(p) for p in configs}
+    workspace = Workspace(tmp_path / "artifacts/.workspace")
+    flash = next(t for t in workspace.catalogue() if t["id"] == "flash")
+    assert flash["installed"] and flash["readiness"] == "unchecked"
+    assert len(flash["variants"]) == 2
+    assert flash["path"] == str(configs[1])
+    commands = []
+    monkeypatch.setattr(module, "spawn", lambda argv, *args: commands.append(argv) or {})
+    workspace.start_install(dict(name="flash", action="check"))
+    assert commands[0][commands[0].index("--descriptor") + 1] == str(configs[1])
+    assert "--source" not in commands[0]

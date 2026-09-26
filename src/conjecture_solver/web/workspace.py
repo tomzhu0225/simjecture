@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import base64
 import fcntl
+import hashlib
 import importlib.util
 import json
 import os
@@ -94,6 +95,7 @@ class Workspace:
         self.root = Path(root).resolve()
         self.settings_path = self.root / "connection.json"
         self.api_path = self.root / "api-connection.json"
+        self.preferences_path = self.root / "agent-preferences.json"
         self.projects_root = self.root.parent / "projects"
 
     @contextmanager
@@ -136,15 +138,47 @@ class Workspace:
         return legacy if legacy.get("backend") == "builtin" else {}
 
     def default_agent(self):
-        config = load(self.settings_path)
-        backend = config.get("backend") or next(
+        candidates = [load(self.preferences_path)]
+        candidates += [p.get("agent", {}) for p in self.projects()]
+        candidates += [load(self.settings_path)]
+        for config in candidates:
+            backend, model = config.get("backend"), config.get("model", "")
+            available = (
+                bool(self.api_config())
+                if backend == "builtin"
+                else bool(
+                    backend in {"codex", "codex-glm", "grok", "agy"} and shutil.which(backend)
+                )
+            )
+            if available and model and self.model_matches_backend(backend, model):
+                return dict(
+                    backend=backend,
+                    model=model,
+                    reasoning_effort=config.get("reasoning_effort") or "",
+                )
+        backend = next(
             (name for name in ("codex", "codex-glm", "grok", "agy") if shutil.which(name)),
             "builtin",
         )
-        model = config.get("model") or self.local_models(backend)["default"]
-        return dict(
-            backend=backend, model=model, reasoning_effort=config.get("reasoning_effort") or ""
-        )
+        model = self.local_models(backend)["default"]
+        return dict(backend=backend, model=model, reasoning_effort="")
+
+    @staticmethod
+    def model_matches_backend(backend, model):
+        if any(c.isspace() for c in model):
+            return False
+        if backend == "agy" and model.startswith(("grok-", "glm-")):
+            return False
+        return not (backend == "grok" and model.startswith(("gemini-", "claude-", "glm-", "gpt-")))
+
+    def normalize_agent(self, agent):
+        agent = dict(agent)
+        if not self.model_matches_backend(agent.get("backend"), agent.get("model", "")):
+            # Keep the intended agent but discard the foreign model, rather than
+            # silently switching providers. The next selection records the repair.
+            agent["model"] = ""
+            agent["reasoning_effort"] = ""
+        return agent
 
     def local_models(self, backend):
         """Read public model metadata, never authentication files or CLI credentials."""
@@ -167,8 +201,15 @@ class Workspace:
         elif backend == "codex-glm":
             models = [dict(id="glm-5.3", name="GLM 5.3")]
             default = "glm-5.3"
+        elif backend == "agy":
+            cache = load(self.root / "model-catalogues" / "agy.json")
+            models = cache.get("models", [])
         legacy = load(self.settings_path)
-        if legacy.get("backend") == backend and legacy.get("model"):
+        if (
+            legacy.get("backend") == backend
+            and legacy.get("model")
+            and self.model_matches_backend(backend, legacy["model"])
+        ):
             default = legacy["model"]
         if default and not any(m["id"] == default for m in models):
             models.insert(0, dict(id=default, name=default))
@@ -182,6 +223,40 @@ class Workspace:
     def models(self, backend):
         if backend not in {"builtin", "codex", "codex-glm", "grok", "agy"}:
             raise ValueError("Unknown agent")
+        if backend == "agy":
+            cache_path = self.root / "model-catalogues" / "agy.json"
+            cached = load(cache_path)
+            if cached.get("at", 0) > time.time() - 300:
+                return cached
+            try:
+                response = subprocess.run(
+                    ["agy", "models"], capture_output=True, text=True, timeout=15
+                )
+                if response.returncode:
+                    raise ValueError("AGY could not list models; check its login")
+                models = []
+                for line in response.stdout.splitlines():
+                    parts = line.split("\t", 1)
+                    if len(parts) == 2 and re.fullmatch(r"[\w./:-]+", parts[0]):
+                        models.append(dict(id=parts[0], name=parts[1].strip()))
+                if not models:
+                    raise ValueError("AGY did not return its model catalogue")
+                result = dict(
+                    models=models,
+                    default=models[0]["id"],
+                    at=time.time(),
+                    note="Models reported by your installed AGY CLI.",
+                )
+                with self.lock():
+                    private_json(cache_path, result)
+                return result
+            except (OSError, ValueError, subprocess.TimeoutExpired):
+                result = self.local_models(backend)
+                result["note"] = (
+                    "Could not read AGY's model list. Run agy models to check its login. "
+                    "Choose an AGY model rather than a Grok model."
+                )
+                return result
         if backend != "builtin":
             return self.local_models(backend)
         import httpx
@@ -258,20 +333,27 @@ class Workspace:
             raise ValueError(f"{backend} is not installed on this machine")
         if any(c.isspace() for c in model):
             raise ValueError("Use the exact model ID; choose reasoning effort separately")
+        if not self.model_matches_backend(backend, model):
+            raise ValueError(
+                "That model belongs to a different agent. Choose a model for this CLI."
+            )
         if effort not in {"", "low", "medium", "high", "xhigh"}:
             raise ValueError("Unknown reasoning effort")
         if backend == "agy" and effort:
             raise ValueError("AGY uses its own reasoning settings; choose Default")
         agent = dict(backend=backend, model=model, reasoning_effort=effort)
         with self.lock():
-            path = self.directory(identifier) / "project.json"
-            record = load(path)
-            record.update(agent=agent, updated_at=time.time())
-            put(path, record)
+            if identifier is not None:
+                path = self.directory(identifier) / "project.json"
+                record = load(path)
+                record.update(agent=agent, updated_at=time.time())
+                put(path, record)
+            if model:
+                private_json(self.preferences_path, agent)
         return agent
 
     def project_connection(self, project):
-        agent = project.get("agent") or self.default_agent()
+        agent = self.normalize_agent(project.get("agent") or self.default_agent())
         if not agent.get("model"):
             raise ValueError("Choose a model in the conversation's agent selector")
         if agent["backend"] == "builtin":
@@ -322,6 +404,8 @@ class Workspace:
         model = text(payload, "model", 200)
         if not model:
             raise ValueError("Enter the model name used by your provider or CLI")
+        if not self.model_matches_backend(backend, model):
+            raise ValueError("Choose a model belonging to the selected agent")
         base_url = text(payload, "base_url", 2000, "https://api.deepseek.com/v1").rstrip("/")
         parsed = urlsplit(base_url)
         if (
@@ -408,6 +492,11 @@ class Workspace:
 
     def create(self, payload):
         name = text(payload, "name", 160) or "Untitled research"
+        agent = (
+            self.select_agent(None, payload["agent"])
+            if payload.get("agent")
+            else self.default_agent()
+        )
         with self.lock():
             base = f"{date.today().isoformat()}-{folder_name(name)}"
             identifier = base
@@ -427,7 +516,7 @@ class Workspace:
                     updated_at=time.time(),
                     studies=[],
                     brief=None,
-                    agent=self.default_agent(),
+                    agent=agent,
                 ),
             )
             self.write_index(directory)
@@ -493,7 +582,7 @@ class Workspace:
             if len(files) >= 200:
                 break
         return project | {
-            "agent": project.get("agent") or self.default_agent(),
+            "agent": self.normalize_agent(project.get("agent") or self.default_agent()),
             "messages": messages,
             "running": running,
             "files": files,
@@ -615,9 +704,18 @@ class Workspace:
         brief["capability_directory"] = text(payload, "capability_directory", 4096)
         instrument = text(payload, "instrument", 160)
         if instrument:
-            selected = next(
-                (t for t in self.catalogue() if instrument in {t["id"], t["name"]}), None
-            )
+            catalogue = self.catalogue()
+            selected = next((t for t in catalogue if instrument in {t["id"], t["name"]}), None)
+            if not selected:
+                selected = next(
+                    (
+                        v | {"installed": True}
+                        for t in catalogue
+                        for v in t.get("variants", [])
+                        if instrument in {v["id"], v["name"], v["label"]}
+                    ),
+                    None,
+                )
             if not selected or not selected.get("installed") or not selected.get("path"):
                 raise ValueError(
                     "The requested instrument is not installed. "
@@ -650,19 +748,38 @@ class Workspace:
 
     def catalogue(self):
         from ..deployment import DeploymentManager, resolve_project_root
+        from .inventory import discover_installed
 
         manager = DeploymentManager(resolve_project_root())
+        detected = discover_installed(manager.project_root)
         cards = []
         for name, label, description, action in CATALOGUE:
             saved = load(manager.runtime_root / "deployment" / f"{name}.json")
             job = load(self.root / "tools" / name / "job.json")
             result = load(self.root / "tools" / name / "result.json")
             descriptor = next(manager.capability_root.glob(name + "-*.json"), None)
+            variants = [item for item in detected if item["name"].startswith(name + "-")]
+            if variants:
+                variants.sort(
+                    key=lambda item: (item["path"] == str(descriptor), item["version"]),
+                    reverse=True,
+                )
+                descriptor = Path(variants[0]["path"])
             config = load(descriptor) if descriptor else {}
-            runtime = (manager.capability_root / config.get("runtime_root", "missing")).resolve()
+            runtime = (
+                (descriptor.resolve().parent if descriptor else manager.capability_root)
+                / config.get("runtime_root", "missing")
+            ).resolve()
             executable = runtime / config.get("executable", "missing")
             installed = bool(config) and executable.is_file() and os.access(executable, os.X_OK)
             latest = result or saved
+            if (
+                latest
+                and descriptor
+                and not descriptor.resolve().is_relative_to(manager.capability_root)
+                and latest.get("descriptor") != str(descriptor.resolve())
+            ):
+                latest = {}
             cards.append(
                 dict(
                     id=name,
@@ -670,6 +787,7 @@ class Workspace:
                     description=description,
                     action=action,
                     installed=installed,
+                    variants=variants,
                     readiness="passed"
                     if installed and latest.get("ready")
                     else "failed"
@@ -682,7 +800,7 @@ class Workspace:
                     else "installed"
                     if installed
                     else "available",
-                    report=result or saved,
+                    report=latest,
                     path=str(descriptor) if descriptor and installed else None,
                     log=self.tool_log(name),
                 )
@@ -731,6 +849,10 @@ class Workspace:
             raise ValueError("Choose an existing source directory for this tool")
         if source and not Path(source).expanduser().is_dir():
             raise ValueError("Source directory does not exist on this machine")
+        descriptor = None
+        if action == "check":
+            card = next(t for t in self.catalogue() if t["id"] == name)
+            descriptor = card.get("path")
         with self.lock():
             directory = self.root / "tools" / name
             directory.mkdir(parents=True, exist_ok=True)
@@ -751,6 +873,8 @@ class Workspace:
             ]
             if source:
                 command += ["--source", str(Path(source).expanduser().resolve())]
+            if descriptor:
+                command += ["--descriptor", descriptor]
             process = spawn(command, self.root, directory / "install.log")
             put(directory / "job.json", dict(process=process, action=action))
         return {"message": f"{action.capitalize()} started for {name}"}
@@ -814,7 +938,12 @@ class Workspace:
                     from ..mvp_skills import MVPCapabilityInstallation
 
                     MVPCapabilityInstallation.read(selected)
-                    inventory = self.root / "selected-capabilities" / folder_name(selected.stem)
+                    suffix = hashlib.sha256(str(selected).encode()).hexdigest()[:10]
+                    inventory = (
+                        self.root
+                        / "selected-capabilities"
+                        / (folder_name(selected.stem) + "-" + suffix)
+                    )
                     inventory.mkdir(parents=True, exist_ok=True)
                     link = inventory / selected.name
                     if not link.exists():
@@ -911,9 +1040,26 @@ def main():
     parser.add_argument("--action", required=True)
     parser.add_argument("--directory", type=Path, required=True)
     parser.add_argument("--source")
+    parser.add_argument("--descriptor", type=Path)
     args = parser.parse_args()
     manager = DeploymentManager(resolve_project_root())
     try:
+        if args.action == "check" and args.descriptor:
+            from ..mvp_skills import MVPCapabilityInstallation
+
+            installation = MVPCapabilityInstallation.read(args.descriptor)
+            detail = manager._probe_capability(installation)
+            result = dict(
+                ready=True,
+                profile=args.tool,
+                descriptor=str(args.descriptor.resolve()),
+                capability=installation.manifest.name,
+                version=installation.manifest.version,
+                detail=detail,
+            )
+            put(args.directory / "result.json", result)
+            print(json.dumps(result, indent=2), flush=True)
+            return 0
         report = (
             manager.doctor(args.tool, probe=True)
             if args.action == "check"
@@ -923,7 +1069,14 @@ def main():
         print(report.model_dump_json(indent=2), flush=True)
         return 0 if report.ready else 1
     except Exception as error:
-        put(args.directory / "result.json", dict(ready=False, error=str(error)))
+        put(
+            args.directory / "result.json",
+            dict(
+                ready=False,
+                error=str(error),
+                descriptor=str(args.descriptor.resolve()) if args.descriptor else None,
+            ),
+        )
         print(str(error), flush=True)
         return 1
 

@@ -1251,6 +1251,30 @@ dialog p {
   background: #fff;
   border-radius: 8px;
 }
+
+.installed-variants > div {
+  margin: 12px 0;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+.installed-variants strong {
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+.installed-variants p {
+  min-height: 0;
+  margin: 6px 0;
+  font-size: 11px;
+}
+.installed-variants code {
+  display: block;
+  font-size: 10px;
+  overflow-wrap: anywhere;
+  color: var(--muted);
+}
+#home-agent-host .agent-controls {
+  margin-bottom: 16px;
+}
 .agent-controls > div {
   min-width: 130px;
 }

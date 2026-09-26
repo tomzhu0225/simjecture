@@ -39,29 +39,34 @@ def test_browser_setup_chat_files_and_autonomous_handoff(tmp_path, provider):
                 "API connection saved. Choose its model in a conversation.", exact=True
             ).first.wait_for()
             assert page.locator("#api-key").input_value() == ""
-            page.get_by_role("button", name="New project").click()
-            page.locator("#project-name").fill("Browser acceptance · Euler positivity")
-            page.get_by_role("button", name="Create project", exact=True).click()
-            page.locator("#conversation-backend").select_option("builtin")
-            page.locator("#conversation-model option[value='fixture-model']").wait_for(
-                state="attached"
-            )
-            page.locator("#conversation-model").select_option("fixture-model")
-            page.locator("#conversation-effort").select_option("high")
-            page.get_by_role("button", name="Autonomous research", exact=True).click()
-            assert not page.locator("#brief-question").is_visible()
-            page.get_by_role("button", name="Grill me", exact=False).click()
+            page.get_by_role("button", name="New conversation").click()
+            page.locator("#home-backend").select_option("builtin")
+            page.locator("#home-model option[value='fixture-model']").wait_for(state="attached")
+            page.locator("#home-model").select_option("fixture-model")
+            page.locator("#home-effort").select_option("high")
+            page.locator("#first-request").fill("Grill me to prepare an autonomous investigation.")
+            page.locator("#first-request").press("Shift+Enter")
+            assert page.locator("#first-request").input_value().endswith("\n")
+            assert len(app.workspace.projects()) == 0
+            page.screenshot(path=str(screenshots / "overview.png"), full_page=True)
+            page.locator("#first-request").press("Enter")
             page.get_by_text(
                 "What question should we test, and what time budget should I use?", exact=True
             ).wait_for(timeout=40000)
             playwright.expect(page.locator("#send-message")).to_be_enabled(timeout=40000)
             page.locator("#chat-input").fill("Calculate and prepare a counterexample study.")
-            page.get_by_role("button", name="Send ↑", exact=True).click()
+            page.locator("#chat-input").press("Shift+Enter")
+            assert page.locator("#chat-input").input_value().endswith("\n")
+            page.locator("#chat-input").dispatch_event(
+                "keydown", {"key": "Enter", "isComposing": True}
+            )
+            assert page.locator("#messages .message.user").count() == 1
+            page.locator("#chat-input").press("Enter")
             page.get_by_text(
                 "The calculation and editable study brief are ready.", exact=True
             ).wait_for(timeout=40000)
             page.get_by_role("link", name="observations.txt", exact=True).wait_for()
-            assert "browser-acceptance" in page.locator("#project-path").text_content()
+            assert "grill-me" in page.locator("#project-path").text_content()
             page.screenshot(path=str(screenshots / "interactive.png"), full_page=True)
             page.reload()
             page.get_by_text(

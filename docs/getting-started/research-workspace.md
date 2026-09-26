@@ -28,7 +28,8 @@ project controls before shutting down the workstation when necessary.
 
 ## Choose an agent in your conversation
 
-Open a project and use its **Agent**, **Model**, and **Reasoning effort** selectors:
+Use the **Agent**, **Model**, and **Reasoning effort** selectors on Overview or in
+an existing conversation:
 
 - **Compatible API:** optionally save a base URL and key in **Connections**. Back in
   the conversation, the model selector reads the endpoint's model catalogue. If a
@@ -38,6 +39,10 @@ Open a project and use its **Agent**, **Model**, and **Reasoning effort** select
   the server's PATH. Select the CLI and model directly in the conversation, keeping
   its existing login. No API setup is needed. Local model suggestions are not a login
   check; the first real conversation verifies authentication and model availability.
+
+AGY's model choices come from `agy models`, not from another CLI's saved model.
+New conversations remember your last valid agent/model selection. Invalid legacy
+pairs are discarded rather than offered as defaults.
 
 Each conversation remembers its choice independently. Changing it affects subsequent
 messages and new studies; in-flight turns and existing studies retain their recorded
@@ -59,8 +64,11 @@ silently change an existing study's provider. Do not place keys in chat messages
 
 ## Your first study
 
-1. On Overview, choose **Find a first counterexample**, then **Start a project**.
-2. Choose the agent and model above the conversation, then send the request.
+1. On Overview, choose **Find a first counterexample** or type your own request.
+2. Choose the agent and model, then press **Enter** or **Send**. This starts the
+   conversation immediately and creates its permanent named folder automatically.
+   **Shift+Enter** inserts a new line, both here and inside existing conversations.
+   **New conversation** returns to this composer without a project-creation form.
 3. Select **Autonomous research** and choose **Grill me** for focused questions, or
    **Draft from this conversation** to use existing context. The agent fills the brief,
    asking about consequential gaps instead of inventing missing facts. Automatic
@@ -124,8 +132,14 @@ belong to that project.
 The catalogue reuses `simjecture install` and `simjecture doctor` implementations.
 **Installed** and **Not installed** are separate sections. Installed instruments
 also show whether a readiness check has passed, failed, or has not yet been run.
-WarpX CPU, EOS and opacity tools have installer buttons. FLASH and WarpX CUDA ask for
-an existing source checkout. Installation jobs continue in the background and expose
+WarpX CPU, EOS and opacity tools have installer buttons. Existing capability descriptors
+in the checkout's `capabilities/`, `.private/*/capabilities*/`, runtime capability
+directories and the configured capability directory are discovered automatically.
+Installed FLASH applications are shown with their own names, versions and runtime paths;
+they are not relabelled as the bundled island-coalescence application. You do not need
+to supply source again for these installations. Readiness checks use the detected
+application's descriptor. FLASH and WarpX CUDA setup asks for a source checkout only
+when installing a new runtime. Installation jobs continue in the background and expose
 their reports and logs. The catalogue also detects configured executable installations.
 
 You can ask your project agent to install other software and register its Simjecture

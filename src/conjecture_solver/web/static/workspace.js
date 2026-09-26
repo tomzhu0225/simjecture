@@ -15,7 +15,8 @@ const state = {
   studyRevision: "",
   sourceTool: null,
   launchKey: null,
-  modelRequest: 0,
+  modelRequests: { home: 0, conversation: 0 },
+  homeAgent: null,
   routeMemory: {},
 };
 const bytes = (n) =>
@@ -99,6 +100,8 @@ function view(name) {
       ? `project=${encodeURIComponent(state.project.id)}`
       : name;
   if (name === "tools") refreshTools().catch((e) => toast(e.message, true));
+  if (name === "home" && state.token)
+    renderAgent(undefined, "home").catch((e) => toast(e.message, true));
 }
 function renderSettings() {
   const s = state.settings;
@@ -138,23 +141,55 @@ function renderSettings() {
     ? "API endpoint saved. Select its model in your conversation."
     : "Optional. You can use an installed CLI without adding an API key.";
 }
-async function renderAgent(backend) {
-  const p = state.project;
+function agentControls(scope = "conversation") {
+  const home = scope === "home";
+  return {
+    backend: $(home ? "home-backend" : "conversation-backend"),
+    model: $(home ? "home-model" : "conversation-model"),
+    effort: $(home ? "home-effort" : "conversation-effort"),
+    custom: $(home ? "home-custom-model" : "custom-model"),
+    customBox: $(home ? "home-custom-model-control" : "custom-model-control"),
+    refresh: $(home ? "home-refresh-models" : "refresh-models"),
+    note: $(home ? "home-model-note" : "model-note"),
+  };
+}
+function mountHomeAgent() {
+  const copy = document.querySelector(".agent-controls").cloneNode(true);
+  const ids = {
+    "conversation-backend": "home-backend",
+    "conversation-model": "home-model",
+    "conversation-effort": "home-effort",
+    "custom-model": "home-custom-model",
+    "custom-model-control": "home-custom-model-control",
+    "refresh-models": "home-refresh-models",
+    "model-note": "home-model-note",
+  };
+  for (const node of copy.querySelectorAll("[id]"))
+    node.id = ids[node.id] || node.id;
+  for (const label of copy.querySelectorAll("label[for]"))
+    label.htmlFor = ids[label.htmlFor] || label.htmlFor;
+  copy.setAttribute("aria-label", "Agent for a new conversation");
+  $("home-agent-host").replaceChildren(copy);
+}
+async function renderAgent(backend, scope = "conversation") {
+  const home = scope === "home";
+  const p = home
+    ? { id: "overview", agent: state.homeAgent || state.settings.default_agent }
+    : state.project;
   if (!p) return;
-  const id = p.id,
-    request = ++state.modelRequest;
+  const controls = agentControls(scope),
+    id = p.id,
+    request = ++state.modelRequests[scope];
   const selected =
     backend ||
     p.agent?.backend ||
     state.settings.default_agent?.backend ||
     "builtin";
-  $("conversation-backend").replaceChildren();
+  controls.backend.replaceChildren();
   for (const cli of state.settings.clis || [])
     if (cli.path)
-      $("conversation-backend").add(
-        new Option(`${cli.id} · local CLI`, cli.id),
-      );
-  $("conversation-backend").add(
+      controls.backend.add(new Option(`${cli.id} · local CLI`, cli.id));
+  controls.backend.add(
     new Option(
       state.settings.api_configured
         ? "Compatible API"
@@ -162,21 +197,19 @@ async function renderAgent(backend) {
       "builtin",
     ),
   );
-  $("conversation-backend").value = selected;
-  if (!$("conversation-backend").value) {
-    $("conversation-backend").add(
-      new Option(`${selected} · unavailable`, selected),
-    );
-    $("conversation-backend").value = selected;
+  controls.backend.value = selected;
+  if (!controls.backend.value) {
+    controls.backend.add(new Option(`${selected} · unavailable`, selected));
+    controls.backend.value = selected;
   }
-  $("conversation-model").replaceChildren(
-    new Option("Loading model choices…", ""),
-  );
-  $("conversation-model").disabled = true;
-  $("model-note").textContent = "Reading model choices…";
-  $("conversation-backend").disabled = state.readonly;
-  $("custom-model").disabled = state.readonly;
-  $("refresh-models").disabled = state.readonly;
+  controls.model.replaceChildren(new Option("Loading model choices…", ""));
+  controls.model.disabled = true;
+  controls.customBox.hidden = true;
+  controls.custom.value = "";
+  controls.note.textContent = "Reading model choices…";
+  controls.backend.disabled = state.readonly;
+  controls.custom.disabled = state.readonly;
+  controls.refresh.disabled = state.readonly;
   const choices = state.readonly
     ? {
         models: p.agent?.model
@@ -186,47 +219,54 @@ async function renderAgent(backend) {
         note: "Recorded conversation agent · read-only session",
       }
     : await api("models", { backend: selected });
-  if (request !== state.modelRequest || state.project?.id !== id) return;
-  const remembered = state.routeMemory[selected];
-  const current = p.agent?.backend === selected ? p.agent : remembered;
+  if (
+    request !== state.modelRequests[scope] ||
+    (!home && state.project?.id !== id)
+  )
+    return false;
+  const current =
+    p.agent?.backend === selected ? p.agent : state.routeMemory[selected];
   const model = current?.model || choices.default || "";
-  $("conversation-model").replaceChildren(
+  controls.model.replaceChildren(
     ...choices.models.map((m) => new Option(m.name, m.id)),
     new Option("Other model…", "__custom__"),
   );
   const known = choices.models.some((m) => m.id === model);
-  $("conversation-model").value = known ? model : "__custom__";
-  $("custom-model-control").hidden = known;
-  $("custom-model").value = known ? "" : model;
-  $("conversation-effort").value = current?.reasoning_effort || "";
-  $("conversation-effort").disabled = selected === "agy" || state.readonly;
-  if (selected === "agy") $("conversation-effort").value = "";
-  $("conversation-model").disabled = state.readonly;
-  $("model-note").textContent = choices.note;
+  controls.model.value = known ? model : "__custom__";
+  controls.customBox.hidden = known;
+  controls.custom.value = known ? "" : model;
+  controls.effort.value = current?.reasoning_effort || "";
+  controls.effort.disabled = selected === "agy" || state.readonly;
+  if (selected === "agy") controls.effort.value = "";
+  controls.model.disabled = state.readonly;
+  controls.note.textContent = choices.note;
+  return true;
 }
-function agentPayload() {
+function agentPayload(scope = "conversation") {
+  const c = agentControls(scope);
   return {
-    project: state.project.id,
-    backend: $("conversation-backend").value,
+    project: scope === "home" ? null : state.project.id,
+    backend: c.backend.value,
     model:
-      $("conversation-model").value === "__custom__"
-        ? $("custom-model").value.trim()
-        : $("conversation-model").value,
-    reasoning_effort: $("conversation-effort").value,
+      c.model.value === "__custom__" ? c.custom.value.trim() : c.model.value,
+    reasoning_effort: c.effort.value,
   };
 }
-async function saveConversationAgent() {
-  if ($("conversation-model").disabled && !state.readonly)
+async function saveConversationAgent(scope = "conversation") {
+  const c = agentControls(scope);
+  if (c.model.disabled && !state.readonly)
     throw Error(
       "Model choices are still loading. Please try again in a moment.",
     );
-  const payload = agentPayload();
+  const payload = agentPayload(scope);
   if (!payload.model)
     throw Error("Choose a model, or enter its exact ID in Other model.");
   const result = await api("agent", payload);
-  if (state.project?.id === payload.project) {
+  state.routeMemory[result.backend] = result;
+  if (scope === "home") state.homeAgent = result;
+  else if (state.project?.id === payload.project) {
     state.project.agent = result;
-    state.routeMemory[result.backend] = result;
+    state.homeAgent = result;
     renderProject();
   }
   return result;
@@ -454,11 +494,14 @@ async function refreshTools() {
     new Option("Ordinary Python · no external solver", ""),
   );
   const paths = new Set();
-  for (const tool of state.tools)
-    if (tool.path && !paths.has(tool.path)) {
-      paths.add(tool.path);
-      $("study-tools").add(new Option(tool.name, tool.path));
-    }
+  for (const tool of state.tools) {
+    const variants = tool.variants?.length ? tool.variants : [tool];
+    for (const item of variants)
+      if (item.path && !paths.has(item.path)) {
+        paths.add(item.path);
+        $("study-tools").add(new Option(item.label || item.name, item.path));
+      }
+  }
   const desired = state.project?.brief?.capability_directory || previous;
   $("study-tools").value = [...$("study-tools").options].some(
     (o) => o.value === desired,
@@ -512,6 +555,25 @@ async function refreshTools() {
           "field-help",
         ),
       );
+    if (tool.variants?.length) {
+      const details = el("details", undefined, "installed-variants");
+      details.append(
+        el(
+          "summary",
+          `${tool.variants.length} installed application${tool.variants.length === 1 ? "" : "s"}`,
+        ),
+      );
+      for (const variant of tool.variants) {
+        const item = el("div");
+        item.append(
+          el("strong", variant.label),
+          el("p", variant.description),
+          el("code", variant.runtime),
+        );
+        details.append(item);
+      }
+      card.append(details);
+    }
     const actions = el("div", undefined, "tool-actions");
     if (tool.action !== "custom") {
       const install = el(
@@ -743,6 +805,7 @@ async function boot() {
   $("readonly").hidden = !state.readonly;
   renderSettings();
   renderProjects();
+  await renderAgent(undefined, "home");
   if (state.readonly)
     for (const b of document.querySelectorAll(
       "form button, #new-project, #check-machine",
@@ -756,29 +819,31 @@ async function boot() {
 for (const item of document.querySelectorAll("[data-view]"))
   item.onclick = () => view(item.dataset.view);
 $("connection-button").onclick = () => view("settings");
-$("conversation-backend").onchange = () =>
-  renderAgent($("conversation-backend").value)
-    .then(() => {
-      if (agentPayload().model) return saveConversationAgent();
-    })
-    .catch((e) => toast(e.message, true));
-$("conversation-model").onchange = () => {
-  $("custom-model-control").hidden =
-    $("conversation-model").value !== "__custom__";
-  if (!$("custom-model-control").hidden) {
-    $("custom-model").focus();
-    return;
-  }
-  saveConversationAgent().catch((e) => toast(e.message, true));
-};
-$("custom-model").onchange = () =>
-  saveConversationAgent().catch((e) => toast(e.message, true));
-$("conversation-effort").onchange = () =>
-  saveConversationAgent().catch((e) => toast(e.message, true));
-$("refresh-models").onclick = () =>
-  action($("refresh-models"), () =>
-    renderAgent($("conversation-backend").value),
-  );
+mountHomeAgent();
+for (const scope of ["home", "conversation"]) {
+  const c = agentControls(scope);
+  c.backend.onchange = () =>
+    renderAgent(c.backend.value, scope)
+      .then((ready) => {
+        if (ready && agentPayload(scope).model)
+          return saveConversationAgent(scope);
+      })
+      .catch((e) => toast(e.message, true));
+  c.model.onchange = () => {
+    c.customBox.hidden = c.model.value !== "__custom__";
+    if (!c.customBox.hidden) {
+      c.custom.focus();
+      return;
+    }
+    saveConversationAgent(scope).catch((e) => toast(e.message, true));
+  };
+  c.custom.onchange = () =>
+    saveConversationAgent(scope).catch((e) => toast(e.message, true));
+  c.effort.onchange = () =>
+    saveConversationAgent(scope).catch((e) => toast(e.message, true));
+  c.refresh.onclick = () =>
+    action(c.refresh, () => renderAgent(c.backend.value, scope));
+}
 $("provider-preset").onchange = () => {
   const preset = {
     deepseek: ["https://api.deepseek.com/v1", "deepseek-chat"],
@@ -800,6 +865,7 @@ $("settings-form").onsubmit = (e) => {
     $("api-key").value = "";
     renderSettings();
     toast("API connection saved. Choose its model in a conversation.");
+    await renderAgent(undefined, "home");
     if (state.project) await renderAgent();
   });
 };
@@ -812,34 +878,30 @@ $("check-machine").onclick = () =>
       : `${result.reason} ${result.remedy || ""}`;
   });
 $("new-project").onclick = () => {
-  $("new-project-dialog").showModal();
-  $("project-name").focus();
-};
-$("cancel-new-project").onclick = () => $("new-project-dialog").close();
-$("new-project-form").onsubmit = (e) => {
-  e.preventDefault();
-  action(e.submitter, async () => {
-    const p = await api("projects", { name: $("project-name").value });
-    $("new-project-dialog").close();
-    $("project-name").value = "";
-    await reloadProjects();
-    mode("interactive");
-    await openProject(p.id);
-  });
+  state.project = null;
+  renderProjects();
+  view("home");
+  $("first-request").value = "";
+  $("first-request").focus();
 };
 $("quick-start").onsubmit = (e) => {
   e.preventDefault();
-  action(e.submitter, async () => {
+  const button =
+    e.submitter || $("quick-start").querySelector("button[type=submit]");
+  action(button, async () => {
     const message = $("first-request").value.trim();
-    const p = await api("projects", { name: message.slice(0, 80) });
+    if (!message) return;
+    const agent = await saveConversationAgent("home");
+    const p = await api("projects", {
+      name: message.split("\n")[0].slice(0, 80),
+      agent,
+    });
     await reloadProjects();
     mode("interactive");
     await openProject(p.id);
     $("chat-input").value = message;
     $("first-request").value = "";
-    toast(
-      "Project created. Choose your agent and model, then send your request.",
-    );
+    await send();
   });
 };
 for (const b of document.querySelectorAll("[data-example]"))
@@ -851,12 +913,23 @@ $("chat-form").onsubmit = (e) => {
   e.preventDefault();
   action($("send-message"), send);
 };
-$("chat-input").onkeydown = (e) => {
-  if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
-    e.preventDefault();
-    $("chat-form").requestSubmit();
-  }
-};
+for (const [input, form] of [
+  ["chat-input", "chat-form"],
+  ["first-request", "quick-start"],
+]) {
+  $(input).onkeydown = (e) => {
+    if (
+      e.key === "Enter" &&
+      !e.shiftKey &&
+      !e.isComposing &&
+      e.keyCode !== 229
+    ) {
+      e.preventDefault();
+      const submit = $(form).querySelector("button[type=submit]");
+      if (!state.readonly && !submit.disabled) $(form).requestSubmit(submit);
+    }
+  };
+}
 $("stop-agent").onclick = () =>
   action($("stop-agent"), async () => {
     toast((await api("stop", { project: state.project.id })).message);

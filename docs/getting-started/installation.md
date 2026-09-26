@@ -19,8 +19,8 @@ uv run simjecture doctor --profile core
 
 ## Native agent login
 
-For browser setup, run `./scripts/launch-workspace.sh` and create a project.
-Choose an installed CLI and model in the conversation. **Connections** is only needed
+For browser setup, run `./scripts/launch-workspace.sh`, choose an agent and model on
+Overview, and send your first message. **Connections** is only needed
 to add an optional compatible API endpoint and key. See the
 [research workspace guide](research-workspace.md) for a complete first investigation.
 

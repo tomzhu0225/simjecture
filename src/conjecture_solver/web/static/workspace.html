@@ -20,7 +20,7 @@
           ><span>simjecture<small>RESEARCH WORKSPACE</small></span></a
         >
         <button id="new-project" class="new-project">
-          ＋ <span>New project</span>
+          ＋ <span>New conversation</span>
         </button>
         <nav aria-label="Workspace navigation">
           <button data-view="home" class="nav-item active">
@@ -33,7 +33,7 @@
             <span aria-hidden="true">⚙</span> Connections
           </button>
         </nav>
-        <div class="sidebar-label">YOUR PROJECTS</div>
+        <div class="sidebar-label">CONVERSATIONS</div>
         <div id="project-list" class="project-list">
           <p class="muted">Your work will appear here.</p>
         </div>
@@ -67,8 +67,9 @@
               with your agent, then let a focused study run on its own.
             </p>
           </div>
+          <div id="home-agent-host"></div>
           <form id="quick-start" class="start-box">
-            <label for="first-request">Your next research project</label
+            <label for="first-request">Your research request</label
             ><textarea
               id="first-request"
               rows="3"
@@ -80,7 +81,7 @@
                 >Ordinary requests welcome. You don’t need a hypothesis
                 yet.</span
               ><button type="submit" class="primary">
-                Start a project <span>↗</span>
+                Send <span>↑</span>
               </button>
             </div>
           </form>
@@ -260,7 +261,7 @@
         <section id="view-project" class="view project-view" hidden>
           <div class="project-heading">
             <div>
-              <p class="eyebrow">RESEARCH PROJECT</p>
+              <p class="eyebrow">RESEARCH CONVERSATION</p>
               <h1 id="project-title"></h1>
             </div>
             <div class="mode-switch" role="group" aria-label="Research mode">
@@ -537,24 +538,6 @@
       </main>
     </div>
     <div id="toast" class="toast" role="status" hidden></div>
-    <dialog id="new-project-dialog">
-      <form id="new-project-form">
-        <p class="eyebrow">A NEW INVESTIGATION</p>
-        <h2>Name your project</h2>
-        <label for="project-name">Project name</label
-        ><input
-          id="project-name"
-          required
-          maxlength="160"
-          placeholder="e.g. Reconnection onset"
-        />
-        <div class="form-actions">
-          <button id="cancel-new-project" class="secondary" type="button">
-            Cancel</button
-          ><button class="primary" type="submit">Create project</button>
-        </div>
-      </form>
-    </dialog>
     <dialog id="source-dialog">
       <form id="source-form">
         <h2 id="source-title">Connect source</h2>
