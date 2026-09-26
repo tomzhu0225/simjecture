@@ -136,17 +136,15 @@
         <section id="view-settings" class="view" hidden>
           <div class="page-intro compact">
             <p class="eyebrow">YOUR AGENT, YOUR MACHINE</p>
-            <h1>Connect your research agent.</h1>
+            <h1>API connections, if you need them.</h1>
             <p class="lead">
-              Use a model API or a CLI agent you already have installed.
+              Choose your agent and model inside each conversation. Installed
+              CLI agents need no API setup here.
             </p>
           </div>
           <div class="settings-layout">
             <form id="settings-form" class="panel form-panel">
-              <label for="backend">Agent connection</label
-              ><select id="backend">
-                <option value="builtin">Built-in agent · compatible API</option>
-              </select>
+              <p class="eyebrow">OPTIONAL · COMPATIBLE API</p>
               <div id="api-fields">
                 <label for="provider-preset">Provider</label
                 ><select id="provider-preset">
@@ -171,27 +169,9 @@
                   returned to the browser or included in project exports.
                 </p>
               </div>
-              <label for="model">Model</label
-              ><input
-                id="model"
-                placeholder="Exact model ID from your provider"
-                required
-              />
-              <details class="advanced">
-                <summary>Independent reviewer</summary>
-                <label for="judge-model">Reviewer model (optional)</label
-                ><input
-                  id="judge-model"
-                  placeholder="Same model in a separate context"
-                />
-                <p class="field-help">
-                  Reviews run in a fresh context without tools. A different
-                  model is optional.
-                </p>
-              </details>
               <div class="form-actions">
                 <button class="primary" type="submit" id="save-connection">
-                  Save and test connection</button
+                  Save API connection</button
                 ><span id="connection-result" role="status"></span>
               </div>
             </form>
@@ -231,7 +211,24 @@
             <strong>Python is ready to explore.</strong> NumPy, SciPy, pandas,
             and plotting are included. Simulation tools are optional.
           </div>
-          <div id="tool-grid" class="tool-grid"></div>
+          <div class="inventory-heading">
+            <h2>
+              Installed <span id="installed-count" class="count-badge">1</span>
+            </h2>
+            <p>
+              Present on this machine. Scientific validation is specific to each
+              study.
+            </p>
+          </div>
+          <div id="installed-tool-grid" class="tool-grid"></div>
+          <div class="inventory-heading">
+            <h2>
+              Not installed
+              <span id="available-count" class="count-badge">0</span>
+            </h2>
+            <p>Add a solver when your investigation needs it.</p>
+          </div>
+          <div id="available-tool-grid" class="tool-grid"></div>
           <details class="panel custom-tool">
             <summary>Connect another research tool</summary>
             <p>
@@ -271,6 +268,39 @@
                 Interactive research</button
               ><button id="autonomous-mode">Autonomous research</button>
             </div>
+          </div>
+          <div class="agent-controls" aria-label="Conversation agent">
+            <div>
+              <label for="conversation-backend">Agent</label
+              ><select id="conversation-backend"></select>
+            </div>
+            <div class="model-control">
+              <label for="conversation-model">Model</label
+              ><select id="conversation-model"></select>
+            </div>
+            <div id="custom-model-control" hidden>
+              <label for="custom-model">Model ID</label
+              ><input id="custom-model" placeholder="Exact model ID" />
+            </div>
+            <div>
+              <label for="conversation-effort">Reasoning effort</label
+              ><select id="conversation-effort">
+                <option value="">Default</option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+                <option value="xhigh">Extra high</option>
+              </select>
+            </div>
+            <button
+              id="refresh-models"
+              class="quiet"
+              type="button"
+              title="Refresh model choices"
+            >
+              ↻ Refresh
+            </button>
+            <p id="model-note" class="field-help"></p>
           </div>
           <div class="project-layout">
             <div class="conversation-column">
@@ -316,99 +346,157 @@
               </div>
               <div id="autonomous-panel" hidden>
                 <div id="study-runs"></div>
-                <form id="brief-form" class="panel brief-form">
-                  <div class="section-line">
-                    <h2>Agree on the investigation</h2>
-                    <span class="badge">EDITABLE BRIEF</span>
-                  </div>
-                  <p class="field-help">
-                    Prepare this together in the conversation, or fill it in
-                    yourself. These conditions are fixed for each launched
-                    study.
+                <div id="study-preparation" class="panel study-preparation">
+                  <p class="eyebrow">PREPARE IT TOGETHER</p>
+                  <h2>Let your agent shape the investigation.</h2>
+                  <p>
+                    Your conversation and files are the starting point. The
+                    agent fills the brief; you review it before launching.
                   </p>
-                  <label for="brief-question">Question or claim to test</label
-                  ><textarea
-                    id="brief-question"
-                    rows="3"
-                    required
-                    placeholder="What precise question should the investigation answer?"
-                  ></textarea
-                  ><label for="brief-criteria"
-                    >What evidence would answer it?</label
-                  ><textarea
-                    id="brief-criteria"
-                    rows="3"
-                    required
-                    placeholder="Measurements, comparison, counterexample, and validation requirements"
-                  ></textarea
-                  ><label for="brief-constraints"
-                    >Constraints and available inputs</label
-                  ><textarea
-                    id="brief-constraints"
-                    rows="3"
-                    placeholder="What may change? What must stay fixed? Which project files matter?"
-                  ></textarea>
-                  <div class="two-fields">
-                    <div>
-                      <label for="brief-policy"
-                        >When is the research complete?</label
-                      ><select id="brief-policy">
-                        <option value="answer">
-                          Answer the question · negative results count
-                        </option>
-                        <option value="repair">
-                          Seek a supported claim or tested repair
-                        </option>
-                      </select>
-                    </div>
-                    <div>
-                      <label for="brief-hours">Time budget (hours)</label
-                      ><input
-                        id="brief-hours"
-                        type="number"
-                        min="0.01"
-                        max="168"
-                        step="any"
-                        value="1"
-                        required
-                      />
-                    </div>
-                  </div>
-                  <label for="study-tools">Research instruments</label
-                  ><select id="study-tools">
-                    <option value="">
-                      Ordinary Python · no external solver
-                    </option>
-                  </select>
-                  <details class="advanced">
-                    <summary>Execution settings</summary>
-                    <label for="execution-backend">Experiment environment</label
-                    ><select id="execution-backend">
-                      <option value="bubblewrap">
-                        Linux sandbox (recommended)
-                      </option>
-                      <option value="proot-cooperative">
-                        Cooperative container execution
-                      </option>
-                    </select>
-                    <p class="field-help">
-                      Cooperative execution is for a dedicated unprivileged
-                      account and does not isolate host networking.
-                    </p>
-                  </details>
-                  <div class="brief-footer">
-                    <button id="save-brief" type="button" class="secondary">
-                      Save brief</button
-                    ><button id="launch-study" type="submit" class="primary">
-                      Start autonomous research ↗
+                  <div class="preparation-options">
+                    <button
+                      id="grill-me"
+                      class="preparation-option"
+                      type="button"
+                    >
+                      <strong>Grill me <span>↗</span></strong
+                      ><small
+                        >Ask focused questions, challenge assumptions, and turn
+                        my answers into a study.</small
+                      >
+                    </button>
+                    <button
+                      id="draft-study"
+                      class="preparation-option"
+                      type="button"
+                    >
+                      <strong
+                        >Draft from this conversation <span>↗</span></strong
+                      ><small
+                        >Use what we already discussed. Ask only when something
+                        important is missing.</small
+                      >
                     </button>
                   </div>
-                  <p class="field-help">
-                    Runs survive closing this page. They stop at the original
-                    deadline or an independently accepted outcome. You can pause
-                    or stop them earlier.
-                  </p>
-                </form>
+                  <p
+                    id="preparation-status"
+                    class="field-help"
+                    role="status"
+                  ></p>
+                </div>
+                <div id="prepared-brief" class="panel prepared-brief" hidden>
+                  <p class="eyebrow">YOUR AGENT’S PROPOSAL</p>
+                  <h2 id="prepared-question"></h2>
+                  <div id="prepared-details"></div>
+                  <div class="brief-footer">
+                    <button id="revise-study" class="secondary" type="button">
+                      Discuss or refine</button
+                    ><button
+                      id="start-prepared-study"
+                      class="primary"
+                      type="button"
+                    >
+                      Start research ↗
+                    </button>
+                  </div>
+                </div>
+                <details id="brief-editor" class="brief-editor">
+                  <summary>Review or edit the study details</summary>
+                  <form id="brief-form" class="panel brief-form">
+                    <div class="section-line">
+                      <h2>Agree on the investigation</h2>
+                      <span class="badge">EDITABLE BRIEF</span>
+                    </div>
+                    <p class="field-help">
+                      Your agent fills these details from the conversation. You
+                      can change them here if needed. Each launched study keeps
+                      its agreed conditions.
+                    </p>
+                    <label for="brief-question">Question or claim to test</label
+                    ><textarea
+                      id="brief-question"
+                      rows="3"
+                      required
+                      placeholder="What precise question should the investigation answer?"
+                    ></textarea
+                    ><label for="brief-criteria"
+                      >What evidence would answer it?</label
+                    ><textarea
+                      id="brief-criteria"
+                      rows="3"
+                      required
+                      placeholder="Measurements, comparison, counterexample, and validation requirements"
+                    ></textarea
+                    ><label for="brief-constraints"
+                      >Constraints and available inputs</label
+                    ><textarea
+                      id="brief-constraints"
+                      rows="3"
+                      placeholder="What may change? What must stay fixed? Which project files matter?"
+                    ></textarea>
+                    <div class="two-fields">
+                      <div>
+                        <label for="brief-policy"
+                          >When is the research complete?</label
+                        ><select id="brief-policy">
+                          <option value="answer">
+                            Answer the question · negative results count
+                          </option>
+                          <option value="repair">
+                            Seek a supported claim or tested repair
+                          </option>
+                        </select>
+                      </div>
+                      <div>
+                        <label for="brief-hours">Time budget (hours)</label
+                        ><input
+                          id="brief-hours"
+                          type="number"
+                          min="0.01"
+                          max="168"
+                          step="any"
+                          value="1"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <label for="study-tools">Research instruments</label
+                    ><select id="study-tools">
+                      <option value="">
+                        Ordinary Python · no external solver
+                      </option>
+                    </select>
+                    <details class="advanced">
+                      <summary>Execution settings</summary>
+                      <label for="execution-backend"
+                        >Experiment environment</label
+                      ><select id="execution-backend">
+                        <option value="bubblewrap">
+                          Linux sandbox (recommended)
+                        </option>
+                        <option value="proot-cooperative">
+                          Cooperative container execution
+                        </option>
+                      </select>
+                      <p class="field-help">
+                        Cooperative execution is for a dedicated unprivileged
+                        account and does not isolate host networking.
+                      </p>
+                    </details>
+                    <div class="brief-footer">
+                      <button id="save-brief" type="button" class="secondary">
+                        Save brief</button
+                      ><button id="launch-study" type="submit" class="primary">
+                        Start autonomous research ↗
+                      </button>
+                    </div>
+                    <p class="field-help">
+                      Runs survive closing this page. They stop at the original
+                      deadline or an independently accepted outcome. You can
+                      pause or stop them earlier.
+                    </p>
+                  </form>
+                </details>
               </div>
             </div>
             <aside class="project-context">

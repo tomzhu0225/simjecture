@@ -29,12 +29,21 @@ def provider():
         def log_message(self, *_):
             pass
 
+        def do_GET(self):  # noqa: N802
+            self.respond({"data": [{"id": "fixture-model"}, {"id": "fixture-alternate"}]})
+
         def do_POST(self):  # noqa: N802
             request = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
             requests.append(request)
             tools = {t["function"]["name"] for t in request.get("tools", [])}
             messages = request["messages"]
             context = json.dumps(messages)
+            plain = "\n".join(
+                m.get("content", "")
+                if isinstance(m.get("content"), str)
+                else "\n".join(c.get("text", "") for c in m.get("content") or [])
+                for m in messages
+            )
             calls = [
                 m
                 for m in messages
@@ -42,6 +51,11 @@ def provider():
             ]
             if "connection_check" in tools:
                 name, args = "connection_check", {"value": "connected"}
+            elif "draft_study" in tools and ("CURRENT USER REQUEST:\nGrill me to prepare" in plain):
+                name, args = (
+                    "final_answer",
+                    {"answer": "What question should we test, and what time budget should I use?"},
+                )
             elif "draft_study" in tools:
                 step = len(calls)
                 if step == 0:
@@ -348,6 +362,7 @@ def test_detected_cli_uses_existing_transport_and_persists_brief(tmp_path, monke
         f"#!{sys.executable}\nimport json,sys\nfrom pathlib import Path\n"
         "if '--version' in sys.argv:\n    print('fixture-cli 1.0');raise SystemExit(0)\n"
         "Path('cli-result.txt').write_text('Permanent CLI output')\n"
+        "Path('cli-argv.json').write_text(json.dumps(sys.argv))\n"
         f"Path('STUDY_BRIEF.json').write_text({json.dumps(brief)!r})\n"
         "print(json.dumps({'type':'item.completed','item':{'type':'agent_message',"
         "'text':'CLI preparation completed.'}}))\n"
@@ -357,9 +372,11 @@ def test_detected_cli_uses_existing_transport_and_persists_brief(tmp_path, monke
     monkeypatch.setenv("PATH", str(binary) + os.pathsep + os.environ["PATH"])
     workspace = Workspace(tmp_path / "runs/.workspace")
     assert next(c for c in workspace.settings()["clis"] if c["id"] == "codex")["path"] == str(cli)
-    workspace.save_settings(dict(backend="codex", model="fixture-cli"))
-    workspace.test_connection()
     project = workspace.create({"name": "CLI project"})
+    workspace.select_agent(
+        project["id"], dict(backend="codex", model="fixture-cli", reasoning_effort="high")
+    )
+    assert not workspace.settings_path.exists()
     workspace.send(project["id"], {"message": "Prepare my experiment"})
     try:
         result = wait_for(
@@ -370,8 +387,10 @@ def test_detected_cli_uses_existing_transport_and_persists_brief(tmp_path, monke
             )
         )
         assert result["messages"][-1]["content"] == "CLI preparation completed."
-        assert result["brief"] == brief
+        assert result["brief"] == brief | {"capability_directory": ""}
         assert (Path(result["files_directory"]) / "cli-result.txt").is_file()
+        argv = load(Path(result["files_directory"]) / "cli-argv.json")
+        assert 'model_reasoning_effort="high"' in argv
         assert (
             "CLI preparation completed."
             in (workspace.directory(project["id"]) / "CONVERSATION.md").read_text()
@@ -390,3 +409,85 @@ def test_terminal_timeout_stops_descendant_commands(tmp_path):
     child_pid = int((tmp_path / "child.pid").read_text())
     stat = Path(f"/proc/{child_pid}/stat")
     assert not stat.exists() or stat.read_text().split(") ")[1].split()[0] in {"Z", "X"}
+
+
+def test_conversation_agents_are_independent_and_api_credentials_are_optional(
+    tmp_path, monkeypatch
+):
+    import conjecture_solver.web.workspace as module
+
+    monkeypatch.setattr(
+        module.shutil, "which", lambda name: "/bin/true" if name == "grok" else None
+    )
+    workspace = Workspace(tmp_path / ".workspace")
+    first = workspace.create({"name": "First conversation"})
+    second = workspace.create({"name": "Second conversation"})
+    assert not workspace.settings_path.exists()
+    selected = workspace.select_agent(
+        first["id"], dict(backend="grok", model="grok-4.7", reasoning_effort="high")
+    )
+    assert (
+        workspace.project_connection(workspace.project(first["id"]))["reasoning_effort"] == "high"
+    )
+    workspace.select_agent(second["id"], dict(backend="grok", model="grok-4.6"))
+    assert workspace.project(first["id"])["agent"] == selected
+    assert workspace.project(second["id"])["agent"]["model"] == "grok-4.6"
+    workspace.save_api(dict(base_url="https://example.org/v1", api_key="private-test-key"))
+    assert workspace.project(first["id"])["agent"] == selected
+    assert "private-test-key" not in json.dumps(workspace.settings())
+    assert "private-test-key" not in json.dumps(workspace.project(first["id"]))
+    with pytest.raises(ValueError, match="reasoning effort separately"):
+        workspace.select_agent(first["id"], dict(backend="grok", model="grok-4.7 high"))
+
+
+def test_api_model_discovery_uses_saved_endpoint_without_global_model(tmp_path, provider):
+    url, _ = provider
+    workspace = Workspace(tmp_path / ".workspace")
+    workspace.save_api(dict(base_url=url, api_key="test-secret"))
+    assert not workspace.settings_path.exists()
+    assert {m["id"] for m in workspace.models("builtin")["models"]} == {
+        "fixture-model",
+        "fixture-alternate",
+    }
+    project = workspace.create({"name": "API project"})
+    workspace.select_agent(project["id"], dict(backend="builtin", model="fixture-alternate"))
+    assert (
+        workspace.project_connection(workspace.project(project["id"]))["model"]
+        == "fixture-alternate"
+    )
+
+
+def test_grill_and_draft_use_agent_preparation_not_empty_forms(tmp_path, monkeypatch):
+    workspace = Workspace(tmp_path / ".workspace")
+    captured = []
+    monkeypatch.setattr(workspace, "send", lambda identifier, payload: captured.append(payload))
+    workspace.prepare("project", {"approach": "interview"})
+    assert captured[-1]["message"] == "Grill me to prepare an autonomous investigation."
+    assert "three consequential questions" in captured[-1]["preparation"]
+    workspace.prepare("project", {"approach": "draft"})
+    assert "one-hour budget" in captured[-1]["preparation"]
+    assert "rather than inventing" in captured[-1]["preparation"]
+    assert "draft_study" not in captured[-1]["message"]
+
+
+def test_native_reasoning_effort_is_in_frozen_launch_contract(tmp_path, monkeypatch):
+    import conjecture_solver.execution as execution
+    import conjecture_solver.study_launch as launch
+    from conjecture_solver.study_launch import NativeStudyRequest, materialize_native
+
+    monkeypatch.setattr(launch.shutil, "which", lambda name: "/bin/true")
+    monkeypatch.setattr(execution, "require_execution_backend", lambda _: {"available": True})
+    request = NativeStudyRequest(
+        hypothesis="An explicit bounded claim.",
+        output_directory=str(tmp_path / "study"),
+        campaign_id="study-test",
+        engine="native",
+        backend="grok",
+        model="grok-4.7",
+        reasoning_effort="high",
+    )
+    plan = materialize_native(request)
+    assert plan.argv[plan.argv.index("--reasoning-effort") + 1] == "high"
+    assert load(tmp_path / "study/study-launch.json")["request"]["reasoning_effort"] == "high"
+    with pytest.raises(ValueError, match="differs"):
+        materialize_native(request.model_copy(update={"reasoning_effort": "low"}), resume=True)

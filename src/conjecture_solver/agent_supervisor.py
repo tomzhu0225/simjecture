@@ -269,6 +269,8 @@ class AgentSupervisor:
             else:
                 command += ["--dangerously-bypass-approvals-and-sandbox"]
             command += [prompt]
+            if getattr(self.args, "reasoning_effort", None):
+                command[-1:-1] = ["-c", f'model_reasoning_effort="{self.args.reasoning_effort}"']
         elif backend == "grok":
             command = [
                 self.args.executable,
@@ -281,6 +283,8 @@ class AgentSupervisor:
                 "--output-format",
                 "streaming-messages-json",
             ]
+            if getattr(self.args, "reasoning_effort", None):
+                command += ["--reasoning-effort", self.args.reasoning_effort]
             if judge:
                 command += [
                     "--tools",

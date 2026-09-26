@@ -26,16 +26,25 @@ The server binds to localhost. Closing the browser or web server leaves agent tu
 installations and autonomous studies running independently. Stop them with their
 project controls before shutting down the workstation when necessary.
 
-## Connect an agent
+## Choose an agent in your conversation
 
-In **Connections**, choose one of:
+Open a project and use its **Agent**, **Model**, and **Reasoning effort** selectors:
 
-- **Built-in agent:** enter an OpenAI-compatible base URL, API key, and exact model
-  identifier. Local compatible model servers work too. Save and test performs a small
-  tool-call request, so it checks more than the availability of an endpoint.
+- **Compatible API:** optionally save a base URL and key in **Connections**. Back in
+  the conversation, the model selector reads the endpoint's model catalogue. If a
+  provider does not expose a catalogue, select **Other model** and enter its exact ID.
+  Local compatible model servers work too.
 - **Installed CLI:** the workspace detects `codex`, `codex-glm`, `grok`, and `agy` on
-  the server's PATH. Choose a model and keep the CLI's existing login. The connection
-  check verifies the executable; the first real conversation verifies authentication.
+  the server's PATH. Select the CLI and model directly in the conversation, keeping
+  its existing login. No API setup is needed. Local model suggestions are not a login
+  check; the first real conversation verifies authentication and model availability.
+
+Each conversation remembers its choice independently. Changing it affects subsequent
+messages and new studies; in-flight turns and existing studies retain their recorded
+connection. Reasoning effort is separate from the model ID: for example, choose
+`grok-4.7` and **High**, rather than typing `grok-4.7 high`. AGY retains its native
+reasoning settings. Compatible API providers must support the selected effort value;
+leave **Default** selected when the provider does not support it.
 
 The built-in agent uses Hugging Face **smolagents** and its compatible API transport.
 Native CLI execution reuses Simjecture's existing supervision adapter. Both routes
@@ -51,10 +60,14 @@ silently change an existing study's provider. Do not place keys in chat messages
 ## Your first study
 
 1. On Overview, choose **Find a first counterexample**, then **Start a project**.
-2. Send the request. The agent can make a small calculation and prepare a study brief.
-3. Select **Autonomous research**. Review the question, required evidence, constraints,
-   time budget, and completion policy. Ordinary Python needs no simulation plugin.
-4. Start the study. The autonomous worker records experiments and submits evidence to
+2. Choose the agent and model above the conversation, then send the request.
+3. Select **Autonomous research** and choose **Grill me** for focused questions, or
+   **Draft from this conversation** to use existing context. The agent fills the brief,
+   asking about consequential gaps instead of inventing missing facts. Automatic
+   drafting uses a disclosed one-hour budget and accepts reviewed negative results
+   unless you have specified otherwise. Ordinary Python needs no simulation plugin.
+4. Review the agent's proposal and press **Start research**. Manual fields are tucked
+   under **Review or edit the study details**. The autonomous worker records experiments and submits evidence to
    a separate tool-free reviewer. Watch progress in the project or experiment monitor.
 5. Open the result, evidence ledger, and simulation files from the study card.
 
@@ -109,6 +122,8 @@ belong to that project.
 ## Research tools
 
 The catalogue reuses `simjecture install` and `simjecture doctor` implementations.
+**Installed** and **Not installed** are separate sections. Installed instruments
+also show whether a readiness check has passed, failed, or has not yet been run.
 WarpX CPU, EOS and opacity tools have installer buttons. FLASH and WarpX CUDA ask for
 an existing source checkout. Installation jobs continue in the background and expose
 their reports and logs. The catalogue also detects configured executable installations.

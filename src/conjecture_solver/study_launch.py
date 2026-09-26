@@ -27,6 +27,7 @@ class NativeStudyRequest(MVPLaunchRequest):
     provider_config: str | None = None
     model: str | None = None
     judge_model: str | None = None
+    reasoning_effort: Literal["low", "medium", "high", "xhigh"] | None = None
     agent_executable: str | None = None
 
 
@@ -146,6 +147,8 @@ def materialize_native(request, *, resume=False):
     argv += ["--completion-policy", request.completion_policy]
     if request.provider_config:
         argv += ["--provider-config", request.provider_config]
+    if request.reasoning_effort:
+        argv += ["--reasoning-effort", request.reasoning_effort]
     put(
         record,
         dict(

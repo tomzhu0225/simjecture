@@ -1239,3 +1239,220 @@ dialog p {
     transition: none !important;
   }
 }
+
+.agent-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+  margin: 0 0 24px;
+  padding: 15px 18px;
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 8px;
+}
+.agent-controls > div {
+  min-width: 130px;
+}
+.agent-controls .model-control {
+  flex: 1;
+  max-width: 350px;
+}
+.agent-controls label {
+  margin: 0 0 5px;
+  font-size: 10px;
+  color: var(--muted);
+  font-weight: 500;
+}
+.agent-controls input,
+.agent-controls select {
+  min-height: 35px;
+  padding: 7px 10px;
+  font-size: 12px;
+}
+.agent-controls .quiet {
+  padding-bottom: 8px;
+  margin-left: auto;
+}
+.agent-controls > p {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 10px;
+}
+.inventory-heading {
+  margin: 28px 0 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+.inventory-heading h2 {
+  font-size: 19px;
+  margin: 0;
+  font-weight: 600;
+}
+.inventory-heading p {
+  font-size: 11px;
+  color: var(--muted);
+  margin: 0;
+}
+.count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #e5ecdf;
+  color: var(--accent);
+  border-radius: 20px;
+  padding: 2px 9px;
+  font-size: 11px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+.tool-status {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: 7px;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 9px;
+}
+.tool-status.installed {
+  background: #e4f0df;
+  color: #315d3b;
+}
+.tool-status.not-installed {
+  background: #f0f1ed;
+  color: #75806e;
+}
+.tool-installed {
+  border-top: 3px solid #81a575;
+}
+.tool-missing {
+  background: #fdfefb;
+}
+.tool-card > .field-help {
+  margin: -4px 0 18px;
+  min-height: 0;
+}
+.study-preparation {
+  margin-bottom: 20px;
+}
+.study-preparation h2 {
+  font:
+    normal 25px/1.4 Georgia,
+    serif;
+  margin: 0 0 10px;
+}
+.study-preparation > p:not(.eyebrow) {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.8;
+}
+.preparation-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 13px;
+  margin: 20px 0 12px;
+}
+.preparation-option {
+  padding: 18px;
+  text-align: left;
+  background: var(--paper);
+  border: 1px solid #d2dfca;
+  border-radius: 7px;
+  color: var(--ink);
+}
+.preparation-option:hover {
+  background: var(--soft);
+  border-color: #84a774;
+}
+.preparation-option strong {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+}
+.preparation-option strong span {
+  color: var(--accent);
+}
+.preparation-option small {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.7;
+  margin-top: 10px;
+}
+.prepared-brief {
+  border-color: #bdcfb1;
+  margin-bottom: 16px;
+}
+.prepared-brief h2 {
+  font:
+    normal 24px/1.4 Georgia,
+    serif;
+  margin: 0 0 22px;
+  overflow-wrap: anywhere;
+}
+#prepared-details > div {
+  margin-bottom: 17px;
+}
+#prepared-details strong {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 600;
+}
+#prepared-details p {
+  font-size: 13px;
+  margin: 4px 0;
+  white-space: pre-wrap;
+}
+.brief-editor > summary {
+  padding: 12px 2px;
+}
+.brief-editor .brief-form {
+  margin-top: 6px;
+}
+.prepared-brief .brief-footer {
+  margin-top: 25px;
+}
+.agent-controls #custom-model-control {
+  flex: 1;
+}
+@media (max-width: 820px) {
+  .agent-controls > div {
+    min-width: 110px;
+    flex: 1;
+  }
+  .agent-controls .model-control {
+    max-width: none;
+  }
+  .inventory-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .preparation-options {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 600px) {
+  .agent-controls {
+    padding: 13px;
+    gap: 10px;
+  }
+  .agent-controls > div {
+    flex: 1 1 40%;
+  }
+  .agent-controls .quiet {
+    font-size: 11px;
+  }
+  .study-preparation,
+  .prepared-brief {
+    padding: 19px;
+  }
+  .prepared-brief .brief-footer {
+    flex-direction: column;
+  }
+}

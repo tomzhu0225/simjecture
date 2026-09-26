@@ -315,6 +315,14 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
                 result = workspace.save_settings(payload)
             elif endpoint == "test":
                 result = workspace.test_connection()
+            elif endpoint == "api-settings":
+                result = workspace.save_api(payload)
+            elif endpoint == "models":
+                result = workspace.models(payload.get("backend"))
+            elif endpoint == "agent":
+                result = workspace.select_agent(payload.get("project"), payload)
+            elif endpoint == "prepare":
+                result = workspace.prepare(payload.get("project"), payload)
             elif endpoint == "projects":
                 result = workspace.create(payload)
             elif endpoint == "message":

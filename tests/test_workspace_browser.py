@@ -30,18 +30,31 @@ def test_browser_setup_chat_files_and_autonomous_handoff(tmp_path, provider):
             page = browser.new_page(viewport={"width": 1440, "height": 1000})
             page.on("pageerror", lambda error: errors.append(str(error)))
             page.goto(f"http://127.0.0.1:{server.server_port}")
-            page.get_by_role("button", name="Connect a model").click()
+            page.get_by_role("button", name="API connections").click()
             page.locator("#base-url").fill(url)
             page.locator("#api-key").fill("test-secret")
-            page.locator("#model").fill("fixture-model")
-            page.get_by_role("button", name="Save and test connection").click()
+            assert page.locator("#model").count() == 0
+            page.get_by_role("button", name="Save API connection").click()
             page.get_by_text(
-                "Connected. Model tool calling is working.", exact=True
+                "API connection saved. Choose its model in a conversation.", exact=True
             ).first.wait_for()
             assert page.locator("#api-key").input_value() == ""
             page.get_by_role("button", name="New project").click()
             page.locator("#project-name").fill("Browser acceptance · Euler positivity")
             page.get_by_role("button", name="Create project", exact=True).click()
+            page.locator("#conversation-backend").select_option("builtin")
+            page.locator("#conversation-model option[value='fixture-model']").wait_for(
+                state="attached"
+            )
+            page.locator("#conversation-model").select_option("fixture-model")
+            page.locator("#conversation-effort").select_option("high")
+            page.get_by_role("button", name="Autonomous research", exact=True).click()
+            assert not page.locator("#brief-question").is_visible()
+            page.get_by_role("button", name="Grill me", exact=False).click()
+            page.get_by_text(
+                "What question should we test, and what time budget should I use?", exact=True
+            ).wait_for(timeout=40000)
+            playwright.expect(page.locator("#send-message")).to_be_enabled(timeout=40000)
             page.locator("#chat-input").fill("Calculate and prepare a counterexample study.")
             page.get_by_role("button", name="Send ↑", exact=True).click()
             page.get_by_text(
@@ -54,18 +67,35 @@ def test_browser_setup_chat_files_and_autonomous_handoff(tmp_path, provider):
             page.get_by_text(
                 "The calculation and editable study brief are ready.", exact=True
             ).wait_for()
+            page.locator("#conversation-model option[value='fixture-model']").wait_for(
+                state="attached"
+            )
+            assert page.locator("#conversation-backend").input_value() == "builtin"
+            assert page.locator("#conversation-model").input_value() == "fixture-model"
+            assert page.locator("#conversation-effort").input_value() == "high"
             page.get_by_role("button", name="Autonomous research", exact=True).click()
             assert "Euler" in page.locator("#brief-question").input_value()
+            assert not page.locator("#brief-question").is_visible()
+            page.get_by_role("button", name="Draft from this conversation").click()
+            page.locator("#interactive-panel").wait_for(state="visible")
+            playwright.expect(page.locator("#send-message")).to_be_enabled(timeout=40000)
+            page.get_by_role("button", name="Autonomous research", exact=True).click()
+            page.locator("#prepared-question").wait_for()
             page.screenshot(path=str(screenshots / "study-brief.png"), full_page=True)
             from conjecture_solver.execution import probe_execution_backend
 
             if probe_execution_backend("bubblewrap")["available"]:
-                page.get_by_role("button", name="Start autonomous research ↗", exact=True).click()
+                page.get_by_role("button", name="Start research ↗", exact=True).click()
                 page.get_by_text("COMPLETED", exact=True).wait_for(timeout=90000)
                 page.get_by_text("Accepted: falsified.", exact=False).wait_for()
                 page.get_by_text("Results, reports, and simulation files", exact=True).click()
                 page.get_by_role("link", name="result.json", exact=False).first.wait_for()
                 page.screenshot(path=str(screenshots / "accepted-result.png"), full_page=True)
+            page.get_by_role("button", name="Research tools", exact=True).click()
+            page.get_by_role("heading", name="Python research stack").wait_for()
+            assert "✓ Installed" in page.locator("#installed-tool-grid").inner_text()
+            assert "Not installed" in page.locator("#available-tool-grid").inner_text()
+            page.screenshot(path=str(screenshots / "tools.png"), full_page=True)
             page.set_viewport_size({"width": 390, "height": 844})
             page.goto(f"http://127.0.0.1:{server.server_port}/workspace#home")
             page.locator("#first-request").wait_for()

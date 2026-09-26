@@ -15,6 +15,8 @@ const state = {
   studyRevision: "",
   sourceTool: null,
   launchKey: null,
+  modelRequest: 0,
+  routeMemory: {},
 };
 const bytes = (n) =>
   n < 1024
@@ -100,30 +102,22 @@ function view(name) {
 }
 function renderSettings() {
   const s = state.settings;
-  $("backend").replaceChildren(
-    new Option("Built-in agent · compatible API", "builtin"),
-  );
-  for (const cli of s.clis || [])
-    if (cli.path)
-      $("backend").add(
-        new Option(`${cli.id} · detected on this machine`, cli.id),
-      );
-  $("backend").value = s.backend || "builtin";
-  $("model").value = s.model || "";
-  $("judge-model").value = s.judge_model || "";
   $("base-url").value = s.base_url || "";
   $("api-key").value = "";
   $("api-key").placeholder = s.has_key
     ? "Saved · leave blank to keep this key"
     : "API key (optional for a local server)";
-  $("api-fields").hidden = $("backend").value !== "builtin";
-  $("connection-button").textContent = s.tested
-    ? `${s.backend === "builtin" ? s.model : s.backend} ↗`
-    : "Connect a model ↗";
-  $("connection-indicator").textContent = s.tested
-    ? "Agent connected"
-    : "No agent connected";
-  $("connection-indicator").classList.toggle("connected", !!s.tested);
+  const installed = (s.clis || []).filter((c) => c.path);
+  $("connection-button").textContent = "API connections ↗";
+  $("connection-indicator").textContent = installed.length
+    ? `${installed.length} CLI agents detected`
+    : s.api_configured
+      ? "API endpoint saved"
+      : "Choose an agent in your project";
+  $("connection-indicator").classList.toggle(
+    "connected",
+    !!installed.length || s.api_configured,
+  );
   $("machine-label").textContent = s.machine || "Local workspace";
   $("machine-card").replaceChildren(
     el("strong", s.machine || "This machine"),
@@ -140,7 +134,102 @@ function renderSettings() {
   $("runtime-status").textContent = s.runtime_installed
     ? "Built-in agent powered by Hugging Face smolagents. Your existing Simjecture experiment and review services govern autonomous studies."
     : "To enable the built-in API agent, run once: uv sync --extra workspace. Installed CLI agents work without this extra.";
-  $("connection-result").textContent = s.test_message || "";
+  $("connection-result").textContent = s.api_configured
+    ? "API endpoint saved. Select its model in your conversation."
+    : "Optional. You can use an installed CLI without adding an API key.";
+}
+async function renderAgent(backend) {
+  const p = state.project;
+  if (!p) return;
+  const id = p.id,
+    request = ++state.modelRequest;
+  const selected =
+    backend ||
+    p.agent?.backend ||
+    state.settings.default_agent?.backend ||
+    "builtin";
+  $("conversation-backend").replaceChildren();
+  for (const cli of state.settings.clis || [])
+    if (cli.path)
+      $("conversation-backend").add(
+        new Option(`${cli.id} · local CLI`, cli.id),
+      );
+  $("conversation-backend").add(
+    new Option(
+      state.settings.api_configured
+        ? "Compatible API"
+        : "Compatible API · add endpoint",
+      "builtin",
+    ),
+  );
+  $("conversation-backend").value = selected;
+  if (!$("conversation-backend").value) {
+    $("conversation-backend").add(
+      new Option(`${selected} · unavailable`, selected),
+    );
+    $("conversation-backend").value = selected;
+  }
+  $("conversation-model").replaceChildren(
+    new Option("Loading model choices…", ""),
+  );
+  $("conversation-model").disabled = true;
+  $("model-note").textContent = "Reading model choices…";
+  $("conversation-backend").disabled = state.readonly;
+  $("custom-model").disabled = state.readonly;
+  $("refresh-models").disabled = state.readonly;
+  const choices = state.readonly
+    ? {
+        models: p.agent?.model
+          ? [{ id: p.agent.model, name: p.agent.model }]
+          : [],
+        default: p.agent?.model || "",
+        note: "Recorded conversation agent · read-only session",
+      }
+    : await api("models", { backend: selected });
+  if (request !== state.modelRequest || state.project?.id !== id) return;
+  const remembered = state.routeMemory[selected];
+  const current = p.agent?.backend === selected ? p.agent : remembered;
+  const model = current?.model || choices.default || "";
+  $("conversation-model").replaceChildren(
+    ...choices.models.map((m) => new Option(m.name, m.id)),
+    new Option("Other model…", "__custom__"),
+  );
+  const known = choices.models.some((m) => m.id === model);
+  $("conversation-model").value = known ? model : "__custom__";
+  $("custom-model-control").hidden = known;
+  $("custom-model").value = known ? "" : model;
+  $("conversation-effort").value = current?.reasoning_effort || "";
+  $("conversation-effort").disabled = selected === "agy" || state.readonly;
+  if (selected === "agy") $("conversation-effort").value = "";
+  $("conversation-model").disabled = state.readonly;
+  $("model-note").textContent = choices.note;
+}
+function agentPayload() {
+  return {
+    project: state.project.id,
+    backend: $("conversation-backend").value,
+    model:
+      $("conversation-model").value === "__custom__"
+        ? $("custom-model").value.trim()
+        : $("conversation-model").value,
+    reasoning_effort: $("conversation-effort").value,
+  };
+}
+async function saveConversationAgent() {
+  if ($("conversation-model").disabled && !state.readonly)
+    throw Error(
+      "Model choices are still loading. Please try again in a moment.",
+    );
+  const payload = agentPayload();
+  if (!payload.model)
+    throw Error("Choose a model, or enter its exact ID in Other model.");
+  const result = await api("agent", payload);
+  if (state.project?.id === payload.project) {
+    state.project.agent = result;
+    state.routeMemory[result.backend] = result;
+    renderProject();
+  }
+  return result;
 }
 function renderProjects() {
   $("project-list").replaceChildren();
@@ -169,6 +258,7 @@ async function openProject(id) {
   renderProject(true);
   view("project");
   renderProjects();
+  await renderAgent();
   if (state.mode === "autonomous") await renderStudies();
 }
 function mode(name) {
@@ -187,16 +277,42 @@ function renderProject(force = false) {
   const p = state.project;
   if (!p) return;
   $("project-title").textContent = p.name;
-  $("agent-label").textContent =
-    state.settings.backend === "builtin"
-      ? state.settings.model || "No model"
-      : state.settings.backend || "No agent";
+  $("agent-label").textContent = p.agent
+    ? `${p.agent.backend} / ${p.agent.model || "choose model"}`
+    : "Choose an agent";
   $("conversation-status").textContent = p.running
     ? "Agent working · files and activity are saved as it goes"
     : "Work through the next step together";
   $("send-message").disabled = p.running || state.readonly;
   $("stop-agent").hidden = !p.running;
   $("launch-study").disabled = p.running || state.readonly;
+  for (const id of ["grill-me", "draft-study", "start-prepared-study"])
+    $(id).disabled = p.running || state.readonly;
+  $("preparation-status").textContent = p.running
+    ? "Your agent is working. Its questions and proposed brief appear in the conversation."
+    : "The agent will ask about missing facts and fill in the details for you.";
+  $("prepared-brief").hidden = !p.brief;
+  $("brief-editor").hidden = !p.brief;
+  if (p.brief) {
+    const b = p.brief;
+    $("prepared-question").textContent = b.question;
+    $("prepared-details").replaceChildren();
+    for (const [label, value] of [
+      ["Evidence", b.success_criteria],
+      ["Constraints", b.constraints || "No additional constraints specified."],
+      ["Time budget", `${b.hours} hours`],
+      [
+        "Completion",
+        b.completion_policy === "answer"
+          ? "An independently reviewed answer, including a negative result."
+          : "A supported claim or independently tested repair.",
+      ],
+    ]) {
+      const section = el("div");
+      section.append(el("strong", label), el("p", value));
+      $("prepared-details").append(section);
+    }
+  }
   const revision = JSON.stringify(p.messages);
   if (revision !== state.messageRevision) {
     const nearEnd =
@@ -221,7 +337,11 @@ function renderProject(force = false) {
       article.append(
         el(
           "span",
-          message.role === "user" ? "You" : "Simjecture",
+          message.role === "user"
+            ? "You"
+            : message.agent
+              ? `Simjecture · ${message.agent.backend} / ${message.agent.model}`
+              : "Simjecture",
           "message-role",
         ),
       );
@@ -306,18 +426,19 @@ function renderProject(force = false) {
     $("brief-constraints").value = b.constraints || "";
     $("brief-hours").value = b.hours || 1;
     $("brief-policy").value = b.completion_policy || "answer";
+    if (
+      b.capability_directory &&
+      [...$("study-tools").options].some(
+        (o) => o.value === b.capability_directory,
+      )
+    )
+      $("study-tools").value = b.capability_directory;
   }
 }
 async function send() {
   const message = $("chat-input").value.trim();
   if (!message) return;
-  if (!state.settings.tested) {
-    toast(
-      "Connect and test your agent first. Your draft stays in this project.",
-    );
-    view("settings");
-    return;
-  }
+  await saveConversationAgent();
   await api("message", { project: state.project.id, message });
   $("chat-input").value = "";
   state.project = await api(
@@ -338,55 +459,88 @@ async function refreshTools() {
       paths.add(tool.path);
       $("study-tools").add(new Option(tool.name, tool.path));
     }
-  $("study-tools").value = previous;
+  const desired = state.project?.brief?.capability_directory || previous;
+  $("study-tools").value = [...$("study-tools").options].some(
+    (o) => o.value === desired,
+  )
+    ? desired
+    : "";
   if (state.view !== "tools") return;
-  $("tool-grid").replaceChildren();
+  $("installed-tool-grid").replaceChildren();
+  $("available-tool-grid").replaceChildren();
+  $("installed-count").textContent =
+    state.tools.filter((t) => t.installed).length + 1;
+  $("available-count").textContent = state.tools.filter(
+    (t) => !t.installed,
+  ).length;
+  const python = el("article", undefined, "tool-card tool-installed");
+  python.append(
+    el("span", "✓ Installed", "tool-status installed"),
+    el("h3", "Python research stack"),
+    el("p", "NumPy, SciPy, pandas, and plotting. Included with Simjecture."),
+    el("small", "Ready for numerical exploration", "field-help"),
+  );
+  $("installed-tool-grid").append(python);
   for (const tool of state.tools) {
-    const card = el("article", undefined, "tool-card");
+    const card = el(
+      "article",
+      undefined,
+      `tool-card ${tool.installed ? "tool-installed" : "tool-missing"}`,
+    );
     card.append(
       el(
         "span",
-        {
-          available: "AVAILABLE",
-          installed: "DETECTED · CHECK READINESS",
-          tested: "INSTALLATION TESTED",
-          working: "WORKING…",
-          registered: "REGISTERED LOCALLY",
-        }[tool.state],
-        "badge",
+        tool.state === "working"
+          ? "◌ Working…"
+          : tool.installed
+            ? "✓ Installed"
+            : "Not installed",
+        `tool-status ${tool.installed ? "installed" : "not-installed"}`,
       ),
       el("h3", tool.name),
       el("p", tool.description),
     );
+    if (tool.installed)
+      card.append(
+        el(
+          "small",
+          tool.readiness === "passed"
+            ? "Installation check passed"
+            : tool.readiness === "failed"
+              ? "Installed, but its readiness check needs attention"
+              : "Detected on this machine · readiness not yet checked",
+          "field-help",
+        ),
+      );
     const actions = el("div", undefined, "tool-actions");
     if (tool.action !== "custom") {
       const install = el(
         "button",
-        tool.action === "source"
-          ? "Connect source"
-          : tool.state === "tested"
-            ? "Check again"
+        tool.installed
+          ? "Check readiness"
+          : tool.action === "source"
+            ? "Connect source"
             : "Install",
         "secondary",
       );
       install.disabled = tool.state === "working" || state.readonly;
       install.onclick = () =>
         action(install, async () => {
-          if (tool.action === "source") {
+          if (tool.action === "source" && !tool.installed) {
             state.sourceTool = tool.id;
             $("source-title").textContent = `Set up ${tool.name}`;
             $("source-dialog").showModal();
           } else {
             await api("install", {
               name: tool.id,
-              action: tool.state === "tested" ? "check" : "install",
+              action: tool.installed ? "check" : "install",
             });
             toast(`${tool.name}: started`);
             await refreshTools();
           }
         });
       actions.append(install);
-      if (tool.state !== "tested") {
+      if (!tool.installed) {
         const check = el("button", "Check installed", "quiet");
         check.disabled = tool.state === "working" || state.readonly;
         check.onclick = () =>
@@ -406,7 +560,9 @@ async function refreshTools() {
       );
       card.append(details);
     }
-    $("tool-grid").append(card);
+    $(tool.installed ? "installed-tool-grid" : "available-tool-grid").append(
+      card,
+    );
   }
 }
 function briefPayload() {
@@ -417,6 +573,7 @@ function briefPayload() {
     constraints: $("brief-constraints").value,
     hours: Number($("brief-hours").value),
     completion_policy: $("brief-policy").value,
+    capability_directory: $("study-tools").value,
   };
 }
 async function saveBrief() {
@@ -599,10 +756,29 @@ async function boot() {
 for (const item of document.querySelectorAll("[data-view]"))
   item.onclick = () => view(item.dataset.view);
 $("connection-button").onclick = () => view("settings");
-$("backend").onchange = () => {
-  $("api-fields").hidden = $("backend").value !== "builtin";
-  $("connection-result").textContent = "";
+$("conversation-backend").onchange = () =>
+  renderAgent($("conversation-backend").value)
+    .then(() => {
+      if (agentPayload().model) return saveConversationAgent();
+    })
+    .catch((e) => toast(e.message, true));
+$("conversation-model").onchange = () => {
+  $("custom-model-control").hidden =
+    $("conversation-model").value !== "__custom__";
+  if (!$("custom-model-control").hidden) {
+    $("custom-model").focus();
+    return;
+  }
+  saveConversationAgent().catch((e) => toast(e.message, true));
 };
+$("custom-model").onchange = () =>
+  saveConversationAgent().catch((e) => toast(e.message, true));
+$("conversation-effort").onchange = () =>
+  saveConversationAgent().catch((e) => toast(e.message, true));
+$("refresh-models").onclick = () =>
+  action($("refresh-models"), () =>
+    renderAgent($("conversation-backend").value),
+  );
 $("provider-preset").onchange = () => {
   const preset = {
     deepseek: ["https://api.deepseek.com/v1", "deepseek-chat"],
@@ -611,31 +787,20 @@ $("provider-preset").onchange = () => {
   }[$("provider-preset").value];
   if (preset) {
     $("base-url").value = preset[0];
-    $("model").value = preset[1];
   }
 };
 $("settings-form").onsubmit = (e) => {
   e.preventDefault();
   action($("save-connection"), async () => {
-    $("connection-result").textContent = "Testing model connection…";
-    state.settings = await api("settings", {
-      backend: $("backend").value,
-      base_url: $("base-url").value || "https://api.deepseek.com/v1",
+    $("connection-result").textContent = "Saving API connection…";
+    state.settings = await api("api-settings", {
+      base_url: $("base-url").value,
       api_key: $("api-key").value,
-      model: $("model").value,
-      judge_model: $("judge-model").value,
     });
     $("api-key").value = "";
-    try {
-      const result = await api("test", {});
-      state.settings = result.settings;
-      renderSettings();
-      toast(result.message);
-    } catch (error) {
-      renderSettings();
-      $("connection-result").textContent = error.message;
-      throw error;
-    }
+    renderSettings();
+    toast("API connection saved. Choose its model in a conversation.");
+    if (state.project) await renderAgent();
   });
 };
 $("check-machine").onclick = () =>
@@ -672,11 +837,9 @@ $("quick-start").onsubmit = (e) => {
     await openProject(p.id);
     $("chat-input").value = message;
     $("first-request").value = "";
-    if (state.settings.tested) await send();
-    else
-      toast(
-        "Project created. Connect your agent, then send your first message.",
-      );
+    toast(
+      "Project created. Choose your agent and model, then send your request.",
+    );
   });
 };
 for (const b of document.querySelectorAll("[data-example]"))
@@ -701,6 +864,29 @@ $("stop-agent").onclick = () =>
 $("interactive-mode").onclick = () => mode("interactive");
 $("autonomous-mode").onclick = () => mode("autonomous");
 $("open-brief").onclick = () => mode("autonomous");
+async function prepareStudy(approach) {
+  await saveConversationAgent();
+  await api("prepare", { project: state.project.id, approach });
+  state.project = await api(
+    `project?id=${encodeURIComponent(state.project.id)}`,
+  );
+  mode("interactive");
+  renderProject();
+  toast(
+    approach === "interview"
+      ? "Your agent will ask focused questions in the conversation."
+      : "Your agent is drafting the study from this conversation.",
+  );
+}
+$("grill-me").onclick = () =>
+  action($("grill-me"), () => prepareStudy("interview"));
+$("draft-study").onclick = () =>
+  action($("draft-study"), () => prepareStudy("draft"));
+$("revise-study").onclick = () => {
+  mode("interactive");
+  $("chat-input").value = "I'd like to refine the proposed study: ";
+  $("chat-input").focus();
+};
 $("brief-form").oninput = () => {
   state.briefDirty = true;
   state.launchKey = null;
@@ -710,33 +896,31 @@ $("save-brief").onclick = () =>
     await saveBrief();
     toast("Study brief saved");
   });
+async function launchStudy() {
+  await saveConversationAgent();
+  if (state.briefDirty || !state.project.brief) await saveBrief();
+  state.launchKey ||= crypto.randomUUID();
+  await api("launch", {
+    project: state.project.id,
+    request_key: state.launchKey,
+    capability_directory: $("study-tools").value,
+    execution_backend: $("execution-backend").value,
+  });
+  state.project = await api(
+    `project?id=${encodeURIComponent(state.project.id)}`,
+  );
+  renderProject();
+  await renderStudies();
+  toast(
+    "Autonomous research started. You can close this page and return later.",
+  );
+}
 $("brief-form").onsubmit = (e) => {
   e.preventDefault();
-  action($("launch-study"), async () => {
-    if (!state.settings.tested) {
-      view("settings");
-      throw Error(
-        "Connect and test a model before starting research. Your brief is still here.",
-      );
-    }
-    if (state.briefDirty || !state.project.brief) await saveBrief();
-    state.launchKey ||= crypto.randomUUID();
-    await api("launch", {
-      project: state.project.id,
-      request_key: state.launchKey,
-      capability_directory: $("study-tools").value,
-      execution_backend: $("execution-backend").value,
-    });
-    state.project = await api(
-      `project?id=${encodeURIComponent(state.project.id)}`,
-    );
-    renderProject();
-    await renderStudies();
-    toast(
-      "Autonomous research started. You can close this page and return later.",
-    );
-  });
+  action($("launch-study"), launchStudy);
 };
+$("start-prepared-study").onclick = () =>
+  action($("start-prepared-study"), launchStudy);
 $("file-input").onchange = async () => {
   for (const file of $("file-input").files) {
     try {

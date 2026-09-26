@@ -54,6 +54,7 @@ def configure_parser(parser):
     parser.add_argument("--completion-policy", choices=["answer", "repair"])
     parser.add_argument("--model")
     parser.add_argument("--judge-model")
+    parser.add_argument("--reasoning-effort", choices=["low", "medium", "high", "xhigh"])
     parser.add_argument("--executable")
     parser.add_argument("--quiet", action="store_true", help="Suppress live terminal progress")
     parser.set_defaults(handler=run)
@@ -104,6 +105,11 @@ def _run(args):
             "Backend/model are part of the launch contract; use a new study to change them"
         )
     saved_state = Path(previous["state_dir"]) if previous.get("state_dir") else None
+    saved_effort = previous.get("request", {}).get("reasoning_effort")
+    effort = getattr(args, "reasoning_effort", None)
+    if previous and effort is not None and effort != saved_effort:
+        raise ValueError("Reasoning effort is part of the saved launch contract")
+    args.reasoning_effort = effort if effort is not None else saved_effort
     args.state_dir = (args.state_dir or saved_state or args.campaign / "supervisor").resolve()
     if saved_state and args.state_dir != saved_state.resolve():
         raise ValueError("State directory is part of the saved launch contract")
@@ -263,6 +269,7 @@ def _run(args):
             backend=args.backend,
             model=args.model,
             judge_model=args.judge_model,
+            reasoning_effort=args.reasoning_effort,
             capability_directory=str(args.capabilities) if args.capabilities else None,
             agent_executable=args.executable,
             provider_config=getattr(args, "provider_config", None),

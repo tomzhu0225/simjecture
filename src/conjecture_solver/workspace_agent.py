@@ -27,10 +27,12 @@ def require_runtime():
 
 def read_provider(path):
     if not path or not Path(path).is_file():
-        raise ValueError("Connect and test a model in Settings first")
+        raise ValueError("Choose an agent and model in the conversation before starting")
     config = json.loads(Path(path).read_text())
     if not config.get("model") or not config.get("base_url"):
-        raise ValueError("Choose a model and API endpoint in Settings")
+        raise ValueError(
+            "Choose a model in the conversation and configure its API endpoint if needed"
+        )
     return config
 
 
@@ -38,12 +40,16 @@ def model_for(config, model=None, timeout=90):
     require_runtime()
     from smolagents import OpenAIServerModel
 
+    extra = (
+        {"reasoning_effort": config["reasoning_effort"]} if config.get("reasoning_effort") else {}
+    )
     return OpenAIServerModel(
         model_id=model or config["model"],
         api_base=config["base_url"],
         api_key=config.get("api_key") or "local",
         client_kwargs={"timeout": timeout, "max_retries": 1},
         max_tokens=8192,
+        **extra,
     )
 
 
@@ -172,6 +178,7 @@ def agent_tools(root, deadline, project=None, workspace=None):
             constraints: str,
             hours: float = 1,
             completion_policy: str = "answer",
+            instrument: str = "",
         ) -> str:
             """Prepare an editable autonomous study brief for the user to launch.
             Preserve their objective. Ask about consequential missing information.
@@ -183,6 +190,7 @@ def agent_tools(root, deadline, project=None, workspace=None):
                 constraints: Fixed assumptions, allowed changes and required tools or inputs.
                 hours: Requested wall-time budget, between 0.01 and 168 hours.
                 completion_policy: answer accepts a negative result; repair seeks a tested repair.
+                instrument: Installed catalogue tool ID, e.g. warpx-cpu; empty for ordinary Python.
             """
             brief = workspace.save_brief(
                 project,
@@ -192,6 +200,7 @@ def agent_tools(root, deadline, project=None, workspace=None):
                     constraints=constraints,
                     hours=hours,
                     completion_policy=completion_policy,
+                    instrument=instrument,
                 ),
             )
             emit("brief", brief=brief)
@@ -300,6 +309,7 @@ def run_external(prompt, root, config, turn, workspace=None):
         model=config["model"],
         judge_model=config.get("judge_model", config["model"]),
         executable=config["backend"],
+        reasoning_effort=config.get("reasoning_effort") or None,
     )
     supervisor = AgentSupervisor(args)
     (directory / "research").symlink_to(root, target_is_directory=True)

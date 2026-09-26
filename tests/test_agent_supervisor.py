@@ -309,6 +309,7 @@ def test_native_backends_stream_activity_for_watchdog(tmp_path, backend, output_
         judge_model="fixture",
         executable=str(executable),
         workflow="frontier",
+        reasoning_effort="high" if backend == "grok" else None,
     )
     supervisor = AgentSupervisor(args)
     directory = supervisor.directory / "turn-00001"
@@ -316,6 +317,8 @@ def test_native_backends_stream_activity_for_watchdog(tmp_path, backend, output_
     assert supervisor.launch(directory, "Transport fixture; no model call.") == 0
     argv = json.loads((directory / "response.json").read_text())
     assert argv[argv.index("--output-format") + 1] == output_format
+    if backend == "grok":
+        assert argv[argv.index("--reasoning-effort") + 1] == "high"
 
 
 def test_codex_startup_diagnostic_is_not_judge_tool_use(tmp_path):
