@@ -9,7 +9,7 @@ from conjecture_solver.agent_supervisor import AgentSupervisor, next_assignment,
 
 
 def claim(name="claim_root", status="open", **extra):
-    return dict(id=name, kind="scientific", status=status, relation="root", **extra)
+    return dict(id=name, kind="scientific", status=status, relation="root") | extra
 
 
 def test_falsification_requires_repair_then_tests_repair():
@@ -339,3 +339,72 @@ def test_codex_startup_diagnostic_is_not_judge_tool_use(tmp_path):
     path.write_text("\n".join(json.dumps(e) for e in events))
     with pytest.raises(ValueError, match="used a tool"):
         parse_judge_stream(path, "codex")
+
+
+@pytest.mark.parametrize("workflow", ["structured", "frontier"])
+def test_rollover_reuses_instrument_descendants_without_granting_other_branches(tmp_path, workflow):
+    from conjecture_solver.role_assignments import AssignmentStore
+
+    root = tmp_path / "campaign"
+    root.mkdir()
+    s = AgentSupervisor(
+        argparse.Namespace(
+            campaign=root,
+            state_dir=tmp_path / "supervisor",
+            wall_seconds=100,
+            workflow=workflow,
+        )
+    )
+    claims = [
+        claim(),
+        claim("claim_instrument", parent_id="claim_root", kind="instrument"),
+        claim("claim_validation", parent_id="claim_instrument", kind="instrument"),
+        claim("claim_unrelated", parent_id="elsewhere", kind="instrument"),
+    ]
+    s.state["round"] = 1
+    first = s.assign(claims)
+    store = AssignmentStore(root)
+    record = store.data["assignments"][first["spec"]["assignment_id"]]
+    record["operations"] = {str(n): {} for n in range(80)}
+    store.save()
+    s.state["round"] = 2
+    second = s.assign(claims)
+    assert first["spec"]["assignment_id"] != second["spec"]["assignment_id"]
+    assert second["children"] == ["claim_instrument", "claim_validation"]
+    store.authorize(second, "run_python", {"active_claim_id": "claim_instrument"})
+    with pytest.raises(ValueError, match="assigned active_claim_id"):
+        store.authorize(second, "run_python", {"active_claim_id": "claim_unrelated"})
+
+
+def test_cancellation_uses_all_durable_jobs_and_continues_after_one_error():
+    from types import SimpleNamespace
+
+    from conjecture_solver.campaign_jobs import CampaignJobStatus
+    from conjecture_solver.campaign_kernel import CampaignKernel
+
+    jobs = [
+        SimpleNamespace(job_id=f"job_{i}", status=CampaignJobStatus.RUNNING) for i in range(150)
+    ]
+
+    class Kernel:
+        def _active_job_states(self):
+            return tuple(j for j in jobs if not j.status.terminal)
+
+        def _jobs(self):
+            return SimpleNamespace(jobs=lambda: tuple(jobs))
+
+        def cancel_job(self, identifier):
+            if identifier == "job_0":
+                raise ValueError("process identity could not be verified")
+            jobs[:] = [j for j in jobs if j.job_id != identifier]
+
+    result = CampaignKernel.cancel_active_jobs(Kernel())
+    assert result["verified"] is False
+    assert result["remaining_jobs"] == ["job_0"]
+    assert list(result["errors"]) == ["job_0"]
+    jobs.clear()
+    assert CampaignKernel.cancel_active_jobs(Kernel())["verified"] is True
+    jobs.append(SimpleNamespace(job_id="job_unknown", status=CampaignJobStatus.OUTCOME_UNKNOWN))
+    uncertain = CampaignKernel.cancel_active_jobs(Kernel())
+    assert uncertain["verified"] is False
+    assert uncertain["unverified_jobs"] == ["job_unknown"]

@@ -474,3 +474,51 @@ def test_recorded_source_mutation_is_an_execution_failure(tmp_path):
     assert r["status"] == "failed"
     # Sandboxed read-only inputs may reject the write before the host mutation check.
     assert r.get("input_mutations") or r["execution"]["returncode"] != 0
+
+
+def test_impossible_repair_acceptance_is_rejected_before_execution(tmp_path):
+    s = service(tmp_path)
+    kwargs = dict(
+        source="calc.py",
+        cases=[[]],
+        acceptance="P1 AND P2",
+        rationale="Test a fresh prediction preserving the parent counterexample",
+    )
+    with pytest.raises(ValueError, match="Empty acceptance intersection"):
+        s.commit(
+            "A prospectively repaired prediction",
+            numerical_bounds=[
+                {"metric": "S2000.rate", "lower": 0.025512, "upper": 0.029297},
+                {"metric": "S2000.rate", "lower": 1.08 * 0.027231},
+            ],
+            **kwargs,
+        )
+    assert not s._all("commitments")
+    assert not s._all("experiments")
+    c = s.commit(
+        "A feasible repaired prediction",
+        numerical_bounds=[
+            {"metric": "S2000.rate", "lower": 0.02, "upper": 0.03},
+            {"metric": "S2000.rate", "lower": 0.025},
+            {"metric": "S1000.rate", "lower": 0.04},
+        ],
+        **kwargs,
+    )
+    assert len(c["numerical_bounds"]) == 3
+
+
+@pytest.mark.parametrize(
+    "bound",
+    [
+        {"metric": "R", "lower": float("nan")},
+        {"metric": "R", "upper": float("inf")},
+        {"metric": "R"},
+        {"metric": " ", "lower": 1.0},
+        {"metric": "R", "lower": 2.0, "upper": 1.0},
+    ],
+)
+def test_invalid_numerical_acceptance_bounds(bound):
+    from conjecture_solver.research_acceptance import acceptance_bounds
+
+    with pytest.raises(ValueError):
+        acceptance_bounds([bound])

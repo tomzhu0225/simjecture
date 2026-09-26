@@ -54,6 +54,14 @@ it must explain the justified scope exclusion. Check that repairs were prospecti
 freshly tested and do not simply delete failed cases. Ordinary calculations need
 no artificial instrument hierarchy. Filename compliance alone is not scientific
 sufficiency. Never turn missing or unconverged evidence into falsification.
+For an exponent band, a confidence interval overlapping the band does not reject the
+whole band just because one endpoint is outside. Distinguish rejection of an exact value
+from rejection of a range. Censored/out-of-domain cases are not counterexamples to a
+conditional claim. Check that conjunctive acceptance bounds have a nonempty intersection;
+an impossible acceptance rule is a specification error, not a physical falsification.
+An eligibility_annotation is worker-authored metadata, not a host stage change: resolve
+its meaning from the recorded implementation and limitations. A stale copied annotation
+alone requires no solver rerun; an actual scientific limitation still blocks acceptance.
 
 Return only JSON matching the schema. If evidence for THIS TARGET is insufficient,
 choose needs_revision, disposition unresolved, explicit gaps and next_test.
@@ -207,7 +215,8 @@ Write source normally here. All recorded numerical experiments use the existing 
   estimated_seconds=600). These are predictions to test, not established facts.
   lab.run(..., plan='note_ID', parent_experiment='exp_ID', purpose='diagnostic') links
   the attempt; purpose can also be baseline/debug/comparison/validation. These optional
-  labels impose no stage order and never turn debugging into a scientific falsification.
+  labels (including timing/parity for pilots) impose no stage order and never turn
+  debugging into a scientific falsification.
 - lab.compare(['exp_ID', ...], {{'onset':['result.json','onset.time']}}) extracts scalar
   metrics from hash-verified outputs. Failed/missing/undefined results remain explicit;
   no best scientific result is inferred from a scalar score. Record binary-data analysis
@@ -229,6 +238,9 @@ Write source normally here. All recorded numerical experiments use the existing 
   inputs=[], capability=None, parent='root', rationale='smallest justified change and why').
   parent may be an earlier commit_ID, preserving a branching hypothesis tree. Explain
   each changed assumption, scope or bound; retain and account for parent counterexamples.
+  For conjunctive numeric rules, supply numerical_bounds=[{{'metric':'case1.rate',
+  'lower':0.02, 'upper':0.03}}]. Repeated metric names mean AND; use case-qualified names.
+  The host rejects empty intersections before execution; prose still needs review.
   Then run each exact planned command with
   commitment='commit_ID'. Review those fresh experiments with claim='commit_ID'.
   The commitment must precede the evidence; a range fitted to existing observations

@@ -2,7 +2,23 @@
 
 This project follows semantic versioning. Dates use ISO 8601.
 
-## Unreleased
+## 0.5.1 — 2026-09-26
+
+- Preserve classic instrument access across assignment rollover; retain role and branch scope.
+- Require explicit methods-review prerequisites and reject conditional approval; distinguish
+  timing/parity pilots from scientific evidence.
+- Surface output eligibility annotations to review without forcing metadata-only solver reruns.
+- Check explicit numerical repair bounds for empty intersections before execution.
+- Cancel through the complete durable job store, report unknown outcomes, and continue cleanup
+  when one job fails cancellation.
+- Document the guided MiMo v2.6 Pro / DeepSeek V4.1 Flash comparison, including tool-protocol,
+  duration and usage limitations; refresh the README around current modes and trust boundaries.
+- Restore guided anchors in all native study modes, with a separate model-free readiness run
+  and instrument-scoped review that cannot authorize hypothesis evidence.
+- Add explicit non-root PRoot cooperative execution for hosts without Linux namespaces;
+  keep Bubblewrap the default and never silently weaken isolation.
+- Retry transient provider failures with interruptible backoff until the original deadline;
+  pause authentication, permission and exhausted-quota failures for operator attention.
 
 - Make experiment journaling and bounded context delivery automatic in minimal mode,
   following AIDE's controller-managed pattern. Add budget-limited checkpoint synthesis

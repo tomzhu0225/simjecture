@@ -36,6 +36,19 @@ def output_findings(workspace, outputs):
             findings.append(dict(path=name, kind="invalid_json", detail=str(error)))
             continue
         if isinstance(obj, dict):
+            checks = obj.get("checks", {})
+            if obj.get("scientific_evidence_eligible") is False or (
+                isinstance(checks, dict) and checks.get("scientific_evidence_eligible") is False
+            ):
+                findings.append(
+                    dict(
+                        path=name,
+                        kind="eligibility_annotation",
+                        detail="Output declares non-evidence. Resolve this annotation against the "
+                        "host-recorded stage and actual limitations during independent review; "
+                        "do not rerun a solver merely to remove metadata.",
+                    )
+                )
             failed = (
                 [
                     k

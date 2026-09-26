@@ -135,7 +135,7 @@ use `--quiet` to suppress them. Open `simjecture web /path/to/study` or
 Pause stops the agent at the supervisor boundary; already recorded numerical jobs
 may finish within their existing bounds. Resume retains the original wall deadline
 and mode. Cancel and deadline exhaustion terminate verified active numerical
-workers. Three consecutive provider failures pause the study with its evidence
-intact; ordinary agent exit and inconclusive review do not establish completion.
+workers. Transient provider failures retry with backoff until the original deadline;
+authentication, permission and exhausted-quota failures pause with evidence intact; ordinary agent exit and inconclusive review do not establish completion.
 Provider usage is shown when the backend supplies completed-turn counters, with
 resumed cumulative counts deduplicated by native thread. Missing usage is not zero.

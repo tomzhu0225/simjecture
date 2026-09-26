@@ -7,7 +7,7 @@ import time
 from collections import Counter
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from .agent_supervisor import parse_judge_stream
 from .provider_retry import provider_failure
@@ -20,6 +20,13 @@ class OversightVerdict(BaseModel):
     rationale: str = Field(min_length=16)
     findings: list[str]
     next_action: str = Field(min_length=8)
+    prerequisites: list[str]
+
+    @model_validator(mode="after")
+    def unconditional_approval(self):
+        if self.decision == "continue" and self.prerequisites:
+            raise ValueError("Unmet prerequisites require revise, never conditional approval")
+        return self
 
 
 def trace_summary(path):
@@ -155,6 +162,14 @@ require the implemented hypothesis measurement and relevant commissioning, but d
 the completed hypothesis experiment matrix before permitting evidence collection.
 For an incomplete method with no evolution benchmark, require a small commissioning run,
 not an entire production matrix. Ordinary analysis need not undergo a rigid hierarchy.
+Read the host-recorded stage and purpose before judging an experiment. Exploration pilots
+measure timing, resource use or diagnostics; failure to reach a scientific flux window in
+such a pilot is not a failed claim test. If purpose is missing, mark it unknown rather than
+inventing a scientific objective. One-rank runs are not invalid merely for using one rank;
+judge the relevant parity/convergence evidence and operator requirements.
+List ALL unmet conditions of approval in prerequisites and choose revise if any remain.
+Never put a prerequisite in prose while returning continue. next_action on continue may
+recommend subsequent work, but cannot require more work to make this approval valid.
 For progress review, address repeated intentions, repeated polling, missing required cases,
 and time left for validation/review. Recommend one concrete next action. Do not redesign
 an otherwise working investigation. A 'continue' methods decision only permits evidence

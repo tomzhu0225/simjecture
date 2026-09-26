@@ -496,16 +496,24 @@ class AgentSupervisor:
                     max_operations=80,
                 )
             )
-            if self.workflow == "frontier":
-                # Preserve access to the existing tree when a local allowance rolls over.
-                owned = {claim}
-                while True:
-                    expanded = owned | {c["id"] for c in claims if c.get("parent_id") in owned}
-                    if expanded == owned:
-                        break
-                    owned = expanded
-                record["children"] = sorted(owned - {claim})
-                store.save()
+            # A new operation allowance must not discard established instrument ownership.
+            # Carry only grants from the same claim/role; unrelated branches remain private.
+            owned = {claim}
+            for previous in store.data["assignments"].values():
+                if (previous["spec"]["claim_id"], previous["spec"]["role"]) == (claim, role):
+                    owned.update(previous["children"])
+            while True:
+                expanded = owned | {
+                    c["id"]
+                    for c in claims
+                    if c.get("parent_id") in owned
+                    and (role == "researcher" or c.get("kind") != "scientific")
+                }
+                if expanded == owned:
+                    break
+                owned = expanded
+            record["children"] = sorted(owned - {claim})
+            store.save()
             self.state["assignment_id"] = assignment
             self.save()
             return record
@@ -944,11 +952,12 @@ Host feedback: {self.state.get("next_test") or "No previous review."}
             # No new detached computations may survive a host budget/cancel boundary.
             if self.state["status"] in {"cancelled", "budget_exhausted"}:
                 try:
-                    _, _, snapshot = self.inspect()
-                    for job in snapshot.get("jobs", []):
-                        if job["status"] in {"queued", "running", "starting", "cancelling"}:
-                            self.call("cancel_job", {"job_id": job["job_id"]})
+                    kernel = CampaignKernel.open_existing(root=self.root)
+                    cleanup = kernel.cancel_active_jobs()
+                    self.state["cancellation"] = cleanup
+                    self.event("cancellation", **cleanup)
                 except Exception as error:
+                    self.state["cancellation"] = {"verified": False, "error": str(error)}
                     self.event("cancellation_error", error=str(error))
             self.save()
             return 124 if self.state["status"] == "budget_exhausted" else 0

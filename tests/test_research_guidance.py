@@ -93,7 +93,7 @@ def test_supplied_validation_cannot_masquerade_as_fresh_output(tmp_path):
         s.run("calc.py", inputs=["result.json"], outputs=["result.json"], stage="exploration")
 
 
-def test_non_evidence_marker_is_not_numerical_failure_but_blocks_claim(tmp_path):
+def test_non_evidence_annotation_reaches_review_without_metadata_rerun(tmp_path):
     from conjecture_solver.research_audit import output_findings
     from tests.test_research_service import completed, service
 
@@ -103,20 +103,25 @@ def test_non_evidence_marker_is_not_numerical_failure_but_blocks_claim(tmp_path)
     workspace = s.root / "experiments" / exp["id"] / "workspace"
     name = record["outputs"][0]
     (workspace / name).write_text('{"checks":{"scientific_evidence_eligible":false}}')
-    assert output_findings(workspace, [name]) == []
+    assert output_findings(workspace, [name])[0]["kind"] == "eligibility_annotation"
     from conjecture_solver.research_service import sha
 
     record["artifacts"][name]["sha256"] = sha(workspace / name)
     put(s.root / "experiments" / (exp["id"] + ".json"), record)
-    with pytest.raises(ValueError, match="non-evidentiary"):
-        s.packet(
-            dict(
-                claim="root",
-                disposition="falsified",
-                conclusion="A counterexample",
-                experiments=[exp["id"]],
-            )
+    packet = s.packet(
+        dict(
+            claim="root",
+            disposition="falsified",
+            conclusion="A counterexample",
+            experiments=[exp["id"]],
         )
+    )
+    assert packet["experiments"][0]["output_findings"][0]["kind"] == "eligibility_annotation"
+    assert not s.status()["completed"]  # review is still required
+    record["stage"] = "exploration"
+    put(s.root / "experiments" / (exp["id"] + ".json"), record)
+    with pytest.raises(ValueError, match="Exploration is not claim evidence"):
+        s.packet(packet["request"])
 
 
 @pytest.mark.parametrize("mode", ["minimal", "structured", "frontier"])
@@ -186,7 +191,7 @@ def commission(s):
     from tests.test_research_service import completed
 
     (s.work / "calc.py").write_text(
-        'from pathlib import Path\n'
+        "from pathlib import Path\n"
         'Path("result.json").write_text(\'{"checks":{"completed":true}}\')\n'
     )
     return completed(s, stage="exploration")["id"]

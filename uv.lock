@@ -2299,7 +2299,7 @@ wheels = [
 
 [[package]]
 name = "simjecture"
-version = "0.5.1.dev0"
+version = "0.5.1"
 source = { editable = "." }
 dependencies = [
     { name = "httpx" },

@@ -1,6 +1,6 @@
 {
   "name": "@simjecture/dsh-bundle",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Open research tools with governed Simjecture scientific execution",
   "type": "module",
   "license": "Apache-2.0",

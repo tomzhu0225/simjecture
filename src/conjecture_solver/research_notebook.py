@@ -99,7 +99,16 @@ class NotebookService:
         )
 
     def validate_experiment_context(self, parent_experiment, purpose, plan):
-        if purpose not in {None, "baseline", "diagnostic", "debug", "comparison", "validation"}:
+        if purpose not in {
+            None,
+            "baseline",
+            "diagnostic",
+            "debug",
+            "comparison",
+            "validation",
+            "timing",
+            "parity",
+        }:
             raise ValueError("Unknown experiment purpose")
         if parent_experiment:
             self._read("experiments", parent_experiment)
@@ -288,7 +297,7 @@ class NotebookService:
                 for n in notes[:12]
             ],
             active_experiments=[
-                {k: e.get(k) for k in ("id", "status", "purpose", "parent_experiment")}
+                {k: e.get(k) for k in ("id", "status", "stage", "purpose", "parent_experiment")}
                 for e in experiments
                 if e["status"] in {"queued", "running"}
             ][:12],

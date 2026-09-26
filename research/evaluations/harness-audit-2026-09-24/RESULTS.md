@@ -111,3 +111,17 @@ benchmark. The live checks demonstrate two reviewer decisions and a small agent 
 not improved discovery rates across frontier models. The proposed observer/reviewer
 cadences need measurement on longer work. Native exploratory activity is not fully
 captured, and source access plus cooperative execution is not an adversarial boundary.
+
+## Follow-up: guided MiMo / DeepSeek comparison, 2026-09-26
+
+The next guided runs exposed additional defects in assignment continuity, methods
+approval, evidence annotations and cancellation. The repairs and remaining limitations
+are recorded in [the follow-up repair report](../guided-model-comparison-2026-09-26/RESULTS.md).
+The [public model comparison](../../../docs/research/llm-comparison.md) separates
+observed model/provider behavior from harness failures and reports cached and uncached
+usage separately. Neither configuration produced an independently accepted conclusion.
+
+An interval extending beyond an allowed band does not falsify the entire band if the
+interval still overlaps it. Any earlier narrative treating that condition alone as
+falsification is not endorsed by this audit. Infeasible repaired acceptance bounds
+likewise establish a specification error, not a physical counterexample.

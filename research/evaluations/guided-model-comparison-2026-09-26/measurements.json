@@ -1,0 +1,96 @@
+{
+  "harness_revision": "de4c8a6",
+  "note": "One trial per configuration; unequal durations and provider tool protocols. Process success is not scientific acceptance.",
+  "arms": [
+    {
+      "model": "MiMo v2.6 Pro",
+      "mode": "minimal",
+      "approx_hours": 6,
+      "status": "budget_exhausted",
+      "rounds": 46,
+      "experiment_status_counts": {
+        "succeeded": 11,
+        "failed": 1
+      },
+      "job_status_counts": {},
+      "usage": {
+        "input_tokens": 18768134,
+        "cached_input_tokens": 14537216,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 229172,
+        "reasoning_output_tokens": 140419,
+        "total_tokens": 18997306
+      },
+      "source_snapshot_sha256": "5e946e7c7e453b8620b4db4e02176c27c11ad4c05bf7c73ebd4546bb33359d49",
+      "usage_limitation": "Eight reviewer threads missing usage; lower bound"
+    },
+    {
+      "model": "MiMo v2.6 Pro",
+      "mode": "structured",
+      "approx_hours": 6,
+      "status": "budget_exhausted",
+      "rounds": 37,
+      "experiment_status_counts": {},
+      "job_status_counts": {
+        "failed": 8,
+        "succeeded": 6
+      },
+      "usage": {
+        "input_tokens": 40812304,
+        "cached_input_tokens": 27382400,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 520346,
+        "reasoning_output_tokens": 281898,
+        "total_tokens": 41332650
+      },
+      "source_snapshot_sha256": "5e946e7c7e453b8620b4db4e02176c27c11ad4c05bf7c73ebd4546bb33359d49",
+      "usage_limitation": "Provider-reported counters; not billed cost"
+    },
+    {
+      "model": "DeepSeek V4.1 Flash",
+      "mode": "minimal",
+      "approx_hours": 4.83,
+      "status": "cancelled",
+      "rounds": 24,
+      "experiment_status_counts": {
+        "succeeded": 29,
+        "failed": 9,
+        "cancelled": 4
+      },
+      "job_status_counts": {},
+      "usage": {
+        "input_tokens": 62576544,
+        "cached_input_tokens": 60373888,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 638484,
+        "reasoning_output_tokens": 470755,
+        "total_tokens": 63215028
+      },
+      "source_snapshot_sha256": "a74847f4be31967f1f1d4a6f47929c608f39986faade1269198095b31e3e7f2b",
+      "usage_limitation": "Provider-reported counters; not billed cost"
+    },
+    {
+      "model": "DeepSeek V4.1 Flash",
+      "mode": "structured",
+      "approx_hours": 4.83,
+      "status": "cancelled",
+      "rounds": 22,
+      "experiment_status_counts": {},
+      "job_status_counts": {
+        "succeeded": 16,
+        "failed": 15,
+        "cancelled": 1
+      },
+      "usage": {
+        "input_tokens": 143911083,
+        "cached_input_tokens": 141405440,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 1923636,
+        "reasoning_output_tokens": 1393598,
+        "total_tokens": 145834719
+      },
+      "source_snapshot_sha256": "a74847f4be31967f1f1d4a6f47929c608f39986faade1269198095b31e3e7f2b",
+      "usage_limitation": "Provider-reported counters; not billed cost"
+    }
+  ]
+}

@@ -83,7 +83,10 @@ class MethodService:
                 raise ValueError("Method source/runtime changed; submit the revised method")
             if stage == "evidence" and record.get("scope", "production") != "production":
                 raise ValueError("Instrument readiness does not authorize hypothesis evidence")
-            if stage == "evidence" and record.get("verdict", {}).get("decision") != "continue":
+            if stage == "evidence" and (
+                record.get("verdict", {}).get("decision") != "continue"
+                or record.get("verdict", {}).get("prerequisites")
+            ):
                 raise ValueError("Method needs independent review; end this turn for the host")
         elif stage == "evidence" and self.manifest.get("methods_required", False):
             raise ValueError(

@@ -3124,6 +3124,25 @@ class CampaignKernel:
                 },
             }
 
+    def cancel_active_jobs(self) -> dict[str, Any]:
+        """Cancel from the complete durable store, independently of CLI/snapshot projections."""
+        errors = {}
+        for state in self._active_job_states():
+            try:
+                self.cancel_job(state.job_id)
+            except Exception as error:
+                # One bad receipt must not prevent cleanup of other computations.
+                errors[state.job_id] = str(error)
+        states = self._jobs().jobs()
+        remaining = [state.job_id for state in states if not state.status.terminal]
+        unknown = [state.job_id for state in states if state.status == "outcome_unknown"]
+        return {
+            "verified": not remaining and not unknown,
+            "remaining_jobs": remaining,
+            "unverified_jobs": unknown,
+            "errors": errors,
+        }
+
     def cancel_job(self, job_id: str) -> Any:
         """Cancel one job only after its persisted process identity verifies."""
 

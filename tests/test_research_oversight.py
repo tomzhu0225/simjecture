@@ -65,7 +65,8 @@ def judge_response(directory, decision="continue"):
         decision=decision,
         rationale="The observed evidence supports this methods decision.",
         findings=[] if decision == "continue" else ["No actual solver benchmark"],
-        next_action="Execute the registered validation case.",
+        next_action="Execute the next evidence case.",
+        prerequisites=[] if decision == "continue" else ["Run an evolution benchmark"],
     )
     transcript(directory / "response.json", text=json.dumps(verdict))
     with (directory / "response.json").open("a") as f:
@@ -310,3 +311,53 @@ def test_durable_review_request_interrupts_busy_native_turn(tmp_path):
     assert time.monotonic() - started < 10
     assert sup.state["worker_cursor"] == "busy-thread"
     assert sup.worker_checkpoint_requested()
+
+
+def test_conditional_approval_cannot_open_methods_gate(tmp_path, monkeypatch):
+    s, sup = make(tmp_path, required=True)
+    m = proposal(s)
+
+    def launch(d, prompt, judge=False):
+        transcript(
+            d / "response.json",
+            text=json.dumps(
+                dict(
+                    decision="continue",
+                    rationale="Conditionally approve after fresh commissioning.",
+                    findings=[],
+                    next_action="Run the missing evolution benchmark.",
+                    prerequisites=["End-to-end execution of the bound implementation"],
+                )
+            ),
+        )
+        return 0
+
+    monkeypatch.setattr(sup, "launch", launch)
+    sup.process_methods()
+    assert s._read("methods", m["id"])["status"] == "queued"
+    binding = s._binding("calc.py", (), (), None)
+    with pytest.raises(ValueError, match="independent review"):
+        s.check_method(binding, m["id"], "evidence")
+    # Also reject imported/malformed historical approval with unresolved conditions.
+    m["verdict"] = {"decision": "continue", "prerequisites": ["unmet condition"]}
+    put(s.root / "methods" / (m["id"] + ".json"), m)
+    with pytest.raises(ValueError, match="independent review"):
+        s.check_method(binding, m["id"], "evidence")
+
+
+def test_timing_and_parity_context_is_retained_for_review(tmp_path):
+    s, sup = make(tmp_path)
+    from tests.test_research_service import completed
+
+    (s.work / "calc.py").write_text(
+        "from pathlib import Path\nPath('result.json').write_text('{}')"
+    )
+    for purpose in ["timing", "parity"]:
+        record = completed(s, stage="exploration", purpose=purpose)
+        assert record["purpose"] == purpose
+        assert record["stage"] == "exploration"
+    brief = s.brief()
+    assert {e["purpose"] for e in brief["recent_experiments"]} == {"timing", "parity"}
+    prompt = sup.oversight_prompt({"snapshot": brief})
+    assert '"stage": "exploration"' in prompt
+    assert "mark it unknown" in prompt

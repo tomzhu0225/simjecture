@@ -211,6 +211,7 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
         source,
         cases,
         acceptance,
+        numerical_bounds=(),
         inputs=(),
         capability=None,
         parent="root",
@@ -232,6 +233,10 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
             rationale=rationale,
             bindings=bindings,
         )
+        if numerical_bounds:
+            from .research_acceptance import acceptance_bounds
+
+            body["numerical_bounds"] = acceptance_bounds(numerical_bounds)
         identifier = "commit_" + fingerprint(body)[:24]
         with self.lock():
             path = self.root / "commitments" / (identifier + ".json")
@@ -545,20 +550,6 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
             for relative, meta in record["artifacts"].items():
                 if sha(workspace / relative) != meta["sha256"]:
                     raise ValueError("Recorded artifact was changed after execution")
-            for name in record["outputs"]:
-                output = workspace / name
-                if output.suffix == ".json" and output.stat().st_size <= 262144:
-                    from .research_audit import strict_json
-
-                    value = strict_json(output.read_text())
-                    if isinstance(value, dict) and (
-                        value.get("scientific_evidence_eligible") is False
-                        or (
-                            isinstance(value.get("checks"), dict)
-                            and value["checks"].get("scientific_evidence_eligible") is False
-                        )
-                    ):
-                        raise ValueError("Output explicitly marked non-evidentiary")
             sources = {}
             for p in record["binding"]["inputs"]:
                 code = p == record["binding"]["source"] or p.endswith((".py", ".sh"))
@@ -739,7 +730,17 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
                 for e in snapshot["experiments"]
             ]
             snapshot["commitments"] = [
-                {k: c.get(k) for k in ["id", "parent", "statement", "rationale", "acceptance"]}
+                {
+                    k: c.get(k)
+                    for k in [
+                        "id",
+                        "parent",
+                        "statement",
+                        "rationale",
+                        "acceptance",
+                        "numerical_bounds",
+                    ]
+                }
                 for c in snapshot["commitments"]
             ]
             snapshot["reviews"] = [

@@ -119,3 +119,43 @@ The cooperative execution backend is not a hostile-agent security boundary. Nati
 work can occur outside the evidence service; important exploratory findings need fresh
 recorded evidence. These checks improve observability and acceptance discipline rather
 than claiming to intercept every native action or to guarantee a valid discovery.
+
+## Approval conditions and exploratory pilots
+
+New methods/progress verdicts include `prerequisites`, an explicit list of unmet
+conditions. `continue` requires an empty list. Conditional approval is rejected and
+must be reviewed again; a recommendation for subsequent work is different from a
+condition required to make the present approval valid.
+
+Label timing and rank-comparison pilots with `purpose="timing"` or `purpose="parity"`
+and `stage="exploration"`. Reviewers receive those labels; such pilots are not claim
+tests. Missing purpose is unknown, not an inferred scientific objective.
+
+The host's recorded stage controls evidence eligibility. A JSON output containing
+`scientific_evidence_eligible=false` is preserved and flagged for independent review;
+it does not itself force a solver rerun. Explain whether it is stale metadata or a
+real limitation. Exploration still cannot become claim evidence, and artifact hashes
+are still checked. This does not allow rewriting previous results.
+
+## Checking numerical repair bounds
+
+For conjunctive inclusive bounds, supplement the prose acceptance rule:
+
+```python
+commitment = lab.commit(
+    "A minimally repaired prediction for the rate",
+    source="calculation.py",
+    cases=[["--S", "2000"]],
+    acceptance="Both predeclared bounds on the S=2000 rate must hold",
+    numerical_bounds=[
+        {"metric": "S2000.rate", "lower": 0.025, "upper": 0.030},
+        {"metric": "S2000.rate", "lower": 0.028},
+    ],
+    rationale="Explain the parent failure and preserve its unaffected predictions",
+)
+```
+
+Repeated metric names mean AND. Use different names for different cases. Empty
+intersections and non-finite bounds are rejected before recording the commitment.
+This optional check validates feasibility, not the physics or the measured outcome;
+natural-language rules and scientific acceptance still require independent review.

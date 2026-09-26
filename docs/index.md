@@ -6,7 +6,7 @@ It accepts a natural-language hypothesis, lets an agent commission and use
 computational instruments, and preserves an independently inspectable path from
 proposal to claim disposition.
 
-This documentation describes version 0.5.0, a research preview. The project
+This documentation describes version 0.5.1, a research preview. The project
 began in computational plasma physics. The same evidence harness is now ready
 to extend to other simulation-gated fields. The software has completed real
 autonomous CPU and CUDA campaigns, but it does not claim unrestricted
@@ -18,7 +18,7 @@ hypothesis solving or empirical closure.
   [recorded Gray–Scott demo](demos/gray-scott.md); it makes no model calls and
   starts no simulations.
 - **New user:** follow [Installation](getting-started/installation.md),
-  [First autonomous run](getting-started/first-run.md), and the
+  [Minimal native studies](how-to/research-service.md), and the
   [Web interface](getting-started/web-interface.md). The
   maintenance-mode [Terminal interface](getting-started/terminal-ui.md)
   remains available for SSH and headless operation.
@@ -34,7 +34,8 @@ hypothesis solving or empirical closure.
   to install the native MCP profile and verify its tool boundary.
 - **Simote operator:** use [Simote agent roles](how-to/simote-agent-roles.md)
   to run claim-scoped CLI agents on shared campaigns.
-- **Reviewer:** inspect [Evaluation status](research/status.md),
+- **Reviewer:** inspect the [MiMo/DeepSeek comparison](research/llm-comparison.md),
+  [Evaluation status](research/status.md),
   the [recorded Gray–Scott demo](demos/gray-scott.md),
   the [recorded collisionless GEM demo](demos/collisionless-gem.md),
   [run 0004 audit](research/run-0004.md), and
@@ -96,6 +97,7 @@ reference/repository-map
 :caption: Research record
 
 research/status
+research/llm-comparison
 research/run-0004
 research/next-steps
 ```
