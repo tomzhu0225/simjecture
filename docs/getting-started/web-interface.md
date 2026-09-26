@@ -1,5 +1,10 @@
 # Web interface
 
+For model setup, project conversations, tool installation and autonomous research,
+start with the [research workspace](research-workspace.md). Running `simjecture web`
+without a campaign opens the workspace. `/monitor` opens the detailed experiment
+monitor below; supplying a campaign directory still opens that monitor directly.
+
 The local web interface is the primary human-facing view of a Simjecture
 campaign. It makes the scientific structure visible without replacing the
 durable record. New native studies default to minimal; mode, backend and model
@@ -126,9 +131,10 @@ For review or screen sharing, disable every mutation:
 uv run simjecture web demos/gray_scott_counterexample/record --read-only
 ```
 
-## Launch a hypothesis
+## Advanced hypothesis launch
 
-Run `simjecture web` without a campaign path and select **New hypothesis**. The
+Open `/monitor` and select **New hypothesis** for the advanced launch form. For
+conversation-led setup and research, use the workspace's **New project** instead. The
 form keeps the immutable root hypothesis separate from optional operational
 guidance and records the execution envelope before starting the runner. The
 child process inherits provider credentials from the terminal environment; the

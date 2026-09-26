@@ -48,6 +48,7 @@ hypothesis solving or empirical closure.
 getting-started/installation
 getting-started/first-run
 getting-started/web-interface
+getting-started/research-workspace
 getting-started/terminal-ui
 ```
 

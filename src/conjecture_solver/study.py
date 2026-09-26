@@ -48,8 +48,10 @@ def configure_parser(parser):
     parser.add_argument("--wall-seconds", type=float, default=3600)
     parser.add_argument("--turn-seconds", type=float, default=600)
     parser.add_argument(
-        "--backend", choices=["codex-glm", "codex", "grok", "agy"], default="codex-glm"
+        "--backend", choices=["codex-glm", "codex", "grok", "agy", "builtin"], default="codex-glm"
     )
+    parser.add_argument("--provider-config")
+    parser.add_argument("--completion-policy", choices=["answer", "repair"])
     parser.add_argument("--model")
     parser.add_argument("--judge-model")
     parser.add_argument("--executable")
@@ -147,7 +149,17 @@ def _run(args):
     args.executable = (
         args.executable or previous.get("request", {}).get("agent_executable") or args.backend
     )
-    if shutil.which(args.executable) is None:
+    if args.backend == "builtin":
+        from .workspace_agent import read_provider, require_runtime
+
+        require_runtime()
+        args.provider_config = getattr(args, "provider_config", None) or previous.get(
+            "request", {}
+        ).get("provider_config")
+        read_provider(args.provider_config)
+        if mode != "minimal":
+            raise ValueError("Built-in research uses minimal mode")
+    elif shutil.which(args.executable) is None:
         raise ValueError(
             f"Backend executable {args.executable!r} not found; install and log in "
             "to that CLI, or choose another backend"
@@ -166,6 +178,7 @@ def _run(args):
                 wall_seconds=args.wall_seconds,
                 capabilities=args.capabilities,
                 execution_backend=args.execution_backend,
+                completion_policy=getattr(args, "completion_policy", None),
             )
             if hypothesis is not None
             else ResearchService(args.campaign)
@@ -252,6 +265,10 @@ def _run(args):
             judge_model=args.judge_model,
             capability_directory=str(args.capabilities) if args.capabilities else None,
             agent_executable=args.executable,
+            provider_config=getattr(args, "provider_config", None),
+            completion_policy=supervisor.service.manifest.get("completion_policy", "repair")
+            if mode == "minimal"
+            else "repair",
         ).model_dump(mode="json")
         operator = args.campaign / "operator_input"
         operator.mkdir(exist_ok=True)

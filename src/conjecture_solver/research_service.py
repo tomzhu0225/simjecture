@@ -80,7 +80,14 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
 
     @classmethod
     def create(
-        cls, root, hypothesis, *, wall_seconds=3600, capabilities=None, execution_backend=None
+        cls,
+        root,
+        hypothesis,
+        *,
+        wall_seconds=3600,
+        capabilities=None,
+        execution_backend=None,
+        completion_policy=None,
     ):
         root = Path(root).resolve()
         root.mkdir(parents=True, exist_ok=True)
@@ -89,12 +96,20 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
             if existing.manifest["hypothesis"] != hypothesis:
                 raise ValueError("Original hypothesis is immutable")
             if (
+                completion_policy
+                and existing.manifest.get("completion_policy", "repair") != completion_policy
+            ):
+                raise ValueError("Completion policy is immutable within a study")
+            if (
                 execution_backend
                 and existing.manifest.get("execution_backend", "bubblewrap") != execution_backend
             ):
                 raise ValueError("Execution backend is immutable within a study")
             return existing
         execution_backend = execution_backend or "bubblewrap"
+        completion_policy = completion_policy or "repair"
+        if completion_policy not in {"answer", "repair"}:
+            raise ValueError("Unknown completion policy")
         if execution_backend not in {"bubblewrap", "proot-cooperative"}:
             raise ValueError("Unknown execution backend")
         if any(root.iterdir()):
@@ -117,6 +132,7 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
                 schema_version=3,
                 methods_required=bool(registry.hashes),
                 workflow="minimal",
+                completion_policy=completion_policy,
                 execution_backend=execution_backend,
                 hypothesis=hypothesis,
                 created_at=now,
@@ -683,7 +699,12 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
             resource_limits={
                 k: self.manifest[k] for k in ["max_experiment_bytes", "max_total_bytes"]
             },
-            completed=original_supported or (original_falsified and repair_supported),
+            completion_policy=self.manifest.get("completion_policy", "repair"),
+            completed=original_supported
+            or (
+                original_falsified
+                and (repair_supported or self.manifest.get("completion_policy") == "answer")
+            ),
             experiments=self._all("experiments"),
             commitments=self._all("commitments"),
             reviews=reviews,

@@ -162,7 +162,9 @@ async function initialize() {
     state.campaigns = bootstrap.campaigns || [];
     state.controlToken = bootstrap.control_token;
     state.allowMutations = Boolean(bootstrap.allow_mutations);
-    state.selectedCampaign = bootstrap.selected_campaign;
+    const requested = new URLSearchParams(window.location.search).get("campaign");
+    state.selectedCampaign = state.campaigns.some(c => c.id === requested)
+      ? requested : bootstrap.selected_campaign;
     document.getElementById("launch-execution-backend").value = bootstrap.default_execution_backend || "bubblewrap";
     document.getElementById("launch-backend").value = bootstrap.default_backend || "codex-glm";
     document.getElementById("launch-model").value = bootstrap.default_model || "";

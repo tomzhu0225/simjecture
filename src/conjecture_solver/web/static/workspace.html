@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Simjecture · Research workspace</title>
+    <link rel="stylesheet" href="/assets/workspace.css" />
+    <script src="/assets/vendor/marked-18.0.10.umd.js" defer></script>
+    <script src="/assets/vendor/dompurify-3.4.14.min.js" defer></script>
+    <script src="/assets/vendor/katex-0.18.4.min.js" defer></script>
+    <script src="/assets/vendor/katex-auto-render-0.18.4.min.js" defer></script>
+    <script src="/assets/markdown.js" defer></script>
+    <script src="/assets/workspace.js" defer></script>
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="sidebar">
+        <a href="/workspace" class="brand"
+          ><span class="mark" aria-hidden="true">s<span>·</span></span
+          ><span>simjecture<small>RESEARCH WORKSPACE</small></span></a
+        >
+        <button id="new-project" class="new-project">
+          ＋ <span>New project</span>
+        </button>
+        <nav aria-label="Workspace navigation">
+          <button data-view="home" class="nav-item active">
+            <span aria-hidden="true">⌂</span> Overview
+          </button>
+          <button data-view="tools" class="nav-item">
+            <span aria-hidden="true">◇</span> Research tools
+          </button>
+          <button data-view="settings" class="nav-item">
+            <span aria-hidden="true">⚙</span> Connections
+          </button>
+        </nav>
+        <div class="sidebar-label">YOUR PROJECTS</div>
+        <div id="project-list" class="project-list">
+          <p class="muted">Your work will appear here.</p>
+        </div>
+        <div class="sidebar-bottom">
+          <a href="/monitor">Experiment monitor <span>↗</span></a>
+          <div id="machine-label">Local workspace</div>
+          <span id="connection-indicator" class="connection-dot"
+            >Connecting…</span
+          >
+        </div>
+      </aside>
+      <main>
+        <header class="topbar">
+          <div id="breadcrumb">Workspace <span>/</span> Overview</div>
+          <div class="topbar-right">
+            <span class="local-label">LOCAL EXECUTION</span
+            ><button id="connection-button" class="quiet">
+              Connect a model <span>↗</span>
+            </button>
+          </div>
+        </header>
+        <div id="readonly" class="banner" hidden>
+          This session is read-only. You can inspect projects and results.
+        </div>
+        <section id="view-home" class="view home-view">
+          <div class="page-intro">
+            <p class="eyebrow">FROM A QUESTION TO EVIDENCE</p>
+            <h1>What would you like<br />to investigate?</h1>
+            <p class="lead">
+              Start with a task, a puzzling result, or a hypothesis.<br />Work
+              with your agent, then let a focused study run on its own.
+            </p>
+          </div>
+          <form id="quick-start" class="start-box">
+            <label for="first-request">Your next research project</label
+            ><textarea
+              id="first-request"
+              rows="3"
+              placeholder="I want to understand why my simulation disagrees with the experiment…"
+              required
+            ></textarea>
+            <div class="start-bottom">
+              <span
+                >Ordinary requests welcome. You don’t need a hypothesis
+                yet.</span
+              ><button type="submit" class="primary">
+                Start a project <span>↗</span>
+              </button>
+            </div>
+          </form>
+          <div class="section-line">
+            <h2>A place to start</h2>
+            <span>Choose an example and make it yours</span>
+          </div>
+          <div class="examples">
+            <button
+              class="example"
+              data-example="Help me reproduce a result from a paper. First ask which paper and what result I want to reproduce."
+            >
+              <span class="example-number">01 / REPRODUCE</span>
+              <h3>Start from a paper</h3>
+              <p>Turn a published result into a reproducible experiment.</p>
+              <span class="arrow">↗</span>
+            </button>
+            <button
+              class="example"
+              data-example="Help me understand an unexpected simulation result. Ask me for the output and what I expected before proposing explanations."
+            >
+              <span class="example-number">02 / UNDERSTAND</span>
+              <h3>Investigate a discrepancy</h3>
+              <p>Explore what happened and design a test to explain it.</p>
+              <span class="arrow">↗</span>
+            </button>
+            <button
+              class="example"
+              data-example="Prepare a short autonomous study to test this claim: explicit Euler integration of y' = -y preserves a nonnegative solution for all positive time steps. Search for a counterexample, record the calculations, and obtain independent review. Use ordinary Python; a well-supported negative result completes the study. Budget 5 minutes."
+            >
+              <span class="example-number">03 / TRY SIMJECTURE</span>
+              <h3>Find a first counterexample</h3>
+              <p>A small numerical question. Python is all you need.</p>
+              <span class="arrow">↗</span>
+            </button>
+          </div>
+          <div class="setup-strip">
+            <div>
+              <span class="step-no">1</span><strong>Connect an agent</strong
+              ><small>API endpoint or existing CLI</small>
+            </div>
+            <div>
+              <span class="step-no">2</span
+              ><strong>Work through your task</strong
+              ><small>Chat, inspect files, prepare experiments</small>
+            </div>
+            <div>
+              <span class="step-no">3</span><strong>Run a bounded study</strong
+              ><small>Evidence, independent review, a clear result</small>
+            </div>
+          </div>
+        </section>
+        <section id="view-settings" class="view" hidden>
+          <div class="page-intro compact">
+            <p class="eyebrow">YOUR AGENT, YOUR MACHINE</p>
+            <h1>Connect your research agent.</h1>
+            <p class="lead">
+              Use a model API or a CLI agent you already have installed.
+            </p>
+          </div>
+          <div class="settings-layout">
+            <form id="settings-form" class="panel form-panel">
+              <label for="backend">Agent connection</label
+              ><select id="backend">
+                <option value="builtin">Built-in agent · compatible API</option>
+              </select>
+              <div id="api-fields">
+                <label for="provider-preset">Provider</label
+                ><select id="provider-preset">
+                  <option value="custom">Custom / OpenAI-compatible</option>
+                  <option value="deepseek">DeepSeek</option>
+                  <option value="openrouter">OpenRouter</option>
+                  <option value="local">Local model server</option></select
+                ><label for="base-url">API base URL</label
+                ><input
+                  id="base-url"
+                  type="url"
+                  placeholder="https://your-provider.example/v1"
+                /><label for="api-key">API key</label
+                ><input
+                  id="api-key"
+                  type="password"
+                  autocomplete="new-password"
+                  placeholder="Enter a key; stored only on this machine"
+                />
+                <p class="field-help">
+                  Stored in a private file on the execution machine. Never
+                  returned to the browser or included in project exports.
+                </p>
+              </div>
+              <label for="model">Model</label
+              ><input
+                id="model"
+                placeholder="Exact model ID from your provider"
+                required
+              />
+              <details class="advanced">
+                <summary>Independent reviewer</summary>
+                <label for="judge-model">Reviewer model (optional)</label
+                ><input
+                  id="judge-model"
+                  placeholder="Same model in a separate context"
+                />
+                <p class="field-help">
+                  Reviews run in a fresh context without tools. A different
+                  model is optional.
+                </p>
+              </details>
+              <div class="form-actions">
+                <button class="primary" type="submit" id="save-connection">
+                  Save and test connection</button
+                ><span id="connection-result" role="status"></span>
+              </div>
+            </form>
+            <aside class="setup-notes">
+              <h3>Where your work runs</h3>
+              <p>
+                Files, installations, and experiments stay on the machine
+                serving this page.
+              </p>
+              <div id="machine-card" class="machine-card"></div>
+              <button id="check-machine" class="secondary">
+                Check experiment readiness
+              </button>
+              <p id="machine-result" class="field-help" role="status"></p>
+              <hr />
+              <h3>Already using a CLI?</h3>
+              <p>
+                Installed agents are detected automatically. They keep their
+                existing login and native tools.
+              </p>
+              <div id="detected-agents"></div>
+              <hr />
+              <p id="runtime-status" class="field-help"></p>
+            </aside>
+          </div>
+        </section>
+        <section id="view-tools" class="view" hidden>
+          <div class="page-intro compact">
+            <p class="eyebrow">THE EXPERIMENT WORKBENCH</p>
+            <h1>Your research instruments.</h1>
+            <p class="lead">
+              Install a supported tool, connect an existing one, or ask your
+              agent to set one up.
+            </p>
+          </div>
+          <div class="tool-note">
+            <strong>Python is ready to explore.</strong> NumPy, SciPy, pandas,
+            and plotting are included. Simulation tools are optional.
+          </div>
+          <div id="tool-grid" class="tool-grid"></div>
+          <details class="panel custom-tool">
+            <summary>Connect another research tool</summary>
+            <p>
+              Register an existing Simjecture capability directory. You can also
+              ask your project agent to install software and create its
+              descriptor.
+            </p>
+            <form id="custom-tool-form">
+              <label for="tool-name">Display name</label
+              ><input
+                id="tool-name"
+                required
+                placeholder="My research solver"
+              /><label for="tool-path"
+                >Capability directory on this machine</label
+              ><input
+                id="tool-path"
+                required
+                placeholder="/path/to/capabilities"
+              /><button class="secondary" type="submit">Register tool</button>
+            </form>
+          </details>
+          <p class="field-help">
+            A successful installation check establishes that a tool can run.
+            Each investigation still validates that it can answer the scientific
+            question.
+          </p>
+        </section>
+        <section id="view-project" class="view project-view" hidden>
+          <div class="project-heading">
+            <div>
+              <p class="eyebrow">RESEARCH PROJECT</p>
+              <h1 id="project-title"></h1>
+            </div>
+            <div class="mode-switch" role="group" aria-label="Research mode">
+              <button id="interactive-mode" class="selected">
+                Interactive research</button
+              ><button id="autonomous-mode">Autonomous research</button>
+            </div>
+          </div>
+          <div class="project-layout">
+            <div class="conversation-column">
+              <div id="interactive-panel">
+                <div class="conversation-heading">
+                  <span class="status-dot"></span
+                  ><span id="conversation-status"
+                    >Work through the next step together</span
+                  >
+                </div>
+                <div id="messages" class="messages" aria-live="polite"></div>
+                <form id="chat-form" class="composer">
+                  <label class="sr-only" for="chat-input"
+                    >Message your research agent</label
+                  ><textarea
+                    id="chat-input"
+                    rows="3"
+                    placeholder="Ask a question, attach your inputs, or describe what you want to achieve…"
+                    required
+                  ></textarea>
+                  <div class="composer-bottom">
+                    <label class="attach-button" for="file-input"
+                      >＋ Attach files</label
+                    ><input id="file-input" type="file" multiple hidden /><span
+                      id="agent-label"
+                    ></span
+                    ><button
+                      id="stop-agent"
+                      type="button"
+                      class="secondary"
+                      hidden
+                    >
+                      Stop</button
+                    ><button id="send-message" class="primary" type="submit">
+                      Send ↑
+                    </button>
+                  </div>
+                </form>
+                <p class="composer-note">
+                  The agent can edit project files and run commands on this
+                  machine.
+                </p>
+              </div>
+              <div id="autonomous-panel" hidden>
+                <div id="study-runs"></div>
+                <form id="brief-form" class="panel brief-form">
+                  <div class="section-line">
+                    <h2>Agree on the investigation</h2>
+                    <span class="badge">EDITABLE BRIEF</span>
+                  </div>
+                  <p class="field-help">
+                    Prepare this together in the conversation, or fill it in
+                    yourself. These conditions are fixed for each launched
+                    study.
+                  </p>
+                  <label for="brief-question">Question or claim to test</label
+                  ><textarea
+                    id="brief-question"
+                    rows="3"
+                    required
+                    placeholder="What precise question should the investigation answer?"
+                  ></textarea
+                  ><label for="brief-criteria"
+                    >What evidence would answer it?</label
+                  ><textarea
+                    id="brief-criteria"
+                    rows="3"
+                    required
+                    placeholder="Measurements, comparison, counterexample, and validation requirements"
+                  ></textarea
+                  ><label for="brief-constraints"
+                    >Constraints and available inputs</label
+                  ><textarea
+                    id="brief-constraints"
+                    rows="3"
+                    placeholder="What may change? What must stay fixed? Which project files matter?"
+                  ></textarea>
+                  <div class="two-fields">
+                    <div>
+                      <label for="brief-policy"
+                        >When is the research complete?</label
+                      ><select id="brief-policy">
+                        <option value="answer">
+                          Answer the question · negative results count
+                        </option>
+                        <option value="repair">
+                          Seek a supported claim or tested repair
+                        </option>
+                      </select>
+                    </div>
+                    <div>
+                      <label for="brief-hours">Time budget (hours)</label
+                      ><input
+                        id="brief-hours"
+                        type="number"
+                        min="0.01"
+                        max="168"
+                        step="any"
+                        value="1"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <label for="study-tools">Research instruments</label
+                  ><select id="study-tools">
+                    <option value="">
+                      Ordinary Python · no external solver
+                    </option>
+                  </select>
+                  <details class="advanced">
+                    <summary>Execution settings</summary>
+                    <label for="execution-backend">Experiment environment</label
+                    ><select id="execution-backend">
+                      <option value="bubblewrap">
+                        Linux sandbox (recommended)
+                      </option>
+                      <option value="proot-cooperative">
+                        Cooperative container execution
+                      </option>
+                    </select>
+                    <p class="field-help">
+                      Cooperative execution is for a dedicated unprivileged
+                      account and does not isolate host networking.
+                    </p>
+                  </details>
+                  <div class="brief-footer">
+                    <button id="save-brief" type="button" class="secondary">
+                      Save brief</button
+                    ><button id="launch-study" type="submit" class="primary">
+                      Start autonomous research ↗
+                    </button>
+                  </div>
+                  <p class="field-help">
+                    Runs survive closing this page. They stop at the original
+                    deadline or an independently accepted outcome. You can pause
+                    or stop them earlier.
+                  </p>
+                </form>
+              </div>
+            </div>
+            <aside class="project-context">
+              <div class="context-section">
+                <h3>Project files <span id="file-count">0</span></h3>
+                <div id="project-files"></div>
+                <details>
+                  <summary>Open local folder</summary>
+                  <code id="project-path"></code>
+                  <p class="field-help">
+                    Copy large datasets here directly. Browser uploads support
+                    files up to 20 MB.
+                  </p>
+                </details>
+              </div>
+              <div class="context-section">
+                <h3>Research brief</h3>
+                <div id="brief-summary">
+                  <p>
+                    When you’re ready, ask your agent to prepare an autonomous
+                    investigation.
+                  </p>
+                </div>
+                <button id="open-brief" class="text-button">
+                  Open study brief ↗
+                </button>
+              </div>
+              <div class="context-section">
+                <h3>Working principle</h3>
+                <p>
+                  Explore freely. Keep the question explicit. Let recorded
+                  evidence and independent review decide the outcome.
+                </p>
+              </div>
+            </aside>
+          </div>
+        </section>
+      </main>
+    </div>
+    <div id="toast" class="toast" role="status" hidden></div>
+    <dialog id="new-project-dialog">
+      <form id="new-project-form">
+        <p class="eyebrow">A NEW INVESTIGATION</p>
+        <h2>Name your project</h2>
+        <label for="project-name">Project name</label
+        ><input
+          id="project-name"
+          required
+          maxlength="160"
+          placeholder="e.g. Reconnection onset"
+        />
+        <div class="form-actions">
+          <button id="cancel-new-project" class="secondary" type="button">
+            Cancel</button
+          ><button class="primary" type="submit">Create project</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="source-dialog">
+      <form id="source-form">
+        <h2 id="source-title">Connect source</h2>
+        <p>Choose an existing source checkout on the execution machine.</p>
+        <label for="source-path">Source directory</label
+        ><input id="source-path" required placeholder="/path/to/source" />
+        <div class="form-actions">
+          <button id="cancel-source" type="button" class="secondary">
+            Cancel</button
+          ><button type="submit" class="primary">Set up tool</button>
+        </div>
+      </form>
+    </dialog>
+  </body>
+</html>

@@ -66,6 +66,9 @@ dsh = [
 flash-demo = [
   "h5py>=3.10,<4",
 ]
+workspace = [
+    "smolagents[openai]>=1.24,<2",
+]
 
 [dependency-groups]
 dev = [

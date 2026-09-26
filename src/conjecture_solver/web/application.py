@@ -58,6 +58,9 @@ VISIBLE_RECORDS = frozenset(
         "research.json",
         "research_report.json",
         "study-mode.json",
+        "RESULTS_INDEX.md",
+        "STUDY_LEDGER.md",
+        "project-brief.json",
     }
 )
 IMAGE_SUFFIXES = frozenset({".apng", ".gif", ".jpeg", ".jpg", ".png", ".svg", ".webp"})
@@ -151,6 +154,13 @@ class SimjectureWebApplication:
         self.default_engine = default_engine
         self._monitors: dict[str, MVPRunMonitor] = {}
         self._lock = threading.RLock()
+        from .workspace import Workspace
+
+        self.workspace = Workspace(self.runs_root / ".workspace")
+        for project in self.workspace.projects():
+            for study in project.get("studies", []):
+                if Path(study["path"]).is_dir():
+                    self.registry.register(study["path"])
 
     @property
     def initial_campaign(self) -> str | None:

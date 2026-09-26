@@ -22,7 +22,9 @@ from .study_status import read, supervisor_directory
 class NativeStudyRequest(MVPLaunchRequest):
     execution_backend: Literal["bubblewrap", "proot-cooperative"] = "bubblewrap"
     mode: Literal["minimal", "structured", "frontier"] = "minimal"
-    backend: Literal["codex-glm", "codex", "grok", "agy"] = "codex-glm"
+    backend: Literal["codex-glm", "codex", "grok", "agy", "builtin"] = "codex-glm"
+    completion_policy: Literal["answer", "repair"] = "repair"
+    provider_config: str | None = None
     model: str | None = None
     judge_model: str | None = None
     agent_executable: str | None = None
@@ -36,7 +38,14 @@ def materialize_native(request, *, resume=False):
     if not model:
         raise ValueError("Choose an explicit model for this backend")
     executable = request.agent_executable or request.backend
-    if shutil.which(executable) is None:
+    if request.backend == "builtin":
+        from .workspace_agent import read_provider, require_runtime
+
+        require_runtime()
+        read_provider(request.provider_config)
+        if request.mode != "minimal":
+            raise ValueError("Built-in research uses minimal mode")
+    elif shutil.which(executable) is None:
         raise ValueError(f"Backend executable {executable!r} not found; install its CLI first")
     if request.engine != "native":
         raise ValueError("Native study modes cannot use the legacy DSH engine")
@@ -66,6 +75,7 @@ def materialize_native(request, *, resume=False):
                 wall_seconds=request.max_wall_seconds,
                 capabilities=request.capability_directory,
                 execution_backend=request.execution_backend,
+                completion_policy=request.completion_policy,
             )
             service.freeze_protocol(protocol)
         else:
@@ -133,6 +143,9 @@ def materialize_native(request, *, resume=False):
         argv += ["--capabilities", request.capability_directory]
     if request.agent_executable:
         argv += ["--executable", request.agent_executable]
+    argv += ["--completion-policy", request.completion_policy]
+    if request.provider_config:
+        argv += ["--provider-config", request.provider_config]
     put(
         record,
         dict(

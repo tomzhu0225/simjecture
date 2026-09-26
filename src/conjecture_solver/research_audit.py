@@ -170,6 +170,36 @@ def write_report(service, state):
         },
     )
     put(service.root / "research_report.json", report)
+    # A readable navigation layer; immutable receipt paths remain unchanged.
+    from urllib.parse import quote
+
+    index = [
+        "# Study results",
+        "",
+        service.manifest["hypothesis"],
+        "",
+        f"Execution: {state['status']}. "
+        f"Scientific status: {snapshot['audit']['scientific_status']}.",
+        "",
+        "- [Scientific narrative](research/RESULTS.md)",
+        "- [Evidence ledger](STUDY_LEDGER.md)",
+        "- [Machine-readable report](research_report.json)",
+        "",
+    ]
+    for number, experiment in enumerate(
+        sorted(snapshot["experiments"], key=lambda e: e["created_at"]), 1
+    ):
+        label = experiment.get("key") or experiment.get("source") or "Simulation"
+        index += [f"## {number:03d} · {label}", "", f"Execution: {experiment['status']}.", ""]
+        base = f"experiments/{experiment['id']}"
+        index.append(f"- [Input snapshot and working files]({base}/workspace/)")
+        for output in experiment.get("outputs", []):
+            index.append(f"- [{output}]({base}/workspace/{quote(output)})")
+        index += [f"- [Receipt]({base}.json)", ""]
+    destination = service.root / "RESULTS_INDEX.md"
+    temporary = destination.with_suffix(".tmp")
+    temporary.write_text("\n".join(index))
+    temporary.replace(destination)
     rows = [
         "# Host-generated study ledger",
         "",

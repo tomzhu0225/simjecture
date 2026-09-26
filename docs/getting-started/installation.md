@@ -19,6 +19,10 @@ uv run simjecture doctor --profile core
 
 ## Native agent login
 
+For browser setup, run `./scripts/launch-workspace.sh` and open **Connections**.
+Choose an installed CLI below or connect a compatible API model directly. See the
+[research workspace guide](research-workspace.md) for a complete first investigation.
+
 New studies default to minimal mode. Install and log in with Codex GLM, Codex,
 Grok or AGY independently, then choose that backend and model in the launcher.
 Simjecture does not redistribute those CLIs or subscriptions. Native tools remain

@@ -235,7 +235,25 @@ class AgentSupervisor:
         if not judge and self.workflow == "frontier":
             work_directory = self.directory / "research"
             work_directory.mkdir(exist_ok=True)
-        if backend in {"codex", "codex-glm"}:
+        if backend == "builtin":
+            command = [
+                sys.executable,
+                "-m",
+                "conjecture_solver.workspace_agent",
+                "--provider-config",
+                str(self.args.provider_config),
+                "--prompt-file",
+                str(directory / "task.txt"),
+                "--cwd",
+                str(work_directory),
+                "--model",
+                self.args.judge_model if judge else self.args.model,
+                "--wall-seconds",
+                str(max(1, remaining)),
+            ]
+            if judge:
+                command += ["--judge"]
+        elif backend in {"codex", "codex-glm"}:
             cursor = self.state.get("worker_cursor") if self.workflow == "frontier" else None
             command = [self.args.executable, "exec"]
             if cursor and not judge:
@@ -450,6 +468,25 @@ class AgentSupervisor:
                     if thread_id and usage:
                         self.state.setdefault("usage_by_thread", {})[thread_id] = usage
                         self.state["usage_updated_at"] = time.time()
+                elif backend == "builtin":
+                    usage = {"input_tokens": 0, "output_tokens": 0}
+                    reported = False
+                    for line in (directory / "response.json").read_text().splitlines():
+                        try:
+                            event = json.loads(line)
+                        except ValueError:
+                            continue
+                        if event.get("type") == "usage":
+                            reported = True
+                            for key in usage:
+                                usage[key] += event.get(key) or 0
+                    if reported:
+                        self.state.setdefault("usage_by_thread", {})[directory.name] = usage
+                        self.state["usage_updated_at"] = time.time()
+                    else:
+                        self.state["usage_incomplete_turns"] = (
+                            self.state.get("usage_incomplete_turns", 0) + 1
+                        )
                 self.state.pop("child_pid", None)
                 self.save()
 

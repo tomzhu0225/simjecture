@@ -14,7 +14,12 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import parse_qs, quote, urlsplit
 
-from .application import API_SCHEMA_VERSION, SimjectureWebApplication, WebApplicationError
+from .application import (
+    API_SCHEMA_VERSION,
+    MAX_ARTIFACT_BYTES,
+    SimjectureWebApplication,
+    WebApplicationError,
+)
 
 STATIC_ROOT = Path(__file__).with_name("static")
 MAX_REQUEST_BYTES = 64 * 1024
@@ -44,6 +49,9 @@ STATIC_ASSETS = frozenset(
         "app.js",
         "markdown.js",
         "styles.css",
+        "workspace.html",
+        "workspace.js",
+        "workspace.css",
         "vendor/dagre-2.0.0.min.js",
         "vendor/dompurify-3.4.14.min.js",
         "vendor/katex-0.18.4.min.js",
@@ -82,6 +90,9 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:  # noqa: N802 - stdlib handler contract
         parsed = urlsplit(self.path)
         try:
+            if parsed.path.startswith("/api/workspace/"):
+                self._workspace_get(parsed)
+                return
             if parsed.path == "/api/bootstrap":
                 payload = self.server.application.bootstrap()
                 payload["control_token"] = self.server.control_token
@@ -134,6 +145,10 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
         try:
             self._authorize_mutation()
             payload = self._read_json_body()
+            if parsed.path.startswith("/api/workspace/"):
+                self.server.application._require_mutations()
+                self._workspace_post(parsed, payload)
+                return
             if parsed.path == "/api/campaigns":
                 result = self.server.application.create_campaign(payload)
                 self._json(result, status=HTTPStatus.CREATED)
@@ -174,7 +189,12 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
             length = int(raw_length or "0")
         except ValueError as error:
             raise WebApplicationError("invalid content length", status=400) from error
-        if length <= 0 or length > MAX_REQUEST_BYTES:
+        maximum = (
+            28 * 1024**2
+            if urlsplit(self.path).path == "/api/workspace/upload"
+            else MAX_REQUEST_BYTES
+        )
+        if length <= 0 or length > maximum:
             raise WebApplicationError("request body is empty or too large", status=413)
         raw = self.rfile.read(length)
         try:
@@ -187,7 +207,11 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
 
     def _static(self, request_path: str) -> None:
         if request_path in {"", "/"}:
-            relative = "index.html"
+            relative = (
+                "index.html" if self.server.application.registry.initial_token else "workspace.html"
+            )
+        elif request_path == "/workspace":
+            relative = "workspace.html"
         elif request_path.startswith("/assets/"):
             relative = request_path.removeprefix("/assets/")
         else:
@@ -205,6 +229,118 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
         body = path.read_bytes()
         self._begin(HTTPStatus.OK, content_type, len(body), cache="no-cache")
         self.wfile.write(body)
+
+    def _workspace_get(self, parsed):
+        workspace = self.server.application.workspace
+        query = parse_qs(parsed.query)
+        endpoint = parsed.path.removeprefix("/api/workspace/")
+        try:
+            if endpoint == "bootstrap":
+                self._json(
+                    dict(
+                        settings=workspace.settings(),
+                        projects=workspace.projects(),
+                        control_token=self.server.control_token,
+                        allow_mutations=self.server.application.allow_mutations,
+                    )
+                )
+            elif endpoint == "project":
+                self._json(workspace.project(self._one_value(query, "id")))
+            elif endpoint == "tools":
+                self._json(workspace.catalogue())
+            elif endpoint == "machine":
+                from ..execution import probe_execution_backend
+
+                self._json(probe_execution_backend("bubblewrap"))
+            elif endpoint == "study":
+                from ..study_status import study_status
+                from .workspace import load
+
+                app = self.server.application
+                token = self._one_value(query, "id")
+                root = app.registry.resolve(token)
+                snapshot = app.campaign_snapshot(token)
+                result = root / "research" / "RESULTS.md"
+                status = study_status(root)
+                self._json(
+                    dict(
+                        snapshot=snapshot,
+                        live={
+                            k: status[k]
+                            for k in (
+                                "status",
+                                "activity",
+                                "remaining",
+                                "elapsed",
+                                "backend",
+                                "model",
+                            )
+                        },
+                        report=load(root / "research_report.json"),
+                        results=result.read_text()[:100000]
+                        if result.is_file()
+                        and not result.is_symlink()
+                        and result.resolve().is_relative_to(root)
+                        else "",
+                    )
+                )
+            elif endpoint == "file":
+                from ..workspace_agent import contained
+
+                root = workspace.directory(self._one_value(query, "id")) / "files"
+                path = contained(root, self._one_value(query, "path"))
+                if not path.is_file() or path.stat().st_size > MAX_ARTIFACT_BYTES:
+                    raise ValueError("File is missing or exceeds 64 MB")
+                body = path.read_bytes()
+                self.send_response(200)
+                self.send_header("Content-Type", "application/octet-stream")
+                self.send_header(
+                    "Content-Disposition", "attachment; filename*=UTF-8''" + quote(path.name)
+                )
+                self.send_header("Content-Length", str(len(body)))
+                for key, value in ARTIFACT_SECURITY_HEADERS.items():
+                    self.send_header(key, value)
+                self.end_headers()
+                self.wfile.write(body)
+            else:
+                raise WebApplicationError("Workspace endpoint not found", status=404)
+        except (ValueError, OSError) as error:
+            raise WebApplicationError(str(error), status=400) from error
+
+    def _workspace_post(self, parsed, payload):
+        workspace = self.server.application.workspace
+        endpoint = parsed.path.removeprefix("/api/workspace/")
+        try:
+            if endpoint == "settings":
+                result = workspace.save_settings(payload)
+            elif endpoint == "test":
+                result = workspace.test_connection()
+            elif endpoint == "projects":
+                result = workspace.create(payload)
+            elif endpoint == "message":
+                result = workspace.send(payload.get("project"), payload)
+            elif endpoint == "stop":
+                result = workspace.stop(payload.get("project"))
+            elif endpoint == "brief":
+                result = workspace.save_brief(payload.get("project"), payload)
+            elif endpoint == "upload":
+                result = workspace.upload(payload.get("project"), payload)
+            elif endpoint == "install":
+                result = workspace.start_install(payload)
+            elif endpoint == "register-tool":
+                result = workspace.register_tool(payload)
+            elif endpoint == "launch":
+                result = workspace.launch(payload.get("project"), payload, self.server.application)
+            else:
+                raise WebApplicationError("Workspace endpoint not found", status=404)
+            self._json(result)
+        except (ValueError, OSError, TypeError) as error:
+            from ..workspace_agent import public_error
+            from .workspace import load
+
+            raise WebApplicationError(
+                public_error(error, load(workspace.settings_path)), status=400
+            ) from error
 
     def _artifact(self, token: str, relative: str) -> None:
         resource = self.server.application.artifact(token, relative)

@@ -41,6 +41,13 @@ def trace_summary(path):
             continue
         item = event.get("item", {})
         kind = item.get("type")
+        if event.get("type") == "tool":
+            kinds["tool_use"] += 1
+            actions.append(
+                dict(type="tool_use", name=event.get("name"), input=event.get("arguments"))
+            )
+        if event.get("type") == "result" and isinstance(event.get("result"), str):
+            messages.append(event["result"][:1600])
         if event.get("type") == "item.completed":
             if kind == "agent_message":
                 messages.append(item.get("text", "")[:1600])
