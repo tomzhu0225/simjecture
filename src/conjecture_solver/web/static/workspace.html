@@ -80,7 +80,6 @@
               with your agent, then let a focused study run on its own.
             </p>
           </div>
-          <div id="home-agent-host"></div>
           <form id="quick-start" class="start-box">
             <label for="first-request">Your research request</label
             ><textarea
@@ -90,12 +89,8 @@
               required
             ></textarea>
             <div class="start-bottom">
-              <span
-                >Ordinary requests welcome. You don’t need a hypothesis
-                yet.</span
-              ><button type="submit" class="primary">
-                Send <span>↑</span>
-              </button>
+              <div id="home-agent-host"></div>
+              <button type="submit" class="primary">Send <span>↑</span></button>
             </div>
           </form>
           <div class="section-line">
@@ -283,39 +278,6 @@
               ><button id="autonomous-mode">Autonomous research</button>
             </div>
           </div>
-          <div class="agent-controls" aria-label="Conversation agent">
-            <div>
-              <label for="conversation-backend">Agent</label
-              ><select id="conversation-backend"></select>
-            </div>
-            <div class="model-control">
-              <label for="conversation-model">Model</label
-              ><select id="conversation-model"></select>
-            </div>
-            <div id="custom-model-control" hidden>
-              <label for="custom-model">Model ID</label
-              ><input id="custom-model" placeholder="Exact model ID" />
-            </div>
-            <div>
-              <label for="conversation-effort">Reasoning effort</label
-              ><select id="conversation-effort">
-                <option value="">Default</option>
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-                <option value="xhigh">Extra high</option>
-              </select>
-            </div>
-            <button
-              id="refresh-models"
-              class="quiet"
-              type="button"
-              title="Refresh model choices"
-            >
-              ↻ Refresh
-            </button>
-            <p id="model-note" class="field-help"></p>
-          </div>
           <wa-split-panel
             id="research-layout"
             class="project-layout"
@@ -344,9 +306,44 @@
                   <div class="composer-bottom">
                     <label class="attach-button" for="file-input"
                       >＋ Attach files</label
-                    ><input id="file-input" type="file" multiple hidden /><span
-                      id="agent-label"
-                    ></span
+                    ><input id="file-input" type="file" multiple hidden />
+                    <div class="agent-controls" aria-label="Conversation agent">
+                      <div>
+                        <label for="conversation-backend">Agent</label
+                        ><select id="conversation-backend"></select>
+                      </div>
+                      <div class="model-control">
+                        <label for="conversation-model">Model</label
+                        ><select id="conversation-model"></select>
+                      </div>
+                      <div id="custom-model-control" hidden>
+                        <label for="custom-model">Model ID</label
+                        ><input
+                          id="custom-model"
+                          placeholder="Exact model ID"
+                        />
+                      </div>
+                      <div>
+                        <label for="conversation-effort">Reasoning effort</label
+                        ><select id="conversation-effort">
+                          <option value="">Default</option>
+                          <option value="low">Low</option>
+                          <option value="medium">Medium</option>
+                          <option value="high">High</option>
+                          <option value="xhigh">Extra high</option>
+                        </select>
+                      </div>
+                      <button
+                        id="refresh-models"
+                        class="quiet"
+                        type="button"
+                        title="Refresh model choices"
+                      >
+                        ↻ Refresh
+                      </button>
+                      <p id="model-note" class="field-help"></p>
+                    </div>
+                    <span id="agent-label"></span
                     ><button
                       id="stop-agent"
                       type="button"

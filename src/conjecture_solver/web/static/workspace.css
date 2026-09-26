@@ -2477,3 +2477,128 @@ wa-split-panel.project-layout::part(divider):hover {
     transition: none !important;
   }
 }
+
+/* Keep routing choices beside the message they apply to. */
+.composer .agent-controls,
+#home-agent-host .agent-controls {
+  margin: 6px 0;
+  padding: 6px 0;
+  border: 0;
+  background: transparent;
+  gap: 6px;
+  align-items: center;
+}
+.composer .agent-controls > div,
+#home-agent-host .agent-controls > div {
+  min-width: 0;
+  flex: 0 1 auto;
+}
+.composer .agent-controls .model-control,
+#home-agent-host .agent-controls .model-control {
+  flex: 1 1 140px;
+  max-width: 250px;
+}
+.composer .agent-controls label,
+#home-agent-host .agent-controls label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.composer .agent-controls select,
+#home-agent-host .agent-controls select {
+  max-width: 100%;
+  background: #f5f4fa;
+  border-color: transparent;
+  border-radius: 16px;
+  min-height: 30px;
+  padding: 5px 9px;
+}
+.composer .agent-controls .quiet,
+#home-agent-host .agent-controls .quiet {
+  margin-left: 0;
+  padding: 5px;
+}
+.composer .agent-controls .field-help,
+#home-agent-host .agent-controls .field-help {
+  display: none;
+}
+.composer .agent-controls:focus-within .field-help,
+#home-agent-host .agent-controls:focus-within .field-help {
+  display: block;
+}
+#agent-label {
+  display: none;
+}
+@media (min-width: 1001px) {
+  .conversation-column,
+  .project-context {
+    height: calc(100dvh - 154px);
+  }
+}
+@media (max-width: 600px) {
+  .composer .agent-controls > div,
+  #home-agent-host .agent-controls > div {
+    flex: 1 1 100px;
+  }
+}
+.composer-bottom .attach-button {
+  margin-right: auto;
+}
+
+/* One composer toolbar: attachments, agent, model, effort, send. */
+.composer-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.composer-bottom .attach-button {
+  margin-right: 0;
+  flex: 0 0 auto;
+}
+.composer-bottom .agent-controls {
+  flex: 1 1 320px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  gap: 4px;
+}
+.composer-bottom .agent-controls .model-control {
+  flex: 1 1 100px;
+  max-width: 220px;
+}
+.composer-bottom .agent-controls > div {
+  max-width: 160px;
+}
+.composer-bottom .agent-controls .quiet {
+  font-size: 0;
+}
+.composer-bottom .agent-controls .quiet::after {
+  content: "↻";
+  font-size: 15px;
+}
+.composer-bottom .primary,
+.start-bottom > .primary {
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+.start-bottom {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.start-bottom #home-agent-host {
+  flex: 1 1 320px;
+  min-width: 0;
+}
+.start-bottom #home-agent-host .agent-controls {
+  margin: 0;
+  padding: 0;
+}
+@media (max-width: 600px) {
+  .composer-bottom .agent-controls {
+    flex-basis: 200px;
+  }
+}

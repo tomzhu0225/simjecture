@@ -40,6 +40,7 @@ def test_browser_setup_chat_files_and_autonomous_handoff(tmp_path, provider):
             ).first.wait_for()
             assert page.locator("#api-key").input_value() == ""
             page.get_by_role("button", name="New conversation").click()
+            assert page.locator("#quick-start #home-backend").count() == 1
             page.locator("#home-backend").select_option("builtin")
             page.locator("#home-model option[value='fixture-model']").wait_for(state="attached")
             page.locator("#home-model").select_option("fixture-model")
@@ -54,6 +55,16 @@ def test_browser_setup_chat_files_and_autonomous_handoff(tmp_path, provider):
                 "What question should we test, and what time budget should I use?", exact=True
             ).wait_for(timeout=40000)
             playwright.expect(page.locator("#send-message")).to_be_enabled(timeout=40000)
+            assert page.locator(".composer-bottom #conversation-backend").count() == 1
+            route_box = page.locator("#conversation-backend").bounding_box()
+            send_box = page.locator("#send-message").bounding_box()
+            assert (
+                abs(
+                    (route_box["y"] + route_box["height"] / 2)
+                    - (send_box["y"] + send_box["height"] / 2)
+                )
+                < 20
+            )
             page.locator("#chat-input").fill("Calculate and prepare a counterexample study.")
             page.locator("#chat-input").press("Shift+Enter")
             assert page.locator("#chat-input").input_value().endswith("\n")
@@ -169,7 +180,11 @@ print("wave")
                 project["id"],
                 dict(
                     name="Wave evolution",
-                    command="echo evolving; sleep 8; cp wave.svg result.svg; echo complete",
+                    command=(
+                        "echo evolving; while [ ! -f continue ]; do sleep 0.1; done; "
+                        "cp wave.svg result.svg; echo complete"
+                    ),
+                    timeout_seconds=45,
                 ),
             )
             page.locator("#simulation-detail h3").filter(has_text="Wave evolution").wait_for(
@@ -179,6 +194,7 @@ print("wave")
                 "active", "simulations"
             )
             page.get_by_role("button", name="Stop run", exact=True).wait_for()
+            (Path(job["work_directory"]) / "continue").touch()
             page.locator("#simulation-detail .live-console").filter(has_text="complete").wait_for(
                 timeout=20000
             )

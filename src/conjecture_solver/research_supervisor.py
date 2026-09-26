@@ -176,6 +176,19 @@ lab = Client()
             "independently supported repair, completes the study."
         )
         header = f"""You own this investigation. Choose your plan and use your native tools freely.
+Budget remaining now: {max(0, self.state["deadline"] - time.time()):.0f} seconds.
+Use the documented lab API below directly; it is sufficient for ordinary Python studies.
+Do not spend the study budget reverse-engineering the host, reading its implementation,
+or auditing its reviewer. Inspect host source only to diagnose a concrete API error.
+For a short study, start with the smallest discriminating calculation and reserve time
+for independent review. A simple arithmetic claim needs proportionate evidence.
+Write calculation.py in this working directory; lab.run executes that file directly,
+so args contains only its arguments, not 'python' or the script name. Relative output
+paths are inside the experiment workspace. Include relied-upon files in outputs.
+After submitting a run, use lab.status() to inspect its receipt. If still running,
+end the turn; the host will resume you. When finished, inspect the recorded result,
+call lab.review with its experiment ID and your argument, then end the turn.
+The host handles reviewer transport and verdict schemas; do not implement them yourself.
 Your working directory is {self.service.work}. The host supplies current journal state
 with every turn. It automatically records attempts, execution results, source changes
 and chronological relationships. Bounded checkpoint summaries are unreviewed memory.
@@ -367,6 +380,8 @@ Do not edit service records or other studies. Resume from lab.status() and your 
                         directory.mkdir()
                         rc = self.launch(directory, self.prompt())
                         self.event("worker_exit_checkpoint", returncode=rc)
+                        if self.boundary():
+                            break
                         if rc not in [0, 124]:
                             raise provider_failure(directory, rc) or ProviderFailure(returncode=rc)
                         self.observe_turn(directory, before)

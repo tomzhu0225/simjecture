@@ -361,3 +361,17 @@ def test_timing_and_parity_context_is_retained_for_review(tmp_path):
     prompt = sup.oversight_prompt({"snapshot": brief})
     assert '"stage": "exploration"' in prompt
     assert "mark it unknown" in prompt
+
+
+def test_deadline_termination_is_not_a_provider_failure(tmp_path, monkeypatch):
+    _service, supervisor = make(tmp_path)
+
+    def launch(directory, prompt, **kwargs):
+        supervisor.state["deadline"] = time.time() - 1
+        return -15
+
+    monkeypatch.setattr(supervisor, "launch", launch)
+    assert supervisor.run() == 124
+    assert supervisor.state["status"] == "budget_exhausted"
+    assert supervisor.state.get("provider_retry_count", 0) == 0
+    assert "Provider transient failure" not in supervisor.state.get("last_error", "")

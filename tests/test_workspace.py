@@ -571,3 +571,29 @@ def test_flash_inventory_finds_existing_application_variants(tmp_path, monkeypat
     workspace.start_install(dict(name="flash", action="check"))
     assert commands[0][commands[0].index("--descriptor") + 1] == str(configs[1])
     assert "--source" not in commands[0]
+
+
+def test_inventory_context_is_compact_and_excludes_logs(tmp_path, monkeypatch):
+    app = SimjectureWebApplication(runs_root=tmp_path, scan_roots=(tmp_path,))
+    monkeypatch.setattr(
+        app.workspace,
+        "catalogue",
+        lambda: [
+            dict(
+                id="flash",
+                name="FLASH",
+                installed=True,
+                registered=True,
+                readiness="unchecked",
+                log="large private installation log",
+                report={"unrelated": "details"},
+                variants=[dict(label="FLASH build", runtime="/runtime/flash")] * 50,
+            )
+        ],
+    )
+    context = app.workspace.inventory_context()
+    card = json.loads(context)[0]
+    assert card["installed"] and card["installation_count"] == 50
+    assert len(card["installations"]) == 3
+    assert "installation log" not in context
+    assert "unrelated" not in context
