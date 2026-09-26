@@ -17,7 +17,7 @@ body {
   color: var(--ink);
   background: var(--paper);
   font:
-    14px/1.6 -apple-system,
+    18px/1.6 -apple-system,
     BlinkMacSystemFont,
     "Segoe UI",
     sans-serif;
@@ -90,7 +90,7 @@ a {
 }
 .brand small {
   display: block;
-  font: 9px/1.8 sans-serif;
+  font: 12px/1.8 sans-serif;
   letter-spacing: 1.8px;
   color: var(--muted);
 }
@@ -146,7 +146,7 @@ nav {
   color: var(--ink);
 }
 .sidebar-label {
-  font-size: 10px;
+  font-size: 13px;
   letter-spacing: 1.5px;
   color: var(--muted);
   margin: 34px 10px 12px;
@@ -173,24 +173,24 @@ nav {
 }
 .project-list .muted {
   padding: 0 10px;
-  font-size: 12px;
+  font-size: 16px;
 }
 .sidebar-bottom {
   margin-top: auto;
   padding: 25px 10px 0;
-  font-size: 11px;
+  font-size: 14px;
   color: var(--muted);
 }
 .sidebar-bottom a {
   display: flex;
   justify-content: space-between;
-  font-size: 12px;
+  font-size: 16px;
   margin-bottom: 24px;
   color: var(--ink);
 }
 .connection-dot {
   display: block;
-  font-size: 10px;
+  font-size: 13px;
   margin-top: 5px;
 }
 .connection-dot:before,
@@ -226,7 +226,7 @@ main {
   box-shadow: none;
 }
 .topbar #breadcrumb {
-  font-size: 12px;
+  font-size: 16px;
   color: var(--muted);
 }
 #breadcrumb span {
@@ -239,7 +239,7 @@ main {
   align-items: center;
 }
 .local-label {
-  font-size: 9px;
+  font-size: 12px;
   letter-spacing: 1.4px;
   color: var(--muted);
 }
@@ -247,7 +247,7 @@ main {
   padding: 5px 0;
   border: 0;
   background: none;
-  font-size: 12px;
+  font-size: 16px;
   color: var(--ink);
 }
 .quiet span {
@@ -262,7 +262,7 @@ main {
   margin: 10px 0 27px;
 }
 .eyebrow {
-  font-size: 10px;
+  font-size: 13px;
   letter-spacing: 2px;
   font-weight: 600;
   color: var(--accent);
@@ -278,7 +278,7 @@ h1 {
   color: var(--ink);
 }
 .lead {
-  font-size: 14px;
+  font-size: 18px;
   line-height: 1.8;
   color: var(--muted);
   margin: 0;
@@ -297,7 +297,7 @@ h1 {
   box-shadow: 0 4px 18px #243b3605;
 }
 .start-box label {
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 600;
 }
 .start-box textarea {
@@ -306,7 +306,7 @@ h1 {
   box-shadow: none;
   background: none;
   resize: vertical;
-  font-size: 15px;
+  font-size: 18px;
 }
 .start-bottom {
   display: flex;
@@ -317,14 +317,14 @@ h1 {
   padding-top: 14px;
 }
 .start-bottom > span {
-  font-size: 11px;
+  font-size: 14px;
   color: var(--muted);
 }
 .primary,
 .secondary {
   border-radius: 6px;
   padding: 10px 17px;
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 600;
   border: 1px solid transparent;
   white-space: nowrap;
@@ -353,13 +353,13 @@ h1 {
   margin: 33px 0 15px;
 }
 .section-line h2 {
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 600;
   margin: 0;
 }
 .section-line > span {
   color: var(--muted);
-  font-size: 10px;
+  font-size: 13px;
 }
 .examples {
   display: grid;
@@ -382,7 +382,7 @@ h1 {
   transform: translateY(-2px);
 }
 .example-number {
-  font-size: 9px;
+  font-size: 12px;
   letter-spacing: 1px;
   color: var(--muted);
 }
@@ -394,7 +394,7 @@ h1 {
   color: var(--ink);
 }
 .example p {
-  font-size: 12px;
+  font-size: 16px;
   line-height: 1.7;
   color: var(--muted);
   margin: 0 0 14px;
@@ -425,16 +425,16 @@ h1 {
   height: 25px;
   width: 25px;
   text-align: center;
-  font-size: 11px;
+  font-size: 14px;
   line-height: 23px;
   color: var(--accent);
 }
 .setup-strip strong {
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 600;
 }
 .setup-strip small {
-  font-size: 10px;
+  font-size: 13px;
   color: var(--muted);
   margin-top: 3px;
 }
@@ -447,7 +447,7 @@ h1 {
 label {
   display: block;
   margin: 15px 0 6px;
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--ink);
 }
@@ -460,7 +460,7 @@ textarea {
   border-radius: 5px;
   background: white;
   color: var(--ink);
-  font-size: 13px;
+  font-size: 17px;
   min-height: 40px;
 }
 textarea {
@@ -476,7 +476,7 @@ select {
 }
 .field-help {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 14px;
   line-height: 1.7;
 }
 .form-actions {
@@ -500,7 +500,7 @@ select {
   border-top: 1px solid var(--line);
 }
 summary {
-  font-size: 12px;
+  font-size: 16px;
   color: var(--muted);
   cursor: pointer;
 }
@@ -508,11 +508,11 @@ summary {
   padding: 8px 0;
 }
 .setup-notes h3 {
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 600;
 }
 .setup-notes p {
-  font-size: 12px;
+  font-size: 16px;
   color: var(--muted);
   max-width: 340px;
 }
@@ -534,7 +534,7 @@ summary {
 }
 .machine-card small {
   color: var(--muted);
-  font-size: 10px;
+  font-size: 13px;
   margin-top: 5px;
 }
 .cli-chip {
@@ -543,14 +543,14 @@ summary {
   border: 1px solid var(--line);
   padding: 4px 9px;
   border-radius: 5px;
-  font-size: 11px;
+  font-size: 14px;
   margin: 4px;
 }
 .tool-note {
   background: var(--soft);
   padding: 16px 20px;
   border-radius: 7px;
-  font-size: 12px;
+  font-size: 16px;
   color: var(--muted);
   margin-bottom: 24px;
 }
@@ -573,17 +573,17 @@ summary {
   min-width: 0;
 }
 .tool-card h3 {
-  font-size: 16px;
+  font-size: 18px;
   margin: 12px 0 7px;
 }
 .tool-card p {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 16px;
   margin: 0 0 17px;
   min-height: 40px;
 }
 .badge {
-  font-size: 9px;
+  font-size: 12px;
   letter-spacing: 0.6px;
   background: var(--soft);
   color: var(--accent);
@@ -601,7 +601,7 @@ summary {
   margin-top: 13px;
 }
 .tool-card pre {
-  font-size: 10px;
+  font-size: 13px;
   white-space: pre-wrap;
   max-height: 240px;
   overflow: auto;
@@ -620,7 +620,7 @@ summary {
   margin-top: 18px;
 }
 .custom-tool p {
-  font-size: 12px;
+  font-size: 16px;
   color: var(--muted);
 }
 .project-view {
@@ -654,7 +654,7 @@ summary {
   background: none;
   border-radius: 4px;
   padding: 8px 12px;
-  font-size: 11px;
+  font-size: 14px;
   color: var(--muted);
 }
 .mode-switch button.selected {
@@ -671,7 +671,7 @@ summary {
   display: flex;
   align-items: center;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 14px;
   border-bottom: 1px solid var(--line);
   padding: 0 0 14px;
 }
@@ -687,7 +687,7 @@ summary {
 }
 .message-role {
   display: block;
-  font-size: 10px;
+  font-size: 13px;
   text-transform: uppercase;
   letter-spacing: 1px;
   color: var(--muted);
@@ -699,7 +699,7 @@ summary {
   padding: 14px 17px;
 }
 .message-content {
-  font-size: 13px;
+  font-size: 17px;
   line-height: 1.85;
   overflow-wrap: anywhere;
 }
@@ -708,7 +708,7 @@ summary {
 }
 .message-content pre {
   overflow: auto;
-  font-size: 11px;
+  font-size: 14px;
   padding: 12px;
   background: #eef1ea;
   border-radius: 6px;
@@ -717,12 +717,12 @@ summary {
 .message-content h2,
 .message-content h3 {
   font-family: inherit;
-  font-size: 16px;
+  font-size: 18px;
   letter-spacing: normal;
   line-height: 1.4;
 }
 .message details {
-  font-size: 11px;
+  font-size: 14px;
   margin-top: 10px;
 }
 .trace {
@@ -737,11 +737,11 @@ summary {
 }
 .trace pre {
   white-space: pre-wrap;
-  font-size: 10px;
+  font-size: 13px;
 }
 .thinking {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 16px;
 }
 .composer {
   border: 1px solid #cfdcc7;
@@ -761,18 +761,18 @@ summary {
   align-items: center;
 }
 .attach-button {
-  font-size: 11px;
+  font-size: 14px;
   cursor: pointer;
   margin: 0;
   font-weight: normal;
 }
 .composer-bottom #agent-label {
   margin-left: auto;
-  font-size: 10px;
+  font-size: 13px;
   color: var(--muted);
 }
 .composer-note {
-  font-size: 10px;
+  font-size: 13px;
   color: var(--muted);
   text-align: center;
 }
@@ -784,17 +784,17 @@ summary {
   margin-bottom: 27px;
 }
 .context-section h3 {
-  font-size: 12px;
+  font-size: 16px;
   margin: 0 0 13px;
 }
 .context-section h3 span {
-  font-size: 10px;
+  font-size: 13px;
   color: var(--muted);
   font-weight: normal;
   margin-left: 8px;
 }
 .context-section p {
-  font-size: 11px;
+  font-size: 14px;
   color: var(--muted);
   line-height: 1.8;
 }
@@ -802,10 +802,10 @@ summary {
   margin-top: 14px;
 }
 .context-section summary {
-  font-size: 10px;
+  font-size: 13px;
 }
 .context-section code {
-  font-size: 10px;
+  font-size: 13px;
   overflow-wrap: anywhere;
   display: block;
   margin-top: 8px;
@@ -814,7 +814,7 @@ summary {
   display: flex;
   gap: 8px;
   justify-content: space-between;
-  font-size: 11px;
+  font-size: 14px;
   padding: 8px 0;
   border-bottom: 1px solid var(--line);
 }
@@ -832,7 +832,7 @@ summary {
   border: 0;
   background: none;
   color: var(--accent);
-  font-size: 11px;
+  font-size: 14px;
 }
 .brief-form {
   padding: 24px;
@@ -859,7 +859,7 @@ summary {
   padding: 20px;
 }
 .study-card h3 {
-  font-size: 15px;
+  font-size: 18px;
   line-height: 1.6;
   margin: 12px 0;
 }
@@ -867,7 +867,7 @@ summary {
   display: flex;
   justify-content: space-between;
   gap: 10px;
-  font-size: 11px;
+  font-size: 14px;
   color: var(--muted);
 }
 .study-controls {
@@ -878,7 +878,7 @@ summary {
 }
 .study-findings {
   margin-top: 12px;
-  font-size: 12px;
+  font-size: 16px;
 }
 .study-findings details {
   padding-top: 10px;
@@ -891,7 +891,7 @@ summary {
   display: flex;
   gap: 25px;
   margin: 18px 0;
-  font-size: 11px;
+  font-size: 14px;
   color: var(--muted);
 }
 .metrics strong {
@@ -912,7 +912,7 @@ summary {
   padding: 13px 22px;
   box-shadow: 0 8px 30px #0002;
   z-index: 100;
-  font-size: 13px;
+  font-size: 17px;
 }
 .toast.error {
   background: var(--danger);
@@ -921,7 +921,7 @@ summary {
   padding: 12px 44px;
   background: #fff1d9;
   color: #775723;
-  font-size: 12px;
+  font-size: 16px;
 }
 dialog {
   border: 1px solid var(--line);
@@ -941,7 +941,7 @@ dialog h2 {
     serif;
 }
 dialog p {
-  font-size: 12px;
+  font-size: 16px;
   color: var(--muted);
 }
 .sr-only {
@@ -964,7 +964,7 @@ dialog p {
 }
 .welcome-message p {
   color: var(--muted);
-  font-size: 13px;
+  font-size: 17px;
 }
 .muted {
   color: var(--muted);
@@ -1033,7 +1033,7 @@ dialog p {
     gap: 8px;
   }
   .brand small {
-    font-size: 7px;
+    font-size: 11px;
   }
   .sidebar .mark {
     font-size: 31px;
@@ -1080,7 +1080,7 @@ dialog p {
     font-size: 17px;
   }
   .example-number {
-    font-size: 8px;
+    font-size: 12px;
   }
   .start-bottom {
     align-items: flex-start;
@@ -1227,7 +1227,7 @@ dialog p {
     padding: 9px 12px;
   }
   .start-bottom > span {
-    font-size: 10px;
+    font-size: 13px;
   }
   .setup-strip {
     margin-top: 24px;
@@ -1258,17 +1258,17 @@ dialog p {
   border-top: 1px solid var(--line);
 }
 .installed-variants strong {
-  font-size: 11px;
+  font-size: 14px;
   overflow-wrap: anywhere;
 }
 .installed-variants p {
   min-height: 0;
   margin: 6px 0;
-  font-size: 11px;
+  font-size: 14px;
 }
 .installed-variants code {
   display: block;
-  font-size: 10px;
+  font-size: 13px;
   overflow-wrap: anywhere;
   color: var(--muted);
 }
@@ -1284,7 +1284,7 @@ dialog p {
 }
 .agent-controls label {
   margin: 0 0 5px;
-  font-size: 10px;
+  font-size: 13px;
   color: var(--muted);
   font-weight: 500;
 }
@@ -1292,7 +1292,7 @@ dialog p {
 .agent-controls select {
   min-height: 35px;
   padding: 7px 10px;
-  font-size: 12px;
+  font-size: 16px;
 }
 .agent-controls .quiet {
   padding-bottom: 8px;
@@ -1301,7 +1301,7 @@ dialog p {
 .agent-controls > p {
   flex-basis: 100%;
   margin: 0;
-  font-size: 10px;
+  font-size: 13px;
 }
 .inventory-heading {
   margin: 28px 0 15px;
@@ -1316,7 +1316,7 @@ dialog p {
   font-weight: 600;
 }
 .inventory-heading p {
-  font-size: 11px;
+  font-size: 14px;
   color: var(--muted);
   margin: 0;
 }
@@ -1328,7 +1328,7 @@ dialog p {
   color: var(--accent);
   border-radius: 20px;
   padding: 2px 9px;
-  font-size: 11px;
+  font-size: 14px;
   margin-left: 6px;
   vertical-align: middle;
 }
@@ -1338,7 +1338,7 @@ dialog p {
   align-items: center;
   gap: 7px;
   border-radius: 5px;
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 600;
   padding: 5px 9px;
 }
@@ -1371,7 +1371,7 @@ dialog p {
 }
 .study-preparation > p:not(.eyebrow) {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 16px;
   line-height: 1.8;
 }
 .preparation-options {
@@ -1396,7 +1396,7 @@ dialog p {
   display: flex;
   justify-content: space-between;
   gap: 10px;
-  font-size: 13px;
+  font-size: 17px;
 }
 .preparation-option strong span {
   color: var(--accent);
@@ -1404,7 +1404,7 @@ dialog p {
 .preparation-option small {
   display: block;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 14px;
   line-height: 1.7;
   margin-top: 10px;
 }
@@ -1423,12 +1423,12 @@ dialog p {
   margin-bottom: 17px;
 }
 #prepared-details strong {
-  font-size: 11px;
+  font-size: 14px;
   color: var(--muted);
   font-weight: 600;
 }
 #prepared-details p {
-  font-size: 13px;
+  font-size: 17px;
   margin: 4px 0;
   white-space: pre-wrap;
 }
@@ -1470,7 +1470,7 @@ dialog p {
     flex: 1 1 40%;
   }
   .agent-controls .quiet {
-    font-size: 11px;
+    font-size: 14px;
   }
   .study-preparation,
   .prepared-brief {
@@ -1502,7 +1502,7 @@ body {
     BlinkMacSystemFont,
     "Segoe UI",
     sans-serif;
-  font-size: 13px;
+  font-size: 17px;
   letter-spacing: -0.1px;
 }
 .sidebar {
@@ -1522,7 +1522,7 @@ body {
 }
 .brand small {
   color: #8188a1;
-  font-size: 8px;
+  font-size: 12px;
 }
 .mark {
   color: #b4aaff;
@@ -1535,11 +1535,11 @@ body {
   border-radius: 9px;
   box-shadow: 0 3px 12px #0002;
   padding: 11px 14px;
-  font-size: 12px;
+  font-size: 16px;
 }
 .nav-item {
   color: #aeb4c9;
-  font-size: 12px;
+  font-size: 16px;
   padding: 10px 12px;
   gap: 10px;
 }
@@ -1553,13 +1553,13 @@ body {
 }
 .sidebar-label {
   color: #6e7794;
-  font-size: 9px;
+  font-size: 12px;
   letter-spacing: 1.6px;
   margin-top: 28px;
 }
 .project-link {
   color: #9ba4be;
-  font-size: 11px;
+  font-size: 14px;
   padding: 9px 11px;
 }
 .project-link.selected {
@@ -1575,7 +1575,7 @@ body {
 }
 .sidebar-bottom {
   color: #78819b;
-  font-size: 10px;
+  font-size: 13px;
 }
 .connection-dot.connected:before {
   background: #8ba7ff;
@@ -1594,16 +1594,16 @@ main {
 }
 .local-label {
   color: #8b91a3;
-  font-size: 8px;
+  font-size: 12px;
 }
 .topbar #breadcrumb {
-  font-size: 11px;
+  font-size: 14px;
 }
 .topbar #breadcrumb span {
   margin-left: 0;
 }
 .quiet {
-  font-size: 11px;
+  font-size: 14px;
 }
 .view {
   padding: 36px 40px;
@@ -1617,7 +1617,7 @@ main {
   margin-bottom: 28px;
 }
 .eyebrow {
-  font-size: 9px;
+  font-size: 12px;
   letter-spacing: 1.7px;
   color: #8a82b9;
 }
@@ -1639,7 +1639,7 @@ h1,
   letter-spacing: -1.7px;
 }
 .lead {
-  font-size: 13px;
+  font-size: 17px;
   color: #8a8fa0;
   line-height: 1.8;
 }
@@ -1650,12 +1650,12 @@ h1,
   padding: 20px;
 }
 .start-box textarea {
-  font-size: 14px;
+  font-size: 18px;
   min-height: 90px;
 }
 .start-box label {
   color: #656d83;
-  font-size: 11px;
+  font-size: 14px;
 }
 .start-bottom {
   border-color: #f0f0f6;
@@ -1677,16 +1677,16 @@ h1,
 }
 .example h3 {
   font-family: inherit;
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 600;
   margin-top: 19px;
 }
 .example p {
-  font-size: 11px;
+  font-size: 14px;
   color: #8a8fa0;
 }
 .example-number {
-  font-size: 8px;
+  font-size: 12px;
   color: #9297aa;
 }
 .example:hover {
@@ -1717,7 +1717,7 @@ h1,
   max-width: 650px;
 }
 .project-heading .eyebrow {
-  font-size: 8px;
+  font-size: 12px;
   margin-bottom: 5px;
 }
 .mode-switch {
@@ -1725,7 +1725,7 @@ h1,
   border-radius: 8px;
 }
 .mode-switch button {
-  font-size: 10px;
+  font-size: 13px;
   padding: 7px 11px;
 }
 .mode-switch button.selected {
@@ -1745,14 +1745,14 @@ h1,
   border-radius: 6px;
   padding: 6px 9px;
   min-height: 31px;
-  font-size: 11px;
+  font-size: 14px;
 }
 .agent-controls label {
-  font-size: 9px;
+  font-size: 12px;
   color: #8c91a2;
 }
 .agent-controls .field-help {
-  font-size: 9px;
+  font-size: 12px;
   color: #969bab;
 }
 .agent-controls .model-control {
@@ -1808,11 +1808,11 @@ wa-split-panel.project-layout::part(divider):hover {
   gap: 8px;
 }
 .inspector-heading strong {
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 600;
 }
 .inspector-heading > span {
-  font-size: 9px;
+  font-size: 12px;
   color: #9ca0ae;
 }
 #inspector-tabs {
@@ -1821,7 +1821,7 @@ wa-split-panel.project-layout::part(divider):hover {
   --track-width: 1px;
 }
 #inspector-tabs wa-tab {
-  font-size: 11px;
+  font-size: 14px;
 }
 #inspector-tabs wa-tab::part(tab) {
   padding: 10px 12px;
@@ -1836,7 +1836,7 @@ wa-split-panel.project-layout::part(divider):hover {
   min-height: 0;
 }
 .conversation-heading {
-  font-size: 10px;
+  font-size: 13px;
   border-color: #eceef4;
   padding-bottom: 12px;
 }
@@ -1856,7 +1856,7 @@ wa-split-panel.project-layout::part(divider):hover {
   margin-bottom: 26px;
 }
 .message-role {
-  font-size: 8px;
+  font-size: 12px;
   color: #9196a8;
   letter-spacing: 1.1px;
   margin-bottom: 9px;
@@ -1869,7 +1869,7 @@ wa-split-panel.project-layout::part(divider):hover {
   color: #403a62;
 }
 .message-content {
-  font-size: 13px;
+  font-size: 17px;
   line-height: 1.9;
 }
 .message-content p {
@@ -1883,7 +1883,7 @@ wa-split-panel.project-layout::part(divider):hover {
   background: #fff;
 }
 .composer textarea {
-  font-size: 12px;
+  font-size: 16px;
   min-height: 64px;
 }
 .composer-bottom {
@@ -1891,36 +1891,36 @@ wa-split-panel.project-layout::part(divider):hover {
   padding-top: 10px;
 }
 .composer-bottom #agent-label {
-  font-size: 9px;
+  font-size: 12px;
   color: #8d90a4;
 }
 .composer-note {
-  font-size: 9px;
+  font-size: 12px;
   color: #a0a3b2;
   margin: 9px 0 0;
 }
 .attach-button {
-  font-size: 10px;
+  font-size: 13px;
 }
 .context-section {
   margin: 6px 0 24px;
 }
 .context-section h3 {
   color: #4a5269;
-  font-size: 11px;
+  font-size: 14px;
 }
 .file-row {
   border-color: #ececf3;
-  font-size: 10px;
+  font-size: 13px;
 }
 .count-badge {
   background: #eeebfc;
   color: #7d6ec7;
   padding: 1px 6px;
-  font-size: 9px;
+  font-size: 12px;
 }
 .context-section p {
-  font-size: 10px;
+  font-size: 13px;
   color: #8d93a5;
 }
 .context-section code {
@@ -1946,12 +1946,12 @@ wa-split-panel.project-layout::part(divider):hover {
 }
 .link-category {
   grid-column: 1/-1;
-  font-size: 8px;
+  font-size: 12px;
   letter-spacing: 1.1px;
   color: #9786c2;
 }
 .research-link-card strong {
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 500;
   color: #4c446a;
   overflow-wrap: anywhere;
@@ -1959,7 +1959,7 @@ wa-split-panel.project-layout::part(divider):hover {
 .link-open {
   align-self: center;
   white-space: nowrap;
-  font-size: 10px;
+  font-size: 13px;
   color: #8370c3;
 }
 .agent-progress {
@@ -1968,24 +1968,24 @@ wa-split-panel.project-layout::part(divider):hover {
   gap: 9px;
   padding: 11px 0;
   color: #8c84a3;
-  font-size: 11px;
+  font-size: 14px;
 }
 .agent-progress wa-spinner {
-  font-size: 14px;
+  font-size: 18px;
   --indicator-color: #8877d7;
   --track-width: 2px;
 }
 .agent-progress small {
   color: #aaa5b5;
-  font-size: 9px;
+  font-size: 12px;
   margin-left: 2px;
 }
 .trace {
-  font-size: 10px;
+  font-size: 13px;
   border-color: #e3dcef;
 }
 .trace p {
-  font-size: 10px;
+  font-size: 13px;
 }
 .prepared-brief,
 .study-card {
@@ -2013,7 +2013,7 @@ wa-split-panel.project-layout::part(divider):hover {
   background: #f6f3ff;
 }
 .preparation-option strong {
-  font-size: 12px;
+  font-size: 16px;
 }
 .panel {
   border-color: #e5e6ef;
@@ -2054,7 +2054,7 @@ wa-split-panel.project-layout::part(divider):hover {
   border: 1px solid #e9e8f1;
   border-radius: 8px;
   margin-bottom: 7px;
-  font-size: 10px;
+  font-size: 13px;
   color: #747b90;
   background: #fff;
 }
@@ -2064,7 +2064,7 @@ wa-split-panel.project-layout::part(divider):hover {
   text-overflow: ellipsis;
 }
 .simulation-item small {
-  font-size: 8px;
+  font-size: 12px;
   color: #a0a5b2;
 }
 .simulation-item.selected {
@@ -2105,7 +2105,7 @@ wa-split-panel.project-layout::part(divider):hover {
   gap: 8px;
   padding: 8px 10px;
   color: #9da8c4;
-  font-size: 10px;
+  font-size: 13px;
 }
 .sidebar-run > span:nth-child(2) {
   white-space: nowrap;
@@ -2125,13 +2125,13 @@ wa-split-panel.project-layout::part(divider):hover {
   color: #bcb2d8;
 }
 .monitor-empty h3 {
-  font-size: 13px;
+  font-size: 17px;
   font-weight: 500;
   color: #7a7c93;
   margin: 15px 0 9px;
 }
 .monitor-empty p {
-  font-size: 11px;
+  font-size: 14px;
   line-height: 1.8;
 }
 .run-heading {
@@ -2142,14 +2142,14 @@ wa-split-panel.project-layout::part(divider):hover {
   margin: 21px 0 8px;
 }
 .run-heading h3 {
-  font-size: 12px;
+  font-size: 16px;
   line-height: 1.5;
   margin: 0;
   overflow-wrap: anywhere;
   max-width: 70%;
 }
 .run-state {
-  font-size: 8px;
+  font-size: 12px;
   padding: 3px 6px;
   border-radius: 4px;
   background: #edeaf6;
@@ -2168,7 +2168,7 @@ wa-split-panel.project-layout::part(divider):hover {
 .run-meta {
   display: flex;
   justify-content: space-between;
-  font-size: 9px;
+  font-size: 12px;
   color: #a0a4b4;
   margin-bottom: 16px;
 }
@@ -2179,11 +2179,11 @@ wa-split-panel.project-layout::part(divider):hover {
   margin: 12px 0;
 }
 #simulation-detail details summary {
-  font-size: 10px;
+  font-size: 13px;
 }
 #simulation-detail details pre,
 #simulation-detail details code {
-  font-size: 9px;
+  font-size: 12px;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   color: #8a8fa3;
@@ -2192,14 +2192,14 @@ wa-split-panel.project-layout::part(divider):hover {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 8px;
+  font-size: 12px;
   letter-spacing: 1px;
   color: #9c96ad;
   margin: 17px 0 8px;
 }
 .console-heading button {
   letter-spacing: 0;
-  font-size: 9px;
+  font-size: 12px;
   color: #a97c8f;
 }
 .live-console {
@@ -2209,7 +2209,7 @@ wa-split-panel.project-layout::part(divider):hover {
   border-radius: 10px;
   color: #c0c7db;
   font:
-    10px/1.9 ui-monospace,
+    13px/1.9 ui-monospace,
     SFMono-Regular,
     Consolas,
     monospace;
@@ -2222,7 +2222,7 @@ wa-split-panel.project-layout::part(divider):hover {
   scrollbar-color: #44485e transparent;
 }
 .simulation-files h4 {
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 500;
   color: #727a91;
   margin: 20px 0 8px;
@@ -2243,7 +2243,7 @@ wa-split-panel.project-layout::part(divider):hover {
 }
 .chat-figure figcaption {
   padding: 9px 12px;
-  font-size: 10px;
+  font-size: 13px;
   color: #9297a8;
   border-top: 1px solid #eeedf4;
 }
@@ -2256,7 +2256,7 @@ wa-split-panel.project-layout::part(divider):hover {
   padding: 8px 13px;
   border-radius: 9px 9px 0 0;
   font:
-    10px ui-monospace,
+    13px ui-monospace,
     SFMono-Regular,
     Consolas,
     monospace;
@@ -2268,14 +2268,14 @@ wa-split-panel.project-layout::part(divider):hover {
   border-radius: 4px;
   padding: 3px 8px;
   background: none;
-  font-size: 9px;
+  font-size: 12px;
 }
 .message-content pre.highlighted-code {
   background: #1e2130;
   border-radius: 0 0 9px 9px;
   padding: 13px;
   margin-top: 0;
-  font-size: 11px;
+  font-size: 14px;
   line-height: 1.8;
 }
 .highlighted-code code.hljs {
@@ -2297,7 +2297,7 @@ wa-split-panel.project-layout::part(divider):hover {
 .toast {
   background: #343046;
   border-radius: 10px;
-  font-size: 12px;
+  font-size: 16px;
   box-shadow: 0 12px 35px #2720331a;
 }
 @keyframes activity-pulse {
@@ -2435,7 +2435,7 @@ wa-split-panel.project-layout::part(divider):hover {
     font-size: 30px;
   }
   .lead {
-    font-size: 12px;
+    font-size: 16px;
   }
   .project-view {
     padding: 18px 14px;
@@ -2462,7 +2462,7 @@ wa-split-panel.project-layout::part(divider):hover {
     gap: 12px;
   }
   .conversation-heading {
-    font-size: 9px;
+    font-size: 12px;
   }
   .new-project span {
     display: none;
@@ -2578,7 +2578,7 @@ wa-split-panel.project-layout::part(divider):hover {
 }
 .composer-bottom .agent-controls .quiet::after {
   content: "↻";
-  font-size: 15px;
+  font-size: 18px;
 }
 .composer-bottom .primary,
 .start-bottom > .primary {
