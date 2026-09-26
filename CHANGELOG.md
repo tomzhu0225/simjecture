@@ -4,6 +4,9 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## 0.5.1 — 2026-09-26
 
+- Update bundled FLASH and Python experiment skills with guided-study/HDF5 lessons,
+  mode-correct interfaces, pilot interpretation and acceptance-rule checks.
+
 - Preserve classic instrument access across assignment rollover; retain role and branch scope.
 - Require explicit methods-review prerequisites and reject conditional approval; distinguish
   timing/parity pilots from scientific evidence.

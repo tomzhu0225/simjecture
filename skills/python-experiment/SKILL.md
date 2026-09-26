@@ -5,14 +5,30 @@ description: Design and run ordinary sandboxed Python, NumPy, or SciPy calculati
 
 # Ordinary Python experiments
 
-Use `run_python` for contained calculations supported by the ordinary Python
+In classic campaigns, use `run_python` for contained calculations supported by the ordinary Python
 environment. Prefer a short workspace script over a large inline `-c` program
 when the calculation, diagnostics, or audit trail is nontrivial. Make the script
 write a compact JSON summary with the exact scalar fields named by the evidence
 contract; retain supporting tables or figures only when they help audit the
 result.
 
-## Contract boundary
+## Minimal-mode interface
+
+When the study supplies `lab.py`, use its `lab.run`, `lab.commit` and `lab.review`
+interface; the classic action fields below do not apply to that API. Use
+`stage="exploration"` for debugging, not the classic `workbench` spelling. Declare
+source dependencies in `inputs` and fresh result paths in `outputs`; the same path
+cannot be both an input and an output. Follow the generated guide for the study's
+saved scientific policy. Do not invent a named Python capability to satisfy an
+external-instrument requirement.
+
+Before a repaired numerical test, check that all required bounds can hold together.
+The optional `numerical_bounds` commitment field rejects empty intersections of
+explicit inclusive bounds on the same case-qualified metric. Natural-language
+acceptance still needs review. A failed impossible rule is a specification error,
+not a discovered counterexample.
+
+## Classic contract boundary
 
 - Register the evidence contract before running the observation. After an
   insufficient adjudication, a later contract version may prospectively name a

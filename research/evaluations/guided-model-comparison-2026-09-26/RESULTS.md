@@ -50,6 +50,15 @@ observations, not a new benchmark of the repair.
   depends on parsing a one-shot CLI response. Cleanup does not claim success when jobs
   remain or their outcomes are unknown; process identity checks still apply.
 
+## Reusable agent skills
+
+The bundled `flash-mhd` and `python-experiment` skills are updated to version 0.1.1.
+FLASH's [guided-study reference](../../../skills/flash-mhd/references/guided-studies.md)
+collects anchor reuse, actual-file HDF5 reader qualification, timing/parity pilots,
+feasible acceptance rules and receipt-based reporting. Both entrypoints distinguish
+minimal's `exploration` API from classic's `workbench` tools. No campaign-specific
+hypothesis, threshold or FLASH-owned source is embedded in the skills.
+
 ## Still open
 
 - A general solver/raw-data/analysis lineage API is not implemented by this patch.

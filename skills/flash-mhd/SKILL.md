@@ -20,7 +20,8 @@ diagnostics, acceptance thresholds, or conclusion.
   map that workspace to another path only during execution.
 - Treat the exact executable identity, compiled unit selection, runtime
   parameter file, launcher configuration, and analysis source as provenance.
-- Use `stage=workbench` while repairing inputs, checking the interface, or
+- Use `stage="exploration"` with minimal mode's `lab.run`, or `stage="workbench"`
+  with classic campaign tools, while repairing inputs, checking the interface, or
   qualifying a model. A workbench artifact is permanently non-evidentiary.
   Use `stage=evidence` only with a frozen, prospectively commissioned program
   and command set under the harness evidence rules.
@@ -66,6 +67,9 @@ diagnostics, acceptance thresholds, or conclusion.
 
 Read these resources as needed:
 
+- [Guided studies](references/guided-studies.md): reuse a supplied anchor, qualify
+  the actual HDF5 reader, distinguish pilots from evidence, and check decision rules
+  before expensive campaigns.
 - [Execution and output](references/execution-output.md): command construction,
   provenance, output inspection, and failure handling.
 - [Model validity](references/model-validity.md): fluid-model scope and

@@ -152,6 +152,7 @@ This release builds on v0.5.0's minimal default and shared interfaces:
 - Methods/progress oversight, stalled-session recovery and deadline-bounded provider retry.
 - Automatic research journaling, bounded context and evidence-linked comparisons.
 - Guided anchors in native studies and explicit cooperative execution for restricted hosts.
+- Updated FLASH/Python skills with guided-study, HDF5 and decision-rule lessons.
 - Preserved instrument ownership across classic assignment rollover.
 - Explicit unmet review prerequisites; conditional approval cannot open the evidence gate.
 - Numerical checks for contradictory prospective acceptance bounds.
