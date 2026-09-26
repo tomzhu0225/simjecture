@@ -302,6 +302,8 @@ class AgentSupervisor:
                 ]
             else:
                 command += ["--always-approve"]
+                if getattr(self.args, "interactive_activity", False):
+                    command += ["--include-partial-messages"]
         else:
             command = [
                 self.args.executable,

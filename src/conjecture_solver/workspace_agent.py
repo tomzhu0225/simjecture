@@ -40,10 +40,21 @@ def model_for(config, model=None, timeout=90):
     require_runtime()
     from smolagents import OpenAIServerModel
 
+    class ActivityModel(OpenAIServerModel):
+        def generate(self, *args, **kwargs):
+            emit("activity", state="thinking", label="Thinking")
+            response = super().generate(*args, **kwargs)
+            emit(
+                "activity",
+                state="working" if response.tool_calls else "responding",
+                label="Using tools" if response.tool_calls else "Writing a response",
+            )
+            return response
+
     extra = (
         {"reasoning_effort": config["reasoning_effort"]} if config.get("reasoning_effort") else {}
     )
-    return OpenAIServerModel(
+    return ActivityModel(
         model_id=model or config["model"],
         api_base=config["base_url"],
         api_key=config.get("api_key") or "local",
@@ -121,6 +132,36 @@ def agent_tools(root, deadline, project=None, workspace=None):
         if remaining <= 0:
             raise TimeoutError("The turn deadline has expired")
         timeout = min(max(1, timeout_seconds), 600, remaining)
+        emit("activity", state="running_command", label="Running a command")
+        if workspace is not None and project is not None:
+            job = workspace.start_simulation(
+                project,
+                dict(
+                    name=command.splitlines()[0][:70],
+                    command=command,
+                    timeout_seconds=timeout,
+                    kind="command",
+                ),
+            )
+            emit("simulation", id=job["id"], name=job["name"])
+            try:
+                while True:
+                    result = workspace.simulation(project, job["id"])
+                    if result["status"] in {
+                        "succeeded",
+                        "failed",
+                        "cancelled",
+                        "timed_out",
+                        "interrupted",
+                    }:
+                        return (
+                            f"{result['status']} · exit code {result.get('returncode')}\n"
+                            + result["output"]
+                        )
+                    time.sleep(0.2)
+            finally:
+                with contextlib.suppress(ValueError, OSError):
+                    workspace.stop_simulation(project, job["id"])
         environment = os.environ.copy()
         environment["PATH"] = (
             str(Path(sys.executable).parent) + os.pathsep + environment.get("PATH", "")
@@ -170,6 +211,33 @@ def agent_tools(root, deadline, project=None, workspace=None):
 
     tools = [read_file, write_file, terminal, fetch_page]
     if project is not None and workspace is not None:
+
+        @tool
+        def run_simulation(name: str, command: str, timeout_seconds: int = 3600) -> str:
+            """Launch an interactive simulation in a permanent named run folder.
+            Project input files are copied into its workspace; run the command in foreground.
+            Returns immediately. The browser opens a side monitor with live logs and outputs.
+            This is exploration, not independently accepted scientific evidence.
+
+            Args:
+                name: Short human-readable simulation name.
+                command: Shell command to run, using the copied project inputs.
+                timeout_seconds: Maximum run time in seconds.
+            """
+            result = workspace.start_simulation(
+                project, dict(name=name, command=command, timeout_seconds=timeout_seconds)
+            )
+            emit("simulation", id=result["id"], name=name)
+            return json.dumps({k: result[k] for k in ("id", "name", "status", "work_directory")})
+
+        @tool
+        def simulation_status(identifier: str) -> str:
+            """Read live logs, status and result files of an interactive simulation.
+
+            Args:
+                identifier: Simulation ID returned by run_simulation.
+            """
+            return json.dumps(workspace.simulation(project, identifier))
 
         @tool
         def draft_study(
@@ -228,7 +296,7 @@ def agent_tools(root, deadline, project=None, workspace=None):
                 )
             raise ValueError("Unknown tool action")
 
-        tools += [draft_study, research_tools]
+        tools += [draft_study, research_tools, run_simulation, simulation_status]
     return tools
 
 
@@ -280,6 +348,11 @@ def run_agent(
             "For interactive requests return after doing the requested task. For autonomous "
             "research follow the supplied research service guide and hand off for reviews. "
             "Only use draft_study when an autonomous investigation would serve the request. "
+            "For interactive simulations, prefer run_simulation so the user can follow live "
+            "progress while continuing the conversation. Files belong to this conversation; "
+            "never place research results in /tmp. Use Markdown with LaTeX equations and "
+            "fenced, language-labelled code. Link figures using relative project paths, e.g. "
+            "![Description](figure.png), or simulation:<run-id>/figure.png for run outputs. "
             "Do not invent user inputs, results or tool installation success."
         ),
     )
@@ -310,12 +383,14 @@ def run_external(prompt, root, config, turn, workspace=None):
         judge_model=config.get("judge_model", config["model"]),
         executable=config["backend"],
         reasoning_effort=config.get("reasoning_effort") or None,
+        interactive_activity=True,
     )
     supervisor = AgentSupervisor(args)
     (directory / "research").symlink_to(root, target_is_directory=True)
     output = directory / "turn"
     output.mkdir()
     emit("tool", name=config["backend"], arguments={"task": "Working in project files"})
+    emit("activity", state="connecting", label="Connecting to " + config["backend"])
     # Native CLI agents can access the same durable brief and installation bridge.
     prompt += (
         "\nTo prepare an autonomous study, write a JSON object to STUDY_BRIEF.json in "
@@ -335,6 +410,17 @@ def run_external(prompt, root, config, turn, workspace=None):
             "then w.register_tool({'name':'Tool name','path':'/capability/directory'}). "
             "Registered tools appear in the browser catalogue. "
             "Installation is not scientific validation."
+        )
+        prompt += (
+            "\nFor interactive simulations use w.start_simulation("
+            f"{root.parent.name!r}, {{'name':'Run name','command':'python calculation.py',"
+            "'timeout_seconds':3600}). Run commands in foreground; this launches a background "
+            "job with permanent inputs/outputs and a live browser monitor. "
+            f"w.simulation({root.parent.name!r}, 'run-id') reads status, output and files. "
+            "Use this for numerical runs instead of untracked background shell processes. "
+            "Use Markdown, LaTeX equations, language-labelled code fences, and image links "
+            "to saved relative file paths or simulation:<run-id>/figure.png. "
+            "Do not put research results in /tmp."
         )
     rc = supervisor.launch(output, prompt)
     messages = []

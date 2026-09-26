@@ -18,6 +18,8 @@ const state = {
   modelRequests: { home: 0, conversation: 0 },
   homeAgent: null,
   routeMemory: {},
+  routing: false,
+  routeStudy: null,
 };
 const bytes = (n) =>
   n < 1024
@@ -74,9 +76,10 @@ async function action(button, fn) {
   }
 }
 function md(node, text) {
-  window.SimjectureMarkdown.render(node, String(text || ""));
+  window.WorkspaceRich.render(node, String(text || ""), state.project);
 }
 function view(name) {
+  const changed = state.view !== name;
   state.view = name;
   for (const section of document.querySelectorAll(".view"))
     section.hidden = section.id !== `view-${name}`;
@@ -95,13 +98,53 @@ function view(name) {
           }[name],
     ),
   );
-  location.hash =
-    name === "project"
-      ? `project=${encodeURIComponent(state.project.id)}`
-      : name;
+  if (!state.routing)
+    location.hash =
+      name === "project"
+        ? projectHash(state.project.id, { view: state.mode })
+        : name;
   if (name === "tools") refreshTools().catch((e) => toast(e.message, true));
-  if (name === "home" && state.token)
+  if (name === "home" && state.token && changed)
     renderAgent(undefined, "home").catch((e) => toast(e.message, true));
+}
+function projectHash(id, options = {}) {
+  return new URLSearchParams({ project: id, ...options }).toString();
+}
+function projectLink(id, options = {}) {
+  return `#${projectHash(id, options)}`;
+}
+async function followRoute() {
+  if (state.routing) return;
+  const initial = location.hash;
+  state.routing = true;
+  try {
+    const params = new URLSearchParams(location.hash.slice(1)),
+      id = params.get("project");
+    if (id) {
+      if (state.project?.id !== id) await openProject(id);
+      else view("project");
+      mode(params.get("view") === "autonomous" ? "autonomous" : "interactive");
+      state.routeStudy = params.get("study");
+      if (state.mode === "autonomous") {
+        await renderStudies();
+        if (state.routeStudy)
+          document
+            .getElementById(`study-${state.routeStudy}`)
+            ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+      if (params.get("simulation"))
+        await monitor.open(params.get("simulation"));
+    } else
+      view(
+        ["settings", "tools"].includes(location.hash.slice(1))
+          ? location.hash.slice(1)
+          : "home",
+      );
+  } finally {
+    state.routing = false;
+    if (location.hash !== initial)
+      followRoute().catch((e) => toast(e.message, true));
+  }
 }
 function renderSettings() {
   const s = state.settings;
@@ -307,6 +350,8 @@ function mode(name) {
   $("autonomous-panel").hidden = name !== "autonomous";
   $("interactive-mode").classList.toggle("selected", name === "interactive");
   $("autonomous-mode").classList.toggle("selected", name === "autonomous");
+  if (!state.routing && state.view === "project" && state.project)
+    location.hash = projectHash(state.project.id, { view: name });
   if (name === "autonomous") {
     refreshTools()
       .then(() => renderStudies())
@@ -353,13 +398,23 @@ function renderProject(force = false) {
       $("prepared-details").append(section);
     }
   }
-  const revision = JSON.stringify(p.messages);
+  monitor.render(p);
+  const revision = JSON.stringify([
+    p.messages,
+    p.files,
+    (p.simulations || []).map((j) => [j.id, j.status]),
+  ]);
   if (revision !== state.messageRevision) {
     const nearEnd =
       $("messages").scrollHeight -
         $("messages").scrollTop -
         $("messages").clientHeight <
       120;
+    const openSteps = new Set(
+      [...$("messages").querySelectorAll("details[open]")].map(
+        (d) => d.dataset.turn,
+      ),
+    );
     $("messages").replaceChildren();
     if (!p.messages.length) {
       const welcome = el("div", undefined, "welcome-message");
@@ -393,6 +448,8 @@ function renderProject(force = false) {
       );
       if (tools.length) {
         const details = el("details");
+        details.dataset.turn = message.turn;
+        details.open = openSteps.has(message.turn);
         details.append(
           el(
             "summary",
@@ -415,15 +472,42 @@ function renderProject(force = false) {
         details.append(trace);
         article.append(details);
       }
-      if (message.running)
-        article.append(
+      for (const related of message.links || []) {
+        const target =
+          related.kind === "simulation"
+            ? { view: "interactive", simulation: related.simulation }
+            : {
+                view: "autonomous",
+                ...(related.campaign ? { study: related.campaign } : {}),
+              };
+        const card = el("a", undefined, "research-link-card");
+        card.href = projectLink(p.id, target);
+        card.append(
           el(
-            "p",
-            "Working… You can leave this page and return later.",
-            "thinking",
+            "span",
+            related.kind === "simulation"
+              ? "SIMULATION"
+              : "AUTONOMOUS RESEARCH",
+            "link-category",
           ),
+          el("strong", related.label),
+          el("span", "Open ↗", "link-open"),
         );
-      else if (message.status === "interrupted")
+        article.append(card);
+      }
+      if (message.running) {
+        const progress = el("div", undefined, "agent-progress");
+        const spinner = el("wa-spinner");
+        spinner.setAttribute("aria-label", "Agent active");
+        const label = el(
+          "span",
+          message.activity?.label || "Waiting for agent",
+        );
+        const elapsed = el("small");
+        elapsed.dataset.elapsed = message.started_at;
+        progress.append(spinner, label, elapsed);
+        article.append(progress);
+      } else if (message.status === "interrupted")
         article.append(
           el(
             "p",
@@ -579,7 +663,9 @@ async function refreshTools() {
       const install = el(
         "button",
         tool.installed
-          ? "Check readiness"
+          ? tool.registered === false
+            ? "View installations"
+            : "Check readiness"
           : tool.action === "source"
             ? "Connect source"
             : "Install",
@@ -588,7 +674,10 @@ async function refreshTools() {
       install.disabled = tool.state === "working" || state.readonly;
       install.onclick = () =>
         action(install, async () => {
-          if (tool.action === "source" && !tool.installed) {
+          if (tool.installed && tool.registered === false) {
+            const details = card.querySelector(".installed-variants");
+            if (details) details.open = true;
+          } else if (tool.action === "source" && !tool.installed) {
             state.sourceTool = tool.id;
             $("source-title").textContent = `Set up ${tool.name}`;
             $("source-dialog").showModal();
@@ -667,6 +756,7 @@ async function renderStudies() {
   $("study-runs").replaceChildren();
   for (const { study, data, error } of responses.reverse()) {
     const card = el("article", undefined, "study-card");
+    card.id = `study-${study.campaign}`;
     if (error) {
       card.append(el("h3", study.question), el("p", error, "error-text"));
       $("study-runs").append(card);
@@ -811,10 +901,7 @@ async function boot() {
       "form button, #new-project, #check-machine",
     ))
       b.disabled = true;
-  const hash = location.hash.slice(1);
-  if (hash.startsWith("project=")) {
-    await openProject(decodeURIComponent(hash.slice(8)));
-  } else view(["settings", "tools"].includes(hash) ? hash : "home");
+  await followRoute();
 }
 for (const item of document.querySelectorAll("[data-view]"))
   item.onclick = () => view(item.dataset.view);
@@ -1044,6 +1131,37 @@ $("source-form").onsubmit = (e) => {
     await refreshTools();
   });
 };
+const monitor = window.WorkspaceMonitor.create({
+  api,
+  project: () => state.project,
+  link: projectLink,
+  notify: toast,
+  readonly: () => state.readonly,
+});
+window.addEventListener("hashchange", () =>
+  followRoute().catch((e) => toast(e.message, true)),
+);
+setInterval(() => {
+  for (const element of document.querySelectorAll("[data-elapsed]")) {
+    const seconds = Math.max(
+      0,
+      Math.floor(Date.now() / 1000 - Number(element.dataset.elapsed)),
+    );
+    element.textContent =
+      seconds < 60
+        ? `${seconds}s`
+        : `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
+  }
+}, 1000);
+const narrow = matchMedia("(max-width: 1000px)");
+function sizeInspector() {
+  const split = $("research-layout");
+  split.setAttribute("orientation", narrow.matches ? "vertical" : "horizontal");
+  split.disabled = narrow.matches;
+  split.setAttribute("position", narrow.matches ? "40" : "32");
+}
+narrow.addEventListener("change", sizeInspector);
+sizeInspector();
 let polling = false,
   ticks = 0;
 setInterval(async () => {
@@ -1053,7 +1171,7 @@ setInterval(async () => {
     if (state.view === "project" && state.project) {
       const id = state.project.id;
       const project = await api(`project?id=${encodeURIComponent(id)}`);
-      if (state.project.id === id) {
+      if (state.project?.id === id) {
         state.project = project;
         renderProject();
         if (state.mode === "autonomous") await renderStudies();

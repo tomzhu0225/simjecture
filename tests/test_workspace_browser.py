@@ -78,7 +78,10 @@ def test_browser_setup_chat_files_and_autonomous_handoff(tmp_path, provider):
             assert page.locator("#conversation-backend").input_value() == "builtin"
             assert page.locator("#conversation-model").input_value() == "fixture-model"
             assert page.locator("#conversation-effort").input_value() == "high"
-            page.get_by_role("button", name="Autonomous research", exact=True).click()
+            page.get_by_role(
+                "link", name="Review autonomous research proposal", exact=False
+            ).click()
+            assert "view=autonomous" in page.url
             assert "Euler" in page.locator("#brief-question").input_value()
             assert not page.locator("#brief-question").is_visible()
             page.get_by_role("button", name="Draft from this conversation").click()
@@ -106,6 +109,91 @@ def test_browser_setup_chat_files_and_autonomous_handoff(tmp_path, provider):
             page.locator("#first-request").wait_for()
             assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
             page.screenshot(path=str(screenshots / "mobile.png"), full_page=True)
+            assert errors == []
+            browser.close()
+    finally:
+        server.shutdown()
+        server.server_close()
+
+
+def test_rich_chat_and_simulation_side_monitor(tmp_path):
+    playwright = pytest.importorskip("playwright.sync_api")
+    app = SimjectureWebApplication(runs_root=tmp_path, scan_roots=(tmp_path,))
+    project = app.workspace.create({"name": "Wave figures"})
+    directory = app.workspace.directory(project["id"])
+    svg = (
+        '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="160">'
+        '<path d="M0 140L80 40L160 100L300 20" stroke="purple" fill="none"/></svg>'
+    )
+    (directory / "files/wave.svg").write_text(svg)
+    server = create_server(app, port=0)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    errors = []
+    try:
+        with playwright.sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page(viewport={"width": 1440, "height": 1000})
+            page.on("pageerror", lambda error: errors.append(str(error)))
+            page.context.grant_permissions(["clipboard-read", "clipboard-write"])
+            base = f"http://127.0.0.1:{server.server_port}"
+            page.goto(base + "/#project=" + project["id"])
+            page.locator("#chat-input").wait_for()
+            page.wait_for_function("customElements.get('wa-tab-group') !== undefined")
+            rich = r"""Inline $E=mc^2$ and \(\alpha_0\).
+
+\[\frac{\partial u}{\partial t}=D\nabla^2 u\]
+
+```python
+print("wave")
+# ![literal](wave.svg)
+```
+
+![Wave result](wave.svg)
+"""
+            page.evaluate(
+                """([text, project]) => {
+              const target = document.createElement('div'); target.id='rich-test';
+              document.querySelector('#messages').append(target);
+              WorkspaceRich.render(target, text, project);
+            }""",
+                [rich, app.workspace.project(project["id"])],
+            )
+            assert page.locator("#rich-test math").count() == 3
+            assert page.locator("#rich-test .hljs-string").count() > 0
+            assert page.locator("#rich-test code").inner_text().endswith("# ![literal](wave.svg)\n")
+            assert page.locator("#rich-test figure").count() == 1
+            page.wait_for_function("document.querySelector('#rich-test img').naturalWidth > 0")
+            page.get_by_role("button", name="Copy code").click()
+            playwright.expect(page.get_by_role("button", name="Copy code")).to_have_text("Copied")
+            job = app.workspace.start_simulation(
+                project["id"],
+                dict(
+                    name="Wave evolution",
+                    command="echo evolving; sleep 8; cp wave.svg result.svg; echo complete",
+                ),
+            )
+            page.locator("#simulation-detail h3").filter(has_text="Wave evolution").wait_for(
+                timeout=15000
+            )
+            playwright.expect(page.locator("#inspector-tabs")).to_have_attribute(
+                "active", "simulations"
+            )
+            page.get_by_role("button", name="Stop run", exact=True).wait_for()
+            page.locator("#simulation-detail .live-console").filter(has_text="complete").wait_for(
+                timeout=20000
+            )
+            page.locator("#simulation-detail a").filter(has_text="result.svg").wait_for()
+            page.locator("#sidebar-run-list a").first.click()
+            assert "simulation=" in page.url
+            page.reload()
+            page.locator("#simulation-detail h3").filter(has_text="Wave evolution").wait_for()
+            assert "simulation=" + job["id"] in page.url
+            assert page.locator("#interactive-panel").is_visible()
+            page.screenshot(
+                path="artifacts/workspace-preview/simulation-monitor.png", full_page=True
+            )
+            page.set_viewport_size({"width": 390, "height": 844})
+            assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
             assert errors == []
             browser.close()
     finally:

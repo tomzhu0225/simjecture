@@ -5,6 +5,7 @@ from __future__ import annotations
 import hmac
 import ipaddress
 import json
+import mimetypes
 import secrets
 import threading
 import webbrowser
@@ -26,7 +27,7 @@ MAX_REQUEST_BYTES = 64 * 1024
 SECURITY_HEADERS = {
     "Content-Security-Policy": (
         "default-src 'self'; script-src 'self'; style-src 'self'; "
-        "img-src 'self' data: blob:; connect-src 'self'; object-src 'none'; "
+        "img-src 'self' data: blob:; connect-src 'self' data:; object-src 'none'; "
         "base-uri 'none'; frame-ancestors 'none'; form-action 'self'"
     ),
     "Referrer-Policy": "no-referrer",
@@ -52,12 +53,22 @@ STATIC_ASSETS = frozenset(
         "workspace.html",
         "workspace.js",
         "workspace.css",
+        "workspace-components.js",
+        "workspace-rich.js",
+        "workspace-monitor.js",
+        "vendor/highlight-11.11.1.min.js",
+        "vendor/highlight-github-dark.css",
         "vendor/dagre-2.0.0.min.js",
         "vendor/dompurify-3.4.14.min.js",
         "vendor/katex-0.18.4.min.js",
         "vendor/katex-auto-render-0.18.4.min.js",
         "vendor/marked-18.0.10.umd.js",
     }
+)
+STATIC_ASSETS = STATIC_ASSETS | frozenset(
+    p.relative_to(STATIC_ROOT).as_posix()
+    for p in (STATIC_ROOT / "vendor/webawesome-3.14.0").rglob("*")
+    if p.is_file() and p.suffix in {".js", ".css", ".svg"}
 )
 
 
@@ -246,6 +257,12 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
                 )
             elif endpoint == "project":
                 self._json(workspace.project(self._one_value(query, "id")))
+            elif endpoint == "simulation":
+                self._json(
+                    workspace.simulation(
+                        self._one_value(query, "id"), self._one_value(query, "simulation")
+                    )
+                )
             elif endpoint == "tools":
                 self._json(workspace.catalogue())
             elif endpoint == "machine":
@@ -284,18 +301,48 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
                         else "",
                     )
                 )
-            elif endpoint == "file":
+            elif endpoint in {"file", "preview", "simulation-file"}:
                 from ..workspace_agent import contained
 
-                root = workspace.directory(self._one_value(query, "id")) / "files"
+                project = workspace.directory(self._one_value(query, "id"))
+                root = project / "files"
+                if endpoint == "simulation-file":
+                    from .jobs import read, resolve
+
+                    job = resolve(project, self._one_value(query, "simulation"))
+                    root = (
+                        project / "files"
+                        if read(job / "request.json").get("kind") == "command"
+                        else job / "workspace"
+                    )
+                if root.is_symlink() or not root.resolve().is_relative_to(project.resolve()):
+                    raise ValueError("Invalid artifact directory")
                 path = contained(root, self._one_value(query, "path"))
                 if not path.is_file() or path.stat().st_size > MAX_ARTIFACT_BYTES:
                     raise ValueError("File is missing or exceeds 64 MB")
                 body = path.read_bytes()
+                preview = endpoint == "preview" or query.get("preview") == ["1"]
+                if preview and path.suffix.lower() not in {
+                    ".png",
+                    ".jpg",
+                    ".jpeg",
+                    ".gif",
+                    ".webp",
+                    ".svg",
+                }:
+                    raise ValueError("Only saved figures can be previewed inline")
                 self.send_response(200)
-                self.send_header("Content-Type", "application/octet-stream")
                 self.send_header(
-                    "Content-Disposition", "attachment; filename*=UTF-8''" + quote(path.name)
+                    "Content-Type",
+                    (mimetypes.guess_type(path.name)[0] or "application/octet-stream")
+                    if preview
+                    else "application/octet-stream",
+                )
+                self.send_header(
+                    "Content-Disposition",
+                    ("inline" if preview else "attachment")
+                    + "; filename*=UTF-8''"
+                    + quote(path.name),
                 )
                 self.send_header("Content-Length", str(len(body)))
                 for key, value in ARTIFACT_SECURITY_HEADERS.items():
@@ -323,6 +370,12 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
                 result = workspace.select_agent(payload.get("project"), payload)
             elif endpoint == "prepare":
                 result = workspace.prepare(payload.get("project"), payload)
+            elif endpoint == "simulations":
+                result = workspace.start_simulation(payload.get("project"), payload)
+            elif endpoint == "stop-simulation":
+                result = workspace.stop_simulation(
+                    payload.get("project"), payload.get("simulation")
+                )
             elif endpoint == "projects":
                 result = workspace.create(payload)
             elif endpoint == "message":

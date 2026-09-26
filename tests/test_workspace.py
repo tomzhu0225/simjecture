@@ -311,7 +311,7 @@ def test_workspace_http_blocks_mutations_readonly_and_path_escape(tmp_path):
     thread.start()
     try:
         with httpx.Client(base_url=f"http://127.0.0.1:{server.server_port}") as client:
-            assert "What would you like" in client.get("/").text
+            assert "What are we investigating?" in client.get("/").text
             boot = client.get("/api/workspace/bootstrap").json()
             assert client.post("/api/workspace/projects", json={"name": "bad"}).status_code == 403
             response = client.post(

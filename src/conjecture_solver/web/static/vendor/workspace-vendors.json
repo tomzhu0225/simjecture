@@ -1,0 +1,14 @@
+[
+  {
+    "name": "@awesome.me/webawesome",
+    "version": "3.14.0",
+    "integrity": "sha512-m5rTGLK/iOvaVFOkYxRjiBOp8lwrBap5tv+zz1gsqLgAxlfwdvElB7BVGjs+Lf9gDps7bWRPTkG0FwZk40mk2A==",
+    "source": "https://registry.npmjs.org/@awesome.me/webawesome/-/webawesome-3.14.0.tgz"
+  },
+  {
+    "name": "@highlightjs/cdn-assets",
+    "version": "11.11.1",
+    "integrity": "sha512-VEPdHzwelZ12hEX18BHduqxMZGolcUsrbeokHYxOUIm8X2+M7nx5QPtPeQgRxR9XjhdLv4/7DD5BWOlSrJ3k7Q==",
+    "source": "https://registry.npmjs.org/@highlightjs/cdn-assets/-/cdn-assets-11.11.1.tgz"
+  }
+]

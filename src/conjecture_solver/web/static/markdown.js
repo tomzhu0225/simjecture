@@ -33,7 +33,7 @@
     return Boolean(global.marked && global.DOMPurify && global.renderMathInElement);
   }
 
-  const protectedMarkdownPattern = /(```[\s\S]*?```|`[^`\n]*`|\$\$[\s\S]*?\$\$|\$[^$\n]+\$|\\\[[\s\S]*?\\\]|\\\([^\n]*?\\\))/g;
+  const protectedMarkdownPattern = /(```[\s\S]*?```|~~~[\s\S]*?~~~|`[^`\n]*`|\$\$[\s\S]*?\$\$|\$[^$\n]+\$|\\\[[\s\S]*?\\\]|\\\([^\n]*?\\\))/g;
   const subscriptVariablePattern = /\b(?:theta|alpha|beta|gamma|delta|lambda|mu|omega|Omega|[A-Za-z])_[A-Za-z0-9{}]+\b/g;
   const chainedInequalityPattern = /(^|[^\w$])([+-]?\d+(?:\.\d+)?\s*(?:<=|>=|<|>)\s*(?:theta|alpha|beta|gamma|delta|lambda|mu|omega|Omega|[A-Za-z])_[A-Za-z0-9{}]+\s*(?:<=|>=|<|>)\s*[+-]?\d+(?:\.\d+)?(?:\s*(?:rad|deg|s))?)/g;
   const assignmentPattern = /\b((?:theta|alpha|beta|gamma|delta|lambda|mu|omega|Omega|[A-Za-z])_[A-Za-z0-9{}]+\s*=\s*(?:(?:\d+(?:\.\d+)?|pi\b|sqrt\([^()\n]+\)|[A-Za-z](?:_[A-Za-z0-9{}]+)?(?![A-Za-z])|[*/+\-^()]|\s))+)/g;
@@ -117,9 +117,15 @@
     target.classList.add("markdown-body");
     if (options.inline) target.classList.add("markdown-inline");
     else target.classList.remove("markdown-inline");
-    const prepared = prepare(markdown, options);
+    const equations = [];
+    const prepared = prepare(markdown, options).replace(protectedMarkdownPattern, (part) => {
+      if (part.startsWith("`") || part.startsWith("~~~")) return part;
+      const marker = `SIMJECTUREMATHBLOCK${equations.length}TOKEN`;
+      equations.push(part);
+      return marker;
+    });
     if (!dependenciesAvailable()) {
-      target.textContent = prepared;
+      target.textContent = String(markdown ?? "");
       return target;
     }
     try {
@@ -127,6 +133,12 @@
       template.innerHTML = safeHtml(prepared, Boolean(options.inline));
       target.replaceChildren(template.content.cloneNode(true));
       normalizeLinks(target);
+      const walker = document.createTreeWalker(target, NodeFilter.SHOW_TEXT);
+      while (walker.nextNode()) {
+        walker.currentNode.textContent = walker.currentNode.textContent.replace(
+          /SIMJECTUREMATHBLOCK(\d+)TOKEN/g, (_, index) => equations[Number(index)] || "",
+        );
+      }
       global.renderMathInElement(target, mathOptions);
     } catch (_) {
       target.textContent = String(markdown ?? "");

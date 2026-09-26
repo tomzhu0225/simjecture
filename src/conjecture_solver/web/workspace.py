@@ -523,15 +523,19 @@ class Workspace:
         return self.project(identifier)
 
     def project(self, identifier):
+        from .activity import native_activity
+        from .jobs import list_jobs
+
         directory = self.directory(identifier)
         project = load(directory / "project.json")
         messages = []
+        simulations = list_jobs(directory)
         running = False
         for turn in sorted((directory / "turns").iterdir()):
             request = load(turn / "request.json")
             if not request:
                 continue
-            messages.append(dict(role="user", content=request["message"]))
+            messages.append(dict(role="user", content=request["message"], turn=turn.name))
             events = []
             if (turn / "events.jsonl").exists():
                 # Each event is bounded by the agent; avoid unbounded polling payloads.
@@ -545,6 +549,8 @@ class Workspace:
                                 "usage",
                                 "brief",
                                 "result",
+                                "activity",
+                                "simulation",
                             }:
                                 events.append(event)
                         except ValueError:
@@ -552,6 +558,23 @@ class Workspace:
             live = alive(load(turn / "process.json"))
             result = next((e for e in reversed(events) if e["type"] == "result"), None)
             running |= live
+            activity = next((e for e in reversed(events) if e["type"] == "activity"), None)
+            native, commands = native_activity(turn / "cli/turn/response.json", turn.name, live)
+            simulations.extend(commands)
+            activity = native or activity or dict(state="waiting", label="Waiting for agent")
+            links = []
+            if project.get("brief_source_turn") == turn.name:
+                links.append(dict(kind="brief", label="Review autonomous research proposal"))
+            links += [
+                dict(kind="study", label=s["question"], campaign=s["campaign"])
+                for s in project.get("studies", [])
+                if s.get("source_turn") == turn.name
+            ]
+            links += [
+                dict(kind="simulation", label=j["name"], simulation=j["id"])
+                for j in simulations
+                if j.get("source_turn") == turn.name and not j.get("native")
+            ]
             messages.append(
                 dict(
                     role="assistant",
@@ -567,6 +590,9 @@ class Workspace:
                     else "interrupted",
                     turn=turn.name,
                     agent=request.get("agent"),
+                    activity=activity,
+                    started_at=request.get("created_at", int(turn.name) / 1e9),
+                    links=links,
                 )
             )
         files = []
@@ -587,6 +613,7 @@ class Workspace:
             "running": running,
             "files": files,
             "files_directory": str(directory / "files"),
+            "simulations": simulations[-100:],
         }
 
     def write_index(self, directory):
@@ -599,6 +626,7 @@ class Workspace:
             "- [Project files and uploaded inputs](files/)",
             "- [Conversation](CONVERSATION.md)",
             "- [Detailed activity records](turns/)",
+            "- [Interactive simulations and outputs](simulations/)",
             "",
             "## Autonomous studies",
             "",
@@ -643,7 +671,10 @@ class Workspace:
                 )
             turn = directory / "turns" / f"{time.time_ns()}"
             turn.mkdir()
-            put(turn / "request.json", dict(message=message, agent=project["agent"]))
+            put(
+                turn / "request.json",
+                dict(message=message, agent=project["agent"], created_at=time.time()),
+            )
             connection = self.root / "turn-connections" / f"{identifier}-{turn.name}.json"
             private_json(connection, config)
             previous = "\n\n".join(f"{m['role']}: {m['content']}" for m in project["messages"])
@@ -682,6 +713,7 @@ class Workspace:
             put(turn / "process.json", identity)
             record = load(directory / "project.json")
             record["updated_at"] = time.time()
+            record["active_turn"] = turn.name
             put(directory / "project.json", record)
         return {"message": "Agent started", "project": identifier}
 
@@ -718,7 +750,7 @@ class Workspace:
                 )
             if not selected or not selected.get("installed") or not selected.get("path"):
                 raise ValueError(
-                    "The requested instrument is not installed. "
+                    "The requested instrument needs a registered research capability. "
                     "Resolve setup before proposing the study."
                 )
             brief["capability_directory"] = selected["path"]
@@ -730,6 +762,7 @@ class Workspace:
             path = self.directory(identifier) / "project.json"
             project = load(path)
             project.update(brief=brief, updated_at=time.time())
+            project["brief_source_turn"] = project.get("active_turn")
             put(path, project)
         return brief
 
@@ -748,10 +781,11 @@ class Workspace:
 
     def catalogue(self):
         from ..deployment import DeploymentManager, resolve_project_root
-        from .inventory import discover_installed
+        from .inventory import discover_installed, discover_system_warpx
 
         manager = DeploymentManager(resolve_project_root())
         detected = discover_installed(manager.project_root)
+        system = discover_system_warpx(manager.project_root)
         cards = []
         for name, label, description, action in CATALOGUE:
             saved = load(manager.runtime_root / "deployment" / f"{name}.json")
@@ -765,6 +799,7 @@ class Workspace:
                     reverse=True,
                 )
                 descriptor = Path(variants[0]["path"])
+            external = [item for item in system if item["profile"] == name]
             config = load(descriptor) if descriptor else {}
             runtime = (
                 (descriptor.resolve().parent if descriptor else manager.capability_root)
@@ -772,7 +807,9 @@ class Workspace:
             ).resolve()
             executable = runtime / config.get("executable", "missing")
             installed = bool(config) and executable.is_file() and os.access(executable, os.X_OK)
-            latest = result or saved
+            registered = installed
+            installed = installed or bool(external)
+            latest = (result or saved) if registered else {}
             if (
                 latest
                 and descriptor
@@ -787,7 +824,8 @@ class Workspace:
                     description=description,
                     action=action,
                     installed=installed,
-                    variants=variants,
+                    registered=registered,
+                    variants=variants + external,
                     readiness="passed"
                     if installed and latest.get("ready")
                     else "failed"
@@ -801,7 +839,7 @@ class Workspace:
                     if installed
                     else "available",
                     report=latest,
-                    path=str(descriptor) if descriptor and installed else None,
+                    path=str(descriptor) if descriptor and registered else None,
                     log=self.tool_log(name),
                 )
             )
@@ -1021,6 +1059,7 @@ class Workspace:
                 request_key=request_key,
                 path=str(root),
                 created_at=time.time(),
+                source_turn=project.get("brief_source_turn") or project.get("active_turn"),
             )
             saved = load(directory / "project.json")
             saved["studies"].append(record)
@@ -1028,6 +1067,21 @@ class Workspace:
             put(directory / "project.json", saved)
             self.write_index(directory)
         return record
+
+    def start_simulation(self, identifier, payload):
+        from .jobs import launch
+
+        return launch(self.directory(identifier), payload)
+
+    def simulation(self, identifier, simulation):
+        from .jobs import snapshot
+
+        return snapshot(self.directory(identifier), simulation, include_files=True)
+
+    def stop_simulation(self, identifier, simulation):
+        from .jobs import cancel
+
+        return cancel(self.directory(identifier), simulation)
 
 
 def main():

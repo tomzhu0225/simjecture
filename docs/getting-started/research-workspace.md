@@ -102,6 +102,12 @@ artifacts/
       CONVERSATION.md              # Readable saved discussion
       project.json                # Project metadata and study references
       files/                      # Uploads and interactive agent outputs
+      simulations/
+        001-wave-decay/
+          output.log              # Live console, retained after completion
+          workspace/              # Input snapshot and simulation outputs
+          request.json            # Command, deadline, and source conversation turn
+          state.json              # Completion or interruption status
       turns/                      # Detailed conversation/activity records
       studies/
         001-test-inflow-averaging/
@@ -163,3 +169,37 @@ agent SDK, file operations, study launch, numerical execution and reviewer trans
 they are not a benchmark of any provider's scientific reasoning. Existing CLI transport
 is also tested with a deterministic executable. Enter your own connection in the
 browser to evaluate a real research task.
+
+## Linked conversations and interactive simulations
+
+Chat responses can link directly to their proposed autonomous study and simulation
+runs. These links also work after a reload. Opening a simulation keeps you in
+interactive research and opens the resizable side inspector, with live output,
+status, saved figures, and a stop button. Explicit simulation runs keep their own
+input snapshot and outputs; ordinary agent shell commands work in the conversation's
+shared `files/` folder. Closing the browser does not stop detached simulations.
+Native CLI commands appear when their CLI emits public command events; managed runs
+launched through the supplied simulation tool support individual cancellation.
+
+Responses render inline and display LaTeX (`$...$`, `$$...$$`, `\(...\)`, `\[...\]`),
+fenced code with syntax highlighting and Copy, and saved PNG, JPEG, GIF, WebP or SVG
+figures. Agents can embed `![Caption](figure.png)` from conversation files or
+`![Caption](simulation:001-wave-decay/figure.png)` from a run. Figure clicks open
+the saved image. Activity labels distinguish connecting, thinking, using tools and
+writing a response when the provider or CLI reports those states. They do not expose
+private reasoning or invent progress percentages.
+
+WarpX discovery also checks sibling source builds and registered Conda environments,
+using CMake's compute setting to identify CPU and GPU executables. These appear as
+installed even if they do not yet have a registered research capability. Their paths
+are available for interactive work; autonomous evidence workflows still require the
+appropriate capability registration and commissioning.
+
+## Frontend components
+
+The workspace uses locally vendored [Web Awesome](https://webawesome.com/docs/)
+3.14.0 split panels, tabs and activity indicators, plus highlight.js 11.11.1,
+KaTeX, marked and DOMPurify. It does not need a CDN at runtime. Licenses are kept
+alongside the assets. `scripts/vendor_workspace.py` rebuilds the Web Awesome and
+highlight.js bundle from pinned npm archives with SHA-512 integrity checks; the
+selected versions are recorded in `static/vendor/workspace-vendors.json`.
