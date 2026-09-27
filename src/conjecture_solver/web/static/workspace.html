@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Simjecture · Research workspace</title>
+    <script src="/assets/workspace-theme.js"></script>
     <link
       rel="stylesheet"
       href="/assets/vendor/webawesome-3.14.0/styles/themes/default.css"
@@ -62,6 +63,9 @@
         <header class="topbar">
           <div id="breadcrumb">Workspace <span>/</span> Overview</div>
           <div class="topbar-right">
+            <button id="theme-toggle" class="quiet" type="button">
+              Dark mode
+            </button>
             <span class="local-label">LOCAL EXECUTION</span
             ><button id="connection-button" class="quiet">
               Connect a model <span>↗</span>
@@ -581,6 +585,27 @@
       </main>
     </div>
     <div id="toast" class="toast" role="status" hidden></div>
+    <dialog id="delete-dialog" aria-labelledby="delete-title">
+      <form id="delete-form">
+        <h2 id="delete-title">Delete conversation?</h2>
+        <p id="delete-name"></p>
+        <p>
+          This permanently deletes the conversation, uploaded files, simulation
+          outputs, and autonomous studies inside this folder:
+        </p>
+        <code id="delete-path"></code>
+        <p>Shared tools and API connections are kept. This cannot be undone.</p>
+        <p id="delete-error" role="alert" hidden></p>
+        <div class="form-actions">
+          <button id="cancel-delete" type="button" class="secondary">
+            Cancel
+          </button>
+          <button id="confirm-delete" type="submit" class="danger-button">
+            Delete conversation and files
+          </button>
+        </div>
+      </form>
+    </dialog>
     <dialog id="source-dialog">
       <form id="source-form">
         <h2 id="source-title">Connect source</h2>

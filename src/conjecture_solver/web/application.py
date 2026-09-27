@@ -119,6 +119,9 @@ class CampaignRegistry:
         return token
 
     def refresh(self) -> None:
+        self._paths = {token: path for token, path in self._paths.items() if path.is_dir()}
+        if self.initial_token not in self._paths:
+            self.initial_token = None
         for recent in discover_recent_runs(self.scan_roots, limit=MAX_CAMPAIGNS):
             try:
                 self.register(recent.run_directory)

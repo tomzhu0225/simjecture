@@ -52,6 +52,7 @@ STATIC_ASSETS = frozenset(
         "styles.css",
         "workspace.html",
         "workspace.js",
+        "workspace-theme.js",
         "workspace.css",
         "workspace-components.js",
         "workspace-rich.js",
@@ -376,6 +377,8 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
                 result = workspace.stop_simulation(
                     payload.get("project"), payload.get("simulation")
                 )
+            elif endpoint == "delete-project":
+                result = workspace.delete_project(payload.get("project"), payload)
             elif endpoint == "projects":
                 result = workspace.create(payload)
             elif endpoint == "message":

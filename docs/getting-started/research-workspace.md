@@ -203,3 +203,15 @@ KaTeX, marked and DOMPurify. It does not need a CDN at runtime. Licenses are kep
 alongside the assets. `scripts/vendor_workspace.py` rebuilds the Web Awesome and
 highlight.js bundle from pinned npm archives with SHA-512 integrity checks; the
 selected versions are recorded in `static/vendor/workspace-vendors.json`.
+
+## Appearance and conversation deletion
+
+Use **Dark mode / Light mode** in the top bar to switch appearance. The first visit
+follows your system preference; an explicit choice is remembered in this browser.
+
+Each conversation in the sidebar has a delete button. Its confirmation shows the
+folder that will be permanently removed, including uploads, interactive simulations
+and autonomous studies. Cancel leaves everything intact. Active agents, simulations
+or study workers must stop before deletion. Shared software installations and API
+settings remain; private connection snapshots belonging to the deleted conversation
+are removed with it.

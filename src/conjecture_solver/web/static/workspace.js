@@ -324,7 +324,22 @@ function renderProjects() {
     button.classList.toggle("selected", project.id === state.project?.id);
     button.onclick = () =>
       openProject(project.id).catch((e) => toast(e.message, true));
-    $("project-list").append(button);
+    const row = el("div", undefined, "conversation-row");
+    const remove = el("button", "×", "delete-conversation");
+    remove.type = "button";
+    remove.title = "Delete conversation and files";
+    remove.setAttribute("aria-label", `Delete conversation: ${project.name}`);
+    remove.disabled = state.readonly;
+    remove.onclick = () => {
+      $("delete-form").dataset.project = project.id;
+      $("delete-name").textContent = project.name;
+      $("delete-path").textContent = project.path || project.id;
+      $("delete-error").hidden = true;
+      $("delete-dialog").showModal();
+      $("cancel-delete").focus();
+    };
+    row.append(button, remove);
+    $("project-list").append(row);
   }
 }
 async function reloadProjects() {
@@ -1188,3 +1203,44 @@ setInterval(async () => {
   }
 }, 2000);
 boot().catch((error) => toast(error.message, true));
+
+$("cancel-delete").onclick = () => $("delete-dialog").close();
+$("delete-form").onsubmit = async (event) => {
+  event.preventDefault();
+  const id = $("delete-form").dataset.project;
+  const button = $("confirm-delete");
+  button.disabled = true;
+  try {
+    await api("delete-project", { project: id, confirm: id });
+    if (state.project?.id === id) {
+      state.project = null;
+      state.messageRevision = "";
+      $("sidebar-simulations").hidden = true;
+      view("home");
+    }
+    $("delete-dialog").close();
+    await reloadProjects();
+    toast("Conversation and saved folders deleted");
+  } catch (error) {
+    $("delete-error").textContent = error.message;
+    $("delete-error").hidden = false;
+  } finally {
+    button.disabled = state.readonly;
+  }
+};
+function updateThemeToggle() {
+  const dark = document.documentElement.dataset.theme === "dark";
+  $("theme-toggle").textContent = dark ? "☀ Light mode" : "☾ Dark mode";
+  $("theme-toggle").setAttribute(
+    "aria-label",
+    dark ? "Switch to light mode" : "Switch to dark mode",
+  );
+}
+$("theme-toggle").onclick = () => {
+  WorkspaceTheme.set(
+    document.documentElement.dataset.theme === "dark" ? "light" : "dark",
+  );
+  updateThemeToggle();
+};
+window.addEventListener("workspace-theme", updateThemeToggle);
+updateThemeToggle();

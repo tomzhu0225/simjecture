@@ -320,6 +320,13 @@ def test_workspace_http_blocks_mutations_readonly_and_path_escape(tmp_path):
                 json={"name": "bad"},
             )
             assert response.status_code == 403
+            response = client.post(
+                "/api/workspace/delete-project",
+                headers={"X-Simjecture-Token": boot["control_token"]},
+                json={"project": project["id"], "confirm": project["id"]},
+            )
+            assert response.status_code == 403
+            assert app.workspace.directory(project["id"]).exists()
             response = client.get(
                 "/api/workspace/file", params={"id": project["id"], "path": "../../outside.txt"}
             )
@@ -597,3 +604,68 @@ def test_inventory_context_is_compact_and_excludes_logs(tmp_path, monkeypatch):
     assert len(card["installations"]) == 3
     assert "installation log" not in context
     assert "unrelated" not in context
+
+
+def test_delete_conversation_removes_owned_folders_only(tmp_path):
+    w = Workspace(tmp_path / ".workspace")
+    p = w.create({"name": "Disposable conversation"})
+    other = w.create({"name": "Keep conversation"})
+    root = w.directory(p["id"])
+    (root / "files/result.txt").write_text("saved result")
+    (root / "studies/example").mkdir(parents=True)
+    outside = tmp_path / "shared-tool"
+    outside.mkdir()
+    (outside / "keep.txt").write_text("shared")
+    (root / "files/shared-link").symlink_to(outside, target_is_directory=True)
+    credentials = w.root / "turn-connections" / (p["id"] + "-123.json")
+    credentials.parent.mkdir()
+    credentials.write_text("{}")
+    with pytest.raises(ValueError, match="Confirm"):
+        w.delete_project(p["id"], {})
+    assert root.exists()
+    w.delete_project(p["id"], {"confirm": p["id"]})
+    assert not root.exists() and not credentials.exists()
+    assert w.directory(other["id"]).exists() and (outside / "keep.txt").exists()
+    assert len(w.projects()) == 1
+    with pytest.raises(ValueError):
+        w.delete_project("../shared-tool", {"confirm": "../shared-tool"})
+
+
+def test_delete_refuses_live_owner_and_linked_project(tmp_path):
+    import os
+
+    from conjecture_solver.mvp_launch import read_process_identity
+
+    w = Workspace(tmp_path / ".workspace")
+    p = w.create({"name": "Active"})
+    root = w.directory(p["id"])
+    turn = root / "turns/123"
+    turn.mkdir()
+    (turn / "process.json").write_text(read_process_identity(os.getpid()).model_dump_json())
+    with pytest.raises(ValueError, match="Stop active"):
+        w.delete_project(p["id"], {"confirm": p["id"]})
+    linked = w.projects_root / "linked"
+    linked.symlink_to(root, target_is_directory=True)
+    with pytest.raises(ValueError, match="linked"):
+        w.delete_project("linked", {"confirm": "linked"})
+    assert root.exists()
+
+
+def test_delete_refuses_live_autonomous_supervisor(tmp_path):
+    import subprocess
+
+    from conjecture_solver.mvp_launch import read_process_identity, write_supervisor_record
+
+    w = Workspace(tmp_path / ".workspace")
+    p = w.create({"name": "Active study"})
+    study = w.directory(p["id"]) / "studies/001-study"
+    study.mkdir(parents=True)
+    child = subprocess.Popen(["sleep", "30"], cwd=study)
+    try:
+        write_supervisor_record(study, read_process_identity(child.pid, run_directory=study))
+        with pytest.raises(ValueError, match="Stop active autonomous"):
+            w.delete_project(p["id"], {"confirm": p["id"]})
+        assert study.exists()
+    finally:
+        child.terminate()
+        child.wait()

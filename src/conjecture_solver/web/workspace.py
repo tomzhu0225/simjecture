@@ -485,10 +485,44 @@ class Workspace:
 
     def projects(self):
         return sorted(
-            [load(p) for p in self.projects_root.glob("*/project.json")],
+            [load(p) | {"path": str(p.parent)} for p in self.projects_root.glob("*/project.json")],
             key=lambda p: p["updated_at"],
             reverse=True,
         )
+
+    def delete_project(self, identifier, payload):
+        """Delete one confirmed, inactive conversation and its owned files."""
+        if payload.get("confirm") != identifier:
+            raise ValueError("Confirm the conversation before deleting its files")
+        with self.lock():
+            directory = self.directory(identifier)
+            if directory.is_symlink() or directory.resolve().parent != self.projects_root.resolve():
+                raise ValueError("Refusing to delete a linked conversation directory")
+            # Never remove outputs while their verified owners are still writing them.
+            patterns = (
+                "turns/*/process.json",
+                "simulations/*/process.json",
+                "simulations/*/child.json",
+            )
+            for pattern in patterns:
+                if any(alive(load(p)) for p in directory.glob(pattern)):
+                    raise ValueError("Stop active agents, simulations and studies before deleting")
+            for path in directory.glob("studies/*/operator_input/supervisor.json"):
+                record = load(path)
+                record.pop("schema_version", None)
+                if alive(record):
+                    raise ValueError("Stop active autonomous studies before deleting")
+            for path in directory.glob("studies/*/experiments/*.json"):
+                if alive(load(path).get("worker_identity")):
+                    raise ValueError("Wait for active study experiments to stop before deleting")
+            shutil.rmtree(directory)
+            # Frozen per-turn/study connections belong to this conversation only.
+            for folder in ("turn-connections", "connections"):
+                for path in (self.root / folder).glob(f"{identifier}-*.json"):
+                    suffix = path.stem[len(identifier) + 1 :]
+                    if suffix.isdigit():
+                        path.unlink(missing_ok=True)
+        return {"deleted": identifier, "message": "Conversation and its saved folders deleted"}
 
     def create(self, payload):
         name = text(payload, "name", 160) or "Untitled research"
@@ -1100,7 +1134,8 @@ class Workspace:
     def start_simulation(self, identifier, payload):
         from .jobs import launch
 
-        return launch(self.directory(identifier), payload)
+        with self.lock():
+            return launch(self.directory(identifier), payload)
 
     def simulation(self, identifier, simulation):
         from .jobs import snapshot

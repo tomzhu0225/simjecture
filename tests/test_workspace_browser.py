@@ -215,3 +215,48 @@ print("wave")
     finally:
         server.shutdown()
         server.server_close()
+
+
+def test_theme_and_confirmed_conversation_deletion(tmp_path):
+    playwright = pytest.importorskip("playwright.sync_api")
+    app = SimjectureWebApplication(runs_root=tmp_path, scan_roots=(tmp_path,))
+    project = app.workspace.create({"name": "Disposable theme preview"})
+    directory = app.workspace.directory(project["id"])
+    (directory / "files/result.txt").write_text("output")
+    server = create_server(app, port=0)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    try:
+        with playwright.sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page(viewport={"width": 1440, "height": 1000}, color_scheme="light")
+            page.goto(f"http://127.0.0.1:{server.server_port}/#project=" + project["id"])
+            page.locator("#chat-input").wait_for()
+            page.get_by_role("button", name="Switch to dark mode").click()
+            playwright.expect(page.locator("html")).to_have_attribute("data-theme", "dark")
+            page.reload()
+            playwright.expect(page.locator("html")).to_have_attribute("data-theme", "dark")
+            page.locator("#chat-input").wait_for()
+            page.screenshot(path="artifacts/workspace-preview/dark-theme.png", full_page=True)
+            page.get_by_role(
+                "button", name="Delete conversation: Disposable theme preview", exact=True
+            ).click()
+            playwright.expect(page.locator("#delete-path")).to_have_text(str(directory))
+            page.get_by_role("button", name="Cancel", exact=True).click()
+            assert directory.exists()
+            page.get_by_role(
+                "button", name="Delete conversation: Disposable theme preview", exact=True
+            ).click()
+            page.get_by_role("button", name="Delete conversation and files", exact=True).click()
+            page.locator("#delete-dialog").wait_for(state="hidden")
+            assert not directory.exists()
+            playwright.expect(page.locator("#project-list")).to_contain_text(
+                "Your work will appear here"
+            )
+            page.get_by_role("button", name="Switch to light mode").click()
+            playwright.expect(page.locator("html")).to_have_attribute("data-theme", "light")
+            page.set_viewport_size({"width": 390, "height": 844})
+            assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
+            browser.close()
+    finally:
+        server.shutdown()
+        server.server_close()

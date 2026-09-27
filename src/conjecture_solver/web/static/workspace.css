@@ -2602,3 +2602,222 @@ wa-split-panel.project-layout::part(divider):hover {
     flex-basis: 200px;
   }
 }
+.conversation-row {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 3px;
+}
+.conversation-row .project-link {
+  flex: 1;
+  min-width: 0;
+}
+.delete-conversation {
+  background: transparent;
+  border: 0;
+  color: #aeb6cb;
+  font-size: 22px;
+  padding: 4px 7px;
+  border-radius: 6px;
+}
+.delete-conversation:hover {
+  color: #ffd4d4;
+  background: #603b48;
+}
+#delete-dialog {
+  max-width: min(560px, calc(100vw - 32px));
+}
+#delete-path {
+  display: block;
+  overflow-wrap: anywhere;
+  padding: 12px;
+  background: var(--soft);
+  border-radius: 6px;
+}
+#delete-error {
+  color: #b33846;
+}
+.danger-button {
+  background: #b53c4a;
+  border: 1px solid #b53c4a;
+  border-radius: 8px;
+  color: white;
+  padding: 10px 14px;
+}
+#theme-toggle {
+  white-space: nowrap;
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ink: #e4e6f0;
+  --muted: #a4acc1;
+  --paper: #131722;
+  --white: #1c2230;
+  --line: #343d51;
+  --soft: #282942;
+  --accent: #b5a7ff;
+  --accent-dark: #c8bdff;
+  --wa-color-brand-on-quiet: #c1b6ff;
+}
+[data-theme="dark"] body,
+[data-theme="dark"] main {
+  background: var(--paper);
+  color: var(--ink);
+}
+[data-theme="dark"]
+  :is(
+    .topbar,
+    .start-box,
+    .panel,
+    .tool-card,
+    .prepared-brief,
+    .study-card,
+    .composer,
+    dialog,
+    .agent-controls,
+    .chat-figure
+  ) {
+  background: #1c2230;
+  color: var(--ink);
+  border-color: var(--line);
+}
+[data-theme="dark"] :is(input, textarea, select) {
+  background: #171d29;
+  color: var(--ink);
+  border-color: #414b63;
+}
+[data-theme="dark"] :is(input, textarea)::placeholder {
+  color: #9ca6bc;
+}
+[data-theme="dark"]
+  :is(
+    h1,
+    h2,
+    h3,
+    h4,
+    strong,
+    .brand,
+    .message-content,
+    .project-context,
+    .page-intro,
+    .lead,
+    .section-line h2,
+    .conversation-heading
+  ) {
+  color: var(--ink);
+}
+[data-theme="dark"]
+  :is(
+    .field-help,
+    .muted,
+    .composer-note,
+    .message-role,
+    .context-section p,
+    .run-meta,
+    .eyebrow,
+    .sidebar-label,
+    .tool-card p,
+    .file-row small,
+    .inspector-heading span,
+    .connection-dot,
+    .local-label,
+    .section-line > span,
+    .chat-figure figcaption
+  ) {
+  color: #a4acc1;
+}
+[data-theme="dark"] :is(a, .quiet, .file-row) {
+  color: #bfb4ff;
+}
+[data-theme="dark"]
+  :is(
+    .secondary,
+    .example,
+    .preparation-option,
+    .tool-note,
+    .research-link-card,
+    .mode-switch
+  ) {
+  background: #252c3e;
+  color: #ddd7ff;
+  border-color: #414761;
+}
+[data-theme="dark"] .mode-switch button {
+  color: #bac1d3;
+}
+[data-theme="dark"] .mode-switch button.selected {
+  background: #3a3659;
+  color: #f2edff;
+}
+[data-theme="dark"] .message.user .message-content {
+  background: #2b2b47;
+  color: #eeeaff;
+  border-color: #42405e;
+}
+[data-theme="dark"]
+  :is(.composer .agent-controls, #home-agent-host .agent-controls) {
+  background: transparent;
+}
+[data-theme="dark"]
+  :is(
+    .composer .agent-controls select,
+    #home-agent-host .agent-controls select
+  ) {
+  background: #30364a;
+  color: #e4e6f0;
+}
+[data-theme="dark"]
+  :is(
+    .context-section,
+    .composer-bottom,
+    .file-row,
+    .section-line,
+    .conversation-heading,
+    .installed-variants > div
+  ) {
+  border-color: var(--line);
+}
+[data-theme="dark"] .simulation-item {
+  background: #232a3a;
+  color: #ddd8f4;
+  border-color: #414761;
+}
+[data-theme="dark"] .simulation-item.selected {
+  background: #353051;
+}
+[data-theme="dark"] :is(.tool-status.installed, .run-state.succeeded) {
+  background: #1f4037;
+  color: #a6e1c2;
+}
+[data-theme="dark"] :is(.tool-status.not-installed, .run-state) {
+  background: #303749;
+  color: #c4ccdf;
+}
+[data-theme="dark"] .chat-figure {
+  background: #e9ebf1;
+}
+[data-theme="dark"] .chat-figure figcaption {
+  background: #1c2230;
+}
+[data-theme="dark"] .message-content :not(pre) > code {
+  background: #30354b;
+  color: #e2dcff;
+}
+[data-theme="dark"] dialog::backdrop {
+  background: #050710b8;
+}
+[data-theme="dark"] #delete-error {
+  color: #ffb3b9;
+}
+@media (max-width: 600px) {
+  .topbar-right {
+    gap: 5px;
+  }
+  #theme-toggle {
+    font-size: 13px;
+    padding: 5px;
+  }
+}
