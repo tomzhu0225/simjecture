@@ -13,7 +13,9 @@
   "identity_files": [
     "bin/optab",
     "bin/mpi-launcher",
-    "share/build-record.json"
+    "share/build-record.json",
+    "share/preflight/h5/NIST.h5",
+    "share/preflight/1016620_Supplementary_Data/gauntff.dat"
   ],
   "manifest": {
     "description": "Operator-supplied Optab 1.3 MPI/HDF5 opacity-table generator",
@@ -29,7 +31,8 @@
       "checks.process_completed",
       "checks.return_code_zero",
       "checks.hdf5_output_created",
-      "checks.hdf5_output_readable"
+      "checks.hdf5_output_readable",
+      "checks.nist_data_complete"
     ],
     "preflight_resource": "examples/optab_runtime_smoke.py",
     "preflight_result": "optab_capability_smoke.json",

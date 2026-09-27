@@ -42,6 +42,19 @@ blocked by a container host. The GUI remains usable if numerical execution requi
 attention. See [restricted containers](../how-to/restricted-containers.md); isolation
 is never silently weakened.
 
+### Changes in the rc2 development installer
+
+On namespace-restricted hosts, a root invocation prepares a dedicated non-root
+account and uses `/srv/simjecture` by default. The printed launcher handles future
+root invocations by dropping privileges. A visible warning explains cooperative
+PRoot execution. Existing unrelated installations are preserved.
+
+Research tool Install buttons provision their own compatible dependencies using
+managed environments and a shared package cache. System scientific compilers,
+MPI and HDF5 do not have to be installed by hand. FLASH still requires the user's
+licensed source and an application choice; FLASH and CUDA use the built-in agent
+for configuration, build, registration and actual backend readiness checks.
+
 ### SSH servers
 
 The GUI and computations run on the SSH server. The installer prints a forwarding

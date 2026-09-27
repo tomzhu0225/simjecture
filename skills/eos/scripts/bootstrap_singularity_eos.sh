@@ -33,53 +33,9 @@ query_source="$project_root/skills/eos/scripts/singularity_query.cpp"
     exit 2
 }
 
-if [[ -e "$prefix" ]]; then
-    if [[ "$repair" -ne 1 ]]; then
-        echo "runtime already exists at $prefix; pass --repair to replace it" >&2
-        exit 2
-    fi
-    rm -rf "$prefix"
-fi
-
-python=""
-for candidate in python3.12 python3; do
-    if command -v "$candidate" >/dev/null; then
-        python="$(command -v "$candidate")"
-        break
-    fi
-done
-[[ -n "$python" ]] || {
-    echo "missing deployment prerequisite: python3.12 or python3" >&2
-    exit 2
-}
-command -v git >/dev/null || {
-    echo "missing deployment prerequisite: git" >&2
-    exit 2
-}
-command -v g++ >/dev/null || {
-    echo "missing deployment prerequisite: g++" >&2
-    exit 2
-}
-
-mkdir -p "$prefix/bin" "$prefix/share" "$prefix/src"
-"$python" - "$prefix" <<'PY'
-import shutil, sys, venv
-from pathlib import Path
-
-prefix = Path(sys.argv[1])
-base = Path(sys.base_prefix).resolve()
-if base.parent.name == "python" and base.parent.parent.name == "uv":
-    # uv's standalone distribution is relocatable. A venv symlink to the
-    # user's uv directory would be broken inside the capability mount.
-    shutil.copytree(base, prefix, dirs_exist_ok=True, symlinks=True)
-    launcher = prefix / "bin" / "python"
-    launcher.unlink(missing_ok=True)
-    launcher.symlink_to(f"python{sys.version_info.major}.{sys.version_info.minor}")
-else:
-    # System Python's standard library is available through the /usr mount.
-    # This query runtime needs only the standard library, not pip.
-    venv.EnvBuilder(with_pip=False, symlinks=False).create(prefix)
-PY
+runtime_profile="singularity-eos"
+source "$project_root/scripts/runtime_environment.sh"
+mkdir -p "$prefix/bin" "$prefix/share/preflight" "$prefix/src"
 
 if [[ -n "$source_tree" ]]; then
     source_tree="$(cd "$source_tree" && pwd)"
@@ -92,6 +48,7 @@ if [[ -n "$source_tree" ]]; then
 else
     src="$prefix/src/singularity-eos"
     git init "$src"
+    git -C "$src" remote remove origin 2>/dev/null || true
     git -C "$src" remote add origin "$UPSTREAM"
     for attempt in 1 2 3; do
         if git -c http.version=HTTP/1.1 -C "$src" fetch --depth 1 origin "$PINNED_REVISION"; then
@@ -122,7 +79,7 @@ if [[ ! -f "$src/utils/ports-of-call/ports-of-call/portability.hpp" ]]; then
     done
 fi
 
-g++ -std=c++20 -O2 -pthread \
+"${CXX:-g++}" -std=c++20 -O2 -pthread \
     -I "$src" \
     -I "$src/utils/ports-of-call" \
     -I "$src/singularity-utils" \

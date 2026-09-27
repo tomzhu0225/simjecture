@@ -5,25 +5,39 @@ with HDF5 openPMD diagnostics on a Linux or WSL machine.
 
 ## Preconditions
 
-- Pin an audited WarpX source checkout. The tested release is 26.07 at commit
-  `312d507407a1bf6f01ae43fb41b5c3a3700d053c`.
-- Install an NVIDIA driver visible to Linux or WSL, `nvidia-smi`, Miniforge or
-  Mambaforge, `mamba`, Python 3.12 development headers, Git, and build tools.
+- The bootstrap obtains pinned WarpX 26.07 source at commit
+  `312d507407a1bf6f01ae43fb41b5c3a3700d053c` automatically. An optional
+  `--source` checkout must match that revision.
+- Install an NVIDIA driver visible to Linux or WSL, `nvidia-smi`, and Simjecture itself. The bootstrap installs its own
+  compiler, CUDA toolkit, Python headers and I/O dependencies using the verified
+  Micromamba downloader; no system mamba, compiler or root access is required.
 - On WSL, confirm `/dev/dxg` and `/usr/lib/wsl/lib/libcuda.so` exist.
 - Budget roughly 15 GB of RAM, several GB of disk, network access for source
-  dependencies, and 10--30 minutes for compilation.
+  dependencies, and tens of minutes for compilation. Shared or older CPUs can
+  take longer; follow the live command log rather than assuming a fixed deadline.
+
+For an agent-assisted install, launch the command below with `run_command`
+and poll `simulation_status` until completion. Do not run `nohup` or `&` inside
+`terminal`: its descendant processes are cleaned up when that terminal command
+ends. Share public progress during downloads and compilation.
 
 Run the bootstrap from the repository root:
 
 ```bash
-skills/warpx/scripts/bootstrap_local_cuda.sh \
-  --source /absolute/path/to/pinned/warpx-26.07 --jobs 8
+skills/warpx/scripts/bootstrap_local_cuda.sh --jobs 8
 ```
 
 The script detects the GPU compute capability unless `--arch` is supplied. It
 creates project-local environments under `.runtime/`, builds only the 2D CUDA
 Python binding, installs openPMD/HDF5 support, and runs a post-install probe.
-It does not mutate the supplied WarpX source.
+It does not change the source revision. Dependency environments resume after
+interrupted downloads and share a package cache with other installers.
+
+The bootstrap writes a host-specific descriptor in
+`.runtime/warpx-cuda-openpmd/capabilities/`, selecting native NVIDIA device files
+or the WSL GPU/driver mount as appropriate. Register that directory, then run
+the catalogue readiness check. The versioned descriptor remains a template.
+Do not stop after compilation or a host-only import test.
 
 ## Why the bootstrap is strict
 
@@ -39,8 +53,8 @@ It does not mutate the supplied WarpX source.
   project-local non-MPI Linux HDF5 prefix. A Windows Miniconda
   `hdf5-config.cmake` can otherwise be discovered through WSL and incorrectly
   require MPI.
-- Set `CPATH=/usr/include` during compilation. With the conda host compiler,
-  `nvcc` otherwise fails to resolve Ubuntu's multiarch Python `pyconfig.h`.
+- The bootstrap uses its managed Python headers instead of relying on Ubuntu
+  development packages. Keep the conda compiler sysroot separate from system headers.
 - Compile for the actual device architecture. This host's RTX 4000 Ada is
   compute capability 8.9, expressed to CMake as `89`.
 
@@ -85,3 +99,14 @@ WARPX_CUDA_RUNTIME=/absolute/path/to/runtime \
 
 Preserve the build log and package lists with deployment artifacts. Re-run the
 probe after driver, CUDA, Python, WarpX, HDF5, or openPMD changes.
+
+## Complete the browser handoff
+
+After registering the descriptor, call `research_tools(action="check", name=ID)`
+with the returned catalogue ID, then `research_tools(action="list")` until that
+check completes. Verify the actual selected descriptor under the configured
+execution backend. A manual host-shell run or relocated copy is insufficient.
+If readiness is failed, inspect the reported error, repair and rerun this check.
+Do not call it a stale UI error or report success while the card is failed.
+Generic CLI profiles can refer to a different pinned capability; check the
+actual custom installation through its own registered catalogue ID.

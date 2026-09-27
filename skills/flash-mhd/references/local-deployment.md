@@ -20,6 +20,62 @@ reference tree and full compiler diagnostics while writing problem files separat
 Enforce reference permissions at the filesystem, and record source/build provenance.
 This does not authorize publication or redistribution of the acquired source.
 
+## Agent-assisted preparation on a fresh machine
+
+Read this section before inspecting platform-specific site files. The user should
+provide their licensed source and choose the intended application/physics and
+geometry. Choose routine compiler settings yourself; do not ask the user to write
+Makefile.h, environment variables, or a capability descriptor.
+
+Prepare a compatible, non-root toolchain with the application's Python:
+
+```bash
+python scripts/prepare_runtime.py flash /absolute/path/to/.runtime/flash-toolchain
+```
+
+This installs Python, C/Fortran compilers, OpenMPI, parallel HDF5, NumPy and h5py
+from conda-forge into that prefix. Its package cache is shared with other tool
+installations; no apt/sudo or preinstalled compiler is required. Source
+`scripts/runtime_environment.sh` with `project_root`, `prefix`, and
+`runtime_profile=flash` set to activate the compiler toolchain. Use that prefix's
+MPI compiler wrappers and HDF5 headers/libraries in the generated local site
+Makefile; keep compiler, MPI and HDF5 from the same environment. On modern
+GFortran, legacy argument interfaces may require `-fallow-argument-mismatch`.
+
+Copy/extract source into a named build directory. Read the chosen upstream
+application's Config and setup help, prepare its site file, then run setup and
+make. Run long builds with the `run_command` tool (foreground shell command),
+then poll `simulation_status`. Do not use `nohup ... &` inside `terminal`: the
+command monitor cleans up descendant processes when the shell finishes.
+
+A single binary is application-specific. Build and register the requested unit,
+not a claim that all FLASH modules or dimensions are installed. Place the actual
+runtime and its custom descriptor in persistent folders. Verify the descriptor
+with the same execution backend the user will use; a host-shell-only run is not
+a completed installation. Use `research_tools(action="register", ...)` to make
+that capability appear in the catalogue.
+
+## Known installation smoke case: 2D ideal-MHD Orszag–Tang
+
+When the user requests this particular application, start with the upstream
+uniform-grid test instead of reverse-engineering all FLASH setup shortcuts:
+
+```bash
+./setup magnetoHD/OrszagTang -2d -auto -nxb=16 -nyb=16 \
+  +ug +usm +parallelIO +hdf5 -parfile=test_UG_2p_2d.par \
+  -site=YOUR_GENERATED_GNU_MPI_SITE -objdir=object_orszag_tang_2d
+make -C object_orszag_tang_2d -j 4
+```
+
+Generate the local site file using the upstream GNU/Linux site as a template,
+with the managed environment's `mpif90`, `mpicc`, and parallel HDF5 prefix.
+This setup command is a tested starting point; other requested physics or
+dimensions require their own unit selection. For this smoke, use the supplied
+2-rank parameter deck, shorten its end time/step limit, and retain its matching
+`iProcs=2, jProcs=1`. Check the produced HDF5 files using the bundled smoke.
+Keep the source archive pristine, and write site/build adjustments only in the
+build copy. Record the full setup command and compiler flags.
+
 ## Build and verify locally
 
 1. Install a compatible Fortran/C compiler, MPI implementation, and parallel
@@ -71,3 +127,39 @@ Official references:
 - <https://flash.rochester.edu/site/flashcode/>
 - <https://flash.rochester.edu/site/flashcode/user_support.html>
 - <https://flash.rochester.edu/site/flashcode/user_support/rpDoc_4p8.py>
+
+## Complete the browser handoff
+
+After registering the descriptor, call `research_tools(action="check", name=ID)`
+with the returned catalogue ID, then `research_tools(action="list")` until that
+check completes. Verify the actual selected descriptor under the configured
+execution backend. A manual host-shell run or relocated copy is insufficient.
+If readiness is failed, inspect the reported error, repair and rerun this check.
+Do not call it a stale UI error or report success while the card is failed.
+The CLI's generic `doctor flash` refers to its pinned application, so a custom
+application should be checked through its own registered catalogue ID.
+
+## Descriptor path mapping
+
+Capability execution mounts the runtime at `/opt/acs-capabilities/<manifest.name>`.
+Use that path, **not the host installation path**, in `FLASH_EXECUTABLE` and
+`FLASH_PREFLIGHT_PARFILE`. For example, for name `flash-orszag-tang-2d-4.8`:
+
+```json
+{
+  "FLASH_EXECUTABLE": "/opt/acs-capabilities/flash-orszag-tang-2d-4.8/bin/flash4",
+  "FLASH_PREFLIGHT_PARFILE": "/opt/acs-capabilities/flash-orszag-tang-2d-4.8/share/preflight/flash.par"
+}
+```
+
+The descriptor's `runtime_root` is the host path (absolute, or relative to the
+JSON file). The executable is relative to that root. A managed MPI launcher
+inside the runtime must also use the mounted path; a compatible system launcher
+can use `/usr/bin/mpirun`. Use the existing FLASH descriptor as a schema template,
+but replace its application name, runtime and physics description accurately.
+
+FLASH 4.8's generated dependency machinery may create an empty `iso_c_binding.mod`
+that shadows GFortran's intrinsic module. If the compiler reports `Unexpected EOF`
+for that file, remove the generated empty file and its generated make dependency
+rule; do not replace intrinsic modules with empty stubs or modify the pristine
+reference source. Record this build-directory compatibility adjustment.

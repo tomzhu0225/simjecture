@@ -773,3 +773,67 @@ def test_partial_eos_runtime_is_not_listed_as_installed(tmp_path, monkeypatch):
     put(runtime / "share/build-record.json", {"version": "fixture"})
     card = next(c for c in workspace.catalogue() if c["id"] == "singularity-eos")
     assert card["installed"] and card["registered"]
+
+
+def test_long_build_command_is_monitored_after_tool_returns(tmp_path):
+    pytest.importorskip("smolagents")
+    from conjecture_solver.workspace_agent import agent_tools
+
+    workspace = Workspace(tmp_path / ".workspace")
+    project = workspace.create({"name": "Build lifecycle"})
+    root = Path(project["files_directory"])
+    tool = next(
+        t
+        for t in agent_tools(root, float("inf"), project["id"], workspace)
+        if t.name == "run_command"
+    )
+    result = json.loads(
+        tool.forward("Install fixture", "sleep 1; echo installed > installed.txt", 10)
+    )
+    job = wait_for(
+        lambda: (
+            (j if j["status"] == "succeeded" else None)
+            if (j := workspace.simulation(project["id"], result["id"]))
+            else None
+        )
+    )
+    assert job["kind"] == "command"
+    assert (root / "installed.txt").read_text().strip() == "installed"
+    failure = json.loads(tool.forward("Failed build", "false | cat", 10))
+    failed = wait_for(
+        lambda: (
+            (j if j["status"] == "failed" else None)
+            if (j := workspace.simulation(project["id"], failure["id"]))
+            else None
+        )
+    )
+    assert failed["returncode"] != 0
+
+
+def test_registered_tool_can_be_checked_from_catalogue(tmp_path, monkeypatch):
+    import conjecture_solver.web.workspace as module
+
+    workspace = Workspace(tmp_path / ".workspace")
+    descriptors = tmp_path / "capabilities"
+    descriptors.mkdir()
+    runtime = tmp_path / "runtime"
+    runtime.mkdir()
+    executable = runtime / "runner"
+    executable.write_text("#!/bin/sh\nexit 0\n")
+    executable.chmod(0o755)
+    template = json.loads((Path(__file__).parents[1] / "capabilities/m-aneos-1.0.json").read_text())
+    template.update(runtime_root=str(runtime), executable="runner", identity_files=[])
+    (descriptors / "test.json").write_text(json.dumps(template))
+    record = workspace.register_tool({"name": "Custom solver", "path": str(descriptors)})
+    commands = []
+    monkeypatch.setattr(module, "spawn", lambda command, *args: commands.append(command) or {})
+    workspace.start_install({"name": record["id"], "action": "check"})
+    assert commands[0][-2:] == ["--descriptor", str(descriptors)]
+    put(workspace.root / "tools" / record["id"] / "result.json", {"ready": True})
+    card = next(t for t in workspace.catalogue() if t["id"] == record["id"])
+    assert card["readiness"] == "passed"
+    assert card["state"] == "tested"
+    template["environment"]["MANEOS_QUERY"] = str(runtime / "runner")
+    (descriptors / "test.json").write_text(json.dumps(template))
+    with pytest.raises(ValueError, match="host runtime path"):
+        workspace.register_tool({"name": "Wrong mapping", "path": str(descriptors)})

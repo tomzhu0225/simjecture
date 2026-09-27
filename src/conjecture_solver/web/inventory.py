@@ -116,9 +116,11 @@ def discover_system_warpx(project_root, *, home=None):
     return found
 
 
-def discover_installed(project_root):
+def discover_installed(project_root, registered_paths=()):
     root = Path(project_root)
     paths = set((root / "capabilities").glob("*.json"))
+    for directory in registered_paths:
+        paths.update(Path(directory).glob("*.json"))
     # Existing local research installations use these directories. Do not scan
     # transcripts, arbitrary home directories, or reinterpret a binary as a new solver.
     for pattern in (

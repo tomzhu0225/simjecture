@@ -33,58 +33,11 @@ preflight_writer="$project_root/skills/opacity/scripts/write_optab_preflight.py"
     exit 2
 }
 
-if [[ -e "$prefix" ]]; then
-    if [[ "$repair" -ne 1 ]]; then
-        echo "runtime already exists at $prefix; pass --repair to replace it" >&2
-        exit 2
-    fi
-    rm -rf "$prefix"
-fi
-
-python=""
-for candidate in python3.12 python3; do
-    if command -v "$candidate" >/dev/null; then
-        python="$(command -v "$candidate")"
-        break
-    fi
-done
-[[ -n "$python" ]] || {
-    echo "missing deployment prerequisite: python3.12 or python3" >&2
-    exit 2
-}
-command -v git >/dev/null || {
-    echo "missing deployment prerequisite: git" >&2
-    exit 2
-}
-
-h5pfc=""
-for candidate in h5pfc h5pfc.openmpi; do
-    if command -v "$candidate" >/dev/null; then
-        h5pfc="$(command -v "$candidate")"
-        break
-    fi
-done
-[[ -n "$h5pfc" ]] || {
-    echo "missing deployment prerequisite: h5pfc (MPI Fortran HDF5 wrapper)" >&2
-    exit 2
-}
-
-launcher=""
-for candidate in mpirun orterun mpiexec; do
-    if command -v "$candidate" >/dev/null; then
-        launcher="$(command -v "$candidate")"
-        break
-    fi
-done
-[[ -n "$launcher" ]] || {
-    echo "missing deployment prerequisite: mpirun, orterun, or mpiexec" >&2
-    exit 2
-}
-
+runtime_profile="optab"
+source "$project_root/scripts/runtime_environment.sh"
 mkdir -p "$prefix/bin" "$prefix/share/preflight" "$prefix/src"
-"$python" -m venv "$prefix"
-"$prefix/bin/python" -m pip install --upgrade pip setuptools wheel
-"$prefix/bin/python" -m pip install 'numpy>=1.26,<3' 'h5py>=3.10,<4'
+h5pfc="$prefix/bin/h5pfc"
+launcher="$prefix/bin/mpirun"
 
 if [[ -n "$source_tree" ]]; then
     source_tree="$(cd "$source_tree" && pwd)"
@@ -96,11 +49,24 @@ if [[ -n "$source_tree" ]]; then
     src="$source_tree"
 else
     src="$prefix/src/optab"
-    git clone --filter=blob:none "$UPSTREAM" "$src"
-    git -C "$src" checkout --detach "$PINNED_REVISION"
+    git init "$src"
+    git -C "$src" remote remove origin 2>/dev/null || true
+    git -C "$src" remote add origin "$UPSTREAM"
+    for attempt in 1 2 3; do
+        if git -c http.version=HTTP/1.1 -C "$src" fetch --depth 1 origin "$PINNED_REVISION"; then
+            break
+        fi
+        if [[ "$attempt" -eq 3 ]]; then
+            echo "Could not fetch the pinned Optab source after three attempts" >&2
+            exit 1
+        fi
+        echo "Source download interrupted; retrying…" >&2
+        sleep "$attempt"
+    done
+    git -C "$src" checkout --detach FETCH_HEAD
 fi
 
-make -C "$src/src" -j "$jobs" H5PFC=true FC="$h5pfc" HDF5=/usr LDFLAGS=
+make -C "$src/src" -j "$jobs" H5PFC=true FC="$h5pfc" HDF5="$prefix" LDFLAGS=
 if [[ -x "$src/src/a.out" ]]; then
     cp "$src/src/a.out" "$prefix/bin/optab"
 elif [[ -x "$src/src/optab" ]]; then
@@ -111,14 +77,17 @@ else
 fi
 chmod +x "$prefix/bin/optab"
 
-cat >"$prefix/bin/mpi-launcher" <<EOF
+cat >"$prefix/bin/mpi-launcher" <<'EOF'
 #!/bin/sh
-exec $launcher "\$@"
+HERE="$(CDPATH= cd -- "$(dirname "$0")" && pwd)"
+export OPAL_PREFIX="$HERE/.."
+export LD_LIBRARY_PATH="$HERE/../lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+exec "$HERE/mpirun" "$@"
 EOF
 chmod +x "$prefix/bin/mpi-launcher"
 
 gaunt_dir="$src/database/1016620_Supplementary_Data"
-if [[ -f "$gaunt_dir/get_gauntff.sh" ]]; then
+if [[ ! -s "$gaunt_dir/gauntff.dat" && -f "$gaunt_dir/get_gauntff.sh" ]]; then
     (cd "$gaunt_dir" && bash get_gauntff.sh)
 fi
 [[ -f "$gaunt_dir/gauntff.dat" ]] || {
@@ -127,22 +96,10 @@ fi
 }
 
 nist_dir="$src/database/NIST"
-if [[ -f "$nist_dir/get_nist_parallel.py" ]]; then
-    (cd "$nist_dir" && "$prefix/bin/python" get_nist_parallel.py)
-fi
-if [[ ! -d "$src/database/h5" ]]; then
-    mkdir -p "$src/database/h5"
-fi
-if [[ -f "$src/database/src/Makefile" ]]; then
-    make -C "$src/database/src" convert_nist_h5 FC="$h5pfc" LDFLAGS= || true
-fi
-if [[ ! -f "$src/database/h5/NIST.h5" ]]; then
-    if [[ -x "$src/database/src/convert_nist_h5" ]]; then
-        (cd "$src/database/src" && ./convert_nist_h5)
-    elif [[ -x "$src/database/src/a.out" ]]; then
-        (cd "$src/database/src" && ./a.out)
-    fi
-fi
+mkdir -p "$src/database/h5"
+make -C "$src/database/src" convert_nist_h5 FC="$h5pfc" HDF5="$prefix" LDFLAGS=
+"$prefix/bin/python" "$project_root/skills/opacity/scripts/fetch_optab_data.py" "$src"
+
 [[ -f "$src/database/h5/NIST.h5" ]] || {
     echo "failed to build input/h5/NIST.h5; install HDF5 Fortran tools and rerun" >&2
     exit 2

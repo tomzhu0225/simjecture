@@ -33,51 +33,9 @@ query_source="$project_root/skills/eos/scripts/maneos_query.f90"
     exit 2
 }
 
-if [[ -e "$prefix" ]]; then
-    if [[ "$repair" -ne 1 ]]; then
-        echo "runtime already exists at $prefix; pass --repair to replace it" >&2
-        exit 2
-    fi
-    rm -rf "$prefix"
-fi
-
-python=""
-for candidate in python3.12 python3; do
-    if command -v "$candidate" >/dev/null; then
-        python="$(command -v "$candidate")"
-        break
-    fi
-done
-[[ -n "$python" ]] || {
-    echo "missing deployment prerequisite: python3.12 or python3" >&2
-    exit 2
-}
-for command in git gfortran make; do
-    command -v "$command" >/dev/null || {
-        echo "missing deployment prerequisite: $command" >&2
-        exit 2
-    }
-done
-
+runtime_profile="m-aneos"
+source "$project_root/scripts/runtime_environment.sh"
 mkdir -p "$prefix/bin" "$prefix/share/preflight" "$prefix/src"
-"$python" - "$prefix" <<'PY'
-import shutil, sys, venv
-from pathlib import Path
-
-prefix = Path(sys.argv[1])
-base = Path(sys.base_prefix).resolve()
-if base.parent.name == "python" and base.parent.parent.name == "uv":
-    # uv's standalone distribution is relocatable. A venv symlink to the
-    # user's uv directory would be broken inside the capability mount.
-    shutil.copytree(base, prefix, dirs_exist_ok=True, symlinks=True)
-    launcher = prefix / "bin" / "python"
-    launcher.unlink(missing_ok=True)
-    launcher.symlink_to(f"python{sys.version_info.major}.{sys.version_info.minor}")
-else:
-    # System Python's standard library is available through the /usr mount.
-    # This query runtime needs only the standard library, not pip.
-    venv.EnvBuilder(with_pip=False, symlinks=False).create(prefix)
-PY
 
 if [[ -n "$source_tree" ]]; then
     source_tree="$(cd "$source_tree" && pwd)"
@@ -90,6 +48,7 @@ if [[ -n "$source_tree" ]]; then
 else
     src="$prefix/src/m-aneos"
     git init "$src"
+    git -C "$src" remote remove origin 2>/dev/null || true
     git -C "$src" remote add origin "$UPSTREAM"
     for attempt in 1 2 3; do
         if git -c http.version=HTTP/1.1 -C "$src" fetch --depth 1 origin "$PINNED_REVISION"; then
@@ -105,8 +64,8 @@ else
     git -C "$src" checkout --detach FETCH_HEAD
 fi
 
-make -C "$src/src" -j "$jobs"
-gfortran -O2 "$query_source" "$src/src/libaneos.a" -o "$prefix/bin/maneos-query"
+make -C "$src/src" -j "$jobs" FC="${FC:-gfortran}"
+"${FC:-gfortran}" -O2 "$query_source" "$src/src/libaneos.a" -o "$prefix/bin/maneos-query"
 
 if [[ -f "$src/example/ANEOS.INPUT" ]]; then
     cp "$src/example/ANEOS.INPUT" "$prefix/share/preflight/ANEOS.INPUT"

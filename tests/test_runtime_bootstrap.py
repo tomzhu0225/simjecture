@@ -1,5 +1,6 @@
 import hashlib
 import io
+import subprocess
 
 import pytest
 
@@ -36,3 +37,37 @@ def test_micromamba_bad_checksum_never_publishes_executable(tmp_path, monkeypatc
     with pytest.raises(ValueError, match="checksum mismatch"):
         bootstrap.ensure_micromamba(tmp_path)
     assert not list((tmp_path / "bootstrap").iterdir())
+
+
+def test_dependency_installation_retries_and_then_reuses_completed_environment(
+    tmp_path, monkeypatch
+):
+    prefix = tmp_path / "optab"
+    calls = []
+    monkeypatch.setattr(bootstrap, "ensure_micromamba", lambda _: "/verified/micromamba")
+
+    def run(command, **kwargs):
+        calls.append(command)
+        if len(calls) == 1:
+            raise subprocess.CalledProcessError(1, command)
+        (prefix / "conda-meta").mkdir(parents=True)
+        (prefix / "conda-meta/history").write_text("installed")
+
+    monkeypatch.setattr(subprocess, "run", run)
+    with pytest.raises(subprocess.CalledProcessError):
+        bootstrap.prepare_runtime_environment("optab", prefix)
+    bootstrap.prepare_runtime_environment("optab", prefix)
+    bootstrap.prepare_runtime_environment("optab", prefix)
+    assert len(calls) == 2
+    assert "gfortran_linux-64=12" in calls[1]
+    assert any(p.startswith("hdf5=") for p in calls[1])
+
+
+def test_dependency_preparation_preserves_unmanaged_files(tmp_path):
+    prefix = tmp_path / "existing"
+    prefix.mkdir()
+    valuable = prefix / "notes"
+    valuable.write_text("keep")
+    with pytest.raises(ValueError, match="unmanaged"):
+        bootstrap.prepare_runtime_environment("optab", prefix)
+    assert valuable.read_text() == "keep"

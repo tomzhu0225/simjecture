@@ -120,7 +120,10 @@ def model_for(config, model=None, timeout=90):
                 # Plain text may be a progress preamble, not a final answer.
                 # Require an explicit completion handoff without using the
                 # provider's unsupported forced tool_choice setting.
-                if response.content:
+                if response.content and not any(
+                    marker in str(response.content)
+                    for marker in ("<tool_call>", "<tool_result>", "<result>")
+                ):
                     emit("progress", text=str(response.content))
                 if attempt == 3:
                     raise RuntimeError(
@@ -142,6 +145,8 @@ def model_for(config, model=None, timeout=90):
                                 "text": (
                                     "COMPLETION CHECK: Your text does not finish this turn. "
                                     "If it announces work, perform the next tool action now. "
+                                    "Use structured tool calls, never tool-call XML "
+                                    "or invented tool results in text. "
                                     "If answered or blocked, call final_answer with the "
                                     "answer, concrete blocker, or essential question. "
                                     "Never finalize merely to promise work. For greetings "
@@ -280,7 +285,7 @@ def agent_tools(root, deadline, project=None, workspace=None):
                     kind="command",
                 ),
             )
-            emit("simulation", id=job["id"], name=job["name"])
+            emit("command", id=job["id"], name=job["name"])
             try:
                 while True:
                     result = workspace.simulation(project, job["id"])
@@ -360,6 +365,31 @@ def agent_tools(root, deadline, project=None, workspace=None):
             return json.dumps(workspace.progress_update(project, message))
 
         @tool
+        def run_command(name: str, command: str, timeout_seconds: int = 7200) -> str:
+            """Start a long installation/build command with persistent live monitoring.
+            Returns immediately; poll simulation_status with its ID until completion.
+            Run the shell command in foreground, without nohup or a trailing ampersand.
+            The job survives individual agent tool calls and appears in Commands.
+            Shell pipefail is enabled so a failed compiler cannot be hidden by tail/tee.
+
+            Args:
+                name: Short descriptive build or installation name.
+                command: Foreground shell command, run from the conversation files directory.
+                timeout_seconds: Maximum job duration in seconds (up to seven days).
+            """
+            result = workspace.start_simulation(
+                project,
+                dict(
+                    name=name,
+                    command="set -o pipefail\n" + command,
+                    timeout_seconds=timeout_seconds,
+                    kind="command",
+                ),
+            )
+            emit("command", id=result["id"], name=result["name"])
+            return json.dumps({k: result[k] for k in ("id", "name", "status", "work_directory")})
+
+        @tool
         def run_simulation(name: str, command: str, timeout_seconds: int = 3600) -> str:
             """Launch an interactive simulation in a permanent named run folder.
             Project input files are copied into its workspace; run the command in foreground.
@@ -427,6 +457,10 @@ def agent_tools(root, deadline, project=None, workspace=None):
             Install only software requested by the user. Use terminal for custom setup,
             then register its existing capability-directory path here. Registration
             records availability; each study still needs scientific validation.
+            After registering, check the returned catalogue ID. Check/install are
+            asynchronous: use list to follow their state and report. Do not claim
+            readiness until the selected capability check reports passed. A host
+            shell test or a relocated copy does not replace this backend check.
 
             Args:
                 action: list, install, check or register.
@@ -443,7 +477,14 @@ def agent_tools(root, deadline, project=None, workspace=None):
                 )
             raise ValueError("Unknown tool action")
 
-        tools += [draft_study, research_tools, run_simulation, simulation_status, progress_update]
+        tools += [
+            draft_study,
+            research_tools,
+            run_simulation,
+            run_command,
+            simulation_status,
+            progress_update,
+        ]
     return tools
 
 
@@ -511,6 +552,14 @@ def run_agent(
             "never place research results in /tmp. Use Markdown with LaTeX equations and "
             "fenced, language-labelled code. Link figures using relative project paths, e.g. "
             "![Description](figure.png), or simulation:<run-id>/figure.png for run outputs. "
+            "For installation requests, read the relevant skill and deployment guide, inspect "
+            "the required user source/hardware, then attempt the documented setup/build. "
+            "Do not exhaustively scan Simjecture implementation or unrelated solver units "
+            "before attempting a build. Inspect implementation only to diagnose a concrete "
+            "tool/API error. Use the managed prerequisite installer from the guide. "
+            "For installations and builds use run_command, then poll simulation_status until "
+            "completion and verify the result. Never detach a process with nohup or & inside "
+            "terminal: its child processes are cleaned up when that command ends. "
             "During extended work use progress_update for meaningful milestones, blockers "
             "and next actions. Do not expose private reasoning or invent progress percentages. "
             "Do not invent user inputs, results or tool installation success."

@@ -203,7 +203,7 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
         except ValueError as error:
             raise WebApplicationError("invalid content length", status=400) from error
         maximum = (
-            28 * 1024**2
+            96 * 1024**2
             if urlsplit(self.path).path == "/api/workspace/upload"
             else MAX_REQUEST_BYTES
         )

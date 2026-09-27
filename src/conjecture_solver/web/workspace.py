@@ -642,7 +642,9 @@ class Workspace:
             links += [
                 dict(kind="simulation", label=j["name"], simulation=j["id"])
                 for j in simulations
-                if j.get("source_turn") == turn.name and not j.get("native")
+                if j.get("source_turn") == turn.name
+                and j.get("kind") == "simulation"
+                and not j.get("native")
             ]
             messages.append(
                 dict(
@@ -909,8 +911,8 @@ class Workspace:
         if not name or Path(name).name != name:
             raise ValueError("Choose a simple filename")
         data = base64.b64decode(payload.get("data", ""), validate=True)
-        if len(data) > 20 * 1024**2:
-            raise ValueError("Files may be at most 20 MB; copy larger data to the project folder")
+        if len(data) > 64 * 1024**2:
+            raise ValueError("Files may be at most 64 MB; copy larger data to the project folder")
         path = contained(root, name)
         with path.open("xb") as stream:
             stream.write(data)
@@ -921,7 +923,8 @@ class Workspace:
         from .inventory import discover_installed, discover_system_warpx
 
         manager = DeploymentManager(resolve_project_root())
-        detected = discover_installed(manager.project_root)
+        registered_paths = [load(p)["path"] for p in (self.root / "custom-tools").glob("*.json")]
+        detected = discover_installed(manager.project_root, registered_paths)
         system = discover_system_warpx(manager.project_root)
         cards = []
         for name, label, description, action in CATALOGUE:
@@ -929,6 +932,13 @@ class Workspace:
             job = load(self.root / "tools" / name / "job.json")
             result = load(self.root / "tools" / name / "result.json")
             descriptor = next(manager.capability_root.glob(name + "-*.json"), None)
+            if name == "warpx-cuda":
+                generated = (
+                    manager.runtime_root
+                    / "warpx-cuda-openpmd/capabilities/warpx-cuda-openpmd-26.07.json"
+                )
+                if generated.is_file():
+                    descriptor = generated
             variants = [item for item in detected if item["name"].startswith(name + "-")]
             if variants:
                 variants.sort(
@@ -957,6 +967,21 @@ class Workspace:
                 and latest.get("descriptor") != str(descriptor.resolve())
             ):
                 latest = {}
+            if descriptor and not latest.get("ready"):
+                # Agent-installed variants may be checked by their registered
+                # directory ID. Reuse that exact capability's readiness result.
+                for record in (self.root / "custom-tools").glob("*.json"):
+                    custom = load(record)
+                    checked = self.root / "tools" / custom["id"] / "result.json"
+                    report = load(checked)
+                    if (
+                        report.get("ready")
+                        and Path(report.get("descriptor", "")).resolve()
+                        == descriptor.resolve().parent
+                        and checked.stat().st_mtime >= descriptor.stat().st_mtime
+                    ):
+                        latest = report
+                        break
             cards.append(
                 dict(
                     id=name,
@@ -998,19 +1023,37 @@ class Workspace:
                     / config.get("executable", "missing")
                 )
                 installed &= executable.is_file() and os.access(executable, os.X_OK)
+            job = load(self.root / "tools" / tool["id"] / "job.json")
+            result = load(self.root / "tools" / tool["id"] / "result.json")
+            for descriptor in descriptors:
+                config = load(descriptor)
+                runtime = descriptor.resolve().parent / config.get("runtime_root", "missing")
+                installed &= all(
+                    (runtime / name).is_file() for name in config.get("identity_files", [])
+                )
             cards.append(
                 tool
                 | {
-                    "state": "registered",
+                    "state": "working"
+                    if alive(job.get("process"))
+                    else "tested"
+                    if result.get("ready") and installed
+                    else "registered",
                     "action": "custom",
                     "installed": installed,
-                    "readiness": "unchecked",
+                    "readiness": "passed"
+                    if result.get("ready") and installed
+                    else "failed"
+                    if result
+                    else "unchecked",
+                    "report": result,
+                    "log": self.tool_log(tool["id"]),
                 }
             )
         return cards
 
     def tool_log(self, name):
-        if name not in {c[0] for c in CATALOGUE}:
+        if name not in {c[0] for c in CATALOGUE} and not re.fullmatch(r"custom-[0-9a-f]{12}", name):
             return ""
         path = self.root / "tools" / name / "install.log"
         if not path.exists():
@@ -1022,10 +1065,19 @@ class Workspace:
     def start_install(self, payload):
         name = text(payload, "name", 60)
         action = text(payload, "action", 20, "install")
-        if name not in {c[0] for c in CATALOGUE} or action not in {"install", "check"}:
+        custom = (
+            bool(re.fullmatch(r"custom-[0-9a-f]{12}", name))
+            and (self.root / "custom-tools" / f"{name}.json").is_file()
+        )
+        if (name not in {c[0] for c in CATALOGUE} and not custom) or action not in {
+            "install",
+            "check",
+        }:
             raise ValueError("Unknown installer action")
+        if custom and action != "check":
+            raise ValueError("Use agent-assisted setup to modify a custom installation")
         source = text(payload, "source", 4096)
-        if action == "install" and name in {"flash", "warpx-cuda"} and not source:
+        if action == "install" and name == "flash" and not source:
             raise ValueError("Choose an existing source directory for this tool")
         if source and not Path(source).expanduser().is_dir():
             raise ValueError("Source directory does not exist on this machine")
@@ -1069,6 +1121,30 @@ class Workspace:
             raise ValueError(
                 "Provide a name and a directory containing valid capability descriptors"
             )
+        for descriptor in path.glob("*.json"):
+            config = load(descriptor)
+            runtime = (descriptor.parent / config.get("runtime_root", "missing")).resolve()
+            mounted = f"/opt/acs-capabilities/{config['manifest']['name']}"
+            executable = runtime / config["executable"]
+            resolved = executable.resolve()
+            visible_roots = [runtime, Path("/usr"), Path("/lib"), Path("/lib64")]
+            visible_roots += [Path(target) for target in config.get("read_only_mounts", {})]
+            if executable.is_symlink() and not any(
+                resolved.is_relative_to(p) for p in visible_roots
+            ):
+                raise ValueError(
+                    f"The executable links outside the capability runtime to {resolved}. "
+                    "Use a self-contained managed environment; an external uv/venv Python "
+                    "will not be present inside capability execution."
+                )
+            for key, value in config.get("environment", {}).items():
+                if str(runtime) + "/" in value and str(runtime) not in config.get(
+                    "read_only_mounts", {}
+                ):
+                    raise ValueError(
+                        f"{key} refers to the host runtime path. Inside capability execution "
+                        f"use {mounted} instead of {runtime}, then register and check again."
+                    )
         record = dict(
             id="custom-" + uuid.uuid4().hex[:12],
             name=name,
@@ -1260,15 +1336,22 @@ def main():
         if args.action == "check" and args.descriptor:
             from ..mvp_skills import MVPCapabilityInstallation
 
-            installation = MVPCapabilityInstallation.read(args.descriptor)
-            detail = manager._probe_capability(installation)
+            descriptors = (
+                sorted(args.descriptor.glob("*.json"))
+                if args.descriptor.is_dir()
+                else [args.descriptor]
+            )
+            if not descriptors:
+                raise ValueError("The registered capability directory is empty")
+            details = []
+            for descriptor in descriptors:
+                installation = MVPCapabilityInstallation.read(descriptor)
+                details.append(manager._probe_capability(installation))
             result = dict(
                 ready=True,
                 profile=args.tool,
                 descriptor=str(args.descriptor.resolve()),
-                capability=installation.manifest.name,
-                version=installation.manifest.version,
-                detail=detail,
+                detail="; ".join(details),
             )
             put(args.directory / "result.json", result)
             print(json.dumps(result, indent=2), flush=True)

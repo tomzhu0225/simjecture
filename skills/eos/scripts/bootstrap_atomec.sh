@@ -5,7 +5,6 @@ set -euo pipefail
 
 PINNED_REVISION="4b05849a1bcf6a9d682673c360ec2ebfb4eceab3"
 UPSTREAM="https://github.com/atomec-project/atoMEC.git"
-LIBXC_URL="https://gitlab.com/libxc/libxc/-/archive/6.2.2/libxc-6.2.2.tar.gz"
 
 usage() {
     echo "usage: $0 --prefix DIR --project-root DIR [--jobs N] [--source DIR] [--repair]" >&2
@@ -29,35 +28,9 @@ done
 [[ -n "$prefix" && -n "$project_root" ]] || { usage; exit 2; }
 prefix="$(mkdir -p "$(dirname "$prefix")" && cd "$(dirname "$prefix")" && pwd)/$(basename "$prefix")"
 
-if [[ -e "$prefix" ]]; then
-    if [[ "$repair" -ne 1 ]]; then
-        echo "runtime already exists at $prefix; pass --repair to replace it" >&2
-        exit 2
-    fi
-    rm -rf "$prefix"
-fi
-
-python=""
-for candidate in python3.12 python3; do
-    if command -v "$candidate" >/dev/null; then
-        python="$(command -v "$candidate")"
-        break
-    fi
-done
-[[ -n "$python" ]] || {
-    echo "missing deployment prerequisite: python3.12 or python3" >&2
-    exit 2
-}
-command -v git >/dev/null || {
-    echo "missing deployment prerequisite: git" >&2
-    exit 2
-}
-
-mkdir -p "$prefix"
-"$python" -m venv "$prefix"
-"$prefix/bin/python" -m pip install --upgrade pip setuptools wheel
-"$prefix/bin/python" -m pip install "$LIBXC_URL"
-"$prefix/bin/python" -m pip install numpy==1.26.1 scipy==1.11.3 mendeleev==0.9.0
+runtime_profile="atomec"
+source "$project_root/scripts/runtime_environment.sh"
+mkdir -p "$prefix/bin" "$prefix/share/preflight" "$prefix/src"
 
 if [[ -n "$source_tree" ]]; then
     source_tree="$(cd "$source_tree" && pwd)"
@@ -66,9 +39,9 @@ if [[ -n "$source_tree" ]]; then
         echo "atoMEC source revision $observed does not match $PINNED_REVISION" >&2
         exit 2
     fi
-    "$prefix/bin/python" -m pip install "$source_tree"
+    "$prefix/bin/python" -m pip install "mendeleev==0.9.0" "numpy<2" "scipy<1.12" "pandas<2" "$source_tree"
 else
-    "$prefix/bin/python" -m pip install \
+    "$prefix/bin/python" -m pip install "mendeleev==0.9.0" "numpy<2" "scipy<1.12" "pandas<2" \
         "git+${UPSTREAM}@${PINNED_REVISION}"
 fi
 

@@ -71,30 +71,9 @@ fi
     exit 2
 }
 
-if [[ -e "$prefix" ]]; then
-    if [[ "$repair" -ne 1 ]]; then
-        echo "runtime already exists at $prefix; pass --repair to replace it" >&2
-        exit 2
-    fi
-    rm -rf "$prefix"
-fi
-
-python=""
-for candidate in python3.12 python3; do
-    if command -v "$candidate" >/dev/null; then
-        python="$(command -v "$candidate")"
-        break
-    fi
-done
-[[ -n "$python" ]] || {
-    echo "missing python3.12 or python3" >&2
-    exit 2
-}
-
+runtime_profile="flash"
+source "$project_root/scripts/runtime_environment.sh"
 mkdir -p "$prefix/bin" "$prefix/share/preflight"
-"$python" -m venv "$prefix"
-"$prefix/bin/python" -m pip install --upgrade pip setuptools wheel
-"$prefix/bin/python" -m pip install 'numpy>=1.26,<3' 'h5py>=3.10,<4'
 
 (
     cd "$source_tree"

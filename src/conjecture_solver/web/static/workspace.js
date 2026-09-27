@@ -565,7 +565,7 @@ function renderProject(force = false) {
         );
         article.append(card);
       }
-      if (message.progress)
+      if (message.running && message.progress)
         article.append(el("p", message.progress, "agent-update"));
       if (message.running) {
         const progress = el("div", undefined, "agent-progress");
@@ -879,7 +879,17 @@ async function refreshTools() {
           });
         actions.append(check);
       }
-    } else card.append(el("code", tool.path));
+    } else {
+      card.append(el("code", tool.path));
+      const check = el("button", "Check readiness", "secondary");
+      check.disabled = tool.state === "working" || state.readonly;
+      check.onclick = () =>
+        action(check, async () => {
+          await api("install", { name: tool.id, action: "check" });
+          await refreshTools();
+        });
+      actions.append(check);
+    }
     card.append(actions);
     if (tool.log || Object.keys(tool.report || {}).length) {
       const details = el("details");
@@ -1339,9 +1349,9 @@ $("start-prepared-study").onclick = () =>
 $("file-input").onchange = async () => {
   for (const file of $("file-input").files) {
     try {
-      if (file.size > 20 * 1024 ** 2)
+      if (file.size > 64 * 1024 ** 2)
         throw Error(
-          `${file.name} exceeds 20 MB. Copy it to the project folder directly.`,
+          `${file.name} exceeds 64 MB. Copy it to the project folder directly.`,
         );
       const data = await new Promise((resolve, reject) => {
         const reader = new FileReader();
