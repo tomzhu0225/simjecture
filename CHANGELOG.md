@@ -4,6 +4,8 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased — next preview
 
+- Replace source-path dialogs for FLASH and WarpX CUDA with **Install with agent**,
+  opening prepared setup conversations that reference the bundled deployment skills.
 - Prefer Bubblewrap, with a checked PRoot cooperative fallback for namespace-restricted
   hosts running under a dedicated non-root account. Show a persistent GUI warning
   about the lack of filesystem/network security isolation; retain explicit backend

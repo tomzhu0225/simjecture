@@ -29,8 +29,8 @@ from ..workspace_agent import contained, model_for, public_error
 
 CATALOGUE = [
     ("warpx-cpu", "WarpX · CPU", "Particle-in-cell plasma simulations", "install"),
-    ("warpx-cuda", "WarpX · CUDA", "GPU plasma simulations · requires a source checkout", "source"),
-    ("flash", "FLASH", "Hydrodynamics and MHD · connect your supplied source", "source"),
+    ("warpx-cuda", "WarpX · CUDA", "GPU plasma simulations · agent-assisted setup", "agent"),
+    ("flash", "FLASH", "Hydrodynamics and MHD · agent-assisted setup", "agent"),
     ("atomec", "atoMEC", "Average-atom equation of state", "install"),
     ("singularity-eos", "Singularity-EOS", "Equation-of-state library", "install"),
     ("m-aneos", "M-ANEOS", "Multiphase equation of state", "install"),

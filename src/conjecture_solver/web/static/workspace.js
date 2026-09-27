@@ -14,7 +14,6 @@ const state = {
   briefDirty: false,
   messageRevision: "",
   studyRevision: "",
-  sourceTool: null,
   launchKey: null,
   modelRequests: { home: 0, conversation: 0 },
   homeAgent: null,
@@ -697,6 +696,26 @@ async function send() {
   renderProject();
   await reloadProjects();
 }
+async function assistInstallation(tool) {
+  const flash = tool.id === "flash";
+  const guidance = flash
+    ? "Read the flash-mhd skill and references/local-deployment.md and references/private-install.md with read_skill. Ask which FLASH application, physics and dimensions I need, and where my supplied source folder or archive is. Do not assume a generic FLASH executable or an island-coalescence build suits every application."
+    : "Read the warpx skill and references/local-cuda-deployment.md with read_skill. Check the GPU, driver, CUDA compatibility and build resources. Ask which dimensions I need: the bundled CUDA recipe targets 2D. Use the documented pinned source/bootstrap when appropriate; do not require me to supply a checkout if the documented source can be downloaded.";
+  const prompt = `Help me install ${tool.name} on this execution machine. ${guidance}
+
+Guide me through the missing decisions in plain language. Inspect prerequisites, prepare a compatible toolchain and build configuration, compile, run a small readiness test, and register the actual working application so it appears in Research tools. Do not ask me to write build environment variables myself. Keep source, build records and logs in persistent named folders, and show progress during long builds. Respect this machine's selected execution mode and explain blockers. Installation/readiness is not scientific qualification.`;
+  const project = await api("projects", { name: `Install ${tool.name}` });
+  await reloadProjects();
+  mode("interactive");
+  await openProject(project.id);
+  $("chat-input").value = prompt;
+  $("chat-input").dispatchEvent(new Event("input"));
+  $("chat-input").focus();
+  toast(
+    "Installation conversation prepared. Choose your agent/model and send the request.",
+  );
+}
+
 async function refreshTools() {
   state.tools = await api("tools");
   const previous = $("study-tools").value;
@@ -754,6 +773,7 @@ async function refreshTools() {
       undefined,
       `tool-card ${tool.installed ? "tool-installed" : "tool-missing"}`,
     );
+    card.dataset.tool = tool.id;
     card.append(
       el(
         "span",
@@ -821,8 +841,8 @@ async function refreshTools() {
           ? tool.registered === false
             ? "View installations"
             : "Check readiness"
-          : tool.action === "source"
-            ? "Connect source"
+          : ["agent", "source"].includes(tool.action)
+            ? "Install with agent"
             : "Install",
         "secondary",
       );
@@ -832,10 +852,11 @@ async function refreshTools() {
           if (tool.installed && tool.registered === false) {
             const details = card.querySelector(".installed-variants");
             if (details) details.open = true;
-          } else if (tool.action === "source" && !tool.installed) {
-            state.sourceTool = tool.id;
-            $("source-title").textContent = `Set up ${tool.name}`;
-            $("source-dialog").showModal();
+          } else if (
+            ["agent", "source"].includes(tool.action) &&
+            !tool.installed
+          ) {
+            await assistInstallation(tool);
           } else {
             await api("install", {
               name: tool.id,
@@ -1291,20 +1312,6 @@ $("custom-tool-form").onsubmit = (e) => {
       path: $("tool-path").value,
     });
     toast("Research tool registered");
-    await refreshTools();
-  });
-};
-$("cancel-source").onclick = () => $("source-dialog").close();
-$("source-form").onsubmit = (e) => {
-  e.preventDefault();
-  action(e.submitter, async () => {
-    await api("install", {
-      name: state.sourceTool,
-      action: "install",
-      source: $("source-path").value,
-    });
-    $("source-dialog").close();
-    toast("Tool setup started");
     await refreshTools();
   });
 };

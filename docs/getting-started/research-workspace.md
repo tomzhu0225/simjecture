@@ -147,8 +147,12 @@ directories and the configured capability directory are discovered automatically
 Installed FLASH applications are shown with their own names, versions and runtime paths;
 they are not relabelled as the bundled island-coalescence application. You do not need
 to supply source again for these installations. Readiness checks use the detected
-application's descriptor. FLASH and WarpX CUDA setup asks for a source checkout only
-when installing a new runtime. Installation jobs continue in the background and expose
+application's descriptor. **Install with agent** opens a prepared setup conversation
+for FLASH and WarpX CUDA. Choose the agent/model and send the editable request; it
+points the agent to the bundled deployment skills and asks it to handle prerequisites,
+build configuration, compilation, readiness checks and registration. The agent asks
+for the intended application/geometry and any required source, rather than requiring
+the user to supply build environment variables. Installation jobs continue in the background and expose
 their reports and logs. The catalogue also detects configured executable installations.
 
 You can ask your project agent to install other software and register its Simjecture

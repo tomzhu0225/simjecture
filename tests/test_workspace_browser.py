@@ -498,3 +498,56 @@ def test_cooperative_fallback_warning_is_visible_and_persistent(tmp_path):
     finally:
         server.shutdown()
         server.server_close()
+
+
+def test_source_tools_open_agent_assisted_installation_conversations(tmp_path, monkeypatch):
+    import re
+
+    playwright = pytest.importorskip("playwright.sync_api")
+    app = SimjectureWebApplication(runs_root=tmp_path, scan_roots=(tmp_path,))
+    cards = [
+        dict(
+            id=identifier,
+            name=name,
+            action="agent",
+            installed=False,
+            state="available",
+            description="Agent-assisted setup",
+            report={},
+            log="",
+        )
+        for identifier, name in [("flash", "FLASH"), ("warpx-cuda", "WarpX · CUDA")]
+    ]
+    monkeypatch.setattr(app.workspace, "catalogue", lambda: cards)
+    installs = []
+    monkeypatch.setattr(app.workspace, "start_install", lambda payload: installs.append(payload))
+    server = create_server(app, port=0)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    try:
+        with playwright.sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page(viewport={"width": 1440, "height": 1000})
+            page.goto(f"http://127.0.0.1:{server.server_port}")
+            for identifier, name, guide in [
+                ("flash", "FLASH", "references/local-deployment.md"),
+                ("warpx-cuda", "WarpX · CUDA", "references/local-cuda-deployment.md"),
+            ]:
+                page.get_by_role("button", name="Research tools", exact=True).click()
+                page.locator(f'[data-tool="{identifier}"]').get_by_role(
+                    "button", name="Install with agent", exact=True
+                ).click()
+                playwright.expect(page.locator("#project-title")).to_have_text(f"Install {name}")
+                playwright.expect(page.locator("#chat-input")).to_have_value(
+                    re.compile(re.escape(guide))
+                )
+                draft = page.locator("#chat-input").input_value()
+                assert guide in draft and "read_skill" in draft
+                assert "persistent named folders" in draft
+                assert page.locator("#interactive-panel").is_visible()
+                assert page.locator("#source-dialog").count() == 0
+            assert not installs
+            assert len(app.workspace.projects()) == 2
+            browser.close()
+    finally:
+        server.shutdown()
+        server.server_close()
