@@ -8,6 +8,7 @@ const state = {
   view: "home",
   mode: "interactive",
   tools: [],
+  toolsRevision: "",
   busy: false,
   readonly: false,
   briefDirty: false,
@@ -420,6 +421,7 @@ function renderProject(force = false) {
     (p.simulations || []).map((j) => [j.id, j.status]),
   ]);
   if (revision !== state.messageRevision) {
+    const messageScroll = $("messages").scrollTop;
     const nearEnd =
       $("messages").scrollHeight -
         $("messages").scrollTop -
@@ -533,9 +535,12 @@ function renderProject(force = false) {
       else if (message.status === "error") article.classList.add("error-text");
       $("messages").append(article);
     }
-    if (nearEnd || force) $("messages").scrollTop = $("messages").scrollHeight;
+    $("messages").scrollTop =
+      nearEnd || force ? $("messages").scrollHeight : messageScroll;
     state.messageRevision = revision;
   }
+  const inspector = document.querySelector(".project-context");
+  const inspectorScroll = inspector.scrollTop;
   $("project-path").textContent = p.files_directory;
   $("file-count").textContent = p.files.length;
   $("project-files").replaceChildren();
@@ -558,6 +563,7 @@ function renderProject(force = false) {
         "Ask your agent to prepare an autonomous investigation, or write a brief yourself.",
     ),
   );
+  inspector.scrollTop = inspectorScroll;
   if (!state.briefDirty || force) {
     const b = p.brief || {};
     $("brief-question").value = b.question || "";
@@ -608,6 +614,20 @@ async function refreshTools() {
     ? desired
     : "";
   if (state.view !== "tools") return;
+  const revision = JSON.stringify(state.tools);
+  if (revision === state.toolsRevision) return;
+  const scroll = document.scrollingElement.scrollTop;
+  const opened = new Set(
+    [...$("view-tools").querySelectorAll("details[open][data-key]")].map(
+      (d) => d.dataset.key,
+    ),
+  );
+  const logScroll = new Map(
+    [...$("view-tools").querySelectorAll("details[data-key] pre")].map((e) => [
+      e.parentElement.dataset.key,
+      e.scrollTop,
+    ]),
+  );
   $("installed-tool-grid").replaceChildren();
   $("available-tool-grid").replaceChildren();
   $("installed-count").textContent =
@@ -656,6 +676,8 @@ async function refreshTools() {
       );
     if (tool.variants?.length) {
       const details = el("details", undefined, "installed-variants");
+      details.dataset.key = `variants-${tool.id}`;
+      details.open = opened.has(details.dataset.key);
       details.append(
         el(
           "summary",
@@ -720,6 +742,8 @@ async function refreshTools() {
     card.append(actions);
     if (tool.log || Object.keys(tool.report || {}).length) {
       const details = el("details");
+      details.dataset.key = `installation-${tool.id}`;
+      details.open = opened.has(details.dataset.key);
       details.append(
         el("summary", "Installation details"),
         el("pre", tool.log || JSON.stringify(tool.report, null, 2)),
@@ -730,6 +754,10 @@ async function refreshTools() {
       card,
     );
   }
+  for (const pre of $("view-tools").querySelectorAll("details[data-key] pre"))
+    pre.scrollTop = logScroll.get(pre.parentElement.dataset.key) || 0;
+  document.scrollingElement.scrollTop = scroll;
+  state.toolsRevision = revision;
 }
 function briefPayload() {
   return {

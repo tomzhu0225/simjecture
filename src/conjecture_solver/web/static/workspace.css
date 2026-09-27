@@ -2821,3 +2821,11 @@ wa-split-panel.project-layout::part(divider):hover {
     padding: 5px;
   }
 }
+[data-theme="dark"] .message-content math[display="block"] {
+  background: #24293b;
+  border-color: #434963;
+  color: #f0edff;
+}
+.message-content math {
+  color: inherit;
+}

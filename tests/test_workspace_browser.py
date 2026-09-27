@@ -260,3 +260,87 @@ def test_theme_and_confirmed_conversation_deletion(tmp_path):
     finally:
         server.shutdown()
         server.server_close()
+
+
+def test_refresh_preserves_inspector_and_tool_details_and_dark_math(tmp_path, monkeypatch):
+    playwright = pytest.importorskip("playwright.sync_api")
+    app = SimjectureWebApplication(runs_root=tmp_path, scan_roots=(tmp_path,))
+    tool = dict(
+        id="flash",
+        name="FLASH",
+        installed=True,
+        registered=False,
+        action="source",
+        state="installed",
+        readiness="unchecked",
+        description="Installed solver",
+        variants=[
+            dict(label=f"Build {i}", runtime="/runtime/flash", description="Local build")
+            for i in range(20)
+        ],
+        report={},
+        log="initial log",
+    )
+    monkeypatch.setattr(app.workspace, "catalogue", lambda: [tool])
+    server = create_server(app, port=0)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    try:
+        with playwright.sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page(viewport={"width": 1440, "height": 1000})
+            page.goto(f"http://127.0.0.1:{server.server_port}")
+            page.get_by_role("button", name="Research tools", exact=True).click()
+            page.locator('[data-key="variants-flash"] summary').click()
+            page.locator('[data-key="installation-flash"] summary').click()
+            page.evaluate("window.scrollTo(0, 450)")
+            tool["log"] = "updated log"
+            page.evaluate("refreshTools()")
+            assert page.locator('[data-key="variants-flash"]').get_attribute("open") is not None
+            assert page.locator('[data-key="installation-flash"]').get_attribute("open") is not None
+            assert page.evaluate("window.scrollY") == 450
+            result = page.evaluate(r"""async () => {
+              state.view='home';
+              history.replaceState(null,'','#home');
+              document.querySelector('#view-tools').hidden=true;
+              const project = {id:'fixture', files:[],
+                simulations:[{id:'001-wave',name:'Wave',status:'running',live:true}]};
+              let job = {...project.simulations[0], command:'python wave.py',
+                created_at:Date.now()/1000,
+                output:Array.from({length:100},(_,i)=>`step ${i}`).join('\n'),
+                files:Array.from({length:20},(_,i)=>({name:`output-${i}.txt`}))};
+              const monitor = WorkspaceMonitor.create({api:async()=>job,project:()=>project,
+                link:()=> '#',notify:()=>{},readonly:()=>false});
+              document.querySelector('#view-home').hidden=true;
+              document.querySelector('#view-project').hidden=false;
+              monitor.render(project);
+              await monitor.open('001-wave');
+              await new Promise(r=>setTimeout(r,100));
+              const detail = document.querySelector('#simulation-detail details');
+              detail.open=true;
+              const console = document.querySelector('.live-console');
+              console.scrollTop=90;
+              const inspector=document.querySelector('.project-context');
+              inspector.scrollTop=210;
+              job={...job,output:job.output+'\nnew step'};
+              await monitor.update();
+              const kept={sameConsole:console===document.querySelector('.live-console'),
+                open:detail.open,consoleScroll:console.scrollTop,inspectorScroll:inspector.scrollTop};
+              WorkspaceTheme.set('dark');
+              const math=document.createElement('div');math.className='message-content';
+              document.querySelector('#messages').append(math);
+              WorkspaceRich.render(math,
+                String.raw`\[A=-0.05\ln\cosh(x/0.05)+0.05\cos(\pi x/2)\cos(\pi y)\]`,project);
+              const equation=math.querySelector('math');
+              kept.math=!!equation;
+              kept.background=getComputedStyle(equation).backgroundColor;
+              kept.color=getComputedStyle(equation).color;
+              return kept;
+            }""")
+            assert result["sameConsole"] and result["open"] and result["math"]
+            assert result["consoleScroll"] == 90 and result["inspectorScroll"] == 210
+            assert result["background"] == "rgb(36, 41, 59)"
+            assert result["color"] == "rgb(240, 237, 255)"
+            browser.close()
+    finally:
+        server.shutdown()
+        server.server_close()
