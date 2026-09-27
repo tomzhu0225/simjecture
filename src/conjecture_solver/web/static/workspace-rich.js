@@ -22,6 +22,19 @@ window.WorkspaceRich = (() => {
       }
       return url.pathname + url.search;
     }
+    if (source.startsWith("study:")) {
+      const slash = source.indexOf("/", 6);
+      const campaign = source.slice(6, slash);
+      const path = source.slice(slash + 1);
+      if (
+        slash < 7 ||
+        !project.studies?.some((s) => s.campaign === campaign) ||
+        path.startsWith("/") ||
+        path.split("/").includes("..")
+      )
+        return null;
+      return `/api/artifact?${new URLSearchParams({ campaign, path })}`;
+    }
     let path = source,
       simulation = null;
     if (source.startsWith("simulation:")) {
@@ -70,9 +83,13 @@ window.WorkspaceRich = (() => {
     const figures = [];
     // Work on Markdown image tokens only. Raw HTML remains disabled by the shared sanitizer.
     const source = String(text || "").replace(
-      /```[\s\S]*?```|~~~[\s\S]*?~~~|`[^`\n]*`|!\[([^\]]*)\]\(([^\s)]+)(?:\s+"[^"]*")?\)/g,
-      (full, caption, path) => {
+      /```[\s\S]*?```|~~~[\s\S]*?~~~|`[^`\n]*`|(!?)\[([^\]]*)\]\(([^\s)]+)(?:\s+"[^"]*")?\)/g,
+      (full, image, caption, path) => {
         if (!path) return full;
+        if (!image) {
+          const local = artifactURL(path, project, false);
+          return local ? `[${caption}](${local})` : full;
+        }
         const node = figure(path, caption, project);
         if (!node) return `[${caption || "Figure"}](${path})`;
         const marker = `SIMJECTUREFIGURE${figures.length}PLACEHOLDER`;

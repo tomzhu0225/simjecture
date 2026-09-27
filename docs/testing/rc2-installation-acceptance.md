@@ -81,3 +81,19 @@ The targeted deployment, runtime bootstrap, workspace, provider-session, browser
 installer, simulation and skill suites finished with **80 passed, 2 skipped**.
 The two skips require local PRoot/non-root execution; that backend was exercised
 by the real remote capability tests above. Lint, shell syntax and diff checks passed.
+
+## Research handoff follow-up
+
+The workspace lifecycle update passed 41 workspace, browser and session tests,
+including a real supervised study against the deterministic provider, background
+report delivery, waiting for an active conversation, restart deduplication, and
+preparing another study without losing its predecessor. Two focused handoff/browser
+checks passed again after the final navigation change.
+
+On the remote test host, the existing completed Euler study was returned to the real
+DeepSeek agent through the GUI's **Explain in conversation** button. The agent read
+the saved report and evidence and explained the independently accepted falsification
+in the original conversation. All seven linked study artifacts returned HTTP 200;
+45 equation nodes rendered, and the study card navigated directly to the explanation.
+No additional autonomous study was launched for this check. Both local and remote
+workspace servers were updated; published preview release assets remain unchanged.

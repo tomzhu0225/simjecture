@@ -3190,3 +3190,27 @@ wa-split-panel.project-layout {
     left: 0;
   }
 }
+
+/* Keep routine machine metadata out of the conversation navigation. */
+.sidebar-bottom {
+  padding-top: 12px;
+}
+.workspace-details {
+  font-size: 13px;
+  margin-top: 8px;
+}
+.workspace-details summary {
+  cursor: pointer;
+  color: var(--muted);
+}
+.workspace-details > div {
+  margin-top: 10px;
+}
+.sidebar-bottom .workspace-details a {
+  margin: 10px 0 0;
+  font-size: 13px;
+}
+#study-stage {
+  color: var(--muted);
+  margin: 4px 0 18px;
+}

@@ -95,10 +95,9 @@ def test_browser_setup_chat_files_and_autonomous_handoff(tmp_path, provider):
             assert "view=autonomous" in page.url
             assert "Euler" in page.locator("#brief-question").input_value()
             assert not page.locator("#brief-question").is_visible()
-            page.get_by_role("button", name="Draft from this conversation").click()
-            page.locator("#interactive-panel").wait_for(state="visible")
-            playwright.expect(page.locator("#send-message")).to_be_enabled(timeout=40000)
-            page.get_by_role("button", name="Autonomous research", exact=True).click()
+            playwright.expect(page.locator("#study-preparation")).to_be_hidden()
+            playwright.expect(page.locator("#study-stage")).to_contain_text("Proposal ready")
+            assert page.locator("#breadcrumb").count() == 0
             page.locator("#prepared-question").wait_for()
             page.screenshot(path=str(screenshots / "study-brief.png"), full_page=True)
             from conjecture_solver.execution import probe_execution_backend
@@ -111,6 +110,11 @@ def test_browser_setup_chat_files_and_autonomous_handoff(tmp_path, provider):
                 page.get_by_role("link", name="result.json", exact=False).first.wait_for()
                 page.screenshot(path=str(screenshots / "accepted-result.png"), full_page=True)
             page.get_by_role("button", name="Interactive research", exact=True).click()
+            if probe_execution_backend("bubblewrap")["available"]:
+                page.get_by_text(
+                    "The completed study found a reviewed counterexample.", exact=True
+                ).wait_for(timeout=30000)
+                playwright.expect(page.locator("#send-message")).to_be_enabled(timeout=30000)
             page.locator("#conversation-model").select_option("fixture-alternate")
             playwright.expect(page.locator("#agent-switch-warning")).to_be_visible()
             playwright.expect(page.locator("#agent-switch-warning")).to_contain_text("cache reuse")
@@ -503,9 +507,9 @@ def test_cooperative_fallback_warning_is_visible_and_persistent(tmp_path):
             page.get_by_role("button", name="Dismiss execution warning").click()
             assert not page.locator("#execution-warning").is_visible()
             page.reload()
-            page.get_by_role("button", name="Cooperative execution", exact=True).wait_for()
+            page.get_by_role("button", name="Limited isolation", exact=True).wait_for()
             assert not page.locator("#execution-warning").is_visible()
-            page.get_by_role("button", name="Cooperative execution", exact=True).click()
+            page.get_by_role("button", name="Limited isolation", exact=True).click()
             assert page.locator("#execution-warning").is_visible()
             app.workspace.execution = dict(
                 backend="bubblewrap",
@@ -627,6 +631,108 @@ def test_sidebar_edges_drag_closed_and_reopen(tmp_path):
             page.screenshot(
                 path="artifacts/workspace-preview/expanded-edge-tabs.png", full_page=True
             )
+            browser.close()
+    finally:
+        server.shutdown()
+        server.server_close()
+
+
+def test_study_lifecycle_and_followup_keep_history(tmp_path):
+    import json
+
+    from conjecture_solver.web.workspace import load, put
+
+    playwright = pytest.importorskip("playwright.sync_api")
+    app = SimjectureWebApplication(runs_root=tmp_path, scan_roots=(tmp_path,))
+    w = app.workspace
+    p = w.create({"name": "Repeated investigations"})
+    directory = w.directory(p["id"])
+    brief = dict(
+        question="Euler positivity",
+        success_criteria="Independent review",
+        constraints="Python",
+        hours=1,
+        completion_policy="answer",
+    )
+    w.save_brief(p["id"], brief)
+    server = create_server(app, port=0)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    try:
+        with playwright.sync_playwright() as pw:
+            browser = pw.chromium.launch(headless=True)
+            page = browser.new_page(viewport={"width": 1440, "height": 1000})
+            status = {"value": "running"}
+            page.route(
+                "**/api/workspace/study?*",
+                lambda route: route.fulfill(
+                    content_type="application/json",
+                    body=json.dumps(
+                        dict(
+                            snapshot={"snapshot": {}, "controls": {}, "artifacts": []},
+                            live={
+                                "status": status["value"],
+                                "activity": "Testing Euler",
+                                "remaining": 25,
+                            },
+                            report={},
+                            results="The step h=2 gives y1=-1.",
+                        )
+                    ),
+                ),
+            )
+            page.goto(f"http://127.0.0.1:{server.server_port}/#project={p['id']}&view=autonomous")
+            playwright.expect(page.locator("#prepared-brief")).to_be_visible()
+            playwright.expect(page.locator("#study-preparation")).to_be_hidden()
+            assert page.locator("#breadcrumb").count() == 0
+            assert not page.locator("#machine-label").is_visible()
+
+            record = load(directory / "project.json")
+            record.update(
+                brief_launched="first",
+                studies=[
+                    dict(
+                        campaign="first",
+                        campaign_id="001-euler",
+                        question=brief["question"],
+                        path=str(directory / "studies/001-euler"),
+                    )
+                ],
+            )
+            put(directory / "project.json", record)
+            page.reload()
+            playwright.expect(page.locator("#study-runs")).to_contain_text("RUNNING")
+            playwright.expect(page.locator("#prepared-brief")).to_be_hidden()
+            playwright.expect(page.locator("#study-preparation")).to_be_hidden()
+            playwright.expect(page.locator("#new-study")).to_be_visible()
+            status["value"] = "completed"
+            page.reload()
+            playwright.expect(page.locator("#study-runs")).to_contain_text("Study finished")
+            assert (
+                page.get_by_role("link", name="Return to the conversation")
+                .get_attribute("href")
+                .startswith("#project=")
+            )
+            playwright.expect(
+                page.get_by_role("button", name="Explain in conversation")
+            ).to_be_visible()
+
+            # Study artifact links survive sanitization; foreign campaigns cannot resolve.
+            rendered = page.evaluate("""() => {
+              const target = document.createElement('div');
+              const project = {id: 'test', studies: [{campaign: 'first'}]};
+              WorkspaceRich.render(target, '[Report](study:first/research/RESULTS.md)', project);
+              return [target.querySelector('a').getAttribute('href'),
+                WorkspaceRich.artifactURL('study:foreign/research/RESULTS.md', project)];
+            }""")
+            assert "campaign=first" in rendered[0] and "RESULTS.md" in rendered[0]
+            assert rendered[1] is None
+            page.get_by_role("button", name="Prepare another study").click()
+            playwright.expect(page.locator("#study-preparation")).to_be_visible()
+            playwright.expect(page.locator("#study-runs")).to_contain_text("Euler positivity")
+            page.reload()
+            playwright.expect(page.locator("#study-preparation")).to_be_visible()
+            playwright.expect(page.locator("#study-runs")).to_contain_text("COMPLETED")
+            assert w.project(p["id"])["brief"] is None
             browser.close()
     finally:
         server.shutdown()

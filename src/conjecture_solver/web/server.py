@@ -8,6 +8,7 @@ import json
 import mimetypes
 import secrets
 import threading
+import time
 import webbrowser
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -90,7 +91,20 @@ class SimjectureHTTPServer(ThreadingHTTPServer):
         self.application = application
         self.control_token = secrets.token_urlsafe(32)
         self.verbose = verbose
+        self._handoff_at = 0
+        self._handoff_thread = None
         super().__init__(address, SimjectureRequestHandler)
+
+    def service_actions(self):
+        if not self.application.allow_mutations or time.monotonic() < self._handoff_at:
+            return
+        if self._handoff_thread and self._handoff_thread.is_alive():
+            return
+        self._handoff_at = time.monotonic() + 5
+        self._handoff_thread = threading.Thread(
+            target=self.application.workspace.deliver_study_reports, daemon=True
+        )
+        self._handoff_thread.start()
 
 
 class SimjectureRequestHandler(BaseHTTPRequestHandler):
@@ -370,6 +384,12 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
                 result = workspace.models(payload.get("backend"))
             elif endpoint == "agent":
                 result = workspace.select_agent(payload.get("project"), payload)
+            elif endpoint == "explain-study":
+                result = workspace.queue_study_report(
+                    payload.get("project"), payload.get("campaign")
+                )
+            elif endpoint == "new-study":
+                result = workspace.new_study(payload.get("project"))
             elif endpoint == "prepare":
                 result = workspace.prepare(payload.get("project"), payload)
             elif endpoint == "simulations":

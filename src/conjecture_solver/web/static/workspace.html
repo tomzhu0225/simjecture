@@ -58,10 +58,6 @@
           <div id="sidebar-run-list"></div>
         </div>
         <div class="sidebar-bottom">
-          <div id="breadcrumb" class="sidebar-location">
-            Workspace / Overview
-          </div>
-          <span id="conversation-status">Ready</span>
           <button
             id="execution-status"
             class="sidebar-status"
@@ -97,11 +93,14 @@
               Dark mode
             </button>
           </div>
-          <a href="/monitor">Experiment monitor <span>↗</span></a>
-          <div id="machine-label">Local workspace</div>
-          <span id="connection-indicator" class="connection-dot"
-            >Connecting…</span
-          >
+          <details class="workspace-details">
+            <summary>Workspace details</summary>
+            <div id="machine-label">Local workspace</div>
+            <span id="connection-indicator" class="connection-dot"
+              >Connecting…</span
+            >
+            <a href="/monitor">Experiment monitor <span>↗</span></a>
+          </details>
         </div>
       </aside>
       <div
@@ -442,6 +441,15 @@
                 </p>
               </div>
               <div id="autonomous-panel" hidden>
+                <div class="section-line">
+                  <div>
+                    <p class="eyebrow">AUTONOMOUS RESEARCH</p>
+                    <p id="study-stage" role="status"></p>
+                  </div>
+                  <button id="new-study" class="secondary" type="button" hidden>
+                    Prepare another study
+                  </button>
+                </div>
                 <div id="study-runs"></div>
                 <div id="study-preparation" class="panel study-preparation">
                   <p class="eyebrow">PREPARE IT TOGETHER</p>
@@ -485,6 +493,11 @@
                   <p class="eyebrow">YOUR AGENT’S PROPOSAL</p>
                   <h2 id="prepared-question"></h2>
                   <div id="prepared-details"></div>
+                  <p class="field-help">
+                    When the study finishes, your interactive agent will explain
+                    its report in this conversation. Each study keeps its own
+                    results.
+                  </p>
                   <div class="brief-footer">
                     <button id="revise-study" class="secondary" type="button">
                       Discuss or refine</button

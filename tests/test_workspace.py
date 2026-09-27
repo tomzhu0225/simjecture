@@ -73,6 +73,13 @@ def provider():
                 name, args = "connection_check", {"value": "connected"}
             elif deepseek and plain.rsplit("CURRENT USER REQUEST:\n", 1)[-1].startswith("Hello"):
                 name, args = "final_answer", {"answer": "Hello!"}
+            elif "draft_study" in tools and plain.rsplit("CURRENT USER REQUEST:\n", 1)[
+                -1
+            ].startswith("Explain the autonomous study report:"):
+                name, args = (
+                    "final_answer",
+                    {"answer": "The completed study found a reviewed counterexample."},
+                )
             elif "draft_study" in tools and (
                 plain.rsplit("CURRENT USER REQUEST:\n", 1)[-1].startswith("Grill me to prepare")
             ):
@@ -310,6 +317,15 @@ def test_autonomous_api_reuses_supervisor_and_accepts_negative_result(tmp_path, 
         assert report["completed"] and report["reviews"][0]["verdict"]["disposition"] == "falsified"
         assert list((root / "experiments").glob("*/workspace/result.json"))
         assert "Scientific results" in (workspace.directory(p["id"]) / "README.md").read_text()
+        workspace.deliver_study_reports()
+        explained = wait_for(
+            lambda: value if not (value := workspace.project(p["id"]))["running"] else None
+        )
+        assert explained["messages"][-1]["content"] == (
+            "The completed study found a reviewed counterexample."
+        )
+        assert explained["messages"][-1]["links"][-1]["campaign"] == launched["campaign"]
+        assert explained["brief_launched"] == launched["campaign"]
         app2 = SimjectureWebApplication(runs_root=tmp_path, scan_roots=(tmp_path,))
         assert app2.registry.resolve(launched["campaign"]) == root
         judges = [
@@ -837,3 +853,97 @@ def test_registered_tool_can_be_checked_from_catalogue(tmp_path, monkeypatch):
     (descriptors / "test.json").write_text(json.dumps(template))
     with pytest.raises(ValueError, match="host runtime path"):
         workspace.register_tool({"name": "Wrong mapping", "path": str(descriptors)})
+
+
+def test_report_handoff_waits_for_idle_and_survives_restart(tmp_path, monkeypatch):
+    import conjecture_solver.web.workspace as module
+
+    w = Workspace(tmp_path / ".workspace")
+    w.save_settings(
+        dict(
+            backend="builtin",
+            base_url="http://localhost:9999/v1",
+            model="fixture-model",
+            api_key="test-secret",
+        )
+    )
+    project = w.create({"name": "Several studies"})
+    directory = w.directory(project["id"])
+    root = directory / "studies/001-euler"
+    (root / "supervisor").mkdir(parents=True)
+    put(root / "supervisor/state.json", {"status": "completed"})
+    study = dict(
+        campaign="first", question="Euler positivity", path=str(root), explain_on_finish=True
+    )
+    saved = load(directory / "project.json")
+    saved["studies"] = [study]
+    put(directory / "project.json", saved)
+    monkeypatch.setattr(w, "inventory_context", lambda: "Python available")
+    prompts = []
+
+    def spawn(command, cwd, log):
+        prompts.append((log.parent / "prompt.txt").read_text())
+        log.write_text(json.dumps({"type": "result", "result": "A negative result."}) + "\n")
+        return {}
+
+    monkeypatch.setattr(module, "spawn", spawn)
+    w.deliver_study_reports()
+    assert not prompts  # Terminal status alone is insufficient: wait for the report.
+    put(root / "research_report.json", {"completed": True, "result": "falsified"})
+    busy = directory / "turns/123"
+    busy.mkdir()
+    put(busy / "request.json", {"message": "Current user task"})
+    put(busy / "process.json", {"busy": True})
+    monkeypatch.setattr(module, "alive", lambda record: record.get("busy", False))
+    w.deliver_study_reports()
+    assert not prompts
+    put(busy / "process.json", {})
+    w.deliver_study_reports()
+    assert len(prompts) == 1
+    assert str(root / "research_report.json") in prompts[0]
+    assert "Do not start another study or simulation" in prompts[0]
+    returned = w.project(project["id"])
+    assert returned["studies"][0]["report_turn"]
+    assert returned["messages"][-1]["links"][-1]["campaign"] == "first"
+
+    # Simulate a crash after sending but before persisting the delivery receipt.
+    saved = load(directory / "project.json")
+    del saved["studies"][0]["report_turn"]
+    put(directory / "project.json", saved)
+    restarted = Workspace(w.root)
+    restarted.deliver_study_reports()
+    assert len(prompts) == 1
+    assert restarted.project(project["id"])["studies"][0]["report_turn"]
+
+    # Another study in the same conversation gets its own explanation once.
+    second = directory / "studies/002-follow-up"
+    (second / "supervisor").mkdir(parents=True)
+    put(second / "supervisor/state.json", {"status": "budget_exhausted"})
+    put(second / "research_report.json", {"completed": False})
+    saved = load(directory / "project.json")
+    saved["studies"].append(dict(study, campaign="second", path=str(second)))
+    put(directory / "project.json", saved)
+    monkeypatch.setattr(restarted, "inventory_context", lambda: "Python available")
+    restarted.deliver_study_reports()
+    restarted.deliver_study_reports()
+    assert len(prompts) == 2
+    assert "budget_exhausted" in prompts[-1]
+
+
+def test_new_study_preserves_previous_study_and_consumes_legacy_brief(tmp_path):
+    w = Workspace(tmp_path / ".workspace")
+    p = w.create({"name": "Follow-up"})
+    directory = w.directory(p["id"])
+    brief = dict(question="A claim", success_criteria="Review it", hours=1)
+    root = directory / "studies/001-claim"
+    root.mkdir(parents=True)
+    put(root / "project-brief.json", brief)
+    record = load(directory / "project.json")
+    record.update(brief=brief, studies=[dict(campaign="first", path=str(root), question="A claim")])
+    put(directory / "project.json", record)
+    assert w.project(p["id"])["brief_launched"] == "first"
+    w.new_study(p["id"])
+    latest = w.project(p["id"])
+    assert latest["brief"] is None and latest["brief_launched"] is None
+    assert len(latest["studies"]) == 1
+    assert load(root / "project-brief.json") == brief

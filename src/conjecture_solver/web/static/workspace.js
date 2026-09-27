@@ -87,19 +87,6 @@ function view(name) {
     section.hidden = section.id !== `view-${name}`;
   for (const item of document.querySelectorAll("[data-view]"))
     item.classList.toggle("active", item.dataset.view === name);
-  $("breadcrumb").replaceChildren(
-    el("span", "Workspace"),
-    document.createTextNode(" / "),
-    document.createTextNode(
-      name === "project"
-        ? state.project?.name || "Project"
-        : {
-            home: "Overview",
-            tools: "Research tools",
-            settings: "Connections",
-          }[name],
-    ),
-  );
   if (!state.routing)
     location.hash =
       name === "project"
@@ -134,6 +121,10 @@ async function followRoute({ reveal = true } = {}) {
             .getElementById(`study-${state.routeStudy}`)
             ?.scrollIntoView({ behavior: "smooth", block: "start" });
       }
+      if (state.mode === "interactive" && params.get("turn"))
+        document
+          .getElementById(`turn-assistant-${params.get("turn")}`)
+          ?.scrollIntoView({ behavior: "smooth", block: "start" });
       if (params.get("simulation") || params.get("command"))
         await monitor.open(params.get("simulation") || params.get("command"), {
           reveal,
@@ -413,9 +404,6 @@ function renderProject(force = false) {
   $("agent-label").textContent = p.agent
     ? `${p.agent.backend} / ${p.agent.model || "choose model"}`
     : "Choose an agent";
-  $("conversation-status").textContent = p.running
-    ? "Agent working · files and activity are saved as it goes"
-    : "Ready";
   $("send-message").disabled = p.running || state.readonly;
   $("stop-agent").hidden = !p.running;
   $("launch-study").disabled = p.running || state.readonly;
@@ -424,8 +412,20 @@ function renderProject(force = false) {
   $("preparation-status").textContent = p.running
     ? "Your agent is working. Its questions and proposed brief appear in the conversation."
     : "The agent will ask about missing facts and fill in the details for you.";
-  $("prepared-brief").hidden = !p.brief;
-  $("brief-editor").hidden = !p.brief;
+  const pendingBrief = p.brief && !p.brief_launched;
+  const preparing = !pendingBrief && !p.brief_launched;
+  $("study-preparation").hidden = !preparing;
+  $("prepared-brief").hidden = !pendingBrief;
+  $("brief-editor").hidden = !pendingBrief;
+  $("new-study").hidden = !p.studies.length || preparing || !!pendingBrief;
+  $("new-study").disabled = p.running || state.readonly;
+  $("study-stage").textContent = pendingBrief
+    ? "Proposal ready — review it below, then start research."
+    : preparing
+      ? p.running
+        ? "Preparing with your agent. Continue the conversation to answer its questions."
+        : "Prepare a study with your agent. You review the proposal before it runs."
+      : "Your studies are below. Finished reports return to this conversation for explanation.";
   if (p.brief) {
     const b = p.brief;
     $("prepared-question").textContent = b.question;
@@ -497,6 +497,7 @@ function renderProject(force = false) {
         continue;
       }
       const article = el("article", undefined, `message ${message.role}`);
+      article.id = `turn-${key}`;
       article.dataset.messageKey = key;
       article.dataset.messageSignature = signature;
       article.append(
@@ -504,9 +505,11 @@ function renderProject(force = false) {
           "span",
           message.role === "user"
             ? "You"
-            : message.agent
-              ? `Simjecture · ${message.agent.backend} / ${message.agent.model}`
-              : "Simjecture",
+            : message.role === "system"
+              ? "Study report received"
+              : message.agent
+                ? `Simjecture · ${message.agent.backend} / ${message.agent.model}`
+                : "Simjecture",
           "message-role",
         ),
       );
@@ -967,6 +970,57 @@ async function renderStudies() {
       el("span", study.campaign_id),
     );
     card.append(meta, el("h3", study.question));
+    const finished = ["completed", "cancelled", "budget_exhausted"].includes(
+      status,
+    );
+    if (finished) {
+      card.append(
+        el(
+          "p",
+          status === "completed"
+            ? "Study finished. Review its findings and independent assessment below."
+            : "Study stopped before an accepted outcome. The report records the partial findings.",
+          "field-help",
+        ),
+      );
+      const returned = el(
+        "a",
+        study.report_turn
+          ? "Read the agent’s explanation in conversation ↗"
+          : "Return to the conversation ↗",
+        "secondary",
+      );
+      returned.href = projectLink(state.project.id, {
+        view: "interactive",
+        ...(study.report_turn ? { turn: study.report_turn } : {}),
+      });
+      card.append(returned);
+      if (!study.explain_on_finish && !study.report_turn) {
+        const explain = el("button", "Explain in conversation", "secondary");
+        explain.disabled = state.readonly;
+        explain.onclick = () =>
+          action(explain, async () => {
+            await api("explain-study", {
+              project: state.project.id,
+              campaign: study.campaign,
+            });
+            mode("interactive");
+            toast("Report queued for your interactive agent.");
+          });
+        card.append(explain);
+      }
+      card.append(
+        el(
+          "p",
+          study.report_turn
+            ? "The report has been handed to your interactive agent. Its explanation appears in the conversation."
+            : study.explain_on_finish
+              ? "The report will be explained here automatically when the interactive agent is free. Keep the workspace server running; closing the browser is fine."
+              : "Ask your interactive agent to explain this report when you are ready.",
+          "field-help",
+        ),
+      );
+    }
     const metrics = el("div", undefined, "metrics");
     for (const [label, value] of [
       [
@@ -1110,7 +1164,7 @@ async function boot() {
         executionNoticeKey;
     } catch {}
     const label = cooperative
-      ? "Cooperative execution"
+      ? "Limited isolation"
       : blocked
         ? "Experiments unavailable"
         : execution?.available
@@ -1303,6 +1357,20 @@ async function prepareStudy(approach) {
       : "Your agent is drafting the study from this conversation.",
   );
 }
+$("new-study").onclick = () =>
+  action($("new-study"), async () => {
+    await api("new-study", { project: state.project.id });
+    state.project = await api(
+      `project?id=${encodeURIComponent(state.project.id)}`,
+    );
+    state.briefDirty = false;
+    state.launchKey = null;
+    renderProject(true);
+    $("study-preparation").scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+  });
 $("grill-me").onclick = () =>
   action($("grill-me"), () => prepareStudy("interview"));
 $("draft-study").onclick = () =>
