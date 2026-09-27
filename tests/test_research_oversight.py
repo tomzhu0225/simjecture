@@ -48,6 +48,28 @@ def proposal(s, **kw):
     )
 
 
+def test_completed_status_is_published_after_final_report(tmp_path, monkeypatch):
+    s, supervisor = make(tmp_path)
+    monkeypatch.setattr(supervisor, "process_methods", lambda: None)
+    monkeypatch.setattr(supervisor, "process_reviews", lambda: None)
+    monkeypatch.setattr(supervisor.service, "status", lambda: {"completed": True})
+    monkeypatch.setattr(supervisor.service, "cancel_active", lambda: None)
+    report_path = s.root / "research_report.json"
+    put(report_path, {"completed": False})
+
+    def publish_report(service, state):
+        # Observe the filesystem while final report generation is still in progress.
+        assert json.loads(supervisor.path.read_text())["status"] == "running"
+        assert not json.loads(report_path.read_text())["completed"]
+        assert state["status"] == "completed"
+        put(report_path, {"completed": True})
+
+    monkeypatch.setattr("conjecture_solver.research_supervisor.write_report", publish_report)
+    assert supervisor.run() == 0
+    assert json.loads(supervisor.path.read_text())["status"] == "completed"
+    assert json.loads(report_path.read_text())["completed"]
+
+
 def transcript(path, *, text="I will launch the refinement now.", command=None):
     events = [{"type": "item.completed", "item": {"type": "agent_message", "text": text}}]
     if command:
