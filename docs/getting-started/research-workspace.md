@@ -239,6 +239,11 @@ or model starts a fresh transport context with conversation text carried forward
 Independent reviewers always use fresh contexts. Provider prompt-cache reuse is separate
 from session identity and is not guaranteed by Simjecture.
 
-Interactive agent turns currently have a 15-minute limit. Managed simulations have
-their own deadlines and can continue after a turn ends. If an agent times out, the
-response reports registered jobs and saved files rather than implying the solver failed.
+Interactive agent turns have no default total time limit. Stop them from the composer.
+The response shows current public activity, recent tool operations, elapsed time, the
+last activity time and the number of monitored simulation jobs. Agents can share concise
+progress updates at milestones. Private reasoning is never displayed. No recent stream
+activity means no new activity was observed; it is not a fabricated completion estimate.
+Managed simulations keep their own explicit deadlines, and autonomous studies retain
+the budget chosen in the study brief. A transport error or stopped agent is distinguished
+from a solver failure; saved files and job statuses remain available.

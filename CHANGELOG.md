@@ -2,7 +2,7 @@
 
 This project follows semantic versioning. Dates use ISO 8601.
 
-## 0.5.2 — 2026-09-27
+## 0.5.2rc1 (preview) — 2026-09-27
 
 - Add a Linux/WSL one-command installer with checksummed release bundles, automatic
   Python/uv setup, a persistent launcher, SSH forwarding guidance and separate version/data folders.
@@ -17,7 +17,9 @@ This project follows semantic versioning. Dates use ISO 8601.
   versus Python-binding availability; expose shipped research skills to browser workers.
 - Resume native chat sessions and retain structured API history per conversation/model/
   connection. Never reuse worker sessions for independent review.
-- Clarify agent timeouts, preserve job statuses, discourage untracked temporary simulation
+- Remove the default interactive-turn time ceiling, show public progress and recent tools,
+  and retain user-selected autonomous/simulation deadlines. Clarify interruptions and
+  preserve job statuses; discourage untracked temporary simulation
   runs, and include an HDF5 reader in the workspace environment.
 - Accept an independently reviewed negative answer as completion when the study's
   selected policy is `answer`; retain the existing `repair` policy.

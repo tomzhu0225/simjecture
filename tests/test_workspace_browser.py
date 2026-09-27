@@ -369,3 +369,46 @@ def test_refresh_preserves_inspector_and_tool_details_and_dark_math(tmp_path, mo
     finally:
         server.shutdown()
         server.server_close()
+
+
+def test_live_activity_updates_preserve_completed_message_nodes(tmp_path):
+    playwright = pytest.importorskip("playwright.sync_api")
+    app = SimjectureWebApplication(runs_root=tmp_path, scan_roots=(tmp_path,))
+    project = app.workspace.create({"name": "Visible progress"})
+    server = create_server(app, port=0)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    try:
+        with playwright.sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page(viewport={"width": 1440, "height": 1000})
+            page.goto(f"http://127.0.0.1:{server.server_port}/#project=" + project["id"])
+            page.locator("#chat-input").wait_for()
+            result = page.evaluate("""() => {
+              state.view='home'; // keep polling out of this synthetic activity test
+              const original = {role:'assistant',turn:'old',content:'Completed result',
+                events:[],links:[],running:false};
+              const active = {role:'assistant',turn:'new',content:'',
+                events:[],links:[],running:true,
+                started_at:Date.now()/1000-1800,last_activity_at:Date.now()/1000-3,
+                monitored_runs:0,progress:'Inputs are prepared; checking the boundary mapping.',
+                activity:{label:'Reading file',detail:'flash.par',recent_actions:[
+                  {label:'Reading file',detail:'flash.par',status:'completed'}]}};
+              state.project.messages=[original,active];
+              renderProject();
+              const old=document.querySelector('[data-message-key="assistant-old"]');
+              active.activity={label:'Running command',detail:'Pilot simulation',recent_actions:[
+                {label:'Running command',detail:'Pilot simulation',status:'running'}]};
+              active.last_activity_at=Date.now()/1000;
+              renderProject();
+              return {preserved:old===document.querySelector('[data-message-key="assistant-old"]'),
+                text:document.querySelector('[data-message-key="assistant-new"]').textContent};
+            }""")
+            assert result["preserved"]
+            assert "Running command" in result["text"]
+            assert "Pilot simulation" in result["text"]
+            assert "Inputs are prepared" in result["text"]
+            assert "0 monitored simulations" in result["text"]
+            browser.close()
+    finally:
+        server.shutdown()
+        server.server_close()

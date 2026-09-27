@@ -75,7 +75,7 @@ def test_bundled_dsh_profile_is_discoverable() -> None:
     profile = bundled_profile_path()
     package = json.loads((profile / "package.json").read_text())
     assert package["name"] == "@simjecture/dsh-bundle"
-    assert package["version"] == "0.5.2"
+    assert package["version"] == "0.5.2-rc.1"
     assert (profile / "cordis.patch.yml").is_file()
 
 

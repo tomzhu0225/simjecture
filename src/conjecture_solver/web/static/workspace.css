@@ -2861,3 +2861,50 @@ wa-split-panel.project-layout::part(divider):hover {
   padding: 2px 4px;
   cursor: pointer;
 }
+
+.agent-current-action,
+.agent-update {
+  font-size: 15px;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+.agent-update {
+  border-left: 3px solid var(--accent);
+  padding-left: 12px;
+}
+.agent-activity-meta {
+  color: var(--muted);
+  font-size: 13px;
+}
+.agent-activity-list {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
+}
+.agent-activity-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line);
+}
+.agent-activity-list strong {
+  font-size: 14px;
+  font-weight: 500;
+}
+.agent-activity-list small {
+  color: var(--muted);
+  font-size: 12px;
+}
+.agent-activity-list span {
+  flex-basis: 100%;
+  font-size: 13px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.agent-activity-history summary {
+  color: var(--muted);
+  font-size: 13px;
+  cursor: pointer;
+}

@@ -36,3 +36,18 @@ Zenodo then archives each new GitHub Release and assigns a version DOI.
 
 Publishing the GitHub Release is intentionally last: it triggers both external
 publication paths and cannot be treated as a rehearsal.
+
+## Preview policy
+
+Ship user-facing changes first as explicit release candidates (`0.5.2rc1`, `0.5.2rc2`, …).
+Use matching GitHub tags (`v0.5.2rc1`) and mark the GitHub release **prerelease**, without
+moving the stable/latest release. PyPI receives the PEP 440 prerelease version; ordinary
+stable installs do not automatically select it. The optional npm bundle uses the matching
+SemVer spelling (`0.5.2-rc.1`). Document a versioned, one-command installer URL so testing
+is repeatable. Never replace an already published preview's artifacts with different code.
+
+Record setup, interface, simulation and session-continuity feedback against the exact
+preview version. Publish a new candidate for fixes. The installer keeps versioned program
+folders and stable research-data folders; retain old versions during the preview period.
+After user testing and release checks pass, publish `0.5.2` as stable and update the default
+installer link. A preview is not a claim of scientific qualification for solver applications.

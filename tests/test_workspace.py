@@ -680,3 +680,21 @@ def test_delete_refuses_live_autonomous_supervisor(tmp_path):
     finally:
         child.terminate()
         child.wait()
+
+
+def test_progress_updates_are_durable_and_visible_in_conversation(tmp_path):
+    w = Workspace(tmp_path / ".workspace")
+    p = w.create({"name": "Progress"})
+    root = w.directory(p["id"])
+    turn = root / "turns/123"
+    turn.mkdir()
+    put(
+        turn / "request.json", dict(message="Run a pilot", agent=p["agent"], created_at=time.time())
+    )
+    saved = load(root / "project.json")
+    saved["active_turn"] = "123"
+    put(root / "project.json", saved)
+    w.progress_update(p["id"], "Inputs are prepared; next I will run a short pilot.")
+    result = w.project(p["id"])
+    assert result["messages"][-1]["progress"].startswith("Inputs are prepared")
+    assert result["messages"][-1]["last_activity_at"] > 0

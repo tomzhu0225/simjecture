@@ -586,6 +586,7 @@ class Workspace:
                                 "activity",
                                 "simulation",
                                 "session",
+                                "progress",
                             }:
                                 events.append(event)
                         except ValueError:
@@ -597,6 +598,29 @@ class Workspace:
             native, commands = native_activity(turn / "cli/turn/response.json", turn.name, live)
             simulations.extend(commands)
             activity = native or activity or dict(state="waiting", label="Waiting for agent")
+            from .activity import describe_tool
+
+            if not native:
+                activity["recent_actions"] = [
+                    dict(
+                        status="completed",
+                        **describe_tool(e.get("name", "tool"), e.get("arguments")),
+                    )
+                    for e in events
+                    if e.get("type") == "tool"
+                    and e.get("name") not in {"grok", "agy", "codex", "codex-glm"}
+                ][-8:]
+            last_activity = max(
+                (
+                    path.stat().st_mtime
+                    for path in (turn / "events.jsonl", turn / "cli/turn/response.json")
+                    if path.exists()
+                ),
+                default=request.get("created_at", 0),
+            )
+            progress = next(
+                (e.get("text") for e in reversed(events) if e.get("type") == "progress"), None
+            )
             links = []
             if project.get("brief_source_turn") == turn.name:
                 links.append(dict(kind="brief", label="Review autonomous research proposal"))
@@ -626,6 +650,12 @@ class Workspace:
                     turn=turn.name,
                     agent=request.get("agent"),
                     activity=activity,
+                    last_activity_at=last_activity,
+                    progress=progress,
+                    monitored_runs=sum(
+                        j.get("source_turn") == turn.name and not j.get("native")
+                        for j in simulations
+                    ),
                     started_at=request.get("created_at", int(turn.name) / 1e9),
                     links=links,
                 )
@@ -754,7 +784,9 @@ class Workspace:
             prompt = (
                 f"Project: {project['name']}\nFiles: {directory / 'files'}\n"
                 "This is interactive research. Work on the current request, then return control. "
-                "Do not start an endless investigation. Prepare a study brief if asked to run "
+                "There is no default wall-time limit on interactive research. Keep the user "
+                "informed with progress_update during extended investigation and stop when "
+                "the request is fulfilled. Prepare a study brief if asked to run "
                 "autonomously. The user launches it from the editable brief. "
                 "If the user is answering your study-preparation questions, continue that "
                 "preparation: ask only remaining consequential questions and fill the brief "
@@ -779,8 +811,8 @@ class Workspace:
                     "Continue this conversation using its existing session and prior tool history. "
                     "The workspace, skills and simulation tools from earlier turns still apply. "
                     "Numerical attempts belong in managed simulation folders, never /tmp. "
-                    "This turn has a 15-minute limit; save progress and return "
-                    "after launching jobs.\n"
+                    "There is no default time limit on interactive work. Give concise progress "
+                    "updates during extended investigation; use managed simulation jobs.\n"
                     f"Current brief: {json.dumps(project['brief'])}\n"
                     f"Related studies: {json.dumps(project['studies'])}\n"
                     f"CURRENT USER REQUEST:\n{message}\n"
@@ -1160,6 +1192,22 @@ class Workspace:
             put(directory / "project.json", saved)
             self.write_index(directory)
         return record
+
+    def progress_update(self, identifier, message):
+        message = text({"message": message}, "message", 2000)
+        if not message:
+            raise ValueError("Provide a concise progress update")
+        with self.lock():
+            directory = self.directory(identifier)
+            active = load(directory / "project.json").get("active_turn", "")
+            if not re.fullmatch(r"[0-9]+", active):
+                raise ValueError("No active conversation turn")
+            target = directory / "turns" / active / "events.jsonl"
+            with target.open("a") as stream:
+                stream.write(
+                    json.dumps(dict(type="progress", time=time.time(), text=message)) + "\n"
+                )
+        return {"message": "Progress shared with the conversation"}
 
     def start_simulation(self, identifier, payload):
         from .jobs import launch

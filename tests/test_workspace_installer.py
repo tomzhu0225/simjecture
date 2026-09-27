@@ -41,8 +41,8 @@ def test_installer_prepares_locked_environment_and_preserves_existing_work(tmp_p
     assert result.returncode == 0, result.stderr
     assert "python install 3.12" in log.read_text()
     assert "--frozen --extra workspace --no-dev" in log.read_text()
-    assert (target / "app/0.5.2/src/module.py").exists()
-    assert not (target / "app/0.5.2/src/__pycache__").exists()
+    assert (target / "app/0.5.2rc1/src/module.py").exists()
+    assert not (target / "app/0.5.2rc1/src/__pycache__").exists()
     assert os.access(target / "start-workspace", os.X_OK)
     (target / "artifacts").mkdir(exist_ok=True)
     (target / "artifacts/keep.txt").write_text("user research")
@@ -69,7 +69,7 @@ def test_download_checksum_failure_does_not_install(tmp_path):
     env, log, target = fixture(tmp_path)
     release = tmp_path / "release"
     release.mkdir()
-    name = "simjecture-0.5.2-workspace.tar.gz"
+    name = "simjecture-0.5.2rc1-workspace.tar.gz"
     (release / name).write_bytes(b"tampered archive")
     (release / "SHA256SUMS").write_text("0" * 64 + "  " + name + "\n")
     env.pop("SIMJECTURE_SOURCE_DIR")

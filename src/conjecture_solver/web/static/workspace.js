@@ -461,7 +461,19 @@ function renderProject(force = false) {
         (d) => d.dataset.turn,
       ),
     );
-    $("messages").replaceChildren();
+    const previousArticles = new Map(
+      [...$("messages").children].map((node) => [
+        node.dataset.messageKey,
+        node,
+      ]),
+    );
+    const desiredArticles = [];
+    const figureRevision = JSON.stringify([
+      p.files.filter((f) => /\.(png|jpe?g|gif|webp|svg)$/i.test(f.name)),
+      (p.simulations || [])
+        .filter((j) => j.kind === "simulation")
+        .map((j) => [j.id, j.status]),
+    ]);
     if (!p.messages.length) {
       const welcome = el("div", undefined, "welcome-message");
       welcome.append(
@@ -471,10 +483,19 @@ function renderProject(force = false) {
           "Describe your task or attach a file. You can investigate together, then prepare an autonomous study when the question is clear.",
         ),
       );
-      $("messages").append(welcome);
+      desiredArticles.push(welcome);
     }
     for (const message of p.messages) {
+      const key = `${message.role}-${message.turn}`;
+      const signature = JSON.stringify([message, figureRevision]);
+      const old = previousArticles.get(key);
+      if (old?.dataset.messageSignature === signature) {
+        desiredArticles.push(old);
+        continue;
+      }
       const article = el("article", undefined, `message ${message.role}`);
+      article.dataset.messageKey = key;
+      article.dataset.messageSignature = signature;
       article.append(
         el(
           "span",
@@ -541,6 +562,8 @@ function renderProject(force = false) {
         );
         article.append(card);
       }
+      if (message.progress)
+        article.append(el("p", message.progress, "agent-update"));
       if (message.running) {
         const progress = el("div", undefined, "agent-progress");
         const spinner = el("wa-spinner");
@@ -553,6 +576,22 @@ function renderProject(force = false) {
         elapsed.dataset.elapsed = message.started_at;
         progress.append(spinner, label, elapsed);
         article.append(progress);
+        if (message.activity?.detail)
+          article.append(
+            el("p", message.activity.detail, "agent-current-action"),
+          );
+        const meta = el("p", undefined, "agent-activity-meta");
+        const since = el("span");
+        since.dataset.idleSince =
+          message.last_activity_at || message.started_at;
+        meta.append(
+          document.createTextNode("Last agent activity: "),
+          since,
+          document.createTextNode(
+            ` · ${message.monitored_runs || 0} monitored simulation${message.monitored_runs === 1 ? "" : "s"} in this turn`,
+          ),
+        );
+        article.append(meta);
       } else if (message.status === "interrupted")
         article.append(
           el(
@@ -562,7 +601,42 @@ function renderProject(force = false) {
           ),
         );
       else if (message.status === "error") article.classList.add("error-text");
-      $("messages").append(article);
+      const recent = message.activity?.recent_actions || [];
+      if (recent.length) {
+        const history = el(
+          message.running ? "div" : "details",
+          undefined,
+          "agent-activity-history",
+        );
+        if (!message.running) {
+          history.dataset.turn = `recent-${message.turn}`;
+          history.open = openSteps.has(history.dataset.turn);
+          history.append(el("summary", "Recent agent activity"));
+        }
+        const list = el("ol", undefined, "agent-activity-list");
+        for (const item of recent.slice(-5)) {
+          const row = el("li");
+          row.append(
+            el("strong", item.label),
+            el("small", item.status.replaceAll("_", " ")),
+          );
+          if (item.detail) row.append(el("span", item.detail));
+          list.append(row);
+        }
+        history.append(list);
+        article.append(history);
+      }
+      desiredArticles.push(article);
+    }
+    let cursor = $("messages").firstChild;
+    for (const node of desiredArticles) {
+      if (node !== cursor) $("messages").insertBefore(node, cursor);
+      cursor = node.nextSibling;
+    }
+    while (cursor) {
+      const next = cursor.nextSibling;
+      cursor.remove();
+      cursor = next;
     }
     $("messages").scrollTop =
       nearEnd || force ? $("messages").scrollHeight : messageScroll;
@@ -1214,6 +1288,16 @@ window.addEventListener("hashchange", () =>
   followRoute().catch((e) => toast(e.message, true)),
 );
 setInterval(() => {
+  for (const element of document.querySelectorAll("[data-idle-since]")) {
+    const seconds = Math.max(
+      0,
+      Math.floor(Date.now() / 1000 - Number(element.dataset.idleSince)),
+    );
+    element.textContent =
+      seconds < 60
+        ? `${seconds}s ago`
+        : `${Math.floor(seconds / 60)}m ${seconds % 60}s ago`;
+  }
   for (const element of document.querySelectorAll("[data-elapsed]")) {
     const seconds = Math.max(
       0,

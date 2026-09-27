@@ -411,3 +411,32 @@ def test_cancellation_uses_all_durable_jobs_and_continues_after_one_error():
     uncertain = CampaignKernel.cancel_active_jobs(Kernel())
     assert uncertain["verified"] is False
     assert uncertain["unverified_jobs"] == ["job_unknown"]
+
+
+def test_interactive_work_can_run_past_old_turn_allowance(tmp_path):
+    import sys
+
+    root = tmp_path / "conversation"
+    root.mkdir()
+    executable = tmp_path / "slow-cli"
+    executable.write_text(f'#!{sys.executable}\nimport time\ntime.sleep(1.3)\nprint("done")\n')
+    executable.chmod(0o755)
+    args = argparse.Namespace(
+        campaign=root,
+        state_dir=root / "supervisor",
+        wall_seconds=0.01,
+        turn_seconds=0.01,
+        backend="grok",
+        model="fixture",
+        judge_model="fixture",
+        executable=str(executable),
+        workflow="frontier",
+        unbounded_interactive=True,
+        interactive_activity=True,
+    )
+    supervisor = AgentSupervisor(args)
+    directory = supervisor.directory / "turn"
+    directory.mkdir()
+    assert supervisor.state["deadline"] is None
+    assert supervisor.launch(directory, "Long investigation; no provider call") == 0
+    assert supervisor.boundary() is None

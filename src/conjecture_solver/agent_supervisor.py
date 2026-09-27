@@ -152,7 +152,9 @@ class AgentSupervisor:
                 workflow=self.workflow,
                 run_id=uuid.uuid4().hex[:12],
                 started_at=time.time(),
-                deadline=time.time() + args.wall_seconds,
+                deadline=None
+                if getattr(args, "unbounded_interactive", False)
+                else time.time() + args.wall_seconds,
                 round=0,
                 status="running",
                 assignment_id=None,
@@ -220,13 +222,16 @@ class AgentSupervisor:
             action = json.loads(control.read_text()).get("command")
             if action in {"pause", "cancel"}:
                 return "paused" if action == "pause" else "cancelled"
-        if time.time() >= self.state["deadline"]:
+        if self.state["deadline"] is not None and time.time() >= self.state["deadline"]:
             return "budget_exhausted"
         return None
 
     def launch(self, directory: Path, prompt: str, *, judge=False):
-        remaining = self.state["deadline"] - time.time()
-        duration = min(self.args.turn_seconds, remaining)
+        unbounded = getattr(self.args, "unbounded_interactive", False) and not judge
+        remaining = (
+            float("inf") if self.state["deadline"] is None else self.state["deadline"] - time.time()
+        )
+        duration = float("inf") if unbounded else min(self.args.turn_seconds, remaining)
         if duration <= 0:
             return 124
         (directory / "task.txt").write_text(prompt)
@@ -411,7 +416,7 @@ class AgentSupervisor:
                                     if event.get("type") == "item.started"
                                     else "Agent working"
                                 )
-                    if not judge and self.workflow == "frontier":
+                    if not judge and self.workflow == "frontier" and not unbounded:
                         paths = [directory / "response.json", self.root / "action_journal.json"]
                         observed = tuple(
                             (p.stat().st_size, p.stat().st_mtime_ns) if p.exists() else (0, 0)

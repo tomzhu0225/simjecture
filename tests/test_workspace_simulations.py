@@ -96,3 +96,84 @@ def test_controller_registers_identity_if_parent_cannot_read_it(tmp_path, monkey
     assert jobs.snapshot(tmp_path, run["id"])["live"]
     jobs.cancel(tmp_path, run["id"])
     assert await_finished(tmp_path, run["id"])["status"] == "cancelled"
+
+
+def test_public_native_activity_describes_work_without_reasoning(tmp_path):
+    log = tmp_path / "events.jsonl"
+    events = [
+        {
+            "type": "assistant",
+            "message": {
+                "content": [
+                    {"type": "thinking", "thinking": "private hidden reasoning"},
+                    {
+                        "type": "tool_use",
+                        "id": "read1",
+                        "name": "read_file",
+                        "input": {"target_file": "flash.par"},
+                    },
+                ]
+            },
+        },
+        {
+            "type": "user",
+            "message": {
+                "content": [
+                    {"type": "tool_result", "tool_use_id": "read1", "content": "input contents"}
+                ]
+            },
+        },
+        {
+            "type": "assistant",
+            "message": {
+                "content": [
+                    {
+                        "type": "tool_use",
+                        "id": "run1",
+                        "name": "run_terminal_command",
+                        "input": {
+                            "command": "python pilot.py",
+                            "description": "Run the pilot simulation",
+                        },
+                    }
+                ]
+            },
+        },
+    ]
+    log.write_text("\n".join(json.dumps(e) for e in events))
+    activity, commands = native_activity(log, "123", True)
+    assert activity["label"] == "Running command"
+    assert activity["detail"] == "Run the pilot simulation"
+    assert activity["recent_actions"][0]["detail"] == "flash.par"
+    assert activity["recent_actions"][0]["status"] == "completed"
+    assert commands[0]["live"] and commands[0]["command"] == "python pilot.py"
+    assert "private hidden reasoning" not in json.dumps([activity, commands])
+
+
+def test_interactive_worker_does_not_arm_default_alarm(tmp_path, monkeypatch):
+    from conjecture_solver import workspace_agent
+
+    config = tmp_path / "config.json"
+    config.write_text(
+        json.dumps(dict(backend="builtin", model="fixture", base_url="http://localhost"))
+    )
+    prompt = tmp_path / "prompt.txt"
+    prompt.write_text("Investigate")
+    limits = []
+    alarms = []
+    monkeypatch.setattr(workspace_agent.signal, "signal", lambda *args: None)
+    monkeypatch.setattr(workspace_agent.signal, "alarm", alarms.append)
+
+    def run(*args, **kwargs):
+        limits.append(kwargs["wall_seconds"])
+        return "done"
+
+    monkeypatch.setattr(workspace_agent, "run_agent", run)
+    assert (
+        workspace_agent.main(
+            ["--provider-config", str(config), "--prompt-file", str(prompt), "--cwd", str(tmp_path)]
+        )
+        == 0
+    )
+    assert limits == [None]
+    assert alarms == [0]  # only clear a possible old alarm on exit

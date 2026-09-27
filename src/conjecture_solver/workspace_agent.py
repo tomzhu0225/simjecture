@@ -47,11 +47,17 @@ def model_for(config, model=None, timeout=90):
                 messages = [messages[0], *prefix, *messages[1:]]
             emit("activity", state="thinking", label="Thinking")
             response = super().generate(messages, *args, **kwargs)
-            emit(
-                "activity",
-                state="working" if response.tool_calls else "responding",
-                label="Using tools" if response.tool_calls else "Writing a response",
-            )
+            from .web.activity import describe_tool
+
+            if response.tool_calls and response.tool_calls[0].function.name != "final_answer":
+                call = response.tool_calls[0].function
+                arguments = call.arguments
+                if isinstance(arguments, str):
+                    with contextlib.suppress(ValueError):
+                        arguments = json.loads(arguments)
+                emit("activity", state="working", **describe_tool(call.name, arguments))
+            else:
+                emit("activity", state="responding", label="Writing a response")
             return response
 
     extra = (
@@ -105,7 +111,7 @@ def agent_tools(root, deadline, project=None, workspace=None):
             path: Relative resource inside that skill; defaults to SKILL.md.
         """
         resource = skills.read(name, path, max_chars=32000)
-        emit("tool", name="read_skill", arguments={"name": name, "path": path})
+        emit("activity", state="working", label="Reading skill", detail=f"{name}/{path}")
         return json.dumps(resource)
 
     @tool
@@ -151,7 +157,12 @@ def agent_tools(root, deadline, project=None, workspace=None):
         if remaining <= 0:
             raise TimeoutError("The turn deadline has expired")
         timeout = min(max(1, timeout_seconds), 600, remaining)
-        emit("activity", state="running_command", label="Running a command")
+        emit(
+            "activity",
+            state="running_command",
+            label="Running a command",
+            detail=command.splitlines()[0][:300],
+        )
         if workspace is not None and project is not None:
             job = workspace.start_simulation(
                 project,
@@ -230,6 +241,16 @@ def agent_tools(root, deadline, project=None, workspace=None):
 
     tools = [read_file, write_file, terminal, fetch_page, read_skill]
     if project is not None and workspace is not None:
+
+        @tool
+        def progress_update(message: str) -> str:
+            """Share a concise public progress update during an extended investigation.
+            Explain the current stage, finding/blocker and next action, not private reasoning.
+
+            Args:
+                message: Short factual status update for the user.
+            """
+            return json.dumps(workspace.progress_update(project, message))
 
         @tool
         def run_simulation(name: str, command: str, timeout_seconds: int = 3600) -> str:
@@ -315,15 +336,23 @@ def agent_tools(root, deadline, project=None, workspace=None):
                 )
             raise ValueError("Unknown tool action")
 
-        tools += [draft_study, research_tools, run_simulation, simulation_status]
+        tools += [draft_study, research_tools, run_simulation, simulation_status, progress_update]
     return tools
 
 
 def run_agent(
-    prompt, root, config, *, model=None, wall_seconds=900, judge=False, project=None, workspace=None
+    prompt,
+    root,
+    config,
+    *,
+    model=None,
+    wall_seconds=None,
+    judge=False,
+    project=None,
+    workspace=None,
 ):
-    deadline = time.time() + wall_seconds
-    llm = model_for(config, model, timeout=min(90, max(1, wall_seconds)))
+    deadline = time.time() + wall_seconds if wall_seconds is not None else float("inf")
+    llm = model_for(config, model, timeout=min(600, max(1, wall_seconds or 600)))
     if judge:
         response = llm.generate([{"role": "user", "content": prompt}])
         if response.tool_calls:
@@ -356,7 +385,7 @@ def run_agent(
     agent = ToolCallingAgent(
         tools=agent_tools(root, deadline, project, workspace),
         model=llm,
-        max_steps=24,
+        max_steps=sys.maxsize if wall_seconds is None else 24,
         return_full_result=True,
         verbosity_level=-1,
         step_callbacks=[step_event],
@@ -372,6 +401,8 @@ def run_agent(
             "never place research results in /tmp. Use Markdown with LaTeX equations and "
             "fenced, language-labelled code. Link figures using relative project paths, e.g. "
             "![Description](figure.png), or simulation:<run-id>/figure.png for run outputs. "
+            "During extended work use progress_update for meaningful milestones, blockers "
+            "and next actions. Do not expose private reasoning or invent progress percentages. "
             "Do not invent user inputs, results or tool installation success."
         ),
     )
@@ -407,7 +438,7 @@ def run_agent(
         return str(result.output)
 
 
-def run_external(prompt, root, config, turn, workspace=None):
+def run_external(prompt, root, config, turn, workspace=None, *, wall_seconds=None):
     """Reuse the native CLI supervision adapter for an interactive turn."""
     from .agent_supervisor import AgentSupervisor
 
@@ -416,8 +447,9 @@ def run_external(prompt, root, config, turn, workspace=None):
         campaign=root,
         state_dir=directory,
         workflow="frontier",
-        wall_seconds=900,
-        turn_seconds=900,
+        wall_seconds=wall_seconds or 0,
+        turn_seconds=wall_seconds or 0,
+        unbounded_interactive=wall_seconds is None,
         backend=config["backend"],
         model=config["model"],
         judge_model=config.get("judge_model", config["model"]),
@@ -458,7 +490,10 @@ def run_external(prompt, root, config, turn, workspace=None):
             "Installation is not scientific validation."
         )
         prompt += (
-            "\nFor interactive simulations use w.start_simulation("
+            "\nDuring extended work share public progress with w.progress_update("
+            f"{root.parent.name!r}, 'Current stage, observed finding/blocker, and next action'). "
+            "Use this at meaningful milestones; do not expose private reasoning. "
+            "For interactive simulations use w.start_simulation("
             f"{root.parent.name!r}, {{'name':'Run name','command':'python calculation.py',"
             "'timeout_seconds':3600}). Run commands in foreground; this launches a background "
             "job with permanent inputs/outputs and a live browser monitor. "
@@ -470,8 +505,10 @@ def run_external(prompt, root, config, turn, workspace=None):
             "must launch through start_simulation so their logs and outputs appear in the "
             "monitor. Never use /tmp for simulation inputs or outputs. The interface above "
             "is sufficient; inspect host implementation only after a concrete API error. "
-            "This interactive turn has a 15-minute deadline: save a brief PROGRESS.md before "
-            "long preparation or analysis, launch bounded jobs, and return while they run. "
+            "Interactive work has no default time limit. Save a brief PROGRESS.md during "
+            "long preparation or analysis and use progress_update to explain your current "
+            "stage, findings and next action periodically. Launch bounded simulation jobs "
+            "so the user can follow them; return control once the requested work is ready. "
             "Do not let plotting setup block launching a valid pilot. Use runtime interface "
             "metadata: a native-input-file binary does not imply available Python bindings; "
             "do not search for pywarpx when python_bindings is false. For cross-solver work, "
@@ -510,7 +547,7 @@ def interrupted_turn_summary(directory, turn, seconds, *, timed_out):
     from .web.jobs import list_jobs
 
     reason = (
-        f"The agent reached its {seconds / 60:g}-minute conversation-turn limit."
+        f"The agent reached its {(seconds or 0) / 60:g}-minute conversation-turn limit."
         if timed_out
         else "The agent turn was stopped."
     )
@@ -534,7 +571,7 @@ def main(argv=None):
     parser.add_argument("--prompt-file", type=Path, required=True)
     parser.add_argument("--cwd", type=Path, required=True)
     parser.add_argument("--model")
-    parser.add_argument("--wall-seconds", type=float, default=900)
+    parser.add_argument("--wall-seconds", type=float, default=None)
     parser.add_argument("--judge", action="store_true")
     parser.add_argument("--workspace", type=Path)
     parser.add_argument("--project")
@@ -563,7 +600,8 @@ def main(argv=None):
         signal.signal(signal.SIGALRM, expired)
         signal.signal(signal.SIGTERM, expired)
         signal.signal(signal.SIGINT, expired)
-        signal.alarm(max(1, int(args.wall_seconds)))
+        if args.wall_seconds is not None:
+            signal.alarm(max(1, int(args.wall_seconds)))
         if config.get("backend", "builtin") != "builtin":
             answer = run_external(
                 args.prompt_file.read_text(),
@@ -571,6 +609,7 @@ def main(argv=None):
                 config,
                 args.prompt_file.parent,
                 workspace,
+                wall_seconds=args.wall_seconds,
             )
             brief = args.cwd / "STUDY_BRIEF.json"
             if workspace and brief.exists():

@@ -1,12 +1,14 @@
 # Installation
 
-## One-command browser installation
+## One-command browser preview installation
 
 On Linux or inside an existing WSL distribution:
 
 ```bash
-curl -fsSL https://github.com/tomzhu0225/simjecture/releases/latest/download/install.sh | bash
+curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.2rc1/install.sh | bash
 ```
+
+This command explicitly selects preview **0.5.2rc1**. Stable **0.5.1** remains unchanged.
 
 No Git, Python environment or CLI agent setup is required in advance. The bootstrap
 fetches the versioned workspace bundle and verifies its SHA-256 checksum, installs uv
@@ -29,7 +31,7 @@ remove older versions or research outputs.
 To install without starting, or choose a different web port:
 
 ```bash
-curl -fsSL https://github.com/tomzhu0225/simjecture/releases/latest/download/install.sh | bash -s -- --no-start
+curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.2rc1/install.sh | bash -s -- --no-start
 ~/simjecture/start-workspace --port 8765
 ```
 
