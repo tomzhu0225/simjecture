@@ -96,3 +96,54 @@ def test_api_preserves_structured_history_between_turns(tmp_path, provider):
     turns = sorted((w.directory(project["id"]) / "turns").iterdir())
     assert "Previous conversation" in (turns[0] / "prompt.txt").read_text()
     assert "Previous conversation" not in (turns[1] / "prompt.txt").read_text()
+
+
+def test_deepseek_thinking_tools_and_plain_answers_resume_privately(tmp_path, provider):
+    url, requests = provider
+    workspace = Workspace(tmp_path / ".workspace")
+    workspace.save_settings(
+        dict(backend="builtin", base_url=url, model="deepseek-flash", api_key="test-secret")
+    )
+    workspace.test_connection()
+    project = workspace.create({"name": "DeepSeek compatibility"})
+    for prompt in ["Hello", "Calculate and prepare a counterexample study.", "Hello again"]:
+        workspace.send(project["id"], {"message": prompt})
+        try:
+            result = wait_for(
+                lambda: (
+                    (p if not p["running"] else None)
+                    if (p := workspace.project(project["id"]))
+                    else None
+                )
+            )
+            assert result["messages"][-1]["status"] == "complete", result["messages"]
+            assert "provider-private-reasoning-fixture" not in json.dumps(result)
+        finally:
+            workspace.stop(project["id"])
+    assert result["messages"][-1]["content"] == "Hello!"
+    assert (Path(result["files_directory"]) / "observations.txt").exists()
+    session = workspace.directory(project["id"]) / "agent-session.json"
+    data = json.loads(session.read_text())
+    assert data["reasoning_records"]
+    assert "provider-private-reasoning-fixture" not in json.dumps(data["history"])
+    assert session.stat().st_mode & 0o777 == 0o600
+    tool_requests = [r for r in requests if r.get("tools")]
+    assert len(tool_requests) >= 7
+    assert all(r["tool_choice"] == "auto" for r in tool_requests)
+    assert all(
+        m.get("reasoning_content")
+        for r in tool_requests
+        for m in r["messages"]
+        if m["role"] == "assistant"
+    )
+    prefixes = {}
+    for request in tool_requests:
+        public_prefix = []
+        for message in request["messages"]:
+            public_prefix.append({k: v for k, v in message.items() if k != "reasoning_content"})
+            if message["role"] == "assistant":
+                key = json.dumps(public_prefix, sort_keys=True)
+                assert (
+                    prefixes.setdefault(key, message["reasoning_content"])
+                    == message["reasoning_content"]
+                )

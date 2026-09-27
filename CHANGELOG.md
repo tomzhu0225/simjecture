@@ -4,6 +4,9 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased — next preview
 
+- Support DeepSeek thinking-mode tool choice and plain-text final answers. Keep
+  required provider reasoning metadata in private session storage and preserve
+  it when resuming a conversation, without displaying it in chat or activity.
 - Add independent hide/show controls for both sidebars, remembering their state
   across reloads. Clarify SSH forwarding when a local port is already occupied.
 - Show only simulations in the left sidebar. Separate Simulations and Commands

@@ -35,6 +35,20 @@ def provider():
         def do_POST(self):  # noqa: N802
             request = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
             requests.append(request)
+            deepseek = request.get("model") == "deepseek-flash"
+            if deepseek and request.get("tools"):
+                if request.get("tool_choice") not in (None, "auto", "none"):
+                    self.respond(
+                        {"error": {"message": "Thinking mode does not support this tool_choice"}},
+                        status=400,
+                    )
+                    return
+                if any(
+                    m["role"] == "assistant" and not m.get("reasoning_content")
+                    for m in request["messages"]
+                ):
+                    self.respond({"error": {"message": "Missing reasoning_content"}}, status=400)
+                    return
             tools = {t["function"]["name"] for t in request.get("tools", [])}
             messages = request["messages"]
             context = json.dumps(messages)
@@ -57,6 +71,8 @@ def provider():
             ]
             if "connection_check" in tools:
                 name, args = "connection_check", {"value": "connected"}
+            elif deepseek and plain.rsplit("CURRENT USER REQUEST:\n", 1)[-1].startswith("Hello"):
+                name, args = "final_answer", {"answer": "Hello!"}
             elif "draft_study" in tools and (
                 plain.rsplit("CURRENT USER REQUEST:\n", 1)[-1].startswith("Grill me to prepare")
             ):
@@ -169,11 +185,18 @@ def provider():
                 ],
                 usage=dict(prompt_tokens=10, completion_tokens=10, total_tokens=20),
             )
+            if deepseek:
+                message = body["choices"][0]["message"]
+                message["reasoning_content"] = f"provider-private-reasoning-fixture-{len(requests)}"
+                if name == "final_answer":
+                    message["content"] = args["answer"]
+                    message.pop("tool_calls")
+                    body["choices"][0]["finish_reason"] = "stop"
             self.respond(body)
 
-        def respond(self, value):
+        def respond(self, value, status=200):
             body = json.dumps(value).encode()
-            self.send_response(200)
+            self.send_response(status)
             self.send_header("Content-Type", "application/json")
             self.send_header("Content-Length", str(len(body)))
             self.end_headers()

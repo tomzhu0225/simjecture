@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import contextlib
+import hashlib
 import importlib.util
 import json
 import os
@@ -15,7 +16,9 @@ import signal
 import subprocess
 import sys
 import time
+import uuid
 from pathlib import Path
+from urllib.parse import urlparse
 
 ACTIVE_COMMANDS: set[int] = set()
 
@@ -40,13 +43,90 @@ def model_for(config, model=None, timeout=90):
     require_runtime()
     from smolagents import OpenAIServerModel
 
+    deepseek = "deepseek" in (model or config["model"]).lower() or (
+        urlparse(config["base_url"]).hostname == "api.deepseek.com"
+    )
+
     class ActivityModel(OpenAIServerModel):
+        # smolagents uses textual action/observation history, not native tool
+        # messages. Keep provider-only reasoning alongside that public memory.
+        # DeepSeek requires it on assistant messages whenever tools are supplied.
+        def _prepare_completion_kwargs(self, *args, **kwargs):
+            request = super()._prepare_completion_kwargs(*args, **kwargs)
+            if deepseek and request.get("tools"):
+                request["tool_choice"] = "auto"
+                if not hasattr(self, "reasoning_messages"):
+                    self.reasoning_messages = {}
+                prefix = hashlib.sha256()
+                for message in request["messages"]:
+                    prefix.update(json.dumps(message, sort_keys=True).encode())
+                    if message["role"] != "assistant":
+                        continue
+                    key = prefix.hexdigest()
+                    content = message.get("content") or ""
+                    if isinstance(content, list):
+                        content = "\n".join(part.get("text", "") for part in content)
+                    if key not in self.reasoning_messages:
+                        self.reasoning_messages[key] = next(
+                            (
+                                record["reasoning_content"]
+                                for record in reversed(getattr(self, "reasoning_records", []))
+                                if any(marker and marker in content for marker in record["markers"])
+                            ),
+                            "",
+                        )
+                    # Freeze each historical message: repeated answer text or
+                    # reused provider call IDs must not rewrite the cached prefix.
+                    message["reasoning_content"] = self.reasoning_messages[key]
+            return request
+
         def generate(self, messages, *args, **kwargs):
             prefix = getattr(self, "conversation_history", [])
             if prefix:
                 messages = [messages[0], *prefix, *messages[1:]]
             emit("activity", state="thinking", label="Thinking")
             response = super().generate(messages, *args, **kwargs)
+            if deepseek:
+                # With auto tool choice, an ordinary answer is a valid end of
+                # turn. Adapt it to the agent's final_answer convention locally.
+                tools = kwargs.get("tools_to_call_from") or []
+                if (
+                    not response.tool_calls
+                    and response.content
+                    and any(tool.name == "final_answer" for tool in tools)
+                ):
+                    from smolagents.models import ChatMessageToolCall, ChatMessageToolCallFunction
+
+                    response.tool_calls = [
+                        ChatMessageToolCall(
+                            id=f"answer_{uuid.uuid4().hex}",
+                            type="function",
+                            function=ChatMessageToolCallFunction(
+                                name="final_answer", arguments={"answer": response.content}
+                            ),
+                        )
+                    ]
+                reasoning = getattr(response.raw.choices[0].message, "reasoning_content", None)
+                if isinstance(reasoning, str):
+                    markers = [call.id for call in response.tool_calls or []]
+                    for call in response.tool_calls or []:
+                        if call.function.name == "final_answer":
+                            arguments = call.function.arguments
+                            if isinstance(arguments, str):
+                                with contextlib.suppress(ValueError):
+                                    arguments = json.loads(arguments)
+                            if isinstance(arguments, dict) and isinstance(
+                                arguments.get("answer"), str
+                            ):
+                                markers.append(arguments["answer"])
+                    if isinstance(response.content, str) and response.content.strip():
+                        markers.append(response.content.strip())
+                    if markers:
+                        if not hasattr(self, "reasoning_records"):
+                            self.reasoning_records = []
+                        self.reasoning_records.append(
+                            {"markers": markers, "reasoning_content": reasoning}
+                        )
             from .web.activity import describe_tool
 
             if response.tool_calls and response.tool_calls[0].function.name != "final_answer":
@@ -411,6 +491,8 @@ def run_agent(
     session = load_session(root.parent, config) if workspace and project else {}
     history = session.get("history", [])
     llm.conversation_history = history
+    llm.reasoning_records = session.get("reasoning_records", [])
+    llm.reasoning_messages = session.get("reasoning_messages", {})
     if workspace and project:
         emit("session", resumed=bool(history), backend="builtin")
     with contextlib.redirect_stdout(sys.stderr):
@@ -429,7 +511,13 @@ def run_agent(
                     messages.extend(
                         json.loads(message.model_dump_json()) for message in step.to_messages()
                     )
-                save_session(root.parent, config, history=messages)
+                save_session(
+                    root.parent,
+                    config,
+                    history=messages,
+                    reasoning_records=llm.reasoning_records,
+                    reasoning_messages=llm.reasoning_messages,
+                )
         if result.state != "success":
             return (
                 "This turn reached its action limit. Work so far is saved; "
