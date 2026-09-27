@@ -89,6 +89,22 @@ def contained(root, name):
 def agent_tools(root, deadline, project=None, workspace=None):
     from smolagents import tool
 
+    from .agent_skills import research_skills
+
+    skills = research_skills()
+
+    @tool
+    def read_skill(name: str, path: str = "SKILL.md") -> str:
+        """Read an installed research skill or its reference/example file.
+
+        Args:
+            name: Skill name from AVAILABLE SIMJECTURE RESEARCH SKILLS.
+            path: Relative resource inside that skill; defaults to SKILL.md.
+        """
+        resource = skills.read(name, path, max_chars=32000)
+        emit("tool", name="read_skill", arguments={"name": name, "path": path})
+        return json.dumps(resource)
+
     @tool
     def read_file(path: str) -> str:
         """Read a UTF-8 project file or list a directory.
@@ -209,7 +225,7 @@ def agent_tools(root, deadline, project=None, workspace=None):
                     break
         return url + "\n" + body[:100000].decode(errors="replace")
 
-    tools = [read_file, write_file, terminal, fetch_page]
+    tools = [read_file, write_file, terminal, fetch_page, read_skill]
     if project is not None and workspace is not None:
 
         @tool

@@ -215,3 +215,14 @@ and autonomous studies. Cancel leaves everything intact. Active agents, simulati
 or study workers must stop before deletion. Shared software installations and API
 settings remain; private connection snapshots belonging to the deleted conversation
 are removed with it.
+
+## Research skills in browser agents
+
+Interactive and autonomous workers receive the shipped scientific skill catalogue,
+including FLASH MHD, WarpX and Python experiments. Native CLI agents receive absolute
+SKILL.md paths; the built-in API worker also exposes `read_skill(name, path)` for
+skill instructions, references and examples. Skills describe operation and evidence
+requirements; their presence does not mean the corresponding runtime is installed.
+Use the actual installed capability and keep demonstrations distinct from independently
+reviewed research. Existing running turns keep their original prompt; the catalogue
+is supplied on new turns.

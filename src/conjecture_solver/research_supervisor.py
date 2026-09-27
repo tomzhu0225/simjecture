@@ -167,6 +167,8 @@ lab = Client()
         return self._full_prompt() + feedback + context
 
     def _full_prompt(self):
+        from .agent_skills import skill_context
+
         completion_rule = (
             "Independent acceptance of support OR falsification of the original claim "
             "completes this investigation. A negative answer is a valid outcome; "
@@ -193,6 +195,7 @@ Your working directory is {self.service.work}. The host supplies current journal
 with every turn. It automatically records attempts, execution results, source changes
 and chronological relationships. Bounded checkpoint summaries are unreviewed memory.
 You need not maintain the journal manually. RESEARCH_BRIEF.md links to full receipts.
+{skill_context()}
 The original hypothesis is immutable:
 {self.service.manifest["hypothesis"]}
 The small evidence service is available with `from lab import lab` in Python.

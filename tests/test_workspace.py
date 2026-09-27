@@ -220,6 +220,8 @@ def test_real_agent_chat_persists_files_brief_and_secret_boundary(tmp_path, prov
         assert (files / "calculation.txt").read_text() == "calculation finished\n"
         assert Workspace(workspace.root).project(project["id"])["messages"] == result["messages"]
         assert any("Saved observations.txt" in json.dumps(r) for r in requests)
+        assert any("AVAILABLE SIMJECTURE RESEARCH SKILLS" in json.dumps(r) for r in requests)
+        assert any("flash-mhd/SKILL.md" in json.dumps(r) for r in requests)
     finally:
         workspace.stop(project["id"])
 
