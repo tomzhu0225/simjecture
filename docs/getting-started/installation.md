@@ -5,10 +5,10 @@
 On Linux or inside an existing WSL distribution:
 
 ```bash
-curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.2rc1/install.sh | bash
+curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.2rc2/install.sh | bash
 ```
 
-This command explicitly selects preview **0.5.2rc1**. Stable **0.5.1** remains unchanged.
+This command explicitly selects preview **0.5.2rc2**. Stable **0.5.1** remains unchanged.
 
 No Git, Python environment or CLI agent setup is required in advance. The bootstrap
 fetches the versioned workspace bundle and verifies its SHA-256 checksum, installs uv
@@ -31,7 +31,7 @@ remove older versions or research outputs.
 To install without starting, or choose a different web port:
 
 ```bash
-curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.2rc1/install.sh | bash -s -- --no-start
+curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.2rc2/install.sh | bash -s -- --no-start
 ~/simjecture/start-workspace --port 8765
 ```
 
@@ -42,7 +42,7 @@ blocked by a container host. The GUI remains usable if numerical execution requi
 attention. See [restricted containers](../how-to/restricted-containers.md); isolation
 is never silently weakened.
 
-### Changes in the rc2 development installer
+### Managed installation and restricted hosts
 
 On namespace-restricted hosts, a root invocation prepares a dedicated non-root
 account and uses `/srv/simjecture` by default. The printed launcher handles future
@@ -127,8 +127,9 @@ The CPU profile is provisioned and checked in one command:
 uv run simjecture install warpx-cpu
 ```
 
-The CUDA profile requires an operator-audited source checkout at the revision
-declared by the WarpX deployment skill:
+The CUDA profile can fetch the pinned source and provision its build prerequisites.
+The bundled recipe builds 2D; use the GUI agent to discuss other dimensions or
+application requirements. An audited source checkout can also be supplied:
 
 ```bash
 uv run simjecture install warpx-cuda \

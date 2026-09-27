@@ -2,7 +2,23 @@
 
 This project follows semantic versioning. Dates use ISO 8601.
 
-## Unreleased — next preview
+## 0.5.2rc2 (preview) — 2026-09-27
+
+- Provision scientific compilers, MPI, HDF5 and other prerequisites in managed
+  environments for the included tools. Preserve diagnostic logs and validate the
+  installed runtime using the selected execution backend before reporting success.
+- Verify all five one-click tools from empty runtime directories, real agent-assisted
+  FLASH and WarpX CUDA builds, GPU execution, and browser uploads of licensed source.
+- Handle restricted root installations with a dedicated non-root account, safe
+  launchers, failed-install retry and upgrade rollback.
+- Make the autonomous research screen follow preparation, proposal, execution and
+  results. Return finished reports to the interactive agent without interrupting
+  active work; preserve queued delivery across restarts and link explanations to evidence.
+- Support follow-up studies in the same conversation with separate briefs and reports.
+  Remove duplicate navigation labels and collapse routine workspace metadata.
+- Accept source archive uploads up to 64 MiB. Keep installation commands separate
+  from simulations, support checks for registered custom tools, and reject runtimes
+  whose host paths or interpreter symlinks cannot work in the execution backend.
 
 - Keep installation skills readable while runtimes are incomplete; retry the
   pinned Singularity-EOS source fetch after transient transport failures and
