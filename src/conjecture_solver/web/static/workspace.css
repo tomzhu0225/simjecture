@@ -2946,3 +2946,9 @@ html[data-right-collapsed] .conversation-column {
     gap: 0;
   }
 }
+
+.tool-failure {
+  color: var(--danger, #b04435);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}

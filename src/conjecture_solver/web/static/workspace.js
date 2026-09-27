@@ -759,14 +759,27 @@ async function refreshTools() {
         "span",
         tool.state === "working"
           ? "◌ Working…"
-          : tool.installed
-            ? "✓ Installed"
-            : "Not installed",
+          : tool.state === "failed"
+            ? "Needs attention"
+            : tool.installed
+              ? "✓ Installed"
+              : "Not installed",
         `tool-status ${tool.installed ? "installed" : "not-installed"}`,
       ),
       el("h3", tool.name),
       el("p", tool.description),
     );
+    const failure =
+      tool.report?.error ||
+      (tool.report?.checks || [])
+        .filter((check) => check.status === "fail" && check.required !== false)
+        .map((check) => [check.detail, check.remedy].filter(Boolean).join(" "))
+        .join("\n");
+    if (failure && tool.state !== "working") {
+      const warning = el("p", failure, "tool-failure");
+      warning.setAttribute("role", "status");
+      card.append(warning);
+    }
     if (tool.installed)
       card.append(
         el(

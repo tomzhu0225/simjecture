@@ -934,7 +934,7 @@ class Workspace:
             installed = bool(config) and executable.is_file() and os.access(executable, os.X_OK)
             registered = installed
             installed = installed or bool(external)
-            latest = (result or saved) if registered else {}
+            latest = result or (saved if registered else {})
             if (
                 latest
                 and descriptor
@@ -962,6 +962,8 @@ class Workspace:
                     if latest.get("ready") and installed
                     else "installed"
                     if installed
+                    else "failed"
+                    if latest and not latest.get("ready")
                     else "available",
                     report=latest,
                     path=str(descriptor) if descriptor and registered else None,

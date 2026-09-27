@@ -412,6 +412,15 @@ def test_refresh_preserves_inspector_and_tool_details_and_dark_math(tmp_path, mo
             assert result["consoleScroll"] == 90 and result["inspectorScroll"] == 210
             assert result["background"] == "rgb(36, 41, 59)"
             assert result["color"] == "rgb(240, 237, 255)"
+            tool.update(
+                installed=False,
+                state="failed",
+                report={"ready": False, "error": "Package download failed"},
+            )
+            page.get_by_role("button", name="Research tools", exact=True).click()
+            page.evaluate("refreshTools()")
+            assert page.locator(".tool-failure").inner_text() == "Package download failed"
+            assert page.locator(".tool-failure").is_visible()
             browser.close()
     finally:
         server.shutdown()

@@ -646,7 +646,10 @@ class DeploymentManager:
             self._write_report(ready)
             return ready
         checks = self._core_checks(probe=True)
-        if not self._ready(checks):
+        # Downloading a solver does not require a working experiment sandbox.
+        # Doctor still reports sandbox failures and evidence execution stays blocked.
+        install_checks = [c for c in checks if not c.name.startswith("core.bubblewrap")]
+        if not self._ready(install_checks):
             return DeploymentReport(
                 profile=DeploymentProfile.WARPX_CPU,
                 project_root=str(self.project_root),
@@ -690,6 +693,10 @@ class DeploymentManager:
             if environment_manager
             else shutil.which("micromamba") or shutil.which("mamba")
         )
+        if not manager and not environment_manager:
+            from .runtime_bootstrap import ensure_micromamba
+
+            manager = ensure_micromamba(self.runtime_root, dry_run=dry_run)
         if not manager:
             checks.append(
                 _check(

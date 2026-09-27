@@ -532,3 +532,40 @@ def test_committed_eos_and_opacity_capability_configs_parse() -> None:
         assert config.manifest.preflight_resource is not None
         assert config.manifest.preflight_resource.startswith("examples/")
         assert config.executable == "bin/python"
+
+def test_cpu_install_can_provision_while_sandbox_remains_unavailable(tmp_path, monkeypatch):
+    root = _project(tmp_path)
+    manager = DeploymentManager(root)
+
+    def core(self, *, probe):
+        return [
+            DeploymentCheck(
+                name="core.bubblewrap_namespace",
+                status=DeploymentCheckStatus.FAIL,
+                required=True,
+                detail="Namespaces denied",
+            )
+        ]
+
+    monkeypatch.setattr(DeploymentManager, "_core_checks", core)
+    monkeypatch.setattr("conjecture_solver.deployment.shutil.which", lambda name: None)
+    monkeypatch.setattr(
+        "conjecture_solver.runtime_bootstrap.ensure_micromamba",
+        lambda *a, **kw: "/local/micromamba",
+    )
+
+    def install(command, **kwargs):
+        prefix = Path(command[command.index("--prefix") + 1])
+        _materialize_runtime(
+            prefix.parent.parent, prefix.relative_to(prefix.parent.parent).as_posix()
+        )
+        return subprocess.CompletedProcess(command, 0, "", "")
+
+    monkeypatch.setattr("conjecture_solver.deployment.subprocess.run", install)
+    report = manager.install(DeploymentProfile.WARPX_CPU)
+    assert report.changed and not report.ready
+    assert (root / ".runtime/warpx-cpu/bin/python").exists()
+    assert any(
+        c.name == "core.bubblewrap_namespace" and c.status == DeploymentCheckStatus.FAIL
+        for c in report.checks
+    )

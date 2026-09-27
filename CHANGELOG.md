@@ -4,6 +4,9 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased — next preview
 
+- Show failed tool installations directly on catalogue cards, including tools
+  that are not yet installed. Bootstrap checksummed Micromamba for WarpX CPU
+  and separate solver provisioning from experiment-sandbox readiness.
 - Support DeepSeek thinking-mode tool choice and plain-text final answers. Keep
   required provider reasoning metadata in private session storage and preserve
   it when resuming a conversation, without displaying it in chat or activity.

@@ -721,3 +721,13 @@ def test_progress_updates_are_durable_and_visible_in_conversation(tmp_path):
     result = w.project(p["id"])
     assert result["messages"][-1]["progress"].startswith("Inputs are prepared")
     assert result["messages"][-1]["last_activity_at"] > 0
+
+
+def test_uninstalled_tool_keeps_failed_install_report(tmp_path):
+    workspace = Workspace(tmp_path / ".workspace")
+    report = {"ready": False, "error": "Package download failed"}
+    (workspace.root / "tools/warpx-cpu").mkdir(parents=True)
+    put(workspace.root / "tools/warpx-cpu/result.json", report)
+    card = next(c for c in workspace.catalogue() if c["id"] == "warpx-cpu")
+    assert card["report"] == report
+    assert card["readiness"] == "failed"
