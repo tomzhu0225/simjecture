@@ -134,8 +134,8 @@ async function followRoute() {
             .getElementById(`study-${state.routeStudy}`)
             ?.scrollIntoView({ behavior: "smooth", block: "start" });
       }
-      if (params.get("simulation"))
-        await monitor.open(params.get("simulation"));
+      if (params.get("simulation") || params.get("command"))
+        await monitor.open(params.get("simulation") || params.get("command"));
     } else
       view(
         ["settings", "tools"].includes(location.hash.slice(1))

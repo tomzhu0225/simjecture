@@ -2175,14 +2175,14 @@ wa-split-panel.project-layout::part(divider):hover {
 .run-meta [data-elapsed]:after {
   content: " elapsed";
 }
-#simulation-detail details {
+:is(#simulation-detail, #command-detail) details {
   margin: 12px 0;
 }
-#simulation-detail details summary {
+:is(#simulation-detail, #command-detail) details summary {
   font-size: 13px;
 }
-#simulation-detail details pre,
-#simulation-detail details code {
+:is(#simulation-detail, #command-detail) details pre,
+:is(#simulation-detail, #command-detail) details code {
   font-size: 12px;
   white-space: pre-wrap;
   overflow-wrap: anywhere;

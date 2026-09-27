@@ -48,7 +48,7 @@
           <p class="muted">Your work will appear here.</p>
         </div>
         <div id="sidebar-simulations" class="sidebar-runs" hidden>
-          <div class="sidebar-label">RUNS &amp; COMMANDS</div>
+          <div class="sidebar-label">SIMULATIONS</div>
           <div id="sidebar-run-list"></div>
         </div>
         <div class="sidebar-bottom">
@@ -547,10 +547,14 @@
               </div>
               <wa-tab-group id="inspector-tabs" active="files">
                 <wa-tab panel="simulations"
-                  >Simulations &amp; commands
+                  >Simulations
                   <span id="simulation-count" class="count-badge"
                     >0</span
                   ></wa-tab
+                >
+                <wa-tab panel="commands"
+                  >Commands
+                  <span id="command-count" class="count-badge">0</span></wa-tab
                 >
                 <wa-tab panel="files">Files</wa-tab>
                 <wa-tab-panel name="simulations">
@@ -564,6 +568,14 @@
                         saved outputs appear here, beside the conversation.
                       </p>
                     </div>
+                  </div>
+                </wa-tab-panel>
+                <wa-tab-panel name="commands">
+                  <div id="command-list"></div>
+                  <div id="command-detail">
+                    <p class="monitor-empty">
+                      Agent commands and their output appear here.
+                    </p>
                   </div>
                 </wa-tab-panel>
                 <wa-tab-panel name="files" active>

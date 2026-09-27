@@ -2,6 +2,12 @@
 
 This project follows semantic versioning. Dates use ISO 8601.
 
+## Unreleased — next preview
+
+- Show only simulations in the left sidebar. Separate Simulations and Commands
+  into right-side tabs with independent selections, counts and links; incoming
+  commands no longer open the simulation monitor.
+
 ## 0.5.2rc1 (preview) — 2026-09-27
 
 - Add a Linux/WSL one-command installer with checksummed release bundles, automatic

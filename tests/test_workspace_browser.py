@@ -230,6 +230,32 @@ print("wave")
             page.locator("#simulation-detail h3").filter(has_text="Wave evolution").wait_for()
             assert "simulation=" + job["id"] in page.url
             assert page.locator("#interactive-panel").is_visible()
+            command = app.workspace.start_simulation(
+                project["id"],
+                dict(name="Inspect environment", command="echo command-ready", kind="command"),
+            )
+            playwright.expect(page.locator("#command-count")).to_have_text("1", timeout=15000)
+            playwright.expect(page.locator("#simulation-count")).to_have_text("1")
+            playwright.expect(page.locator("#sidebar-run-list a")).to_have_count(1)
+            playwright.expect(page.locator("#sidebar-run-list")).not_to_contain_text(
+                "Inspect environment"
+            )
+            playwright.expect(page.locator("#inspector-tabs")).to_have_attribute(
+                "active", "simulations"
+            )
+            page.locator('wa-tab[panel="commands"]').click()
+            page.locator("#command-list a").click()
+            assert "command=" + command["id"] in page.url
+            page.reload()
+            page.locator("#command-detail .live-console").filter(
+                has_text="command-ready"
+            ).wait_for()
+            playwright.expect(page.locator("#inspector-tabs")).to_have_attribute(
+                "active", "commands"
+            )
+            playwright.expect(page.locator("#simulation-list a")).to_have_count(1)
+            page.locator("#sidebar-run-list a").click()
+            page.locator("#simulation-detail h3").filter(has_text="Wave evolution").wait_for()
             page.screenshot(
                 path="artifacts/workspace-preview/simulation-monitor.png", full_page=True
             )
