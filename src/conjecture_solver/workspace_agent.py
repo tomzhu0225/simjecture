@@ -478,7 +478,9 @@ def run_external(prompt, root, config, turn, workspace=None, *, wall_seconds=Non
     )
     if workspace:
         prompt += (
-            "\nFor research software inventory, reuse the local Python bridge: "
+            f"\nUse {sys.executable} for the workspace bridge and project file analysis. "
+            "Scientific runtimes may have separate interpreters. "
+            "For research software inventory, reuse the local Python bridge: "
             "from conjecture_solver.web.workspace import Workspace; "
             f"w = Workspace({str(workspace.root)!r}); "
             "w.catalogue() lists tools. "

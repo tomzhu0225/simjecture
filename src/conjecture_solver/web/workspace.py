@@ -653,7 +653,7 @@ class Workspace:
                     last_activity_at=last_activity,
                     progress=progress,
                     monitored_runs=sum(
-                        j.get("source_turn") == turn.name and not j.get("native")
+                        j.get("source_turn") == turn.name and j.get("kind") == "simulation"
                         for j in simulations
                     ),
                     started_at=request.get("created_at", int(turn.name) / 1e9),
