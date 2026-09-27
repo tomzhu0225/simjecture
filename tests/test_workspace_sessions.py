@@ -106,7 +106,11 @@ def test_deepseek_thinking_tools_and_plain_answers_resume_privately(tmp_path, pr
     )
     workspace.test_connection()
     project = workspace.create({"name": "DeepSeek compatibility"})
-    for prompt in ["Hello", "Calculate and prepare a counterexample study.", "Hello again"]:
+    for prompt in [
+        "Hello",
+        "Progress test: calculate and prepare a counterexample study.",
+        "Hello again",
+    ]:
         workspace.send(project["id"], {"message": prompt})
         try:
             result = wait_for(
@@ -147,3 +151,35 @@ def test_deepseek_thinking_tools_and_plain_answers_resume_privately(tmp_path, pr
                     prefixes.setdefault(key, message["reasoning_content"])
                     == message["reasoning_content"]
                 )
+
+
+def test_deepseek_preambles_cannot_loop_or_complete_without_actions(monkeypatch):
+    from types import SimpleNamespace
+
+    from smolagents import OpenAIServerModel
+    from smolagents.models import ChatMessage, TokenUsage
+
+    from conjecture_solver.workspace_agent import model_for
+
+    calls = []
+
+    def generate(self, messages, *args, **kwargs):
+        calls.append(messages)
+        return ChatMessage(
+            role="assistant",
+            content="Let me check that now.",
+            raw=SimpleNamespace(
+                choices=[SimpleNamespace(message=SimpleNamespace(reasoning_content="private"))]
+            ),
+            token_usage=TokenUsage(input_tokens=1, output_tokens=1),
+        )
+
+    monkeypatch.setattr(OpenAIServerModel, "generate", generate)
+    model = model_for(dict(model="deepseek-flash", base_url="http://127.0.0.1:1/v1"))
+    with pytest.raises(RuntimeError, match="did not complete"):
+        model.generate(
+            [{"role": "user", "content": "Install the tool"}],
+            tools_to_call_from=[SimpleNamespace(name="final_answer")],
+        )
+    assert len(calls) == 4
+    assert "COMPLETION CHECK:" in str(calls[1])

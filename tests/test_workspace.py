@@ -188,7 +188,16 @@ def provider():
             if deepseek:
                 message = body["choices"][0]["message"]
                 message["reasoning_content"] = f"provider-private-reasoning-fixture-{len(requests)}"
-                if name == "final_answer":
+                checkpoint = "COMPLETION CHECK:" in json.dumps(current_messages[-2:])
+                if (
+                    not calls
+                    and plain.rsplit("CURRENT USER REQUEST:\n", 1)[-1].startswith("Progress test")
+                    and not checkpoint
+                ):
+                    message["content"] = "Let me inspect and write the calculation now."
+                    message.pop("tool_calls")
+                    body["choices"][0]["finish_reason"] = "stop"
+                elif name == "final_answer" and not checkpoint:
                     message["content"] = args["answer"]
                     message.pop("tool_calls")
                     body["choices"][0]["finish_reason"] = "stop"

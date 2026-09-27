@@ -16,7 +16,6 @@ import signal
 import subprocess
 import sys
 import time
-import uuid
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -80,53 +79,81 @@ def model_for(config, model=None, timeout=90):
                     message["reasoning_content"] = self.reasoning_messages[key]
             return request
 
+        def remember_reasoning(self, response):
+            reasoning = getattr(response.raw.choices[0].message, "reasoning_content", None)
+            if isinstance(reasoning, str):
+                markers = [call.id for call in response.tool_calls or []]
+                for call in response.tool_calls or []:
+                    if call.function.name == "final_answer":
+                        arguments = call.function.arguments
+                        if isinstance(arguments, str):
+                            with contextlib.suppress(ValueError):
+                                arguments = json.loads(arguments)
+                        if isinstance(arguments, dict) and isinstance(arguments.get("answer"), str):
+                            markers.append(arguments["answer"])
+                if isinstance(response.content, str) and response.content.strip():
+                    markers.append(response.content.strip())
+                if markers:
+                    if not hasattr(self, "reasoning_records"):
+                        self.reasoning_records = []
+                    self.reasoning_records.append(
+                        {"markers": markers, "reasoning_content": reasoning}
+                    )
+
         def generate(self, messages, *args, **kwargs):
             prefix = getattr(self, "conversation_history", [])
             if prefix:
                 messages = [messages[0], *prefix, *messages[1:]]
-            emit("activity", state="thinking", label="Thinking")
-            response = super().generate(messages, *args, **kwargs)
-            if deepseek:
-                # With auto tool choice, an ordinary answer is a valid end of
-                # turn. Adapt it to the agent's final_answer convention locally.
-                tools = kwargs.get("tools_to_call_from") or []
-                if (
-                    not response.tool_calls
-                    and response.content
-                    and any(tool.name == "final_answer" for tool in tools)
-                ):
-                    from smolagents.models import ChatMessageToolCall, ChatMessageToolCallFunction
-
-                    response.tool_calls = [
-                        ChatMessageToolCall(
-                            id=f"answer_{uuid.uuid4().hex}",
-                            type="function",
-                            function=ChatMessageToolCallFunction(
-                                name="final_answer", arguments={"answer": response.content}
-                            ),
-                        )
-                    ]
-                reasoning = getattr(response.raw.choices[0].message, "reasoning_content", None)
-                if isinstance(reasoning, str):
-                    markers = [call.id for call in response.tool_calls or []]
-                    for call in response.tool_calls or []:
-                        if call.function.name == "final_answer":
-                            arguments = call.function.arguments
-                            if isinstance(arguments, str):
-                                with contextlib.suppress(ValueError):
-                                    arguments = json.loads(arguments)
-                            if isinstance(arguments, dict) and isinstance(
-                                arguments.get("answer"), str
-                            ):
-                                markers.append(arguments["answer"])
-                    if isinstance(response.content, str) and response.content.strip():
-                        markers.append(response.content.strip())
-                    if markers:
-                        if not hasattr(self, "reasoning_records"):
-                            self.reasoning_records = []
-                        self.reasoning_records.append(
-                            {"markers": markers, "reasoning_content": reasoning}
-                        )
+            tools = kwargs.get("tools_to_call_from") or []
+            explicit_completion = deepseek and any(tool.name == "final_answer" for tool in tools)
+            total_input = total_output = 0
+            for attempt in range(4):
+                emit("activity", state="thinking", label="Thinking")
+                response = super().generate(messages, *args, **kwargs)
+                if response.token_usage:
+                    total_input += response.token_usage.input_tokens
+                    total_output += response.token_usage.output_tokens
+                if deepseek:
+                    self.remember_reasoning(response)
+                if not explicit_completion or response.tool_calls:
+                    break
+                # Plain text may be a progress preamble, not a final answer.
+                # Require an explicit completion handoff without using the
+                # provider's unsupported forced tool_choice setting.
+                if response.content:
+                    emit("progress", text=str(response.content))
+                if attempt == 3:
+                    raise RuntimeError(
+                        "The provider repeatedly returned text without taking a tool action "
+                        "or explicitly finishing the turn. Work is saved; "
+                        "this turn did not complete."
+                    )
+                messages = [
+                    *messages,
+                    {
+                        "role": "assistant",
+                        "content": [{"type": "text", "text": str(response.content or "")}],
+                    },
+                    {
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": (
+                                    "COMPLETION CHECK: Your text does not finish this turn. "
+                                    "If it announces work, perform the next tool action now. "
+                                    "If answered or blocked, call final_answer with the "
+                                    "answer, concrete blocker, or essential question. "
+                                    "Never finalize merely to promise work. For greetings "
+                                    "and ordinary questions, use final_answer for the reply."
+                                ),
+                            }
+                        ],
+                    },
+                ]
+            if response.token_usage:
+                response.token_usage.input_tokens = total_input
+                response.token_usage.output_tokens = total_output
             from .web.activity import describe_tool
 
             if response.tool_calls and response.tool_calls[0].function.name != "final_answer":
@@ -473,6 +500,9 @@ def run_agent(
             "You are Simjecture's research assistant. Work on the user's actual request. "
             "Distinguish observations, hypotheses and independently accepted findings. "
             "Use files and tools to do work, not just suggest commands. Never expose credentials. "
+            "If you announce an action, perform it before ending the turn. Use final_answer "
+            "for a completed answer, a concrete blocker, or an essential question, never "
+            "merely a promise of future work. "
             "For interactive requests return after doing the requested task. For autonomous "
             "research follow the supplied research service guide and hand off for reviews. "
             "Only use draft_study when an autonomous investigation would serve the request. "

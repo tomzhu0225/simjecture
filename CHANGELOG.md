@@ -4,6 +4,9 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased — next preview
 
+- Require an explicit completion handoff after DeepSeek text-only progress replies,
+  continuing tools instead of marking promises as completed answers. Bound repeated
+  protocol failures and retain usage accounting for completion-check requests.
 - Move routine workspace controls and execution status into the left sidebar,
   remove the redundant top bar, and make execution warnings dismissible with
   expandable diagnostics. Keep conversation-blocking notices prominent.
