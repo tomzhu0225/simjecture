@@ -2908,3 +2908,41 @@ wa-split-panel.project-layout::part(divider):hover {
   font-size: 13px;
   cursor: pointer;
 }
+
+/* Keep reopen controls outside the panels and preserve the saved splitter size. */
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+#left-sidebar-toggle,
+#right-sidebar-toggle {
+  flex-shrink: 0;
+}
+html[data-left-collapsed] .sidebar {
+  display: none;
+}
+html[data-left-collapsed] main {
+  margin-left: 0;
+}
+html[data-right-collapsed] #research-layout {
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-rows: auto !important;
+}
+html[data-right-collapsed] #research-layout::part(divider),
+html[data-right-collapsed] #research-layout::part(end),
+html[data-right-collapsed] #research-inspector {
+  display: none;
+}
+html[data-right-collapsed] .conversation-column {
+  padding-right: 0;
+}
+@media (max-width: 700px) {
+  .topbar-left #breadcrumb {
+    display: none;
+  }
+  .topbar-left {
+    gap: 0;
+  }
+}

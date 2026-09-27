@@ -256,11 +256,32 @@ print("wave")
             playwright.expect(page.locator("#simulation-list a")).to_have_count(1)
             page.locator("#sidebar-run-list a").click()
             page.locator("#simulation-detail h3").filter(has_text="Wave evolution").wait_for()
+            original_width = page.locator(".conversation-column").bounding_box()["width"]
+            page.get_by_role("button", name="Hide left sidebar", exact=True).click()
+            page.get_by_role("button", name="Hide right sidebar", exact=True).click()
+            assert not page.locator("#workspace-sidebar").is_visible()
+            assert not page.locator("#research-inspector").is_visible()
+            assert page.locator(".conversation-column").bounding_box()["width"] > original_width
+            page.reload()
+            page.get_by_role("button", name="Show right sidebar", exact=True).wait_for()
+            assert not page.locator("#workspace-sidebar").is_visible()
+            assert not page.locator("#research-inspector").is_visible()
+            page.get_by_role("button", name="Show left sidebar", exact=True).click()
+            page.locator("#sidebar-run-list a").click()
+            assert page.locator("#research-inspector").is_visible()
+            page.locator("#simulation-detail h3").filter(has_text="Wave evolution").wait_for()
             page.screenshot(
                 path="artifacts/workspace-preview/simulation-monitor.png", full_page=True
             )
             page.set_viewport_size({"width": 390, "height": 844})
             assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
+            page.get_by_role("button", name="Hide left sidebar", exact=True).click()
+            page.get_by_role("button", name="Hide right sidebar", exact=True).click()
+            assert not page.locator("#research-inspector").is_visible()
+            assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
+            page.get_by_role("button", name="Show left sidebar", exact=True).click()
+            page.get_by_role("button", name="Show right sidebar", exact=True).click()
+            assert page.locator("#research-inspector").is_visible()
             assert errors == []
             browser.close()
     finally:

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Simjecture · Research workspace</title>
     <script src="/assets/workspace-theme.js"></script>
+    <script src="/assets/workspace-panels.js"></script>
     <link
       rel="stylesheet"
       href="/assets/vendor/webawesome-3.14.0/styles/themes/default.css"
@@ -24,7 +25,7 @@
   </head>
   <body>
     <div class="shell">
-      <aside class="sidebar">
+      <aside class="sidebar" id="workspace-sidebar">
         <a href="/workspace" class="brand"
           ><span class="mark" aria-hidden="true">s<span>·</span></span
           ><span>simjecture<small>RESEARCH WORKSPACE</small></span></a
@@ -61,7 +62,18 @@
       </aside>
       <main>
         <header class="topbar">
-          <div id="breadcrumb">Workspace <span>/</span> Overview</div>
+          <div class="topbar-left">
+            <button
+              id="left-sidebar-toggle"
+              class="quiet"
+              type="button"
+              aria-controls="workspace-sidebar"
+              aria-expanded="true"
+            >
+              Hide left sidebar
+            </button>
+            <div id="breadcrumb">Workspace <span>/</span> Overview</div>
+          </div>
           <div class="topbar-right">
             <button id="theme-toggle" class="quiet" type="button">
               Dark mode
@@ -276,6 +288,15 @@
               <p class="eyebrow">RESEARCH CONVERSATION</p>
               <h1 id="project-title"></h1>
             </div>
+            <button
+              id="right-sidebar-toggle"
+              class="quiet"
+              type="button"
+              aria-controls="research-inspector"
+              aria-expanded="true"
+            >
+              Hide right sidebar
+            </button>
             <div class="mode-switch" role="group" aria-label="Research mode">
               <button id="interactive-mode" class="selected">
                 Interactive research</button

@@ -4,6 +4,8 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased — next preview
 
+- Add independent hide/show controls for both sidebars, remembering their state
+  across reloads. Clarify SSH forwarding when a local port is already occupied.
 - Show only simulations in the left sidebar. Separate Simulations and Commands
   into right-side tabs with independent selections, counts and links; incoming
   commands no longer open the simulation monitor.

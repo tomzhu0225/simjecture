@@ -154,8 +154,9 @@ if [[ -n "${SSH_CONNECTION:-}" ]]; then
   simjecture_login="$(id -un)"
   simjecture_host="${SIMJECTURE_SSH_HOST:-$simjecture_server}"
   echo 'On your LOCAL computer, open another terminal and run:'
-  printf '  ssh -p %q -N -L 8766:127.0.0.1:%s %q\n' "$simjecture_ssh_port" "$simjecture_port" "$simjecture_login@$simjecture_host"
+  printf '  ssh -o ExitOnForwardFailure=yes -p %q -N -L 8766:127.0.0.1:%s %q\n' "$simjecture_ssh_port" "$simjecture_port" "$simjecture_login@$simjecture_host"
   echo 'Then open http://localhost:8766. If SSH uses a public relay/NAT, substitute the same host and port you used to log in.'
+  echo 'If local port 8766 is occupied, change only the first port in -L to another free port (for example 8876), then open http://localhost:8876.'
   simjecture_web_args+=(--no-open)
 fi
 if ((simjecture_start)); then

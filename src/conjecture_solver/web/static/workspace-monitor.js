@@ -18,11 +18,12 @@ window.WorkspaceMonitor = {
       job.kind === "command" ? "commands" : "simulations";
     const prefixFor = (panel) =>
       panel === "commands" ? "command" : "simulation";
-    function open(id) {
+    function open(id, { reveal = true } = {}) {
       render(project());
       const job = project()?.simulations?.find((j) => j.id === id);
       if (!job) return;
       const panel = panelFor(job);
+      if (reveal) window.WorkspacePanels?.set("right", false);
       selected[panel] = id;
       detailRevision[panel] = "";
       $("inspector-tabs").setAttribute("active", panel);
@@ -107,6 +108,7 @@ window.WorkspaceMonitor = {
           ) {
             const b = a.cloneNode(true);
             b.className = "sidebar-run";
+            b.onclick = () => window.WorkspacePanels?.set("right", false);
             $("sidebar-run-list").append(b);
           }
         }

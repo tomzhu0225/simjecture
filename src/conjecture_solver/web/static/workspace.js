@@ -115,7 +115,7 @@ function projectHash(id, options = {}) {
 function projectLink(id, options = {}) {
   return `#${projectHash(id, options)}`;
 }
-async function followRoute() {
+async function followRoute({ reveal = true } = {}) {
   if (state.routing) return;
   const initial = location.hash;
   state.routing = true;
@@ -135,7 +135,9 @@ async function followRoute() {
             ?.scrollIntoView({ behavior: "smooth", block: "start" });
       }
       if (params.get("simulation") || params.get("command"))
-        await monitor.open(params.get("simulation") || params.get("command"));
+        await monitor.open(params.get("simulation") || params.get("command"), {
+          reveal,
+        });
     } else
       view(
         ["settings", "tools"].includes(location.hash.slice(1))
@@ -1047,7 +1049,7 @@ async function boot() {
       "form button, #new-project, #check-machine",
     ))
       b.disabled = true;
-  await followRoute();
+  await followRoute({ reveal: false });
 }
 for (const item of document.querySelectorAll("[data-view]"))
   item.onclick = () => view(item.dataset.view);
