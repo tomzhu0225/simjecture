@@ -468,3 +468,33 @@ def test_live_activity_updates_preserve_completed_message_nodes(tmp_path):
     finally:
         server.shutdown()
         server.server_close()
+
+
+def test_cooperative_fallback_warning_is_visible_and_persistent(tmp_path):
+    from conjecture_solver.execution import COOPERATIVE_WARNING
+
+    playwright = pytest.importorskip("playwright.sync_api")
+    app = SimjectureWebApplication(runs_root=tmp_path, scan_roots=(tmp_path,))
+    app.workspace.execution = dict(
+        backend="proot-cooperative",
+        available=True,
+        warning=COOPERATIVE_WARNING,
+        reason="Probe passed",
+    )
+    server = create_server(app, port=0)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    try:
+        with playwright.sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page()
+            page.goto(f"http://127.0.0.1:{server.server_port}")
+            playwright.expect(page.locator("#execution-warning")).to_have_text(COOPERATIVE_WARNING)
+            assert page.locator("#execution-warning").is_visible()
+            assert page.locator("#execution-backend").input_value() == "proot-cooperative"
+            page.reload()
+            playwright.expect(page.locator("#execution-warning")).to_have_text(COOPERATIVE_WARNING)
+            assert page.locator("#execution-warning").is_visible()
+            browser.close()
+    finally:
+        server.shutdown()
+        server.server_close()

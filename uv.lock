@@ -2637,6 +2637,7 @@ tui = [
 ]
 workspace = [
     { name = "h5py" },
+    { name = "psutil" },
     { name = "smolagents", extra = ["openai"] },
 ]
 
@@ -2669,6 +2670,7 @@ requires-dist = [
     { name = "pandas", specifier = ">=2.2,<4" },
     { name = "pillow", specifier = ">=10,<13" },
     { name = "psutil", marker = "extra == 'process'", specifier = ">=6,<8" },
+    { name = "psutil", marker = "extra == 'workspace'", specifier = ">=6,<8" },
     { name = "pydantic", specifier = ">=2.9,<3" },
     { name = "scipy", specifier = ">=1.12,<2" },
     { name = "smolagents", extras = ["openai"], marker = "extra == 'workspace'", specifier = ">=1.24,<2" },

@@ -4,6 +4,15 @@ Scientific modes (`minimal`, `structured`, `frontier`) are independent of the
 experiment execution backend. Bubblewrap remains the default. Simjecture never
 silently switches to weaker isolation when namespace creation fails.
 
+The next preview (rc2) adds checked fallback in the conversation workspace and
+runtime installer: prefer Bubblewrap; when it cannot run, select PRoot only if
+its probe succeeds under a non-root account. A persistent GUI banner warns that
+this is cooperative execution without filesystem/network security isolation.
+The workspace extra includes the process monitor. The installer can install
+PRoot on Debian/Ubuntu; restricted hosts still need a dedicated non-root account.
+Root execution never qualifies for this fallback. Explicit backend requests and
+existing studies are not silently changed.
+
 Check the actual host before launching:
 
 ```sh
@@ -45,8 +54,8 @@ not a cgroup hard memory guarantee. GPU VRAM has no independent harness limit.
 
 CLI, browser, and TUI native studies support this selection. A browser host may
 explicitly set `SIMJECTURE_DEFAULT_EXECUTION_BACKEND=proot-cooperative`; the UI
-shows that default, and it is stored in the launch contract. This environment
-setting configures the form, not an invisible execution fallback. Browser host
+shows that default, and it is stored in the launch contract. An explicit environment
+setting takes precedence over automatic workspace selection and is checked before use. Browser host
 setup can similarly set `SIMJECTURE_DEFAULT_BACKEND`, `SIMJECTURE_DEFAULT_MODEL`,
 and `SIMJECTURE_DEFAULT_CAPABILITIES`. Legacy DSH/API launch forms do not select
 this backend; use native study modes for this route.

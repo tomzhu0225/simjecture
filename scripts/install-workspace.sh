@@ -112,13 +112,13 @@ if [[ -x "$simjecture_app/.venv/bin/python" ]]; then
 fi
 
 echo '[4/4] Checking numerical execution setup…'
-if ((simjecture_system)) && ! command -v bwrap >/dev/null 2>&1; then
+if ((simjecture_system)) && { ! command -v bwrap >/dev/null 2>&1 || ! command -v proot >/dev/null 2>&1; }; then
   if command -v apt-get >/dev/null 2>&1; then
     if [[ "$EUID" == 0 ]]; then
-      apt-get update && apt-get install -y bubblewrap || echo 'Bubblewrap installation failed; check execution readiness in the GUI.' >&2
+      apt-get update && apt-get install -y bubblewrap proot || echo 'Bubblewrap installation failed; check execution readiness in the GUI.' >&2
     elif command -v sudo >/dev/null 2>&1; then
       echo 'Your system may ask for a sudo password to install Bubblewrap.'
-      sudo apt-get update && sudo apt-get install -y bubblewrap || echo 'Bubblewrap installation failed; check execution readiness in the GUI.' >&2
+      sudo apt-get update && sudo apt-get install -y bubblewrap proot || echo 'Bubblewrap installation failed; check execution readiness in the GUI.' >&2
     else
       echo 'An administrator must install Bubblewrap for recorded experiments.' >&2
     fi
@@ -128,9 +128,14 @@ if ((simjecture_system)) && ! command -v bwrap >/dev/null 2>&1; then
 fi
 if [[ -x "$simjecture_app/.venv/bin/python" ]]; then
   "$simjecture_app/.venv/bin/python" - <<'PY'
-from conjecture_solver.execution import probe_execution_backend
-probe = probe_execution_backend('bubblewrap')
-print('Numerical execution: ready' if probe['available'] else 'GUI available; numerical execution needs attention: ' + probe['reason'])
+from conjecture_solver.execution import select_execution_backend
+probe = select_execution_backend()
+print('Numerical execution: ' + probe['backend'] if probe['available'] else 'GUI available; numerical execution needs attention: ' + probe['reason'])
+if probe.get('warning'):
+    print('WARNING: ' + probe['warning'])
+if probe.get('fallback_unavailable'):
+    print('Cooperative fallback unavailable: ' + probe['fallback_unavailable'])
+    print('On namespace-restricted hosts, install/run under a dedicated non-root account with PRoot.')
 PY
 fi
 # Activate only after the environment is installed successfully. Earlier versions and results remain.

@@ -1051,6 +1051,22 @@ async function boot() {
   const data = await api("bootstrap");
   state.token = data.control_token;
   state.settings = data.settings;
+  const execution = data.settings.execution;
+  $("execution-backend").value = execution?.backend || "bubblewrap";
+  function executionWarning() {
+    const cooperative = $("execution-backend").value === "proot-cooperative";
+    const warning =
+      execution?.warning ||
+      (cooperative
+        ? "Cooperative execution (PRoot) is not a security sandbox: it does not isolate host files or networking. Use only trusted code under a dedicated non-root account."
+        : execution && !execution.available
+          ? `Isolated experiments are unavailable: ${execution.reason}. Cooperative fallback: ${execution.fallback_unavailable || "not configured"}.`
+          : "");
+    $("execution-warning").textContent = warning;
+    $("execution-warning").hidden = !warning;
+  }
+  $("execution-backend").addEventListener("change", executionWarning);
+  executionWarning();
   state.projects = data.projects;
   state.readonly = !data.allow_mutations;
   $("readonly").hidden = !state.readonly;

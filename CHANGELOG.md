@@ -4,6 +4,10 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased — next preview
 
+- Prefer Bubblewrap, with a checked PRoot cooperative fallback for namespace-restricted
+  hosts running under a dedicated non-root account. Show a persistent GUI warning
+  about the lack of filesystem/network security isolation; retain explicit backend
+  choices and immutable study execution modes. Use the selected backend for tool checks.
 - Show failed tool installations directly on catalogue cards, including tools
   that are not yet installed. Bootstrap checksummed Micromamba for WarpX CPU
   and separate solver provisioning from experiment-sandbox readiness.

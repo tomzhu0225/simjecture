@@ -67,6 +67,7 @@ flash-demo = [
   "h5py>=3.10,<4",
 ]
 workspace = [
+    "psutil>=6,<8",
     "smolagents[openai]>=1.24,<2",
     "h5py>=3.10,<4",
 ]

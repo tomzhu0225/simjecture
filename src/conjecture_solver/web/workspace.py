@@ -19,6 +19,7 @@ import tomllib
 import uuid
 from contextlib import contextmanager, suppress
 from datetime import date
+from functools import cached_property
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -98,6 +99,14 @@ class Workspace:
         self.preferences_path = self.root / "agent-preferences.json"
         self.projects_root = self.root.parent / "projects"
 
+    @cached_property
+    def execution(self):
+        from ..execution import select_execution_backend
+
+        return select_execution_backend(
+            os.environ.get("SIMJECTURE_DEFAULT_EXECUTION_BACKEND", "auto")
+        )
+
     @contextmanager
     def lock(self):
         self.root.mkdir(parents=True, exist_ok=True, mode=0o700)
@@ -129,6 +138,7 @@ class Workspace:
             ],
             "data_directory": str(self.root),
             "default_agent": self.default_agent(),
+            "execution": self.execution,
         }
 
     def api_config(self):
@@ -1157,7 +1167,7 @@ class Workspace:
                 max_wall_seconds=brief["hours"] * 3600,
                 max_command_seconds=600,
                 capability_directory=capability_directory,
-                execution_backend=payload.get("execution_backend", "bubblewrap"),
+                execution_backend=payload.get("execution_backend", self.execution["backend"]),
             )
             plan = materialize_native(request)
             inputs = root / "research" / "project_inputs"

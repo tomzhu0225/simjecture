@@ -8,6 +8,27 @@ import shutil
 import subprocess
 
 BACKENDS = ("bubblewrap", "proot-cooperative")
+COOPERATIVE_WARNING = (
+    "Cooperative execution (PRoot) is not a security sandbox: it does not isolate "
+    "host files or networking. Use only trusted code under a dedicated non-root account."
+)
+
+
+def select_execution_backend(preference="auto") -> dict:
+    """Choose a workspace default; explicit study backends never silently change."""
+    if preference != "auto":
+        report = probe_execution_backend(preference)
+    else:
+        report = probe_execution_backend("bubblewrap")
+        if not report["available"]:
+            fallback = probe_execution_backend("proot-cooperative")
+            if fallback["available"]:
+                report = fallback | {"fallback_reason": report["reason"]}
+            else:
+                report["fallback_unavailable"] = fallback["reason"]
+    if report["backend"] == "proot-cooperative":
+        report["warning"] = COOPERATIVE_WARNING
+    return report
 
 
 def probe_execution_backend(backend: str) -> dict:

@@ -12,6 +12,7 @@ import tempfile
 import tomllib
 from dataclasses import dataclass
 from enum import StrEnum
+from functools import cached_property
 from pathlib import Path
 from typing import Literal
 
@@ -283,6 +284,14 @@ class DeploymentManager:
         self.capability_root = self.project_root / "capabilities"
         self.runtime_root = self.project_root / ".runtime"
 
+    @cached_property
+    def execution(self):
+        from .execution import select_execution_backend
+
+        return select_execution_backend(
+            os.environ.get("SIMJECTURE_DEFAULT_EXECUTION_BACKEND", "auto")
+        )
+
     def _core_checks(self, *, probe: bool) -> list[DeploymentCheck]:
         checks: list[DeploymentCheck] = []
         supported_python = sys.version_info >= (3, 11)
@@ -368,6 +377,22 @@ class DeploymentManager:
                     )
                 )
 
+        if self.execution["backend"] == "proot-cooperative":
+            checks.append(
+                _check(
+                    "core.proot-cooperative",
+                    DeploymentCheckStatus.PASS
+                    if self.execution["available"] else DeploymentCheckStatus.FAIL,
+                    self.execution["reason"],
+                )
+            )
+            checks.append(
+                _check(
+                    "core.cooperative_warning", DeploymentCheckStatus.WARNING,
+                    self.execution["warning"], required=False,
+                )
+            )
+            return checks
         bubblewrap = shutil.which("bwrap")
         checks.append(
             _check(
@@ -457,6 +482,7 @@ class DeploymentManager:
             sandbox = BubblewrapSandbox(
                 workspace,
                 MVPAgentConfig(
+                    execution_backend=self.execution["backend"],
                     max_iterations=1,
                     max_wall_seconds=180,
                     max_command_seconds=120,

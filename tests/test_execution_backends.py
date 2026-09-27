@@ -113,3 +113,28 @@ def test_parent_death_cleans_up_experiment_descendants(tmp_path):
         if pid and psutil.pid_exists(pid):
             with suppress(psutil.NoSuchProcess):
                 psutil.Process(pid).kill()
+
+
+def test_workspace_fallback_is_checked_and_warned(monkeypatch):
+    from conjecture_solver import execution
+
+    def probe(backend):
+        return dict(
+            backend=backend, available=backend == "proot-cooperative", reason="probe result"
+        )
+
+    monkeypatch.setattr(execution, "probe_execution_backend", probe)
+    selected = execution.select_execution_backend()
+    assert selected["backend"] == "proot-cooperative"
+    assert selected["fallback_reason"] == "probe result"
+    assert "not a security sandbox" in selected["warning"]
+    assert execution.select_execution_backend("bubblewrap")["backend"] == "bubblewrap"
+    monkeypatch.setattr(
+        execution,
+        "probe_execution_backend",
+        lambda backend: dict(
+            backend=backend, available=False, reason="root or missing prerequisite"
+        ),
+    )
+    assert execution.select_execution_backend()["backend"] == "bubblewrap"
+    assert not execution.select_execution_backend()["available"]
