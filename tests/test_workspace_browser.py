@@ -30,7 +30,7 @@ def test_browser_setup_chat_files_and_autonomous_handoff(tmp_path, provider):
             page = browser.new_page(viewport={"width": 1440, "height": 1000})
             page.on("pageerror", lambda error: errors.append(str(error)))
             page.goto(f"http://127.0.0.1:{server.server_port}")
-            page.get_by_role("button", name="API connections").click()
+            page.get_by_role("button", name="Connections").click()
             page.locator("#base-url").fill(url)
             page.locator("#api-key").fill("test-secret")
             assert page.locator("#model").count() == 0
@@ -95,10 +95,9 @@ def test_browser_setup_chat_files_and_autonomous_handoff(tmp_path, provider):
             assert "view=autonomous" in page.url
             assert "Euler" in page.locator("#brief-question").input_value()
             assert not page.locator("#brief-question").is_visible()
-            page.get_by_role("button", name="Draft from this conversation").click()
-            page.locator("#interactive-panel").wait_for(state="visible")
-            playwright.expect(page.locator("#send-message")).to_be_enabled(timeout=40000)
-            page.get_by_role("button", name="Autonomous research", exact=True).click()
+            playwright.expect(page.locator("#study-preparation")).to_be_hidden()
+            playwright.expect(page.locator("#study-stage")).to_contain_text("Proposal ready")
+            assert page.locator("#breadcrumb").count() == 0
             page.locator("#prepared-question").wait_for()
             page.screenshot(path=str(screenshots / "study-brief.png"), full_page=True)
             from conjecture_solver.execution import probe_execution_backend
@@ -111,6 +110,11 @@ def test_browser_setup_chat_files_and_autonomous_handoff(tmp_path, provider):
                 page.get_by_role("link", name="result.json", exact=False).first.wait_for()
                 page.screenshot(path=str(screenshots / "accepted-result.png"), full_page=True)
             page.get_by_role("button", name="Interactive research", exact=True).click()
+            if probe_execution_backend("bubblewrap")["available"]:
+                page.get_by_text(
+                    "The completed study found a reviewed counterexample.", exact=True
+                ).wait_for(timeout=30000)
+                playwright.expect(page.locator("#send-message")).to_be_enabled(timeout=30000)
             page.locator("#conversation-model").select_option("fixture-alternate")
             playwright.expect(page.locator("#agent-switch-warning")).to_be_visible()
             playwright.expect(page.locator("#agent-switch-warning")).to_contain_text("cache reuse")
@@ -230,11 +234,58 @@ print("wave")
             page.locator("#simulation-detail h3").filter(has_text="Wave evolution").wait_for()
             assert "simulation=" + job["id"] in page.url
             assert page.locator("#interactive-panel").is_visible()
+            command = app.workspace.start_simulation(
+                project["id"],
+                dict(name="Inspect environment", command="echo command-ready", kind="command"),
+            )
+            playwright.expect(page.locator("#command-count")).to_have_text("1", timeout=15000)
+            playwright.expect(page.locator("#simulation-count")).to_have_text("1")
+            playwright.expect(page.locator("#sidebar-run-list a")).to_have_count(1)
+            playwright.expect(page.locator("#sidebar-run-list")).not_to_contain_text(
+                "Inspect environment"
+            )
+            playwright.expect(page.locator("#inspector-tabs")).to_have_attribute(
+                "active", "simulations"
+            )
+            page.locator('wa-tab[panel="commands"]').click()
+            page.locator("#command-list a").click()
+            assert "command=" + command["id"] in page.url
+            page.reload()
+            page.locator("#command-detail .live-console").filter(
+                has_text="command-ready"
+            ).wait_for()
+            playwright.expect(page.locator("#inspector-tabs")).to_have_attribute(
+                "active", "commands"
+            )
+            playwright.expect(page.locator("#simulation-list a")).to_have_count(1)
+            page.locator("#sidebar-run-list a").click()
+            page.locator("#simulation-detail h3").filter(has_text="Wave evolution").wait_for()
+            original_width = page.locator(".conversation-column").bounding_box()["width"]
+            page.get_by_role("button", name="Collapse left sidebar", exact=True).click()
+            page.get_by_role("button", name="Collapse right sidebar", exact=True).click()
+            assert not page.locator("#workspace-sidebar").is_visible()
+            assert not page.locator("#research-inspector").is_visible()
+            assert page.locator(".conversation-column").bounding_box()["width"] > original_width
+            page.reload()
+            page.get_by_role("button", name="Expand right sidebar", exact=True).wait_for()
+            assert not page.locator("#workspace-sidebar").is_visible()
+            assert not page.locator("#research-inspector").is_visible()
+            page.get_by_role("button", name="Expand left sidebar", exact=True).click()
+            page.locator("#sidebar-run-list a").click()
+            assert page.locator("#research-inspector").is_visible()
+            page.locator("#simulation-detail h3").filter(has_text="Wave evolution").wait_for()
             page.screenshot(
                 path="artifacts/workspace-preview/simulation-monitor.png", full_page=True
             )
             page.set_viewport_size({"width": 390, "height": 844})
             assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
+            page.get_by_role("button", name="Collapse left sidebar", exact=True).click()
+            page.get_by_role("button", name="Collapse right sidebar", exact=True).click()
+            assert not page.locator("#research-inspector").is_visible()
+            assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
+            page.get_by_role("button", name="Expand left sidebar", exact=True).click()
+            page.get_by_role("button", name="Expand right sidebar", exact=True).click()
+            assert page.locator("#research-inspector").is_visible()
             assert errors == []
             browser.close()
     finally:
@@ -365,6 +416,15 @@ def test_refresh_preserves_inspector_and_tool_details_and_dark_math(tmp_path, mo
             assert result["consoleScroll"] == 90 and result["inspectorScroll"] == 210
             assert result["background"] == "rgb(36, 41, 59)"
             assert result["color"] == "rgb(240, 237, 255)"
+            tool.update(
+                installed=False,
+                state="failed",
+                report={"ready": False, "error": "Package download failed"},
+            )
+            page.get_by_role("button", name="Research tools", exact=True).click()
+            page.evaluate("refreshTools()")
+            assert page.locator(".tool-failure").inner_text() == "Package download failed"
+            assert page.locator(".tool-failure").is_visible()
             browser.close()
     finally:
         server.shutdown()
@@ -408,6 +468,271 @@ def test_live_activity_updates_preserve_completed_message_nodes(tmp_path):
             assert "Pilot simulation" in result["text"]
             assert "Inputs are prepared" in result["text"]
             assert "0 monitored simulations" in result["text"]
+            browser.close()
+    finally:
+        server.shutdown()
+        server.server_close()
+
+
+def test_cooperative_fallback_warning_is_visible_and_persistent(tmp_path):
+    from conjecture_solver.execution import COOPERATIVE_WARNING
+
+    playwright = pytest.importorskip("playwright.sync_api")
+    app = SimjectureWebApplication(runs_root=tmp_path, scan_roots=(tmp_path,))
+    app.workspace.execution = dict(
+        backend="proot-cooperative",
+        available=True,
+        warning=COOPERATIVE_WARNING,
+        reason="Probe passed",
+    )
+    server = create_server(app, port=0)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    try:
+        with playwright.sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page()
+            page.goto(f"http://127.0.0.1:{server.server_port}")
+            playwright.expect(page.locator("#execution-warning-message")).to_have_text(
+                COOPERATIVE_WARNING
+            )
+            assert page.locator("#execution-warning").is_visible()
+            assert page.locator("#execution-backend").input_value() == "proot-cooperative"
+            page.reload()
+            playwright.expect(page.locator("#execution-warning-message")).to_have_text(
+                COOPERATIVE_WARNING
+            )
+            assert page.locator("#execution-warning").is_visible()
+            assert page.locator("#workspace-sidebar #execution-warning").count() == 1
+            assert page.locator(".topbar").count() == 0
+            page.get_by_role("button", name="Dismiss execution warning").click()
+            assert not page.locator("#execution-warning").is_visible()
+            page.reload()
+            page.get_by_role("button", name="Limited isolation", exact=True).wait_for()
+            assert not page.locator("#execution-warning").is_visible()
+            page.get_by_role("button", name="Limited isolation", exact=True).click()
+            assert page.locator("#execution-warning").is_visible()
+            app.workspace.execution = dict(
+                backend="bubblewrap",
+                available=False,
+                reason="bwrap: Namespace creation denied. https://example.invalid/diagnostic",
+                fallback_unavailable="Missing proot executable",
+            )
+            page.reload()
+            playwright.expect(page.locator("#execution-status")).to_have_text(
+                "Experiments unavailable"
+            )
+            assert page.locator("#execution-warning").is_visible()
+            assert "https://" not in page.locator("#execution-warning-message").inner_text()
+            assert not page.locator("#execution-warning-diagnostics").is_visible()
+            browser.close()
+    finally:
+        server.shutdown()
+        server.server_close()
+
+
+def test_source_tools_open_agent_assisted_installation_conversations(tmp_path, monkeypatch):
+    import re
+
+    playwright = pytest.importorskip("playwright.sync_api")
+    app = SimjectureWebApplication(runs_root=tmp_path, scan_roots=(tmp_path,))
+    cards = [
+        dict(
+            id=identifier,
+            name=name,
+            action="agent",
+            installed=False,
+            state="available",
+            description="Agent-assisted setup",
+            report={},
+            log="",
+        )
+        for identifier, name in [("flash", "FLASH"), ("warpx-cuda", "WarpX · CUDA")]
+    ]
+    monkeypatch.setattr(app.workspace, "catalogue", lambda: cards)
+    installs = []
+    monkeypatch.setattr(app.workspace, "start_install", lambda payload: installs.append(payload))
+    server = create_server(app, port=0)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    try:
+        with playwright.sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page(viewport={"width": 1440, "height": 1000})
+            page.goto(f"http://127.0.0.1:{server.server_port}")
+            for identifier, name, guide in [
+                ("flash", "FLASH", "references/local-deployment.md"),
+                ("warpx-cuda", "WarpX · CUDA", "references/local-cuda-deployment.md"),
+            ]:
+                page.get_by_role("button", name="Research tools", exact=True).click()
+                page.locator(f'[data-tool="{identifier}"]').get_by_role(
+                    "button", name="Install with agent", exact=True
+                ).click()
+                playwright.expect(page.locator("#project-title")).to_have_text(f"Install {name}")
+                playwright.expect(page.locator("#chat-input")).to_have_value(
+                    re.compile(re.escape(guide))
+                )
+                draft = page.locator("#chat-input").input_value()
+                assert guide in draft and "read_skill" in draft
+                assert "persistent named folders" in draft
+                assert page.locator("#interactive-panel").is_visible()
+                assert page.locator("#source-dialog").count() == 0
+            assert not installs
+            assert len(app.workspace.projects()) == 2
+            browser.close()
+    finally:
+        server.shutdown()
+        server.server_close()
+
+
+def test_sidebar_edges_drag_closed_and_reopen(tmp_path):
+    playwright = pytest.importorskip("playwright.sync_api")
+    app = SimjectureWebApplication(runs_root=tmp_path, scan_roots=(tmp_path,))
+    project = app.workspace.create({"name": "Panel gestures"})
+    server = create_server(app, port=0)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    try:
+        with playwright.sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page(viewport={"width": 1440, "height": 1000})
+            page.goto(f"http://127.0.0.1:{server.server_port}/#project={project['id']}")
+            page.locator("#chat-input").wait_for()
+            page.evaluate("() => customElements.whenDefined('wa-split-panel')")
+
+            def drag(selector, end_x, y_offset=20):
+                box = page.locator(selector).bounding_box()
+                x, y = box["x"] + box["width"] / 2, box["y"] + min(y_offset, box["height"] / 2)
+                page.mouse.move(x, y)
+                page.mouse.down()
+                page.mouse.move(end_x, y, steps=16)
+                page.mouse.up()
+
+            drag("#left-sidebar-resizer", 2)
+            playwright.expect(page.locator("#workspace-sidebar")).not_to_be_visible()
+            drag("#left-sidebar-toggle", 280)
+            playwright.expect(page.locator("#workspace-sidebar")).to_be_visible()
+            assert abs(page.locator("#workspace-sidebar").bounding_box()["width"] - 280) < 2
+            split = page.locator("#research-layout").bounding_box()
+            drag('#research-layout [part="divider"]', split["x"] + split["width"] - 2)
+            playwright.expect(page.locator("#research-inspector")).not_to_be_visible()
+            drag("#right-sidebar-toggle", split["x"] + split["width"] - 340)
+            playwright.expect(page.locator("#research-inspector")).to_be_visible()
+            assert page.locator("#research-inspector").bounding_box()["width"] > 250
+            page.get_by_role("button", name="Collapse left sidebar").click()
+            page.get_by_role("button", name="Collapse right sidebar").click()
+            page.reload()
+            page.get_by_role("button", name="Expand right sidebar").wait_for()
+            assert not page.locator("#workspace-sidebar").is_visible()
+            assert not page.locator("#research-inspector").is_visible()
+            page.screenshot(
+                path="artifacts/workspace-preview/collapsed-edge-tabs.png", full_page=True
+            )
+            page.get_by_role("button", name="Expand left sidebar").click()
+            page.get_by_role("button", name="Expand right sidebar").click()
+            assert abs(page.locator("#workspace-sidebar").bounding_box()["width"] - 280) < 2
+            page.screenshot(
+                path="artifacts/workspace-preview/expanded-edge-tabs.png", full_page=True
+            )
+            browser.close()
+    finally:
+        server.shutdown()
+        server.server_close()
+
+
+def test_study_lifecycle_and_followup_keep_history(tmp_path):
+    import json
+
+    from conjecture_solver.web.workspace import load, put
+
+    playwright = pytest.importorskip("playwright.sync_api")
+    app = SimjectureWebApplication(runs_root=tmp_path, scan_roots=(tmp_path,))
+    w = app.workspace
+    p = w.create({"name": "Repeated investigations"})
+    directory = w.directory(p["id"])
+    brief = dict(
+        question="Euler positivity",
+        success_criteria="Independent review",
+        constraints="Python",
+        hours=1,
+        completion_policy="answer",
+    )
+    w.save_brief(p["id"], brief)
+    server = create_server(app, port=0)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    try:
+        with playwright.sync_playwright() as pw:
+            browser = pw.chromium.launch(headless=True)
+            page = browser.new_page(viewport={"width": 1440, "height": 1000})
+            status = {"value": "running"}
+            page.route(
+                "**/api/workspace/study?*",
+                lambda route: route.fulfill(
+                    content_type="application/json",
+                    body=json.dumps(
+                        dict(
+                            snapshot={"snapshot": {}, "controls": {}, "artifacts": []},
+                            live={
+                                "status": status["value"],
+                                "activity": "Testing Euler",
+                                "remaining": 25,
+                            },
+                            report={},
+                            results="The step h=2 gives y1=-1.",
+                        )
+                    ),
+                ),
+            )
+            page.goto(f"http://127.0.0.1:{server.server_port}/#project={p['id']}&view=autonomous")
+            playwright.expect(page.locator("#prepared-brief")).to_be_visible()
+            playwright.expect(page.locator("#study-preparation")).to_be_hidden()
+            assert page.locator("#breadcrumb").count() == 0
+            assert not page.locator("#machine-label").is_visible()
+
+            record = load(directory / "project.json")
+            record.update(
+                brief_launched="first",
+                studies=[
+                    dict(
+                        campaign="first",
+                        campaign_id="001-euler",
+                        question=brief["question"],
+                        path=str(directory / "studies/001-euler"),
+                    )
+                ],
+            )
+            put(directory / "project.json", record)
+            page.reload()
+            playwright.expect(page.locator("#study-runs")).to_contain_text("RUNNING")
+            playwright.expect(page.locator("#prepared-brief")).to_be_hidden()
+            playwright.expect(page.locator("#study-preparation")).to_be_hidden()
+            playwright.expect(page.locator("#new-study")).to_be_visible()
+            status["value"] = "completed"
+            page.reload()
+            playwright.expect(page.locator("#study-runs")).to_contain_text("Study finished")
+            assert (
+                page.get_by_role("link", name="Return to the conversation")
+                .get_attribute("href")
+                .startswith("#project=")
+            )
+            playwright.expect(
+                page.get_by_role("button", name="Explain in conversation")
+            ).to_be_visible()
+
+            # Study artifact links survive sanitization; foreign campaigns cannot resolve.
+            rendered = page.evaluate("""() => {
+              const target = document.createElement('div');
+              const project = {id: 'test', studies: [{campaign: 'first'}]};
+              WorkspaceRich.render(target, '[Report](study:first/research/RESULTS.md)', project);
+              return [target.querySelector('a').getAttribute('href'),
+                WorkspaceRich.artifactURL('study:foreign/research/RESULTS.md', project)];
+            }""")
+            assert "campaign=first" in rendered[0] and "RESULTS.md" in rendered[0]
+            assert rendered[1] is None
+            page.get_by_role("button", name="Prepare another study").click()
+            playwright.expect(page.locator("#study-preparation")).to_be_visible()
+            playwright.expect(page.locator("#study-runs")).to_contain_text("Euler positivity")
+            page.reload()
+            playwright.expect(page.locator("#study-preparation")).to_be_visible()
+            playwright.expect(page.locator("#study-runs")).to_contain_text("COMPLETED")
+            assert w.project(p["id"])["brief"] is None
             browser.close()
     finally:
         server.shutdown()

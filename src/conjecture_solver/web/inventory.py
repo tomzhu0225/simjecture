@@ -116,9 +116,11 @@ def discover_system_warpx(project_root, *, home=None):
     return found
 
 
-def discover_installed(project_root):
+def discover_installed(project_root, registered_paths=()):
     root = Path(project_root)
     paths = set((root / "capabilities").glob("*.json"))
+    for directory in registered_paths:
+        paths.update(Path(directory).glob("*.json"))
     # Existing local research installations use these directories. Do not scan
     # transcripts, arbitrary home directories, or reinterpret a binary as a new solver.
     for pattern in (
@@ -138,6 +140,8 @@ def discover_installed(project_root):
             runtime = (resolved.parent / config.runtime_root).resolve()
             executable = runtime / config.executable
             if not executable.is_file() or not os.access(executable, os.X_OK):
+                continue
+            if any(not (runtime / name).is_file() for name in config.identity_files):
                 continue
             identity = (str(runtime), config.manifest.name)
             found.setdefault(

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Simjecture · Research workspace</title>
     <script src="/assets/workspace-theme.js"></script>
+    <script src="/assets/workspace-panels.js"></script>
     <link
       rel="stylesheet"
       href="/assets/vendor/webawesome-3.14.0/styles/themes/default.css"
@@ -24,7 +25,7 @@
   </head>
   <body>
     <div class="shell">
-      <aside class="sidebar">
+      <aside class="sidebar" id="workspace-sidebar">
         <a href="/workspace" class="brand"
           ><span class="mark" aria-hidden="true">s<span>·</span></span
           ><span>simjecture<small>RESEARCH WORKSPACE</small></span></a
@@ -39,7 +40,12 @@
           <button data-view="tools" class="nav-item">
             <span aria-hidden="true">◇</span> Research tools
           </button>
-          <button data-view="settings" class="nav-item">
+          <button
+            id="connection-button"
+            data-view="settings"
+            class="nav-item"
+            disabled
+          >
             <span aria-hidden="true">⚙</span> Connections
           </button>
         </nav>
@@ -48,30 +54,85 @@
           <p class="muted">Your work will appear here.</p>
         </div>
         <div id="sidebar-simulations" class="sidebar-runs" hidden>
-          <div class="sidebar-label">RUNS &amp; COMMANDS</div>
+          <div class="sidebar-label">SIMULATIONS</div>
           <div id="sidebar-run-list"></div>
         </div>
         <div class="sidebar-bottom">
-          <a href="/monitor">Experiment monitor <span>↗</span></a>
-          <div id="machine-label">Local workspace</div>
-          <span id="connection-indicator" class="connection-dot"
-            >Connecting…</span
+          <button
+            id="execution-status"
+            class="sidebar-status"
+            type="button"
+            aria-controls="execution-warning"
           >
-        </div>
-      </aside>
-      <main>
-        <header class="topbar">
-          <div id="breadcrumb">Workspace <span>/</span> Overview</div>
-          <div class="topbar-right">
+            Execution status
+          </button>
+          <div
+            id="execution-warning"
+            class="sidebar-notice"
+            role="status"
+            hidden
+          >
+            <div class="sidebar-notice-heading">
+              <strong id="execution-warning-title"></strong
+              ><button
+                id="dismiss-execution-warning"
+                type="button"
+                aria-label="Dismiss execution warning"
+              >
+                ×
+              </button>
+            </div>
+            <p id="execution-warning-message"></p>
+            <details id="execution-warning-details">
+              <summary>Technical details</summary>
+              <pre id="execution-warning-diagnostics"></pre>
+            </details>
+          </div>
+          <div class="sidebar-utilities">
             <button id="theme-toggle" class="quiet" type="button">
               Dark mode
             </button>
-            <span class="local-label">LOCAL EXECUTION</span
-            ><button id="connection-button" class="quiet">
-              Connect a model <span>↗</span>
-            </button>
           </div>
-        </header>
+          <details class="workspace-details">
+            <summary>Workspace details</summary>
+            <div id="machine-label">Local workspace</div>
+            <span id="connection-indicator" class="connection-dot"
+              >Connecting…</span
+            >
+            <a href="/monitor">Experiment monitor <span>↗</span></a>
+          </details>
+        </div>
+      </aside>
+      <div
+        id="left-sidebar-resizer"
+        role="separator"
+        tabindex="0"
+        aria-label="Resize left sidebar"
+        aria-orientation="vertical"
+        aria-controls="workspace-sidebar"
+      ></div>
+      <button
+        id="left-sidebar-toggle"
+        class="panel-edge-tab"
+        type="button"
+        aria-label="Collapse left sidebar"
+        aria-controls="workspace-sidebar"
+        aria-expanded="true"
+      >
+        <span aria-hidden="true">‹</span>
+      </button>
+      <button
+        id="right-sidebar-toggle"
+        class="panel-edge-tab"
+        type="button"
+        aria-label="Collapse right sidebar"
+        aria-controls="research-inspector"
+        aria-expanded="true"
+        hidden
+      >
+        <span aria-hidden="true">›</span>
+      </button>
+      <main>
         <div id="readonly" class="banner" hidden>
           This session is read-only. You can inspect projects and results.
         </div>
@@ -273,7 +334,6 @@
         <section id="view-project" class="view project-view" hidden>
           <div class="project-heading">
             <div>
-              <p class="eyebrow">RESEARCH CONVERSATION</p>
               <h1 id="project-title"></h1>
             </div>
             <div class="mode-switch" role="group" aria-label="Research mode">
@@ -291,12 +351,6 @@
             <span slot="divider" class="resize-grip" aria-hidden="true">⋮</span>
             <div class="conversation-column" slot="start">
               <div id="interactive-panel">
-                <div class="conversation-heading">
-                  <span class="status-dot"></span
-                  ><span id="conversation-status"
-                    >Work through the next step together</span
-                  >
-                </div>
                 <div id="messages" class="messages" aria-live="polite"></div>
                 <form id="chat-form" class="composer">
                   <label class="sr-only" for="chat-input"
@@ -387,6 +441,15 @@
                 </p>
               </div>
               <div id="autonomous-panel" hidden>
+                <div class="section-line">
+                  <div>
+                    <p class="eyebrow">AUTONOMOUS RESEARCH</p>
+                    <p id="study-stage" role="status"></p>
+                  </div>
+                  <button id="new-study" class="secondary" type="button" hidden>
+                    Prepare another study
+                  </button>
+                </div>
                 <div id="study-runs"></div>
                 <div id="study-preparation" class="panel study-preparation">
                   <p class="eyebrow">PREPARE IT TOGETHER</p>
@@ -430,6 +493,11 @@
                   <p class="eyebrow">YOUR AGENT’S PROPOSAL</p>
                   <h2 id="prepared-question"></h2>
                   <div id="prepared-details"></div>
+                  <p class="field-help">
+                    When the study finishes, your interactive agent will explain
+                    its report in this conversation. Each study keeps its own
+                    results.
+                  </p>
                   <div class="brief-footer">
                     <button id="revise-study" class="secondary" type="button">
                       Discuss or refine</button
@@ -547,10 +615,14 @@
               </div>
               <wa-tab-group id="inspector-tabs" active="files">
                 <wa-tab panel="simulations"
-                  >Simulations &amp; commands
+                  >Simulations
                   <span id="simulation-count" class="count-badge"
                     >0</span
                   ></wa-tab
+                >
+                <wa-tab panel="commands"
+                  >Commands
+                  <span id="command-count" class="count-badge">0</span></wa-tab
                 >
                 <wa-tab panel="files">Files</wa-tab>
                 <wa-tab-panel name="simulations">
@@ -564,6 +636,14 @@
                         saved outputs appear here, beside the conversation.
                       </p>
                     </div>
+                  </div>
+                </wa-tab-panel>
+                <wa-tab-panel name="commands">
+                  <div id="command-list"></div>
+                  <div id="command-detail">
+                    <p class="monitor-empty">
+                      Agent commands and their output appear here.
+                    </p>
                   </div>
                 </wa-tab-panel>
                 <wa-tab-panel name="files" active>
@@ -624,19 +704,6 @@
           <button id="confirm-delete" type="submit" class="danger-button">
             Delete conversation and files
           </button>
-        </div>
-      </form>
-    </dialog>
-    <dialog id="source-dialog">
-      <form id="source-form">
-        <h2 id="source-title">Connect source</h2>
-        <p>Choose an existing source checkout on the execution machine.</p>
-        <label for="source-path">Source directory</label
-        ><input id="source-path" required placeholder="/path/to/source" />
-        <div class="form-actions">
-          <button id="cancel-source" type="button" class="secondary">
-            Cancel</button
-          ><button type="submit" class="primary">Set up tool</button>
         </div>
       </form>
     </dialog>

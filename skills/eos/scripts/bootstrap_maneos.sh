@@ -33,34 +33,9 @@ query_source="$project_root/skills/eos/scripts/maneos_query.f90"
     exit 2
 }
 
-if [[ -e "$prefix" ]]; then
-    if [[ "$repair" -ne 1 ]]; then
-        echo "runtime already exists at $prefix; pass --repair to replace it" >&2
-        exit 2
-    fi
-    rm -rf "$prefix"
-fi
-
-python=""
-for candidate in python3.12 python3; do
-    if command -v "$candidate" >/dev/null; then
-        python="$(command -v "$candidate")"
-        break
-    fi
-done
-[[ -n "$python" ]] || {
-    echo "missing deployment prerequisite: python3.12 or python3" >&2
-    exit 2
-}
-for command in git gfortran make; do
-    command -v "$command" >/dev/null || {
-        echo "missing deployment prerequisite: $command" >&2
-        exit 2
-    }
-done
-
+runtime_profile="m-aneos"
+source "$project_root/scripts/runtime_environment.sh"
 mkdir -p "$prefix/bin" "$prefix/share/preflight" "$prefix/src"
-"$python" -m venv "$prefix"
 
 if [[ -n "$source_tree" ]]; then
     source_tree="$(cd "$source_tree" && pwd)"
@@ -72,12 +47,25 @@ if [[ -n "$source_tree" ]]; then
     src="$source_tree"
 else
     src="$prefix/src/m-aneos"
-    git clone --filter=blob:none "$UPSTREAM" "$src"
-    git -C "$src" checkout --detach "$PINNED_REVISION"
+    git init "$src"
+    git -C "$src" remote remove origin 2>/dev/null || true
+    git -C "$src" remote add origin "$UPSTREAM"
+    for attempt in 1 2 3; do
+        if git -c http.version=HTTP/1.1 -C "$src" fetch --depth 1 origin "$PINNED_REVISION"; then
+            break
+        fi
+        if [[ "$attempt" -eq 3 ]]; then
+            echo "Could not fetch the pinned M-ANEOS source after three attempts" >&2
+            exit 1
+        fi
+        echo "Source download interrupted; retrying…" >&2
+        sleep "$attempt"
+    done
+    git -C "$src" checkout --detach FETCH_HEAD
 fi
 
-make -C "$src/src" -j "$jobs"
-gfortran -O2 "$query_source" "$src/src/libaneos.a" -o "$prefix/bin/maneos-query"
+make -C "$src/src" -j "$jobs" FC="${FC:-gfortran}"
+"${FC:-gfortran}" -O2 "$query_source" "$src/src/libaneos.a" -o "$prefix/bin/maneos-query"
 
 if [[ -f "$src/example/ANEOS.INPUT" ]]; then
     cp "$src/example/ANEOS.INPUT" "$prefix/share/preflight/ANEOS.INPUT"
@@ -100,6 +88,7 @@ print(json.dumps({
     "preflight_input": "share/preflight/ANEOS.INPUT",
     "python": sys.executable,
     "python_version": sysconfig.get_python_version(),
+    "python_layout": "self-contained" if sys.prefix == sys.base_prefix else "system-venv",
 }, indent=2, sort_keys=True))
 PY
 echo "M-ANEOS runtime ready at $prefix"

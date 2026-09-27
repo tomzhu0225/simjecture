@@ -9,7 +9,7 @@ experiments, searches for counterexamples, and proposes small, testable repairs 
 failed hypotheses. The harness records what actually ran and requires independent
 review before a scientific claim can close.
 
-**v0.5.2rc1 is a preview release for user testing; v0.5.1 remains stable.** Minimal mode is the default: agents keep their
+**v0.5.2rc2 is a preview release for user testing; v0.5.1 remains stable.** Minimal mode is the default: agents keep their
 native tools and choose their research strategy, while Simjecture manages recorded
 evidence, review and deadlines. Structured and frontier modes remain available.
 The system does not establish physical truth from a successful simulation or promise
@@ -20,7 +20,7 @@ that a long agent run will produce a useful result.
 On Linux or inside WSL, run:
 
 ```bash
-curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.2rc1/install.sh | bash
+curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.2rc2/install.sh | bash
 ```
 
 The installer downloads the versioned release, verifies its checksum, installs uv,
@@ -45,7 +45,7 @@ Use Linux with Python 3.11+, [uv](https://docs.astral.sh/uv/), and an installed,
 authenticated native agent CLI. Bubblewrap is the default numerical execution backend.
 
 ```bash
-uv tool install 'simjecture[tui]==0.5.2rc1'
+uv tool install 'simjecture[tui]==0.5.2rc2'
 simjecture install core
 simjecture doctor --execution-backend bubblewrap
 

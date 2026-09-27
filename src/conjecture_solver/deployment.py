@@ -8,10 +8,11 @@ import os
 import shutil
 import subprocess
 import sys
-import tempfile
 import tomllib
 from dataclasses import dataclass
+from datetime import UTC
 from enum import StrEnum
+from functools import cached_property
 from pathlib import Path
 from typing import Literal
 
@@ -58,6 +59,27 @@ _CORE_DISTRIBUTIONS = (
     "pydantic",
     "scipy",
 )
+
+
+def _run_install_command(command, *, capture_output=False):
+    """Keep live build output while retaining a bounded failure diagnostic."""
+    if capture_output:
+        return subprocess.run(command, check=False, text=True, capture_output=True)
+    from collections import deque
+
+    tail = deque(maxlen=40)
+    with subprocess.Popen(
+        command,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        bufsize=1,
+    ) as process:
+        for line in process.stdout:
+            print(line, end="", flush=True)
+            tail.append(line[-2000:])
+        code = process.wait()
+    return subprocess.CompletedProcess(command, code, "", "".join(tail))
 
 
 class DeploymentProfile(StrEnum):
@@ -129,9 +151,7 @@ _PREFLIGHT_REMEDY = {
     M_ANEOS_CAPABILITY: (
         "Inspect the M-ANEOS runtime and rerun `simjecture install m-aneos --repair`."
     ),
-    OPTAB_CAPABILITY: (
-        "Inspect the Optab runtime and rerun `simjecture install optab --repair`."
-    ),
+    OPTAB_CAPABILITY: ("Inspect the Optab runtime and rerun `simjecture install optab --repair`."),
 }
 
 
@@ -283,6 +303,14 @@ class DeploymentManager:
         self.capability_root = self.project_root / "capabilities"
         self.runtime_root = self.project_root / ".runtime"
 
+    @cached_property
+    def execution(self):
+        from .execution import select_execution_backend
+
+        return select_execution_backend(
+            os.environ.get("SIMJECTURE_DEFAULT_EXECUTION_BACKEND", "auto")
+        )
+
     def _core_checks(self, *, probe: bool) -> list[DeploymentCheck]:
         checks: list[DeploymentCheck] = []
         supported_python = sys.version_info >= (3, 11)
@@ -368,6 +396,25 @@ class DeploymentManager:
                     )
                 )
 
+        if self.execution["backend"] == "proot-cooperative":
+            checks.append(
+                _check(
+                    "core.proot-cooperative",
+                    DeploymentCheckStatus.PASS
+                    if self.execution["available"]
+                    else DeploymentCheckStatus.FAIL,
+                    self.execution["reason"],
+                )
+            )
+            checks.append(
+                _check(
+                    "core.cooperative_warning",
+                    DeploymentCheckStatus.WARNING,
+                    self.execution["warning"],
+                    required=False,
+                )
+            )
+            return checks
         bubblewrap = shutil.which("bwrap")
         checks.append(
             _check(
@@ -409,11 +456,7 @@ class DeploymentManager:
             checks.append(
                 _check(
                     "core.bubblewrap_namespace",
-                    (
-                        DeploymentCheckStatus.PASS
-                        if returncode == 0
-                        else DeploymentCheckStatus.FAIL
-                    ),
+                    (DeploymentCheckStatus.PASS if returncode == 0 else DeploymentCheckStatus.FAIL),
                     result_detail,
                     remedy=(
                         "Enable unprivileged user namespaces for Bubblewrap on this host."
@@ -429,6 +472,10 @@ class DeploymentManager:
             name = _CAPABILITY_CONFIGS[capability]
         except KeyError as error:
             raise ValueError(f"unknown deployment capability {capability!r}") from error
+        if capability == WARPX_CUDA_CAPABILITY:
+            generated = self.runtime_root / "warpx-cuda-openpmd" / "capabilities" / name
+            if generated.is_file():
+                return generated
         return self.capability_root / name
 
     def _configured_runtime_root(self, capability: str) -> Path:
@@ -448,50 +495,57 @@ class DeploymentManager:
         if not manifest.preflight_resource or not manifest.preflight_result:
             return "capability has no declared preflight"
         source = self._skill_resource(installation)
-        with tempfile.TemporaryDirectory(prefix="acs-capability-doctor-") as temporary:
-            workspace = Path(temporary)
-            program = workspace / manifest.preflight_resource
-            program.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(source, program)
-            registry = MVPCapabilityRegistry((installation,))
-            sandbox = BubblewrapSandbox(
-                workspace,
-                MVPAgentConfig(
-                    max_iterations=1,
-                    max_wall_seconds=180,
-                    max_command_seconds=120,
-                    max_workspace_bytes=128 * 1024 * 1024,
-                    max_file_bytes=64 * 1024 * 1024,
-                    max_memory_bytes=4 * 1024 * 1024 * 1024,
-                ),
-                registry,
+        from datetime import datetime
+
+        stamp = datetime.now(UTC).strftime("%Y%m%d-%H%M%S-%f")
+        workspace = self.runtime_root / "deployment" / "preflights" / manifest.name / stamp
+        workspace.mkdir(parents=True)
+        program = workspace / manifest.preflight_resource
+        program.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, program)
+        registry = MVPCapabilityRegistry((installation,))
+        sandbox = BubblewrapSandbox(
+            workspace,
+            MVPAgentConfig(
+                execution_backend=self.execution["backend"],
+                max_iterations=1,
+                max_wall_seconds=180,
+                max_command_seconds=120,
+                max_workspace_bytes=128 * 1024 * 1024,
+                max_file_bytes=64 * 1024 * 1024,
+                max_memory_bytes=4 * 1024 * 1024 * 1024,
+            ),
+            registry,
+        )
+        result = sandbox.run_capability(
+            manifest.name,
+            (manifest.preflight_resource,),
+            timeout_seconds=120,
+        )
+        result_path = workspace / manifest.preflight_result
+        if result.returncode != 0:
+            detail = result.stderr.strip() or result.stdout.strip()
+            if result_path.is_file():
+                diagnostic = json.loads(result_path.read_text())
+                detail = diagnostic.get("error") or detail
+            logs = [path for path in workspace.glob("*.stderr.log") if path.is_file()]
+            if logs:
+                detail += "\n" + logs[0].read_text(errors="replace")[-2500:]
+            raise RuntimeError(
+                f"preflight command exited with {result.returncode}: "
+                f"{detail or 'see saved output'}. Logs: {workspace}"
             )
-            result = sandbox.run_capability(
-                manifest.name,
-                (manifest.preflight_resource,),
-                timeout_seconds=120,
-            )
-            if result.returncode != 0:
-                detail = result.stderr.strip() or result.stdout.strip() or "no diagnostic output"
-                raise RuntimeError(
-                    f"preflight command exited with {result.returncode}: {detail}"
-                )
-            result_path = workspace / manifest.preflight_result
-            if not result_path.is_file():
-                raise RuntimeError(
-                    f"preflight did not create {manifest.preflight_result!r}"
-                )
-            payload = json.loads(result_path.read_text())
-            failed = [
-                path
-                for path in manifest.preflight_checks
-                if _nested_value(payload, path) is not True
-            ]
-            if failed:
-                raise RuntimeError(f"preflight checks were false: {', '.join(failed)}")
+        if not result_path.is_file():
+            raise RuntimeError(f"preflight did not create {manifest.preflight_result!r}")
+        payload = json.loads(result_path.read_text())
+        failed = [
+            path for path in manifest.preflight_checks if _nested_value(payload, path) is not True
+        ]
+        if failed:
+            raise RuntimeError(f"preflight checks were false: {', '.join(failed)}")
         return (
             f"{manifest.name} passed {len(manifest.preflight_checks)} declared "
-            "preflight check(s)"
+            f"preflight check(s). Logs: {workspace}"
         )
 
     def _capability_checks(
@@ -523,10 +577,7 @@ class DeploymentManager:
         except (OSError, ValueError) as error:
             remedy = _MISSING_RUNTIME_REMEDY.get(
                 capability,
-                (
-                    "Run `simjecture install "
-                    f"{_PROFILE_BY_CAPABILITY[capability].value}`."
-                ),
+                (f"Run `simjecture install {_PROFILE_BY_CAPABILITY[capability].value}`."),
             )
             return (
                 [
@@ -594,17 +645,13 @@ class DeploymentManager:
         checks = self._core_checks(probe=probe)
         capabilities: tuple[tuple[str, bool], ...]
         if profile == "all":
-            capabilities = tuple(
-                (capability, False) for capability in _PROFILE_BY_CAPABILITY
-            )
+            capabilities = tuple((capability, False) for capability in _PROFILE_BY_CAPABILITY)
         elif profile == DeploymentProfile.CORE:
             capabilities = ()
         else:
             selected = DeploymentProfile(profile)
             capability_name = next(
-                name
-                for name, mapped in _PROFILE_BY_CAPABILITY.items()
-                if mapped is selected
+                name for name, mapped in _PROFILE_BY_CAPABILITY.items() if mapped is selected
             )
             capabilities = ((capability_name, True),)
         for capability, required in capabilities:
@@ -646,7 +693,10 @@ class DeploymentManager:
             self._write_report(ready)
             return ready
         checks = self._core_checks(probe=True)
-        if not self._ready(checks):
+        # Downloading a solver does not require a working experiment sandbox.
+        # Doctor still reports sandbox failures and evidence execution stays blocked.
+        install_checks = [c for c in checks if not c.name.startswith("core.bubblewrap")]
+        if not self._ready(install_checks):
             return DeploymentReport(
                 profile=DeploymentProfile.WARPX_CPU,
                 project_root=str(self.project_root),
@@ -655,7 +705,12 @@ class DeploymentManager:
             )
         prefix = self._configured_runtime_root(WARPX_CPU_CAPABILITY)
         managed_prefix = (prefix / "conda-meta").is_dir()
-        if prefix.exists() and not repair:
+        ownership = prefix.parent / "install-state" / f"{prefix.name}.json"
+        if (
+            prefix.exists()
+            and not repair
+            and not (prefix.parent / "install-state" / f"{prefix.name}.json").is_file()
+        ):
             checks.append(
                 _check(
                     "install.warpx-cpu.existing_runtime",
@@ -690,6 +745,10 @@ class DeploymentManager:
             if environment_manager
             else shutil.which("micromamba") or shutil.which("mamba")
         )
+        if not manager and not environment_manager:
+            from .runtime_bootstrap import ensure_micromamba
+
+            manager = ensure_micromamba(self.runtime_root, dry_run=dry_run)
         if not manager:
             checks.append(
                 _check(
@@ -706,7 +765,7 @@ class DeploymentManager:
                 checks=tuple(checks),
             )
         environment_file = self.project_root / "environments" / "warpx-cpu.yml"
-        action = "update" if managed_prefix and repair else "create"
+        action = "update" if managed_prefix and (repair or ownership.is_file()) else "create"
         if action == "update":
             command = (
                 manager,
@@ -745,14 +804,11 @@ class DeploymentManager:
                 command=command,
                 checks=tuple(checks),
             )
-        result = subprocess.run(
-            command,
-            check=False,
-            text=True,
-            capture_output=capture_output,
-        )
+        ownership.parent.mkdir(parents=True, exist_ok=True)
+        ownership.write_text(json.dumps({"profile": "warpx-cpu"}) + "\n")
+        result = _run_install_command(command, capture_output=capture_output)
         if result.returncode != 0:
-            detail = result.stderr.strip() if capture_output else "environment manager failed"
+            detail = result.stderr.strip()
             checks.append(
                 _check(
                     "install.warpx-cpu.command",
@@ -852,7 +908,11 @@ class DeploymentManager:
         prefix = self._configured_runtime_root(spec.capability)
         marker = prefix / spec.managed_marker
         check_prefix = f"install.{profile.value}"
-        if prefix.exists() and not repair:
+        if (
+            prefix.exists()
+            and not repair
+            and not (prefix.parent / "install-state" / f"{prefix.name}.json").is_file()
+        ):
             checks.append(
                 _check(
                     f"{check_prefix}.existing_runtime",
@@ -864,7 +924,12 @@ class DeploymentManager:
                     ),
                 )
             )
-        if prefix.exists() and repair and not marker.is_file():
+        if (
+            prefix.exists()
+            and repair
+            and not marker.is_file()
+            and not (prefix.parent / "install-state" / f"{prefix.name}.json").is_file()
+        ):
             checks.append(
                 _check(
                     f"{check_prefix}.existing_runtime",
@@ -915,9 +980,7 @@ class DeploymentManager:
                     )
                 )
         script_path = Path(spec.script)
-        bootstrap = (
-            script_path if script_path.is_absolute() else self.project_root / script_path
-        )
+        bootstrap = script_path if script_path.is_absolute() else self.project_root / script_path
         if not bootstrap.is_file() or not os.access(bootstrap, os.X_OK):
             checks.append(
                 _check(
@@ -963,14 +1026,9 @@ class DeploymentManager:
                 command=command,
                 checks=tuple(checks),
             )
-        result = subprocess.run(
-            command,
-            check=False,
-            text=True,
-            capture_output=capture_output,
-        )
+        result = _run_install_command(command, capture_output=capture_output)
         if result.returncode != 0:
-            detail = result.stderr.strip() if capture_output else "bootstrap failed"
+            detail = result.stderr.strip()
             checks.append(
                 _check(
                     f"{check_prefix}.command",
@@ -1011,7 +1069,11 @@ class DeploymentManager:
             self.runtime_root / "cuda-toolkit-12.4",
             self.runtime_root / "warpx-cuda-openpmd-deps",
         )
-        existing_roots = tuple(path for path in cuda_roots if path.exists())
+        existing_roots = tuple(
+            path
+            for path in cuda_roots
+            if path.exists() and not (path.parent / "install-state" / f"{path.name}.json").is_file()
+        )
         if existing_roots:
             checks.append(
                 _check(
@@ -1027,16 +1089,7 @@ class DeploymentManager:
                     ),
                 )
             )
-        if source is None:
-            checks.append(
-                _check(
-                    "install.warpx-cuda.source",
-                    DeploymentCheckStatus.FAIL,
-                    "--source is required for a new CUDA build",
-                    remedy=f"Supply a WarpX checkout at revision {PINNED_WARPX_REVISION}.",
-                )
-            )
-        else:
+        if source is not None:
             checks.append(self._source_revision_check(Path(source).resolve()))
         if jobs < 1:
             checks.append(
@@ -1063,7 +1116,6 @@ class DeploymentManager:
                 ready=False,
                 checks=tuple(checks),
             )
-        assert source is not None
         bootstrap = self.project_root / "skills" / "warpx" / "scripts" / "bootstrap_local_cuda.sh"
         if not bootstrap.is_file() or not os.access(bootstrap, os.X_OK):
             checks.append(
@@ -1082,8 +1134,7 @@ class DeploymentManager:
             )
         command = (
             str(bootstrap),
-            "--source",
-            str(Path(source).resolve()),
+            *(("--source", str(Path(source).resolve())) if source is not None else ()),
             "--jobs",
             str(jobs),
             *(("--arch", arch) if arch is not None else ()),
@@ -1104,14 +1155,9 @@ class DeploymentManager:
                 command=command,
                 checks=tuple(checks),
             )
-        result = subprocess.run(
-            command,
-            check=False,
-            text=True,
-            capture_output=capture_output,
-        )
+        result = _run_install_command(command, capture_output=capture_output)
         if result.returncode != 0:
-            detail = result.stderr.strip() if capture_output else "CUDA bootstrap failed"
+            detail = result.stderr.strip()
             checks.append(
                 _check(
                     "install.warpx-cuda.command",
@@ -1155,19 +1201,13 @@ class DeploymentManager:
             git_url = repository or _git_remote(source)
             local_source = None if git_url else source
             overlay = self._discover_private_bootstrap(profile)
-            has_fetch = bool(
-                git_url or local_source or os.environ.get("FLASH_GIT_URL", "").strip()
-            )
+            has_fetch = bool(git_url or local_source or os.environ.get("FLASH_GIT_URL", "").strip())
             if overlay is None and not has_fetch:
                 report = self.doctor(profile.value, probe=True)
                 if not dry_run:
                     self._write_report(report)
                 return report
-            script = (
-                str(overlay)
-                if overlay is not None
-                else FLASH_BOOTSTRAP_SCRIPT
-            )
+            script = str(overlay) if overlay is not None else FLASH_BOOTSTRAP_SCRIPT
             return self._install_bootstrap(
                 profile,
                 dry_run=dry_run,

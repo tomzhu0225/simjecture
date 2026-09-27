@@ -9,15 +9,24 @@ window.WorkspaceMonitor = {
       return n;
     };
     let currentProject = null,
-      selected = null,
+      selected = { simulations: null, commands: null },
       announced = new Set(),
-      inFlight = false,
-      detailRevision = "",
+      inFlight = {},
+      detailRevision = {},
       listRevision = "";
-    function open(id) {
-      selected = id;
-      detailRevision = "";
-      $("inspector-tabs").setAttribute("active", "simulations");
+    const panelFor = (job) =>
+      job.kind === "command" ? "commands" : "simulations";
+    const prefixFor = (panel) =>
+      panel === "commands" ? "command" : "simulation";
+    function open(id, { reveal = true } = {}) {
+      render(project());
+      const job = project()?.simulations?.find((j) => j.id === id);
+      if (!job) return;
+      const panel = panelFor(job);
+      if (reveal) window.WorkspacePanels?.set("right", false);
+      selected[panel] = id;
+      detailRevision[panel] = "";
+      $("inspector-tabs").setAttribute("active", panel);
       render(project());
       return update();
     }
@@ -26,16 +35,48 @@ window.WorkspaceMonitor = {
       const jobs = p.simulations || [];
       if (currentProject !== p.id) {
         currentProject = p.id;
-        selected = null;
+        selected = { simulations: null, commands: null };
         announced = new Set(jobs.map((j) => j.id));
-        detailRevision = "";
+        detailRevision = {};
+        for (const panel of ["simulations", "commands"]) {
+          const container = $(`${prefixFor(panel)}-detail`);
+          container.replaceChildren(
+            node(
+              "p",
+              panel === "commands"
+                ? "No command selected."
+                : "No simulation selected.",
+              "monitor-empty",
+            ),
+          );
+          delete container.dataset.job;
+        }
       }
-      $("simulation-count").textContent = jobs.length;
-      $("sidebar-simulations").hidden = !jobs.length;
+      const simulations = jobs.filter((j) => panelFor(j) === "simulations");
+      $("simulation-count").textContent = simulations.length;
+      $("command-count").textContent = jobs.length - simulations.length;
+      $("sidebar-simulations").hidden = !simulations.length;
+      for (const panel of ["simulations", "commands"]) {
+        const entries = jobs.filter((j) => panelFor(j) === panel);
+        if (!entries.some((j) => j.id === selected[panel]))
+          selected[panel] =
+            [...entries].reverse().find((j) => j.live)?.id ||
+            entries.at(-1)?.id ||
+            null;
+      }
+      const fresh = [...simulations]
+        .reverse()
+        .find((j) => !announced.has(j.id));
+      if (fresh) {
+        announced.add(fresh.id);
+        selected.simulations = fresh.id;
+        detailRevision.simulations = "";
+        $("inspector-tabs").setAttribute("active", "simulations");
+      }
       const nextList = JSON.stringify([
         p.id,
         selected,
-        jobs.map((j) => [j.id, j.name, j.status]),
+        jobs.map((j) => [j.id, j.name, j.status, j.kind]),
       ]);
       if (nextList !== listRevision) {
         listRevision = nextList;
@@ -44,70 +85,68 @@ window.WorkspaceMonitor = {
         const sidebarScroll = $("sidebar-run-list").scrollTop;
         $("sidebar-run-list").replaceChildren();
         $("simulation-list").replaceChildren();
+        $("command-list").replaceChildren();
         for (const job of [...jobs].reverse()) {
+          const panel = panelFor(job);
           const a = node(
             "a",
             undefined,
-            `simulation-item ${job.id === selected ? "selected" : ""}`,
+            `simulation-item ${job.id === selected[panel] ? "selected" : ""}`,
           );
-          a.href = link(p.id, { simulation: job.id, view: "interactive" });
+          a.href = link(p.id, {
+            [panel === "commands" ? "command" : "simulation"]: job.id,
+            view: "interactive",
+          });
           const dot = node("span", undefined, `run-dot ${job.status}`);
           const label = node("span", job.name);
           const status = node("small", job.status.replaceAll("_", " "));
           a.append(dot, label, status);
-          $("simulation-list").append(a);
-          if ($("sidebar-run-list").children.length < 5) {
+          $(`${prefixFor(panel)}-list`).append(a);
+          if (
+            panel === "simulations" &&
+            $("sidebar-run-list").children.length < 5
+          ) {
             const b = a.cloneNode(true);
             b.className = "sidebar-run";
+            b.onclick = () => window.WorkspacePanels?.set("right", false);
             $("sidebar-run-list").append(b);
           }
         }
         inspector.scrollTop = inspectorScroll;
         $("sidebar-run-list").scrollTop = sidebarScroll;
       }
-      const fresh = [...jobs]
-        .reverse()
-        .find(
-          (j) =>
-            !announced.has(j.id) &&
-            (j.kind === "simulation" || (j.live && j.elapsed_seconds > 1)),
-        );
-      if (fresh) {
-        announced.add(fresh.id);
-        selected = fresh.id;
-        detailRevision = "";
-        $("inspector-tabs").setAttribute("active", "simulations");
-      }
-      if (!selected && jobs.length)
-        selected =
-          [...jobs].reverse().find((j) => j.live)?.id ||
-          jobs[jobs.length - 1].id;
-      if (selected) update().catch((e) => notify(e.message, true));
+      update().catch((e) => notify(e.message, true));
     }
     async function update() {
+      await Promise.all(["simulations", "commands"].map(updatePanel));
+    }
+    async function updatePanel(panel) {
       const p = project();
-      if (!p || !selected || inFlight) return;
-      const identifier = selected,
+      if (!p || !selected[panel] || inFlight[panel]) return;
+      const identifier = selected[panel],
         projectId = p.id;
       const observed = p.simulations?.find((j) => j.id === identifier);
       if (!observed) return;
-      inFlight = true;
+      inFlight[panel] = true;
       try {
         const job = observed.native
           ? observed
           : await api(
               `simulation?id=${encodeURIComponent(p.id)}&simulation=${encodeURIComponent(identifier)}`,
             );
-        if (project()?.id !== projectId || selected !== identifier) return;
+        if (project()?.id !== projectId || selected[panel] !== identifier)
+          return;
         const revision = JSON.stringify([
+          projectId,
+          identifier,
           job.status,
           job.output,
           job.files,
           job.error,
         ]);
-        if (revision === detailRevision) return;
-        detailRevision = revision;
-        const container = $("simulation-detail");
+        if (revision === detailRevision[panel]) return;
+        detailRevision[panel] = revision;
+        const container = $(`${prefixFor(panel)}-detail`);
         const key = `${projectId}/${identifier}`;
         if (container.dataset.job !== key) {
           container.replaceChildren();
@@ -130,7 +169,11 @@ window.WorkspaceMonitor = {
           );
           const title = node("div", undefined, "console-heading");
           title.append(node("span", "LIVE CONSOLE"));
-          const stop = node("button", "Stop run", "quiet stop-run");
+          const stop = node(
+            "button",
+            panel === "commands" ? "Stop command" : "Stop run",
+            "quiet stop-run",
+          );
           stop.onclick = async () => {
             stop.disabled = true;
             try {
@@ -148,7 +191,10 @@ window.WorkspaceMonitor = {
           };
           title.append(stop);
           const output = node("pre", "", "live-console");
-          output.setAttribute("aria-label", "Simulation console");
+          output.setAttribute(
+            "aria-label",
+            panel === "commands" ? "Command console" : "Simulation console",
+          );
           container.append(
             header,
             meta,
@@ -182,7 +228,9 @@ window.WorkspaceMonitor = {
         const text = (
           job.output ||
           job.error ||
-          "Waiting for simulation output…"
+          (panel === "commands"
+            ? "Waiting for command output…"
+            : "Waiting for simulation output…")
         ).replace(/\x1b\[[0-?]*[ -/]*[@-~]/g, "");
         if (output.textContent !== text) {
           output.textContent = text;
@@ -211,7 +259,7 @@ window.WorkspaceMonitor = {
           files.append(row);
         }
       } finally {
-        inFlight = false;
+        inFlight[panel] = false;
       }
     }
     return { render, open, update };

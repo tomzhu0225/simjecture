@@ -78,6 +78,7 @@ def main() -> int:
         "mpi_launcher_present": False,
         "input_present": False,
         "input_copied": False,
+        "nist_data_complete": False,
         "process_completed": False,
         "return_code_zero": False,
         "hdf5_output_created": False,
@@ -124,6 +125,16 @@ def main() -> int:
             raise ValueError(
                 "the configured executable, launcher, or preflight input is unavailable"
             )
+        h5py = importlib.import_module("h5py")
+        with h5py.File(source_input / "h5/NIST.h5", "r") as nist:
+            expected = {f"{z:03d}.{ion:02d}" for z in range(1, 93) for ion in range(z)}
+            required = {"mass", "nstates", "eneion", "ene", "gtot", "term", "conf"}
+            checks["nist_data_complete"] = (
+                set(nist["prop"]) == expected
+                and all(required <= set(nist["prop"][name]) for name in expected)
+            )
+        if not checks["nist_data_complete"]:
+            raise ValueError("NIST input data is incomplete; repair the installation")
         _copy_tree(source_input, workspace / "input")
         (workspace / "output").mkdir(exist_ok=True)
         checks["input_copied"] = (workspace / "input").is_dir()

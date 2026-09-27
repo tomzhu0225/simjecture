@@ -9,6 +9,19 @@ import pytest
 from conjecture_solver.agent_skills import research_skills, skill_context
 
 
+def test_documentation_does_not_depend_on_runtime_health(monkeypatch):
+    from conjecture_solver.mvp_skills import MVPCapabilityRegistry
+
+    def unavailable(*args, **kwargs):
+        raise ValueError("capability executable is unavailable or not executable")
+
+    monkeypatch.setattr(MVPCapabilityRegistry, "discover", unavailable)
+    assert "flash-mhd" in research_skills()
+    assert "local-cuda-deployment.md" in research_skills().read(
+        "warpx", "SKILL.md", max_chars=32000
+    )["content"]
+
+
 def test_catalogue_advertises_existing_absolute_skill_entrypoints():
     skills = research_skills()
     context = skill_context()

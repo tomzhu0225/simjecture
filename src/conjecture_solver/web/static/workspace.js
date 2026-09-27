@@ -14,7 +14,6 @@ const state = {
   briefDirty: false,
   messageRevision: "",
   studyRevision: "",
-  sourceTool: null,
   launchKey: null,
   modelRequests: { home: 0, conversation: 0 },
   homeAgent: null,
@@ -83,23 +82,11 @@ function md(node, text) {
 function view(name) {
   const changed = state.view !== name;
   state.view = name;
+  $("right-sidebar-toggle").hidden = name !== "project";
   for (const section of document.querySelectorAll(".view"))
     section.hidden = section.id !== `view-${name}`;
   for (const item of document.querySelectorAll("[data-view]"))
     item.classList.toggle("active", item.dataset.view === name);
-  $("breadcrumb").replaceChildren(
-    el("span", "Workspace"),
-    document.createTextNode(" / "),
-    document.createTextNode(
-      name === "project"
-        ? state.project?.name || "Project"
-        : {
-            home: "Overview",
-            tools: "Research tools",
-            settings: "Connections",
-          }[name],
-    ),
-  );
   if (!state.routing)
     location.hash =
       name === "project"
@@ -115,7 +102,7 @@ function projectHash(id, options = {}) {
 function projectLink(id, options = {}) {
   return `#${projectHash(id, options)}`;
 }
-async function followRoute() {
+async function followRoute({ reveal = true } = {}) {
   if (state.routing) return;
   const initial = location.hash;
   state.routing = true;
@@ -134,8 +121,14 @@ async function followRoute() {
             .getElementById(`study-${state.routeStudy}`)
             ?.scrollIntoView({ behavior: "smooth", block: "start" });
       }
-      if (params.get("simulation"))
-        await monitor.open(params.get("simulation"));
+      if (state.mode === "interactive" && params.get("turn"))
+        document
+          .getElementById(`turn-assistant-${params.get("turn")}`)
+          ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      if (params.get("simulation") || params.get("command"))
+        await monitor.open(params.get("simulation") || params.get("command"), {
+          reveal,
+        });
     } else
       view(
         ["settings", "tools"].includes(location.hash.slice(1))
@@ -156,7 +149,8 @@ function renderSettings() {
     ? "Saved · leave blank to keep this key"
     : "API key (optional for a local server)";
   const installed = (s.clis || []).filter((c) => c.path);
-  $("connection-button").textContent = "API connections ↗";
+  $("connection-button").title = "Configure API connections";
+  $("connection-button").disabled = false;
   $("connection-indicator").textContent = installed.length
     ? `${installed.length} CLI agents detected`
     : s.api_configured
@@ -410,9 +404,6 @@ function renderProject(force = false) {
   $("agent-label").textContent = p.agent
     ? `${p.agent.backend} / ${p.agent.model || "choose model"}`
     : "Choose an agent";
-  $("conversation-status").textContent = p.running
-    ? "Agent working · files and activity are saved as it goes"
-    : "Work through the next step together";
   $("send-message").disabled = p.running || state.readonly;
   $("stop-agent").hidden = !p.running;
   $("launch-study").disabled = p.running || state.readonly;
@@ -421,8 +412,20 @@ function renderProject(force = false) {
   $("preparation-status").textContent = p.running
     ? "Your agent is working. Its questions and proposed brief appear in the conversation."
     : "The agent will ask about missing facts and fill in the details for you.";
-  $("prepared-brief").hidden = !p.brief;
-  $("brief-editor").hidden = !p.brief;
+  const pendingBrief = p.brief && !p.brief_launched;
+  const preparing = !pendingBrief && !p.brief_launched;
+  $("study-preparation").hidden = !preparing;
+  $("prepared-brief").hidden = !pendingBrief;
+  $("brief-editor").hidden = !pendingBrief;
+  $("new-study").hidden = !p.studies.length || preparing || !!pendingBrief;
+  $("new-study").disabled = p.running || state.readonly;
+  $("study-stage").textContent = pendingBrief
+    ? "Proposal ready — review it below, then start research."
+    : preparing
+      ? p.running
+        ? "Preparing with your agent. Continue the conversation to answer its questions."
+        : "Prepare a study with your agent. You review the proposal before it runs."
+      : "Your studies are below. Finished reports return to this conversation for explanation.";
   if (p.brief) {
     const b = p.brief;
     $("prepared-question").textContent = b.question;
@@ -494,6 +497,7 @@ function renderProject(force = false) {
         continue;
       }
       const article = el("article", undefined, `message ${message.role}`);
+      article.id = `turn-${key}`;
       article.dataset.messageKey = key;
       article.dataset.messageSignature = signature;
       article.append(
@@ -501,9 +505,11 @@ function renderProject(force = false) {
           "span",
           message.role === "user"
             ? "You"
-            : message.agent
-              ? `Simjecture · ${message.agent.backend} / ${message.agent.model}`
-              : "Simjecture",
+            : message.role === "system"
+              ? "Study report received"
+              : message.agent
+                ? `Simjecture · ${message.agent.backend} / ${message.agent.model}`
+                : "Simjecture",
           "message-role",
         ),
       );
@@ -562,7 +568,7 @@ function renderProject(force = false) {
         );
         article.append(card);
       }
-      if (message.progress)
+      if (message.running && message.progress)
         article.append(el("p", message.progress, "agent-update"));
       if (message.running) {
         const progress = el("div", undefined, "agent-progress");
@@ -695,6 +701,26 @@ async function send() {
   renderProject();
   await reloadProjects();
 }
+async function assistInstallation(tool) {
+  const flash = tool.id === "flash";
+  const guidance = flash
+    ? "Read the flash-mhd skill and references/local-deployment.md and references/private-install.md with read_skill. Ask which FLASH application, physics and dimensions I need, and where my supplied source folder or archive is. Do not assume a generic FLASH executable or an island-coalescence build suits every application."
+    : "Read the warpx skill and references/local-cuda-deployment.md with read_skill. Check the GPU, driver, CUDA compatibility and build resources. Ask which dimensions I need: the bundled CUDA recipe targets 2D. Use the documented pinned source/bootstrap when appropriate; do not require me to supply a checkout if the documented source can be downloaded.";
+  const prompt = `Help me install ${tool.name} on this execution machine. ${guidance}
+
+Guide me through the missing decisions in plain language. Inspect prerequisites, prepare a compatible toolchain and build configuration, compile, run a small readiness test, and register the actual working application so it appears in Research tools. Do not ask me to write build environment variables myself. Keep source, build records and logs in persistent named folders, and show progress during long builds. Respect this machine's selected execution mode and explain blockers. Installation/readiness is not scientific qualification.`;
+  const project = await api("projects", { name: `Install ${tool.name}` });
+  await reloadProjects();
+  mode("interactive");
+  await openProject(project.id);
+  $("chat-input").value = prompt;
+  $("chat-input").dispatchEvent(new Event("input"));
+  $("chat-input").focus();
+  toast(
+    "Installation conversation prepared. Choose your agent/model and send the request.",
+  );
+}
+
 async function refreshTools() {
   state.tools = await api("tools");
   const previous = $("study-tools").value;
@@ -752,19 +778,33 @@ async function refreshTools() {
       undefined,
       `tool-card ${tool.installed ? "tool-installed" : "tool-missing"}`,
     );
+    card.dataset.tool = tool.id;
     card.append(
       el(
         "span",
         tool.state === "working"
           ? "◌ Working…"
-          : tool.installed
-            ? "✓ Installed"
-            : "Not installed",
+          : tool.state === "failed"
+            ? "Needs attention"
+            : tool.installed
+              ? "✓ Installed"
+              : "Not installed",
         `tool-status ${tool.installed ? "installed" : "not-installed"}`,
       ),
       el("h3", tool.name),
       el("p", tool.description),
     );
+    const failure =
+      tool.report?.error ||
+      (tool.report?.checks || [])
+        .filter((check) => check.status === "fail" && check.required !== false)
+        .map((check) => [check.detail, check.remedy].filter(Boolean).join(" "))
+        .join("\n");
+    if (failure && tool.state !== "working") {
+      const warning = el("p", failure, "tool-failure");
+      warning.setAttribute("role", "status");
+      card.append(warning);
+    }
     if (tool.installed)
       card.append(
         el(
@@ -806,8 +846,8 @@ async function refreshTools() {
           ? tool.registered === false
             ? "View installations"
             : "Check readiness"
-          : tool.action === "source"
-            ? "Connect source"
+          : ["agent", "source"].includes(tool.action)
+            ? "Install with agent"
             : "Install",
         "secondary",
       );
@@ -817,10 +857,11 @@ async function refreshTools() {
           if (tool.installed && tool.registered === false) {
             const details = card.querySelector(".installed-variants");
             if (details) details.open = true;
-          } else if (tool.action === "source" && !tool.installed) {
-            state.sourceTool = tool.id;
-            $("source-title").textContent = `Set up ${tool.name}`;
-            $("source-dialog").showModal();
+          } else if (
+            ["agent", "source"].includes(tool.action) &&
+            !tool.installed
+          ) {
+            await assistInstallation(tool);
           } else {
             await api("install", {
               name: tool.id,
@@ -841,7 +882,17 @@ async function refreshTools() {
           });
         actions.append(check);
       }
-    } else card.append(el("code", tool.path));
+    } else {
+      card.append(el("code", tool.path));
+      const check = el("button", "Check readiness", "secondary");
+      check.disabled = tool.state === "working" || state.readonly;
+      check.onclick = () =>
+        action(check, async () => {
+          await api("install", { name: tool.id, action: "check" });
+          await refreshTools();
+        });
+      actions.append(check);
+    }
     card.append(actions);
     if (tool.log || Object.keys(tool.report || {}).length) {
       const details = el("details");
@@ -919,6 +970,57 @@ async function renderStudies() {
       el("span", study.campaign_id),
     );
     card.append(meta, el("h3", study.question));
+    const finished = ["completed", "cancelled", "budget_exhausted"].includes(
+      status,
+    );
+    if (finished) {
+      card.append(
+        el(
+          "p",
+          status === "completed"
+            ? "Study finished. Review its findings and independent assessment below."
+            : "Study stopped before an accepted outcome. The report records the partial findings.",
+          "field-help",
+        ),
+      );
+      const returned = el(
+        "a",
+        study.report_turn
+          ? "Read the agent’s explanation in conversation ↗"
+          : "Return to the conversation ↗",
+        "secondary",
+      );
+      returned.href = projectLink(state.project.id, {
+        view: "interactive",
+        ...(study.report_turn ? { turn: study.report_turn } : {}),
+      });
+      card.append(returned);
+      if (!study.explain_on_finish && !study.report_turn) {
+        const explain = el("button", "Explain in conversation", "secondary");
+        explain.disabled = state.readonly;
+        explain.onclick = () =>
+          action(explain, async () => {
+            await api("explain-study", {
+              project: state.project.id,
+              campaign: study.campaign,
+            });
+            mode("interactive");
+            toast("Report queued for your interactive agent.");
+          });
+        card.append(explain);
+      }
+      card.append(
+        el(
+          "p",
+          study.report_turn
+            ? "The report has been handed to your interactive agent. Its explanation appears in the conversation."
+            : study.explain_on_finish
+              ? "The report will be explained here automatically when the interactive agent is free. Keep the workspace server running; closing the browser is fine."
+              : "Ask your interactive agent to explain this report when you are ready.",
+          "field-help",
+        ),
+      );
+    }
     const metrics = el("div", undefined, "metrics");
     for (const [label, value] of [
       [
@@ -1036,6 +1138,77 @@ async function boot() {
   const data = await api("bootstrap");
   state.token = data.control_token;
   state.settings = data.settings;
+  const execution = data.settings.execution;
+  $("execution-backend").value = execution?.backend || "bubblewrap";
+  let executionNoticeKey = "";
+  function executionWarning() {
+    const cooperative =
+      execution?.backend === "proot-cooperative" ||
+      $("execution-backend").value === "proot-cooperative";
+    const blocked = execution && !execution.available;
+    const warning = cooperative
+      ? execution?.warning ||
+        "Cooperative execution (PRoot) is not a security sandbox: it does not isolate host files or networking. Use only trusted code under a dedicated non-root account."
+      : blocked
+        ? "Isolated experiments cannot run on this host. Cooperative mode needs PRoot and a dedicated non-root account."
+        : "";
+    executionNoticeKey = JSON.stringify([
+      data.settings.machine,
+      execution,
+      cooperative,
+    ]);
+    let dismissed = false;
+    try {
+      dismissed =
+        localStorage.getItem("simjecture-execution-notice-dismissed") ===
+        executionNoticeKey;
+    } catch {}
+    const label = cooperative
+      ? "Limited isolation"
+      : blocked
+        ? "Experiments unavailable"
+        : execution?.available
+          ? "Isolated experiments ready"
+          : "Execution status unchecked";
+    $("execution-status").textContent = label;
+    $("execution-status").disabled = !warning;
+    $("execution-warning-title").textContent = cooperative
+      ? "Limited isolation"
+      : "Execution needs setup";
+    $("execution-warning-message").textContent = warning;
+    $("execution-warning-diagnostics").textContent = [
+      execution?.reason,
+      execution?.fallback_reason,
+      execution?.fallback_unavailable,
+    ]
+      .filter(Boolean)
+      .join("\n");
+    $("execution-warning-details").hidden = !$("execution-warning-diagnostics")
+      .textContent;
+    $("execution-warning").hidden = !warning || dismissed;
+    $("execution-status").setAttribute(
+      "aria-expanded",
+      String(!$("execution-warning").hidden),
+    );
+  }
+  $("dismiss-execution-warning").onclick = () => {
+    try {
+      localStorage.setItem(
+        "simjecture-execution-notice-dismissed",
+        executionNoticeKey,
+      );
+    } catch {}
+    $("execution-warning").hidden = true;
+    $("execution-status").setAttribute("aria-expanded", "false");
+  };
+  $("execution-status").onclick = () => {
+    try {
+      localStorage.removeItem("simjecture-execution-notice-dismissed");
+    } catch {}
+    executionWarning();
+  };
+  $("execution-backend").addEventListener("change", executionWarning);
+  executionWarning();
   state.projects = data.projects;
   state.readonly = !data.allow_mutations;
   $("readonly").hidden = !state.readonly;
@@ -1047,7 +1220,7 @@ async function boot() {
       "form button, #new-project, #check-machine",
     ))
       b.disabled = true;
-  await followRoute();
+  await followRoute({ reveal: false });
 }
 for (const item of document.querySelectorAll("[data-view]"))
   item.onclick = () => view(item.dataset.view);
@@ -1184,6 +1357,20 @@ async function prepareStudy(approach) {
       : "Your agent is drafting the study from this conversation.",
   );
 }
+$("new-study").onclick = () =>
+  action($("new-study"), async () => {
+    await api("new-study", { project: state.project.id });
+    state.project = await api(
+      `project?id=${encodeURIComponent(state.project.id)}`,
+    );
+    state.briefDirty = false;
+    state.launchKey = null;
+    renderProject(true);
+    $("study-preparation").scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+  });
 $("grill-me").onclick = () =>
   action($("grill-me"), () => prepareStudy("interview"));
 $("draft-study").onclick = () =>
@@ -1230,9 +1417,9 @@ $("start-prepared-study").onclick = () =>
 $("file-input").onchange = async () => {
   for (const file of $("file-input").files) {
     try {
-      if (file.size > 20 * 1024 ** 2)
+      if (file.size > 64 * 1024 ** 2)
         throw Error(
-          `${file.name} exceeds 20 MB. Copy it to the project folder directly.`,
+          `${file.name} exceeds 64 MB. Copy it to the project folder directly.`,
         );
       const data = await new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -1260,20 +1447,6 @@ $("custom-tool-form").onsubmit = (e) => {
       path: $("tool-path").value,
     });
     toast("Research tool registered");
-    await refreshTools();
-  });
-};
-$("cancel-source").onclick = () => $("source-dialog").close();
-$("source-form").onsubmit = (e) => {
-  e.preventDefault();
-  action(e.submitter, async () => {
-    await api("install", {
-      name: state.sourceTool,
-      action: "install",
-      source: $("source-path").value,
-    });
-    $("source-dialog").close();
-    toast("Tool setup started");
     await refreshTools();
   });
 };
@@ -1315,6 +1488,7 @@ function sizeInspector() {
   split.setAttribute("orientation", narrow.matches ? "vertical" : "horizontal");
   split.disabled = narrow.matches;
   split.setAttribute("position", narrow.matches ? "40" : "32");
+  requestAnimationFrame(() => window.WorkspacePanels?.resize());
 }
 narrow.addEventListener("change", sizeInspector);
 sizeInspector();

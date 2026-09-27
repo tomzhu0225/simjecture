@@ -359,9 +359,11 @@ Do not edit service records or other studies. Resume from lab.status() and your 
                         if snapshot["completed"]:
                             self.service.cancel_active()
                             snapshot = self.service.status()
+                            # Completion is the publication barrier for the final report.
+                            # Readers must not observe it alongside the preceding report.
+                            write_report(self.service, self.state | {"status": "completed"})
                             self.state["status"] = "completed"
                             self.save()
-                            write_report(self.service, self.state)
                             return 0
                         if self.boundary():
                             break

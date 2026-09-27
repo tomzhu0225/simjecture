@@ -2,6 +2,55 @@
 
 This project follows semantic versioning. Dates use ISO 8601.
 
+## 0.5.2rc2 (preview) — 2026-09-27
+
+- Provision scientific compilers, MPI, HDF5 and other prerequisites in managed
+  environments for the included tools. Preserve diagnostic logs and validate the
+  installed runtime using the selected execution backend before reporting success.
+- Verify all five one-click tools from empty runtime directories, real agent-assisted
+  FLASH and WarpX CUDA builds, GPU execution, and browser uploads of licensed source.
+- Handle restricted root installations with a dedicated non-root account, safe
+  launchers, failed-install retry and upgrade rollback.
+- Make the autonomous research screen follow preparation, proposal, execution and
+  results. Return finished reports to the interactive agent without interrupting
+  active work; preserve queued delivery across restarts and link explanations to evidence.
+- Support follow-up studies in the same conversation with separate briefs and reports.
+  Remove duplicate navigation labels and collapse routine workspace metadata.
+- Accept source archive uploads up to 64 MiB. Keep installation commands separate
+  from simulations, support checks for registered custom tools, and reject runtimes
+  whose host paths or interpreter symlinks cannot work in the execution backend.
+
+- Keep installation skills readable while runtimes are incomplete; retry the
+  pinned Singularity-EOS source fetch after transient transport failures and
+  populate its required ports-of-call dependency. Package a relocatable Python
+  runtime when using uv-managed Python, avoiding broken sandbox symlinks. Incomplete runtimes with missing
+  declared identity files are not listed as installed.
+- Require an explicit completion handoff after DeepSeek text-only progress replies,
+  continuing tools instead of marking promises as completed answers. Bound repeated
+  protocol failures and retain usage accounting for completion-check requests.
+- Move routine workspace controls and execution status into the left sidebar,
+  remove the redundant top bar, and make execution warnings dismissible with
+  expandable diagnostics. Keep conversation-blocking notices prominent.
+- Use draggable sidebar edges and compact chevron tabs instead of text hide/show
+  buttons. Drag to the outer edge to collapse, pull or click the tab to reopen,
+  and retain panel widths and collapsed state across reloads.
+- Replace source-path dialogs for FLASH and WarpX CUDA with **Install with agent**,
+  opening prepared setup conversations that reference the bundled deployment skills.
+- Prefer Bubblewrap, with a checked PRoot cooperative fallback for namespace-restricted
+  hosts running under a dedicated non-root account. Show a dismissible sidebar warning
+  about the lack of filesystem/network security isolation; retain explicit backend
+  choices and immutable study execution modes. Use the selected backend for tool checks.
+- Show failed tool installations directly on catalogue cards, including tools
+  that are not yet installed. Bootstrap checksummed Micromamba for WarpX CPU
+  and separate solver provisioning from experiment-sandbox readiness.
+- Support DeepSeek thinking-mode tool choice and plain-text final answers. Keep
+  required provider reasoning metadata in private session storage and preserve
+  it when resuming a conversation, without displaying it in chat or activity.
+- Clarify SSH forwarding when a local port is already occupied.
+- Show only simulations in the left sidebar. Separate Simulations and Commands
+  into right-side tabs with independent selections, counts and links; incoming
+  commands no longer open the simulation monitor.
+
 ## 0.5.2rc1 (preview) — 2026-09-27
 
 - Add a Linux/WSL one-command installer with checksummed release bundles, automatic

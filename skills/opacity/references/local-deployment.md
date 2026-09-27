@@ -15,8 +15,10 @@ Upstream: https://github.com/nombac/optab
 
 ## Install with Simjecture
 
-Prerequisites on `PATH`: Git, Python 3.12 or 3.11, an MPI Fortran HDF5 wrapper
-(`h5pfc`), and `mpirun` / `orterun` / `mpiexec`.
+Click Install in Research tools. The installer provisions a compatible Fortran
+compiler, MPI-enabled HDF5, OpenMPI, Python and data-download dependencies into
+a managed environment. No system scientific libraries or sudo are needed.
+The equivalent CLI commands are:
 
 ```bash
 uv run simjecture install optab
@@ -24,12 +26,13 @@ uv run simjecture doctor --profile optab
 ```
 
 Repeating the command against a healthy runtime performs no installation. An
-unhealthy installer-managed prefix is left unchanged unless `--repair` is
-explicit. `--dry-run` prints the bootstrap command. `--source` may point at an
+interrupted managed installation resumes on another Install click. Unmanaged
+directories are left untouched. `--dry-run` prints the bootstrap command. `--source` may point at an
 already cloned tree whose `HEAD` matches the pinned revision.
 
 The bootstrap compiles Optab, downloads the van Hoof free-free Gaunt-factor
-table and the NIST level database used by Optab, and writes a one-zone
+table and the NIST level database used by Optab, verifies all 4,278 expected
+ion groups, and writes a one-zone
 continuum hydrogen preflight input. That preflight is an interface check, not a
 production opacity table.
 
@@ -44,8 +47,9 @@ production opacity table.
   share/preflight/          # complete Optab input/ tree for the doctor probe
 ```
 
-`bin/python` must provide `h5py`. `bin/mpi-launcher` wraps the host MPI
-launcher discovered at install time.
+`bin/python` provides `h5py`. `bin/mpi-launcher` uses the matching managed MPI
+launcher with paths that work inside capability execution. Failed readiness
+outputs remain in `.runtime/deployment/preflights/`.
 
 Capability environment (sandbox paths):
 

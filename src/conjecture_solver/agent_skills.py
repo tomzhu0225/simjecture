@@ -1,10 +1,16 @@
 """Expose shipped research skills consistently to API and native CLI agents."""
 
-from .mvp_skills import discover_builtin_mvp_resources
+from pathlib import Path
+
+from .mvp_skills import MVPSkillCatalog
 
 
 def research_skills():
-    return discover_builtin_mvp_resources()[0]
+    # Installation guidance must remain readable while a runtime is incomplete.
+    # Loading documentation must not validate unrelated capability executables.
+    package = Path(__file__).resolve().parent
+    bundled = package / "builtin_skills"
+    return MVPSkillCatalog.discover(bundled if bundled.is_dir() else package.parents[1] / "skills")
 
 
 def skill_context():

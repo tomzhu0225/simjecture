@@ -45,9 +45,7 @@ def _project(tmp_path: Path) -> Path:
         "dependencies: [python=3.11, warpx=26.07]\n"
     )
     (root / "capabilities/warpx-cpu-26.07.json").write_text(
-        json.dumps(
-            _capability_payload("warpx-cpu-26.07", "../.runtime/warpx-cpu")
-        )
+        json.dumps(_capability_payload("warpx-cpu-26.07", "../.runtime/warpx-cpu"))
     )
     (root / "capabilities/warpx-cuda-openpmd-26.07.json").write_text(
         json.dumps(
@@ -209,9 +207,7 @@ def test_flash_install_clones_operator_repository_without_overlay(
     )
 
     assert report.planned is True
-    assert report.command[0] == str(
-        root / "skills/flash-mhd/scripts/bootstrap_flash.sh"
-    )
+    assert report.command[0] == str(root / "skills/flash-mhd/scripts/bootstrap_flash.sh")
     assert report.command[report.command.index("--git-url") + 1] == (
         "git@github.com:example/flash.git"
     )
@@ -374,14 +370,8 @@ def test_core_doctor_enforces_locked_direct_dependency_versions(
     by_name = {item.name: item for item in checks}
 
     assert by_name["core.lock"].status is DeploymentCheckStatus.PASS
-    assert (
-        by_name["core.package.httpx"].status
-        is DeploymentCheckStatus.PASS
-    )
-    assert (
-        by_name["core.package.numpy"].status
-        is DeploymentCheckStatus.FAIL
-    )
+    assert by_name["core.package.httpx"].status is DeploymentCheckStatus.PASS
+    assert by_name["core.package.numpy"].status is DeploymentCheckStatus.FAIL
     assert "locked=2.2.0" in by_name["core.package.numpy"].detail
 
 
@@ -524,11 +514,60 @@ def test_committed_eos_and_opacity_capability_configs_parse() -> None:
         "optab-1.3.1": "opacity",
     }
     for name, skill in expected.items():
-        config = MVPCapabilityConfig.model_validate_json(
-            (root / f"{name}.json").read_bytes()
-        )
+        config = MVPCapabilityConfig.model_validate_json((root / f"{name}.json").read_bytes())
         assert config.manifest.name == name
         assert config.manifest.skill == skill
         assert config.manifest.preflight_resource is not None
         assert config.manifest.preflight_resource.startswith("examples/")
         assert config.executable == "bin/python"
+
+
+def test_cpu_install_can_provision_while_sandbox_remains_unavailable(tmp_path, monkeypatch):
+    root = _project(tmp_path)
+    manager = DeploymentManager(root)
+
+    def core(self, *, probe):
+        return [
+            DeploymentCheck(
+                name="core.bubblewrap_namespace",
+                status=DeploymentCheckStatus.FAIL,
+                required=True,
+                detail="Namespaces denied",
+            )
+        ]
+
+    monkeypatch.setattr(DeploymentManager, "_core_checks", core)
+    monkeypatch.setattr("conjecture_solver.deployment.shutil.which", lambda name: None)
+    monkeypatch.setattr(
+        "conjecture_solver.runtime_bootstrap.ensure_micromamba",
+        lambda *a, **kw: "/local/micromamba",
+    )
+
+    def install(command, **kwargs):
+        prefix = Path(command[command.index("--prefix") + 1])
+        _materialize_runtime(
+            prefix.parent.parent, prefix.relative_to(prefix.parent.parent).as_posix()
+        )
+        return subprocess.CompletedProcess(command, 0, "", "")
+
+    monkeypatch.setattr("conjecture_solver.deployment._run_install_command", install)
+    report = manager.install(DeploymentProfile.WARPX_CPU)
+    assert report.changed and not report.ready
+    assert (root / ".runtime/warpx-cpu/bin/python").exists()
+    assert any(
+        c.name == "core.bubblewrap_namespace" and c.status == DeploymentCheckStatus.FAIL
+        for c in report.checks
+    )
+
+
+def test_install_failure_keeps_live_output_and_actual_error(capsys):
+    import sys
+
+    from conjecture_solver.deployment import _run_install_command
+
+    result = _run_install_command(
+        [sys.executable, "-c", "print('missing test-library', flush=True); raise SystemExit(2)"]
+    )
+    assert result.returncode == 2
+    assert "missing test-library" in result.stderr
+    assert "missing test-library" in capsys.readouterr().out

@@ -80,7 +80,21 @@ silently change an existing study's provider. Do not place keys in chat messages
 4. Review the agent's proposal and press **Start research**. Manual fields are tucked
    under **Review or edit the study details**. The autonomous worker records experiments and submits evidence to
    a separate tool-free reviewer. Watch progress in the project or experiment monitor.
-5. Open the result, evidence ledger, and simulation files from the study card.
+5. Open the result, evidence ledger, and simulation files from the study card. Once
+   the report is saved, the interactive agent explains it in the same conversation.
+   This waits for any active interactive task to finish. The study card links to the
+   explanation, and the explanation links back to the study. Budget-exhausted or
+   stopped studies return partial findings rather than implying success.
+6. Choose **Prepare another study** for a follow-up in the same conversation. Each
+   study retains its own agreed brief, files, report and history. A launched proposal
+   cannot accidentally be launched a second time; review a new proposal to continue.
+
+Preparation choices disappear when a proposal is ready. After launch, the autonomous
+section shows the study's progress and controls instead of the old launch form.
+Older studies have an **Explain in conversation** action to request the same handoff.
+Automatic explanations use the conversation's selected agent and consume a normal
+agent turn. Keep the workspace server running for delivery; closing the browser is
+fine. If the server is stopped, pending handoffs resume when it starts again.
 
 **Answer the question** permits independently accepted support or falsification of the
 original claim to complete the investigation. **Seek a supported claim or tested repair**
@@ -147,8 +161,12 @@ directories and the configured capability directory are discovered automatically
 Installed FLASH applications are shown with their own names, versions and runtime paths;
 they are not relabelled as the bundled island-coalescence application. You do not need
 to supply source again for these installations. Readiness checks use the detected
-application's descriptor. FLASH and WarpX CUDA setup asks for a source checkout only
-when installing a new runtime. Installation jobs continue in the background and expose
+application's descriptor. **Install with agent** opens a prepared setup conversation
+for FLASH and WarpX CUDA. Choose the agent/model and send the editable request; it
+points the agent to the bundled deployment skills and asks it to handle prerequisites,
+build configuration, compilation, readiness checks and registration. The agent asks
+for the intended application/geometry and any required source, rather than requiring
+the user to supply build environment variables. Installation jobs continue in the background and expose
 their reports and logs. The catalogue also detects configured executable installations.
 
 You can ask your project agent to install other software and register its Simjecture

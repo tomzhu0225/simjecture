@@ -36,5 +36,9 @@
     "/opt/acs-dependencies/io": "../.runtime/warpx-cuda-openpmd-deps",
     "/opt/acs-dependencies/wsl-lib": "/usr/lib/wsl/lib"
   },
-  "runtime_root": "../.runtime/warpx-cuda-openpmd"
+  "runtime_root": "../.runtime/warpx-cuda-openpmd",
+  "identity_files": [
+    "share/build-record.json",
+    "lib/python3.12/site-packages/pywarpx/__init__.py"
+  ]
 }

@@ -35,6 +35,20 @@ def provider():
         def do_POST(self):  # noqa: N802
             request = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
             requests.append(request)
+            deepseek = request.get("model") == "deepseek-flash"
+            if deepseek and request.get("tools"):
+                if request.get("tool_choice") not in (None, "auto", "none"):
+                    self.respond(
+                        {"error": {"message": "Thinking mode does not support this tool_choice"}},
+                        status=400,
+                    )
+                    return
+                if any(
+                    m["role"] == "assistant" and not m.get("reasoning_content")
+                    for m in request["messages"]
+                ):
+                    self.respond({"error": {"message": "Missing reasoning_content"}}, status=400)
+                    return
             tools = {t["function"]["name"] for t in request.get("tools", [])}
             messages = request["messages"]
             context = json.dumps(messages)
@@ -57,6 +71,15 @@ def provider():
             ]
             if "connection_check" in tools:
                 name, args = "connection_check", {"value": "connected"}
+            elif deepseek and plain.rsplit("CURRENT USER REQUEST:\n", 1)[-1].startswith("Hello"):
+                name, args = "final_answer", {"answer": "Hello!"}
+            elif "draft_study" in tools and plain.rsplit("CURRENT USER REQUEST:\n", 1)[
+                -1
+            ].startswith("Explain the autonomous study report:"):
+                name, args = (
+                    "final_answer",
+                    {"answer": "The completed study found a reviewed counterexample."},
+                )
             elif "draft_study" in tools and (
                 plain.rsplit("CURRENT USER REQUEST:\n", 1)[-1].startswith("Grill me to prepare")
             ):
@@ -169,11 +192,27 @@ def provider():
                 ],
                 usage=dict(prompt_tokens=10, completion_tokens=10, total_tokens=20),
             )
+            if deepseek:
+                message = body["choices"][0]["message"]
+                message["reasoning_content"] = f"provider-private-reasoning-fixture-{len(requests)}"
+                checkpoint = "COMPLETION CHECK:" in json.dumps(current_messages[-2:])
+                if (
+                    not calls
+                    and plain.rsplit("CURRENT USER REQUEST:\n", 1)[-1].startswith("Progress test")
+                    and not checkpoint
+                ):
+                    message["content"] = "Let me inspect and write the calculation now."
+                    message.pop("tool_calls")
+                    body["choices"][0]["finish_reason"] = "stop"
+                elif name == "final_answer" and not checkpoint:
+                    message["content"] = args["answer"]
+                    message.pop("tool_calls")
+                    body["choices"][0]["finish_reason"] = "stop"
             self.respond(body)
 
-        def respond(self, value):
+        def respond(self, value, status=200):
             body = json.dumps(value).encode()
-            self.send_response(200)
+            self.send_response(status)
             self.send_header("Content-Type", "application/json")
             self.send_header("Content-Length", str(len(body)))
             self.end_headers()
@@ -278,6 +317,15 @@ def test_autonomous_api_reuses_supervisor_and_accepts_negative_result(tmp_path, 
         assert report["completed"] and report["reviews"][0]["verdict"]["disposition"] == "falsified"
         assert list((root / "experiments").glob("*/workspace/result.json"))
         assert "Scientific results" in (workspace.directory(p["id"]) / "README.md").read_text()
+        workspace.deliver_study_reports()
+        explained = wait_for(
+            lambda: value if not (value := workspace.project(p["id"]))["running"] else None
+        )
+        assert explained["messages"][-1]["content"] == (
+            "The completed study found a reviewed counterexample."
+        )
+        assert explained["messages"][-1]["links"][-1]["campaign"] == launched["campaign"]
+        assert explained["brief_launched"] == launched["campaign"]
         app2 = SimjectureWebApplication(runs_root=tmp_path, scan_roots=(tmp_path,))
         assert app2.registry.resolve(launched["campaign"]) == root
         judges = [
@@ -698,3 +746,204 @@ def test_progress_updates_are_durable_and_visible_in_conversation(tmp_path):
     result = w.project(p["id"])
     assert result["messages"][-1]["progress"].startswith("Inputs are prepared")
     assert result["messages"][-1]["last_activity_at"] > 0
+
+
+def test_uninstalled_tool_keeps_failed_install_report(tmp_path):
+    workspace = Workspace(tmp_path / ".workspace")
+    report = {"ready": False, "error": "Package download failed"}
+    (workspace.root / "tools/warpx-cpu").mkdir(parents=True)
+    put(workspace.root / "tools/warpx-cpu/result.json", report)
+    card = next(c for c in workspace.catalogue() if c["id"] == "warpx-cpu")
+    assert card["report"] == report
+    assert card["readiness"] == "failed"
+
+
+def test_partial_eos_runtime_is_not_listed_as_installed(tmp_path, monkeypatch):
+    monkeypatch.setattr("conjecture_solver.deployment.resolve_project_root", lambda *a: tmp_path)
+    caps = tmp_path / "capabilities"
+    caps.mkdir()
+    runtime = tmp_path / ".runtime/eos"
+    (runtime / "bin").mkdir(parents=True)
+    (runtime / "bin/python").write_text("#!/bin/sh\nexit 0\n")
+    (runtime / "bin/python").chmod(0o755)
+    put(
+        caps / "singularity-eos-fixture.json",
+        dict(
+            runtime_root="../.runtime/eos",
+            executable="bin/python",
+            identity_files=["bin/eos-query", "share/build-record.json"],
+            manifest=dict(
+                name="singularity-eos-fixture",
+                version="1",
+                description="EOS fixture",
+                skill="eos",
+                executable_kind="python-test",
+            ),
+        ),
+    )
+    workspace = Workspace(tmp_path / "artifacts/.workspace")
+    card = next(c for c in workspace.catalogue() if c["id"] == "singularity-eos")
+    assert not card["installed"] and not card["registered"] and not card["variants"]
+    (runtime / "bin/eos-query").write_text("binary")
+    (runtime / "share").mkdir()
+    put(runtime / "share/build-record.json", {"version": "fixture"})
+    card = next(c for c in workspace.catalogue() if c["id"] == "singularity-eos")
+    assert card["installed"] and card["registered"]
+
+
+def test_long_build_command_is_monitored_after_tool_returns(tmp_path):
+    pytest.importorskip("smolagents")
+    from conjecture_solver.workspace_agent import agent_tools
+
+    workspace = Workspace(tmp_path / ".workspace")
+    project = workspace.create({"name": "Build lifecycle"})
+    root = Path(project["files_directory"])
+    tool = next(
+        t
+        for t in agent_tools(root, float("inf"), project["id"], workspace)
+        if t.name == "run_command"
+    )
+    result = json.loads(
+        tool.forward("Install fixture", "sleep 1; echo installed > installed.txt", 10)
+    )
+    job = wait_for(
+        lambda: (
+            (j if j["status"] == "succeeded" else None)
+            if (j := workspace.simulation(project["id"], result["id"]))
+            else None
+        )
+    )
+    assert job["kind"] == "command"
+    assert (root / "installed.txt").read_text().strip() == "installed"
+    failure = json.loads(tool.forward("Failed build", "false | cat", 10))
+    failed = wait_for(
+        lambda: (
+            (j if j["status"] == "failed" else None)
+            if (j := workspace.simulation(project["id"], failure["id"]))
+            else None
+        )
+    )
+    assert failed["returncode"] != 0
+
+
+def test_registered_tool_can_be_checked_from_catalogue(tmp_path, monkeypatch):
+    import conjecture_solver.web.workspace as module
+
+    workspace = Workspace(tmp_path / ".workspace")
+    descriptors = tmp_path / "capabilities"
+    descriptors.mkdir()
+    runtime = tmp_path / "runtime"
+    runtime.mkdir()
+    executable = runtime / "runner"
+    executable.write_text("#!/bin/sh\nexit 0\n")
+    executable.chmod(0o755)
+    template = json.loads((Path(__file__).parents[1] / "capabilities/m-aneos-1.0.json").read_text())
+    template.update(runtime_root=str(runtime), executable="runner", identity_files=[])
+    (descriptors / "test.json").write_text(json.dumps(template))
+    record = workspace.register_tool({"name": "Custom solver", "path": str(descriptors)})
+    commands = []
+    monkeypatch.setattr(module, "spawn", lambda command, *args: commands.append(command) or {})
+    workspace.start_install({"name": record["id"], "action": "check"})
+    assert commands[0][-2:] == ["--descriptor", str(descriptors)]
+    put(workspace.root / "tools" / record["id"] / "result.json", {"ready": True})
+    card = next(t for t in workspace.catalogue() if t["id"] == record["id"])
+    assert card["readiness"] == "passed"
+    assert card["state"] == "tested"
+    template["environment"]["MANEOS_QUERY"] = str(runtime / "runner")
+    (descriptors / "test.json").write_text(json.dumps(template))
+    with pytest.raises(ValueError, match="host runtime path"):
+        workspace.register_tool({"name": "Wrong mapping", "path": str(descriptors)})
+
+
+def test_report_handoff_waits_for_idle_and_survives_restart(tmp_path, monkeypatch):
+    import conjecture_solver.web.workspace as module
+
+    w = Workspace(tmp_path / ".workspace")
+    w.save_settings(
+        dict(
+            backend="builtin",
+            base_url="http://localhost:9999/v1",
+            model="fixture-model",
+            api_key="test-secret",
+        )
+    )
+    project = w.create({"name": "Several studies"})
+    directory = w.directory(project["id"])
+    root = directory / "studies/001-euler"
+    (root / "supervisor").mkdir(parents=True)
+    put(root / "supervisor/state.json", {"status": "completed"})
+    study = dict(
+        campaign="first", question="Euler positivity", path=str(root), explain_on_finish=True
+    )
+    saved = load(directory / "project.json")
+    saved["studies"] = [study]
+    put(directory / "project.json", saved)
+    monkeypatch.setattr(w, "inventory_context", lambda: "Python available")
+    prompts = []
+
+    def spawn(command, cwd, log):
+        prompts.append((log.parent / "prompt.txt").read_text())
+        log.write_text(json.dumps({"type": "result", "result": "A negative result."}) + "\n")
+        return {}
+
+    monkeypatch.setattr(module, "spawn", spawn)
+    w.deliver_study_reports()
+    assert not prompts  # Terminal status alone is insufficient: wait for the report.
+    put(root / "research_report.json", {"completed": True, "result": "falsified"})
+    busy = directory / "turns/123"
+    busy.mkdir()
+    put(busy / "request.json", {"message": "Current user task"})
+    put(busy / "process.json", {"busy": True})
+    monkeypatch.setattr(module, "alive", lambda record: record.get("busy", False))
+    w.deliver_study_reports()
+    assert not prompts
+    put(busy / "process.json", {})
+    w.deliver_study_reports()
+    assert len(prompts) == 1
+    assert str(root / "research_report.json") in prompts[0]
+    assert "Do not start another study or simulation" in prompts[0]
+    returned = w.project(project["id"])
+    assert returned["studies"][0]["report_turn"]
+    assert returned["messages"][-1]["links"][-1]["campaign"] == "first"
+
+    # Simulate a crash after sending but before persisting the delivery receipt.
+    saved = load(directory / "project.json")
+    del saved["studies"][0]["report_turn"]
+    put(directory / "project.json", saved)
+    restarted = Workspace(w.root)
+    restarted.deliver_study_reports()
+    assert len(prompts) == 1
+    assert restarted.project(project["id"])["studies"][0]["report_turn"]
+
+    # Another study in the same conversation gets its own explanation once.
+    second = directory / "studies/002-follow-up"
+    (second / "supervisor").mkdir(parents=True)
+    put(second / "supervisor/state.json", {"status": "budget_exhausted"})
+    put(second / "research_report.json", {"completed": False})
+    saved = load(directory / "project.json")
+    saved["studies"].append(dict(study, campaign="second", path=str(second)))
+    put(directory / "project.json", saved)
+    monkeypatch.setattr(restarted, "inventory_context", lambda: "Python available")
+    restarted.deliver_study_reports()
+    restarted.deliver_study_reports()
+    assert len(prompts) == 2
+    assert "budget_exhausted" in prompts[-1]
+
+
+def test_new_study_preserves_previous_study_and_consumes_legacy_brief(tmp_path):
+    w = Workspace(tmp_path / ".workspace")
+    p = w.create({"name": "Follow-up"})
+    directory = w.directory(p["id"])
+    brief = dict(question="A claim", success_criteria="Review it", hours=1)
+    root = directory / "studies/001-claim"
+    root.mkdir(parents=True)
+    put(root / "project-brief.json", brief)
+    record = load(directory / "project.json")
+    record.update(brief=brief, studies=[dict(campaign="first", path=str(root), question="A claim")])
+    put(directory / "project.json", record)
+    assert w.project(p["id"])["brief_launched"] == "first"
+    w.new_study(p["id"])
+    latest = w.project(p["id"])
+    assert latest["brief"] is None and latest["brief_launched"] is None
+    assert len(latest["studies"]) == 1
+    assert load(root / "project-brief.json") == brief

@@ -12,6 +12,7 @@
 #include <iostream>
 #include <string>
 
+#include <singularity-eos/base/eos_error.hpp>
 #include <singularity-eos/eos/eos_electrons.hpp>
 #include <singularity-eos/eos/eos_ideal.hpp>
 

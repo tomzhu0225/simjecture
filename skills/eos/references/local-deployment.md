@@ -21,7 +21,7 @@ Simjecture skill and capability metadata must remain independently written.
 
 ## Install with Simjecture
 
-From a Simjecture checkout, with Git and Python 3.12 or 3.11 on `PATH`:
+Use Install in Research tools, or run these commands from the installed Simjecture workspace:
 
 ```bash
 uv run simjecture install atomec
@@ -30,13 +30,16 @@ uv run simjecture install m-aneos
 ```
 
 Repeating a command against a healthy runtime performs no installation. An
-unhealthy installer-managed prefix is left unchanged unless `--repair` is
-explicit. `--dry-run` prints the bootstrap command without writing a runtime.
+interrupted managed installation resumes when Install is clicked again; unrelated
+unmanaged directories are never overwritten. `--dry-run` prints the bootstrap command without writing a runtime.
 `--source` may point at an already cloned tree whose `HEAD` matches the pinned
 revision; otherwise the bootstrap clones it. `--jobs` is passed to compilation
 where relevant.
 
-Singularity-EOS also needs `g++`. M-ANEOS needs `gfortran` and `make`.
+The installer provisions Python, Git and the required C++/Fortran compilers and
+libraries into managed environments automatically. No system compiler or sudo
+is needed. Compatible package downloads are shared through a common cache.
+Failed readiness outputs remain in `.runtime/deployment/preflights/`.
 
 Then verify:
 
@@ -66,7 +69,7 @@ declared in `identity_files` and hashed at discovery.
 
 ## What the installer builds
 
-- **atoMEC 1.4.0:** a virtual environment with libxc 6.2.2 and the pinned
+- **atoMEC 1.4.0:** a managed Python environment with libxc 6.2.2 and the pinned
   atoMEC revision. The probe is a helium ion-sphere SCF.
 - **Singularity-EOS 1.12.1:** a query driver compiled against the pinned source
   for `IdealGas` and `IdealElectrons`. The probe evaluates `IdealGas` only.

@@ -33,36 +33,9 @@ query_source="$project_root/skills/eos/scripts/singularity_query.cpp"
     exit 2
 }
 
-if [[ -e "$prefix" ]]; then
-    if [[ "$repair" -ne 1 ]]; then
-        echo "runtime already exists at $prefix; pass --repair to replace it" >&2
-        exit 2
-    fi
-    rm -rf "$prefix"
-fi
-
-python=""
-for candidate in python3.12 python3; do
-    if command -v "$candidate" >/dev/null; then
-        python="$(command -v "$candidate")"
-        break
-    fi
-done
-[[ -n "$python" ]] || {
-    echo "missing deployment prerequisite: python3.12 or python3" >&2
-    exit 2
-}
-command -v git >/dev/null || {
-    echo "missing deployment prerequisite: git" >&2
-    exit 2
-}
-command -v g++ >/dev/null || {
-    echo "missing deployment prerequisite: g++" >&2
-    exit 2
-}
-
-mkdir -p "$prefix/bin" "$prefix/share" "$prefix/src"
-"$python" -m venv "$prefix"
+runtime_profile="singularity-eos"
+source "$project_root/scripts/runtime_environment.sh"
+mkdir -p "$prefix/bin" "$prefix/share/preflight" "$prefix/src"
 
 if [[ -n "$source_tree" ]]; then
     source_tree="$(cd "$source_tree" && pwd)"
@@ -74,11 +47,39 @@ if [[ -n "$source_tree" ]]; then
     src="$source_tree"
 else
     src="$prefix/src/singularity-eos"
-    git clone --filter=blob:none "$UPSTREAM" "$src"
-    git -C "$src" checkout --detach "$PINNED_REVISION"
+    git init "$src"
+    git -C "$src" remote remove origin 2>/dev/null || true
+    git -C "$src" remote add origin "$UPSTREAM"
+    for attempt in 1 2 3; do
+        if git -c http.version=HTTP/1.1 -C "$src" fetch --depth 1 origin "$PINNED_REVISION"; then
+            break
+        fi
+        if [[ "$attempt" -eq 3 ]]; then
+            echo "Could not fetch the pinned Singularity-EOS source after three attempts" >&2
+            exit 1
+        fi
+        echo "Source download interrupted; retrying…" >&2
+        sleep "$attempt"
+    done
+    git -C "$src" checkout --detach FETCH_HEAD
 fi
 
-g++ -std=c++20 -O2 -pthread \
+# The analytic query driver needs this pinned submodule even without Kokkos,
+# Spiner or tabular EOS support. A plain checkout does not populate it.
+if [[ ! -f "$src/utils/ports-of-call/ports-of-call/portability.hpp" ]]; then
+    for attempt in 1 2 3; do
+        if git -c http.version=HTTP/1.1 -C "$src" submodule update --init --depth 1 -- utils/ports-of-call; then
+            break
+        fi
+        if [[ "$attempt" -eq 3 ]]; then
+            echo "Could not fetch the pinned ports-of-call dependency" >&2
+            exit 1
+        fi
+        sleep "$attempt"
+    done
+fi
+
+"${CXX:-g++}" -std=c++20 -O2 -pthread \
     -I "$src" \
     -I "$src/utils/ports-of-call" \
     -I "$src/singularity-utils" \
@@ -97,6 +98,7 @@ print(json.dumps({
     "models": ["IdealGas", "IdealElectrons"],
     "python": sys.executable,
     "python_version": sysconfig.get_python_version(),
+    "python_layout": "self-contained" if sys.prefix == sys.base_prefix else "system-venv",
 }, indent=2, sort_keys=True))
 PY
 echo "Singularity-EOS runtime ready at $prefix"

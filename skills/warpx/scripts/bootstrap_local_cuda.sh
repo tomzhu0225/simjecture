@@ -6,7 +6,7 @@ set -euo pipefail
 # pin and audit the WarpX release rather than downloading an implicit branch.
 
 usage() {
-    echo "usage: $0 --source WARPX_SOURCE [--jobs N] [--arch N]" >&2
+    echo "usage: $0 [--source WARPX_SOURCE] [--jobs N] [--arch N]" >&2
 }
 
 source_tree=""
@@ -20,8 +20,9 @@ while (($#)); do
         *) usage; exit 2 ;;
     esac
 done
-[[ -n "$source_tree" ]] || { usage; exit 2; }
-source_tree="$(cd "$source_tree" && pwd)"
+if [[ -n "$source_tree" ]]; then
+    source_tree="$(cd "$source_tree" && pwd)"
+fi
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/../../.." && pwd)"
@@ -29,7 +30,7 @@ cuda_root="$repo_root/.runtime/cuda-toolkit-12.4"
 io_root="$repo_root/.runtime/warpx-cuda-openpmd-deps"
 python_root="$repo_root/.runtime/warpx-cuda-openpmd"
 
-for command in mamba python3.12 nvidia-smi; do
+for command in python3 nvidia-smi; do
     command -v "$command" >/dev/null || {
         echo "missing deployment prerequisite: $command" >&2
         exit 2
@@ -43,22 +44,36 @@ if [[ -z "$cuda_arch" ]]; then
     cuda_arch="$(nvidia-smi --query-gpu=compute_cap --format=csv,noheader | head -1 | tr -d '.')"
 fi
 
-mamba create -y -p "$cuda_root" -c conda-forge \
-    cuda-nvcc=12.4 cuda-cudart-dev=12.4 libcublas-dev=12.4 \
-    libcurand-dev=10.3.5.147 libcusparse-dev=12.3.1.170 \
-    cuda-profiler-api=12.4 cuda-nvtx-dev=12.4 \
-    gcc_linux-64=12.4 gxx_linux-64=12.4
-mamba create -y -p "$io_root" -c conda-forge \
-    'hdf5=1.14.6=nompi_*' cmake ninja pkg-config
+bootstrap_python="${SIMJECTURE_BOOTSTRAP_PYTHON:-python3}"
+for spec in "cuda-toolkit:$cuda_root" "cuda-io:$io_root" "cuda-python:$python_root"; do
+    "$bootstrap_python" "$repo_root/scripts/prepare_runtime.py" "${spec%%:*}" "${spec#*:}"
+done
 
-python3.12 -m venv --system-site-packages "$python_root"
-"$python_root/bin/python" -m pip install --upgrade \
-    pip setuptools wheel packaging picmistandard==0.34.0 \
-    periodictable openpmd-api matplotlib numpy
+pinned_revision="312d507407a1bf6f01ae43fb41b5c3a3700d053c"
+if [[ -z "$source_tree" ]]; then
+    source_tree="$repo_root/.runtime/src-cache/warpx-26.07"
+    git="$python_root/bin/git"
+    "$git" init "$source_tree"
+    "$git" -C "$source_tree" remote remove origin 2>/dev/null || true
+    "$git" -C "$source_tree" remote add origin https://github.com/BLAST-WarpX/warpx.git
+    for attempt in 1 2 3; do
+        if "$git" -c http.version=HTTP/1.1 -C "$source_tree" fetch --depth 1 origin "$pinned_revision"; then
+            break
+        fi
+        [[ "$attempt" -lt 3 ]] || exit 1
+        sleep "$attempt"
+    done
+    "$git" -C "$source_tree" checkout --detach FETCH_HEAD
+fi
+observed="$("$python_root/bin/git" -C "$source_tree" rev-parse HEAD)"
+[[ "$observed" == "$pinned_revision" ]] || {
+    echo "WarpX source revision $observed does not match $pinned_revision" >&2
+    exit 2
+}
 
 # Keep Windows toolchains out of discovery under WSL. HDF5_ROOT and the
 # non-MPI build prefix prevent a Windows/MPI HDF5 config from being selected.
-export PATH="$cuda_root/bin:/usr/local/bin:/usr/bin:/bin:$io_root/bin"
+export PATH="$cuda_root/bin:$io_root/bin:$python_root/bin:/usr/local/bin:/usr/bin:/bin"
 export CUDA_PATH="$cuda_root"
 export HDF5_ROOT="$io_root"
 export CMAKE_PREFIX_PATH="$io_root"
@@ -66,7 +81,7 @@ export PKG_CONFIG_PATH="$io_root/lib/pkgconfig"
 driver_path=""
 [[ -d /usr/lib/wsl/lib ]] && driver_path="/usr/lib/wsl/lib:"
 export LD_LIBRARY_PATH="${driver_path}$cuda_root/lib:$cuda_root/lib64:$io_root/lib"
-export CPATH=/usr/include
+export CPATH="$python_root/include/python3.12"
 export CC="$cuda_root/bin/x86_64-conda-linux-gnu-cc"
 export CXX="$cuda_root/bin/x86_64-conda-linux-gnu-c++"
 export CUDAHOSTCXX="$CXX"
@@ -79,4 +94,15 @@ export WARPX_PYTHON_IPO=OFF BUILD_PARALLEL="$jobs"
 
 "$python_root/bin/python" -m pip install --no-build-isolation -v "$source_tree"
 "$script_dir/run_local_cuda.sh" "$script_dir/probe_local_cuda.py" \
-    --require-openpmd
+    --require-openpmd --workdir "$python_root/share/preflight"
+
+"$python_root/bin/python" - "$source_tree" "$cuda_arch" > "$python_root/share/build-record.json" <<'PYRECORD'
+import json, subprocess, sys
+print(json.dumps({
+    "package": "WarpX", "version": "26.07", "dimensions": "2", "compute": "CUDA",
+    "revision": subprocess.check_output(["git", "-C", sys.argv[1], "rev-parse", "HEAD"], text=True).strip(),
+    "cuda_architecture": sys.argv[2], "openpmd_probe_passed": True,
+}, indent=2))
+PYRECORD
+
+"$bootstrap_python" "$repo_root/scripts/register_cuda_runtime.py" "$repo_root"
