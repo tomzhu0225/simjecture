@@ -4,6 +4,8 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased — next preview
 
+- Keep installation skills readable while runtimes are incomplete; retry the
+  pinned Singularity-EOS source fetch after transient transport failures.
 - Require an explicit completion handoff after DeepSeek text-only progress replies,
   continuing tools instead of marking promises as completed answers. Bound repeated
   protocol failures and retain usage accounting for completion-check requests.

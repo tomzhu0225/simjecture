@@ -74,8 +74,20 @@ if [[ -n "$source_tree" ]]; then
     src="$source_tree"
 else
     src="$prefix/src/singularity-eos"
-    git clone --filter=blob:none "$UPSTREAM" "$src"
-    git -C "$src" checkout --detach "$PINNED_REVISION"
+    git init "$src"
+    git -C "$src" remote add origin "$UPSTREAM"
+    for attempt in 1 2 3; do
+        if git -c http.version=HTTP/1.1 -C "$src" fetch --depth 1 origin "$PINNED_REVISION"; then
+            break
+        fi
+        if [[ "$attempt" -eq 3 ]]; then
+            echo "Could not fetch the pinned Singularity-EOS source after three attempts" >&2
+            exit 1
+        fi
+        echo "Source download interrupted; retrying…" >&2
+        sleep "$attempt"
+    done
+    git -C "$src" checkout --detach FETCH_HEAD
 fi
 
 g++ -std=c++20 -O2 -pthread \
