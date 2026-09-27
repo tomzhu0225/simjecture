@@ -62,7 +62,24 @@ command -v g++ >/dev/null || {
 }
 
 mkdir -p "$prefix/bin" "$prefix/share" "$prefix/src"
-"$python" -m venv "$prefix"
+"$python" - "$prefix" <<'PY'
+import shutil, sys, venv
+from pathlib import Path
+
+prefix = Path(sys.argv[1])
+base = Path(sys.base_prefix).resolve()
+if base.parent.name == "python" and base.parent.parent.name == "uv":
+    # uv's standalone distribution is relocatable. A venv symlink to the
+    # user's uv directory would be broken inside the capability mount.
+    shutil.copytree(base, prefix, dirs_exist_ok=True, symlinks=True)
+    launcher = prefix / "bin" / "python"
+    launcher.unlink(missing_ok=True)
+    launcher.symlink_to(f"python{sys.version_info.major}.{sys.version_info.minor}")
+else:
+    # System Python's standard library is available through the /usr mount.
+    # This query runtime needs only the standard library, not pip.
+    venv.EnvBuilder(with_pip=False, symlinks=False).create(prefix)
+PY
 
 if [[ -n "$source_tree" ]]; then
     source_tree="$(cd "$source_tree" && pwd)"
@@ -124,6 +141,7 @@ print(json.dumps({
     "models": ["IdealGas", "IdealElectrons"],
     "python": sys.executable,
     "python_version": sysconfig.get_python_version(),
+    "python_layout": "self-contained" if sys.prefix == sys.base_prefix else "system-venv",
 }, indent=2, sort_keys=True))
 PY
 echo "Singularity-EOS runtime ready at $prefix"
