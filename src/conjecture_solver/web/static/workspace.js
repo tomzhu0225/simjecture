@@ -21,6 +21,7 @@ const state = {
   routeMemory: {},
   routing: false,
   routeStudy: null,
+  dismissedSwitches: new Set(),
 };
 const bytes = (n) =>
   n < 1024
@@ -311,16 +312,11 @@ async function saveConversationAgent(scope = "conversation") {
   if (scope === "home") state.homeAgent = result;
   else if (state.project?.id === payload.project) {
     if (
-      state.project.messages.length &&
       previousAgent &&
       (previousAgent.backend !== result.backend ||
         previousAgent.model !== result.model)
     ) {
-      $("agent-switch-warning").textContent =
-        "Changing CLI or model starts a fresh agent session. It may lose tool context and " +
-        "cache reuse, making the next reply slower or less consistent. Your conversation " +
-        "and files are kept. Any running turn continues with its original agent.";
-      $("agent-switch-warning").hidden = false;
+      state.dismissedSwitches.delete(state.project.id);
     }
     state.project.agent = result;
     state.homeAgent = result;
@@ -388,9 +384,28 @@ function mode(name) {
       .catch((e) => toast(e.message, true));
   }
 }
+function renderAgentSwitchWarning() {
+  const p = state.project;
+  const original = p?.messages
+    ?.slice()
+    .reverse()
+    .find((m) => m.agent)?.agent;
+  const changed =
+    original &&
+    p.agent &&
+    (original.backend !== p.agent.backend || original.model !== p.agent.model);
+  if (!changed && p) state.dismissedSwitches.delete(p.id);
+  $("agent-switch-warning").hidden =
+    !changed || state.dismissedSwitches.has(p?.id);
+}
+$("dismiss-agent-switch-warning").onclick = () => {
+  if (state.project) state.dismissedSwitches.add(state.project.id);
+  $("agent-switch-warning").hidden = true;
+};
 function renderProject(force = false) {
   const p = state.project;
   if (!p) return;
+  renderAgentSwitchWarning();
   $("project-title").textContent = p.name;
   $("agent-label").textContent = p.agent
     ? `${p.agent.backend} / ${p.agent.model || "choose model"}`

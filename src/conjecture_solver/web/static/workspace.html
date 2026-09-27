@@ -307,12 +307,27 @@
                     placeholder="Ask a question, attach your inputs, or describe what you want to achieve…"
                     required
                   ></textarea>
-                  <p
+                  <div
                     id="agent-switch-warning"
                     class="agent-switch-warning"
                     role="status"
                     hidden
-                  ></p>
+                  >
+                    <span
+                      >Changing CLI or model starts a fresh agent session. It
+                      may lose tool context and cache reuse, making the next
+                      reply slower or less consistent. Your conversation and
+                      files are kept. Any running turn continues with its
+                      original agent.</span
+                    >
+                    <button
+                      id="dismiss-agent-switch-warning"
+                      type="button"
+                      aria-label="Dismiss session warning"
+                    >
+                      ×
+                    </button>
+                  </div>
                   <div class="composer-bottom">
                     <label class="attach-button" for="file-input"
                       >＋ Attach files</label

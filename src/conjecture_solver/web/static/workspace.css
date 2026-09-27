@@ -2845,3 +2845,19 @@ wa-split-panel.project-layout::part(divider):hover {
   color: #efd7a2;
   border-color: #78643d;
 }
+
+.agent-switch-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+#dismiss-agent-switch-warning {
+  flex: 0 0 auto;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  font-size: 22px;
+  line-height: 1;
+  padding: 2px 4px;
+  cursor: pointer;
+}
