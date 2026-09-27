@@ -440,6 +440,8 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", str(length))
         self.send_header("Cache-Control", cache)
+        if self.close_connection:
+            self.send_header("Connection", "close")
         for key, value in SECURITY_HEADERS.items():
             self.send_header(key, value)
         self.end_headers()

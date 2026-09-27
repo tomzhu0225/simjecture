@@ -330,6 +330,7 @@ def test_workspace_http_blocks_mutations_readonly_and_path_escape(tmp_path):
                 json={"name": "bad"},
             )
             assert response.status_code == 403
+            assert response.headers["connection"] == "close"
             response = client.post(
                 "/api/workspace/delete-project",
                 headers={"X-Simjecture-Token": boot["control_token"]},

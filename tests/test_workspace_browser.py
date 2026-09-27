@@ -163,7 +163,7 @@ def test_rich_chat_and_simulation_side_monitor(tmp_path):
             base = f"http://127.0.0.1:{server.server_port}"
             page.goto(base + "/#project=" + project["id"])
             page.locator("#chat-input").wait_for()
-            page.wait_for_function("customElements.get('wa-tab-group') !== undefined")
+            page.evaluate("() => customElements.whenDefined('wa-tab-group')")
             rich = r"""Inline $E=mc^2$ and \(\alpha_0\).
 
 \[\frac{\partial u}{\partial t}=D\nabla^2 u\]
@@ -187,7 +187,18 @@ print("wave")
             assert page.locator("#rich-test .hljs-string").count() > 0
             assert page.locator("#rich-test code").inner_text().endswith("# ![literal](wave.svg)\n")
             assert page.locator("#rich-test figure").count() == 1
-            page.wait_for_function("document.querySelector('#rich-test img').naturalWidth > 0")
+            figure = page.locator("#rich-test img")
+            figure.scroll_into_view_if_needed()
+            assert figure.evaluate("""img => new Promise((resolve, reject) => {
+                if (img.complete) return resolve(img.naturalWidth > 0);
+                const timer = setTimeout(() => reject(Error('Figure did not load')), 10000);
+                img.addEventListener('load', () => {
+                    clearTimeout(timer); resolve(img.naturalWidth > 0)
+                }, {once:true});
+                img.addEventListener('error', () => {
+                    clearTimeout(timer); resolve(false)
+                }, {once:true});
+            })""")
             page.get_by_role("button", name="Copy code").click()
             playwright.expect(page.get_by_role("button", name="Copy code")).to_have_text("Copied")
             job = app.workspace.start_simulation(
