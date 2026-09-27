@@ -44,14 +44,22 @@ def provider():
                 else "\n".join(c.get("text", "") for c in m.get("content") or [])
                 for m in messages
             )
+            task_indices = [
+                i
+                for i, m in enumerate(messages)
+                if "CURRENT USER REQUEST:" in json.dumps(m.get("content", ""))
+            ]
+            current_messages = messages[task_indices[-1] :] if task_indices else messages
             calls = [
                 m
-                for m in messages
+                for m in current_messages
                 if m.get("role") == "assistant" and "Calling tools:" in json.dumps(m)
             ]
             if "connection_check" in tools:
                 name, args = "connection_check", {"value": "connected"}
-            elif "draft_study" in tools and ("CURRENT USER REQUEST:\nGrill me to prepare" in plain):
+            elif "draft_study" in tools and (
+                plain.rsplit("CURRENT USER REQUEST:\n", 1)[-1].startswith("Grill me to prepare")
+            ):
                 name, args = (
                     "final_answer",
                     {"answer": "What question should we test, and what time budget should I use?"},

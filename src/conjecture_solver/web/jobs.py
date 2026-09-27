@@ -119,9 +119,10 @@ def launch(project, payload):
         env = os.environ.copy()
         env["PYTHONPATH"] = str(Path(__file__).resolve().parents[2])
         env["PATH"] = str(Path(sys.executable).parent) + os.pathsep + env.get("PATH", "")
+        command = [sys.executable, "-m", "conjecture_solver.web.jobs", "--run", str(root)]
         with (root / "controller.log").open("ab") as log:
             process = subprocess.Popen(
-                [sys.executable, "-m", "conjecture_solver.web.jobs", "--run", str(root)],
+                command,
                 env=env,
                 cwd=project,
                 stdout=log,
@@ -129,7 +130,7 @@ def launch(project, payload):
                 stdin=subprocess.DEVNULL,
                 start_new_session=True,
             )
-        identity = read_process_identity(process.pid, run_directory=root)
+        identity = read_process_identity(process.pid, command, run_directory=root)
         if identity:
             put(root / "process.json", identity.model_dump(mode="json"))
         threading.Thread(target=process.wait, daemon=True).start()
@@ -199,6 +200,11 @@ def cancel(project, identifier):
 
 
 def run(root):
+    # Register from the initialized controller too: /proc/cmdline can briefly be
+    # unreadable to the parent immediately after exec on some hosts.
+    identity = read_process_identity(os.getpid(), run_directory=root)
+    if identity:
+        put(root / "process.json", identity.model_dump(mode="json"))
     request = read(root / "request.json")
     stopped = False
 

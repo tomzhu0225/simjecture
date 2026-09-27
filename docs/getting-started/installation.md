@@ -1,20 +1,70 @@
 # Installation
 
-## Core research runtime
+## One-command browser installation
 
-Simjecture currently targets Linux because the
-natural-language MVP uses Bubblewrap for workspace isolation.
+On Linux or inside an existing WSL distribution:
 
-Install Python 3.11 or newer, `uv`, and Bubblewrap, then clone and synchronize
-the locked environment. The idempotent core installer verifies the exact Python
-stack and proves that Bubblewrap can create the namespace required by a run:
+```bash
+curl -fsSL https://github.com/tomzhu0225/simjecture/releases/latest/download/install.sh | bash
+```
+
+No Git, Python environment or CLI agent setup is required in advance. The bootstrap
+fetches the versioned workspace bundle and verifies its SHA-256 checksum, installs uv
+and Python 3.12 when needed, then installs the locked workspace dependencies. It starts
+the GUI on localhost. In **Connections**, add a compatible API endpoint/key; choose its
+model in the message composer. Existing CLI agents are optional.
+
+The installer uses `~/simjecture` by default:
+
+- `app/<version>/`: source and an isolated Python environment for that release;
+- `.runtime/`: shared installed scientific tools;
+- `artifacts/projects/`: permanent conversations, input files and simulation/study outputs;
+- `start-workspace`: start the installed version again.
+
+An unrelated existing destination is never overwritten. Set `SIMJECTURE_INSTALL_DIR`
+to choose another folder. Re-running the installer retries incomplete setup, and a new
+release installs beside the old version before switching the launcher. It does not
+remove older versions or research outputs.
+
+To install without starting, or choose a different web port:
+
+```bash
+curl -fsSL https://github.com/tomzhu0225/simjecture/releases/latest/download/install.sh | bash -s -- --no-start
+~/simjecture/start-workspace --port 8765
+```
+
+On Debian/Ubuntu the installer attempts to install Bubblewrap with apt; a non-root
+user may see a sudo password prompt. `--no-system-packages` skips that step. Namespace
+availability is checked separately: installing a binary cannot enable kernel features
+blocked by a container host. The GUI remains usable if numerical execution requires
+attention. See [restricted containers](../how-to/restricted-containers.md); isolation
+is never silently weakened.
+
+### SSH servers
+
+The GUI and computations run on the SSH server. The installer prints a forwarding
+command; run it on your local computer, for example:
+
+```bash
+ssh -N -L 8766:127.0.0.1:8765 user@your-server
+```
+
+Open `http://localhost:8766` locally. Use the SSH host and port you normally connect to;
+behind a relay/NAT they may differ from the server's own address. The GUI is not exposed
+as a public listener. Keep the server terminal open or use a session manager; detached
+agents and simulation jobs keep their own deadlines if the web server closes.
+
+### Source checkout
+
+Developers can install from their current checkout with `bash scripts/install-workspace.sh`,
+or manage dependencies themselves:
 
 ```bash
 git clone https://github.com/tomzhu0225/simjecture.git
 cd simjecture
-uv sync --frozen
-uv run simjecture install core
+uv sync --frozen --extra workspace
 uv run simjecture doctor --profile core
+uv run simjecture web
 ```
 
 ## Native agent login
@@ -134,18 +184,10 @@ campaigns can be opened without Node.js or a model runtime:
 uv run simjecture web demos/gray_scott_counterexample/record --read-only
 ```
 
-New browser-launched campaigns use DeepSeek Harness by default. Install the
-pinned DSH profile once per machine with the
-[DSH deployment guide](../how-to/deepseek-harness.md), then use the same command:
-
-```bash
-uv run simjecture web
-```
-
-It binds only to localhost and can discover, launch, or attach to durable
-campaigns. `uv run simjecture web --engine native` selects the built-in
-compatibility engine when DSH is intentionally unavailable. See
-[Web interface](web-interface.md).
+The default browser entry point is the research workspace. Use a compatible API or
+an installed native CLI. The experiment monitor remains available at `/monitor` and
+can inspect existing study records. The legacy DSH engine is an explicit alternative;
+it is not required for ordinary workspace setup. See [Web interface](web-interface.md).
 
 ## Optional terminal dashboard (maintenance mode)
 

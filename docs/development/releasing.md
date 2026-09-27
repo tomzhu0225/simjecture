@@ -21,11 +21,17 @@ Zenodo then archives each new GitHub Release and assigns a version DOI.
 
 ## Publish a version
 
-1. Update the version in `pyproject.toml`, `CITATION.cff`, and the changelog.
+1. Update the version in `pyproject.toml`, `CITATION.cff`, `docs/conf.py`,
+   `src/conjecture_solver/__init__.py`, `scripts/install-workspace.sh`, and the changelog.
+   Run `uv lock` and build both Python distributions (`uv build`) and the checksummed
+   workspace bundle (`python scripts/package_workspace.py --output dist`).
+   Verify the installer with `python scripts/verify_workspace_install.py --release-dir dist
+   --work-dir /tmp/simjecture-release-install-check`. This uses a fresh HOME, no API key
+   or CLI agent, and does not change host system packages.
 2. Run the complete local checks and merge them into `main`.
 3. Create an annotated `v<version>` tag on the tested commit.
 4. Publish a GitHub Release from that tag using the matching changelog section.
-5. Verify the GitHub workflow, PyPI files, and Zenodo deposit before announcing
+5. Verify the GitHub workflow, installer assets/checksums, PyPI files, and Zenodo deposit before announcing
    the release.
 
 Publishing the GitHub Release is intentionally last: it triggers both external

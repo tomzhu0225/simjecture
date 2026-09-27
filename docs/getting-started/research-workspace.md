@@ -6,7 +6,10 @@ investigation when the question and evidence requirements are clear.
 
 ## Start the browser
 
-From the Linux source checkout:
+For a fresh Linux/WSL installation, use the [one-command installer](installation.md).
+It sets up Python and the GUI without a CLI agent.
+
+From an existing Linux source checkout:
 
 ```bash
 ./scripts/launch-workspace.sh
@@ -226,3 +229,16 @@ requirements; their presence does not mean the corresponding runtime is installe
 Use the actual installed capability and keep demonstrations distinct from independently
 reviewed research. Existing running turns keep their original prompt; the catalogue
 is supplied on new turns.
+
+## Conversation continuity
+
+Native worker session IDs are retained per conversation and connection/model route.
+Grok and Codex transports resume the saved ID; AGY resumes when it reports a conversation
+ID. Built-in API workers retain structured message/tool history. A different connection
+or model starts a fresh transport context with conversation text carried forward.
+Independent reviewers always use fresh contexts. Provider prompt-cache reuse is separate
+from session identity and is not guaranteed by Simjecture.
+
+Interactive agent turns currently have a 15-minute limit. Managed simulations have
+their own deadlines and can continue after a turn ends. If an agent times out, the
+response reports registered jobs and saved files rather than implying the solver failed.

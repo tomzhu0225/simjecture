@@ -2829,3 +2829,19 @@ wa-split-panel.project-layout::part(divider):hover {
 .message-content math {
   color: inherit;
 }
+
+.agent-switch-warning {
+  margin: 8px 0;
+  padding: 9px 12px;
+  border: 1px solid #dfc689;
+  border-radius: 7px;
+  background: #fff8e6;
+  color: #6e5423;
+  font-size: 13px;
+  line-height: 1.6;
+}
+[data-theme="dark"] .agent-switch-warning {
+  background: #342e21;
+  color: #efd7a2;
+  border-color: #78643d;
+}

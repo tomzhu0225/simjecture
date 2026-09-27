@@ -15,7 +15,7 @@ jobs:
       name: pypi
       url: https://pypi.org/p/simjecture
     permissions:
-      contents: read
+      contents: write
       id-token: write
     steps:
       - uses: actions/checkout@v7
@@ -40,7 +40,9 @@ jobs:
             --ro-bind /lib64 /lib64 \
             /usr/bin/true
       - name: Install locked test environment
-        run: uv sync --frozen --extra tui --extra dsh
+        run: uv sync --frozen --extra tui --extra dsh --extra workspace --group browser
+      - name: Install browser test runtime
+        run: uv run playwright install --with-deps chromium
       - uses: actions/setup-node@v4
         with:
           node-version: "22.23.1"
@@ -69,5 +71,20 @@ jobs:
           PY
       - name: Build source and wheel distributions
         run: uv build
+      - name: Package and verify the one-command workspace installer
+        run: |
+          uv run python scripts/package_workspace.py --output dist
+          uv run python scripts/verify_workspace_install.py --release-dir dist --work-dir /tmp/simjecture-installer-validation
+      - name: Attach installable release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "$GITHUB_REF_NAME" dist/install.sh dist/SHA256SUMS dist/*-workspace.tar.gz --clobber
+      - name: Collect Python distributions
+        run: |
+          mkdir pypi-dist
+          cp dist/*.whl pypi-dist/
+          find dist -maxdepth 1 -name '*.tar.gz' ! -name '*-workspace.tar.gz' -exec cp {} pypi-dist/ \;
       - name: Publish with PyPI Trusted Publishing
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: pypi-dist/

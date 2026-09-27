@@ -305,10 +305,23 @@ async function saveConversationAgent(scope = "conversation") {
   const payload = agentPayload(scope);
   if (!payload.model)
     throw Error("Choose a model, or enter its exact ID in Other model.");
+  const previousAgent = scope === "conversation" ? state.project?.agent : null;
   const result = await api("agent", payload);
   state.routeMemory[result.backend] = result;
   if (scope === "home") state.homeAgent = result;
   else if (state.project?.id === payload.project) {
+    if (
+      state.project.messages.length &&
+      previousAgent &&
+      (previousAgent.backend !== result.backend ||
+        previousAgent.model !== result.model)
+    ) {
+      $("agent-switch-warning").textContent =
+        "Changing CLI or model starts a fresh agent session. It may lose tool context and " +
+        "cache reuse, making the next reply slower or less consistent. Your conversation " +
+        "and files are kept. Any running turn continues with its original agent.";
+      $("agent-switch-warning").hidden = false;
+    }
     state.project.agent = result;
     state.homeAgent = result;
     renderProject();
@@ -349,6 +362,7 @@ async function reloadProjects() {
   renderProjects();
 }
 async function openProject(id) {
+  $("agent-switch-warning").hidden = true;
   state.project = await api(`project?id=${encodeURIComponent(id)}`);
   state.briefDirty = false;
   state.messageRevision = "";

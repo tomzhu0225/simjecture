@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "simjecture"
-version = "0.5.1"
+version = "0.5.2"
 description = "Evidence-governed autonomous experimentation and falsification for computational science"
 readme = "README.md"
 license = "Apache-2.0"
@@ -68,9 +68,11 @@ flash-demo = [
 ]
 workspace = [
     "smolagents[openai]>=1.24,<2",
+    "h5py>=3.10,<4",
 ]
 
 [dependency-groups]
+browser = ["playwright>=1.50,<2"]
 dev = [
   "hypothesis>=6.100,<7",
   "pytest>=8.0,<9",

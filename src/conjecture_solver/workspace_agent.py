@@ -41,9 +41,12 @@ def model_for(config, model=None, timeout=90):
     from smolagents import OpenAIServerModel
 
     class ActivityModel(OpenAIServerModel):
-        def generate(self, *args, **kwargs):
+        def generate(self, messages, *args, **kwargs):
+            prefix = getattr(self, "conversation_history", [])
+            if prefix:
+                messages = [messages[0], *prefix, *messages[1:]]
             emit("activity", state="thinking", label="Thinking")
-            response = super().generate(*args, **kwargs)
+            response = super().generate(messages, *args, **kwargs)
             emit(
                 "activity",
                 state="working" if response.tool_calls else "responding",
@@ -372,9 +375,30 @@ def run_agent(
             "Do not invent user inputs, results or tool installation success."
         ),
     )
+    from .workspace_sessions import load_session, save_session
+
+    session = load_session(root.parent, config) if workspace and project else {}
+    history = session.get("history", [])
+    llm.conversation_history = history
+    if workspace and project:
+        emit("session", resumed=bool(history), backend="builtin")
     with contextlib.redirect_stdout(sys.stderr):
         # Tool/step events use the original stream while library chatter stays out of JSONL.
-        result = agent.run(prompt)
+        try:
+            result = agent.run(prompt)
+        finally:
+            if workspace and project:
+                messages = list(history)
+                from smolagents.memory import FinalAnswerStep
+
+                for step in agent.memory.steps:
+                    if isinstance(step, FinalAnswerStep):
+                        messages.append({"role": "assistant", "content": str(step.output)})
+                        continue
+                    messages.extend(
+                        json.loads(message.model_dump_json()) for message in step.to_messages()
+                    )
+                save_session(root.parent, config, history=messages)
         if result.state != "success":
             return (
                 "This turn reached its action limit. Work so far is saved; "
@@ -402,6 +426,12 @@ def run_external(prompt, root, config, turn, workspace=None):
         interactive_activity=True,
     )
     supervisor = AgentSupervisor(args)
+    from .workspace_sessions import load_session, save_session
+
+    session = load_session(root.parent, config) if workspace else {}
+    if session.get("cursor"):
+        supervisor.state["worker_cursor"] = session["cursor"]
+    emit("session", resumed=bool(session.get("cursor")), backend=config["backend"])
     (directory / "research").symlink_to(root, target_is_directory=True)
     output = directory / "turn"
     output.mkdir()
@@ -436,9 +466,24 @@ def run_external(prompt, root, config, turn, workspace=None):
             "Use this for numerical runs instead of untracked background shell processes. "
             "Use Markdown, LaTeX equations, language-labelled code fences, and image links "
             "to saved relative file paths or simulation:<run-id>/figure.png. "
-            "Do not put research results in /tmp."
+            "All numerical attempts, including smoke tests, belong in project files and "
+            "must launch through start_simulation so their logs and outputs appear in the "
+            "monitor. Never use /tmp for simulation inputs or outputs. The interface above "
+            "is sufficient; inspect host implementation only after a concrete API error. "
+            "This interactive turn has a 15-minute deadline: save a brief PROGRESS.md before "
+            "long preparation or analysis, launch bounded jobs, and return while they run. "
+            "Do not let plotting setup block launching a valid pilot. Use runtime interface "
+            "metadata: a native-input-file binary does not imply available Python bindings; "
+            "do not search for pywarpx when python_bindings is false. For cross-solver work, "
+            "reuse prior inputs/results and state model, forcing, unit and diagnostic "
+            "differences before calling it a replication. Do not silently remove driving "
+            "or change boundaries just to get a run."
         )
-    rc = supervisor.launch(output, prompt)
+    try:
+        rc = supervisor.launch(output, prompt)
+    finally:
+        if workspace and supervisor.state.get("worker_cursor"):
+            save_session(root.parent, config, cursor=supervisor.state["worker_cursor"])
     messages = []
     for line in (output / "response.json").read_text().splitlines():
         try:
@@ -460,6 +505,29 @@ def run_external(prompt, root, config, turn, workspace=None):
     return "\n\n".join(messages) or "The CLI turn ended. Inspect the project files for its output."
 
 
+def interrupted_turn_summary(directory, turn, seconds, *, timed_out):
+    """Describe observed saved work, without inventing a scientific result."""
+    from .web.jobs import list_jobs
+
+    reason = (
+        f"The agent reached its {seconds / 60:g}-minute conversation-turn limit."
+        if timed_out
+        else "The agent turn was stopped."
+    )
+    jobs = [j for j in list_jobs(directory) if j.get("source_turn") == turn.name]
+    files = [p for p in (directory / "files").rglob("*") if p.is_file() and not p.is_symlink()]
+    lines = [reason, "This is an agent interruption, not a verdict that the simulation failed."]
+    if jobs:
+        lines += [f"- {j['name']}: {j['status']}." for j in jobs]
+    else:
+        lines.append("No simulation was registered with this turn's workspace monitor.")
+    lines.append(f"Conversation files remain in {directory / 'files'} ({len(files)} files).")
+    lines.append(
+        "Ask to continue from the saved work; running managed simulations keep their own deadlines."
+    )
+    return "\n\n".join(lines)
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument("--provider-config", required=True)
@@ -479,8 +547,18 @@ def main(argv=None):
         workspace = Workspace(args.workspace)
     try:
 
-        def expired(*_):
-            raise KeyboardInterrupt("Turn stopped or time budget reached; project files are saved")
+        def expired(signum, *_):
+            summary = (
+                interrupted_turn_summary(
+                    args.cwd.resolve().parent,
+                    args.prompt_file.parent,
+                    args.wall_seconds,
+                    timed_out=signum == signal.SIGALRM,
+                )
+                if workspace and args.project
+                else ("Agent time budget reached" if signum == signal.SIGALRM else "Agent stopped")
+            )
+            raise KeyboardInterrupt(summary)
 
         signal.signal(signal.SIGALRM, expired)
         signal.signal(signal.SIGTERM, expired)

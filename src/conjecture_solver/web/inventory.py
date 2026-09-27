@@ -40,6 +40,16 @@ def discover_system_warpx(project_root, *, home=None):
                 if compute not in {"CUDA", "HIP", "SYCL", "OMP", "NOACC"}:
                     continue
                 profile = "warpx-cuda" if compute in {"CUDA", "HIP", "SYCL"} else "warpx-cpu"
+                python_flag = re.search(r"^WarpX_PYTHON[^=]*=(.*)$", text, re.M)
+                python_bindings = (
+                    python_flag.group(1).strip().upper() in {"ON", "TRUE", "1"}
+                    if python_flag
+                    else None
+                )
+                openpmd_flag = re.search(r"^WarpX_OPENPMD[^=]*=(.*)$", text, re.M)
+                output_formats = ["AMReX plotfile"]
+                if openpmd_flag and openpmd_flag.group(1).strip().upper() in {"ON", "TRUE", "1"}:
+                    output_formats.append("openPMD")
                 for binary in sorted((build / "bin").glob("warpx*")):
                     if not binary.is_file() or not os.access(binary, os.X_OK):
                         continue
@@ -60,6 +70,9 @@ def discover_system_warpx(project_root, *, home=None):
                             path=None,
                             registered=False,
                             compute=compute,
+                            interface="native-input-file",
+                            python_bindings=python_bindings,
+                            output_formats=output_formats,
                         )
                     )
     prefixes = {home / "miniforge3", home / "miniconda3", home / "mambaforge"}

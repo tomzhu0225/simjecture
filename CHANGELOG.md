@@ -2,6 +2,26 @@
 
 This project follows semantic versioning. Dates use ISO 8601.
 
+## 0.5.2 — 2026-09-27
+
+- Add a Linux/WSL one-command installer with checksummed release bundles, automatic
+  Python/uv setup, a persistent launcher, SSH forwarding guidance and separate version/data folders.
+- Add the conversation-first research workspace with optional compatible API setup,
+  auto-detected native CLIs, per-conversation agent/model controls and agent-prepared studies.
+- Keep named simulation folders and live logs beside conversations; link interactive
+  runs, figures, files and autonomous studies with a resizable side monitor.
+- Render equations, highlighted code and saved figures; add larger typography, persistent
+  light/dark themes and confirmed conversation/folder deletion with active-run guards.
+- Preserve scroll position and expanded details during live refreshes.
+- Discover existing FLASH applications and WarpX CPU/GPU builds, including native-input
+  versus Python-binding availability; expose shipped research skills to browser workers.
+- Resume native chat sessions and retain structured API history per conversation/model/
+  connection. Never reuse worker sessions for independent review.
+- Clarify agent timeouts, preserve job statuses, discourage untracked temporary simulation
+  runs, and include an HDF5 reader in the workspace environment.
+- Accept an independently reviewed negative answer as completion when the study's
+  selected policy is `answer`; retain the existing `repair` policy.
+
 ## 0.5.1 — 2026-09-26
 
 - Update bundled FLASH and Python experiment skills with guided-study/HDF5 lessons,

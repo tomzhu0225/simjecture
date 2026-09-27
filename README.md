@@ -9,19 +9,43 @@ experiments, searches for counterexamples, and proposes small, testable repairs 
 failed hypotheses. The harness records what actually ran and requires independent
 review before a scientific claim can close.
 
-**v0.5.1 is a research preview.** Minimal mode is the default: agents keep their
+**v0.5.2 is a research preview.** Minimal mode is the default: agents keep their
 native tools and choose their research strategy, while Simjecture manages recorded
 evidence, review and deadlines. Structured and frontier modes remain available.
 The system does not establish physical truth from a successful simulation or promise
 that a long agent run will produce a useful result.
 
-## Start a study
+## Install and open the workspace
+
+On Linux or inside WSL, run:
+
+```bash
+curl -fsSL https://github.com/tomzhu0225/simjecture/releases/latest/download/install.sh | bash
+```
+
+The installer downloads the versioned release, verifies its checksum, installs uv,
+Python 3.12 and the workspace dependencies, and starts the local GUI. Git and a CLI
+agent are not required. Enter a compatible API endpoint and key in **Connections**, or
+select an existing local CLI from the message composer. Choose **Interactive research**
+for a task, or prepare an **Autonomous research** study together with the agent.
+
+Software lives under `~/simjecture/app/<version>`; conversations, inputs, simulations
+and studies stay in `~/simjecture/artifacts/projects`. Reopen the GUI with
+`~/simjecture/start-workspace`. On SSH hosts the installer prints forwarding instructions
+for your local browser. Keep the server terminal open, or run the launcher in your usual
+session manager. Ubuntu/Debian may request sudo to install Bubblewrap; restricted
+containers can open the GUI but may need a separately configured execution backend.
+
+See [installation options](docs/getting-started/installation.md) and the
+[workspace walkthrough](docs/getting-started/research-workspace.md).
+
+## Start a study from an external CLI
 
 Use Linux with Python 3.11+, [uv](https://docs.astral.sh/uv/), and an installed,
 authenticated native agent CLI. Bubblewrap is the default numerical execution backend.
 
 ```bash
-uv tool install 'simjecture[tui]==0.5.1'
+uv tool install 'simjecture[tui]==0.5.2'
 simjecture install core
 simjecture doctor --execution-backend bubblewrap
 
@@ -145,7 +169,7 @@ FLASH source is not redistributed. Solver source inspection can be configured se
 from a writable problem/build area. See [runtime deployment](docs/how-to/deploy-runtimes.md)
 and the [scientific skills](skills/).
 
-## What v0.5.1 changes
+## Research core introduced in v0.5.1
 
 This release builds on v0.5.0's minimal default and shared interfaces:
 

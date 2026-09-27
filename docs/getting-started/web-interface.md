@@ -134,11 +134,13 @@ uv run simjecture web demos/gray_scott_counterexample/record --read-only
 ## Advanced hypothesis launch
 
 Open `/monitor` and select **New hypothesis** for the advanced launch form. For
-conversation-led setup and research, use the workspace's **New project** instead. The
+conversation-led setup and research, use the workspace's **New conversation** instead. The
 form keeps the immutable root hypothesis separate from optional operational
 guidance and records the execution envelope before starting the runner. The
 child process inherits provider credentials from the terminal environment; the
-browser never asks for, stores, or returns an API key.
+advanced form does not request an API key. The separate workspace **Connections**
+page stores a user-supplied compatible API key in a private mode-0600 server file;
+it does not send that key back to the browser.
 
 ```bash
 export DEEPSEEK_API_KEY='your-process-local-key'
@@ -147,8 +149,8 @@ uv run simjecture web --runs-root artifacts
 
 Campaigns launched in the browser use the same structured
 `operator_input/launch.json` contract as the TUI and CLI. No shell command is
-constructed from hypothesis text. In v0.2, new browser campaigns use the
-installed DeepSeek Harness profile by default. DSH owns provider routing,
+constructed from hypothesis text. Legacy DSH campaigns use an
+installed DeepSeek Harness profile. DSH owns provider routing,
 retries, conversation compaction, and the resumable model session; Simjecture
 continues to own the hypothesis graph, evidence rules, sandbox, capabilities,
 jobs, and durable scientific record. The DSH session is stored inside the
@@ -162,8 +164,8 @@ uv run simjecture web --engine native
 ```
 
 Viewing and controlling an already recorded campaign does not require Node.js
-or DSH. Starting a new default campaign does; follow the
-[DSH deployment guide](../how-to/deepseek-harness.md) once per machine.
+or DSH. Only the explicit legacy DSH route needs the
+[DSH deployment guide](../how-to/deepseek-harness.md).
 
 ## Local security boundary
 

@@ -283,6 +283,12 @@ class AgentSupervisor:
                 "--output-format",
                 "streaming-messages-json",
             ]
+            if (
+                not judge
+                and self.state.get("worker_cursor")
+                and getattr(self.args, "interactive_activity", False)
+            ):
+                command += ["--resume", self.state["worker_cursor"]]
             if getattr(self.args, "reasoning_effort", None):
                 command += ["--reasoning-effort", self.args.reasoning_effort]
             if judge:
@@ -318,6 +324,10 @@ class AgentSupervisor:
             ]
             if not judge:
                 command += ["--dangerously-skip-permissions", "--add-dir", str(directory)]
+                if self.state.get("worker_cursor") and getattr(
+                    self.args, "interactive_activity", False
+                ):
+                    command += ["--conversation", self.state["worker_cursor"]]
             else:
                 command += ["--disable-slash-commands"]
         # Scientific cases can exceed the OS per-argument limit. Codex accepts
@@ -474,6 +484,29 @@ class AgentSupervisor:
                     if thread_id and usage:
                         self.state.setdefault("usage_by_thread", {})[thread_id] = usage
                         self.state["usage_updated_at"] = time.time()
+                elif (
+                    backend in {"grok", "agy"}
+                    and getattr(self.args, "interactive_activity", False)
+                    and not judge
+                ):
+                    for line in (directory / "response.json").read_text().splitlines():
+                        try:
+                            event = json.loads(line)
+                        except ValueError:
+                            continue
+                        if event.get("parent_tool_use_id"):
+                            continue
+                        session_id = (
+                            event.get("session_id")
+                            if backend == "grok"
+                            else event.get("conversation_id")
+                        )
+                        if backend == "agy":
+                            payload = event.get(event.get("event", ""), {})
+                            if isinstance(payload, dict):
+                                session_id = payload.get("conversation_id") or session_id
+                        if isinstance(session_id, str) and session_id:
+                            self.state["worker_cursor"] = session_id
                 elif backend == "builtin":
                     usage = {"input_tokens": 0, "output_tokens": 0}
                     reported = False

@@ -585,6 +585,7 @@ class Workspace:
                                 "result",
                                 "activity",
                                 "simulation",
+                                "session",
                             }:
                                 events.append(event)
                         except ValueError:
@@ -706,7 +707,18 @@ class Workspace:
                     "capability_directory": card.get("path"),
                     "installation_count": len(variants),
                     "installations": [
-                        {k: v[k] for k in ("label", "runtime", "executable") if k in v}
+                        {
+                            k: v[k]
+                            for k in (
+                                "label",
+                                "runtime",
+                                "executable",
+                                "interface",
+                                "python_bindings",
+                                "output_formats",
+                            )
+                            if k in v
+                        }
                         for v in variants[:3]
                     ],
                 }
@@ -715,6 +727,7 @@ class Workspace:
 
     def send(self, identifier, payload):
         from ..agent_skills import skill_context
+        from ..workspace_sessions import load_session
 
         message = text(payload, "message")
         if not message:
@@ -735,6 +748,8 @@ class Workspace:
             )
             connection = self.root / "turn-connections" / f"{identifier}-{turn.name}.json"
             private_json(connection, config)
+            session = load_session(directory, config)
+            continuing = bool(session.get("cursor") or session.get("history"))
             previous = "\n\n".join(f"{m['role']}: {m['content']}" for m in project["messages"])
             prompt = (
                 f"Project: {project['name']}\nFiles: {directory / 'files'}\n"
@@ -759,6 +774,18 @@ class Workspace:
                 f"CURRENT USER REQUEST:\n{message}"
                 f"\nStudy preparation guidance:\n{text(payload, 'preparation')}"
             )
+            if continuing:
+                prompt = (
+                    "Continue this conversation using its existing session and prior tool history. "
+                    "The workspace, skills and simulation tools from earlier turns still apply. "
+                    "Numerical attempts belong in managed simulation folders, never /tmp. "
+                    "This turn has a 15-minute limit; save progress and return "
+                    "after launching jobs.\n"
+                    f"Current brief: {json.dumps(project['brief'])}\n"
+                    f"Related studies: {json.dumps(project['studies'])}\n"
+                    f"CURRENT USER REQUEST:\n{message}\n"
+                    f"Study preparation guidance:\n{text(payload, 'preparation')}"
+                )
             (turn / "prompt.txt").write_text(prompt)
             command = [
                 sys.executable,
