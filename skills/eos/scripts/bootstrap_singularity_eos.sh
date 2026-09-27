@@ -90,6 +90,21 @@ else
     git -C "$src" checkout --detach FETCH_HEAD
 fi
 
+# The analytic query driver needs this pinned submodule even without Kokkos,
+# Spiner or tabular EOS support. A plain checkout does not populate it.
+if [[ ! -f "$src/utils/ports-of-call/ports-of-call/portability.hpp" ]]; then
+    for attempt in 1 2 3; do
+        if git -c http.version=HTTP/1.1 -C "$src" submodule update --init --depth 1 -- utils/ports-of-call; then
+            break
+        fi
+        if [[ "$attempt" -eq 3 ]]; then
+            echo "Could not fetch the pinned ports-of-call dependency" >&2
+            exit 1
+        fi
+        sleep "$attempt"
+    done
+fi
+
 g++ -std=c++20 -O2 -pthread \
     -I "$src" \
     -I "$src/utils/ports-of-call" \

@@ -139,6 +139,8 @@ def discover_installed(project_root):
             executable = runtime / config.executable
             if not executable.is_file() or not os.access(executable, os.X_OK):
                 continue
+            if any(not (runtime / name).is_file() for name in config.identity_files):
+                continue
             identity = (str(runtime), config.manifest.name)
             found.setdefault(
                 identity,

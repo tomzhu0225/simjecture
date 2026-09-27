@@ -740,3 +740,36 @@ def test_uninstalled_tool_keeps_failed_install_report(tmp_path):
     card = next(c for c in workspace.catalogue() if c["id"] == "warpx-cpu")
     assert card["report"] == report
     assert card["readiness"] == "failed"
+
+
+def test_partial_eos_runtime_is_not_listed_as_installed(tmp_path, monkeypatch):
+    monkeypatch.setattr("conjecture_solver.deployment.resolve_project_root", lambda *a: tmp_path)
+    caps = tmp_path / "capabilities"
+    caps.mkdir()
+    runtime = tmp_path / ".runtime/eos"
+    (runtime / "bin").mkdir(parents=True)
+    (runtime / "bin/python").write_text("#!/bin/sh\nexit 0\n")
+    (runtime / "bin/python").chmod(0o755)
+    put(
+        caps / "singularity-eos-fixture.json",
+        dict(
+            runtime_root="../.runtime/eos",
+            executable="bin/python",
+            identity_files=["bin/eos-query", "share/build-record.json"],
+            manifest=dict(
+                name="singularity-eos-fixture",
+                version="1",
+                description="EOS fixture",
+                skill="eos",
+                executable_kind="python-test",
+            ),
+        ),
+    )
+    workspace = Workspace(tmp_path / "artifacts/.workspace")
+    card = next(c for c in workspace.catalogue() if c["id"] == "singularity-eos")
+    assert not card["installed"] and not card["registered"] and not card["variants"]
+    (runtime / "bin/eos-query").write_text("binary")
+    (runtime / "share").mkdir()
+    put(runtime / "share/build-record.json", {"version": "fixture"})
+    card = next(c for c in workspace.catalogue() if c["id"] == "singularity-eos")
+    assert card["installed"] and card["registered"]

@@ -5,7 +5,9 @@ This project follows semantic versioning. Dates use ISO 8601.
 ## Unreleased — next preview
 
 - Keep installation skills readable while runtimes are incomplete; retry the
-  pinned Singularity-EOS source fetch after transient transport failures.
+  pinned Singularity-EOS source fetch after transient transport failures and
+  populate its required ports-of-call dependency. Incomplete runtimes with missing
+  declared identity files are not listed as installed.
 - Require an explicit completion handoff after DeepSeek text-only progress replies,
   continuing tools instead of marking promises as completed answers. Bound repeated
   protocol failures and retain usage accounting for completion-check requests.

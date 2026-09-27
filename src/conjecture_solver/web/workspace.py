@@ -944,6 +944,9 @@ class Workspace:
             ).resolve()
             executable = runtime / config.get("executable", "missing")
             installed = bool(config) and executable.is_file() and os.access(executable, os.X_OK)
+            installed = installed and all(
+                (runtime / name).is_file() for name in config.get("identity_files", [])
+            )
             registered = installed
             installed = installed or bool(external)
             latest = result or (saved if registered else {})
