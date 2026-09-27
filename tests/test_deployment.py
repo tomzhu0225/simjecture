@@ -569,3 +569,20 @@ def test_cpu_install_can_provision_while_sandbox_remains_unavailable(tmp_path, m
         c.name == "core.bubblewrap_namespace" and c.status == DeploymentCheckStatus.FAIL
         for c in report.checks
     )
+
+
+def test_maneos_missing_compiler_reports_actionable_prerequisite(tmp_path, monkeypatch):
+    root = _project(tmp_path)
+    manager = DeploymentManager(root)
+    monkeypatch.setattr(DeploymentManager, "_core_checks", _passing_core)
+    monkeypatch.setattr(DeploymentManager, "_already_ready", lambda *args: None)
+    monkeypatch.setattr(
+        "conjecture_solver.deployment.shutil.which",
+        lambda name: None if name == "gfortran" else "/usr/bin/" + name,
+    )
+    report = manager.install(DeploymentProfile.M_ANEOS)
+    assert not report.ready
+    failure = next(c for c in report.checks if c.name.endswith("prerequisite.gfortran"))
+    assert "gfortran" in failure.detail
+    assert "apt-get install" in failure.remedy
+    assert not (root / ".runtime/m-aneos-1.0").exists()

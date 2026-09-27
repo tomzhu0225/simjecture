@@ -960,6 +960,22 @@ class DeploymentManager:
                     remedy="Restore the versioned skill scripts.",
                 )
             )
+        # Report compiler prerequisites on the tool card before launching the
+        # bootstrap; otherwise streaming output leaves only "bootstrap failed".
+        if profile == DeploymentProfile.M_ANEOS and not dry_run:
+            for executable in ("git", "gfortran", "make"):
+                if shutil.which(executable) is None:
+                    checks.append(
+                        _check(
+                            f"{check_prefix}.prerequisite.{executable}",
+                            DeploymentCheckStatus.FAIL,
+                            f"M-ANEOS requires {executable}; it is missing from PATH.",
+                            remedy=(
+                                "On Debian/Ubuntu, an administrator can run "
+                                "`apt-get install git gfortran make`. Then click Install again."
+                            ),
+                        )
+                    )
         if not self._ready(checks):
             return DeploymentReport(
                 profile=profile,

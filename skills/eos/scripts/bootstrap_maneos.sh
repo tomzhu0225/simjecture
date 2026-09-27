@@ -60,7 +60,24 @@ for command in git gfortran make; do
 done
 
 mkdir -p "$prefix/bin" "$prefix/share/preflight" "$prefix/src"
-"$python" -m venv "$prefix"
+"$python" - "$prefix" <<'PY'
+import shutil, sys, venv
+from pathlib import Path
+
+prefix = Path(sys.argv[1])
+base = Path(sys.base_prefix).resolve()
+if base.parent.name == "python" and base.parent.parent.name == "uv":
+    # uv's standalone distribution is relocatable. A venv symlink to the
+    # user's uv directory would be broken inside the capability mount.
+    shutil.copytree(base, prefix, dirs_exist_ok=True, symlinks=True)
+    launcher = prefix / "bin" / "python"
+    launcher.unlink(missing_ok=True)
+    launcher.symlink_to(f"python{sys.version_info.major}.{sys.version_info.minor}")
+else:
+    # System Python's standard library is available through the /usr mount.
+    # This query runtime needs only the standard library, not pip.
+    venv.EnvBuilder(with_pip=False, symlinks=False).create(prefix)
+PY
 
 if [[ -n "$source_tree" ]]; then
     source_tree="$(cd "$source_tree" && pwd)"
@@ -72,8 +89,20 @@ if [[ -n "$source_tree" ]]; then
     src="$source_tree"
 else
     src="$prefix/src/m-aneos"
-    git clone --filter=blob:none "$UPSTREAM" "$src"
-    git -C "$src" checkout --detach "$PINNED_REVISION"
+    git init "$src"
+    git -C "$src" remote add origin "$UPSTREAM"
+    for attempt in 1 2 3; do
+        if git -c http.version=HTTP/1.1 -C "$src" fetch --depth 1 origin "$PINNED_REVISION"; then
+            break
+        fi
+        if [[ "$attempt" -eq 3 ]]; then
+            echo "Could not fetch the pinned M-ANEOS source after three attempts" >&2
+            exit 1
+        fi
+        echo "Source download interrupted; retrying…" >&2
+        sleep "$attempt"
+    done
+    git -C "$src" checkout --detach FETCH_HEAD
 fi
 
 make -C "$src/src" -j "$jobs"
@@ -100,6 +129,7 @@ print(json.dumps({
     "preflight_input": "share/preflight/ANEOS.INPUT",
     "python": sys.executable,
     "python_version": sysconfig.get_python_version(),
+    "python_layout": "self-contained" if sys.prefix == sys.base_prefix else "system-venv",
 }, indent=2, sort_keys=True))
 PY
 echo "M-ANEOS runtime ready at $prefix"
