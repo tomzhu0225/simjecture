@@ -30,7 +30,7 @@ def test_browser_setup_chat_files_and_autonomous_handoff(tmp_path, provider):
             page = browser.new_page(viewport={"width": 1440, "height": 1000})
             page.on("pageerror", lambda error: errors.append(str(error)))
             page.goto(f"http://127.0.0.1:{server.server_port}")
-            page.get_by_role("button", name="API connections").click()
+            page.get_by_role("button", name="Connections").click()
             page.locator("#base-url").fill(url)
             page.locator("#api-key").fill("test-secret")
             assert page.locator("#model").count() == 0
@@ -257,16 +257,16 @@ print("wave")
             page.locator("#sidebar-run-list a").click()
             page.locator("#simulation-detail h3").filter(has_text="Wave evolution").wait_for()
             original_width = page.locator(".conversation-column").bounding_box()["width"]
-            page.get_by_role("button", name="Hide left sidebar", exact=True).click()
-            page.get_by_role("button", name="Hide right sidebar", exact=True).click()
+            page.get_by_role("button", name="Collapse left sidebar", exact=True).click()
+            page.get_by_role("button", name="Collapse right sidebar", exact=True).click()
             assert not page.locator("#workspace-sidebar").is_visible()
             assert not page.locator("#research-inspector").is_visible()
             assert page.locator(".conversation-column").bounding_box()["width"] > original_width
             page.reload()
-            page.get_by_role("button", name="Show right sidebar", exact=True).wait_for()
+            page.get_by_role("button", name="Expand right sidebar", exact=True).wait_for()
             assert not page.locator("#workspace-sidebar").is_visible()
             assert not page.locator("#research-inspector").is_visible()
-            page.get_by_role("button", name="Show left sidebar", exact=True).click()
+            page.get_by_role("button", name="Expand left sidebar", exact=True).click()
             page.locator("#sidebar-run-list a").click()
             assert page.locator("#research-inspector").is_visible()
             page.locator("#simulation-detail h3").filter(has_text="Wave evolution").wait_for()
@@ -275,12 +275,12 @@ print("wave")
             )
             page.set_viewport_size({"width": 390, "height": 844})
             assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
-            page.get_by_role("button", name="Hide left sidebar", exact=True).click()
-            page.get_by_role("button", name="Hide right sidebar", exact=True).click()
+            page.get_by_role("button", name="Collapse left sidebar", exact=True).click()
+            page.get_by_role("button", name="Collapse right sidebar", exact=True).click()
             assert not page.locator("#research-inspector").is_visible()
             assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
-            page.get_by_role("button", name="Show left sidebar", exact=True).click()
-            page.get_by_role("button", name="Show right sidebar", exact=True).click()
+            page.get_by_role("button", name="Expand left sidebar", exact=True).click()
+            page.get_by_role("button", name="Expand right sidebar", exact=True).click()
             assert page.locator("#research-inspector").is_visible()
             assert errors == []
             browser.close()
@@ -488,12 +488,38 @@ def test_cooperative_fallback_warning_is_visible_and_persistent(tmp_path):
             browser = p.chromium.launch(headless=True)
             page = browser.new_page()
             page.goto(f"http://127.0.0.1:{server.server_port}")
-            playwright.expect(page.locator("#execution-warning")).to_have_text(COOPERATIVE_WARNING)
+            playwright.expect(page.locator("#execution-warning-message")).to_have_text(
+                COOPERATIVE_WARNING
+            )
             assert page.locator("#execution-warning").is_visible()
             assert page.locator("#execution-backend").input_value() == "proot-cooperative"
             page.reload()
-            playwright.expect(page.locator("#execution-warning")).to_have_text(COOPERATIVE_WARNING)
+            playwright.expect(page.locator("#execution-warning-message")).to_have_text(
+                COOPERATIVE_WARNING
+            )
             assert page.locator("#execution-warning").is_visible()
+            assert page.locator("#workspace-sidebar #execution-warning").count() == 1
+            assert page.locator(".topbar").count() == 0
+            page.get_by_role("button", name="Dismiss execution warning").click()
+            assert not page.locator("#execution-warning").is_visible()
+            page.reload()
+            page.get_by_role("button", name="Cooperative execution", exact=True).wait_for()
+            assert not page.locator("#execution-warning").is_visible()
+            page.get_by_role("button", name="Cooperative execution", exact=True).click()
+            assert page.locator("#execution-warning").is_visible()
+            app.workspace.execution = dict(
+                backend="bubblewrap",
+                available=False,
+                reason="bwrap: Namespace creation denied. https://example.invalid/diagnostic",
+                fallback_unavailable="Missing proot executable",
+            )
+            page.reload()
+            playwright.expect(page.locator("#execution-status")).to_have_text(
+                "Experiments unavailable"
+            )
+            assert page.locator("#execution-warning").is_visible()
+            assert "https://" not in page.locator("#execution-warning-message").inner_text()
+            assert not page.locator("#execution-warning-diagnostics").is_visible()
             browser.close()
     finally:
         server.shutdown()
@@ -547,6 +573,60 @@ def test_source_tools_open_agent_assisted_installation_conversations(tmp_path, m
                 assert page.locator("#source-dialog").count() == 0
             assert not installs
             assert len(app.workspace.projects()) == 2
+            browser.close()
+    finally:
+        server.shutdown()
+        server.server_close()
+
+
+def test_sidebar_edges_drag_closed_and_reopen(tmp_path):
+    playwright = pytest.importorskip("playwright.sync_api")
+    app = SimjectureWebApplication(runs_root=tmp_path, scan_roots=(tmp_path,))
+    project = app.workspace.create({"name": "Panel gestures"})
+    server = create_server(app, port=0)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    try:
+        with playwright.sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page(viewport={"width": 1440, "height": 1000})
+            page.goto(f"http://127.0.0.1:{server.server_port}/#project={project['id']}")
+            page.locator("#chat-input").wait_for()
+            page.evaluate("() => customElements.whenDefined('wa-split-panel')")
+
+            def drag(selector, end_x, y_offset=20):
+                box = page.locator(selector).bounding_box()
+                x, y = box["x"] + box["width"] / 2, box["y"] + min(y_offset, box["height"] / 2)
+                page.mouse.move(x, y)
+                page.mouse.down()
+                page.mouse.move(end_x, y, steps=16)
+                page.mouse.up()
+
+            drag("#left-sidebar-resizer", 2)
+            playwright.expect(page.locator("#workspace-sidebar")).not_to_be_visible()
+            drag("#left-sidebar-toggle", 280)
+            playwright.expect(page.locator("#workspace-sidebar")).to_be_visible()
+            assert abs(page.locator("#workspace-sidebar").bounding_box()["width"] - 280) < 2
+            split = page.locator("#research-layout").bounding_box()
+            drag('#research-layout [part="divider"]', split["x"] + split["width"] - 2)
+            playwright.expect(page.locator("#research-inspector")).not_to_be_visible()
+            drag("#right-sidebar-toggle", split["x"] + split["width"] - 340)
+            playwright.expect(page.locator("#research-inspector")).to_be_visible()
+            assert page.locator("#research-inspector").bounding_box()["width"] > 250
+            page.get_by_role("button", name="Collapse left sidebar").click()
+            page.get_by_role("button", name="Collapse right sidebar").click()
+            page.reload()
+            page.get_by_role("button", name="Expand right sidebar").wait_for()
+            assert not page.locator("#workspace-sidebar").is_visible()
+            assert not page.locator("#research-inspector").is_visible()
+            page.screenshot(
+                path="artifacts/workspace-preview/collapsed-edge-tabs.png", full_page=True
+            )
+            page.get_by_role("button", name="Expand left sidebar").click()
+            page.get_by_role("button", name="Expand right sidebar").click()
+            assert abs(page.locator("#workspace-sidebar").bounding_box()["width"] - 280) < 2
+            page.screenshot(
+                path="artifacts/workspace-preview/expanded-edge-tabs.png", full_page=True
+            )
             browser.close()
     finally:
         server.shutdown()

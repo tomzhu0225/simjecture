@@ -40,7 +40,12 @@
           <button data-view="tools" class="nav-item">
             <span aria-hidden="true">◇</span> Research tools
           </button>
-          <button data-view="settings" class="nav-item">
+          <button
+            id="connection-button"
+            data-view="settings"
+            class="nav-item"
+            disabled
+          >
             <span aria-hidden="true">⚙</span> Connections
           </button>
         </nav>
@@ -53,6 +58,45 @@
           <div id="sidebar-run-list"></div>
         </div>
         <div class="sidebar-bottom">
+          <div id="breadcrumb" class="sidebar-location">
+            Workspace / Overview
+          </div>
+          <span id="conversation-status">Ready</span>
+          <button
+            id="execution-status"
+            class="sidebar-status"
+            type="button"
+            aria-controls="execution-warning"
+          >
+            Execution status
+          </button>
+          <div
+            id="execution-warning"
+            class="sidebar-notice"
+            role="status"
+            hidden
+          >
+            <div class="sidebar-notice-heading">
+              <strong id="execution-warning-title"></strong
+              ><button
+                id="dismiss-execution-warning"
+                type="button"
+                aria-label="Dismiss execution warning"
+              >
+                ×
+              </button>
+            </div>
+            <p id="execution-warning-message"></p>
+            <details id="execution-warning-details">
+              <summary>Technical details</summary>
+              <pre id="execution-warning-diagnostics"></pre>
+            </details>
+          </div>
+          <div class="sidebar-utilities">
+            <button id="theme-toggle" class="quiet" type="button">
+              Dark mode
+            </button>
+          </div>
           <a href="/monitor">Experiment monitor <span>↗</span></a>
           <div id="machine-label">Local workspace</div>
           <span id="connection-indicator" class="connection-dot"
@@ -60,34 +104,39 @@
           >
         </div>
       </aside>
+      <div
+        id="left-sidebar-resizer"
+        role="separator"
+        tabindex="0"
+        aria-label="Resize left sidebar"
+        aria-orientation="vertical"
+        aria-controls="workspace-sidebar"
+      ></div>
+      <button
+        id="left-sidebar-toggle"
+        class="panel-edge-tab"
+        type="button"
+        aria-label="Collapse left sidebar"
+        aria-controls="workspace-sidebar"
+        aria-expanded="true"
+      >
+        <span aria-hidden="true">‹</span>
+      </button>
+      <button
+        id="right-sidebar-toggle"
+        class="panel-edge-tab"
+        type="button"
+        aria-label="Collapse right sidebar"
+        aria-controls="research-inspector"
+        aria-expanded="true"
+        hidden
+      >
+        <span aria-hidden="true">›</span>
+      </button>
       <main>
-        <header class="topbar">
-          <div class="topbar-left">
-            <button
-              id="left-sidebar-toggle"
-              class="quiet"
-              type="button"
-              aria-controls="workspace-sidebar"
-              aria-expanded="true"
-            >
-              Hide left sidebar
-            </button>
-            <div id="breadcrumb">Workspace <span>/</span> Overview</div>
-          </div>
-          <div class="topbar-right">
-            <button id="theme-toggle" class="quiet" type="button">
-              Dark mode
-            </button>
-            <span class="local-label">LOCAL EXECUTION</span
-            ><button id="connection-button" class="quiet">
-              Connect a model <span>↗</span>
-            </button>
-          </div>
-        </header>
         <div id="readonly" class="banner" hidden>
           This session is read-only. You can inspect projects and results.
         </div>
-        <div id="execution-warning" class="banner" role="status" hidden></div>
         <section id="view-home" class="view home-view">
           <div class="page-intro">
             <p class="eyebrow">YOUR RESEARCH WORKSPACE</p>
@@ -286,18 +335,8 @@
         <section id="view-project" class="view project-view" hidden>
           <div class="project-heading">
             <div>
-              <p class="eyebrow">RESEARCH CONVERSATION</p>
               <h1 id="project-title"></h1>
             </div>
-            <button
-              id="right-sidebar-toggle"
-              class="quiet"
-              type="button"
-              aria-controls="research-inspector"
-              aria-expanded="true"
-            >
-              Hide right sidebar
-            </button>
             <div class="mode-switch" role="group" aria-label="Research mode">
               <button id="interactive-mode" class="selected">
                 Interactive research</button
@@ -313,12 +352,6 @@
             <span slot="divider" class="resize-grip" aria-hidden="true">⋮</span>
             <div class="conversation-column" slot="start">
               <div id="interactive-panel">
-                <div class="conversation-heading">
-                  <span class="status-dot"></span
-                  ><span id="conversation-status"
-                    >Work through the next step together</span
-                  >
-                </div>
                 <div id="messages" class="messages" aria-live="polite"></div>
                 <form id="chat-form" class="composer">
                   <label class="sr-only" for="chat-input"

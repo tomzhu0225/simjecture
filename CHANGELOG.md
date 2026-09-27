@@ -4,10 +4,16 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased — next preview
 
+- Move routine workspace controls and execution status into the left sidebar,
+  remove the redundant top bar, and make execution warnings dismissible with
+  expandable diagnostics. Keep conversation-blocking notices prominent.
+- Use draggable sidebar edges and compact chevron tabs instead of text hide/show
+  buttons. Drag to the outer edge to collapse, pull or click the tab to reopen,
+  and retain panel widths and collapsed state across reloads.
 - Replace source-path dialogs for FLASH and WarpX CUDA with **Install with agent**,
   opening prepared setup conversations that reference the bundled deployment skills.
 - Prefer Bubblewrap, with a checked PRoot cooperative fallback for namespace-restricted
-  hosts running under a dedicated non-root account. Show a persistent GUI warning
+  hosts running under a dedicated non-root account. Show a dismissible sidebar warning
   about the lack of filesystem/network security isolation; retain explicit backend
   choices and immutable study execution modes. Use the selected backend for tool checks.
 - Show failed tool installations directly on catalogue cards, including tools
@@ -16,8 +22,7 @@ This project follows semantic versioning. Dates use ISO 8601.
 - Support DeepSeek thinking-mode tool choice and plain-text final answers. Keep
   required provider reasoning metadata in private session storage and preserve
   it when resuming a conversation, without displaying it in chat or activity.
-- Add independent hide/show controls for both sidebars, remembering their state
-  across reloads. Clarify SSH forwarding when a local port is already occupied.
+- Clarify SSH forwarding when a local port is already occupied.
 - Show only simulations in the left sidebar. Separate Simulations and Commands
   into right-side tabs with independent selections, counts and links; incoming
   commands no longer open the simulation monitor.

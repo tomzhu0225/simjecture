@@ -82,6 +82,7 @@ function md(node, text) {
 function view(name) {
   const changed = state.view !== name;
   state.view = name;
+  $("right-sidebar-toggle").hidden = name !== "project";
   for (const section of document.querySelectorAll(".view"))
     section.hidden = section.id !== `view-${name}`;
   for (const item of document.querySelectorAll("[data-view]"))
@@ -157,7 +158,8 @@ function renderSettings() {
     ? "Saved · leave blank to keep this key"
     : "API key (optional for a local server)";
   const installed = (s.clis || []).filter((c) => c.path);
-  $("connection-button").textContent = "API connections ↗";
+  $("connection-button").title = "Configure API connections";
+  $("connection-button").disabled = false;
   $("connection-indicator").textContent = installed.length
     ? `${installed.length} CLI agents detected`
     : s.api_configured
@@ -413,7 +415,7 @@ function renderProject(force = false) {
     : "Choose an agent";
   $("conversation-status").textContent = p.running
     ? "Agent working · files and activity are saved as it goes"
-    : "Work through the next step together";
+    : "Ready";
   $("send-message").disabled = p.running || state.readonly;
   $("stop-agent").hidden = !p.running;
   $("launch-study").disabled = p.running || state.readonly;
@@ -1074,18 +1076,73 @@ async function boot() {
   state.settings = data.settings;
   const execution = data.settings.execution;
   $("execution-backend").value = execution?.backend || "bubblewrap";
+  let executionNoticeKey = "";
   function executionWarning() {
-    const cooperative = $("execution-backend").value === "proot-cooperative";
-    const warning =
-      execution?.warning ||
-      (cooperative
-        ? "Cooperative execution (PRoot) is not a security sandbox: it does not isolate host files or networking. Use only trusted code under a dedicated non-root account."
-        : execution && !execution.available
-          ? `Isolated experiments are unavailable: ${execution.reason}. Cooperative fallback: ${execution.fallback_unavailable || "not configured"}.`
-          : "");
-    $("execution-warning").textContent = warning;
-    $("execution-warning").hidden = !warning;
+    const cooperative =
+      execution?.backend === "proot-cooperative" ||
+      $("execution-backend").value === "proot-cooperative";
+    const blocked = execution && !execution.available;
+    const warning = cooperative
+      ? execution?.warning ||
+        "Cooperative execution (PRoot) is not a security sandbox: it does not isolate host files or networking. Use only trusted code under a dedicated non-root account."
+      : blocked
+        ? "Isolated experiments cannot run on this host. Cooperative mode needs PRoot and a dedicated non-root account."
+        : "";
+    executionNoticeKey = JSON.stringify([
+      data.settings.machine,
+      execution,
+      cooperative,
+    ]);
+    let dismissed = false;
+    try {
+      dismissed =
+        localStorage.getItem("simjecture-execution-notice-dismissed") ===
+        executionNoticeKey;
+    } catch {}
+    const label = cooperative
+      ? "Cooperative execution"
+      : blocked
+        ? "Experiments unavailable"
+        : execution?.available
+          ? "Isolated experiments ready"
+          : "Execution status unchecked";
+    $("execution-status").textContent = label;
+    $("execution-status").disabled = !warning;
+    $("execution-warning-title").textContent = cooperative
+      ? "Limited isolation"
+      : "Execution needs setup";
+    $("execution-warning-message").textContent = warning;
+    $("execution-warning-diagnostics").textContent = [
+      execution?.reason,
+      execution?.fallback_reason,
+      execution?.fallback_unavailable,
+    ]
+      .filter(Boolean)
+      .join("\n");
+    $("execution-warning-details").hidden = !$("execution-warning-diagnostics")
+      .textContent;
+    $("execution-warning").hidden = !warning || dismissed;
+    $("execution-status").setAttribute(
+      "aria-expanded",
+      String(!$("execution-warning").hidden),
+    );
   }
+  $("dismiss-execution-warning").onclick = () => {
+    try {
+      localStorage.setItem(
+        "simjecture-execution-notice-dismissed",
+        executionNoticeKey,
+      );
+    } catch {}
+    $("execution-warning").hidden = true;
+    $("execution-status").setAttribute("aria-expanded", "false");
+  };
+  $("execution-status").onclick = () => {
+    try {
+      localStorage.removeItem("simjecture-execution-notice-dismissed");
+    } catch {}
+    executionWarning();
+  };
   $("execution-backend").addEventListener("change", executionWarning);
   executionWarning();
   state.projects = data.projects;
@@ -1353,6 +1410,7 @@ function sizeInspector() {
   split.setAttribute("orientation", narrow.matches ? "vertical" : "horizontal");
   split.disabled = narrow.matches;
   split.setAttribute("position", narrow.matches ? "40" : "32");
+  requestAnimationFrame(() => window.WorkspacePanels?.resize());
 }
 narrow.addEventListener("change", sizeInspector);
 sizeInspector();

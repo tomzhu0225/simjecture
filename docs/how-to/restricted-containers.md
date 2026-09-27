@@ -6,8 +6,9 @@ silently switches to weaker isolation when namespace creation fails.
 
 The next preview (rc2) adds checked fallback in the conversation workspace and
 runtime installer: prefer Bubblewrap; when it cannot run, select PRoot only if
-its probe succeeds under a non-root account. A persistent GUI banner warns that
+its probe succeeds under a non-root account. A sidebar warning explains that
 this is cooperative execution without filesystem/network security isolation.
+It can be dismissed; the mode indicator remains available to reopen it.
 The workspace extra includes the process monitor. The installer can install
 PRoot on Debian/Ubuntu; restricted hosts still need a dedicated non-root account.
 Root execution never qualifies for this fallback. Explicit backend requests and
