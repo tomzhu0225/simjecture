@@ -29,3 +29,11 @@ Model providers, literature services, and externally supplied guided
 commissioning packages are services or inputs rather than sublicensed parts of
 this source distribution. Run artifacts must retain the provenance and license
 information supplied by their generators.
+
+The optional ITER ecosystem pack downloads CHERAB, Raysect, CHERAB-IMAS,
+CHERAB-ITER, IMAS-Python, IMAS-Validator and their dependencies under their
+respective upstream licenses. Solver guides refer to separately distributed
+JOREK, SOLPS-ITER/EIRENE and DINA-PS. Their component code, data, citation and
+redistribution terms remain upstream terms; Simjecture does not relicense them
+or imply ITER endorsement. The diagnostic demo is independently authored using
+public APIs; its CHERAB bremsstrahlung API reference is credited in the script.

@@ -1,0 +1,32 @@
+{
+  "environment": {
+    "MPLBACKEND": "Agg",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "executable": "bin/python",
+  "identity_files": [
+    "share/build-record.json",
+    "share/installed-requirements.txt"
+  ],
+  "manifest": {
+    "description": "CHERAB/Raysect synthetic diagnostics and IMAS data tools; does not include JOREK, SOLPS or DINA binaries",
+    "executable_kind": "python-iter-pack",
+    "name": "iter-pack-1.0",
+    "preflight_checks": [
+      "checks.completed",
+      "checks.chord_integral",
+      "checks.density_scaling",
+      "checks.imas_roundtrip",
+      "checks.imas_bolometers",
+      "checks.iter_geometry"
+    ],
+    "preflight_resource": "examples/diagnostics_demo.py",
+    "preflight_result": "iter_pack_demo.json",
+    "schema_version": "0.1.0",
+    "skill": "iter-pack",
+    "version": "1.0"
+  },
+  "runtime_root": "../.runtime/iter-pack-1.0"
+}

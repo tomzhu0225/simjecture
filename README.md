@@ -9,18 +9,23 @@ experiments, searches for counterexamples, and proposes small, testable repairs 
 failed hypotheses. The harness records what actually ran and requires independent
 review before a scientific claim can close.
 
-**v0.5.2rc2 is a preview release for user testing; v0.5.1 remains stable.** Minimal mode is the default: agents keep their
+**v0.5.2 is the current stable release.** Minimal mode is the default: agents keep their
 native tools and choose their research strategy, while Simjecture manages recorded
 evidence, review and deadlines. Structured and frontier modes remain available.
 The system does not establish physical truth from a successful simulation or promise
 that a long agent run will produce a useful result.
 
-## Install and open the workspace preview
+The workspace includes visible **Continue investigation** and **Send
+guidance** actions in the study view and experiment monitor. Continue with a new
+budget and selected prior files, or send advisory guidance at the next checkpoint.
+See [continuation and steering](docs/how-to/continuation-steering.md).
+
+## Install and open the workspace
 
 On Linux or inside WSL, run:
 
 ```bash
-curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.2rc2/install.sh | bash
+curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.2/install.sh | bash
 ```
 
 The installer downloads the versioned release, verifies its checksum, installs uv,
@@ -45,7 +50,7 @@ Use Linux with Python 3.11+, [uv](https://docs.astral.sh/uv/), and an installed,
 authenticated native agent CLI. Bubblewrap is the default numerical execution backend.
 
 ```bash
-uv tool install 'simjecture[tui]==0.5.2rc2'
+uv tool install 'simjecture[tui]==0.5.2'
 simjecture install core
 simjecture doctor --execution-backend bubblewrap
 
@@ -164,6 +169,13 @@ capabilities. For example:
 simjecture install warpx-cpu
 simjecture doctor --profile warpx-cpu
 ```
+
+The release also includes an [ITER ecosystem pack](docs/how-to/iter-pack.md):
+CHERAB/Raysect synthetic diagnostics, CHERAB-ITER/IMAS adapters and IMAS data tools.
+Use **Research tools → ITER pack → Install**, then **Run demo** for a monitored
+example with plots, or run `simjecture install iter-pack`. JOREK, SOLPS-ITER and
+DINA-PS have separate **Install with agent** entries and source-based guidance;
+they are not silently included in the diagnostics installation.
 
 FLASH source is not redistributed. Solver source inspection can be configured separately
 from a writable problem/build area. See [runtime deployment](docs/how-to/deploy-runtimes.md)

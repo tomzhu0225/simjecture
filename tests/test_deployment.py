@@ -165,7 +165,7 @@ def test_doctor_treats_uninstalled_optional_capabilities_as_warnings(
 
     assert report.ready is True
     warnings = [item for item in report.checks if item.status is DeploymentCheckStatus.WARNING]
-    assert len(warnings) == 7
+    assert len(warnings) == len(DeploymentProfile) - 1
     assert all(not item.required for item in warnings)
 
 

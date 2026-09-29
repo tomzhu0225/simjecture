@@ -38,7 +38,7 @@ def read_provider(path):
     return config
 
 
-def model_for(config, model=None, timeout=90):
+def model_for(config, model=None, timeout=90, max_tokens=8192):
     require_runtime()
     from smolagents import OpenAIServerModel
 
@@ -180,7 +180,7 @@ def model_for(config, model=None, timeout=90):
         api_base=config["base_url"],
         api_key=config.get("api_key") or "local",
         client_kwargs={"timeout": timeout, "max_retries": 1},
-        max_tokens=8192,
+        max_tokens=max_tokens,
         **extra,
     )
 
@@ -424,6 +424,7 @@ def agent_tools(root, deadline, project=None, workspace=None):
             hours: float = 1,
             completion_policy: str = "answer",
             instrument: str = "",
+            inherited_files: list[str] | None = None,
         ) -> str:
             """Prepare an editable autonomous study brief for the user to launch.
             Preserve their objective. Ask about consequential missing information.
@@ -436,6 +437,8 @@ def agent_tools(root, deadline, project=None, workspace=None):
                 hours: Requested wall-time budget, between 0.01 and 168 hours.
                 completion_policy: answer accepts a negative result; repair seeks a tested repair.
                 instrument: Installed catalogue tool ID, e.g. warpx-cpu; empty for ordinary Python.
+                inherited_files: Parent research-relative paths for a continuation.
+                    Omit to preserve the existing selection.
             """
             brief = workspace.save_brief(
                 project,
@@ -446,6 +449,7 @@ def agent_tools(root, deadline, project=None, workspace=None):
                     hours=hours,
                     completion_policy=completion_policy,
                     instrument=instrument,
+                    inherited_files=inherited_files,
                 ),
             )
             emit("brief", brief=brief)
@@ -500,18 +504,61 @@ def run_agent(
     workspace=None,
 ):
     deadline = time.time() + wall_seconds if wall_seconds is not None else float("inf")
-    llm = model_for(config, model, timeout=min(600, max(1, wall_seconds or 600)))
+    llm = model_for(
+        config,
+        model,
+        timeout=min(600, max(1, wall_seconds or 600)),
+        max_tokens=32768 if judge else 8192,
+    )
     if judge:
-        response = llm.generate([{"role": "user", "content": prompt}])
-        if response.tool_calls:
-            raise ValueError("Independent reviewer attempted a tool call")
-        if response.token_usage:
-            emit(
-                "usage",
-                input_tokens=response.token_usage.input_tokens,
-                output_tokens=response.token_usage.output_tokens,
+        messages = [
+            {
+                "role": "user",
+                "content": prompt
+                + "\nReturn the requested verdict JSON concisely; omit any preamble.",
+            }
+        ]
+        for attempt in range(2):
+            if time.time() >= deadline:
+                raise ValueError("Independent review deadline exhausted")
+            options = {"max_tokens": 32768}
+            deepseek = (
+                "deepseek" in (model or config["model"]).lower()
+                or urlparse(config["base_url"]).hostname == "api.deepseek.com"
             )
-        return response.content
+            if attempt and deepseek:
+                # Avoid spending a second full budget entirely in provider reasoning.
+                options["extra_body"] = {"thinking": {"type": "disabled"}}
+            response = llm.generate(messages, **options)
+            if response.token_usage:
+                emit(
+                    "usage",
+                    input_tokens=response.token_usage.input_tokens,
+                    output_tokens=response.token_usage.output_tokens,
+                )
+            raw = getattr(response, "raw", None)
+            choices = (
+                raw.get("choices", []) if isinstance(raw, dict) else getattr(raw, "choices", [])
+            )
+            first = choices[0] if choices else None
+            finish = (
+                first.get("finish_reason")
+                if isinstance(first, dict)
+                else getattr(first, "finish_reason", None)
+            )
+            emit(
+                "review_response",
+                attempt=attempt + 1,
+                finish_reason=finish,
+                empty=not bool(response.content and response.content.strip()),
+            )
+            if response.tool_calls:
+                raise ValueError("Independent reviewer attempted a tool call")
+            if response.content and response.content.strip() and finish != "length":
+                return response.content
+        raise ValueError(
+            "Independent reviewer returned empty or truncated output after two bounded attempts"
+        )
     from smolagents import ToolCallingAgent
 
     def step_event(step, **kwargs):

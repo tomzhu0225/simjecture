@@ -692,6 +692,11 @@ def build_parser() -> argparse.ArgumentParser:
         subcommands.add_parser("study", help="Launch a native-agent study (default mode: minimal)")
     )
 
+    steer = subcommands.add_parser("steer", help="Send advisory guidance to a minimal study")
+    steer.add_argument("--campaign", type=Path, required=True)
+    steer.add_argument("--message", required=True)
+    steer.add_argument("--request-key")
+
     benchmark = subcommands.add_parser("benchmark")
     benchmark.add_argument(
         "name",
@@ -1132,6 +1137,14 @@ def build_parser() -> argparse.ArgumentParser:
 def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
+    if args.command == "steer":
+        from .research_continuation import submit
+
+        try:
+            print(json.dumps(submit(args.campaign, args.message, key=args.request_key), indent=2))
+            return 0
+        except ValueError as error:
+            parser.error(str(error))
     if args.command == "study":
         try:
             return int(args.handler(args))

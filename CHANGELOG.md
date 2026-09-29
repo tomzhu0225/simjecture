@@ -2,6 +2,33 @@
 
 This project follows semantic versioning. Dates use ISO 8601.
 
+## 0.5.2 — 2026-09-29
+
+Stable release of the conversation-first research workspace tested in rc1/rc2,
+plus continuation, steering, review recovery and the ITER diagnostics pack.
+Minimal mode remains the default; structured/frontier modes remain selectable.
+The versioned installer preserves existing research data and older program folders.
+
+- Add an optional ITER diagnostics/data pack with pinned CHERAB/Raysect,
+  CHERAB-ITER/IMAS extensions and IMAS tools. Install/check from the CLI or GUI;
+  run a visible, monitored numerical demo with plots. Add source-based agent
+  guidance and separate setup entries for JOREK, SOLPS-ITER and DINA-PS.
+
+- Offer Prepare directly or Prepare with agent from the continuation dialog.
+  Chat preparation carries parent context across turns and lets the agent draft
+  the brief and select inherited files without losing lineage or instruments.
+- Add Continue investigation and Send guidance to study cards and the experiment
+  monitor. Review a linked phase's brief, selected inherited files, model and new
+  budget before launch; retain the original study and evidence status.
+- Snapshot continuation context with verified hashes and immutable parent lineage.
+  Add CLI continuation and advisory steering; show queued/checkpoint delivery in
+  the web interface and include guidance in independent review packets.
+- Detect empty/truncated built-in review replies, record finish reasons and usage,
+  and use bounded recovery with a larger output allocation and a DeepSeek
+  non-thinking retry. Back off repeated invalid oversight without granting approval.
+- Reconcile expired deadlines/dead supervisors in live status and write final
+  reports when a supervisor exits through an external error.
+
 ## 0.5.2rc2 (preview) — 2026-09-27
 
 - Provision scientific compilers, MPI, HDF5 and other prerequisites in managed

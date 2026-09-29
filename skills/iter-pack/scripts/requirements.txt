@@ -1,0 +1,10 @@
+# Python 3.11/3.12. Raysect 0.8 is required by CHERAB 1.5.
+cherab==1.5.0
+raysect==0.8.1.post1
+numpy==1.26.4
+imas-python[netcdf]==2.3.0
+imas-validator==1.0.0
+imas-data-dictionaries==4.1.1
+netCDF4==1.7.4
+cherab-imas @ git+https://github.com/cherab/imas.git@d7e04592e8d40c3b6ab6ae070b0f4aa33c072640
+cherab-iter @ git+https://github.com/cherab/iter.git@ee3e1fe99e02d2cb03bce3f1017a081070ab0837

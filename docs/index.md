@@ -6,7 +6,7 @@ It accepts a natural-language hypothesis, lets an agent commission and use
 computational instruments, and preserves an independently inspectable path from
 proposal to claim disposition.
 
-This documentation describes version 0.5.2rc2, a research preview. The project
+This documentation describes the stable 0.5.2 release. The project
 began in computational plasma physics. The same evidence harness is now ready
 to extend to other simulation-gated fields. The software has completed real
 autonomous CPU and CUDA campaigns, but it does not claim unrestricted
@@ -29,7 +29,8 @@ hypothesis solving or empirical closure.
   [Guided commissioning](how-to/guided-commissioning.md).
 - **Operator:** use [Deploy runtime profiles](how-to/deploy-runtimes.md) to
   provision and verify the core, WarpX, FLASH, equation-of-state, or opacity
-  environment.
+  environment. See the [ITER ecosystem pack](how-to/iter-pack.md) for diagnostics,
+  IMAS data and guided fusion-solver setup.
 - **DSH operator:** use [Run a Simjecture campaign under DSH](how-to/deepseek-harness.md)
   to install the native MCP profile and verify its tool boundary.
 - **Simote operator:** use [Simote agent roles](how-to/simote-agent-roles.md)
@@ -79,10 +80,12 @@ how-to/minimal-oversight
 how-to/research-memory
 how-to/add-a-capability
 how-to/deploy-runtimes
+how-to/iter-pack
 how-to/deepseek-harness
 how-to/dsh-upgrade-assessment
 how-to/simote-agent-roles
 how-to/research-service
+how-to/continuation-steering
 ```
 
 ```{toctree}
@@ -101,6 +104,7 @@ research/status
 research/llm-comparison
 research/run-0004
 research/next-steps
+research/continuation-steering-rc3
 ```
 
 ```{toctree}
@@ -110,4 +114,6 @@ research/next-steps
 development/documentation
 development/releasing
 testing/rc2-installation-acceptance
+testing/rc3-continuation-acceptance
+testing/iter-pack-acceptance
 ```

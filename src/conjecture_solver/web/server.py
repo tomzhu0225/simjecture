@@ -285,7 +285,13 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
                 from ..execution import probe_execution_backend
 
                 self._json(probe_execution_backend("bubblewrap"))
+            elif endpoint == "continuation-preview":
+                from ..research_continuation import preview
+
+                root = self.server.application.registry.resolve(self._one_value(query, "id"))
+                self._json(preview(root))
             elif endpoint == "study":
+                from ..research_continuation import steering
                 from ..study_status import study_status
                 from .workspace import load
 
@@ -307,9 +313,12 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
                                 "elapsed",
                                 "backend",
                                 "model",
+                                "mode",
                             )
                         },
-                        report=load(root / "research_report.json"),
+                        steering=steering(root),
+                        continuation=status["manifest"].get("continuation"),
+                        report=load(root / "research_report.json") | {"status": status["status"]},
                         results=result.read_text()[:100000]
                         if result.is_file()
                         and not result.is_symlink()
@@ -388,6 +397,13 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
                 result = workspace.queue_study_report(
                     payload.get("project"), payload.get("campaign")
                 )
+            elif endpoint == "prepare-continuation":
+                result = workspace.prepare_continuation(payload, self.server.application)
+            elif endpoint == "steer-study":
+                from ..research_continuation import submit
+
+                root = self.server.application.registry.resolve(payload.get("campaign"))
+                result = submit(root, payload.get("message"), key=payload.get("request_key"))
             elif endpoint == "new-study":
                 result = workspace.new_study(payload.get("project"))
             elif endpoint == "prepare":
@@ -412,6 +428,8 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
                 result = workspace.upload(payload.get("project"), payload)
             elif endpoint == "install":
                 result = workspace.start_install(payload)
+            elif endpoint == "tool-demo":
+                result = workspace.run_tool_demo(payload)
             elif endpoint == "register-tool":
                 result = workspace.register_tool(payload)
             elif endpoint == "launch":

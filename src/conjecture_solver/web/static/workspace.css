@@ -3214,3 +3214,14 @@ wa-split-panel.project-layout {
   color: var(--muted);
   margin: 4px 0 18px;
 }
+
+.research-action-dialog { max-width: 42rem; width: calc(100% - 3rem); max-height: 85vh; overflow: auto; }
+.research-action-dialog label { display: block; margin: 1rem 0; }
+.research-action-dialog textarea { display: block; width: 100%; box-sizing: border-box; }
+.inherit-file-list { max-height: 14rem; overflow: auto; }
+.inherit-file-list label { overflow-wrap: anywhere; }
+.inherit-file-list input { width: auto; margin-right: .5rem; }
+.form-error { color: var(--danger, #b91c1c); }
+
+.continuation-chat-context { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; margin-bottom: .75rem; font-size: .9rem; }
+.continuation-chat-context[hidden] { display: none; }

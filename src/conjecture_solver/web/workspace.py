@@ -1,4 +1,4 @@
-"""Persistent local projects, provider setup and the existing research/installer bridge."""
+"Persistent local projects, provider setup and the existing research/installer bridge."
 
 from __future__ import annotations
 
@@ -28,6 +28,15 @@ from ..research_service import put
 from ..workspace_agent import contained, model_for, public_error
 
 CATALOGUE = [
+    (
+        "iter-pack",
+        "ITER pack · diagnostics & data",
+        "CHERAB / Raysect and IMAS · verified demos",
+        "install",
+    ),
+    ("solps", "SOLPS-ITER", "Tokamak edge and neutrals · guided setup", "agent"),
+    ("jorek", "JOREK", "Nonlinear MHD · guided setup", "agent"),
+    ("dina", "DINA-PS", "Tokamak scenarios and control · guided setup", "agent"),
     ("warpx-cpu", "WarpX · CPU", "Particle-in-cell plasma simulations", "install"),
     ("warpx-cuda", "WarpX · CUDA", "GPU plasma simulations · agent-assisted setup", "agent"),
     ("flash", "FLASH", "Hydrodynamics and MHD · agent-assisted setup", "agent"),
@@ -378,6 +387,8 @@ class Workspace:
 
     def prepare(self, identifier, payload):
         approach = payload.get("approach", "draft")
+        if approach == "continuation":
+            return self.prepare_continuation_chat(identifier)
         if approach == "interview":
             message = (
                 "Grill me to prepare an autonomous investigation. Read our conversation and files "
@@ -872,6 +883,13 @@ class Workspace:
                     f"CURRENT USER REQUEST:\n{message}\n"
                     f"Study preparation guidance:\n{text(payload, 'preparation')}"
                 )
+            if project.get("continuation_draft"):
+                prompt += (
+                    "\nCONTINUATION PREPARATION (operator-selected parent; preserve this link):\n"
+                    + json.dumps(project["continuation_draft"])
+                    + "\nUse draft_study when ready. Prior outputs are not fresh evidence. "
+                    "Preparing a brief does not authorize launching an autonomous study."
+                )
             (turn / "prompt.txt").write_text(prompt)
             command = [
                 sys.executable,
@@ -902,12 +920,169 @@ class Workspace:
             put(directory / "project.json", record)
         return {"message": "Agent started", "project": identifier}
 
+    def prepare_continuation_chat(self, identifier):
+        """Discuss an attached parent in chat; only draft_study prepares a launchable brief."""
+        with self.lock():
+            directory = self.directory(identifier)
+            project = self.project(identifier)
+            continuation = project.get("continuation_draft")
+            if not continuation:
+                raise ValueError("Choose a parent with Continue investigation first")
+            if project["running"]:
+                raise ValueError("Wait for the current interactive turn before preparing")
+            self.project_connection(project)  # Validate before scheduling a paid chat turn.
+            parent = Path(continuation["parent"])
+            manifest = load(parent / "research.json")
+            state = load(parent / "supervisor/state.json")
+            notes = [load(p) for p in (parent / "notebook").glob("*.json")]
+            notes.sort(key=lambda n: n.get("created_at", 0), reverse=True)
+            reviews = [load(p) for p in (parent / "reviews").glob("*.json")]
+            context = dict(
+                parent=str(parent),
+                original_question=manifest.get("hypothesis"),
+                prior_instructions=str(manifest.get("operator_protocol", ""))[:16000],
+                last_status=state.get("status"),
+                last_error=state.get("last_error"),
+                notes=[{k: n.get(k) for k in ["id", "kind", "statement"]} for n in notes[:6]],
+                reviews=[
+                    {k: r.get(k) for k in ["id", "claim", "status", "verdict"]}
+                    for r in reviews[-6:]
+                ],
+                selected_files=continuation["files"],
+                proposed_hours=(project.get("brief") or {}).get(
+                    "hours", continuation.get("hours", 1)
+                ),
+                guidance=continuation.get("guidance", ""),
+                authority=(
+                    "Historical context. Worker notes are unreviewed. "
+                    "Inspect receipts before making claims; never edit or resume the parent."
+                ),
+            )
+            name = "continuation-context-" + uuid.uuid4().hex[:12] + ".json"
+            put(directory / "files" / name, context)
+            saved = load(directory / "project.json")
+            saved["continuation_draft"]["context_file"] = name
+            put(directory / "project.json", saved)
+        return self.send(
+            identifier,
+            dict(
+                message="Help me prepare the next phase of this investigation in chat.",
+                preparation=(
+                    f"Read {name} first. The parent question, limitations, selected files and "
+                    "review status are context, not accepted findings. Read parent sources "
+                    "and receipts if needed, without modifying them. Discuss useful follow-up "
+                    "directions with me and ask only consequential missing questions, at most "
+                    "three at a time. Retain the proposed budget unless I change it. As the plan "
+                    "becomes clear, call draft_study to fill the continuation brief yourself; "
+                    "the host preserves its parent link and inherited instruments. You may "
+                    "refine inherited_files using parent research-relative paths. Do not "
+                    "ask me to fill a blank form. Do not start an autonomous study or rerun "
+                    "simulations merely to prepare a proposal. I will review the brief and "
+                    "select Start research. Preserve my current constraints and existing draft."
+                ),
+            ),
+        )
+
+    def prepare_continuation(self, payload, application):
+        from ..research_continuation import preview, selected_file
+
+        parent = application.registry.resolve(payload.get("campaign"))
+        info = preview(parent)
+        files = payload.get("files", [])
+        if (
+            not isinstance(files, list)
+            or len(files) > 128
+            or not all(isinstance(n, str) for n in files)
+        ):
+            raise ValueError("Select at most 128 workspace files")
+        for name in files:
+            selected_file(parent, name)
+        approach = payload.get("approach", "direct")
+        if approach not in {"direct", "agent"}:
+            raise ValueError("Choose direct or agent preparation")
+        guidance = text(payload, "guidance", 8000)
+        if not guidance and approach == "direct":
+            raise ValueError("Describe what the next phase should investigate")
+        hours = float(payload.get("hours", 1))
+        if not 0.01 <= hours <= 168:
+            raise ValueError("Choose a budget between 0.01 and 168 hours")
+        identifier = payload.get("project")
+        if not identifier:
+            identifier = self.create({"name": "Continue: " + info["hypothesis"][:100]})["id"]
+        with self.lock():
+            path = self.directory(identifier) / "project.json"
+            project = self.project(identifier)
+            if project["running"]:
+                raise ValueError(
+                    "Wait for the interactive agent before preparing this continuation"
+                )
+            saved = load(path)
+            same_parent = (saved.get("continuation_draft") or {}).get("parent") == str(parent)
+            if (
+                saved.get("brief")
+                and not saved.get("brief_launched")
+                and not (same_parent and approach == "agent")
+            ):
+                raise ValueError(
+                    "Finish or clear the current proposal before preparing a continuation"
+                )
+            saved.update(
+                continuation_draft={
+                    "parent": str(parent),
+                    "campaign": payload["campaign"],
+                    "files": files,
+                    "guidance": guidance,
+                    "hours": hours,
+                    "capability_directory": info.get("capabilities") or "",
+                },
+                brief={
+                    "question": info["hypothesis"],
+                    "success_criteria": (
+                        "Resolve the stated follow-up with fresh prospective tests, "
+                        "counterexamples and independent review. Preserve prior result "
+                        "limitations."
+                    ),
+                    "constraints": guidance,
+                    "hours": hours,
+                    "completion_policy": "answer",
+                    "capability_directory": info.get("capabilities") or "",
+                },
+                brief_launched=None,
+                brief_source_turn=None,
+                updated_at=time.time(),
+            )
+            if approach == "agent":
+                # A conversation preparation is not an agreed autonomous brief.
+                saved["brief"] = project.get("brief") if same_parent else None
+            put(path, saved)
+        if approach == "agent":
+            try:
+                self.prepare_continuation_chat(identifier)
+                return {
+                    "project": identifier,
+                    "view": "interactive",
+                    "message": "Your agent is preparing the continuation in chat.",
+                }
+            except (ValueError, OSError) as error:
+                return {
+                    "project": identifier,
+                    "view": "interactive",
+                    "message": "Parent attached. Choose a model, then Prepare with agent.",
+                    "preparation_error": str(error),
+                }
+        return {
+            "project": identifier,
+            "view": "autonomous",
+            "message": "Draft ready. Review the brief, model and budget before launch.",
+        }
+
     def new_study(self, identifier):
         with self.lock():
             path = self.directory(identifier) / "project.json"
             if self.project(identifier)["running"]:
                 raise ValueError("Wait for the interactive agent before preparing another study")
             project = load(path)
+            project.pop("continuation_draft", None)
             project.update(
                 brief=None, brief_source_turn=None, brief_launched=None, updated_at=time.time()
             )
@@ -1024,6 +1199,31 @@ class Workspace:
         with self.lock():
             path = self.directory(identifier) / "project.json"
             project = load(path)
+            if (
+                "capability_directory" not in payload
+                and not instrument
+                and project.get("continuation_draft")
+            ):
+                brief["capability_directory"] = project["continuation_draft"].get(
+                    "capability_directory"
+                ) or (project.get("brief") or {}).get("capability_directory", "")
+            if payload.get("inherited_files") is not None:
+                from ..research_continuation import selected_file
+
+                selected = payload["inherited_files"]
+                continuation = project.get("continuation_draft")
+                if (
+                    not continuation
+                    or not isinstance(selected, list)
+                    or len(selected) > 128
+                    or not all(isinstance(n, str) for n in selected)
+                ):
+                    raise ValueError("Select at most 128 parent workspace files for a continuation")
+                if len(selected) != len(set(selected)):
+                    raise ValueError("Inherited files must be distinct")
+                for name in selected:
+                    selected_file(Path(continuation["parent"]), name)
+                continuation["files"] = selected
             project.update(brief=brief, brief_launched=None, updated_at=time.time())
             project["brief_source_turn"] = project.get("active_turn")
             put(path, project)
@@ -1200,6 +1400,8 @@ class Workspace:
             raise ValueError("Unknown installer action")
         if custom and action != "check":
             raise ValueError("Use agent-assisted setup to modify a custom installation")
+        if name in {"solps", "jorek", "dina"} and action == "install":
+            raise ValueError("Use Install with agent to prepare and register this solver")
         source = text(payload, "source", 4096)
         if action == "install" and name == "flash" and not source:
             raise ValueError("Choose an existing source directory for this tool")
@@ -1209,6 +1411,8 @@ class Workspace:
         if action == "check":
             card = next(t for t in self.catalogue() if t["id"] == name)
             descriptor = card.get("path")
+            if name in {"solps", "jorek", "dina"} and not descriptor:
+                raise ValueError("No registered runtime yet; use Install with agent")
         with self.lock():
             directory = self.root / "tools" / name
             directory.mkdir(parents=True, exist_ok=True)
@@ -1281,6 +1485,35 @@ class Workspace:
             directory.mkdir(exist_ok=True)
             put(directory / f"{record['id']}.json", record)
         return record
+
+    def run_tool_demo(self, payload):
+        """Run the bundled offline example as a visible interactive simulation."""
+        import shlex
+
+        from ..deployment import DeploymentManager, resolve_project_root
+
+        if text(payload, "name", 60) != "iter-pack":
+            raise ValueError("No bundled demo for this tool")
+        manager = DeploymentManager(resolve_project_root())
+        runtime = manager.runtime_root / "iter-pack-1.0"
+        python = runtime / "bin/python"
+        if not python.is_file() or not (runtime / "share/build-record.json").is_file():
+            raise ValueError("Install the ITER pack before running its demo")
+        project = self.create({"name": "ITER diagnostics demo"})
+        directory = self.directory(project["id"])
+        source = manager.project_root / "skills/iter-pack/examples/diagnostics_demo.py"
+        shutil.copyfile(source, directory / "files/diagnostics_demo.py")
+        simulation = self.start_simulation(
+            project["id"],
+            {
+                "name": "CHERAB and IMAS numerical demo",
+                "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MPLBACKEND=Agg "
+                + shlex.quote(str(python))
+                + " diagnostics_demo.py",
+                "timeout_seconds": 120,
+            },
+        )
+        return {"project": project["id"], "simulation": simulation}
 
     def launch(self, identifier, payload, application):
         from ..mvp_launch import start_managed_campaign
@@ -1377,6 +1610,12 @@ class Workspace:
                 execution_backend=payload.get("execution_backend", self.execution["backend"]),
             )
             plan = materialize_native(request)
+            if project.get("continuation_draft"):
+                from ..research_continuation import attach
+                from ..research_service import ResearchService
+
+                continuation = project["continuation_draft"]
+                attach(ResearchService(root), continuation["parent"], continuation["files"])
             inputs = root / "research" / "project_inputs"
             inputs.mkdir()
             total = 0
@@ -1400,6 +1639,7 @@ class Workspace:
                 campaign=token,
                 campaign_id=campaign_id,
                 question=brief["question"],
+                parent_campaign=(project.get("continuation_draft") or {}).get("campaign"),
                 request_key=request_key,
                 path=str(root),
                 created_at=time.time(),
@@ -1408,6 +1648,7 @@ class Workspace:
             )
             saved = load(directory / "project.json")
             saved["studies"].append(record)
+            saved.pop("continuation_draft", None)
             saved["brief_launched"] = token
             saved["updated_at"] = time.time()
             put(directory / "project.json", saved)

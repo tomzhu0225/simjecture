@@ -495,6 +495,11 @@ function renderMetrics(data) {
 }
 
 function renderControls(controls) {
+  for (const [id, query] of [["continue-study-link", "continue-study"], ["steer-study-link", "steer-study"]]) {
+    const link = document.getElementById(id);
+    link.hidden = !state.selectedCampaign || !state.allowMutations || state.snapshot?.engine?.mode !== "minimal" || (query === "steer-study" && (state.snapshot?.engine?.remaining_seconds <= 0 || ["completed", "cancelled", "budget_exhausted"].includes(state.snapshot?.engine?.status)));
+    link.href = `/workspace?${query}=${encodeURIComponent(state.selectedCampaign || "")}`;
+  }
   const enabled = state.allowMutations;
   ui["pause-button"].disabled = !enabled || !controls.can_pause;
   ui["resume-button"].disabled = !enabled || !controls.can_resume;

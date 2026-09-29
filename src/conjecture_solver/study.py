@@ -43,6 +43,17 @@ def configure_parser(parser):
         type=Path,
         help="Validated starting package; supplied outputs are not evidence",
     )
+    parser.add_argument(
+        "--continue-from",
+        type=Path,
+        help="Parent minimal study for a new phase with a fresh explicit budget",
+    )
+    parser.add_argument(
+        "--inherit-file",
+        action="append",
+        default=[],
+        help="Parent research-relative file to copy as context",
+    )
     parser.add_argument("--state-dir", type=Path)
     parser.add_argument("--capabilities", type=Path)
     parser.add_argument("--wall-seconds", type=float, default=3600)
@@ -174,6 +185,13 @@ def _run(args):
 
     execution_probe = require_execution_backend(args.execution_backend)
     hypothesis = args.hypothesis_file.read_text() if args.hypothesis_file else None
+    parent = getattr(args, "continue_from", None)
+    if parent:
+        if mode != "minimal" or (args.campaign / "research.json").exists():
+            raise ValueError("Continuation requires a new minimal study")
+        prior = ResearchService(parent)
+        hypothesis = hypothesis or prior.manifest["hypothesis"]
+        args.capabilities = args.capabilities or prior.manifest.get("capabilities")
     if mode == "minimal":
         if not (args.campaign / "research.json").exists() and hypothesis is None:
             raise ValueError("New study requires --hypothesis-file")
@@ -194,6 +212,10 @@ def _run(args):
             service.freeze_requirements(json.loads(args.requirements_file.read_text()))
         if getattr(args, "guided_commission", None):
             service.install_guidance(args.guided_commission)
+        if parent:
+            from .research_continuation import attach
+
+            attach(service, parent, getattr(args, "inherit_file", []))
         supervisor = ResearchSupervisor(args)
     else:
         from .campaign_kernel import CampaignKernel
@@ -297,7 +319,13 @@ def _run(args):
     signal.signal(signal.SIGTERM, lambda *_: setattr(supervisor, "cancelled", True))
     signal.signal(signal.SIGINT, lambda *_: setattr(supervisor, "cancelled", True))
     with TerminalProgress(args.campaign, quiet=getattr(args, "quiet", False)):
-        return supervisor.run()
+        try:
+            return supervisor.run()
+        finally:
+            if mode == "minimal":
+                from .research_audit import write_report
+
+                write_report(supervisor.service, supervisor.state)
 
 
 def main(argv=None):

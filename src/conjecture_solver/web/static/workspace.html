@@ -342,6 +342,11 @@
               ><button id="autonomous-mode">Autonomous research</button>
             </div>
           </div>
+          <div id="continuation-chat-context" class="continuation-chat-context" hidden>
+            <a id="continuation-parent-link">Continuing an earlier investigation ↗</a>
+            <span>Discuss the next phase in chat, then review its brief.</span>
+            <button id="continuation-chat" class="secondary" type="button">Prepare with agent</button>
+          </div>
           <wa-split-panel
             id="research-layout"
             class="project-layout"
@@ -490,7 +495,7 @@
                   ></p>
                 </div>
                 <div id="prepared-brief" class="panel prepared-brief" hidden>
-                  <p class="eyebrow">YOUR AGENT’S PROPOSAL</p>
+                  <p id="prepared-heading" class="eyebrow">YOUR AGENT’S PROPOSAL</p>
                   <h2 id="prepared-question"></h2>
                   <div id="prepared-details"></div>
                   <p class="field-help">

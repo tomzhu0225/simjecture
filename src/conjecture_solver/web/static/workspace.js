@@ -419,6 +419,9 @@ function renderProject(force = false) {
   $("brief-editor").hidden = !pendingBrief;
   $("new-study").hidden = !p.studies.length || preparing || !!pendingBrief;
   $("new-study").disabled = p.running || state.readonly;
+  $("continuation-chat-context").hidden = !p.continuation_draft;
+  if (p.continuation_draft) $("continuation-parent-link").href = `/monitor?campaign=${encodeURIComponent(p.continuation_draft.campaign)}`;
+  $("continuation-chat").disabled = p.running || state.readonly;
   $("study-stage").textContent = pendingBrief
     ? "Proposal ready — review it below, then start research."
     : preparing
@@ -429,7 +432,17 @@ function renderProject(force = false) {
   if (p.brief) {
     const b = p.brief;
     $("prepared-question").textContent = b.question;
+    $("prepared-heading").textContent = p.continuation_draft ? "CONTINUATION PROPOSAL" : "YOUR AGENT’S PROPOSAL";
     $("prepared-details").replaceChildren();
+    if (p.continuation_draft) {
+      const parent = el("a", `Continuation phase · ${p.continuation_draft.files.length} selected files · parent study ↗`);
+      parent.href = `/monitor?campaign=${encodeURIComponent(p.continuation_draft.campaign)}`;
+      $("prepared-details").append(parent);
+    }
+    const agentRow = el("p", `Agent: ${p.agent?.backend || "choose agent"} / ${p.agent?.model || "choose model"}`, "field-help");
+    const changeAgent = el("button", "Change agent / model", "secondary"); changeAgent.type = "button";
+    changeAgent.onclick = () => { mode("interactive"); $("conversation-backend").focus(); };
+    agentRow.append(document.createTextNode(" "), changeAgent); $("prepared-details").append(agentRow);
     for (const [label, value] of [
       ["Evidence", b.success_criteria],
       ["Constraints", b.constraints || "No additional constraints specified."],
@@ -703,7 +716,10 @@ async function send() {
 }
 async function assistInstallation(tool) {
   const flash = tool.id === "flash";
-  const guidance = flash
+  const fusion = ["solps", "jorek", "dina"].includes(tool.id);
+  const guidance = fusion
+    ? `Read the iter-pack skill and references/${tool.id}.md with read_skill. Use upstream source, documentation and supplied reference cases. Check the host's CPU, memory and dependencies, preserve the chosen source revision and build configuration, and distinguish a successful build from a verified numerical demonstration. Do not substitute a different solver or advertise an untested runtime as ready.`
+    : flash
     ? "Read the flash-mhd skill and references/local-deployment.md and references/private-install.md with read_skill. Ask which FLASH application, physics and dimensions I need, and where my supplied source folder or archive is. Do not assume a generic FLASH executable or an island-coalescence build suits every application."
     : "Read the warpx skill and references/local-cuda-deployment.md with read_skill. Check the GPU, driver, CUDA compatibility and build resources. Ask which dimensions I need: the bundled CUDA recipe targets 2D. Use the documented pinned source/bootstrap when appropriate; do not require me to supply a checkout if the documented source can be downloaded.";
   const prompt = `Help me install ${tool.name} on this execution machine. ${guidance}
@@ -894,6 +910,19 @@ async function refreshTools() {
       actions.append(check);
     }
     card.append(actions);
+    if (tool.id === "iter-pack" && tool.installed) {
+      const demo = el("button", "Run demo", "secondary");
+      demo.disabled = tool.state === "working" || state.readonly;
+      demo.onclick = () => action(demo, async () => {
+        const result = await api("tool-demo", { name: tool.id });
+        await reloadProjects();
+        mode("interactive");
+        await openProject(result.project);
+        await monitor.open(result.simulation.id);
+        toast("Diagnostic demo started. Its plots and results will appear in Simulations.");
+      });
+      actions.append(demo);
+    }
     if (tool.log || Object.keys(tool.report || {}).length) {
       const details = el("details");
       details.dataset.key = `installation-${tool.id}`;
@@ -1065,7 +1094,25 @@ async function renderStudies() {
     const monitor = el("a", "Open experiment monitor ↗", "secondary");
     monitor.href = `/monitor?campaign=${study.campaign}`;
     controls.append(monitor);
+    if (data.live?.mode === "minimal") {
+      for (const [kind, label] of [["continue", "Continue investigation"], ["steer", "Send guidance"]]) {
+        if (kind === "steer" && (data.live.remaining <= 0 || ["completed", "cancelled", "budget_exhausted"].includes(status))) continue;
+        const button = el("button", label, "secondary"); button.disabled = state.readonly;
+        button.onclick = () => action(button, () => openResearchAction(study.campaign, kind)); controls.append(button);
+      }
+    }
     card.append(controls);
+    if (study.parent_campaign) {
+      const parent = el("a", "Continues an earlier study ↗", "field-help"); parent.href = `/monitor?campaign=${encodeURIComponent(study.parent_campaign)}`; card.append(parent);
+    }
+    if (data.steering?.length) {
+      const notes = el("details"); notes.dataset.key = `steering-${study.campaign}`; notes.open = openDetails.has(notes.dataset.key);
+      notes.append(el("summary", `Operator guidance (${data.steering.filter(n => !n.delivered_at).length} queued)`));
+      for (const note of data.steering) {
+        notes.append(el("p", `${note.delivered_at ? "Included at agent checkpoint" : "Queued"} · ${new Date(note.created_at * 1000).toLocaleString()}`, "field-help"), el("p", note.message));
+      }
+      card.append(notes);
+    }
     const findings = el("div", undefined, "study-findings");
     for (const review of report.reviews || [])
       if (review.verdict) {
@@ -1375,6 +1422,8 @@ $("grill-me").onclick = () =>
   action($("grill-me"), () => prepareStudy("interview"));
 $("draft-study").onclick = () =>
   action($("draft-study"), () => prepareStudy("draft"));
+$("continuation-chat").onclick = () =>
+  action($("continuation-chat"), () => prepareStudy("continuation"));
 $("revise-study").onclick = () => {
   mode("interactive");
   $("chat-input").value = "I'd like to refine the proposed study: ";
@@ -1517,7 +1566,16 @@ setInterval(async () => {
     polling = false;
   }
 }, 2000);
-boot().catch((error) => toast(error.message, true));
+boot().then(async () => {
+  const query = new URLSearchParams(location.search);
+  const campaign = query.get("continue-study") || query.get("steer-study");
+  if (campaign) {
+    const kind = query.has("continue-study") ? "continue" : "steer";
+    const url = new URL(location.href); url.searchParams.delete("continue-study"); url.searchParams.delete("steer-study");
+    history.replaceState(null, "", url);
+    await openResearchAction(campaign, kind);
+  }
+}).catch((error) => toast(error.message, true));
 
 $("cancel-delete").onclick = () => $("delete-dialog").close();
 $("delete-form").onsubmit = async (event) => {
@@ -1559,3 +1617,56 @@ $("theme-toggle").onclick = () => {
 };
 window.addEventListener("workspace-theme", updateThemeToggle);
 updateThemeToggle();
+
+// Shared entry point from a study card or a directly opened CLI study monitor.
+async function openResearchAction(campaign, kind) {
+  if (state.readonly) throw Error("This workspace is read-only");
+  const continuing = kind === "continue";
+  const preview = continuing ? await api(`continuation-preview?id=${encodeURIComponent(campaign)}`) : null;
+  const dialog = el("dialog", undefined, "research-action-dialog");
+  const form = el("form");
+  form.append(el("h2", continuing ? "Continue investigation" : "Send guidance"));
+  form.append(el("p", continuing
+    ? "Prepare a linked phase with a new budget. The previous study stays unchanged. Selected files are snapshotted at launch; earlier results keep their original status. Review the brief and model before starting."
+    : "Guidance reaches the agent at its next checkpoint. It does not change the deadline or existing experiment contracts. Use Continue investigation for a new question or requirements.", "field-help"));
+  const label = el("label", continuing ? "What should the next phase investigate?" : "Guidance for the agent");
+  const message = el("textarea");
+  message.required = !continuing; message.maxLength = 8000; message.rows = 6;
+  label.append(message); form.append(label);
+  if (continuing) form.append(el("p", "Optional when preparing with an agent: discuss the next direction in chat, then review the agent’s brief before launch.", "field-help"));
+  const hours = el("input"); hours.type = "number"; hours.min = "0.01"; hours.max = "168"; hours.step = "0.01"; hours.value = "1";
+  const selection = [];
+  if (continuing) {
+    const budget = el("label", "New wall-time budget (hours)"); budget.append(hours); form.append(budget);
+    const files = el("details"); files.append(el("summary", `Working files to inherit (${preview.files.length} available)`));
+    const list = el("div", undefined, "inherit-file-list");
+    preview.files.forEach((file, i) => {
+      const row = el("label"); const check = el("input"); check.type = "checkbox"; check.checked = i < 64;
+      selection.push([check, file.path]); row.append(check, document.createTextNode(`${file.path} · ${bytes(file.bytes)}`)); list.append(row);
+    });
+    files.append(list); form.append(files);
+  }
+  const error = el("p", "", "form-error"); error.setAttribute("role", "alert"); form.append(error);
+  const controls = el("div", undefined, "study-controls");
+  const cancel = el("button", "Cancel", "secondary"); cancel.type = "button"; cancel.onclick = () => dialog.close();
+  const submit = el("button", continuing ? "Prepare directly" : "Send guidance"); submit.type = "submit"; submit.value = "direct";
+  const withAgent = continuing ? el("button", "Prepare with agent", "secondary") : null;
+  if (withAgent) { withAgent.type = "submit"; withAgent.value = "agent"; }
+  controls.append(cancel, submit); if (withAgent) controls.append(withAgent); form.append(controls); dialog.append(form); document.body.append(dialog);
+  const key = crypto.randomUUID();
+  form.onsubmit = async (event) => {
+    event.preventDefault(); submit.disabled = true; if (withAgent) withAgent.disabled = true;
+    const approach = event.submitter?.value || "direct";
+    try {
+      if (continuing) {
+        const result = await api("prepare-continuation", {campaign, project: state.project?.id,
+          approach, guidance: message.value, hours: Number(hours.value), files: selection.filter(([c]) => c.checked).map(([,p]) => p)});
+        dialog.close(); await reloadProjects(); await openProject(result.project); mode(result.view || "autonomous"); toast(result.preparation_error || result.message, !!result.preparation_error);
+      } else {
+        await api("steer-study", {campaign, message: message.value, request_key: key});
+        dialog.close(); toast("Guidance queued for the next agent checkpoint."); state.studyRevision = ""; await renderStudies();
+      }
+    } catch (e) { error.textContent = e.message; submit.disabled = false; if (withAgent) withAgent.disabled = false; }
+  };
+  dialog.addEventListener("close", () => dialog.remove()); dialog.showModal(); message.focus();
+}

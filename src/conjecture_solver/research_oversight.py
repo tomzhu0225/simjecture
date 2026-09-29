@@ -189,8 +189,12 @@ SCHEMA:
         )
 
     def run_oversight(self, method=None):
+        from .research_continuation import steering
+
         now = time.time()
         if self.boundary():
+            return
+        if method is None and now < self.state.get("oversight_retry_after", 0):
             return
         last = self.state.get("last_oversight_at", self.state.get("started_at", now))
         streak = self.state.get("no_progress_streak", 0)
@@ -200,6 +204,7 @@ SCHEMA:
         packet = dict(
             original_hypothesis=self.service.manifest["hypothesis"],
             operator_protocol=self.service.manifest.get("operator_protocol"),
+            operator_steering=steering(self.service.root),
             requirements=self.service.manifest.get("requirements", {}),
             guided_commissioning=self.service.manifest.get("guided_commissioning"),
             method=method,
@@ -230,9 +235,15 @@ SCHEMA:
             self.state["oversight_feedback"] = (
                 f"Independent methods/progress review needs retry: {error}"
             )
+            failures = (method or self.state).get("review_failures", 0) + 1
+            delay = min(1800, 120 * 2 ** min(failures - 1, 4))
             if method:
-                method["retry_after"] = time.time() + 120
+                method["review_failures"] = failures
+                method["retry_after"] = time.time() + delay
                 put(self.service.root / "methods" / (method["id"] + ".json"), method)
+            if method is None:
+                self.state["review_failures"] = failures
+                self.state["oversight_retry_after"] = time.time() + delay
             self.state["last_oversight_at"] = now
             self.event("oversight_invalid", error=str(error))
             self.save()
@@ -250,6 +261,8 @@ SCHEMA:
             )
             put(self.service.root / "methods" / (method["id"] + ".json"), current)
         self.state["last_oversight_at"] = time.time()
+        self.state["review_failures"] = 0
+        self.state.pop("oversight_retry_after", None)
         self.state["oversight_feedback"] = verdict
         self.event("research_oversight", method=method["id"] if method else None, verdict=verdict)
         self.save()

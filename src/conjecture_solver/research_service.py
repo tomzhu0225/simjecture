@@ -77,6 +77,10 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
         self.manifest = json.loads((self.root / "research.json").read_text())
         self.work = self.root / "research"
         self.verify_guidance()
+        if self.manifest.get("continuation"):
+            from .research_continuation import verify
+
+            verify(self)
 
     @classmethod
     def create(
@@ -341,9 +345,12 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
                 shutil.copyfile(self._source(relative), target)
                 if sha(target) != expected:
                     raise ValueError("Input changed while snapshotting")
+            from .research_continuation import steering
+
             record = dict(
                 id=identifier,
                 status="queued",
+                operator_guidance_ids=[r["id"] for r in steering(self.root)],
                 created_at=time.time(),
                 timeout=min(timeout, self.manifest["deadline"] - time.time()),
                 workspace_limit_bytes=workspace_limit,
@@ -499,6 +506,8 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
         }
 
     def packet(self, request, *, include_history=True):
+        from .research_continuation import steering
+
         claim = request["claim"]
         if self.manifest["schema_version"] >= 2 and request["disposition"] == "supported":
             challenge = request.get("challenge")
@@ -526,6 +535,7 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
             ),
             original_hypothesis=self.manifest["hypothesis"],
             operator_protocol=self.manifest.get("operator_protocol"),
+            operator_steering=steering(self.root),
             protocol_sha256=self.manifest.get("protocol_sha256"),
             requirements=self.manifest.get("requirements", {}),
             guided_commissioning=self.manifest.get("guided_commissioning"),

@@ -5,10 +5,10 @@
 On Linux or inside an existing WSL distribution:
 
 ```bash
-curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.2rc2/install.sh | bash
+curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.2/install.sh | bash
 ```
 
-This command explicitly selects preview **0.5.2rc2**. Stable **0.5.1** remains unchanged.
+This command selects stable **0.5.2**. Existing research data and older program versions are preserved.
 
 No Git, Python environment or CLI agent setup is required in advance. The bootstrap
 fetches the versioned workspace bundle and verifies its SHA-256 checksum, installs uv
@@ -31,7 +31,7 @@ remove older versions or research outputs.
 To install without starting, or choose a different web port:
 
 ```bash
-curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.2rc2/install.sh | bash -s -- --no-start
+curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.2/install.sh | bash -s -- --no-start
 ~/simjecture/start-workspace --port 8765
 ```
 

@@ -45,7 +45,20 @@ def study_status(root):
     started = manifest.get("created_at") or state.get("started_at", now)
     deadline = state.get("deadline", manifest.get("deadline", now))
     status = state.get("status", "initialized")
-    elapsed_end = now if status == "running" else state.get("updated_at", now)
+    recorded_status = status
+    if deadline <= now and status not in {"completed", "cancelled"}:
+        status = "budget_exhausted"
+    elif status == "running":
+        from .mvp_launch import load_supervisor_record, process_identity_matches
+
+        identity = load_supervisor_record(root)
+        if identity and not process_identity_matches(identity):
+            status = "interrupted"
+    elapsed_end = (
+        min(now, deadline)
+        if status in {"running", "budget_exhausted"}
+        else state.get("updated_at", now)
+    )
     counts = Counter(e.get("status", "unknown") for e in experiments)
     activity = state.get("activity", "Starting backend")
     if state.get("waiting_for"):
@@ -89,6 +102,8 @@ def study_status(root):
         backend=launch.get("backend", state.get("backend", "unknown")),
         model=launch.get("model", state.get("model", "unknown")),
         status=status,
+        recorded_status=recorded_status,
+        budget_expired=deadline <= now,
         activity=activity,
         round=state.get("round", 0),
         elapsed=max(0, elapsed_end - started),

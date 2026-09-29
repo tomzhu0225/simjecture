@@ -33,6 +33,7 @@ ATOMEC_CAPABILITY = "atomec-1.4.0"
 SINGULARITY_EOS_CAPABILITY = "singularity-eos-1.12.1"
 M_ANEOS_CAPABILITY = "m-aneos-1.0"
 OPTAB_CAPABILITY = "optab-1.3.1"
+ITER_PACK_CAPABILITY = "iter-pack-1.0"
 PINNED_WARPX_REVISION = "312d507407a1bf6f01ae43fb41b5c3a3700d053c"
 PINNED_ATOMEC_REVISION = "4b05849a1bcf6a9d682673c360ec2ebfb4eceab3"
 PINNED_SINGULARITY_EOS_REVISION = "760ac3f8e106addc13dad8a47b9d4ad75e44ea48"
@@ -42,6 +43,7 @@ PRIVATE_ROOT_ENV = "SIMJECTURE_PRIVATE_ROOT"
 FLASH_BOOTSTRAP_SCRIPT = "skills/flash-mhd/scripts/bootstrap_flash.sh"
 
 _CAPABILITY_CONFIGS = {
+    ITER_PACK_CAPABILITY: "iter-pack-1.0.json",
     WARPX_CPU_CAPABILITY: "warpx-cpu-26.07.json",
     WARPX_CUDA_CAPABILITY: "warpx-cuda-openpmd-26.07.json",
     FLASH_MHD_CAPABILITY: "flash-island-coalescence-resistive-mhd-4.8.json",
@@ -83,6 +85,7 @@ def _run_install_command(command, *, capture_output=False):
 
 
 class DeploymentProfile(StrEnum):
+    ITER_PACK = "iter-pack"
     CORE = "core"
     WARPX_CPU = "warpx-cpu"
     WARPX_CUDA = "warpx-cuda"
@@ -94,6 +97,7 @@ class DeploymentProfile(StrEnum):
 
 
 _PROFILE_BY_CAPABILITY = {
+    ITER_PACK_CAPABILITY: DeploymentProfile.ITER_PACK,
     WARPX_CPU_CAPABILITY: DeploymentProfile.WARPX_CPU,
     WARPX_CUDA_CAPABILITY: DeploymentProfile.WARPX_CUDA,
     FLASH_MHD_CAPABILITY: DeploymentProfile.FLASH,
@@ -103,6 +107,7 @@ _PROFILE_BY_CAPABILITY = {
     OPTAB_CAPABILITY: DeploymentProfile.OPTAB,
 }
 _MISSING_RUNTIME_REMEDY = {
+    ITER_PACK_CAPABILITY: "Run `simjecture install iter-pack` for diagnostics and IMAS support.",
     FLASH_MHD_CAPABILITY: (
         "Obtain FLASH from the official FLASH Center under its license, "
         "register the local runtime described by "
@@ -130,6 +135,7 @@ _MISSING_RUNTIME_REMEDY = {
     ),
 }
 _PREFLIGHT_REMEDY = {
+    ITER_PACK_CAPABILITY: "Inspect the report; run `simjecture install iter-pack --repair`.",
     WARPX_CPU_CAPABILITY: (
         "Inspect the runtime and rerun the CPU profile installer with --repair."
     ),
@@ -167,6 +173,14 @@ class _BootstrapSpec:
 
 
 _BOOTSTRAP_SPECS = {
+    DeploymentProfile.ITER_PACK: _BootstrapSpec(
+        capability=ITER_PACK_CAPABILITY,
+        script="skills/iter-pack/scripts/bootstrap.sh",
+        managed_marker="share/build-record.json",
+        pinned_revision="",
+        source_label="ITER diagnostics and data pack",
+        verify_revision=False,
+    ),
     DeploymentProfile.ATOMEC: _BootstrapSpec(
         capability=ATOMEC_CAPABILITY,
         script="skills/eos/scripts/bootstrap_atomec.sh",

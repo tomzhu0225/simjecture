@@ -63,6 +63,7 @@ def ensure_micromamba(runtime_root: Path, *, dry_run=False) -> str:
 # Package files are shared through Micromamba's cache; separate environments
 # retain independent ABI constraints without downloading identical packages twice.
 RUNTIME_PACKAGES = {
+    "iter-pack": ["python=3.12", "pip", "git"],
     "cuda-toolkit": [
         "cuda-nvcc=12.4",
         "cuda-cudart-dev=12.4",

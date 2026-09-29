@@ -1,0 +1,8 @@
+{
+  "schema_version": "0.1.0",
+  "name": "iter-pack",
+  "version": "1.0.0",
+  "entrypoint": "SKILL.md",
+  "description": "Use CHERAB/Raysect synthetic diagnostics and IMAS data; prepare guided SOLPS-ITER, JOREK and DINA-PS runtimes with upstream examples",
+  "capability_names": ["iter-pack-1.0"]
+}
