@@ -209,7 +209,7 @@ root = pathlib.Path(request["root"])
 root.mkdir(parents=True,exist_ok=True)
 os.chdir(root)
 bundle = base64.b64decode(request["source"])
-digest = hashlib.sha256(bundle).hexdigest()
+digest = hashlib.sha256(bundle + request["package_version"].encode()).hexdigest()
 program = root / "programs" / digest
 program.mkdir(parents=True, exist_ok=True)
 source = program / "source"
@@ -253,7 +253,7 @@ if not (program / "install-complete").exists():
         subprocess.run([uv,"venv","--python","3.12","--python-preference","only-managed",str(venv)],
                        env=environment,check=True,stdout=sys.stderr,stderr=sys.stderr)
     subprocess.run([uv,"pip","install","--python",str(python),
-                    "simjecture[process,flash-demo]==0.5.3rc1"],env=environment,
+                    "simjecture[process,flash-demo]=="+request["package_version"]],env=environment,
                    check=True,stdout=sys.stderr,stderr=sys.stderr)
     subprocess.run([str(python), "-c",
       "import sysconfig,pathlib; pathlib.Path(sysconfig.get_paths()['purelib'],"
@@ -261,7 +261,8 @@ if not (program / "install-complete").exists():
       + repr("import sys; sys.path.insert(0, " + repr(str(source)) + ")\n") + ")"], check=True)
     subprocess.run([str(python),"-c","import numpy,h5py,psutil,pydantic"],check=True)
     (program / "install-complete").write_text(digest)
-print(json.dumps({"ok":True,"result":{"python":str(python),"source_sha256":digest}}))
+print(json.dumps({"ok":True,"result":{"python":str(python),
+                 "source_sha256":hashlib.sha256(bundle).hexdigest(),"program_sha256":digest}}))
 """
 
 
@@ -393,6 +394,8 @@ class MachineRegistry:
         return self.public(identifier)
 
     def prepare(self, identifier):
+        from importlib.metadata import version
+
         self._preparation_phase(identifier, "Connecting and inspecting the host")
         transport = self.transport(identifier)
         if transport.machine.kind == "ssh" and transport.machine.automatic_setup:
@@ -435,6 +438,7 @@ class MachineRegistry:
                 {
                     "root": transport.machine.root,
                     "source": base64.b64encode(source.getvalue()).decode(),
+                    "package_version": version("simjecture"),
                 },
                 timeout=600,
             )

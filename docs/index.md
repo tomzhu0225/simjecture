@@ -6,11 +6,15 @@ It accepts a natural-language hypothesis, lets an agent commission and use
 computational instruments, and preserves an independently inspectable path from
 proposal to claim disposition.
 
-This documentation describes the stable 0.5.2 release. The project
+This documentation covers stable 0.5.2 and the 0.5.3rc2 preview. The project
 began in computational plasma physics. The same evidence harness is now ready
 to extend to other simulation-gated fields. The software has completed real
 autonomous CPU and CUDA campaigns, but it does not claim unrestricted
 hypothesis solving or empirical closure.
+
+The **0.5.3rc2 preview** adds [SSH experiment workers](how-to/ssh-workers.md),
+automatic machine setup, live availability and refreshed research-tool details.
+See [preview scope and validation](testing/0.5.3rc2-acceptance.md).
 
 ## Choose a starting point
 
@@ -122,6 +126,7 @@ testing/rc2-installation-acceptance
 testing/rc3-continuation-acceptance
 testing/iter-pack-acceptance
 testing/0.5.3rc1-acceptance
+testing/0.5.3rc2-acceptance
 testing/native-api-adapter
 testing/ssh-workers-acceptance
 testing/mimo-flash-comparison

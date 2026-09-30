@@ -2,12 +2,11 @@
 
 This project follows semantic versioning. Dates use ISO 8601.
 
-## Unreleased — SSH experiment workers
+## 0.5.3rc2 (preview) — 2026-09-30
 
 - Polish Research tools with compact independent cards and a separate details
   panel. Keep paths, diagnostics and logs accessible without expanding grid rows;
   distinguish detected local builds from unavailable managed-runtime profiles.
-
 - Add standalone local/SSH headless numerical workers for minimal studies, with
   frozen runtime identities, CPU/RAM/GPU admission and asynchronous execution.
 - Preserve job identity across lost replies, SSH interruptions and coordinator
@@ -17,6 +16,8 @@ This project follows semantic versioning. Dates use ISO 8601.
 - Simplify SSH onboarding to address and password with automatic hardware/runtime
   detection, optional advanced settings, recorded agent setup commands and independent
   30-second availability heartbeats. Polish machine cards, jobs and mobile navigation.
+- Install the matching released package on headless workers instead of a fixed
+  older candidate.
 - Preserve pool selection when preparing continuation phases. Keep research agents
   and independent scientific review central; Simote remains optional.
 

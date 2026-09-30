@@ -20,29 +20,29 @@ guidance** actions in the study view and experiment monitor. Continue with a new
 budget and selected prior files, or send advisory guidance at the next checkpoint.
 See [continuation and steering](docs/how-to/continuation-steering.md).
 
-The **0.5.3rc1 preview** adds credit-exhaustion recovery, explicit
-instrument alternatives, evidence-preserving review context and request-level usage
-records, native DeepSeek tool-message continuity and the experimental **Simjecture
-Bench 0.1.0** task pack. The workspace sidebar includes **Benchmarks** to prepare
-CSV/RZ diagnostic tasks and independently grade delivered results. See
-[benchmark usage](docs/how-to/llm-bench.md), [model comparison pilot](docs/testing/mimo-flash-comparison.md)
-and [preview scope and validation](docs/testing/0.5.3rc1-acceptance.md).
+The **0.5.3rc2 preview** adds local/SSH experiment workers and refreshed research
+interfaces. In **Machines**, connect with an SSH address and password; hardware and
+worker setup are detected automatically, with optional advanced settings and agent
+preparation. Availability updates every 30 seconds. Minimal studies can dispatch
+parallel experiments with GPU reservations and recover existing jobs after SSH
+interruptions or coordinator restarts. Agents and independent review stay on the
+coordinator; Simote remains optional.
+
+Research tools now uses compact cards with build lists, diagnostics and logs in a
+separate Details panel. The preview also includes rc1's campaign audit repairs,
+request-level usage records, native DeepSeek tool-message continuity and experimental
+**Simjecture Bench 0.1.0**. See [SSH setup](docs/how-to/ssh-workers.md),
+[benchmark usage](docs/how-to/llm-bench.md), and
+[rc2 scope and validation](docs/testing/0.5.3rc2-acceptance.md).
 The stable installation commands below remain on 0.5.2.
 
-To try the preview, preserving existing research data:
+To try rc2, preserving existing research data:
 
 ```bash
-curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.3rc1/install.sh | bash
+curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.3rc2/install.sh | bash
 # Or install only the Python package:
-uv tool install 'simjecture[workspace,tui]==0.5.3rc1'
+uv tool install 'simjecture[workspace,tui]==0.5.3rc2'
 ```
-
-The development checkout also adds local/SSH **experiment workers**, with a visible
-**Machines** page, address/password onboarding, optional advanced settings, live
-30-second availability checks, agent-guided preparation, GPU reservations and
-durable recovery. Agents
-and scientific review remain on the coordinator. This is separate from the published
-rc1 preview; see [SSH workers](docs/how-to/ssh-workers.md).
 
 ## Install and open the workspace
 

@@ -1,8 +1,8 @@
 # Run experiments on local and SSH workers
 
-This development feature extends minimal-mode studies with an execution pool.
-It is not included in the published 0.5.3rc1 package. Run the development checkout
-on the coordinator to try it.
+Available from **0.5.3rc2**, execution pools extend minimal-mode studies with
+local and SSH numerical workers. Use the rc2 installer or matching Python package
+on the coordinator.
 
 One Simjecture workspace owns the research agent, hypothesis, methods, reviews,
 experiment receipts and deadline. Each selected machine runs a headless execution
@@ -61,7 +61,7 @@ new phase. Register the parent's machine IDs first when importing an external st
 
 ## Prepare through the CLI
 
-Install the development checkout with the `process` extra on the coordinator.
+Install `simjecture[process]==0.5.3rc2` on the coordinator.
 For a managed local worker, its Python environment also needs that extra.
 Create `node-a.json`, substituting your host, login, paths and capacity:
 

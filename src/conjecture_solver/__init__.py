@@ -5,6 +5,6 @@ from importlib.metadata import PackageNotFoundError, version
 try:
     __version__ = version("simjecture")
 except PackageNotFoundError:
-    __version__ = "0.5.3rc1"
+    __version__ = "0.5.3rc2"
 
 __all__ = ["__version__"]

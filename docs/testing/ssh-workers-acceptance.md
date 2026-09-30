@@ -1,6 +1,6 @@
-# SSH experiment workers: development acceptance
+# SSH experiment workers: acceptance
 
-Tested on 2026-09-30. This feature is unreleased and separate from 0.5.3rc1.
+Tested on 2026-09-30 and included in **0.5.3rc2**.
 Two operator-provided SSH hosts were used, each with two Tesla P40 GPUs and
 restricted Linux namespaces. Headless workers were prepared in dedicated directories
 under unprivileged service accounts. Existing research installations were preserved.

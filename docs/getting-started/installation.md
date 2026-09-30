@@ -10,6 +10,16 @@ curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.2/ins
 
 This command selects stable **0.5.2**. Existing research data and older program versions are preserved.
 
+For the **0.5.3rc2 preview**, including SSH workers and refreshed interfaces:
+
+```bash
+curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.3rc2/install.sh | bash
+```
+
+The preview installs beside older versions. It retains projects, provider settings
+and runtime directories. See [rc2 scope and checks](../testing/0.5.3rc2-acceptance.md)
+and [SSH worker setup](../how-to/ssh-workers.md).
+
 No Git, Python environment or CLI agent setup is required in advance. The bootstrap
 fetches the versioned workspace bundle and verifies its SHA-256 checksum, installs uv
 and Python 3.12 when needed, then installs the locked workspace dependencies. It starts
@@ -57,7 +67,8 @@ for configuration, build, registration and actual backend readiness checks.
 
 ### SSH servers
 
-The GUI and computations run on the SSH server. The installer prints a forwarding
+The workspace runs on the SSH server. Experiments run there by default; rc2 can
+select additional SSH workers through Machines. The installer prints a forwarding
 command; run it on your local computer, for example:
 
 ```bash

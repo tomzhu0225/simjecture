@@ -15,7 +15,7 @@ Principal command families:
 
 - `install`: idempotently provision or verify a selected runtime profile;
 - `machines`: register, prepare, check and inspect local/SSH numerical workers
-  (development checkout; [SSH guide](../how-to/ssh-workers.md));
+  (from 0.5.3rc2; [SSH guide](../how-to/ssh-workers.md));
 - `doctor`: inspect core and optional capability health, with JSON output;
 - `mvp`: natural-language sandbox campaign with claims and capabilities;
 - `status`: compact read-only snapshot of a durable MVP run directory;
