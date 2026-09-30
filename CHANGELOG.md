@@ -10,6 +10,9 @@ This project follows semantic versioning. Dates use ISO 8601.
   restarts; enforce worker deadlines and confirm descendant cancellation.
 - Add the Machines workspace page, visible study pool selection, placement and
   transport status, bounded read-only source access and verified artifact retrieval.
+- Simplify SSH onboarding to address and password with automatic hardware/runtime
+  detection, optional advanced settings, recorded agent setup commands and independent
+  30-second availability heartbeats. Polish machine cards, jobs and mobile navigation.
 - Preserve pool selection when preparing continuation phases. Keep research agents
   and independent scientific review central; Simote remains optional.
 

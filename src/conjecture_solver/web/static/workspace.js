@@ -742,106 +742,182 @@ Guide me through the missing decisions in plain language. Inspect prerequisites,
   );
 }
 
-function fillMachine(machine) {
-  state.editMachine = machine;
-  const config = machine.config || {};
-  for (const [id, value] of Object.entries({"machine-id":machine.id, "machine-label-input":machine.label,
-    "machine-kind":machine.kind, "machine-host":machine.host, "machine-port":machine.port || 22,
-    "machine-user":machine.user, "machine-root":machine.root, "machine-python":machine.python || "python3",
-    "machine-run-as":machine.run_as, "machine-identity":machine.identity_file,
-    "machine-known-hosts":machine.known_hosts, "machine-cpus":config.cpus || 2,
-    "machine-memory":config.memory_mb || 4096, "machine-max-jobs":config.max_jobs || 2,
-    "machine-gpus":(config.gpu_ids || []).join(","), "machine-capabilities":(config.capabilities || []).join("\n"),
-    "machine-execution":config.execution_backend || "bubblewrap"})) $(id).value = value ?? "";
-  $("machine-password").value = "";
-  $("machine-editor").open = true;
+const machineAddress = (m) => m.kind === "local" ? "This computer" : `${m.user ? m.user + "@" : ""}${m.host.includes(":") ? "[" + m.host + "]" : m.host}:${m.port}`;
+function machineState(record) {
+  if (record.preparation?.status === "working") return ["preparing", "Preparing"];
+  const live = record.availability;
+  if (live?.checked_at && Date.now()/1000 - live.checked_at > 75) return ["stale", "Last check stale"];
+  if (live?.status === "offline") return ["offline", "Offline"];
+  if (live?.status === "ready") return ["ready", "Online"];
+  if (record.preparation?.status === "failed") return ["setup_needed", "Setup needs attention"];
+  if (live?.online) return ["setup_needed", "Needs setup"];
+  if (record.probe?.execution?.available && !record.error) return ["stale", "Checking…"];
+  return ["setup_needed", "Not prepared"];
 }
+function machineGlyph() {
+  const span = el("span", undefined, "machine-glyph");
+  span.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="18" height="7" rx="2"/><rect x="3" y="14" width="18" height="7" rx="2"/><path d="M7 6.5h.01M7 17.5h.01M12 6.5h5M12 17.5h5" stroke-linecap="round"/></svg>';
+  return span;
+}
+function fillMachine(machine = null, hasPassword = false) {
+  state.editMachine = machine;
+  const automatic = machine?.automatic_setup;
+  const config = machine?.config || {};
+  const fields = automatic || (machine ? {...config, root:machine.root,run_as:machine.run_as} : {});
+  $("machine-editor-title").textContent = machine ? "Machine settings" : "Add a machine";
+  $("machine-address").value = machine?.kind === "ssh" ? machineAddress(machine) : "";
+  $("machine-password").value = "";
+  $("machine-password").placeholder = hasPassword ? "Leave empty to keep the saved password" : "Leave empty to use your SSH key or agent";
+  for (const [id, value] of Object.entries({"machine-id":machine?.id, "machine-label-input":machine?.label,
+    "machine-kind":machine?.kind || "ssh", "machine-root":fields.root, "machine-python":machine?.python || "",
+    "machine-run-as":fields.run_as, "machine-identity":machine?.identity_file,
+    "machine-known-hosts":automatic ? "" : machine?.known_hosts, "machine-cpus":fields.cpus,
+    "machine-memory":fields.memory_mb, "machine-max-jobs":fields.max_jobs,
+    "machine-gpus":fields.gpu_ids == null ? "" : fields.gpu_ids.length ? fields.gpu_ids.join(",") : "none",
+    "machine-capabilities":(fields.capabilities || []).join("\n"), "machine-execution":fields.execution_backend || "auto"})) $(id).value = value ?? "";
+  $("machine-advanced").open = false;
+  $("machine-form-error").hidden = true;
+  $("save-machine").textContent = machine ? "Save settings" : "Connect & prepare";
+  updateMachineKind();
+  $("machine-dialog").showModal();
+}
+function updateMachineKind() {
+  const local = $("machine-kind").value === "local";
+  for (const id of ["machine-address", "machine-password"]) {
+    $(id).closest("label").hidden = local;
+    $(id).closest("label").nextElementSibling.hidden = local;
+  }
+  $("machine-address").required = !local;
+}
+$("machine-kind").onchange = updateMachineKind;
+$("add-machine").onclick = () => fillMachine();
+for (const id of ["close-machine-editor", "cancel-machine-editor"]) $(id).onclick = () => $("machine-dialog").close();
+$("machine-dialog").addEventListener("click", e => {if (e.target === $("machine-dialog")) {const r=e.target.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)e.target.close();}});
+$("close-machine-jobs").onclick = () => $("machine-jobs-panel").hidden = true;
 function renderMachineSelection() {
   const select = $("study-machines"), saved = state.project?.brief?.machine_ids || [];
   const selected = state.briefDirty ? [...select.selectedOptions].map(o => o.value) : saved;
   select.replaceChildren(new Option("This host · existing local launcher", ""));
   for (const record of state.machines) {
-    const machine = record.machine, ready = record.probe?.execution?.available === true;
-    const option = new Option(`${machine.label || machine.id} · ${ready ? "ready" : "prepare in Machines"}`, machine.id);
-    option.disabled = !ready;
-    option.selected = selected.includes(machine.id);
-    select.add(option);
+    const machine = record.machine, [kind,label] = machineState(record);
+    // Retain an existing selection through a temporary outage; launch rechecks it.
+    const option = new Option(`${machine.label || machine.id} · ${label.toLowerCase()}`, machine.id);
+    option.disabled = !["ready","stale"].includes(kind) && !selected.includes(machine.id);
+    option.selected = selected.includes(machine.id); select.add(option);
   }
   select.options[0].selected = !selected.some(Boolean);
 }
-async function refreshMachines() {
-  const data = await api("machines"); state.machines = data.machines;
-  renderMachineSelection();
-  $("register-local-worker").disabled = state.readonly;
-  $("register-local-worker").onclick = () => {
-    fillMachine(data.local_defaults); $("machine-form").scrollIntoView({behavior:"smooth"});
-  };
-  if (state.view !== "machines") return;
-  const grid = $("machine-grid"); grid.replaceChildren();
-  for (const record of data.machines) {
-    const machine = record.machine, card = el("article", undefined, "tool-card");
-    card.dataset.machine = machine.id;
-    const working = record.preparation?.status === "working";
-    card.append(el("h2", machine.label || machine.id), el("p", `${machine.id} · ${machine.kind === "ssh" ? `${machine.user ? machine.user + "@" : ""}${machine.host}:${machine.port}` : "local"}`));
-    card.append(el("p", working ? "Preparing worker…" : record.preparation?.status === "failed" ? `Preparation failed: ${record.preparation.error}` : record.error ? `Readiness check failed: ${record.error}` : record.probe?.execution?.available ? "Execution ready · scientific qualification is specific to each study" : "Not prepared"));
-    card.append(el("p", `${machine.config.cpus} CPUs · ${machine.config.memory_mb} MiB RAM · ${machine.config.gpu_ids.length} GPUs · ${machine.config.max_jobs} concurrent jobs`));
-    const capabilities = Object.keys(record.probe?.capabilities || {});
-    if (capabilities.length) card.append(el("p", `Instruments: ${capabilities.join(", ")}`));
-    const actions = el("div", undefined, "tool-actions");
-    for (const [label, endpoint] of [["Prepare worker", "prepare-machine"], ["Check readiness", "check-machine"]]) {
-      const button = el("button", label, "secondary"); button.disabled = state.readonly || working;
-      button.onclick = () => action(button, async () => {
-        button.textContent = "Working…";
-        try {await api(endpoint, {id:machine.id}); await refreshMachines();}
-        finally {button.textContent = label;}
-      }); actions.append(button);
+async function assistMachine(machine) {
+  const request = await api("prepare-machine-chat", {id:machine.id});
+  await reloadProjects(); mode("interactive"); await openProject(request.project);
+  $("chat-input").value = request.prompt; $("chat-input").dispatchEvent(new Event("input")); $("chat-input").focus();
+  toast("Setup conversation ready. Choose your agent and send the request.");
+}
+async function showMachineJobs(machine) {
+  const status = await api(`machine-jobs?id=${encodeURIComponent(machine.id)}`);
+  $("machine-jobs-panel").hidden = false;
+  $("machine-jobs-title").textContent = `${machine.label || machine.id} · jobs`;
+  $("machine-jobs-report").textContent = JSON.stringify(status,null,2);
+  const list=$("machine-jobs-list");list.replaceChildren();$("machine-job-controls").replaceChildren();
+  const jobs=[...(status.jobs || [])].sort((a,b)=> (b.created_at || 0)-(a.created_at || 0));
+  for (const job of jobs.slice(0,15)) {
+    const row=el("div",undefined,"machine-job-row");row.append(el("code",job.id.slice(-12)),el("span",job.status.replaceAll("_"," ")));
+    if (["staging","queued","running","cancelling"].includes(job.status)) {
+      const stop=el("button",job.status === "cancelling" ? "Stopping…" : "Cancel","quiet");stop.disabled=state.readonly;
+      stop.onclick=()=>action(stop,async()=>{await api("cancel-machine-job",{id:machine.id,job:job.id});await showMachineJobs(machine);});row.append(stop);
+    } else row.append(el("span",job.assigned_gpu_ids?.length ? `GPU ${job.assigned_gpu_ids.join(",")}` : "CPU"));
+    list.append(row);
+  }
+  if(!jobs.length)list.append(el("p","No experiments on this worker yet.","field-help"));
+  $("machine-jobs-panel").scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+function renderMachines(data) {
+  if(state.view!=="machines")return;
+  const revision=JSON.stringify(data.machines);if(revision===state.machineRevision)return;state.machineRevision=revision;
+  const grid=$("machine-grid");grid.replaceChildren();
+  let online=0,gpus=0;
+  for(const record of data.machines){
+    const machine=record.machine,[kind,label]=machineState(record),live=record.availability;
+    if(kind==="ready")online++;gpus+=machine.config.gpu_ids.length;
+    const card=el("article",undefined,"execution-machine");card.dataset.machine=machine.id;
+    const top=el("div",undefined,"machine-card-top"),heading=el("div",undefined,"machine-card-name");
+    heading.append(el("h2",machine.label || machine.id),el("div",machineAddress(machine),"machine-address-line"));
+    top.append(machineGlyph(),heading,el("span",label,`machine-status ${kind}`));card.append(top);
+    const resources=el("div",undefined,"machine-resources");
+    for(const [value,title] of [[machine.config.cpus,"CPU cores"],[`${+(machine.config.memory_mb/1024).toFixed(1)} GB`,"RAM budget"],[machine.config.gpu_ids.length,"GPUs"]]){
+      const metric=el("div",undefined,"machine-resource");metric.append(el("strong",String(value)),el("span",title));resources.append(metric);
+    }card.append(resources);
+    const instruments=el("div",undefined,"machine-instruments");
+    for(const name of Object.keys(record.probe?.capabilities || {})){
+      const title=name.startsWith("flash") ? "FLASH" : name.startsWith("warpx") ? `WarpX${name.includes("cuda") ? " · CUDA" : ""}` : name;
+      const pill=el("span",title,"machine-instrument");pill.title=name;instruments.append(pill);
     }
-    const jobs = el("button", "Jobs", "quiet");
-    jobs.onclick = () => action(jobs, async () => {
-      const status = await api(`machine-jobs?id=${encodeURIComponent(machine.id)}`);
-      $("machine-jobs-report").hidden = false;
-      $("machine-jobs-report").textContent = JSON.stringify(status, null, 2);
-      $("machine-job-controls").replaceChildren();
-      for (const job of status.jobs || []) {
-        if (!["staging", "queued", "running", "cancelling"].includes(job.status)) continue;
-        const stop = el("button", `Cancel ${job.id.slice(-12)} · ${job.status}`, "secondary");
-        stop.disabled = state.readonly;
-        stop.onclick = () => action(stop, async () => {
-          const receipt = await api("cancel-machine-job", {id:machine.id, job:job.id});
-          const terminal = ["cancelled", "timed_out", "succeeded", "failed", "interrupted"].includes(receipt.status);
-          stop.textContent = receipt.cancellation_confirmed ? "Cancellation confirmed" :
-            terminal ? `Job ${receipt.status}` : "Stopping · retry cancellation";
-          stop.disabled = terminal;
-        });
-        $("machine-job-controls").append(stop);
-      }
-    }); actions.append(jobs);
-    const edit = el("button", "Edit", "quiet"); edit.disabled = state.readonly;
-    edit.onclick = () => fillMachine(machine); actions.append(edit);
-    card.append(actions);
-    if (record.preparation?.log) {
-      const details = el("details"); details.append(el("summary", "Preparation log"), el("pre", record.preparation.log)); card.append(details);
+    if(!instruments.children.length)instruments.append(el("span","Your agent can prepare scientific tools.","no-instruments"));card.append(instruments);
+    const runtime=el("div",undefined,"machine-runtime");
+    const backend=machine.config.execution_backend==="proot-cooperative" ? "Cooperative runtime" : "Linux sandbox";
+    const active=live?.active_jobs || 0;
+    runtime.append(el("span",`${backend} · ${active}/${machine.config.max_jobs} jobs`));
+    const stamp=el("span",live?.checked_at ? "just checked" : "Awaiting first check");
+    if(live?.checked_at){stamp.dataset.idleSince=live.checked_at;stamp.title=`Last checked ${new Date(live.checked_at*1000).toLocaleString()} · ${live.latency_ms ?? "?"} ms`;}
+    runtime.append(stamp);card.append(runtime);
+    if(kind==="preparing")card.append(el("p",record.preparation.phase || "Detecting hardware and preparing the worker…","machine-note"));
+    const error=kind==="offline" ? live?.error : record.preparation?.status==="failed" ? record.preparation.error : record.error;
+    if(error){const note=el("details",undefined,"machine-note");note.append(el("summary",kind==="offline" ? "Connection unavailable · details" : "Setup needs attention · details"),el("pre",error));card.append(note);}
+    const actions=el("div",undefined,"machine-card-bottom");
+    const jobs=el("button","Jobs","secondary");jobs.disabled=kind!=="ready" && kind!=="stale";jobs.onclick=()=>action(jobs,()=>showMachineJobs(machine));actions.append(jobs);
+    if(kind==="setup_needed"){
+      const prepare=el("button","Prepare worker","secondary");prepare.disabled=state.readonly;prepare.onclick=()=>action(prepare,async()=>{await api("prepare-machine",{id:machine.id});await refreshMachines();});actions.append(prepare);
     }
+    const agent=el("button","Prepare with agent","quiet");agent.disabled=state.readonly || kind==="preparing";agent.onclick=()=>action(agent,()=>assistMachine(machine));actions.append(agent);
+    const edit=el("button","Settings","quiet settings-button");edit.disabled=state.readonly;edit.onclick=()=>fillMachine(machine,record.has_password);actions.append(edit);card.append(actions);
+    if(record.preparation?.log){const log=el("details",undefined,"machine-note");log.style.margin="12px 0 0";log.append(el("summary","Setup log"),el("pre",record.preparation.log));card.append(log);}
     grid.append(card);
   }
-  if (!data.machines.length) grid.append(el("p", "Add an SSH machine or register this host to create an execution pool."));
+  const summary=$("machine-summary");summary.replaceChildren();
+  for(const [count,text] of [[data.machines.length,"machines"],[online,"online"],[gpus,"GPUs"]]){const item=el("span");item.append(el("strong",String(count)),document.createTextNode(text));summary.append(item);}
+  if(!data.machines.length){const empty=el("div",undefined,"machine-empty");empty.append(el("h2","Your first machine is one connection away."),el("p","Add an SSH address, or use this computer to get started."));grid.append(empty);}
 }
-$("machine-form").onsubmit = e => {
-  e.preventDefault();
-  action(e.submitter, async () => {
-    const machine = {...(state.editMachine || {}), id:$("machine-id").value.trim(), label:$("machine-label-input").value.trim(),
-      kind:$("machine-kind").value, host:$("machine-host").value.trim(), port:Number($("machine-port").value),
-      user:$("machine-user").value.trim(), root:$("machine-root").value.trim(), python:$("machine-python").value.trim(),
-      run_as:$("machine-run-as").value.trim() || null, identity_file:$("machine-identity").value.trim() || null,
-      known_hosts:$("machine-known-hosts").value.trim() || null,
-      config:{execution_backend:$("machine-execution").value, cpus:Number($("machine-cpus").value),
-        memory_mb:Number($("machine-memory").value), max_jobs:Number($("machine-max-jobs").value),
-        gpu_ids:$("machine-gpus").value.split(",").map(s=>s.trim()).filter(Boolean),
-        capabilities:$("machine-capabilities").value.split("\n").map(s=>s.trim()).filter(Boolean)}};
-    if ($("machine-password").value) machine.password = $("machine-password").value;
-    await api("save-machine", machine); $("machine-password").value = "";
-    await refreshMachines(); toast("Machine saved. Prepare the worker before launching experiments.");
-  });
+async function refreshMachines(){
+  const data=await api("machines");state.machines=data.machines;renderMachineSelection();renderMachines(data);
+  for(const id of ["add-machine","register-local-worker","refresh-machines"])$(id).disabled=state.readonly;
+  $("register-local-worker").onclick=()=>action($("register-local-worker"),async()=>{const saved=await api("save-machine",data.local_defaults);await api("prepare-machine",{id:saved.machine.id});await refreshMachines();});
+}
+$("refresh-machines").onclick=()=>action($("refresh-machines"),async()=>{await Promise.all(state.machines.map(r=>api("refresh-machine",{id:r.machine.id})));await refreshMachines();});
+$("machine-form").onsubmit=async e=>{
+  e.preventDefault();const button=e.submitter;button.disabled=true;$("machine-form-error").hidden=true;
+  try{
+    const previous=state.editMachine;
+    const fields={execution_backend:$("machine-execution").value,capabilities:$("machine-capabilities").value.split("\n").map(s=>s.trim()).filter(Boolean)};
+    for(const [key,id] of [["root","machine-root"],["run_as","machine-run-as"]])if($(id).value.trim())fields[key]=$(id).value.trim();
+    for(const [key,id] of [["cpus","machine-cpus"],["memory_mb","machine-memory"],["max_jobs","machine-max-jobs"]])if($(id).value)fields[key]=Number($(id).value);
+    const devices=$("machine-gpus").value.trim();if(devices)fields.gpu_ids=devices.toLowerCase()==="none" ? [] : devices.split(",").map(s=>s.trim()).filter(Boolean);
+    let payload;
+    if($("machine-kind").value==="local"){
+      payload={...(previous || {}),id:$("machine-id").value || "local",kind:"local",label:$("machine-label-input").value || "This computer",root:fields.root,
+        python:$("machine-python").value || "python3",config:{...previous?.config,...fields}};
+      delete payload.config.root;delete payload.config.run_as;
+      if(payload.config.execution_backend==="auto")payload.config.execution_backend="bubblewrap";
+    }else if(previous && !previous.automatic_setup){
+      // Existing manual installations retain their known paths and configuration.
+      payload={...previous,label:$("machine-label-input").value || previous.label,
+        root:fields.root || previous.root,run_as:fields.run_as || previous.run_as,
+        config:{...previous.config,...fields},password:$("machine-password").value || undefined};
+      delete payload.config.root;delete payload.config.run_as;
+      if(payload.config.execution_backend==="auto")payload.config.execution_backend=previous.config.execution_backend;
+      // Let the server parse an edited address while preserving this manual profile.
+      payload.address=$("machine-address").value;delete payload.password;
+      payload.overrides=undefined;
+    }else payload={address:$("machine-address").value,overrides:fields};
+    if($("machine-id").value)payload.id=$("machine-id").value;
+    if($("machine-label-input").value)payload.label=$("machine-label-input").value;
+    for(const [key,id] of [["identity_file","machine-identity"],["known_hosts","machine-known-hosts"]])if($(id).value.trim())payload[key]=$(id).value.trim();
+    if($("machine-password").value)payload.password=$("machine-password").value;
+    const saved=await api("save-machine",payload);
+    if(payload.kind==="local")await api("prepare-machine",{id:saved.machine.id});
+    $("machine-password").value="";$("machine-dialog").close();state.editMachine=null;
+    await refreshMachines();toast(saved.preparation?.status === "working" ? "Connected. Preparing the worker in the background…" : "Machine settings saved.");
+  }catch(error){$("machine-form-error").textContent=error.message;$("machine-form-error").hidden=false;}
+  finally{button.disabled=false;}
 };
 
 async function refreshBenchmarks() {

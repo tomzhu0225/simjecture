@@ -26,11 +26,8 @@ def test_machine_page_prepares_worker_and_preserves_study_selection(tmp_path):
             page.on("pageerror", lambda error: errors.append(str(error)))
             page.goto(f"http://127.0.0.1:{server.server_port}/workspace#machines")
             page.locator("#register-local-worker").click()
-            page.locator('#machine-form button[type="submit"]').click()
             card = page.locator('[data-machine="local"]')
-            playwright.expect(card).to_contain_text("Not prepared")
-            card.get_by_role("button", name="Prepare worker", exact=True).click()
-            playwright.expect(card).to_contain_text("Execution ready", timeout=30000)
+            playwright.expect(card).to_contain_text("Online", timeout=30000)
             project = app.workspace.create({"name": "Pool proposal"})
             app.workspace.save_brief(
                 project["id"],
@@ -80,7 +77,7 @@ def test_machine_page_prepares_worker_and_preserves_study_selection(tmp_path):
             shots = Path("artifacts/ssh-feature")
             shots.mkdir(parents=True, exist_ok=True)
             page.locator('[data-view="machines"]').click()
-            playwright.expect(page.locator("#machine-grid")).to_contain_text("Execution ready")
+            playwright.expect(page.locator("#machine-grid")).to_contain_text("Online")
             page.screenshot(path=str(shots / "machines-page.png"), full_page=True)
             assert not list(app.workspace.projects_root.glob("*/turns/*"))
             assert not errors
@@ -107,6 +104,84 @@ def test_readonly_machine_api_has_no_provisioning_side_effects(tmp_path):
         )
         assert response.status_code == 403
         assert not app.workspace.machine_registry.root.exists()
+    finally:
+        server.shutdown()
+        server.server_close()
+
+
+def test_two_field_dialog_and_advanced_settings_persist_without_model_calls(tmp_path, monkeypatch):
+    playwright = pytest.importorskip("playwright.sync_api")
+    from conjecture_solver.execution_pool import MachineRegistry
+    from conjecture_solver.worker_protocol import load, private_put
+
+    prepared = []
+
+    def prepare(registry, identifier):
+        prepared.append(identifier)
+        private_put(
+            registry.root / "preparation" / identifier / "state.json", {"status": "working"}
+        )
+        return {"message": "Fixture preparation started"}
+
+    monkeypatch.setattr(MachineRegistry, "start_prepare", prepare)
+    app = SimjectureWebApplication(scan_roots=(tmp_path,), runs_root=tmp_path / "runs")
+    # Only this fixture's SSH endpoint is synthetic.
+    app.workspace.poll_machine_availability = lambda: None
+    server = create_server(app, port=0)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    errors = []
+    try:
+        with playwright.sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page(viewport={"width": 1440, "height": 1000})
+            page.on("pageerror", lambda e: errors.append(str(e)))
+            page.goto(f"http://127.0.0.1:{server.server_port}/workspace#machines")
+            page.get_by_role("button", name="Add machine", exact=True).click()
+            assert page.locator("#machine-form input:visible").count() == 2
+            page.locator("#machine-address").fill("ssh -p 23 root@fixture.example")
+            page.locator("#machine-password").fill("fixture-only-secret")
+            page.locator("#save-machine").click()
+            playwright.expect(page.locator("#machine-dialog")).not_to_be_visible()
+            card = page.locator("[data-machine]").first
+            playwright.expect(card).to_contain_text("Preparing")
+            records = app.workspace.machine_registry.catalogue()
+            assert len(records) == 1
+            record = records[0]
+            identifier = record["machine"]["id"]
+            assert record["machine"]["automatic_setup"]["execution_backend"] == "auto"
+            assert record["has_password"] and "fixture-only-secret" not in __import__("json").dumps(
+                records
+            )
+            assert prepared == [identifier]
+            card.get_by_role("button", name="Settings", exact=True).click()
+            assert page.locator("#machine-form input:visible").count() == 2
+            page.locator("#machine-advanced > summary").click()
+            page.locator("#machine-label-input").fill("My P40")
+            page.locator("#machine-memory").fill("6144")
+            page.locator("#machine-gpus").fill("none")
+            page.locator("#save-machine").click()
+            playwright.expect(card).to_contain_text("My P40")
+            saved = app.workspace.machine_registry.machine(identifier)
+            assert saved.automatic_setup.memory_mb == 6144 and saved.automatic_setup.gpu_ids == []
+            private_put(
+                app.workspace.machine_registry.root / "preparation" / identifier / "state.json",
+                {"status": "ready"},
+            )
+            profile = load(app.workspace.machine_registry.path(identifier))
+            profile["availability"] = {
+                "online": True,
+                "status": "ready",
+                "checked_at": __import__("time").time(),
+            }
+            private_put(app.workspace.machine_registry.path(identifier), profile)
+            playwright.expect(card).to_contain_text("Online")
+            card.get_by_role("button", name="Prepare with agent", exact=True).click()
+            playwright.expect(page.locator("#chat-input")).to_have_value(
+                __import__("re").compile(".*execution_machines.*", __import__("re").DOTALL)
+            )
+            assert not list(app.workspace.projects_root.glob("*/turns/*"))
+            assert not errors
+            browser.close()
     finally:
         server.shutdown()
         server.server_close()

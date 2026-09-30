@@ -353,6 +353,28 @@ class Worker:
             "capacity": self.config.model_dump(mode="json"),
         }
 
+    def heartbeat(self):
+        """Cheap availability check; no numerical launch or instrument rehashing."""
+        state = self.status()
+        return {
+            "protocol": PROTOCOL,
+            "worker_id": load(self.root / "identity.json")["worker_id"],
+            "clock": time.time(),
+            "capacity": state["capacity"],
+            "jobs": [r for r in state["jobs"] if r["status"] in ACTIVE],
+        }
+
+    def suggest_configuration(self):
+        from .execution import probe_execution_backend
+        from .machine_setup import hardware
+
+        result = hardware()
+        backend = probe_execution_backend("bubblewrap")
+        if not backend["available"]:
+            backend = probe_execution_backend("proot-cooperative")
+        result["execution_backend"] = backend["backend"] if backend["available"] else None
+        return result
+
     def _reserve(self, identifier):
         with lock(self.root):
             config = self.config
@@ -557,6 +579,8 @@ class Worker:
             "stage",
             "submit",
             "status",
+            "heartbeat",
+            "suggest_configuration",
             "cancel",
             "fetch",
             "read_instrument",

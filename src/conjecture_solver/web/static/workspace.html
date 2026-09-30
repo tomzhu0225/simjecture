@@ -213,53 +213,58 @@
             </div>
           </div>
         </section>
-        <section id="view-machines" class="view" hidden>
-          <div class="page-intro compact">
-            <p class="eyebrow">EXPERIMENT EXECUTION POOL</p>
-            <h1>Run experiments across your machines.</h1>
-            <p class="lead">Prepare workers, check their instruments and choose a pool
-              in each study. Research agents and scientific review stay in this workspace.</p>
+        <section id="view-machines" class="view machines-view" hidden>
+          <div class="machines-heading">
+            <div><p class="eyebrow">YOUR COMPUTE</p><h1>Machines</h1>
+              <p class="lead">Connect your machines. Run experiments in parallel.</p></div>
+            <button id="add-machine" class="primary" type="button"><span aria-hidden="true">＋</span> Add machine</button>
           </div>
-          <div id="machine-grid" class="tool-grid"></div>
-          <button id="register-local-worker" class="secondary" type="button">Register this machine</button>
-          <details id="machine-editor" class="brief-editor" open>
-            <summary>Add or edit an execution machine</summary>
-            <form id="machine-form" class="panel form-panel">
-              <div class="two-fields">
-                <label>Machine ID<input id="machine-id" required placeholder="p40" pattern="[a-z][a-z0-9-]{0,39}" /></label>
-                <label>Name<input id="machine-label-input" placeholder="P40 compute" /></label>
-              </div>
-              <label>Connection<select id="machine-kind"><option value="ssh">SSH</option><option value="local">This machine</option></select></label>
-              <div class="two-fields">
-                <label>SSH host or configured alias<input id="machine-host" placeholder="compute.example.org" /></label>
-                <label>Port<input id="machine-port" type="number" min="1" max="65535" value="22" /></label>
-              </div>
-              <label>SSH user<input id="machine-user" placeholder="research" /></label>
-              <label>Password (optional)<input id="machine-password" type="password" autocomplete="new-password" placeholder="Use your SSH key/agent, or save a password" /></label>
-              <p class="field-help">Uses your OpenSSH configuration. Trust the host in known_hosts
-                before connecting. Saved passwords stay on this coordinator.</p>
-              <label>Worker directory<input id="machine-root" required placeholder="/home/research/.simjecture-worker" /></label>
-              <div class="two-fields">
-                <label>CPU budget<input id="machine-cpus" type="number" value="2" min="1" /></label>
-                <label>RAM budget (MiB)<input id="machine-memory" type="number" value="4096" min="128" /></label>
-              </div>
-              <div class="two-fields">
-                <label>GPU IDs<input id="machine-gpus" placeholder="0,1 or GPU UUIDs; empty for CPU" /></label>
-                <label>Concurrent jobs<input id="machine-max-jobs" type="number" value="2" min="1" max="256" /></label>
-              </div>
-              <label>Experiment environment<select id="machine-execution"><option value="bubblewrap">Linux sandbox</option><option value="proot-cooperative">Cooperative PRoot · dedicated unprivileged account</option></select></label>
-              <label>Instrument descriptor directories (one per line)<textarea id="machine-capabilities" rows="3" placeholder="/home/research/capabilities"></textarea></label>
-              <details class="advanced"><summary>Connection and installation details</summary>
-                <label>Python executable<input id="machine-python" value="python3" /></label>
-                <label>Run worker as user (for a root SSH login)<input id="machine-run-as" placeholder="research" /></label>
-                <label>SSH private key path<input id="machine-identity" /></label>
-                <label>Known hosts file<input id="machine-known-hosts" /></label>
+          <div class="machines-toolbar">
+            <div id="machine-summary" class="machines-summary" aria-live="polite"></div>
+            <div class="machines-live"><span class="live-dot" aria-hidden="true"></span> Checked every 30 seconds
+              <button id="refresh-machines" type="button" class="quiet" aria-label="Refresh machine availability">↻</button></div>
+          </div>
+          <div id="machine-grid" class="machines-grid"></div>
+          <div class="machines-footnote"><span aria-hidden="true">⌘</span><p>The research agent stays here. Connected machines run your experiments.
+            <button id="register-local-worker" class="text-button" type="button">Add this computer</button></p></div>
+          <section id="machine-jobs-panel" class="machine-jobs-panel" hidden>
+            <div class="machine-panel-heading"><h2 id="machine-jobs-title">Worker jobs</h2><button id="close-machine-jobs" class="quiet" type="button" aria-label="Close jobs">×</button></div>
+            <div id="machine-jobs-list"></div><div id="machine-job-controls" class="tool-actions"></div>
+            <details><summary>Detailed receipts</summary><pre id="machine-jobs-report"></pre></details>
+          </section>
+          <dialog id="machine-dialog" class="machine-dialog">
+            <div class="machine-dialog-heading"><div><p class="eyebrow">SSH CONNECTION</p><h2 id="machine-editor-title">Add a machine</h2></div>
+              <button id="close-machine-editor" type="button" class="quiet" aria-label="Close machine settings">×</button></div>
+            <p class="machine-dialog-intro">An SSH address and password are all you need. We’ll detect the hardware and prepare the worker.</p>
+            <form id="machine-form" class="machine-form">
+              <label>SSH address<input id="machine-address" required autocomplete="off" spellcheck="false" placeholder="ssh -p 23 root@your-machine" /></label>
+              <p class="field-help">Also accepts user@host:port or an address from your SSH config.</p>
+              <label>Password<input id="machine-password" type="password" autocomplete="new-password" placeholder="Leave empty to use your SSH key or agent" /></label>
+              <p class="field-help">Stored privately on this computer.</p>
+              <details id="machine-advanced" class="machine-advanced"><summary>Advanced settings <span>Optional</span></summary>
+                <div class="machine-advanced-fields">
+                  <div class="two-fields"><label>Display name<input id="machine-label-input" placeholder="Use the host name" /></label>
+                    <label>Machine ID<input id="machine-id" pattern="[a-z][a-z0-9-]{0,39}" placeholder="Generated automatically" /></label></div>
+                  <label>Connection<select id="machine-kind"><option value="ssh">SSH</option><option value="local">This computer</option></select></label>
+                  <label>Worker directory<input id="machine-root" placeholder="Choose a persistent directory automatically" /></label>
+                  <div class="two-fields"><label>CPU budget<input id="machine-cpus" type="number" min="1" placeholder="Detect automatically" /></label>
+                    <label>RAM budget (MiB)<input id="machine-memory" type="number" min="128" placeholder="Detect automatically" /></label></div>
+                  <div class="two-fields"><label>GPU IDs<input id="machine-gpus" placeholder="Detect automatically; type none for CPU only" /></label>
+                    <label>Concurrent jobs<input id="machine-max-jobs" type="number" min="1" max="256" placeholder="Choose automatically" /></label></div>
+                  <label>Experiment environment<select id="machine-execution"><option value="auto">Detect automatically</option><option value="bubblewrap">Linux sandbox</option><option value="proot-cooperative">Cooperative · restricted container</option></select></label>
+                  <p class="field-help">Restricted containers use a dedicated unprivileged worker with cooperative execution.</p>
+                  <label>Instrument descriptor directories<textarea id="machine-capabilities" rows="2" placeholder="Optional. Your agent can prepare scientific tools later."></textarea></label>
+                  <div class="two-fields"><label>SSH private key path<input id="machine-identity" placeholder="Use your SSH agent" /></label>
+                    <label>Known hosts file<input id="machine-known-hosts" placeholder="Managed automatically" /></label></div>
+                  <div class="two-fields"><label>Run worker as user<input id="machine-run-as" placeholder="Choose an unprivileged account" /></label>
+                    <label>Python executable<input id="machine-python" placeholder="python3" /></label></div>
+                </div>
               </details>
-              <div class="brief-footer"><button type="submit" class="primary">Save machine</button></div>
+              <p id="machine-form-error" class="machine-form-error" role="alert" hidden></p>
+              <div class="machine-dialog-footer"><button id="cancel-machine-editor" class="secondary" type="button">Cancel</button>
+                <button id="save-machine" class="primary" type="submit">Connect &amp; prepare</button></div>
             </form>
-          </details>
-          <pre id="machine-jobs-report" hidden></pre>
-          <div id="machine-job-controls" class="tool-actions"></div>
+          </dialog>
         </section>
         <section id="view-settings" class="view" hidden>
           <div class="page-intro compact">

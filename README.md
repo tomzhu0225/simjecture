@@ -38,7 +38,9 @@ uv tool install 'simjecture[workspace,tui]==0.5.3rc1'
 ```
 
 The development checkout also adds local/SSH **experiment workers**, with a visible
-**Machines** page, per-study pools, GPU reservations and durable recovery. Agents
+**Machines** page, address/password onboarding, optional advanced settings, live
+30-second availability checks, agent-guided preparation, GPU reservations and
+durable recovery. Agents
 and scientific review remain on the coordinator. This is separate from the published
 rc1 preview; see [SSH workers](docs/how-to/ssh-workers.md).
 

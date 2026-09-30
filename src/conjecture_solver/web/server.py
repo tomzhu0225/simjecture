@@ -93,9 +93,21 @@ class SimjectureHTTPServer(ThreadingHTTPServer):
         self.verbose = verbose
         self._handoff_at = 0
         self._handoff_thread = None
+        self._machine_poll_at = 0
+        self._machine_poll_thread = None
         super().__init__(address, SimjectureRequestHandler)
 
     def service_actions(self):
+        from ..machine_availability import POLL_SECONDS
+
+        if time.monotonic() >= self._machine_poll_at and not (
+            self._machine_poll_thread and self._machine_poll_thread.is_alive()
+        ):
+            self._machine_poll_at = time.monotonic() + POLL_SECONDS
+            self._machine_poll_thread = threading.Thread(
+                target=self.application.workspace.poll_machine_availability, daemon=True
+            )
+            self._machine_poll_thread.start()
         if not self.application.allow_mutations or time.monotonic() < self._handoff_at:
             return
         if self._handoff_thread and self._handoff_thread.is_alive():
@@ -435,10 +447,16 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
                 result = workspace.grade_benchmark(payload)
             elif endpoint == "save-machine":
                 result = workspace.save_machine(payload)
+                self.server._machine_poll_at = 0
             elif endpoint == "prepare-machine":
                 result = workspace.prepare_machine(payload.get("id"))
+                self.server._machine_poll_at = 0
             elif endpoint == "check-machine":
                 result = workspace.check_machine(payload.get("id"))
+            elif endpoint == "refresh-machine":
+                result = workspace.refresh_machine_availability(payload.get("id"))
+            elif endpoint == "prepare-machine-chat":
+                result = workspace.prepare_machine_chat(payload)
             elif endpoint == "cancel-machine-job":
                 result = workspace.cancel_machine_job(payload.get("id"), payload.get("job"))
             elif endpoint == "fetch-remote-artifact":

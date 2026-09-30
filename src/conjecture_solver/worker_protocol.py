@@ -44,6 +44,20 @@ class WorkerConfig(BaseModel):
         return self
 
 
+class AutomaticSetup(BaseModel):
+    """Explicit overrides for otherwise automatic SSH provisioning."""
+
+    model_config = ConfigDict(extra="forbid")
+    execution_backend: Literal["auto", "bubblewrap", "proot-cooperative"] = "auto"
+    root: str | None = None
+    run_as: str | None = Field(default=None, pattern=r"^[a-zA-Z_][a-zA-Z0-9_.-]*$")
+    cpus: int | None = Field(default=None, ge=1, le=65536)
+    memory_mb: int | None = Field(default=None, ge=128, le=16 * 1024**2)
+    max_jobs: int | None = Field(default=None, ge=1, le=256)
+    gpu_ids: list[str] | None = None
+    capabilities: list[str] = Field(default_factory=list, max_length=32)
+
+
 class Machine(BaseModel):
     model_config = ConfigDict(extra="forbid")
     id: str = Field(pattern=r"^[a-z][a-z0-9-]{0,39}$")
@@ -59,6 +73,7 @@ class Machine(BaseModel):
     control_path: str | None = None
     known_hosts: str | None = None
     config: WorkerConfig = Field(default_factory=WorkerConfig)
+    automatic_setup: AutomaticSetup | None = None
 
     @model_validator(mode="after")
     def valid_machine(self):

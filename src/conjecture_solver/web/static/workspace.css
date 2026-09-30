@@ -3225,3 +3225,100 @@ wa-split-panel.project-layout {
 
 .continuation-chat-context { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; margin-bottom: .75rem; font-size: .9rem; }
 .continuation-chat-context[hidden] { display: none; }
+
+/* Machines: compact inventory, quiet live status, two-field onboarding. */
+.machines-view { max-width: 1160px; }
+.machines-heading { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 32px; }
+.machines-heading h1 { margin: 2px 0 6px; font-size: 34px; letter-spacing: -1.1px; }
+.machines-heading .eyebrow { font-size: 11px; letter-spacing: .17em; margin: 0; }
+.machines-heading .lead { font-size: 15px; margin: 0; color: var(--muted); }
+.machines-heading > button { flex: 0 0 auto; padding: 11px 18px; font-size: 14px; border-radius: 9px; display: flex; align-items: center; gap: 7px; }
+.machines-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; font-size: 12px; }
+.machines-summary { display: flex; gap: 18px; color: var(--muted); }
+.machines-summary strong { color: var(--ink); font-weight: 600; margin-right: 4px; }
+.machines-live { display: flex; gap: 7px; align-items: center; color: var(--muted); }
+.machines-live button { font-size: 21px; line-height: 1; padding: 4px 6px; }
+.live-dot { width: 6px; height: 6px; border-radius: 50%; background: #42a47e; flex: 0 0 auto; }
+.machines-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 18px; }
+.execution-machine { background: var(--white); border: 1px solid var(--line); border-radius: 15px; padding: 22px; box-shadow: 0 2px 8px #22203e04; min-width: 0; display: flex; flex-direction: column; }
+.machine-card-top { display: flex; gap: 12px; align-items: flex-start; }
+.machine-glyph { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 11px; background: var(--soft); color: var(--accent); flex: 0 0 auto; }
+.machine-glyph svg { width: 23px; height: 23px; }
+.machine-card-name { flex: 1; min-width: 0; }
+.machine-card-name h2 { font-size: 16px; font-weight: 650; margin: 0 0 3px; line-height: 1.4; overflow-wrap: anywhere; }
+.machine-address-line { font-family: ui-monospace,SFMono-Regular,Consolas,monospace; font-size: 11px; color: var(--muted); overflow-wrap: anywhere; }
+.machine-status { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; white-space: nowrap; border-radius: 20px; padding: 5px 9px; background: var(--soft); color: var(--muted); }
+.machine-status::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+.machine-status.ready { background: #e7f4ed; color: #28805c; }
+.machine-status.preparing,.machine-status.setup_needed { background: #fcf1d9; color: #96701c; }
+.machine-status.offline { background: #f7e9ed; color: #ad566a; }
+.machine-status.stale { background: var(--soft); color: var(--muted); }
+.machine-resources { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; padding: 19px 0 16px; margin: 17px 0 0; border-top: 1px solid var(--line); }
+.machine-resource strong { display: block; font-size: 20px; line-height: 1.3; font-weight: 600; letter-spacing: -.4px; }
+.machine-resource span { font-size: 11px; color: var(--muted); }
+.machine-instruments { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-height: 27px; margin-bottom: 13px; }
+.machine-instrument { background: var(--soft); border-radius: 5px; font-size: 10px; padding: 3px 7px; color: var(--muted); }
+.machine-instruments .no-instruments { color: var(--muted); font-size: 12px; }
+.machine-runtime { display: flex; gap: 8px; justify-content: space-between; font-size: 11px; color: var(--muted); margin-bottom: 15px; }
+.machine-note { color: var(--muted); font-size: 12px; padding: 10px 12px; border-radius: 8px; background: var(--soft); margin: 0 0 12px; overflow-wrap: anywhere; }
+.machine-note summary { font-size: 12px; cursor: pointer; }
+.machine-note pre { font-size: 11px; max-height: 160px; overflow: auto; white-space: pre-wrap; margin-bottom: 0; }
+.machine-card-bottom { display: flex; gap: 6px; align-items: center; border-top: 1px solid var(--line); padding-top: 13px; margin-top: auto; }
+.machine-card-bottom button { font-size: 12px; padding: 7px 10px; border-radius: 7px; white-space: nowrap; }
+.machine-card-bottom .settings-button { margin-left: auto; }
+.machine-card-bottom .quiet { color: var(--muted); }
+.machine-card-bottom .quiet:hover { color: var(--ink); background: var(--soft); }
+.machines-footnote { display: flex; align-items: center; gap: 12px; padding: 22px 2px; color: var(--muted); }
+.machines-footnote > span { color: var(--accent); font-size: 21px; }
+.machines-footnote p { font-size: 12px; line-height: 1.6; margin: 0; }
+.text-button { background: transparent; border: 0; padding: 0; color: var(--accent); font-size: inherit; margin-left: 9px; text-decoration: underline; text-underline-offset: 3px; }
+.machine-empty { grid-column: 1 / -1; padding: 70px 25px; text-align: center; border: 1px dashed var(--line); border-radius: 16px; background: var(--white); }
+.machine-empty h2 { font-size: 19px; margin: 15px 0 5px; }
+.machine-empty p { color: var(--muted); font-size: 14px; }
+.machine-dialog { padding: 26px; width: 540px; max-width: calc(100vw - 32px); max-height: calc(100dvh - 40px); border: 1px solid var(--line); border-radius: 17px; color: var(--ink); background: var(--white); box-shadow: 0 24px 80px #15132d26; }
+.machine-dialog::backdrop { background: #15132966; backdrop-filter: blur(3px); }
+.machine-dialog-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 15px; }
+.machine-dialog-heading .eyebrow { font-size: 10px; letter-spacing: .13em; margin: 0 0 3px; }
+.machine-dialog-heading h2 { font-size: 23px; margin: 0; letter-spacing: -.5px; }
+.machine-dialog-heading > button { font-size: 25px; line-height: 1; padding: 3px; }
+.machine-dialog-intro { font-size: 13px; color: var(--muted); line-height: 1.6; margin: 14px 0 22px; }
+.machine-form > label, .machine-advanced-fields label { display: flex; flex-direction: column; gap: 7px; font-size: 12px; font-weight: 600; }
+.machine-form input,.machine-form textarea,.machine-form select { width: 100%; padding: 10px 12px; min-height: 42px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); color: var(--ink); font-size: 13px; font-weight: 400; margin: 0; }
+.machine-form input:focus { border-color: var(--accent); }
+.machine-form input::placeholder,.machine-form textarea::placeholder { color: var(--muted); font-size: 12px; }
+.machine-form > .field-help { font-size: 11px; margin: 6px 0 18px; }
+.machine-advanced { border-top: 1px solid var(--line); margin-top: 23px; padding-top: 15px; }
+.machine-advanced > summary { font-size: 12px; font-weight: 600; cursor: pointer; }
+.machine-advanced > summary span { float: right; font-weight: 400; color: var(--muted); font-size: 11px; }
+.machine-advanced-fields { display: grid; gap: 15px; padding-top: 18px; }
+.machine-advanced-fields .two-fields { gap: 13px; }
+.machine-advanced-fields .field-help { font-size: 11px; margin: -8px 0 0; }
+.machine-dialog-footer { display: flex; align-items: center; justify-content: flex-end; gap: 9px; border-top: 1px solid var(--line); padding-top: 19px; margin-top: 23px; }
+.machine-dialog-footer button { font-size: 13px; padding: 10px 15px; border-radius: 8px; }
+.machine-form-error { color: var(--danger); font-size: 12px; padding: 10px; background: var(--soft); border-radius: 7px; }
+.machine-jobs-panel { margin-top: 12px; border: 1px solid var(--line); border-radius: 14px; background: var(--white); padding: 22px; }
+.machine-panel-heading { display: flex; justify-content: space-between; align-items: center; }
+.machine-panel-heading h2 { font-size: 17px; margin: 0 0 15px; }
+.machine-job-row { display: flex; align-items: center; gap: 12px; justify-content: space-between; border-top: 1px solid var(--line); padding: 10px 0; font-size: 12px; }
+.machine-job-row code { font-size: 11px; color: var(--muted); }
+.machine-jobs-panel details { font-size: 12px; margin-top: 15px; }
+.machine-jobs-panel pre { max-height: 300px; overflow: auto; font-size: 11px; }
+[data-theme="dark"] .machine-status.ready { background: #1d3c30; color: #85d9af; }
+[data-theme="dark"] .machine-status.preparing,[data-theme="dark"] .machine-status.setup_needed { background: #403620; color: #e9c579; }
+[data-theme="dark"] .machine-status.offline { background: #432933; color: #eea1b5; }
+@media (max-width: 1150px) { .machines-grid { grid-template-columns: 1fr; } }
+@media (max-width: 650px) {
+  .machines-heading { align-items: flex-start; gap: 12px; margin-bottom: 23px; }
+  .machines-heading h1 { font-size: 27px; }
+  .machines-heading .lead { font-size: 12px; }
+  .machines-heading > button { font-size: 12px; padding: 9px 11px; }
+  .machines-toolbar { align-items: flex-start; flex-direction: column; gap: 10px; }
+  .execution-machine { padding: 18px; }
+  .machine-card-top { gap: 9px; }
+  .machine-status { font-size: 10px; padding: 4px 7px; }
+  .machine-card-name h2 { font-size: 14px; }
+  .machine-dialog { padding: 22px; }
+  .machine-card-bottom { flex-wrap: wrap; }
+  .machine-form .two-fields { grid-template-columns: 1fr; }
+}
+.machine-dialog-heading h2 { font-family: inherit; font-weight: 650; }

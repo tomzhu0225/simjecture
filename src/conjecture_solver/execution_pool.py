@@ -65,7 +65,9 @@ class Transport:
             "-o",
             "ConnectTimeout=5",
             "-o",
-            "StrictHostKeyChecking=yes",
+            "StrictHostKeyChecking=accept-new"
+            if self.machine.automatic_setup
+            else "StrictHostKeyChecking=yes",
             "-o",
             "ServerAliveInterval=10",
             "-o",
@@ -301,6 +303,11 @@ class MachineRegistry:
         password = payload.pop("password", None)
         machine = Machine.model_validate(payload)
         with lock(self.root):
+            if machine.kind == "ssh" and machine.automatic_setup and not machine.known_hosts:
+                key_file = contained(self.root, ".private/known_hosts")
+                key_file.parent.mkdir(mode=0o700, exist_ok=True)
+                key_file.touch(mode=0o600, exist_ok=True)
+                machine.known_hosts = str(key_file)
             old = load(self.path(machine.id))
             value = machine.model_dump(mode="json")
             routing = ("kind", "host", "port", "user", "root", "run_as")
@@ -318,7 +325,11 @@ class MachineRegistry:
                 self.path(machine.id),
                 {
                     "machine": value,
-                    "probe": old.get("probe") if old.get("machine") == value else None,
+                    "probe": old.get("probe")
+                    if old
+                    and Machine.model_validate(old["machine"]).model_dump(mode="json") == value
+                    else None,
+                    **{key: old[key] for key in ("hardware", "availability") if key in old},
                 },
             )
             if password is not None:
@@ -346,6 +357,7 @@ class MachineRegistry:
 
     def check(self, identifier):
         transport = self.transport(identifier)
+        started = time.monotonic()
         try:
             result = transport.call("probe", timeout=60)
         except (WorkerUnavailable, ValueError) as error:
@@ -366,14 +378,37 @@ class MachineRegistry:
         path = self.path(identifier)
         with lock(self.root):
             record = load(path)
-            if record["machine"] != transport.machine.model_dump(mode="json"):
+            if Machine.model_validate(record["machine"]).model_dump(
+                mode="json"
+            ) != transport.machine.model_dump(mode="json"):
                 raise ValueError("Machine profile changed during readiness check; check again")
             record.update(probe=result, checked_at=time.time(), error=None)
+            record["availability"] = {
+                "online": True,
+                "status": "ready",
+                "checked_at": time.time(),
+                "latency_ms": round((time.monotonic() - started) * 1000),
+            }
             private_put(path, record)
         return self.public(identifier)
 
     def prepare(self, identifier):
+        self._preparation_phase(identifier, "Connecting and inspecting the host")
         transport = self.transport(identifier)
+        if transport.machine.kind == "ssh" and transport.machine.automatic_setup:
+            from .machine_setup import DISCOVER
+
+            detected = transport.run(["python3", "-c", DISCOVER], {}, login_user=True)
+            options = transport.machine.automatic_setup
+            profile = transport.machine.model_dump(mode="json")
+            profile["run_as"] = options.run_as or ("simjecture" if detected["uid"] == 0 else None)
+            profile["root"] = options.root or (
+                f"/var/lib/simjecture/workers/{identifier}"
+                if detected["uid"] == 0
+                else str(Path(detected["home"]) / ".local/share/simjecture/workers" / identifier)
+            )
+            self.save(profile)
+            transport = self.transport(identifier)
         if transport.machine.kind == "ssh":
             transport.run(
                 ["python3", "-c", HOST_SETUP],
@@ -394,8 +429,9 @@ class MachineRegistry:
                         )
                         entry.compress_type = zipfile.ZIP_DEFLATED
                         archive.writestr(entry, path.read_bytes())
+            self._preparation_phase(identifier, "Preparing the private Python environment")
             installed = transport.run(
-                [transport.machine.python, "-c", BOOTSTRAP],
+                ["python3", "-c", BOOTSTRAP],
                 {
                     "root": transport.machine.root,
                     "source": base64.b64encode(source.getvalue()).decode(),
@@ -405,10 +441,52 @@ class MachineRegistry:
             machine = transport.machine.model_dump(mode="json") | {"python": installed["python"]}
             self.save(machine)
             transport = self.transport(identifier)
+            if transport.machine.automatic_setup:
+                from .machine_setup import INSTALL_BACKEND
+
+                self._preparation_phase(identifier, "Detecting hardware and execution environment")
+                suggested = transport.call("suggest_configuration", timeout=15)
+                options = transport.machine.automatic_setup
+                config = transport.machine.config.model_dump(mode="json")
+                for key in ("cpus", "memory_mb", "max_jobs", "gpu_ids"):
+                    config[key] = (
+                        getattr(options, key)
+                        if getattr(options, key) is not None
+                        else suggested[key]
+                    )
+                config["capabilities"] = options.capabilities
+                config["execution_backend"] = (
+                    options.execution_backend
+                    if options.execution_backend != "auto"
+                    else suggested.get("execution_backend") or "proot-cooperative"
+                )
+                transport.run(
+                    ["python3", "-c", INSTALL_BACKEND],
+                    {"backend": config["execution_backend"]},
+                    timeout=600,
+                    login_user=True,
+                )
+                machine = transport.machine.model_dump(mode="json") | {"config": config}
+                self.save(machine)
+                with lock(self.root):
+                    path = self.path(identifier)
+                    record = load(path)
+                    record["hardware"] = suggested["hardware"]
+                    private_put(path, record)
+                transport = self.transport(identifier)
+        self._preparation_phase(identifier, "Verifying the experiment launcher")
         transport.call(
             "configure", timeout=60, config=transport.machine.config.model_dump(mode="json")
         )
         return self.check(identifier)
+
+    def _preparation_phase(self, identifier, message):
+        with lock(self.root):
+            path = self.root / "preparation" / identifier / "state.json"
+            state = load(path)
+            if state.get("status") == "working":
+                state.update(phase=message, updated_at=time.time())
+                private_put(path, state)
 
     def freeze(self, identifiers):
         if not identifiers or len(set(identifiers)) != len(identifiers):

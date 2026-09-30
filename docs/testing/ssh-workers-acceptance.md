@@ -74,3 +74,26 @@ were separately exercised on the real hosts above. **14 DSH tests passed**.
   after changing instruments or pool configuration.
 
 See [setup and usage](../how-to/ssh-workers.md).
+
+## Polished onboarding and live availability
+
+The updated interface has compact resource/status cards, a two-field SSH dialog,
+collapsed advanced settings, a readable jobs view and agent-guided preparation.
+Desktop light/dark and narrow mobile layouts were checked, including modal input
+visibility, drawer behavior and horizontal overflow.
+
+A fresh coordinator registered both real SSH hosts through the HTTP endpoint using
+**only SSH address and password**. It automatically selected persistent directories,
+non-root worker accounts, conservative 8-core/16-GiB budgets, two P40 devices and
+cooperative execution. Both managed workers then completed real numerical jobs.
+The existing scientific runtimes and prototype worker directories remained intact.
+
+Tests verify heartbeat outage/recovery, unchanged numerical-probe modification times,
+30-second server scheduling without browser requests, common address formats,
+command-injection rejection, private host-key enrollment, advanced overrides, and
+agent setup preparation without provider calls. A real SSH maintenance command also
+passed and retained a mode-0600 receipt marked `not_evidence`.
+
+Polished-feature regression: **822 passed, 7 skipped**; combined browser/onboarding
+coverage: **32 passed**. Ruff, JavaScript syntax, public schemas and the
+warning-free documentation build also pass.

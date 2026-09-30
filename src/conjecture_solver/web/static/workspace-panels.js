@@ -3,6 +3,7 @@ window.WorkspacePanels = (() => {
   const $ = (id) => document.getElementById(id);
   const collapsed = { left: false, right: false };
   const sizes = { left: 224, right: 320 };
+  const mobileNavigation = matchMedia("(max-width: 600px)");
   const clamp = (n, min, max) => Math.min(max, Math.max(min, n));
   const store = (key, value) => {
     try {
@@ -189,6 +190,15 @@ window.WorkspacePanels = (() => {
         }
         requestAnimationFrame(positionTab);
       });
+    });
+    if (mobileNavigation.matches) collapsed.left = true;
+    mobileNavigation.addEventListener("change", () => {
+      if (mobileNavigation.matches) collapsed.left = true;
+      else {
+        try { collapsed.left = localStorage.getItem("simjecture-left-collapsed") === "true"; }
+        catch { collapsed.left = false; }
+      }
+      apply();
     });
     window.addEventListener("resize", positionTab);
     apply();

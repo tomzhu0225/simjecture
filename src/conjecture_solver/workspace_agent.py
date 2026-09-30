@@ -580,23 +580,44 @@ def agent_tools(root, deadline, project=None, workspace=None):
             raise ValueError("Unknown tool action")
 
         @tool
-        def execution_machines(action: str = "list", machine: str = "") -> str:
-            """Inspect prepared local/SSH experiment workers for an autonomous study.
+        def execution_machines(
+            action: str = "list", machine: str = "", configuration: dict | None = None
+        ) -> str:
+            """Inspect or prepare registered execution workers through saved SSH connections.
 
             Args:
-                action: list for profiles/capabilities, status for an existing worker's jobs.
+                action: list, status, prepare, check, or configure an authorized worker.
                 machine: Worker ID for status; not an SSH address or a credential.
+                configuration: Explicit changes for configure: config, root, run_as or label.
             """
             if action == "list":
                 return json.dumps(workspace.machines())
             if action == "status":
                 return json.dumps(workspace.machine_jobs(machine))
-            raise ValueError("Use list or status for execution machines")
+            if action == "prepare":
+                return json.dumps(workspace.prepare_machine(machine))
+            if action == "check":
+                return json.dumps(workspace.check_machine(machine))
+            if action == "configure":
+                return json.dumps(workspace.configure_machine(machine, configuration or {}))
+            raise ValueError("Use list, status, prepare, check or configure")
+
+        @tool
+        def execution_machine_command(machine: str, command: str, timeout_seconds: int = 60) -> str:
+            """Run an operator-authorized SSH setup command; never scientific evidence.
+
+            Args:
+                machine: Registered worker ID. Credentials remain on the coordinator.
+                command: Shell command to inspect or prepare that machine's software.
+                timeout_seconds: Bounded wait, 1-7200 seconds. Output and receipt are retained.
+            """
+            return json.dumps(workspace.machine_command(machine, command, timeout_seconds))
 
         tools += [
             draft_study,
             research_tools,
             execution_machines,
+            execution_machine_command,
             run_simulation,
             run_command,
             simulation_status,
@@ -822,6 +843,15 @@ def run_external(prompt, root, config, turn, workspace=None, *, wall_seconds=Non
             "then w.register_tool({'name':'Tool name','path':'/capability/directory'}). "
             "Registered tools appear in the browser catalogue. "
             "Installation is not scientific validation."
+            " For registered SSH machines, w.machines() lists saved connections and hardware; "
+            "w.prepare_machine('id') installs the headless worker; w.check_machine('id') "
+            "checks readiness. w.machine_command('id','shell command',timeout_seconds=60) "
+            "runs a bounded operator-authorized setup command over its saved connection, "
+            "returning a recorded result; credentials stay on the coordinator. "
+            "w.configure_machine('id',{'config':{'capabilities':['/remote/descriptors']}}) "
+            "registers that worker's instrument directories. "
+            "Reprepare after changing configuration. "
+            "These commands prepare machines; their outputs are not research evidence."
         )
         prompt += (
             "\nDuring extended work share public progress with w.progress_update("

@@ -14,26 +14,44 @@ share the same versioned execution protocol and numerical launcher.
 
 ## Prepare through the workspace
 
-1. Open **Machines** in the sidebar. Register this machine or enter an SSH host,
-   login, dedicated worker directory, CPU/RAM budget and GPU IDs. Your OpenSSH
-   configuration, SSH agent and host aliases work normally. Enroll and verify the
-   host in `known_hosts` before connecting; the application requires a trusted host.
-2. **Save machine**, then **Prepare worker**. Preparation runs in the background;
-   its status and log remain on the machine card. For SSH hosts it installs a private
-   managed Python 3.12 environment and the headless worker. A root login can create
-   the selected unprivileged `run_as` account and install missing Bubblewrap/PRoot on
-   Debian/Ubuntu. Other hosts need the execution dependency installed beforehand.
-3. Set instrument descriptor directories to absolute paths **on the worker**.
-   Scientific solvers, source views and tables are registered there. Preparation
-   does not download FLASH or copy licensed tables between machines. The worker
-   account needs read/traverse permission for every registered runtime and mount.
-4. **Check readiness** verifies the protocol, worker identity, GPU inventory,
-   instrument identity, clock and the exact numerical launcher. It does not qualify
-   a scientific method. **Jobs** shows worker receipts and cancellation controls.
-5. In **Autonomous research**, select the prepared workers under **Experiment
-   machines** before preparing the study. The proposal shows the selection; the
-   interactive preparation agent can inspect machines and include them in its brief.
-   Use minimal mode. An empty selection retains the original local execution path.
+1. Open **Machines → Add machine**. Enter an SSH address and password, then
+   click **Connect & prepare**. Addresses can be a normal command such as
+   `ssh -p 23 root@host`, `user@host:port`, `ssh://user@host:port` or an SSH config
+   alias. An empty password uses your existing key/SSH agent.
+2. Preparation runs in the background. It detects the login account, visible
+   CPU/RAM/GPU resources, chooses conservative budgets and a persistent worker
+   directory, installs private Python 3.12, and verifies the numerical launcher.
+   Root logins prepare an unprivileged `simjecture` worker account. Bubblewrap is
+   preferred; restricted containers automatically use cooperative PRoot. Root
+   Debian/Ubuntu hosts can install the missing execution dependency. Other hosts
+   show an actionable setup error when installation needs additional privileges.
+3. **Advanced settings** are optional. Override the display name, directory,
+   resource budget, GPU IDs, execution environment, key path or instrument
+   directories. Blank resource fields mean automatic detection; `none` in GPU IDs
+   explicitly chooses CPU-only execution. Existing manual installations retain
+   their paths and budgets when you edit settings.
+4. Machine cards show **Online**, **Offline**, **Preparing**, setup errors or stale
+   checks, plus resource budgets, active jobs and the last-check age. The server
+   sends lightweight heartbeats every **30 seconds**, even when no browser is open.
+   Heartbeats do not launch numerical jobs or rehash solver installations. Refresh
+   checks availability immediately. A study launch still performs its full checks.
+5. **Prepare with agent** opens a setup conversation with the registered machine
+   selected. Choose your agent/model and send the prepared request. The agent can
+   inspect the host, prepare the managed worker, run recorded SSH setup commands,
+   and register actual instrument descriptor directories using the saved connection.
+   Passwords are not placed in its prompt or tool arguments. Native CLI agents use
+   the same workspace Python bridge. Scientific solvers, source views and tables
+   must be registered on the worker; worker preparation does not download FLASH or
+   copy licensed tables between machines. The worker account needs read/traverse
+   access to every registered runtime and mount.
+6. In **Autonomous research**, select the prepared workers under **Experiment
+   machines**. Use minimal mode. **Add this computer** provides a managed local
+   worker with one click. An empty study selection retains the existing local
+   execution path. Machine **Jobs** shows readable receipts and cancellation controls.
+
+Basic onboarding enrolls a new host key into a private, coordinator-managed
+`known_hosts` file on first connection; subsequent key changes are rejected.
+Existing manually configured SSH profiles retain strict pre-enrolled host-key checks.
 
 The study and monitor show placement, remote job ID, GPU assignment and unreachable
 transport. Declared outputs appear in study results; recorded files held remotely
