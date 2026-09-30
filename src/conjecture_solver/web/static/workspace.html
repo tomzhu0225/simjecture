@@ -350,64 +350,38 @@
           <div id="benchmark-projects" class="tool-grid"></div>
           <pre id="benchmark-report" hidden></pre>
         </section>
-        <section id="view-tools" class="view" hidden>
-          <div class="page-intro compact">
-            <p class="eyebrow">THE EXPERIMENT WORKBENCH</p>
-            <h1>Your research instruments.</h1>
-            <p class="lead">
-              Install a supported tool, connect an existing one, or ask your
-              agent to set one up.
-            </p>
+        <section id="view-tools" class="view research-tools-view" hidden>
+          <div class="research-tools-heading">
+            <div><p class="eyebrow">YOUR WORKBENCH</p><h1>Research tools</h1>
+              <p class="lead">Use what’s installed. Add a solver when your investigation needs it.</p></div>
+            <button id="connect-research-tool" class="secondary" type="button">＋ Connect existing tool</button>
           </div>
-          <div class="tool-note">
-            <strong>Python is ready to explore.</strong> NumPy, SciPy, pandas,
-            and plotting are included. Simulation tools are optional.
-          </div>
-          <div class="inventory-heading">
-            <h2>
-              Installed <span id="installed-count" class="count-badge">1</span>
-            </h2>
-            <p>
-              Present on this machine. Scientific validation is specific to each
-              study.
-            </p>
-          </div>
-          <div id="installed-tool-grid" class="tool-grid"></div>
-          <div class="inventory-heading">
-            <h2>
-              Not installed
-              <span id="available-count" class="count-badge">0</span>
-            </h2>
-            <p>Add a solver when your investigation needs it.</p>
-          </div>
-          <div id="available-tool-grid" class="tool-grid"></div>
-          <details class="panel custom-tool">
-            <summary>Connect another research tool</summary>
-            <p>
-              Register an existing Simjecture capability directory. You can also
-              ask your project agent to install software and create its
-              descriptor.
-            </p>
-            <form id="custom-tool-form">
-              <label for="tool-name">Display name</label
-              ><input
-                id="tool-name"
-                required
-                placeholder="My research solver"
-              /><label for="tool-path"
-                >Capability directory on this machine</label
-              ><input
-                id="tool-path"
-                required
-                placeholder="/path/to/capabilities"
-              /><button class="secondary" type="submit">Register tool</button>
+          <div class="research-tools-intro"><span aria-hidden="true">∑</span>
+            <p><strong>Start with Python.</strong> NumPy, SciPy, pandas and plotting are included. External solvers are optional.</p></div>
+          <div class="inventory-heading"><h2>Installed <span id="installed-count" class="count-badge">1</span></h2>
+            <p>On this computer · includes detected local builds</p></div>
+          <div id="installed-tool-grid" class="tool-grid research-tool-grid"></div>
+          <div class="inventory-heading"><h2>Available to add <span id="available-count" class="count-badge">0</span></h2>
+            <p>Install directly or prepare with your agent</p></div>
+          <div id="available-tool-grid" class="tool-grid research-tool-grid"></div>
+          <p class="research-tools-footnote">Installation and readiness checks tell you a tool can run. Each investigation still validates its scientific method.
+            For tools on SSH workers, use <button id="tools-open-machines" class="text-button" type="button">Machines</button>.</p>
+          <dialog id="tool-details-dialog" class="tool-details-dialog">
+            <div class="tool-dialog-heading"><div><p id="tool-detail-category" class="eyebrow">RESEARCH TOOL</p><h2 id="tool-detail-title">Tool details</h2></div>
+              <button id="close-tool-details" class="quiet" type="button" aria-label="Close tool details">×</button></div>
+            <div id="tool-details-body" class="tool-details-body"></div>
+            <div class="tool-dialog-footer"><span id="tool-detail-status"></span><button id="tool-detail-action" class="secondary" type="button">Check readiness</button></div>
+          </dialog>
+          <dialog id="custom-tool-dialog" class="machine-dialog">
+            <div class="machine-dialog-heading"><div><p class="eyebrow">EXISTING INSTALLATION</p><h2>Connect a research tool</h2></div>
+              <button id="close-custom-tool" class="quiet" type="button" aria-label="Close tool registration">×</button></div>
+            <p class="machine-dialog-intro">Connect an existing capability directory on this computer. Your agent can help prepare the software and its descriptor.</p>
+            <form id="custom-tool-form" class="machine-form">
+              <label for="tool-name">Display name<input id="tool-name" required placeholder="My research solver" /></label>
+              <label for="tool-path">Capability directory<input id="tool-path" required placeholder="/path/to/capabilities" /></label>
+              <div class="machine-dialog-footer"><button id="cancel-custom-tool" class="secondary" type="button">Cancel</button><button class="primary" type="submit">Register tool</button></div>
             </form>
-          </details>
-          <p class="field-help">
-            A successful installation check establishes that a tool can run.
-            Each investigation still validates that it can answer the scientific
-            question.
-          </p>
+          </dialog>
         </section>
         <section id="view-project" class="view project-view" hidden>
           <div class="project-heading">

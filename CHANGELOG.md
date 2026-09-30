@@ -4,6 +4,10 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased — SSH experiment workers
 
+- Polish Research tools with compact independent cards and a separate details
+  panel. Keep paths, diagnostics and logs accessible without expanding grid rows;
+  distinguish detected local builds from unavailable managed-runtime profiles.
+
 - Add standalone local/SSH headless numerical workers for minimal studies, with
   frozen runtime identities, CPU/RAM/GPU admission and asynchronous execution.
 - Preserve job identity across lost replies, SSH interruptions and coordinator

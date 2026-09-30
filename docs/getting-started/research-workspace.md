@@ -152,6 +152,17 @@ belong to that project.
 
 ## Research tools
 
+The catalogue uses compact cards for installed and optional tools. **Details**
+opens a separate panel for build variants, paths, setup diagnostics and logs;
+expanding that information does not stretch neighboring cards.
+
+A **Detected** local build is present but still needs a registered capability
+to participate in recorded studies. An unavailable optional managed runtime is
+shown in its scoped setup diagnostics; it does not imply that detected local
+builds are missing. **Connect existing tool** opens the registration form.
+Install, readiness-check, demonstration and agent-assisted setup actions retain
+their existing behavior.
+
 The catalogue reuses `simjecture install` and `simjecture doctor` implementations.
 **Installed** and **Not installed** are separate sections. Installed instruments
 also show whether a readiness check has passed, failed, or has not yet been run.

@@ -366,14 +366,18 @@ def test_refresh_preserves_inspector_and_tool_details_and_dark_math(tmp_path, mo
             page = browser.new_page(viewport={"width": 1440, "height": 1000})
             page.goto(f"http://127.0.0.1:{server.server_port}")
             page.get_by_role("button", name="Research tools", exact=True).click()
+            page.locator('[data-tool="flash"]').get_by_role(
+                "button", name="Details", exact=True
+            ).click()
             page.locator('[data-key="variants-flash"] summary').click()
             page.locator('[data-key="installation-flash"] summary').click()
-            page.evaluate("window.scrollTo(0, 450)")
+            page.locator("#tool-details-body").evaluate("e => e.scrollTop = 450")
             tool["log"] = "updated log"
             page.evaluate("refreshTools()")
             assert page.locator('[data-key="variants-flash"]').get_attribute("open") is not None
             assert page.locator('[data-key="installation-flash"]').get_attribute("open") is not None
-            assert page.evaluate("window.scrollY") == 450
+            assert page.locator("#tool-details-body").evaluate("e => e.scrollTop") == 450
+            page.get_by_role("button", name="Close tool details").click()
             result = page.evaluate(r"""async () => {
               state.view='home';
               history.replaceState(null,'','#home');
@@ -423,6 +427,13 @@ def test_refresh_preserves_inspector_and_tool_details_and_dark_math(tmp_path, mo
             )
             page.get_by_role("button", name="Research tools", exact=True).click()
             page.evaluate("refreshTools()")
+            playwright.expect(page.locator('[data-tool="flash"]')).to_contain_text(
+                "Needs attention"
+            )
+            page.locator('[data-tool="flash"]').get_by_role(
+                "button", name="Details", exact=True
+            ).click()
+            page.locator('[data-key="diagnostics-flash"] summary').click()
             assert page.locator(".tool-failure").inner_text() == "Package download failed"
             assert page.locator(".tool-failure").is_visible()
             browser.close()

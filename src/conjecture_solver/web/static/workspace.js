@@ -961,211 +961,138 @@ async function refreshBenchmarks() {
   if (!pack.projects.length) $("benchmark-projects").append(el("p", "Prepare a task to begin."));
 }
 
-async function refreshTools() {
-  state.tools = await api("tools");
-  const previous = $("study-tools").value;
-  $("study-tools").replaceChildren(
-    new Option("Ordinary Python · no external solver", ""),
-  );
-  const paths = new Set();
-  for (const tool of state.tools) {
-    const variants = tool.variants?.length ? tool.variants : [tool];
-    for (const item of variants)
-      if (item.path && !paths.has(item.path)) {
-        paths.add(item.path);
-        $("study-tools").add(new Option(item.label || item.name, item.path));
-      }
-  }
-  const desired = state.project?.brief?.capability_directory || previous;
-  $("study-tools").value = [...$("study-tools").options].some(
-    (o) => o.value === desired,
-  )
-    ? desired
-    : "";
-  if (state.view !== "tools") return;
-  const revision = JSON.stringify(state.tools);
-  if (revision === state.toolsRevision) return;
-  const scroll = document.scrollingElement.scrollTop;
-  const opened = new Set(
-    [...$("view-tools").querySelectorAll("details[open][data-key]")].map(
-      (d) => d.dataset.key,
-    ),
-  );
-  const logScroll = new Map(
-    [...$("view-tools").querySelectorAll("details[data-key] pre")].map((e) => [
-      e.parentElement.dataset.key,
-      e.scrollTop,
-    ]),
-  );
-  $("installed-tool-grid").replaceChildren();
-  $("available-tool-grid").replaceChildren();
-  $("installed-count").textContent =
-    state.tools.filter((t) => t.installed).length + 1;
-  $("available-count").textContent = state.tools.filter(
-    (t) => !t.installed,
-  ).length;
-  const python = el("article", undefined, "tool-card tool-installed");
-  python.append(
-    el("span", "✓ Installed", "tool-status installed"),
-    el("h3", "Python research stack"),
-    el("p", "NumPy, SciPy, pandas, and plotting. Included with Simjecture."),
-    el("small", "Ready for numerical exploration", "field-help"),
-  );
-  $("installed-tool-grid").append(python);
-  for (const tool of state.tools) {
-    const card = el(
-      "article",
-      undefined,
-      `tool-card ${tool.installed ? "tool-installed" : "tool-missing"}`,
-    );
-    card.dataset.tool = tool.id;
-    card.append(
-      el(
-        "span",
-        tool.state === "working"
-          ? "◌ Working…"
-          : tool.state === "failed"
-            ? "Needs attention"
-            : tool.installed
-              ? "✓ Installed"
-              : "Not installed",
-        `tool-status ${tool.installed ? "installed" : "not-installed"}`,
-      ),
-      el("h3", tool.name),
-      el("p", tool.description),
-    );
-    const failure =
-      tool.report?.error ||
-      (tool.report?.checks || [])
-        .filter((check) => check.status === "fail" && check.required !== false)
-        .map((check) => [check.detail, check.remedy].filter(Boolean).join(" "))
-        .join("\n");
-    if (failure && tool.state !== "working") {
-      const warning = el("p", failure, "tool-failure");
-      warning.setAttribute("role", "status");
-      card.append(warning);
-    }
-    if (tool.installed)
-      card.append(
-        el(
-          "small",
-          tool.readiness === "passed"
-            ? "Installation check passed"
-            : tool.readiness === "failed"
-              ? "Installed, but its readiness check needs attention"
-              : "Detected on this machine · readiness not yet checked",
-          "field-help",
-        ),
-      );
-    if (tool.variants?.length) {
-      const details = el("details", undefined, "installed-variants");
-      details.dataset.key = `variants-${tool.id}`;
-      details.open = opened.has(details.dataset.key);
-      details.append(
-        el(
-          "summary",
-          `${tool.variants.length} installed application${tool.variants.length === 1 ? "" : "s"}`,
-        ),
-      );
-      for (const variant of tool.variants) {
-        const item = el("div");
-        item.append(
-          el("strong", variant.label),
-          el("p", variant.description),
-          el("code", variant.runtime),
-        );
-        details.append(item);
-      }
-      card.append(details);
-    }
-    const actions = el("div", undefined, "tool-actions");
-    if (tool.action !== "custom") {
-      const install = el(
-        "button",
-        tool.installed
-          ? tool.registered === false
-            ? "View installations"
-            : "Check readiness"
-          : ["agent", "source"].includes(tool.action)
-            ? "Install with agent"
-            : "Install",
-        "secondary",
-      );
-      install.disabled = tool.state === "working" || state.readonly;
-      install.onclick = () =>
-        action(install, async () => {
-          if (tool.installed && tool.registered === false) {
-            const details = card.querySelector(".installed-variants");
-            if (details) details.open = true;
-          } else if (
-            ["agent", "source"].includes(tool.action) &&
-            !tool.installed
-          ) {
-            await assistInstallation(tool);
-          } else {
-            await api("install", {
-              name: tool.id,
-              action: tool.installed ? "check" : "install",
-            });
-            toast(`${tool.name}: started`);
-            await refreshTools();
-          }
-        });
-      actions.append(install);
-      if (!tool.installed) {
-        const check = el("button", "Check installed", "quiet");
-        check.disabled = tool.state === "working" || state.readonly;
-        check.onclick = () =>
-          action(check, async () => {
-            await api("install", { name: tool.id, action: "check" });
-            await refreshTools();
-          });
-        actions.append(check);
-      }
-    } else {
-      card.append(el("code", tool.path));
-      const check = el("button", "Check readiness", "secondary");
-      check.disabled = tool.state === "working" || state.readonly;
-      check.onclick = () =>
-        action(check, async () => {
-          await api("install", { name: tool.id, action: "check" });
-          await refreshTools();
-        });
-      actions.append(check);
-    }
-    card.append(actions);
-    if (tool.id === "iter-pack" && tool.installed) {
-      const demo = el("button", "Run demo", "secondary");
-      demo.disabled = tool.state === "working" || state.readonly;
-      demo.onclick = () => action(demo, async () => {
-        const result = await api("tool-demo", { name: tool.id });
-        await reloadProjects();
-        mode("interactive");
-        await openProject(result.project);
-        await monitor.open(result.simulation.id);
-        toast("Diagnostic demo started. Its plots and results will appear in Simulations.");
-      });
-      actions.append(demo);
-    }
-    if (tool.log || Object.keys(tool.report || {}).length) {
-      const details = el("details");
-      details.dataset.key = `installation-${tool.id}`;
-      details.open = opened.has(details.dataset.key);
-      details.append(
-        el("summary", "Installation details"),
-        el("pre", tool.log || JSON.stringify(tool.report, null, 2)),
-      );
-      card.append(details);
-    }
-    $(tool.installed ? "installed-tool-grid" : "available-tool-grid").append(
-      card,
-    );
-  }
-  for (const pre of $("view-tools").querySelectorAll("details[data-key] pre"))
-    pre.scrollTop = logScroll.get(pre.parentElement.dataset.key) || 0;
-  document.scrollingElement.scrollTop = scroll;
-  state.toolsRevision = revision;
+const toolLabels = {
+  "iter-pack": ["ITER pack", "Diagnostics & data", "IT"],
+  "solps": ["SOLPS-ITER", "Edge plasma", "SP"],
+  "jorek": ["JOREK", "Tokamak MHD", "JK"],
+  "dina": ["DINA-PS", "Scenario modelling", "DN"],
+  "warpx-cpu": ["WarpX · CPU", "Particle-in-cell", "WX"],
+  "warpx-cuda": ["WarpX · CUDA", "GPU particle-in-cell", "WX"],
+  "flash": ["FLASH", "Hydrodynamics & MHD", "FL"],
+  "atomec": ["atoMEC", "Atomic physics", "AT"],
+  "singularity-eos": ["Singularity-EOS", "Equation of state", "ES"],
+  "m-aneos": ["M-ANEOS", "Equation of state", "ES"],
+  "optab": ["Optab", "Opacity tables", "OP"],
+};
+function toolPresentation(tool) {
+  const [name,category,glyph] = toolLabels[tool.id] || [tool.name,"Connected tool","RS"];
+  if(tool.state === "working")return {name,category,glyph,status:"Working…",kind:"working",note:"Preparation is running. Follow progress in Details."};
+  if(tool.installed && tool.registered === false)return {name,category,glyph,status:"Detected",kind:"installed",note:`${tool.variants?.length || 1} local build${tool.variants?.length === 1 ? "" : "s"} · registration needed`};
+  if(tool.report?.error || (tool.installed && tool.readiness === "failed"))return {name,category,glyph,status:"Needs attention",kind:"attention",note:tool.installed ? "The readiness check needs attention." : "Setup did not finish. See Details."};
+  return {name,category,glyph,status:tool.installed ? "✓ Installed" : "Not installed",kind:tool.installed ? "installed" : "not-installed",
+    note:tool.installed ? tool.readiness === "passed" ? "Installation check passed" : "Ready to check when you need it" : "Add when your investigation needs it"};
 }
+function toolFailure(tool) {
+  return tool.report?.error || (tool.report?.checks || [])
+    .filter(check=>check.status === "fail" && check.required !== false)
+    .map(check=>[check.detail,check.remedy].filter(Boolean).join(" ")).join("\n");
+}
+function toolActionLabel(tool) {
+  return tool.installed ? tool.registered === false ? "View installations" : "Check readiness" :
+    tool.action === "custom" ? "Check readiness" : ["agent","source"].includes(tool.action) ? "Install with agent" : "Install";
+}
+async function runToolAction(tool, button) {
+  await action(button,async()=>{
+    if(tool.installed && tool.registered === false){openToolDetails(tool,"variants");return;}
+    if(["agent","source"].includes(tool.action) && !tool.installed){$("tool-details-dialog").close();state.selectedTool=null;await assistInstallation(tool);return;}
+    await api("install",{name:tool.id,action:tool.installed || tool.action === "custom" ? "check" : "install"});
+    toast(`${tool.name}: started`);await refreshTools();
+  });
+  if(button.id === "tool-detail-action")button.disabled=state.readonly || state.tools.find(t=>t.id === tool.id)?.state === "working";
+}
+function closeToolDetails() {$("tool-details-dialog").close();state.selectedTool=null;state.toolDetailsRevision="";}
+$("close-tool-details").onclick=closeToolDetails;
+$("tool-details-dialog").addEventListener("close",()=>{state.selectedTool=null;state.toolDetailsRevision="";});
+function openToolDetails(tool, section=null) {
+  state.selectedTool=tool.id;state.toolDetailsRevision="";
+  renderToolDetails(tool,section);
+  if(!$("tool-details-dialog").open)$("tool-details-dialog").showModal();
+}
+function renderToolDetails(tool,section=null) {
+  const revision=JSON.stringify(tool);
+  if(revision===state.toolDetailsRevision && !section)return;
+  const body=$("tool-details-body"),scroll=body.scrollTop;
+  const opened=new Set([...body.querySelectorAll("details[open][data-key]")].map(d=>d.dataset.key));
+  const positions=new Map([...body.querySelectorAll("details[data-key] pre")].map(p=>[p.parentElement.dataset.key,p.scrollTop]));
+  const presentation=toolPresentation(tool);
+  $("tool-detail-title").textContent=presentation.name;
+  $("tool-detail-category").textContent=presentation.category;
+  body.replaceChildren(el("p",tool.description));
+  const explanation=tool.registered === false && tool.installed ?
+    "Local builds are present. Connect a capability directory to use one in recorded studies. A managed-profile check does not test these detected builds." : presentation.note;
+  body.append(el("div",explanation,`tool-detail-note${presentation.kind === "attention" ? " attention" : ""}`));
+  if(tool.path){const location=el("details");location.dataset.key=`location-${tool.id}`;location.open=opened.has(location.dataset.key);
+    location.append(el("summary","Connected capability directory"),el("code",tool.path));body.append(location);}
+  if(tool.variants?.length){
+    const variants=el("details",undefined,"installed-variants");variants.dataset.key=`variants-${tool.id}`;
+    variants.open=section === "variants" || opened.has(variants.dataset.key);
+    variants.append(el("summary",`${tool.variants.length} installed application${tool.variants.length === 1 ? "" : "s"}`));
+    for(const variant of tool.variants){const item=el("div");item.append(el("strong",variant.label || variant.name || "Local build"),el("p",variant.description || ""),el("code",variant.runtime || variant.path || ""));variants.append(item);}
+    body.append(variants);
+  }
+  const failure=toolFailure(tool);
+  if(failure){const diagnostics=el("details");diagnostics.dataset.key=`diagnostics-${tool.id}`;
+    diagnostics.open=opened.has(diagnostics.dataset.key);
+    diagnostics.append(el("summary",tool.registered === false && tool.installed ? "Managed profile · setup diagnostics" : "Setup diagnostics"));
+    const warning=el("pre",failure,"tool-failure");diagnostics.append(warning);body.append(diagnostics);}
+  if(tool.log || Object.keys(tool.report || {}).length){const details=el("details");details.dataset.key=`installation-${tool.id}`;
+    details.open=opened.has(details.dataset.key);details.append(el("summary","Installation details"),el("pre",tool.log || JSON.stringify(tool.report,null,2)));body.append(details);}
+  $("tool-detail-status").textContent=tool.installed ? "Installation is separate from scientific validation." : "Optional research tool";
+  const actionButton=$("tool-detail-action");actionButton.textContent=toolActionLabel(tool);
+  actionButton.disabled=tool.state === "working" || state.readonly;
+  actionButton.onclick=()=>runToolAction(tool,actionButton);
+  for(const pre of body.querySelectorAll("details[data-key] pre"))pre.scrollTop=positions.get(pre.parentElement.dataset.key)||0;
+  body.scrollTop=section ? 0 : scroll;state.toolDetailsRevision=revision;
+}
+function researchToolCard(tool) {
+  const p=toolPresentation(tool),card=el("article",undefined,"research-tool-card");card.dataset.tool=tool.id;
+  const top=el("div",undefined,"research-tool-top"),name=el("div",undefined,"research-tool-name");
+  name.append(el("h3",p.name),el("small",p.category));
+  top.append(el("span",p.glyph,"research-tool-icon"),name,el("span",p.status,`tool-status ${p.kind}`));
+  const description=el("p",tool.description,"research-tool-description");description.title=tool.description;
+  const note=el("div",p.note,`research-tool-note${p.kind === "attention" ? " attention" : ""}`);
+  card.append(top,description,note);
+  const actions=el("div",undefined,"tool-actions"),install=el("button",toolActionLabel(tool),"secondary");
+  install.disabled=tool.state === "working" || state.readonly;install.onclick=()=>runToolAction(tool,install);actions.append(install);
+  if(!tool.installed && tool.action !== "custom"){
+    const check=el("button","Check installed","quiet");check.disabled=tool.state === "working" || state.readonly;
+    check.onclick=()=>action(check,async()=>{await api("install",{name:tool.id,action:"check"});await refreshTools();});actions.append(check);
+  }
+  if(tool.id === "iter-pack" && tool.installed){const demo=el("button","Run demo","quiet");demo.disabled=tool.state === "working" || state.readonly;
+    demo.onclick=()=>action(demo,async()=>{const result=await api("tool-demo",{name:tool.id});await reloadProjects();mode("interactive");await openProject(result.project);await monitor.open(result.simulation.id);toast("Diagnostic demo started. Its plots and results will appear in Simulations.");});actions.append(demo);}
+  const details=el("button","Details","quiet tool-details-button");details.onclick=()=>openToolDetails(tool);actions.append(details);
+  card.append(actions);return card;
+}
+$("connect-research-tool").onclick=()=>$("custom-tool-dialog").showModal();
+for(const id of ["close-custom-tool","cancel-custom-tool"])$(id).onclick=()=>$("custom-tool-dialog").close();
+$("tools-open-machines").onclick=()=>view("machines");
+async function refreshTools() {
+  state.tools=await api("tools");
+  const previous=$("study-tools").value;$("study-tools").replaceChildren(new Option("Ordinary Python · no external solver",""));
+  const paths=new Set();
+  for(const tool of state.tools){const variants=tool.variants?.length ? tool.variants : [tool];for(const item of variants)if(item.path && !paths.has(item.path)){paths.add(item.path);$("study-tools").add(new Option(item.label || item.name,item.path));}}
+  const desired=state.project?.brief?.capability_directory || previous;
+  $("study-tools").value=[...$("study-tools").options].some(o=>o.value===desired) ? desired : "";
+  if(state.view!=="tools")return;
+  $("connect-research-tool").disabled=state.readonly;
+  for(const button of $("custom-tool-form").querySelectorAll("button[type='submit']"))button.disabled=state.readonly;
+  if(state.selectedTool && $("tool-details-dialog").open){const selected=state.tools.find(t=>t.id===state.selectedTool);if(selected)renderToolDetails(selected);}
+  // Raw logs and reports do not reshape or rebuild the catalogue while a panel is open.
+  const revision=JSON.stringify(state.tools.map(t=>({id:t.id,presentation:toolPresentation(t),description:t.description,installed:t.installed,action:t.action,registered:t.registered})));
+  if(revision===state.toolsRevision)return;
+  const scroll=document.scrollingElement.scrollTop;
+  $("installed-tool-grid").replaceChildren();$("available-tool-grid").replaceChildren();
+  $("installed-count").textContent=state.tools.filter(t=>t.installed).length+1;
+  $("available-count").textContent=state.tools.filter(t=>!t.installed).length;
+  const python=el("article",undefined,"research-tool-card"),top=el("div",undefined,"research-tool-top"),name=el("div",undefined,"research-tool-name");
+  name.append(el("h3","Python research stack"),el("small","Numerical exploration"));
+  top.append(el("span","PY","research-tool-icon"),name,el("span","✓ Installed","tool-status installed"));
+  python.append(top,el("p","NumPy, SciPy, pandas and plotting. Included with Simjecture.","research-tool-description"),el("div","Ready for numerical exploration","research-tool-note"));
+  const included=el("div",undefined,"tool-actions");included.append(el("span","Included with Simjecture","included-label"));python.append(included);$("installed-tool-grid").append(python);
+  for(const tool of state.tools)$(tool.installed ? "installed-tool-grid" : "available-tool-grid").append(researchToolCard(tool));
+  document.scrollingElement.scrollTop=scroll;state.toolsRevision=revision;
+}
+
 function briefPayload() {
   return {
     project: state.project.id,
@@ -1742,6 +1669,7 @@ $("custom-tool-form").onsubmit = (e) => {
       path: $("tool-path").value,
     });
     toast("Research tool registered");
+    $("custom-tool-dialog").close();
     await refreshTools();
   });
 };

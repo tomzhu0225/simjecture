@@ -3322,3 +3322,76 @@ wa-split-panel.project-layout {
   .machine-form .two-fields { grid-template-columns: 1fr; }
 }
 .machine-dialog-heading h2 { font-family: inherit; font-weight: 650; }
+
+/* Research tools: compact tiles; build lists and diagnostics stay in a separate panel. */
+.research-tools-view { max-width: 1160px; }
+.research-tools-heading { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 26px; }
+.research-tools-heading h1 { font-size: 34px; letter-spacing: -1.1px; margin: 2px 0 7px; }
+.research-tools-heading .eyebrow { font-size: 11px; letter-spacing: .17em; margin: 0; }
+.research-tools-heading .lead { font-size: 14px; color: var(--muted); margin: 0; }
+.research-tools-heading > button { font-size: 12px; white-space: nowrap; padding: 10px 14px; border-radius: 9px; }
+.research-tools-intro { display: flex; align-items: center; gap: 13px; border: 1px solid var(--line); border-radius: 11px; padding: 13px 16px; margin-bottom: 27px; background: var(--white); }
+.research-tools-intro > span { font-size: 23px; color: var(--accent); }
+.research-tools-intro p { font-size: 12px; color: var(--muted); margin: 0; }
+.research-tools-intro strong { color: var(--ink); font-weight: 600; }
+.research-tools-view .inventory-heading { margin: 27px 0 13px; align-items: center; }
+.research-tools-view .inventory-heading h2 { font-size: 15px; letter-spacing: -.1px; }
+.research-tools-view .inventory-heading p { font-size: 11px; }
+.research-tools-view .count-badge { font-size: 10px; padding: 2px 7px; background: var(--soft); color: var(--muted); }
+.research-tool-grid { align-items: start; gap: 16px; }
+.research-tool-card { border: 1px solid var(--line); border-radius: 13px; padding: 19px; background: var(--white); display: flex; flex-direction: column; min-width: 0; min-height: 215px; box-shadow: 0 2px 8px #22203e03; }
+.research-tool-top { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 13px; }
+.research-tool-icon { width: 34px; height: 34px; flex: 0 0 auto; border-radius: 9px; background: var(--soft); color: var(--accent); display: grid; place-items: center; font: 600 12px ui-monospace,SFMono-Regular,Consolas,monospace; }
+.research-tool-name { flex: 1; min-width: 0; }
+.research-tool-name h3 { margin: 0 0 4px; font-family: inherit; font-size: 14px; font-weight: 650; line-height: 1.4; overflow-wrap: anywhere; }
+.research-tool-name small { color: var(--muted); font-size: 10px; display: block; }
+.research-tool-card .tool-status { margin-left: auto; font-size: 9px; padding: 4px 7px; border-radius: 20px; white-space: nowrap; font-weight: 600; }
+.research-tool-card .tool-status.installed { color: #28805c; background: #e7f4ed; }
+.research-tool-card .tool-status.not-installed { color: var(--muted); background: var(--soft); }
+.research-tool-card .tool-status.working { color: #7861c0; background: #eeeafa; }
+.research-tool-card .tool-status.attention { color: #9b681b; background: #fcf1d9; }
+.research-tool-description { font-size: 12px; line-height: 1.7; color: var(--muted); margin: 0 0 12px; min-height: 40px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.research-tool-note { font-size: 10px; color: var(--muted); margin-bottom: 15px; min-height: 16px; }
+.research-tool-note.attention { color: #9b681b; }
+.research-tool-card .tool-actions { border-top: 1px solid var(--line); padding-top: 12px; margin-top: auto; gap: 5px; align-items: center; }
+.research-tool-card .tool-actions button { font-size: 11px; padding: 7px 9px; border-radius: 7px; }
+.research-tool-card .tool-actions .tool-details-button { margin-left: auto; color: var(--muted); }
+.research-tool-card .tool-actions .included-label { font-size: 11px; color: var(--muted); line-height: 30px; }
+.research-tools-footnote { font-size: 11px; color: var(--muted); padding-top: 22px; margin: 0; line-height: 1.7; }
+.tool-details-dialog { width: 730px; max-width: calc(100vw - 32px); max-height: calc(100dvh - 48px); padding: 0; border: 1px solid var(--line); border-radius: 16px; background: var(--white); color: var(--ink); box-shadow: 0 24px 80px #15132d26; }
+.tool-details-dialog[open] { display: flex; flex-direction: column; }
+.tool-details-dialog::backdrop { background: #15132966; backdrop-filter: blur(3px); }
+.tool-dialog-heading { display: flex; justify-content: space-between; align-items: flex-start; padding: 24px 26px 19px; gap: 15px; border-bottom: 1px solid var(--line); }
+.tool-dialog-heading .eyebrow { font-size: 10px; letter-spacing: .14em; margin: 0 0 4px; }
+.tool-dialog-heading h2 { font: inherit; font-size: 22px; font-weight: 650; letter-spacing: -.4px; margin: 0; }
+.tool-dialog-heading > button { font-size: 25px; line-height: 1; padding: 3px; }
+.tool-details-body { padding: 20px 26px; overflow-y: auto; min-height: 0; }
+.tool-details-body > p { font-size: 13px; line-height: 1.7; margin: 0 0 14px; color: var(--muted); }
+.tool-detail-note { background: var(--soft); padding: 11px 13px; border-radius: 8px; font-size: 12px; line-height: 1.6; color: var(--muted); margin-bottom: 18px; }
+.tool-detail-note.attention { color: #9b681b; }
+.tool-details-body details { border-top: 1px solid var(--line); padding-top: 14px; margin-top: 17px; }
+.tool-details-body summary { cursor: pointer; font-size: 12px; font-weight: 600; }
+.tool-details-body .installed-variants > div { border-bottom: 1px solid var(--line); padding: 13px 0; }
+.tool-details-body .installed-variants strong { font-size: 12px; font-weight: 600; display: block; }
+.tool-details-body .installed-variants p { color: var(--muted); font-size: 12px; line-height: 1.6; margin: 5px 0 8px; }
+.tool-details-body code { font-size: 11px; background: var(--soft); padding: 4px 6px; border-radius: 5px; overflow-wrap: anywhere; display: inline-block; }
+.tool-details-body pre { font: 11px/1.7 ui-monospace,SFMono-Regular,Consolas,monospace; white-space: pre-wrap; overflow: auto; max-height: 300px; padding: 13px; background: var(--soft); border-radius: 8px; margin-bottom: 0; overflow-wrap: anywhere; }
+.tool-dialog-footer { border-top: 1px solid var(--line); padding: 15px 26px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.tool-dialog-footer span { font-size: 11px; color: var(--muted); }
+.tool-dialog-footer button { font-size: 12px; padding: 9px 12px; border-radius: 8px; }
+#custom-tool-form { display: grid; gap: 17px; }
+[data-theme="dark"] .research-tool-card .tool-status.installed { color: #85d9af; background: #1d3c30; }
+[data-theme="dark"] .research-tool-card .tool-status.working { color: #bfb1f2; background: #342c4c; }
+[data-theme="dark"] .research-tool-card .tool-status.attention { color: #e9c579; background: #403620; }
+[data-theme="dark"] .research-tool-note.attention,[data-theme="dark"] .tool-detail-note.attention { color: #e9c579; }
+@media (max-width: 1150px) { .research-tool-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+@media (max-width: 650px) {
+  .research-tools-heading { align-items: flex-start; gap: 12px; flex-direction: column; }
+  .research-tools-heading h1 { font-size: 27px; }
+  .research-tools-heading .lead { font-size: 12px; }
+  .research-tool-grid { grid-template-columns: 1fr; }
+  .research-tools-view .inventory-heading p { display: none; }
+  .tool-dialog-heading { padding: 20px; }
+  .tool-details-body { padding: 16px 20px; }
+  .tool-dialog-footer { padding: 14px 20px; }
+}
