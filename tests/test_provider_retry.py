@@ -44,6 +44,25 @@ def test_error_event_is_detected_even_with_zero_exit(tmp_path):
     assert provider_failure(tmp_path, 0) is None
 
 
+@pytest.mark.parametrize("field", ["result", "message", "error"])
+def test_actual_insufficient_balance_envelopes_pause_without_retry(tmp_path, field):
+    (tmp_path / "response.json").write_text(
+        json.dumps(
+            {"type": "result", "is_error": True, field: "Error code: 402 - Insufficient Balance"}
+        )
+    )
+    error = provider_failure(tmp_path, 0)
+    state = {"deadline": time.time() + 600}
+    original_deadline = state["deadline"]
+    fake = SimpleNamespace(state=state, save=lambda: None, event=lambda *a, **kw: None)
+    assert error.category == "quota" and not error.retryable
+    assert not wait_for_provider(fake, error)
+    assert state["status"] == "paused_external_error"
+    assert "Restore credit" in state["provider_attention"]
+    assert state["deadline"] == original_deadline
+    assert not state.get("provider_retry_count")
+
+
 def test_backoff_caps_and_obeys_deadline():
     assert retry_delay(100000) == 60
     state = {"deadline": time.time() + 0.05}

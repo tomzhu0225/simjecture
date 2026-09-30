@@ -706,6 +706,14 @@ def build_parser() -> argparse.ArgumentParser:
     benchmark.add_argument("--assert-falsified", action="store_true")
     benchmark.set_defaults(handler=_benchmark)
 
+    from .llm_bench.pack import configure_parser as configure_llm_bench
+
+    configure_llm_bench(
+        subcommands.add_parser(
+            "llm-benchmark", help="Experimental, versioned scientific coding task pack"
+        )
+    )
+
     schemas = subcommands.add_parser("schemas")
     schemas.add_argument("--output", default="schemas")
     schemas.add_argument("--check", action="store_true")

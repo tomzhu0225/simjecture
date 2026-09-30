@@ -220,6 +220,14 @@ class NotebookService:
         )
         reviews = sorted(snapshot["reviews"], key=lambda r: r.get("created_at", 0), reverse=True)
         methods = sorted(snapshot["methods"], key=lambda m: m.get("created_at", 0), reverse=True)
+        completed = [e for e in experiments if e["status"] not in {"queued", "running"}]
+
+        def anchor(rows):
+            if not rows:
+                return None
+            row = rows[0]
+            return {k: row[k] for k in ("id", "status") if k in row}
+
         brief = dict(
             hypothesis=shorten(self.manifest["hypothesis"], min(900, max_bytes // 16)),
             authority="Worker notes are unreviewed; only independent verdicts accept claims.",
@@ -237,6 +245,12 @@ class NotebookService:
                 notebook="lab.notes(limit=20, offset=0)",
             ),
             budget_warning=snapshot["audit"].get("budget_warning"),
+            # These small receipt references are never evicted by prose notes.
+            current_evidence=dict(
+                latest_completed=anchor(completed),
+                latest_method=anchor(methods),
+                latest_review=anchor(reviews),
+            ),
             automatic_journal=[
                 {
                     k: e.get(k)
@@ -320,6 +334,12 @@ class NotebookService:
             omitted={},
         )
         for note in brief["notes"]:
+            note["statement"] = shorten(note["statement"], 500)
+            note["alternatives"] = {
+                shorten(k, 100): shorten(v, 180)
+                for k, v in list((note.get("alternatives") or {}).items())[:3]
+            }
+            note["sources"] = [shorten(s, 160) for s in (note.get("sources") or [])[:3]]
             if note["kind"] == "next_test":
                 note["attempted_by"] = [
                     e["id"] for e in experiments if e.get("plan") == note["id"]
@@ -341,21 +361,26 @@ class NotebookService:
                     }
         # Drop whole entries, never silently truncate a JSON document or overwrite records.
         priority = (
-            "recent_experiments",
-            "methods",
-            "automatic_journal",
-            "controller_summaries",
             "notes",
+            "controller_summaries",
+            "recent_experiments",
+            "automatic_journal",
+            "methods",
             "recent_reviews",
             "missing_cases",
             "accepted_claims",
             "active_experiments",
         )
-        while len(json.dumps(brief, ensure_ascii=False).encode()) > max_bytes:
-            removable = next((key for key in priority if brief[key]), None)
-            if removable is None:
-                raise ValueError("Brief header exceeds requested budget")
-            brief[removable].pop()
+
+        def removable_section():
+            # Remove excess history first, preserving one recent item per evidence
+            # category while any less essential history can still be removed.
+            for key in priority:
+                reserve = 0 if key in {"notes", "controller_summaries"} else 1
+                if len(brief[key]) > reserve:
+                    return key
+            return next((key for key in priority if brief[key]), None)
+
         totals = dict(
             automatic_journal=len(journal),
             controller_summaries=len(summaries),
@@ -372,7 +397,7 @@ class NotebookService:
         brief["omitted"] = {key: total - len(brief[key]) for key, total in totals.items()}
         # Reserve space for omission counts too.
         while len(json.dumps(brief, ensure_ascii=False).encode()) > max_bytes:
-            key = next((k for k in priority if brief[k]), None)
+            key = removable_section()
             if key is None:
                 raise ValueError("Brief header exceeds requested budget")
             brief[key].pop()

@@ -577,6 +577,69 @@ class Workspace:
             self.write_index(directory)
         return self.project(identifier)
 
+    def benchmark_catalogue(self):
+        from ..llm_bench.pack import catalogue
+
+        return catalogue() | {
+            "projects": [
+                {
+                    "id": p["id"],
+                    "name": p["name"],
+                    "benchmark": p["benchmark"],
+                    "grade": {
+                        k: v
+                        for k, v in load(Path(p["path"]) / "benchmark-grade.json").items()
+                        if k != "verified_plot_data"
+                    },
+                }
+                for p in self.projects()
+                if p.get("benchmark")
+            ]
+        }
+
+    def prepare_benchmark(self, payload):
+        from ..llm_bench.pack import PACK_VERSION, TASKS, prepare, validate_task
+
+        task = payload.get("task")
+        validate_task(task)
+        project = self.create({"name": f"Bench: {TASKS[task]['title']}"})
+        directory = self.directory(project["id"])
+        prepare(task, directory / "files/benchmark")
+        with self.lock():
+            record = load(directory / "project.json")
+            record["benchmark"] = {"task": task, "pack_version": PACK_VERSION}
+            put(directory / "project.json", record)
+        return self.project(project["id"])
+
+    def grade_benchmark(self, payload):
+        from ..llm_bench.pack import PACK_VERSION, grade, render_verified_plots
+
+        identifier = payload.get("project")
+        project = self.project(identifier)
+        if project["running"]:
+            raise ValueError("Wait for the benchmark agent to finish before grading")
+        specification = project.get("benchmark") or {}
+        if specification.get("pack_version") != PACK_VERSION:
+            raise ValueError("No compatible benchmark prepared in this conversation")
+        directory = self.directory(identifier)
+        report = grade(
+            specification["task"],
+            directory / "files/benchmark",
+            backend=self.execution["backend"],
+            metadata={
+                "model": project["agent"].get("model"),
+                "agent": project["agent"].get("backend"),
+            },
+        )
+        put(directory / "benchmark-grade.json", report)
+        render_verified_plots(
+            specification["task"],
+            directory / "files/benchmark",
+            report,
+            directory / "files/benchmark/verified-plots",
+        )
+        return {k: v for k, v in report.items() if k != "verified_plot_data"}
+
     def project(self, identifier):
         from .activity import native_activity
         from .jobs import list_jobs

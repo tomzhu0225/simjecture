@@ -93,6 +93,7 @@ function view(name) {
         ? projectHash(state.project.id, { view: state.mode })
         : name;
   if (name === "tools") refreshTools().catch((e) => toast(e.message, true));
+  if (name === "benchmarks") refreshBenchmarks().catch((e) => toast(e.message, true));
   if (name === "home" && state.token && changed)
     renderAgent(undefined, "home").catch((e) => toast(e.message, true));
 }
@@ -131,7 +132,7 @@ async function followRoute({ reveal = true } = {}) {
         });
     } else
       view(
-        ["settings", "tools"].includes(location.hash.slice(1))
+        ["settings", "tools", "benchmarks"].includes(location.hash.slice(1))
           ? location.hash.slice(1)
           : "home",
       );
@@ -737,6 +738,47 @@ Guide me through the missing decisions in plain language. Inspect prerequisites,
   );
 }
 
+async function refreshBenchmarks() {
+  const pack = await api("benchmarks");
+  $("benchmark-version").textContent = `Task pack ${pack.version} · experimental · no leaderboard`;
+  $("benchmark-tasks").replaceChildren();
+  for (const task of pack.tasks) {
+    const card = el("article", undefined, "tool-card"), button = el("button", "Prepare conversation");
+    card.append(el("h2", task.title), el("p", `${task.seconds / 60} minute suggested budget. ${task.fields ? "HDF5 fields and CSV diagnostics." : "CSV diagnostics; no HDF5 dependency."}`));
+    button.disabled = state.readonly;
+    button.onclick = () => action(button, async () => {
+      const project = await api("prepare-benchmark", {task:task.id});
+      await reloadProjects();
+      await openProject(project.id);
+      mode("interactive");
+      $("chat-input").value = "Complete the benchmark in ./benchmark under your current working directory. Read benchmark/TASK.md, preserve the inputs, implement the reducer and deliver the requested files in benchmark/. Record progress before a handoff. Do not inspect verifier or oracle implementations. Report limitations honestly.";
+      $("chat-input").dispatchEvent(new Event("input"));
+      $("chat-input").focus();
+      toast("Task prepared. Choose your agent and send the request.");
+    });
+    card.append(button); $("benchmark-tasks").append(card);
+  }
+  $("benchmark-projects").replaceChildren();
+  for (const project of pack.projects) {
+    const card = el("article", undefined, "tool-card"), link = el("a", project.name);
+    link.href = projectLink(project.id);
+    card.append(link, el("p", project.grade?.passed === true ? "Passed the finite numerical contract" : project.grade?.passed === false ? "Incomplete or failed numerical contract" : "Not graded"));
+    const button = el("button", "Grade delivered results");
+    button.disabled = state.readonly;
+    button.onclick = () => action(button, async () => {
+      button.textContent = "Grading…";
+      try {
+        const report = await api("grade-benchmark", {project:project.id});
+        $("benchmark-report").textContent = JSON.stringify(report, null, 2);
+        $("benchmark-report").hidden = false;
+        await refreshBenchmarks();
+      } finally {button.textContent = "Grade delivered results";}
+    });
+    card.append(button); $("benchmark-projects").append(card);
+  }
+  if (!pack.projects.length) $("benchmark-projects").append(el("p", "Prepare a task to begin."));
+}
+
 async function refreshTools() {
   state.tools = await api("tools");
   const previous = $("study-tools").value;
@@ -1057,6 +1099,9 @@ async function renderStudies() {
         report.experiments?.length ?? snap.executions?.length ?? 0,
       ],
       ["Independent reviews", report.reviews?.length ?? 0],
+      ["Input tokens", data.live?.usage ? data.live.usage.input_tokens.toLocaleString() : "—"],
+      ["Output tokens", data.live?.usage ? data.live.usage.output_tokens.toLocaleString() : "—"],
+      ["Provider retry wait", `${Math.round((data.live?.provider_wait_seconds || 0) / 60)} min`],
       [
         "Time remaining",
         data.live?.remaining === undefined
@@ -1070,6 +1115,12 @@ async function renderStudies() {
     }
     card.append(metrics);
     card.append(el("p", data.live?.activity || "", "field-help"));
+    if (data.live?.usage_details) {
+      const usage = data.live.usage_details;
+      card.append(el("p", `${usage.requests} tracked requests; ${usage.requests_without_usage} without usage yet. Cache usage ${usage.cache_usage_complete ? "reported" : "not fully reported"}. ${usage.cost_note}`, "field-help"));
+    }
+    const instrument = data.live?.instrument_requirement;
+    if (instrument?.prefixes?.length) card.append(el("p", `Instrument family: any of ${instrument.prefixes.join(" or ")}. ${instrument.satisfied ? "Available" : "Not available"}; scientific qualification is separate.`, "field-help"));
     const controls = el("div", undefined, "study-controls");
     for (const [verb, label, allowed] of [
       ["pause", "Pause", snap.controls?.can_pause],

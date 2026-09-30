@@ -32,7 +32,11 @@ def provider_failure(directory, returncode):
                 continue
             if event.get("type") in {"error", "turn.failed"} or event.get("is_error"):
                 stream_error = True
-                messages.append(json.dumps(event.get("error", event.get("message", {}))))
+                # CLI adapters also put protocol errors in a result field.
+                # Successful assistant prose is never inspected as an error.
+                messages.extend(
+                    json.dumps(event[key]) for key in ("error", "message", "result") if key in event
+                )
     if returncode in (0, 124) and not stream_error:
         return None
     text = "\n".join(messages).lower()
@@ -40,7 +44,8 @@ def provider_failure(directory, returncode):
         "authentication": r"\b401\b|invalid.api.key|authentication.error|unauthorized",
         "quota": (
             r"insufficient.quota|quota.exhausted|quota.exceeded|out.of.credits|"
-            r"credit.balance|额度.*(?:用尽|耗尽)"
+            r"credit.balance|insufficient.balance|payment.required|\b402\b|"
+            r"额度.*(?:用尽|耗尽)|余额不足"
         ),
         "permission": r"\b403\b|permission.denied|access.denied|model.not.found|unsupported.model",
     }
@@ -61,7 +66,13 @@ def wait_for_provider(supervisor, error):
     state["provider_error_category"] = error.category
     if not error.retryable:
         state["status"] = "paused_external_error"
-        state["activity"] = f"Provider needs attention: {error.category}"
+        state["provider_attention"] = {
+            "quota": "Provider credit or quota exhausted. Restore credit, then resume this study.",
+            "authentication": "Authentication failed. Fix the provider connection, then resume.",
+            "permission": "Provider access denied. Check model access, then resume.",
+        }.get(error.category, "Provider needs attention before this study can resume.")
+        state["activity"] = state["provider_attention"]
+        supervisor.event("provider_needs_attention", category=error.category)
         supervisor.save()
         return False
     state["provider_retry_count"] = state.get("provider_retry_count", 0) + 1
@@ -100,3 +111,4 @@ def provider_recovered(supervisor):
     supervisor.state["provider_consecutive_failures"] = 0
     supervisor.state.pop("provider_error_category", None)
     supervisor.state.pop("last_error", None)
+    supervisor.state.pop("provider_attention", None)

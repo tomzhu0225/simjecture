@@ -16,6 +16,7 @@ import signal
 import subprocess
 import sys
 import time
+import uuid
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -38,7 +39,9 @@ def read_provider(path):
     return config
 
 
-def model_for(config, model=None, timeout=90, max_tokens=8192):
+def model_for(
+    config, model=None, timeout=90, max_tokens=8192, *, native_tools=False, completion_check=None
+):
     require_runtime()
     from smolagents import OpenAIServerModel
 
@@ -51,7 +54,15 @@ def model_for(config, model=None, timeout=90, max_tokens=8192):
         # messages. Keep provider-only reasoning alongside that public memory.
         # DeepSeek requires it on assistant messages whenever tools are supplied.
         def _prepare_completion_kwargs(self, *args, **kwargs):
+            original_messages = kwargs.get("messages")
+            if native_tools and original_messages is not None:
+                # Ask the library for parameters, not its lossy history conversion.
+                kwargs["messages"] = [{"role": "user", "content": ""}]
             request = super()._prepare_completion_kwargs(*args, **kwargs)
+            if native_tools and original_messages is not None:
+                from .workspace_protocol import native_messages
+
+                request["messages"] = native_messages(original_messages)
             if deepseek and request.get("tools"):
                 request["tool_choice"] = "auto"
                 if not hasattr(self, "reasoning_messages"):
@@ -65,18 +76,30 @@ def model_for(config, model=None, timeout=90, max_tokens=8192):
                     content = message.get("content") or ""
                     if isinstance(content, list):
                         content = "\n".join(part.get("text", "") for part in content)
+                    call_ids = [c["id"] for c in message.get("tool_calls", [])]
                     if key not in self.reasoning_messages:
                         self.reasoning_messages[key] = next(
                             (
                                 record["reasoning_content"]
                                 for record in reversed(getattr(self, "reasoning_records", []))
-                                if any(marker and marker in content for marker in record["markers"])
+                                if any(
+                                    marker and (marker in content or marker in call_ids)
+                                    for marker in record["markers"]
+                                )
                             ),
                             "",
                         )
                     # Freeze each historical message: repeated answer text or
                     # reused provider call IDs must not rewrite the cached prefix.
                     message["reasoning_content"] = self.reasoning_messages[key]
+            from .provider_usage import context_metadata
+
+            if getattr(self, "usage_request_id", None):
+                emit(
+                    "provider_context",
+                    request_id=self.usage_request_id,
+                    **context_metadata(request),
+                )
             return request
 
         def remember_reasoning(self, response):
@@ -101,15 +124,61 @@ def model_for(config, model=None, timeout=90, max_tokens=8192):
                     )
 
         def generate(self, messages, *args, **kwargs):
+            if native_tools:
+                # Text delimiters belong to the legacy transcript format. Native
+                # calls are already structured; never trim their accompanying text.
+                kwargs.pop("stop_sequences", None)
             prefix = getattr(self, "conversation_history", [])
             if prefix:
                 messages = [messages[0], *prefix, *messages[1:]]
             tools = kwargs.get("tools_to_call_from") or []
             explicit_completion = deepseek and any(tool.name == "final_answer" for tool in tools)
             total_input = total_output = 0
+            generation_id = uuid.uuid4().hex
             for attempt in range(4):
                 emit("activity", state="thinking", label="Thinking")
-                response = super().generate(messages, *args, **kwargs)
+                from .provider_usage import mapping, reported_usage
+
+                self.usage_request_id = uuid.uuid4().hex
+                receipt = dict(
+                    request_id=self.usage_request_id,
+                    generation_id=generation_id,
+                    attempt=attempt + 1,
+                    reason="completion_check" if attempt else "generation",
+                    model=self.model_id,
+                    sdk_max_retries=1,
+                )
+                emit("provider_request", status="started", **receipt)
+                started = time.monotonic()
+                try:
+                    response = super().generate(messages, *args, **kwargs)
+                except Exception as error:
+                    emit(
+                        "provider_request",
+                        status="failed",
+                        **receipt,
+                        seconds=time.monotonic() - started,
+                        error_type=type(error).__name__,
+                        http_status=getattr(error, "status_code", None),
+                    )
+                    raise
+                finally:
+                    self.usage_request_id = None
+                raw = mapping(getattr(response, "raw", None))
+                choice = mapping((raw.get("choices") or [{}])[0])
+                native_content = mapping(choice.get("message")).get("content")
+                emit(
+                    "provider_request",
+                    status="succeeded",
+                    **receipt,
+                    seconds=time.monotonic() - started,
+                    provider_request_id=raw.get("id"),
+                    usage=reported_usage(response),
+                    finish_reason=choice.get("finish_reason"),
+                    tool_call_count=len(response.tool_calls or []),
+                    content_trimmed=isinstance(native_content, str)
+                    and native_content != response.content,
+                )
                 if response.token_usage:
                     total_input += response.token_usage.input_tokens
                     total_output += response.token_usage.output_tokens
@@ -117,6 +186,32 @@ def model_for(config, model=None, timeout=90, max_tokens=8192):
                     self.remember_reasoning(response)
                 if not explicit_completion or response.tool_calls:
                     break
+                if completion_check is not None:
+                    # A host-owned validator may finish a fully verified task
+                    # without another request just to reformat its final answer.
+                    # A false result, missing receipt or exception cannot approve.
+                    try:
+                        verified = completion_check() is True
+                    except Exception:
+                        verified = False
+                    emit("completion_probe", verified=verified)
+                    if verified:
+                        from smolagents.models import (
+                            ChatMessageToolCall,
+                            ChatMessageToolCallFunction,
+                        )
+
+                        response.tool_calls = [
+                            ChatMessageToolCall(
+                                id="host_verified_" + uuid.uuid4().hex,
+                                type="function",
+                                function=ChatMessageToolCallFunction(
+                                    name="final_answer",
+                                    arguments={"answer": "Host checks verified task delivery."},
+                                ),
+                            )
+                        ]
+                        break
                 # Plain text may be a progress preamble, not a final answer.
                 # Require an explicit completion handoff without using the
                 # provider's unsupported forced tool_choice setting.
@@ -504,11 +599,16 @@ def run_agent(
     workspace=None,
 ):
     deadline = time.time() + wall_seconds if wall_seconds is not None else float("inf")
+    native_tools = not judge and (
+        "deepseek" in (model or config["model"]).lower()
+        or urlparse(config["base_url"]).hostname == "api.deepseek.com"
+    )
     llm = model_for(
         config,
         model,
         timeout=min(600, max(1, wall_seconds or 600)),
         max_tokens=32768 if judge else 8192,
+        native_tools=native_tools,
     )
     if judge:
         messages = [
@@ -559,7 +659,9 @@ def run_agent(
         raise ValueError(
             "Independent reviewer returned empty or truncated output after two bounded attempts"
         )
-    from smolagents import ToolCallingAgent
+    from .workspace_protocol import agent_type, step_messages
+
+    ToolCallingAgent = agent_type(native_tools=native_tools)
 
     def step_event(step, **kwargs):
         if time.time() >= deadline:
@@ -634,9 +736,7 @@ def run_agent(
                     if isinstance(step, FinalAnswerStep):
                         messages.append({"role": "assistant", "content": str(step.output)})
                         continue
-                    messages.extend(
-                        json.loads(message.model_dump_json()) for message in step.to_messages()
-                    )
+                    messages.extend(step_messages(step))
                 save_session(
                     root.parent,
                     config,

@@ -67,7 +67,8 @@ def provider():
             calls = [
                 m
                 for m in current_messages
-                if m.get("role") == "assistant" and "Calling tools:" in json.dumps(m)
+                if m.get("role") == "assistant"
+                and (m.get("tool_calls") or "Calling tools:" in json.dumps(m))
             ]
             if "connection_check" in tools:
                 name, args = "connection_check", {"value": "connected"}

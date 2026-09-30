@@ -105,6 +105,42 @@ def test_brief_is_bounded_with_explicit_omissions_and_retrieval(tmp_path):
     assert len(s.notes(limit=20, offset=20)["notes"]) == 20
 
 
+def test_long_plans_cannot_evict_latest_evidence_and_method(tmp_path):
+    from conjecture_solver.research_journal import sync_journal
+
+    s = service(tmp_path)
+    for i in range(20):
+        latest = receipt(s, f"exp_{i:03}", payload={"energy_J": i, "closure_error": 0.01})
+    (s.root / "methods").mkdir()
+    put(
+        s.root / "methods/method_latest.json",
+        dict(
+            id="method_latest",
+            status="resolved",
+            created_at=time.time(),
+            verdict={"decision": "revise", "next_action": "Verify the outer-boundary flux."},
+        ),
+    )
+    for i in range(9):
+        s.note(
+            f"Plan {i}: " + "x" * 2000,
+            kind="next_test",
+            alternatives={f"case {n}": "y" * 1000 for n in range(8)},
+        )
+    sync_journal(s)
+    brief = s.brief()
+    assert brief["automatic_journal"][0]["id"] == latest["id"]
+    assert brief["methods"][0]["id"] == "method_latest"
+    assert (
+        brief["automatic_journal"][0]["results"]["result.json"]["reported_values"]["energy_J"] == 19
+    )
+    assert len(json.dumps(brief).encode()) <= 16000
+    tiny = s.brief(max_bytes=2048)
+    assert tiny["current_evidence"]["latest_completed"]["id"] == latest["id"]
+    assert tiny["current_evidence"]["latest_method"]["id"] == "method_latest"
+    assert len(json.dumps(tiny).encode()) <= 2048
+
+
 def test_generated_brief_does_not_count_as_new_research(tmp_path):
     s = service(tmp_path)
     before = durable_signature(s)

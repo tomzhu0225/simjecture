@@ -86,6 +86,7 @@ how-to/dsh-upgrade-assessment
 how-to/simote-agent-roles
 how-to/research-service
 how-to/continuation-steering
+how-to/llm-bench
 ```
 
 ```{toctree}
@@ -105,6 +106,9 @@ research/llm-comparison
 research/run-0004
 research/next-steps
 research/continuation-steering-rc3
+research/stagnation-deep-audit-20260929
+research/stagnation-retrospective-20260929
+research/stagnation-video-outline-20260929
 ```
 
 ```{toctree}
@@ -116,4 +120,7 @@ development/releasing
 testing/rc2-installation-acceptance
 testing/rc3-continuation-acceptance
 testing/iter-pack-acceptance
+testing/0.5.3rc1-acceptance
+testing/native-api-adapter
+testing/mimo-flash-comparison
 ```

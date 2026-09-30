@@ -20,6 +20,8 @@ artifacts/
 !demos/agent_roles_validation/record/workspace/artifacts/
 !demos/agent_roles_validation/record/workspace/artifacts/*.json
 data/
+!src/conjecture_solver/llm_bench/data/
+!src/conjecture_solver/llm_bench/data/*
 .private/
 
 integrations/dsh/node_modules/

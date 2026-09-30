@@ -671,6 +671,10 @@ def _engine_projection(
             provider_retry_count=status["provider_retry_count"],
             provider_wait_seconds=status["provider_wait_seconds"],
             failed_provider_turn_seconds=status["failed_provider_turn_seconds"],
+            provider_error_category=status["provider_error_category"],
+            provider_attention=status["provider_attention"],
+            usage_details=status["usage_details"],
+            instrument_requirement=status["instrument_requirement"],
             remaining_seconds=status["remaining"],
             current_activity=status["activity"],
         )

@@ -48,6 +48,22 @@ def proposal(s, **kw):
     )
 
 
+def test_required_instrument_families_are_evaluated_as_alternatives(tmp_path):
+    from conjecture_solver.research_methods import instrument_requirement
+
+    s, sup = make(tmp_path)
+    s.freeze_requirements({"required_capability_prefixes": ["flash-", "warpx-"]})
+    binding = {"capability": "flash-stagnation"}
+    # Test the identity check separately from required independent method approval.
+    s.manifest["methods_required"] = False
+    s.check_method(binding, method=None, stage="evidence")
+    result = instrument_requirement(s.manifest, capability="flash-stagnation")
+    assert result["operator"] == "any_of" and result["satisfied"]
+    assert result["matching_capabilities"] == ["flash-stagnation"]
+    prompt = sup.oversight_prompt({"requirements_evaluation": result})
+    assert "ALTERNATIVES" in prompt and "unused alternatives" not in result["matching_capabilities"]
+
+
 def test_completed_status_is_published_after_final_report(tmp_path, monkeypatch):
     s, supervisor = make(tmp_path)
     monkeypatch.setattr(supervisor, "process_methods", lambda: None)

@@ -20,6 +20,23 @@ guidance** actions in the study view and experiment monitor. Continue with a new
 budget and selected prior files, or send advisory guidance at the next checkpoint.
 See [continuation and steering](docs/how-to/continuation-steering.md).
 
+The **0.5.3rc1 preview** adds credit-exhaustion recovery, explicit
+instrument alternatives, evidence-preserving review context and request-level usage
+records, native DeepSeek tool-message continuity and the experimental **Simjecture
+Bench 0.1.0** task pack. The workspace sidebar includes **Benchmarks** to prepare
+CSV/RZ diagnostic tasks and independently grade delivered results. See
+[benchmark usage](docs/how-to/llm-bench.md), [model comparison pilot](docs/testing/mimo-flash-comparison.md)
+and [preview scope and validation](docs/testing/0.5.3rc1-acceptance.md).
+The stable installation commands below remain on 0.5.2.
+
+To try the preview, preserving existing research data:
+
+```bash
+curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.3rc1/install.sh | bash
+# Or install only the Python package:
+uv tool install 'simjecture[workspace,tui]==0.5.3rc1'
+```
+
 ## Install and open the workspace
 
 On Linux or inside WSL, run:

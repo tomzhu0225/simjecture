@@ -6,6 +6,11 @@ configuration delivered an independently accepted scientific conclusion. Both
 structured runs spent much of their time commissioning and revising infrastructure.
 These observations motivate harness repairs, not a general model ranking.
 
+The later [MiMo Flash / DeepSeek Flash coding comparison](../testing/mimo-flash-comparison.md)
+uses the same native coding client for both, fresh FLASH simulations, independent
+diagnostic grading and a separate CSV control. It tests MiMo v2.6 **Flash**, not
+the Pro model used in this earlier campaign.
+
 ## What was compared
 
 Each model ran once in minimal mode and once in structured (classic) mode on the

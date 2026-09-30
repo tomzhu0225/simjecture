@@ -1543,14 +1543,28 @@ function renderResearchTrace() {
   const usageRows = [
     ["Input", compactNumber(usage.prompt_tokens)],
     ["Output", compactNumber(usage.completion_tokens)],
-    ["Reasoning", compactNumber(usage.reasoning_tokens)],
-    ["Cached", compactNumber(usage.cached_tokens)],
+    ["Reasoning", engine.usage_details?.reasoning_usage_complete === false ? "Not fully reported" : compactNumber(usage.reasoning_tokens)],
+    ["Cached", engine.usage_details?.cache_usage_complete === false ? "Not fully reported" : compactNumber(usage.cached_tokens)],
   ];
   for (const [label, value] of usageRows) {
     const cell = element("div");
     cell.append(element("span", null, label), element("strong", null,
       engine.usage_available === false ? "—" : value));
     usagePanel.append(cell);
+  }
+  if (engine.provider_attention) panel.append(element("p", "warning-list", engine.provider_attention));
+  if (engine.usage_details) {
+    const details = engine.usage_details;
+    panel.append(element("p", "field-help",
+      `${details.requests || 0} tracked requests · ${details.requests_without_usage || 0} without usage yet · ${formatDuration(engine.provider_wait_seconds || 0)} in provider retry waits. ${details.cost_note}`));
+    for (const [role, totals] of Object.entries(details.by_role || {})) {
+      panel.append(element("p", "field-help", `${role}: ${compactNumber(totals.input_tokens)} input / ${compactNumber(totals.output_tokens)} output tokens`));
+    }
+  }
+  if (engine.instrument_requirement?.prefixes?.length) {
+    const rule = engine.instrument_requirement;
+    panel.append(element("p", "field-help",
+      `Instrument family: any of ${rule.prefixes.join(" or ")}. ${rule.satisfied ? `Matched by ${rule.matching_capabilities.join(", ")}` : "No matching instrument available"}. Scientific qualification is reviewed separately.`));
   }
   if (snapshot.warnings?.length) {
     const warnings = element("ul", "warning-list");

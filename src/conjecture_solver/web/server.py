@@ -281,6 +281,8 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
                 )
             elif endpoint == "tools":
                 self._json(workspace.catalogue())
+            elif endpoint == "benchmarks":
+                self._json(workspace.benchmark_catalogue())
             elif endpoint == "machine":
                 from ..execution import probe_execution_backend
 
@@ -314,6 +316,11 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
                                 "backend",
                                 "model",
                                 "mode",
+                                "provider_attention",
+                                "provider_wait_seconds",
+                                "usage",
+                                "usage_details",
+                                "instrument_requirement",
                             )
                         },
                         steering=steering(root),
@@ -418,6 +425,10 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
                 result = workspace.delete_project(payload.get("project"), payload)
             elif endpoint == "projects":
                 result = workspace.create(payload)
+            elif endpoint == "prepare-benchmark":
+                result = workspace.prepare_benchmark(payload)
+            elif endpoint == "grade-benchmark":
+                result = workspace.grade_benchmark(payload)
             elif endpoint == "message":
                 result = workspace.send(payload.get("project"), payload)
             elif endpoint == "stop":

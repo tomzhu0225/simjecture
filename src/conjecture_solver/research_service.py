@@ -507,6 +507,7 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
 
     def packet(self, request, *, include_history=True):
         from .research_continuation import steering
+        from .research_methods import instrument_requirement
 
         claim = request["claim"]
         if self.manifest["schema_version"] >= 2 and request["disposition"] == "supported":
@@ -538,6 +539,9 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
             operator_steering=steering(self.root),
             protocol_sha256=self.manifest.get("protocol_sha256"),
             requirements=self.manifest.get("requirements", {}),
+            requirements_evaluation=instrument_requirement(
+                self.manifest, available=self.capability_hashes()
+            ),
             guided_commissioning=self.manifest.get("guided_commissioning"),
             request=request,
             commitment=commitment,

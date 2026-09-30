@@ -2,6 +2,45 @@
 
 This project follows semantic versioning. Dates use ISO 8601.
 
+## 0.5.3rc1 (preview) — 2026-09-30
+
+First repairs from the aluminium stagnation campaign audit. Minimal remains the
+default; this preview does not change worker session policy or claim scientific
+improvements from a new long campaign.
+
+- Recognize provider `402 Insufficient Balance` errors in native result envelopes.
+  Pause with a credit/quota explanation and keep Resume and the original deadline.
+- Explain and evaluate alternative instrument requirements as **any of**, in methods
+  review, claim review, study status and the browser; FLASH or WarpX never means both.
+- Bound long plan notes before evicting current evidence. Preserve references to the
+  newest completed experiment, method and claim review even in small recovery briefs.
+- Let methods/progress reviewers request recorded JSON excerpts through the host,
+  with hash checks, bounded size and at most two retrieval rounds. Requests and failed
+  retrievals cannot grant approval; record each review packet and response.
+- Record builtin provider requests before agent-step aggregation, including completion
+  retries, failures, native cache/reasoning usage when reported, and context sizes/hashes.
+  Preserve unknown counters and avoid adding request and legacy step totals together.
+- Show live request counts, worker/reviewer token breakdown, missing usage, provider
+  retry time and actionable provider errors in terminal/browser views. Monetary cost
+  is explicitly unavailable without billing data; no price assumptions are invented.
+- Preserve native tool-call/result messages in builtin DeepSeek worker conversations,
+  including private reasoning continuity. Nineteen controlled live repair trials
+  informed this choice; retain the completion guard, session policy and review gates.
+  Record response finish reasons, call counts and text trimming for further audits.
+- Ship experimental **Simjecture Bench 0.1.0**, independently versioned CSV and
+  recorded-RZ diagnostic coding tasks, portable CLI preparation/grading and Harbor
+  task-format export. Verify varied numerical holdouts, saved outputs, input hashes
+  and numerical plot data; keep scientific claim approval separate.
+- Add a visible Benchmarks workspace entry for preparation with the chosen agent
+  and independent grading after delivery. Preparation makes no provider request.
+  Timed framework trials use the external runner; interactive chat is exploratory.
+- Document the matched MiMo 2.6 Flash/Pro and DeepSeek V4.1 Flash pilot, including
+  cache usage, continuation/setup differences and limits of single-trial evidence.
+
+See [audit and next phases](docs/research/stagnation-deep-audit-20260929.md) and
+[preview scope](docs/testing/0.5.3rc1-acceptance.md), and
+[adapter benchmark](docs/testing/native-api-adapter.md).
+
 ## 0.5.2 — 2026-09-29
 
 Stable release of the conversation-first research workspace tested in rc1/rc2,

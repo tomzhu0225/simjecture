@@ -133,6 +133,7 @@ def test_deepseek_thinking_tools_and_plain_answers_resume_privately(tmp_path, pr
     assert session.stat().st_mode & 0o777 == 0o600
     tool_requests = [r for r in requests if r.get("tools")]
     assert len(tool_requests) >= 7
+    assert any(m["role"] == "tool" for r in tool_requests for m in r["messages"])
     assert all(r["tool_choice"] == "auto" for r in tool_requests)
     assert all(
         m.get("reasoning_content")

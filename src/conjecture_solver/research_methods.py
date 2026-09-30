@@ -15,7 +15,29 @@ class StudyRequirements(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
     require_method_review: bool = True
-    required_capability_prefixes: list[str] = Field(default_factory=list)
+    required_capability_prefixes: list[str] = Field(
+        default_factory=list,
+        description="Alternative families: ONE matching prefix satisfies the requirement.",
+    )
+
+
+def instrument_requirement(manifest, *, capability=None, available=()):
+    """Evaluate the existing any-of contract; availability is not qualification."""
+    prefixes = manifest.get("requirements", {}).get("required_capability_prefixes", [])
+    candidates = [capability] if capability is not None else list(available)
+    matching = [c for c in candidates if any(c.startswith(p) for p in prefixes)]
+    return dict(
+        id="instrument_family",
+        operator="any_of",
+        prefixes=prefixes,
+        scope="selected_method" if capability is not None else "available_instruments",
+        matching_capabilities=matching,
+        satisfied=not prefixes or bool(matching),
+        interpretation=(
+            "One matching instrument family is sufficient; other listed families are alternatives. "
+            "This checks instrument identity only, not scientific suitability or method approval."
+        ),
+    )
 
 
 class MethodService:
@@ -86,6 +108,7 @@ class MethodService:
             if stage == "evidence" and (
                 record.get("verdict", {}).get("decision") != "continue"
                 or record.get("verdict", {}).get("prerequisites")
+                or record.get("verdict", {}).get("evidence_requests")
             ):
                 raise ValueError("Method needs independent review; end this turn for the host")
         elif stage == "evidence" and self.manifest.get("methods_required", False):

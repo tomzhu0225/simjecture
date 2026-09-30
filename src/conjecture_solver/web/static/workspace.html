@@ -40,6 +40,9 @@
           <button data-view="tools" class="nav-item">
             <span aria-hidden="true">◇</span> Research tools
           </button>
+          <button data-view="benchmarks" class="nav-item">
+            <span aria-hidden="true">▥</span> Benchmarks
+          </button>
           <button
             id="connection-button"
             data-view="settings"
@@ -271,6 +274,25 @@
               <p id="runtime-status" class="field-help"></p>
             </aside>
           </div>
+        </section>
+        <section id="view-benchmarks" class="view" hidden>
+          <div class="page-intro compact">
+            <p class="eyebrow">SIMJECTURE BENCH · EXPERIMENTAL</p>
+            <h1>Compare scientific coding agents.</h1>
+            <p class="lead">Prepare a versioned task, choose your existing agent in chat,
+              and grade its numerical results independently.</p>
+          </div>
+          <div class="tool-note">
+            Recorded solver outputs are included. These tasks measure finite diagnostic
+            coding contracts; passing does not approve a scientific claim.
+            Preparation makes no model request. Interactive chat is exploratory;
+            use the Harbor export for enforced deadlines and controlled comparisons.
+          </div>
+          <p id="benchmark-version"></p>
+          <div id="benchmark-tasks" class="tool-grid"></div>
+          <div class="inventory-heading"><h2>Your benchmark conversations</h2></div>
+          <div id="benchmark-projects" class="tool-grid"></div>
+          <pre id="benchmark-report" hidden></pre>
         </section>
         <section id="view-tools" class="view" hidden>
           <div class="page-intro compact">

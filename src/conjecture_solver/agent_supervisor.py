@@ -355,6 +355,8 @@ class AgentSupervisor:
                 stdin=prompt_stream if prompt_on_stdin else subprocess.DEVNULL,
             )
             self.state["child_pid"] = child.pid
+            if backend == "builtin":
+                self.state["active_usage_directory"] = str(directory)
             self.state["activity"] = (
                 "Summarizing research journal"
                 if judge and directory.name.startswith("journal-summary-")
@@ -513,25 +515,19 @@ class AgentSupervisor:
                         if isinstance(session_id, str) and session_id:
                             self.state["worker_cursor"] = session_id
                 elif backend == "builtin":
-                    usage = {"input_tokens": 0, "output_tokens": 0}
-                    reported = False
-                    for line in (directory / "response.json").read_text().splitlines():
-                        try:
-                            event = json.loads(line)
-                        except ValueError:
-                            continue
-                        if event.get("type") == "usage":
-                            reported = True
-                            for key in usage:
-                                usage[key] += event.get(key) or 0
-                    if reported:
-                        self.state.setdefault("usage_by_thread", {})[directory.name] = usage
+                    from .provider_usage import request_accounting
+
+                    usage = request_accounting(directory / "response.json")
+                    if usage is not None:
+                        usage_key = directory.relative_to(self.directory).as_posix()
+                        self.state.setdefault("usage_by_thread", {})[usage_key] = usage
                         self.state["usage_updated_at"] = time.time()
-                    else:
+                    if usage is None or usage.get("requests_without_usage", 0):
                         self.state["usage_incomplete_turns"] = (
                             self.state.get("usage_incomplete_turns", 0) + 1
                         )
                 self.state.pop("child_pid", None)
+                self.state.pop("active_usage_directory", None)
                 self.save()
 
     def assign(self, claims):

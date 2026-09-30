@@ -66,7 +66,7 @@ def study_status(root):
     if status != "running":
         activity = status.replace("_", " ")
         if status == "paused_external_error" and state.get("last_error"):
-            activity += ": " + state["last_error"]
+            activity = state.get("provider_attention") or (activity + ": " + state["last_error"])
     if state.get("provider_next_retry_at") and status == "running":
         activity = (
             f"Reconnecting provider (attempt {state.get('provider_retry_count', 0)}, "
@@ -74,11 +74,55 @@ def study_status(root):
         )
     if status == "running" and state.get("no_progress_streak", 0) >= 2:
         activity += f" · {state['no_progress_streak']} turns without observed progress"
-    counters = list(state.get("usage_by_thread", {}).values())
+    by_thread = dict(state.get("usage_by_thread", {}))
+    if state.get("active_usage_directory") and status == "running":
+        from .provider_usage import request_accounting
+
+        active = Path(state["active_usage_directory"])
+        if active.resolve().is_relative_to(directory.resolve()):
+            current = request_accounting(active / "response.json")
+            if current is not None:
+                by_thread[active.resolve().relative_to(directory.resolve()).as_posix()] = current
+    counters = list(by_thread.values())
     usage = {
         k: sum(u.get(k, 0) for u in counters)
         for k in ["input_tokens", "output_tokens", "cached_input_tokens", "reasoning_output_tokens"]
     }
+    from .research_methods import instrument_requirement
+
+    by_role = {}
+    for name, counter in by_thread.items():
+        role = (
+            "memory"
+            if name.startswith("journal-summary-")
+            else "reviewer"
+            if name.startswith(("oversight-", "judge-", "review-"))
+            else "worker"
+            if name.startswith("turn-")
+            else "other"
+        )
+        row = by_role.setdefault(role, dict(input_tokens=0, output_tokens=0, requests=0))
+        for key in row:
+            row[key] += counter.get(key, 0)
+    usage_details = dict(
+        by_role=by_role,
+        requests=sum(u.get("requests", 0) for u in counters),
+        requests_without_usage=sum(u.get("requests_without_usage", 0) for u in counters),
+        cache_usage_complete=bool(counters)
+        and all(u.get("cache_usage_complete", "cached_input_tokens" in u) for u in counters),
+        reasoning_usage_complete=bool(counters)
+        and all(
+            u.get("reasoning_usage_complete", "reasoning_output_tokens" in u) for u in counters
+        ),
+        cost_status="unavailable",
+        cost_note="Provider billing and cache pricing are not inferred from token totals.",
+    )
+    available = set(manifest.get("capability_hashes", {}))
+    available.update(
+        r["name"]
+        for p in (root / "capability_additions").glob("*.json")
+        if (r := read(p)).get("name")
+    )
     return dict(
         execution_backend=launch.get(
             "execution_backend",
@@ -88,6 +132,10 @@ def study_status(root):
             ),
         ),
         provider_retry_count=state.get("provider_retry_count", 0),
+        provider_error_category=state.get("provider_error_category"),
+        provider_attention=state.get("provider_attention")
+        if status == "paused_external_error"
+        else None,
         provider_wait_seconds=state.get("provider_wait_seconds", 0),
         failed_provider_turn_seconds=state.get("failed_provider_turn_seconds", 0),
         oversight_count=state.get("oversight_count", 0),
@@ -96,7 +144,12 @@ def study_status(root):
         session_recoveries=state.get("session_recoveries", 0),
         methods=[read(p) for p in sorted((root / "methods").glob("*.json"))],
         usage=usage,
-        usage_available=bool(counters),
+        usage_details=usage_details,
+        instrument_requirement=instrument_requirement(manifest, available=sorted(available)),
+        usage_available=any(
+            u.get("accounting") != "provider_requests" or u.get("reported_requests", 0)
+            for u in counters
+        ),
         usage_incomplete_turns=state.get("usage_incomplete_turns", 0),
         mode=mode,
         backend=launch.get("backend", state.get("backend", "unknown")),
@@ -131,7 +184,10 @@ def status_line(status):
         f"jobs {counts.get('running', 0)} running / {counts.get('succeeded', 0)} done / "
         f"{counts.get('failed', 0)} failed | "
         f"reviews {sum(r.get('status') == 'queued' for r in status['reviews'])} queued · "
-        f"oversight {status.get('oversight_count', 0)}"
+        f"oversight {status.get('oversight_count', 0)} | "
+        f"tokens {status['usage']['input_tokens']:,} in / "
+        f"{status['usage']['output_tokens']:,} out · "
+        f"provider wait {status.get('provider_wait_seconds', 0) / 60:.1f}m"
     )
 
 
@@ -141,6 +197,7 @@ class TerminalProgress:
         self.stream = stream or sys.stderr
         self.stop = threading.Event()
         self.thread = None
+        self.tty_drawn = False
 
     def __enter__(self):
         if not self.quiet:
@@ -164,7 +221,17 @@ class TerminalProgress:
                     import shutil
 
                     width = shutil.get_terminal_size((120, 24)).columns
-                    self.stream.write("\r\033[K" + line[: max(20, width - 1)])
+                    usage = status["usage"]
+                    accounting = (
+                        f"Tokens {usage['input_tokens']:,} in / {usage['output_tokens']:,} out | "
+                        f"Retry wait {status.get('provider_wait_seconds', 0) / 60:.1f}m | "
+                        f"Requests {status['usage_details']['requests']}"
+                    )
+                    if self.tty_drawn:
+                        self.stream.write("\033[F")
+                    self.stream.write("\r\033[K" + line[: max(20, width - 1)] + "\n")
+                    self.stream.write("\r\033[K" + accounting[: max(20, width - 1)])
+                    self.tty_drawn = True
                 else:
                     self.stream.write(line + "\n")
                 self.stream.flush()
@@ -175,7 +242,7 @@ class TerminalProgress:
         self.stop.set()
         if self.thread:
             self.thread.join(timeout=2)
-            prefix = "\r\033[K" if self.stream.isatty() else ""
+            prefix = "\r\033[K\033[F\033[K" if self.tty_drawn else ""
             self.stream.write(prefix + status_line(study_status(self.root)) + "\n")
             self.stream.write(f"Records: {self.root}\n")
             self.stream.flush()
@@ -337,9 +404,10 @@ def minimal_snapshot(root):
             completion_tokens=status["usage"]["output_tokens"],
             total_tokens=status["usage"]["input_tokens"] + status["usage"]["output_tokens"],
             cached_tokens=status["usage"]["cached_input_tokens"],
+            reasoning_tokens=status["usage"]["reasoning_output_tokens"],
             label=(
                 f"Reported: {status['usage']['input_tokens']:,} in / "
-                f"{status['usage']['output_tokens']:,} out (completed turns)"
+                f"{status['usage']['output_tokens']:,} out (reported usage)"
             )
             if status["usage_available"]
             else "Usage unavailable until a provider counter arrives",
@@ -437,6 +505,7 @@ def native_snapshot_overlay(root, snapshot):
                 completion_tokens=usage["output_tokens"],
                 total_tokens=usage["input_tokens"] + usage["output_tokens"],
                 cached_tokens=usage["cached_input_tokens"],
+                reasoning_tokens=usage["reasoning_output_tokens"],
                 label=f"Reported: {usage['input_tokens']:,} in / {usage['output_tokens']:,} out"
                 if status["usage_available"]
                 else "Usage pending",
