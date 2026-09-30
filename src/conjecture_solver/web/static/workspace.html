@@ -43,6 +43,9 @@
           <button data-view="benchmarks" class="nav-item">
             <span aria-hidden="true">▥</span> Benchmarks
           </button>
+          <button data-view="machines" class="nav-item">
+            <span aria-hidden="true">▣</span> Machines
+          </button>
           <button
             id="connection-button"
             data-view="settings"
@@ -209,6 +212,54 @@
               ><small>Evidence, independent review, a clear result</small>
             </div>
           </div>
+        </section>
+        <section id="view-machines" class="view" hidden>
+          <div class="page-intro compact">
+            <p class="eyebrow">EXPERIMENT EXECUTION POOL</p>
+            <h1>Run experiments across your machines.</h1>
+            <p class="lead">Prepare workers, check their instruments and choose a pool
+              in each study. Research agents and scientific review stay in this workspace.</p>
+          </div>
+          <div id="machine-grid" class="tool-grid"></div>
+          <button id="register-local-worker" class="secondary" type="button">Register this machine</button>
+          <details id="machine-editor" class="brief-editor" open>
+            <summary>Add or edit an execution machine</summary>
+            <form id="machine-form" class="panel form-panel">
+              <div class="two-fields">
+                <label>Machine ID<input id="machine-id" required placeholder="p40" pattern="[a-z][a-z0-9-]{0,39}" /></label>
+                <label>Name<input id="machine-label-input" placeholder="P40 compute" /></label>
+              </div>
+              <label>Connection<select id="machine-kind"><option value="ssh">SSH</option><option value="local">This machine</option></select></label>
+              <div class="two-fields">
+                <label>SSH host or configured alias<input id="machine-host" placeholder="compute.example.org" /></label>
+                <label>Port<input id="machine-port" type="number" min="1" max="65535" value="22" /></label>
+              </div>
+              <label>SSH user<input id="machine-user" placeholder="research" /></label>
+              <label>Password (optional)<input id="machine-password" type="password" autocomplete="new-password" placeholder="Use your SSH key/agent, or save a password" /></label>
+              <p class="field-help">Uses your OpenSSH configuration. Trust the host in known_hosts
+                before connecting. Saved passwords stay on this coordinator.</p>
+              <label>Worker directory<input id="machine-root" required placeholder="/home/research/.simjecture-worker" /></label>
+              <div class="two-fields">
+                <label>CPU budget<input id="machine-cpus" type="number" value="2" min="1" /></label>
+                <label>RAM budget (MiB)<input id="machine-memory" type="number" value="4096" min="128" /></label>
+              </div>
+              <div class="two-fields">
+                <label>GPU IDs<input id="machine-gpus" placeholder="0,1 or GPU UUIDs; empty for CPU" /></label>
+                <label>Concurrent jobs<input id="machine-max-jobs" type="number" value="2" min="1" max="256" /></label>
+              </div>
+              <label>Experiment environment<select id="machine-execution"><option value="bubblewrap">Linux sandbox</option><option value="proot-cooperative">Cooperative PRoot · dedicated unprivileged account</option></select></label>
+              <label>Instrument descriptor directories (one per line)<textarea id="machine-capabilities" rows="3" placeholder="/home/research/capabilities"></textarea></label>
+              <details class="advanced"><summary>Connection and installation details</summary>
+                <label>Python executable<input id="machine-python" value="python3" /></label>
+                <label>Run worker as user (for a root SSH login)<input id="machine-run-as" placeholder="research" /></label>
+                <label>SSH private key path<input id="machine-identity" /></label>
+                <label>Known hosts file<input id="machine-known-hosts" /></label>
+              </details>
+              <div class="brief-footer"><button type="submit" class="primary">Save machine</button></div>
+            </form>
+          </details>
+          <pre id="machine-jobs-report" hidden></pre>
+          <div id="machine-job-controls" class="tool-actions"></div>
         </section>
         <section id="view-settings" class="view" hidden>
           <div class="page-intro compact">
@@ -603,6 +654,13 @@
                         Ordinary Python · no external solver
                       </option>
                     </select>
+                      <label for="study-machines">Execution machines</label>
+                      <select id="study-machines" multiple size="4">
+                        <option value="" selected>This host · existing local launcher</option>
+                      </select>
+                      <p class="field-help">Choose prepared workers for parallel experiments.
+                        Register a managed local worker in Machines to include it in a pool.
+                        Worker profiles define their own experiment environment.</p>
                     <details class="advanced">
                       <summary>Execution settings</summary>
                       <label for="execution-backend"

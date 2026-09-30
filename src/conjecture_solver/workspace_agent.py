@@ -520,6 +520,7 @@ def agent_tools(root, deadline, project=None, workspace=None):
             completion_policy: str = "answer",
             instrument: str = "",
             inherited_files: list[str] | None = None,
+            machine_ids: list[str] | None = None,
         ) -> str:
             """Prepare an editable autonomous study brief for the user to launch.
             Preserve their objective. Ask about consequential missing information.
@@ -534,6 +535,7 @@ def agent_tools(root, deadline, project=None, workspace=None):
                 instrument: Installed catalogue tool ID, e.g. warpx-cpu; empty for ordinary Python.
                 inherited_files: Parent research-relative paths for a continuation.
                     Omit to preserve the existing selection.
+                machine_ids: Prepared execution worker IDs. Omit to preserve the current selection.
             """
             brief = workspace.save_brief(
                 project,
@@ -545,6 +547,7 @@ def agent_tools(root, deadline, project=None, workspace=None):
                     completion_policy=completion_policy,
                     instrument=instrument,
                     inherited_files=inherited_files,
+                    machine_ids=machine_ids,
                 ),
             )
             emit("brief", brief=brief)
@@ -576,9 +579,24 @@ def agent_tools(root, deadline, project=None, workspace=None):
                 )
             raise ValueError("Unknown tool action")
 
+        @tool
+        def execution_machines(action: str = "list", machine: str = "") -> str:
+            """Inspect prepared local/SSH experiment workers for an autonomous study.
+
+            Args:
+                action: list for profiles/capabilities, status for an existing worker's jobs.
+                machine: Worker ID for status; not an SSH address or a credential.
+            """
+            if action == "list":
+                return json.dumps(workspace.machines())
+            if action == "status":
+                return json.dumps(workspace.machine_jobs(machine))
+            raise ValueError("Use list or status for execution machines")
+
         tools += [
             draft_study,
             research_tools,
+            execution_machines,
             run_simulation,
             run_command,
             simulation_status,

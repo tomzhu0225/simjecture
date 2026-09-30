@@ -56,6 +56,14 @@ def configure_parser(parser):
     )
     parser.add_argument("--state-dir", type=Path)
     parser.add_argument("--capabilities", type=Path)
+    parser.add_argument("--machine-registry", type=Path, help="Local/SSH worker registry directory")
+    parser.add_argument(
+        "--machine",
+        dest="machine_ids",
+        action="append",
+        default=[],
+        help="Execution worker ID; repeat to select a pool (minimal mode)",
+    )
     parser.add_argument("--wall-seconds", type=float, default=3600)
     parser.add_argument("--turn-seconds", type=float, default=600)
     parser.add_argument(
@@ -183,7 +191,33 @@ def _run(args):
         )
     from .execution import require_execution_backend
 
-    execution_probe = require_execution_backend(args.execution_backend)
+    machine_ids = getattr(args, "machine_ids", None) or previous.get("request", {}).get(
+        "machine_ids", []
+    )
+    machine_registry = getattr(args, "machine_registry", None) or previous.get("request", {}).get(
+        "machine_registry"
+    )
+    pool = None
+    if machine_ids:
+        from .execution_pool import MachineRegistry
+
+        if mode != "minimal" or not machine_registry:
+            raise ValueError("Execution pools require minimal mode and --machine-registry")
+        prior_pool = read(args.campaign / "research.json").get("execution_pool")
+        if prior_pool:
+            if (
+                list(prior_pool["workers"]) != machine_ids
+                or Path(prior_pool["registry"]).resolve() != Path(machine_registry).resolve()
+            ):
+                raise ValueError("Execution pool is immutable within a study")
+            pool = prior_pool
+        else:
+            pool = MachineRegistry(machine_registry).freeze(machine_ids)
+        execution_probe = {"backend": "worker-pool", "available": True, "machines": machine_ids}
+        if args.capabilities:
+            require_execution_backend(args.execution_backend)
+    else:
+        execution_probe = require_execution_backend(args.execution_backend)
     hypothesis = args.hypothesis_file.read_text() if args.hypothesis_file else None
     parent = getattr(args, "continue_from", None)
     if parent:
@@ -203,6 +237,7 @@ def _run(args):
                 capabilities=args.capabilities,
                 execution_backend=args.execution_backend,
                 completion_policy=getattr(args, "completion_policy", None),
+                execution_pool=pool,
             )
             if hypothesis is not None
             else ResearchService(args.campaign)
@@ -295,6 +330,8 @@ def _run(args):
             capability_directory=str(args.capabilities) if args.capabilities else None,
             agent_executable=args.executable,
             provider_config=getattr(args, "provider_config", None),
+            machine_registry=str(machine_registry) if machine_registry else None,
+            machine_ids=machine_ids,
             completion_policy=supervisor.service.manifest.get("completion_policy", "repair")
             if mode == "minimal"
             else "repair",

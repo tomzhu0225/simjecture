@@ -26,6 +26,7 @@ from urllib.parse import urlsplit
 from ..mvp_launch import ProcessIdentity, process_identity_matches, read_process_identity
 from ..research_service import put
 from ..workspace_agent import contained, model_for, public_error
+from .workspace_machines import MachineWorkspace
 
 CATALOGUE = [
     (
@@ -100,7 +101,7 @@ def spawn(command, directory, log):
     return identity.model_dump(mode="json") if identity else {}
 
 
-class Workspace:
+class Workspace(MachineWorkspace):
     def __init__(self, root):
         self.root = Path(root).resolve()
         self.settings_path = self.root / "connection.json"
@@ -1051,6 +1052,9 @@ class Workspace:
 
         parent = application.registry.resolve(payload.get("campaign"))
         info = preview(parent)
+        machine_ids = info.get("machine_ids", [])
+        for machine in machine_ids:
+            self.machine_registry.machine(machine)
         files = payload.get("files", [])
         if (
             not isinstance(files, list)
@@ -1097,6 +1101,7 @@ class Workspace:
                     "guidance": guidance,
                     "hours": hours,
                     "capability_directory": info.get("capabilities") or "",
+                    **({"machine_ids": machine_ids} if machine_ids else {}),
                 },
                 brief={
                     "question": info["hypothesis"],
@@ -1109,6 +1114,7 @@ class Workspace:
                     "hours": hours,
                     "completion_policy": "answer",
                     "capability_directory": info.get("capabilities") or "",
+                    **({"machine_ids": machine_ids} if machine_ids else {}),
                 },
                 brief_launched=None,
                 brief_source_turn=None,
@@ -1235,6 +1241,17 @@ class Workspace:
             raise ValueError("Choose a budget between 0.01 and 168 hours")
         brief["completion_policy"] = payload.get("completion_policy", "answer")
         brief["capability_directory"] = text(payload, "capability_directory", 4096)
+        requested_machines = payload.get("machine_ids")
+        if requested_machines is not None:
+            if (
+                not isinstance(requested_machines, list)
+                or len(requested_machines) > 16
+                or len(set(requested_machines)) != len(requested_machines)
+            ):
+                raise ValueError("Choose up to sixteen distinct execution workers")
+            for machine in requested_machines:
+                self.machine_registry.machine(machine)
+            brief["machine_ids"] = requested_machines
         instrument = text(payload, "instrument", 160)
         if instrument:
             catalogue = self.catalogue()
@@ -1262,6 +1279,12 @@ class Workspace:
         with self.lock():
             path = self.directory(identifier) / "project.json"
             project = load(path)
+            if requested_machines is None and "machine_ids" in (project.get("brief") or {}):
+                brief["machine_ids"] = project["brief"]["machine_ids"]
+            elif requested_machines is None and "machine_ids" in (
+                project.get("continuation_draft") or {}
+            ):
+                brief["machine_ids"] = project["continuation_draft"]["machine_ids"]
             if (
                 "capability_directory" not in payload
                 and not instrument
@@ -1671,6 +1694,10 @@ class Workspace:
                 max_command_seconds=600,
                 capability_directory=capability_directory,
                 execution_backend=payload.get("execution_backend", self.execution["backend"]),
+                machine_registry=str(self.machine_registry.root)
+                if brief.get("machine_ids")
+                else None,
+                machine_ids=brief.get("machine_ids", []),
             )
             plan = materialize_native(request)
             if project.get("continuation_draft"):

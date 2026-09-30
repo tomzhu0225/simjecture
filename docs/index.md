@@ -84,6 +84,7 @@ how-to/iter-pack
 how-to/deepseek-harness
 how-to/dsh-upgrade-assessment
 how-to/simote-agent-roles
+how-to/ssh-workers
 how-to/research-service
 how-to/continuation-steering
 how-to/llm-bench
@@ -122,5 +123,6 @@ testing/rc3-continuation-acceptance
 testing/iter-pack-acceptance
 testing/0.5.3rc1-acceptance
 testing/native-api-adapter
+testing/ssh-workers-acceptance
 testing/mimo-flash-comparison
 ```

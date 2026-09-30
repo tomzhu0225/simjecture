@@ -103,6 +103,10 @@ class Client:
         if not receipt['ok']: raise RuntimeError(receipt['error'])
         return receipt['result']
     def run(self, source, args=(), **kw): return self._call('run', source=source, args=args, **kw)
+    def machines(self): return self._call('machines')
+    def fetch_remote(self, **kw): return self._call('fetch_remote', **kw)
+    def read_instrument(self, capability, **kw):
+        return self._call('read_instrument', capability=capability, **kw)
     def commit(self, statement, **kw): return self._call('commit', statement=statement, **kw)
     def review(self, experiments, conclusion, **kw):
         return self._call('review', experiments=experiments, conclusion=conclusion, **kw)
@@ -225,6 +229,17 @@ Write source normally here. All recorded numerical experiments use the existing 
   Storage limits: {self.service.manifest["max_experiment_bytes"]} bytes per experiment,
   {self.service.manifest["max_total_bytes"]} bytes total, shared with active experiments.
   Installed capability names: {list(self.service.capability_hashes())}.
+- lab.machines() lists the frozen execution workers, resource budgets and machine-scoped
+  capability aliases. In a configured pool, lab.run accepts machine='worker-id' and
+  resources={{'cpus':2,'memory_mb':2048,'gpus':1}}. Omit machine for automatic placement;
+  explicit requests and instrument aliases remain bound to their worker. Several
+  asynchronous experiments can run in parallel when capacity permits. Jobs survive
+  SSH interruptions; inspect transport_status before deciding a run failed.
+  Declared outputs are retrieved with hash verification. Other large files remain
+  in remote_artifacts; lab.fetch_remote(experiment='exp_ID',path='file') retrieves one.
+  lab.read_instrument(capability='alias',root='runtime',path='.') lists registered
+  read-only instrument files. Use a readable_roots entry from lab.machines() for
+  source mounts and a relative path to retrieve a bounded UTF-8 excerpt.
 - When using installed scientific instruments, commission with stage='exploration'.
   Before evidence, submit lab.method(source='calculation.py', inputs=['helper.py'],
   capability='instrument-name', model='equations and limits', geometry='axes/boundaries',

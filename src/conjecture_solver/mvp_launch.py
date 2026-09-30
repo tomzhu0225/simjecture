@@ -386,6 +386,13 @@ def read_process_identity(
     if starttime is None:
         return None
     actual_argv = _read_process_argv(pid)
+    # A just-exec'd process can briefly expose an empty cmdline (observed on WSL).
+    # Keep this bounded; exited processes still have no valid live identity.
+    for _ in range(5):
+        if actual_argv is not None or not stat_path.is_file():
+            break
+        time.sleep(0.01)
+        actual_argv = _read_process_argv(pid)
     if actual_argv is None and argv:
         actual_argv = tuple(argv)
     if actual_argv is None:

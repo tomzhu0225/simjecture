@@ -14,6 +14,8 @@ uv run simjecture --help
 Principal command families:
 
 - `install`: idempotently provision or verify a selected runtime profile;
+- `machines`: register, prepare, check and inspect local/SSH numerical workers
+  (development checkout; [SSH guide](../how-to/ssh-workers.md));
 - `doctor`: inspect core and optional capability health, with JSON output;
 - `mvp`: natural-language sandbox campaign with claims and capabilities;
 - `status`: compact read-only snapshot of a durable MVP run directory;
@@ -58,3 +60,7 @@ session allowance/watchdog. Resume with the same campaign and instructions;
 mode and deadline are preserved. `simjecture-supervise` and `simjecture-research`
 are equivalent launchers. The browser and TUI share the same native mode choices. Legacy `mvp` and DSH/API
 remain explicit legacy routes. See [the guide](../how-to/research-service.md).
+
+Minimal studies can select `--machine-registry DIR --machine ID`, repeating
+`--machine` to choose a pool. Placement and resource requests are recorded by
+`Lab.run`; local execution remains the default when no pool is selected.

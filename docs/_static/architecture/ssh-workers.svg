@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 260" role="img" aria-labelledby="title desc">
+<title id="title">One research coordinator and independent execution workers</title>
+<desc id="desc">The research agent uses a central Lab service, which dispatches experiments to local and SSH workers. Hashed results return to central evidence records and independent review.</desc>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8" fill="#6d60bd"/></marker></defs>
+<rect width="980" height="260" rx="12" fill="#f8f8fc"/>
+<g fill="white" stroke="#d6d3e9" stroke-width="2">
+<rect x="20" y="90" width="170" height="70" rx="10"/>
+<rect x="245" y="65" width="260" height="125" rx="10"/>
+<rect x="595" y="15" width="195" height="58" rx="10"/>
+<rect x="595" y="99" width="195" height="58" rx="10"/>
+<rect x="595" y="183" width="195" height="58" rx="10"/>
+</g>
+<g fill="none" stroke="#6d60bd" stroke-width="2" marker-end="url(#arrow)">
+<path d="M190 125H240"/><path d="M505 92L590 44"/><path d="M505 127H590"/><path d="M505 162L590 212"/>
+</g>
+<g font-family="sans-serif" font-size="18" fill="#353144" text-anchor="middle">
+<text x="105" y="130">Research agent</text><text x="375" y="98" font-weight="bold">Coordinator / Lab</text>
+<text x="375" y="133" font-size="15">Hypothesis, methods, receipts</text><text x="375" y="162" font-size="15">Evidence and independent review</text>
+<text x="692" y="50">Local worker</text><text x="692" y="134">SSH worker A</text><text x="692" y="218">SSH worker B</text>
+<text x="880" y="118" font-size="15">Hashed results</text><text x="880" y="144" font-size="15">return to Lab</text>
+</g>
+</svg>

@@ -66,6 +66,11 @@ def preview(parent):
         hypothesis=manifest["hypothesis"],
         files=files,
         capabilities=manifest.get("capabilities"),
+        **(
+            {"machine_ids": list(manifest["execution_pool"]["workers"])}
+            if manifest.get("execution_pool")
+            else {}
+        ),
         explanation=(
             "Copies selected working files and a frozen record summary. Prior "
             "results retain their original status; no approval is inherited."

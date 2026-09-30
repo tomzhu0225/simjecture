@@ -29,6 +29,8 @@ class NativeStudyRequest(MVPLaunchRequest):
     judge_model: str | None = None
     reasoning_effort: Literal["low", "medium", "high", "xhigh"] | None = None
     agent_executable: str | None = None
+    machine_registry: str | None = None
+    machine_ids: list[str] = []
 
 
 def materialize_native(request, *, resume=False):
@@ -62,7 +64,23 @@ def materialize_native(request, *, resume=False):
         raise ResumeError("No saved native launch contract")
     from .execution import require_execution_backend
 
-    execution_probe = require_execution_backend(request.execution_backend)
+    pool = None
+    if request.machine_ids:
+        from .execution_pool import MachineRegistry
+
+        if request.mode != "minimal" or not request.machine_registry:
+            raise ValueError("Execution pools require minimal mode and a machine registry")
+        if not resume:
+            pool = MachineRegistry(request.machine_registry).freeze(request.machine_ids)
+        execution_probe = {
+            "backend": "worker-pool",
+            "available": True,
+            "machines": request.machine_ids,
+        }
+        if request.capability_directory:
+            require_execution_backend(request.execution_backend)
+    else:
+        execution_probe = require_execution_backend(request.execution_backend)
     protocol = (
         request.instruction or "Investigate the stated hypothesis within its scientific scope."
     )
@@ -77,6 +95,7 @@ def materialize_native(request, *, resume=False):
                 capabilities=request.capability_directory,
                 execution_backend=request.execution_backend,
                 completion_policy=request.completion_policy,
+                execution_pool=pool,
             )
             service.freeze_protocol(protocol)
         else:
@@ -142,6 +161,10 @@ def materialize_native(request, *, resume=False):
     ]
     if request.capability_directory:
         argv += ["--capabilities", request.capability_directory]
+    if request.machine_ids:
+        argv += ["--machine-registry", request.machine_registry]
+        for machine in request.machine_ids:
+            argv += ["--machine", machine]
     if request.agent_executable:
         argv += ["--executable", request.agent_executable]
     argv += ["--completion-policy", request.completion_policy]

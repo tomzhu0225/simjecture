@@ -23,7 +23,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from .mvp_agent import BubblewrapSandbox, MVPAgentConfig, MVPArtifactInput
+from .mvp_agent import BubblewrapSandbox
 from .mvp_skills import MVPCapabilityRegistry
 from .research_guidance import GuidedResearch
 from .research_methods import MethodService
@@ -92,6 +92,7 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
         capabilities=None,
         execution_backend=None,
         completion_policy=None,
+        execution_pool=None,
     ):
         root = Path(root).resolve()
         root.mkdir(parents=True, exist_ok=True)
@@ -109,6 +110,10 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
                 and existing.manifest.get("execution_backend", "bubblewrap") != execution_backend
             ):
                 raise ValueError("Execution backend is immutable within a study")
+            if execution_pool is not None and execution_pool != existing.manifest.get(
+                "execution_pool"
+            ):
+                raise ValueError("Execution pool is immutable within a study")
             return existing
         execution_backend = execution_backend or "bubblewrap"
         completion_policy = completion_policy or "repair"
@@ -130,11 +135,18 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
             else MVPCapabilityRegistry()
         )
         now = time.time()
+        remote_capabilities = {
+            name: entry["runtime_sha256"]
+            for name, entry in (execution_pool or {}).get("capabilities", {}).items()
+        }
+        if set(registry.hashes) & set(remote_capabilities):
+            raise ValueError("Local and worker capability names collide")
         put(
             root / "research.json",
             dict(
                 schema_version=3,
-                methods_required=bool(registry.hashes),
+                study_id=uuid.uuid4().hex,
+                methods_required=bool(registry.hashes or remote_capabilities),
                 workflow="minimal",
                 completion_policy=completion_policy,
                 execution_backend=execution_backend,
@@ -142,9 +154,18 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
                 created_at=now,
                 deadline=now + wall_seconds,
                 capabilities=str(Path(capabilities).resolve()) if capabilities else None,
-                capability_hashes=registry.hashes,
+                capability_hashes=registry.hashes | remote_capabilities,
                 max_experiment_bytes=4 * 1024**3,
-                max_total_bytes=8 * 1024**3,
+                max_total_bytes=max(
+                    8,
+                    sum(
+                        w["profile"]["config"]["max_jobs"]
+                        for w in (execution_pool or {}).get("workers", {}).values()
+                    )
+                    * 4,
+                )
+                * 1024**3,
+                **({"execution_pool": execution_pool} if execution_pool else {}),
             ),
         )
         return cls(root)
@@ -196,9 +217,13 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
         paths = list(dict.fromkeys([source, *inputs]))
         hashes = {p: sha(self._source(p)) for p in paths}
         runtime = None
+        remote = self.manifest.get("execution_pool", {}).get("capabilities", {}).get(capability)
         if capability:
-            registry = MVPCapabilityRegistry.discover(self.manifest["capabilities"])
-            runtime = registry.get(capability).contract_hash
+            if remote:
+                runtime = remote["runtime_sha256"]
+            else:
+                registry = MVPCapabilityRegistry.discover(self.manifest["capabilities"])
+                runtime = registry.get(capability).contract_hash
             if runtime != self.capability_hashes().get(capability):
                 raise ValueError("Capability identity changed since study creation")
         return dict(
@@ -207,6 +232,7 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
             inputs=hashes,
             capability=capability,
             runtime_sha256=runtime,
+            **({"worker_capability": remote["worker_capability"]} if remote else {}),
         )
 
     def lineage(self, claim):
@@ -281,6 +307,8 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
         parent_experiment=None,
         purpose=None,
         plan=None,
+        machine=None,
+        resources=None,
     ):
         """Snapshot inputs, launch a bounded experiment, return an immediate receipt."""
         if not outputs or timeout <= 0:
@@ -289,6 +317,14 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
             if Path(p).is_absolute() or ".." in Path(p).parts:
                 raise ValueError("Result paths must stay inside the experiment workspace")
         binding = self._binding(source, args, inputs, capability)
+        pool = self.manifest.get("execution_pool")
+        selected_machine = None
+        if pool and (not capability or capability in pool["capabilities"] or machine):
+            from .worker_protocol import Resources
+
+            resources = Resources.model_validate(resources or {}).model_dump(mode="json")
+        elif machine or resources:
+            raise ValueError("Configure a study execution pool before selecting worker resources")
         if stage not in {"exploration", "evidence"}:
             raise ValueError("stage must be exploration or evidence")
         if review_documents is not None and (
@@ -307,6 +343,9 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
             if binding not in frozen["bindings"]:
                 raise ValueError("Execution differs from the prospective commitment")
         identity = dict(binding=binding, outputs=list(outputs), commitment=commitment, key=key)
+        if resources is not None:
+            # Automatic placement is durable allocation, not part of retry identity.
+            identity.update(execution_target=machine or "auto", resources=resources)
         # Preserve legacy idempotency identities for calls without the new options.
         if stage != "evidence" or method is not None or review_documents is not None:
             identity.update(stage=stage, method=method, review_documents=review_documents)
@@ -337,6 +376,18 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
             )
             if workspace_limit < sum(sizes) + 1024**2:
                 raise ValueError("Insufficient study storage reservation; await active experiments")
+            if resources is not None:
+                from .execution_pool import job_identifier, reserve_worker
+
+                selected_machine, resources = reserve_worker(
+                    pool,
+                    capability,
+                    machine,
+                    resources,
+                    reservation=job_identifier(self, {"id": identifier}),
+                    receipt=path,
+                    deadline=self.manifest["deadline"],
+                )
             workspace = self.root / "experiments" / identifier / "workspace"
             workspace.mkdir(parents=True)
             for relative, expected in binding["inputs"].items():
@@ -355,111 +406,84 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
                 timeout=min(timeout, self.manifest["deadline"] - time.time()),
                 workspace_limit_bytes=workspace_limit,
                 **identity,
+                **({"machine": selected_machine} if selected_machine else {}),
             )
             put(path, record)
-            env = dict(os.environ, PYTHONPATH=str(Path(__file__).resolve().parents[1]))
-            with (workspace.parent / "worker.log").open("w") as log:
-                child = subprocess.Popen(
-                    [
-                        sys.executable,
-                        "-m",
-                        "conjecture_solver.research_service",
-                        "--root",
-                        str(self.root),
-                        "--execute",
-                        identifier,
-                    ],
-                    env=env,
-                    stdout=log,
-                    stderr=log,
-                    stdin=subprocess.DEVNULL,
-                    start_new_session=True,
-                )
-            record["pid"] = child.pid
-            from .mvp_launch import read_process_identity
-
-            identity = read_process_identity(child.pid)
-            record["worker_identity"] = identity.model_dump(mode="json") if identity else None
+            self._spawn_experiment(record)
             put(path, record)
         return record
 
+    def _spawn_experiment(self, record):
+        from .mvp_launch import read_process_identity
+
+        directory = self.root / "experiments" / record["id"]
+        env = dict(os.environ, PYTHONPATH=str(Path(__file__).resolve().parents[1]))
+        with (directory / "worker.log").open("a") as log:
+            child = subprocess.Popen(
+                [
+                    sys.executable,
+                    "-m",
+                    "conjecture_solver.research_service",
+                    "--root",
+                    str(self.root),
+                    "--execute",
+                    record["id"],
+                ],
+                env=env,
+                stdout=log,
+                stderr=log,
+                stdin=subprocess.DEVNULL,
+                start_new_session=True,
+            )
+        record["pid"] = child.pid
+        identity = read_process_identity(child.pid, argv=getattr(child, "args", ()))
+        record["worker_identity"] = identity.model_dump(mode="json") if identity else None
+
     def execute(self, identifier):
+        from .mvp_launch import read_process_identity
+
         path = self.root / "experiments" / (identifier + ".json")
         with self.lock():
             record = self._read("experiments", identifier)
             if record["status"] != "queued":
                 return
+            identity = read_process_identity(os.getpid())
+            if identity:
+                record["worker_identity"] = identity.model_dump(mode="json")
             record.update(status="running", started_at=time.time())
             put(path, record)
+        if record.get("machine"):
+            from .execution_pool import dispatch
+
+            try:
+                dispatch(self, record)
+            except Exception as error:
+                with self.lock():
+                    current = self._read("experiments", identifier)
+                    if current["status"] not in {"cancelled", "succeeded", "timed_out"}:
+                        current.update(status="failed", error=str(error), finished_at=time.time())
+                        put(path, current)
+            return
         workspace = self.root / "experiments" / identifier / "workspace"
         try:
-            registry = (
-                MVPCapabilityRegistry.discover(self.manifest["capabilities"])
-                if self.manifest["capabilities"]
-                else MVPCapabilityRegistry()
-            )
-            b = record["binding"]
-            if (
-                b["capability"]
-                and registry.get(b["capability"]).contract_hash != b["runtime_sha256"]
-            ):
-                raise ValueError("Runtime changed before execution")
+            from .experiment_executor import execute_frozen
+
             timeout = min(record["timeout"], self.manifest["deadline"] - time.time())
             if timeout <= 0:
                 raise ValueError("Study deadline exhausted before launch")
-            sandbox = BubblewrapSandbox(
-                workspace,
-                MVPAgentConfig(
+            record.update(
+                execute_frozen(
+                    workspace,
+                    record["binding"],
+                    record["outputs"],
+                    timeout=timeout,
                     execution_backend=self.manifest.get("execution_backend", "bubblewrap"),
-                    max_command_seconds=timeout,
+                    capabilities=self.manifest.get("capabilities"),
                     max_workspace_bytes=record.get(
                         "workspace_limit_bytes", self.manifest["max_experiment_bytes"]
                     ),
-                    max_file_bytes=512 * 1024**2,
-                ),
-                registry,
+                )
             )
-            fn = sandbox.run_capability if b["capability"] else sandbox.run_python
-            args = ((b["capability"],) if b["capability"] else ()) + (
-                tuple([b["source"], *b["args"]]),
-            )
-            result = fn(
-                *args,
-                input_artifacts=tuple(
-                    MVPArtifactInput(path=p, sha256=h)
-                    for p, h in b["inputs"].items()
-                    if p != b["source"]
-                ),
-                program_path=b["source"],
-                program_sha256=b["inputs"][b["source"]],
-                timeout_seconds=timeout,
-            )
-            record["execution"] = result.model_dump(mode="json")
-            record["artifacts"] = {}
-            for p in sorted(workspace.rglob("*")):
-                if p.is_file() and not p.is_symlink():
-                    record["artifacts"][str(p.relative_to(workspace))] = dict(
-                        sha256=sha(p), bytes=p.stat().st_size
-                    )
-            absent = [p for p in record["outputs"] if p not in record["artifacts"]]
-            record["missing_outputs"] = absent
-            record["input_mutations"] = [
-                p
-                for p, expected in b["inputs"].items()
-                if record["artifacts"].get(p, {}).get("sha256") != expected
-            ]
-            ok = (
-                not record["input_mutations"]
-                and result.returncode == 0
-                and not result.timed_out
-                and not result.workspace_exceeded
-                and not absent
-            )
-            from .research_audit import output_findings
-
-            record["output_findings"] = output_findings(workspace, record["outputs"])
-            record["scientific_status"] = "unreviewed"
-            record["status"] = "succeeded" if ok else "failed"
         except Exception as error:
             record.update(status="failed", error=str(error))
         record["finished_at"] = time.time()
@@ -685,6 +709,12 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
                     continue
                 if process_identity_matches(ProcessIdentity.model_validate(identity)):
                     continue
+                if record.get("machine"):
+                    # A coordinator restart does not establish remote experiment failure.
+                    record.update(status="queued", recovery_started_at=time.time())
+                    self._spawn_experiment(record)
+                    put(self.root / "experiments" / (record["id"] + ".json"), record)
+                    continue
                 record.update(
                     status="failed",
                     finished_at=time.time(),
@@ -752,6 +782,11 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
                     parent_experiment=e.get("parent_experiment"),
                     purpose=e.get("purpose"),
                     plan=e.get("plan"),
+                    machine=e.get("machine", "local"),
+                    resources=e.get("resources"),
+                    remote_job=e.get("remote_job"),
+                    transport_status=e.get("transport_status"),
+                    assigned_gpu_ids=e.get("assigned_gpu_ids"),
                     commitment=e.get("commitment"),
                     outputs=e["outputs"],
                     stage=e.get("stage", "evidence"),
@@ -785,9 +820,16 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
         return snapshot
 
     def cancel_active(self):
+        from .execution_pool import cancel_remote
+
+        for record in self._all("experiments"):
+            if record.get("machine") and record["status"] in {"queued", "running"}:
+                cancel_remote(self, record)
         with self.lock():
             for record in self._all("experiments"):
                 if record["status"] in ["queued", "running"]:
+                    if record.get("machine"):
+                        continue
                     if record.get("worker_identity"):
                         from .mvp_launch import ProcessIdentity, process_identity_matches
 
@@ -798,6 +840,71 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
                     record.update(status="cancelled", finished_at=time.time())
                     put(self.root / "experiments" / (record["id"] + ".json"), record)
 
+    def machines(self):
+        """Frozen execution pool and machine-scoped instrument identities."""
+        pool = self.manifest.get("execution_pool")
+        if not pool:
+            return {"local": {"execution_backend": self.manifest.get("execution_backend")}}
+        return {
+            name: {
+                "label": worker["profile"]["label"],
+                "capacity": worker["profile"]["config"],
+                "capabilities": {
+                    alias: cap
+                    for alias, cap in pool["capabilities"].items()
+                    if cap["machine"] == name
+                },
+            }
+            for name, worker in pool["workers"].items()
+        }
+
+    def fetch_remote(self, experiment, path):
+        from .execution_pool import MachineRegistry, download
+
+        record = self._read("experiments", experiment)
+        pool = self.manifest.get("execution_pool")
+        if (
+            not pool
+            or not record.get("remote_job")
+            or record["status"]
+            not in {"succeeded", "failed", "timed_out", "cancelled", "interrupted"}
+        ):
+            raise ValueError("Select a completed worker experiment")
+        metadata = record.get("remote_artifacts", {}).get(path)
+        if not metadata:
+            raise ValueError("Remote artifact was not recorded")
+        workspace = self.root / "experiments" / experiment / "workspace"
+        from .worker_protocol import contained
+
+        destination = contained(workspace, path)
+        used = BubblewrapSandbox._tree_bytes(workspace)
+        if destination.is_file():
+            used -= destination.stat().st_size
+        if used + metadata["bytes"] > record["workspace_limit_bytes"]:
+            raise ValueError("Artifact exceeds the coordinator storage reservation")
+
+        transport = MachineRegistry(pool["registry"]).transport(
+            record["machine"], frozen=pool["workers"][record["machine"]]
+        )
+        download(transport, record["remote_job"], path, metadata, destination)
+        with self.lock():
+            current = self._read("experiments", experiment)
+            current["artifacts"][path] = metadata
+            put(self.root / "experiments" / (experiment + ".json"), current)
+        return {"path": str(workspace / path), **metadata}
+
+    def read_instrument(self, capability, **kwargs):
+        from .execution_pool import MachineRegistry
+
+        pool = self.manifest.get("execution_pool") or {}
+        entry = pool.get("capabilities", {}).get(capability)
+        if not entry:
+            raise ValueError("Choose a machine-scoped instrument alias")
+        transport = MachineRegistry(pool["registry"]).transport(
+            entry["machine"], frozen=pool["workers"][entry["machine"]]
+        )
+        return transport.call("read_instrument", capability=entry["worker_capability"], **kwargs)
+
 
 class Lab:
     """Worker API. Authority to accept reviews stays with the supervisor."""
@@ -807,6 +914,15 @@ class Lab:
 
     def run(self, source, args=(), **kwargs):
         return self._service.run(source, args, **kwargs)
+
+    def machines(self):
+        return self._service.machines()
+
+    def fetch_remote(self, **kwargs):
+        return self._service.fetch_remote(**kwargs)
+
+    def read_instrument(self, capability, **kwargs):
+        return self._service.read_instrument(capability, **kwargs)
 
     def reproduce_anchor(self, **kwargs):
         return self._service.reproduce_anchor(**kwargs)
@@ -862,6 +978,9 @@ def main():
             "notes",
             "brief",
             "compare",
+            "machines",
+            "fetch_remote",
+            "read_instrument",
         ],
     )
     a = parser.parse_args()

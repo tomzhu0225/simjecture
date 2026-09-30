@@ -714,6 +714,14 @@ def build_parser() -> argparse.ArgumentParser:
         )
     )
 
+    from .execution_pool import configure_parser as configure_machines
+
+    configure_machines(
+        subcommands.add_parser(
+            "machines", help="Configure, prepare and inspect local/SSH execution workers"
+        )
+    )
+
     schemas = subcommands.add_parser("schemas")
     schemas.add_argument("--output", default="schemas")
     schemas.add_argument("--check", action="store_true")

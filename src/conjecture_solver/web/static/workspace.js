@@ -8,6 +8,7 @@ const state = {
   view: "home",
   mode: "interactive",
   tools: [],
+  machines: [],
   toolsRevision: "",
   busy: false,
   readonly: false,
@@ -94,6 +95,7 @@ function view(name) {
         : name;
   if (name === "tools") refreshTools().catch((e) => toast(e.message, true));
   if (name === "benchmarks") refreshBenchmarks().catch((e) => toast(e.message, true));
+  if (name === "machines") refreshMachines().catch((e) => toast(e.message, true));
   if (name === "home" && state.token && changed)
     renderAgent(undefined, "home").catch((e) => toast(e.message, true));
 }
@@ -132,7 +134,7 @@ async function followRoute({ reveal = true } = {}) {
         });
     } else
       view(
-        ["settings", "tools", "benchmarks"].includes(location.hash.slice(1))
+        ["settings", "tools", "benchmarks", "machines"].includes(location.hash.slice(1))
           ? location.hash.slice(1)
           : "home",
       );
@@ -400,6 +402,7 @@ $("dismiss-agent-switch-warning").onclick = () => {
 function renderProject(force = false) {
   const p = state.project;
   if (!p) return;
+  renderMachineSelection();
   renderAgentSwitchWarning();
   $("project-title").textContent = p.name;
   $("agent-label").textContent = p.agent
@@ -448,6 +451,7 @@ function renderProject(force = false) {
       ["Evidence", b.success_criteria],
       ["Constraints", b.constraints || "No additional constraints specified."],
       ["Time budget", `${b.hours} hours`],
+      ["Execution", b.machine_ids?.length ? b.machine_ids.join(", ") : "This host"],
       [
         "Completion",
         b.completion_policy === "answer"
@@ -738,6 +742,108 @@ Guide me through the missing decisions in plain language. Inspect prerequisites,
   );
 }
 
+function fillMachine(machine) {
+  state.editMachine = machine;
+  const config = machine.config || {};
+  for (const [id, value] of Object.entries({"machine-id":machine.id, "machine-label-input":machine.label,
+    "machine-kind":machine.kind, "machine-host":machine.host, "machine-port":machine.port || 22,
+    "machine-user":machine.user, "machine-root":machine.root, "machine-python":machine.python || "python3",
+    "machine-run-as":machine.run_as, "machine-identity":machine.identity_file,
+    "machine-known-hosts":machine.known_hosts, "machine-cpus":config.cpus || 2,
+    "machine-memory":config.memory_mb || 4096, "machine-max-jobs":config.max_jobs || 2,
+    "machine-gpus":(config.gpu_ids || []).join(","), "machine-capabilities":(config.capabilities || []).join("\n"),
+    "machine-execution":config.execution_backend || "bubblewrap"})) $(id).value = value ?? "";
+  $("machine-password").value = "";
+  $("machine-editor").open = true;
+}
+function renderMachineSelection() {
+  const select = $("study-machines"), saved = state.project?.brief?.machine_ids || [];
+  const selected = state.briefDirty ? [...select.selectedOptions].map(o => o.value) : saved;
+  select.replaceChildren(new Option("This host · existing local launcher", ""));
+  for (const record of state.machines) {
+    const machine = record.machine, ready = record.probe?.execution?.available === true;
+    const option = new Option(`${machine.label || machine.id} · ${ready ? "ready" : "prepare in Machines"}`, machine.id);
+    option.disabled = !ready;
+    option.selected = selected.includes(machine.id);
+    select.add(option);
+  }
+  select.options[0].selected = !selected.some(Boolean);
+}
+async function refreshMachines() {
+  const data = await api("machines"); state.machines = data.machines;
+  renderMachineSelection();
+  $("register-local-worker").disabled = state.readonly;
+  $("register-local-worker").onclick = () => {
+    fillMachine(data.local_defaults); $("machine-form").scrollIntoView({behavior:"smooth"});
+  };
+  if (state.view !== "machines") return;
+  const grid = $("machine-grid"); grid.replaceChildren();
+  for (const record of data.machines) {
+    const machine = record.machine, card = el("article", undefined, "tool-card");
+    card.dataset.machine = machine.id;
+    const working = record.preparation?.status === "working";
+    card.append(el("h2", machine.label || machine.id), el("p", `${machine.id} · ${machine.kind === "ssh" ? `${machine.user ? machine.user + "@" : ""}${machine.host}:${machine.port}` : "local"}`));
+    card.append(el("p", working ? "Preparing worker…" : record.preparation?.status === "failed" ? `Preparation failed: ${record.preparation.error}` : record.error ? `Readiness check failed: ${record.error}` : record.probe?.execution?.available ? "Execution ready · scientific qualification is specific to each study" : "Not prepared"));
+    card.append(el("p", `${machine.config.cpus} CPUs · ${machine.config.memory_mb} MiB RAM · ${machine.config.gpu_ids.length} GPUs · ${machine.config.max_jobs} concurrent jobs`));
+    const capabilities = Object.keys(record.probe?.capabilities || {});
+    if (capabilities.length) card.append(el("p", `Instruments: ${capabilities.join(", ")}`));
+    const actions = el("div", undefined, "tool-actions");
+    for (const [label, endpoint] of [["Prepare worker", "prepare-machine"], ["Check readiness", "check-machine"]]) {
+      const button = el("button", label, "secondary"); button.disabled = state.readonly || working;
+      button.onclick = () => action(button, async () => {
+        button.textContent = "Working…";
+        try {await api(endpoint, {id:machine.id}); await refreshMachines();}
+        finally {button.textContent = label;}
+      }); actions.append(button);
+    }
+    const jobs = el("button", "Jobs", "quiet");
+    jobs.onclick = () => action(jobs, async () => {
+      const status = await api(`machine-jobs?id=${encodeURIComponent(machine.id)}`);
+      $("machine-jobs-report").hidden = false;
+      $("machine-jobs-report").textContent = JSON.stringify(status, null, 2);
+      $("machine-job-controls").replaceChildren();
+      for (const job of status.jobs || []) {
+        if (!["staging", "queued", "running", "cancelling"].includes(job.status)) continue;
+        const stop = el("button", `Cancel ${job.id.slice(-12)} · ${job.status}`, "secondary");
+        stop.disabled = state.readonly;
+        stop.onclick = () => action(stop, async () => {
+          const receipt = await api("cancel-machine-job", {id:machine.id, job:job.id});
+          const terminal = ["cancelled", "timed_out", "succeeded", "failed", "interrupted"].includes(receipt.status);
+          stop.textContent = receipt.cancellation_confirmed ? "Cancellation confirmed" :
+            terminal ? `Job ${receipt.status}` : "Stopping · retry cancellation";
+          stop.disabled = terminal;
+        });
+        $("machine-job-controls").append(stop);
+      }
+    }); actions.append(jobs);
+    const edit = el("button", "Edit", "quiet"); edit.disabled = state.readonly;
+    edit.onclick = () => fillMachine(machine); actions.append(edit);
+    card.append(actions);
+    if (record.preparation?.log) {
+      const details = el("details"); details.append(el("summary", "Preparation log"), el("pre", record.preparation.log)); card.append(details);
+    }
+    grid.append(card);
+  }
+  if (!data.machines.length) grid.append(el("p", "Add an SSH machine or register this host to create an execution pool."));
+}
+$("machine-form").onsubmit = e => {
+  e.preventDefault();
+  action(e.submitter, async () => {
+    const machine = {...(state.editMachine || {}), id:$("machine-id").value.trim(), label:$("machine-label-input").value.trim(),
+      kind:$("machine-kind").value, host:$("machine-host").value.trim(), port:Number($("machine-port").value),
+      user:$("machine-user").value.trim(), root:$("machine-root").value.trim(), python:$("machine-python").value.trim(),
+      run_as:$("machine-run-as").value.trim() || null, identity_file:$("machine-identity").value.trim() || null,
+      known_hosts:$("machine-known-hosts").value.trim() || null,
+      config:{execution_backend:$("machine-execution").value, cpus:Number($("machine-cpus").value),
+        memory_mb:Number($("machine-memory").value), max_jobs:Number($("machine-max-jobs").value),
+        gpu_ids:$("machine-gpus").value.split(",").map(s=>s.trim()).filter(Boolean),
+        capabilities:$("machine-capabilities").value.split("\n").map(s=>s.trim()).filter(Boolean)}};
+    if ($("machine-password").value) machine.password = $("machine-password").value;
+    await api("save-machine", machine); $("machine-password").value = "";
+    await refreshMachines(); toast("Machine saved. Prepare the worker before launching experiments.");
+  });
+};
+
 async function refreshBenchmarks() {
   const pack = await api("benchmarks");
   $("benchmark-version").textContent = `Task pack ${pack.version} · experimental · no leaderboard`;
@@ -993,6 +1099,7 @@ function briefPayload() {
     hours: Number($("brief-hours").value),
     completion_policy: $("brief-policy").value,
     capability_directory: $("study-tools").value,
+    machine_ids: [...$("study-machines").selectedOptions].map(o=>o.value).filter(Boolean),
   };
 }
 async function saveBrief() {
@@ -1220,6 +1327,18 @@ async function renderStudies() {
         files.append(
           linkFile(`experiments/${experiment.id}/workspace/${output}`, output),
         );
+      if (experiment.machine) files.append(el("p", `Machine: ${experiment.machine} · ${experiment.transport_status || "recorded"}`));
+      const retained = Object.keys(experiment.remote_artifacts || {}).filter(name=>!experiment.artifacts?.[name]);
+      if (retained.length) {
+        const select = el("select"); select.setAttribute("aria-label", "Remote artifact to retrieve");
+        for (const name of retained) select.add(new Option(name, name));
+        const fetch = el("button", "Retrieve from worker", "secondary"); fetch.disabled = state.readonly;
+        fetch.onclick = () => action(fetch, async () => {
+          await api("fetch-remote-artifact", {campaign:study.campaign,experiment:experiment.id,path:select.value});
+          state.studyRevision = ""; await renderStudies(); toast("Artifact retrieved and SHA256 verified.");
+        });
+        files.append(select, fetch);
+      }
     }
     const all = el("details");
     all.append(el("summary", "All recorded files"));
@@ -1608,6 +1727,7 @@ setInterval(async () => {
       }
     }
     if (state.view === "tools" && ++ticks % 3 === 0) await refreshTools();
+    if (state.view === "machines") await refreshMachines();
   } catch (error) {
     toast(
       `Connection interrupted: ${error.message}. Your work stays on disk.`,
@@ -1618,6 +1738,7 @@ setInterval(async () => {
   }
 }, 2000);
 boot().then(async () => {
+  await refreshMachines();
   const query = new URLSearchParams(location.search);
   const campaign = query.get("continue-study") || query.get("steer-study");
   if (campaign) {

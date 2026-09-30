@@ -163,6 +163,10 @@ class HumanizedEvent(StrictModel):
 
 
 class ComputeExecutionSummary(StrictModel):
+    machine: str | None = None
+    remote_job: str | None = None
+    transport_status: str | None = None
+    assigned_gpu_ids: list[str] = Field(default_factory=list)
     id: str
     iteration: int = Field(ge=1)
     action_name: str

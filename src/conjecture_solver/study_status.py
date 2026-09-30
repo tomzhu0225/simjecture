@@ -124,7 +124,9 @@ def study_status(root):
         if (r := read(p)).get("name")
     )
     return dict(
-        execution_backend=launch.get(
+        execution_backend="worker-pool"
+        if manifest.get("execution_pool")
+        else launch.get(
             "execution_backend",
             manifest.get(
                 "execution_backend",
@@ -176,6 +178,26 @@ def study_status(root):
 
 def status_line(status):
     counts = status["experiment_counts"]
+    placement = ""
+    if status.get("execution_backend") == "worker-pool":
+        active = Counter(
+            e["machine"]
+            for e in status["experiments"]
+            if e.get("machine") and e["status"] in {"queued", "running"}
+        )
+        unreachable = sorted(
+            {
+                e["machine"]
+                for e in status["experiments"]
+                if e.get("machine") and e.get("transport_status") == "unreachable"
+            }
+        )
+        if active:
+            placement += " | workers " + ", ".join(
+                f"{name}:{n}" for name, n in sorted(active.items())
+            )
+        if unreachable:
+            placement += " | SSH unreachable " + ", ".join(unreachable)
     return (
         f"{status['mode']} · {status['backend']}/{status['model']} · "
         f"{status.get('execution_backend', 'bubblewrap')} | "
@@ -187,7 +209,7 @@ def status_line(status):
         f"oversight {status.get('oversight_count', 0)} | "
         f"tokens {status['usage']['input_tokens']:,} in / "
         f"{status['usage']['output_tokens']:,} out · "
-        f"provider wait {status.get('provider_wait_seconds', 0) / 60:.1f}m"
+        f"provider wait {status.get('provider_wait_seconds', 0) / 60:.1f}m{placement}"
     )
 
 
@@ -312,9 +334,15 @@ def minimal_snapshot(root):
             )[-12000:].strip()
             or None,
             capability=e.get("binding", {}).get("capability"),
+            machine=e.get("machine", "local"),
+            remote_job=e.get("remote_job"),
+            transport_status=e.get("transport_status"),
+            assigned_gpu_ids=e.get("assigned_gpu_ids") or [],
             active_claim_id=e.get("commitment") or "root",
             elapsed_wall_seconds=max(
-                0, e.get("finished_at", time.time()) - e.get("started_at", time.time())
+                0,
+                (e.get("finished_at") or time.time())
+                - (e.get("started_at") or e.get("created_at") or time.time()),
             ),
         )
         for i, e in enumerate(status["experiments"], 1)

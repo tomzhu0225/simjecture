@@ -1051,6 +1051,11 @@ class BubblewrapSandbox:
             "--setenv",
             "OPENBLAS_NUM_THREADS",
             "1",
+            *(
+                ["--setenv", "CUDA_VISIBLE_DEVICES", ",".join(self.assigned_gpu_ids)]
+                if getattr(self, "assigned_gpu_ids", None) is not None
+                else []
+            ),
         ]
 
     def _regular_workspace_file(
@@ -1521,6 +1526,10 @@ class BubblewrapSandbox:
                 command.extend(("--dev-bind", device, device))
             for key, value in sorted(installed.environment.items()):
                 command.extend(("--setenv", key, value))
+            if getattr(self, "assigned_gpu_ids", None) is not None:
+                command.extend(
+                    ("--setenv", "CUDA_VISIBLE_DEVICES", ",".join(self.assigned_gpu_ids))
+                )
             command.extend(
                 (
                     "--setenv",

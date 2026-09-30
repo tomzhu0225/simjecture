@@ -2,6 +2,18 @@
 
 This project follows semantic versioning. Dates use ISO 8601.
 
+## Unreleased — SSH experiment workers
+
+- Add standalone local/SSH headless numerical workers for minimal studies, with
+  frozen runtime identities, CPU/RAM/GPU admission and asynchronous execution.
+- Preserve job identity across lost replies, SSH interruptions and coordinator
+  restarts; enforce worker deadlines and confirm descendant cancellation.
+- Add the Machines workspace page, visible study pool selection, placement and
+  transport status, bounded read-only source access and verified artifact retrieval.
+- Preserve pool selection when preparing continuation phases. Keep research agents
+  and independent scientific review central; Simote remains optional.
+
+
 ## 0.5.3rc1 (preview) — 2026-09-30
 
 First repairs from the aluminium stagnation campaign audit. Minimal remains the

@@ -1406,6 +1406,8 @@ function renderExecutions() {
       `iteration ${item.iteration}`,
       item.stage,
       item.active_claim_id,
+      item.machine,
+      item.transport_status === "unreachable" ? "SSH connection unavailable" : null,
     ].filter(Boolean).join(" · ");
     button.append(header, paragraph(null, item.description), element("small", null, metadata));
     button.addEventListener("click", () => {
@@ -1497,6 +1499,10 @@ function renderExecutionConsole(container, item) {
     item.route ? `route ${item.route}` : null,
     item.returncode == null ? null : `return code ${item.returncode}`,
     item.timed_out ? "timed out" : null,
+    item.machine ? `machine ${item.machine}` : null,
+    item.remote_job ? `job ${item.remote_job}` : null,
+    item.assigned_gpu_ids?.length ? `GPU ${item.assigned_gpu_ids.join(", ")}` : null,
+    item.transport_status === "unreachable" ? "SSH unavailable; remote execution may continue" : null,
   ].filter(Boolean);
   binding.textContent = bindingParts.join(" · ");
   container.append(binding);

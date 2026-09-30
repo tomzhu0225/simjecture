@@ -283,6 +283,10 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
                 self._json(workspace.catalogue())
             elif endpoint == "benchmarks":
                 self._json(workspace.benchmark_catalogue())
+            elif endpoint == "machines":
+                self._json(workspace.machines())
+            elif endpoint == "machine-jobs":
+                self._json(workspace.machine_jobs(self._one_value(query, "id")))
             elif endpoint == "machine":
                 from ..execution import probe_execution_backend
 
@@ -429,6 +433,21 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
                 result = workspace.prepare_benchmark(payload)
             elif endpoint == "grade-benchmark":
                 result = workspace.grade_benchmark(payload)
+            elif endpoint == "save-machine":
+                result = workspace.save_machine(payload)
+            elif endpoint == "prepare-machine":
+                result = workspace.prepare_machine(payload.get("id"))
+            elif endpoint == "check-machine":
+                result = workspace.check_machine(payload.get("id"))
+            elif endpoint == "cancel-machine-job":
+                result = workspace.cancel_machine_job(payload.get("id"), payload.get("job"))
+            elif endpoint == "fetch-remote-artifact":
+                from ..research_service import ResearchService
+
+                root = self.server.application.registry.resolve(payload.get("campaign"))
+                result = ResearchService(root).fetch_remote(
+                    payload.get("experiment"), payload.get("path")
+                )
             elif endpoint == "message":
                 result = workspace.send(payload.get("project"), payload)
             elif endpoint == "stop":
