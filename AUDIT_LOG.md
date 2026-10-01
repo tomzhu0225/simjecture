@@ -111,3 +111,9 @@ Validation: 72 GUI/workspace tests passed, one pre-existing namespace-dependent 
 - Example constructed limit: 8 allocated CPUs × 2.5 seconds yields 21 CPU seconds including cushion, versus the old 4. Invalid/nonfinite allocations are rejected before limit calls. Tests mock limit calls rather than changing host limits.
 - Treat malformed/inconsistent worker success envelopes as transport uncertainty (`WorkerUnavailable`), retaining genuine worker rejections as semantic errors; do not prematurely fail a possibly running experiment.
 - Validation: CPU construction/transport/staging/web suite passed, including a recovery test for malformed replies; CLI and Ruff passed. Actual multi-core isolated runs remain untested due host restrictions.
+
+### Independent review corrections
+- Independent review found that targeted polling could leave unrelated stale jobs counted against admission. Reconcile once under the existing admission lock; per-job polls stay O(1). Four saturation regressions reclaim 256 expired/disappeared/cancelled receipts and preserve the genuinely-live queue cap.
+- Independent review also found that generic bootstrap transport legitimately returns scalar success values. Keep generic result compatibility while requiring object results only at the worker-RPC boundary.
+- These audit-introduced integration regressions were fixed in follow-up commits before final validation, without rewriting history.
+- Validation: independent harness review 49 passed; owned harness scope 88 passed, 14 environment-gated skips; parent review/web regression smoke passed. Two hundred seeded randomized provider logs matched pristine accounting totals. Ruff passed.

@@ -66,3 +66,53 @@ def test_targeted_status_does_not_require_worker_configuration(tmp_path):
     worker = Worker(tmp_path)
     identifier = "job_" + "a" * 40
     assert worker.status(identifier) == {"id": identifier, "status": "not_found"}
+
+
+@pytest.mark.parametrize("stale_status", ["staging", "running", "cancelling", "active"])
+def test_create_reclaims_stale_queue_slots_and_preserves_active_capacity(
+    tmp_path, monkeypatch, stale_status
+):
+    import os
+
+    from conjecture_solver.mvp_launch import read_process_identity
+    from conjecture_solver.worker_protocol import fingerprint
+
+    worker = Worker(tmp_path)
+    config = WorkerConfig().model_dump(mode="json")
+    private_put(worker.root / "config.json", config)
+    process = read_process_identity(os.getpid()).model_dump(mode="json")
+    monkeypatch.setattr(
+        "conjecture_solver.mvp_launch.process_identity_matches", lambda identity: False
+    )
+    for index in range(256):
+        receipt(
+            worker,
+            index,
+            "staging" if stale_status == "active" else stale_status,
+            deadline=time.time() + (60 if stale_status == "active" else -1),
+            process=None if stale_status == "active" else process,
+            cancellation_reason="operator",
+            cancellation_processes=[],
+        )
+    identifier = "job_" + "f" * 40
+    assert worker.status(identifier)["status"] == "not_found"
+    specification = {
+        "id": identifier,
+        "binding": {
+            "source": "calc.py",
+            "inputs": {"calc.py": "a" * 64},
+            "args": [],
+        },
+        "outputs": ["result.json"],
+        "deadline": time.time() + 60,
+        "timeout": 30,
+        "config_sha256": fingerprint(config),
+    }
+    if stale_status == "active":
+        with pytest.raises(ValueError, match="queue is full"):
+            worker.create(specification)
+        assert len(worker.jobs()) == 256
+        return
+    result = worker.create(specification)
+    assert result["status"] == "staging"
+    assert sum(record["status"] == "staging" for record in worker.jobs()) == 1

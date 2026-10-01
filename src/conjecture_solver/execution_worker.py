@@ -187,7 +187,9 @@ class Worker:
                 return current
             if spec.deadline <= time.time():
                 raise ValueError("Experiment deadline expired")
-            if sum(r["status"] in ACTIVE for r in self.jobs()) >= 256:
+            # Admission must reclaim stale slots itself; targeted status polls
+            # intentionally do not scan unrelated jobs.
+            if sum(r["status"] in ACTIVE for r in self._reconcile_locked()) >= 256:
                 raise ValueError("Worker queue is full")
             (path / "workspace").mkdir(parents=True)
             put(path / "request.json", body)
