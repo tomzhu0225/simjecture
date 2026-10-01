@@ -28,10 +28,10 @@ parallel experiments with GPU reservations and recover existing jobs after SSH
 interruptions or coordinator restarts. Agents and independent review stay on the
 coordinator; Simote remains optional.
 
-Research tools now uses compact cards with build lists, diagnostics and logs in a
+Research tools now use compact cards with build lists, diagnostics and logs in a
 separate Details panel. The preview also includes rc1's campaign audit repairs,
 request-level usage records, native DeepSeek tool-message continuity and experimental
-**Simjecture Bench 0.1.0**. See [SSH setup](docs/how-to/ssh-workers.md),
+**Simjecture Bench** (task pack 0.3.0 in rc3). See [SSH setup](docs/how-to/ssh-workers.md),
 [benchmark usage](docs/how-to/llm-bench.md), and
 [rc3 scope and validation](docs/testing/0.5.3rc3-acceptance.md).
 The stable installation commands below remain on 0.5.2.
@@ -62,7 +62,7 @@ needs no GUI, API key or imported data:
 simjecture llm-benchmark export-page --output ./leaderboard.html
 ```
 
-To try rc2, preserving existing research data:
+To try rc3, preserving existing research data:
 
 ```bash
 curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.3rc3/install.sh | bash

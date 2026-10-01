@@ -1,6 +1,6 @@
 # Continue and steer an investigation
 
-Available in the rc3 development preview for minimal studies. The published rc2
+Available in the 0.5.3rc3 preview for minimal studies. The published rc2
 installer does not yet include these actions.
 
 ## Continue after a deadline or change direction
@@ -40,7 +40,7 @@ simjecture study --campaign runs/phase-2 --continue-from runs/phase-1 \
 Omit `--hypothesis-file` to retain the original question. Specify a different one
 for an explicitly revised question. Configure the execution backend appropriate
 to the host. For a new phase the backend is checked afresh. Selected files are
-limited to128files,1MiB each, with a16MiB handoff including metadata. Hidden
+limited to 128 files, 1 MiB each, with a 16 MiB handoff including metadata. Hidden
 configuration, known credential filenames, symlinks and `lab.py` are excluded.
 
 ## Prepare the continuation with an agent
@@ -90,7 +90,7 @@ The built-in reviewer now records whether output was empty or truncated and its
 provider finish reason. It makes at most two transport attempts per invocation;
 a DeepSeek retry disables thinking after an empty/truncated response. Usage includes
 both attempts. Persistent failure remains an error, never approval. Invalid
-oversight retries back off up to30minutes while other research can continue.
+oversight retries back off up to 30 minutes while other research can continue.
 
 Live status reconciles expired budgets and recorded supervisor identity. Final
 reports are written on supervisor exit, including an external-error exit. A

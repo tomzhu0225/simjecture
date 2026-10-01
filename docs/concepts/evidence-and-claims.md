@@ -1,5 +1,13 @@
 # Evidence and claims
 
+This page describes the classic campaign contract/claim model. Minimal studies
+apply the same separation of execution and scientific acceptance through
+experiment receipts, source-bound methods review and prospective repair
+commitments; see [minimal research](../how-to/research-service.md). A minimal
+study's `answer` completion policy can finish on a reviewed root falsification;
+the `repair` policy requires an independently supported repair. Do not apply
+classic instrument-claim APIs or completion rules to every workflow.
+
 ## Evidence is prospective
 
 A decisive claim requires a contract registered before its evidence-generating

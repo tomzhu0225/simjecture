@@ -3,8 +3,13 @@
 The local [Web interface](web-interface.md) is the primary interactive client
 beginning with v0.1.1. The Textual dashboard remains supported for SSH,
 headless, and accessibility-constrained workflows, but new visualization and
-interaction work targets the browser. It is not scheduled for removal during
-the 0.1 release line.
+interaction work targets the browser. It remains available in stable 0.5.2 and preview 0.5.3rc3.
+
+The terminal interface supports minimal studies as well as classic MVP campaigns.
+Minimal studies use `research.json`, experiment receipts and `research_report.json`;
+see [minimal research](../how-to/research-service.md) for their absolute-deadline
+and supervisor controls. The classic MVP behavior described below uses a
+different launch/record format and active-time accounting.
 
 The terminal interface is a human-facing projection of durable MVP artifacts.
 It does not replace `mvp_manifest.json`, `transcript.jsonl`,

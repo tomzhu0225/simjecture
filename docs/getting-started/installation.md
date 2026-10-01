@@ -67,7 +67,7 @@ for configuration, build, registration and actual backend readiness checks.
 
 ### SSH servers
 
-The workspace runs on the SSH server. Experiments run there by default; rc2 can
+The workspace runs on the SSH server. Experiments run there by default; the rc3 preview can
 select additional SSH workers through Machines. The installer prints a forwarding
 command; run it on your local computer, for example:
 
@@ -103,7 +103,8 @@ to add an optional compatible API endpoint and key. See the
 New studies default to minimal mode. Install and log in with Codex GLM, Codex,
 Grok or AGY independently, then choose that backend and model in the launcher.
 Simjecture does not redistribute those CLIs or subscriptions. Native tools remain
-available; numerical execution still uses the Bubblewrap sandbox. No DeepSeek
+available; numerical execution defaults to Bubblewrap, with explicit cooperative PRoot
+selection available on supported restricted hosts. No DeepSeek
 API key or DSH install is required for native-agent studies.
 
 ## Legacy API credentials

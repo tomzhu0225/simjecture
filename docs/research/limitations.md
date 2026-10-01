@@ -38,7 +38,7 @@ expert comparison.
 
 ## Current release scope
 
-Version 0.1 demonstrates evidence-governed autonomous computation and real
+Stable 0.5.2 and preview 0.5.3rc3 build on recorded demonstrations of evidence-governed autonomous computation and real
 failure discovery. The next step is to apply the same harness to other
 simulation-gated fields and to hunt independently confirmed new results in
 the origin domain and beyond.

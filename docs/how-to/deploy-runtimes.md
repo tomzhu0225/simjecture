@@ -2,7 +2,10 @@
 
 Deployment is an operator action, not an authority granted to the autonomous
 agent. All profiles use project-local, Git-ignored runtime paths, after which the
-harness mounts one selected instrument read-only into the agent sandbox.
+harness exposes a selected instrument to the numerical execution backend.
+Bubblewrap enforces read-only mounts; cooperative PRoot is not an OS security
+boundary. Native research agents retain their separate host tools. See
+[restricted hosts](restricted-containers.md).
 
 ## Core
 

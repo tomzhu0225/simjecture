@@ -62,8 +62,9 @@ uv run simjecture resume artifacts/first-study
 
 Pause stops the native agent at the supervisor boundary. Already recorded jobs
 may finish within their existing limits; the wall deadline continues. Cancel or
-deadline exhaustion terminates active recorded jobs. A provider outage pauses
-with the evidence intact rather than inventing a scientific conclusion.
+deadline exhaustion terminates active recorded jobs. Transient provider outages retry within the original deadline; authentication,
+permission and exhausted-quota failures pause with the evidence intact rather
+than inventing a scientific conclusion.
 
 The optional [Terminal interface](terminal-ui.md) offers the same mode/backend
 selection and a dashboard for SSH and headless machines. The legacy `simjecture

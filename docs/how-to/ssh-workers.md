@@ -1,7 +1,7 @@
 # Run experiments on local and SSH workers
 
 Available from **0.5.3rc2**, execution pools extend minimal-mode studies with
-local and SSH numerical workers. Use the rc2 installer or matching Python package
+local and SSH numerical workers. Use the rc3 preview installer or matching Python package
 on the coordinator.
 
 One Simjecture workspace owns the research agent, hypothesis, methods, reviews,
@@ -22,7 +22,9 @@ share the same versioned execution protocol and numerical launcher.
    CPU/RAM/GPU resources, chooses conservative budgets and a persistent worker
    directory, installs private Python 3.12, and verifies the numerical launcher.
    Root logins prepare an unprivileged `simjecture` worker account. Bubblewrap is
-   preferred; restricted containers automatically use cooperative PRoot. Root
+   preferred; restricted containers select cooperative PRoot only when its probe succeeds
+   under the unprivileged worker account. If both backends are blocked, preparation
+   fails with a setup error. Root
    Debian/Ubuntu hosts can install the missing execution dependency. Other hosts
    show an actionable setup error when installation needs additional privileges.
 3. **Advanced settings** are optional. Override the display name, directory,
@@ -61,8 +63,10 @@ new phase. Register the parent's machine IDs first when importing an external st
 
 ## Prepare through the CLI
 
-Install `simjecture[process]==0.5.3rc2` on the coordinator.
-For a managed local worker, its Python environment also needs that extra.
+Install `simjecture[workspace]==0.5.3rc3` on the coordinator.
+This includes the process monitor and the built-in API agent used in the example.
+A coordinator using only native CLIs can use the smaller `process` extra; managed
+local workers also need the process monitor.
 Create `node-a.json`, substituting your host, login, paths and capacity:
 
 ```json

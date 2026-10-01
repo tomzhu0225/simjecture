@@ -141,7 +141,7 @@ and an operator instruction file, then start the persistent supervisor:
 simjecture-supervise --campaign /absolute/path/to/campaign \
   --state-dir /absolute/path/to/supervisor-state \
   --instructions-file /absolute/path/to/instructions.txt \
-  --backend grok --model grok-4.6 --judge-model grok-4.6 \
+  --mode structured --backend grok --model grok-4.6 --judge-model grok-4.6 \
   --wall-seconds 21600 --turn-seconds 600
 ```
 
@@ -209,7 +209,8 @@ retain their existing logins; the supervisor does not rewrite global MCP setting
 
 Use `--workflow frontier` to let one researcher organize experiments, pursue
 supporting claims and test repairs without switching scientific roles. The
-structured workflow remains the default. Both use the same evidence contracts,
+structured workflow is selected explicitly with `--mode structured`; new studies
+default to minimal. Both classic workflows use the same evidence contracts,
 provenance checks, independent reviews and completion rules.
 
 For a campaign configured with independent contract review:

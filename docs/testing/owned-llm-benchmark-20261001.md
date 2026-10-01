@@ -4,7 +4,7 @@
 
 The current pack 0.3.0 results are **100/188 CSV passes** and **34/40 RZ passes**. CSV numerical checks passed in 161/188 graded attempts; 61 of those did not complete the full delivery contract. RZ has one trial per configuration and remains provisional. There is no overall model winner.
 
-The results ship as [sanitized host grades](https://github.com/tomzhu0225/simjecture/blob/feature/benchmark-leaderboard/src/conjecture_solver/llm_bench/results/owned-2026-10-01.json). Open **Benchmarks** in the development workspace to inspect comparison groups, trial receipts and interactive time/cost tradeoffs. Choose **Run your model** for a native CLI or configured API model, or import a grade bundle. See [benchmark usage](../how-to/llm-bench.md) for community submissions. This publication ships in the 0.5.3rc3 preview; it was not included in 0.5.3rc2.
+The results ship as [sanitized host grades](https://github.com/tomzhu0225/simjecture/blob/v0.5.3rc3/src/conjecture_solver/llm_bench/results/owned-2026-10-01.json). Open **Benchmarks** in the development workspace to inspect comparison groups, trial receipts and interactive time/cost tradeoffs. Choose **Run your model** for a native CLI or configured API model, or import a grade bundle. See [benchmark usage](../how-to/llm-bench.md) for community submissions. This publication ships in the 0.5.3rc3 preview; it was not included in 0.5.3rc2.
 
 ## What was tested
 
@@ -23,7 +23,7 @@ connections. This report retains the original failure-inclusive cost-per-success
 tables below for auditing. Its missing cost-per-success cells do not mean vendor
 tariffs are unavailable.
 
-The publication adds a separate [valuation ledger](https://github.com/tomzhu0225/simjecture/blob/feature/benchmark-leaderboard/src/conjecture_solver/llm_bench/results/owned-2026-10-01-valuation.json):
+The publication adds a separate [valuation ledger](https://github.com/tomzhu0225/simjecture/blob/v0.5.3rc3/src/conjecture_solver/llm_bench/results/owned-2026-10-01-valuation.json):
 recovered native/API counters produce per-attempt standard-rate equivalents.
 AGY's input/cache interpretation is an explicitly labelled estimate; interrupted
 receipt totals are lower bounds and are excluded from cost ranking. A Groq
@@ -174,7 +174,7 @@ Download sanitized grades from **Benchmarks → Download grades**, then run:
 simjecture llm-benchmark leaderboard --reports simjecture-benchmark-grades.json --output summary.json
 ```
 
-The configuration identities, task repeats, protocol and environment versions are bundled with the owned grades. Use **Run your model** or the timed CLI runner for fresh attempts; importing a report does not create a new repetition. A community submission adds sanitized grades under [results/community](https://github.com/tomzhu0225/simjecture/blob/feature/benchmark-leaderboard/src/conjecture_solver/llm_bench/results/community/README.md) through a pull request. Contributor-declared records use `community-controlled` groups, separate from owned measurements.
+The configuration identities, task repeats, protocol and environment versions are bundled with the owned grades. Use **Run your model** or the timed CLI runner for fresh attempts; importing a report does not create a new repetition. A community submission adds sanitized grades under [results/community](https://github.com/tomzhu0225/simjecture/blob/v0.5.3rc3/src/conjecture_solver/llm_bench/results/community/README.md) through a pull request. Contributor-declared records use `community-controlled` groups, separate from owned measurements.
 
 ## Validation
 

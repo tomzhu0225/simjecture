@@ -64,3 +64,9 @@ Pending completion. All test results, skips, performance measurements and review
 - Added **DRAFT ONLY** paper-authorship consideration text. No threshold, guarantee or final criteria adopted; Bowen must decide the process and paper-specific requirements.
 - Corrected security descriptions: native agents are trusted host processes; numerical isolation does not cover them; cooperative PRoot is not an OS security boundary; local UI is not a public multi-user service.
 - Validation: strict Sphinx warning-as-error build and local link checks passed; CLI/schema and no-key artifact replay checks passed. Authorship/security wording still warrants maintainer review.
+
+### rc3 documentation reconciliation
+- Corrected rc2/rc3 installation wording, actual built-in/native backend selection, minimal versus classic deadlines/policies, DSH bundle filenames/tools, SSH worker selection and benchmark-versus-simulation distinctions.
+- Audited 47 public Markdown pages structurally using strict Sphinx/link checks. Current guides received source/CLI spot-check review; historical experiment records received scope/version/link checks, not fresh scientific revalidation.
+- Verified schemas and recorded Gray–Scott/GEM/agent-role artifact verifiers; prepared a no-key coding-benchmark task and exported the leaderboard. Those checks do not run fresh FLASH/WarpX or call models.
+- Preserved historical measured claims and identified uncertain remaining tasks for maintainer review rather than rewriting old evidence.

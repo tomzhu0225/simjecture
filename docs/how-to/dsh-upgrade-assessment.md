@@ -5,7 +5,7 @@ The scientific CampaignKernel and its evidence contract remain unchanged.
 The adapter changes and validation described below replace the earlier
 recommendation to retain `0.1.1-rc.2` pending compatibility work.
 
-The official npm registry currently tags `0.1.5-rc.2` as `latest` and `next`,
+At the 2026-09-20 assessment, the official npm registry tagged `0.1.5-rc.2` as `latest` and `next`,
 and `0.1.6-alpha.2` as `alpha`. These are all prereleases. The recommended first
 migration target is the default-channel `0.1.5-rc.2`, keeping the alpha work
 separate. Versions were checked with `npm view @deepseek-ai/dsh dist-tags --json`.
