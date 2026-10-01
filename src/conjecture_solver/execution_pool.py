@@ -147,8 +147,12 @@ class Transport:
                 askpass_directory.cleanup()
         try:
             envelope = json.loads(result.stdout)
-            if not isinstance(envelope, dict):
+            if not isinstance(envelope, dict) or type(envelope.get("ok")) is not bool:
                 raise ValueError("Invalid worker envelope")
+            if envelope["ok"] and (
+                result.returncode != 0 or not isinstance(envelope.get("result"), dict)
+            ):
+                raise ValueError("Invalid worker success envelope")
         except ValueError as error:
             # Bound diagnostics; OpenSSH errors contain no password arguments.
             detail = (
