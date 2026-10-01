@@ -90,3 +90,8 @@ Pending completion. All test results, skips, performance measurements and review
 - Clarified legacy launch archive versus workspace installer, legacy monitor DSH default versus conversation backends, and CLI repair versus workspace answer completion policies.
 - Added guidance for reporting blocked/failed/running long checks honestly. Strict docs build passed; 5,765 generated local link/asset references checked without missing targets; 11 Python fenced examples parsed (not executed).
 - Historical scientific measurements, external links, paid models and GPU/SSH solver execution are not newly validated.
+
+### Numerical parameter interpolation
+- Fixed finite extreme log/linear ranges whose intermediate ratio/span overflowed (e.g. log midpoint of [1e-300,1e300] incorrectly mapped to upper bound rather than 1).
+- Retained ordinary seeded-design formulas exactly; only overflowing intermediate cases use weighted interpolation. Added six extreme-range regressions.
+- Validation: 58 parameters/models/search/campaign/domain/web tests passed; parent parameter/GUI/web integration: 46 passed; Ruff and CLI smoke passed.

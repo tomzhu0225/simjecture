@@ -82,9 +82,24 @@ class ParameterDefinition(StrictModel):
         if self.lower == self.upper:
             mapped = self.lower
         elif self.scale is ParameterScale.LOG:
-            mapped = float(np.exp(np.log(self.lower) + value * np.log(self.upper / self.lower)))
+            ratio = self.upper / self.lower
+            if np.isfinite(ratio):
+                mapped = float(np.exp(np.log(self.lower) + value * np.log(ratio)))
+            else:
+                # Finite bounds can still overflow their ratio. Interpolate in
+                # log space without constructing that ratio in this case.
+                mapped = float(
+                    np.exp((1 - value) * np.log(self.lower) + value * np.log(self.upper))
+                )
         else:
-            mapped = self.lower + value * (self.upper - self.lower)
+            span = self.upper - self.lower
+            # Preserve existing seeded designs for ordinary ranges, while
+            # avoiding overflow when finite bounds straddle most of float64.
+            mapped = (
+                self.lower + value * span
+                if np.isfinite(span)
+                else (1 - value) * self.lower + value * self.upper
+            )
         if self.scale is ParameterScale.INTEGER:
             mapped = float(round(mapped))
         return min(self.upper, max(self.lower, mapped))
