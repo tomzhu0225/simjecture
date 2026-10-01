@@ -772,6 +772,33 @@ def import_result(service, record, transport, remote):
     return save_progress(service, record, **result)
 
 
+def _stage_input(transport, job, name, path):
+    """Stop replaying once the worker confirms this entire frozen input exists."""
+    size = path.stat().st_size
+    with path.open("rb") as stream:
+        while True:
+            offset = stream.tell()
+            raw = stream.read(CHUNK_BYTES)
+            end = stream.tell()
+            if end > size or (not raw and end < size):
+                raise ValueError("Input size changed during staging")
+            final = end == size
+            reply = transport.call(
+                "stage",
+                identifier=job,
+                name=name,
+                offset=offset,
+                data=base64.b64encode(raw).decode(),
+                final=final,
+            )
+            if reply.get("complete"):
+                if reply.get("offset") != size:
+                    raise ValueError("Worker acknowledged an inconsistent input size")
+                return
+            if final or reply.get("offset") != end:
+                raise ValueError("Worker did not acknowledge the staged input chunk")
+
+
 def dispatch(service, record):
     pool = service.manifest["execution_pool"]
     transport = MachineRegistry(pool["registry"]).transport(
@@ -802,22 +829,7 @@ def dispatch(service, record):
             if state["status"] == "staging":
                 for name in spec["binding"]["inputs"]:
                     path = contained(workspace, name)
-                    with path.open("rb") as stream:
-                        offset = 0
-                        while True:
-                            raw = stream.read(CHUNK_BYTES)
-                            final = stream.tell() == path.stat().st_size
-                            transport.call(
-                                "stage",
-                                identifier=job,
-                                name=name,
-                                offset=offset,
-                                data=base64.b64encode(raw).decode(),
-                                final=final,
-                            )
-                            offset += len(raw)
-                            if final:
-                                break
+                    _stage_input(transport, job, name, path)
                 state = transport.call("submit", identifier=job)
             if time.time() >= service.manifest["deadline"] and state["status"] in ACTIVE:
                 state = transport.call("cancel", identifier=job, reason="deadline")

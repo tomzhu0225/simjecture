@@ -70,3 +70,8 @@ Pending completion. All test results, skips, performance measurements and review
 - Audited 47 public Markdown pages structurally using strict Sphinx/link checks. Current guides received source/CLI spot-check review; historical experiment records received scope/version/link checks, not fresh scientific revalidation.
 - Verified schemas and recorded Gray–Scott/GEM/agent-role artifact verifiers; prepared a no-key coding-benchmark task and exported the leaderboard. Those checks do not run fresh FLASH/WarpX or call models.
 - Preserved historical measured claims and identified uncertain remaining tasks for maintainer review rather than rewriting old evidence.
+
+### Efficient worker input replay
+- Respect the worker's verified complete/size staging acknowledgement, stopping retransmission of already-complete frozen inputs; validate partial offsets and final acknowledgement and reject size changes.
+- A completed 3 MiB + 7 byte replay now takes **1 staging RPC instead of 4**. Worker-side whole-file hash verification is retained; this is a transfer-protocol test, not a remote SSH run.
+- Added partial/completed replay, empty/exact-boundary input and malformed acknowledgement tests. Parent recovery/web smoke: 26 passed; broader owned harness checks: 60 passed, 14 runtime skips.
