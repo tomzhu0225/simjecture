@@ -82,9 +82,10 @@ def test_standalone_publication_ranks_and_effort_connections(tmp_path):
         assert page.locator(".benchmark-effort-line").count() == 6
         for kind in ("time", "cost"):
             bars = page.locator(f"#benchmark-{kind}-bars .benchmark-bar-row")
-            assert bars.count() == 42
+            assert bars.count() == 40
             data = bars.evaluate_all("""els => els.map(e => ({
                 value:e.dataset.value, finished:e.dataset.finished, rank:e.dataset.rank,
+                text:e.querySelector('.benchmark-bar-value').textContent,colour:e.querySelector('.benchmark-bar-fill').style.backgroundColor,
                 width:e.querySelector('.benchmark-bar-fill').getBoundingClientRect().width,
                 height:e.querySelector('.benchmark-bar-fill').getBoundingClientRect().height
             }))""")
@@ -92,9 +93,12 @@ def test_standalone_publication_ranks_and_effort_connections(tmp_path):
             assert ranked == sorted(ranked)
             unfinished = [d for d in data if d["finished"] == "false"]
             assert unfinished
-            assert all(
-                d["value"] == "0" and d["width"] == 0 and d["height"] == 0 for d in unfinished
-            )
+            if kind == "time":
+                assert all(d["value"] == "0" and d["width"] == 0 for d in unfinished)
+            else:
+                assert all(float(d["value"]) > 0 and d["width"] > 0 for d in unfinished)
+                assert all("$" in d["text"] and "Unfinished" in d["text"] for d in unfinished)
+            assert all(d["colour"] == "rgb(220, 82, 76)" for d in unfinished)
         dots = page.locator(".benchmark-official-dot").evaluate_all("""els => els.map(e => ({
             cost:Number(e.dataset.cost), time:Number(e.dataset.time),
             x:Number(e.getAttribute('cx')), y:Number(e.getAttribute('cy'))
@@ -106,7 +110,26 @@ def test_standalone_publication_ranks_and_effort_connections(tmp_path):
                 if a["time"] < b["time"]:
                     assert a["y"] < b["y"]
         assert page.locator(".benchmark-official-dot.pareto").count() == 2
-        assert page.locator(".benchmark-pareto-front").count() == 1
+        assert page.locator(".benchmark-pareto-front").count() == 0
+        assert page.locator("#benchmark-chart").count() == 0
+        assert (
+            page.locator("#benchmark-history, #benchmark-unranked, #benchmark-methodology").count()
+            == 0
+        )
+        assert page.locator("#benchmark-methodology-link").is_visible()
+        assert page.locator("#benchmark-leaderboard").get_by_text("GLM 5.3").count() == 0
+        colours = page.locator(".benchmark-official-dot").evaluate_all(
+            """els => els.map(e => ({model:e.dataset.model,fill:e.getAttribute('fill')}))"""
+        )
+        lookup = {d["model"]: d["fill"] for d in colours}
+        assert lookup["deepseek-flash"] != lookup["gpt-6-luna"]
+        assert lookup["deepseek-flash"] != lookup["gemini-3.8-flash-medium"]
+        assert (
+            page.locator("#benchmark-series-legend")
+            .get_by_text("DeepSeek Flash", exact=True)
+            .count()
+            == 1
+        )
         first = page.locator("#benchmark-leaderboard > div > table > tbody > tr").first
         playwright.expect(first).to_contain_text("DeepSeek Flash")
         page.locator("#benchmark-sort").select_option("cost")
@@ -114,6 +137,10 @@ def test_standalone_publication_ranks_and_effort_connections(tmp_path):
         page.locator("#benchmark-search").fill("gpt 6.1")
         assert page.locator(".benchmark-effort-line").count() == 1
         assert page.locator("#benchmark-leaderboard > div > table > tbody > tr").count() == 6
+        page.locator("#benchmark-task-tabs button").nth(1).click()
+        assert page.locator("#benchmark-leaderboard > div > table > tbody > tr").count() == 6
+        page.locator("#benchmark-search").fill("")
+        assert page.locator("#benchmark-cost-bars .benchmark-bar-row").count() == 41
         assert page.locator("#benchmark-your-work").is_hidden()
         assert page.locator(".benchmark-submit-link").is_visible()
         page.set_viewport_size({"width": 390, "height": 1000})

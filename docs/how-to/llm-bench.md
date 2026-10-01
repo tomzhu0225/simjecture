@@ -5,7 +5,7 @@ Its version is independent of the harness version. It packages finite diagnostic
 coding tasks from the aluminium RZ investigation; passing does not establish a
 physical mechanism, approve a scientific claim, or measure general research ability.
 
-The development pack is now **0.3.0**, with qualified tracer interpolation and
+The task pack in **0.5.3rc3** is **0.3.0**, with qualified tracer interpolation and
 float64 reductions. The [owned 42-configuration sweep](../testing/owned-llm-benchmark-20261001.md)
 contains actual timing, delivery and usage results from 252 scheduled attempts;
 unavailable provider observations and affected earlier qualifications stay unranked.
@@ -68,13 +68,13 @@ are not graded; nonempty findings are only a delivery check. This preview has no
 LLM judge for scientific conclusions. The development leaderboard below is a
 comparison of declared trials, not a cheating-resistant public submission service.
 
-## Leaderboard and tradeoffs (development feature)
+## Leaderboard and tradeoffs
 
 The default page is **Official Simjecture results**, a maintained publication of
 the owned sweep. It has exactly two task tabs: RZ plasma diagnostics and radiation
 energy accounting. The older CSV entries were the same task under qualification
 versions and a local runner, not four scientific tasks; they now live in
-**Community, local & archive**.
+the retained audit downloads; current custom runs appear in **Community & local**.
 
 Select **Rank by** completion, fastest verified completion or lowest cost per
 attempt. Column headings also change the sort. The table shows numerical checks
@@ -86,16 +86,11 @@ failures. This remains defined when a model never completed the task.
 
 Three plots are visible for each task: finish-time ranked bars, cost ranked bars,
 and a cost–time Pareto plot. Bars sort completed configurations from lower to
-higher values. An unfinished configuration has value **0** in both bar charts,
-is labelled unfinished, and appears last. This zero is a completion-status
-sentinel; actual spending remains in the table and receipts. Unavailable
-configurations are labelled separately. Missing tariffs and partial cost receipts
-do not receive a cost rank.
+higher values. Unfinished configurations appear last in **red**, without a verified finish-time rank. Their cost bars show recorded spending, including labelled **≥** lower bounds. Configurations that never reached inference are omitted from the public charts and table. Missing tariffs and partial cost receipts do not receive a cost rank.
 
 In the Pareto plot, cost increases from left to right and verified finish time
 increases from top to bottom: **the upper-left corner is better**. It includes
-completed configurations with comparable cost estimates. Outlined points and a
-solid guide line mark the observed two-objective frontier. This describes the
+completed configurations with comparable cost estimates. Outlined points mark the observed two-objective frontier; no line joins different models. Each model has a distinct colour shared across the plots and model legend. This describes the
 sample, including one-trial RZ observations; it does not establish statistical
 superiority. Dashed lines connect reasoning efforts for the same model and coding
 agent. Search, effort filters and clickable series names focus all three plots.
@@ -236,8 +231,7 @@ simjecture llm-benchmark leaderboard --reports ./trial-*-grade.json \
 
 The MiMo/DeepSeek live-simulation pilot below remains a separate evaluation. Its
 task, environment and one-off observations cannot populate this pack's controlled
-leaderboard. **Earlier real-model pilots** preserves its published observations
-in a separate panel, with a link to the full evaluation and its limitations.
+leaderboard. Earlier pilots and verifier qualifications remain in the audit records and reports; they are not panels on the public leaderboard. The public page has only time bars, cost bars and the cost–time plot.
 New comparisons require fresh trials. Starting timed trials uses the operator's
 configured subscription/API credits. Published host grades ship with the task pack;
 local trials and community imports keep their declared comparison conditions.

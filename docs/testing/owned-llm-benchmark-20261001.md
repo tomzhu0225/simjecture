@@ -4,7 +4,7 @@
 
 The current pack 0.3.0 results are **100/188 CSV passes** and **34/40 RZ passes**. CSV numerical checks passed in 161/188 graded attempts; 61 of those did not complete the full delivery contract. RZ has one trial per configuration and remains provisional. There is no overall model winner.
 
-The results ship as [sanitized host grades](https://github.com/tomzhu0225/simjecture/blob/feature/benchmark-leaderboard/src/conjecture_solver/llm_bench/results/owned-2026-10-01.json). Open **Benchmarks** in the development workspace to inspect comparison groups, trial receipts and interactive time/cost tradeoffs. Choose **Run your model** for a native CLI or configured API model, or import a grade bundle. See [benchmark usage](../how-to/llm-bench.md) for community submissions. This development feature is not included in the published 0.5.3rc2 package.
+The results ship as [sanitized host grades](https://github.com/tomzhu0225/simjecture/blob/feature/benchmark-leaderboard/src/conjecture_solver/llm_bench/results/owned-2026-10-01.json). Open **Benchmarks** in the development workspace to inspect comparison groups, trial receipts and interactive time/cost tradeoffs. Choose **Run your model** for a native CLI or configured API model, or import a grade bundle. See [benchmark usage](../how-to/llm-bench.md) for community submissions. This publication ships in the 0.5.3rc3 preview; it was not included in 0.5.3rc2.
 
 ## What was tested
 
@@ -162,7 +162,7 @@ Before the formal sweep, real agents exposed two reference defects. Pack 0.1.0 d
 
 Pack 0.3.0 aggregates masses at distinct exact radii and specifies interpolation explicitly. All reductions promote fields to float64 before arithmetic. Independent closed-form volume/energy tests, equal-radius permutation tests and scalar `math.fsum` checks validate these definitions. The former workers’ float64 curves agree exactly with the repaired reference for both recorded cases.
 
-The eight initial qualification observations and 53 completed observations from the interrupted pack-0.2 sweep are bundled separately. Affected RZ records are visibly unranked; they were not silently regraded or counted as fresh model passes. Qualification CSV records retain their original pack/protocol cohort. The formal results above come from fresh pack-0.3 trials.
+The eight initial qualification observations and 53 completed observations from the interrupted pack-0.2 sweep are bundled separately. Affected RZ records remain unranked in the audit archive; they were not silently regraded or counted as fresh model passes. Qualification CSV records retain their original pack/protocol cohort. The formal results above come from fresh pack-0.3 trials.
 
 The formal sweep used frozen runner `native-public-feedback-v3`; source fingerprints are in each receipt. A publication audit corrected availability classification and AGY zero-reset accounting while preserving original private host grades and their source hashes. The next runner (`native-public-feedback-v4`) detects these errors directly, distinguishes temporary rate limits, exposes partial-inference quota interruptions, and preserves a selected virtualenv interpreter’s path.
 

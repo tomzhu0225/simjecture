@@ -1,0 +1,104 @@
+{
+  "title_en": "Benchmarking AI for Fusion & Plasma Simulation",
+  "title_zh": "面向聚变与等离子体研究的 AI 基准",
+  "subtitle_en": "42 configurations · recorded plasma diagnostics · measured delivery",
+  "subtitle_zh": "42 种配置 · 真实等离子体诊断数据 · 独立验证交付",
+  "scenes": [
+    {
+      "id": "01-motivation",
+      "kind": "intro",
+      "title_en": "From fluent answers to usable evidence",
+      "title_zh": "从回答问题，到交付可用的证据",
+      "en": "An AI assistant can explain a plasma instability beautifully and still leave a researcher without a usable result. In simulation work, somebody has to open the files, understand their units, calculate the right quantities, and leave an analysis that another person can run. That practical gap motivated our benchmark in Simjecture. We used recorded data from an aluminium plasma investigation and tested coding agents on the work between a simulation and a scientific claim. This video presents our own measured results. The wider motivation is AI for fusion and plasma research, while the measurements cover a specific slice of that workflow: reproducible numerical analysis.",
+      "zh": "一个 AI 可以把等离子体不稳定性讲得很清楚，研究者却未必能拿到可用的结果。模拟结束以后，还得有人打开数据文件，确认单位，计算所需的物理量，并留下别人能够重复运行的分析。我们在 Simjecture 里做这次基准测试，就是想观察这段工作完成得怎么样。数据来自一次铝等离子体研究，测试的是模拟输出到科学判断之间的分析环节。视频的主题是面向聚变和等离子体研究的 AI，但这次实际测量的范围更具体：代理能不能按时交付可复现的数值分析。"
+    },
+    {
+      "id": "02-tasks",
+      "kind": "tasks",
+      "title_en": "Two tasks, two deadlines",
+      "title_zh": "两项任务，两种时间预算",
+      "en": "The first task had a three-minute budget. Given two CSV cases, the agent had to compare radiation escaping the domain with energy removed by the radiation operator, and save both results and findings. The second task had fifteen minutes and used HDF5 files from two cylindrical simulations. R Z means radius and axial position. The grids had sixty-four or one hundred and twenty-eight radial cells, with four axial cells, and four hundred and one frames each. The requested diagnostics included inward kinetic energy, compression, event times, radiation windows, and differences between grids. Both tasks analyzed existing output; they did not launch new FLASH or WarpX simulations.",
+      "zh": "第一项任务给三分钟。代理拿到两组 CSV 数据，要比较流出计算区域的辐射能量与辐射算子移除的能量，同时保存结果和解释。第二项任务给十五分钟，输入是两组柱坐标模拟的 HDF5 文件。R 表示半径，Z 表示轴向位置，两组网格分别有六十四和一百二十八个径向单元，轴向都是四个单元，每组四百零一帧。代理要计算向内运动的动能、压缩程度、事件时间、辐射积分窗口和网格差异。这两项任务都分析已有输出，没有重新启动 FLASH 或 WarpX 模拟，也没有检验完整三维湍流研究的能力。"
+    },
+    {
+      "id": "03-protocol",
+      "kind": "protocol",
+      "title_en": "Measure the whole coding agent",
+      "title_zh": "测量完整的编码代理配置",
+      "en": "We scheduled forty-two configurations, not forty-two different model weights. Some entries use the same model with different reasoning effort. Native coding agents kept their own tools and system prompts, while API agents used the configured tool adapters. Each attempt started with a fresh conversation and working directory. The independent host ran the submitted reducer and checked three additional numerical holdouts, with inputs kept immutable. The deadline included verification. There were two hundred and fifty-two scheduled attempts. Twenty-four never reached inference because of subscription or quota availability, leaving two hundred and twenty-eight graded attempts. Those availability observations remain visible, but do not count as failures of numerical ability.",
+      "zh": "我们安排了四十二种配置，里面包括同一模型的不同推理强度，所以不能把它说成四十二个不同模型。原生编码代理保留各自的工具和系统提示，API 代理则通过已配置的工具适配器工作。每次尝试都从新的对话和工作目录开始。独立的验证程序重新运行代理提交的分析器，并检查三组额外数值样例；输入文件不能改写，验证耗时也计入截止时间。总共安排了二百五十二次尝试，其中二十四次因订阅或额度问题没有进入推理，实际评分的是二百二十八次。不可用记录仍然保留，但不算代理的数值计算失败。"
+    },
+    {
+      "id": "04-short",
+      "kind": "completion",
+      "title_en": "Correct numbers did not guarantee completion",
+      "title_zh": "数值正确，仍然可能没有完成任务",
+      "en": "The short task produced the most revealing separation. Out of one hundred and eighty-eight graded attempts, one hundred completed the full contract. One hundred and sixty-one passed every numerical check. That leaves sixty-one attempts with correct numbers but incomplete delivery. For example, GPT six point one Sol at high effort passed the numerical checks in all five attempts, yet completed none of the full timed submissions. At low effort, it completed all five. Missing findings or incomplete delivery mattered because the researcher needs the whole analysis. This score checks that findings exist; it does not claim an AI judge has validated the scientific quality of that prose.",
+      "zh": "短任务最有意思的结果，是数值正确和任务完成之间出现了明显差距。一百八十八次有效尝试里，一百次完成了全部交付，而一百六十一次通过了所有数值检查。也就是说，六十一次虽然数字算对了，仍然没有按要求交付。例如 GPT 六点一 Sol 的高推理强度配置，五次的数值检查都通过，完整交付却是零次；低推理强度配置则五次都完成了。研究者需要拿到整个分析，缺少解释文件或交付超时都会影响使用。这里对解释文字只检查是否提交，并没有用另一个 AI 裁判来认定其科学质量。"
+    },
+    {
+      "id": "05-short-results",
+      "kind": "csv-results",
+      "title_en": "Read completion rate alongside speed",
+      "title_zh": "完成率和速度要放在一起看",
+      "en": "On that short task, GPT six Luna at medium effort completed five out of five attempts, with a median verified finish time of seventy-four seconds. Gemini three point eight Flash at medium effort, running through AGY, also completed five out of five, at a median of one hundred and fifty-eight seconds. DeepSeek Flash completed four out of five, with a median successful finish time of fifty-one seconds. That last time summarizes successful attempts, so it needs the four-out-of-five label beside it. A fast successful trial does not erase a failed one. Even five successes provide limited certainty: five out of five has a wide ninety-five-percent Wilson interval, roughly fifty-seven to one hundred percent.",
+      "zh": "在这个短任务里，GPT 六 Luna 的中等推理配置完成了五次中的五次，成功交付时间的中位数约七十四秒。通过 AGY 运行的 Gemini 三点八 Flash 中等推理配置也是五次全部完成，中位时间约一百五十八秒。DeepSeek Flash 完成了五次中的四次，成功尝试的中位时间约五十一秒。五十一秒旁边需要保留四比五的完成记录，因为这个时间只概括成功尝试，不能把失败抹掉。五次全成功的证据也有限，按威尔逊方法计算，百分之九十五置信区间大约仍是百分之五十七到百分之百。"
+    },
+    {
+      "id": "06-rz",
+      "kind": "rz-results",
+      "title_en": "A longer diagnostic task changed the picture",
+      "title_zh": "更长的诊断任务，呈现出不同结果",
+      "en": "The fifteen-minute R Z task had thirty-four passes among forty graded attempts. Every one of the nineteen tested Codex configurations passed. DeepSeek Flash finished in about one hundred and fourteen seconds. GPT six Luna at medium effort finished in about two hundred and seventy-two seconds. That is a very different picture from the short deadline. However, this was also a different task, so we cannot isolate extra time as the cause of the improvement. And each R Z configuration had just one attempt. These are observed outcomes, useful for deciding what to investigate next, but not enough to establish a stable ordering across scientific problems or repeated runs.",
+      "zh": "十五分钟的 RZ 任务里，四十次有效尝试有三十四次通过，十九种受测 Codex 配置全部通过。DeepSeek Flash 大约一百一十四秒完成，GPT 六 Luna 中等推理配置大约二百七十二秒完成。这和短任务呈现的情况很不一样。不过，时间预算和任务内容都变了，不能单独把改善归因于多给了时间。另一个限制是，RZ 每种配置只有一次尝试。它能告诉我们这一次发生了什么，也能帮助决定下一轮重点测试哪些配置，但还不足以建立跨科学问题、跨重复实验的稳定名次。"
+    },
+    {
+      "id": "07-adapters",
+      "kind": "adapters",
+      "title_en": "A result belongs to a model–agent configuration",
+      "title_zh": "结果属于模型和代理的完整配置",
+      "en": "MiMo version two point six Flash and Pro did not complete either task in the tested API-agent setup. Yet MiMo Flash passed the short task's numerical checks in four of five attempts. On R Z, neither delivered the required bounded, self-contained reducer. DeepSeek used native tool-message history, while the MiMo setup retained the installed tool framework's default history formatter. Those implementation differences are part of what we measured. Grok four point seven gives another useful example: its R Z numbers passed, but the required findings were missing. Calling these models incapable would go beyond the evidence. The actionable question is which configuration reliably delivers this contract within this budget.",
+      "zh": "这次测试的 API 代理配置中，MiMo 二点六 Flash 和 Pro 都没有完成两项任务，但 MiMo Flash 在短任务里有五次中的四次数值检查通过。到了 RZ，两者都没有交出符合要求、能独立运行的分析程序。DeepSeek 使用原生工具消息历史，MiMo 保留了已安装工具框架默认的历史格式，这些实现差异也包含在测量结果里。Grok 四点七则展示了另一种失败：RZ 数值全部通过，却缺少要求的解释文件。直接据此断言模型没有能力，超过了证据支持的范围。我们能据此追问的是，哪种完整配置能在给定预算内可靠交付。"
+    },
+    {
+      "id": "08-bars",
+      "kind": "ranks",
+      "title_en": "Two rankings, with failure kept visible",
+      "title_zh": "时间榜和成本榜，都保留失败状态",
+      "en": "The publication separates finish time from cost. The first bar chart ranks median verified finish time, with lower values better. The second ranks mean API-equivalent cost per attempt, including recorded spending on unsuccessful attempts. Completion counts stay beside the bars. Unfinished runs appear in red, after completed entries. They have no verified finish-time rank, but their cost bars still show recorded spending. Partial usage records are marked as lower bounds and receive no money rank. Configurations that never reached inference are omitted from these public charts. Actual receipts remain available, so an incomplete run cannot disappear from the spending account.",
+      "zh": "发布页面把时间和成本分开。第一张条形图按验证完成时间的中位数排名，越低越好。第二张按每次尝试的平均 API 等价成本排名，失败尝试已经记录的花费也包括在内，完成次数仍然显示在旁边。未完成运行用红色表示，排在已完成配置后面。它们没有验证完成时间名次，但费用条仍然显示已经记录的花费。如果用量记录不完整，会明确标出成本下限，这种条目不参加费用排名。完全没有进入推理的配置，不出现在这些公开图表里。实际凭据仍然保留，因此运行没有完成，也不能从费用记录里消失。"
+    },
+    {
+      "id": "09-pareto",
+      "kind": "pareto",
+      "title_en": "Time and money: the upper left is better",
+      "title_zh": "时间与费用：左上角更好",
+      "en": "The third plot puts money on the horizontal axis and finish time on the vertical axis. Cost grows to the right; elapsed time grows downward. Faster and cheaper therefore means closer to the upper left. Each model has its own color. Dashed lines connect efforts within the same model and coding agent. White rings mark the observed two-objective frontier. In R Z, DeepSeek Flash was faster, at about four point four US cents, while GPT six Luna was cheaper, at about one point two cents. Neither dominates the other on both axes. With one trial each, that frontier is descriptive. It is not a statistically established claim that either configuration is universally superior.",
+      "zh": "第三张图把费用放在横轴，完成时间放在纵轴。往右更贵，往下更慢，所以越接近左上角，时间和费用的组合越好。每个模型使用自己的颜色，虚线连接同一模型、同一编码代理的不同推理强度，白色外圈标出这次观察到的双目标前沿。RZ 里，DeepSeek Flash 更快，估计花费约四点四美分；GPT 六 Luna 更便宜，约一点二美分。两者都没有在时间和费用上同时胜过对方。由于每个配置只有一次尝试，这些前沿点只描述本轮观察，不能当成统计上已经确立的普遍优势。"
+    },
+    {
+      "id": "10-costs",
+      "kind": "costs",
+      "title_en": "A public price needs trustworthy usage counters",
+      "title_zh": "公开单价，还需要可信的用量记录",
+      "en": "A vendor's public price is only half the calculation. We also need input, cached input, and output counters for the actual run. These costs use dated standard API tariffs with the default cache-adjusted basis, rather than subscription invoices. AGY estimates are explicitly marked because its cache-counter interpretation is uncertain. Interrupted streams can leave a lower bound. Cumulative conversation totals must not be added again whenever an agent resumes, and a final quota error must not erase earlier paid work. Dynamic model routing can also lack a fixed tariff. Keeping estimates, lower bounds, and complete records separate makes the cost plot honest and gives the next benchmark a clearer accounting target.",
+      "zh": "厂商公开的单价，只完成了费用计算的一半。另一半是本次运行真实产生了多少输入、缓存输入和输出 token。这里用有日期的标准 API 单价，默认按缓存折扣计费，得到的是 API 等价估计，并不是订阅账单。AGY 的缓存计数解释还不确定，所以会明确标记为估计；中断的数据流可能只留下成本下限。代理继续工作时，累计对话用量不能重新累加，最后一次额度报错也不能覆盖之前已花费的用量。动态模型路由还可能没有固定单价。把这些情况分清楚，成本图才有可信的含义。"
+    },
+    {
+      "id": "11-verifier",
+      "kind": "verifier",
+      "title_en": "The benchmark itself needed scientific controls",
+      "title_zh": "基准测试本身也需要独立对照",
+      "en": "The agents also exposed errors in our own reference implementation before the formal sweep. One version depended on the ordering of cells at equal radius. Another multiplied single-precision fields before converting them to double precision. Independent reducers agreed with one another, yet the reference could reject them. We repaired the radius aggregation and interpolation rules, and promoted fields before arithmetic. Closed-form energy and volume checks, permutation controls, and independent summation checks qualified the replacement. The official sweep then used fresh task-pack zero point three trials. Earlier qualification records remain separate. That distinction matters: repairing the referee cannot justify silently turning old failures into new model successes.",
+      "zh": "正式测试之前，代理还暴露了我们参考实现里的问题。一个版本受相同半径单元的排列顺序影响，另一个先对单精度字段做乘法，再转成双精度。独立分析器的结果彼此一致，参考程序却可能拒绝它们。我们修正了半径聚合和插值规则，也把精度提升放到运算之前，再用解析能量与体积、排列对照以及独立求和检查来验证。这次正式成绩来自任务包零点三的全新尝试，早期资格测试记录单独保存。修好评分程序后，不能悄悄把旧失败改记成一次新的模型成功。"
+    },
+    {
+      "id": "12-outlook",
+      "kind": "outlook",
+      "title_en": "A reproducible starting point for scientific AI",
+      "title_zh": "为科学 AI 留下可复现的起点",
+      "en": "What we have is a small, inspectable benchmark of scientific delivery. It shows why effort, adapter behavior, deadlines, and accounting belong beside model names. It does not yet measure autonomous hypothesis testing, new three-dimensional solver campaigns, tokamak physics, or the correctness of a research conclusion. Those need separate tasks and stronger controls. The source, sanitized grades, and valuation ledger are available on Simjecture's benchmark development branch. The workspace can run a custom model, and community-controlled submissions stay separate from our owned results. The useful next step is to add independent scientific tasks and repeated solver-backed trials, while keeping the evidence traceable. That is how this can grow into a meaningful benchmark for fusion and simulation research.",
+      "zh": "我们现在得到的是一个规模有限、记录可以检查的科学交付基准。它说明模型名字旁边还需要写清推理强度、工具适配、截止时间和费用计量。自主检验假设、新的三维模拟、托卡马克物理，以及研究结论是否正确，都还需要另外设计任务和对照。源代码、脱敏成绩和费用记录放在 Simjecture 的基准测试开发分支，工作台也能测试自定义模型；社区自行提交的结果与我们的实测结果分开展示。下一步值得加入独立科学问题和重复的真实求解器任务，同时保留可追踪的证据。这次分析可以作为面向聚变与模拟研究基准的一个起点。"
+    }
+  ]
+}

@@ -394,13 +394,16 @@ def test_browser_leaderboard_import_chart_filter_and_export(tmp_path):
             )
             page.locator("#benchmark-pricing summary").click()
             playwright.expect(page.locator("#benchmark-price-table")).to_contain_text("gpt-6.1-sol")
-            page.locator("#benchmark-history summary").click()
-            playwright.expect(page.locator("#benchmark-history-table")).to_contain_text(
-                "mimo-v2.6-pro"
+            assert (
+                page.locator("#benchmark-history, #benchmark-unranked, #benchmark-chart").count()
+                == 0
             )
             records = [trial(f"deepseek-{i}") for i in range(5)]
             records += [trial(f"grok-{i}", model="grok-4.7") for i in range(5)]
             records += [trial("other", budget=900)]
+            for record in records:
+                record["pack_version"] = "0.3.0"
+            records += [trial("older-qualification")]
             page.locator("#benchmark-import-files").set_input_files(
                 [
                     {
@@ -419,7 +422,6 @@ def test_browser_leaderboard_import_chart_filter_and_export(tmp_path):
                 "Pareto frontier"
             )
             assert page.locator("#benchmark-tradeoff svg circle").count() == 2
-            page.locator("#benchmark-chart").select_option("cost-time")
             page.locator("#benchmark-tradeoff svg circle").first.click()
             assert page.locator(".benchmark-highlight").count() == 1
             with page.expect_download() as info:
@@ -435,3 +437,27 @@ def test_browser_leaderboard_import_chart_filter_and_export(tmp_path):
     finally:
         server.shutdown()
         server.server_close()
+
+
+def test_public_custom_results_exclude_owned_and_older_grades(tmp_path, monkeypatch):
+    from conjecture_solver.web.workspace import Workspace
+
+    owned = trial("owned")
+    owned["pack_version"] = "0.3.0"
+    monkeypatch.setattr(
+        "conjecture_solver.llm_bench.leaderboard.published_reports", lambda: [owned]
+    )
+    custom = trial("custom")
+    custom["pack_version"] = "0.3.0"
+    older = trial("old-qualification")
+    workspace = Workspace(tmp_path / "workspace")
+    workspace.import_benchmark_reports({"reports": [owned, custom, older]})
+    result = workspace.benchmark_catalogue()
+    rows = [r for c in result["local_leaderboard"]["cohorts"] for r in c["rows"]]
+    assert sum(r["trials"] for r in rows) == 1
+    assert len(result["grade_reports"]) == 3
+    assert {r["trial"]["trial_id"] for r in result["grade_reports"]} == {
+        "owned",
+        "custom",
+        "old-qualification",
+    }

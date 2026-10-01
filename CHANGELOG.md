@@ -4,14 +4,18 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+## 0.5.3rc3 — 2026-10-01
+
 - Add separate finish-time and cost ranked bar plots for every published task.
-  Encode unfinished configurations as labelled zero bars after completed runs;
+  Show unfinished configurations in red with recorded cost bars; omit no-inference
+  configurations from public rankings;
   plot comparable completed profiles on an upper-left-preferred cost–time Pareto
   chart with an observed frontier and model-effort connections.
 
 - Present a maintained official benchmark edition by default, with two task tabs,
   explicit time and cost ranks, input/output API tariffs, model search and effort
-  filters. Move prior qualifications and contributed/local trials into an archive.
+  filters. Keep prior qualifications in audit records and current contributed/local trials
+  in their own comparison groups.
 - Plot API-equivalent cost versus task time with dashed lines connecting model
   effort settings; preserve partial receipt bounds and labelled AGY estimates.
 - Recover a separate valuation ledger from saved usage counters without changing
@@ -20,9 +24,11 @@ This project follows semantic versioning. Dates use ISO 8601.
 - Add a task-scoped benchmark leaderboard with pass-rate uncertainty, separate
   actual reported spend and API token estimates, failure-inclusive cost/time per
   success, and descriptive Pareto comparisons after repeated trials.
-- Redesign Benchmarks with task cards, comparison groups, quality/time and
-  cost/time plots, graded-trial import, private-field-free summary export,
-  dated official pricing references and visible unranked records.
+- Redesign Benchmarks with task cards, comparison groups, time/cost rankings,
+  a cost/time plot, graded-trial import, private-field-free summary export,
+  dated pricing references and a linked methodology. Remove pilot/unranked panels
+  and the completion/time view from the public page. Model colours are distinct;
+  outlined frontier points replace connections between different models.
 - Preserve trial identity during regrading and report the agent that actually
   performed benchmark turns, with request-level usage where available.
 - Expose `max` reasoning effort in native launch contracts and the workspace

@@ -626,6 +626,15 @@ class Workspace(MachineWorkspace):
                 if key not in owned_keys:
                     reports[key] = report
         result["leaderboard"] = summarize(reports.values())
+        # Public custom-model results contain current-pack local/community trials.
+        # Owned grades and earlier qualifications remain in the audit download.
+        local_reports = []
+        for report in reports.values():
+            value = normalize(report)
+            identity = value["trial_key"] or value["report_sha256"]
+            if identity not in owned_keys and report.get("pack_version") == result["version"]:
+                local_reports.append(report)
+        result["local_leaderboard"] = summarize(local_reports)
         result["official"] = dashboard()
         result["imported_trials"] = len(list((self.root / "benchmark-reports").glob("*.json")))
         result["campaigns"] = self.benchmark_campaigns()

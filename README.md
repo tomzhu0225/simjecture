@@ -20,7 +20,7 @@ guidance** actions in the study view and experiment monitor. Continue with a new
 budget and selected prior files, or send advisory guidance at the next checkpoint.
 See [continuation and steering](docs/how-to/continuation-steering.md).
 
-The **0.5.3rc2 preview** adds local/SSH experiment workers and refreshed research
+The **0.5.3rc3 preview** adds local/SSH experiment workers and refreshed research
 interfaces. In **Machines**, connect with an SSH address and password; hardware and
 worker setup are detected automatically, with optional advanced settings and agent
 preparation. Availability updates every 30 seconds. Minimal studies can dispatch
@@ -33,27 +33,29 @@ separate Details panel. The preview also includes rc1's campaign audit repairs,
 request-level usage records, native DeepSeek tool-message continuity and experimental
 **Simjecture Bench 0.1.0**. See [SSH setup](docs/how-to/ssh-workers.md),
 [benchmark usage](docs/how-to/llm-bench.md), and
-[rc2 scope and validation](docs/testing/0.5.3rc2-acceptance.md).
+[rc3 scope and validation](docs/testing/0.5.3rc3-acceptance.md).
 The stable installation commands below remain on 0.5.2.
 
-On the development branch, **Benchmarks** also includes a task-scoped leaderboard:
+The **0.5.3rc3 preview** includes a task-scoped leaderboard:
 compare verified completion, cost and elapsed time, explore Pareto tradeoffs, import
 timed trial grades and export a summary. **Run your model** starts fresh trials for
 any native CLI or configured API model, with visible progress and downloadable
 grades. [Actual results from 42 configurations](docs/testing/owned-llm-benchmark-20261001.md)
 are bundled with the task pack: 252 scheduled attempts, with quota/expiry
 observations kept separate from inference results.
-It keeps exploratory pilots and missing
-measurements visible without ranking them. See the
-[leaderboard protocol](docs/how-to/llm-bench.md#leaderboard-and-tradeoffs-development-feature).
-This feature is not included in the published 0.5.3rc2 preview.
+Earlier pilots and qualifications remain in the audit records; they are absent
+from the public leaderboard. Missing measurements stay explicitly labelled. See the
+[leaderboard protocol](docs/how-to/llm-bench.md#leaderboard-and-tradeoffs).
+The leaderboard ships in 0.5.3rc3; it is absent from the older 0.5.3rc2 preview.
 
-The development leaderboard opens on **Official Simjecture results**, with two
+The leaderboard opens on **Official Simjecture results**, with two
 task tabs, time/cost ranks, published API tariffs and a cost-versus-time plot.
 Each task has ranked time bars, ranked cost bars and a Pareto plot with the
-upper-left corner preferred. Unfinished runs show zero bars after completed runs.
-Dashed lines connect reasoning efforts for each model. Qualifications and local
-or community trials have a separate archive. A standalone read-only publication
+upper-left corner preferred. Unfinished runs appear in red and retain recorded
+cost bars; configurations without inference are omitted. Model colours are
+consistent, and only same-model effort settings are connected. Methodology is a
+link beside the plots. Current community and local trials have a separate view;
+older qualifications remain in the audit records. A standalone read-only publication
 needs no GUI, API key or imported data:
 
 ```bash
@@ -63,9 +65,9 @@ simjecture llm-benchmark export-page --output ./leaderboard.html
 To try rc2, preserving existing research data:
 
 ```bash
-curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.3rc2/install.sh | bash
+curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.3rc3/install.sh | bash
 # Or install only the Python package:
-uv tool install 'simjecture[workspace,tui]==0.5.3rc2'
+uv tool install 'simjecture[workspace,tui]==0.5.3rc3'
 ```
 
 ## Install and open the workspace

@@ -346,14 +346,14 @@
             <p id="benchmark-published-note"></p>
             <label>Results <select id="benchmark-source" aria-label="Results source">
               <option value="official">Official Simjecture results</option>
-              <option value="local">Community, local &amp; archive</option>
+              <option value="local">Community &amp; local</option>
             </select></label>
           </div>
           <div id="benchmark-overview" class="benchmark-overview"></div>
           <section class="benchmark-board" aria-labelledby="leaderboard-title">
             <div class="inventory-heading"><div><h2 id="leaderboard-title">Task leaderboard</h2></div>
               <div id="benchmark-task-tabs" class="benchmark-task-tabs" role="group" aria-label="Benchmark task"></div>
-              <label class="benchmark-filter" id="benchmark-local-group" hidden>Archived comparison
+              <label class="benchmark-filter" id="benchmark-local-group" hidden>Comparison group
                 <select id="benchmark-cohort" aria-label="Comparison group"></select></label></div>
             <div id="benchmark-task-brief" class="benchmark-task-brief"></div>
             <div class="benchmark-controls" id="benchmark-official-controls">
@@ -380,23 +380,18 @@
                 <div id="benchmark-cost-bars" class="benchmark-bar-scroll"></div>
               </section>
             </div>
-            <p id="benchmark-bar-note" class="field-help" hidden>Unfinished = 0 in both bar charts and appears after completed configurations. Zero marks no completed task, not zero spending or instant completion.</p>
+            <p id="benchmark-bar-note" class="field-help" hidden>Red marks unfinished runs. They have no verified finish-time rank; cost bars still show recorded spending, including labelled lower bounds. Configurations without inference are omitted.</p>
             <div class="benchmark-tradeoff-heading">
               <div><h3 id="benchmark-plot-title">Cost–time Pareto plot</h3><p id="benchmark-chart-note" class="field-help">Upper left is better. Dashed lines connect the same model's reasoning efforts.</p></div>
-              <label class="benchmark-filter">Plot <select id="benchmark-chart" aria-label="Tradeoff view">
-                <option value="cost-time">Cost × time</option><option value="quality-time">Completion × time</option>
-              </select></label>
+
             </div>
+            <a id="benchmark-methodology-link" class="benchmark-methodology-link" href="https://github.com/tomzhu0225/simjecture/blob/feature/benchmark-leaderboard/docs/how-to/llm-bench.md#leaderboard-and-tradeoffs" target="_blank" rel="noopener noreferrer">Methodology ↗</a>
             <div id="benchmark-tradeoff"></div>
             <div id="benchmark-series-legend" class="benchmark-series-legend"></div>
             <div id="benchmark-leaderboard"></div>
             <p id="benchmark-ranking-note" class="field-help"></p>
             <p id="benchmark-cohort-note" class="field-help" hidden></p>
           </section>
-          <details class="benchmark-details" id="benchmark-methodology">
-            <summary>Tasks, scoring &amp; cost methodology</summary>
-            <div id="benchmark-methodology-text"></div>
-          </details>
           <details class="benchmark-details" id="benchmark-pricing">
             <summary>Published API tariffs <span id="benchmark-price-date"></span></summary>
             <p id="benchmark-price-note" class="field-help"></p>
@@ -404,7 +399,7 @@
           </details>
           <details class="benchmark-details" id="benchmark-your-work">
             <summary>Your runs &amp; community contributions</summary>
-            <p class="field-help">Test any supported model with your installed agent or API connection. Local and imported runs appear in Community, local &amp; archive. Official results are maintained by Simjecture.</p>
+            <p class="field-help">Test any supported model with your installed agent or API connection. Local and imported runs appear in Community &amp; local. Official results are maintained by Simjecture.</p>
             <div class="benchmark-actions">
               <button id="benchmark-import" class="secondary" type="button">Import grades</button>
               <button id="benchmark-download-grades" class="secondary" type="button">Download raw grades</button>
@@ -416,16 +411,7 @@
             <h3>Your benchmark conversations</h3><div id="benchmark-projects" class="tool-grid"></div>
             <details><summary>Latest numerical grade</summary><pre id="benchmark-report" hidden></pre></details>
           </details>
-          <details class="benchmark-details" id="benchmark-unranked">
-            <summary>Availability &amp; unranked records <span id="benchmark-unranked-count"></span></summary>
-            <p class="field-help">Expired subscriptions and quota failures before inference are availability observations. Earlier verifier qualifications stay in the archive.</p>
-            <div id="benchmark-unranked-table" class="benchmark-table-scroll"></div>
-          </details>
-          <details class="benchmark-details" id="benchmark-history">
-            <summary>Earlier real-model pilots <span>Separate contract · 2026-09-30</span></summary>
-            <p id="benchmark-history-note" class="field-help"></p><div id="benchmark-history-table" class="benchmark-table-scroll"></div>
-            <p class="field-help"><a id="benchmark-history-source" target="_blank" rel="noopener noreferrer">Read the full MiMo / DeepSeek evaluation</a></p>
-          </details>
+
         </section>
         <section id="view-tools" class="view research-tools-view" hidden>
           <div class="research-tools-heading">

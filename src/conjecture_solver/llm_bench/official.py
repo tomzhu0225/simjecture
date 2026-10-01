@@ -292,8 +292,8 @@ def export_page(output):
         + encoded
         + ',{readonly:true,api:async()=>{throw Error("Use the workspace to run a model.")},'
         "refresh:async()=>{},toast:()=>{}});"
-        + 'for(const id of ["benchmark-run","benchmark-your-work",'
-        '"benchmark-unranked","benchmark-history"])document.getElementById(id).hidden=true;'
+        + 'for(const id of ["benchmark-run","benchmark-your-work"'
+        '])document.getElementById(id).hidden=true;'
         + 'document.getElementById("benchmark-source").parentElement.hidden=true;'
         + "</script></body></html>"
     )

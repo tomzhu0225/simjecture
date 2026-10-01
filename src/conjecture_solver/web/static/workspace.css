@@ -3498,7 +3498,7 @@ wa-split-panel.project-layout {
 .benchmark-plot-tooltip strong { font-size:12px; }.benchmark-plot-tooltip span { font-size:12px; }.benchmark-plot-tooltip small { font-size:10px; color:var(--muted); }
 .benchmark-series-legend { display:flex; flex-wrap:wrap; gap:8px 18px; margin:12px 0 24px; }
 .benchmark-series-button { display:flex; align-items:center; gap:7px; padding:3px 0; background:transparent; border:0; color:var(--muted); font-size:11px; }
-.benchmark-series-swatch { display:block; width:23px; border-top:2px dashed; }
+.benchmark-series-swatch { display:block; width:10px; height:10px; border:0; border-radius:50%; }
 .benchmark-model-identity { min-width:200px; }
 .benchmark-model-identity details { margin-top:7px; }.benchmark-model-identity summary { font-size:10px; color:var(--muted); cursor:pointer; }
 .benchmark-model-identity details[open] { min-width:680px; }
@@ -3524,7 +3524,8 @@ wa-split-panel.project-layout {
 .benchmark-bar-fill { display:block; height:11px; border-radius:3px; min-width:0; }
 .benchmark-bar-fill.partial { opacity:.5; background-image:repeating-linear-gradient(135deg,transparent,transparent 3px,#ffffff80 3px,#ffffff80 6px); }
 .benchmark-bar-value { text-align:right; font-size:10px; font-variant-numeric:tabular-nums; }
-.benchmark-bar-row.unfinished { opacity:.55; }
+.benchmark-bar-row.unfinished { background:color-mix(in srgb, #dc524c 7%, transparent); }
+.benchmark-bar-row.unfinished .benchmark-bar-value,.benchmark-bar-row.unfinished .benchmark-bar-label strong,.benchmark-unfinished td:nth-child(4) strong { color:#dc524c; }
 #benchmark-bar-note { margin:8px 0 0; font-size:11px; }
 #benchmark-tradeoff .benchmark-better-corner { fill:var(--accent); font-size:11px; font-weight:650; }
 .benchmark-pareto-front { pointer-events:none; }
@@ -3551,3 +3552,5 @@ wa-split-panel.project-layout {
   #benchmark-tradeoff svg text { font-size:12px; }
   .benchmark-plot-tooltip { position:sticky; right:auto; top:auto; margin:8px; }
 }
+
+.benchmark-methodology-link { display:block; width:fit-content; margin:8px 0 0 auto; color:var(--muted); font-size:11px; text-decoration:underline; text-underline-offset:3px; }
