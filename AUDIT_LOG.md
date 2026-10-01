@@ -48,3 +48,8 @@ Pending completion. All test results, skips, performance measurements and review
 - Enforce nested required artifact fields (`path` and `sha256`) and reject nonfinite numeric inputs before kernel dispatch. Valid tool schemas and inputs remain compatible; callers relying on malformed inputs will now receive validation errors.
 - Added regressions for missing nested fields, NaN/infinity and valid fractional/integer timeouts.
 - Parent verification: 67 API/client/one-shot/web tests passed, one optional MCP SDK test skipped; generated schemas unchanged and checked; Ruff passed.
+
+### Research client transport errors
+- Convert malformed/empty transport JSON, non-object responses and missing successful results into useful `RuntimeError` diagnostics. Successful response recording and replay behavior are preserved.
+- Added deterministic subprocess-response tests, including successful response persistence. This standardizes invalid-response exception behavior rather than changing valid API signatures.
+- Validation included the 67-test API/web smoke above and focused client tests.
