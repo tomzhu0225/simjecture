@@ -75,3 +75,8 @@ Pending completion. All test results, skips, performance measurements and review
 - Respect the worker's verified complete/size staging acknowledgement, stopping retransmission of already-complete frozen inputs; validate partial offsets and final acknowledgement and reject size changes.
 - A completed 3 MiB + 7 byte replay now takes **1 staging RPC instead of 4**. Worker-side whole-file hash verification is retained; this is a transfer-protocol test, not a remote SSH run.
 - Added partial/completed replay, empty/exact-boundary input and malformed acknowledgement tests. Parent recovery/web smoke: 26 passed; broader owned harness checks: 60 passed, 14 runtime skips.
+
+### Waiting and benchmark reproducibility
+- Added a synthetic supervisor scheduling test: five pending-job waits cause zero provider turns; a terminal receipt produces one wake. This checks scheduling policy without real model/token billing or numerical execution.
+- Added bounded reproducible ledger and harness microbenchmark scripts in `scripts/benchmarks/`. Fixtures/measurement scope are explicit; runtime variation means repeated timing ratios differ.
+- Validation: synthetic wait test and combined web/recovery smoke passed; scripts passed Ruff and benchmark smoke runs. No actual model-token savings claimed.
