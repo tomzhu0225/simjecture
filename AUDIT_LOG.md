@@ -80,3 +80,7 @@ Pending completion. All test results, skips, performance measurements and review
 - Added a synthetic supervisor scheduling test: five pending-job waits cause zero provider turns; a terminal receipt produces one wake. This checks scheduling policy without real model/token billing or numerical execution.
 - Added bounded reproducible ledger and harness microbenchmark scripts in `scripts/benchmarks/`. Fixtures/measurement scope are explicit; runtime variation means repeated timing ratios differ.
 - Validation: synthetic wait test and combined web/recovery smoke passed; scripts passed Ruff and benchmark smoke runs. No actual model-token savings claimed.
+
+### Reject invalid service durations before persistence
+- Reject NaN/infinity, nonpositive values, booleans, strings and unrepresentably large durations before study/experiment state is partially written; failed validation can be retried with valid inputs.
+- Existing valid deadline/timeout signatures are preserved. Added 16 boundary/retry regressions; 87 service-family/web tests passed, plus 27 parent boundary/web tests; Ruff/CLI smoke passed.
