@@ -147,3 +147,28 @@ def test_reopening_existing_ledger_indexes_incremental_campaign_replay(tmp_path)
         assert ledger.verify_chain("campaign_1")
         indexes = ledger._connection.execute("PRAGMA index_list(campaign_events)").fetchall()
         assert any(row["name"] == "campaign_events_campaign_sequence" for row in indexes)
+
+
+@pytest.mark.parametrize("original, replay", [(True, 1), (False, 0), (1, 1.0)])
+def test_idempotency_distinguishes_json_scalar_representations(original, replay) -> None:
+    kwargs = dict(
+        campaign_id="campaign_1", event_type="value_recorded", aggregate_type="test",
+        aggregate_id="test_1", idempotency_key="same_action",
+    )
+    with SQLiteEventLedger() as ledger:
+        ledger.append(payload={"value": original}, **kwargs)
+        with pytest.raises(IdempotencyConflict):
+            ledger.append(payload={"value": replay}, **kwargs)
+        assert ledger.verify_chain("campaign_1")
+
+
+def test_idempotency_compares_canonical_json_not_python_container_types() -> None:
+    kwargs = dict(
+        campaign_id="campaign_1", event_type="value_recorded", aggregate_type="test",
+        aggregate_id="test_1", idempotency_key="same_action",
+    )
+    with SQLiteEventLedger() as ledger:
+        first = ledger.append(payload={"values": (1, 2), "metadata": {"b": 2, "a": 1}}, **kwargs)
+        replay = ledger.append(payload={"metadata": {"a": 1, "b": 2}, "values": [1, 2]}, **kwargs)
+        assert not replay.inserted
+        assert replay.event == first.event

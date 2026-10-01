@@ -38,9 +38,10 @@ class IdempotencyConflict(ValueError):
 
 
 class SQLiteEventLedger:
-    """SQLite test implementation.
+    """Append-only SQLite event store with per-campaign hash chains.
 
-    Production will implement the same contract in PostgreSQL.
+    Separate connections serialize appends, including idempotent replay checks.
+    Each instance retains SQLite's default single-thread connection ownership.
     """
 
     def __init__(self, path: str | Path = ":memory:") -> None:
@@ -161,7 +162,7 @@ class SQLiteEventLedger:
                         stored.event_type != event_type
                         or stored.aggregate_type != aggregate_type
                         or stored.aggregate_id != aggregate_id
-                        or stored.payload != payload
+                        or existing["payload_json"] != payload_json
                     ):
                         raise IdempotencyConflict(
                             "an idempotency key cannot be reused for a different logical event"

@@ -53,3 +53,8 @@ Pending completion. All test results, skips, performance measurements and review
 - Convert malformed/empty transport JSON, non-object responses and missing successful results into useful `RuntimeError` diagnostics. Successful response recording and replay behavior are preserved.
 - Added deterministic subprocess-response tests, including successful response persistence. This standardizes invalid-response exception behavior rather than changing valid API signatures.
 - Validation included the 67-test API/web smoke above and focused client tests.
+
+### Canonical idempotency payloads
+- Compare the already-canonical JSON representation for replay identity. Python equality previously conflated `true` with `1` and rejected equivalent tuple/list JSON arrays.
+- Added scalar-representation and equivalent-container tests; clarified the ledger's real single-thread-per-connection contract.
+- Validation: 75 affected tests reported by the worker, plus 21 parent ledger/web tests, Ruff and CLI smoke passed. Changed behavior applies to ambiguous or mismatched replay payloads.
