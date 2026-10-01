@@ -122,3 +122,28 @@ def test_failed_append_releases_writer_and_preserves_chain(tmp_path) -> None:
         second.append(**kwargs)
         assert first.verify_chain("campaign_1")
         assert len(first.load("campaign_1")) == 2
+
+
+def test_reopening_existing_ledger_indexes_incremental_campaign_replay(tmp_path) -> None:
+    path = tmp_path / "events.sqlite"
+    with SQLiteEventLedger(path) as ledger:
+        first = ledger.append(
+            campaign_id="campaign_1", event_type="created", aggregate_type="test",
+            aggregate_id="test_1", payload={},
+        ).event
+        ledger.append(
+            campaign_id="campaign_2", event_type="created", aggregate_type="test",
+            aggregate_id="test_2", payload={},
+        )
+        last = ledger.append(
+            campaign_id="campaign_1", event_type="updated", aggregate_type="test",
+            aggregate_id="test_1", payload={"value": 1},
+        ).event
+        # Simulate a database created before the index existed.
+        ledger._connection.execute("DROP INDEX campaign_events_campaign_sequence")
+        ledger._connection.commit()
+    with SQLiteEventLedger(path) as ledger:
+        assert ledger.load("campaign_1", after_sequence=first.sequence) == (last,)
+        assert ledger.verify_chain("campaign_1")
+        indexes = ledger._connection.execute("PRAGMA index_list(campaign_events)").fetchall()
+        assert any(row["name"] == "campaign_events_campaign_sequence" for row in indexes)

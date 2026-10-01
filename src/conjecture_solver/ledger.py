@@ -66,6 +66,12 @@ class SQLiteEventLedger:
             )
             """
         )
+        # Support campaign-local chain heads and incremental replay without
+        # scanning/sorting the complete campaign history.
+        self._connection.execute(
+            "CREATE INDEX IF NOT EXISTS campaign_events_campaign_sequence "
+            "ON campaign_events(campaign_id, sequence)"
+        )
         self._connection.commit()
 
     def close(self) -> None:

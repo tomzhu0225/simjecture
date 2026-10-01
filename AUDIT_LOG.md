@@ -27,3 +27,12 @@ Pending completion. All test results, skips, performance measurements and review
 - Added concurrent writer/shared-idempotency and failed-insert rollback regression tests.
 - Validation: 99 affected tests passed (ledger, models, parameters, research client, campaign, control, search, proposals, orchestration, web); focused Ruff and CLI help passed. Web tests supply the basic app smoke.
 - No full numerical or autonomous-model claim is made by these tests.
+
+### Baseline validation
+- Pristine rc3 in a separate detached worktree: **754 passed, 93 failed, 28 skipped**, 193.39 seconds. Baseline Ruff across source/tests passed.
+- The unmodified suite is not green in this environment. Many failures require working Bubblewrap or browser binaries; each remaining failure is being compared/classified rather than hidden with blanket skips.
+
+### Indexed campaign replay
+- Added a backwards-compatible `(campaign_id, sequence)` SQLite index; reopening an existing ledger installs it without altering events.
+- Synthetic in-memory benchmark: 40,000 events across 8 campaigns, median of 5 batches of 500 queries. Campaign-head lookup: **1618.25 → 1.35 µs**; incremental-tail retrieval: **294.29 → 49.84 µs**. Query results were checked equal. These are query timings, not end-to-end simulation speedups; indexing incurs storage/write overhead.
+- Validation: 71 affected tests passed; schema export check and Ruff passed. Parent's combined ledger/web/worker/accounting suite: 29 passed; CLI smoke passed.
