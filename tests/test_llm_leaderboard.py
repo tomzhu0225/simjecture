@@ -3,6 +3,7 @@
 import copy
 import json
 import threading
+from types import SimpleNamespace
 
 import httpx
 import pytest
@@ -10,6 +11,12 @@ import pytest
 from conjecture_solver.llm_bench.leaderboard import normalize, public_grade, summarize
 from conjecture_solver.web.application import SimjectureWebApplication
 from conjecture_solver.web.server import create_server
+
+
+@pytest.fixture(autouse=True)
+def isolate_shipped_results(monkeypatch):
+    # Published model runs evolve independently of these synthetic UI fixtures.
+    monkeypatch.setattr("conjecture_solver.llm_bench.leaderboard.published_reports", lambda: [])
 
 
 def trial(identifier, *, model="deepseek-flash", passed=True, wall=50, budget=180, effort="high"):
@@ -175,6 +182,92 @@ def test_private_fields_are_excluded_and_exploratory_runs_remain_unranked():
     assert not result["cohorts"] and result["unranked"][0]["passed"]
 
 
+def test_invalidated_qualification_is_preserved_but_never_ranked():
+    report = trial("invalidated")
+    report["trial"]["invalidated_reason"] = "Ambiguous legacy radius definition"
+    exported = public_grade(report)
+    data = summarize([exported])
+    assert not data["cohorts"]
+    assert "Ambiguous legacy radius definition" in data["unranked"][0]["issues"][0]
+
+
+def test_cli_downloaded_bundle_round_trip(tmp_path, capsys):
+    from conjecture_solver.llm_bench.pack import cli
+
+    path = tmp_path / "grades.json"
+    output = tmp_path / "summary.json"
+    reports = [public_grade(trial("one")), public_grade(trial("two", passed=False))]
+    path.write_text(json.dumps({"reports": reports}))
+    args = SimpleNamespace(
+        bench_command="leaderboard", reports=[path], minimum_trials=5, output=output
+    )
+    assert cli(args) == 0
+    assert json.loads(output.read_text()) == summarize(reports)
+    assert json.loads(capsys.readouterr().out)["cohorts"][0]["rows"][0]["trials"] == 2
+
+
+def test_shipped_audit_supersedes_older_import_of_same_grade(tmp_path, monkeypatch):
+    from conjecture_solver.web.workspace import Workspace
+
+    original = trial("qualification", passed=False)
+    revised = copy.deepcopy(original)
+    revised["trial"]["invalidated_reason"] = "Verifier qualification defect"
+    monkeypatch.setattr(
+        "conjecture_solver.llm_bench.leaderboard.published_reports", lambda: [public_grade(revised)]
+    )
+    workspace = Workspace(tmp_path)
+    workspace.import_benchmark_reports({"reports": [original]})
+    result = workspace.benchmark_catalogue()["leaderboard"]
+    assert not result["cohorts"]
+    assert "Verifier qualification defect" in result["unranked"][0]["issues"][0]
+
+
+def test_community_bundles_are_sanitized_and_separate_from_owned_trials(tmp_path, monkeypatch):
+    from conjecture_solver.llm_bench.leaderboard import community_reports
+
+    monkeypatch.setattr("conjecture_solver.llm_bench.leaderboard.COMMUNITY_RESULTS_ROOT", tmp_path)
+    record = trial("community")
+    record["trial"]["settings"]["api_key"] = "never-publish-this"
+    (tmp_path / "submission.json").write_text(json.dumps({"reports": [record]}))
+    imported = community_reports()
+    assert "never-publish-this" not in json.dumps(imported)
+    summary = summarize([trial("owned"), *imported])
+    assert len(summary["cohorts"]) == 2
+    assert {c["scope"]["protocol"] for c in summary["cohorts"]} == {
+        "controlled",
+        "community-controlled",
+    }
+
+
+def test_custom_model_launch_freezes_private_config_and_exports_only_progress(
+    tmp_path, monkeypatch
+):
+    from conjecture_solver.web.workspace import Workspace, load
+
+    workspace = Workspace(tmp_path / ".workspace")
+    workspace.root.mkdir()
+    workspace.save_api({"base_url": "https://provider.example/v1", "api_key": "private-key"})
+    launched = []
+    monkeypatch.setattr(
+        "conjecture_solver.web.workspace.spawn",
+        lambda command, directory, log: launched.append(command) or {},
+    )
+    result = workspace.start_benchmark_campaign(
+        {
+            "backend": "builtin",
+            "model": "my/custom-model",
+            "repeats": 2,
+            "tasks": ["csv-energy"],
+        }
+    )
+    directory = workspace.root / "benchmark-campaigns" / result["id"]
+    assert load(directory / "provider.json")["api_key"] == "private-key"
+    assert "private-key" not in json.dumps(load(directory / "models.json"))
+    assert (directory / "provider.json").stat().st_mode & 0o777 == 0o600
+    assert "--repeats" in launched[0]
+    assert "private-key" not in json.dumps(workspace.benchmark_campaigns())
+
+
 @pytest.mark.parametrize("value", [-1, float("nan"), float("inf"), True, 10**400])
 def test_invalid_measurements_are_rejected(value):
     report = trial("invalid")
@@ -220,6 +313,16 @@ def test_import_http_replays_do_not_inflate_trials_and_export_has_no_private_set
             assert result["imported_trials"] == 1
             assert result["leaderboard"]["cohorts"][0]["rows"][0]["trials"] == 1
             assert "do-not-export" not in json.dumps(result)
+            # A full campaign bundle exceeds the normal 64 KiB control-request limit.
+            bundle = [trial(f"bulk-{i}") for i in range(101)]
+            assert len(json.dumps({"reports": bundle}).encode()) > 64 * 1024
+            response = client.post(
+                "/api/workspace/import-benchmark-reports",
+                headers=headers,
+                json={"reports": bundle},
+            )
+            assert response.status_code == 200, response.text
+            assert client.get("/api/workspace/benchmarks").json()["imported_trials"] == 102
     finally:
         server.shutdown()
         server.server_close()
@@ -281,6 +384,10 @@ def test_browser_leaderboard_import_chart_filter_and_export(tmp_path):
             page = browser.new_page(viewport={"width": 1440, "height": 1100})
             page.on("pageerror", lambda e: errors.append(str(e)))
             page.goto(f"http://127.0.0.1:{server.server_port}/workspace#benchmarks")
+            page.locator("#benchmark-run").click()
+            playwright.expect(page.locator(".benchmark-run-dialog")).to_be_visible()
+            page.get_by_label("Model ID · suggestions or your own").fill("custom-provider-model")
+            page.get_by_role("button", name="Cancel", exact=True).click()
             playwright.expect(page.locator("#benchmark-leaderboard")).to_contain_text(
                 "Build the first comparison"
             )

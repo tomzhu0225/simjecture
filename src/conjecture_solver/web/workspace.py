@@ -357,7 +357,7 @@ class Workspace(MachineWorkspace):
             raise ValueError(
                 "That model belongs to a different agent. Choose a model for this CLI."
             )
-        if effort not in {"", "low", "medium", "high", "xhigh", "max"}:
+        if effort not in {"", "low", "medium", "high", "xhigh", "max", "ultra"}:
             raise ValueError("Unknown reasoning effort")
         if backend == "agy" and effort:
             raise ValueError("AGY uses its own reasoning settings; choose Default")
@@ -579,7 +579,13 @@ class Workspace(MachineWorkspace):
         return self.project(identifier)
 
     def benchmark_catalogue(self):
-        from ..llm_bench.leaderboard import normalize, summarize
+        from ..llm_bench.leaderboard import (
+            community_reports,
+            normalize,
+            public_grade,
+            published_reports,
+            summarize,
+        )
         from ..llm_bench.pack import catalogue
 
         result = catalogue() | {
@@ -599,21 +605,146 @@ class Workspace(MachineWorkspace):
             ]
         }
         reports = {p.stem: load(p) for p in (self.root / "benchmark-reports").glob("*.json")}
+        published = published_reports()
+        community = community_reports()
+        owned_keys = set()
+        for report in published:
+            value = normalize(report)
+            key = value["trial_key"] or value["report_sha256"]
+            owned_keys.add(key)
+            # A shipped audit supersedes an earlier local copy of that host grade.
+            reports[key] = report
+        for report in community:
+            value = normalize(report)
+            reports.setdefault(value["trial_key"] or value["report_sha256"], report)
         for project in result["projects"]:
             report = project["grade"]
             if report:
                 value = normalize(report)
-                reports[value["trial_key"] or value["report_sha256"]] = report
+                key = value["trial_key"] or value["report_sha256"]
+                if key not in owned_keys:
+                    reports[key] = report
         result["leaderboard"] = summarize(reports.values())
         result["imported_trials"] = len(list((self.root / "benchmark-reports").glob("*.json")))
+        result["campaigns"] = self.benchmark_campaigns()
+        result["published_trials"] = len(published)
+        result["community_trials"] = len(community)
+        result["grade_reports"] = [public_grade(report) for report in reports.values()]
         return result
+
+    def benchmark_campaigns(self):
+        """Read host-created progress manifests without publishing traces or paths."""
+        campaigns = []
+        for record in sorted((self.root / "benchmark-campaigns").glob("*/campaign.json"))[-30:]:
+            info = load(record)
+            root = Path(info.get("directory", record.parent))
+            plan = load(root / "plan.json")
+            states = [load(path) for path in (root / "trials").glob("*/state.json")]
+            errors = load(root / "runner-errors.json", [])
+            done = sum(
+                s.get("status") in {"passed", "failed", "blocked", "cancelled"} for s in states
+            )
+            campaigns.append(
+                {
+                    "id": record.parent.name,
+                    "name": info.get("name", "Custom model trials"),
+                    "total": plan.get("trials", 0),
+                    "finished": done,
+                    "running": [s.get("model") for s in states if s.get("status") == "running"],
+                    "blocked": [s.get("model") for s in states if s.get("status") == "blocked"],
+                    "passed": sum(s.get("status") == "passed" for s in states),
+                    "runner_errors": len(errors),
+                    "stopped_reason": info.get("stopped_reason"),
+                    "active": not info.get("stopped_reason")
+                    and (
+                        alive(info.get("process"))
+                        if info.get("process")
+                        else done < plan.get("trials", 0)
+                    ),
+                }
+            )
+        return campaigns
+
+    def start_benchmark_campaign(self, payload):
+        """Launch the same timed CLI runner for any operator-selected model ID."""
+        from ..llm_bench.pack import TASKS
+
+        backend = text(payload, "backend", 30)
+        model = text(payload, "model", 160)
+        effort = text(payload, "reasoning_effort", 20)
+        if backend not in {"builtin", "codex", "codex-glm", "grok", "agy"} or not model:
+            raise ValueError("Choose a coding agent and exact model ID")
+        if not re.fullmatch(r"[\w./:@+-]{1,160}", model):
+            raise ValueError("Use an exact model identifier without whitespace")
+        if effort not in {"", "low", "medium", "high", "xhigh", "max", "ultra"}:
+            raise ValueError("Unknown reasoning effort")
+        if backend != "builtin" and not shutil.which(backend):
+            raise ValueError(f"{backend} is not installed on this machine")
+        tasks = payload.get("tasks", list(TASKS))
+        if not isinstance(tasks, list) or not tasks or any(t not in TASKS for t in tasks):
+            raise ValueError("Choose at least one benchmark task")
+        repeats, workers = payload.get("repeats", 5), payload.get("workers", 1)
+        if (
+            type(repeats) is not int
+            or not 1 <= repeats <= 20
+            or type(workers) is not int
+            or not 1 <= workers <= 8
+        ):
+            raise ValueError("Choose 1-20 repetitions and 1-8 parallel trials")
+        config = {"id": "custom", "backend": backend, "model": model, "effort": effort or None}
+        if backend == "builtin" and not self.api_config().get("base_url"):
+            raise ValueError("Add your API endpoint in Connections before running API trials")
+        with self.lock():
+            identifier = uuid.uuid4().hex
+            directory = self.root / "benchmark-campaigns" / identifier
+            directory.mkdir(parents=True, mode=0o700)
+            if backend == "builtin":
+                provider = directory / "provider.json"
+                private_json(
+                    provider,
+                    self.api_config()
+                    | {"reasoning_effort": effort or None},
+                )
+                config["provider_config"] = str(provider)
+            private_json(directory / "models.json", [config])
+            process = spawn(
+                [
+                    sys.executable,
+                    "-m",
+                    "conjecture_solver",
+                    "llm-benchmark",
+                    "run",
+                    "--config",
+                    str(directory / "models.json"),
+                    "--output",
+                    str(directory),
+                    "--workspace",
+                    str(self.root),
+                    "--repeats",
+                    str(repeats),
+                    "--workers",
+                    str(workers),
+                    "--tasks",
+                    *tasks,
+                ],
+                self.root,
+                directory / "runner.log",
+            )
+            private_json(
+                directory / "campaign.json",
+                {
+                    "name": f"{backend} / {model}",
+                    "process": process,
+                },
+            )
+        return {"id": identifier, "message": "Timed trials started; grades appear automatically."}
 
     def import_benchmark_reports(self, payload):
         from ..llm_bench.leaderboard import normalize, public_grade
 
         reports = payload.get("reports")
-        if not isinstance(reports, list) or not 0 < len(reports) <= 100:
-            raise ValueError("Import between 1 and 100 host grade reports")
+        if not isinstance(reports, list) or not 0 < len(reports) <= 1000:
+            raise ValueError("Import between 1 and 1000 host grade reports")
         validated = [(normalize(report), public_grade(report)) for report in reports]
         with self.lock():
             (self.root / "benchmark-reports").mkdir(exist_ok=True, mode=0o700)
@@ -656,9 +787,16 @@ class Workspace(MachineWorkspace):
         for turn in sorted((directory / "turns").iterdir()):
             request = load(turn / "request.json")
             if request.get("agent"):
-                agents.append({key: request["agent"].get(key) for key in (
-                    "backend", "model", "reasoning_effort",
-                )})
+                agents.append(
+                    {
+                        key: request["agent"].get(key)
+                        for key in (
+                            "backend",
+                            "model",
+                            "reasoning_effort",
+                        )
+                    }
+                )
             account = request_accounting(turn / "events.jsonl")
             if request.get("agent") or account:
                 accounts.append(account or {})

@@ -73,7 +73,9 @@ def configure_parser(parser):
     parser.add_argument("--completion-policy", choices=["answer", "repair"])
     parser.add_argument("--model")
     parser.add_argument("--judge-model")
-    parser.add_argument("--reasoning-effort", choices=["low", "medium", "high", "xhigh", "max"])
+    parser.add_argument(
+        "--reasoning-effort", choices=["low", "medium", "high", "xhigh", "max", "ultra"]
+    )
     parser.add_argument("--executable")
     parser.add_argument("--quiet", action="store_true", help="Suppress live terminal progress")
     parser.set_defaults(handler=run)

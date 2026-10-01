@@ -108,6 +108,67 @@ def test_closed_form_rz_leaf_volume_and_clock(tmp_path):
     assert reference.comparisons({"time_s": [1e-9]}, {"time_s": [2e-9]})[0]["passed"] is False
 
 
+def test_tracer_radius_aggregates_equal_centres_before_interpolation():
+    radii = np.array([1, 1, 2, 2, 3, 3])
+    masses = np.array([1, 3, 4, 2, 0, 0])
+    for permutation in np.random.default_rng(13).permuted(np.tile(np.arange(6), (40, 1)), axis=1):
+        assert math.isclose(
+            reference.tracer_radius(radii[permutation], masses[permutation]), 1 + 1 / 6
+        )
+    assert reference.tracer_radius([1, 1], [2, 4]) == 1
+    with pytest.raises(ValueError, match="positive"):
+        reference.tracer_radius([1, 2], [0, 0])
+    with pytest.raises(ValueError, match="Invalid"):
+        reference.tracer_radius([1, 2], [1, -1])
+
+
+def test_float32_fields_are_promoted_before_products(tmp_path):
+    """Python scalar shell integrals independently fix the arithmetic precision."""
+    h5py = pytest.importorskip("h5py")
+    directory = next(iter(fixtures.create(tmp_path / "precision", "rz-diagnostics", 91).values()))
+    density = np.array([[0.43891, 1.9827], [1.12988, 0.74321]], dtype="f4")
+    tracer = np.array([[0.322129, 0.749121], [0.788918, 0.217814]], dtype="f4")
+    velocity = np.float32(-2.327491)
+    eint = np.float32(10.217)
+    # dr=dz=1 cm, hence the two shell-cell volumes are pi and 3*pi cm^3.
+    mass = math.fsum(
+        float(density[z, r]) * math.pi * (1 if r == 0 else 3) for z in range(2) for r in range(2)
+    )
+    bins = [
+        math.fsum(
+            float(density[z, r]) * float(tracer[z, r]) * math.pi * (1 if r == 0 else 3)
+            for z in range(2)
+        )
+        for r in range(2)
+    ]
+    half = 0.5 * sum(bins)
+    radius = 0.5 if half <= bins[0] else 0.5 + (half - bins[0]) / bins[1]
+    for step, path in enumerate(sorted(directory.glob("stagnation_hdf5_plt_cnt_*"))):
+        with h5py.File(path, "w") as file:
+            file["real scalars"] = np.array(
+                [(b"time", step * 1e-9)], dtype=[("name", "S80"), ("value", "f8")]
+            )
+            file["node type"] = [1]
+            file["bounding box"] = [[[0, 2], [0, 2], [0, 1]]]
+            file["dens"] = density.reshape(1, 1, 2, 2)
+            file["line"] = tracer.reshape(1, 1, 2, 2)
+            for key, value in {
+                "velx": velocity,
+                "vely": 0,
+                "velz": 0,
+                "magx": 0,
+                "magy": 0,
+                "magz": 0,
+                "eint": eint + step,
+            }.items():
+                file[key] = np.full((1, 1, 2, 2), value, dtype="f4")
+    result, curves = reference.rz_result(directory)
+    assert result["K_in_peak_J"] == pytest.approx(
+        0.5 * mass * float(velocity) ** 2 * 1e-7, rel=1e-14
+    )
+    assert curves["tracer_r50_mm"] == pytest.approx([radius * 10] * 5, rel=1e-14)
+
+
 @pytest.mark.parametrize("task", ["csv-energy", "rz-diagnostics"])
 def test_real_recorded_oracle_and_noop(tmp_path, bubblewrap, task):
     path = tmp_path / "task"

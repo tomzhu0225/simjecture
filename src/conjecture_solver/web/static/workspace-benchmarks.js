@@ -52,7 +52,7 @@ window.WorkspaceBenchmarks = (() => {
       if (text !== undefined) n.textContent = text;
       return n;
     };
-    const svg = svgNode("svg", {viewBox:"0 0 760 290", role:"img", "aria-label":quality ? "Verified pass rate and mean elapsed time per trial. Includes failed attempts; upper left is more reliable and faster." : "API token cost and elapsed time per verified success. Includes failed attempts; lower left is cheaper and faster. Pass rate is a third Pareto objective."});
+    const svg = svgNode("svg", {viewBox:"0 0 760 290", role:"img", "aria-label":quality ? "Verified pass rate and mean elapsed time per trial. Includes failed attempts; upper left is more reliable and faster." : "Estimated token cost and elapsed time per verified success. Includes failed attempts; lower left is cheaper and faster. Pass rate is a third Pareto objective."});
     const xvalue = r => quality ? r.mean_trial_seconds : r.api_tokens_usd_per_success;
     const yvalue = r => quality ? r.pass_rate : r.seconds_per_success;
     const xmax = Math.max(...points.map(xvalue), 0.000001) * 1.15;
@@ -64,7 +64,7 @@ window.WorkspaceBenchmarks = (() => {
       svg.append(svgNode("text", {x,y:263,"text-anchor":"middle"}, quality ? seconds(i*xmax/4) : money(i*xmax/4)));
       svg.append(svgNode("text", {x:73,y:y+4,"text-anchor":"end"}, quality ? percent(i*ymax/4) : seconds(i*ymax/4)));
     }
-    svg.append(svgNode("text", {x:385,y:285,"text-anchor":"middle"}, quality ? "Mean trial time (includes failures)" : "API token $ / verified success"));
+    svg.append(svgNode("text", {x:385,y:285,"text-anchor":"middle"}, quality ? "Mean trial time (includes failures)" : "Token $ estimate / verified success"));
     svg.append(svgNode("text", {x:85,y:20}, quality ? "Verified pass rate" : "Elapsed time / verified success"));
     points.forEach(row => {
       const frontier = quality ? row.pareto_quality_time : row.pareto;
@@ -77,7 +77,7 @@ window.WorkspaceBenchmarks = (() => {
       });
       dot.append(svgNode("title", {}, `${title(row)}\n${row.passes}/${row.trials} passed\n${seconds(row.mean_trial_seconds)} per trial\n${money(row.api_tokens_usd_per_success)} · ${seconds(row.seconds_per_success)} per success${row.provisional ? "\nProvisional: fewer than five trials" : ""}`));
       const focus = () => {
-        const entries = $("benchmark-leaderboard").querySelectorAll("tbody tr");
+        const entries = $("benchmark-leaderboard").querySelectorAll(":scope > .benchmark-table-scroll > table > tbody > tr");
         entries.forEach(n => n.classList.remove("benchmark-highlight"));
         const index = rows.indexOf(row), entry = entries[index];
         if (entry) {entry.classList.add("benchmark-highlight"); entry.tabIndex=-1; entry.focus(); entry.scrollIntoView({block:"nearest",behavior:"smooth"});}
@@ -102,17 +102,68 @@ window.WorkspaceBenchmarks = (() => {
       const identity = node("div"), quality = node("div");
       identity.append(node("strong", row.model), node("small", `${row.agent} ${row.agent_version} · ${row.settings.reasoning_effort || "default"} effort`));
       identity.title = JSON.stringify({model_version:row.model_version,settings:row.settings});
+      const receipts=node("details"),receiptLabel=node("summary","Trial measurements");receipts.append(receiptLabel);
+      const tokens=n=>n===null || n===undefined ? "Unknown" : n.toLocaleString();
+      receipts.append(table(["Elapsed","Input tokens","Cached input","Output tokens","Delivery"],row.receipts.map(r=>[
+        seconds(r.wall_seconds),tokens(r.usage.input_tokens),tokens(r.usage.cached_input_tokens),tokens(r.usage.output_tokens),r.passed ? "Verified pass" : r.provider_interruption ? `Interrupted · ${r.provider_interruption}` : r.numeric_passed && r.findings_present===false ? "Numbers pass · findings missing" : r.deadline_missed ? "Verified after deadline" : "Incomplete contract",
+      ])));identity.append(receipts);
       quality.append(node("strong", `${percent(row.pass_rate)} · ${row.passes}/${row.trials}`), node("small", `95% interval ${row.pass_rate_95_interval.map(percent).join("–")}`));
       const status = node("span", row.provisional ? "Provisional" : !row.passes ? "No verified success" : row.pareto === true ? "Pareto frontier" : row.pareto === false ? "Tradeoff dominated" : row.pareto_quality_time ? "Time frontier · cost unknown" : "Cost incomplete", `benchmark-badge ${row.pareto ? "frontier" : ""}`);
       status.title = `Median first verified completion: ${seconds(row.median_verified_seconds)}. ${row.deadline_misses} late completions. ${row.trials_without_price} trials with unknown token cost.`;
-      return [identity,String(row.trials),quality,seconds(row.seconds_per_success),money(row.api_tokens_usd_per_success),money(row.reported_usd_per_success),status];
+      return [identity,String(row.trials),quality,seconds(row.mean_trial_seconds),seconds(row.seconds_per_success),money(row.api_tokens_usd_per_success),money(row.reported_usd_per_success),status];
     });
     const wrap = node("div",undefined,"benchmark-table-scroll");
-    wrap.append(table(["Agent configuration","Trials","Pass rate","Time / success","API token $ estimate / success","Reported $ / success","Sample status"],entries));
+    wrap.append(table(["Agent configuration","Trials","Pass rate","Mean trial time","Time / success","Token $ estimate / success","Reported $ / success","Sample status"],entries));
     container.append(wrap); scatter(cohort.rows);
   }
 
+  function runDialog(pack, actions) {
+    const dialog=node("dialog",undefined,"research-action-dialog benchmark-run-dialog"), form=node("form");
+    form.append(node("h2","Benchmark your model"),node("p","Run fresh timed trials with your installed coding agent or the API connection saved in Connections. Your agent keeps its native tools. Grades are added here automatically.","field-help"));
+    const field=(label,input)=>{const row=node("label",label);input.setAttribute("aria-label",label);row.append(input);form.append(row);return input;};
+    const backend=field("Coding agent",node("select"));
+    for(const [id,label] of [["codex","Codex"],["codex-glm","Codex / GLM"],["grok","Grok"],["agy","AGY"],["builtin","API coding agent"]]) {const option=node("option",label);option.value=id;backend.append(option);}
+    const model=field("Model ID · suggestions or your own",node("input"));model.required=true;model.maxLength=160;model.autocomplete="off";
+    const suggestions=node("datalist");suggestions.id=`benchmark-model-${crypto.randomUUID()}`;model.setAttribute("list",suggestions.id);form.append(suggestions);
+    const effort=field("Reasoning effort",node("select"));
+    for(const value of ["","low","medium","high","xhigh","max","ultra"]) {const option=node("option",value || "Provider default");option.value=value;effort.append(option);}
+    const taskList=node("fieldset");taskList.append(node("legend","Tasks"));const checks=[];
+    for(const task of pack.tasks) {const row=node("label"),check=node("input");check.type="checkbox";check.checked=true;checks.push([check,task.id]);row.append(check,document.createTextNode(`${task.title} · ${task.seconds / 60} min per trial`));taskList.append(row);}form.append(taskList);
+    const repeats=field("Fresh trials per task",node("input"));repeats.type="number";repeats.min="1";repeats.max="20";repeats.value="5";repeats.required=true;
+    const advanced=node("details");advanced.append(node("summary","Advanced settings"));const workerLabel=node("label","Parallel trials"),workers=node("input");workers.type="number";workers.min="1";workers.max="8";workers.value="1";workerLabel.append(workers);advanced.append(workerLabel,node("p","Task definitions and deadlines stay fixed. Hardware and runner settings create separate comparison groups. One trial is provisional; five are required for Pareto eligibility.","field-help"));form.append(advanced);
+    form.append(node("p","Uses your configured subscription or API credits. API cost estimates and provider-reported spending remain separate.","field-help"));
+    const error=node("p","","form-error");error.setAttribute("role","alert");form.append(error);
+    const controls=node("div",undefined,"study-controls"),cancel=node("button","Cancel","secondary"),submit=node("button","Start timed trials");cancel.type="button";cancel.onclick=()=>dialog.close();submit.type="submit";controls.append(cancel,submit);form.append(controls);
+    let request=0;
+    backend.onchange=async()=>{
+      const current=++request;effort.disabled=backend.value==="agy";if(effort.disabled)effort.value="";
+      try {const catalogue=await actions.api("models",{backend:backend.value});if(current!==request)return;suggestions.replaceChildren();for(const entry of catalogue.models || []) {const option=node("option");option.value=entry.id;suggestions.append(option);}if(!model.value)model.value=catalogue.default || "";}catch(e){if(current===request)error.textContent=e.message;}
+    };
+    form.onsubmit=async event=>{
+      event.preventDefault();submit.disabled=true;error.textContent="";
+      try {const result=await actions.api("start-benchmark-campaign",{backend:backend.value,model:model.value.trim(),reasoning_effort:effort.value,repeats:Number(repeats.value),workers:Number(workers.value),tasks:checks.filter(([check])=>check.checked).map(([,id])=>id)});dialog.close();await actions.refresh();actions.toast(result.message);}catch(e){error.textContent=e.message;submit.disabled=false;}
+    };
+    dialog.append(form);document.body.append(dialog);dialog.addEventListener("close",()=>dialog.remove());dialog.showModal();backend.onchange();model.focus();
+  }
+
   function render(pack, actions) {
+    $("benchmark-published-note").textContent=`${pack.published_trials || 0} Simjecture-owned grades · ${pack.community_trials || 0} shipped community grades. Local runs appear as they finish. Community declarations keep separate comparison groups.`;
+    $("benchmark-download-grades").onclick=()=>{
+      const url=URL.createObjectURL(new Blob([JSON.stringify({reports:pack.grade_reports || []},null,2)+"\n"],{type:"application/json"}));
+      const a=node("a");a.href=url;a.download="simjecture-benchmark-grades.json";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+    };
+    $("benchmark-run").disabled=actions.readonly;
+    $("benchmark-run").onclick=()=>runDialog(pack,actions);
+    const campaigns=$("benchmark-campaigns");campaigns.replaceChildren();
+    for(const run of pack.campaigns || []) {
+      const card=node("article",undefined,"benchmark-campaign");
+      card.append(node("strong",run.name),node("span",`${run.finished}/${run.total} finished · ${run.passed} passed · ${run.active ? "Running" : run.stopped_reason || "Finished"}`));
+      const progress=node("progress");progress.max=run.total || 1;progress.value=run.finished;progress.setAttribute("aria-label",`${run.name} progress`);card.append(progress);
+      if(run.running.length)card.append(node("p",`Working: ${run.running.join(", ")}`,"field-help"));
+      if(run.blocked.length)card.append(node("p",`Unavailable or quota limited: ${[...new Set(run.blocked)].join(", ")}`,"field-help"));
+      if(run.runner_errors)card.append(node("p",`${run.runner_errors} runner errors need attention`,"form-error"));
+      campaigns.append(card);
+    }
     const data = pack.leaderboard, allRows = data.cohorts.flatMap(c => c.rows);
     $("benchmark-overview").replaceChildren();
     const values = [
@@ -126,8 +177,9 @@ window.WorkspaceBenchmarks = (() => {
     }
     const picker = $("benchmark-cohort");
     picker.replaceChildren();
-    data.cohorts.forEach((c,i) => {
-      const option = node("option",`${c.scope.task} · ${c.scope.budget_seconds}s · ${c.scope.hardware} · ${c.id.slice(0,6)}`); option.value=c.id; picker.append(option);
+    const ordered=[...data.cohorts].sort((a,b)=>b.scope.pack_version.localeCompare(a.scope.pack_version,{numeric:true}) || b.rows.reduce((n,r)=>n+r.trials,0)-a.rows.reduce((n,r)=>n+r.trials,0));
+    ordered.forEach((c,i) => {
+      const option = node("option",`${c.scope.protocol==="community-controlled" ? "Community · " : ""}${c.scope.task} · ${c.scope.budget_seconds}s · ${c.scope.hardware} · ${c.id.slice(0,6)}`); option.value=c.id; picker.append(option);
       if (!selected && i===0) selected=c.id;
     });
     if (!data.cohorts.length) picker.append(node("option","No controlled trials yet"));
@@ -138,13 +190,14 @@ window.WorkspaceBenchmarks = (() => {
     $("benchmark-chart").onchange = () => {chartMode=$("benchmark-chart").value;board(data.cohorts.find(c=>c.id===selected));};
     board(data.cohorts.find(c=>c.id===selected));
     $("benchmark-unranked-count").textContent=`(${data.unranked.length})`;
-    $("benchmark-unranked-table").replaceChildren(table(["Model / agent","Numerical contract","Measurements needed"],data.unranked.slice(0,100).map(r=>[
-      `${r.model || "Unknown model"} / ${r.agent || "Unknown agent"}`,r.passed ? "Passed" : "Failed / incomplete",r.issues.join(" · "),
+    $("benchmark-unranked-table").replaceChildren(table(["Model / agent","Host result","Reason unranked"],data.unranked.slice(0,100).map(r=>[
+      `${r.model || "Unknown model"} / ${r.agent || "Unknown agent"}`,r.availability_only ? "Unavailable · no inference" : r.passed ? "Passed" : "Failed / incomplete",r.issues.join(" · "),
     ])));
     $("benchmark-price-date").textContent=`· ${data.pricing.checked_date}`;
     $("benchmark-price-note").textContent=`USD per million tokens. ${data.cost_note}`;
     const prices = Object.entries(data.pricing.per_million_tokens).map(([model,rate]) => {
       const link = node("a","Official source"); link.href=rate.source; link.target="_blank"; link.rel="noopener noreferrer";
+      if(rate.basis)link.title=rate.basis;
       return [model,money(rate.input),money(rate.cached),money(rate.output),link];
     });
     $("benchmark-price-table").replaceChildren(table(["Model","Input","Cached input","Output","Reference"],prices));
@@ -169,7 +222,11 @@ window.WorkspaceBenchmarks = (() => {
         if (!selectedFiles.length) return;
         if (selectedFiles.length>100 || selectedFiles.some(f=>f.size>4000000)) throw Error("Choose at most 100 grade files, up to 4 MB each.");
         $("benchmark-import").disabled=true;
-        const reports=await Promise.all(selectedFiles.map(async f=>JSON.parse(await f.text())));
+        const parsed=await Promise.all(selectedFiles.map(async f=>JSON.parse(await f.text())));
+        const reports=parsed.flatMap(value=>Array.isArray(value) ? value : Array.isArray(value.reports) ? value.reports : [value]);
+        if(reports.length>1000)throw Error("Import at most 1000 grades at a time.");
+        const knownLocal=new Set((pack.grade_reports || []).filter(r=>r.trial?.comparison?.protocol==="controlled").map(r=>r.trial.trial_id));
+        for(const report of reports)if(report.trial?.comparison?.protocol==="controlled" && !knownLocal.has(report.trial.trial_id))report.trial.comparison.protocol="community-controlled";
         const result=await actions.api("import-benchmark-reports",{reports});
         await actions.refresh(); actions.toast(`${result.imported} grades imported. Repeated imports do not add trials.`);
       } catch(error) {actions.toast(error.message,true);}

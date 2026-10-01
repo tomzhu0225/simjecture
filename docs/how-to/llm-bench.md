@@ -5,6 +5,11 @@ Its version is independent of the harness version. It packages finite diagnostic
 coding tasks from the aluminium RZ investigation; passing does not establish a
 physical mechanism, approve a scientific claim, or measure general research ability.
 
+The development pack is now **0.3.0**, with qualified tracer interpolation and
+float64 reductions. The [owned 42-configuration sweep](../testing/owned-llm-benchmark-20261001.md)
+contains actual timing, delivery and usage results from 252 scheduled attempts;
+unavailable provider observations and affected earlier qualifications stay unranked.
+
 ## Prepare a task
 
 Open **Benchmarks** in the workspace sidebar. Choose **Prepare conversation**,
@@ -66,8 +71,13 @@ comparison of declared trials, not a cheating-resistant public submission servic
 ## Leaderboard and tradeoffs (development feature)
 
 After 0.5.3rc2, the development workspace adds a leaderboard to **Benchmarks**.
-Task preparation and grading remain available. **Import grades** accepts final host
-grade JSON files from timed runners; **Export summary** downloads an aggregate with
+Task preparation and grading remain available. **Run your model** starts fresh
+timed trials using an installed coding CLI or the API coding agent configured in
+Connections. Enter any supported model ID, choose its effort, select one or both
+tasks, and choose repetitions. No registration in a fixed model list is needed.
+The page polls progress and imports final host grades automatically.
+**Import grades** accepts individual host grades or a `{ "reports": [...] }` bundle.
+**Download grades** produces a portable, sanitized bundle; **Export summary** downloads an aggregate with
 no submitted code, private settings, paths, transcripts or reasoning text. This
 includes per-trial timing/usage counters and source report hashes so aggregate
 denominators and cost calculations can be inspected.
@@ -81,6 +91,14 @@ identifies model/version, agent/version and settings, including reasoning effort
 Compare different agents as complete configurations; select a single agent/version
 when attributing differences to a model. There is no overall cross-task score.
 
+The API coding agent retains the installed harness defaults: DeepSeek uses native
+tool history, while MiMo uses the default smolagents history formatter. Each API
+request allows 8192 output tokens and each episode allows 24 action steps; the
+timed runner continues incomplete episodes within the original deadline. CLI
+agents retain their native system prompts, tools and default internal limits.
+These differences are part of the tested configurations, so cross-backend results
+cannot be attributed solely to model weights.
+
 - Pass rate uses all delivered trial grades, with a 95% Wilson interval.
   A numerical pass first verified after the declared deadline counts as a timed
   failure. Do not omit unsuccessful or interrupted attempts: collect their host
@@ -89,6 +107,9 @@ when attributing differences to a model. There is no overall cross-task score.
   median first verified completion time describes passing trials separately.
 - Cost per success includes spending on failed attempts. **API tokens** is a dated
   standard API equivalent; **Reported $** is operator-supplied actual spending.
+  Grok Build Fast uses its separately published CLI token rates; it is not
+  available through the public xAI API. Its rate estimate is also separate from
+  subscription fees and reported spending.
   Subscription fees, credits and discounts are not inferred from token counters.
 - **Quality × time** uses pass rate and mean elapsed time per attempt, so it can
   include configurations without billing data. **Cost × time** uses token cost
@@ -166,8 +187,76 @@ The MiMo/DeepSeek live-simulation pilot below remains a separate evaluation. Its
 task, environment and one-off observations cannot populate this pack's controlled
 leaderboard. **Earlier real-model pilots** preserves its published observations
 in a separate panel, with a link to the full evaluation and its limitations.
-New comparisons require fresh, repeated trials; the page does not
-launch paid model runs or introduce a provider scheduler.
+New comparisons require fresh trials. Starting timed trials uses the operator's
+configured subscription/API credits. Published host grades ship with the task pack;
+local trials and community imports keep their declared comparison conditions.
+Community execution and billing declarations are not independently certified.
+
+### Run a custom model from the terminal
+
+Create a configuration array, for example:
+
+```json
+[
+  {"id":"sol-high", "backend":"codex", "model":"gpt-6.1-sol", "effort":"high"},
+  {"id":"custom-api", "backend":"builtin", "model":"YOUR_MODEL_ID",
+   "provider_config":"/absolute/path/to/private-provider.json"}
+]
+```
+
+The private provider file contains `backend`, `base_url`, `api_key`, and optionally
+`protocol: "native-tools"`. Keep it outside a public submission; native CLI trials
+use their existing login. Supported backends are `codex`, `codex-glm`, `grok`, `agy`
+and `builtin`. AGY uses its model-profile ID for effort; Codex accepts its native
+effort levels, including `ultra` where the installed model supports it.
+
+```bash
+simjecture llm-benchmark run --config models.json --output ./model-trials \
+  --repeats 5 --workers 4
+```
+
+Use `--workspace /path/to/runs/.workspace` to import grades into an existing GUI,
+`--tasks csv-energy` to run one task, or `--numerical-python /path/to/python` to
+select the agent's numerical environment. Private traces and provider files stay
+local; share only `trials/*/public-grade.json` or the GUI's **Download grades**.
+Submit a result bundle under `src/conjecture_solver/llm_bench/results/community/`
+with a pull request and describe your hardware, software,
+agent settings and runner protocol. A community result is not relabelled as a
+Simjecture-owned measurement.
+Accepted community bundles are loaded automatically into separate
+`community-controlled` comparison groups. Imported external GUI grades use that
+label too; reimporting a known local grade preserves its existing identity.
+
+### Pack 0.2.0 correction
+
+Qualification exposed an ambiguity in 0.1.0's half-mass-radius definition:
+interpolating individual equal-radius cells depends on their order. Version 0.2.0
+sums mass at each distinct radius before interpolation and specifies the
+after-reference radiation subtraction explicitly. Oracle controls and shuffled
+equal-radius tests verify the repaired definition. Affected 0.1.0 qualifications
+remain visible, marked invalidated for ranking; they are not silently regraded.
+
+Pack **0.3.0** also promotes recorded float32 fields to float64 before products and
+reductions. The old reference rounded density × tracer mass before summing; two
+independent model implementations using float64 were rejected despite agreeing
+with each other. Independent Python scalar shell integrals now check this case,
+and their curves match the repaired reference exactly. Affected 0.2.0 RZ grades
+remain unranked qualifications. Fresh 0.3.0 trials use an explicit float64 contract.
+
+The timed runner gives every configuration the same failed public-case field
+labels when continuing, without expected numbers or hidden-fixture contents.
+The original deadline includes grading and reserves ten seconds for final
+verification. Native tools and system prompts remain enabled. This measures the
+whole coding-agent configuration on recorded diagnostics, not new simulation
+performance or a pure model-only score. Native agents are trusted to obey the
+no-verifier-inspection contract; their normal filesystem access is retained.
+The numerical verifier executes submitted reducers separately under Bubblewrap.
+
+AGY conversation usage is cumulative: successive totals must not be added.
+Its undocumented cache/input semantics leave token cost unknown. Interrupted
+requests and unaccounted delegated work also leave complete cost unknown;
+known partial counters remain visible. API-equivalent estimates are not
+subscription invoices.
 
 ## Export for Harbor
 

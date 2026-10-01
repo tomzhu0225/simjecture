@@ -14,6 +14,21 @@ This project follows semantic versioning. Dates use ISO 8601.
   performed benchmark turns, with request-level usage where available.
 - Expose `max` reasoning effort in native launch contracts and the workspace
   selector, allowing supported models to be compared at each effort setting.
+- Add fresh timed native/API model trials, arbitrary custom model IDs, a visible
+  Run your model dialog, campaign progress, and portable sanitized grade bundles.
+- Repair equal-radius tracer interpolation in independently versioned task pack
+  0.2.0 and float32 intermediate rounding in 0.3.0; preserve affected qualification
+  grades as unranked records and verify precision with independent scalar integrals.
+- Preserve cumulative AGY usage without double counting and partial native Grok
+  receipts; expose native `ultra` reasoning effort where supported.
+- Ship actual host grade bundles and a community submission directory, keeping
+  contributor-declared measurements in separate comparison groups.
+- Complete an owned 42-configuration, 252-attempt sweep with five CSV attempts
+  and one recorded RZ diagnostic attempt per configuration; publish the full
+  result table and audited receipts. Separate no-inference quota/expiry from
+  interrupted paid work, and retain usage preceding zero-counter AGY errors.
+- Accept downloaded grade bundles in the CLI leaderboard command and preserve
+  a selected virtualenv Python path for subsequent timed trials.
 
 ## 0.5.3rc2 (preview) — 2026-09-30
 

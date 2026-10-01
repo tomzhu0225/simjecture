@@ -38,7 +38,12 @@ The stable installation commands below remain on 0.5.2.
 
 On the development branch, **Benchmarks** also includes a task-scoped leaderboard:
 compare verified completion, cost and elapsed time, explore Pareto tradeoffs, import
-timed trial grades and export a summary. It keeps exploratory pilots and missing
+timed trial grades and export a summary. **Run your model** starts fresh trials for
+any native CLI or configured API model, with visible progress and downloadable
+grades. [Actual results from 42 configurations](docs/testing/owned-llm-benchmark-20261001.md)
+are bundled with the task pack: 252 scheduled attempts, with quota/expiry
+observations kept separate from inference results.
+It keeps exploratory pilots and missing
 measurements visible without ranking them. See the
 [leaderboard protocol](docs/how-to/llm-bench.md#leaderboard-and-tradeoffs-development-feature).
 This feature is not included in the published 0.5.3rc2 preview.

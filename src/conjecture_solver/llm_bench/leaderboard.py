@@ -6,9 +6,133 @@ import math
 import re
 import statistics
 from collections import defaultdict
+from pathlib import Path
 
 PRICING_DATE = "2026-10-01"
 PRICES = {
+    "gpt-5.5": {
+        "input": 5.0,
+        "cached": 0.50,
+        "output": 30.0,
+        "max_input": 272000,
+        "writes_must_be_zero": True,
+        "source": "https://developers.openai.com/api/docs/models/gpt-5.5",
+    },
+    "gemini-3.7-flash": {
+        "input": 0.75,
+        "cached": 0.075,
+        "output": 3.75,
+        "source": "https://ai.google.dev/gemini-api/docs/pricing",
+    },
+    "gemini-3.6-flash": {
+        "input": 0.75,
+        "cached": 0.075,
+        "output": 3.75,
+        "source": "https://ai.google.dev/gemini-api/docs/pricing",
+    },
+    "gemini-3.1-pro-preview": {
+        "input": 2.0,
+        "cached": 0.20,
+        "output": 12.0,
+        "max_input": 200000,
+        "source": "https://ai.google.dev/gemini-api/docs/pricing",
+    },
+    "claude-opus-4-6": {
+        "input": 5.0,
+        "cached": 0.50,
+        "write": 6.25,
+        "output": 25.0,
+        "writes_must_be_zero": True,
+        "source": "https://platform.claude.com/docs/en/about-claude/pricing",
+    },
+    "claude-sonnet-4-6": {
+        "input": 3.0,
+        "cached": 0.30,
+        "write": 3.75,
+        "output": 15.0,
+        "writes_must_be_zero": True,
+        "source": "https://platform.claude.com/docs/en/about-claude/pricing",
+    },
+    "grok-4.7-build-fast": {
+        "input": 4.0,
+        "cached": 1.0,
+        "output": 12.0,
+        "max_input": 200000,
+        "basis": "Grok Build token rates - not public API availability",
+        "source": "https://docs.x.ai/developers/pricing#grok-47-fast-pricing-cursor-and-grok-build-only",
+    },
+    "mimo-v2.6-pro": {
+        "input": 0.435,
+        "cached": 0.0036,
+        "output": 0.87,
+        "source": "https://mimo.mi.com/docs/en-US/quick-start/usage-guide/text-generation/batch-api",
+    },
+    "mimo-v2.6-flash": {
+        "input": 0.14,
+        "cached": 0.0028,
+        "output": 0.28,
+        "source": "https://mimo.mi.com/docs/en-US/quick-start/usage-guide/text-generation/batch-api",
+    },
+    "grok-4.6": {
+        "input": 2.0,
+        "cached": 0.50,
+        "output": 6.0,
+        "max_input": 200000,
+        "source": "https://docs.x.ai/developers/models/grok-4.6",
+    },
+    "gpt-6-sol": {
+        "input": 2.0,
+        "cached": 0.20,
+        "write": 2.50,
+        "output": 10.0,
+        "max_input": 272000,
+        "source": "https://developers.openai.com/api/docs/models/gpt-6-sol",
+    },
+    "gpt-6-luna": {
+        "input": 0.10,
+        "cached": 0.01,
+        "write": 0.125,
+        "output": 0.50,
+        "max_input": 272000,
+        "source": "https://developers.openai.com/api/docs/models/gpt-6-luna",
+    },
+    "gpt-5.6-sol": {
+        "input": 4.0,
+        "cached": 0.40,
+        "write": 5.0,
+        "output": 20.0,
+        "max_input": 272000,
+        "source": "https://developers.openai.com/api/docs/models/gpt-5.6-sol",
+    },
+    "gpt-5.6-terra": {
+        "input": 2.0,
+        "cached": 0.20,
+        "write": 2.50,
+        "output": 12.0,
+        "max_input": 272000,
+        "source": "https://developers.openai.com/api/docs/models/gpt-5.6-terra",
+    },
+    "gpt-5.6-luna": {
+        "input": 0.20,
+        "cached": 0.02,
+        "write": 0.25,
+        "output": 1.20,
+        "max_input": 272000,
+        "source": "https://developers.openai.com/api/docs/models/gpt-5.6-luna",
+    },
+    "glm-5.3": {
+        "input": 1.40,
+        "cached": 0.26,
+        "output": 4.40,
+        "source": "https://docs.z.ai/guides/overview/pricing",
+    },
+    "grok-4.5": {
+        "input": 2.0,
+        "cached": 0.30,
+        "output": 6.0,
+        "max_input": 200000,
+        "source": "https://docs.x.ai/developers/models/grok-4.5",
+    },
     "gpt-6.1-sol": {
         "input": 2.0,
         "cached": 0.10,
@@ -137,6 +261,33 @@ def fingerprint(value):
     return hashlib.sha256(json.dumps(value, sort_keys=True, allow_nan=False).encode()).hexdigest()
 
 
+def published_reports():
+    """Curated host grades shipped with Simjecture; no credentials or transcripts."""
+    path = Path(__file__).with_name("results") / "owned-2026-10-01.json"
+    if not path.is_file():
+        return []
+    return json.loads(path.read_text())["reports"]
+
+
+COMMUNITY_RESULTS_ROOT = Path(__file__).with_name("results") / "community"
+
+
+def community_reports():
+    """Reviewed submission bundles remain community declarations in separate cohorts."""
+    reports = []
+    for path in sorted(COMMUNITY_RESULTS_ROOT.glob("*.json")):
+        if path.is_symlink() or path.stat().st_size > 4_000_000:
+            raise ValueError("Community grade bundles must be bounded regular JSON files")
+        bundle = json.loads(path.read_text())
+        for raw in bundle["reports"]:
+            report = public_grade(raw)
+            comparison = report["trial"]["comparison"]
+            if comparison["protocol"] == "controlled":
+                comparison["protocol"] = "community-controlled"
+            reports.append(report)
+    return reports
+
+
 def label(value):
     if value is None or value == "":
         return None
@@ -191,7 +342,7 @@ def normalize(report):
     if not isinstance(comparison, dict):
         raise ValueError("Expected comparison metadata object")
     protocol = comparison.get("protocol") or "exploratory"
-    if protocol not in {"exploratory", "controlled"}:
+    if protocol not in {"exploratory", "controlled", "community-controlled"}:
         raise ValueError("Unknown comparison protocol")
     cohort = {key: label(comparison.get(key)) for key in COHORT_FIELDS if key != "budget_seconds"}
     cohort["protocol"] = protocol
@@ -208,6 +359,8 @@ def normalize(report):
         for key in ("reasoning_effort", "service_tier", "tool_profile")
     }
     trial = {
+        "invalidated_reason": label(raw.get("invalidated_reason")),
+        "provider_interruption": label(raw.get("provider_interruption")),
         "model": label(raw.get("model")),
         "agent": label(raw.get("agent")),
         "agent_version": label(raw.get("agent_version")),
@@ -252,13 +405,15 @@ def normalize(report):
         raise ValueError("Expected a source report SHA256")
     # Old, unidentified reports are inspection only: regrading is not a fresh trial.
     issues = []
+    if trial["invalidated_reason"]:
+        issues.append("Invalidated: " + trial["invalidated_reason"])
     if not identity:
         issues.append("Missing stable trial ID")
     if not trial["model"] or not trial["agent"] or not trial["agent_version"]:
         issues.append("Incomplete model/agent/version identity")
     if not report.get("execution_backend"):
         issues.append("Unknown execution environment")
-    if protocol != "controlled":
+    if protocol not in {"controlled", "community-controlled"}:
         issues.append("Interactive/exploratory protocol")
     if not contract or any(cohort[key] is None for key in COHORT_FIELDS):
         issues.append("Incomplete comparison cohort")
@@ -282,7 +437,9 @@ def normalize(report):
         "execution_backend": label(report.get("execution_backend")),
         "task_contract_sha256": contract,
         "passed": report["passed"] and not missed,
-        "numeric_passed": report["passed"],
+        "numeric_passed": all(check["passed"] for check in checks),
+        "findings_present": report.get("findings_present") is True,
+        "intact_inputs": report.get("intact_inputs") is True,
         "deadline_missed": missed,
         "trial": trial,
         "trial_key": fingerprint([report["pack_version"], report["task"], identity])
@@ -318,7 +475,12 @@ def public_grade(report):
 
 def token_cost(trial):
     """A dated standard/short-context API equivalent, never a subscription invoice."""
-    rate = PRICES.get(trial["model"])
+    aliases = {
+        f"gemini-{version}-flash-{effort}": f"gemini-{version}-flash"
+        for version in ("3.6", "3.7", "3.8")
+        for effort in ("low", "medium", "high")
+    } | {"claude-opus-4-6-thinking": "claude-opus-4-6"}
+    rate = PRICES.get(aliases.get(trial["model"], trial["model"]))
     required = ("input_tokens", "output_tokens", "cached_input_tokens")
     if not rate or any(trial[k] is None for k in required) or trial["requests_without_usage"] != 0:
         return None
@@ -327,6 +489,8 @@ def token_cost(trial):
         if maximum is None or maximum > rate["max_input"]:
             return None
     writes = trial.get("cache_write_input_tokens")
+    if rate.get("writes_must_be_zero") and writes != 0:
+        return None
     if "write" in rate and writes is None:
         return None
     writes = writes or 0
@@ -377,6 +541,12 @@ def summarize(reports, *, minimum_trials=5):
                     "model": record["trial"]["model"],
                     "agent": record["trial"]["agent"],
                     "passed": record["passed"],
+                    "availability_only": bool(
+                        record["trial"]["invalidated_reason"]
+                        and record["trial"]["invalidated_reason"].endswith(
+                            "no successful inference"
+                        )
+                    ),
                     "issues": record["issues"],
                     "report_sha256": record["report_sha256"],
                 }
@@ -441,7 +611,10 @@ def summarize(reports, *, minimum_trials=5):
                             "source_report_sha256": item["report_sha256"],
                             "passed": item["passed"],
                             "numeric_passed": item["numeric_passed"],
+                            "findings_present": item["findings_present"],
+                            "intact_inputs": item["intact_inputs"],
                             "deadline_missed": item["deadline_missed"],
+                            "provider_interruption": item["trial"]["provider_interruption"],
                             "wall_seconds": item["trial"]["wall_seconds"],
                             "first_verified_completion_seconds": item["trial"][
                                 "first_verified_completion_seconds"
@@ -497,8 +670,9 @@ def summarize(reports, *, minimum_trials=5):
         "minimum_trials": minimum_trials,
         "pricing": {"checked_date": PRICING_DATE, "currency": "USD", "per_million_tokens": PRICES},
         "cost_note": (
-            "Standard short-context API token equivalent; DeepSeek peak and Gemini introductory "
-            "rates. Excludes hosted tools, cache storage, discounts, subscriptions and hardware. "
+            "Standard short-context published token-rate equivalent, including Grok Build Fast "
+            "rates; DeepSeek peak and Gemini introductory rates. Excludes hosted tools, cache "
+            "storage, discounts, subscriptions and hardware. "
             "Missing usage stays unknown. Reported costs are operator supplied."
         ),
         "comparison_note": (

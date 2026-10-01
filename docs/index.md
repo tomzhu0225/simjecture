@@ -130,4 +130,5 @@ testing/0.5.3rc2-acceptance
 testing/native-api-adapter
 testing/ssh-workers-acceptance
 testing/mimo-flash-comparison
+testing/owned-llm-benchmark-20261001
 ```

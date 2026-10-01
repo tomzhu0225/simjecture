@@ -92,24 +92,33 @@ Return E_rad_total_J, radiation_operator_loss_J, radiation_relative_difference
 Write result.json as {{"cases":{{"n64":{{...}},"n128":{{...}}}}}} and nonempty FINDINGS.md
 with definitions, units, input provenance and limitations. Findings existence is
 checked; prose scientific accuracy is not automatically certified.
-Keep PROGRESS.md before any handoff. Continue after a handoff only with the same task,
-remaining deadline and generic reminder to read PROGRESS.md; no operator solution hints.
+Keep PROGRESS.md before any handoff. Continue with the same task and original deadline.
+The runner may report failed public-case field names, without expected values or
+hidden-fixture contents. No operator solution hints are supplied.
 Do not inspect verifier/oracle code or use it as your submitted implementation.
 """
     if task == "rz-diagnostics":
         text += """
 RZ definitions: visit only node type 1 leaves. Field shape is [block,dummy,axial,r];
+Convert field values and bounding boxes to float64 BEFORE arithmetic, including
+rho*line and squared velocities, and perform all reductions in float64.
 dummy has size one. bounding box coordinates are in cm. Cell centres and volume
 are r=rlo+(i+0.5)*dr and 2*pi*r*dr*dz. Density is g/cm^3 and velocity cm/s.
 Integrate inward kinetic energy 0.5*rho*max(-velx,0)^2 over the full box.
 Total kinetic uses all three velocity components and both signs. Magnetic energy
 is 0.5*(magx^2+magy^2+magz^2) in this instrument's normalization; internal energy
 is rho*eint, already including radiation. Integrated erg become J by 1e-7.
-Tracer r50: sort cell-centre radii, linearly interpolate half of cumulative
-rho*line*volume mass on these centres; cm become mm by x10.
+Tracer r50: sum rho*line*volume mass over ALL leaf cells sharing each exactly
+equal cell-centre radius, then discard radius bins with zero mass. Sort the distinct
+radii ascending, cumulatively sum their bin masses, and linearly interpolate half
+the total mass against these distinct centres (clamp at endpoint centres).
+Aggregate equal radii BEFORE interpolation; do not interpolate individual axial
+cells or depend on their ordering. Radius in cm becomes mm by x10.
 HDF5 time is seconds. Reference time is the first maximum inward kinetic sample.
 Compression bounds are first/last sample times with r50 <= 1.3*min(r50).
 Interpolate cumulative radiation on its own clock to subtract window endpoints.
+E_rad_after_ref_J is cumulative radiation at the FINAL radiation time minus
+cumulative radiation linearly interpolated at the HDF5 reference time.
 Stored-energy change is FINAL minus INITIAL over the FULL HDF5 span (total kinetic
 + magnetic + internal), not over the compression window.
 
@@ -163,11 +172,11 @@ def prepare(task, output):
     }
 
 
-def _read_json(path):
+def _read_json(path, *, allow_array=False):
     if path.is_symlink() or path.stat().st_size > 4_000_000:
         raise ValueError("Submission must be a bounded regular JSON file")
     value = json.loads(path.read_text())
-    if not isinstance(value, dict):
+    if not isinstance(value, dict) and not (allow_array and isinstance(value, list)):
         raise ValueError("Expected a JSON object")
     return value
 
@@ -352,8 +361,29 @@ def render_verified_plots(task, submission, report, output):
 def configure_parser(parser):
     commands = parser.add_subparsers(dest="bench_command", required=True)
     commands.add_parser("list")
+    run = commands.add_parser(
+        "run", help="Run fresh timed coding-agent trials, including custom models"
+    )
+    run.add_argument(
+        "--config", type=Path, required=True, help="JSON array of agent/model configurations"
+    )
+    run.add_argument("--output", type=Path, required=True)
+    run.add_argument("--repeats", type=int, default=5)
+    run.add_argument("--workers", type=int, default=4)
+    run.add_argument("--tasks", choices=tuple(TASKS), nargs="+")
+    run.add_argument("--task-repeats", action="append", help="Override repetitions: TASK=COUNT")
+    run.add_argument("--numerical-python", type=Path)
+    run.add_argument(
+        "--workspace", type=Path, help="Workspace root to receive completed public grades"
+    )
     leaderboard = commands.add_parser("leaderboard")
-    leaderboard.add_argument("--reports", type=Path, nargs="+", required=True)
+    leaderboard.add_argument(
+        "--reports",
+        type=Path,
+        nargs="+",
+        required=True,
+        help="Individual grades, JSON arrays or downloaded reports bundles",
+    )
     leaderboard.add_argument("--output", type=Path)
     leaderboard.add_argument("--minimum-trials", type=int, default=5)
     for command in ("prepare", "grade", "export"):
@@ -379,12 +409,22 @@ def cli(args):
     try:
         if args.bench_command == "list":
             result = catalogue()
+        elif args.bench_command == "run":
+            from .runner import cli as run_cli
+
+            result = run_cli(args)
         elif args.bench_command == "leaderboard":
             from .leaderboard import summarize
 
-            result = summarize(
-                [_read_json(path) for path in args.reports], minimum_trials=args.minimum_trials
-            )
+            reports = []
+            for path in args.reports:
+                value = _read_json(path, allow_array=True)
+                if isinstance(value, dict) and "reports" in value:
+                    value = value["reports"]
+                if not isinstance(value, list):
+                    value = [value]
+                reports.extend(value)
+            result = summarize(reports, minimum_trials=args.minimum_trials)
             if args.output:
                 args.output.parent.mkdir(parents=True, exist_ok=True)
                 args.output.write_text(json.dumps(result, indent=2) + "\n")

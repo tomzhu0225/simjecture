@@ -920,8 +920,12 @@ $("machine-form").onsubmit=async e=>{
   finally{button.disabled=false;}
 };
 
+let benchmarkRevision = "";
 async function refreshBenchmarks() {
   const pack = await api("benchmarks");
+  const revision = JSON.stringify(pack);
+  if (revision === benchmarkRevision) return;
+  benchmarkRevision = revision;
   window.WorkspaceBenchmarks.render(pack, {api, refresh:refreshBenchmarks, toast, readonly:state.readonly});
   $("benchmark-version").textContent = `Task pack ${pack.version} · finite diagnostic coding contracts`;
   $("benchmark-tasks").replaceChildren();
@@ -1734,6 +1738,7 @@ setInterval(async () => {
     }
     if (state.view === "tools" && ++ticks % 3 === 0) await refreshTools();
     if (state.view === "machines") await refreshMachines();
+    if (state.view === "benchmarks") await refreshBenchmarks();
   } catch (error) {
     toast(
       `Connection interrupted: ${error.message}. Your work stays on disk.`,

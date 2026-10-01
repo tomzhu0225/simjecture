@@ -49,6 +49,31 @@ def csv_result(directory):
     }, {"radiation_time_s": time, "cumulative_radiation_J": cumulative}
 
 
+def tracer_radius(radii, masses):
+    """Half-mass radius in cm, independent of ordering at equal radii."""
+    import numpy as np
+
+    radii, masses = np.asarray(radii, dtype=float), np.asarray(masses, dtype=float)
+    if (
+        radii.ndim != 1
+        or radii.shape != masses.shape
+        or not len(radii)
+        or not np.all(np.isfinite(radii))
+        or not np.all(np.isfinite(masses))
+        or np.any(radii < 0)
+        or np.any(masses < 0)
+    ):
+        raise ValueError("Invalid tracer radii or masses")
+    centres, inverse = np.unique(radii, return_inverse=True)
+    grouped = np.bincount(inverse, weights=masses)
+    positive = grouped > 0
+    centres, grouped = centres[positive], grouped[positive]
+    if not len(centres):
+        raise ValueError("Missing positive leaf tracer mass")
+    cumulative = np.cumsum(grouped)
+    return float(np.interp(0.5 * cumulative[-1], cumulative, centres))
+
+
 def rz_result(directory):
     import h5py
     import numpy as np
@@ -61,37 +86,39 @@ def rz_result(directory):
             total = np.zeros(5)
             radii, masses = [], []
             for block in np.flatnonzero(file["node type"][:] == 1):
-                rho = file["dens"][block]
+                rho = np.asarray(file["dens"][block], dtype=np.float64)
                 if not np.all(np.isfinite(rho)) or np.any(rho <= 0):
                     raise ValueError("Invalid density")
                 dummy, nz, nr = rho.shape
                 if dummy != 1:
                     raise ValueError("Expected 2D RZ field layout")
-                bounds = file["bounding box"][block]
+                bounds = np.asarray(file["bounding box"][block], dtype=np.float64)
                 dr = (bounds[0, 1] - bounds[0, 0]) / nr
                 dz = (bounds[1, 1] - bounds[1, 0]) / nz
                 if dr <= 0 or dz <= 0 or bounds[0, 0] < 0:
                     raise ValueError("Invalid RZ geometry")
                 radius = np.broadcast_to(bounds[0, 0] + (np.arange(nr) + 0.5) * dr, rho.shape)
                 volume = 2 * np.pi * radius * dr * dz
-                vr, vy, vz = (file[key][block] for key in ("velx", "vely", "velz"))
-                magnetic = sum(file[key][block] ** 2 for key in ("magx", "magy", "magz"))
+                vr, vy, vz = (
+                    np.asarray(file[key][block], dtype=np.float64)
+                    for key in ("velx", "vely", "velz")
+                )
+                magnetic = sum(
+                    np.asarray(file[key][block], dtype=np.float64) ** 2
+                    for key in ("magx", "magy", "magz")
+                )
                 values = [
                     rho,
                     0.5 * rho * np.maximum(-vr, 0) ** 2,
                     0.5 * rho * (vr**2 + vy**2 + vz**2),
                     0.5 * magnetic,
-                    rho * file["eint"][block],
+                    rho * np.asarray(file["eint"][block], dtype=np.float64),
                 ]
                 total += [np.sum(value * volume) for value in values]
                 radii.extend(radius.ravel())
-                masses.extend((rho * file["line"][block] * volume).ravel())
-            if not radii or min(masses) < 0 or sum(masses) <= 0:
-                raise ValueError("Missing positive leaf tracer mass")
-            order = np.argsort(radii)
-            radii = np.array(radii)[order]
-            cumulative = np.cumsum(np.array(masses)[order])
-            r50 = float(np.interp(0.5 * cumulative[-1], cumulative, radii)) * 10
+                tracer = np.asarray(file["line"][block], dtype=np.float64)
+                masses.extend((rho * tracer * volume).ravel())
+            r50 = tracer_radius(radii, masses) * 10
             records.append([scalar["time"], total[0], *(total[1:] * 1e-7), r50])
     a = np.array(records)
     if len(records) < 2 or not np.all(np.isfinite(a)) or np.any(np.diff(a[:, 0]) <= 0):

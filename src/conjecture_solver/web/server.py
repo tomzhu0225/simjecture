@@ -229,9 +229,12 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
             length = int(raw_length or "0")
         except ValueError as error:
             raise WebApplicationError("invalid content length", status=400) from error
+        endpoint = urlsplit(self.path).path
         maximum = (
             96 * 1024**2
-            if urlsplit(self.path).path == "/api/workspace/upload"
+            if endpoint == "/api/workspace/upload"
+            else 4 * 1024**2
+            if endpoint == "/api/workspace/import-benchmark-reports"
             else MAX_REQUEST_BYTES
         )
         if length <= 0 or length > maximum:
@@ -448,6 +451,8 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
                 result = workspace.grade_benchmark(payload)
             elif endpoint == "import-benchmark-reports":
                 result = workspace.import_benchmark_reports(payload)
+            elif endpoint == "start-benchmark-campaign":
+                result = workspace.start_benchmark_campaign(payload)
             elif endpoint == "save-machine":
                 result = workspace.save_machine(payload)
                 self.server._machine_poll_at = 0
