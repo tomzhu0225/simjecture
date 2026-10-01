@@ -43,3 +43,8 @@ Pending completion. All test results, skips, performance measurements and review
 - Synthetic 1,000-history-job status benchmark: **19.884 → 0.072 ms** median (276.5×); 20 MB provider-log benchmark: peak Python allocation **40.08 → 0.324 MB** (123.7× reduction), identical totals. This is measured orchestration overhead, not measured model-token savings or solver throughput.
 - Validation: 50 focused tests passed, 14 real-runtime tests skipped; Ruff, CLI smoke and parent combined web suite passed. Runtime skips are explicitly not successful simulations.
 - Fresh probes confirm Bubblewrap network-namespace and PRoot ptrace operations are prohibited. Long isolated WarpX runs remain skipped; no host security controls were weakened.
+
+### Public MCP input validation
+- Enforce nested required artifact fields (`path` and `sha256`) and reject nonfinite numeric inputs before kernel dispatch. Valid tool schemas and inputs remain compatible; callers relying on malformed inputs will now receive validation errors.
+- Added regressions for missing nested fields, NaN/infinity and valid fractional/integer timeouts.
+- Parent verification: 67 API/client/one-shot/web tests passed, one optional MCP SDK test skipped; generated schemas unchanged and checked; Ruff passed.
