@@ -68,3 +68,57 @@ def test_idempotency_key_reuse_with_changed_payload_is_rejected() -> None:
         with pytest.raises(IdempotencyConflict):
             ledger.append(payload={"parameter": 2}, **base)
 
+
+
+def test_concurrent_writers_preserve_chain_and_idempotency(tmp_path) -> None:
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Barrier
+
+    path = tmp_path / "events.sqlite"
+    with SQLiteEventLedger(path):
+        pass
+    workers = 6
+    barrier = Barrier(workers)
+
+    def append_events(worker: int) -> int:
+        inserted = 0
+        with SQLiteEventLedger(path) as ledger:
+            for iteration in range(10):
+                barrier.wait(timeout=10)
+                result = ledger.append(
+                    campaign_id="campaign_1",
+                    event_type="value_recorded",
+                    aggregate_type="test",
+                    aggregate_id="test_1",
+                    payload={"iteration": iteration},
+                    idempotency_key=f"shared_{iteration}" if iteration % 2 else None,
+                )
+                inserted += result.inserted
+        return inserted
+
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        inserted = sum(pool.map(append_events, range(workers)))
+    with SQLiteEventLedger(path) as ledger:
+        assert inserted == 5 * workers + 5
+        assert len(ledger.load("campaign_1")) == inserted
+        assert ledger.verify_chain("campaign_1")
+
+
+def test_failed_append_releases_writer_and_preserves_chain(tmp_path) -> None:
+    import sqlite3
+
+    path = tmp_path / "events.sqlite"
+    kwargs = dict(
+        campaign_id="campaign_1",
+        event_type="value_recorded",
+        aggregate_type="test",
+        aggregate_id="test_1",
+        payload={},
+    )
+    with SQLiteEventLedger(path) as first, SQLiteEventLedger(path) as second:
+        first.append(event_id="duplicate", **kwargs)
+        with pytest.raises(sqlite3.IntegrityError):
+            first.append(event_id="duplicate", **kwargs)
+        second.append(**kwargs)
+        assert first.verify_chain("campaign_1")
+        assert len(first.load("campaign_1")) == 2

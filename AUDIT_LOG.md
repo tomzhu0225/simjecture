@@ -20,3 +20,10 @@
 
 ## Final summary
 Pending completion. All test results, skips, performance measurements and review decisions will be recorded below.
+
+### 2026-10-01 — Atomic event-ledger append
+- Reproduced hash-chain corruption with six concurrent SQLite connections: all writes succeeded but chain verification failed.
+- Reserved the SQLite writer with `BEGIN IMMEDIATE` before reading replay identity/chain head; commit/rollback now encloses the full append. Public method signatures are unchanged.
+- Added concurrent writer/shared-idempotency and failed-insert rollback regression tests.
+- Validation: 99 affected tests passed (ledger, models, parameters, research client, campaign, control, search, proposals, orchestration, web); focused Ruff and CLI help passed. Web tests supply the basic app smoke.
+- No full numerical or autonomous-model claim is made by these tests.

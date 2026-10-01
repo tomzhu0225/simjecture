@@ -136,75 +136,79 @@ class SQLiteEventLedger:
         created_at: datetime | None = None,
     ) -> AppendResult:
         payload_json = json.dumps(payload, sort_keys=True, separators=(",", ":"))
-        if idempotency_key is not None:
-            existing = self._connection.execute(
-                """
-                SELECT * FROM campaign_events
-                WHERE campaign_id = ? AND idempotency_key = ?
-                """,
-                (campaign_id, idempotency_key),
-            ).fetchone()
-            if existing is not None:
-                stored = self._from_row(existing)
-                if (
-                    stored.event_type != event_type
-                    or stored.aggregate_type != aggregate_type
-                    or stored.aggregate_id != aggregate_id
-                    or stored.payload != payload
-                ):
-                    raise IdempotencyConflict(
-                        "an idempotency key cannot be reused for a different logical event"
-                    )
-                return AppendResult(event=stored, inserted=False)
+        # Reserve the writer before reading replay identity or the chain head.
+        # A deferred transaction allows another connection to append between
+        # those reads and the insert, forking the campaign's hash chain.
+        with self._connection:
+            self._connection.execute("BEGIN IMMEDIATE")
+            if idempotency_key is not None:
+                existing = self._connection.execute(
+                    """
+                    SELECT * FROM campaign_events
+                    WHERE campaign_id = ? AND idempotency_key = ?
+                    """,
+                    (campaign_id, idempotency_key),
+                ).fetchone()
+                if existing is not None:
+                    stored = self._from_row(existing)
+                    if (
+                        stored.event_type != event_type
+                        or stored.aggregate_type != aggregate_type
+                        or stored.aggregate_id != aggregate_id
+                        or stored.payload != payload
+                    ):
+                        raise IdempotencyConflict(
+                            "an idempotency key cannot be reused for a different logical event"
+                        )
+                    return AppendResult(event=stored, inserted=False)
 
-        prior = self._connection.execute(
-            """
-            SELECT event_hash FROM campaign_events
-            WHERE campaign_id = ? ORDER BY sequence DESC LIMIT 1
-            """,
-            (campaign_id,),
-        ).fetchone()
-        previous_hash = prior["event_hash"] if prior else "GENESIS"
-        actual_event_id = event_id or f"event_{uuid4().hex}"
-        actual_created_at = (created_at or datetime.now(UTC)).isoformat()
-        event_hash = self._hash_event(
-            campaign_id=campaign_id,
-            event_id=actual_event_id,
-            event_type=event_type,
-            aggregate_type=aggregate_type,
-            aggregate_id=aggregate_id,
-            idempotency_key=idempotency_key,
-            payload_json=payload_json,
-            created_at=actual_created_at,
-            previous_hash=previous_hash,
-        )
-        cursor = self._connection.execute(
-            """
-            INSERT INTO campaign_events (
-                campaign_id, event_id, event_type, aggregate_type, aggregate_id,
-                idempotency_key, payload_json, created_at, previous_hash, event_hash
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """,
-            (
-                campaign_id,
-                actual_event_id,
-                event_type,
-                aggregate_type,
-                aggregate_id,
-                idempotency_key,
-                payload_json,
-                actual_created_at,
-                previous_hash,
-                event_hash,
-            ),
-        )
-        self._connection.commit()
-        row = self._connection.execute(
-            "SELECT * FROM campaign_events WHERE sequence = ?",
-            (cursor.lastrowid,),
-        ).fetchone()
-        assert row is not None
-        return AppendResult(event=self._from_row(row), inserted=True)
+            prior = self._connection.execute(
+                """
+                SELECT event_hash FROM campaign_events
+                WHERE campaign_id = ? ORDER BY sequence DESC LIMIT 1
+                """,
+                (campaign_id,),
+            ).fetchone()
+            previous_hash = prior["event_hash"] if prior else "GENESIS"
+            actual_event_id = event_id or f"event_{uuid4().hex}"
+            actual_created_at = (created_at or datetime.now(UTC)).isoformat()
+            event_hash = self._hash_event(
+                campaign_id=campaign_id,
+                event_id=actual_event_id,
+                event_type=event_type,
+                aggregate_type=aggregate_type,
+                aggregate_id=aggregate_id,
+                idempotency_key=idempotency_key,
+                payload_json=payload_json,
+                created_at=actual_created_at,
+                previous_hash=previous_hash,
+            )
+            cursor = self._connection.execute(
+                """
+                INSERT INTO campaign_events (
+                    campaign_id, event_id, event_type, aggregate_type, aggregate_id,
+                    idempotency_key, payload_json, created_at, previous_hash, event_hash
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    campaign_id,
+                    actual_event_id,
+                    event_type,
+                    aggregate_type,
+                    aggregate_id,
+                    idempotency_key,
+                    payload_json,
+                    actual_created_at,
+                    previous_hash,
+                    event_hash,
+                ),
+            )
+            row = self._connection.execute(
+                "SELECT * FROM campaign_events WHERE sequence = ?",
+                (cursor.lastrowid,),
+            ).fetchone()
+            assert row is not None
+            return AppendResult(event=self._from_row(row), inserted=True)
 
     def load(self, campaign_id: str, *, after_sequence: int = 0) -> tuple[StoredEvent, ...]:
         rows = self._connection.execute(
