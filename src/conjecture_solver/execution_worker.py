@@ -286,10 +286,11 @@ class Worker:
             put(directory / "state.json", record)
         return record
 
-    def _reconcile_locked(self):
+    def _reconcile_locked(self, records=None):
         from .mvp_launch import ProcessIdentity, process_identity_matches
 
-        for record in self.jobs():
+        records = self.jobs() if records is None else records
+        for record in records:
             if record["status"] not in ACTIVE:
                 continue
             if record["status"] == "cancelling":
@@ -318,16 +319,18 @@ class Worker:
             else:
                 continue
             put(self.directory(record["id"]) / "state.json", record)
+        return records
 
     def status(self, identifier=None):
         with lock(self.root):
-            self._reconcile_locked()
             if identifier:
                 record = load(self.directory(identifier) / "state.json")
                 if not record:
                     return {"id": identifier, "status": "not_found"}
+                # Individual polls and artifact chunks must not scan job history.
+                self._reconcile_locked([record])
                 return record
-            jobs = self.jobs()
+            jobs = self._reconcile_locked()
         visible = [r for r in jobs if r["status"] in ACTIVE] + [
             r for r in jobs if r["status"] not in ACTIVE
         ][-100:]
@@ -378,7 +381,7 @@ class Worker:
     def _reserve(self, identifier):
         with lock(self.root):
             config = self.config
-            self._reconcile_locked()
+            jobs = self._reconcile_locked()
             path = self.directory(identifier)
             current = load(path / "state.json")
             if current["status"] != "queued":
@@ -387,7 +390,7 @@ class Worker:
                 current.update(status="timed_out", finished_at=time.time())
                 put(path / "state.json", current)
                 return current, False
-            running = [r for r in self.jobs() if r["status"] in {"running", "cancelling"}]
+            running = [r for r in jobs if r["status"] in {"running", "cancelling"}]
             used_gpus = {gpu for r in running for gpu in r.get("assigned_gpu_ids", [])}
             free_gpus = [gpu for gpu in config.gpu_ids if gpu not in used_gpus]
             resources = current["resources"]

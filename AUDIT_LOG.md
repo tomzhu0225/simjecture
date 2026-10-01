@@ -36,3 +36,10 @@ Pending completion. All test results, skips, performance measurements and review
 - Added a backwards-compatible `(campaign_id, sequence)` SQLite index; reopening an existing ledger installs it without altering events.
 - Synthetic in-memory benchmark: 40,000 events across 8 campaigns, median of 5 batches of 500 queries. Campaign-head lookup: **1618.25 → 1.35 µs**; incremental-tail retrieval: **294.29 → 49.84 µs**. Query results were checked equal. These are query timings, not end-to-end simulation speedups; indexing incurs storage/write overhead.
 - Validation: 71 affected tests passed; schema export check and Ruff passed. Parent's combined ledger/web/worker/accounting suite: 29 passed; CLI smoke passed.
+
+### Harness polling and usage-log memory
+- Single-job status/artifact polling now reconciles only the selected receipt; aggregate status and resource reservations still reconcile the full job set, but avoid a second history read.
+- Provider accounting streams JSONL and retains accounting fields rather than complete per-request context metadata. Totals/replay precedence remain unchanged.
+- Synthetic 1,000-history-job status benchmark: **19.884 → 0.072 ms** median (276.5×); 20 MB provider-log benchmark: peak Python allocation **40.08 → 0.324 MB** (123.7× reduction), identical totals. This is measured orchestration overhead, not measured model-token savings or solver throughput.
+- Validation: 50 focused tests passed, 14 real-runtime tests skipped; Ruff, CLI smoke and parent combined web suite passed. Runtime skips are explicitly not successful simulations.
+- Fresh probes confirm Bubblewrap network-namespace and PRoot ptrace operations are prohibited. Long isolated WarpX runs remain skipped; no host security controls were weakened.

@@ -66,19 +66,24 @@ def request_accounting(path):
     requests, legacy = {}, []
     if not path.exists():
         return None
-    for line in path.read_text(errors="replace").splitlines():
-        try:
-            event = json.loads(line)
-        except ValueError:
-            continue
-        if not isinstance(event, dict):
-            continue
-        if event.get("type") == "provider_request" and event.get("request_id"):
-            key = event["request_id"]
-            if event.get("status") != "started" or key not in requests:
-                requests[key] = event
-        elif event.get("type") == "usage":
-            legacy.append(event)
+    with path.open(errors="replace") as stream:
+        for line in stream:
+            try:
+                event = json.loads(line)
+            except ValueError:
+                continue
+            if not isinstance(event, dict):
+                continue
+            if event.get("type") == "provider_request" and event.get("request_id"):
+                key = event["request_id"]
+                if event.get("status") != "started" or key not in requests:
+                    # Context metadata can dwarf the counters on long research runs.
+                    requests[key] = {
+                        "status": event.get("status", "unknown"),
+                        "usage": event.get("usage"),
+                    }
+            elif event.get("type") == "usage":
+                legacy.append(event)
     if not requests:
         if not legacy:
             return None
