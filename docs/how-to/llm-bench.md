@@ -84,11 +84,22 @@ median verified completion, so a timed-out attempt is not ranked as fast.
 Cost rank uses mean API-equivalent cost across all graded attempts, including
 failures. This remains defined when a model never completed the task.
 
-The cost/time plot is visible by default. Dashed lines connect reasoning efforts
-for the same model and coding agent. Search, effort filters and clickable series
-names focus the comparison. Cost uses a logarithmic axis; task time includes
-incomplete attempts. Filled points have at least one completion. Hollow points
-have none. Hover or focus a point for its model, effort and measurements.
+Three plots are visible for each task: finish-time ranked bars, cost ranked bars,
+and a cost–time Pareto plot. Bars sort completed configurations from lower to
+higher values. An unfinished configuration has value **0** in both bar charts,
+is labelled unfinished, and appears last. This zero is a completion-status
+sentinel; actual spending remains in the table and receipts. Unavailable
+configurations are labelled separately. Missing tariffs and partial cost receipts
+do not receive a cost rank.
+
+In the Pareto plot, cost increases from left to right and verified finish time
+increases from top to bottom: **the upper-left corner is better**. It includes
+completed configurations with comparable cost estimates. Outlined points and a
+solid guide line mark the observed two-objective frontier. This describes the
+sample, including one-trial RZ observations; it does not establish statistical
+superiority. Dashed lines connect reasoning efforts for the same model and coding
+agent. Search, effort filters and clickable series names focus all three plots.
+Cost uses a logarithmic axis. Hover or focus a point for its measurements.
 
 The separate valuation ledger recovers counters from saved traces while preserving
 original host grades. AGY estimates explicitly treat its input and cache-read
@@ -156,7 +167,7 @@ cannot be attributed solely to model weights.
   and elapsed time per verified success, with colour showing pass rate.
   Its Pareto calculation considers all three quantities. Hover/focus a point for
   its measurements; activate it to select the corresponding row.
-- Fewer than five repetitions remain provisional and receive no Pareto status.
+- In the archive summary, fewer than five repetitions remain provisional and receive no Pareto status.
   The frontier is descriptive; five trials do not establish statistical
   superiority. Missing timings, versions or protocol fields remain visibly
   unranked. Missing usage never becomes zero cost. No model receives an entry

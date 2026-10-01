@@ -368,8 +368,21 @@
                 <option value="cached">API equivalent · cache adjusted</option><option value="uncached">API equivalent · no cache discounts</option>
               </select></label>
             </div>
+            <div id="benchmark-ranked-charts" class="benchmark-rank-grid" hidden>
+              <section class="benchmark-rank-card" aria-labelledby="benchmark-time-title">
+                <h3 id="benchmark-time-title">Finish time ranking</h3>
+                <p class="field-help">Median verified finish time · shorter bars are better</p>
+                <div id="benchmark-time-bars" class="benchmark-bar-scroll"></div>
+              </section>
+              <section class="benchmark-rank-card" aria-labelledby="benchmark-cost-title">
+                <h3 id="benchmark-cost-title">Cost ranking</h3>
+                <p class="field-help">API-equivalent cost per attempt · shorter bars are better</p>
+                <div id="benchmark-cost-bars" class="benchmark-bar-scroll"></div>
+              </section>
+            </div>
+            <p id="benchmark-bar-note" class="field-help" hidden>Unfinished = 0 in both bar charts and appears after completed configurations. Zero marks no completed task, not zero spending or instant completion.</p>
             <div class="benchmark-tradeoff-heading">
-              <div><h3>Cost and time</h3><p id="benchmark-chart-note" class="field-help">Dashed lines connect the same model's reasoning efforts.</p></div>
+              <div><h3 id="benchmark-plot-title">Cost–time Pareto plot</h3><p id="benchmark-chart-note" class="field-help">Upper left is better. Dashed lines connect the same model's reasoning efforts.</p></div>
               <label class="benchmark-filter">Plot <select id="benchmark-chart" aria-label="Tradeoff view">
                 <option value="cost-time">Cost × time</option><option value="quality-time">Completion × time</option>
               </select></label>

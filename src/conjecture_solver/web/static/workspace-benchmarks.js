@@ -43,30 +43,65 @@ window.WorkspaceBenchmarks = (() => {
   };
   const rankKey = () => rankMode==="time" ? "median_verified_seconds" : rankMode==="cost" ? (costBasis==="cached" ? "ranked_cost_per_attempt" : "ranked_uncached_cost_per_attempt") : "pass_rate";
 
+  function rankBars(rows, kind) {
+    const target=$(kind==="time" ? "benchmark-time-bars" : "benchmark-cost-bars");target.replaceChildren();
+    const metric=r=>!r.passes ? 0 : kind==="time" ? r.median_verified_seconds : officialCost(r);
+    const ranked=r=>r.passes>0 && metric(r)!==null && (kind==="time" || r.cost_coverage!=="partial");
+    const category=r=>ranked(r) ? 0 : r.passes ? 1 : 2;
+    const ordered=[...rows].sort((a,b)=>category(a)-category(b)||(category(a)===0 ? metric(a)-metric(b) : 0)||a.model.localeCompare(b.model)||effortOrder.indexOf(a.effort)-effortOrder.indexOf(b.effort));
+    const maximum=Math.max(...ordered.map(metric).filter(n=>n!==null),1e-9);
+    const axis=node("div",undefined,"benchmark-bar-axis");axis.append(node("span","0"),node("span",kind==="time" ? seconds(maximum) : money(maximum)));target.append(axis);
+    const list=node("ol",undefined,"benchmark-bar-list");list.setAttribute("aria-label",kind==="time" ? "Finish time ranked from fastest; unfinished has value zero" : "Task cost ranked from cheapest; unfinished has value zero");
+    let previous=null,place=0,position=0;
+    for(const row of ordered){
+      const value=metric(row),eligible=ranked(row);
+      if(eligible){position++;if(value!==previous)place=position;previous=value;}
+      const item=node("li",undefined,"benchmark-bar-row"+(!row.passes ? " unfinished" : ""));item.dataset.config=row.id;item.dataset.value=value===null ? "" : String(value);item.dataset.finished=String(row.passes>0);item.dataset.rank=eligible ? String(place) : "";
+      item.append(node("span",eligible ? String(place) : "—","benchmark-bar-rank"));
+      const label=node("div",undefined,"benchmark-bar-label");label.append(node("strong",modelName(row.family_label)),node("small",(row.effort||"default")+" · "+agentName(row.agent)));item.append(label);
+      const track=node("div",undefined,"benchmark-bar-track"),bar=node("span",undefined,"benchmark-bar-fill");bar.style.width=value===null ? "0%" : (value/maximum*100)+"%";bar.style.backgroundColor=familyColour(row.family);if(!row.passes)bar.style.height="0";
+      if(row.cost_coverage==="partial"&&kind==="cost")bar.classList.add("partial");
+      track.append(bar);item.append(track);
+      const text=!row.passes ? "0 · "+(row.trials ? "Unfinished" : "Unavailable") : value===null ? "No fixed tariff" : kind==="time" ? seconds(value) : costLabel(row);
+      item.append(node("span",text,"benchmark-bar-value"));
+      item.tabIndex=0;item.setAttribute("role","button");item.setAttribute("aria-label",modelName(row.family_label)+" "+(row.effort||"default")+", "+text);
+      item.title=row.passes+"/"+row.trials+" verified completions"+(row.cost_coverage==="partial"&&kind==="cost" ? " · recorded cost lower bound, unranked" : "");
+      const choose=()=>{const entry=document.querySelector('#benchmark-leaderboard tr[data-config="'+row.id+'"]');if(entry){entry.classList.add("benchmark-highlight");entry.scrollIntoView({block:"nearest",behavior:"smooth"});}};
+      item.onclick=choose;item.onkeydown=e=>{if(["Enter"," "].includes(e.key)){e.preventDefault();choose();}};list.append(item);
+    }
+    target.append(list);
+  }
+
   function officialPlot(rows, task) {
     const target=$("benchmark-tradeoff"),legend=$("benchmark-series-legend");target.replaceChildren();legend.replaceChildren();
-    const quality=chartMode==="quality-time", points=rows.filter(r=>r.mean_trial_seconds!==null && (quality || officialCost(r)!==null));
+    const quality=chartMode==="quality-time", points=rows.filter(r=>r.passes>0 && r.median_verified_seconds!==null && (quality || officialCost(r)!==null && r.cost_coverage!=="partial"));
     if(!points.length){target.append(empty("No measurements match this filter","Clear the model or effort filter to see the published results."));return;}
     const ns="http://www.w3.org/2000/svg";
     const s=(tag,attrs,text)=>{const n=document.createElementNS(ns,tag);for(const [k,v] of Object.entries(attrs||{}))n.setAttribute(k,String(v));if(text!==undefined)n.textContent=text;return n;};
-    const svg=s("svg",{viewBox:"0 0 1000 440",role:"img","aria-label":"Official task cost and time. Dashed lines connect reasoning efforts for the same model."});
+    const svg=s("svg",{viewBox:"0 0 1000 440",role:"img","aria-label":quality ? "Completion and time" : "Cost-time Pareto plot. Lower cost is left; faster completion is top. Upper left is better."});
     const x0=90,x1=958,y0=365,y1=45,xmax=task.budget_seconds;
     const costs=points.map(officialCost).filter(n=>n>0);
     const logmin=quality ? 0 : Math.log10(Math.min(...costs)*.75);
     const logmax=quality ? 1 : Math.log10(Math.max(...costs)*1.4);
-    const x=r=>x0+(x1-x0)*r.mean_trial_seconds/xmax;
-    const y=r=>quality ? y0-(y0-y1)*r.pass_rate : y0-(y0-y1)*(Math.log10(officialCost(r))-logmin)/(logmax-logmin);
+    const x=r=>quality ? x0+(x1-x0)*r.median_verified_seconds/xmax : x0+(x1-x0)*(Math.log10(officialCost(r))-logmin)/(logmax-logmin);
+    const y=r=>quality ? y0-(y0-y1)*r.pass_rate : y1+(y0-y1)*r.median_verified_seconds/xmax;
     for(let i=0;i<=5;i++){
       const px=x0+(x1-x0)*i/5;
-      svg.append(s("line",{x1:px,x2:px,y1:y1,y2:y0,class:"benchmark-gridline"}));
-      svg.append(s("text",{x:px,y:y0+28,"text-anchor":"middle"},(xmax*i/5/60).toLocaleString(undefined,{maximumFractionDigits:1})));
+      if(quality){svg.append(s("line",{x1:px,x2:px,y1:y1,y2:y0,class:"benchmark-gridline"}));svg.append(s("text",{x:px,y:y0+28,"text-anchor":"middle"},(xmax*i/5/60).toLocaleString(undefined,{maximumFractionDigits:1})));}
+      else{const py=y1+(y0-y1)*i/5;svg.append(s("line",{x1:x0,x2:x1,y1:py,y2:py,class:"benchmark-gridline"}));svg.append(s("text",{x:x0-15,y:py+4,"text-anchor":"end"},(xmax*i/5/60).toLocaleString(undefined,{maximumFractionDigits:1})));}
     }
     const ticks=[];
     if(quality){for(let i=0;i<=4;i++)ticks.push(i/4);}
     else{for(let power=Math.floor(logmin);power<=Math.ceil(logmax);power++)for(const multiple of [1,2,5]){const v=multiple*10**power;if(Math.log10(v)>=logmin && Math.log10(v)<=logmax)ticks.push(v);}}
-    for(const v of ticks){const py=quality ? y0-(y0-y1)*v : y0-(y0-y1)*(Math.log10(v)-logmin)/(logmax-logmin);svg.append(s("line",{x1:x0,x2:x1,y1:py,y2:py,class:"benchmark-gridline"}));svg.append(s("text",{x:x0-15,y:py+4,"text-anchor":"end"},quality ? percent(v) : money(v)));}
-    svg.append(s("text",{x:x0,y:22,class:"benchmark-axis-title"},quality ? "Verified completion rate" : "API-equivalent cost per attempt · USD · log scale"));
-    svg.append(s("text",{x:(x0+x1)/2,y:427,"text-anchor":"middle",class:"benchmark-axis-title"},"Elapsed task time · minutes · includes incomplete attempts"));
+    for(const v of ticks){
+      if(quality){const py=y0-(y0-y1)*v;svg.append(s("line",{x1:x0,x2:x1,y1:py,y2:py,class:"benchmark-gridline"}));svg.append(s("text",{x:x0-15,y:py+4,"text-anchor":"end"},percent(v)));}
+      else{const px=x0+(x1-x0)*(Math.log10(v)-logmin)/(logmax-logmin);svg.append(s("line",{x1:px,x2:px,y1:y1,y2:y0,class:"benchmark-gridline"}));svg.append(s("text",{x:px,y:y0+28,"text-anchor":"middle"},money(v)));}
+    }
+    svg.append(s("text",{x:x0,y:22,class:"benchmark-axis-title"},quality ? "Verified completion rate" : "Verified finish time · minutes · faster at top"));
+    svg.append(s("text",{x:(x0+x1)/2,y:427,"text-anchor":"middle",class:"benchmark-axis-title"},quality ? "Verified finish time · minutes" : "API-equivalent cost per attempt · USD · log scale · cheaper to the left"));
+    const frontier=quality ? [] : points.filter(r=>!points.some(o=>o!==r && officialCost(o)<=officialCost(r) && o.median_verified_seconds<=r.median_verified_seconds && (officialCost(o)<officialCost(r)||o.median_verified_seconds<r.median_verified_seconds)));
+    if(frontier.length>1){const edge=s("polyline",{points:[...frontier].sort((a,b)=>officialCost(a)-officialCost(b)).map(r=>x(r)+","+y(r)).join(" "),fill:"none",stroke:"var(--accent)","stroke-width":2.5,opacity:.6,class:"benchmark-pareto-front"});edge.append(s("title",{},"Observed cost–finish-time Pareto frontier"));svg.append(edge);}
+    svg.append(s("text",{x:x0+8,y:y1+20,class:"benchmark-better-corner"},quality ? "" : "↖ BETTER · LESS COST + LESS TIME"));
     const families=new Map();for(const r of points){if(!families.has(r.family))families.set(r.family,[]);families.get(r.family).push(r);}
     for(const [family,variants] of families){
       variants.sort((a,b)=>effortOrder.indexOf(a.effort)-effortOrder.indexOf(b.effort));
@@ -84,10 +119,10 @@ window.WorkspaceBenchmarks = (() => {
     const placedLabels=[];
     for(const row of points){
       const colour=familyColour(row.family),partial=row.cost_coverage==="partial";
-      const dot=s("circle",{cx:x(row),cy:y(row),r:partial ? 6 : 7,fill:row.passes ? colour : "var(--white)",stroke:colour,"stroke-width":2.5,tabindex:0,role:"button",class:"benchmark-official-dot","data-model":row.model,"data-effort":row.effort||"default","aria-label":row.model+" "+(row.effort||"default")+", "+costLabel(row)+", "+seconds(row.mean_trial_seconds)});
+      const dot=s("circle",{cx:x(row),cy:y(row),r:frontier.includes(row) ? 9 : 7,fill:colour,stroke:frontier.includes(row) ? "var(--ink)" : colour,"stroke-width":frontier.includes(row) ? 3 : 2.5,tabindex:0,role:"button",class:"benchmark-official-dot"+(frontier.includes(row) ? " pareto" : ""),"data-model":row.model,"data-effort":row.effort||"default","data-cost":officialCost(row),"data-time":row.median_verified_seconds,"aria-label":row.model+" "+(row.effort||"default")+", "+costLabel(row)+", "+seconds(row.median_verified_seconds)});
       const label=row.model+" · "+(row.effort||"default")+" effort";
-      dot.append(s("title",{},label+" · "+row.passes+"/"+row.trials+" completed · "+costLabel(row)+" per attempt · "+seconds(row.mean_trial_seconds)));
-      const show=()=>{tooltip.replaceChildren(node("strong",label),node("span",costLabel(row)+" per attempt · "+seconds(row.mean_trial_seconds)),node("small",row.passes+"/"+row.trials+" completed"+(partial ? " · incomplete usage receipt" : row.cost_coverage==="estimated" ? " · AGY counter estimate" : "")));tooltip.hidden=false;};
+      dot.append(s("title",{},label+" · "+row.passes+"/"+row.trials+" completed · "+costLabel(row)+" per attempt · "+seconds(row.median_verified_seconds)+(frontier.includes(row) ? " · observed Pareto frontier" : "")));
+      const show=()=>{tooltip.replaceChildren(node("strong",label),node("span",costLabel(row)+" per attempt · "+seconds(row.median_verified_seconds)),node("small",row.passes+"/"+row.trials+" completed"+(row.cost_coverage==="estimated" ? " · AGY counter estimate" : "")+(frontier.includes(row) ? " · Pareto frontier" : "")));tooltip.hidden=false;};
       dot.onmouseenter=show;dot.onfocus=show;dot.onmouseleave=()=>tooltip.hidden=true;dot.onblur=()=>tooltip.hidden=true;
       const choose=()=>{document.querySelectorAll("#benchmark-leaderboard .benchmark-highlight").forEach(n=>n.classList.remove("benchmark-highlight"));const entry=document.querySelector('#benchmark-leaderboard tr[data-config="'+row.id+'"]');if(entry){entry.classList.add("benchmark-highlight");entry.scrollIntoView({block:"nearest",behavior:"smooth"});}};
       dot.onclick=choose;dot.onkeydown=e=>{if(["Enter"," "].includes(e.key)){e.preventDefault();choose();}};svg.append(dot);
@@ -105,7 +140,8 @@ window.WorkspaceBenchmarks = (() => {
       }
     }
     target.append(svg,tooltip);
-    $("benchmark-chart-note").textContent="Dashed lines join low → medium → high → xhigh → max → ultra for the same model and agent. Filled = at least one completion; hollow = no completion. ≥ = recorded cost lower bound; lower bounds are not connected.";
+    $("benchmark-plot-title").textContent=quality ? "Completion versus finish time" : "Cost–time Pareto plot";
+    $("benchmark-chart-note").textContent=quality ? "Upper left is better: faster to the left, higher completion at the top. Dashed lines connect reasoning efforts." : "Upper left is better: cheaper to the left, faster at the top. Outlined points and the solid line mark the observed Pareto frontier. Dashed lines connect reasoning efforts for the same model. Unfinished and partial cost receipts are excluded.";
   }
 
   function officialBoard(publication, actions) {
@@ -136,7 +172,7 @@ window.WorkspaceBenchmarks = (() => {
       for(const [index,mode] of [[3,"score"],[5,"time"],[6,"cost"]]){
         const th=t.tHead.rows[0].cells[index],label=th.textContent,b=node("button",label+(rankMode===mode ? " ↓" : ""),"benchmark-sort-heading");b.type="button";b.onclick=()=>{$("benchmark-sort").value=mode;rankMode=mode;redraw();};th.replaceChildren(b);th.setAttribute("aria-sort",rankMode===mode ? mode==="score" ? "descending" : "ascending" : "none");
       }
-      officialPlot(rows,task);
+      rankBars(rows,"time");rankBars(rows,"cost");officialPlot(rows,task);
       $("benchmark-ranking-note").textContent="Time rank = median independently verified completion. Cost rank = mean API-equivalent cost per attempt, including failures. Partial usage has a lower bound and no cost rank. "+(task.repeats===1 ? "RZ has one measured attempt per configuration; ranks describe this initial sweep." : "CSV schedules five fresh attempts; quota-blocked attempts are excluded.")+" API tariffs are published prices; task cost depends on tokens used.";
     };
     $("benchmark-search").oninput=redraw;$("benchmark-effort-filter").onchange=redraw;
@@ -380,6 +416,8 @@ window.WorkspaceBenchmarks = (() => {
     const official=resultsSource==="official";
     $("benchmark-task-tabs").hidden=!official;
     $("benchmark-official-controls").hidden=!official;
+    $("benchmark-ranked-charts").hidden=!official;
+    $("benchmark-bar-note").hidden=!official;
     $("benchmark-local-group").hidden=official;
     $("benchmark-cohort-note").hidden=official;
     if(official){

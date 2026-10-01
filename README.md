@@ -50,6 +50,8 @@ This feature is not included in the published 0.5.3rc2 preview.
 
 The development leaderboard opens on **Official Simjecture results**, with two
 task tabs, time/cost ranks, published API tariffs and a cost-versus-time plot.
+Each task has ranked time bars, ranked cost bars and a Pareto plot with the
+upper-left corner preferred. Unfinished runs show zero bars after completed runs.
 Dashed lines connect reasoning efforts for each model. Qualifications and local
 or community trials have a separate archive. A standalone read-only publication
 needs no GUI, API key or imported data:

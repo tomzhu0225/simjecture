@@ -202,10 +202,14 @@ def dashboard(bundle=None, ledger=None):
             row.setdefault("median_verified_seconds", None)
             row.setdefault("mean_trial_seconds", None)
             row["ranked_cost_per_attempt"] = (
-                row["cost_per_attempt"] if coverage in {"complete", "estimated"} else None
+                row["cost_per_attempt"]
+                if row["passes"] and coverage in {"complete", "estimated"}
+                else None
             )
             row["ranked_uncached_cost_per_attempt"] = (
-                row["uncached_cost_per_attempt"] if coverage in {"complete", "estimated"} else None
+                row["uncached_cost_per_attempt"]
+                if row["passes"] and coverage in {"complete", "estimated"}
+                else None
             )
             rows.append(row)
         rank(rows, "pass_rate", reverse=True)
@@ -287,7 +291,7 @@ def export_page(output):
         + "WorkspaceBenchmarks.render("
         + encoded
         + ',{readonly:true,api:async()=>{throw Error("Use the workspace to run a model.")},'
-        'refresh:async()=>{},toast:()=>{}});'
+        "refresh:async()=>{},toast:()=>{}});"
         + 'for(const id of ["benchmark-run","benchmark-your-work",'
         '"benchmark-unranked","benchmark-history"])document.getElementById(id).hidden=true;'
         + 'document.getElementById("benchmark-source").parentElement.hidden=true;'

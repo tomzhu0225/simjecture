@@ -4,6 +4,11 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+- Add separate finish-time and cost ranked bar plots for every published task.
+  Encode unfinished configurations as labelled zero bars after completed runs;
+  plot comparable completed profiles on an upper-left-preferred cost–time Pareto
+  chart with an observed frontier and model-effort connections.
+
 - Present a maintained official benchmark edition by default, with two task tabs,
   explicit time and cost ranks, input/output API tariffs, model search and effort
   filters. Move prior qualifications and contributed/local trials into an archive.

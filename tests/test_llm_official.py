@@ -33,6 +33,7 @@ def test_time_ranking_requires_verified_completion_and_cost_bounds_are_not_ranks
         ordered = sorted(timed, key=lambda r: r["median_verified_seconds"])
         assert ordered[0]["ranks"]["median_verified_seconds"] == 1
         assert all(r["passes"] for r in timed)
+        assert all(r["passes"] for r in task["rows"] if "ranked_cost_per_attempt" in r["ranks"])
         assert all(
             "ranked_cost_per_attempt" not in r["ranks"]
             for r in task["rows"]
@@ -79,6 +80,33 @@ def test_standalone_publication_ranks_and_effort_connections(tmp_path):
         page.goto(path.as_uri())
         playwright.expect(page.locator("#benchmark-task-tabs button")).to_have_count(2)
         assert page.locator(".benchmark-effort-line").count() == 6
+        for kind in ("time", "cost"):
+            bars = page.locator(f"#benchmark-{kind}-bars .benchmark-bar-row")
+            assert bars.count() == 42
+            data = bars.evaluate_all("""els => els.map(e => ({
+                value:e.dataset.value, finished:e.dataset.finished, rank:e.dataset.rank,
+                width:e.querySelector('.benchmark-bar-fill').getBoundingClientRect().width,
+                height:e.querySelector('.benchmark-bar-fill').getBoundingClientRect().height
+            }))""")
+            ranked = [float(d["value"]) for d in data if d["rank"]]
+            assert ranked == sorted(ranked)
+            unfinished = [d for d in data if d["finished"] == "false"]
+            assert unfinished
+            assert all(
+                d["value"] == "0" and d["width"] == 0 and d["height"] == 0 for d in unfinished
+            )
+        dots = page.locator(".benchmark-official-dot").evaluate_all("""els => els.map(e => ({
+            cost:Number(e.dataset.cost), time:Number(e.dataset.time),
+            x:Number(e.getAttribute('cx')), y:Number(e.getAttribute('cy'))
+        }))""")
+        for a in dots:
+            for b in dots:
+                if a["cost"] < b["cost"]:
+                    assert a["x"] < b["x"]
+                if a["time"] < b["time"]:
+                    assert a["y"] < b["y"]
+        assert page.locator(".benchmark-official-dot.pareto").count() == 2
+        assert page.locator(".benchmark-pareto-front").count() == 1
         first = page.locator("#benchmark-leaderboard > div > table > tbody > tr").first
         playwright.expect(first).to_contain_text("DeepSeek Flash")
         page.locator("#benchmark-sort").select_option("cost")
