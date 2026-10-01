@@ -1,0 +1,71 @@
+/* Shared UI primitives for the workspace and experiment monitor.
+   Page-specific layout and scientific visualizations stay in their own sheets. */
+:root {
+  --ui-font: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --ui-radius: 10px;
+  --ui-space: 8px;
+  --ui-focus: #6658d9;
+  --ui-muted: #626a7d;
+  --accent: #6658d9;
+  --accent-strong: #5345bb;
+  --accent-soft: #f0eefb;
+  --muted: var(--ui-muted);
+  --bg: #f8f9fc;
+  --bg-deep: #eef0f6;
+  --surface-soft: #f0f1f7;
+  --text: #202332;
+  --text-soft: #42495b;
+}
+:root[data-theme="dark"] {
+  --ui-focus: #b5a7ff;
+  --ui-muted: #a4acc1;
+  --accent: #b5a7ff;
+  --accent-strong: #c8bdff;
+  --accent-soft: #282942;
+  --bg: #131722;
+  --bg-deep: #10131c;
+  --surface: #1c2230;
+  --surface-raised: #222a3a;
+  --surface-soft: #282942;
+  --canvas: #131722;
+  --text: #e4e6f0;
+  --text-soft: #c5cada;
+}
+body, button, input, select, textarea { font-family: var(--ui-font); }
+:where(button, .button, input, select, textarea) { border-radius: var(--ui-radius); }
+:where(button, a, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--ui-focus);
+  outline-offset: 3px;
+}
+.skip-link {
+  position: fixed;
+  top: var(--ui-space);
+  left: var(--ui-space);
+  z-index: 1000;
+  padding: 10px 16px;
+  color: var(--text);
+  background: var(--surface, #fff);
+  border: 1px solid var(--ui-focus);
+  border-radius: var(--ui-radius);
+  transform: translateY(-160%);
+}
+.skip-link:focus { transform: translateY(0); }
+.composer-help { margin: 10px 0 24px; max-width: 760px; }
+dialog { max-height: calc(100dvh - 32px); overflow-y: auto; }
+dialog::backdrop { backdrop-filter: blur(3px); }
+button, .button { transition: background-color 140ms ease, border-color 140ms ease, box-shadow 140ms ease; }
+.toast.error { background: var(--danger, #a74435); color: #fff; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+@media (max-width: 650px) {
+  .benchmark-publication-bar label { white-space: normal; flex-wrap: wrap; }
+  .benchmark-publication-bar select { max-width: 100%; min-width: 0; }
+  .benchmark-bar-row { grid-template-columns: 18px minmax(70px, 1fr) minmax(25px, .7fr) 72px; gap: 5px; }
+}
+/* Keep white button text legible when the dark palette uses pale link colors. */
+.shell .primary:hover:not(:disabled) { background: #5345bb; color: #fff; }

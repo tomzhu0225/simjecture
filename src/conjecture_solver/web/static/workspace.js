@@ -5,6 +5,7 @@ const state = {
   settings: {},
   projects: [],
   project: null,
+  projectRequest: 0,
   view: "home",
   mode: "interactive",
   tools: [],
@@ -74,20 +75,26 @@ async function action(button, fn) {
   } catch (error) {
     toast(error.message, true);
   } finally {
-    button.disabled = state.readonly;
+    button.disabled = state.readonly ||
+      (button.id === "send-message" && !!state.project?.running);
   }
 }
 function md(node, text) {
   window.WorkspaceRich.render(node, String(text || ""), state.project);
 }
 function view(name) {
+  if (name !== "project") ++state.projectRequest;
   const changed = state.view !== name;
   state.view = name;
   $("right-sidebar-toggle").hidden = name !== "project";
   for (const section of document.querySelectorAll(".view"))
     section.hidden = section.id !== `view-${name}`;
-  for (const item of document.querySelectorAll("[data-view]"))
-    item.classList.toggle("active", item.dataset.view === name);
+  for (const item of document.querySelectorAll("[data-view]")) {
+    const active = item.dataset.view === name;
+    item.classList.toggle("active", active);
+    if (active) item.setAttribute("aria-current", "page");
+    else item.removeAttribute("aria-current");
+  }
   if (!state.routing)
     location.hash =
       name === "project"
@@ -113,8 +120,9 @@ async function followRoute({ reveal = true } = {}) {
     const params = new URLSearchParams(location.hash.slice(1)),
       id = params.get("project");
     if (id) {
-      if (state.project?.id !== id) await openProject(id);
-      else view("project");
+      if (state.project?.id !== id) {
+        if (!(await openProject(id))) return;
+      } else view("project");
       mode(params.get("view") === "autonomous" ? "autonomous" : "interactive");
       state.routeStudy = params.get("study");
       if (state.mode === "autonomous") {
@@ -329,6 +337,7 @@ function renderProjects() {
     const button = el("button", project.name, "project-link");
     button.title = project.name;
     button.classList.toggle("selected", project.id === state.project?.id);
+    if (project.id === state.project?.id) button.setAttribute("aria-current", "page");
     button.onclick = () =>
       openProject(project.id).catch((e) => toast(e.message, true));
     const row = el("div", undefined, "conversation-row");
@@ -355,8 +364,12 @@ async function reloadProjects() {
   renderProjects();
 }
 async function openProject(id) {
+  const request = ++state.projectRequest;
+  const project = await api(`project?id=${encodeURIComponent(id)}`);
+  // A slower earlier click must not replace a newer navigation choice.
+  if (request !== state.projectRequest) return false;
   $("agent-switch-warning").hidden = true;
-  state.project = await api(`project?id=${encodeURIComponent(id)}`);
+  state.project = project;
   state.briefDirty = false;
   state.messageRevision = "";
   state.studyRevision = "";
@@ -365,7 +378,9 @@ async function openProject(id) {
   view("project");
   renderProjects();
   await renderAgent();
+  if (request !== state.projectRequest || state.project?.id !== id) return false;
   if (state.mode === "autonomous") await renderStudies();
+  return request === state.projectRequest && state.project?.id === id;
 }
 function mode(name) {
   state.mode = name;
@@ -373,6 +388,8 @@ function mode(name) {
   $("autonomous-panel").hidden = name !== "autonomous";
   $("interactive-mode").classList.toggle("selected", name === "interactive");
   $("autonomous-mode").classList.toggle("selected", name === "autonomous");
+  $("interactive-mode").setAttribute("aria-pressed", String(name === "interactive"));
+  $("autonomous-mode").setAttribute("aria-pressed", String(name === "autonomous"));
   if (!state.routing && state.view === "project" && state.project)
     location.hash = projectHash(state.project.id, { view: name });
   if (name === "autonomous") {
@@ -708,15 +725,20 @@ function renderProject(force = false) {
   }
 }
 async function send() {
-  const message = $("chat-input").value.trim();
-  if (!message) return;
+  const input = $("chat-input");
+  const draft = input.value;
+  const message = draft.trim();
+  const project = state.project?.id;
+  if (!message || !project) return;
+  // Navigation and new typing may happen while either request is pending.
   await saveConversationAgent();
-  await api("message", { project: state.project.id, message });
-  $("chat-input").value = "";
-  state.project = await api(
-    `project?id=${encodeURIComponent(state.project.id)}`,
-  );
-  renderProject();
+  await api("message", { project, message });
+  if (state.project?.id === project && input.value === draft) input.value = "";
+  const updated = await api(`project?id=${encodeURIComponent(project)}`);
+  if (state.project?.id === project) {
+    state.project = updated;
+    renderProject();
+  }
   await reloadProjects();
 }
 async function assistInstallation(tool) {
@@ -733,7 +755,7 @@ Guide me through the missing decisions in plain language. Inspect prerequisites,
   const project = await api("projects", { name: `Install ${tool.name}` });
   await reloadProjects();
   mode("interactive");
-  await openProject(project.id);
+  if (!(await openProject(project.id))) return;
   $("chat-input").value = prompt;
   $("chat-input").dispatchEvent(new Event("input"));
   $("chat-input").focus();
@@ -789,6 +811,9 @@ function updateMachineKind() {
   }
   $("machine-address").required = !local;
 }
+$("machine-dialog").addEventListener("close", () => {
+  $("machine-password").value = "";
+});
 $("machine-kind").onchange = updateMachineKind;
 $("add-machine").onclick = () => fillMachine();
 for (const id of ["close-machine-editor", "cancel-machine-editor"]) $(id).onclick = () => $("machine-dialog").close();
@@ -809,7 +834,7 @@ function renderMachineSelection() {
 }
 async function assistMachine(machine) {
   const request = await api("prepare-machine-chat", {id:machine.id});
-  await reloadProjects(); mode("interactive"); await openProject(request.project);
+  await reloadProjects(); mode("interactive"); if (!(await openProject(request.project))) return;
   $("chat-input").value = request.prompt; $("chat-input").dispatchEvent(new Event("input")); $("chat-input").focus();
   toast("Setup conversation ready. Choose your agent and send the request.");
 }
@@ -936,7 +961,7 @@ async function refreshBenchmarks() {
     button.onclick = () => action(button, async () => {
       const project = await api("prepare-benchmark", {task:task.id});
       await reloadProjects();
-      await openProject(project.id);
+      if (!(await openProject(project.id))) return;
       mode("interactive");
       $("chat-input").value = "Complete the benchmark in ./benchmark under your current working directory. Read benchmark/TASK.md, preserve the inputs, implement the reducer and deliver the requested files in benchmark/. Record progress before a handoff. Do not inspect verifier or oracle implementations. Report limitations honestly.";
       $("chat-input").dispatchEvent(new Event("input"));
@@ -1065,7 +1090,7 @@ function researchToolCard(tool) {
     check.onclick=()=>action(check,async()=>{await api("install",{name:tool.id,action:"check"});await refreshTools();});actions.append(check);
   }
   if(tool.id === "iter-pack" && tool.installed){const demo=el("button","Run demo","quiet");demo.disabled=tool.state === "working" || state.readonly;
-    demo.onclick=()=>action(demo,async()=>{const result=await api("tool-demo",{name:tool.id});await reloadProjects();mode("interactive");await openProject(result.project);await monitor.open(result.simulation.id);toast("Diagnostic demo started. Its plots and results will appear in Simulations.");});actions.append(demo);}
+    demo.onclick=()=>action(demo,async()=>{const result=await api("tool-demo",{name:tool.id});await reloadProjects();mode("interactive");if (!(await openProject(result.project))) return;await monitor.open(result.simulation.id);toast("Diagnostic demo started. Its plots and results will appear in Simulations.");});actions.append(demo);}
   const details=el("button","Details","quiet tool-details-button");details.onclick=()=>openToolDetails(tool);actions.append(details);
   card.append(actions);return card;
 }
@@ -1490,10 +1515,15 @@ $("settings-form").onsubmit = (e) => {
   e.preventDefault();
   action($("save-connection"), async () => {
     $("connection-result").textContent = "Saving API connection…";
-    state.settings = await api("api-settings", {
-      base_url: $("base-url").value,
-      api_key: $("api-key").value,
-    });
+    try {
+      state.settings = await api("api-settings", {
+        base_url: $("base-url").value,
+        api_key: $("api-key").value,
+      });
+    } catch (error) {
+      $("connection-result").textContent = `Connection not saved: ${error.message}`;
+      throw error;
+    }
     $("api-key").value = "";
     renderSettings();
     toast("API connection saved. Choose its model in a conversation.");
@@ -1521,18 +1551,22 @@ $("quick-start").onsubmit = (e) => {
   const button =
     e.submitter || $("quick-start").querySelector("button[type=submit]");
   action(button, async () => {
-    const message = $("first-request").value.trim();
+    const draft = $("first-request").value;
+    const message = draft.trim();
+    const request = state.projectRequest;
     if (!message) return;
     const agent = await saveConversationAgent("home");
+    if (request !== state.projectRequest) return;
     const p = await api("projects", {
       name: message.split("\n")[0].slice(0, 80),
       agent,
     });
     await reloadProjects();
+    if (request !== state.projectRequest) return;
     mode("interactive");
-    await openProject(p.id);
+    if (!(await openProject(p.id))) return;
     $("chat-input").value = message;
-    $("first-request").value = "";
+    if ($("first-request").value === draft) $("first-request").value = "";
     await send();
   });
 };
@@ -1807,6 +1841,7 @@ async function openResearchAction(campaign, kind) {
   const continuing = kind === "continue";
   const preview = continuing ? await api(`continuation-preview?id=${encodeURIComponent(campaign)}`) : null;
   const dialog = el("dialog", undefined, "research-action-dialog");
+  dialog.setAttribute("aria-label", continuing ? "Continue investigation" : "Send guidance");
   const form = el("form");
   form.append(el("h2", continuing ? "Continue investigation" : "Send guidance"));
   form.append(el("p", continuing
@@ -1844,7 +1879,7 @@ async function openResearchAction(campaign, kind) {
       if (continuing) {
         const result = await api("prepare-continuation", {campaign, project: state.project?.id,
           approach, guidance: message.value, hours: Number(hours.value), files: selection.filter(([c]) => c.checked).map(([,p]) => p)});
-        dialog.close(); await reloadProjects(); await openProject(result.project); mode(result.view || "autonomous"); toast(result.preparation_error || result.message, !!result.preparation_error);
+        dialog.close(); await reloadProjects(); if (!(await openProject(result.project))) return; mode(result.view || "autonomous"); toast(result.preparation_error || result.message, !!result.preparation_error);
       } else {
         await api("steer-study", {campaign, message: message.value, request_key: key});
         dialog.close(); toast("Guidance queued for the next agent checkpoint."); state.studyRevision = ""; await renderStudies();

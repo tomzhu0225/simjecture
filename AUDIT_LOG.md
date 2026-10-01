@@ -95,3 +95,13 @@ Pending completion. All test results, skips, performance measurements and review
 - Fixed finite extreme log/linear ranges whose intermediate ratio/span overflowed (e.g. log midpoint of [1e-300,1e300] incorrectly mapped to upper bound rather than 1).
 - Retained ordinary seeded-design formulas exactly; only overflowing intermediate cases use weighted interpolation. Added six extreme-range regressions.
 - Validation: 58 parameters/models/search/campaign/domain/web tests passed; parent parameter/GUI/web integration: 46 passed; Ruff and CLI smoke passed.
+
+### GUI workflows, wording and shared interface primitives
+Problems found and fixed:
+- A conversation change while submitting could send a message to the wrong conversation, clear a newer draft or apply stale project data. Capture destination/draft and reject stale navigation results.
+- Generic action cleanup re-enabled Send despite the backend rejecting messages during an active agent run. Preserve that disabled state; repeated benchmark submits are guarded.
+- Failed API connection saves left misleading pending text; now report failure and allow retry. SSH password input clears when its dialog closes.
+- Workspace and monitor had divergent theme behavior; share preference bootstrap and common typography, palette/focus/spacing/radius primitives. Added reduced-motion treatment, constrained dialogs and narrow benchmark layout.
+- Added keyboard skip navigation without corrupting hash routes, named dialogs, current-navigation/mode accessibility semantics and concrete first-use/SSH instructions.
+Validation: 72 GUI/workspace tests passed, one pre-existing namespace-dependent skip; parent integration 46 passed. All non-vendor JavaScript syntax checks, Ruff and local HTTP/CSP asset smoke checks passed.
+**Limit:** actual rendered desktop/mobile/browser QA and screenshots remain blocked. Shell Chromium cannot create required sockets, and the separate cloud browser rejects the local URL. No rendering or visual-polish certification is claimed; Bowen should review the appearance on a supported browser.

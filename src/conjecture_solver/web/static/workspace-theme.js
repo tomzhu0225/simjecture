@@ -4,6 +4,7 @@ window.WorkspaceTheme = (() => {
   let choice;
   try {
     choice = localStorage.getItem("simjecture-theme");
+    if (!["dark", "light"].includes(choice)) choice = null;
   } catch {}
   function apply(theme) {
     document.documentElement.dataset.theme = theme;
@@ -12,6 +13,7 @@ window.WorkspaceTheme = (() => {
     window.dispatchEvent(new Event("workspace-theme"));
   }
   function set(theme) {
+    if (!["dark", "light"].includes(theme)) return;
     choice = theme;
     try {
       localStorage.setItem("simjecture-theme", theme);
@@ -30,3 +32,11 @@ window.WorkspaceTheme = (() => {
   });
   return { set };
 })();
+
+// Move keyboard focus without replacing a conversation's hash-based route.
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelector(".skip-link")?.addEventListener("click", (event) => {
+    event.preventDefault();
+    document.getElementById("main-content")?.focus();
+  });
+});

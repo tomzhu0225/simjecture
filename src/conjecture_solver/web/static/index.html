@@ -5,9 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="light dark">
     <title>Simjecture</title>
+    <script src="/assets/workspace-theme.js"></script>
     <link rel="stylesheet" href="/assets/styles.css">
+    <link rel="stylesheet" href="/assets/interface.css">
   </head>
   <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
     <div class="app-shell">
       <header class="topbar">
         <a class="brand" href="/" aria-label="Simjecture home">
@@ -36,7 +39,7 @@
         </div>
       </header>
 
-      <main>
+      <main id="main-content" tabindex="-1">
         <section class="empty-state" id="empty-state" hidden>
           <div class="empty-orbit" aria-hidden="true"><i></i><i></i><i></i></div>
           <p class="eyebrow">No campaign selected</p>
@@ -188,12 +191,12 @@
       </main>
     </div>
 
-    <dialog id="new-run-dialog">
+    <dialog id="new-run-dialog" aria-labelledby="new-run-title">
       <form id="new-run-form">
         <header>
           <div>
             <p class="eyebrow">New campaign</p>
-            <h2>Give Simjecture a hypothesis</h2>
+            <h2 id="new-run-title">Give Simjecture a hypothesis</h2>
           </div>
           <button class="icon-button" id="close-dialog" type="button" aria-label="Close">×</button>
         </header>
