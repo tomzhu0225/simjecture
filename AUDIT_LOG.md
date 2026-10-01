@@ -105,3 +105,9 @@ Problems found and fixed:
 - Added keyboard skip navigation without corrupting hash routes, named dialogs, current-navigation/mode accessibility semantics and concrete first-use/SSH instructions.
 Validation: 72 GUI/workspace tests passed, one pre-existing namespace-dependent skip; parent integration 46 passed. All non-vendor JavaScript syntax checks, Ruff and local HTTP/CSP asset smoke checks passed.
 **Limit:** actual rendered desktop/mobile/browser QA and screenshots remain blocked. Shell Chromium cannot create required sockets, and the separate cloud browser rejects the local URL. No rendering or visual-polish certification is claimed; Bowen should review the appearance on a supported browser.
+
+### Allocated CPU-time budget and uncertain worker replies
+- Account for explicitly allocated CPUs in per-process `RLIMIT_CPU` seconds so threaded jobs do not lose most of their wall-clock allowance. None/one-CPU behavior, other limits and explicit capability OpenMP/BLAS settings remain unchanged. This is not CPU affinity, an aggregate MPI quota or a host security-policy change.
+- Example constructed limit: 8 allocated CPUs × 2.5 seconds yields 21 CPU seconds including cushion, versus the old 4. Invalid/nonfinite allocations are rejected before limit calls. Tests mock limit calls rather than changing host limits.
+- Treat malformed/inconsistent worker success envelopes as transport uncertainty (`WorkerUnavailable`), retaining genuine worker rejections as semantic errors; do not prematurely fail a possibly running experiment.
+- Validation: CPU construction/transport/staging/web suite passed, including a recovery test for malformed replies; CLI and Ruff passed. Actual multi-core isolated runs remain untested due host restrictions.
