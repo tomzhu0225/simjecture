@@ -21,6 +21,7 @@
     <script src="/assets/vendor/highlight-11.11.1.min.js" defer></script>
     <script src="/assets/workspace-rich.js" defer></script>
     <script src="/assets/workspace-monitor.js" defer></script>
+    <script src="/assets/workspace-benchmarks.js" defer></script>
     <script src="/assets/workspace.js" defer></script>
   </head>
   <body>
@@ -331,24 +332,66 @@
             </aside>
           </div>
         </section>
-        <section id="view-benchmarks" class="view" hidden>
-          <div class="page-intro compact">
-            <p class="eyebrow">SIMJECTURE BENCH · EXPERIMENTAL</p>
-            <h1>Compare scientific coding agents.</h1>
-            <p class="lead">Prepare a versioned task, choose your existing agent in chat,
-              and grade its numerical results independently.</p>
+        <section id="view-benchmarks" class="view benchmark-view" hidden>
+          <div class="benchmark-heading">
+            <div><p class="eyebrow">SIMJECTURE BENCH · EXPERIMENTAL</p>
+              <h1>Scientific work. Measured.</h1>
+              <p class="lead">Compare what agents finish, what it costs, and how long verified results take.</p></div>
+            <div class="benchmark-actions">
+              <button id="benchmark-import" class="secondary" type="button">Import grades</button>
+              <button id="benchmark-export" class="secondary" type="button">Export summary</button>
+              <input id="benchmark-import-files" type="file" accept=".json,application/json" multiple hidden />
+            </div>
           </div>
-          <div class="tool-note">
-            Recorded solver outputs are included. These tasks measure finite diagnostic
-            coding contracts; passing does not approve a scientific claim.
-            Preparation makes no model request. Interactive chat is exploratory;
-            use the Harbor export for enforced deadlines and controlled comparisons.
-          </div>
-          <p id="benchmark-version"></p>
+          <div id="benchmark-overview" class="benchmark-overview"></div>
+          <div class="inventory-heading"><div><h2>Choose a task</h2>
+            <p id="benchmark-version" class="field-help"></p></div></div>
           <div id="benchmark-tasks" class="tool-grid"></div>
+          <p class="benchmark-explainer">Recorded solver diagnostics, fresh numerical holdouts,
+            and independent grading. Chat preparation makes no model request; use a timed
+            runner for controlled trials. Passing a coding contract does not approve a scientific claim.</p>
+          <section class="benchmark-board" aria-labelledby="leaderboard-title">
+            <div class="inventory-heading"><div><p class="eyebrow">COMPARABLE TRIALS</p>
+              <h2 id="leaderboard-title">Leaderboard</h2></div>
+              <label class="benchmark-filter">Comparison group
+                <select id="benchmark-cohort" aria-label="Comparison group"></select></label></div>
+            <p id="benchmark-cohort-note" class="field-help"></p>
+            <div id="benchmark-leaderboard"></div>
+            <div class="benchmark-tradeoff-heading"><label class="benchmark-filter">Tradeoff view
+              <select id="benchmark-chart" aria-label="Tradeoff view">
+                <option value="quality-time">Quality × time</option>
+                <option value="cost-time">Cost × time</option>
+              </select></label>
+              <span class="field-help">Colour = pass rate · outlined = frontier for this view</span></div>
+            <div id="benchmark-tradeoff"></div>
+            <p class="field-help">Failures count toward both cost and time per success.
+              Five fresh trials per configuration are required for Pareto eligibility;
+              membership describes this sample, not statistical superiority.</p>
+            <p class="field-help">Imported protocols and reported spending are runner/operator
+              declarations. This page does not certify their execution or billing.</p>
+          </section>
+          <details class="benchmark-details" id="benchmark-pricing">
+            <summary>API price reference <span id="benchmark-price-date"></span></summary>
+            <p id="benchmark-price-note" class="field-help"></p>
+            <div id="benchmark-price-table" class="benchmark-table-scroll"></div>
+          </details>
+          <details class="benchmark-details" id="benchmark-unranked">
+            <summary>Exploratory &amp; incomplete records <span id="benchmark-unranked-count"></span></summary>
+            <p class="field-help">These results remain visible, with the measurements needed
+              to include them in a controlled comparison. Earlier live simulation pilots
+              use a different contract and remain in their own evaluation reports.</p>
+            <div id="benchmark-unranked-table" class="benchmark-table-scroll"></div>
+          </details>
+          <details class="benchmark-details" id="benchmark-history">
+            <summary>Earlier real-model pilots <span>Separate contract · 2026-09-30</span></summary>
+            <p id="benchmark-history-note" class="field-help"></p>
+            <div id="benchmark-history-table" class="benchmark-table-scroll"></div>
+            <p class="field-help"><a id="benchmark-history-source" target="_blank" rel="noopener noreferrer">Read the full MiMo / DeepSeek evaluation</a></p>
+          </details>
           <div class="inventory-heading"><h2>Your benchmark conversations</h2></div>
           <div id="benchmark-projects" class="tool-grid"></div>
-          <pre id="benchmark-report" hidden></pre>
+          <details class="benchmark-details"><summary>Latest numerical grade</summary>
+            <pre id="benchmark-report" hidden></pre></details>
         </section>
         <section id="view-tools" class="view research-tools-view" hidden>
           <div class="research-tools-heading">
@@ -467,6 +510,7 @@
                           <option value="medium">Medium</option>
                           <option value="high">High</option>
                           <option value="xhigh">Extra high</option>
+                          <option value="max">Max</option>
                         </select>
                       </div>
                       <button

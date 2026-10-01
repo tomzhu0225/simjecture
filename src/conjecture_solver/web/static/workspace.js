@@ -922,7 +922,8 @@ $("machine-form").onsubmit=async e=>{
 
 async function refreshBenchmarks() {
   const pack = await api("benchmarks");
-  $("benchmark-version").textContent = `Task pack ${pack.version} · experimental · no leaderboard`;
+  window.WorkspaceBenchmarks.render(pack, {api, refresh:refreshBenchmarks, toast, readonly:state.readonly});
+  $("benchmark-version").textContent = `Task pack ${pack.version} · finite diagnostic coding contracts`;
   $("benchmark-tasks").replaceChildren();
   for (const task of pack.tasks) {
     const card = el("article", undefined, "tool-card"), button = el("button", "Prepare conversation");
@@ -953,6 +954,7 @@ async function refreshBenchmarks() {
         const report = await api("grade-benchmark", {project:project.id});
         $("benchmark-report").textContent = JSON.stringify(report, null, 2);
         $("benchmark-report").hidden = false;
+        $("benchmark-report").closest("details").open = true;
         await refreshBenchmarks();
       } finally {button.textContent = "Grade delivered results";}
     });

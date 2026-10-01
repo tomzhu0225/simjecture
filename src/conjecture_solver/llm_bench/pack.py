@@ -8,6 +8,7 @@ import shutil
 import tarfile
 import tempfile
 import time
+import uuid
 from pathlib import Path
 
 from . import PACK_VERSION, fixtures, reference
@@ -145,6 +146,7 @@ def prepare(task, output):
                 "pack": "Simjecture Bench",
                 "version": PACK_VERSION,
                 "task": task,
+                "trial_id": uuid.uuid4().hex,
                 "suggested_wall_seconds": TASKS[task]["seconds"],
                 "continuation_policy": "same contract; remaining deadline; generic reminder only",
                 "provenance": json.loads((HERE / "data/provenance.json").read_text())["scope"],
@@ -277,6 +279,7 @@ def grade(
             "schema_version": "0.1.0",
             "pack_version": PACK_VERSION,
             "task": task,
+            "task_contract_sha256": hashlib.sha256(instruction(task).encode()).hexdigest(),
             "passed": intact and delivered and all(c["passed"] for c in checks),
             "checks": checks,
             "intact_inputs": intact,
@@ -298,10 +301,22 @@ def grade(
                     "cached_input_tokens",
                     "reasoning_output_tokens",
                     "requests_without_usage",
+                    "agent_version",
+                    "model_version",
+                    "comparison",
+                    "cache_write_input_tokens",
+                    "max_request_input_tokens",
+                    "first_verified_completion_seconds",
+                    "reported_cost_usd",
                 )
             },
             "usage_note": "Null means unknown; manual metadata is not provider billing evidence.",
         }
+        manifest = submission / "benchmark.json"
+        prepared = _read_json(manifest) if manifest.is_file() else {}
+        report["trial"]["trial_id"] = (
+            prepared.get("trial_id") or hashlib.sha256(str(submission).encode()).hexdigest()
+        )
         if task == "rz-diagnostics" and report["passed"]:
             report["verified_plot_data"] = {name: expected[name][1] for name in expected_cases}
     return report
@@ -337,6 +352,10 @@ def render_verified_plots(task, submission, report, output):
 def configure_parser(parser):
     commands = parser.add_subparsers(dest="bench_command", required=True)
     commands.add_parser("list")
+    leaderboard = commands.add_parser("leaderboard")
+    leaderboard.add_argument("--reports", type=Path, nargs="+", required=True)
+    leaderboard.add_argument("--output", type=Path)
+    leaderboard.add_argument("--minimum-trials", type=int, default=5)
     for command in ("prepare", "grade", "export"):
         sub = commands.add_parser(command)
         sub.add_argument("task", choices=tuple(TASKS))
@@ -350,6 +369,9 @@ def configure_parser(parser):
             )
             sub.add_argument("--model")
             sub.add_argument("--agent")
+            sub.add_argument(
+                "--metadata", type=Path, help="Timed runner's trial measurements/configuration"
+            )
     parser.set_defaults(handler=cli)
 
 
@@ -357,6 +379,15 @@ def cli(args):
     try:
         if args.bench_command == "list":
             result = catalogue()
+        elif args.bench_command == "leaderboard":
+            from .leaderboard import summarize
+
+            result = summarize(
+                [_read_json(path) for path in args.reports], minimum_trials=args.minimum_trials
+            )
+            if args.output:
+                args.output.parent.mkdir(parents=True, exist_ok=True)
+                args.output.write_text(json.dumps(result, indent=2) + "\n")
         elif args.bench_command == "prepare":
             result = prepare(args.task, args.output)
         elif args.bench_command == "export":
@@ -364,11 +395,19 @@ def cli(args):
 
             result = export(args.task, args.output)
         else:
+            metadata = _read_json(args.metadata) if args.metadata else {}
+            metadata.update(
+                {
+                    key: value
+                    for key, value in {"model": args.model, "agent": args.agent}.items()
+                    if value is not None
+                }
+            )
             result = grade(
                 args.task,
                 args.submission,
                 backend=args.execution_backend,
-                metadata={"model": args.model, "agent": args.agent},
+                metadata=metadata,
             )
             args.output.parent.mkdir(parents=True, exist_ok=True)
             args.output.write_text(json.dumps(result, indent=2) + "\n")

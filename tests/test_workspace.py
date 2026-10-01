@@ -537,7 +537,8 @@ def test_grill_and_draft_use_agent_preparation_not_empty_forms(tmp_path, monkeyp
     assert "draft_study" not in captured[-1]["message"]
 
 
-def test_native_reasoning_effort_is_in_frozen_launch_contract(tmp_path, monkeypatch):
+@pytest.mark.parametrize("effort", ["high", "max"])
+def test_native_reasoning_effort_is_in_frozen_launch_contract(tmp_path, monkeypatch, effort):
     import conjecture_solver.execution as execution
     import conjecture_solver.study_launch as launch
     from conjecture_solver.study_launch import NativeStudyRequest, materialize_native
@@ -549,13 +550,13 @@ def test_native_reasoning_effort_is_in_frozen_launch_contract(tmp_path, monkeypa
         output_directory=str(tmp_path / "study"),
         campaign_id="study-test",
         engine="native",
-        backend="grok",
-        model="grok-4.7",
-        reasoning_effort="high",
+        backend="codex" if effort == "max" else "grok",
+        model="gpt-6.1-sol" if effort == "max" else "grok-4.7",
+        reasoning_effort=effort,
     )
     plan = materialize_native(request)
-    assert plan.argv[plan.argv.index("--reasoning-effort") + 1] == "high"
-    assert load(tmp_path / "study/study-launch.json")["request"]["reasoning_effort"] == "high"
+    assert plan.argv[plan.argv.index("--reasoning-effort") + 1] == effort
+    assert load(tmp_path / "study/study-launch.json")["request"]["reasoning_effort"] == effort
     with pytest.raises(ValueError, match="differs"):
         materialize_native(request.model_copy(update={"reasoning_effort": "low"}), resume=True)
 

@@ -357,7 +357,7 @@ class Workspace(MachineWorkspace):
             raise ValueError(
                 "That model belongs to a different agent. Choose a model for this CLI."
             )
-        if effort not in {"", "low", "medium", "high", "xhigh"}:
+        if effort not in {"", "low", "medium", "high", "xhigh", "max"}:
             raise ValueError("Unknown reasoning effort")
         if backend == "agy" and effort:
             raise ValueError("AGY uses its own reasoning settings; choose Default")
@@ -579,9 +579,10 @@ class Workspace(MachineWorkspace):
         return self.project(identifier)
 
     def benchmark_catalogue(self):
+        from ..llm_bench.leaderboard import normalize, summarize
         from ..llm_bench.pack import catalogue
 
-        return catalogue() | {
+        result = catalogue() | {
             "projects": [
                 {
                     "id": p["id"],
@@ -596,6 +597,32 @@ class Workspace(MachineWorkspace):
                 for p in self.projects()
                 if p.get("benchmark")
             ]
+        }
+        reports = {p.stem: load(p) for p in (self.root / "benchmark-reports").glob("*.json")}
+        for project in result["projects"]:
+            report = project["grade"]
+            if report:
+                value = normalize(report)
+                reports[value["trial_key"] or value["report_sha256"]] = report
+        result["leaderboard"] = summarize(reports.values())
+        result["imported_trials"] = len(list((self.root / "benchmark-reports").glob("*.json")))
+        return result
+
+    def import_benchmark_reports(self, payload):
+        from ..llm_bench.leaderboard import normalize, public_grade
+
+        reports = payload.get("reports")
+        if not isinstance(reports, list) or not 0 < len(reports) <= 100:
+            raise ValueError("Import between 1 and 100 host grade reports")
+        validated = [(normalize(report), public_grade(report)) for report in reports]
+        with self.lock():
+            (self.root / "benchmark-reports").mkdir(exist_ok=True, mode=0o700)
+            for value, report in validated:
+                key = value["trial_key"] or value["report_sha256"]
+                put(self.root / "benchmark-reports" / f"{key}.json", report)
+        return {
+            "imported": len(validated),
+            "note": "One final grade per trial; imports replace earlier grades of that trial.",
         }
 
     def prepare_benchmark(self, payload):
@@ -623,14 +650,38 @@ class Workspace(MachineWorkspace):
         if specification.get("pack_version") != PACK_VERSION:
             raise ValueError("No compatible benchmark prepared in this conversation")
         directory = self.directory(identifier)
+        from ..provider_usage import TOKEN_FIELDS, request_accounting
+
+        agents, accounts = [], []
+        for turn in sorted((directory / "turns").iterdir()):
+            request = load(turn / "request.json")
+            if request.get("agent"):
+                agents.append({key: request["agent"].get(key) for key in (
+                    "backend", "model", "reasoning_effort",
+                )})
+            account = request_accounting(turn / "events.jsonl")
+            if request.get("agent") or account:
+                accounts.append(account or {})
+        configurations = {json.dumps(agent, sort_keys=True) for agent in agents}
+        used = agents[0] if len(configurations) == 1 else {}
+        metadata = {
+            "model": "mixed-models" if len(configurations) > 1 else used.get("model"),
+            "agent": "mixed-agents" if len(configurations) > 1 else used.get("backend"),
+            "settings": {"reasoning_effort": used.get("reasoning_effort")},
+            "comparison": {"protocol": "exploratory"},
+        }
+        for key in (*TOKEN_FIELDS, "requests_without_usage"):
+            complete = bool(accounts) and all(account.get(key) is not None for account in accounts)
+            if key == "cached_input_tokens":
+                complete &= all(account.get("cache_usage_complete") for account in accounts)
+            if key == "reasoning_output_tokens":
+                complete &= all(account.get("reasoning_usage_complete") for account in accounts)
+            metadata[key] = sum(account[key] for account in accounts) if complete else None
         report = grade(
             specification["task"],
             directory / "files/benchmark",
             backend=self.execution["backend"],
-            metadata={
-                "model": project["agent"].get("model"),
-                "agent": project["agent"].get("backend"),
-            },
+            metadata=metadata,
         )
         put(directory / "benchmark-grade.json", report)
         render_verified_plots(

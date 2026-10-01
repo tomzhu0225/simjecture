@@ -2,6 +2,19 @@
 
 This project follows semantic versioning. Dates use ISO 8601.
 
+## Unreleased
+
+- Add a task-scoped benchmark leaderboard with pass-rate uncertainty, separate
+  actual reported spend and API token estimates, failure-inclusive cost/time per
+  success, and descriptive Pareto comparisons after repeated trials.
+- Redesign Benchmarks with task cards, comparison groups, quality/time and
+  cost/time plots, graded-trial import, private-field-free summary export,
+  dated official pricing references and visible unranked records.
+- Preserve trial identity during regrading and report the agent that actually
+  performed benchmark turns, with request-level usage where available.
+- Expose `max` reasoning effort in native launch contracts and the workspace
+  selector, allowing supported models to be compared at each effort setting.
+
 ## 0.5.3rc2 (preview) — 2026-09-30
 
 - Polish Research tools with compact independent cards and a separate details

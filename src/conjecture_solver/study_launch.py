@@ -27,7 +27,7 @@ class NativeStudyRequest(MVPLaunchRequest):
     provider_config: str | None = None
     model: str | None = None
     judge_model: str | None = None
-    reasoning_effort: Literal["low", "medium", "high", "xhigh"] | None = None
+    reasoning_effort: Literal["low", "medium", "high", "xhigh", "max"] | None = None
     agent_executable: str | None = None
     machine_registry: str | None = None
     machine_ids: list[str] = []

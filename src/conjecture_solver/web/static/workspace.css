@@ -3395,3 +3395,71 @@ wa-split-panel.project-layout {
   .tool-details-body { padding: 16px 20px; }
   .tool-dialog-footer { padding: 14px 20px; }
 }
+
+/* Benchmarks: compact tasks, comparable trials and measurable tradeoffs. */
+.benchmark-view { max-width: 1480px; min-width: 0; }
+.benchmark-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-bottom: 26px; }
+.benchmark-heading h1 { margin: 0 0 8px; font-size: 34px; line-height: 1.15; letter-spacing: -1.1px; }
+.benchmark-heading .lead { margin: 0; font-size: 14px; color: var(--muted); max-width: 590px; }
+.benchmark-actions { display: flex; gap: 8px; flex-wrap: wrap; padding-top: 5px; }
+.benchmark-actions button { font-size: 12px; padding: 9px 12px; border-radius: 9px; white-space: nowrap; }
+.benchmark-overview { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 12px; margin-bottom: 28px; }
+.benchmark-stat { border: 1px solid var(--line); border-radius: 12px; background: var(--white); padding: 16px 20px; }
+.benchmark-stat strong { display: block; color: var(--accent); font-size: 28px; font-weight: 650; line-height: 1.3; font-variant-numeric: tabular-nums; }
+.benchmark-stat span { font-size: 12px; color: var(--muted); }
+.benchmark-view .inventory-heading { margin-bottom: 14px; gap: 20px; }
+.benchmark-view .inventory-heading h2 { margin: 0; font-size: 18px; }
+.benchmark-view .field-help { font-size: 12px; line-height: 1.65; }
+.benchmark-view .tool-grid { grid-template-columns: repeat(2,minmax(0,1fr)); align-items: start; gap: 14px; }
+.benchmark-view .tool-card { border-radius: 12px; padding: 19px 22px; background: var(--white); }
+.benchmark-view .tool-card h2 { font-size: 16px; margin: 0 0 7px; }
+.benchmark-view .tool-card p { font-size: 12px; color: var(--muted); margin: 0 0 15px; }
+.benchmark-view .tool-card button { padding: 9px 14px; font-size: 12px; border-radius: 8px; border: 0; background: var(--accent); color: #fff; font-weight: 600; width: auto; }
+.benchmark-explainer { font-size: 12px; color: var(--muted); max-width: 900px; margin: 13px 0 26px; }
+.benchmark-board { padding: 23px; border: 1px solid var(--line); border-radius: 16px; background: var(--white); margin-bottom: 18px; min-width: 0; }
+.benchmark-filter { display: flex; align-items: center; gap: 12px; font-size: 11px; color: var(--muted); }
+.benchmark-filter select { font-size: 12px; padding: 7px 9px; max-width: 390px; border-radius: 8px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); }
+.benchmark-table-scroll { overflow-x: auto; max-width: 100%; border: 1px solid var(--line); border-radius: 10px; }
+.benchmark-table { width: 100%; border-collapse: collapse; font-size: 12px; line-height: 1.5; }
+.benchmark-table th { text-align: left; white-space: nowrap; background: var(--soft); color: var(--muted); font-size: 10px; font-weight: 600; padding: 12px 15px; letter-spacing: .2px; }
+.benchmark-table td { padding: 14px 15px; border-top: 1px solid var(--line); vertical-align: middle; font-variant-numeric: tabular-nums; }
+.benchmark-table td strong { display: block; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.benchmark-table td small { display: block; color: var(--muted); font-size: 10px; margin-top: 3px; }
+.benchmark-table td:not(:first-child) { min-width: 85px; }
+.benchmark-badge { display: inline-block; padding: 4px 8px; background: var(--soft); color: var(--muted); border-radius: 6px; font-size: 10px; white-space: nowrap; }
+.benchmark-badge.frontier { color: var(--accent); border: 1px solid var(--accent); background: var(--paper); }
+.benchmark-tradeoff-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin: 25px 0 3px; }
+.benchmark-tradeoff-heading h3 { font-size: 15px; margin: 0; }
+#benchmark-tradeoff svg { display: block; width: 100%; max-height: 400px; }
+#benchmark-tradeoff svg text { fill: var(--muted); font-size: 11px; font-family: inherit; }
+.benchmark-gridline { stroke: var(--line); stroke-width: 1; }
+.benchmark-dot { cursor: pointer; stroke: var(--white); stroke-width: 2; }
+.benchmark-dot.frontier { stroke: var(--ink); stroke-width: 2; }
+.benchmark-dot:focus { outline: none; stroke-width: 4; stroke: var(--accent); }
+.benchmark-highlight { background: var(--soft); }
+.benchmark-empty { border: 1px dashed var(--line); border-radius: 11px; background: var(--paper); padding: 30px 24px; text-align: center; }
+.benchmark-empty-icon { font-size: 27px; color: var(--accent); }
+.benchmark-empty h3 { font-size: 15px; margin: 3px 0 6px; }
+.benchmark-empty p { max-width: 620px; margin: 0 auto; color: var(--muted); font-size: 12px; }
+.benchmark-details { background: var(--white); border: 1px solid var(--line); border-radius: 11px; margin: 12px 0; padding: 15px 20px; }
+.benchmark-details summary { font-size: 13px; font-weight: 600; cursor: pointer; }
+.benchmark-details summary span { color: var(--muted); font-size: 11px; font-weight: 400; margin-left: 8px; }
+.benchmark-details pre { overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 11px; max-height: 450px; }
+@media (max-width: 1000px) {
+  .benchmark-heading { flex-direction: column; gap: 12px; }
+  .benchmark-board .inventory-heading { align-items: flex-start; flex-direction: column; }
+  .benchmark-filter { width: 100%; }
+  .benchmark-filter select { flex: 1; min-width: 0; }
+}
+@media (max-width: 650px) {
+  .benchmark-heading h1 { font-size: 27px; }
+  .benchmark-overview { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; }
+  .benchmark-stat { padding: 12px 15px; }
+  .benchmark-view .tool-grid { grid-template-columns: 1fr; }
+  .benchmark-board { padding: 16px; }
+  .benchmark-empty { padding: 23px 16px; }
+  .benchmark-details { padding: 13px 15px; }
+  .benchmark-tradeoff-heading .field-help { font-size: 10px; }
+  #benchmark-tradeoff svg text { font-size: 22px; }
+  .benchmark-dot { r: 11px; }
+}

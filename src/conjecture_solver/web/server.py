@@ -59,6 +59,7 @@ STATIC_ASSETS = frozenset(
         "workspace-components.js",
         "workspace-rich.js",
         "workspace-monitor.js",
+        "workspace-benchmarks.js",
         "vendor/highlight-11.11.1.min.js",
         "vendor/highlight-github-dark.css",
         "vendor/dagre-2.0.0.min.js",
@@ -445,6 +446,8 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
                 result = workspace.prepare_benchmark(payload)
             elif endpoint == "grade-benchmark":
                 result = workspace.grade_benchmark(payload)
+            elif endpoint == "import-benchmark-reports":
+                result = workspace.import_benchmark_reports(payload)
             elif endpoint == "save-machine":
                 result = workspace.save_machine(payload)
                 self.server._machine_poll_at = 0

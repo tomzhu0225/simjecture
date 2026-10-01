@@ -60,7 +60,114 @@ The host independently reruns `reduce.py`, checks saved results against its own
 reductions, verifies immutable inputs and checks numerical plot-data arrays. It
 renders canonical RZ plots after a pass. Agent PNG appearance and scientific prose
 are not graded; nonempty findings are only a delivery check. This preview has no
-LLM judge for scientific conclusions and is not a cheating-resistant leaderboard.
+LLM judge for scientific conclusions. The development leaderboard below is a
+comparison of declared trials, not a cheating-resistant public submission service.
+
+## Leaderboard and tradeoffs (development feature)
+
+After 0.5.3rc2, the development workspace adds a leaderboard to **Benchmarks**.
+Task preparation and grading remain available. **Import grades** accepts final host
+grade JSON files from timed runners; **Export summary** downloads an aggregate with
+no submitted code, private settings, paths, transcripts or reasoning text. This
+includes per-trial timing/usage counters and source report hashes so aggregate
+denominators and cost calculations can be inspected.
+The summary
+does not upload anything publicly. Regrading or reimporting one trial does not add
+another repetition. Fresh trials require fresh preparation directories.
+
+Choose a comparison group to hold task/pack/contract, prompt, hardware, execution
+backend, harness, runner version, budget and continuation policy fixed. Each row
+identifies model/version, agent/version and settings, including reasoning effort.
+Compare different agents as complete configurations; select a single agent/version
+when attributing differences to a model. There is no overall cross-task score.
+
+- Pass rate uses all delivered trial grades, with a 95% Wilson interval.
+  A numerical pass first verified after the declared deadline counts as a timed
+  failure. Do not omit unsuccessful or interrupted attempts: collect their host
+  grades as well. A setup error without a grade is not silently scored as success.
+- Time per success is all trial elapsed time divided by verified successes;
+  median first verified completion time describes passing trials separately.
+- Cost per success includes spending on failed attempts. **API tokens** is a dated
+  standard API equivalent; **Reported $** is operator-supplied actual spending.
+  Subscription fees, credits and discounts are not inferred from token counters.
+- **Quality × time** uses pass rate and mean elapsed time per attempt, so it can
+  include configurations without billing data. **Cost × time** uses token cost
+  and elapsed time per verified success, with colour showing pass rate.
+  Its Pareto calculation considers all three quantities. Hover/focus a point for
+  its measurements; activate it to select the corresponding row.
+- Fewer than five repetitions remain provisional and receive no Pareto status.
+  The frontier is descriptive; five trials do not establish statistical
+  superiority. Missing timings, versions or protocol fields remain visibly
+  unranked. Missing usage never becomes zero cost. No model receives an entry
+  merely because its price is listed.
+
+The initial USD price snapshot was checked on **2026-10-01** against
+[GPT-6.1 Sol](https://developers.openai.com/api/docs/models/gpt-6.1-sol),
+[GPT-6 Astra](https://developers.openai.com/api/docs/models/gpt-6-astra),
+[Grok 4.7](https://docs.x.ai/developers/models/grok-4.7),
+[Gemini 3.8 Flash](https://ai.google.dev/gemini-api/docs/pricing), and
+[DeepSeek Flash/Pro](https://api-docs.deepseek.com/quick_start/pricing/).
+It uses standard short-context rates, DeepSeek peak rates and Gemini's introductory
+rates through 2026-12-31. It excludes hosted-tool charges, cache storage, hardware,
+regional/service premiums and subscription discounts. OpenAI estimates require
+cache-write counts and a reported maximum request input of at most 272K; Grok
+requires at most 200K. Larger or unidentified tiers stay unknown. The total output
+counter must already include billed reasoning tokens; its reasoning subset is not
+added a second time. A snapshot is not a historical invoice; keep the pricing
+metadata with exported comparisons.
+
+For a controlled runner, pass measurements through `grade --metadata trial.json`:
+
+```json
+{
+  "model": "gpt-6.1-sol",
+  "model_version": "gpt-6.1-sol",
+  "agent": "codex",
+  "agent_version": "RECORD_INSTALLED_VERSION",
+  "settings": {"reasoning_effort": "high", "service_tier": "standard"},
+  "comparison": {
+    "protocol": "controlled",
+    "budget_seconds": 180,
+    "hardware": "RECORD_FIXED_HARDWARE",
+    "harness_version": "RECORD_INSTALLED_VERSION",
+    "runner_version": "RECORD_INSTALLED_VERSION",
+    "prompt_sha256": "REPLACE_WITH_64_HEX_DIGITS",
+    "continuation_policy": "original-deadline-generic"
+  },
+  "wall_seconds": null,
+  "first_verified_completion_seconds": null,
+  "input_tokens": null,
+  "cached_input_tokens": null,
+  "cache_write_input_tokens": null,
+  "output_tokens": null,
+  "requests_without_usage": null,
+  "max_request_input_tokens": null,
+  "reported_cost_usd": null
+}
+```
+
+Replace placeholders with the runner's records; do not invent unknown counters.
+For development builds, include the Git commit in the harness/runner version
+labels so different implementations do not share a comparison group.
+Record first verified completion around the host verifier call, not the agent's
+completion message. A runner can fill that field in the returned grade after the
+first verification. Trial identity and task contract hashes are assigned by the
+host. A controlled label is an operator/runner declaration, not a certification
+of deadline enforcement or submission isolation.
+
+```bash
+simjecture llm-benchmark grade csv-energy --submission ./trial-1 \
+  --output ./trial-1-grade.json --metadata ./trial-1-metadata.json
+simjecture llm-benchmark leaderboard --reports ./trial-*-grade.json \
+  --output ./leaderboard.json
+```
+
+The MiMo/DeepSeek live-simulation pilot below remains a separate evaluation. Its
+task, environment and one-off observations cannot populate this pack's controlled
+leaderboard. **Earlier real-model pilots** preserves its published observations
+in a separate panel, with a link to the full evaluation and its limitations.
+New comparisons require fresh, repeated trials; the page does not
+launch paid model runs or introduce a provider scheduler.
 
 ## Export for Harbor
 

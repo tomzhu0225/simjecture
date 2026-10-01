@@ -36,6 +36,13 @@ request-level usage records, native DeepSeek tool-message continuity and experim
 [rc2 scope and validation](docs/testing/0.5.3rc2-acceptance.md).
 The stable installation commands below remain on 0.5.2.
 
+On the development branch, **Benchmarks** also includes a task-scoped leaderboard:
+compare verified completion, cost and elapsed time, explore Pareto tradeoffs, import
+timed trial grades and export a summary. It keeps exploratory pilots and missing
+measurements visible without ranking them. See the
+[leaderboard protocol](docs/how-to/llm-bench.md#leaderboard-and-tradeoffs-development-feature).
+This feature is not included in the published 0.5.3rc2 preview.
+
 To try rc2, preserving existing research data:
 
 ```bash
