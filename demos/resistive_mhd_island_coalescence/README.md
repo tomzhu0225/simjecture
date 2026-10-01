@@ -105,22 +105,29 @@ The command rewrites only the marked anchor directory. The validation summary
 records the executable and parameter-file hashes so the operator can audit
 which local FLASH build produced the states.
 
-## What the autonomous campaign actually established
+## Historical campaign disposition and current interpretation
 
 The local campaign record is
 `artifacts/resistive-mhd-island-coalescence-dsh-0001`. It ended with
 `status=budget_exhausted` after six hours and 328 model turns. The durable
-claim ledger, rather than the model's prose, is authoritative.
+claim ledger records the historical disposition; it does not make the statistical
+interpretation correct.
+
+**Current interpretation:** the reported root interval `[-0.423266, -0.389641]`
+overlaps the allowed exponent band `[-0.60, -0.40]`. An upper edge above `-0.40`
+alone does not establish falsification of that band. The original audit JSON,
+ledger disposition and figure are preserved for inspection; the historical
+falsification is not independently endorsed here. This is a correction to the
+summary, not a new simulation, reanalysis or accepted scientific verdict.
 
 | Branch | Fresh-data result | Durable disposition |
 | --- | --- | --- |
-| `claim_root` | Six `256²` cases gave `p = -0.406453`; 95% CI `[-0.423266, -0.389641]`, whose upper edge is above `-0.40` | **Falsified** for the stated bounded root claim |
+| `claim_root` | Six `256²` cases gave `p = -0.406453`; 95% CI `[-0.423266, -0.389641]`, whose upper edge is above `-0.40` | Recorded **falsified**; see interpretation warning above |
 | Root refinement | The `S_eta=250`, `512²` context point gave a refined fit `p = -0.396338`; CI `[-0.403641, -0.389034]` | Context for the root branch; not evidence for the repair |
 | `claim_repair_root_v1` | Audit fit over five `256²` cases plus the actual `S_eta=350`, `512²` run gave `p = -0.390961`; CI `[-0.408482, -0.373440]` | **Open**, not supported or falsified |
 
-The root counterexample is meaningful: it rejects the particular exponent
-interval in the particular model and protocol. The repair line is shown so a
-reader can see what the campaign explored, not to claim a second discovery.
+The root row shows what the campaign recorded, not a validated rejection of
+the exponent band. The repair line shows what it explored, not a second discovery.
 The original child contract requested a `S_eta=2000` refinement; the executed
 high-resolution run was instead `S_eta=350`. In addition, the analyzer/fit
 inputs did not pass the final sealed-input coverage check. Because the evidence
@@ -160,8 +167,9 @@ asset is
 
 ![Audit view of the scaling fit and open repair branch](figures/scaling_law_discovery.png)
 
-The scaling view uses only the checked-in audit extract. It records the valid
-root falsification and leaves the repair branch open; it is not a portable
+The scaling view uses only the checked-in audit extract. It displays the
+historical root disposition and leaves the repair branch open; the root
+interpretation needs the warning above. It is not a portable
 evidence record. The source asset is
 [`scaling_law_discovery.png`](figures/scaling_law_discovery.png).
 

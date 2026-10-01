@@ -183,10 +183,13 @@ The host maintains the scientific record:
   records and reports unresolved cleanup rather than assuming that agent exit stopped
   every computation.
 
-A study completes when its original claim is independently supported, or when a
-falsified original leads to an independently supported repair with the required
-ancestry. A deadline may end the campaign unresolved; that is recorded, not promoted
-to a success.
+Under the default CLI `repair` policy, a study completes when its original claim
+is independently supported, or when a falsified original leads to an independently
+supported repair with the required ancestry. The workspace defaults new studies to
+`answer`, which also permits an independently accepted root falsification to complete
+the investigation. Select the policy in the study brief or with
+`--completion-policy`; resumes retain it. A deadline may leave the campaign unresolved;
+that is recorded, not promoted to success.
 
 See [methods and progress oversight](docs/how-to/minimal-oversight.md),
 [research memory](docs/how-to/research-memory.md) and

@@ -98,7 +98,9 @@ stable session identity. The normal browser command is unchanged:
 uv run simjecture web
 ```
 
-New browser campaigns select DSH by default. The Python supervisor passes the
+In `/monitor`, explicitly selected legacy campaigns use DSH by default. The
+conversation workspace instead chooses a native CLI or configured built-in API
+agent. For a DSH campaign, the Python supervisor passes the
 hypothesis by contained file rather than process argument, stores the DSH event
 log beside the campaign, and reopens the same session on **Resume**.
 `uv run simjecture web --engine native` is the explicit compatibility path.

@@ -34,3 +34,23 @@ authorship discussion.
 Examples must use placeholders for credentials and bounded output directories.
 Never paste a real key, private run URL, or unpublished third-party artifact into
 the documentation.
+
+## Report host-dependent and long-running checks honestly
+
+Before a solver or full workspace test, run the selected execution backend's
+`simjecture doctor --execution-backend BACKEND` probe. An installed `bwrap` or
+`proot` binary does not establish that namespaces or tracing work. Some existing
+tests check only binary presence, so a restricted host can fail rather than skip
+those tests. Preserve the failure and classify it from the actual probe/log.
+
+For a long check, retain the command, start time, log and final exit status. A
+quiet log or polling timeout is not a pass or permission to resubmit a detached
+job. Reconcile its recorded identity before retrying. Keep blocked, skipped,
+running and failed checks separate from passed checks; never change tests to
+report success merely because the host cannot run them.
+
+Examples requiring paid model calls, credentials, licensed solver source, GPU
+hardware, SSH workers or Docker should list those prerequisites. Run them only
+in an authorized environment; otherwise report the unexercised behavior and
+continue independent no-key checks. A successful replay of historical artifacts
+does not replace a fresh numerical execution or long-job recovery test.

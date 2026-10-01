@@ -84,3 +84,9 @@ Pending completion. All test results, skips, performance measurements and review
 ### Reject invalid service durations before persistence
 - Reject NaN/infinity, nonpositive values, booleans, strings and unrepresentably large durations before study/experiment state is partially written; failed validation can be retried with valid inputs.
 - Existing valid deadline/timeout signatures are preserved. Added 16 boundary/retry regressions; 87 service-family/web tests passed, plus 27 parent boundary/web tests; Ruff/CLI smoke passed.
+
+### Correct historical summaries and remaining installation drift
+- Qualified FLASH demo summaries: the historical root interval overlaps the allowed band, so the historical ledger label does not independently establish falsification. Original audit JSON, result data and figures are preserved.
+- Clarified legacy launch archive versus workspace installer, legacy monitor DSH default versus conversation backends, and CLI repair versus workspace answer completion policies.
+- Added guidance for reporting blocked/failed/running long checks honestly. Strict docs build passed; 5,765 generated local link/asset references checked without missing targets; 11 Python fenced examples parsed (not executed).
+- Historical scientific measurements, external links, paid models and GPU/SSH solver execution are not newly validated.
