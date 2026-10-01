@@ -48,6 +48,16 @@ measurements visible without ranking them. See the
 [leaderboard protocol](docs/how-to/llm-bench.md#leaderboard-and-tradeoffs-development-feature).
 This feature is not included in the published 0.5.3rc2 preview.
 
+The development leaderboard opens on **Official Simjecture results**, with two
+task tabs, time/cost ranks, published API tariffs and a cost-versus-time plot.
+Dashed lines connect reasoning efforts for each model. Qualifications and local
+or community trials have a separate archive. A standalone read-only publication
+needs no GUI, API key or imported data:
+
+```bash
+simjecture llm-benchmark export-page --output ./leaderboard.html
+```
+
 To try rc2, preserving existing research data:
 
 ```bash

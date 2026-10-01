@@ -386,6 +386,10 @@ def configure_parser(parser):
     )
     leaderboard.add_argument("--output", type=Path)
     leaderboard.add_argument("--minimum-trials", type=int, default=5)
+    page = commands.add_parser("export-page")
+    page.add_argument(
+        "--output", type=Path, required=True, help="Standalone read-only leaderboard HTML"
+    )
     for command in ("prepare", "grade", "export"):
         sub = commands.add_parser(command)
         sub.add_argument("task", choices=tuple(TASKS))
@@ -428,6 +432,10 @@ def cli(args):
             if args.output:
                 args.output.parent.mkdir(parents=True, exist_ok=True)
                 args.output.write_text(json.dumps(result, indent=2) + "\n")
+        elif args.bench_command == "export-page":
+            from .official import export_page
+
+            result = export_page(args.output)
         elif args.bench_command == "prepare":
             result = prepare(args.task, args.output)
         elif args.bench_command == "export":

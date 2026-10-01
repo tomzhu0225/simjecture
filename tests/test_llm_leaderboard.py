@@ -17,6 +17,7 @@ from conjecture_solver.web.server import create_server
 def isolate_shipped_results(monkeypatch):
     # Published model runs evolve independently of these synthetic UI fixtures.
     monkeypatch.setattr("conjecture_solver.llm_bench.leaderboard.published_reports", lambda: [])
+    monkeypatch.setattr("conjecture_solver.llm_bench.official.dashboard", lambda: None)
 
 
 def trial(identifier, *, model="deepseek-flash", passed=True, wall=50, budget=180, effort="high"):

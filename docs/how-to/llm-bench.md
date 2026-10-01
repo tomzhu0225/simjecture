@@ -70,6 +70,46 @@ comparison of declared trials, not a cheating-resistant public submission servic
 
 ## Leaderboard and tradeoffs (development feature)
 
+The default page is **Official Simjecture results**, a maintained publication of
+the owned sweep. It has exactly two task tabs: RZ plasma diagnostics and radiation
+energy accounting. The older CSV entries were the same task under qualification
+versions and a local runner, not four scientific tasks; they now live in
+**Community, local & archive**.
+
+Select **Rank by** completion, fastest verified completion or lowest cost per
+attempt. Column headings also change the sort. The table shows numerical checks
+separately from the complete delivery contract, and published input/output USD
+tariffs per million tokens separately from the cost of an attempt. Time rank uses
+median verified completion, so a timed-out attempt is not ranked as fast.
+Cost rank uses mean API-equivalent cost across all graded attempts, including
+failures. This remains defined when a model never completed the task.
+
+The cost/time plot is visible by default. Dashed lines connect reasoning efforts
+for the same model and coding agent. Search, effort filters and clickable series
+names focus the comparison. Cost uses a logarithmic axis; task time includes
+incomplete attempts. Filled points have at least one completion. Hollow points
+have none. Hover or focus a point for its model, effort and measurements.
+
+The separate valuation ledger recovers counters from saved traces while preserving
+original host grades. AGY estimates explicitly treat its input and cache-read
+counters as disjoint and never add thinking tokens twice. They are labelled
+estimates, not billing receipts. Interrupted requests show **≥** recorded cost
+and receive no cost rank or effort connection. The optional uncached basis applies
+full input tariffs to recorded cached tokens. Standard short-context tariffs,
+cache storage exclusions and counter interpretations are stated in Methodology.
+GPT-OSS uses a labelled Groq reference tariff because open weights have no single
+hosting price. GPT Reserve is a dynamic router with no fixed model tariff.
+Grok Build Fast uses its published CLI token tariff, since that profile has no
+public API endpoint.
+
+View the [standalone publication](../_static/benchmark-leaderboard.html), or export
+a self-contained HTML page for hosting or sharing. It includes the curated results,
+filters, rankings and plots; it needs no server, login, model request or import:
+
+```bash
+simjecture llm-benchmark export-page --output ./leaderboard.html
+```
+
 After 0.5.3rc2, the development workspace adds a leaderboard to **Benchmarks**.
 Task preparation and grading remain available. **Run your model** starts fresh
 timed trials using an installed coding CLI or the API coding agent configured in

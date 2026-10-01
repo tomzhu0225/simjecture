@@ -4,6 +4,14 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+- Present a maintained official benchmark edition by default, with two task tabs,
+  explicit time and cost ranks, input/output API tariffs, model search and effort
+  filters. Move prior qualifications and contributed/local trials into an archive.
+- Plot API-equivalent cost versus task time with dashed lines connecting model
+  effort settings; preserve partial receipt bounds and labelled AGY estimates.
+- Recover a separate valuation ledger from saved usage counters without changing
+  host grades, and export a standalone read-only leaderboard page without model calls.
+
 - Add a task-scoped benchmark leaderboard with pass-rate uncertainty, separate
   actual reported spend and API token estimates, failure-inclusive cost/time per
   success, and descriptive Pareto comparisons after repeated trials.

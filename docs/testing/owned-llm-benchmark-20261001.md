@@ -17,6 +17,20 @@ These are diagnostic coding tasks using recorded simulations. They do not test n
 
 ## CSV results
 
+The [official interactive publication](../_static/benchmark-leaderboard.html)
+is the primary comparison view: task tabs, time/cost ranks, API tariffs and effort
+connections. This report retains the original failure-inclusive cost-per-success
+tables below for auditing. Its missing cost-per-success cells do not mean vendor
+tariffs are unavailable.
+
+The publication adds a separate [valuation ledger](https://github.com/tomzhu0225/simjecture/blob/feature/benchmark-leaderboard/src/conjecture_solver/llm_bench/results/owned-2026-10-01-valuation.json):
+recovered native/API counters produce per-attempt standard-rate equivalents.
+AGY's input/cache interpretation is an explicitly labelled estimate; interrupted
+receipt totals are lower bounds and are excluded from cost ranking. A Groq
+reference tariff values GPT-OSS open weights; it is not an AGY invoice. GPT Reserve
+has variable routing rather than a fixed public model tariff. No scientific
+scores, trial denominators or original host grades changed.
+
 Pass denominators exclude explicitly identified no-inference availability failures. Every attempt that reached inference, including incomplete work and quota interruptions, remains in its denominator. Mean elapsed time includes failures. Time and token cost per success also include failed attempts. `Numbers only` counts all numerical checks passing without the full timed delivery contract.
 
 | Coding agent / model | Effort | Passes / graded | Numbers only | Mean seconds | Seconds / success | Token USD / success |

@@ -334,68 +334,85 @@
         </section>
         <section id="view-benchmarks" class="view benchmark-view" hidden>
           <div class="benchmark-heading">
-            <div><p class="eyebrow">SIMJECTURE BENCH · EXPERIMENTAL</p>
-              <h1>Scientific work. Measured.</h1>
-              <p class="lead">Compare what agents finish, what it costs, and how long verified results take.</p></div>
+            <div><p class="eyebrow">SIMJECTURE BENCHMARK RESULTS</p>
+              <h1>Model leaderboard</h1>
+              <p class="lead">Measured scientific coding tasks. Compare completion, time and API-equivalent cost.</p></div>
             <div class="benchmark-actions">
-              <button id="benchmark-run" type="button">＋ Run your model</button>
-              <button id="benchmark-import" class="secondary" type="button">Import grades</button>
-              <button id="benchmark-export" class="secondary" type="button">Export summary</button>
-              <button id="benchmark-download-grades" class="secondary" type="button">Download grades</button>
-              <input id="benchmark-import-files" type="file" accept=".json,application/json" multiple hidden />
+              <button id="benchmark-run" type="button">＋ Test a model</button>
+              <button id="benchmark-export" class="secondary" type="button">Download results</button>
             </div>
           </div>
+          <div class="benchmark-publication-bar">
+            <p id="benchmark-published-note"></p>
+            <label>Results <select id="benchmark-source" aria-label="Results source">
+              <option value="official">Official Simjecture results</option>
+              <option value="local">Community, local &amp; archive</option>
+            </select></label>
+          </div>
           <div id="benchmark-overview" class="benchmark-overview"></div>
-          <p id="benchmark-published-note" class="field-help"></p>
-          <div id="benchmark-campaigns" class="benchmark-campaigns" aria-live="polite"></div>
-          <div class="inventory-heading"><div><h2>Choose a task</h2>
-            <p id="benchmark-version" class="field-help"></p></div></div>
-          <div id="benchmark-tasks" class="tool-grid"></div>
-          <p class="benchmark-explainer">Recorded solver diagnostics, fresh numerical holdouts,
-            and independent grading. Chat preparation makes no model request; use a timed
-            runner for controlled trials. Passing a coding contract does not approve a scientific claim.</p>
           <section class="benchmark-board" aria-labelledby="leaderboard-title">
-            <div class="inventory-heading"><div><p class="eyebrow">COMPARABLE TRIALS</p>
-              <h2 id="leaderboard-title">Leaderboard</h2></div>
-              <label class="benchmark-filter">Comparison group
+            <div class="inventory-heading"><div><h2 id="leaderboard-title">Task leaderboard</h2></div>
+              <div id="benchmark-task-tabs" class="benchmark-task-tabs" role="group" aria-label="Benchmark task"></div>
+              <label class="benchmark-filter" id="benchmark-local-group" hidden>Archived comparison
                 <select id="benchmark-cohort" aria-label="Comparison group"></select></label></div>
-            <p id="benchmark-cohort-note" class="field-help"></p>
-            <div id="benchmark-leaderboard"></div>
-            <div class="benchmark-tradeoff-heading"><label class="benchmark-filter">Tradeoff view
-              <select id="benchmark-chart" aria-label="Tradeoff view">
-                <option value="quality-time">Quality × time</option>
-                <option value="cost-time">Cost × time</option>
+            <div id="benchmark-task-brief" class="benchmark-task-brief"></div>
+            <div class="benchmark-controls" id="benchmark-official-controls">
+              <label>Find a model <input id="benchmark-search" type="search" placeholder="Model or coding agent" aria-label="Find a model" /></label>
+              <label>Rank by <select id="benchmark-sort" aria-label="Rank by">
+                <option value="score">Completion rate</option><option value="time">Fastest completion</option><option value="cost">Lowest cost per task</option>
               </select></label>
-              <span class="field-help">Colour = pass rate · outlined = frontier for this view</span></div>
+              <label>Effort <select id="benchmark-effort-filter" aria-label="Filter reasoning effort">
+                <option value="all">All efforts</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="xhigh">Xhigh</option><option value="max">Max</option><option value="ultra">Ultra</option><option value="default">Provider default</option>
+              </select></label>
+              <label>Cost basis <select id="benchmark-cost-basis" aria-label="Cost basis">
+                <option value="cached">API equivalent · cache adjusted</option><option value="uncached">API equivalent · no cache discounts</option>
+              </select></label>
+            </div>
+            <div class="benchmark-tradeoff-heading">
+              <div><h3>Cost and time</h3><p id="benchmark-chart-note" class="field-help">Dashed lines connect the same model's reasoning efforts.</p></div>
+              <label class="benchmark-filter">Plot <select id="benchmark-chart" aria-label="Tradeoff view">
+                <option value="cost-time">Cost × time</option><option value="quality-time">Completion × time</option>
+              </select></label>
+            </div>
             <div id="benchmark-tradeoff"></div>
-            <p class="field-help">Failures count toward both cost and time per success.
-              Five fresh trials per configuration are required for Pareto eligibility;
-              membership describes this sample, not statistical superiority.</p>
-            <p class="field-help">Imported protocols and reported spending are runner/operator
-              declarations. This page does not certify their execution or billing.</p>
+            <div id="benchmark-series-legend" class="benchmark-series-legend"></div>
+            <div id="benchmark-leaderboard"></div>
+            <p id="benchmark-ranking-note" class="field-help"></p>
+            <p id="benchmark-cohort-note" class="field-help" hidden></p>
           </section>
+          <details class="benchmark-details" id="benchmark-methodology">
+            <summary>Tasks, scoring &amp; cost methodology</summary>
+            <div id="benchmark-methodology-text"></div>
+          </details>
           <details class="benchmark-details" id="benchmark-pricing">
-            <summary>Token price reference <span id="benchmark-price-date"></span></summary>
+            <summary>Published API tariffs <span id="benchmark-price-date"></span></summary>
             <p id="benchmark-price-note" class="field-help"></p>
             <div id="benchmark-price-table" class="benchmark-table-scroll"></div>
           </details>
+          <details class="benchmark-details" id="benchmark-your-work">
+            <summary>Your runs &amp; community contributions</summary>
+            <p class="field-help">Test any supported model with your installed agent or API connection. Local and imported runs appear in Community, local &amp; archive. Official results are maintained by Simjecture.</p>
+            <div class="benchmark-actions">
+              <button id="benchmark-import" class="secondary" type="button">Import grades</button>
+              <button id="benchmark-download-grades" class="secondary" type="button">Download raw grades</button>
+              <input id="benchmark-import-files" type="file" accept=".json,application/json" multiple hidden />
+            </div>
+            <div id="benchmark-campaigns" class="benchmark-campaigns" aria-live="polite"></div>
+            <h3>Prepare or grade a task</h3><p id="benchmark-version" class="field-help"></p>
+            <div id="benchmark-tasks" class="tool-grid"></div>
+            <h3>Your benchmark conversations</h3><div id="benchmark-projects" class="tool-grid"></div>
+            <details><summary>Latest numerical grade</summary><pre id="benchmark-report" hidden></pre></details>
+          </details>
           <details class="benchmark-details" id="benchmark-unranked">
             <summary>Availability &amp; unranked records <span id="benchmark-unranked-count"></span></summary>
-            <p class="field-help">Quota limits, expired subscriptions, exploratory trials and
-              invalidated qualifications remain visible here. They do not count as controlled
-              model failures. Earlier live simulation pilots use a separate contract.</p>
+            <p class="field-help">Expired subscriptions and quota failures before inference are availability observations. Earlier verifier qualifications stay in the archive.</p>
             <div id="benchmark-unranked-table" class="benchmark-table-scroll"></div>
           </details>
           <details class="benchmark-details" id="benchmark-history">
             <summary>Earlier real-model pilots <span>Separate contract · 2026-09-30</span></summary>
-            <p id="benchmark-history-note" class="field-help"></p>
-            <div id="benchmark-history-table" class="benchmark-table-scroll"></div>
+            <p id="benchmark-history-note" class="field-help"></p><div id="benchmark-history-table" class="benchmark-table-scroll"></div>
             <p class="field-help"><a id="benchmark-history-source" target="_blank" rel="noopener noreferrer">Read the full MiMo / DeepSeek evaluation</a></p>
           </details>
-          <div class="inventory-heading"><h2>Your benchmark conversations</h2></div>
-          <div id="benchmark-projects" class="tool-grid"></div>
-          <details class="benchmark-details"><summary>Latest numerical grade</summary>
-            <pre id="benchmark-report" hidden></pre></details>
         </section>
         <section id="view-tools" class="view research-tools-view" hidden>
           <div class="research-tools-heading">

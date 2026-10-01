@@ -12,7 +12,147 @@ window.WorkspaceBenchmarks = (() => {
   const percent = n => `${Math.round(n * 100)}%`;
   const title = row => `${row.agent} / ${row.model}${row.settings.reasoning_effort ? ` · ${row.settings.reasoning_effort}` : " · default effort"}`;
   let selected = "";
-  let chartMode = "quality-time";
+  let chartMode = "cost-time";
+  let resultsSource = "", officialTask = "rz-diagnostics", rankMode = "time", costBasis = "cached";
+
+  const effortOrder = ["low","medium","high","xhigh","max","ultra"];
+  const titleWords = text => text.replace(/\b(sol|astra|luna|terra|flash|pro|opus|sonnet|build|fast|thinking)\b/g,w=>w[0].toUpperCase()+w.slice(1));
+  const modelName = name => {
+    if(name==="deepseek-flash")return "DeepSeek Flash";
+    if(name==="deepseek-v4-pro")return "DeepSeek V4 Pro";
+    if(name==="gpt-reserve")return "GPT Reserve · dynamic router";
+    if(name==="gpt-oss-120b-medium")return "GPT-OSS 120B";
+    if(name.startsWith("gpt-"))return titleWords(name.replace("gpt-","GPT-").replaceAll("-"," ").replace("GPT ","GPT-"));
+    if(name.startsWith("gemini-"))return titleWords(name.replace("gemini-","Gemini ").replaceAll("-"," "));
+    if(name.startsWith("mimo-"))return titleWords(name.replace("mimo-","MiMo ").replaceAll("-"," "));
+    if(name.startsWith("grok-"))return titleWords(name.replace("grok-","Grok ").replaceAll("-"," "));
+    if(name.startsWith("claude-"))return titleWords(name.replace("claude-","Claude ").replace("4-6","4.6").replaceAll("-"," "));
+    return name;
+  };
+  const agentName = name => ({codex:"Codex",agy:"Antigravity",grok:"Grok CLI",builtin:"API coding agent","codex-glm":"Codex / GLM"})[name]||name;
+  const familyColour = family => {
+    const palette=["#4879d9","#11958b","#bc6698","#8b6ed1","#d48a36","#679743","#b85c50","#639eb2"];
+    let hash=0;for(const c of family)hash=(hash*31+c.charCodeAt(0))>>>0;
+    return palette[hash%palette.length];
+  };
+  const officialCost = row => costBasis==="cached" ? row.cost_per_attempt : row.uncached_cost_per_attempt;
+  const costLabel = row => {
+    const value=officialCost(row);
+    if(value===null)return !row.trials ? "No inference" : !row.tariff ? "Variable tariff" : "Usage missing";
+    return (row.cost_coverage==="partial" ? "≥ " : row.cost_coverage==="estimated" ? "≈ " : "")+money(value);
+  };
+  const rankKey = () => rankMode==="time" ? "median_verified_seconds" : rankMode==="cost" ? (costBasis==="cached" ? "ranked_cost_per_attempt" : "ranked_uncached_cost_per_attempt") : "pass_rate";
+
+  function officialPlot(rows, task) {
+    const target=$("benchmark-tradeoff"),legend=$("benchmark-series-legend");target.replaceChildren();legend.replaceChildren();
+    const quality=chartMode==="quality-time", points=rows.filter(r=>r.mean_trial_seconds!==null && (quality || officialCost(r)!==null));
+    if(!points.length){target.append(empty("No measurements match this filter","Clear the model or effort filter to see the published results."));return;}
+    const ns="http://www.w3.org/2000/svg";
+    const s=(tag,attrs,text)=>{const n=document.createElementNS(ns,tag);for(const [k,v] of Object.entries(attrs||{}))n.setAttribute(k,String(v));if(text!==undefined)n.textContent=text;return n;};
+    const svg=s("svg",{viewBox:"0 0 1000 440",role:"img","aria-label":"Official task cost and time. Dashed lines connect reasoning efforts for the same model."});
+    const x0=90,x1=958,y0=365,y1=45,xmax=task.budget_seconds;
+    const costs=points.map(officialCost).filter(n=>n>0);
+    const logmin=quality ? 0 : Math.log10(Math.min(...costs)*.75);
+    const logmax=quality ? 1 : Math.log10(Math.max(...costs)*1.4);
+    const x=r=>x0+(x1-x0)*r.mean_trial_seconds/xmax;
+    const y=r=>quality ? y0-(y0-y1)*r.pass_rate : y0-(y0-y1)*(Math.log10(officialCost(r))-logmin)/(logmax-logmin);
+    for(let i=0;i<=5;i++){
+      const px=x0+(x1-x0)*i/5;
+      svg.append(s("line",{x1:px,x2:px,y1:y1,y2:y0,class:"benchmark-gridline"}));
+      svg.append(s("text",{x:px,y:y0+28,"text-anchor":"middle"},(xmax*i/5/60).toLocaleString(undefined,{maximumFractionDigits:1})));
+    }
+    const ticks=[];
+    if(quality){for(let i=0;i<=4;i++)ticks.push(i/4);}
+    else{for(let power=Math.floor(logmin);power<=Math.ceil(logmax);power++)for(const multiple of [1,2,5]){const v=multiple*10**power;if(Math.log10(v)>=logmin && Math.log10(v)<=logmax)ticks.push(v);}}
+    for(const v of ticks){const py=quality ? y0-(y0-y1)*v : y0-(y0-y1)*(Math.log10(v)-logmin)/(logmax-logmin);svg.append(s("line",{x1:x0,x2:x1,y1:py,y2:py,class:"benchmark-gridline"}));svg.append(s("text",{x:x0-15,y:py+4,"text-anchor":"end"},quality ? percent(v) : money(v)));}
+    svg.append(s("text",{x:x0,y:22,class:"benchmark-axis-title"},quality ? "Verified completion rate" : "API-equivalent cost per attempt · USD · log scale"));
+    svg.append(s("text",{x:(x0+x1)/2,y:427,"text-anchor":"middle",class:"benchmark-axis-title"},"Elapsed task time · minutes · includes incomplete attempts"));
+    const families=new Map();for(const r of points){if(!families.has(r.family))families.set(r.family,[]);families.get(r.family).push(r);}
+    for(const [family,variants] of families){
+      variants.sort((a,b)=>effortOrder.indexOf(a.effort)-effortOrder.indexOf(b.effort));
+      const comparable=variants.filter(r=>r.cost_coverage!=="partial" || quality);
+      if(comparable.length>1){
+        const path=s("polyline",{points:comparable.map(r=>x(r)+","+y(r)).join(" "),fill:"none",stroke:familyColour(family),"stroke-width":2,"stroke-dasharray":"7 5",opacity:.65,class:"benchmark-effort-line","data-family":family});
+        path.append(s("title",{},variants[0].family_label+" · "+comparable.map(r=>r.effort).join(" → ")));svg.append(path);
+        const button=node("button",undefined,"benchmark-series-button");button.type="button";
+        const swatch=node("span",undefined,"benchmark-series-swatch");swatch.style.borderColor=familyColour(family);
+        button.append(swatch,document.createTextNode(modelName(variants[0].family_label)));
+        button.onclick=()=>{const search=$("benchmark-search");search.value=search.value===variants[0].family_label ? "" : variants[0].family_label;search.dispatchEvent(new Event("input"));};legend.append(button);
+      }
+    }
+    const tooltip=node("div",undefined,"benchmark-plot-tooltip");tooltip.hidden=true;
+    const placedLabels=[];
+    for(const row of points){
+      const colour=familyColour(row.family),partial=row.cost_coverage==="partial";
+      const dot=s("circle",{cx:x(row),cy:y(row),r:partial ? 6 : 7,fill:row.passes ? colour : "var(--white)",stroke:colour,"stroke-width":2.5,tabindex:0,role:"button",class:"benchmark-official-dot","data-model":row.model,"data-effort":row.effort||"default","aria-label":row.model+" "+(row.effort||"default")+", "+costLabel(row)+", "+seconds(row.mean_trial_seconds)});
+      const label=row.model+" · "+(row.effort||"default")+" effort";
+      dot.append(s("title",{},label+" · "+row.passes+"/"+row.trials+" completed · "+costLabel(row)+" per attempt · "+seconds(row.mean_trial_seconds)));
+      const show=()=>{tooltip.replaceChildren(node("strong",label),node("span",costLabel(row)+" per attempt · "+seconds(row.mean_trial_seconds)),node("small",row.passes+"/"+row.trials+" completed"+(partial ? " · incomplete usage receipt" : row.cost_coverage==="estimated" ? " · AGY counter estimate" : "")));tooltip.hidden=false;};
+      dot.onmouseenter=show;dot.onfocus=show;dot.onmouseleave=()=>tooltip.hidden=true;dot.onblur=()=>tooltip.hidden=true;
+      const choose=()=>{document.querySelectorAll("#benchmark-leaderboard .benchmark-highlight").forEach(n=>n.classList.remove("benchmark-highlight"));const entry=document.querySelector('#benchmark-leaderboard tr[data-config="'+row.id+'"]');if(entry){entry.classList.add("benchmark-highlight");entry.scrollIntoView({block:"nearest",behavior:"smooth"});}};
+      dot.onclick=choose;dot.onkeydown=e=>{if(["Enter"," "].includes(e.key)){e.preventDefault();choose();}};svg.append(dot);
+      if(partial&&!quality)svg.append(s("text",{x:x(row)+9,y:y(row)-8,fill:colour},"≥"));
+      if(families.get(row.family).length>1&&!partial){
+        const width=(row.effort||"").length*6.5;
+        const candidates=[[9,-10],[9,18],[-width-9,-10],[-width-9,18],[0,-25],[0,32]];
+        const offset=candidates.find(([dx,dy])=>{
+          const box={left:x(row)+dx,top:y(row)+dy-10,right:x(row)+dx+width,bottom:y(row)+dy+3};
+          if(box.left<x0||box.right>x1||box.top<y1||box.bottom>y0)return false;
+          if(placedLabels.some(b=>box.left<b.right+4&&box.right>b.left-4&&box.top<b.bottom+3&&box.bottom>b.top-3))return false;
+          placedLabels.push(box);return true;
+        });
+        if(offset){const label=s("text",{x:x(row)+offset[0],y:y(row)+offset[1],class:"benchmark-effort-label"},row.effort);label.style.fill=colour;svg.append(label);}
+      }
+    }
+    target.append(svg,tooltip);
+    $("benchmark-chart-note").textContent="Dashed lines join low → medium → high → xhigh → max → ultra for the same model and agent. Filled = at least one completion; hollow = no completion. ≥ = recorded cost lower bound; lower bounds are not connected.";
+  }
+
+  function officialBoard(publication, actions) {
+    const task=publication.tasks.find(t=>t.id===officialTask)||publication.tasks[0];officialTask=task.id;
+    const tabs=$("benchmark-task-tabs");tabs.replaceChildren();
+    for(const t of publication.tasks){const b=node("button",t.title,"benchmark-task-tab");b.type="button";b.setAttribute("aria-pressed",String(t.id===task.id));b.onclick=()=>{officialTask=t.id;officialBoard(publication,actions);};tabs.append(b);}
+    const brief=$("benchmark-task-brief");brief.replaceChildren(node("p",task.description),node("span",task.inputs),node("span",task.budget_seconds/60+" min deadline · "+task.repeats+" scheduled "+(task.repeats===1 ? "attempt" : "attempts")+" per configuration"));
+    const redraw=()=>{
+      const search=$("benchmark-search").value.toLowerCase().replaceAll(/[^a-z0-9]/g,""),effort=$("benchmark-effort-filter").value;
+      let rows=task.rows.filter(r=>(r.agent+" "+agentName(r.agent)+" "+r.model+" "+modelName(r.family_label)).toLowerCase().replaceAll(/[^a-z0-9]/g,"").includes(search)&&(effort==="all"||(r.effort||"default")===effort));
+      const key=rankKey();rows.sort((a,b)=>(a.ranks[key]??Infinity)-(b.ranks[key]??Infinity)||a.model.localeCompare(b.model)||effortOrder.indexOf(a.effort)-effortOrder.indexOf(b.effort));
+      const entries=rows.map(row=>{
+        const identity=node("div",undefined,"benchmark-model-identity"),name=node("strong",modelName(row.family_label)),detail=node("small",agentName(row.agent));identity.append(name,detail);identity.title=row.model+" · "+(row.agent_version||"Version unavailable");
+        const receipts=node("details");receipts.append(node("summary","View "+row.trials+" "+(row.trials===1 ? "attempt" : "attempts")));
+        const token=n=>n===null||n===undefined ? "Not recorded" : n.toLocaleString();
+        receipts.append(table(["Elapsed","Input incl. cache","Cached input","Output","Cost","Result"],row.receipts.map(r=>[seconds(r.wall_seconds),token(r.usage.input_tokens),token(r.usage.cached_input_tokens),token(r.usage.output_tokens),(r.coverage==="partial" ? "≥ " : r.coverage==="agy-estimate" ? "≈ " : "")+money(costBasis==="cached" ? r.cost_usd : r.uncached_cost_usd),r.passed ? "Complete" : r.provider_interruption ? "Quota interrupted after work" : r.numeric_passed&&!r.findings_present ? "Numbers pass; findings missing" : "Incomplete contract"])));
+        if(row.unavailable_attempts)receipts.append(node("p",row.unavailable_attempts+" attempts unavailable before inference; excluded from scores.","field-help"));identity.append(receipts);
+        const score=node("div");score.append(node("strong",row.trials ? percent(row.pass_rate) : "Unavailable"),node("small",row.trials ? row.passes+"/"+row.trials+" complete" : "No successful inference"));
+        const numerical=node("div");numerical.append(node("strong",row.trials ? percent(row.numeric_passes/row.trials) : "—"),node("small",row.trials ? row.numeric_passes+"/"+row.trials+" numerical passes" : ""));
+        const cost=node("div");cost.append(node("strong",costLabel(row)),node("small",row.cost_coverage==="estimated" ? "AGY estimate" : row.cost_coverage==="partial" ? "Partial receipt · unranked by cost" : row.tariff?.reference ? "Groq tariff reference" : row.trials ? "API equivalent" : ""));
+        const rate=node("div");rate.append(node("span",row.tariff ? money(row.tariff.input)+" / "+money(row.tariff.output) : "Variable routing"));
+        if(row.tariff){const link=node("a",row.tariff.reference ? "Reference source" : "Vendor tariff");link.href=row.tariff.source;link.target="_blank";link.rel="noopener noreferrer";rate.append(link);rate.title=row.tariff.basis||"Input / output USD per million tokens; this is separate from task cost.";}
+        return [String(row.ranks[key]??"—"),identity,row.effort||"default",score,numerical,row.median_verified_seconds===null ? row.trials ? "Not completed" : "—" : seconds(row.median_verified_seconds),cost,rate];
+      });
+      const container=$("benchmark-leaderboard"),wrap=node("div",undefined,"benchmark-table-scroll");container.replaceChildren();
+      const t=table(["Rank","Model / coding agent","Effort","Completion","Numerical checks","Completion time","Cost / attempt · USD","Token tariff · in / out per 1M"],entries);wrap.append(t);container.append(wrap);
+      Array.from(t.tBodies[0].rows).forEach((tr,i)=>tr.dataset.config=rows[i].id);
+      for(const [index,mode] of [[3,"score"],[5,"time"],[6,"cost"]]){
+        const th=t.tHead.rows[0].cells[index],label=th.textContent,b=node("button",label+(rankMode===mode ? " ↓" : ""),"benchmark-sort-heading");b.type="button";b.onclick=()=>{$("benchmark-sort").value=mode;rankMode=mode;redraw();};th.replaceChildren(b);th.setAttribute("aria-sort",rankMode===mode ? mode==="score" ? "descending" : "ascending" : "none");
+      }
+      officialPlot(rows,task);
+      $("benchmark-ranking-note").textContent="Time rank = median independently verified completion. Cost rank = mean API-equivalent cost per attempt, including failures. Partial usage has a lower bound and no cost rank. "+(task.repeats===1 ? "RZ has one measured attempt per configuration; ranks describe this initial sweep." : "CSV schedules five fresh attempts; quota-blocked attempts are excluded.")+" API tariffs are published prices; task cost depends on tokens used.";
+    };
+    $("benchmark-search").oninput=redraw;$("benchmark-effort-filter").onchange=redraw;
+    $("benchmark-sort").value=rankMode;$("benchmark-sort").onchange=()=>{rankMode=$("benchmark-sort").value;redraw();};
+    $("benchmark-cost-basis").value=costBasis;$("benchmark-cost-basis").onchange=()=>{costBasis=$("benchmark-cost-basis").value;redraw();};
+    $("benchmark-chart").value=chartMode;$("benchmark-chart").onchange=()=>{chartMode=$("benchmark-chart").value;redraw();};
+    const methodology=$("benchmark-methodology-text");methodology.replaceChildren();
+    for(const text of ["Official results are this fixed 2026-10-01 edition, pack "+publication.pack_version+". Earlier packs and local/community protocols are archived separately.",
+      "Completion requires numerical results, an independently reexecuted reducer, unchanged inputs and nonempty findings. Numerical checks are shown separately so correct arithmetic with missing delivery is visible.",
+      "API-equivalent costs use published standard short-context rates and recorded token usage. They are not subscription invoices. Cache storage, hosted tools and unreported cache-write charges are excluded. Switching cost basis applies full input rates to all recorded input.",
+      "AGY estimates treat its reported input and cache-read counters as disjoint; output already includes its thinking subset. This interpretation is explicit because native counter semantics are not a verified billing receipt.",
+      "Interrupted requests may lack final usage. ≥ shows the recorded cost lower bound; it is excluded from cost ranking and effort connections. Grok Build Fast uses its published CLI tariff. GPT-OSS uses a labelled Groq reference tariff; GPT Reserve routes dynamically and has no fixed model tariff.",
+      "These are recorded-diagnostic coding tasks with fresh numerical holdouts. Passing does not establish a physical hypothesis. Trials retain each coding agent's native prompts and tools."]){methodology.append(node("p",text,"field-help"));}
+    const report=node("a","Full results and protocol");report.href=publication.report_url;report.target="_blank";report.rel="noopener noreferrer";methodology.append(report);
+    redraw();
+  }
 
   function table(headers, entries) {
     const t = node("table", undefined, "benchmark-table"), h = node("thead"), r = node("tr"), body = node("tbody");
@@ -179,7 +319,7 @@ window.WorkspaceBenchmarks = (() => {
     picker.replaceChildren();
     const ordered=[...data.cohorts].sort((a,b)=>b.scope.pack_version.localeCompare(a.scope.pack_version,{numeric:true}) || b.rows.reduce((n,r)=>n+r.trials,0)-a.rows.reduce((n,r)=>n+r.trials,0));
     ordered.forEach((c,i) => {
-      const option = node("option",`${c.scope.protocol==="community-controlled" ? "Community · " : ""}${c.scope.task} · ${c.scope.budget_seconds}s · ${c.scope.hardware} · ${c.id.slice(0,6)}`); option.value=c.id; picker.append(option);
+      const option = node("option",`${c.scope.protocol==="community-controlled" ? "Community · " : "Archive / local · "}${c.scope.task} · pack ${c.scope.pack_version} · ${c.scope.budget_seconds}s · ${c.id.slice(0,6)}`); option.value=c.id; picker.append(option);
       if (!selected && i===0) selected=c.id;
     });
     if (!data.cohorts.length) picker.append(node("option","No controlled trials yet"));
@@ -232,6 +372,35 @@ window.WorkspaceBenchmarks = (() => {
       } catch(error) {actions.toast(error.message,true);}
       finally {files.value="";$("benchmark-import").disabled=actions.readonly;}
     };
+    if(!resultsSource)resultsSource=pack.official ? "official" : "local";
+    if(!pack.official)resultsSource="local";
+    const source=$("benchmark-source");source.value=resultsSource;
+    source.querySelector('option[value="official"]').disabled=!pack.official;
+    source.onchange=()=>{resultsSource=source.value;render(pack,actions);};
+    const official=resultsSource==="official";
+    $("benchmark-task-tabs").hidden=!official;
+    $("benchmark-official-controls").hidden=!official;
+    $("benchmark-local-group").hidden=official;
+    $("benchmark-cohort-note").hidden=official;
+    if(official){
+      const publication=pack.official;
+      $("benchmark-published-note").textContent="Official Simjecture measurements · "+publication.date+" · maintained result edition · pack "+publication.pack_version;
+      $("benchmark-overview").replaceChildren();
+      for(const [count,label] of [[publication.configurations,"Configurations tested"],[publication.attempts,"Scheduled attempts recorded"],[publication.tasks.length,"Scientific coding tasks"],[publication.unavailable_attempts,"Unavailable before inference"]]){
+        const card=node("div",undefined,"benchmark-stat");card.append(node("strong",String(count)),node("span",label));$("benchmark-overview").append(card);
+      }
+      $("benchmark-export").onclick=()=>{
+        const url=URL.createObjectURL(new Blob([JSON.stringify(publication,null,2)+"\n"],{type:"application/json"}));
+        const a=node("a");a.href=url;a.download="simjecture-official-results-"+publication.date+".json";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+      };
+      officialBoard(publication,actions);
+    }else{
+      $("benchmark-series-legend").replaceChildren();
+      $("benchmark-task-brief").replaceChildren(node("p","Archived qualifications and locally declared trials. Each comparison preserves its task version and runner conditions."));
+      $("benchmark-ranking-note").textContent="This archive is separate from the official publication. Imported and community execution/billing declarations are not independently certified.";
+      $("benchmark-chart-note").textContent="Archive measurements use their original comparison protocol.";
+      $("benchmark-methodology-text").replaceChildren(node("p","Choose Official Simjecture results for the maintained two-task publication. Community and local records remain in their declared comparison groups.","field-help"));
+    }
   }
   return {render};
 })();

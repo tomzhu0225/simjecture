@@ -232,6 +232,7 @@ def test_browser_benchmark_preparation_and_failed_grading(tmp_path, bubblewrap):
             page.on("pageerror", lambda error: errors.append(str(error)))
             page.goto(f"http://127.0.0.1:{server.server_port}/workspace#benchmarks")
             playwright.expect(page.locator("#benchmark-tasks")).to_contain_text("CSV energy")
+            page.locator("#benchmark-your-work > summary").click()
             page.locator("#benchmark-tasks button").first.click()
             playwright.expect(page.locator("#chat-input")).to_have_value(
                 __import__("re").compile("Complete the benchmark")

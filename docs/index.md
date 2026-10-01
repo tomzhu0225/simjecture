@@ -40,6 +40,7 @@ See [preview scope and validation](testing/0.5.3rc2-acceptance.md).
 - **Simote operator:** use [Simote agent roles](how-to/simote-agent-roles.md)
   to run claim-scoped CLI agents on shared campaigns.
 - **Reviewer:** inspect the [MiMo/DeepSeek comparison](research/llm-comparison.md),
+  the [official benchmark leaderboard](_static/benchmark-leaderboard.html),
   [Evaluation status](research/status.md),
   the [recorded Gray–Scott demo](demos/gray-scott.md),
   the [recorded collisionless GEM demo](demos/collisionless-gem.md),

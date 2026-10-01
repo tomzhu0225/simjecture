@@ -586,6 +586,7 @@ class Workspace(MachineWorkspace):
             published_reports,
             summarize,
         )
+        from ..llm_bench.official import dashboard
         from ..llm_bench.pack import catalogue
 
         result = catalogue() | {
@@ -625,6 +626,7 @@ class Workspace(MachineWorkspace):
                 if key not in owned_keys:
                     reports[key] = report
         result["leaderboard"] = summarize(reports.values())
+        result["official"] = dashboard()
         result["imported_trials"] = len(list((self.root / "benchmark-reports").glob("*.json")))
         result["campaigns"] = self.benchmark_campaigns()
         result["published_trials"] = len(published)
