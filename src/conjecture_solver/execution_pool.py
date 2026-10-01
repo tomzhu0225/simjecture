@@ -149,9 +149,7 @@ class Transport:
             envelope = json.loads(result.stdout)
             if not isinstance(envelope, dict) or type(envelope.get("ok")) is not bool:
                 raise ValueError("Invalid worker envelope")
-            if envelope["ok"] and (
-                result.returncode != 0 or not isinstance(envelope.get("result"), dict)
-            ):
+            if envelope["ok"] and (result.returncode != 0 or "result" not in envelope):
                 raise ValueError("Invalid worker success envelope")
         except ValueError as error:
             # Bound diagnostics; OpenSSH errors contain no password arguments.
@@ -167,7 +165,7 @@ class Transport:
         return envelope["result"]
 
     def call(self, method, *, timeout=20, **arguments):
-        return self.run(
+        result = self.run(
             [
                 self.machine.python,
                 "-m",
@@ -178,6 +176,10 @@ class Transport:
             {"protocol": PROTOCOL, "method": method, "arguments": arguments},
             timeout=timeout,
         )
+        # Bootstrap scripts may return scalar results; worker RPC methods may not.
+        if not isinstance(result, dict):
+            raise WorkerUnavailable(f"Worker {self.machine.id}: invalid RPC result")
+        return result
 
 
 HOST_SETUP = r"""

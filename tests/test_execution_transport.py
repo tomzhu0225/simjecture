@@ -131,3 +131,15 @@ def test_dispatch_recovers_malformed_reply_without_false_terminal_failure(tmp_pa
     assert waiting == [1]
     assert load(path)["status"] == "succeeded"
     assert load(path)["transport_status"] == "connected"
+
+
+@pytest.mark.parametrize("result", [True, "installed", ["ready"]])
+def test_generic_bootstrap_accepts_scalar_or_list_results_from_real_fixture_process(
+    tmp_path, result
+):
+    import sys
+
+    # INSTALL_BACKEND currently emits {"ok": True, "result": True}. This real,
+    # harmless fixture prints the envelope only; it never runs setup/install code.
+    script = "import json; print(json.dumps(" + repr({"ok": True, "result": result}) + "))"
+    assert transport(tmp_path).run([sys.executable, "-c", script], {}) == result
