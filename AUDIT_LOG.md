@@ -58,3 +58,9 @@ Pending completion. All test results, skips, performance measurements and review
 - Compare the already-canonical JSON representation for replay identity. Python equality previously conflated `true` with `1` and rejected equivalent tuple/list JSON arrays.
 - Added scalar-representation and equivalent-container tests; clarified the ledger's real single-thread-per-connection contract.
 - Validation: 75 affected tests reported by the worker, plus 21 parent ledger/web tests, Ruff and CLI smoke passed. Changed behavior applies to ambiguous or mismatched replay payloads.
+
+### Contribution and security guidance
+- Expanded reproducible bug reports, setup, existing code-style rules, regression/PR expectations, provenance and license guidance.
+- Added **DRAFT ONLY** paper-authorship consideration text. No threshold, guarantee or final criteria adopted; Bowen must decide the process and paper-specific requirements.
+- Corrected security descriptions: native agents are trusted host processes; numerical isolation does not cover them; cooperative PRoot is not an OS security boundary; local UI is not a public multi-user service.
+- Validation: strict Sphinx warning-as-error build and local link checks passed; CLI/schema and no-key artifact replay checks passed. Authorship/security wording still warrants maintainer review.

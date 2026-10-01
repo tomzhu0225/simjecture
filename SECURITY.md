@@ -1,8 +1,11 @@
 # Security policy
 
-## Supported version
+## Supported versions
 
-The latest commit on `main` is supported during the 0.1 research-preview phase.
+This is a research project, not a hardened multi-tenant service. Report issues
+against the exact release and commit: stable 0.5.2 and preview 0.5.3rc3 are distinct.
+The repository does not promise a long-term security-maintenance window for older
+releases. Check current maintainer guidance before deploying sensitive workloads.
 
 ## Reporting a vulnerability
 
@@ -11,18 +14,28 @@ host execution, or another security-sensitive defect. Contact the maintainer
 privately through the GitHub account associated with this repository. Include a
 minimal reproduction, affected commit, and impact assessment when possible.
 
-## Credential boundary
+## Credentials and execution boundaries
 
-Provider credentials belong only in process environment variables or an
-untracked local secret manager. They must never be written into prompts,
-workspaces, run artifacts, documentation examples, tests, or Git history. The
-agent sandbox intentionally receives no provider credentials or host network
-namespace.
+Keep provider credentials out of prompts, source control, shared artifacts and
+public test fixtures. CLI agents use their own credential stores. The built-in
+workspace connection stores its user-supplied key in a private mode-0600 server
+file; protect that file and backups, and never publish the workspace directory.
+
+Numerical experiments default to network-isolated Bubblewrap with a clean child
+environment. This does not enclose the native research agent, which retains its
+host tools and is a trusted same-account process. Explicit cooperative PRoot
+execution is **not an OS security boundary**: host networking is shared and
+read-only path remapping is not kernel-enforced. Run cooperative code only on a
+dedicated non-root account without unrelated sensitive files. See
+[restricted hosts](docs/how-to/restricted-containers.md) for probe requirements.
+Do not treat either a successful benchmark or an execution receipt as a security
+certification for hostile code.
 
 ## Local web boundary
 
-The version 0.1.1 web interface is a loopback-only operator tool, not a hosted
-or multi-user service. It must not be exposed through a reverse proxy or public
-port. Mutating requests require the per-process browser control token, and
-agent-authored artifacts are delivered under a restrictive content-security
-policy. Use `simjecture web --read-only` when presenting or reviewing a record.
+The web interface is a loopback-only operator tool, not a hosted or multi-user
+service. Do not expose it through a public port or reverse proxy. Use SSH port
+forwarding for remote access. Mutating requests require the per-process browser
+control token, and agent-authored artifacts are delivered under a restrictive
+content-security policy. Use `simjecture web --read-only` when reviewing a record;
+review record contents for private data before sharing them.
