@@ -20,7 +20,7 @@ acceptance records are retained separately under `research/` and `testing/`;
 they document what was checked then, not a promise that the same checks passed
 on the current host. Incremental implementation notes belong in Git history.
 
-Distinguish stable 0.5.2 instructions from preview 0.5.3rc3 features. Check CLI
+Distinguish stable 0.5.2 instructions from preview 0.5.3rc4 features. Check CLI
 examples against the checkout's `--help` and model/API claims against source and
 tests. Build with warnings as errors and check relative links. For examples that
 need credentials, licensed source, GPU hardware or an unavailable sandbox, state

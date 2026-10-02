@@ -1,6 +1,6 @@
 # Next steps
 
-Stable 0.5.2 and preview 0.5.3rc3 provide a domain-neutral evidence harness,
+Stable 0.5.2 and preview 0.5.3rc4 provide a domain-neutral evidence harness,
 recorded autonomous campaigns, and a capability framework that can take a new
 instrument. Operational improvements do not by themselves qualify new science.
 

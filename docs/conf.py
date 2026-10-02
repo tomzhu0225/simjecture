@@ -3,7 +3,7 @@ from __future__ import annotations
 project = "Simjecture"
 author = "Bowen Zhu"
 copyright = "2026, Bowen Zhu and contributors"
-release = "0.5.3rc3"
+release = "0.5.3rc4"
 
 extensions = [
     "myst_parser",

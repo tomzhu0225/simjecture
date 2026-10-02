@@ -6,16 +6,18 @@ It accepts a natural-language hypothesis, lets an agent commission and use
 computational instruments, and preserves an independently inspectable path from
 proposal to claim disposition.
 
-This documentation covers stable 0.5.2 and the 0.5.3rc3 preview. The project
+This documentation covers stable 0.5.2 and the 0.5.3rc4 preview. The project
 began in computational plasma physics. The same evidence harness is now ready
 to extend to other simulation-gated fields. The software has completed real
 autonomous CPU and CUDA campaigns, but it does not claim unrestricted
 hypothesis solving or empirical closure.
 
-The **0.5.3rc3 preview** includes [SSH experiment workers](how-to/ssh-workers.md),
+The **0.5.3rc4 preview** includes [SSH experiment workers](how-to/ssh-workers.md),
 automatic machine setup, live availability and refreshed research-tool details.
 It also adds the [published model benchmark](how-to/llm-bench.md).
-See [preview scope and validation](testing/0.5.3rc3-acceptance.md).
+Rc4 integrates the independent rc3 audit, including ledger integrity, multicore
+CPU allowances, worker recovery, usage-log efficiency and conversation fixes.
+See [preview scope and validation](testing/0.5.3rc4-acceptance.md).
 
 ## Choose a starting point
 
@@ -130,6 +132,7 @@ testing/iter-pack-acceptance
 testing/0.5.3rc1-acceptance
 testing/0.5.3rc2-acceptance
 testing/0.5.3rc3-acceptance
+testing/0.5.3rc4-acceptance
 testing/native-api-adapter
 testing/ssh-workers-acceptance
 testing/mimo-flash-comparison

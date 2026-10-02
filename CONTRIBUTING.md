@@ -12,7 +12,7 @@ Redact credentials and private paths. For security-sensitive issues, follow
 [SECURITY.md](SECURITY.md) rather than opening a public issue. Discuss large changes
 or scientific-policy changes with the maintainer before investing in an implementation.
 
-Stable 0.5.2 and the 0.5.3rc3 preview have different feature sets. Develop against
+Stable 0.5.2 and the 0.5.3rc4 preview have different feature sets. Develop against
 the intended branch and identify it in the issue or pull request; do not assume
 preview behavior is available in a stable installation.
 

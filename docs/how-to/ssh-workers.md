@@ -63,7 +63,7 @@ new phase. Register the parent's machine IDs first when importing an external st
 
 ## Prepare through the CLI
 
-Install `simjecture[workspace]==0.5.3rc3` on the coordinator.
+Install `simjecture[workspace]==0.5.3rc4` on the coordinator.
 This includes the process monitor and the built-in API agent used in the example.
 A coordinator using only native CLIs can use the smaller `process` extra; managed
 local workers also need the process monitor.
