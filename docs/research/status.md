@@ -1,7 +1,8 @@
 # Evaluation status
 
-Version 0.1 is a methods and infrastructure research preview. Conjecture
-Simjecture was first built to attack simulation-gated plasma conjectures. The
+Simjecture remains a methods and infrastructure research project. Stable 0.5.2
+and preview 0.5.3rc4 add operational features; neither establishes unrestricted
+scientific reliability. Simjecture was first built to attack simulation-gated plasma conjectures. The
 claim ledger, sandbox, commissioning protocol, and capability framework are
 now domain-neutral enough to extend to other fields that have a sharp
 question, a commissioned instrument, and a cheap verification path. Plasma
@@ -31,7 +32,7 @@ remains the origin domain.
 
 ## Next
 
-The 0.1 target is the methods and infrastructure preview. The same claim
+The current target remains methods and infrastructure. The same claim
 ledger, sandbox, commissioning protocol, and capability framework are ready
 to extend to other simulation-gated fields. The next scientific step is to
 use that tooling to hunt independently confirmed new results — a compact

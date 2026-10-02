@@ -1,7 +1,8 @@
 # Add a capability
 
-A capability exposes a named executable runtime without giving the model host
-shell authority.
+A capability exposes a named executable runtime through the recorded experiment
+interface. It does not grant extra host authority; native research agents may
+already have their own shell tools outside this numerical execution boundary.
 
 1. Add a versioned capability manifest under `capabilities/`.
 2. Define the immutable runtime path, probe command, resource environment, and
@@ -20,8 +21,10 @@ missing files, directories, symlinks, traversal, and duplicates are rejected.
 
 Capability availability, commissioning, and scientific validity are different
 states. A healthy runtime may execute workbench code. It may produce scientific
-evidence only after a suitable instrument claim is supported and the scientific
-command was prospectively authorized.
+evidence only after the applicable workflow gates are satisfied: classic campaigns
+use instrument claims and prospective contracts, while capability-backed minimal
+studies use source-bound methods review and the relevant claim/repair commitments.
+See [methods review](minimal-oversight.md).
 
 Do not place a problem-specific experiment plan in a general capability skill.
 Skills may capture stable interface facts and numerical hazards; the agent owns

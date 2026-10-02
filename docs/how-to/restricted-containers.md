@@ -4,19 +4,26 @@ Scientific modes (`minimal`, `structured`, `frontier`) are independent of the
 experiment execution backend. Bubblewrap remains the default. Simjecture never
 silently switches to weaker isolation when namespace creation fails.
 
-The next preview (rc2) adds checked fallback in the conversation workspace and
+The rc3 preview includes the checked fallback introduced in rc2 in the conversation workspace and
 runtime installer: prefer Bubblewrap; when it cannot run, select PRoot only if
 its probe succeeds under a non-root account. A sidebar warning explains that
 this is cooperative execution without filesystem/network security isolation.
 It can be dismissed; the mode indicator remains available to reopen it.
 The workspace extra includes the process monitor. The installer can install
 PRoot on Debian/Ubuntu. When invoked as root on a namespace-restricted host,
-the rc2 installer creates a dedicated `simjecture` account and installs by default
+the preview installer creates a dedicated `simjecture` account and installs by default
 under `/srv/simjecture`, with a root-owned launcher that drops privileges on
 subsequent starts. The account's home is `/var/lib/simjecture`; no permissions on
 `/root` or host namespace restrictions are relaxed. A custom installation path
 must be accessible to that account. Existing installations without this account
 marker are left untouched rather than silently migrated.
+PRoot also requires host support for tracing child processes. A container can block
+both user namespaces and ptrace, so installing PRoot is not a guaranteed workaround.
+If both probes fail, do not launch a local numerical study: use a supported host
+or a configured SSH execution worker. The GUI, recorded-demo replay and benchmark
+task preparation can still be used; grading executes code and requires a working
+backend. Do not relax host security settings merely to make a probe pass.
+
 Root execution itself never qualifies for this fallback. Explicit backend requests and
 existing studies are not silently changed.
 

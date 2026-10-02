@@ -7,7 +7,7 @@ final response. Simjecture remains authoritative for the hypothesis DAG,
 evidence contracts, commissioning, provenance, sandbox, and durable simulation
 jobs.
 
-Version 0.4.0 targets DSH 0.1.5-rc.2 and separates scientific work into four scopes:
+Bundle 0.5.3-rc.4 targets DSH 0.1.5-rc.2 and separates scientific work into four scopes:
 
 - a persistent, compact **Lead Scientist** reads durable state and delegates;
 - a fresh **Falsifier/Experimenter** commissions and tests exactly one open
@@ -60,7 +60,7 @@ outside the repository or remove the generated tarball after installation:
 SIMJECTURE_DSH_PROFILE="$(simjecture dsh-profile)"
 npm pack "$SIMJECTURE_DSH_PROFILE" --pack-destination /tmp
 dsh plugin --profile simjecture add @deepseek-ai/dsh-headless@0.1.5-rc.2
-dsh plugin --profile simjecture add /tmp/simjecture-dsh-bundle-0.4.0.tgz
+dsh plugin --profile simjecture add /tmp/simjecture-dsh-bundle-0.5.3-rc.4.tgz
 ```
 
 The dedicated profile composes DSH's native research tools with Simjecture's
@@ -98,7 +98,9 @@ stable session identity. The normal browser command is unchanged:
 uv run simjecture web
 ```
 
-New browser campaigns select DSH by default. The Python supervisor passes the
+In `/monitor`, explicitly selected legacy campaigns use DSH by default. The
+conversation workspace instead chooses a native CLI or configured built-in API
+agent. For a DSH campaign, the Python supervisor passes the
 hypothesis by contained file rather than process argument, stores the DSH event
 log beside the campaign, and reopens the same session on **Resume**.
 `uv run simjecture web --engine native` is the explicit compatibility path.

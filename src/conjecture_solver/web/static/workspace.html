@@ -12,6 +12,7 @@
     />
     <link rel="stylesheet" href="/assets/vendor/highlight-github-dark.css" />
     <link rel="stylesheet" href="/assets/workspace.css" />
+    <link rel="stylesheet" href="/assets/interface.css" />
     <script type="module" src="/assets/workspace-components.js"></script>
     <script src="/assets/vendor/marked-18.0.10.umd.js" defer></script>
     <script src="/assets/vendor/dompurify-3.4.14.min.js" defer></script>
@@ -25,6 +26,7 @@
     <script src="/assets/workspace.js" defer></script>
   </head>
   <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
     <div class="shell">
       <aside class="sidebar" id="workspace-sidebar">
         <a href="/workspace" class="brand"
@@ -35,7 +37,7 @@
           ＋ <span>New conversation</span>
         </button>
         <nav aria-label="Workspace navigation">
-          <button data-view="home" class="nav-item active">
+          <button data-view="home" class="nav-item active" aria-current="page">
             <span aria-hidden="true">⌂</span> Overview
           </button>
           <button data-view="tools" class="nav-item">
@@ -139,7 +141,7 @@
       >
         <span aria-hidden="true">›</span>
       </button>
-      <main>
+      <main id="main-content" tabindex="-1">
         <div id="readonly" class="banner" hidden>
           This session is read-only. You can inspect projects and results.
         </div>
@@ -156,6 +158,7 @@
             <label for="first-request">Your research request</label
             ><textarea
               id="first-request"
+              aria-describedby="first-request-help"
               rows="3"
               placeholder="I want to understand why my simulation disagrees with the experiment…"
               required
@@ -165,6 +168,7 @@
               <button type="submit" class="primary">Send <span>↑</span></button>
             </div>
           </form>
+          <p id="first-request-help" class="field-help composer-help">Enter to send · Shift + Enter for a new line. Choose an installed agent above, or set up an API in Connections.</p>
           <div class="section-line">
             <h2>A place to start</h2>
             <span>Choose an example and make it yours</span>
@@ -233,10 +237,10 @@
             <div id="machine-jobs-list"></div><div id="machine-job-controls" class="tool-actions"></div>
             <details><summary>Detailed receipts</summary><pre id="machine-jobs-report"></pre></details>
           </section>
-          <dialog id="machine-dialog" class="machine-dialog">
+          <dialog id="machine-dialog" class="machine-dialog" aria-labelledby="machine-editor-title">
             <div class="machine-dialog-heading"><div><p class="eyebrow">SSH CONNECTION</p><h2 id="machine-editor-title">Add a machine</h2></div>
               <button id="close-machine-editor" type="button" class="quiet" aria-label="Close machine settings">×</button></div>
-            <p class="machine-dialog-intro">An SSH address and password are all you need. We’ll detect the hardware and prepare the worker.</p>
+            <p class="machine-dialog-intro">Connect with an SSH address and your SSH key, agent, or password. We’ll detect the hardware and prepare the worker.</p>
             <form id="machine-form" class="machine-form">
               <label>SSH address<input id="machine-address" required autocomplete="off" spellcheck="false" placeholder="ssh -p 23 root@your-machine" /></label>
               <p class="field-help">Also accepts user@host:port or an address from your SSH config.</p>
@@ -429,13 +433,13 @@
           <div id="available-tool-grid" class="tool-grid research-tool-grid"></div>
           <p class="research-tools-footnote">Installation and readiness checks tell you a tool can run. Each investigation still validates its scientific method.
             For tools on SSH workers, use <button id="tools-open-machines" class="text-button" type="button">Machines</button>.</p>
-          <dialog id="tool-details-dialog" class="tool-details-dialog">
+          <dialog id="tool-details-dialog" class="tool-details-dialog" aria-labelledby="tool-detail-title">
             <div class="tool-dialog-heading"><div><p id="tool-detail-category" class="eyebrow">RESEARCH TOOL</p><h2 id="tool-detail-title">Tool details</h2></div>
               <button id="close-tool-details" class="quiet" type="button" aria-label="Close tool details">×</button></div>
             <div id="tool-details-body" class="tool-details-body"></div>
             <div class="tool-dialog-footer"><span id="tool-detail-status"></span><button id="tool-detail-action" class="secondary" type="button">Check readiness</button></div>
           </dialog>
-          <dialog id="custom-tool-dialog" class="machine-dialog">
+          <dialog id="custom-tool-dialog" class="machine-dialog" aria-label="Connect a research tool">
             <div class="machine-dialog-heading"><div><p class="eyebrow">EXISTING INSTALLATION</p><h2>Connect a research tool</h2></div>
               <button id="close-custom-tool" class="quiet" type="button" aria-label="Close tool registration">×</button></div>
             <p class="machine-dialog-intro">Connect an existing capability directory on this computer. Your agent can help prepare the software and its descriptor.</p>
@@ -780,7 +784,7 @@
                     <h3>Project files <span id="file-count">0</span></h3>
                     <div id="project-files"></div>
                     <details>
-                      <summary>Open local folder</summary>
+                      <summary>Project folder location</summary>
                       <code id="project-path"></code>
                       <p class="field-help">
                         Copy large datasets here directly. Browser uploads

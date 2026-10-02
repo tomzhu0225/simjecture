@@ -223,3 +223,21 @@ def test_infrastructure_failure_is_distinct_from_numerical_failure() -> None:
     assessment = assess_numerics(plan, diagnostics, NumericalGate())
     assert assessment.outcome is AttemptOutcome.INFRASTRUCTURE_FAILURE
     assert assessment.recovery_action is RecoveryAction.RETRY_REFERENCE
+
+
+@pytest.mark.parametrize("value, expected", [(0.25, 1e-150), (0.5, 1.0), (0.75, 1e150)])
+def test_log_mapping_handles_overflowing_ratio_of_finite_bounds(value, expected) -> None:
+    parameter = ParameterDefinition(
+        name="wide_log", role=ParameterRole.PHYSICAL, scale=ParameterScale.LOG,
+        lower=1e-300, upper=1e300, reference=1.0,
+    )
+    assert parameter.map_unit_interval(value) == pytest.approx(expected, rel=1e-12, abs=0)
+
+
+@pytest.mark.parametrize("value, expected", [(0.25, -5e307), (0.5, 0.0), (0.75, 5e307)])
+def test_linear_mapping_handles_overflowing_span_of_finite_bounds(value, expected) -> None:
+    parameter = ParameterDefinition(
+        name="wide_linear", role=ParameterRole.PHYSICAL, scale=ParameterScale.LINEAR,
+        lower=-1e308, upper=1e308, reference=0.0,
+    )
+    assert parameter.map_unit_interval(value) == pytest.approx(expected)

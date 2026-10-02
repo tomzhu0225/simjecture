@@ -77,10 +77,20 @@ class ResearchClient:
         ]
         env = dict(os.environ, PYTHONPATH=str(Path(__file__).resolve().parents[1]))
         completed = subprocess.run(command, capture_output=True, text=True, env=env)
-        payload = json.loads(completed.stdout)
+        try:
+            payload = json.loads(completed.stdout)
+        except json.JSONDecodeError as error:
+            detail = completed.stderr.strip() or "invalid JSON response"
+            raise RuntimeError(
+                f"Kernel call failed (exit code {completed.returncode}): {detail}"
+            ) from error
+        if not isinstance(payload, dict):
+            raise RuntimeError("Kernel call failed: response must be a JSON object")
         (path.with_suffix(".response.json")).write_text(json.dumps(payload, indent=2) + "\n")
         if completed.returncode or not payload.get("ok"):
             raise RuntimeError(payload.get("error") or completed.stderr or "Kernel call failed")
+        if "result" not in payload:
+            raise RuntimeError("Kernel call failed: successful response is missing result")
         return payload["result"]
 
     def write(self, path: str, content: str, *, request_key: str | None = None):

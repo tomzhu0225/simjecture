@@ -20,7 +20,7 @@ guidance** actions in the study view and experiment monitor. Continue with a new
 budget and selected prior files, or send advisory guidance at the next checkpoint.
 See [continuation and steering](docs/how-to/continuation-steering.md).
 
-The **0.5.3rc3 preview** adds local/SSH experiment workers and refreshed research
+The **0.5.3rc4 preview** includes local/SSH experiment workers and refreshed research
 interfaces. In **Machines**, connect with an SSH address and password; hardware and
 worker setup are detected automatically, with optional advanced settings and agent
 preparation. Availability updates every 30 seconds. Minimal studies can dispatch
@@ -28,15 +28,24 @@ parallel experiments with GPU reservations and recover existing jobs after SSH
 interruptions or coordinator restarts. Agents and independent review stay on the
 coordinator; Simote remains optional.
 
-Research tools now uses compact cards with build lists, diagnostics and logs in a
+Research tools now use compact cards with build lists, diagnostics and logs in a
 separate Details panel. The preview also includes rc1's campaign audit repairs,
 request-level usage records, native DeepSeek tool-message continuity and experimental
-**Simjecture Bench 0.1.0**. See [SSH setup](docs/how-to/ssh-workers.md),
+**Simjecture Bench** (task pack 0.3.0). See [SSH setup](docs/how-to/ssh-workers.md),
 [benchmark usage](docs/how-to/llm-bench.md), and
-[rc3 scope and validation](docs/testing/0.5.3rc3-acceptance.md).
+[rc4 scope and validation](docs/testing/0.5.3rc4-acceptance.md).
 The stable installation commands below remain on 0.5.2.
 
-The **0.5.3rc3 preview** includes a task-scoped leaderboard:
+Rc4 integrates the independent rc3 audit: concurrent evidence-ledger writes now
+preserve the hash chain, reserved multicore experiments retain their wall-time
+allowance, and worker polling, transfer recovery and usage-log reading are more
+efficient. It also fixes conversation navigation/submission races and adds small
+interface and accessibility improvements. Minimal remains the default; the
+research strategy and completion rules are unchanged. These repairs have direct
+reproductions and regression checks; a new long research campaign is still needed
+to measure their effect on scientific delivery.
+
+The **0.5.3rc4 preview** includes a task-scoped leaderboard:
 compare verified completion, cost and elapsed time, explore Pareto tradeoffs, import
 timed trial grades and export a summary. **Run your model** starts fresh trials for
 any native CLI or configured API model, with visible progress and downloadable
@@ -46,7 +55,8 @@ observations kept separate from inference results.
 Earlier pilots and qualifications remain in the audit records; they are absent
 from the public leaderboard. Missing measurements stay explicitly labelled. See the
 [leaderboard protocol](docs/how-to/llm-bench.md#leaderboard-and-tradeoffs).
-The leaderboard ships in 0.5.3rc3; it is absent from the older 0.5.3rc2 preview.
+The leaderboard first shipped in 0.5.3rc3 and is retained in rc4; it is absent from
+the older 0.5.3rc2 preview.
 
 The leaderboard opens on **Official Simjecture results**, with two
 task tabs, time/cost ranks, published API tariffs and a cost-versus-time plot.
@@ -62,12 +72,12 @@ needs no GUI, API key or imported data:
 simjecture llm-benchmark export-page --output ./leaderboard.html
 ```
 
-To try rc2, preserving existing research data:
+To try rc4, preserving existing research data:
 
 ```bash
-curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.3rc3/install.sh | bash
+curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.3rc4/install.sh | bash
 # Or install only the Python package:
-uv tool install 'simjecture[workspace,tui]==0.5.3rc3'
+uv tool install 'simjecture[workspace,tui]==0.5.3rc4'
 ```
 
 ## Install and open the workspace
@@ -183,10 +193,13 @@ The host maintains the scientific record:
   records and reports unresolved cleanup rather than assuming that agent exit stopped
   every computation.
 
-A study completes when its original claim is independently supported, or when a
-falsified original leads to an independently supported repair with the required
-ancestry. A deadline may end the campaign unresolved; that is recorded, not promoted
-to a success.
+Under the default CLI `repair` policy, a study completes when its original claim
+is independently supported, or when a falsified original leads to an independently
+supported repair with the required ancestry. The workspace defaults new studies to
+`answer`, which also permits an independently accepted root falsification to complete
+the investigation. Select the policy in the study brief or with
+`--completion-policy`; resumes retain it. A deadline may leave the campaign unresolved;
+that is recorded, not promoted to success.
 
 See [methods and progress oversight](docs/how-to/minimal-oversight.md),
 [research memory](docs/how-to/research-memory.md) and

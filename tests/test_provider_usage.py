@@ -152,3 +152,34 @@ def test_live_usage_replaces_same_turn_and_keeps_nested_review_identity(tmp_path
     assert status["usage"]["input_tokens"] == 100
     assert status["usage_details"]["requests"] == 1
     assert status["usage_details"]["by_role"]["reviewer"]["input_tokens"] == 100
+
+
+def test_accounting_streams_large_logs_without_read_text(tmp_path, monkeypatch):
+    from pathlib import Path
+
+    path = stream(
+        tmp_path,
+        [
+            {"type": "provider_request", "request_id": "one", "status": "started"},
+            {"type": "assistant", "content": "x" * 1000000},
+            {
+                "type": "provider_request",
+                "request_id": "one",
+                "status": "succeeded",
+                "usage": {"input_tokens": 50, "output_tokens": 5},
+            },
+            # A replayed start must not erase the completed receipt.
+            {"type": "provider_request", "request_id": "one", "status": "started"},
+        ],
+    )
+    with path.open("a") as output:
+        output.write('{"unfinished":')
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("Accounting must not materialize the whole provider log")
+
+    monkeypatch.setattr(Path, "read_text", forbidden)
+    result = request_accounting(path)
+    assert result["requests"] == 1
+    assert result["request_states"] == {"succeeded": 1}
+    assert result["input_tokens"] == 50

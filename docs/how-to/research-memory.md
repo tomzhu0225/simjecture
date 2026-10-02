@@ -86,7 +86,7 @@ The predictions above are illustrative, not sufficient reconnection diagnostics.
 agent selects and justifies the actual discriminating test. Estimated cost is advisory;
 it neither reserves resources nor extends the deadline. Notes link intentions to attempts,
 while receipts retain what actually ran. Purpose labels are optional: `baseline`, `debug`,
-`diagnostic`, `comparison`, or `validation`. They are not enforced stages. A failed
+`diagnostic`, `comparison`, `validation`, `timing`, or `parity`. They are not enforced stages. A failed
 execution is not automatically a physical counterexample, and a debug branch is not a
 repaired hypothesis.
 

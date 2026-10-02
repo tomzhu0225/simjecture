@@ -71,6 +71,16 @@ def put(path, value):
     os.replace(temp, path)
 
 
+def _positive_finite_seconds(value):
+    # Compare without converting arbitrary-size integers to float. This rejects
+    # NaN/infinity before creating directories or persisting partial records.
+    return (
+        isinstance(value, (int, float))
+        and not isinstance(value, bool)
+        and 0 < value <= sys.float_info.max
+    )
+
+
 class ResearchService(GuidedResearch, MethodService, NotebookService):
     def __init__(self, root):
         self.root = Path(root).resolve(strict=True)
@@ -125,8 +135,8 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
             raise ValueError(
                 "New minimal study requires an empty directory; never convert a campaign"
             )
-        if not hypothesis.strip() or wall_seconds <= 0:
-            raise ValueError("Require a hypothesis and positive deadline")
+        if not hypothesis.strip() or not _positive_finite_seconds(wall_seconds):
+            raise ValueError("Require a hypothesis and positive finite deadline")
         for name in ["research", "experiments", "commitments", "reviews"]:
             (root / name).mkdir(exist_ok=True)
         registry = (
@@ -311,8 +321,8 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
         resources=None,
     ):
         """Snapshot inputs, launch a bounded experiment, return an immediate receipt."""
-        if not outputs or timeout <= 0:
-            raise ValueError("Declare result paths and a positive timeout")
+        if not outputs or not _positive_finite_seconds(timeout):
+            raise ValueError("Declare result paths and a positive finite timeout")
         for p in outputs:
             if Path(p).is_absolute() or ".." in Path(p).parts:
                 raise ValueError("Result paths must stay inside the experiment workspace")

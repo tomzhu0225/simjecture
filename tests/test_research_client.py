@@ -129,3 +129,44 @@ def test_design_approval_can_suggest_execution_but_cannot_retain_required_gaps()
             evidence_gaps=["Missing domain coverage"],
             next_test="Run more cases",
         )
+
+
+@pytest.mark.parametrize(
+    ("stdout", "stderr", "returncode", "message"),
+    [
+        ("", "No module named conjecture_solver", 1, "No module named conjecture_solver"),
+        ("not-json", "", 0, "invalid JSON response"),
+        ("[]", "", 0, "response must be a JSON object"),
+        ('{"ok": true}', "", 0, "successful response is missing result"),
+        ('{"ok": false, "error": "denied"}', "", 1, "denied"),
+    ],
+)
+def test_client_reports_transport_and_kernel_errors(
+    tmp_path, monkeypatch, stdout, stderr, returncode, message
+):
+    import subprocess
+
+    c = client(tmp_path)
+    c.binding.update(campaign=str(tmp_path / "campaign"), agent_id="agent", session_id="session")
+    monkeypatch.setattr(
+        subprocess, "run",
+        lambda *args, **kwargs: subprocess.CompletedProcess(args, returncode, stdout, stderr),
+    )
+    with pytest.raises(RuntimeError, match=message):
+        c.call("snapshot")
+
+
+def test_client_returns_and_records_successful_result(tmp_path, monkeypatch):
+    import subprocess
+
+    c = client(tmp_path)
+    c.binding.update(campaign=str(tmp_path / "campaign"), agent_id="agent", session_id="session")
+    payload = {"ok": True, "result": {"campaign_id": "campaign"}}
+    monkeypatch.setattr(
+        subprocess, "run",
+        lambda *args, **kwargs: subprocess.CompletedProcess(args, 0, json.dumps(payload), ""),
+    )
+    assert c.call("snapshot") == payload["result"]
+    responses = list(c.requests.glob("*.response.json"))
+    assert len(responses) == 1
+    assert json.loads(responses[0].read_text()) == payload

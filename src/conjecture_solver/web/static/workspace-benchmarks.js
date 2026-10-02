@@ -284,6 +284,7 @@ window.WorkspaceBenchmarks = (() => {
 
   function runDialog(pack, actions) {
     const dialog=node("dialog",undefined,"research-action-dialog benchmark-run-dialog"), form=node("form");
+    dialog.setAttribute("aria-label", "Benchmark your model");
     form.append(node("h2","Benchmark your model"),node("p","Run fresh timed trials with your installed coding agent or the API connection saved in Connections. Your agent keeps its native tools. Grades are added here automatically.","field-help"));
     const field=(label,input)=>{const row=node("label",label);input.setAttribute("aria-label",label);row.append(input);form.append(row);return input;};
     const backend=field("Coding agent",node("select"));
@@ -305,7 +306,7 @@ window.WorkspaceBenchmarks = (() => {
       try {const catalogue=await actions.api("models",{backend:backend.value});if(current!==request)return;suggestions.replaceChildren();for(const entry of catalogue.models || []) {const option=node("option");option.value=entry.id;suggestions.append(option);}if(!model.value)model.value=catalogue.default || "";}catch(e){if(current===request)error.textContent=e.message;}
     };
     form.onsubmit=async event=>{
-      event.preventDefault();submit.disabled=true;error.textContent="";
+      event.preventDefault();if(submit.disabled)return;submit.disabled=true;error.textContent="";
       try {const result=await actions.api("start-benchmark-campaign",{backend:backend.value,model:model.value.trim(),reasoning_effort:effort.value,repeats:Number(repeats.value),workers:Number(workers.value),tasks:checks.filter(([check])=>check.checked).map(([,id])=>id)});dialog.close();await actions.refresh();actions.toast(result.message);}catch(e){error.textContent=e.message;submit.disabled=false;}
     };
     dialog.append(form);document.body.append(dialog);dialog.addEventListener("close",()=>dialog.remove());dialog.showModal();backend.onchange();model.focus();

@@ -11,7 +11,8 @@ Resume without a mode flag to retain the recorded mode. Changing a study's mode
 requires a new campaign directory; no existing evidence is silently converted.
 Old studies retain their existing scientific-policy schema. The browser and TUI
 launch and monitor minimal, structured and frontier native-agent studies. Select
-mode and backend separately. DSH/API remain explicit legacy choices; selecting an
+mode and backend separately. The built-in API agent (`--backend builtin` with a private `--provider-config`)
+also supports minimal studies; DSH and `mvp` remain explicit legacy choices. Selecting an
 unsupported combination returns an error rather than silently changing modes.
 The `mvp` command remains the legacy API entry point.
 
@@ -48,7 +49,8 @@ review = lab.review_status(request["id"])
 
 `run` returns immediately. You may keep working while jobs execute, or end the model turn; the host then waits for a recorded job to finish before resuming the agent. The service snapshots source and declared local inputs,
 records their hashes and arguments, and runs the experiment inside Simjecture's
-existing Bubblewrap numerical sandbox. An installed capability can be selected
+selected numerical execution backend (Bubblewrap by default; cooperative PRoot
+is not a security boundary). An installed capability can be selected
 with `capability=NAME`. Supply its manifest directory using `--capabilities` or
 the numerical instrument registry field in the browser/TUI. With no registry,
 minimal exposes only the Python numerical sandbox. Its identity is bound to the receipt. Native tools are
@@ -65,7 +67,11 @@ A review request returns a persistent receipt, independent of the caller's
 working directory. End the model turn after submitting it: the supervisor opens
 a fresh, tool-free reviewer context and records the result. Missing evidence
 returns explicit gaps. A malformed reviewer response never becomes approval.
-Each review targets one explicit claim ID and statement; the host rejects a mismatched target. Approval of an original falsification is distinct from completion of the study, which still requires a supported repair. Pending reviews survive pauses and deadlines. Scientific approval authority is
+Each review targets one explicit claim ID and statement; the host rejects a mismatched target. Under the default CLI `repair` completion policy, approval of an original
+falsification is distinct from completion, which still requires a supported repair.
+The `answer` policy also allows an independently accepted root falsification to
+complete the study. The workspace uses `answer` for new studies; saved policies
+are retained on resume. Pending reviews survive pauses and deadlines. Scientific approval authority is
 not exposed through `lab`.
 
 For a repair, commit the prediction and exact commands first:
@@ -103,14 +109,15 @@ is not validated research.
 Ordinary calculations do not need a separate instrument-claim hierarchy or an
 approval before every calculation. Physical adequacy, controls and convergence
 remain scientific obligations and are checked at review. A supported original
-claim completes the study; a falsified original requires an independently
-supported repair. Unresolved evidence and normal model exit do not complete it.
+claim completes the study; under `repair`, a falsified original requires an
+independently supported repair. Under `answer`, a reviewed negative answer can
+complete it without that repair. Unresolved evidence and normal model exit do not complete it.
 
 This is a cooperative same-account trust model. The native CLI agent is not
 adversarially isolated from host files; host-only Python methods are an interface
 boundary, not an OS security boundary. A hostile-worker deployment needs separate
 accounts or a separately authenticated service. Numerical execution retains its
-existing sandbox. No existing campaign is migrated automatically.
+selected backend and recorded isolation limits. No existing campaign is migrated automatically.
 
 Native-thread continuation prompts are short; full instructions remain in
 `research/RESEARCH_GUIDE.md`. `lab.status()` includes remaining wall time and

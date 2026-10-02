@@ -12,6 +12,7 @@ catalog without importing the optional MCP SDK or the campaign kernel.
 
 from __future__ import annotations
 
+import math
 from collections.abc import Mapping
 from copy import deepcopy
 from typing import Any
@@ -680,6 +681,9 @@ def _validate_shape(value: Any, schema: Mapping[str, Any], *, path: str) -> None
     if enum is not None and value not in enum:
         raise ValueError(f"{path} must be one of {enum!r}")
     if schema_type == "object":
+        missing = [key for key in schema.get("required", ()) if key not in value]
+        if missing:
+            raise ValueError(f"{path} missing required field(s): {', '.join(missing)}")
         properties = schema.get("properties", {})
         unknown = set(value) - set(properties)
         if schema.get("additionalProperties") is False and unknown:
@@ -695,6 +699,8 @@ def _validate_shape(value: Any, schema: Mapping[str, Any], *, path: str) -> None
 def _validate_input_bounds(name: str, value: Any, *, field: str = "arguments") -> None:
     """Apply limits that are intentionally absent from the advertised schema."""
 
+    if isinstance(value, float) and not math.isfinite(value):
+        raise ValueError(f"{name}.{field} must be finite")
     if isinstance(value, str):
         if len(value) > 16_384:
             raise ValueError(f"{name}.{field} exceeds the 16,384-character input limit")

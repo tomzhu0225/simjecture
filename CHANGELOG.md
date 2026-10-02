@@ -4,6 +4,39 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+## 0.5.3rc4 (preview) — 2026-10-02
+
+- Integrate the independent rc3 audit with its reproducible fixes and regression
+  tests. Acquire the SQLite write transaction before reading the ledger head;
+  concurrent writers now preserve the event hash chain. Compare canonical JSON
+  for idempotent replay and index campaign event heads and incremental replay.
+- Scale per-process CPU-time allowances by explicitly reserved CPUs, preventing
+  threaded experiments from being killed before their wall-time allowance expires.
+  This does not impose CPU affinity or an aggregate MPI process-tree quota.
+- Reconcile only the requested worker receipt during targeted polling, while
+  preserving full reconciliation for admission and reservations. Avoid sending
+  remaining input chunks after a checksum-verified completed-upload acknowledgement.
+- Preserve uncertain execution state after malformed worker replies, distinguish
+  worker RPC object results from valid scalar bootstrap results, and improve
+  research-client transport errors.
+- Stream provider usage logs while retaining request accounting fields. Reject
+  non-finite numbers, missing nested required inputs and invalid durations before
+  persistent side effects. Avoid overflow when mapping finite extreme parameters.
+- Fix stale conversation navigation, wrong-conversation submissions, draft loss,
+  duplicate benchmark submission and retry/button state. Clear SSH passwords when
+  closing the editor and report API connection save failures inline.
+- Add shared workspace/monitor styling, keyboard skip links, accessible labels,
+  reduced-motion support and bounded scrolling dialogs. Main page layouts are
+  retained; this is a modest interface polish pass.
+- Reconcile installation, permissions, native-agent and research documentation
+  with current behavior. Qualify historical reconnection conclusions against their
+  registered tolerance band without changing original scientific records.
+- Keep minimal as the default and retain existing research strategy, review gates,
+  completion rules, benchmark task pack 0.3.0 and recorded model measurements.
+  No new live-model or long scientific campaign is claimed by this release.
+- Explicitly exclude installed dependencies and local environments/state from
+  source distributions, including when building from a Git worktree.
+
 ## 0.5.3rc3 — 2026-10-01
 
 - Add separate finish-time and cost ranked bar plots for every published task.

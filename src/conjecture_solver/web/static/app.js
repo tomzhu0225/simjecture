@@ -125,27 +125,18 @@ function bindEvents() {
 }
 
 function applyStoredTheme() {
-  let theme = "light";
-  try {
-    const stored = window.localStorage.getItem("simjecture-theme");
-    if (stored === "light" || stored === "dark") theme = stored;
-  } catch (_) {
-    // Local storage can be unavailable in hardened browsers.
-  }
-  document.documentElement.dataset.theme = theme;
+  // The shared bootstrap applies saved or system preference before first paint.
   updateThemeButton();
+  window.addEventListener("workspace-theme", () => {
+    updateThemeButton();
+    if (state.snapshot) renderGraph(true);
+  });
 }
 
 function toggleTheme() {
-  const theme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
-  document.documentElement.dataset.theme = theme;
-  try {
-    window.localStorage.setItem("simjecture-theme", theme);
-  } catch (_) {
-    // Theme still applies for this page session.
-  }
-  updateThemeButton();
-  if (state.snapshot) renderGraph(true);
+  window.WorkspaceTheme.set(
+    document.documentElement.dataset.theme === "dark" ? "light" : "dark",
+  );
 }
 
 function updateThemeButton() {

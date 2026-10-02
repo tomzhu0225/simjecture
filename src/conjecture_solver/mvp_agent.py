@@ -979,7 +979,17 @@ class BubblewrapSandbox:
         return value[:half] + "\n... sandbox output truncated ...\n" + value[-half:]
 
     def _limits(self) -> None:
-        cpu = max(1, math.ceil(self.config.max_command_seconds) + 1)
+        # RLIMIT_CPU counts CPU seconds across a process's threads, not wall time.
+        # An explicitly reserved multi-CPU job must retain its full wall allowance.
+        # This is not an affinity limit or an aggregate MPI process-tree quota.
+        cpus = getattr(self, "assigned_cpus", None)
+        cpus = 1 if cpus is None else cpus
+        if type(cpus) is not int or not 1 <= cpus <= 65536:
+            raise ValueError("Assigned CPUs must be a positive bounded integer")
+        cpu_seconds = self.config.max_command_seconds * cpus
+        if not math.isfinite(cpu_seconds) or cpu_seconds <= 0:
+            raise ValueError("CPU-time allowance must be positive and finite")
+        cpu = max(1, math.ceil(cpu_seconds) + 1)
         resource.setrlimit(resource.RLIMIT_CPU, (cpu, cpu))
         resource.setrlimit(
             resource.RLIMIT_AS,

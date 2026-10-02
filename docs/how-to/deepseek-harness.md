@@ -1,7 +1,8 @@
 # Run a Simjecture campaign under DSH
 
 The DSH integration is a native-tool profile plus a small resumable driver for
-a durable Simjecture campaign. Version 0.4.0 uses a persistent Lead Scientist
+a durable Simjecture campaign. The current bundle (0.5.3-rc.4) retains the
+architecture introduced in 0.4.0: it uses a persistent Lead Scientist
 and fresh, claim-scoped Falsifier, Repair Scientist, and tool-free Judge
 sessions. Fresh workers see bounded kernel state rather than inherited chat.
 Native web search, page fetch, shell, filesystem, skills, workflows and configured
@@ -65,7 +66,7 @@ resulting local bundle into the isolated harness profile:
 SIMJECTURE_DSH_PROFILE="$(simjecture dsh-profile)"
 npm pack "$SIMJECTURE_DSH_PROFILE" --pack-destination /tmp
 dsh plugin --profile simjecture add @deepseek-ai/dsh-headless@0.1.5-rc.2
-dsh plugin --profile simjecture add /tmp/simjecture-dsh-bundle-0.4.0.tgz
+dsh plugin --profile simjecture add /tmp/simjecture-dsh-bundle-0.5.3-rc.4.tgz
 ```
 
 For a checkout-only development install, use the directory directly when the
@@ -129,7 +130,9 @@ entry point:
 uv run simjecture web
 ```
 
-New browser campaigns use DSH by default. Recorded-run viewing needs neither
+Open `/monitor` and explicitly select a legacy DSH campaign. The legacy
+`--engine` default is DSH; the conversation workspace instead selects its own
+native CLI or built-in API agent. Recorded-run viewing needs neither
 Node.js nor DSH, and `uv run simjecture web --engine native` retains the built-in
 runner for compatibility and diagnosis. Pause and resume use the same Web and
 CLI controls; resume opens the stable DSH session stored under
@@ -205,7 +208,7 @@ report.
 Stop its campaign supervisor and back up the entire campaign directory, including
 `operator_input/dsh_sessions`, before upgrading the CLI and isolated profile.
 Install DSH `0.1.5-rc.2`, replace the headless bundle with the matching version,
-and install Simjecture's `0.4.0` profile using the commands above. Inspect
+and install Simjecture's matching `0.5.3-rc.4` bundle using the commands above. Inspect
 `--dump-config` before resuming. Do not mix the `0.1.6` alpha packages into this
 profile. Provider/model selection stays in your DSH configuration.
 
@@ -242,7 +245,7 @@ the configured file policy. Network tools remain enabled. Copy experiment source
 into the scientific workspace using `write_workspace_file` before submitting a
 contracted run. Native notes and calculations do not automatically become evidence.
 
-Bundle 0.4.0 uses the deterministic `<launch-session-id>.research-v1` DSH identity.
+Since bundle 0.4.0, the profile uses the deterministic `<launch-session-id>.research-v1` DSH identity.
 This deliberately avoids resuming pre-0.4.0 sessions whose immutable working
 directory was the campaign itself. On first upgrade, the researcher starts a
 fresh conversation and reconciles the existing kernel snapshot; previous logs

@@ -249,7 +249,7 @@ Create a configuration array, for example:
 ]
 ```
 
-The private provider file contains `backend`, `base_url`, `api_key`, and optionally
+The private provider file contains `model`, `backend`, `base_url`, `api_key`, and optionally
 `protocol: "native-tools"`. Keep it outside a public submission; native CLI trials
 use their existing login. Supported backends are `codex`, `codex-glm`, `grok`, `agy`
 and `builtin`. AGY uses its model-profile ID for effort; Codex accepts its native
@@ -298,7 +298,9 @@ no-verifier-inspection contract; their normal filesystem access is retained.
 The numerical verifier executes submitted reducers separately under Bubblewrap.
 
 AGY conversation usage is cumulative: successive totals must not be added.
-Its undocumented cache/input semantics leave token cost unknown. Interrupted
+Original grades leave token cost unknown where cache/input semantics are not
+verified. The separate published valuation ledger applies the explicitly labelled
+interpretation described above; those estimates are not measured invoices. Interrupted
 requests and unaccounted delegated work also leave complete cost unknown;
 known partial counters remain visible. API-equivalent estimates are not
 subscription invoices.

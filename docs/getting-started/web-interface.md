@@ -169,7 +169,7 @@ or DSH. Only the explicit legacy DSH route needs the
 
 ## Local security boundary
 
-Version 0.1.1 is intentionally local-first rather than a hosted service:
+The local web interface is intentionally an operator tool rather than a hosted service:
 
 - the server refuses non-loopback bind addresses;
 - mutating requests require an unguessable per-process control token and a
@@ -181,7 +181,7 @@ Version 0.1.1 is intentionally local-first rather than a hosted service:
 
 It does not provide remote authentication, multi-user ownership, or a public
 deployment boundary. Use the headless commands or TUI over SSH; do not proxy the
-v0.1.1 local server onto a network.
+local server onto a network. Use SSH port forwarding for remote hosts.
 
 ## Compatibility clients
 

@@ -1,5 +1,12 @@
 # Simjecture Linux launch package
 
+This is the legacy launch archive, not the one-command workspace installer
+linked from the repository README. Its `setup.sh` installs the `tui` extra and
+requires an existing Python/Bubblewrap host; it does not perform the workspace
+installer's Python provisioning, built-in API setup or restricted-host preparation.
+For a new conversation workspace, prefer the versioned workspace installer
+described in the repository installation guide.
+
 This package contains matching Python and DSH bundles. Read `VERSION` for the
 release number and `CHANGELOG.md` for release notes.
 

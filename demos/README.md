@@ -21,6 +21,7 @@ remain unresolved.
 - [`resistive_mhd_island_coalescence/`](resistive_mhd_island_coalescence/) is the
   fluid-plasma MHD demo. It bundles an operator-validated, non-evidentiary
   FLASH anchor and an audit extract from a six-hour autonomous campaign. The
-  campaign falsified the specified root interval ($p \approx -0.406$), while
-  its repair branch remains explicitly open because the final analyzer lineage
-  was not closure-eligible.
+  historical ledger recorded a root falsification ($p \approx -0.406$), but its
+  reported interval overlaps the allowed band and does not by itself establish
+  that conclusion. The repair branch remains open because the final analyzer
+  lineage was not closure-eligible. See the demo's current interpretation notice.

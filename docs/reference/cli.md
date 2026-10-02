@@ -22,8 +22,13 @@ Principal command families:
 - `watch`: follow durable MVP events until a terminal report or pause;
 - `pause`: request an action-boundary pause of a verified live runner;
 - `resume`: repeat a stored launch contract for a paused or incomplete run;
-- `web`: local browser dashboard and reviewed campaign controls; new launches
-  use DSH by default, with `--engine native` as the compatibility fallback;
+- `web`: local research workspace and campaign monitor; the composer selects
+  a native CLI or configured built-in API agent. `--engine` selects the legacy
+  campaign engine, not the default workspace agent;
+- `study`: minimal, structured or frontier studies with recorded launch contracts;
+- `steer`: advisory guidance for an existing minimal study;
+- `llm-benchmark`: prepare, grade, run and publish recorded-diagnostic coding tasks
+  (distinct from the simulation `benchmark` command);
 - `tui`: optional interactive dashboard (`uv sync --extra tui`);
 - `benchmark`: deterministic planted scientific benchmarks;
 - `campaign`: durable bounded campaign execution;
@@ -53,11 +58,16 @@ external paths are refused. See
 
 `simjecture study --campaign DIR --hypothesis-file H --instructions-file I`
 starts minimal mode by default. Add `--mode structured` or `--mode frontier` for
-another workflow. `--backend` selects `codex-glm`, `codex`, `grok` or `agy`;
-non-GLM backends require an explicit `--model`. Native tools remain available.
+another workflow. `--backend` selects `codex-glm`, `codex`, `grok`, `agy` or
+`builtin`; non-GLM backends require an explicit `--model`. Native CLI tools remain
+available. `builtin` uses a private `--provider-config` file and requires the
+workspace extra; it supports minimal mode only. Keep provider credentials out of
+committed files and shared records.
 `--wall-seconds` fixes the study budget and `--turn-seconds` controls the native
 session allowance/watchdog. Resume with the same campaign and instructions;
-mode and deadline are preserved. `simjecture-supervise` and `simjecture-research`
+mode and deadline are preserved. `--continue-from` instead creates a new minimal
+phase with a fresh explicit budget and selected context; see
+[continuation and steering](../how-to/continuation-steering.md). `simjecture-supervise` and `simjecture-research`
 are equivalent launchers. The browser and TUI share the same native mode choices. Legacy `mvp` and DSH/API
 remain explicit legacy routes. See [the guide](../how-to/research-service.md).
 

@@ -4,7 +4,7 @@ The public documentation uses Sphinx with MyST Markdown and the PyData Sphinx
 Theme.
 
 ```bash
-uv sync --group docs
+uv sync --frozen --group docs
 uv run --group docs sphinx-build -W --keep-going -b html docs docs/_build/html
 ```
 
@@ -15,9 +15,42 @@ Treat warnings as build failures. Keep pages in one of four roles:
 - reference documents the exact public interface;
 - explanation describes architecture, scientific reasoning, and limitations.
 
-Keep the tree to those four roles. Incremental development notes belong in
-Git history, not in the current documentation.
+Current user guides should stay in those four roles. Dated research and release
+acceptance records are retained separately under `research/` and `testing/`;
+they document what was checked then, not a promise that the same checks passed
+on the current host. Incremental implementation notes belong in Git history.
+
+Distinguish stable 0.5.2 instructions from preview 0.5.3rc4 features. Check CLI
+examples against the checkout's `--help` and model/API claims against source and
+tests. Build with warnings as errors and check relative links. For examples that
+need credentials, licensed source, GPU hardware or an unavailable sandbox, state
+what was not exercised. Read-only demo verification, task preparation and HTML
+export are useful no-key checks; benchmark grading still executes submitted code.
+
+See the repository's [contributor guide](https://github.com/tomzhu0225/simjecture/blob/main/CONTRIBUTING.md)
+for coding checks, pull-request expectations, licensing and the draft publication
+authorship discussion.
 
 Examples must use placeholders for credentials and bounded output directories.
 Never paste a real key, private run URL, or unpublished third-party artifact into
 the documentation.
+
+## Report host-dependent and long-running checks honestly
+
+Before a solver or full workspace test, run the selected execution backend's
+`simjecture doctor --execution-backend BACKEND` probe. An installed `bwrap` or
+`proot` binary does not establish that namespaces or tracing work. Some existing
+tests check only binary presence, so a restricted host can fail rather than skip
+those tests. Preserve the failure and classify it from the actual probe/log.
+
+For a long check, retain the command, start time, log and final exit status. A
+quiet log or polling timeout is not a pass or permission to resubmit a detached
+job. Reconcile its recorded identity before retrying. Keep blocked, skipped,
+running and failed checks separate from passed checks; never change tests to
+report success merely because the host cannot run them.
+
+Examples requiring paid model calls, credentials, licensed solver source, GPU
+hardware, SSH workers or Docker should list those prerequisites. Run them only
+in an authorized environment; otherwise report the unexercised behavior and
+continue independent no-key checks. A successful replay of historical artifacts
+does not replace a fresh numerical execution or long-job recovery test.

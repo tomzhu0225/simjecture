@@ -1,8 +1,8 @@
 # Next steps
 
-Version 0.1 is the methods and infrastructure preview: a domain-neutral
-evidence harness, recorded autonomous campaigns, and a capability framework
-that can take a new instrument. That is the released target.
+Stable 0.5.2 and preview 0.5.3rc4 provide a domain-neutral evidence harness,
+recorded autonomous campaigns, and a capability framework that can take a new
+instrument. Operational improvements do not by themselves qualify new science.
 
 What comes next is scientific use of that harness, not a second set of
 release conditions.
@@ -22,7 +22,7 @@ counterexample, or a scoped impossibility that survives fresh confirmation
 and adversarial attack. A numerical failure or under-resolved run is an
 instrument result, not a scientific finding.
 
-## What 0.1 already requires
+## Scientific requirements that remain
 
 Any later result still needs prospective contracts, commissioned instruments,
 immutable provenance, and guarded claim closure. Those rules do not change
