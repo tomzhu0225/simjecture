@@ -2,6 +2,10 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21945748.svg)](https://doi.org/10.5281/zenodo.21945748)
 
+[Install](#install-and-open-the-workspace) · [Documentation](docs/index.md) ·
+[Benchmarks](docs/how-to/llm-bench.md) · [Contributing](#contributing) ·
+[Releases](https://github.com/tomzhu0225/simjecture/releases)
+
 **Hypothesize. Simulate. Falsify.**
 
 Simjecture is a research harness for computational science. An agent writes and runs
@@ -9,7 +13,10 @@ experiments, searches for counterexamples, and proposes small, testable repairs 
 failed hypotheses. The harness records what actually ran and requires independent
 review before a scientific claim can close.
 
-**v0.5.2 is the current stable release.** Minimal mode is the default: agents keep their
+**Latest preview: [0.5.3rc4](https://github.com/tomzhu0225/simjecture/releases/tag/v0.5.3rc4).
+Stable release: [0.5.2](https://github.com/tomzhu0225/simjecture/releases/tag/v0.5.2).**
+
+Minimal mode is the default: agents keep their
 native tools and choose their research strategy, while Simjecture manages recorded
 evidence, review and deadlines. Structured and frontier modes remain available.
 The system does not establish physical truth from a successful simulation or promise
@@ -20,8 +27,10 @@ guidance** actions in the study view and experiment monitor. Continue with a new
 budget and selected prior files, or send advisory guidance at the next checkpoint.
 See [continuation and steering](docs/how-to/continuation-steering.md).
 
-The **0.5.3rc4 preview** includes local/SSH experiment workers and refreshed research
-interfaces. In **Machines**, connect with an SSH address and password; hardware and
+## Current preview: 0.5.3rc4
+
+The preview includes local/SSH experiment workers and the research workspace.
+In **Machines**, connect with an SSH address and an SSH key, agent, or password; hardware and
 worker setup are detected automatically, with optional advanced settings and agent
 preparation. Availability updates every 30 seconds. Minimal studies can dispatch
 parallel experiments with GPU reservations and recover existing jobs after SSH
@@ -29,14 +38,13 @@ interruptions or coordinator restarts. Agents and independent review stay on the
 coordinator; Simote remains optional.
 
 Research tools now use compact cards with build lists, diagnostics and logs in a
-separate Details panel. The preview also includes rc1's campaign audit repairs,
+separate Details panel. The preview also includes campaign recovery repairs,
 request-level usage records, native DeepSeek tool-message continuity and experimental
 **Simjecture Bench** (task pack 0.3.0). See [SSH setup](docs/how-to/ssh-workers.md),
 [benchmark usage](docs/how-to/llm-bench.md), and
 [rc4 scope and validation](docs/testing/0.5.3rc4-acceptance.md).
-The stable installation commands below remain on 0.5.2.
 
-Rc4 integrates the independent rc3 audit: concurrent evidence-ledger writes now
+Rc4 integrates the independent audit: concurrent evidence-ledger writes now
 preserve the hash chain, reserved multicore experiments retain their wall-time
 allowance, and worker polling, transfer recovery and usage-log reading are more
 efficient. It also fixes conversation navigation/submission races and adds small
@@ -45,7 +53,7 @@ research strategy and completion rules are unchanged. These repairs have direct
 reproductions and regression checks; a new long research campaign is still needed
 to measure their effect on scientific delivery.
 
-The **0.5.3rc4 preview** includes a task-scoped leaderboard:
+The preview includes a task-scoped leaderboard:
 compare verified completion, cost and elapsed time, explore Pareto tradeoffs, import
 timed trial grades and export a summary. **Run your model** starts fresh trials for
 any native CLI or configured API model, with visible progress and downloadable
@@ -55,8 +63,8 @@ observations kept separate from inference results.
 Earlier pilots and qualifications remain in the audit records; they are absent
 from the public leaderboard. Missing measurements stay explicitly labelled. See the
 [leaderboard protocol](docs/how-to/llm-bench.md#leaderboard-and-tradeoffs).
-The leaderboard first shipped in 0.5.3rc3 and is retained in rc4; it is absent from
-the older 0.5.3rc2 preview.
+These tasks analyze recorded plasma diagnostics; the benchmark does not launch
+new FLASH or WarpX simulations.
 
 The leaderboard opens on **Official Simjecture results**, with two
 task tabs, time/cost ranks, published API tariffs and a cost-versus-time plot.
@@ -72,20 +80,31 @@ needs no GUI, API key or imported data:
 simjecture llm-benchmark export-page --output ./leaderboard.html
 ```
 
-To try rc4, preserving existing research data:
-
-```bash
-curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.3rc4/install.sh | bash
-# Or install only the Python package:
-uv tool install 'simjecture[workspace,tui]==0.5.3rc4'
-```
+Release validation: **974 Python tests passed, 7 optional-runtime checks skipped;
+14 DSH/MCP tests passed.** CI also passed WarpX CPU qualification, strict
+documentation and a fresh-home installer check. See the
+[acceptance record](docs/testing/0.5.3rc4-acceptance.md) and [changelog](CHANGELOG.md).
 
 ## Install and open the workspace
 
-On Linux or inside WSL, run:
+On Linux or inside WSL, choose the current preview or the stable release.
+
+**Latest preview — 0.5.3rc4:**
+
+```bash
+curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.3rc4/install.sh | bash
+```
+
+**Stable — 0.5.2:**
 
 ```bash
 curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.2/install.sh | bash
+```
+
+Or install the current preview's Python package:
+
+```bash
+uv tool install 'simjecture[workspace,tui]==0.5.3rc4'
 ```
 
 The installer downloads the versioned release, verifies its checksum, installs uv,
@@ -110,7 +129,7 @@ Use Linux with Python 3.11+, [uv](https://docs.astral.sh/uv/), and an installed,
 authenticated native agent CLI. Bubblewrap is the default numerical execution backend.
 
 ```bash
-uv tool install 'simjecture[tui]==0.5.2'
+uv tool install 'simjecture[tui]==0.5.3rc4'
 simjecture install core
 simjecture doctor --execution-backend bubblewrap
 
@@ -244,24 +263,6 @@ FLASH source is not redistributed. Solver source inspection can be configured se
 from a writable problem/build area. See [runtime deployment](docs/how-to/deploy-runtimes.md)
 and the [scientific skills](skills/).
 
-## Research core introduced in v0.5.1
-
-This release builds on v0.5.0's minimal default and shared interfaces:
-
-- Methods/progress oversight, stalled-session recovery and deadline-bounded provider retry.
-- Automatic research journaling, bounded context and evidence-linked comparisons.
-- Guided anchors in native studies and explicit cooperative execution for restricted hosts.
-- Updated FLASH/Python skills with guided-study, HDF5 and decision-rule lessons.
-- Preserved instrument ownership across classic assignment rollover.
-- Explicit unmet review prerequisites; conditional approval cannot open the evidence gate.
-- Numerical checks for contradictory prospective acceptance bounds.
-- Output eligibility annotations exposed for review without forcing metadata-only solver reruns.
-- Durable cancellation cleanup independent of CLI-response parsing.
-
-The [changelog](CHANGELOG.md) and [repair report](research/evaluations/guided-model-comparison-2026-09-26/RESULTS.md)
-include validation and remaining limitations. General reuse of raw solver data under
-independently versioned analysis still needs a fuller provenance API.
-
 ## Measured evidence and limitations
 
 Minimal is the default by design preference, not a demonstrated universal performance
@@ -271,6 +272,11 @@ independently accepted scientific conclusion** from either model configuration.
 Unequal duration, different provider tool protocols and one trial per configuration
 limit that comparison. Token totals distinguish cached input, uncached input and
 output; they are not billed-cost estimates.
+
+The [guided-study repair report](research/evaluations/guided-model-comparison-2026-09-26/RESULTS.md)
+records the underlying harness failures, fixes and remaining limitations. General
+reuse of raw solver data under independently versioned analysis still needs a
+fuller provenance API. Release history is in the [changelog](CHANGELOG.md).
 
 | Recorded evaluation | What can be inspected |
 |---|---|
@@ -298,12 +304,13 @@ uv run simjecture web demos/gray_scott_counterexample/record --read-only
 
 ## Documentation and development
 
-Start at [the documentation index](docs/index.md). Linux release assets include a
-launch archive with matching Python/DSH packages, setup scripts and SHA-256 checksums.
+Start at [the documentation index](docs/index.md). Release assets include the
+workspace source bundle, installer and SHA-256 checksums; Python distributions
+are published on PyPI and include the DSH integration resources.
 Native-agent setup does not require installing DSH.
 
 ```bash
-uv sync --all-groups --extra tui --extra dsh
+uv sync --frozen --extra workspace --extra tui --extra dsh --group browser --group docs
 uv run ruff check .
 uv run pytest
 uv run simjecture schemas --output schemas --check
@@ -311,8 +318,27 @@ uv run --group docs sphinx-build -W -b html docs docs/_build/html
 ```
 
 `conjecture-solver` and `acs` remain compatibility aliases. The Python package remains
-`conjecture_solver`. See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md)
+`conjecture_solver`. See [SECURITY.md](SECURITY.md)
 and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+
+## Contributing
+
+Contributions from researchers and developers are welcome. Useful starting points:
+
+- Add a scientific instrument, tested diagnostic reader, or agent skill with a
+  reproducible example. See [capability development](docs/how-to/add-a-capability.md).
+- Report and repair harness, worker or interface failures with a minimal
+  reproduction and regression check.
+- Share inspectable research examples and help review numerical methods and
+  evidence. See [guided commissioning](docs/how-to/guided-commissioning.md).
+- Add custom-model benchmark results using the
+  [benchmark and community submission guide](docs/how-to/llm-bench.md).
+- Improve documentation, onboarding and accessibility.
+
+Read [CONTRIBUTING.md](CONTRIBUTING.md) for setup, checks, pull requests and
+licensing. [Open an issue](https://github.com/tomzhu0225/simjecture/issues) for a
+reproducible problem or proposed change; discuss large changes before implementing
+them. Use [SECURITY.md](SECURITY.md) for security-sensitive reports.
 
 ## Citation and license
 
