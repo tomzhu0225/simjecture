@@ -52,6 +52,7 @@ STATIC_ASSETS = frozenset(
         "markdown.js",
         "styles.css",
         "interface.css",
+        "study-navigation.js",
         "workspace.html",
         "workspace.js",
         "workspace-theme.js",
