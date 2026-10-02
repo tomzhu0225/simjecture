@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <title>Simjecture</title>
+    <title>Study details · Simjecture</title>
     <script src="/assets/workspace-theme.js"></script>
     <link rel="stylesheet" href="/assets/styles.css">
     <link rel="stylesheet" href="/assets/interface.css">
@@ -22,12 +22,12 @@
         </a>
 
         <div class="campaign-picker">
-          <label for="campaign-select">Campaign</label>
+          <label for="campaign-select">Study details</label>
           <select id="campaign-select" aria-label="Select campaign"></select>
         </div>
 
         <div class="topbar-actions">
-          <a class="button quiet" href="/workspace">Workspace</a>
+          <a class="button quiet" id="conversation-return" href="/workspace">Workspace</a>
           <span class="sync-state" id="sync-state"><i></i><span>Connecting</span></span>
           <button class="icon-button theme-button" id="theme-button" type="button" aria-label="Switch color theme" title="Switch color theme">◐</button>
           <button class="button quiet" id="pause-button" type="button" disabled>Pause</button>
@@ -51,15 +51,18 @@
           <button class="button primary large" id="empty-new-run" type="button">Start a campaign</button>
         </section>
 
+        <nav id="study-navigation" class="study-navigation" aria-label="Research navigation" hidden></nav>
         <section id="dashboard" hidden>
           <div class="campaign-heading">
             <div>
+              <p class="eyebrow">Study details · Evidence &amp; review</p>
               <div class="heading-meta">
                 <span class="status-badge" id="campaign-status">—</span>
                 <span id="campaign-id">—</span>
                 <span class="status-badge" id="study-route">—</span>
               </div>
               <h1 id="root-hypothesis">Loading campaign…</h1>
+              <p class="panel-description">Recorded experiments and independent assessments. An output or completed run alone is not an accepted scientific finding.</p>
               <details id="guidance-details"><summary>Operational guidance</summary><p id="campaign-instruction" hidden></p></details>
             </div>
             <div class="current-action" id="current-action">
@@ -284,6 +287,7 @@
     <script src="/assets/vendor/katex-auto-render-0.18.4.min.js" defer></script>
     <script src="/assets/vendor/dagre-2.0.0.min.js" defer></script>
     <script src="/assets/markdown.js" defer></script>
+    <script src="/assets/study-navigation.js" defer></script>
     <script src="/assets/app.js" defer></script>
   </body>
 </html>

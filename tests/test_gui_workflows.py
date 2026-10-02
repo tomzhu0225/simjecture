@@ -220,7 +220,10 @@ def test_new_shared_assets_are_served_with_existing_csp(tmp_path):
         with httpx.Client(
             base_url=f"http://127.0.0.1:{server.server_port}", trust_env=False
         ) as client:
-            for path in ["/", "/monitor", "/assets/interface.css", "/assets/workspace-theme.js"]:
+            for path in [
+                "/", "/monitor", "/assets/interface.css", "/assets/workspace-theme.js",
+                "/assets/study-navigation.js",
+            ]:
                 response = client.get(path)
                 assert response.status_code == 200
                 assert "script-src 'self'" in response.headers["content-security-policy"]
@@ -238,6 +241,7 @@ def test_slow_project_response_does_not_override_newer_navigation(destination):
     run_js(
         """
 const assert = require('node:assert/strict');
+const window = {StudyNavigation:{selected:()=>null}};
 const state = {project:null,projectRequest:0,mode:'interactive'};
 const $ = () => ({});
 const pending = new Map();
