@@ -94,15 +94,6 @@ a {
   letter-spacing: 1.8px;
   color: var(--muted);
 }
-.mark {
-  font:
-    italic 39px/1 Georgia,
-    serif;
-  color: var(--accent);
-}
-.mark span {
-  color: #a5bb88;
-}
 .new-project {
   display: flex;
   gap: 13px;
@@ -1035,9 +1026,6 @@ dialog p {
   .brand small {
     font-size: 11px;
   }
-  .sidebar .mark {
-    font-size: 31px;
-  }
   main {
     margin-left: 175px;
   }
@@ -1124,7 +1112,6 @@ dialog p {
     font-size: 19px;
   }
   .brand small,
-  .brand .mark,
   .sidebar-label,
   .project-list,
   .sidebar-bottom {
@@ -1523,12 +1510,6 @@ body {
 .brand small {
   color: #8188a1;
   font-size: 12px;
-}
-.mark {
-  color: #b4aaff;
-}
-.mark span {
-  color: #786de1;
 }
 .new-project {
   background: #7666e1;
@@ -3152,9 +3133,6 @@ wa-split-panel.project-layout {
   .sidebar .brand small,
   .sidebar .sidebar-label {
     display: block;
-  }
-  .sidebar .brand .mark {
-    display: inline-block;
   }
   .sidebar .new-project {
     width: 100%;
