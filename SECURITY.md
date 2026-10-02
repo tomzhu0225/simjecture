@@ -3,16 +3,20 @@
 ## Supported versions
 
 This is a research project, not a hardened multi-tenant service. Report issues
-against the exact release and commit: stable 0.5.2 and preview 0.5.3rc3 are distinct.
-The repository does not promise a long-term security-maintenance window for older
-releases. Check current maintainer guidance before deploying sensitive workloads.
+against the exact package version and Git commit, and identify the execution
+backend. Stable releases and previews can have different security-relevant
+features. The repository does not promise a long-term security-maintenance window
+for older releases. Check current release notes and maintainer guidance before
+deploying sensitive workloads.
 
 ## Reporting a vulnerability
 
 Do not open a public issue for credential exposure, sandbox escape, arbitrary
-host execution, or another security-sensitive defect. Contact the maintainer
-privately through the GitHub account associated with this repository. Include a
-minimal reproduction, affected commit, and impact assessment when possible.
+host execution, or another security-sensitive defect. Use a private contact
+method published by the repository maintainer, or GitHub's **Report a vulnerability**
+option if the repository offers it. If neither is available, request a private
+reporting channel without including vulnerability details. In the private report,
+include a minimal reproduction, affected commit, and impact assessment when possible.
 
 ## Credentials and execution boundaries
 
