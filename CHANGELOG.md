@@ -34,6 +34,8 @@ This project follows semantic versioning. Dates use ISO 8601.
 - Keep minimal as the default and retain existing research strategy, review gates,
   completion rules, benchmark task pack 0.3.0 and recorded model measurements.
   No new live-model or long scientific campaign is claimed by this release.
+- Explicitly exclude installed dependencies and local environments/state from
+  source distributions, including when building from a Git worktree.
 
 ## 0.5.3rc3 — 2026-10-01
 

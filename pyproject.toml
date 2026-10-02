@@ -91,6 +91,30 @@ docs = [
 [tool.hatch.build.targets.wheel]
 packages = ["src/conjecture_solver"]
 
+[tool.hatch.build.targets.sdist]
+# Worktree builds must not depend on Git-directory detection for local exclusions.
+exclude = [
+  "/.venv/**",
+  "/.runtime/**",
+  "/.private/**",
+  "/artifacts/**",
+  "/data/**",
+  "/dist/**",
+  "/build/**",
+  "/docs/_build/**",
+  "/.coverage*",
+  "**/node_modules/**",
+  "**/__pycache__/**",
+  "**/.pytest_cache/**",
+  "**/.ruff_cache/**",
+  "**/.hypothesis/**",
+  "**/.env",
+  "**/*.pyc",
+  "**/*.sqlite3",
+  "**/*.sqlite3-shm",
+  "**/*.sqlite3-wal",
+]
+
 [tool.hatch.build.targets.wheel.force-include]
 "skills" = "conjecture_solver/builtin_skills"
 "capabilities" = "conjecture_solver/builtin_capabilities"
