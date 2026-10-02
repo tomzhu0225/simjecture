@@ -4,6 +4,15 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+- Connect conversation, selected study, and **Evidence & review** with shared
+  navigation. Study links retain their selection across reloads, mode changes,
+  and monitor Back/Forward navigation.
+- Return from study details to the owning conversation, and prepare continuations
+  there by default. Standalone CLI studies and read-only inspection remain available.
+- Guard study rendering and continuation dialogs against stale requests, newer
+  navigation, and repeated submission. Clarify that simulation output alone is
+  not an independently accepted scientific finding.
+
 ## 0.5.3rc4 (preview) — 2026-10-02
 
 - Integrate the independent rc3 audit with its reproducible fixes and regression

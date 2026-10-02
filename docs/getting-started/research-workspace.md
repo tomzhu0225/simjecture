@@ -107,6 +107,32 @@ existing minimal research core, with its evidence, method, provenance, deadline,
 recovery and independent-review checks. Its pause/resume/stop controls reuse the
 existing verified process controls. A paused study retains its original deadline.
 
+## Move between conversation, study, and evidence
+
+The shared **Conversation → Study → Evidence & review** trail keeps the selected
+study in the page URL. Select a study by its title or **Select study** link; the
+selected card is outlined. Switching between interactive and autonomous research,
+reloading, or returning from its evidence page preserves that selection. A newly
+launched study becomes the selected one. Links without a study choose the latest
+study in that conversation.
+
+**Evidence & review** opens the existing detailed study view with its graph,
+experiment console, independent reviews, artifacts, and advanced controls.
+**Back to this conversation** returns to the actual owning conversation. The
+**Study** breadcrumb returns to its selected card. Browser Back/Forward also
+restores monitor campaign choices.
+
+Conversation-side **Simulations** are exploration results. Recorded experiments
+and completed processes do not by themselves establish scientific acceptance;
+read the independent reviews and the scope of the accepted finding.
+
+Continuing a study from its detailed view prepares the next phase in the owning
+conversation, after you submit the continuation dialog. Cancel or Escape before
+submission leaves the record unchanged. A busy conversation or existing unlaunched
+proposal must be resolved first; it is not silently replaced. A directly opened
+CLI study without a workspace owner remains standalone and creates a conversation
+only when a continuation is submitted.
+
 ## Permanent files, arranged by project
 
 Project and study folders use names you can recognize:

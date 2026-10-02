@@ -95,3 +95,17 @@ oversight retries back off up to 30 minutes while other research can continue.
 Live status reconciles expired budgets and recorded supervisor identity. Final
 reports are written on supervisor exit, including an external-error exit. A
 continuation does not erase or silently resolve a parent's pending review.
+
+## Conversation continuity
+
+From **Study details · Evidence & review**, **Continue investigation** opens the
+workspace with the study selected. For a workspace-owned study, the next proposal
+stays in that conversation. If its agent is busy or it already has an unlaunched
+proposal, resolve that work before preparing another proposal. Earlier versions
+that inferred a launched brief are supported without rewriting their records.
+
+Standalone CLI studies still create a conversation on submission. If the network
+fails after submitting a standalone continuation, check the conversation list for
+**Continue:** before submitting again: this preparation API does not yet provide
+an idempotent replay receipt. Repeated clicks while a request is pending are
+suppressed. An owned-study retry never silently overwrites its pending proposal.
