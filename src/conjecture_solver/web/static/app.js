@@ -27,6 +27,7 @@ const state = {
   executionConsoleCache: new Map(),
   executionLoads: new Set(),
   pollInFlight: false,
+  snapshotRequest: 0,
   pollCount: 0,
   toastTimer: null,
 };
@@ -119,6 +120,11 @@ function bindEvents() {
   for (const tab of ui.tabs) {
     tab.addEventListener("click", () => setTab(tab.dataset.tab));
   }
+  window.addEventListener("popstate", () => {
+    const campaign = new URLSearchParams(location.search).get("campaign");
+    if (campaign && state.campaigns.some((item) => item.id === campaign))
+      selectCampaign(campaign, { history: false });
+  });
   window.addEventListener("resize", debounce(() => {
     if (state.snapshot) renderGraph(false);
   }, 160));
@@ -164,6 +170,7 @@ async function initialize() {
     ui["new-run-button"].disabled = !state.allowMutations;
     ui["empty-new-run"].disabled = !state.allowMutations;
     renderCampaignPicker();
+    writeCampaignRoute("replaceState");
     if (state.selectedCampaign) {
       await refreshSnapshot(true);
     } else {
@@ -197,29 +204,50 @@ async function refreshCampaigns() {
 
 async function refreshSnapshot(force) {
   if (!state.selectedCampaign) return;
+  const campaign = state.selectedCampaign;
+  const request = ++state.snapshotRequest;
   state.pollInFlight = true;
   try {
     const payload = await api(
-      `/api/snapshot?campaign=${encodeURIComponent(state.selectedCampaign)}`,
+      `/api/snapshot?campaign=${encodeURIComponent(campaign)}`,
     );
+    if (request !== state.snapshotRequest || campaign !== state.selectedCampaign) return;
     state.snapshot = payload;
     renderSnapshot(force);
     setSync("online", "Live");
   } catch (error) {
+    if (request !== state.snapshotRequest || campaign !== state.selectedCampaign) return;
     setSync("offline", "Retrying");
     if (force) showToast(error.message, true);
   } finally {
-    state.pollInFlight = false;
+    if (request === state.snapshotRequest) state.pollInFlight = false;
   }
 }
 
-async function selectCampaign(token) {
+function writeCampaignRoute(method = "pushState") {
+  if (!state.selectedCampaign) return;
+  const url = new URL(location.href);
+  url.searchParams.set("campaign", state.selectedCampaign);
+  if (url.href !== location.href) history[method](null, "", url);
+}
+
+async function selectCampaign(token, { history: updateHistory = true } = {}) {
   if (!token || token === state.selectedCampaign) return;
   state.selectedCampaign = token;
+  if (updateHistory) writeCampaignRoute();
+  ui["campaign-select"].value = token;
+  // Hide old context while the newly selected study is loading.
+  document.getElementById("study-navigation").hidden = true;
+  const returned = document.getElementById("conversation-return");
+  returned.href = "/workspace";
+  returned.textContent = "Workspace";
+  for (const id of ["continue-study-link", "steer-study-link"]) document.getElementById(id).hidden = true;
   state.selectedClaim = null;
   state.selectedStage = null;
   state.selectedExecution = null;
   state.snapshot = null;
+  ui.dashboard.hidden = true;
+  for (const id of ["pause-button", "resume-button", "cancel-button"]) ui[id].disabled = true;
   state.graphZoom = 1;
   loadGraphPositions();
   state.expandedDetails.clear();
@@ -268,6 +296,7 @@ function renderSnapshot(force) {
   const snapshot = data.snapshot;
   ui["empty-state"].hidden = true;
   ui.dashboard.hidden = false;
+  renderStudyNavigation(data);
 
   const execution = snapshot.execution_status;
   const displayStatus = execution === "terminal" ? snapshot.phase : execution;
@@ -485,11 +514,36 @@ function renderMetrics(data) {
     : `${data.artifacts.length} visible artifacts`;
 }
 
+function renderStudyNavigation(data) {
+  const context = data.workspace_context;
+  const campaign = state.selectedCampaign;
+  const nav = document.getElementById("study-navigation");
+  nav.hidden = false;
+  window.StudyNavigation.render(nav, {
+    project: context?.project_id,
+    campaign,
+    page: "evidence",
+    title: data.display_name || "",
+  });
+  const returned = document.getElementById("conversation-return");
+  returned.textContent = context ? "Back to this conversation" : "Workspace";
+  returned.href = context
+    ? window.StudyNavigation.workspace(context.project_id, campaign, "interactive")
+    : "/workspace";
+  returned.title = context?.project_name || "Open the research workspace";
+}
+
 function renderControls(controls) {
   for (const [id, query] of [["continue-study-link", "continue-study"], ["steer-study-link", "steer-study"]]) {
     const link = document.getElementById(id);
     link.hidden = !state.selectedCampaign || !state.allowMutations || state.snapshot?.engine?.mode !== "minimal" || (query === "steer-study" && (state.snapshot?.engine?.remaining_seconds <= 0 || ["completed", "cancelled", "budget_exhausted"].includes(state.snapshot?.engine?.status)));
-    link.href = `/workspace?${query}=${encodeURIComponent(state.selectedCampaign || "")}`;
+    const context = state.snapshot?.workspace_context;
+    const route = context
+      ? window.StudyNavigation.workspace(context.project_id, state.selectedCampaign)
+      : "/workspace";
+    const target = new URL(route, location.href);
+    target.searchParams.set(query, state.selectedCampaign || "");
+    link.href = target.pathname + target.search + target.hash;
   }
   const enabled = state.allowMutations;
   ui["pause-button"].disabled = !enabled || !controls.can_pause;

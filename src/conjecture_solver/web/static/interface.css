@@ -69,3 +69,16 @@ button, .button { transition: background-color 140ms ease, border-color 140ms ea
 }
 /* Keep white button text legible when the dark palette uses pale link colors. */
 .shell .primary:hover:not(:disabled) { background: #5345bb; color: #fff; }
+
+/* One path through the conversation, its selected study and the evidence view. */
+.study-navigation { margin: 0 0 20px; font-size: 13px; color: var(--muted); }
+.study-navigation ol { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0; padding: 0; }
+.study-navigation li { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.study-navigation li + li::before { content: "›"; color: var(--muted); }
+.study-navigation a { color: var(--accent); text-decoration: none; }
+.study-navigation a:hover { text-decoration: underline; }
+.study-navigation [aria-current="page"] { color: var(--text); font-weight: 600; }
+.study-card.selected-study { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.study-card .study-selection { font-size: 12px; margin-left: auto; }
+.study-card h3 a { color: inherit; text-decoration: none; }
+.study-card h3 a:hover { text-decoration: underline; }
