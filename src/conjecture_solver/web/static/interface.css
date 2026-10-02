@@ -82,3 +82,6 @@ button, .button { transition: background-color 140ms ease, border-color 140ms ea
 .study-card .study-selection { font-size: 12px; margin-left: auto; }
 .study-card h3 a { color: inherit; text-decoration: none; }
 .study-card h3 a:hover { text-decoration: underline; }
+/* The explicit conversation return label must fit alongside advanced controls. */
+.topbar-actions { flex-wrap: wrap; min-width: 0; }
+#conversation-return { max-width: 100%; white-space: normal; }
