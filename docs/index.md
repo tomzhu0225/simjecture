@@ -5,6 +5,9 @@ counterexample searches and independently reviewed claims. The browser workspace
 is the recommended starting point. Use a compatible API model or an installed
 native agent CLI; terminal automation is also supported.
 
+These guides cover **Simjecture 0.5.3**. See the
+[stable release scope and checks](testing/0.5.3-acceptance.md).
+
 ## Start in the workspace
 
 1. [Install Simjecture](getting-started/installation.md) on Linux or WSL

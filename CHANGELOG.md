@@ -4,6 +4,23 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+## 0.5.3 — 2026-10-02
+
+Stable release of the 0.5.3 candidate series. Minimal remains the default;
+structured and frontier remain selectable. Existing research data and older
+program folders are preserved by the versioned installer.
+
+- Run recorded numerical experiments on local or SSH workers with CPU/RAM/GPU
+  reservations, automatic machine setup, 30-second availability checks and recovery
+  after interruptions. Research agents and independent review stay on the coordinator.
+- Publish the measured coding-agent leaderboard with task-specific time/cost
+  rankings, failure-inclusive cost bars, consistent model colours and a Pareto plot.
+  Custom trials and community grades remain separate; the benchmark analyzes
+  recorded diagnostics and does not launch new simulations.
+- Repair concurrent ledger writes, idempotent replay, reserved-CPU time limits,
+  transport recovery, input validation and conversation races. Retain request-level
+  usage records, native DeepSeek tool-message continuity and review evidence retrieval.
+  Preserve scientific review gates, deadlines and the benchmark task pack 0.3.0.
 - Connect conversation, selected study, and **Evidence & review** with shared
   navigation. Study links retain their selection across reloads, mode changes,
   and monitor Back/Forward navigation.

@@ -25,16 +25,16 @@ scope; see [scientific limitations](docs/research/limitations.md).
 
 ## Install and open the workspace
 
-On Linux or inside WSL, install the **0.5.3rc4 preview**:
+On Linux or inside WSL, install **Simjecture 0.5.3**:
 
 ```bash
-curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.3rc4/install.sh | bash
+curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.3/install.sh | bash
 ```
 
 The installer verifies the release bundle's checksum, sets up uv, Python 3.12 and
 workspace dependencies, then starts the local GUI. Git and a CLI agent are not
-required. For the stable release, Python-package installation, SSH forwarding or
-source setup, see [installation options](docs/getting-started/installation.md).
+required. For Python-package installation, SSH forwarding or source setup, see
+[installation options](docs/getting-started/installation.md).
 
 1. In **Connections**, add a compatible API endpoint and key, or select an installed,
    authenticated CLI in the message composer
@@ -94,8 +94,11 @@ them. Explicit cooperative PRoot execution is not an OS security boundary. Read
   [evaluation status](docs/research/status.md),
   [research and release archive](docs/archive/index.md)
 
-Release changes live in [CHANGELOG.md](CHANGELOG.md); version-specific validation
-and its limits are linked from the [archive](docs/archive/index.md). The
+**0.5.3** brings SSH experiment workers, the measured coding-agent leaderboard,
+ledger and recovery repairs, and shared conversation/study/evidence navigation.
+Release changes live in [CHANGELOG.md](CHANGELOG.md); checks and limits are in the
+[0.5.3 acceptance record](docs/testing/0.5.3-acceptance.md) and
+[archive](docs/archive/index.md). The
 [documentation index](docs/index.md) covers the full guide set.
 
 ## Contributing

@@ -13,11 +13,11 @@ provider or subscription is required by this workflow. Keep credentials in the
 agent's own credential store, outside study directories and source control.
 
 Install Bubblewrap using your distribution's package manager (for example,
-`sudo apt install bubblewrap` on Debian/Ubuntu). Then install the preview package
+`sudo apt install bubblewrap` on Debian/Ubuntu). Then install the package
 and check whether this host permits the required namespaces:
 
 ```bash
-uv tool install 'simjecture==0.5.3rc4'
+uv tool install 'simjecture==0.5.3'
 simjecture doctor --execution-backend bubblewrap
 ```
 

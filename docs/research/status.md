@@ -1,7 +1,6 @@
 # Evaluation status
 
-Simjecture remains a methods and infrastructure research project. Stable 0.5.2
-and preview 0.5.3rc4 add operational features; neither establishes unrestricted
+Simjecture remains a methods and infrastructure research project. Stable 0.5.3 adds operational features; it does not establish unrestricted
 scientific reliability. Simjecture was first built to attack simulation-gated plasma conjectures. The
 claim ledger, sandbox, commissioning protocol, and capability framework are
 now domain-neutral enough to extend to other fields that have a sharp

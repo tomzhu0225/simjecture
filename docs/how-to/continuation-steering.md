@@ -1,7 +1,6 @@
 # Continue and steer an investigation
 
-Available in the 0.5.3rc3 preview for minimal studies. The published rc2
-installer does not yet include these actions.
+Available in 0.5.3 for minimal studies.
 
 ## Continue after a deadline or change direction
 

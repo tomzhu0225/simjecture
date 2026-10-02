@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Simjecture's public Linux/WSL installer. No Git, Python, uv or CLI agent required.
 set -euo pipefail
-SIMJECTURE_VERSION=0.5.3rc4
+SIMJECTURE_VERSION=0.5.3
 simjecture_install_dir="${SIMJECTURE_INSTALL_DIR:-$HOME/simjecture}"
 simjecture_python="${SIMJECTURE_PYTHON:-3.12}"
 simjecture_start=1
