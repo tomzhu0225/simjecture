@@ -50,6 +50,9 @@ def navigation_case(tmp_path, monkeypatch):
 def rendered_page():
     playwright = pytest.importorskip("playwright.sync_api")
     with playwright.sync_playwright() as runtime:
+        executable = Path(runtime.chromium.executable_path)
+        if not executable.is_file():
+            pytest.skip(f"Playwright Chromium executable is not installed: {executable}")
         browser = runtime.chromium.launch(headless=True)
         page = browser.new_page(viewport={"width": 1440, "height": 1050})
         errors = []
