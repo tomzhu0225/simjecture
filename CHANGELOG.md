@@ -12,6 +12,9 @@ This project follows semantic versioning. Dates use ISO 8601.
 - Guard study rendering and continuation dialogs against stale requests, newer
   navigation, and repeated submission. Clarify that simulation output alone is
   not an independently accepted scientific finding.
+- Release pending continuation previews when navigating away, so a stalled old
+  request cannot block a new action. Ignore its late reply even after returning
+  to the original route; retain the currently open dialog.
 
 ## 0.5.3rc4 (preview) — 2026-10-02
 

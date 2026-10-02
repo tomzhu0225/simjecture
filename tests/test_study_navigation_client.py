@@ -395,6 +395,57 @@ const api = async (path,payload) => {calls.push([path,payload]);return {files:[]
     )
 
 
+@pytest.mark.parametrize("destination", ["new-study", "return-to-original"])
+def test_departed_preview_does_not_block_new_action_or_reopen_on_same_route(destination):
+    run_js(
+        DOM
+        + navigation_source()
+        + ACTION_DOM
+        + f"const destination = {json.dumps(destination)};\n"
+        + """
+state.project.studies.push({campaign:'next'});
+state.mode = 'autonomous';
+state.routing = false;
+const originalRoute = location.hash;
+const view = () => {};
+document.getElementById = () => null;
+const history = {replaceState() {throw Error('Unexpected route normalization');}};
+let resolveOriginal;
+const previews = [];
+const api = async path => {
+ previews.push(path);
+ if (previews.length === 1) return new Promise(resolve => {resolveOriginal=resolve;});
+ return {files:[]};
+};
+"""
+        + client_function("followRoute")
+        + client_function("openResearchAction")
+        + """
+(async () => {
+ const original = openResearchAction('parent','continue');
+ location.hash = '#project=owner&view=autonomous&study=next';
+ await followRoute();
+ if (destination === 'return-to-original') {
+   location.hash = originalRoute;
+   await followRoute();
+ }
+ const target = destination === 'return-to-original' ? 'parent' : 'next';
+ await openResearchAction(target,'continue');
+ assert.equal(previews.length,2,'a departed pending preview must not block a new action');
+ const current = state.researchAction;
+ assert.equal(current.dialog.open,true);
+ resolveOriginal({files:[]});
+ await original;
+ assert.equal(state.researchAction,current,'an old reply must preserve the current action');
+ const dialogs = document.body.children.filter(node => node.tagName === 'dialog' && !node.removed);
+ assert.equal(dialogs.length,1,'returning to the same route must not resurrect its old dialog');
+ assert.equal(dialogs[0],current.dialog);
+ assert.deepEqual(opened,[]);
+})().catch(error => {console.error(error);process.exitCode=1;});
+"""
+    )
+
+
 @pytest.mark.parametrize("destination", ["owned", "foreign", "departed"])
 def test_continuation_submit_captures_owner_and_ignores_duplicates_and_late_navigation(destination):
     run_js(

@@ -4,6 +4,7 @@ All studies and conversations are local fixtures. No provider calls or real laun
 are needed. These checks complement, rather than replace, deterministic client tests.
 """
 
+import json
 import threading
 from contextlib import contextmanager
 from pathlib import Path
@@ -11,6 +12,7 @@ from urllib.parse import parse_qs, urlencode, urlsplit
 
 import pytest
 
+from conjecture_solver.research_continuation import preview
 from conjecture_solver.research_service import ResearchService, put
 from conjecture_solver.web.application import SimjectureWebApplication
 from conjecture_solver.web.server import create_server
@@ -228,3 +230,65 @@ def test_owned_continuation_cancel_escape_and_repeated_submit_reuse_conversation
         assert saved["continuation_draft"]["campaign"] == original
         assert len(saved["studies"]) == 2
         screenshot(page, "owned-continuation")
+
+
+@pytest.mark.parametrize("return_to_original", [False, True])
+def test_pending_preview_navigation_allows_new_continuation_without_waiting(
+    navigation_case, rendered_page, return_to_original
+):
+    app, project, studies, _ = navigation_case
+    page, expect = rendered_page
+    original, newer = [study["campaign"] for study in studies]
+    held = []
+    previews = []
+    released = False
+
+    def intercept(route):
+        campaign = parse_qs(urlsplit(route.request.url).query)["id"][0]
+        previews.append(campaign)
+        if campaign == original and not held:
+            held.append(route)
+        else:
+            route.continue_()
+
+    page.route("**/api/workspace/continuation-preview?*", intercept)
+    with serve(app) as base:
+        try:
+            page.goto(base + workspace_route(project, original))
+            page.locator(f"#study-{original}").get_by_role(
+                "button", name="Continue investigation", exact=True
+            ).click()
+            dialog = page.get_by_role("dialog", name="Continue investigation", exact=True)
+            expect(dialog).to_have_count(0)
+            page.evaluate(
+                "hash => location.hash=hash", workspace_route(project, newer).split("#")[1]
+            )
+            expect(page.locator(f"#study-{newer}")).to_have_class("study-card selected-study")
+            if return_to_original:
+                page.evaluate(
+                    "hash => location.hash=hash", workspace_route(project, original).split("#")[1]
+                )
+                expect(page.locator(f"#study-{original}")).to_have_class(
+                    "study-card selected-study"
+                )
+            target = original if return_to_original else newer
+            page.locator(f"#study-{target}").get_by_role(
+                "button", name="Continue investigation", exact=True
+            ).click()
+            dialog = page.get_by_role("dialog", name="Continue investigation", exact=True)
+            expect(dialog).to_be_visible()
+            assert previews == [original, target]
+            dialog.evaluate("node => node.dataset.retained='true'")
+            held[0].fulfill(
+                status=200,
+                content_type="application/json",
+                body=json.dumps(preview(Path(studies[0]["path"]))),
+            )
+            released = True
+            page.wait_for_timeout(100)
+            expect(dialog).to_have_count(1)
+            expect(dialog).to_have_attribute("data-retained", "true")
+            assert_workspace_route(page, project, target, "autonomous")
+        finally:
+            if held and not released:
+                held[0].abort()

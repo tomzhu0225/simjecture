@@ -137,8 +137,11 @@ async function followRoute({ reveal = true } = {}) {
   if (state.routing) return;
   const initial = location.hash;
   // Leaving an action's route dismisses it; a late response must not navigate back.
-  if (state.researchAction && state.researchAction.route !== initial)
-    state.researchAction.dialog?.close();
+  if (state.researchAction && state.researchAction.route !== initial) {
+    const departed = state.researchAction;
+    departed.dialog?.close();
+    if (state.researchAction === departed) state.researchAction = null;
+  }
   state.routing = true;
   try {
     const params = new URLSearchParams(location.hash.slice(1)),
@@ -1909,7 +1912,7 @@ async function openResearchAction(campaign, kind) {
     if (state.researchAction === active) state.researchAction = null;
     throw error;
   }
-  if (location.hash !== route || state.projectRequest !== projectRequest) {
+  if (state.researchAction !== active || location.hash !== route || state.projectRequest !== projectRequest) {
     if (state.researchAction === active) state.researchAction = null;
     return;
   }

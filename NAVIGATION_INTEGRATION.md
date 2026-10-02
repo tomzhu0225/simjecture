@@ -87,3 +87,22 @@ new regression tests when resolving conflicts. Keep conversation ownership
 authoritative and path-checked, and do not relax read-only controls or independent
 evidence semantics. Rerun validation after conflict resolution; the current
 results apply to the supplied rc4-based tree.
+
+## Local audit and repair — 2026-10-02
+
+The subsequent local audit verified the kit on the exact released rc4 base,
+ran all six rendered browser cases, and completed a supervised full suite with
+1,041 passes and seven optional-runtime skips. Desktop/mobile checks covered
+light/dark study, evidence and continuation views.
+
+A delayed-response check found that leaving before a continuation preview
+created its dialog retained the global action lock. New actions stayed blocked
+until the old request returned. The repair clears the departed token regardless
+of whether a dialog exists and checks token identity before opening a preview.
+Regression coverage exercises a new action while the original request remains
+pending, plus returning to the same route before its reply. The two deterministic
+cases failed on the supplied implementation before the repair.
+
+This is a local development preview; the published rc4 tag and artifacts retain
+their original contents. No new model inference or scientific campaign is needed
+to inspect the navigation.
