@@ -106,6 +106,7 @@ def verify(release, destination):
             for resource in (
                 "/",
                 "/assets/workspace-theme.js",
+                "/assets/study-navigation.js",
                 "/assets/brand/simjecture-lockup-light.svg",
                 "/assets/brand/simjecture-lockup-dark.svg",
                 "/favicon.svg",

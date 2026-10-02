@@ -37,3 +37,9 @@ JOREK, SOLPS-ITER/EIRENE and DINA-PS. Their component code, data, citation and
 redistribution terms remain upstream terms; Simjecture does not relicense them
 or imply ITER endorsement. The diagnostic demo is independently authored using
 public APIs; its CHERAB bremsstrahlung API reference is credited in the script.
+
+The shared Simjecture logo wordmark is outlined from Open Sans Semibold. Its
+attribution and Apache 2.0 license are retained beside the distributed artwork in
+[src/conjecture_solver/web/static/brand/OPEN-SANS-NOTICE.txt](src/conjecture_solver/web/static/brand/OPEN-SANS-NOTICE.txt)
+and [APACHE-2.0.txt](src/conjecture_solver/web/static/brand/APACHE-2.0.txt).
+No font binaries or external font dependencies are included.

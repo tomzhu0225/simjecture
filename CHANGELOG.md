@@ -32,6 +32,9 @@ program folders are preserved by the versioned installer.
 - Release pending continuation previews when navigating away, so a stalled old
   request cannot block a new action. Ignore its late reply even after returning
   to the original route; retain the currently open dialog.
+- Use shared light/dark logo artwork in the workspace and monitor, with SVG/ICO
+  favicons, accessible home links and packaged font attribution. Keep assets
+  self-contained and preserve the existing content-security policy.
 - Make the README and documentation entry points workspace-first, move terminal
   automation into a dedicated guide, and group dated reports in an archive index.
   Simplify contributor setup and checks, and keep release facts in the changelog
