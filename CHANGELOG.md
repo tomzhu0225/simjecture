@@ -15,6 +15,10 @@ This project follows semantic versioning. Dates use ISO 8601.
 - Release pending continuation previews when navigating away, so a stalled old
   request cannot block a new action. Ignore its late reply even after returning
   to the original route; retain the currently open dialog.
+- Make the README and documentation entry points workspace-first, move terminal
+  automation into a dedicated guide, and group dated reports in an archive index.
+  Simplify contributor setup and checks, and keep release facts in the changelog
+  and acceptance records.
 
 ## 0.5.3rc4 (preview) — 2026-10-02
 

@@ -16,11 +16,29 @@ Treat warnings as build failures. Keep pages in one of four roles:
 - explanation describes architecture, scientific reasoning, and limitations.
 
 Current user guides should stay in those four roles. Dated research and release
-acceptance records are retained separately under `research/` and `testing/`;
-they document what was checked then, not a promise that the same checks passed
-on the current host. Incremental implementation notes belong in Git history.
+acceptance records are retained at their existing `research/` and `testing/` paths
+and grouped in the [archive](../archive/index.md). They document what was checked
+then, not a promise that the same checks passed on the current host. Incremental
+implementation notes belong in Git history.
 
-Distinguish stable 0.5.2 instructions from preview 0.5.3rc4 features. Check CLI
+## Give each fact one home
+
+- `README.md`: purpose, a short workspace quickstart, capabilities and next-step links
+- `CONTRIBUTING.md`: ways to help, minimal setup and contribution-specific checks
+- Installation and how-to guides: complete task recipes and their prerequisites
+- Reference: exact command interfaces, compatibility aliases and import names
+- Explanation: architecture, scientific contracts and limitations
+- `CHANGELOG.md`: release changes; GitHub Releases use the matching section, as
+  described in the [release process](releasing.md)
+- Dated archive records: validation commands, measurements, context and known limits
+
+When behavior changes, update its owning guide and link to it from entry points.
+Do not copy the release diary, test totals or the full CLI recipe into every page.
+Keep historical reports intact and attach clearly labelled corrections when needed.
+Review versioned quickstart links when shipping a release; change other pages only
+when their instructions or claims change.
+
+Distinguish stable instructions from preview-only features. Check CLI
 examples against the checkout's `--help` and model/API claims against source and
 tests. Build with warnings as errors and check relative links. For examples that
 need credentials, licensed source, GPU hardware or an unavailable sandbox, state
@@ -28,8 +46,7 @@ what was not exercised. Read-only demo verification, task preparation and HTML
 export are useful no-key checks; benchmark grading still executes submitted code.
 
 See the repository's [contributor guide](https://github.com/tomzhu0225/simjecture/blob/main/CONTRIBUTING.md)
-for coding checks, pull-request expectations, licensing and the draft publication
-authorship discussion.
+for coding checks, pull-request expectations and licensing.
 
 Examples must use placeholders for credentials and bounded output directories.
 Never paste a real key, private run URL, or unpublished third-party artifact into

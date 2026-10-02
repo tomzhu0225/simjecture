@@ -93,6 +93,13 @@ uv run simjecture doctor --profile core
 uv run simjecture web
 ```
 
+## Headless Python package
+
+For a package-only installation and terminal automation with an existing native
+agent, follow [Run a headless study](../how-to/headless-studies.md). That guide
+covers package installation, the separate Bubblewrap prerequisite and a complete
+launch/monitor/resume recipe.
+
 ## Native agent login
 
 For browser setup, run `./scripts/launch-workspace.sh`, choose an agent and model on
