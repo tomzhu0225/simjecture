@@ -29,44 +29,7 @@ review. A timeout without review is incomplete work, not an accepted negative an
 The advanced **New hypothesis** form remains at `/monitor` for explicit mode and
 execution configuration. See the [workspace walkthrough](research-workspace.md).
 
-For a terminal run, write a bounded statement in `hypothesis.txt` and its test
-scope, resource constraints and acceptance criteria in `instructions.md`:
-
-```bash
-uv run simjecture study --campaign artifacts/first-study \
-  --hypothesis-file hypothesis.txt --instructions-file instructions.md \
-  --backend codex-glm --model glm-5.3 --wall-seconds 3600
-```
-
-The terminal shows current activity, elapsed/remaining time and experiment/review
-counts. Use `--quiet` to suppress progress. Select `--mode structured` or
-`--mode frontier` when starting a new directory. Existing mode, backend and wall
-deadline are retained on resume.
-
-Minimal records include `research.json`, immutable experiment snapshots,
-prospective repair commitments, independent review receipts and a final
-`research_report.json`. A clean agent exit is only a checkpoint. Under the default CLI `repair` completion policy, a supported root
-or an accepted falsification followed by a supported repair completes the study;
-uncertainty stays unresolved. Numerical convergence and physical validity remain
-scientific obligations. See [minimal research](../how-to/research-service.md).
-
-Inspect or control the same directory:
-
-```bash
-uv run simjecture status artifacts/first-study
-uv run simjecture watch artifacts/first-study
-uv run simjecture web artifacts/first-study
-uv run simjecture pause artifacts/first-study
-uv run simjecture resume artifacts/first-study
-```
-
-Pause stops the native agent at the supervisor boundary. Already recorded jobs
-may finish within their existing limits; the wall deadline continues. Cancel or
-deadline exhaustion terminates active recorded jobs. Transient provider outages retry within the original deadline; authentication,
-permission and exhausted-quota failures pause with the evidence intact rather
-than inventing a scientific conclusion.
-
-The optional [Terminal interface](terminal-ui.md) offers the same mode/backend
-selection and a dashboard for SSH and headless machines. The legacy `simjecture
-mvp` and [DSH](../how-to/deepseek-harness.md) entry points remain available; their
-workbench/commissioning contracts are unchanged.
+For a terminal or automated run, follow [Run a headless study](../how-to/headless-studies.md).
+It covers native CLI setup, mode and completion-policy choices, monitoring, and
+resuming within the original budget. The optional
+[terminal dashboard](terminal-ui.md) remains available for browserless operation.

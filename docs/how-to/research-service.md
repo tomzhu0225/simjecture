@@ -16,16 +16,12 @@ also supports minimal studies; DSH and `mvp` remain explicit legacy choices. Sel
 unsupported combination returns an error rather than silently changing modes.
 The `mvp` command remains the legacy API entry point.
 
-```bash
-simjecture study --campaign /absolute/path/to/new-study \
-  --hypothesis-file hypothesis.txt --instructions-file instructions.md \
-  --backend codex-glm --model glm-5.3 --wall-seconds 3600
-```
-
-From a checkout use `python -m conjecture_solver.research_supervisor` with the
-checkout's `src` on `PYTHONPATH`. The backend uses its existing login. Codex/GLM
-resume the same native thread; other configured CLI backends preserve the working
-folder and evidence state. The wall deadline survives process restarts. Operator instructions are frozen before experiments and included in every reviewer packet; changing them requires a new study.
+For installation, a complete launch recipe, and monitoring/resume commands, use
+[Run a headless study](headless-studies.md). The backend uses its existing login.
+Codex/GLM resume the same native thread; other configured CLI backends preserve the
+working folder and evidence state. The wall deadline survives process restarts.
+Operator instructions are frozen before experiments and included in every reviewer
+packet; changing them requires a new study.
 
 The generated `research/lab.py` offers a small evidence API. Optional
 [research memory and comparison helpers](research-memory.md) keep observations,
