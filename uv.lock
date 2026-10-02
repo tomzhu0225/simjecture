@@ -2608,7 +2608,7 @@ wheels = [
 
 [[package]]
 name = "simjecture"
-version = "0.5.3rc4"
+version = "0.5.3"
 source = { editable = "." }
 dependencies = [
     { name = "httpx" },

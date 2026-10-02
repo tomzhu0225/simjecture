@@ -1,7 +1,7 @@
 # Run a Simjecture campaign under DSH
 
 The DSH integration is a native-tool profile plus a small resumable driver for
-a durable Simjecture campaign. The current bundle (0.5.3-rc.4) retains the
+a durable Simjecture campaign. The current bundle (0.5.3) retains the
 architecture introduced in 0.4.0: it uses a persistent Lead Scientist
 and fresh, claim-scoped Falsifier, Repair Scientist, and tool-free Judge
 sessions. Fresh workers see bounded kernel state rather than inherited chat.
@@ -66,7 +66,7 @@ resulting local bundle into the isolated harness profile:
 SIMJECTURE_DSH_PROFILE="$(simjecture dsh-profile)"
 npm pack "$SIMJECTURE_DSH_PROFILE" --pack-destination /tmp
 dsh plugin --profile simjecture add @deepseek-ai/dsh-headless@0.1.5-rc.2
-dsh plugin --profile simjecture add /tmp/simjecture-dsh-bundle-0.5.3-rc.4.tgz
+dsh plugin --profile simjecture add /tmp/simjecture-dsh-bundle-0.5.3.tgz
 ```
 
 For a checkout-only development install, use the directory directly when the
@@ -208,7 +208,7 @@ report.
 Stop its campaign supervisor and back up the entire campaign directory, including
 `operator_input/dsh_sessions`, before upgrading the CLI and isolated profile.
 Install DSH `0.1.5-rc.2`, replace the headless bundle with the matching version,
-and install Simjecture's matching `0.5.3-rc.4` bundle using the commands above. Inspect
+and install Simjecture's matching `0.5.3` bundle using the commands above. Inspect
 `--dump-config` before resuming. Do not mix the `0.1.6` alpha packages into this
 profile. Provider/model selection stays in your DSH configuration.
 

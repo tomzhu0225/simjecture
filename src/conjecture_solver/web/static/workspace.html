@@ -4,6 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Simjecture · Research workspace</title>
+    <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" type="image/x-icon" />
+    <link rel="icon" href="/favicon.svg" sizes="any" type="image/svg+xml" />
     <script src="/assets/workspace-theme.js"></script>
     <script src="/assets/workspace-panels.js"></script>
     <link
@@ -23,16 +25,17 @@
     <script src="/assets/workspace-rich.js" defer></script>
     <script src="/assets/workspace-monitor.js" defer></script>
     <script src="/assets/workspace-benchmarks.js" defer></script>
+    <script src="/assets/study-navigation.js" defer></script>
     <script src="/assets/workspace.js" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to main content</a>
     <div class="shell">
       <aside class="sidebar" id="workspace-sidebar">
-        <a href="/workspace" class="brand"
-          ><span class="mark" aria-hidden="true">s<span>·</span></span
-          ><span>simjecture<small>RESEARCH WORKSPACE</small></span></a
-        >
+        <a href="/workspace" class="brand" aria-label="Simjecture research workspace">
+          <img class="brand-logo brand-logo-dark" src="/assets/brand/simjecture-lockup-dark.svg" width="289" height="64" alt="" aria-hidden="true" />
+          <small>Research workspace</small>
+        </a>
         <button id="new-project" class="new-project">
           ＋ <span>New conversation</span>
         </button>
@@ -461,6 +464,7 @@
               ><button id="autonomous-mode">Autonomous research</button>
             </div>
           </div>
+          <nav id="study-navigation" class="study-navigation" aria-label="Research navigation"></nav>
           <div id="continuation-chat-context" class="continuation-chat-context" hidden>
             <a id="continuation-parent-link">Continuing an earlier investigation ↗</a>
             <span>Discuss the next phase in chat, then review its brief.</span>
@@ -766,7 +770,7 @@
                       <h3>Your experiments, in view.</h3>
                       <p>
                         Ask your agent to run a simulation. Its live console and
-                        saved outputs appear here, beside the conversation.
+                        saved outputs appear here, beside the conversation. These are exploration results; independent study review is separate.
                       </p>
                     </div>
                   </div>

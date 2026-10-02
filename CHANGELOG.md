@@ -4,6 +4,42 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+## 0.5.3 — 2026-10-02
+
+Stable release of the 0.5.3 candidate series. Minimal remains the default;
+structured and frontier remain selectable. Existing research data and older
+program folders are preserved by the versioned installer.
+
+- Run recorded numerical experiments on local or SSH workers with CPU/RAM/GPU
+  reservations, automatic machine setup, 30-second availability checks and recovery
+  after interruptions. Research agents and independent review stay on the coordinator.
+- Publish the measured coding-agent leaderboard with task-specific time/cost
+  rankings, failure-inclusive cost bars, consistent model colours and a Pareto plot.
+  Custom trials and community grades remain separate; the benchmark analyzes
+  recorded diagnostics and does not launch new simulations.
+- Repair concurrent ledger writes, idempotent replay, reserved-CPU time limits,
+  transport recovery, input validation and conversation races. Retain request-level
+  usage records, native DeepSeek tool-message continuity and review evidence retrieval.
+  Preserve scientific review gates, deadlines and the benchmark task pack 0.3.0.
+- Connect conversation, selected study, and **Evidence & review** with shared
+  navigation. Study links retain their selection across reloads, mode changes,
+  and monitor Back/Forward navigation.
+- Return from study details to the owning conversation, and prepare continuations
+  there by default. Standalone CLI studies and read-only inspection remain available.
+- Guard study rendering and continuation dialogs against stale requests, newer
+  navigation, and repeated submission. Clarify that simulation output alone is
+  not an independently accepted scientific finding.
+- Release pending continuation previews when navigating away, so a stalled old
+  request cannot block a new action. Ignore its late reply even after returning
+  to the original route; retain the currently open dialog.
+- Use shared light/dark logo artwork in the workspace and monitor, with SVG/ICO
+  favicons, accessible home links and packaged font attribution. Keep assets
+  self-contained and preserve the existing content-security policy.
+- Make the README and documentation entry points workspace-first, move terminal
+  automation into a dedicated guide, and group dated reports in an archive index.
+  Simplify contributor setup and checks, and keep release facts in the changelog
+  and acceptance records.
+
 ## 0.5.3rc4 (preview) — 2026-10-02
 
 - Integrate the independent rc3 audit with its reproducible fixes and regression

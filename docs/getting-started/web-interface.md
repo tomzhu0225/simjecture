@@ -3,7 +3,12 @@
 For model setup, project conversations, tool installation and autonomous research,
 start with the [research workspace](research-workspace.md). Running `simjecture web`
 without a campaign opens the workspace. `/monitor` opens the detailed experiment
-monitor below; supplying a campaign directory still opens that monitor directly.
+view below, labelled **Study details · Evidence & review**; supplying a campaign
+directory still opens that view directly. Workspace studies expose a shared
+**Conversation → Study → Evidence & review** trail and **Back to this conversation**.
+The owning conversation is resolved from recorded study ownership, not a browser
+return URL. Standalone CLI studies show **Standalone study**, without inventing a
+conversation. Read-only sessions keep navigation while disabling mutations.
 
 The local web interface is the primary human-facing view of a Simjecture
 campaign. It makes the scientific structure visible without replacing the

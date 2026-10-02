@@ -106,6 +106,11 @@ def verify(release, destination):
             for resource in (
                 "/",
                 "/assets/workspace-theme.js",
+                "/assets/study-navigation.js",
+                "/assets/brand/simjecture-lockup-light.svg",
+                "/assets/brand/simjecture-lockup-dark.svg",
+                "/favicon.svg",
+                "/favicon.ico",
                 "/assets/workspace-monitor.js",
                 "/assets/vendor/webawesome-3.14.0/components/tab/tab.js",
                 "/api/workspace/tools",

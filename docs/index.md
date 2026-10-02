@@ -1,63 +1,60 @@
-# Simjecture
+# Simjecture documentation
 
-Simjecture is an evidence-governed runtime for autonomous experimentation and
-falsification over hypothesis trees inside a human-defined scientific problem.
-It accepts a natural-language hypothesis, lets an agent commission and use
-computational instruments, and preserves an independently inspectable path from
-proposal to claim disposition.
+Simjecture helps you turn a scientific question into recorded experiments,
+counterexample searches and independently reviewed claims. The browser workspace
+is the recommended starting point. Use a compatible API model or an installed
+native agent CLI; terminal automation is also supported.
 
-This documentation covers stable 0.5.2 and the 0.5.3rc4 preview. The project
-began in computational plasma physics. The same evidence harness is now ready
-to extend to other simulation-gated fields. The software has completed real
-autonomous CPU and CUDA campaigns, but it does not claim unrestricted
-hypothesis solving or empirical closure.
+These guides cover **Simjecture 0.5.3**. See the
+[stable release scope and checks](testing/0.5.3-acceptance.md).
 
-The **0.5.3rc4 preview** includes [SSH experiment workers](how-to/ssh-workers.md),
-automatic machine setup, live availability and refreshed research-tool details.
-It also adds the [published model benchmark](how-to/llm-bench.md).
-Rc4 integrates the independent rc3 audit, including ledger integrity, multicore
-CPU allowances, worker recovery, usage-log efficiency and conversation fixes.
-See [preview scope and validation](testing/0.5.3rc4-acceptance.md).
+## Start in the workspace
 
-## Choose a starting point
+1. [Install Simjecture](getting-started/installation.md) on Linux or WSL
+2. Follow the [workspace walkthrough](getting-started/research-workspace.md) to
+   choose an agent, start a conversation and prepare a study
+3. Try a [small first investigation](getting-started/first-run.md), then inspect
+   its experiments and review
 
-- **No-key tour:** verify and replay the
-  [recorded Gray–Scott demo](demos/gray-scott.md); it makes no model calls and
-  starts no simulations.
-- **New user:** follow [Installation](getting-started/installation.md),
-  [Minimal native studies](how-to/research-service.md), and the
-  [Web interface](getting-started/web-interface.md). The
-  maintenance-mode [Terminal interface](getting-started/terminal-ui.md)
-  remains available for SSH and headless operation.
-- **Scientist:** read [System architecture](concepts/architecture.md),
-  [Evidence and claims](concepts/evidence-and-claims.md), and
-  [Scientific limitations](research/limitations.md).
-- **Tool author:** start with [Add a capability](how-to/add-a-capability.md) and
-  [Guided commissioning](how-to/guided-commissioning.md).
-- **Operator:** use [Deploy runtime profiles](how-to/deploy-runtimes.md) to
-  provision and verify the core, WarpX, FLASH, equation-of-state, or opacity
-  environment. See the [ITER ecosystem pack](how-to/iter-pack.md) for diagnostics,
-  IMAS data and guided fusion-solver setup.
-- **DSH operator:** use [Run a Simjecture campaign under DSH](how-to/deepseek-harness.md)
-  to install the native MCP profile and verify its tool boundary.
-- **Simote operator:** use [Simote agent roles](how-to/simote-agent-roles.md)
-  to run claim-scoped CLI agents on shared campaigns.
-- **Reviewer:** inspect the [MiMo/DeepSeek comparison](research/llm-comparison.md),
-  the [official benchmark leaderboard](_static/benchmark-leaderboard.html),
-  [Evaluation status](research/status.md),
-  the [recorded Gray–Scott demo](demos/gray-scott.md),
-  the [recorded collisionless GEM demo](demos/collisionless-gem.md),
-  [run 0004 audit](research/run-0004.md), and
-  [next steps](research/next-steps.md).
+Want to look around first? The [recorded Gray–Scott demo](demos/gray-scott.md)
+can be verified and replayed without an API key or new simulations.
+
+## Solve a specific task
+
+- **Automate a study:** [headless CLI workflow](how-to/headless-studies.md)
+- **Continue or guide work:** [continuation and steering](how-to/continuation-steering.md)
+- **Prepare a scientific instrument:** [guided commissioning](how-to/guided-commissioning.md),
+  [runtime deployment](how-to/deploy-runtimes.md), [ITER pack](how-to/iter-pack.md)
+- **Use remote compute:** [SSH workers](how-to/ssh-workers.md) and
+  [restricted hosts](how-to/restricted-containers.md)
+- **Inspect a study:** [web monitor](getting-started/web-interface.md),
+  [methods and progress oversight](how-to/minimal-oversight.md),
+  [research memory](how-to/research-memory.md)
+- **Compare models:** [benchmark guide and community results](how-to/llm-bench.md)
+- **Extend the harness:** [add a capability](how-to/add-a-capability.md) or
+  [contribute](https://github.com/tomzhu0225/simjecture/blob/main/CONTRIBUTING.md)
+
+## Understand the evidence
+
+Read [architecture](concepts/architecture.md),
+[evidence and claims](concepts/evidence-and-claims.md),
+[evaluation status](research/status.md) and
+[scientific limitations](research/limitations.md) for what the harness records,
+what has been demonstrated and what still needs scientific judgment.
+
+Current guides describe supported workflows and identify version-specific
+features where needed. Dated audits, model comparisons and acceptance checks live
+in the [research and release archive](archive/index.md). Release changes are in
+[CHANGELOG.md](https://github.com/tomzhu0225/simjecture/blob/main/CHANGELOG.md).
 
 ```{toctree}
 :hidden:
 :caption: Getting started
 
 getting-started/installation
+getting-started/research-workspace
 getting-started/first-run
 getting-started/web-interface
-getting-started/research-workspace
 getting-started/terminal-ui
 ```
 
@@ -76,12 +73,16 @@ demos/collisionless-gem
 concepts/architecture
 concepts/evidence-and-claims
 research/limitations
+research/status
 ```
 
 ```{toctree}
 :hidden:
 :caption: How-to guides
 
+how-to/headless-studies
+how-to/research-service
+how-to/continuation-steering
 how-to/guided-commissioning
 how-to/restricted-containers
 how-to/minimal-oversight
@@ -89,13 +90,10 @@ how-to/research-memory
 how-to/add-a-capability
 how-to/deploy-runtimes
 how-to/iter-pack
-how-to/deepseek-harness
-how-to/dsh-upgrade-assessment
-how-to/simote-agent-roles
 how-to/ssh-workers
-how-to/research-service
-how-to/continuation-steering
 how-to/llm-bench
+how-to/deepseek-harness
+how-to/simote-agent-roles
 ```
 
 ```{toctree}
@@ -108,33 +106,15 @@ reference/repository-map
 
 ```{toctree}
 :hidden:
-:caption: Research record
-
-research/status
-research/llm-comparison
-research/run-0004
-research/next-steps
-research/continuation-steering-rc3
-research/stagnation-deep-audit-20260929
-research/stagnation-retrospective-20260929
-research/stagnation-video-outline-20260929
-```
-
-```{toctree}
-:hidden:
 :caption: Development
 
 development/documentation
 development/releasing
-testing/rc2-installation-acceptance
-testing/rc3-continuation-acceptance
-testing/iter-pack-acceptance
-testing/0.5.3rc1-acceptance
-testing/0.5.3rc2-acceptance
-testing/0.5.3rc3-acceptance
-testing/0.5.3rc4-acceptance
-testing/native-api-adapter
-testing/ssh-workers-acceptance
-testing/mimo-flash-comparison
-testing/owned-llm-benchmark-20261001
+```
+
+```{toctree}
+:hidden:
+:caption: Archive
+
+archive/index
 ```

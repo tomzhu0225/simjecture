@@ -1,12 +1,11 @@
 # Compare scientific coding agents
 
-**Simjecture Bench 0.1.0** is an experimental task pack shipped with 0.5.3rc1.
+**Simjecture Bench 0.3.0** is the experimental task pack shipped with 0.5.3.
 Its version is independent of the harness version. It packages finite diagnostic
 coding tasks from the aluminium RZ investigation; passing does not establish a
 physical mechanism, approve a scientific claim, or measure general research ability.
 
-The task pack in **0.5.3rc3** is **0.3.0**, with qualified tracer interpolation and
-float64 reductions. The [owned 42-configuration sweep](../testing/owned-llm-benchmark-20261001.md)
+The current pack uses qualified tracer interpolation and float64 reductions. The [owned 42-configuration sweep](../testing/owned-llm-benchmark-20261001.md)
 contains actual timing, delivery and usage results from 252 scheduled attempts;
 unavailable provider observations and affected earlier qualifications stay unranked.
 
@@ -116,7 +115,7 @@ filters, rankings and plots; it needs no server, login, model request or import:
 simjecture llm-benchmark export-page --output ./leaderboard.html
 ```
 
-After 0.5.3rc2, the development workspace adds a leaderboard to **Benchmarks**.
+The workspace includes a leaderboard in **Benchmarks**.
 Task preparation and grading remain available. **Run your model** starts fresh
 timed trials using an installed coding CLI or the API coding agent configured in
 Connections. Enter any supported model ID, choose its effort, select one or both

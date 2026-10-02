@@ -16,6 +16,8 @@ const state = {
   briefDirty: false,
   messageRevision: "",
   studyRevision: "",
+  studyRequest: 0,
+  researchAction: null,
   launchKey: null,
   modelRequests: { home: 0, conversation: 0 },
   homeAgent: null,
@@ -107,7 +109,26 @@ function view(name) {
     renderAgent(undefined, "home").catch((e) => toast(e.message, true));
 }
 function projectHash(id, options = {}) {
-  return new URLSearchParams({ project: id, ...options }).toString();
+  const study = id === state.project?.id
+    ? window.StudyNavigation.selected(state.project, state.routeStudy) : null;
+  return new URLSearchParams({ project: id, ...(study ? { study } : {}), ...options }).toString();
+}
+function renderStudyNavigation() {
+  if (!state.project) return;
+  state.routeStudy = window.StudyNavigation.selected(state.project, state.routeStudy);
+  const study = state.project.studies.find((item) => item.campaign === state.routeStudy);
+  window.StudyNavigation.render($("study-navigation"), {
+    project: state.project.id,
+    campaign: state.routeStudy,
+    page: state.mode === "autonomous" ? "study" : "conversation",
+    title: study?.question || "",
+  });
+  for (const card of $("study-runs").querySelectorAll(".study-card")) {
+    const selected = card.id === `study-${state.routeStudy}`;
+    card.classList.toggle("selected-study", selected);
+    const marker = card.querySelector(".study-selection");
+    if (marker) marker.textContent = selected ? "Selected study" : "Select study";
+  }
 }
 function projectLink(id, options = {}) {
   return `#${projectHash(id, options)}`;
@@ -115,6 +136,12 @@ function projectLink(id, options = {}) {
 async function followRoute({ reveal = true } = {}) {
   if (state.routing) return;
   const initial = location.hash;
+  // Leaving an action's route dismisses it; a late response must not navigate back.
+  if (state.researchAction && state.researchAction.route !== initial) {
+    const departed = state.researchAction;
+    departed.dialog?.close();
+    if (state.researchAction === departed) state.researchAction = null;
+  }
   state.routing = true;
   try {
     const params = new URLSearchParams(location.hash.slice(1)),
@@ -123,8 +150,13 @@ async function followRoute({ reveal = true } = {}) {
       if (state.project?.id !== id) {
         if (!(await openProject(id))) return;
       } else view("project");
+      state.routeStudy = window.StudyNavigation.selected(state.project, params.get("study"));
       mode(params.get("view") === "autonomous" ? "autonomous" : "interactive");
-      state.routeStudy = params.get("study");
+      if (location.hash !== initial) return;
+      if (state.routeStudy && params.get("study") !== state.routeStudy) {
+        params.set("study", state.routeStudy);
+        history.replaceState(null, "", `#${params}`);
+      }
       if (state.mode === "autonomous") {
         await renderStudies();
         if (state.routeStudy)
@@ -369,7 +401,9 @@ async function openProject(id) {
   // A slower earlier click must not replace a newer navigation choice.
   if (request !== state.projectRequest) return false;
   $("agent-switch-warning").hidden = true;
+  const sameProject = state.project?.id === id;
   state.project = project;
+  state.routeStudy = window.StudyNavigation.selected(project, sameProject ? state.routeStudy : null);
   state.briefDirty = false;
   state.messageRevision = "";
   state.studyRevision = "";
@@ -384,6 +418,7 @@ async function openProject(id) {
 }
 function mode(name) {
   state.mode = name;
+  renderStudyNavigation();
   $("interactive-panel").hidden = name !== "interactive";
   $("autonomous-panel").hidden = name !== "autonomous";
   $("interactive-mode").classList.toggle("selected", name === "interactive");
@@ -422,6 +457,7 @@ function renderProject(force = false) {
   renderMachineSelection();
   renderAgentSwitchWarning();
   $("project-title").textContent = p.name;
+  renderStudyNavigation();
   $("agent-label").textContent = p.agent
     ? `${p.agent.backend} / ${p.agent.model || "choose model"}`
     : "Choose an agent";
@@ -1145,6 +1181,8 @@ async function saveBrief() {
 }
 async function renderStudies() {
   if (!state.project || state.mode !== "autonomous") return;
+  const projectId = state.project.id;
+  const request = ++state.studyRequest;
   const studies = state.project.studies;
   const responses = await Promise.all(
     studies.map(async (study) => {
@@ -1155,6 +1193,8 @@ async function renderStudies() {
       }
     }),
   );
+  if (request !== state.studyRequest || state.project?.id !== projectId || state.mode !== "autonomous") return;
+  renderStudyNavigation();
   const rev = JSON.stringify(responses);
   if (rev === state.studyRevision) return;
   const openDetails = new Set(
@@ -1166,8 +1206,13 @@ async function renderStudies() {
   for (const { study, data, error } of responses.reverse()) {
     const card = el("article", undefined, "study-card");
     card.id = `study-${study.campaign}`;
+    card.classList.toggle("selected-study", study.campaign === state.routeStudy);
+    const heading = el("h3");
+    const selectedLink = el("a", study.question);
+    selectedLink.href = projectLink(projectId, { view: "autonomous", study: study.campaign });
+    heading.append(selectedLink);
     if (error) {
-      card.append(el("h3", study.question), el("p", error, "error-text"));
+      card.append(heading, el("p", error, "error-text"));
       $("study-runs").append(card);
       continue;
     }
@@ -1181,7 +1226,10 @@ async function renderStudies() {
       el("span", String(status).replaceAll("_", " ").toUpperCase(), "badge"),
       el("span", study.campaign_id),
     );
-    card.append(meta, el("h3", study.question));
+    const select = el("a", study.campaign === state.routeStudy ? "Selected study" : "Select study", "study-selection");
+    select.href = selectedLink.href;
+    meta.append(select);
+    card.append(meta, heading);
     const finished = ["completed", "cancelled", "budget_exhausted"].includes(
       status,
     );
@@ -1204,6 +1252,7 @@ async function renderStudies() {
       );
       returned.href = projectLink(state.project.id, {
         view: "interactive",
+        study: study.campaign,
         ...(study.report_turn ? { turn: study.report_turn } : {}),
       });
       card.append(returned);
@@ -1283,8 +1332,8 @@ async function renderStudies() {
           });
         controls.append(b);
       }
-    const monitor = el("a", "Open experiment monitor ↗", "secondary");
-    monitor.href = `/monitor?campaign=${study.campaign}`;
+    const monitor = el("a", "Evidence & review ↗", "secondary");
+    monitor.href = window.StudyNavigation.evidence(study.campaign);
     controls.append(monitor);
     if (data.live?.mode === "minimal") {
       for (const [kind, label] of [["continue", "Continue investigation"], ["steer", "Send guidance"]]) {
@@ -1306,6 +1355,7 @@ async function renderStudies() {
       card.append(notes);
     }
     const findings = el("div", undefined, "study-findings");
+    findings.append(el("p", "Experiment outputs are recorded results. Scientific acceptance comes from independent review; completing a run alone does not establish a claim.", "field-help"));
     for (const review of report.reviews || [])
       if (review.verdict) {
         const v = review.verdict;
@@ -1652,18 +1702,26 @@ $("save-brief").onclick = () =>
     toast("Study brief saved");
   });
 async function launchStudy() {
+  const id = state.project.id;
+  const request = state.projectRequest;
+  const route = location.hash;
+  const stillHere = () => state.project?.id === id && state.projectRequest === request && location.hash === route;
   await saveConversationAgent();
+  if (!stillHere()) return;
   if (state.briefDirty || !state.project.brief) await saveBrief();
+  if (!stillHere()) return;
   state.launchKey ||= crypto.randomUUID();
-  await api("launch", {
-    project: state.project.id,
+  const launched = await api("launch", {
+    project: id,
     request_key: state.launchKey,
     capability_directory: $("study-tools").value,
     execution_backend: $("execution-backend").value,
   });
-  state.project = await api(
-    `project?id=${encodeURIComponent(state.project.id)}`,
-  );
+  const project = await api(`project?id=${encodeURIComponent(id)}`);
+  if (!stillHere()) return;
+  state.project = project;
+  state.routeStudy = launched.campaign || project.studies.at(-1)?.campaign || null;
+  mode("autonomous");
   renderProject();
   await renderStudies();
   toast(
@@ -1838,9 +1896,28 @@ updateThemeToggle();
 // Shared entry point from a study card or a directly opened CLI study monitor.
 async function openResearchAction(campaign, kind) {
   if (state.readonly) throw Error("This workspace is read-only");
+  if (state.researchAction) return;
   const continuing = kind === "continue";
-  const preview = continuing ? await api(`continuation-preview?id=${encodeURIComponent(campaign)}`) : null;
+  const route = location.hash;
+  const projectRequest = state.projectRequest;
+  // Capture the source before awaiting a preview. Never use a later conversation.
+  const project = state.project?.studies.some((study) => study.campaign === campaign)
+    || state.project?.continuation_draft?.campaign === campaign ? state.project.id : null;
+  const active = { route, dialog: null };
+  state.researchAction = active;
+  let preview;
+  try {
+    preview = continuing ? await api(`continuation-preview?id=${encodeURIComponent(campaign)}`) : null;
+  } catch (error) {
+    if (state.researchAction === active) state.researchAction = null;
+    throw error;
+  }
+  if (state.researchAction !== active || location.hash !== route || state.projectRequest !== projectRequest) {
+    if (state.researchAction === active) state.researchAction = null;
+    return;
+  }
   const dialog = el("dialog", undefined, "research-action-dialog");
+  active.dialog = dialog;
   dialog.setAttribute("aria-label", continuing ? "Continue investigation" : "Send guidance");
   const form = el("form");
   form.append(el("h2", continuing ? "Continue investigation" : "Send guidance"));
@@ -1872,19 +1949,41 @@ async function openResearchAction(campaign, kind) {
   if (withAgent) { withAgent.type = "submit"; withAgent.value = "agent"; }
   controls.append(cancel, submit); if (withAgent) controls.append(withAgent); form.append(controls); dialog.append(form); document.body.append(dialog);
   const key = crypto.randomUUID();
+  let submitting = false;
   form.onsubmit = async (event) => {
-    event.preventDefault(); submit.disabled = true; if (withAgent) withAgent.disabled = true;
+    event.preventDefault();
+    if (submitting || !dialog.open) return;
+    submitting = true;
+    cancel.disabled = true;
+    submit.disabled = true; if (withAgent) withAgent.disabled = true;
     const approach = event.submitter?.value || "direct";
     try {
       if (continuing) {
-        const result = await api("prepare-continuation", {campaign, project: state.project?.id,
+        const result = await api("prepare-continuation", {campaign, project,
           approach, guidance: message.value, hours: Number(hours.value), files: selection.filter(([c]) => c.checked).map(([,p]) => p)});
-        dialog.close(); await reloadProjects(); if (!(await openProject(result.project))) return; mode(result.view || "autonomous"); toast(result.preparation_error || result.message, !!result.preparation_error);
+        const stillHere = dialog.open && location.hash === route && state.projectRequest === projectRequest;
+        dialog.close();
+        await reloadProjects();
+        if (!stillHere || location.hash !== route || state.projectRequest !== projectRequest) return;
+        if (!(await openProject(result.project))) return;
+        state.routeStudy = window.StudyNavigation.selected(state.project, campaign);
+        mode(result.view || "autonomous");
+        toast(result.preparation_error || result.message, !!result.preparation_error);
       } else {
         await api("steer-study", {campaign, message: message.value, request_key: key});
         dialog.close(); toast("Guidance queued for the next agent checkpoint."); state.studyRevision = ""; await renderStudies();
       }
-    } catch (e) { error.textContent = e.message; submit.disabled = false; if (withAgent) withAgent.disabled = false; }
+    } catch (e) {
+      error.textContent = e.message;
+      submitting = false;
+      cancel.disabled = false;
+      submit.disabled = false; if (withAgent) withAgent.disabled = false;
+    }
   };
-  dialog.addEventListener("close", () => dialog.remove()); dialog.showModal(); message.focus();
+  dialog.addEventListener("cancel", (event) => { if (submitting) event.preventDefault(); });
+  dialog.addEventListener("close", () => {
+    if (state.researchAction === active) state.researchAction = null;
+    dialog.remove();
+  });
+  dialog.showModal(); message.focus();
 }

@@ -1,24 +1,18 @@
 # Installation
 
-## One-command browser preview installation
+## One-command workspace installation
 
 On Linux or inside an existing WSL distribution:
 
 ```bash
-curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.2/install.sh | bash
+curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.3/install.sh | bash
 ```
 
-This command selects stable **0.5.2**. Existing research data and older program versions are preserved.
-
-For the **0.5.3rc4 preview**, including SSH workers and refreshed interfaces:
-
-```bash
-curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.3rc4/install.sh | bash
-```
-
-The preview installs beside older versions. It retains projects, provider settings
-and runtime directories. See [rc4 scope and checks](../testing/0.5.3rc4-acceptance.md)
-and [SSH worker setup](../how-to/ssh-workers.md).
+This command selects stable **0.5.3**, including SSH experiment workers and shared
+conversation/study/evidence navigation. Existing projects, provider settings,
+runtimes and older program versions are preserved. See
+[release scope and checks](../testing/0.5.3-acceptance.md) and
+[SSH worker setup](../how-to/ssh-workers.md).
 
 No Git, Python environment or CLI agent setup is required in advance. The bootstrap
 fetches the versioned workspace bundle and verifies its SHA-256 checksum, installs uv
@@ -41,7 +35,7 @@ remove older versions or research outputs.
 To install without starting, or choose a different web port:
 
 ```bash
-curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.2/install.sh | bash -s -- --no-start
+curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.3/install.sh | bash -s -- --no-start
 ~/simjecture/start-workspace --port 8765
 ```
 
@@ -67,8 +61,8 @@ for configuration, build, registration and actual backend readiness checks.
 
 ### SSH servers
 
-The workspace runs on the SSH server. Experiments run there by default; the rc4 preview can
-select additional SSH workers through Machines. The installer prints a forwarding
+The workspace runs on the SSH server. Experiments run there by default; select
+additional SSH workers through Machines. The installer prints a forwarding
 command; run it on your local computer, for example:
 
 ```bash
@@ -92,6 +86,13 @@ uv sync --frozen --extra workspace
 uv run simjecture doctor --profile core
 uv run simjecture web
 ```
+
+## Headless Python package
+
+For a package-only installation and terminal automation with an existing native
+agent, follow [Run a headless study](../how-to/headless-studies.md). That guide
+covers package installation, the separate Bubblewrap prerequisite and a complete
+launch/monitor/resume recipe.
 
 ## Native agent login
 

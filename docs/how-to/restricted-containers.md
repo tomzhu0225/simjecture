@@ -4,14 +4,13 @@ Scientific modes (`minimal`, `structured`, `frontier`) are independent of the
 experiment execution backend. Bubblewrap remains the default. Simjecture never
 silently switches to weaker isolation when namespace creation fails.
 
-The rc3 preview includes the checked fallback introduced in rc2 in the conversation workspace and
-runtime installer: prefer Bubblewrap; when it cannot run, select PRoot only if
+The conversation workspace and runtime installer provide a checked fallback: prefer Bubblewrap; when it cannot run, select PRoot only if
 its probe succeeds under a non-root account. A sidebar warning explains that
 this is cooperative execution without filesystem/network security isolation.
 It can be dismissed; the mode indicator remains available to reopen it.
 The workspace extra includes the process monitor. The installer can install
 PRoot on Debian/Ubuntu. When invoked as root on a namespace-restricted host,
-the preview installer creates a dedicated `simjecture` account and installs by default
+the installer creates a dedicated `simjecture` account and installs by default
 under `/srv/simjecture`, with a root-owned launcher that drops privileges on
 subsequent starts. The account's home is `/var/lib/simjecture`; no permissions on
 `/root` or host namespace restrictions are relaxed. A custom installation path

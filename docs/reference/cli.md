@@ -56,6 +56,8 @@ external paths are refused. See
 
 ## Native-agent studies
 
+For a complete setup and automation recipe, see [Run a headless study](../how-to/headless-studies.md).
+
 `simjecture study --campaign DIR --hypothesis-file H --instructions-file I`
 starts minimal mode by default. Add `--mode structured` or `--mode frontier` for
 another workflow. `--backend` selects `codex-glm`, `codex`, `grok`, `agy` or

@@ -52,6 +52,11 @@ STATIC_ASSETS = frozenset(
         "markdown.js",
         "styles.css",
         "interface.css",
+        "study-navigation.js",
+        "brand/simjecture-lockup-light.svg",
+        "brand/simjecture-lockup-dark.svg",
+        "brand/favicon.svg",
+        "brand/favicon.ico",
         "workspace.html",
         "workspace.js",
         "workspace-theme.js",
@@ -256,6 +261,8 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
             )
         elif request_path == "/workspace":
             relative = "workspace.html"
+        elif request_path in {"/favicon.svg", "/favicon.ico"}:
+            relative = "brand/" + request_path.removeprefix("/")
         elif request_path.startswith("/assets/"):
             relative = request_path.removeprefix("/assets/")
         else:
@@ -269,6 +276,8 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
             ".css": "text/css; charset=utf-8",
             ".html": "text/html; charset=utf-8",
             ".js": "text/javascript; charset=utf-8",
+            ".svg": "image/svg+xml",
+            ".ico": "image/x-icon",
         }.get(path.suffix, "application/octet-stream")
         body = path.read_bytes()
         self._begin(HTTPStatus.OK, content_type, len(body), cache="no-cache")

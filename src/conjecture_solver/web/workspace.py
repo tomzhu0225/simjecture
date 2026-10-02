@@ -512,6 +512,57 @@ class Workspace(MachineWorkspace):
             reverse=True,
         )
 
+    def campaign_context(self, campaign, root):
+        """Find a conversation from its owned study records without changing any state.
+
+        A matching token alone does not establish ownership: stale or edited mappings
+        must still point at the registered run inside that conversation's studies.
+        """
+        root = Path(root).resolve()
+        matches = []
+        for path in self.projects_root.glob("*/project.json"):
+            directory = path.parent
+            try:
+                if (
+                    path.is_symlink()
+                    or directory.is_symlink()
+                    or directory.resolve().parent != self.projects_root.resolve()
+                    or not root.is_relative_to(directory.resolve() / "studies")
+                ):
+                    continue
+                project = load(path)
+                if (
+                    not isinstance(project, dict)
+                    or project.get("id") != directory.name
+                    or not re.fullmatch(r"[\w-]{1,100}", directory.name)
+                    or not isinstance(project.get("studies"), list)
+                ):
+                    continue
+                for study in project["studies"]:
+                    if (
+                        not isinstance(study, dict)
+                        or study.get("campaign") != campaign
+                        or not isinstance(study.get("path"), str)
+                        or Path(study["path"]).resolve() != root
+                        or not root.is_dir()
+                    ):
+                        continue
+                    name = project.get("name")
+                    context = {
+                        "project_id": project["id"],
+                        "project_name": name if isinstance(name, str) else project["id"],
+                        "campaign": campaign,
+                    }
+                    report_turn = study.get("report_turn")
+                    if isinstance(report_turn, str) and re.fullmatch(r"[0-9]+", report_turn):
+                        context["report_turn"] = report_turn
+                    matches.append(context)
+            except (OSError, ValueError, RuntimeError):
+                # Missing, malformed, or invalidly linked metadata cannot own a run.
+                continue
+        # Do not choose an arbitrary record if metadata claims multiple owners.
+        return matches[0] if len(matches) == 1 else None
+
     def delete_project(self, identifier, payload):
         """Delete one confirmed, inactive conversation and its owned files."""
         if payload.get("confirm") != identifier:
@@ -1275,6 +1326,9 @@ class Workspace(MachineWorkspace):
             raise ValueError("Choose a budget between 0.01 and 168 hours")
         identifier = payload.get("project")
         if not identifier:
+            context = self.campaign_context(payload["campaign"], parent)
+            identifier = context["project_id"] if context else None
+        if not identifier:
             identifier = self.create({"name": "Continue: " + info["hypothesis"][:100]})["id"]
         with self.lock():
             path = self.directory(identifier) / "project.json"
@@ -1287,7 +1341,7 @@ class Workspace(MachineWorkspace):
             same_parent = (saved.get("continuation_draft") or {}).get("parent") == str(parent)
             if (
                 saved.get("brief")
-                and not saved.get("brief_launched")
+                and not project.get("brief_launched")
                 and not (same_parent and approach == "agent")
             ):
                 raise ValueError(

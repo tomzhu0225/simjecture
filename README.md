@@ -2,343 +2,115 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21945748.svg)](https://doi.org/10.5281/zenodo.21945748)
 
-[Install](#install-and-open-the-workspace) · [Documentation](docs/index.md) ·
-[Benchmarks](docs/how-to/llm-bench.md) · [Contributing](#contributing) ·
+[Quickstart](#install-and-open-the-workspace) · [Documentation](docs/index.md) ·
+[Recorded demo](docs/demos/gray-scott.md) · [Contributing](CONTRIBUTING.md) ·
 [Releases](https://github.com/tomzhu0225/simjecture/releases)
 
 **Hypothesize. Simulate. Falsify.**
 
-Simjecture is a research harness for computational science. An agent writes and runs
-experiments, searches for counterexamples, and proposes small, testable repairs to
-failed hypotheses. The harness records what actually ran and requires independent
-review before a scientific claim can close.
+Simjecture is a research workspace for computational science. Work with an agent to
+turn a question into a bounded study, run experiments, search for counterexamples,
+and test repairs to failed hypotheses. The harness records what ran and requires
+independent review before a scientific claim can close.
 
-**Latest preview: [0.5.3rc4](https://github.com/tomzhu0225/simjecture/releases/tag/v0.5.3rc4).
-Stable release: [0.5.2](https://github.com/tomzhu0225/simjecture/releases/tag/v0.5.2).**
+Use a compatible API model or an installed native agent CLI. Start in the browser
+workspace; terminal and headless workflows are available when you need automation.
 
-Minimal mode is the default: agents keep their
-native tools and choose their research strategy, while Simjecture manages recorded
-evidence, review and deadlines. Structured and frontier modes remain available.
-The system does not establish physical truth from a successful simulation or promise
-that a long agent run will produce a useful result.
+![Recorded Gray–Scott fields and pattern measurements](docs/_static/demos/gray-scott-result.png)
 
-The workspace includes visible **Continue investigation** and **Send
-guidance** actions in the study view and experiment monitor. Continue with a new
-budget and selected prior files, or send advisory guidance at the next checkpoint.
-See [continuation and steering](docs/how-to/continuation-steering.md).
-
-## Current preview: 0.5.3rc4
-
-The preview includes local/SSH experiment workers and the research workspace.
-In **Machines**, connect with an SSH address and an SSH key, agent, or password; hardware and
-worker setup are detected automatically, with optional advanced settings and agent
-preparation. Availability updates every 30 seconds. Minimal studies can dispatch
-parallel experiments with GPU reservations and recover existing jobs after SSH
-interruptions or coordinator restarts. Agents and independent review stay on the
-coordinator; Simote remains optional.
-
-Research tools now use compact cards with build lists, diagnostics and logs in a
-separate Details panel. The preview also includes campaign recovery repairs,
-request-level usage records, native DeepSeek tool-message continuity and experimental
-**Simjecture Bench** (task pack 0.3.0). See [SSH setup](docs/how-to/ssh-workers.md),
-[benchmark usage](docs/how-to/llm-bench.md), and
-[rc4 scope and validation](docs/testing/0.5.3rc4-acceptance.md).
-
-Rc4 integrates the independent audit: concurrent evidence-ledger writes now
-preserve the hash chain, reserved multicore experiments retain their wall-time
-allowance, and worker polling, transfer recovery and usage-log reading are more
-efficient. It also fixes conversation navigation/submission races and adds small
-interface and accessibility improvements. Minimal remains the default; the
-research strategy and completion rules are unchanged. These repairs have direct
-reproductions and regression checks; a new long research campaign is still needed
-to measure their effect on scientific delivery.
-
-The preview includes a task-scoped leaderboard:
-compare verified completion, cost and elapsed time, explore Pareto tradeoffs, import
-timed trial grades and export a summary. **Run your model** starts fresh trials for
-any native CLI or configured API model, with visible progress and downloadable
-grades. [Actual results from 42 configurations](docs/testing/owned-llm-benchmark-20261001.md)
-are bundled with the task pack: 252 scheduled attempts, with quota/expiry
-observations kept separate from inference results.
-Earlier pilots and qualifications remain in the audit records; they are absent
-from the public leaderboard. Missing measurements stay explicitly labelled. See the
-[leaderboard protocol](docs/how-to/llm-bench.md#leaderboard-and-tradeoffs).
-These tasks analyze recorded plasma diagnostics; the benchmark does not launch
-new FLASH or WarpX simulations.
-
-The leaderboard opens on **Official Simjecture results**, with two
-task tabs, time/cost ranks, published API tariffs and a cost-versus-time plot.
-Each task has ranked time bars, ranked cost bars and a Pareto plot with the
-upper-left corner preferred. Unfinished runs appear in red and retain recorded
-cost bars; configurations without inference are omitted. Model colours are
-consistent, and only same-model effort settings are connected. Methodology is a
-link beside the plots. Current community and local trials have a separate view;
-older qualifications remain in the audit records. A standalone read-only publication
-needs no GUI, API key or imported data:
-
-```bash
-simjecture llm-benchmark export-page --output ./leaderboard.html
-```
-
-Release validation: **974 Python tests passed, 7 optional-runtime checks skipped;
-14 DSH/MCP tests passed.** CI also passed WarpX CPU qualification, strict
-documentation and a fresh-home installer check. See the
-[acceptance record](docs/testing/0.5.3rc4-acceptance.md) and [changelog](CHANGELOG.md).
+A [recorded Gray–Scott study](docs/demos/gray-scott.md) found a finite-domain
+counterexample. You can inspect its code, evidence and review without an API key or
+new simulations. Simulation results remain conditional on the model and numerical
+scope; see [scientific limitations](docs/research/limitations.md).
 
 ## Install and open the workspace
 
-On Linux or inside WSL, choose the current preview or the stable release.
-
-**Latest preview — 0.5.3rc4:**
+On Linux or inside WSL, install **Simjecture 0.5.3**:
 
 ```bash
-curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.3rc4/install.sh | bash
+curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.3/install.sh | bash
 ```
 
-**Stable — 0.5.2:**
+The installer verifies the release bundle's checksum, sets up uv, Python 3.12 and
+workspace dependencies, then starts the local GUI. Git and a CLI agent are not
+required. For Python-package installation, SSH forwarding or source setup, see
+[installation options](docs/getting-started/installation.md).
 
-```bash
-curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.2/install.sh | bash
-```
+1. In **Connections**, add a compatible API endpoint and key, or select an installed,
+   authenticated CLI in the message composer
+2. Start a conversation with your question, paper or simulation outputs
+3. Open **Autonomous research**, prepare a study with the agent, and review its
+   question, evidence requirements and budget before starting
+4. Follow the recorded experiments and independent review in the study view
 
-Or install the current preview's Python package:
+Reopen the workspace with `~/simjecture/start-workspace`. Research files stay under
+`~/simjecture/artifacts/projects`, separate from versioned application folders.
+Keep the server terminal open or use a session manager. Ubuntu/Debian may request
+sudo to install Bubblewrap; restricted hosts may need additional execution setup.
 
-```bash
-uv tool install 'simjecture[workspace,tui]==0.5.3rc4'
-```
+Follow the [workspace walkthrough](docs/getting-started/research-workspace.md) for
+agent selection and your first investigation, or try the
+[no-key recorded demo](docs/demos/gray-scott.md#audit-or-replay) first.
 
-The installer downloads the versioned release, verifies its checksum, installs uv,
-Python 3.12 and the workspace dependencies, and starts the local GUI. Git and a CLI
-agent are not required. Enter a compatible API endpoint and key in **Connections**, or
-select an existing local CLI from the message composer. Choose **Interactive research**
-for a task, or prepare an **Autonomous research** study together with the agent.
+## What you can do
 
-Software lives under `~/simjecture/app/<version>`; conversations, inputs, simulations
-and studies stay in `~/simjecture/artifacts/projects`. Reopen the GUI with
-`~/simjecture/start-workspace`. On SSH hosts the installer prints forwarding instructions
-for your local browser. Keep the server terminal open, or run the launcher in your usual
-session manager. Ubuntu/Debian may request sudo to install Bubblewrap; restricted
-containers can open the GUI but may need a separately configured execution backend.
+- **Investigate a question:** work interactively, then launch a bounded autonomous
+  study with recorded evidence and independent methods/claim review
+- **Challenge and repair hypotheses:** search for counterexamples, preserve claim
+  ancestry, and test committed predictions with fresh evidence
+- **Use scientific instruments:** commission optional WarpX, operator-supplied
+  FLASH, EOS/opacity tools and ITER diagnostics, or add your own capability
+- **Run local or SSH experiments:** select numerical workers and track resource
+  reservations, execution receipts and recovery
+- **Continue an investigation:** prepare a linked phase with a new budget and
+  selected prior files, or send advisory guidance at a checkpoint
+- **Compare coding agents:** run task-scoped benchmarks over recorded diagnostics
+  and inspect completion, time, cost and missing measurements
 
-See [installation options](docs/getting-started/installation.md) and the
-[workspace walkthrough](docs/getting-started/research-workspace.md).
+Minimal mode is the default: the agent chooses its research strategy while the
+host manages evidence, review and deadlines. Structured and frontier modes are
+also available. See [research modes and evidence](docs/how-to/research-service.md)
+and [architecture](docs/concepts/architecture.md).
 
-## Start a study from an external CLI
+Numerical experiments use Bubblewrap by default. Native agents are trusted
+same-account processes with host tools; the experiment sandbox does not enclose
+them. Explicit cooperative PRoot execution is not an OS security boundary. Read
+[security guidance](SECURITY.md) before running sensitive workloads and
+[restricted-host setup](docs/how-to/restricted-containers.md) when needed.
 
-Use Linux with Python 3.11+, [uv](https://docs.astral.sh/uv/), and an installed,
-authenticated native agent CLI. Bubblewrap is the default numerical execution backend.
+## Find your next step
 
-```bash
-uv tool install 'simjecture[tui]==0.5.3rc4'
-simjecture install core
-simjecture doctor --execution-backend bubblewrap
+- **Use the workspace:** [first investigation](docs/getting-started/first-run.md),
+  [continue or steer a study](docs/how-to/continuation-steering.md)
+- **Automate from a terminal:** [headless studies](docs/how-to/headless-studies.md),
+  [command reference](docs/reference/cli.md),
+  [optional terminal dashboard](docs/getting-started/terminal-ui.md)
+- **Prepare an instrument:** [guided commissioning](docs/how-to/guided-commissioning.md),
+  [runtime deployment](docs/how-to/deploy-runtimes.md),
+  [ITER ecosystem pack](docs/how-to/iter-pack.md)
+- **Add compute:** [SSH workers](docs/how-to/ssh-workers.md)
+- **Evaluate models:** [benchmark and community submissions](docs/how-to/llm-bench.md)
+- **Inspect the science:** [evidence and claims](docs/concepts/evidence-and-claims.md),
+  [evaluation status](docs/research/status.md),
+  [research and release archive](docs/archive/index.md)
 
-simjecture study --campaign ./runs/my-study \
-  --hypothesis-file hypothesis.txt --instructions-file instructions.md \
-  --backend codex-glm --model glm-5.3 --wall-seconds 3600
-```
-
-Write a falsifiable hypothesis in `hypothesis.txt`. In `instructions.md`, specify
-physical scope, available instruments, resource limits and the evidence needed to
-accept or reject it. Configure provider credentials in your agent's own credential
-store, outside the study directory. The model name must match that configuration.
-
-A terminal launch shows activity, backend/model, remaining time and experiment/review
-counts. Inspect the same study in either interface:
-
-```bash
-simjecture web ./runs/my-study
-simjecture tui ./runs/my-study
-```
-
-Resume using the same campaign path and launch options. Its recorded mode and original
-wall deadline remain fixed. A normal agent exit or inconclusive result does not mark
-research complete. Transient provider disconnects retry with backoff until the deadline;
-authentication, permission and exhausted-quota errors pause for attention. Waiting for
-a provider counts against wall time.
-
-See [minimal-mode usage](docs/how-to/research-service.md),
-[terminal progress](docs/getting-started/terminal-ui.md) and the
-[browser interface](docs/getting-started/web-interface.md).
-
-## Choose the agent, workflow and execution backend separately
-
-| Choice | Options | What it controls |
-|---|---|---|
-| Native agent | `codex-glm`, `codex`, `grok`, `agy` | CLI, configured provider/model, login and native tools |
-| Research mode | `minimal` (default), `structured`, `frontier` | How scientific work is organized |
-| Numerical execution | `bubblewrap` (default), `proot-cooperative` | How recorded experiment processes execute |
-| Legacy engine | DSH or built-in API routes | Existing campaign integrations; separate from native-study modes |
-
-Use `--mode structured` or `--mode frontier` for another workflow. Minimal lets the
-agent organize its investigation around a small evidence API; structured uses explicit
-claim-scoped roles and contracts; frontier gives a persistent researcher control of
-the classic claim tree. Existing campaigns retain their recorded semantics.
-
-Native agents retain their own shell, search, file and configured provider tools.
-They are trusted, cooperative processes on the study host; they are **not** enclosed
-by the numerical experiment sandbox. Simjecture's supplied tools record experiments,
-provenance and reviews. Native scratch work is not automatically scientific evidence.
-
-If namespaces are unavailable, explicitly select `--execution-backend proot-cooperative`
-on a dedicated non-root account. It provides execution bookkeeping and limits, **not
-an OS security boundary**. Simjecture never silently falls back to it. See
-[restricted containers](docs/how-to/restricted-containers.md).
-
-[DSH integration](docs/how-to/deepseek-harness.md) remains available with native research
-tools and a governed MCP boundary. [Simote integration](docs/how-to/simote-agent-roles.md)
-is optional; Simjecture can run independently on a local or remote host. Deployment
-to a remote host does not itself create a multi-machine experiment scheduler.
-
-## What minimal mode enforces
-
-The agent chooses hypotheses, code, diagnostics and the next discriminating experiment.
-The host maintains the scientific record:
-
-- **Immutable question and scope.** Operator requirements cannot be waived by a worker
-  or reviewer. Repairs preserve ancestry and explain each changed assumption or bound.
-- **Recorded execution.** Commands, declared inputs, runtime identity and output hashes
-  accompany each experiment. Interrupted attempts remain visible.
-- **Commissioning before evidence.** Instrument-backed studies receive source-bound
-  methods review. Exploration and supplied examples cannot be relabelled as new evidence.
-- **Counterexample search and fresh repairs.** Support includes an actual challenge
-  attempt. Repaired predictions are committed before their fresh tests.
-- **Independent acceptance.** A methods approval permits evidence collection; it does
-  not accept a scientific claim. Unconverged, censored or missing results are not
-  physical counterexamples.
-- **Persistent context.** The host maintains an experiment journal and bounded research
-  brief. Evidence-linked notes and comparisons help retain failed approaches and findings.
-- **Bounded work.** The original deadline survives restart. Cancellation uses durable job
-  records and reports unresolved cleanup rather than assuming that agent exit stopped
-  every computation.
-
-Under the default CLI `repair` policy, a study completes when its original claim
-is independently supported, or when a falsified original leads to an independently
-supported repair with the required ancestry. The workspace defaults new studies to
-`answer`, which also permits an independently accepted root falsification to complete
-the investigation. Select the policy in the study brief or with
-`--completion-policy`; resumes retain it. A deadline may leave the campaign unresolved;
-that is recorded, not promoted to success.
-
-See [methods and progress oversight](docs/how-to/minimal-oversight.md),
-[research memory](docs/how-to/research-memory.md) and
-[evidence and claims](docs/concepts/evidence-and-claims.md).
-
-## Begin with a working scientific instrument
-
-For expensive solver setup, provide a guided commissioning package: exact working
-source and command, output reader, observable, validation checks, runtime and known
-limitations. Reproduce that anchor in a separate bounded readiness run before spending
-hours on hypothesis testing.
-
-```bash
-simjecture study --campaign ./runs/guided-study \
-  --hypothesis-file hypothesis.txt --instructions-file instructions.md \
-  --guided-commission /path/to/guided_commission.json \
-  --capabilities /path/to/installed-capabilities \
-  --backend codex-glm --model glm-5.3 --wall-seconds 3600
-```
-
-Guided examples are starting instruments, not fresh evidence for the new hypothesis.
-An executable smoke test does not validate a new geometry or diagnostic. The
-[guided commissioning guide](docs/how-to/guided-commissioning.md) explains readiness
-budgets, immutable anchors and instrument versus production review.
-
-Optional instruments include WarpX CPU/CUDA, operator-supplied FLASH, and EOS/opacity
-capabilities. For example:
-
-```bash
-simjecture install warpx-cpu
-simjecture doctor --profile warpx-cpu
-```
-
-The release also includes an [ITER ecosystem pack](docs/how-to/iter-pack.md):
-CHERAB/Raysect synthetic diagnostics, CHERAB-ITER/IMAS adapters and IMAS data tools.
-Use **Research tools → ITER pack → Install**, then **Run demo** for a monitored
-example with plots, or run `simjecture install iter-pack`. JOREK, SOLPS-ITER and
-DINA-PS have separate **Install with agent** entries and source-based guidance;
-they are not silently included in the diagnostics installation.
-
-FLASH source is not redistributed. Solver source inspection can be configured separately
-from a writable problem/build area. See [runtime deployment](docs/how-to/deploy-runtimes.md)
-and the [scientific skills](skills/).
-
-## Measured evidence and limitations
-
-Minimal is the default by design preference, not a demonstrated universal performance
-advantage. The latest [MiMo v2.6 Pro / DeepSeek V4.1 Flash comparison](docs/research/llm-comparison.md)
-found faster useful progress with DeepSeek in a guided minimal FLASH study, but **no
-independently accepted scientific conclusion** from either model configuration.
-Unequal duration, different provider tool protocols and one trial per configuration
-limit that comparison. Token totals distinguish cached input, uncached input and
-output; they are not billed-cost estimates.
-
-The [guided-study repair report](research/evaluations/guided-model-comparison-2026-09-26/RESULTS.md)
-records the underlying harness failures, fixes and remaining limitations. General
-reuse of raw solver data under independently versioned analysis still needs a
-fuller provenance API. Release history is in the [changelog](CHANGELOG.md).
-
-| Recorded evaluation | What can be inspected |
-|---|---|
-| [Gray–Scott](demos/gray_scott_counterexample/) | A completed 23.8-minute finite-domain counterexample campaign, programs, numerical evidence and replay |
-| [Collisionless GEM](demos/collisionless_gem_reconnection/) | 12 fresh CUDA runs; finite-sample child falsification with an unresolved population root |
-| [FLASH island coalescence](demos/resistive_mhd_island_coalescence/) | Working guided anchor, real fields and a historical audit; the repair remained open |
-| [Guided model comparison](research/evaluations/guided-model-comparison-2026-09-26/) | MiMo/DeepSeek progress, usage, harness failures and corrective tests |
-
-The historical FLASH narrative recorded an exponent-band falsification with an interval
-that overlaps the allowed band. That overlap alone does not establish such falsification;
-the earlier summary is not independently endorsed here. Provenance enables inspection,
-but cannot make a faulty scientific decision correct.
-
-Replay a completed example without an API key or new simulations:
-
-```bash
-git clone https://github.com/tomzhu0225/simjecture.git
-cd simjecture
-uv sync --frozen
-uv run python demos/gray_scott_counterexample/verify_record.py
-uv run simjecture web demos/gray_scott_counterexample/record --read-only
-```
-
-![Gray–Scott recorded numerical evidence](docs/_static/demos/gray-scott-result.png)
-
-## Documentation and development
-
-Start at [the documentation index](docs/index.md). Release assets include the
-workspace source bundle, installer and SHA-256 checksums; Python distributions
-are published on PyPI and include the DSH integration resources.
-Native-agent setup does not require installing DSH.
-
-```bash
-uv sync --frozen --extra workspace --extra tui --extra dsh --group browser --group docs
-uv run ruff check .
-uv run pytest
-uv run simjecture schemas --output schemas --check
-uv run --group docs sphinx-build -W -b html docs docs/_build/html
-```
-
-`conjecture-solver` and `acs` remain compatibility aliases. The Python package remains
-`conjecture_solver`. See [SECURITY.md](SECURITY.md)
-and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+**0.5.3** brings SSH experiment workers, the measured coding-agent leaderboard,
+ledger and recovery repairs, and shared conversation/study/evidence navigation.
+Release changes live in [CHANGELOG.md](CHANGELOG.md); checks and limits are in the
+[0.5.3 acceptance record](docs/testing/0.5.3-acceptance.md) and
+[archive](docs/archive/index.md). The
+[documentation index](docs/index.md) covers the full guide set.
 
 ## Contributing
 
-Contributions from researchers and developers are welcome. Useful starting points:
+Researchers, developers and first-time contributors are welcome. Help improve an
+example or guide, reproduce a bug, add a tested diagnostic or scientific capability,
+review numerical methods, or share benchmark results.
 
-- Add a scientific instrument, tested diagnostic reader, or agent skill with a
-  reproducible example. See [capability development](docs/how-to/add-a-capability.md).
-- Report and repair harness, worker or interface failures with a minimal
-  reproduction and regression check.
-- Share inspectable research examples and help review numerical methods and
-  evidence. See [guided commissioning](docs/how-to/guided-commissioning.md).
-- Add custom-model benchmark results using the
-  [benchmark and community submission guide](docs/how-to/llm-bench.md).
-- Improve documentation, onboarding and accessibility.
-
-Read [CONTRIBUTING.md](CONTRIBUTING.md) for setup, checks, pull requests and
-licensing. [Open an issue](https://github.com/tomzhu0225/simjecture/issues) for a
-reproducible problem or proposed change; discuss large changes before implementing
-them. Use [SECURITY.md](SECURITY.md) for security-sensitive reports.
+Pick a small task in [CONTRIBUTING.md](CONTRIBUTING.md), which includes setup and
+checks for each kind of change. [Open an issue](https://github.com/tomzhu0225/simjecture/issues)
+to discuss an idea or reproducible problem; discuss large changes before implementing
+them. For security-sensitive reports, follow [SECURITY.md](SECURITY.md).
 
 ## Citation and license
 
@@ -347,4 +119,5 @@ result. The [concept DOI](https://doi.org/10.5281/zenodo.21945748) identifies th
 release series.
 
 Copyright 2026 Bowen Zhu and contributors. Licensed under the
-[Apache License 2.0](LICENSE).
+[Apache License 2.0](LICENSE). See [third-party notices](THIRD_PARTY_NOTICES.md) for
+upstream attribution and redistribution requirements.

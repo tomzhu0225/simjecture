@@ -1,0 +1,6 @@
+The outlined wordmark and presentation typography use Open Sans.
+Digitized data copyright (c) 2010-2011, Google Corporation.
+Licensed under the Apache License, Version 2.0.
+Source: https://www.opensans.com/
+Full license: APACHE-2.0.txt in this directory.
+No font binaries are distributed in this kit.

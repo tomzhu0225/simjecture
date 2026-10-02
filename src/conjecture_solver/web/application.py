@@ -296,6 +296,7 @@ class SimjectureWebApplication:
             return {
                 "schema_version": API_SCHEMA_VERSION,
                 "campaign": token,
+                "workspace_context": self.workspace.campaign_context(token, root),
                 "display_name": _campaign_display_name(snapshot, root),
                 "revision": revision,
                 "snapshot": payload,
