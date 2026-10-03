@@ -594,7 +594,15 @@ class MachineRegistry:
 
 
 def select_worker(
-    pool, capability, requested, resources, *, reservation=None, receipt=None, deadline=None
+    pool,
+    capability,
+    requested,
+    resources,
+    *,
+    reservation=None,
+    receipt=None,
+    deadline=None,
+    require_monitor=False,
 ):
     resources = Resources.model_validate(resources or {})
     if capability in pool["capabilities"]:
@@ -610,9 +618,15 @@ def select_worker(
     registry = MachineRegistry(pool["registry"])
     book = load(registry.root / "allocations.json")
     alternate_active = False
+    monitor_unavailable = False
     for identifier in candidates:
         if identifier not in pool["workers"]:
             raise ValueError("Machine is outside this study's frozen pool")
+        if require_monitor and not pool["workers"][identifier]["probe"].get("features", {}).get(
+            "experiment_monitor"
+        ):
+            monitor_unavailable = True
+            continue
         config = pool["workers"][identifier]["profile"]["config"]
         endpoint = ssh_endpoint(pool["workers"][identifier]["profile"])
         busy_alternative = False
@@ -660,6 +674,11 @@ def select_worker(
             pressure = 1_000_000
         eligible.append((pressure, identifier))
     if not eligible:
+        if monitor_unavailable:
+            raise ValueError(
+                "Selected frozen workers do not support live monitoring. Use monitor=None, "
+                "or prepare an upgraded worker for a new study."
+            )
         if alternate_active:
             raise ValueError(
                 "Another execution profile for this SSH endpoint has active experiments. "
@@ -678,7 +697,9 @@ def select_worker(
     return selected, resources.model_dump(mode="json")
 
 
-def reserve_worker(pool, capability, requested, resources, *, reservation, receipt, deadline):
+def reserve_worker(
+    pool, capability, requested, resources, *, reservation, receipt, deadline, require_monitor=False
+):
     with lock(pool["registry"]):
         return select_worker(
             pool,
@@ -688,6 +709,7 @@ def reserve_worker(pool, capability, requested, resources, *, reservation, recei
             reservation=reservation,
             receipt=receipt,
             deadline=deadline,
+            require_monitor=require_monitor,
         )
 
 
@@ -718,6 +740,7 @@ def _specification(service, record):
         config_sha256=probe["config_sha256"],
         worker_code_sha256=probe["worker_code_sha256"],
         worker_id=probe["worker_id"],
+        monitor=record.get("monitor"),
     ).model_dump(mode="json")
 
 
@@ -803,6 +826,8 @@ def import_result(service, record, transport, remote):
             "assigned_gpu_ids",
             "cancellation_confirmed",
             "cancellation_reason",
+            "telemetry",
+            "execution_heartbeat",
         )
         if key in remote
     }
@@ -891,6 +916,8 @@ def dispatch(service, record):
                 transport_status="connected",
                 started_at=state.get("started_at"),
                 assigned_gpu_ids=state.get("assigned_gpu_ids", []),
+                telemetry=state.get("telemetry"),
+                execution_heartbeat=state.get("execution_heartbeat"),
             )
         except WorkerUnavailable as error:
             save_progress(

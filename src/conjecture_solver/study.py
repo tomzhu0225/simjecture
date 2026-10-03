@@ -80,6 +80,13 @@ def configure_parser(parser):
         "--judge-reasoning-effort", choices=["low", "medium", "high", "xhigh", "max", "ultra"]
     )
     parser.add_argument("--executable")
+    parser.add_argument(
+        "--director",
+        dest="director_enabled",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        help="Research director can stop experiments and request replans (minimal)",
+    )
     parser.add_argument("--quiet", action="store_true", help="Suppress live terminal progress")
     parser.set_defaults(handler=run)
 
@@ -139,6 +146,13 @@ def _run(args):
     if previous and judge_effort is not None and judge_effort != saved_judge_effort:
         raise ValueError("Judge reasoning effort is part of the saved launch contract")
     args.judge_reasoning_effort = judge_effort if judge_effort is not None else saved_judge_effort
+    saved_director = previous.get("request", {}).get("director_enabled", False)
+    chosen_director = getattr(args, "director_enabled", None)
+    if previous and chosen_director is not None and chosen_director != saved_director:
+        raise ValueError("Research director policy is part of the saved launch contract")
+    args.director_enabled = (
+        chosen_director if chosen_director is not None else saved_director if previous else True
+    )
     args.state_dir = (args.state_dir or saved_state or args.campaign / "supervisor").resolve()
     if saved_state and args.state_dir != saved_state.resolve():
         raise ValueError("State directory is part of the saved launch contract")
@@ -338,6 +352,7 @@ def _run(args):
             judge_model=args.judge_model,
             reasoning_effort=args.reasoning_effort,
             judge_reasoning_effort=args.judge_reasoning_effort,
+            director_enabled=args.director_enabled,
             capability_directory=str(args.capabilities) if args.capabilities else None,
             agent_executable=args.executable,
             provider_config=getattr(args, "provider_config", None),

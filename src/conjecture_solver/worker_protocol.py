@@ -9,7 +9,9 @@ import re
 from pathlib import Path
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_serializer, model_validator
+
+from .research_control import ExperimentMonitor
 
 PROTOCOL = "simjecture-worker/1"
 ACTIVE = {"staging", "queued", "running", "cancelling"}
@@ -104,9 +106,17 @@ class Experiment(BaseModel):
     timeout: float = Field(gt=0, le=604800)
     workspace_bytes: int = Field(default=4 * 1024**3, ge=1024**2, le=1024**4)
     resources: Resources = Field(default_factory=Resources)
+    monitor: ExperimentMonitor | None = None
     config_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     worker_code_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
     worker_id: str | None = Field(default=None, pattern=r"^[a-f0-9]{32}$")
+
+    @model_serializer(mode="wrap")
+    def preserve_legacy_identity(self, handler):
+        value = handler(self)
+        if self.monitor is None:
+            value.pop("monitor", None)
+        return value
 
     @model_validator(mode="after")
     def validate_files(self):

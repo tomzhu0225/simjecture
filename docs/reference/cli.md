@@ -76,3 +76,8 @@ remain explicit legacy routes. See [the guide](../how-to/research-service.md).
 Minimal studies can select `--machine-registry DIR --machine ID`, repeating
 `--machine` to choose a pool. Placement and resource requests are recorded by
 `Lab.run`; local execution remains the default when no pool is selected.
+
+New minimal studies default to `--director`; `--no-director` disables strategy
+control for that launch. `--judge-model` and `--judge-reasoning-effort` choose
+the director and independent reviewer route. Existing studies preserve their saved
+policy on resume. See [stop and replan](../how-to/minimal-oversight.md#research-director-stop-and-replan).

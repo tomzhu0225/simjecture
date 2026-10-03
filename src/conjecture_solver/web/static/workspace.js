@@ -1716,6 +1716,9 @@ async function launchStudy() {
     request_key: state.launchKey,
     capability_directory: $("study-tools").value,
     execution_backend: $("execution-backend").value,
+    director_enabled: $("research-director").checked,
+    judge_model: $("review-model").value.trim(),
+    judge_reasoning_effort: $("review-effort").value || null,
   });
   const project = await api(`project?id=${encodeURIComponent(id)}`);
   if (!stillHere()) return;

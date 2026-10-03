@@ -71,6 +71,10 @@ Minimal mode is the default: the agent chooses its research strategy while the
 host manages evidence, review and deadlines. Structured and frontier modes are
 also available. See [research modes and evidence](docs/how-to/research-service.md)
 and [architecture](docs/concepts/architecture.md).
+In the development source, new minimal studies also use a [research director](docs/how-to/minimal-oversight.md#research-director-stop-and-replan)
+to check feasibility during long jobs, stop named experiments and request recorded
+replans. Its launch switch and decisions are visible in the workspace; scientific
+claim acceptance remains independent.
 
 Numerical experiments use Bubblewrap by default. Native agents are trusted
 same-account processes with host tools; the experiment sandbox does not enclose

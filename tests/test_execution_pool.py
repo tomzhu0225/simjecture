@@ -571,3 +571,34 @@ def test_generated_agent_client_exposes_worker_controls_through_real_rpc(tmp_pat
     snapshot["experiments"][0].update(status="running", transport_status="unreachable")
     line = status_line(snapshot)
     assert "workers node-b:1" in line and "SSH unreachable node-b" in line
+
+
+def test_monitor_placement_rejects_legacy_worker_before_recording_and_uses_new_worker(
+    tmp_path, registry
+):
+    pool = registry.freeze(["node-a", "node-b"])
+    pool["workers"]["node-a"]["probe"].pop("features")
+    service = ResearchService.create(
+        tmp_path / "monitor-study",
+        "Live monitor compatibility",
+        execution_pool=pool,
+        wall_seconds=60,
+    )
+    (service.work / "calc.py").write_text(
+        "from pathlib import Path\nPath('result.json').write_text('{\"value\":4}')\n"
+    )
+    options = dict(
+        outputs=["result.json"],
+        stage="exploration",
+        monitor={"path": "result.json", "target": 10.0},
+    )
+    before = load(registry.root / "allocations.json")
+    with pytest.raises(ValueError, match="do not support live monitoring"):
+        service.run("calc.py", machine="node-a", **options)
+    assert not service._all("experiments")
+    assert load(registry.root / "allocations.json") == before
+    r = service.run("calc.py", **options)
+    assert r["machine"] == "node-b"
+    result = finish(service, [r["id"]])[0]
+    assert result["status"] == "succeeded"
+    assert result["telemetry"]["value"] == 4

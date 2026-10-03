@@ -1607,7 +1607,7 @@ function renderResearchTrace() {
   if (engine.usage_details) {
     const details = engine.usage_details;
     panel.append(element("p", "field-help",
-      `${details.requests || 0} tracked requests · ${details.requests_without_usage || 0} without usage yet · ${formatDuration(engine.provider_wait_seconds || 0)} in provider retry waits. ${details.cost_note}`));
+      `${details.request_count_complete === false ? "Per-request counts unavailable from native CLI" : `${details.requests || 0} tracked requests`} · ${details.requests_without_usage || 0} tracked requests without usage yet · ${formatDuration(engine.provider_wait_seconds || 0)} in provider retry waits. ${details.cost_note}`));
     for (const [role, totals] of Object.entries(details.by_role || {})) {
       panel.append(element("p", "field-help", `${role}: ${compactNumber(totals.input_tokens)} input / ${compactNumber(totals.output_tokens)} output tokens`));
     }
@@ -1617,10 +1617,36 @@ function renderResearchTrace() {
     panel.append(element("p", "field-help",
       `Instrument family: any of ${rule.prefixes.join(" or ")}. ${rule.satisfied ? `Matched by ${rule.matching_capabilities.join(", ")}` : "No matching instrument available"}. Scientific qualification is reviewed separately.`));
   }
-  if (engine.receipt_progress?.length || engine.execution_costs?.length) {
+  if (engine.director_policy?.enabled || engine.director_decisions?.length) {
+    const director = element("section", "research-director");
+    director.append(element("h3", null, "Research director · strategy & control"),
+      element("p", "field-help", "Stops individual experiments and requests replans. Scientific claim acceptance remains separate."));
+    const route = engine.director_route || {};
+    if (route.model) director.append(element("p", "field-help", `Director route: ${[route.backend, route.model, route.reasoning_effort].filter(Boolean).join(" · ")}`));
+    if (!engine.director_decisions?.length) director.append(element("p", "field-help", "Enabled · awaiting the first strategy review."));
+    for (const d of engine.director_decisions || []) {
+      const card = element("article", "trace-event"), copy = element("div", "trace-copy");
+      copy.append(element("strong", null, `${d.decision === "replan" ? "Stop / replan" : "Continue strategy"} · budget ${d.budget_feasibility} · science ${d.scientific_feasibility}`),
+        element("p", null, d.rationale), element("p", null, `Next action: ${d.next_action}`));
+      for (const action of d.control_actions || []) copy.append(element("p", "field-help", `Stop requested: ${action.experiment} · ${action.status} · ${action.cancellation_confirmed ? "stop confirmed" : "awaiting confirmation"} · partial data retained when available`));
+      copy.append(element("p", "field-help", d.acknowledgement ? `Worker ${d.acknowledgement.response}: ${d.acknowledgement.reason}` : d.decision === "replan" ? "Awaiting worker plan or challenge" : "No replan acknowledgement required"));
+      card.append(element("span", "event-mark", d.decision === "replan" ? "↻" : "✓"), copy);director.append(card);
+    }
+    panel.append(director);
+  }
+  if (engine.receipt_progress?.length || engine.execution_costs?.length || engine.live_experiments?.length) {
     const coverage = element("section", "scientific-progress");
     coverage.append(element("h3", null, "Scientific coverage & cost"),
-      element("p", "field-help", "Recorded metrics with researcher-declared targets and units. Claim approval remains separate."));
+      element("p", "field-help", "Live timing is operational telemetry. Recorded metrics have researcher-declared targets and units. Claim approval remains separate."));
+    for (const e of engine.live_experiments || []) {
+      const t = e.telemetry, copy = element("div", "trace-copy"), card = element("article", "trace-event");
+      copy.append(element("strong", null, `${e.id} · ${e.status}`));
+      if (t?.available) copy.append(element("p", null, `${t.quantity}: ${t.value} ${t.unit} / target ${t.target} ${t.unit}`),
+        element("p", "field-help", `Elapsed ${formatDuration(t.elapsed_seconds)} · estimated additional ${t.estimated_additional_seconds == null ? "unknown" : formatDuration(t.estimated_additional_seconds)} · ${t.authority}`));
+      else copy.append(element("p", "field-help", t?.error || "Awaiting operational timing telemetry"));
+      if (e.cancel_requested) copy.append(element("p", "warning-list", `Stop requested: ${e.stop_reason || "operator control"}`));
+      card.append(element("span", "event-mark", "◷"), copy);coverage.append(card);
+    }
     for (const row of engine.receipt_progress || []) {
       const card = element("article", "trace-event");
       const copy = element("div", "trace-copy");

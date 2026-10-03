@@ -39,6 +39,45 @@ def test_recorded_progress_and_cost_are_visible(tmp_path, width, register_target
             artifacts={"result.json": {"sha256": sha(p), "bytes": p.stat().st_size}},
         ),
     )
+    live_id = "exp_" + "c" * 24
+    put(
+        s.root / "experiments" / (live_id + ".json"),
+        dict(
+            id=live_id,
+            status="running",
+            created_at=time.time(),
+            stage="exploration",
+            binding=s._binding("calc.py", (), (), None),
+            outputs=["result.json"],
+            cancel_requested=True,
+            stop_reason="An affordable full trajectory is needed.",
+            monitor={"path": "progress.json", "target": 40.0},
+            telemetry=dict(
+                available=True,
+                value=2,
+                target=40,
+                unit="ns",
+                quantity="Live 3D time",
+                elapsed_seconds=600,
+                estimated_additional_seconds=11400,
+                authority="Mutable operational telemetry; not scientific evidence",
+            ),
+        ),
+    )
+    (s.root / "director").mkdir()
+    put(
+        s.root / "director" / "director_test.json",
+        dict(
+            id="director_test",
+            created_at=time.time(),
+            decision="replan",
+            scientific_feasibility="limited",
+            budget_feasibility="infeasible",
+            rationale="This early-time calculation cannot reach the radiation peak in budget.",
+            next_action="Test a complete adaptive trajectory before refining diagnostics.",
+            control_actions=[dict(experiment=live_id, status="running")],
+        ),
+    )
     if register_target:
         s.progress(
             experiment=identifier,
@@ -64,6 +103,12 @@ def test_recorded_progress_and_cost_are_visible(tmp_path, width, register_target
             page.goto(f"http://127.0.0.1:{server.server_port}/monitor?campaign={campaign}")
             panel = page.locator(".scientific-progress")
             playwright.expect(panel).to_contain_text("Measured execution:")
+            playwright.expect(panel).to_contain_text("Live 3D time: 2 ns / target 40 ns")
+            playwright.expect(panel).to_contain_text("not scientific evidence")
+            director = page.locator(".research-director")
+            playwright.expect(director).to_contain_text("budget infeasible")
+            playwright.expect(director).to_contain_text("Awaiting worker plan or challenge")
+            playwright.expect(director).to_contain_text("awaiting confirmation")
             if register_target:
                 playwright.expect(panel).to_contain_text("3D physical time: 2 ns / target 20.5 ns")
                 playwright.expect(panel).to_contain_text("Exceeds remaining wall budget")
@@ -85,6 +130,7 @@ def test_recorded_progress_and_cost_are_visible(tmp_path, width, register_target
                 full_page=True,
             )
             assert not errors
+            assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
             browser.close()
     finally:
         server.shutdown()

@@ -4,6 +4,15 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+- Add a default-on minimal-mode research director with bounded strategy reviews
+  during experiment waits, named experiment stops, preserved partial artifacts,
+  recorded worker plans/challenges and visible launch/monitor controls. Claim
+  acceptance and the original hypothesis/deadline remain independent.
+- Add optional live JSON/FLASH timing telemetry across local and SSH execution;
+  preserve legacy worker request identities when monitoring is absent. Update
+  FLASH guidance to prefer qualified adaptive stepping and affordable complete
+  exploratory trajectories before expensive refinement.
+
 - Add explicit reserved-slot Open MPI launch helpers and keep compiler alternatives
   visible read-only inside numerical execution.
 - Add explicit `process-cooperative` execution for trusted unprivileged hosts where

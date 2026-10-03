@@ -502,6 +502,16 @@ class AgentSupervisor:
                         )
                     if thread_id and usage:
                         self.state.setdefault("usage_by_thread", {})[thread_id] = usage
+                        role = (
+                            "memory"
+                            if directory.name.startswith("journal-summary-")
+                            else "director"
+                            if directory.name.startswith("director-")
+                            else "reviewer"
+                            if judge
+                            else "worker"
+                        )
+                        self.state.setdefault("usage_roles_by_thread", {})[thread_id] = role
                         self.state["usage_updated_at"] = time.time()
                 elif (
                     backend in {"grok", "agy"}

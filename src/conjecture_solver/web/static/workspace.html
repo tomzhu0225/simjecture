@@ -715,6 +715,12 @@
                         Worker profiles define their own experiment environment.</p>
                     <details class="advanced">
                       <summary>Execution settings</summary>
+                      <label class="research-director-option"><input id="research-director" type="checkbox" checked /><span>Research director · stop and replan expensive experiments</span></label>
+                      <p class="field-help">Reviews strategy while jobs run, preserves partial data on stops, and asks the worker to acknowledge a new plan. Scientific claim review stays separate.</p>
+                      <label for="review-model">Reviewer and director model (optional)</label>
+                      <input id="review-model" placeholder="Default: conversation agent model" />
+                      <label for="review-effort">Reviewer and director reasoning</label>
+                      <select id="review-effort"><option value="">Use agent setting</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="xhigh">Extra high</option></select>
                       <label for="execution-backend"
                         >Experiment environment</label
                       ><select id="execution-backend">

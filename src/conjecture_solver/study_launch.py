@@ -8,6 +8,8 @@ import time
 from pathlib import Path
 from typing import Literal
 
+from pydantic import Field
+
 from .mvp_launch import (
     MVPLaunchPlan,
     MVPLaunchRequest,
@@ -31,6 +33,7 @@ class NativeStudyRequest(MVPLaunchRequest):
     judge_model: str | None = None
     reasoning_effort: Literal["low", "medium", "high", "xhigh", "max", "ultra"] | None = None
     judge_reasoning_effort: Literal["low", "medium", "high", "xhigh", "max", "ultra"] | None = None
+    director_enabled: bool = Field(default=True, strict=True)
     agent_executable: str | None = None
     machine_registry: str | None = None
     machine_ids: list[str] = []
@@ -60,6 +63,8 @@ def materialize_native(request, *, resume=False):
         raise ResumeError("Study is already running; attach to its status")
     saved_request = existing.get("request", {})
     if saved_request:
+        if "director_enabled" not in saved_request:
+            saved_request = saved_request | {"director_enabled": False}
         saved_request = NativeStudyRequest.model_validate(saved_request).model_dump(mode="json")
     if existing and saved_request != request.model_dump(mode="json"):
         raise ValueError("Existing study launch contract differs")
@@ -177,6 +182,7 @@ def materialize_native(request, *, resume=False):
         argv += ["--reasoning-effort", request.reasoning_effort]
     if request.judge_reasoning_effort:
         argv += ["--judge-reasoning-effort", request.judge_reasoning_effort]
+    argv += ["--director" if request.director_enabled else "--no-director"]
     put(
         record,
         dict(
@@ -206,7 +212,10 @@ def resume_native(root):
     record = read(Path(root) / "study-launch.json")
     if not record.get("request"):
         raise ResumeError("Repeat the original study command to resume this direct CLI study")
-    return materialize_native(NativeStudyRequest.model_validate(record["request"]), resume=True)
+    saved = record["request"]
+    if "director_enabled" not in saved:
+        saved = saved | {"director_enabled": False}
+    return materialize_native(NativeStudyRequest.model_validate(saved), resume=True)
 
 
 def control_native(root, action):

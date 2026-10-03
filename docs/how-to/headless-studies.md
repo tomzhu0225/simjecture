@@ -57,6 +57,8 @@ Mode, agent and numerical execution are separate choices:
 - `--mode minimal` is the default; `structured` and `frontier` select other
   research workflows
 - `--execution-backend` chooses how recorded numerical experiments execute
+- `--director` (minimal default) enables bounded strategy reviews and named
+  experiment stops; `--no-director` disables it for the new study
 
 In minimal mode, the CLI defaults to `--completion-policy repair`: an independently supported root,
 or an accepted falsification followed by a supported repair, can complete it.

@@ -1320,6 +1320,7 @@ class BubblewrapSandbox:
         with tempfile.TemporaryDirectory(prefix="simjecture-declared-work-") as temporary:
             view = Path(temporary) / "work"
             view.mkdir()
+            self.live_workspace = view
             mount_arguments, mounts = self._prepare_declared_input_view(
                 view,
                 input_artifacts=input_artifacts,

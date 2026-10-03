@@ -123,6 +123,7 @@ class Worker:
                 )
         return {
             "protocol": PROTOCOL,
+            "features": {"experiment_monitor": True},
             "worker_id": load(self.root / "identity.json")["worker_id"],
             "host": socket.gethostname(),
             "uid": os.geteuid(),
@@ -466,6 +467,8 @@ class Worker:
                         max_memory_bytes=spec.resources.memory_mb * 1024**2,
                         gpu_ids=record["assigned_gpu_ids"],
                         cpus=spec.resources.cpus,
+                        monitor=spec.monitor.model_dump(mode="json") if spec.monitor else None,
+                        progress_callback=lambda event: self._execution_progress(identifier, event),
                     )
                 )
                 if record.get("execution", {}).get("timed_out"):
@@ -475,6 +478,9 @@ class Worker:
         record["finished_at"] = time.time()
         with lock(self.root):
             current = load(directory / "state.json")
+            for key in ("telemetry", "execution_heartbeat"):
+                if key in current:
+                    record[key] = current[key]
             if current["status"] in {"cancelling", "cancelled", "timed_out"}:
                 # The cancelled executor may still have harvested native data.
                 for key in (
@@ -489,6 +495,14 @@ class Worker:
                 put(directory / "state.json", current)
                 return
             put(directory / "state.json", record)
+
+    def _execution_progress(self, identifier, event):
+        with lock(self.root):
+            path = self.directory(identifier) / "state.json"
+            current = load(path)
+            if current["status"] == "running":
+                current.update(event)
+                put(path, current)
 
     def cancel(self, identifier, reason="operator"):
         import psutil

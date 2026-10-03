@@ -2,6 +2,7 @@
 
 import signal
 import threading
+import time
 from contextlib import contextmanager
 from pathlib import Path
 
@@ -46,6 +47,8 @@ def _execute_frozen(
     gpu_ids=None,
     cpus=None,
     cancel_check=None,
+    progress_callback=None,
+    monitor=None,
 ):
     from .research_audit import output_findings
     from .research_service import sha
@@ -65,14 +68,31 @@ def _execute_frozen(
             max_workspace_bytes=max_workspace_bytes,
             max_file_bytes=512 * 1024**2,
             max_memory_bytes=max_memory_bytes,
+            command_heartbeat_seconds=5 if monitor else 30,
         ),
         registry,
     )
     sandbox.assigned_gpu_ids = gpu_ids
     sandbox.assigned_cpus = cpus
     sandbox.cancel_check = cancel_check
+
+    def progress(event):
+        from .research_control import read_monitor
+
+        update = {"execution_heartbeat": dict(**event, observed_at=time.time())}
+        if monitor:
+            view = getattr(sandbox, "live_workspace", workspace)
+            update["telemetry"] = read_monitor(
+                view if Path(view).exists() else workspace,
+                monitor,
+                event["elapsed_wall_seconds"],
+            )
+        if progress_callback:
+            progress_callback(update)
+
     function = sandbox.run_capability if capability else sandbox.run_python
     args = ((capability,) if capability else ()) + (tuple([binding["source"], *binding["args"]]),)
+    progress({"elapsed_wall_seconds": 0.0})
     result = function(
         *args,
         input_artifacts=tuple(
@@ -83,7 +103,9 @@ def _execute_frozen(
         program_path=binding["source"],
         program_sha256=binding["inputs"][binding["source"]],
         timeout_seconds=timeout,
+        progress_callback=progress,
     )
+    progress({"elapsed_wall_seconds": result.wall_seconds})
     artifacts = {
         str(p.relative_to(workspace)): {"sha256": sha(p), "bytes": p.stat().st_size}
         for p in sorted(workspace.rglob("*"))

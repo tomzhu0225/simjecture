@@ -179,3 +179,5 @@ its hypothesis. Adaptive timestepping is a candidate to test with representative
 accuracy checks; the startup 58 ps MHD limit is neither a fixed-step prescription
 nor proof of accurate radiation evolution. No strategic-control implementation
 or new autonomous campaign is claimed by this follow-up note.
+
+The subsequent [director and adaptive qualification](research-director-adaptive-20261003.md) implements and tests this strategic-control follow-up; the results above retain their original scope.

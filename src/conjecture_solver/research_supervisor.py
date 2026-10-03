@@ -11,6 +11,7 @@ from pathlib import Path
 from .agent_supervisor import AgentSupervisor, parse_judge_stream
 from .provider_retry import ProviderFailure, provider_failure, provider_recovered, wait_for_provider
 from .research_audit import write_report
+from .research_director import ResearchDirector
 from .research_journal import AutomaticJournal, sync_journal
 from .research_oversight import ResearchOversight, durable_signature
 from .research_service import ResearchService, ResearchVerdict, fingerprint, put
@@ -81,15 +82,31 @@ TARGET:
     )
 
 
-class ResearchSupervisor(AutomaticJournal, ResearchOversight, AgentSupervisor):
+class ResearchSupervisor(AutomaticJournal, ResearchOversight, ResearchDirector, AgentSupervisor):
     def __init__(self, args):
         args.workflow = "frontier"  # Reuse native session resumption and inactivity watchdog.
         super().__init__(args)
         self.service = ResearchService(self.root)
         self.service.freeze_protocol(args.instructions_file.read_text())
         self.state["deadline"] = self.service.manifest["deadline"]
+        policy = {
+            "enabled": bool(getattr(args, "director_enabled", False)),
+            "interval_seconds": 300,
+            "review_seconds": 120,
+        }
+        if "director_policy" not in self.service.manifest:
+            self.service.manifest["director_policy"] = policy
+            put(self.root / "research.json", self.service.manifest)
+        elif self.service.manifest["director_policy"]["enabled"] != policy["enabled"]:
+            raise ValueError("Research director policy is immutable on resume")
         self.worker_slice_seconds = 300
         self.state["mode"] = "minimal"  # workflow=frontier selects native transport reuse.
+        self.state["reviewer_route"] = {
+            "backend": args.backend,
+            "model": args.judge_model,
+            "reasoning_effort": getattr(args, "judge_reasoning_effort", None)
+            or getattr(args, "reasoning_effort", None),
+        }
         self.save()
         directory = self.directory / "research"
         if not directory.exists():
@@ -110,6 +127,10 @@ class Client:
         # Frozen exploratory analysis; cannot approve or support a claim.
         return self._call('analyze', source=source, args=args, **kw)
     def progress(self, **kw): return self._call('progress', **kw)
+    def cancel(self, experiment, **kw): return self._call('cancel', experiment=experiment, **kw)
+    def director_status(self): return self._call('director_status')
+    def director_ack(self, decision, **kw):
+        return self._call('director_ack', decision=decision, **kw)
     def machines(self): return self._call('machines')
     def fetch_remote(self, **kw): return self._call('fetch_remote', **kw)
     def read_instrument(self, capability, **kw):
@@ -147,6 +168,10 @@ lab = Client()
             if self.state.get("oversight_feedback")
             else ""
         )
+        if self.service.manifest.get("director_policy", {}).get("enabled"):
+            feedback += "\nResearch director decisions and required responses:\n" + json.dumps(
+                self.service.director_status()[:2]
+            )
         if steering:
             feedback += (
                 "\nNew operator guidance (advisory, not evidence or changed contracts): "
@@ -226,6 +251,14 @@ You need not maintain the journal manually. RESEARCH_BRIEF.md links to full rece
 {skill_context()}
 The original hypothesis is immutable:
 {self.service.manifest["hypothesis"]}
+The commissioned setup is a starting example, not a fixed numerical prescription.
+Mesh, adaptive timestep, rank count, output cadence and restart strategy may be optimized.
+Declare physical-model variants and their scope; do not silently change the scientific claim.
+Default research strategy: obtain an affordable complete trajectory through the relevant
+window before polishing startup diagnostics. Repair blockers to valid completion first.
+Coarse results remain exploratory. Seek counterexamples and refine where conclusions depend
+on accuracy. Use adaptive timestepping where the solver supports it, with appropriate CFL
+and demonstrated radiation/coupling accuracy; do not carry an arbitrary tiny cap forever.
 The small evidence service is available with `from lab import lab` in Python.
 Write source normally here. All recorded numerical experiments use the existing sandbox.
 - lab.run('calculation.py', args=['...'], inputs=['helper.py'], outputs=['result.json'],
@@ -311,6 +344,19 @@ Write source normally here. All recorded numerical experiments use the existing 
   wall time; use lab.status(compact=False) for full metadata. Experiment files are under
   {self.root}/experiments/ID/workspace/.
   You can inspect results with native tools but must not modify those recorded artifacts.
+- lab.run(..., monitor={{'path':'case/execution.log','format':'flash','unit':'ns',
+  'target':30.0,'baseline':0.0}}) supplies live operational timing for running FLASH.
+  Generic JSON monitors use format='json', value_key='actual_end_ns'. Targets must be
+  meaningful for that experiment; telemetry guides cost decisions, never claim acceptance.
+- lab.cancel('exp_ID', reason='Why this attempt should stop') stops an individual
+  experiment, preserves partial data and leaves the investigation running.
+- A research director may stop named experiments and request a concrete replan during
+  long jobs. Read lab.director_status(). Acknowledge a replan with a fresh next_test note:
+  p=lab.note('Specific cheaper test and what it discriminates', kind='next_test',
+    estimated_seconds=600)
+  lab.director_ack('director_ID', response='plan', plan=p['id'], reason='Why this is feasible')
+  Or respond='challenge' with a reasoned scientific objection. The director will reassess.
+  New simulations require this response; short exploratory analysis remains available.
 - lab.review(['exp_ID',...], 'argument with scope and limitations', claim='root',
   disposition='supported' or 'falsified', challenge=None) returns a durable review receipt.
   Support requires challenge={{'strategy':'how you tried to disprove it',
@@ -429,6 +475,9 @@ Do not edit service records or other studies. Resume from lab.status() and your 
                             return 0
                         if self.boundary():
                             break
+                        self.run_director()
+                        if self.state.pop("director_wake_worker", False):
+                            self.state.pop("waiting_for", None)
                         waiting = self.state.get("waiting_for", [])
                         states = {j["id"]: j["status"] for j in snapshot["experiments"]}
                         if waiting and all(states.get(j) in ["queued", "running"] for j in waiting):
@@ -436,7 +485,8 @@ Do not edit service records or other studies. Resume from lab.status() and your 
                             continue
                         self.state.pop("waiting_for", None)
                         self.maintain_journal()
-                        self.run_oversight()
+                        if not self.service.manifest.get("director_policy", {}).get("enabled"):
+                            self.run_oversight()
                         self.recovery_wait()
                         if self.boundary():
                             break

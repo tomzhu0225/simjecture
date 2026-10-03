@@ -48,6 +48,10 @@ diagnostics, acceptance thresholds, or conclusion.
    [runtime smoke](examples/runtime_smoke.py) checks an operator-supplied test
    parameter file, MPI execution, and HDF5 readback; it never qualifies a
    scientific calculation.
+   For evolution, start with the solver's adaptive CFL timestep and qualify its
+   accuracy through the relevant physical window. Commissioning caps are examples,
+   not fixed production settings. Read [adaptive stepping](references/adaptive-time-stepping.md)
+   when a small timestep or unfinished trajectory dominates the wall budget.
 4. Before freezing an expensive evidence command, run short, distinct,
    non-evidentiary timing pilots at representative resolution. Separate fixed
    startup/checkpoint cost from marginal evolution cost, benchmark plausible

@@ -1940,8 +1940,12 @@ class Workspace(MachineWorkspace):
                 mode="minimal",
                 backend=config["backend"],
                 model=config["model"],
-                judge_model=config.get("judge_model") or config["model"],
+                judge_model=text(payload, "judge_model", 200)
+                or config.get("judge_model")
+                or config["model"],
                 reasoning_effort=config.get("reasoning_effort") or None,
+                judge_reasoning_effort=payload.get("judge_reasoning_effort") or None,
+                director_enabled=payload.get("director_enabled", True),
                 provider_config=str(frozen) if config["backend"] == "builtin" else None,
                 completion_policy=brief["completion_policy"],
                 max_wall_seconds=brief["hours"] * 3600,
