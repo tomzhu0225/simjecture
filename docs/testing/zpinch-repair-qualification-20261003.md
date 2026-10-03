@@ -146,3 +146,36 @@ independent verdict. RZ, 3D patches and kinetic patches have different coverage;
 a successful local WarpX build is not proof that its current sheet represents the
 Al pinch. Better execution and visibility help the agents choose feasible work;
 they do not replace the scientific reasoning or establish the 10% bound.
+
+## Remaining stop-and-replan gap found in the review trace
+
+Follow-up inspection of the actual Sol verdicts shows that cost information was
+not completely missing. Oversight 00004 estimated roughly four hours for a 2 ns
+pair even with ideal four-rank scaling and noted its endpoint was far earlier than
+the radiation peak. It still recommended executing the pair. Oversight 00008
+explicitly called extension to the reference peak impractical at the measured
+roughly 3.75-hour cost per 2 ns, then recommended repairing postprocessing. These
+are recorded planning choices, not evidence that Sol had no relevant information.
+
+The harness also inhibits timely reconsideration. In `ResearchSupervisor.run`,
+the branch waiting for queued/running experiments sleeps and continues before
+`run_oversight`. Thus periodic progress oversight is skipped during those waits.
+`OversightVerdict` permits `continue` or `revise`; a progress verdict is retained
+as worker feedback, not executed as an experiment-stop or replan instruction.
+The generated agent client exposes no receipt-aware experiment cancellation call.
+Native shell access is not a substitute for an auditable control-plane operation.
+
+The execution, source-identity and cost-visibility repairs above do **not** repair
+this strategic-control gap. A follow-up should keep cheap operational monitoring
+active during numerical jobs, trigger bounded strategy review when feasibility
+changes, and allow a research director to stop named experiments with preserved
+partial artifacts and an explicit reason. A replan should be acknowledged by the
+worker with an action or a reasoned challenge. Scientific correctness and budget
+feasibility should be distinct judgments, visible with executed control actions
+in the GUI. Ordinary waiting should still avoid unnecessary provider turns.
+
+Stopping an experiment must not terminate an unresolved investigation or weaken
+its hypothesis. Adaptive timestepping is a candidate to test with representative
+accuracy checks; the startup 58 ps MHD limit is neither a fixed-step prescription
+nor proof of accurate radiation evolution. No strategic-control implementation
+or new autonomous campaign is claimed by this follow-up note.
