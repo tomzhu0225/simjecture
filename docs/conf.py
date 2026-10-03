@@ -27,6 +27,7 @@ myst_enable_extensions = [
     "substitution",
     "tasklist",
 ]
+myst_heading_anchors = 3
 
 exclude_patterns = [
     "_build",

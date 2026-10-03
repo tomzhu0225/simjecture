@@ -14,6 +14,7 @@ open scientific goals.
 
 ## Release acceptance
 
+- [0.5.4rc1 execution controls and validation](../testing/0.5.4rc1-acceptance.md)
 - [0.5.3 stable scope and validation](../testing/0.5.3-acceptance.md)
 - [0.5.3rc4 scope and validation](../testing/0.5.3rc4-acceptance.md)
 - [0.5.3rc3 benchmark presentation](../testing/0.5.3rc3-acceptance.md)
@@ -27,6 +28,7 @@ open scientific goals.
 ```{toctree}
 :hidden:
 
+../testing/0.5.4rc1-acceptance
 ../testing/0.5.3-acceptance
 ../testing/0.5.3rc4-acceptance
 ../testing/0.5.3rc3-acceptance

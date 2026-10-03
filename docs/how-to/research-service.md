@@ -52,7 +52,7 @@ the numerical instrument registry field in the browser/TUI. With no registry,
 minimal exposes only the Python numerical sandbox. Its identity is bound to the receipt. Native tools are
 available for exploration; execution success alone does not accept a claim.
 
-### Exploratory analysis and advisory progress (source checkout)
+## Exploratory analysis and advisory progress (0.5.4rc1 preview)
 
 `lab.run` defaults to evidence collection. When the study requires methods review,
 this gate also applies to evidence-producing postprocessing. For diagnostics,

@@ -57,7 +57,7 @@ records without the field continue to mean Bubblewrap.
 
 ## Explicit trusted native processes
 
-This option is an unreleased source-checkout addition after 0.5.3.
+This option is available in the 0.5.4rc1 preview.
 
 PRoot can pass a basic probe while failing a larger MPI launch. On the audited P40
 host, the same 16-rank collective completed natively but hung under PRoot, including
