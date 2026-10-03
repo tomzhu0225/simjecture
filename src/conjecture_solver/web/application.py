@@ -197,6 +197,17 @@ class SimjectureWebApplication:
     def campaigns(self) -> list[dict[str, Any]]:
         with self._lock:
             self.registry.refresh()
+            # Native/operator launches can add a study after the server starts.
+            # Reconcile the same workspace records used during initialization.
+            for project in self.workspace.projects():
+                studies = project.get("studies")
+                for study in studies if isinstance(studies, list) else []:
+                    if not isinstance(study, dict) or not isinstance(study.get("path"), str):
+                        continue
+                    try:
+                        self.registry.register(study["path"])
+                    except (OSError, ValueError):
+                        continue
             cards: list[dict[str, Any]] = []
             for token, path in self.registry.items():
                 try:

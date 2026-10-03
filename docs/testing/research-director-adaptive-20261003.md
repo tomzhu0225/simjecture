@@ -62,7 +62,7 @@ stop confirmation/acknowledgement and artifact links without JavaScript errors o
 horizontal overflow. A browser launch test verifies that model, effort and the director
 switch survive into the native launch contract.
 
-There are **344 unique passing local tests** across these batches, plus **7 optional
+There are **345 unique passing local tests** across these batches, plus **7 optional
 runtime skips** (local PRoot and optional numerical installations). Ruff, JavaScript
 syntax and diff checks pass. One HTTP test initially used the inherited proxy for a
 loopback URL; it passed with loopback `NO_PROXY`, without changing user routing.
@@ -170,3 +170,5 @@ schedule, compulsory solver sequence or scientific conclusion is assigned.
 Previous studies and immutable reference installations remain available. Source
 changes are privately deployed on 0.5.3 and committed for review; they are not a new
 public release. Launch and supervision survive the browser/SSH viewer closing.
+
+The live launch exposed a GUI discovery gap for operator-added studies after server startup. Campaign polling now registers new workspace study records without a restart; a regression check covers that admission. The first real director review returned continue / budget feasible / science limited, while a FLASH refinement was running with a40ns live monitor.

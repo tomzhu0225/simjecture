@@ -80,6 +80,18 @@ def test_standalone_snapshot_does_not_create_workspace(tmp_path):
     assert tree_bytes(tmp_path) == before
 
 
+def test_operator_study_added_after_server_start_appears_without_restart(owned_study):
+    app, identifier, parent, _campaign = owned_study
+    added = ResearchService.create(parent.root.parent / "002-new", "A new operator study")
+    p = app.workspace.directory(identifier) / "project.json"
+    saved = load(p)
+    token = app.registry.token_for(added.root)
+    saved["studies"].append(dict(campaign=token, path=str(added.root), question="New study"))
+    put(p, saved)
+    assert token in {r["id"] for r in app.campaigns()}
+    assert app.registry.resolve(token) == added.root
+
+
 @pytest.mark.parametrize(
     "change",
     [
