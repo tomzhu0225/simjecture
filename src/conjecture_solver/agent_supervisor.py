@@ -77,8 +77,10 @@ def next_assignment(claims: list[dict[str, Any]]) -> tuple[str, str]:
     )
 
 
-def parse_judge_stream(path: Path, backend: str = "agy") -> dict[str, Any]:
-    """Accept harmless JSON fences, but never coerce scientific verdict fields."""
+def parse_judge_stream(
+    path: Path, backend: str = "agy", *, allow_readonly_tools: bool = False
+) -> dict[str, Any]:
+    """Parse verdicts; native inspection requires an explicitly read-only launch."""
     result = None
     response_text = None
     for line in path.read_text().splitlines():
@@ -94,13 +96,10 @@ def parse_judge_stream(path: Path, backend: str = "agy") -> dict[str, Any]:
             response = payload.get("response")
         elif backend in {"codex", "codex-glm"}:
             item = event.get("item", {})
-            if item and item.get("type") not in {
-                "agent_message",
-                "reasoning",
-                "error",
-                "command_execution",
-                "web_search",
-            }:
+            allowed = {"agent_message", "reasoning", "error"}
+            if allow_readonly_tools:
+                allowed.update({"command_execution", "web_search"})
+            if item and item.get("type") not in allowed:
                 raise ValueError("Independent judge used a tool; verdict rejected")
             if item.get("type") == "agent_message":
                 response_text = item.get("text", "")

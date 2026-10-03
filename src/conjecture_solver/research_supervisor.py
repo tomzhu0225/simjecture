@@ -436,7 +436,11 @@ Do not edit service records or other studies. Resume from lab.status() and your 
                     if rc:
                         raise ValueError(f"Reviewer exited with {rc}")
                     verdict = ResearchVerdict.model_validate(
-                        parse_judge_stream(directory / "response.json", self.args.backend)
+                        parse_judge_stream(
+                            directory / "response.json",
+                            self.args.backend,
+                            allow_readonly_tools=True,
+                        )
                     )
                     self.service.record_verdict(
                         request["id"],

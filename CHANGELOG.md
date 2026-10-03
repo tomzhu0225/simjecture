@@ -12,6 +12,8 @@ This project follows semantic versioning. Dates use ISO 8601.
   control errors in the GUI. Recover director I/O errors and clear stale review
   errors after a successful decision. Review timeouts remain bounded and explicit.
 - Discover studies launched after the GUI server starts without requiring a restart.
+- Scope native reviewer source/data inspection to explicitly read-only minimal
+  research contexts; retain tool-free verdict parsing in structured/frontier workflows.
 
 - Add a default-on minimal-mode research director with bounded strategy reviews
   during experiment waits, named experiment stops, preserved partial artifacts,

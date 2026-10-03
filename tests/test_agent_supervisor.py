@@ -367,11 +367,15 @@ def test_codex_startup_diagnostic_is_not_judge_tool_use(tmp_path):
     events[-1] = {"type": "turn.completed"}
     events.insert(1, {"type": "item.completed", "item": {"type": "command_execution"}})
     path.write_text("\n".join(json.dumps(e) for e in events))
-    assert parse_judge_stream(path, "codex") == {"decision": "approved"}
+    with pytest.raises(ValueError, match="used a tool"):
+        parse_judge_stream(path, "codex")
+    assert parse_judge_stream(path, "codex", allow_readonly_tools=True) == {
+        "decision": "approved"
+    }
     events.insert(1, {"type": "item.completed", "item": {"type": "file_change"}})
     path.write_text("\n".join(json.dumps(e) for e in events))
     with pytest.raises(ValueError, match="used a tool"):
-        parse_judge_stream(path, "codex")
+        parse_judge_stream(path, "codex", allow_readonly_tools=True)
 
 
 @pytest.mark.parametrize("workflow", ["structured", "frontier"])

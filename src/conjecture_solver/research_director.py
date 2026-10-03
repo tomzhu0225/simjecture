@@ -147,7 +147,9 @@ SCHEMA:
             if rc:
                 raise ValueError(f"Director exited with {rc}")
             verdict = DirectorVerdict.model_validate(
-                parse_judge_stream(d / "response.json", self.args.backend)
+                parse_judge_stream(
+                    d / "response.json", self.args.backend, allow_readonly_tools=True
+                )
             ).model_dump()
             known = {r["id"] for r in packet["active_experiments"]}
             if any(i not in known for i in verdict["stop_experiments"]):

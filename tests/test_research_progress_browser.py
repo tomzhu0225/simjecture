@@ -75,7 +75,14 @@ def test_recorded_progress_and_cost_are_visible(tmp_path, width, register_target
             budget_feasibility="infeasible",
             rationale="This early-time calculation cannot reach the radiation peak in budget.",
             next_action="Test a complete adaptive trajectory before refining diagnostics.",
-            control_actions=[dict(experiment=live_id, status="running")],
+            control_actions=[
+                dict(
+                    experiment=live_id,
+                    status="stop_failed",
+                    error="Temporary worker transport failure",
+                    cancellation_confirmed=False,
+                )
+            ],
         ),
     )
     if register_target:
@@ -109,6 +116,9 @@ def test_recorded_progress_and_cost_are_visible(tmp_path, width, register_target
             playwright.expect(director).to_contain_text("budget infeasible")
             playwright.expect(director).to_contain_text("Awaiting worker plan or challenge")
             playwright.expect(director).to_contain_text("awaiting confirmation")
+            playwright.expect(director).to_contain_text(
+                "recorded control error: Temporary worker transport failure"
+            )
             if register_target:
                 playwright.expect(panel).to_contain_text("3D physical time: 2 ns / target 20.5 ns")
                 playwright.expect(panel).to_contain_text("Exceeds remaining wall budget")

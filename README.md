@@ -89,7 +89,8 @@ claim acceptance remains independent.
 
 Numerical experiments use Bubblewrap by default. Native agents are trusted
 same-account processes with host tools; the experiment sandbox does not enclose
-them. Explicit cooperative PRoot execution is not an OS security boundary. Read
+them. Explicit cooperative PRoot and native process execution require a trusted
+host; neither provides an OS security boundary. Read
 [security guidance](SECURITY.md) before running sensitive workloads and
 [restricted-host setup](docs/how-to/restricted-containers.md) when needed.
 

@@ -265,7 +265,9 @@ SCHEMA:
                         raise failure
                     raise ValueError(f"Oversight exited with {rc}")
                 verdict = OversightVerdict.model_validate(
-                    parse_judge_stream(turn / "response.json", self.args.backend)
+                    parse_judge_stream(
+                        turn / "response.json", self.args.backend, allow_readonly_tools=True
+                    )
                 ).model_dump()
                 put(turn / "response-verdict.json", verdict)
                 if not verdict["evidence_requests"] or attempt == 2:
