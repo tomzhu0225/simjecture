@@ -410,10 +410,10 @@ class DeploymentManager:
                     )
                 )
 
-        if self.execution["backend"] == "proot-cooperative":
+        if self.execution["backend"] in {"proot-cooperative", "process-cooperative"}:
             checks.append(
                 _check(
-                    "core.proot-cooperative",
+                    "core." + self.execution["backend"],
                     DeploymentCheckStatus.PASS
                     if self.execution["available"]
                     else DeploymentCheckStatus.FAIL,

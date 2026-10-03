@@ -202,7 +202,9 @@ class AutomaticJournal:
             if rc or self.boundary():
                 raise ValueError(f"Journal summary incomplete (exit {rc})")
             summary = JournalSynthesis.model_validate(
-                parse_judge_stream(directory / "response.json", self.args.backend)
+                parse_judge_stream(
+                    directory / "response.json", self.args.backend, allow_readonly_tools=True
+                )
             )
             identifiers = {e["id"] for e in packet["attempts"]}
             if any(not set(n.experiments) <= identifiers for n in summary.notes):

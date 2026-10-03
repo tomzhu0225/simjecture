@@ -159,3 +159,59 @@ Repeated metric names mean AND. Use different names for different cases. Empty
 intersections and non-finite bounds are rejected before recording the commitment.
 This optional check validates feasibility, not the physics or the measured outcome;
 natural-language rules and scientific acceptance still require independent review.
+
+## Research director: stop and replan
+
+The director is available in the **0.5.4rc1 preview**; stable 0.5.3 keeps its earlier
+progress oversight.
+
+New minimal studies enable a research director by default. The launch settings in
+the workspace expose the switch, reviewer/director model and effort; CLI launches
+accept `--director` and `--no-director`. Existing launches retain their saved
+policy, including studies created before the director existed. Other workflow
+modes retain their existing supervision.
+
+The director uses the reviewer route with a fresh context and checks execution
+strategy about every five minutes, including when the worker is waiting for a
+long experiment. Native worker turns still checkpoint within five minutes.
+Each director call has a two-minute allowance, separate from the worker's turn
+allowance; invalid or interrupted decisions receive a bounded retry delay.
+It receives remaining wall time, recorded coverage/cost, active experiment
+telemetry and recent plans. It evaluates scientific usefulness and budget
+feasibility separately. Its role is to obtain useful complete trajectories before
+refining details, without imposing a fixed phase schedule.
+
+A `replan` decision can name active experiment IDs to stop. The host requests
+those stops, preserves available partial data and wakes the worker. It does not
+stop the campaign, change the hypothesis/deadline, or accept a scientific claim.
+Transport failures leave cancellation unconfirmed; the UI shows that distinction.
+Failed control calls retain the valid decision and their individual errors, so
+other requested stops and worker replanning can proceed. Available partial data
+are retained; the host does not claim a confirmed stop until it is observed.
+The usual independent methods and claim reviews remain in force.
+
+The worker reads `lab.director_status()` and records its response:
+
+```python
+plan = lab.note('Test adaptive stepping over the radiation peak, then compare '
+                'a stricter CFL setting before refining the spatial mesh.',
+                kind='next_test', estimated_seconds=600)
+lab.director_ack('director_ID', response='plan', plan=plan['id'],
+                 reason='This provides an affordable complete trajectory and '
+                        'a temporal accuracy comparison.')
+```
+
+A reasoned `response='challenge'` is also allowed. New numerical submissions
+require acknowledgement of the latest replan, even after a later continue review;
+reads, idempotent replay and short
+exploratory diagnostics remain available. Acknowledgement records a response,
+not scientific approval. Decisions and responses appear in **Evidence & review**.
+The durable records live under `director/` and `director-acks/`.
+
+`lab.cancel('exp_ID', reason='...')` can stop a named experiment in the current
+study. `lab.run(..., monitor={...})` optionally publishes bounded live JSON or
+FLASH log timing. Live observations and their linear estimates are operational,
+not scientific evidence. Receipt-backed `lab.progress` remains the recorded
+metric interface; neither kind of target changes scientific acceptance.
+SSH monitoring requires a prepared worker advertising that feature. Older frozen
+workers remain usable without a monitor; prepare a new worker/study to add monitoring.

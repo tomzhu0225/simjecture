@@ -29,14 +29,16 @@ def test_missing_bubblewrap_does_not_fallback(monkeypatch):
     assert report["backend"] == "bubblewrap"
 
 
-@pytest.mark.skipif(
-    not shutil.which("proot") or os.geteuid() == 0, reason="Needs proot and non-root user"
-)
-def test_cooperative_execution_seals_inputs_clears_environment_and_times_out(tmp_path, monkeypatch):
+@pytest.mark.parametrize("backend", ["proot-cooperative", "process-cooperative"])
+def test_cooperative_execution_seals_inputs_clears_environment_and_times_out(
+    tmp_path, monkeypatch, backend
+):
+    if os.geteuid() == 0 or (backend == "proot-cooperative" and not shutil.which("proot")):
+        pytest.skip("Needs an unprivileged account and selected backend")
     pytest.importorskip("psutil")
     monkeypatch.setenv("PROVIDER_TEST_SECRET", "must-not-inherit")
     sandbox = BubblewrapSandbox(
-        tmp_path, MVPAgentConfig(execution_backend="proot-cooperative", max_command_seconds=10)
+        tmp_path, MVPAgentConfig(execution_backend=backend, max_command_seconds=10)
     )
     source = tmp_path / "probe.py"
     source.write_text(
@@ -56,9 +58,11 @@ def test_cooperative_execution_seals_inputs_clears_environment_and_times_out(tmp
 
     result = run()
     assert result.returncode == 0, result.stderr
-    assert result.isolation_backend == "proot-cooperative"
+    assert result.isolation_backend == backend
     assert (tmp_path / "result.txt").read_text() == "42"
-    source.write_text('from pathlib import Path\nPath("probe.py").write_text("tampered")\n')
+    source.write_text(
+        'from pathlib import Path\np=Path("probe.py")\np.chmod(0o600)\np.write_text("tampered")\n'
+    )
     before = source.read_bytes()
     assert run().returncode == 125
     assert source.read_bytes() == before
@@ -66,10 +70,10 @@ def test_cooperative_execution_seals_inputs_clears_environment_and_times_out(tmp
     assert run(0.4).timed_out
 
 
-@pytest.mark.skipif(
-    not shutil.which("proot") or os.geteuid() == 0, reason="Needs proot and non-root user"
-)
-def test_parent_death_cleans_up_experiment_descendants(tmp_path):
+@pytest.mark.parametrize("backend", ["proot-cooperative", "process-cooperative"])
+def test_parent_death_cleans_up_experiment_descendants(tmp_path, backend):
+    if os.geteuid() == 0 or (backend == "proot-cooperative" and not shutil.which("proot")):
+        pytest.skip("Needs an unprivileged account and selected backend")
     import subprocess
     import sys
     import time
@@ -85,7 +89,7 @@ def test_parent_death_cleans_up_experiment_descendants(tmp_path):
             "-c",
             "from conjecture_solver.mvp_agent import BubblewrapSandbox,MVPAgentConfig; "
             "import sys; s=BubblewrapSandbox(sys.argv[1], "
-            "MVPAgentConfig(execution_backend='proot-cooperative',max_command_seconds=60)); "
+            f"MVPAgentConfig(execution_backend={backend!r},max_command_seconds=60)); "
             "s.run_python(('slow.py',))",
             str(tmp_path),
         ],

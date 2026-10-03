@@ -3,11 +3,25 @@
 from __future__ import annotations
 
 import json
+import re
 import time
 
 from pydantic import BaseModel, ConfigDict, Field
 
 from .mvp_skills import MVPCapabilityRegistry
+
+
+def experiment_ids(values, field):
+    """Validate receipt references before reading source or hashing a runtime."""
+    if not isinstance(values, (list, tuple)):
+        raise ValueError(f"{field} must be a list of experiment receipt IDs, e.g. ['exp_ID']")
+    for index, value in enumerate(values):
+        if not isinstance(value, str) or not re.fullmatch(r"exp_[a-z0-9_-]+", value):
+            raise ValueError(
+                f"{field}[{index}] must be an experiment receipt ID (exp_...), "
+                "not descriptive text. Put scientific limitations in limitations=[...]."
+            )
+    return list(dict.fromkeys(values))
 
 
 class StudyRequirements(BaseModel):
@@ -130,11 +144,27 @@ class MethodService:
         capability=None,
         validation_experiments=(),
         blockers=(),
+        blocker_experiments=(),
+        limitations=(),
         scope="production",
     ):
         """Freeze the method and actual commissioning evidence for host-triggered review."""
         from .research_service import fingerprint, put
 
+        blockers = experiment_ids(blockers, "blockers")
+        blocker_experiments = experiment_ids(blocker_experiments, "blocker_experiments")
+        if blockers and blocker_experiments:
+            raise ValueError("Use blocker_experiments or its legacy alias blockers, not both")
+        validation_experiments = experiment_ids(validation_experiments, "validation_experiments")
+        blockers = blocker_experiments or blockers
+        if (
+            not isinstance(limitations, (list, tuple))
+            or any(not isinstance(v, str) or not v.strip() or len(v) > 2400 for v in limitations)
+            or len(limitations) > 32
+        ):
+            raise ValueError(
+                "limitations must be at most 32 nonempty descriptions, each ≤2400 chars"
+            )
         if scope not in {"instrument", "production"}:
             raise ValueError("Method scope must be instrument or production")
         fields = dict(
@@ -175,7 +205,13 @@ class MethodService:
         from .research_service import sha
 
         for identifier in dict.fromkeys([*validation_experiments, *blockers]):
-            r = self._read("experiments", identifier)
+            try:
+                r = self._read("experiments", identifier)
+            except FileNotFoundError as error:
+                raise ValueError(
+                    f"Method references unknown experiment {identifier!r}; "
+                    "choose an existing receipt from lab.status()."
+                ) from error
             if r["status"] in {"queued", "running"}:
                 raise ValueError("Wait for the commissioning/blocker experiment to finish")
             w = self.root / "experiments" / identifier / "workspace"
@@ -220,6 +256,7 @@ class MethodService:
             evidence=evidence,
             validation_experiments=list(validation_experiments),
             blockers=list(blockers),
+            **({"limitations": list(limitations)} if limitations else {}),
         )
         if len(json.dumps(body).encode()) > 700_000:
             raise ValueError("Method packet exceeds 700 KiB")

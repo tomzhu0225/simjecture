@@ -22,8 +22,10 @@ parameters, diagnostics, or conclusion.
   the CPU fallback, and an argv whose first item is the workspace-relative
   Python filename. Arguments are passed directly to the pinned Python
   interpreter; there is no shell.
-- The capability has no host home, network, provider credential, or writable
-  location outside `/work`.
+- With the default Bubblewrap backend, numerical execution has no host home,
+  network, provider credential, or writable location outside `/work`. Explicit
+  cooperative backends have the account's host access; read the recorded backend
+  before assuming kernel isolation.
 - Before GPU production work, read `references/gpu-launch-tuning.md`. The CUDA
   capability is non-MPI, 2D-only, and provides HDF5 openPMD diagnostics.
 - Ordinary `run_python` does not contain `pywarpx`. Use `run_capability` for
@@ -106,6 +108,13 @@ Read these resources as needed:
   wiring and native-input smoke test; it is also permanently non-evidentiary.
   Its JSON booleans are under `checks`. Run it in the workbench only when the
   implicit interface itself is relevant; it does not prove loaded-plasma stability.
+- `examples/native_cli_smoke.py`: an execution-only check for operator-supplied
+  native CUDA builds that set `WARPX_EXECUTABLE` and `WARPX_PREFLIGHT_INPUT`. It
+  runs two steps and reads evolved native AMReX plotfiles with `yt`. This route
+  does not require PICMI or openPMD; neither geometry, physics extensions nor
+  hybrid-PIC support may be inferred from the pinned stock capability. Read the
+  actual build record. CUDA synchronization overrides in this smoke are wiring
+  choices, not a scientific timestep or performance qualification.
 - Host repository demos and operator launch scripts outside this skill tree are
   not skill resources: sandbox agents cannot `read_skill` or
   `materialize_skill_resource` them.

@@ -2,7 +2,45 @@
 
 This project follows semantic versioning. Dates use ISO 8601.
 
-## Unreleased
+## 0.5.4rc1 (preview) — 2026-10-03
+
+- Preserve an unacknowledged replan across subsequent continue decisions and
+  bounded history. Keep the pending directive visible to the worker, director
+  and GUI until the latest replan receives a recorded plan or challenge.
+- Record failed stop controls without discarding a valid director decision,
+  continue other named stop requests, wake the worker for replanning and expose
+  control errors in the GUI. Recover director I/O errors and clear stale review
+  errors after a successful decision. Review timeouts remain bounded and explicit.
+- Discover studies launched after the GUI server starts without requiring a restart.
+- Scope native reviewer source/data inspection to explicitly read-only minimal
+  research contexts; retain tool-free verdict parsing in structured/frontier workflows.
+
+- Add a default-on minimal-mode research director with bounded strategy reviews
+  during experiment waits, named experiment stops, preserved partial artifacts,
+  recorded worker plans/challenges and visible launch/monitor controls. Claim
+  acceptance and the original hypothesis/deadline remain independent.
+- Add optional live JSON/FLASH timing telemetry across local and SSH execution;
+  preserve legacy worker request identities when monitoring is absent. Update
+  FLASH guidance to prefer qualified adaptive stepping and affordable complete
+  exploratory trajectories before expensive refinement.
+
+- Add explicit reserved-slot Open MPI launch helpers and keep compiler alternatives
+  visible read-only inside numerical execution.
+- Add explicit `process-cooperative` execution for trusted unprivileged hosts where
+  PRoot interferes with MPI. Expose it in CLI/TUI/browser machine settings; preserve
+  automatic selection and prevent duplicate SSH profiles from double-counting capacity.
+- Support verified dependency source manifests on OverlayFS hosts with unstable
+  directory inode numbers; changed declared source bytes still fail integrity checks.
+- Keep partial artifacts on cancellation and allow read-only native reviewer tool
+  events; retain separate worker/reviewer reasoning efforts across launches and resumes.
+- Validate method experiment references with field-specific errors; accept
+  `blocker_experiments` and separate descriptive `limitations` while retaining the
+  legacy receipt-ID `blockers` argument.
+- Add `lab.analyze` for frozen exploratory postprocessing without production-method
+  approval. Exploratory results remain ineligible for scientific claim acceptance.
+- Expose receipt-backed advisory progress targets, measured execution cost and
+  conditional throughput estimates to workers, progress reviewers and the GUI.
+  Targets do not alter scientific contracts, deadlines or agent scheduling freedom.
 
 ## 0.5.3 — 2026-10-02
 

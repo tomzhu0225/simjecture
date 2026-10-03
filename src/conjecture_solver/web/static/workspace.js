@@ -915,7 +915,7 @@ function renderMachines(data) {
     }
     if(!instruments.children.length)instruments.append(el("span","Your agent can prepare scientific tools.","no-instruments"));card.append(instruments);
     const runtime=el("div",undefined,"machine-runtime");
-    const backend=machine.config.execution_backend==="proot-cooperative" ? "Cooperative runtime" : "Linux sandbox";
+    const backend=machine.config.execution_backend==="process-cooperative" ? "Native process" : machine.config.execution_backend==="proot-cooperative" ? "Cooperative runtime" : "Linux sandbox";
     const active=live?.active_jobs || 0;
     runtime.append(el("span",`${backend} · ${active}/${machine.config.max_jobs} jobs`));
     const stamp=el("span",live?.checked_at ? "just checked" : "Awaiting first check");
@@ -1444,12 +1444,12 @@ async function boot() {
   let executionNoticeKey = "";
   function executionWarning() {
     const cooperative =
-      execution?.backend === "proot-cooperative" ||
-      $("execution-backend").value === "proot-cooperative";
+      ["proot-cooperative", "process-cooperative"].includes(execution?.backend) ||
+      ["proot-cooperative", "process-cooperative"].includes($("execution-backend").value);
     const blocked = execution && !execution.available;
     const warning = cooperative
       ? execution?.warning ||
-        "Cooperative execution (PRoot) is not a security sandbox: it does not isolate host files or networking. Use only trusted code under a dedicated non-root account."
+        "Cooperative execution is not a security sandbox: it does not isolate host files or networking. Use only trusted code under a dedicated non-root account."
       : blocked
         ? "Isolated experiments cannot run on this host. Cooperative mode needs PRoot and a dedicated non-root account."
         : "";
@@ -1716,6 +1716,9 @@ async function launchStudy() {
     request_key: state.launchKey,
     capability_directory: $("study-tools").value,
     execution_backend: $("execution-backend").value,
+    director_enabled: $("research-director").checked,
+    judge_model: $("review-model").value.trim(),
+    judge_reasoning_effort: $("review-effort").value || null,
   });
   const project = await api(`project?id=${encodeURIComponent(id)}`);
   if (!stillHere()) return;

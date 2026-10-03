@@ -15,6 +15,7 @@ import shutil
 import signal
 import subprocess
 import sys
+import threading
 import time
 import uuid
 from contextlib import contextmanager, suppress
@@ -25,9 +26,11 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from .mvp_agent import BubblewrapSandbox
 from .mvp_skills import MVPCapabilityRegistry
+from .research_control import ControlService, ExperimentMonitor
 from .research_guidance import GuidedResearch
 from .research_methods import MethodService
 from .research_notebook import NotebookService
+from .research_progress import ProgressService
 
 
 class ResearchVerdict(BaseModel):
@@ -81,7 +84,9 @@ def _positive_finite_seconds(value):
     )
 
 
-class ResearchService(GuidedResearch, MethodService, NotebookService):
+class ResearchService(
+    GuidedResearch, MethodService, NotebookService, ProgressService, ControlService
+):
     def __init__(self, root):
         self.root = Path(root).resolve(strict=True)
         self.manifest = json.loads((self.root / "research.json").read_text())
@@ -129,7 +134,7 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
         completion_policy = completion_policy or "repair"
         if completion_policy not in {"answer", "repair"}:
             raise ValueError("Unknown completion policy")
-        if execution_backend not in {"bubblewrap", "proot-cooperative"}:
+        if execution_backend not in {"bubblewrap", "proot-cooperative", "process-cooperative"}:
             raise ValueError("Unknown execution backend")
         if any(root.iterdir()):
             raise ValueError(
@@ -300,6 +305,15 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
                 put(path, dict(id=identifier, created_at=time.time(), **body))
         return self._read("commitments", identifier)
 
+    def analyze(self, source, args=(), **kwargs):
+        """Record frozen exploratory postprocessing without claiming method approval."""
+        if "stage" in kwargs or "purpose" in kwargs or kwargs.get("commitment"):
+            raise ValueError(
+                "lab.analyze records exploration with purpose='diagnostic'. "
+                "Use lab.run with an approved method for claim evidence."
+            )
+        return self.run(source, args, stage="exploration", purpose="diagnostic", **kwargs)
+
     def run(
         self,
         source,
@@ -319,6 +333,7 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
         plan=None,
         machine=None,
         resources=None,
+        monitor=None,
     ):
         """Snapshot inputs, launch a bounded experiment, return an immediate receipt."""
         if not outputs or not _positive_finite_seconds(timeout):
@@ -353,6 +368,8 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
             if binding not in frozen["bindings"]:
                 raise ValueError("Execution differs from the prospective commitment")
         identity = dict(binding=binding, outputs=list(outputs), commitment=commitment, key=key)
+        if monitor is not None:
+            identity["monitor"] = ExperimentMonitor.model_validate(monitor).model_dump(mode="json")
         if resources is not None:
             # Automatic placement is durable allocation, not part of retry identity.
             identity.update(execution_target=machine or "auto", resources=resources)
@@ -366,6 +383,7 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
             path = self.root / "experiments" / (identifier + ".json")
             if path.exists():
                 return self._read("experiments", identifier)
+            self.check_director(stage, purpose, timeout)
             if time.time() >= self.manifest["deadline"]:
                 raise ValueError("Study deadline exhausted")
             used = BubblewrapSandbox._tree_bytes(self.root / "experiments")
@@ -397,6 +415,7 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
                     reservation=job_identifier(self, {"id": identifier}),
                     receipt=path,
                     deadline=self.manifest["deadline"],
+                    require_monitor=monitor is not None,
                 )
             workspace = self.root / "experiments" / identifier / "workspace"
             workspace.mkdir(parents=True)
@@ -457,6 +476,12 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
             record = self._read("experiments", identifier)
             if record["status"] != "queued":
                 return
+            if record.get("cancel_requested") and not record.get("machine"):
+                record.update(
+                    status="cancelled", finished_at=time.time(), cancellation_confirmed=True
+                )
+                put(path, record)
+                return
             identity = read_process_identity(os.getpid())
             if identity:
                 record["worker_identity"] = identity.model_dump(mode="json")
@@ -475,6 +500,15 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
                         put(path, current)
             return
         workspace = self.root / "experiments" / identifier / "workspace"
+        interrupted = [False]
+        previous_handler = None
+        if threading.current_thread() is threading.main_thread():
+            # Retain the executor long enough to harvest the stopped sandbox.
+            # Its descendants receive the process-group TERM independently.
+            def retain_partial_outputs(signum, frame):
+                interrupted[0] = True
+
+            previous_handler = signal.signal(signal.SIGTERM, retain_partial_outputs)
         try:
             from .experiment_executor import execute_frozen
 
@@ -492,16 +526,38 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
                     max_workspace_bytes=record.get(
                         "workspace_limit_bytes", self.manifest["max_experiment_bytes"]
                     ),
+                    cancel_check=lambda: (
+                        interrupted[0]
+                        or self._read("experiments", identifier).get("cancel_requested", False)
+                    ),
+                    progress_callback=lambda event: self._execution_progress(identifier, event),
+                    monitor=record.get("monitor"),
                 )
             )
         except Exception as error:
             record.update(status="failed", error=str(error))
+        finally:
+            if previous_handler is not None:
+                signal.signal(signal.SIGTERM, previous_handler)
+        if interrupted[0]:
+            record["status"] = "cancelled"
         record["finished_at"] = time.time()
         with self.lock():
             current = self._read("experiments", identifier)
-            if current["status"] == "cancelled":
+            if current["status"] == "cancelled" or current.get("cancel_requested"):
                 record["status"] = "cancelled"
+                record["cancellation_confirmed"] = True
+            for k in ["stop_reason", "stop_requested_at", "cancel_requested", "telemetry"]:
+                if k in current:
+                    record[k] = current[k]
             put(path, record)
+
+    def _execution_progress(self, identifier, event):
+        with self.lock():
+            current = self._read("experiments", identifier)
+            if current["status"] in {"queued", "running"}:
+                current.update(event)
+                put(self.root / "experiments" / (identifier + ".json"), current)
 
     def review(
         self, experiments, conclusion, *, claim="root", disposition="supported", challenge=None
@@ -764,6 +820,7 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
             reviews=reviews,
             methods=self._all("methods"),
             capability_additions=self._all("capability_additions"),
+            progress=self.progress_summary(max(0, self.manifest["deadline"] - time.time())),
         )
         for experiment in snapshot["experiments"]:
             linked = [r for r in reviews if experiment["id"] in r.get("experiments", [])]
@@ -790,6 +847,12 @@ class ResearchService(GuidedResearch, MethodService, NotebookService):
                     created_at=e["created_at"],
                     status=e["status"],
                     parent_experiment=e.get("parent_experiment"),
+                    started_at=e.get("started_at"),
+                    timeout=e.get("timeout"),
+                    monitor=e.get("monitor"),
+                    telemetry=e.get("telemetry"),
+                    cancel_requested=e.get("cancel_requested", False),
+                    stop_reason=e.get("stop_reason"),
                     purpose=e.get("purpose"),
                     plan=e.get("plan"),
                     machine=e.get("machine", "local"),
@@ -925,6 +988,12 @@ class Lab:
     def run(self, source, args=(), **kwargs):
         return self._service.run(source, args, **kwargs)
 
+    def analyze(self, source, args=(), **kwargs):
+        return self._service.analyze(source, args, **kwargs)
+
+    def progress(self, **kwargs):
+        return self._service.progress(**kwargs)
+
     def machines(self):
         return self._service.machines()
 
@@ -939,6 +1008,15 @@ class Lab:
 
     def status(self, *, compact=True):
         return self._service.status(compact=compact)
+
+    def cancel(self, experiment, *, reason):
+        return self._service.cancel(experiment, reason=reason)
+
+    def director_status(self):
+        return self._service.director_status()
+
+    def director_ack(self, decision, **kwargs):
+        return self._service.director_ack(decision, **kwargs)
 
     def commit(self, statement, **kwargs):
         return self._service.commit(statement, **kwargs)
@@ -977,6 +1055,11 @@ def main():
         "--call",
         choices=[
             "run",
+            "cancel",
+            "director_status",
+            "director_ack",
+            "analyze",
+            "progress",
             "reproduce_anchor",
             "status",
             "commit",

@@ -1607,7 +1607,7 @@ function renderResearchTrace() {
   if (engine.usage_details) {
     const details = engine.usage_details;
     panel.append(element("p", "field-help",
-      `${details.requests || 0} tracked requests · ${details.requests_without_usage || 0} without usage yet · ${formatDuration(engine.provider_wait_seconds || 0)} in provider retry waits. ${details.cost_note}`));
+      `${details.request_count_complete === false ? "Per-request counts unavailable from native CLI" : `${details.requests || 0} tracked requests`} · ${details.requests_without_usage || 0} tracked requests without usage yet · ${formatDuration(engine.provider_wait_seconds || 0)} in provider retry waits. ${details.cost_note}`));
     for (const [role, totals] of Object.entries(details.by_role || {})) {
       panel.append(element("p", "field-help", `${role}: ${compactNumber(totals.input_tokens)} input / ${compactNumber(totals.output_tokens)} output tokens`));
     }
@@ -1616,6 +1616,75 @@ function renderResearchTrace() {
     const rule = engine.instrument_requirement;
     panel.append(element("p", "field-help",
       `Instrument family: any of ${rule.prefixes.join(" or ")}. ${rule.satisfied ? `Matched by ${rule.matching_capabilities.join(", ")}` : "No matching instrument available"}. Scientific qualification is reviewed separately.`));
+  }
+  if (engine.director_policy?.enabled || engine.director_decisions?.length) {
+    const director = element("section", "research-director");
+    director.append(element("h3", null, "Research director · strategy & control"),
+      element("p", "field-help", "Stops individual experiments and requests replans. Scientific claim acceptance remains separate."));
+    const route = engine.director_route || {};
+    if (route.model) director.append(element("p", "field-help", `Director route: ${[route.backend, route.model, route.reasoning_effort].filter(Boolean).join(" · ")}`));
+    if (!engine.director_decisions?.length) director.append(element("p", "field-help", "Enabled · awaiting the first strategy review."));
+    for (const d of engine.director_decisions || []) {
+      const card = element("article", "trace-event"), copy = element("div", "trace-copy");
+      copy.append(element("strong", null, `${d.decision === "replan" ? "Stop / replan" : "Continue strategy"} · budget ${d.budget_feasibility} · science ${d.scientific_feasibility}`),
+        element("p", null, d.rationale), element("p", null, `Next action: ${d.next_action}`));
+      for (const action of d.control_actions || []) copy.append(element("p", "field-help", `Stop requested: ${action.experiment} · ${action.status} · ${action.cancellation_confirmed ? "stop confirmed" : "awaiting confirmation"}${action.error ? ` · recorded control error: ${action.error}` : ""} · partial data retained when available`));
+      copy.append(element("p", "field-help", d.acknowledgement ? `Worker ${d.acknowledgement.response}: ${d.acknowledgement.reason}` : d.decision === "replan" ? "Awaiting worker plan or challenge" : "No replan acknowledgement required"));
+      card.append(element("span", "event-mark", d.decision === "replan" ? "↻" : "✓"), copy);director.append(card);
+    }
+    panel.append(director);
+  }
+  if (engine.receipt_progress?.length || engine.execution_costs?.length || engine.live_experiments?.length) {
+    const coverage = element("section", "scientific-progress");
+    coverage.append(element("h3", null, "Scientific coverage & cost"),
+      element("p", "field-help", "Live timing is operational telemetry. Recorded metrics have researcher-declared targets and units. Claim approval remains separate."));
+    for (const e of engine.live_experiments || []) {
+      const t = e.telemetry, copy = element("div", "trace-copy"), card = element("article", "trace-event");
+      copy.append(element("strong", null, `${e.id} · ${e.status}`));
+      if (t?.available) copy.append(element("p", null, `${t.quantity}: ${t.value} ${t.unit} / target ${t.target} ${t.unit}`),
+        element("p", "field-help", `Elapsed ${formatDuration(t.elapsed_seconds)} · estimated additional ${t.estimated_additional_seconds == null ? "unknown" : formatDuration(t.estimated_additional_seconds)} · ${t.authority}`));
+      else copy.append(element("p", "field-help", t?.error || "Awaiting operational timing telemetry"));
+      if (e.cancel_requested) copy.append(element("p", "warning-list", `Stop requested: ${e.stop_reason || "operator control"}`));
+      card.append(element("span", "event-mark", "◷"), copy);coverage.append(card);
+    }
+    for (const row of engine.receipt_progress || []) {
+      const card = element("article", "trace-event");
+      const copy = element("div", "trace-copy");
+      copy.append(element("strong", null, `${row.quantity}: ${row.value} ${row.unit} / target ${row.target} ${row.unit}`));
+      if (row.measured_wall_seconds != null) copy.append(element("p", "field-help",
+        `Measured execution: ${formatDuration(row.measured_wall_seconds)} · ${row.machine || "local"}`));
+      if (row.integrity !== "verified") {
+        copy.append(element("p", "warning-list", `Recorded value integrity failed: ${row.integrity_error || "inspect the receipt"}`));
+      } else {
+        const parts = [row.series, row.target_reached ? "Metric target reached" : "Metric target outstanding"];
+        if (row.estimated_additional_seconds != null) {
+          parts.push(`Estimated additional time: ${formatDuration(row.estimated_additional_seconds)}`);
+          if (row.exceeds_remaining_budget) parts.push("Exceeds remaining wall budget");
+        }
+        copy.append(element("p", row.exceeds_remaining_budget ? "warning-list" : "field-help", parts.filter(Boolean).join(" · ")));
+        if (row.estimated_additional_seconds != null) copy.append(element("p", "field-help", row.estimate_note));
+      }
+      const link = element("a", null, "View recorded metric");
+      link.href = `/api/artifact?campaign=${encodeURIComponent(state.selectedCampaign)}&path=${encodeURIComponent(`experiments/${row.experiment}/workspace/${row.output}`)}`;
+      link.target = "_blank"; link.rel = "noopener";
+      copy.append(link);
+      card.append(element("span", "event-mark", row.target_reached ? "✓" : "◷"), copy);
+      coverage.append(card);
+    }
+    const registered = new Set((engine.receipt_progress || []).map(row => row.experiment));
+    for (const row of engine.execution_costs || []) {
+      if (registered.has(row.id)) continue;
+      const card = element("article", "trace-event");
+      const copy = element("div", "trace-copy");
+      copy.append(element("strong", null, [row.source, ...(row.args || [])].filter(Boolean).join(" ")),
+        element("p", "field-help", `Measured execution: ${formatDuration(row.wall_seconds)} · ${row.machine} · ${row.status} · ${row.stage || "recorded"}`));
+      const link = element("a", null, "View execution receipt");
+      link.href = `/api/artifact?campaign=${encodeURIComponent(state.selectedCampaign)}&path=${encodeURIComponent(`experiments/${row.id}.json`)}`;
+      link.target = "_blank"; link.rel = "noopener"; copy.append(link);
+      card.append(element("span", "event-mark", "◷"), copy); coverage.append(card);
+    }
+    coverage.append(element("p", "field-help", "Execution wall time excludes provider calls, preflight checks and artifact transfers. Targets and forecasts remain advisory."));
+    panel.append(coverage);
   }
   if (snapshot.warnings?.length) {
     const warnings = element("ul", "warning-list");

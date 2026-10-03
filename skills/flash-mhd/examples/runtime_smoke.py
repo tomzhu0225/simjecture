@@ -14,6 +14,7 @@ import json
 import os
 import shutil
 import subprocess
+import sys
 import time
 from pathlib import Path
 from typing import Any
@@ -143,9 +144,7 @@ def main() -> int:
             os.X_OK,
         )
         checks["parameter_file_present"] = source_parfile.is_file()
-        payload["executable_sha256"] = (
-            _sha256(executable) if checks["executable_present"] else None
-        )
+        payload["executable_sha256"] = _sha256(executable) if checks["executable_present"] else None
         payload["source_parameter_sha256"] = (
             _sha256(source_parfile) if checks["parameter_file_present"] else None
         )
@@ -174,6 +173,20 @@ def main() -> int:
             "-par_file",
             copied_parfile.name,
         ]
+        helper = os.environ.get("SIMJECTURE_MPI_HELPER")
+        if helper:
+            command = [
+                sys.executable,
+                helper,
+                "--ranks",
+                str(ranks),
+                "--launcher",
+                str(launcher),
+                "--",
+                str(executable),
+                "-par_file",
+                copied_parfile.name,
+            ]
         payload["command"] = command
         try:
             with stdout_path.open("wb") as stdout, stderr_path.open("wb") as stderr:

@@ -18,8 +18,9 @@ must be accessible to that account. Existing installations without this account
 marker are left untouched rather than silently migrated.
 PRoot also requires host support for tracing child processes. A container can block
 both user namespaces and ptrace, so installing PRoot is not a guaranteed workaround.
-If both probes fail, do not launch a local numerical study: use a supported host
-or a configured SSH execution worker. The GUI, recorded-demo replay and benchmark
+If both probes fail, use a supported host, a configured SSH execution worker, or
+explicitly select trusted native process execution as described below. The GUI,
+recorded-demo replay and benchmark
 task preparation can still be used; grading executes code and requires a working
 backend. Do not relax host security settings merely to make a probe pass.
 
@@ -53,6 +54,46 @@ output collection, wall-time limits, file-size limits, and a sampled aggregate
 resident-memory watchdog. Every execution receipt names its isolation backend.
 The study persists the choice; changing it requires a new study. Existing
 records without the field continue to mean Bubblewrap.
+
+## Explicit trusted native processes
+
+This option is available in the 0.5.4rc1 preview.
+
+PRoot can pass a basic probe while failing a larger MPI launch. On the audited P40
+host, the same 16-rank collective completed natively but hung under PRoot, including
+TCP and disabled-seccomp variants. Changing the declared slot count alone did not
+repair that failure.
+
+`process-cooperative` runs trusted experiments directly under a dedicated non-root
+account, without PRoot or namespaces:
+
+```sh
+simjecture doctor --execution-backend process-cooperative
+simjecture study --campaign studies/example \
+  --hypothesis-file hypothesis.txt --instructions-file instructions.txt \
+  --backend codex --execution-backend process-cooperative
+```
+
+The browser offers **Native process · trusted host** in the study execution selector
+and machine advanced settings; the TUI offers the same explicit choice. Automatic
+selection still probes Bubblewrap then PRoot and never silently selects native
+execution. A study freezes its choice. SSH workers still drop privileges before
+execution; root is refused.
+
+The native runner copies and checks declared inputs, clears the child environment,
+uses a private temporary directory, monitors aggregate RSS and cleans up recorded
+descendants on cancellation or parent death. It translates registered virtual paths
+in command arguments and environment variables to host paths. Programs should use
+workspace-relative inputs and provided runtime environment variables such as
+`FLASH_ROOT`; hard-coded `/opt/acs-*` paths inside source text are not rewritten.
+Declared input copies have write bits removed and are checked after execution.
+The worker account can change those bits: this detects cooperative mutations, not
+hostile code. Runtime/source immutability depends on host filesystem permissions.
+
+The process has the account's host file and network access. CPU reservations are
+admission accounting, not affinity or cgroup quotas. RSS checks are sampled, and
+GPU VRAM is not bounded. Use this only when that trust boundary is acceptable.
+Native research agents retain their existing tools regardless of experiment backend.
 
 **It is not a security sandbox.** Host networking is shared; PRoot is not a
 kernel permission boundary, read-only bindings are not OS-enforced, and a

@@ -92,11 +92,13 @@ def study_status(root):
 
     by_role = {}
     for name, counter in by_thread.items():
-        role = (
+        role = state.get("usage_roles_by_thread", {}).get(name) or (
             "memory"
             if name.startswith("journal-summary-")
             else "reviewer"
             if name.startswith(("oversight-", "judge-", "review-"))
+            else "director"
+            if name.startswith("director-")
             else "worker"
             if name.startswith("turn-")
             else "other"
@@ -107,6 +109,7 @@ def study_status(root):
     usage_details = dict(
         by_role=by_role,
         requests=sum(u.get("requests", 0) for u in counters),
+        request_count_complete=bool(counters) and all("requests" in u for u in counters),
         requests_without_usage=sum(u.get("requests_without_usage", 0) for u in counters),
         cache_usage_complete=bool(counters)
         and all(u.get("cache_usage_complete", "cached_input_tokens" in u) for u in counters),
@@ -123,7 +126,42 @@ def study_status(root):
         for p in (root / "capability_additions").glob("*.json")
         if (r := read(p)).get("name")
     )
+    progress = []
+    if mode == "minimal" and (root / "progress").is_dir():
+        from .research_service import ResearchService
+
+        progress = ResearchService(root).progress_summary(max(0, deadline - now))
+    director_decisions = []
+    if (root / "director").is_dir():
+        from .research_service import ResearchService
+
+        director_decisions = ResearchService(root).director_status()
     return dict(
+        director_policy=manifest.get("director_policy", {"enabled": False}),
+        director_route=state.get("reviewer_route", {}),
+        director_decisions=director_decisions,
+        live_experiments=[
+            {
+                k: e.get(k)
+                for k in ["id", "status", "monitor", "telemetry", "cancel_requested", "stop_reason"]
+            }
+            for e in experiments
+            if e.get("monitor") and e.get("status") in {"queued", "running"}
+        ],
+        receipt_progress=progress,
+        execution_costs=[
+            dict(
+                id=e["id"],
+                source=e.get("binding", {}).get("source"),
+                args=e.get("binding", {}).get("args", []),
+                machine=e.get("machine", "local"),
+                status=e["status"],
+                stage=e.get("stage"),
+                wall_seconds=e["execution"]["wall_seconds"],
+            )
+            for e in reversed(experiments)
+            if (e.get("execution") or {}).get("wall_seconds") is not None
+        ][:6],
         execution_backend="worker-pool"
         if manifest.get("execution_pool")
         else launch.get(

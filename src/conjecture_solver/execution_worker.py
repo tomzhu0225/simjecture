@@ -123,6 +123,7 @@ class Worker:
                 )
         return {
             "protocol": PROTOCOL,
+            "features": {"experiment_monitor": True},
             "worker_id": load(self.root / "identity.json")["worker_id"],
             "host": socket.gethostname(),
             "uid": os.geteuid(),
@@ -296,10 +297,18 @@ class Worker:
             if record["status"] not in ACTIVE:
                 continue
             if record["status"] == "cancelling":
-                if any(
-                    process_identity_matches(ProcessIdentity.model_validate(p))
+                live = [
+                    p
                     for p in record.get("cancellation_processes", [])
-                ):
+                    if process_identity_matches(ProcessIdentity.model_validate(p))
+                ]
+                if live:
+                    if time.time() >= record.get("cancellation_grace_until", float("inf")):
+                        import signal
+
+                        for p in live:
+                            with suppress(ProcessLookupError):
+                                os.kill(p["pid"], signal.SIGKILL)
                     continue
                 record.update(
                     status="timed_out"
@@ -458,6 +467,8 @@ class Worker:
                         max_memory_bytes=spec.resources.memory_mb * 1024**2,
                         gpu_ids=record["assigned_gpu_ids"],
                         cpus=spec.resources.cpus,
+                        monitor=spec.monitor.model_dump(mode="json") if spec.monitor else None,
+                        progress_callback=lambda event: self._execution_progress(identifier, event),
                     )
                 )
                 if record.get("execution", {}).get("timed_out"):
@@ -467,9 +478,31 @@ class Worker:
         record["finished_at"] = time.time()
         with lock(self.root):
             current = load(directory / "state.json")
+            for key in ("telemetry", "execution_heartbeat"):
+                if key in current:
+                    record[key] = current[key]
             if current["status"] in {"cancelling", "cancelled", "timed_out"}:
+                # The cancelled executor may still have harvested native data.
+                for key in (
+                    "execution",
+                    "artifacts",
+                    "missing_outputs",
+                    "input_mutations",
+                    "output_findings",
+                ):
+                    if key in record:
+                        current[key] = record[key]
+                put(directory / "state.json", current)
                 return
             put(directory / "state.json", record)
+
+    def _execution_progress(self, identifier, event):
+        with lock(self.root):
+            path = self.directory(identifier) / "state.json"
+            current = load(path)
+            if current["status"] == "running":
+                current.update(event)
+                put(path, current)
 
     def cancel(self, identifier, reason="operator"):
         import psutil
@@ -492,6 +525,7 @@ class Worker:
                 return record
             identity = record.get("process")
             processes = []
+            owner_pid = identity.get("pid") if identity else None
             for saved in record.get("cancellation_processes", []):
                 if process_identity_matches(ProcessIdentity.model_validate(saved)):
                     with suppress(psutil.NoSuchProcess):
@@ -504,6 +538,7 @@ class Worker:
                 status="cancelling",
                 cancellation_reason=reason,
                 cancellation_confirmed=False,
+                cancellation_grace_until=time.time() + 60,
                 cancellation_processes=[
                     p.model_dump(mode="json")
                     for child in processes
@@ -514,7 +549,10 @@ class Worker:
             for process in processes:
                 with suppress(psutil.NoSuchProcess):
                     process.terminate()
-            _gone, alive = psutil.wait_procs(processes, timeout=3)
+            # Stop numerical descendants promptly; let their executor harvest
+            # partial data and finish its receipt after this lock is released.
+            descendants = [p for p in processes if p.pid != owner_pid]
+            _gone, alive = psutil.wait_procs(descendants, timeout=3)
             for process in alive:
                 with suppress(psutil.NoSuchProcess):
                     process.kill()

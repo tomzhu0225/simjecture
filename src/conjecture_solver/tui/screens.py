@@ -272,6 +272,7 @@ class NewRunScreen(Screen[None]):
                 [
                     ("Bubblewrap (kernel isolation)", "bubblewrap"),
                     ("Cooperative PRoot (no kernel/network isolation)", "proot-cooperative"),
+                    ("Native process (trusted unprivileged host)", "process-cooperative"),
                 ],
                 value="bubblewrap",
                 allow_blank=False,

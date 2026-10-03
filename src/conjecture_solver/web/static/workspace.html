@@ -259,7 +259,7 @@
                     <label>RAM budget (MiB)<input id="machine-memory" type="number" min="128" placeholder="Detect automatically" /></label></div>
                   <div class="two-fields"><label>GPU IDs<input id="machine-gpus" placeholder="Detect automatically; type none for CPU only" /></label>
                     <label>Concurrent jobs<input id="machine-max-jobs" type="number" min="1" max="256" placeholder="Choose automatically" /></label></div>
-                  <label>Experiment environment<select id="machine-execution"><option value="auto">Detect automatically</option><option value="bubblewrap">Linux sandbox</option><option value="proot-cooperative">Cooperative · restricted container</option></select></label>
+                  <label>Experiment environment<select id="machine-execution"><option value="auto">Detect automatically</option><option value="bubblewrap">Linux sandbox</option><option value="proot-cooperative">Cooperative · restricted container</option><option value="process-cooperative">Native process · trusted host</option></select></label>
                   <p class="field-help">Restricted containers use a dedicated unprivileged worker with cooperative execution.</p>
                   <label>Instrument descriptor directories<textarea id="machine-capabilities" rows="2" placeholder="Optional. Your agent can prepare scientific tools later."></textarea></label>
                   <div class="two-fields"><label>SSH private key path<input id="machine-identity" placeholder="Use your SSH agent" /></label>
@@ -715,6 +715,12 @@
                         Worker profiles define their own experiment environment.</p>
                     <details class="advanced">
                       <summary>Execution settings</summary>
+                      <label class="research-director-option"><input id="research-director" type="checkbox" checked /><span>Research director · stop and replan expensive experiments</span></label>
+                      <p class="field-help">Reviews strategy while jobs run, preserves partial data on stops, and asks the worker to acknowledge a new plan. Scientific claim review stays separate.</p>
+                      <label for="review-model">Reviewer and director model (optional)</label>
+                      <input id="review-model" placeholder="Default: conversation agent model" />
+                      <label for="review-effort">Reviewer and director reasoning</label>
+                      <select id="review-effort"><option value="">Use agent setting</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="xhigh">Extra high</option></select>
                       <label for="execution-backend"
                         >Experiment environment</label
                       ><select id="execution-backend">
@@ -724,6 +730,7 @@
                         <option value="proot-cooperative">
                           Cooperative container execution
                         </option>
+                        <option value="process-cooperative">Native process — trusted host</option>
                       </select>
                       <p class="field-help">
                         Cooperative execution is for a dedicated unprivileged

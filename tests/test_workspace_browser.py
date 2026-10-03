@@ -100,11 +100,30 @@ def test_browser_setup_chat_files_and_autonomous_handoff(tmp_path, provider):
             assert page.locator("#breadcrumb").count() == 0
             page.locator("#prepared-question").wait_for()
             page.screenshot(path=str(screenshots / "study-brief.png"), full_page=True)
+            page.locator("#brief-editor > summary").click()
+            page.locator("#brief-form .advanced > summary").click()
+            playwright.expect(page.locator("#research-director")).to_be_checked()
+            page.locator("#research-director").uncheck()
+            page.locator("#review-model").fill("fixture-model")
+            page.locator("#review-effort").select_option("high")
+            assert page.locator("#research-director").bounding_box()["width"] <= 20
+            page.screenshot(
+                path=str(screenshots / "research-director-settings.png"), full_page=True
+            )
+            page.locator("#brief-editor > summary").click()
             from conjecture_solver.execution import probe_execution_backend
 
             if probe_execution_backend("bubblewrap")["available"]:
                 page.get_by_role("button", name="Start research ↗", exact=True).click()
                 page.get_by_text("COMPLETED", exact=True).wait_for(timeout=90000)
+                from conjecture_solver.web.workspace import load
+
+                project = app.workspace.projects()[0]
+                saved = load(app.workspace.directory(project["id"]) / "project.json")
+                request = load(Path(saved["studies"][-1]["path"]) / "study-launch.json")["request"]
+                assert request["director_enabled"] is False
+                assert request["judge_model"] == "fixture-model"
+                assert request["judge_reasoning_effort"] == "high"
                 page.get_by_text("Accepted: falsified.", exact=False).wait_for()
                 page.get_by_text("Results, reports, and simulation files", exact=True).click()
                 page.get_by_role("link", name="result.json", exact=False).first.wait_for()

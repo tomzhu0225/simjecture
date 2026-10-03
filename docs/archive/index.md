@@ -14,6 +14,7 @@ open scientific goals.
 
 ## Release acceptance
 
+- [0.5.4rc1 execution controls and validation](../testing/0.5.4rc1-acceptance.md)
 - [0.5.3 stable scope and validation](../testing/0.5.3-acceptance.md)
 - [0.5.3rc4 scope and validation](../testing/0.5.3rc4-acceptance.md)
 - [0.5.3rc3 benchmark presentation](../testing/0.5.3rc3-acceptance.md)
@@ -27,6 +28,7 @@ open scientific goals.
 ```{toctree}
 :hidden:
 
+../testing/0.5.4rc1-acceptance
 ../testing/0.5.3-acceptance
 ../testing/0.5.3rc4-acceptance
 ../testing/0.5.3rc3-acceptance
@@ -68,6 +70,8 @@ corrections together with the claimed result.
 - [Historical next-step plan](../research/next-steps.md)
 - [Continuation and steering research note](../research/continuation-steering-rc3.md)
 - [Stagnation deep audit, 2026-09-29](../research/stagnation-deep-audit-20260929.md)
+- [Z-pinch execution and timestep repair qualification, 2026-10-03](../testing/zpinch-repair-qualification-20261003.md)
+- [Research director and adaptive FLASH qualification, 2026-10-03](../testing/research-director-adaptive-20261003.md)
 - [Stagnation retrospective, 2026-09-29](../research/stagnation-retrospective-20260929.md)
 - [Stagnation video outline, 2026-09-29](../research/stagnation-video-outline-20260929.md)
 
@@ -78,6 +82,8 @@ corrections together with the claimed result.
 ../research/next-steps
 ../research/continuation-steering-rc3
 ../research/stagnation-deep-audit-20260929
+../testing/zpinch-repair-qualification-20261003
+../testing/research-director-adaptive-20261003
 ../research/stagnation-retrospective-20260929
 ../research/stagnation-video-outline-20260929
 ```

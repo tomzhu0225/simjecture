@@ -288,6 +288,33 @@ def test_large_codex_case_uses_stdin_without_changing_prompt(tmp_path):
     )
 
 
+def test_codex_worker_and_reviewer_use_distinct_efforts(tmp_path):
+    import sys
+
+    root = tmp_path / "campaign"
+    root.mkdir()
+    executable = tmp_path / "codex-role-probe"
+    executable.write_text(
+        f"#!{sys.executable}\n"
+        "import sys,json\nprint(json.dumps({'argv':sys.argv[1:]}))\n"
+    )
+    executable.chmod(0o700)
+    args = argparse.Namespace(
+        campaign=root, state_dir=tmp_path / "supervisor", wall_seconds=30,
+        turn_seconds=10, executable=str(executable), backend="codex",
+        model="gpt-6-luna", judge_model="gpt-6.1-sol", workflow="structured",
+        reasoning_effort="medium", judge_reasoning_effort="high",
+    )
+    supervisor = AgentSupervisor(args)
+    for judge, model, effort in [(False, args.model, "medium"), (True, args.judge_model, "high")]:
+        directory = supervisor.directory / ("reviewer" if judge else "worker")
+        directory.mkdir()
+        assert supervisor.launch(directory, "Inspect the evidence.", judge=judge) == 0
+        argv = json.loads((directory / "response.json").read_text())["argv"]
+        assert argv[argv.index("--model") + 1] == model
+        assert f'model_reasoning_effort="{effort}"' in argv
+
+
 @pytest.mark.parametrize(
     "backend,output_format", [("grok", "streaming-messages-json"), ("agy", "stream-json")]
 )
@@ -342,6 +369,13 @@ def test_codex_startup_diagnostic_is_not_judge_tool_use(tmp_path):
     path.write_text("\n".join(json.dumps(e) for e in events))
     with pytest.raises(ValueError, match="used a tool"):
         parse_judge_stream(path, "codex")
+    assert parse_judge_stream(path, "codex", allow_readonly_tools=True) == {
+        "decision": "approved"
+    }
+    events.insert(1, {"type": "item.completed", "item": {"type": "file_change"}})
+    path.write_text("\n".join(json.dumps(e) for e in events))
+    with pytest.raises(ValueError, match="used a tool"):
+        parse_judge_stream(path, "codex", allow_readonly_tools=True)
 
 
 @pytest.mark.parametrize("workflow", ["structured", "frontier"])

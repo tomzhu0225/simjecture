@@ -3,7 +3,7 @@ from __future__ import annotations
 project = "Simjecture"
 author = "Bowen Zhu"
 copyright = "2026, Bowen Zhu and contributors"
-release = "0.5.3"
+release = "0.5.4rc1"
 
 extensions = [
     "myst_parser",
@@ -27,6 +27,7 @@ myst_enable_extensions = [
     "substitution",
     "tasklist",
 ]
+myst_heading_anchors = 3
 
 exclude_patterns = [
     "_build",

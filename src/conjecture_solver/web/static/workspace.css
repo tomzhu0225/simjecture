@@ -490,6 +490,9 @@ select {
   padding-top: 14px;
   border-top: 1px solid var(--line);
 }
+.research-director-option { display: flex; align-items: flex-start; gap: 10px; }
+.research-director-option input { width: 18px; height: 18px; min-height: 0; padding: 0;
+  margin: 3px 0 0; flex: 0 0 18px; accent-color: var(--ink); }
 summary {
   font-size: 16px;
   color: var(--muted);

@@ -77,8 +77,10 @@ def next_assignment(claims: list[dict[str, Any]]) -> tuple[str, str]:
     )
 
 
-def parse_judge_stream(path: Path, backend: str = "agy") -> dict[str, Any]:
-    """Accept harmless JSON fences, but never coerce scientific verdict fields."""
+def parse_judge_stream(
+    path: Path, backend: str = "agy", *, allow_readonly_tools: bool = False
+) -> dict[str, Any]:
+    """Parse verdicts; native inspection requires an explicitly read-only launch."""
     result = None
     response_text = None
     for line in path.read_text().splitlines():
@@ -94,7 +96,10 @@ def parse_judge_stream(path: Path, backend: str = "agy") -> dict[str, Any]:
             response = payload.get("response")
         elif backend in {"codex", "codex-glm"}:
             item = event.get("item", {})
-            if item and item.get("type") not in {"agent_message", "reasoning", "error"}:
+            allowed = {"agent_message", "reasoning", "error"}
+            if allow_readonly_tools:
+                allowed.update({"command_execution", "web_search"})
+            if item and item.get("type") not in allowed:
                 raise ValueError("Independent judge used a tool; verdict rejected")
             if item.get("type") == "agent_message":
                 response_text = item.get("text", "")
@@ -274,8 +279,11 @@ class AgentSupervisor:
             else:
                 command += ["--dangerously-bypass-approvals-and-sandbox"]
             command += [prompt]
-            if getattr(self.args, "reasoning_effort", None):
-                command[-1:-1] = ["-c", f'model_reasoning_effort="{self.args.reasoning_effort}"']
+            effort = (
+                getattr(self.args, "judge_reasoning_effort", None) if judge else None
+            ) or getattr(self.args, "reasoning_effort", None)
+            if effort:
+                command[-1:-1] = ["-c", f'model_reasoning_effort="{effort}"']
         elif backend == "grok":
             command = [
                 self.args.executable,
@@ -294,8 +302,11 @@ class AgentSupervisor:
                 and getattr(self.args, "interactive_activity", False)
             ):
                 command += ["--resume", self.state["worker_cursor"]]
-            if getattr(self.args, "reasoning_effort", None):
-                command += ["--reasoning-effort", self.args.reasoning_effort]
+            effort = (
+                getattr(self.args, "judge_reasoning_effort", None) if judge else None
+            ) or getattr(self.args, "reasoning_effort", None)
+            if effort:
+                command += ["--reasoning-effort", effort]
             if judge:
                 command += [
                     "--tools",
@@ -490,6 +501,16 @@ class AgentSupervisor:
                         )
                     if thread_id and usage:
                         self.state.setdefault("usage_by_thread", {})[thread_id] = usage
+                        role = (
+                            "memory"
+                            if directory.name.startswith("journal-summary-")
+                            else "director"
+                            if directory.name.startswith("director-")
+                            else "reviewer"
+                            if judge
+                            else "worker"
+                        )
+                        self.state.setdefault("usage_roles_by_thread", {})[thread_id] = role
                         self.state["usage_updated_at"] = time.time()
                 elif (
                     backend in {"grok", "agy"}
