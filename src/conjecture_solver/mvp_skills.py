@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal
@@ -299,7 +300,10 @@ class MVPCapabilityConfig(StrictModel):
             raise ValueError("capability executable is already part of runtime identity")
         if any("\x00" in key or "\x00" in value for key, value in self.environment.items()):
             raise ValueError("capability environment cannot contain NUL bytes")
-        reserved = {"HOME", "PATH"}.intersection(self.environment)
+        reserved = {
+            "HOME", "PATH", "SIMJECTURE_CPU_SLOTS", "SIMJECTURE_MPI_HELPER",
+            "SIMJECTURE_EXECUTION_BACKEND",
+        }.intersection(self.environment)
         if reserved:
             raise ValueError(
                 f"capability environment cannot override sandbox variables: {sorted(reserved)}"
@@ -385,6 +389,31 @@ def _dependency_identity(root: Path) -> str:
     """Bind package-manager records for one read-only dependency root."""
 
     digest = hashlib.sha256()
+    manifest = root / ".simjecture-source-manifest.json"
+    if manifest.exists() or manifest.is_symlink():
+        if (manifest.is_symlink() or not manifest.is_file()
+                or manifest.stat().st_size > 8 * 1024**2):
+            raise ValueError("Dependency source manifest must be a bounded regular file")
+        raw = manifest.read_bytes()
+        files = json.loads(raw)
+        if not isinstance(files, dict) or not files or len(files) > 50000:
+            raise ValueError("Dependency source manifest must map declared paths to SHA256 hashes")
+        for name, expected in sorted(files.items()):
+            path = _relative_path(name, label="dependency source manifest path")
+            if not isinstance(expected, str) or not re.fullmatch(r"[a-f0-9]{64}", expected):
+                raise ValueError("Dependency source manifest must contain SHA256 hashes")
+            source = (root / path).resolve(strict=True)
+            if not source.is_relative_to(root.resolve()) or not source.is_file():
+                raise ValueError("Dependency source manifest file escapes its reference root")
+            actual = hashlib.sha256()
+            with source.open("rb") as stream:
+                for block in iter(lambda: stream.read(1024 * 1024), b""):
+                    actual.update(block)
+            if actual.hexdigest() != expected:
+                raise RuntimeError(f"Dependency source file changed: {name}")
+        digest.update(b"simjecture-source-manifest-v1\0")
+        digest.update(raw)
+        return digest.hexdigest()
     metadata = root / "conda-meta"
     if metadata.is_dir():
         for path in sorted(metadata.glob("*.json")):

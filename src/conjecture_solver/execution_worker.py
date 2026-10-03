@@ -296,10 +296,18 @@ class Worker:
             if record["status"] not in ACTIVE:
                 continue
             if record["status"] == "cancelling":
-                if any(
-                    process_identity_matches(ProcessIdentity.model_validate(p))
+                live = [
+                    p
                     for p in record.get("cancellation_processes", [])
-                ):
+                    if process_identity_matches(ProcessIdentity.model_validate(p))
+                ]
+                if live:
+                    if time.time() >= record.get("cancellation_grace_until", float("inf")):
+                        import signal
+
+                        for p in live:
+                            with suppress(ProcessLookupError):
+                                os.kill(p["pid"], signal.SIGKILL)
                     continue
                 record.update(
                     status="timed_out"
@@ -468,6 +476,17 @@ class Worker:
         with lock(self.root):
             current = load(directory / "state.json")
             if current["status"] in {"cancelling", "cancelled", "timed_out"}:
+                # The cancelled executor may still have harvested native data.
+                for key in (
+                    "execution",
+                    "artifacts",
+                    "missing_outputs",
+                    "input_mutations",
+                    "output_findings",
+                ):
+                    if key in record:
+                        current[key] = record[key]
+                put(directory / "state.json", current)
                 return
             put(directory / "state.json", record)
 
@@ -492,6 +511,7 @@ class Worker:
                 return record
             identity = record.get("process")
             processes = []
+            owner_pid = identity.get("pid") if identity else None
             for saved in record.get("cancellation_processes", []):
                 if process_identity_matches(ProcessIdentity.model_validate(saved)):
                     with suppress(psutil.NoSuchProcess):
@@ -504,6 +524,7 @@ class Worker:
                 status="cancelling",
                 cancellation_reason=reason,
                 cancellation_confirmed=False,
+                cancellation_grace_until=time.time() + 60,
                 cancellation_processes=[
                     p.model_dump(mode="json")
                     for child in processes
@@ -514,7 +535,10 @@ class Worker:
             for process in processes:
                 with suppress(psutil.NoSuchProcess):
                     process.terminate()
-            _gone, alive = psutil.wait_procs(processes, timeout=3)
+            # Stop numerical descendants promptly; let their executor harvest
+            # partial data and finish its receipt after this lock is released.
+            descendants = [p for p in processes if p.pid != owner_pid]
+            _gone, alive = psutil.wait_procs(descendants, timeout=3)
             for process in alive:
                 with suppress(psutil.NoSuchProcess):
                     process.kill()

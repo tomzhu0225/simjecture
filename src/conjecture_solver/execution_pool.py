@@ -44,6 +44,13 @@ def profile_identity(profile):
     }
 
 
+def ssh_endpoint(profile):
+    """Alternative execution profiles must not double-count one SSH host."""
+    if profile.get("kind") != "ssh":
+        return None
+    return (profile["host"].lower().rstrip("."), profile.get("port", 22))
+
+
 class Transport:
     def __init__(self, machine, password=None):
         self.machine = Machine.model_validate(machine)
@@ -199,7 +206,7 @@ if user:
     root.mkdir(parents=True,exist_ok=True)
     os.chown(root,account.pw_uid,account.pw_gid)
 needed = "proot" if request["backend"] == "proot-cooperative" else "bwrap"
-if not shutil.which(needed):
+if request["backend"] != "process-cooperative" and not shutil.which(needed):
     if os.geteuid() != 0 or not shutil.which("apt-get"):
         raise ValueError("Install "+needed+" before preparing this worker")
     subprocess.run(["apt-get","update"],check=True,stdout=sys.stderr,stderr=sys.stderr)
@@ -501,6 +508,12 @@ class MachineRegistry:
     def freeze(self, identifiers):
         if not identifiers or len(set(identifiers)) != len(identifiers):
             raise ValueError("Choose distinct execution machines")
+        endpoints = [ssh_endpoint(self.machine(i).model_dump(mode="json")) for i in identifiers]
+        ssh = [e for e in endpoints if e is not None]
+        if len(ssh) != len(set(ssh)):
+            raise ValueError(
+                "Choose one execution profile per SSH endpoint, not duplicate host capacity"
+            )
         workers, capabilities = {}, {}
         for identifier in identifiers:
             record = self.check(identifier)
@@ -596,10 +609,29 @@ def select_worker(
     eligible = []
     registry = MachineRegistry(pool["registry"])
     book = load(registry.root / "allocations.json")
+    alternate_active = False
     for identifier in candidates:
         if identifier not in pool["workers"]:
             raise ValueError("Machine is outside this study's frozen pool")
         config = pool["workers"][identifier]["profile"]["config"]
+        endpoint = ssh_endpoint(pool["workers"][identifier]["profile"])
+        busy_alternative = False
+        for entry in book.values():
+            if entry["machine"] == identifier or endpoint is None:
+                continue
+            try:
+                other = registry.machine(entry["machine"]).model_dump(mode="json")
+            except ValueError:
+                continue
+            state = load(entry["receipt"])
+            active = state.get("status") in {"queued", "running"} or (
+                not state and time.time() - entry["created_at"] < 60
+            )
+            if ssh_endpoint(other) == endpoint and active:
+                busy_alternative = alternate_active = True
+                break
+        if busy_alternative:
+            continue
         if (
             resources.cpus > config["cpus"]
             or resources.memory_mb > config["memory_mb"]
@@ -628,6 +660,11 @@ def select_worker(
             pressure = 1_000_000
         eligible.append((pressure, identifier))
     if not eligible:
+        if alternate_active:
+            raise ValueError(
+                "Another execution profile for this SSH endpoint has active experiments. "
+                "Use that profile or wait; alternative profiles share the same machine."
+            )
         raise ValueError("No selected worker can satisfy the requested resources")
     selected = min(eligible)[1]
     if reservation:

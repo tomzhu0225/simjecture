@@ -68,6 +68,7 @@ corrections together with the claimed result.
 - [Historical next-step plan](../research/next-steps.md)
 - [Continuation and steering research note](../research/continuation-steering-rc3.md)
 - [Stagnation deep audit, 2026-09-29](../research/stagnation-deep-audit-20260929.md)
+- [Z-pinch execution and timestep repair qualification, 2026-10-03](../testing/zpinch-repair-qualification-20261003.md)
 - [Stagnation retrospective, 2026-09-29](../research/stagnation-retrospective-20260929.md)
 - [Stagnation video outline, 2026-09-29](../research/stagnation-video-outline-20260929.md)
 
@@ -78,6 +79,7 @@ corrections together with the claimed result.
 ../research/next-steps
 ../research/continuation-steering-rc3
 ../research/stagnation-deep-audit-20260929
+../testing/zpinch-repair-qualification-20261003
 ../research/stagnation-retrospective-20260929
 ../research/stagnation-video-outline-20260929
 ```

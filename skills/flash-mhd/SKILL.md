@@ -51,8 +51,16 @@ diagnostics, acceptance thresholds, or conclusion.
 4. Before freezing an expensive evidence command, run short, distinct,
    non-evidentiary timing pilots at representative resolution. Separate fixed
    startup/checkpoint cost from marginal evolution cost, benchmark plausible
-   MPI/OpenMP topologies, and leave enough wall-time and workspace margin for
-   the complete output transaction. Do not assume that more ranks are faster.
+  MPI/OpenMP topologies, and leave enough wall-time and workspace margin for
+  the complete output transaction. Do not assume that more ranks are faster.
+   Test the exact experiment launcher at the intended rank count. For single-node
+   Open MPI, use `SIMJECTURE_MPI_HELPER` with `--ranks` and reserve that many CPUs
+   through `lab.run(resources=...)`; do not hide a slot-allocation failure with
+   oversubscription. A PRoot smoke may pass while larger collectives hang. Record
+   that failure separately from hardware throughput. Compare native execution
+   only when an operator explicitly configured the trusted process backend.
+   Check timestep changes against fields and observables over a representative
+   physical window; a startup scalar comparison cannot qualify stagnation physics.
 5. Commission the actual representation prospectively. Check geometry,
    coordinates, units, initialization, boundaries, active physical terms,
    diagnostics, and numerical regime. Preserve quantitative metrics behind

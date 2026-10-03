@@ -52,6 +52,48 @@ the numerical instrument registry field in the browser/TUI. With no registry,
 minimal exposes only the Python numerical sandbox. Its identity is bound to the receipt. Native tools are
 available for exploration; execution success alone does not accept a claim.
 
+### Exploratory analysis and advisory progress (source checkout)
+
+`lab.run` defaults to evidence collection. When the study requires methods review,
+this gate also applies to evidence-producing postprocessing. For diagnostics,
+arithmetic validation, or reduction while method approval is pending, use:
+
+```python
+analysis = lab.analyze("reader.py", inputs=["recorded-data.json"],
+                       outputs=["analysis.json"], parent_experiment="exp_SOURCE_ID")
+```
+
+This snapshots source and inputs and retains an exploratory diagnostic receipt.
+It cannot authorize a claim or retrospectively promote exploratory results.
+Qualify the method and collect fresh evidence before requesting claim acceptance.
+
+Method proposals accept `validation_experiments` and `blocker_experiments` as
+lists of actual `exp_...` receipt IDs. The legacy `blockers` field has the same ID
+semantics. Put descriptive scientific caveats in `limitations=["..."]`.
+Incorrect types identify the failing field; unknown IDs direct the caller to
+`lab.status()`.
+
+An optional target links planning to an actual recorded numeric result:
+
+```python
+lab.progress(experiment="exp_EVOLUTION_ID", output="result.json",
+             path="actual_end_ns", quantity="3D time reached", unit="ns",
+             target=20.5, baseline=0, estimate_rate=True,
+             series="same-model-grid-seeded",
+             limitations=["Startup throughput may change near stagnation"])
+```
+
+The host checks output identity and its numeric value. Quantity, unit, baseline,
+target and series remain researcher declarations. Use the actual starting time
+as the baseline for a restart, and separate grids/geometries/windows into distinct
+series. A linear throughput estimate uses this evolution's measured wall time;
+it excludes analysis/review and may change with the physics. Do not substitute
+postprocessing runtime for evolution cost. Registered targets appear under
+**Scientific coverage & cost** in the run monitor's research trace and in worker
+and reviewer context. Measured execution costs are also included automatically
+when no target has been registered. These are advisory planning signals, not
+acceptance criteria or a prescribed phase schedule.
+
 Identical requests reuse the same receipt. Change `key` for an intentional
 replicate. Changed source, inputs or arguments produce a new experiment identity.
 Result files and raw outputs remain under `experiments/ID/workspace/`; agents can
@@ -61,7 +103,9 @@ The initial implementation bounds each experiment to 4 GiB and the study to
 
 A review request returns a persistent receipt, independent of the caller's
 working directory. End the model turn after submitting it: the supervisor opens
-a fresh, tool-free reviewer context and records the result. Missing evidence
+a fresh reviewer context and records the result. Codex reviewers can inspect
+relevant source, data and documentation with read-only tools; they cannot modify
+recorded evidence. Other adapters retain their configured review restrictions. Missing evidence
 returns explicit gaps. A malformed reviewer response never becomes approval.
 Each review targets one explicit claim ID and statement; the host rejects a mismatched target. Under the default CLI `repair` completion policy, approval of an original
 falsification is distinct from completion, which still requires a supported repair.

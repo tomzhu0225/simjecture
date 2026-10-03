@@ -27,9 +27,11 @@ file; protect that file and backups, and never publish the workspace directory.
 
 Numerical experiments default to network-isolated Bubblewrap with a clean child
 environment. This does not enclose the native research agent, which retains its
-host tools and is a trusted same-account process. Explicit cooperative PRoot
-execution is **not an OS security boundary**: host networking is shared and
-read-only path remapping is not kernel-enforced. Run cooperative code only on a
+host tools and is a trusted same-account process. Explicit cooperative PRoot and
+native process execution are **not OS security boundaries**: host networking is
+shared and declared read-only inputs are checked rather than protected against
+hostile same-account code. Native execution has direct host filesystem access;
+reference runtime/source protection depends on host permissions. Run cooperative code only on a
 dedicated non-root account without unrelated sensitive files. See
 [restricted hosts](docs/how-to/restricted-containers.md) for probe requirements.
 Do not treat either a successful benchmark or an execution receipt as a security

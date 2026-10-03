@@ -124,6 +124,12 @@ def study_findings(snapshot, manifest):
             "Remaining budget may not cover the outstanding committed cases plus analysis/review. "
             "Prioritize required validation and independent review; do not weaken the claim."
         )
+    if any(r.get("exceeds_remaining_budget") for r in snapshot.get("progress", [])):
+        budget_warning = (
+            "A registered scientific target exceeds the remaining budget at measured throughput. "
+            "Reconsider the experiment strategy or report conditional coverage; targets and "
+            "linear forecasts are advisory, not scientific acceptance or a fixed schedule."
+        )
     return dict(
         recommended_review_reserve_seconds=review_reserve,
         budget_warning=budget_warning,

@@ -6,8 +6,9 @@ import importlib.util
 import os
 import shutil
 import subprocess
+import sys
 
-BACKENDS = ("bubblewrap", "proot-cooperative")
+BACKENDS = ("bubblewrap", "proot-cooperative", "process-cooperative")
 COOPERATIVE_WARNING = (
     "Cooperative execution (PRoot) is not a security sandbox: it does not isolate "
     "host files or networking. Use only trusted code under a dedicated non-root account."
@@ -26,8 +27,14 @@ def select_execution_backend(preference="auto") -> dict:
                 report = fallback | {"fallback_reason": report["reason"]}
             else:
                 report["fallback_unavailable"] = fallback["reason"]
-    if report["backend"] == "proot-cooperative":
+    if report["backend"] in {"proot-cooperative", "process-cooperative"}:
         report["warning"] = COOPERATIVE_WARNING
+        if report["backend"] == "process-cooperative":
+            report["warning"] = (
+                "Native process execution is not a security sandbox. It runs trusted code "
+                "with host filesystem/network access under an unprivileged account; "
+                "inputs, resources and receipts are monitored."
+            )
     return report
 
 
@@ -40,20 +47,28 @@ def probe_execution_backend(backend: str) -> dict:
         "kernel_isolation": backend == "bubblewrap",
         "network_isolation": backend == "bubblewrap",
     }
-    binary = shutil.which("bwrap" if backend == "bubblewrap" else "proot")
+    binary = (
+        sys.executable
+        if backend == "process-cooperative"
+        else shutil.which("bwrap" if backend == "bubblewrap" else "proot")
+    )
     if not binary:
         report["reason"] = (
             f"Missing {'bubblewrap' if backend == 'bubblewrap' else 'proot'} executable"
         )
         return report
-    if backend == "proot-cooperative":
+    if backend in {"proot-cooperative", "process-cooperative"}:
         if os.geteuid() == 0:
             report["reason"] = "Cooperative execution requires an unprivileged account"
             return report
         if importlib.util.find_spec("psutil") is None:
             report["reason"] = "Install simjecture[process] for resident-memory monitoring"
             return report
-        command = [binary, "-r", "/", "/usr/bin/true"]
+        command = (
+            [binary, "-c", "pass"]
+            if backend == "process-cooperative"
+            else [binary, "-r", "/", "/usr/bin/true"]
+        )
     else:
         command = [
             binary,

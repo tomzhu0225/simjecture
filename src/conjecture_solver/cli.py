@@ -805,7 +805,9 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Inspect runtime manifests and files without executing capability smokes",
     )
-    doctor.add_argument("--execution-backend", choices=("bubblewrap", "proot-cooperative"))
+    doctor.add_argument(
+        "--execution-backend", choices=("bubblewrap", "proot-cooperative", "process-cooperative")
+    )
     doctor.add_argument("--json", action="store_true")
     doctor.set_defaults(handler=_doctor)
 

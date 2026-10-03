@@ -398,7 +398,7 @@ def configure_parser(parser):
             sub.add_argument("--submission", type=Path, required=True)
             sub.add_argument(
                 "--execution-backend",
-                choices=("bubblewrap", "proot-cooperative"),
+                choices=("bubblewrap", "proot-cooperative", "process-cooperative"),
                 default="bubblewrap",
             )
             sub.add_argument("--model")

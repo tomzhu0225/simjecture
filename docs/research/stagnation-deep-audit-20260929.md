@@ -472,3 +472,12 @@ audit counts above intentionally retain their earlier frozen snapshot.
 The immediate target is a small set of reproduced defects and information-flow
 failures, followed by controlled testing of continuity. The scientific mistakes
 remain part of the agent evaluation rather than being relabeled as harness bugs.
+
+## Follow-up implementation, 2026-10-03
+
+The statement above about document-only changes describes the original September
+audit. Subsequent repairs and the separate October 2–3 Luna/Sol campaign are recorded
+in [the execution and timestep qualification report](../testing/zpinch-repair-qualification-20261003.md).
+The follow-up separates reproduced launcher/API defects from scientific mistakes,
+documents measured PRoot/MPI failures, and preserves scientific approval rules and
+the researcher's freedom to choose an experiment schedule.

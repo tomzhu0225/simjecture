@@ -676,6 +676,8 @@ def _engine_projection(
             provider_attention=status["provider_attention"],
             usage_details=status["usage_details"],
             instrument_requirement=status["instrument_requirement"],
+            receipt_progress=status.get("receipt_progress", []),
+            execution_costs=status.get("execution_costs", []),
             remaining_seconds=status["remaining"],
             current_activity=status["activity"],
         )

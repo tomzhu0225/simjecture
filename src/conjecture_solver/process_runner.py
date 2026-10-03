@@ -1,4 +1,4 @@
-"""Explicit cooperative PRoot fallback; NOT a kernel security sandbox."""
+"""Explicit cooperative execution; NOT a kernel security sandbox."""
 
 import ctypes
 import hashlib
@@ -72,22 +72,54 @@ def main():
         (root / "sbin").symlink_to("usr/sbin")
         for d in dirs:
             (root / d.lstrip("/")).mkdir(parents=True, exist_ok=True)
+        native = env.get("SIMJECTURE_EXECUTION_BACKEND") == "process-cooperative"
+        workspace = next((Path(s) for _, s, d in bindings if d == "/work"), None)
         cmd = [shutil.which("proot") or "/usr/bin/proot", "-r", str(root), "-w", cwd]
         sealed = []
         for i, (kind, source, dest) in enumerate(bindings):
             if kind == "--ro-bind" and dest.startswith("/work/"):
                 original = Path(source)
-                copy = Path(temporary) / f"input-{i}" / original.name
-                copy.parent.mkdir()
+                copy = (
+                    workspace / dest.removeprefix("/work/")
+                    if native and workspace is not None
+                    else Path(temporary) / f"input-{i}" / original.name
+                )
+                copy.parent.mkdir(parents=True, exist_ok=True)
                 if original.is_dir():
-                    shutil.copytree(original, copy)
+                    shutil.copytree(original, copy, dirs_exist_ok=native)
                 else:
                     shutil.copy2(original, copy)
+                if native:
+                    for p in list(copy.rglob("*")) if copy.is_dir() else [copy]:
+                        if p.is_file():
+                            p.chmod(p.stat().st_mode & ~0o222)
                 sealed.append((copy, digest(copy)))
                 source = str(copy)
             cmd.extend(["-b", f"{source}:{dest}!"])
         cmd.extend(args)
-        proc = subprocess.Popen(cmd, env=env, cwd=temporary, start_new_session=True)
+        if native:
+            mappings = sorted(
+                [
+                    (dest.rstrip("/"), source)
+                    for _, source, dest in bindings
+                    if not dest.startswith("/work/")
+                ],
+                key=lambda x: len(x[0]),
+                reverse=True,
+            ) + [("/tmp", str(root / "tmp"))]
+
+            def translate(value):
+                for dest, source in mappings:
+                    if value == dest or value.startswith(dest + "/"):
+                        return str(Path(source)) + value[len(dest) :]
+                return value
+
+            env = {k: ":".join(translate(part) for part in v.split(":")) for k, v in env.items()}
+            cmd = [translate(value) for value in args]
+            cwd = translate(cwd)
+        else:
+            cwd = temporary
+        proc = subprocess.Popen(cmd, env=env, cwd=cwd, start_new_session=True)
 
         def stop(*_):
             with suppress(psutil.NoSuchProcess):

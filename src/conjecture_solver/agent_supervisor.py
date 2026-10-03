@@ -94,7 +94,13 @@ def parse_judge_stream(path: Path, backend: str = "agy") -> dict[str, Any]:
             response = payload.get("response")
         elif backend in {"codex", "codex-glm"}:
             item = event.get("item", {})
-            if item and item.get("type") not in {"agent_message", "reasoning", "error"}:
+            if item and item.get("type") not in {
+                "agent_message",
+                "reasoning",
+                "error",
+                "command_execution",
+                "web_search",
+            }:
                 raise ValueError("Independent judge used a tool; verdict rejected")
             if item.get("type") == "agent_message":
                 response_text = item.get("text", "")
@@ -274,8 +280,11 @@ class AgentSupervisor:
             else:
                 command += ["--dangerously-bypass-approvals-and-sandbox"]
             command += [prompt]
-            if getattr(self.args, "reasoning_effort", None):
-                command[-1:-1] = ["-c", f'model_reasoning_effort="{self.args.reasoning_effort}"']
+            effort = (
+                getattr(self.args, "judge_reasoning_effort", None) if judge else None
+            ) or getattr(self.args, "reasoning_effort", None)
+            if effort:
+                command[-1:-1] = ["-c", f'model_reasoning_effort="{effort}"']
         elif backend == "grok":
             command = [
                 self.args.executable,
@@ -294,8 +303,11 @@ class AgentSupervisor:
                 and getattr(self.args, "interactive_activity", False)
             ):
                 command += ["--resume", self.state["worker_cursor"]]
-            if getattr(self.args, "reasoning_effort", None):
-                command += ["--reasoning-effort", self.args.reasoning_effort]
+            effort = (
+                getattr(self.args, "judge_reasoning_effort", None) if judge else None
+            ) or getattr(self.args, "reasoning_effort", None)
+            if effort:
+                command += ["--reasoning-effort", effort]
             if judge:
                 command += [
                     "--tools",

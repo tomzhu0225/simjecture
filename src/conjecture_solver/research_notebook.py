@@ -245,6 +245,28 @@ class NotebookService:
                 notebook="lab.notes(limit=20, offset=0)",
             ),
             budget_warning=snapshot["audit"].get("budget_warning"),
+            progress=[
+                {
+                    k: r.get(k)
+                    for k in (
+                        "id",
+                        "experiment",
+                        "quantity",
+                        "unit",
+                        "value",
+                        "baseline",
+                        "target",
+                        "series",
+                        "integrity",
+                        "target_reached",
+                        "estimated_additional_seconds",
+                        "exceeds_remaining_budget",
+                        "authority",
+                        "estimate_note",
+                    )
+                }
+                for r in snapshot.get("progress", [])[-6:]
+            ],
             # These small receipt references are never evicted by prose notes.
             current_evidence=dict(
                 latest_completed=anchor(completed),
@@ -266,11 +288,28 @@ class NotebookService:
                         "results",
                         "error",
                         "execution_details",
+                        "measured_wall_seconds",
                         "input_mutations",
                     )
                 }
                 for e in journal[:8]
             ],
+            execution_costs=[
+                {
+                    k: e.get(k)
+                    for k in (
+                        "id",
+                        "source",
+                        "runtime_sha256",
+                        "args",
+                        "stage",
+                        "purpose",
+                        "measured_wall_seconds",
+                    )
+                }
+                for e in journal
+                if e.get("measured_wall_seconds") is not None
+            ][:6],
             controller_summaries=[
                 dict(authority=s["authority"], notes=s["notes"], packet_sha256=s["packet_sha256"])
                 for s in summaries[:2]
@@ -368,6 +407,8 @@ class NotebookService:
             "methods",
             "recent_reviews",
             "missing_cases",
+            "progress",
+            "execution_costs",
             "accepted_claims",
             "active_experiments",
         )

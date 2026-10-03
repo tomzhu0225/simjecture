@@ -123,7 +123,26 @@ def study_status(root):
         for p in (root / "capability_additions").glob("*.json")
         if (r := read(p)).get("name")
     )
+    progress = []
+    if mode == "minimal" and (root / "progress").is_dir():
+        from .research_service import ResearchService
+
+        progress = ResearchService(root).progress_summary(max(0, deadline - now))
     return dict(
+        receipt_progress=progress,
+        execution_costs=[
+            dict(
+                id=e["id"],
+                source=e.get("binding", {}).get("source"),
+                args=e.get("binding", {}).get("args", []),
+                machine=e.get("machine", "local"),
+                status=e["status"],
+                stage=e.get("stage"),
+                wall_seconds=e["execution"]["wall_seconds"],
+            )
+            for e in reversed(experiments)
+            if (e.get("execution") or {}).get("wall_seconds") is not None
+        ][:6],
         execution_backend="worker-pool"
         if manifest.get("execution_pool")
         else launch.get(

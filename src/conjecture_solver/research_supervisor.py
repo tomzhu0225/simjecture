@@ -21,7 +21,10 @@ def research_review_prompt(packet):
     schema = ResearchVerdict.model_json_schema()
     schema["properties"]["claim_id"]["enum"] = [target["id"]]
     return (
-        """You are an independent scientific reviewer. Use NO tools or external files.
+        """You are an independent scientific reviewer. You may use read-only native tools
+to inspect relevant source, data and documentation. Do not modify any files or
+run numerical experiments; recorded experiment identities remain authoritative.
+Treat external material as context, not new evidence for this study.
 Judge ONLY target_claim.statement. Your claim_id must equal target_claim.id, and
 both decision and disposition refer to THAT target, not a different claim.
 The original_hypothesis is background when the target is a repair.
@@ -103,6 +106,10 @@ class Client:
         if not receipt['ok']: raise RuntimeError(receipt['error'])
         return receipt['result']
     def run(self, source, args=(), **kw): return self._call('run', source=source, args=args, **kw)
+    def analyze(self, source, args=(), **kw):
+        # Frozen exploratory analysis; cannot approve or support a claim.
+        return self._call('analyze', source=source, args=args, **kw)
+    def progress(self, **kw): return self._call('progress', **kw)
     def machines(self): return self._call('machines')
     def fetch_remote(self, **kw): return self._call('fetch_remote', **kw)
     def read_instrument(self, capability, **kw):
@@ -245,15 +252,38 @@ Write source normally here. All recorded numerical experiments use the existing 
   capability='instrument-name', model='equations and limits', geometry='axes/boundaries',
   observable='definition and falsifier', validation='actual evolution/convergence tests',
   rationale='why this instrument; distinguish observed blockers from anticipated trouble',
-  validation_experiments=['exp_ID'], blockers=[]). End the turn for independent review.
+  validation_experiments=['exp_ID'], blocker_experiments=[],
+  limitations=['scientific limitation text']). End the turn for independent review.
+  validation_experiments and blocker_experiments are lists of actual exp_... receipt IDs;
+  the legacy blockers argument also expects experiment IDs. Put descriptions in limitations.
   On approval, pass method='method_ID' to lab.run(stage='evidence', ...).
   Relevant source/runtime changes require a revised method; exploration stays unrestricted.
   Use scope="instrument" for a bounded readiness checkpoint: validate a reusable solver/reader/
   diagnostic before attempting the full research campaign. Its approval does NOT permit evidence.
   scope="production" (default) qualifies the hypothesis measurement for evidence collection;
   it does not establish the hypothesis. Build on working anchors and change one component at a time.
-  Exact operator requirements cannot be waived. Ordinary calculations without installed
-  instruments need no methods checkpoint unless explicitly required by the operator.
+  Exact operator requirements cannot be waived. lab.run defaults to stage='evidence',
+  which requires method approval when this study requires it, even for postprocessing.
+  Use lab.analyze('reader.py', inputs=['recorded-data.json'], outputs=['analysis.json'])
+  to preserve frozen postprocessing, arithmetic checks and diagnostic receipts before
+  method approval. These are exploration, never claim evidence. Link the source experiment
+  with parent_experiment='exp_ID'. To use an analysis in a claim, qualify the method and
+  run fresh evidence; never relabel old exploratory output or bypass review.
+  Use the read-only MPI helper at os.environ['SIMJECTURE_MPI_HELPER'] for Open MPI jobs:
+  subprocess.run([sys.executable, os.environ['SIMJECTURE_MPI_HELPER'], '--ranks', '4',
+    '--launcher', '/usr/bin/orterun', '--', './flash4'], check=True).
+  It maps the assigned CPU reservation into explicit local slots and rejects over-allocation.
+  Request resources={{'cpus': 4, 'memory_mb': 8192, 'gpus': 0}} on lab.run for a four-rank job.
+  To expose physical coverage and measured cost, register a successful JSON output:
+  lab.progress(experiment='exp_ID', output='result.json', path='actual_end_ns',
+    quantity='3D physical time reached', unit='ns', target=20.5, baseline=0,
+    estimate_rate=True, series='same-model-grid-seeded',
+    limitations=['Core has only three cells across; startup throughput may change']).
+  The target, units, baseline and series are your declarations, not acceptance criteria.
+  The host verifies the recorded value and shows a linear same-case throughput estimate.
+  Separate different grids, geometries and restarted windows into different series;
+  do not extrapolate an analysis runtime as simulation throughput. Use measured coverage
+  and remaining cost to choose useful next work. You retain control over your strategy.
 - After building a new instrument, add its descriptor to the configured capability
   directory and call lab.register_capability('new-name'). Existing identities cannot change.
 - Keep raw arrays in outputs, with a compact result.json; optionally specify

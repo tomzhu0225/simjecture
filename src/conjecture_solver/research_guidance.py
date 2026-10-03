@@ -111,7 +111,9 @@ def main():
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--wall-seconds", type=float, default=600)
     parser.add_argument(
-        "--execution-backend", choices=["bubblewrap", "proot-cooperative"], default="bubblewrap"
+        "--execution-backend",
+        choices=["bubblewrap", "proot-cooperative", "process-cooperative"],
+        default="bubblewrap",
     )
     args = parser.parse_args()
     if args.output.exists():

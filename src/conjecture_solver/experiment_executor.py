@@ -1,12 +1,39 @@
 """Shared, bounded numerical execution for local and SSH workers."""
 
+import signal
+import threading
+from contextlib import contextmanager
 from pathlib import Path
 
 from .mvp_agent import BubblewrapSandbox, MVPAgentConfig, MVPArtifactInput
 from .mvp_skills import MVPCapabilityRegistry
 
 
-def execute_frozen(
+@contextmanager
+def _retain_partial_on_term(cancel_check=None):
+    interrupted = [False]
+    previous = None
+    if threading.current_thread() is threading.main_thread():
+
+        def retain(signum, frame):
+            interrupted[0] = True
+            if callable(previous):
+                previous(signum, frame)
+
+        previous = signal.signal(signal.SIGTERM, retain)
+    try:
+        yield lambda: interrupted[0] or bool(cancel_check and cancel_check())
+    finally:
+        if previous is not None:
+            signal.signal(signal.SIGTERM, previous)
+
+
+def execute_frozen(workspace, binding, outputs, *, cancel_check=None, **kwargs):
+    with _retain_partial_on_term(cancel_check) as check:
+        return _execute_frozen(workspace, binding, outputs, cancel_check=check, **kwargs)
+
+
+def _execute_frozen(
     workspace,
     binding,
     outputs,
@@ -18,6 +45,7 @@ def execute_frozen(
     max_memory_bytes=4 * 1024**3,
     gpu_ids=None,
     cpus=None,
+    cancel_check=None,
 ):
     from .research_audit import output_findings
     from .research_service import sha
@@ -42,6 +70,7 @@ def execute_frozen(
     )
     sandbox.assigned_gpu_ids = gpu_ids
     sandbox.assigned_cpus = cpus
+    sandbox.cancel_check = cancel_check
     function = sandbox.run_capability if capability else sandbox.run_python
     args = ((capability,) if capability else ()) + (tuple([binding["source"], *binding["args"]]),)
     result = function(
@@ -70,6 +99,7 @@ def execute_frozen(
         not mutated
         and result.returncode == 0
         and not result.timed_out
+        and not result.cancelled
         and not result.workspace_exceeded
         and not absent
     )
@@ -80,5 +110,5 @@ def execute_frozen(
         "input_mutations": mutated,
         "output_findings": output_findings(workspace, outputs),
         "scientific_status": "unreviewed",
-        "status": "succeeded" if success else "failed",
+        "status": "cancelled" if result.cancelled else "succeeded" if success else "failed",
     }

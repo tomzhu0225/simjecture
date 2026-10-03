@@ -526,7 +526,9 @@ class ModelCompletionRetriesExhausted(RuntimeError):
 
 
 class MVPAgentConfig(StrictModel):
-    execution_backend: Literal["bubblewrap", "proot-cooperative"] = "bubblewrap"
+    execution_backend: Literal["bubblewrap", "proot-cooperative", "process-cooperative"] = (
+        "bubblewrap"
+    )
     max_iterations: int | None = Field(
         default=None,
         ge=1,
@@ -709,6 +711,7 @@ class SandboxCommandResult(StrictModel):
     stdout: str
     stderr: str
     timed_out: bool
+    cancelled: bool = False
     workspace_exceeded: bool = False
     stdout_truncated: bool = False
     stderr_truncated: bool = False
@@ -751,10 +754,10 @@ class BubblewrapSandbox:
         capabilities: MVPCapabilityRegistry | None = None,
     ) -> None:
         self.isolation_backend = config.execution_backend
-        if self.isolation_backend == "proot-cooperative":
+        if self.isolation_backend in {"proot-cooperative", "process-cooperative"}:
             if os.geteuid() == 0:
                 raise RuntimeError("Cooperative process execution requires an unprivileged account")
-            if shutil.which("proot") is None:
+            if self.isolation_backend == "proot-cooperative" and shutil.which("proot") is None:
                 raise RuntimeError("Install proot for the explicitly selected cooperative backend")
             try:
                 import psutil  # noqa: F401
@@ -994,7 +997,7 @@ class BubblewrapSandbox:
         resource.setrlimit(
             resource.RLIMIT_AS,
             ((1 << 47), (1 << 47))
-            if self.isolation_backend == "proot-cooperative"
+            if self.isolation_backend in {"proot-cooperative", "process-cooperative"}
             else (self.config.max_memory_bytes, self.config.max_memory_bytes),
         )
         resource.setrlimit(
@@ -1009,7 +1012,7 @@ class BubblewrapSandbox:
             self.executable,
             *(
                 ["-m", "conjecture_solver.process_runner"]
-                if self.isolation_backend == "proot-cooperative"
+                if self.isolation_backend in {"proot-cooperative", "process-cooperative"}
                 else []
             ),
             "--unshare-all",
@@ -1025,6 +1028,11 @@ class BubblewrapSandbox:
             "--ro-bind",
             "/lib64",
             "/lib64",
+            *(
+                ["--dir", "/etc", "--ro-bind", "/etc/alternatives", "/etc/alternatives"]
+                if Path("/etc/alternatives").is_dir()
+                else []
+            ),
             "--dev",
             "/dev",
             "--proc",
@@ -1033,6 +1041,22 @@ class BubblewrapSandbox:
             "/tmp",
             "--dir",
             "/opt",
+            "--dir",
+            "/opt/acs-tools",
+            "--ro-bind",
+            str(Path(__file__).with_name("mpi_launch.py")),
+            "/opt/acs-tools/mpi_launch.py",
+            "--setenv",
+            "SIMJECTURE_MPI_HELPER",
+            "/opt/acs-tools/mpi_launch.py",
+            "--setenv",
+            "SIMJECTURE_EXECUTION_BACKEND",
+            self.isolation_backend,
+            *(
+                ["--setenv", "SIMJECTURE_CPU_SLOTS", str(self.assigned_cpus)]
+                if getattr(self, "assigned_cpus", None) is not None
+                else []
+            ),
             "--dir",
             "/work",
             "--bind",
@@ -1368,6 +1392,7 @@ class BubblewrapSandbox:
             raise ValueError("sandbox command has no remaining wall-time budget")
         started = time.monotonic()
         timed_out = False
+        cancelled = False
         workspace_exceeded = False
         heartbeat_count = 0
         measure_workspace = workspace_measure or self.workspace_bytes
@@ -1384,6 +1409,10 @@ class BubblewrapSandbox:
             try:
                 while process.poll() is None:
                     now = time.monotonic()
+                    if (check := getattr(self, "cancel_check", None)) and check():
+                        cancelled = True
+                        self._terminate(process)
+                        break
                     if now - started >= timeout:
                         timed_out = True
                         self._terminate(process)
@@ -1411,6 +1440,8 @@ class BubblewrapSandbox:
                 self._terminate(process)
                 raise
             process.wait()
+            if (check := getattr(self, "cancel_check", None)) and check():
+                cancelled = True
             workspace_bytes = measure_workspace()
             workspace_exceeded = (
                 workspace_exceeded or workspace_bytes > self.config.max_workspace_bytes
@@ -1424,6 +1455,7 @@ class BubblewrapSandbox:
                 stdout=stdout_text,
                 stderr=stderr_text,
                 timed_out=timed_out,
+                cancelled=cancelled,
                 workspace_exceeded=workspace_exceeded,
                 stdout_truncated=stdout_truncated,
                 stderr_truncated=stderr_truncated,

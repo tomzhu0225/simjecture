@@ -4,6 +4,24 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+- Add explicit reserved-slot Open MPI launch helpers and keep compiler alternatives
+  visible read-only inside numerical execution.
+- Add explicit `process-cooperative` execution for trusted unprivileged hosts where
+  PRoot interferes with MPI. Expose it in CLI/TUI/browser machine settings; preserve
+  automatic selection and prevent duplicate SSH profiles from double-counting capacity.
+- Support verified dependency source manifests on OverlayFS hosts with unstable
+  directory inode numbers; changed declared source bytes still fail integrity checks.
+- Keep partial artifacts on cancellation and allow read-only native reviewer tool
+  events; retain separate worker/reviewer reasoning efforts across launches and resumes.
+- Validate method experiment references with field-specific errors; accept
+  `blocker_experiments` and separate descriptive `limitations` while retaining the
+  legacy receipt-ID `blockers` argument.
+- Add `lab.analyze` for frozen exploratory postprocessing without production-method
+  approval. Exploratory results remain ineligible for scientific claim acceptance.
+- Expose receipt-backed advisory progress targets, measured execution cost and
+  conditional throughput estimates to workers, progress reviewers and the GUI.
+  Targets do not alter scientific contracts, deadlines or agent scheduling freedom.
+
 ## 0.5.3 — 2026-10-02
 
 Stable release of the 0.5.3 candidate series. Minimal remains the default;

@@ -144,6 +144,22 @@ set `CUDA_VISIBLE_DEVICES`; CPU-only jobs receive an empty value. A CUDA capabil
 must mount all devices that may be allocated to it. CPU counts are admission
 reservations, not OS CPU quotas; request enough cores for MPI ranks and threads.
 
+For single-node Open MPI, launch through the installed helper inside the experiment:
+
+```python
+import os, subprocess, sys
+subprocess.run([
+    sys.executable, os.environ["SIMJECTURE_MPI_HELPER"],
+    "--ranks", "16", "--", "./flash4",
+], check=True)
+```
+
+Request `resources={"cpus": 16, "memory_mb": 49152, "gpus": 0}` for that example.
+The helper supplies the reserved localhost slots and rejects excess ranks rather
+than oversubscribing. It covers single-node Open MPI, not distributed MPI or other
+MPI implementations. A successful one-rank smoke test does not qualify a 16-rank
+launch: commission the exact worker, rank count, runtime and input bundle.
+
 Source and dependency views are read-only. Inspect them through the bounded helper:
 
 ```python
@@ -160,6 +176,16 @@ input programs and small text diagnostics are imported automatically. Other reco
 arrays remain on the worker until explicitly retrieved. Transfers are chunked and
 SHA256-verified; a solver exit or a transferred file never grants scientific approval.
 Large explicitly declared outputs are transferred even when they are arrays.
+
+On filesystems with unstable directory inodes, the operator can provide a
+`.simjecture-source-manifest.json` inside a reference dependency root. It maps
+declared source paths to SHA256 hashes. The harness verifies every listed file's
+bytes and uses the manifest content as identity instead of device/inode numbers.
+Keep the manifest and reference root protected by host permissions. It covers the
+listed files, not unlisted additions. Symlink escapes, changed bytes and malformed
+hashes fail validation. Introducing it changes the capability identity: qualify a
+new phase/profile rather than changing an existing frozen study. Legacy references
+without it retain their existing identity semantics.
 
 ## Recovery, deadlines and boundaries
 
@@ -187,6 +213,24 @@ use trusted workers and programs. Native agent tools remain available on the
 coordinator. This feature currently covers minimal-mode numerical experiments;
 interactive chat simulations, remote agent hosting and Slurm submission are separate
 paths.
+
+For a trusted host where PRoot interferes with MPI, **Machines → Settings → Advanced
+settings → Experiment environment → Native process** explicitly selects
+`process-cooperative`. This runs under the unprivileged worker account with host
+filesystem and network access. It retains frozen-input checks, deadlines, sampled
+aggregate RSS limits and receipts, but supplies no OS isolation. Registered runtime
+and source files need host permissions to remain read-only. Automatic detection does
+not select this backend. See [restricted hosts](restricted-containers.md).
+
+The native backend, reserved-slot helper and content manifests described here are
+unreleased source-checkout additions after 0.5.3; stable 0.5.3 retains its existing
+Bubblewrap/PRoot choices.
+
+Create a separate machine profile and worker root when changing an execution
+backend that old studies have frozen. Keep the original profile and program generation
+for retrieval. Profiles for the same SSH address/port share physical capacity: a study
+cannot select both, and an active reservation on either prevents allocating through
+the alternative. DNS aliases are not resolved into one physical-host identity.
 
 ## Relationship to Simote
 

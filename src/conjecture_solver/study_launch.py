@@ -20,7 +20,9 @@ from .study_status import read, supervisor_directory
 
 
 class NativeStudyRequest(MVPLaunchRequest):
-    execution_backend: Literal["bubblewrap", "proot-cooperative"] = "bubblewrap"
+    execution_backend: Literal["bubblewrap", "proot-cooperative", "process-cooperative"] = (
+        "bubblewrap"
+    )
     mode: Literal["minimal", "structured", "frontier"] = "minimal"
     backend: Literal["codex-glm", "codex", "grok", "agy", "builtin"] = "codex-glm"
     completion_policy: Literal["answer", "repair"] = "repair"
@@ -28,6 +30,7 @@ class NativeStudyRequest(MVPLaunchRequest):
     model: str | None = None
     judge_model: str | None = None
     reasoning_effort: Literal["low", "medium", "high", "xhigh", "max", "ultra"] | None = None
+    judge_reasoning_effort: Literal["low", "medium", "high", "xhigh", "max", "ultra"] | None = None
     agent_executable: str | None = None
     machine_registry: str | None = None
     machine_ids: list[str] = []
@@ -172,6 +175,8 @@ def materialize_native(request, *, resume=False):
         argv += ["--provider-config", request.provider_config]
     if request.reasoning_effort:
         argv += ["--reasoning-effort", request.reasoning_effort]
+    if request.judge_reasoning_effort:
+        argv += ["--judge-reasoning-effort", request.judge_reasoning_effort]
     put(
         record,
         dict(

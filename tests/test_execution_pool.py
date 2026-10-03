@@ -233,6 +233,103 @@ def test_passwords_remain_private_and_outside_public_metadata(tmp_path):
     assert load(private)["password"] == "only-a-fixture-password"
 
 
+def test_alternative_profiles_cannot_double_count_ssh_capacity(tmp_path):
+    registry = MachineRegistry(tmp_path)
+    for identifier, backend in [("traced", "proot-cooperative"), ("native", "process-cooperative")]:
+        registry.save(
+            {
+                "id": identifier,
+                "host": "example.invalid",
+                "root": f"/tmp/{identifier}",
+                "config": {"execution_backend": backend},
+            }
+        )
+    with pytest.raises(ValueError, match="one execution profile per SSH endpoint"):
+        registry.freeze(["traced", "native"])
+
+
+def test_active_alternative_ssh_profile_blocks_new_reservation(tmp_path, monkeypatch):
+    from conjecture_solver.execution_pool import select_worker
+    from conjecture_solver.worker_protocol import put
+
+    registry = MachineRegistry(tmp_path)
+    for identifier in ["traced", "native"]:
+        registry.save({"id": identifier, "host": "example.invalid", "root": f"/tmp/{identifier}"})
+    receipt = tmp_path / "receipt.json"
+    put(receipt, {"status": "running"})
+    put(
+        tmp_path / "allocations.json",
+        {
+            "old-job": {
+                "machine": "traced",
+                "receipt": str(receipt),
+                "created_at": time.time(),
+                "deadline": time.time() + 60,
+            }
+        },
+    )
+    pool = {
+        "registry": str(tmp_path),
+        "capabilities": {},
+        "workers": {"native": {"profile": registry.machine("native").model_dump(mode="json")}},
+    }
+    with pytest.raises(ValueError, match="active.*profile|profile.*active"):
+        select_worker(pool, None, "native", {"cpus": 1, "memory_mb": 1024})
+    put(receipt, {"status": "succeeded"})
+
+    class IdleTransport:
+        def call(self, *_args, **_kwargs):
+            return {"jobs": []}
+
+    monkeypatch.setattr(MachineRegistry, "transport", lambda *_args, **_kwargs: IdleTransport())
+    assert select_worker(pool, None, "native", {"cpus": 1, "memory_mb": 1024})[0] == "native"
+
+
+def test_native_worker_analysis_preserves_frozen_inputs_and_receipt(tmp_path):
+    if not probe_execution_backend("process-cooperative")["available"]:
+        pytest.skip("Needs an unprivileged native process worker")
+    registry = MachineRegistry(tmp_path / "registry")
+    registry.save(
+        {
+            "id": "native",
+            "kind": "local",
+            "root": str(tmp_path / "native"),
+            "python": sys.executable,
+            "config": {
+                "cpus": 2,
+                "memory_mb": 2048,
+                "execution_backend": "process-cooperative",
+            },
+        }
+    )
+    registry.prepare("native")
+    service = ResearchService.create(
+        tmp_path / "study", "Native analysis receipt", execution_pool=registry.freeze(["native"])
+    )
+    (service.work / "input.json").write_text('{"value": 21}')
+    (service.work / "calc.py").write_text(
+        "import json,os\nfrom pathlib import Path\n"
+        "assert Path(os.environ['SIMJECTURE_MPI_HELPER']).is_file()\n"
+        "assert os.environ['SIMJECTURE_EXECUTION_BACKEND']=='process-cooperative'\n"
+        "assert int(os.environ['SIMJECTURE_CPU_SLOTS'])==2\n"
+        "Path('result.json').write_text(json.dumps({'value':json.loads("
+        "Path('input.json').read_text())['value']*2}))\n"
+    )
+    receipt = service.analyze(
+        "calc.py",
+        inputs=["input.json"],
+        outputs=["result.json"],
+        resources={"cpus": 2, "memory_mb": 1024},
+    )
+    result = finish(service, [receipt["id"]])[0]
+    assert result["status"] == "succeeded", result
+    assert result["stage"] == "exploration"
+    assert result["execution"]["isolation_backend"] == "process-cooperative"
+    output = service.root / "experiments" / result["id"] / "workspace/result.json"
+    assert json.loads(output.read_text())["value"] == 42
+    assert checksum(output) == result["artifacts"]["result.json"]["sha256"]
+
+
 def test_running_cancel_stops_descendants_before_releasing_resources(tmp_path, registry):
     service = study(
         tmp_path,
@@ -265,6 +362,12 @@ def test_running_cancel_stops_descendants_before_releasing_resources(tmp_path, r
         pytest.fail("Bounded worker never started its subprocess")
     service.cancel_active()
     record = worker.status(job)
+    # Cancellation keeps the reservation while partial artifacts are harvested.
+    deadline = time.time() + 10
+    while record["status"] == "cancelling" and time.time() < deadline:
+        assert not record["cancellation_confirmed"]
+        time.sleep(0.1)
+        record = worker.status(job)
     assert record["status"] == "cancelled", record
     assert record["cancellation_confirmed"]
     assert len(record["cancellation_processes"]) >= 2

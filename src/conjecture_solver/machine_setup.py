@@ -132,7 +132,7 @@ print(json.dumps({'ok':True,'result':{'uid':os.geteuid(),'home':account.pw_dir,'
 INSTALL_BACKEND = r"""
 import json,os,shutil,subprocess,sys
 r=json.load(sys.stdin);name='proot' if r['backend']=='proot-cooperative' else 'bwrap'
-if not shutil.which(name):
+if r['backend'] != 'process-cooperative' and not shutil.which(name):
  if os.geteuid()!=0 or not shutil.which('apt-get'):
   raise ValueError('Install '+name+' on this host, or use Prepare with agent')
  subprocess.run(['apt-get','update'],check=True,stdout=sys.stderr,stderr=sys.stderr)

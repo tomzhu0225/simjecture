@@ -1617,6 +1617,49 @@ function renderResearchTrace() {
     panel.append(element("p", "field-help",
       `Instrument family: any of ${rule.prefixes.join(" or ")}. ${rule.satisfied ? `Matched by ${rule.matching_capabilities.join(", ")}` : "No matching instrument available"}. Scientific qualification is reviewed separately.`));
   }
+  if (engine.receipt_progress?.length || engine.execution_costs?.length) {
+    const coverage = element("section", "scientific-progress");
+    coverage.append(element("h3", null, "Scientific coverage & cost"),
+      element("p", "field-help", "Recorded metrics with researcher-declared targets and units. Claim approval remains separate."));
+    for (const row of engine.receipt_progress || []) {
+      const card = element("article", "trace-event");
+      const copy = element("div", "trace-copy");
+      copy.append(element("strong", null, `${row.quantity}: ${row.value} ${row.unit} / target ${row.target} ${row.unit}`));
+      if (row.measured_wall_seconds != null) copy.append(element("p", "field-help",
+        `Measured execution: ${formatDuration(row.measured_wall_seconds)} · ${row.machine || "local"}`));
+      if (row.integrity !== "verified") {
+        copy.append(element("p", "warning-list", `Recorded value integrity failed: ${row.integrity_error || "inspect the receipt"}`));
+      } else {
+        const parts = [row.series, row.target_reached ? "Metric target reached" : "Metric target outstanding"];
+        if (row.estimated_additional_seconds != null) {
+          parts.push(`Estimated additional time: ${formatDuration(row.estimated_additional_seconds)}`);
+          if (row.exceeds_remaining_budget) parts.push("Exceeds remaining wall budget");
+        }
+        copy.append(element("p", row.exceeds_remaining_budget ? "warning-list" : "field-help", parts.filter(Boolean).join(" · ")));
+        if (row.estimated_additional_seconds != null) copy.append(element("p", "field-help", row.estimate_note));
+      }
+      const link = element("a", null, "View recorded metric");
+      link.href = `/api/artifact?campaign=${encodeURIComponent(state.selectedCampaign)}&path=${encodeURIComponent(`experiments/${row.experiment}/workspace/${row.output}`)}`;
+      link.target = "_blank"; link.rel = "noopener";
+      copy.append(link);
+      card.append(element("span", "event-mark", row.target_reached ? "✓" : "◷"), copy);
+      coverage.append(card);
+    }
+    const registered = new Set((engine.receipt_progress || []).map(row => row.experiment));
+    for (const row of engine.execution_costs || []) {
+      if (registered.has(row.id)) continue;
+      const card = element("article", "trace-event");
+      const copy = element("div", "trace-copy");
+      copy.append(element("strong", null, [row.source, ...(row.args || [])].filter(Boolean).join(" ")),
+        element("p", "field-help", `Measured execution: ${formatDuration(row.wall_seconds)} · ${row.machine} · ${row.status} · ${row.stage || "recorded"}`));
+      const link = element("a", null, "View execution receipt");
+      link.href = `/api/artifact?campaign=${encodeURIComponent(state.selectedCampaign)}&path=${encodeURIComponent(`experiments/${row.id}.json`)}`;
+      link.target = "_blank"; link.rel = "noopener"; copy.append(link);
+      card.append(element("span", "event-mark", "◷"), copy); coverage.append(card);
+    }
+    coverage.append(element("p", "field-help", "Execution wall time excludes provider calls, preflight checks and artifact transfers. Targets and forecasts remain advisory."));
+    panel.append(coverage);
+  }
   if (snapshot.warnings?.length) {
     const warnings = element("ul", "warning-list");
     snapshot.warnings.forEach((warning) => warnings.append(element("li", null, warning)));
