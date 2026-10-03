@@ -1628,7 +1628,7 @@ function renderResearchTrace() {
       const card = element("article", "trace-event"), copy = element("div", "trace-copy");
       copy.append(element("strong", null, `${d.decision === "replan" ? "Stop / replan" : "Continue strategy"} · budget ${d.budget_feasibility} · science ${d.scientific_feasibility}`),
         element("p", null, d.rationale), element("p", null, `Next action: ${d.next_action}`));
-      for (const action of d.control_actions || []) copy.append(element("p", "field-help", `Stop requested: ${action.experiment} · ${action.status} · ${action.cancellation_confirmed ? "stop confirmed" : "awaiting confirmation"} · partial data retained when available`));
+      for (const action of d.control_actions || []) copy.append(element("p", "field-help", `Stop requested: ${action.experiment} · ${action.status} · ${action.cancellation_confirmed ? "stop confirmed" : "awaiting confirmation"}${action.error ? ` · recorded control error: ${action.error}` : ""} · partial data retained when available`));
       copy.append(element("p", "field-help", d.acknowledgement ? `Worker ${d.acknowledgement.response}: ${d.acknowledgement.reason}` : d.decision === "replan" ? "Awaiting worker plan or challenge" : "No replan acknowledgement required"));
       card.append(element("span", "event-mark", d.decision === "replan" ? "↻" : "✓"), copy);director.append(card);
     }

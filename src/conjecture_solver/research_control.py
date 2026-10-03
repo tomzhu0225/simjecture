@@ -114,8 +114,22 @@ class ControlService:
                 os.killpg(identity["pid"], signal.SIGTERM)
         return self._read("experiments", experiment)
 
+    def pending_director_replan(self):
+        """A continue review cannot silently discharge a required worker response."""
+        replans = [r for r in self._all("director") if r["decision"] == "replan"]
+        if not replans:
+            return None
+        latest = max(replans, key=lambda r: r["created_at"])
+        if (self.root / "director-acks" / (latest["id"] + ".json")).exists():
+            return None
+        return latest
+
     def director_status(self):
         decisions = sorted(self._all("director"), key=lambda r: r["created_at"], reverse=True)
+        pending = self.pending_director_replan()
+        decisions = decisions[:8]
+        if pending and all(r["id"] != pending["id"] for r in decisions):
+            decisions = decisions[:7] + [pending]
         for r in decisions:
             p = self.root / "director-acks" / (r["id"] + ".json")
             if p.exists():
@@ -126,7 +140,7 @@ class ControlService:
                     status=current["status"],
                     cancellation_confirmed=current.get("cancellation_confirmed", False),
                 )
-        return decisions[:8]
+        return decisions
 
     def director_ack(self, decision, *, response, reason, plan=None):
         """A replan needs a recorded next-test plan or an explicit reasoned challenge."""
@@ -166,12 +180,7 @@ class ControlService:
         return body
 
     def check_director(self, stage, purpose, timeout):
-        decisions = self.director_status()
-        if (
-            not decisions
-            or decisions[0]["decision"] != "replan"
-            or decisions[0].get("acknowledgement")
-        ):
+        if not self.pending_director_replan():
             return
         if stage == "exploration" and purpose == "diagnostic" and timeout <= 120:
             return

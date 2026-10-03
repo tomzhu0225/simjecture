@@ -5,7 +5,8 @@ counterexample searches and independently reviewed claims. The browser workspace
 is the recommended starting point. Use a compatible API model or an installed
 native agent CLI; terminal automation is also supported.
 
-These guides cover **Simjecture 0.5.3**. See the
+These guides cover the **Simjecture 0.5.4rc1 preview** and stable **0.5.3**. See the
+[preview checks and limits](testing/0.5.4rc1-acceptance.md) and the
 [stable release scope and checks](testing/0.5.3-acceptance.md).
 
 ## Start in the workspace

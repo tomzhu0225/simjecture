@@ -172,6 +172,9 @@ lab = Client()
             feedback += "\nResearch director decisions and required responses:\n" + json.dumps(
                 self.service.director_status()[:2]
             )
+            pending = self.service.pending_director_replan()
+            if pending:
+                feedback += "\nPending replan requiring a worker response:\n" + json.dumps(pending)
         if steering:
             feedback += (
                 "\nNew operator guidance (advisory, not evidence or changed contracts): "

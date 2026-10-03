@@ -162,8 +162,8 @@ natural-language rules and scientific acceptance still require independent revie
 
 ## Research director: stop and replan
 
-The director is an unreleased source feature; published 0.5.3 keeps its earlier
-progress oversight. The operator's private deployment may include these source changes.
+The director is available in the **0.5.4rc1 preview**; stable 0.5.3 keeps its earlier
+progress oversight.
 
 New minimal studies enable a research director by default. The launch settings in
 the workspace expose the switch, reviewer/director model and effort; CLI launches
@@ -185,6 +185,9 @@ A `replan` decision can name active experiment IDs to stop. The host requests
 those stops, preserves available partial data and wakes the worker. It does not
 stop the campaign, change the hypothesis/deadline, or accept a scientific claim.
 Transport failures leave cancellation unconfirmed; the UI shows that distinction.
+Failed control calls retain the valid decision and their individual errors, so
+other requested stops and worker replanning can proceed. Available partial data
+are retained; the host does not claim a confirmed stop until it is observed.
 The usual independent methods and claim reviews remain in force.
 
 The worker reads `lab.director_status()` and records its response:
@@ -199,7 +202,8 @@ lab.director_ack('director_ID', response='plan', plan=plan['id'],
 ```
 
 A reasoned `response='challenge'` is also allowed. New numerical submissions
-require acknowledgement of the latest replan; reads, idempotent replay and short
+require acknowledgement of the latest replan, even after a later continue review;
+reads, idempotent replay and short
 exploratory diagnostics remain available. Acknowledgement records a response,
 not scientific approval. Decisions and responses appear in **Evidence & review**.
 The durable records live under `director/` and `director-acks/`.

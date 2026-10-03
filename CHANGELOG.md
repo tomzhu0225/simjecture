@@ -2,7 +2,16 @@
 
 This project follows semantic versioning. Dates use ISO 8601.
 
-## Unreleased
+## 0.5.4rc1 (preview) — 2026-10-03
+
+- Preserve an unacknowledged replan across subsequent continue decisions and
+  bounded history. Keep the pending directive visible to the worker, director
+  and GUI until the latest replan receives a recorded plan or challenge.
+- Record failed stop controls without discarding a valid director decision,
+  continue other named stop requests, wake the worker for replanning and expose
+  control errors in the GUI. Recover director I/O errors and clear stale review
+  errors after a successful decision. Review timeouts remain bounded and explicit.
+- Discover studies launched after the GUI server starts without requiring a restart.
 
 - Add a default-on minimal-mode research director with bounded strategy reviews
   during experiment waits, named experiment stops, preserved partial artifacts,

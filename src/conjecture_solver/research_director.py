@@ -64,6 +64,7 @@ class ResearchDirector:
             snapshot=self.service.brief(max_bytes=8000),
             active_experiments=active,
             previous_decisions=self.service.director_status()[:2],
+            pending_replan=self.service.pending_director_replan(),
             authority="Execution strategy only; cannot change hypothesis or approve claims",
         )
 
@@ -102,6 +103,8 @@ individual experiments when a better strategy is justified; keep the investigati
 Use decision=replan to stop or redirect; use continue only when the current strategy is
 defensible. Explain uncertainty rather than inventing missing measurements. Acknowledge
 worker challenges and assess their recorded plan. Stops preserve partial data and history.
+A continue review does not waive the pending_replan worker response. A later replan
+replaces the earlier response requirement; the worker must acknowledge that latest replan.
 SCHEMA:
 """
             + json.dumps(DirectorVerdict.model_json_schema())
@@ -160,33 +163,45 @@ SCHEMA:
                 id=identifier,
                 created_at=time.time(),
                 packet_sha256=fingerprint(packet),
-                control_actions=[],
+                control_actions=[
+                    dict(experiment=experiment, status="stop_pending", cancellation_confirmed=False)
+                    for experiment in verdict["stop_experiments"]
+                ],
                 authority="Execution strategy; not scientific approval",
                 **verdict,
             )
             put(folder / (identifier + ".json"), record)
-            for experiment in verdict["stop_experiments"]:
-                stopped = self.service.cancel(
-                    experiment, reason=f"{identifier}: {verdict['rationale']}"[:2400]
-                )
-                record["control_actions"].append(
-                    dict(
-                        experiment=experiment,
+            for action in record["control_actions"]:
+                try:
+                    stopped = self.service.cancel(
+                        action["experiment"], reason=f"{identifier}: {verdict['rationale']}"[:2400]
+                    )
+                    action.update(
                         status=stopped["status"],
                         cancellation_confirmed=stopped.get("cancellation_confirmed", False),
                     )
-                )
+                except (OSError, RuntimeError, ValueError, KeyError) as error:
+                    action.update(status="stop_failed", error=str(error)[:500])
+                    self.event(
+                        "director_control_failed",
+                        decision=identifier,
+                        experiment=action["experiment"],
+                        error=action["error"],
+                    )
                 put(folder / (identifier + ".json"), record)
             put(d / "verdict.json", record)
             self.state.update(
-                last_director_at=time.time(), director_feedback=record, director_retry_after=0
+                last_director_at=time.time(),
+                director_feedback=record,
+                director_retry_after=0,
+                last_director_error=None,
             )
             if verdict["decision"] == "replan":
                 self.state["director_wake_worker"] = True
             self.event("research_director", decision=identifier, verdict=verdict)
             self.save()
             return verdict["decision"] == "replan"
-        except (ValueError, KeyError) as error:
+        except (ValueError, KeyError, OSError) as error:
             self.state.update(
                 last_director_error=str(error)[:500], director_retry_after=time.time() + 120
             )

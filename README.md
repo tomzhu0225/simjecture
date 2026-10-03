@@ -36,6 +36,17 @@ workspace dependencies, then starts the local GUI. Git and a CLI agent are not
 required. For Python-package installation, SSH forwarding or source setup, see
 [installation options](docs/getting-started/installation.md).
 
+To try the **0.5.4rc1 preview**, including research stop-and-replan controls:
+
+```bash
+curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.4rc1/install.sh | bash
+```
+
+The preview adds a default-on research director for new minimal studies, live
+simulation timing and MPI/SSH execution repairs. See its
+[checks and known limits](docs/testing/0.5.4rc1-acceptance.md). Stable 0.5.3 remains
+available above; application versions share the existing research files.
+
 1. In **Connections**, add a compatible API endpoint and key, or select an installed,
    authenticated CLI in the message composer
 2. Start a conversation with your question, paper or simulation outputs
@@ -71,7 +82,7 @@ Minimal mode is the default: the agent chooses its research strategy while the
 host manages evidence, review and deadlines. Structured and frontier modes are
 also available. See [research modes and evidence](docs/how-to/research-service.md)
 and [architecture](docs/concepts/architecture.md).
-In the development source, new minimal studies also use a [research director](docs/how-to/minimal-oversight.md#research-director-stop-and-replan)
+In **0.5.4rc1**, new minimal studies also use a [research director](docs/how-to/minimal-oversight.md#research-director-stop-and-replan)
 to check feasibility during long jobs, stop named experiments and request recorded
 replans. Its launch switch and decisions are visible in the workspace; scientific
 claim acceptance remains independent.
@@ -100,6 +111,9 @@ them. Explicit cooperative PRoot execution is not an OS security boundary. Read
 
 **0.5.3** brings SSH experiment workers, the measured coding-agent leaderboard,
 ledger and recovery repairs, and shared conversation/study/evidence navigation.
+The **0.5.4rc1 preview** adds execution strategy control, partial-result retention,
+adaptive FLASH guidance and receipt-backed progress. Its live research campaign
+is ongoing; these changes do not establish a scientific result or lower model cost.
 Release changes live in [CHANGELOG.md](CHANGELOG.md); checks and limits are in the
 [0.5.3 acceptance record](docs/testing/0.5.3-acceptance.md) and
 [archive](docs/archive/index.md). The

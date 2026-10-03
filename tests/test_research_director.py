@@ -112,6 +112,93 @@ def test_director_rejects_unknown_stop_before_any_actions(tmp_path, monkeypatch)
     assert sup.service.director_status() == []
 
 
+def test_continue_cannot_waive_unacknowledged_replan(tmp_path, monkeypatch):
+    sup = supervisor(tmp_path)
+    active(sup, monkeypatch)
+    answer(sup, monkeypatch, [])
+    assert sup.run_director(force=True)
+    pending = sup.service.pending_director_replan()
+    answer(sup, monkeypatch, [], decision="continue")
+    assert not sup.run_director(force=True)
+    assert sup.service.director_status()[0]["decision"] == "continue"
+    assert sup.director_packet()["pending_replan"]["id"] == pending["id"]
+    with pytest.raises(ValueError, match="Director requested"):
+        sup.service.run("calc.py", outputs=["result.json"], stage="exploration", key="new")
+    plan = sup.service.note("A bounded refinement pilot using measured costs.", kind="next_test")
+    sup.service.director_ack(
+        pending["id"], response="plan", plan=plan["id"], reason="Measure refinement before scaling."
+    )
+    assert sup.service.pending_director_replan() is None
+    assert sup.service.run(
+        "calc.py", outputs=["result.json"], stage="exploration", key="new"
+    )["status"] == "queued"
+
+
+def test_pending_replan_survives_bounded_director_history(tmp_path, monkeypatch):
+    sup = supervisor(tmp_path)
+    active(sup, monkeypatch)
+    answer(sup, monkeypatch, [])
+    sup.run_director(force=True)
+    pending = sup.service.pending_director_replan()
+    for _ in range(10):
+        answer(sup, monkeypatch, [], decision="continue")
+        sup.run_director(force=True)
+    decisions = sup.service.director_status()
+    assert len(decisions) == 8
+    assert any(d["id"] == pending["id"] for d in decisions)
+    with pytest.raises(ValueError, match="Director requested"):
+        sup.service.run("calc.py", outputs=["result.json"], stage="exploration", key="new")
+
+
+def test_stop_error_preserves_valid_directive_and_other_stops(tmp_path, monkeypatch):
+    sup = supervisor(tmp_path)
+    first = active(sup, monkeypatch)
+    second = sup.service.run(
+        "calc.py", args=["second"], outputs=["result.json"], stage="exploration", key="second"
+    )
+    answer(sup, monkeypatch, [first["id"], second["id"]])
+    original = sup.service.cancel
+
+    def cancel(experiment, **kwargs):
+        if experiment == first["id"]:
+            raise OSError(22, "Invalid argument")
+        return original(experiment, **kwargs)
+
+    monkeypatch.setattr(sup.service, "cancel", cancel)
+    assert sup.run_director(force=True)
+    record = sup.service.pending_director_replan()
+    assert record["control_actions"][0]["status"] == "stop_failed"
+    assert "Invalid argument" in record["control_actions"][0]["error"]
+    assert not record["control_actions"][0]["cancellation_confirmed"]
+    assert sup.service._read("experiments", second["id"])["cancel_requested"]
+    assert sup.state["director_wake_worker"]
+    assert sup.state["last_director_error"] is None
+    directory = sup.directory / "director-00001"
+    assert json.loads((directory / "verdict.json").read_text())["id"] == record["id"]
+    assert record["control_actions"][0]["error"] in json.dumps(sup.service.director_status())
+    with pytest.raises(ValueError, match="Director requested"):
+        sup.service.run("calc.py", outputs=["result.json"], stage="exploration", key="new")
+
+
+def test_director_io_failure_recovers_and_clears_error(tmp_path, monkeypatch):
+    sup = supervisor(tmp_path)
+    active(sup, monkeypatch)
+
+    def fail(*args, **kwargs):
+        raise OSError(22, "Invalid argument")
+
+    monkeypatch.setattr(sup, "launch", fail)
+    assert not sup.run_director(force=True)
+    assert "Invalid argument" in sup.state["last_director_error"]
+    assert sup.service.director_status() == []
+    assert sup.state["director_retry_after"] > time.time()
+    sup.state["director_retry_after"] = 0
+    answer(sup, monkeypatch, [], decision="continue")
+    sup.run_director(force=True)
+    assert sup.state["last_director_error"] is None
+    assert sup.state["director_retry_after"] == 0
+
+
 def test_director_can_redirect_planning_without_experiments(tmp_path, monkeypatch):
     sup = supervisor(tmp_path)
     sup.state.update(round=2, last_director_at=time.time() - 400)
