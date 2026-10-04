@@ -2,7 +2,7 @@
 
 This project follows semantic versioning. Dates use ISO 8601.
 
-## Unreleased
+## 0.5.4rc2 (preview) — 2026-10-04
 
 - Separate interactive simulation outputs from copied project inputs in the GUI.
   Record input hashes for new runs, identify changed inputs, and label command

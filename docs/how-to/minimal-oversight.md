@@ -162,7 +162,7 @@ natural-language rules and scientific acceptance still require independent revie
 
 ## Research director: stop and replan
 
-The director is available in the **0.5.4rc1 preview**; stable 0.5.3 keeps its earlier
+The director is available in the **0.5.4rc2 preview**; stable 0.5.3 keeps its earlier
 progress oversight.
 
 New minimal studies enable a research director by default. The launch settings in
@@ -173,7 +173,7 @@ modes retain their existing supervision.
 
 The director uses the reviewer route with a fresh context and checks execution
 strategy about every five minutes, including when the worker is waiting for a
-long experiment. The unreleased audit repair allows new studies to defer model
+long experiment. Since rc2, new studies can defer model
 reviews of healthy, unchanged work to at most 15 minutes, with operational checks
 at up to one-minute intervals during deferral. A changed record/plan or steering,
 pending replan, transport failure, stale telemetry, runtime risk or near deadline
