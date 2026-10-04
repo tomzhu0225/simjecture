@@ -1,5 +1,6 @@
 """Browser acceptance checks. Install Playwright + Chromium to run locally."""
 
+import shlex
 import threading
 from pathlib import Path
 
@@ -247,6 +248,14 @@ print("wave")
                 timeout=20000
             )
             page.locator("#simulation-detail a").filter(has_text="result.svg").wait_for()
+            playwright.expect(page.locator("#simulation-detail .run-outputs")).to_contain_text(
+                "result.svg"
+            )
+            playwright.expect(page.locator("#simulation-detail .run-outputs")).not_to_contain_text(
+                "wave.svg"
+            )
+            assert not page.locator("#simulation-detail .run-inputs").evaluate("e => e.open")
+            assert page.locator("#simulation-detail .run-inputs figure").count() == 0
             page.locator("#sidebar-run-list a").first.click()
             assert "simulation=" in page.url
             page.reload()
@@ -273,6 +282,9 @@ print("wave")
             page.locator("#command-detail .live-console").filter(
                 has_text="command-ready"
             ).wait_for()
+            playwright.expect(page.locator("#command-detail .run-shared-files h4")).to_have_text(
+                "Project files (shared)"
+            )
             playwright.expect(page.locator("#inspector-tabs")).to_have_attribute(
                 "active", "commands"
             )
@@ -305,6 +317,76 @@ print("wave")
             page.get_by_role("button", name="Expand left sidebar", exact=True).click()
             page.get_by_role("button", name="Expand right sidebar", exact=True).click()
             assert page.locator("#research-inspector").is_visible()
+            assert errors == []
+            browser.close()
+    finally:
+        server.shutdown()
+        server.server_close()
+
+
+def test_selected_simulation_files_do_not_mix_run_outputs_and_project_results(tmp_path):
+    playwright = pytest.importorskip("playwright.sync_api")
+    from tests.test_workspace_simulations import await_finished
+
+    app = SimjectureWebApplication(runs_root=tmp_path, scan_roots=(tmp_path,))
+    project = app.workspace.create({"name": "Separate run artifacts"})
+    directory = app.workspace.directory(project["id"])
+    svg = (
+        '<svg xmlns="http://www.w3.org/2000/svg" width="100" height="50">'
+        '<text y="30">{}</text></svg>'
+    )
+    (directory / "files/comparison.svg").write_text(svg.format("Shared comparison"))
+    (directory / "files/input.txt").write_text("before")
+    runs = []
+    for number in (1, 2):
+        command = "printf %s " + shlex.quote(svg.format(f"Run {number}")) + " > result.svg"
+        if number == 1:
+            command += "; printf 'after!' > input.txt"
+        run = app.workspace.start_simulation(
+            project["id"], dict(name=f"Case {number}", command=command)
+        )
+        assert await_finished(directory, run["id"])["status"] == "succeeded"
+        runs.append(run)
+    server = create_server(app, port=0)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    errors = []
+    try:
+        with playwright.sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page(viewport={"width": 1440, "height": 1000})
+            page.on("pageerror", lambda error: errors.append(str(error)))
+            base = f"http://127.0.0.1:{server.server_port}"
+            page.goto(base + "/#project=" + project["id"])
+            for number, run in enumerate(runs, 1):
+                page.locator("#sidebar-run-list a").filter(has_text=f"Case {number}").click()
+                detail = page.locator("#simulation-detail")
+                playwright.expect(detail.locator("h3")).to_have_text(f"Case {number}")
+                outputs = detail.locator(".run-outputs")
+                link = outputs.locator("a.file-row").filter(has_text="result.svg")
+                link.wait_for()
+                href = link.get_attribute("href")
+                assert f"simulation={run['id']}" in href
+                assert f"Run {number}" in page.request.get(base + href).text()
+                playwright.expect(outputs).not_to_contain_text("comparison.svg")
+                copied = detail.locator(".run-inputs")
+                assert not copied.evaluate("e => e.open")
+                assert copied.locator("figure").count() == 0
+                copied.locator("summary").click()
+                copied.get_by_role("link", name="comparison.svg", exact=True).wait_for()
+                if number == 1:
+                    outputs.get_by_role("link", name="input.txt", exact=True).wait_for()
+                    playwright.expect(outputs).to_contain_text("Changed from the copied input")
+                else:
+                    playwright.expect(outputs).not_to_contain_text("input.txt")
+                copied.locator("summary").click()
+            page.reload()
+            playwright.expect(page.locator("#simulation-detail h3")).to_have_text("Case 2")
+            playwright.expect(page.locator("#simulation-detail .run-outputs")).not_to_contain_text(
+                "comparison.svg"
+            )
+            page.locator('wa-tab[panel="files"]').click()
+            playwright.expect(page.locator("#project-files")).to_contain_text("comparison.svg")
+            playwright.expect(page.locator('wa-tab[panel="files"]')).to_have_text("Project files")
             assert errors == []
             browser.close()
     finally:

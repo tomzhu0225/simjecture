@@ -1604,12 +1604,22 @@ function renderResearchTrace() {
     usagePanel.append(cell);
   }
   if (engine.provider_attention) panel.append(element("p", "warning-list", engine.provider_attention));
+  if (engine.recorded_error) panel.append(element("p", "warning-list",
+    `Supervisor stopped early: ${engine.recorded_error}. Recorded status: ${engine.recorded_status}. ${formatDuration(engine.stopped_with_remaining_seconds)} remained at the stop.`));
+  if (Object.keys(engine.diagnostic_errors || {}).length) {
+    const diagnostics = element("section", "research-diagnostics");
+    diagnostics.append(element("h3", null, "Harness diagnostics"),
+      element("p", "field-help", "Context or report generation is degraded. Scientific receipts and review remain authoritative."));
+    for (const [component, detail] of Object.entries(engine.diagnostic_errors)) diagnostics.append(
+      element("p", "warning-list", `${component}: ${detail.error} · ${detail.count} occurrence${detail.count === 1 ? "" : "s"}`));
+    panel.append(diagnostics);
+  }
   if (engine.usage_details) {
     const details = engine.usage_details;
     panel.append(element("p", "field-help",
       `${details.request_count_complete === false ? "Per-request counts unavailable from native CLI" : `${details.requests || 0} tracked requests`} · ${details.requests_without_usage || 0} tracked requests without usage yet · ${formatDuration(engine.provider_wait_seconds || 0)} in provider retry waits. ${details.cost_note}`));
     for (const [role, totals] of Object.entries(details.by_role || {})) {
-      panel.append(element("p", "field-help", `${role}: ${compactNumber(totals.input_tokens)} input / ${compactNumber(totals.output_tokens)} output tokens`));
+      panel.append(element("p", "field-help", `${role}: ${compactNumber(totals.input_tokens)} input / ${totals.cache_usage_complete === false ? "unknown" : compactNumber(totals.cached_input_tokens)} cached / ${totals.uncached_input_tokens == null ? "unknown" : compactNumber(totals.uncached_input_tokens)} uncached / ${compactNumber(totals.output_tokens)} output tokens`));
     }
   }
   if (engine.instrument_requirement?.prefixes?.length) {
@@ -1623,6 +1633,11 @@ function renderResearchTrace() {
       element("p", "field-help", "Stops individual experiments and requests replans. Scientific claim acceptance remains separate."));
     const route = engine.director_route || {};
     if (route.model) director.append(element("p", "field-help", `Director route: ${[route.backend, route.model, route.reasoning_effort].filter(Boolean).join(" · ")}`));
+    if (engine.director_policy?.enabled) {
+      const policy = engine.director_policy;
+      director.append(element("p", "field-help", `Strategy review interval: ${formatDuration(policy.interval_seconds || 300)}. Healthy experiments with unchanged work may wait up to ${formatDuration(policy.unchanged_review_seconds || policy.interval_seconds || 300)}; operational checks continue.`));
+      if (engine.director_next_review_at) director.append(element("p", "field-help", `Unchanged strategy · next model review by ${new Date(engine.director_next_review_at * 1000).toLocaleTimeString()}. New evidence or an operational risk brings the review forward.`));
+    }
     if (!engine.director_decisions?.length) director.append(element("p", "field-help", "Enabled · awaiting the first strategy review."));
     for (const d of engine.director_decisions || []) {
       const card = element("article", "trace-event"), copy = element("div", "trace-copy");
@@ -1653,6 +1668,9 @@ function renderResearchTrace() {
       copy.append(element("strong", null, `${row.quantity}: ${row.value} ${row.unit} / target ${row.target} ${row.unit}`));
       if (row.measured_wall_seconds != null) copy.append(element("p", "field-help",
         `Measured execution: ${formatDuration(row.measured_wall_seconds)} · ${row.machine || "local"}`));
+      const cost = (engine.execution_costs || []).find(c => c.id === row.experiment);
+      if (cost?.end_to_end_seconds != null) copy.append(element("p", "field-help",
+        `Submission to result: ${formatDuration(cost.end_to_end_seconds)} · includes admission, transfer and result collection.`));
       if (row.integrity !== "verified") {
         copy.append(element("p", "warning-list", `Recorded value integrity failed: ${row.integrity_error || "inspect the receipt"}`));
       } else {
@@ -1678,6 +1696,8 @@ function renderResearchTrace() {
       const copy = element("div", "trace-copy");
       copy.append(element("strong", null, [row.source, ...(row.args || [])].filter(Boolean).join(" ")),
         element("p", "field-help", `Measured execution: ${formatDuration(row.wall_seconds)} · ${row.machine} · ${row.status} · ${row.stage || "recorded"}`));
+      if (row.end_to_end_seconds != null) copy.append(element("p", "field-help",
+        `Submission to result: ${formatDuration(row.end_to_end_seconds)} · includes admission, transfer and result collection.`));
       const link = element("a", null, "View execution receipt");
       link.href = `/api/artifact?campaign=${encodeURIComponent(state.selectedCampaign)}&path=${encodeURIComponent(`experiments/${row.id}.json`)}`;
       link.target = "_blank"; link.rel = "noopener"; copy.append(link);

@@ -37,6 +37,92 @@ def test_runs_keep_inputs_logs_and_outputs_and_stop(tmp_path):
     assert await_finished(tmp_path, run["id"])["status"] == "cancelled"
 
 
+def test_run_files_separate_copied_results_and_changed_inputs(tmp_path):
+    files = tmp_path / "files"
+    (files / "analysis").mkdir(parents=True)
+    (files / "analysis/previous-result.svg").write_text("previous simulation figure")
+    (files / "settings.txt").write_text("before")
+    (files / "unchanged.txt").write_text("keep this input")
+    run = jobs.launch(
+        tmp_path,
+        dict(
+            name="New result",
+            command=(
+                "printf 'after!' > settings.txt; touch unchanged.txt; printf fresh > result.txt"
+            ),
+        ),
+    )
+    result = await_finished(tmp_path, run["id"])
+    roles = {f["name"]: f["role"] for f in result["files"]}
+    assert roles == {
+        "analysis/previous-result.svg": "input",
+        "settings.txt": "modified_input",
+        "unchanged.txt": "input",
+        "result.txt": "output",
+    }
+    assert result["file_provenance"] == "content"
+    assert "input_manifest" not in result  # Keep full hashes out of repeated agent/GUI polls.
+    request = jobs.read(tmp_path / "simulations" / run["id"] / "request.json")
+    assert len(request["input_manifest"]["settings.txt"]["sha256"]) == 64
+    assert (files / "settings.txt").read_text() == "before"
+
+
+def test_old_run_file_provenance_uses_only_recorded_input_paths(tmp_path):
+    (tmp_path / "files").mkdir()
+    (tmp_path / "files/input.txt").write_text("original")
+    run = jobs.launch(
+        tmp_path, dict(name="Legacy", command="printf changed > input.txt; printf new > result.txt")
+    )
+    await_finished(tmp_path, run["id"])
+    request_path = tmp_path / "simulations" / run["id"] / "request.json"
+    request = jobs.read(request_path)
+    del request["input_manifest"]
+    jobs.put(request_path, request)
+    result = jobs.snapshot(tmp_path, run["id"], include_files=True)
+    assert result["file_provenance"] == "paths_only"
+    assert {f["name"]: f["role"] for f in result["files"]} == {
+        "input.txt": "input",
+        "result.txt": "output",
+    }
+    assert "input_manifest" not in jobs.read(request_path)  # No retrospective record rewrite.
+
+
+def test_run_file_limit_prioritizes_outputs_and_modified_inputs(tmp_path):
+    files = tmp_path / "files"
+    files.mkdir()
+    for i in range(205):
+        (files / f"input-{i:03d}.txt").write_text("unchanged")
+    (files / "z-settings.txt").write_text("before")
+    run = jobs.launch(
+        tmp_path,
+        dict(
+            name="Many inputs",
+            command="printf 'after!' > z-settings.txt; printf new > z-result.txt",
+        ),
+    )
+    result = await_finished(tmp_path, run["id"])
+    assert len(result["files"]) == 200
+    assert {f["name"]: f["role"] for f in result["files"][:2]} == {
+        "z-result.txt": "output",
+        "z-settings.txt": "modified_input",
+    }
+
+
+def test_command_files_are_shared_project_files(tmp_path):
+    (tmp_path / "files").mkdir()
+    (tmp_path / "files/previous-result.txt").write_text("earlier result")
+    run = jobs.launch(
+        tmp_path,
+        dict(name="Analysis", kind="command", command="printf comparison > comparison.txt"),
+    )
+    result = await_finished(tmp_path, run["id"])
+    assert result["file_provenance"] == "shared"
+    assert {f["name"]: f["role"] for f in result["files"]} == {
+        "previous-result.txt": "shared",
+        "comparison.txt": "shared",
+    }
+
+
 def test_native_activity_exposes_state_not_reasoning(tmp_path):
     log = tmp_path / "events.jsonl"
     log.write_text(

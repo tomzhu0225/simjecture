@@ -88,6 +88,36 @@ def test_context_metadata_never_contains_message_or_reasoning_text():
     assert metadata["messages"][0]["sha256"]
 
 
+def test_status_reports_uncached_input_by_role_without_inventing_missing_cache(tmp_path):
+    from conjecture_solver.research_service import ResearchService, put
+    from conjecture_solver.study_status import study_status
+
+    s = ResearchService.create(tmp_path / "study", "A cache-accounting fixture")
+    (s.root / "supervisor").mkdir()
+    put(
+        s.root / "supervisor/state.json",
+        dict(
+            status="initialized",
+            deadline=s.manifest["deadline"],
+            usage_by_thread={
+                "worker": dict(input_tokens=1000, cached_input_tokens=900, output_tokens=20),
+                "director": dict(input_tokens=500, cached_input_tokens=100, output_tokens=10),
+                "reviewer": dict(input_tokens=250, output_tokens=5),
+            },
+            usage_roles_by_thread={
+                "worker": "worker",
+                "director": "director",
+                "reviewer": "reviewer",
+            },
+        ),
+    )
+    roles = study_status(s.root)["usage_details"]["by_role"]
+    assert roles["worker"]["uncached_input_tokens"] == 100
+    assert roles["director"]["uncached_input_tokens"] == 400
+    assert roles["reviewer"]["uncached_input_tokens"] is None
+    assert not roles["reviewer"]["cache_usage_complete"]
+
+
 def test_each_completion_retry_is_recorded_before_step_aggregation(monkeypatch):
     from smolagents import OpenAIServerModel
     from smolagents.models import ChatMessage, TokenUsage

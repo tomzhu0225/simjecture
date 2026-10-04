@@ -223,7 +223,7 @@ and source files need host permissions to remain read-only. Automatic detection 
 not select this backend. See [restricted hosts](restricted-containers.md).
 
 The native backend, reserved-slot helper and content manifests described here are
-available in the 0.5.4rc1 preview; stable 0.5.3 retains its existing
+available in the 0.5.4rc2 preview; stable 0.5.3 retains its existing
 Bubblewrap/PRoot choices.
 
 Create a separate machine profile and worker root when changing an execution

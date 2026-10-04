@@ -9,6 +9,8 @@ from __future__ import annotations
 import argparse
 import contextlib
 import fcntl
+import hashlib
+import heapq
 import json
 import os
 import re
@@ -84,6 +86,7 @@ def launch(project, payload):
         work = project / "files" if kind == "command" else root / "workspace"
         work.mkdir(exist_ok=True)
         inputs = []
+        input_manifest = {}
         if kind == "simulation":
             total = 0
             for path in (project / "files").rglob("*"):
@@ -102,6 +105,15 @@ def launch(project, payload):
                 target.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(path, target)
                 inputs.append(relative.as_posix())
+                stat = target.stat()
+                with target.open("rb") as stream:
+                    digest = hashlib.file_digest(stream, "sha256").hexdigest()
+                input_manifest[relative.as_posix()] = dict(
+                    sha256=digest,
+                    bytes=stat.st_size,
+                    mtime_ns=stat.st_mtime_ns,
+                    ctime_ns=stat.st_ctime_ns,
+                )
         request = dict(
             id=identifier,
             name=name,
@@ -110,6 +122,7 @@ def launch(project, payload):
             timeout_seconds=timeout,
             work_directory=str(work),
             inputs=inputs,
+            input_manifest=input_manifest,
             created_at=time.time(),
             scientific_status="exploration",
             source_turn=read(project / "project.json").get("active_turn"),
@@ -147,6 +160,45 @@ def launch(project, payload):
     return snapshot(project, identifier)
 
 
+def file_role(path, name, request):
+    """Distinguish workspace results from the project snapshot retained as inputs."""
+    if request.get("kind") == "command":
+        return "shared"
+    if name not in request.get("inputs", []):
+        return "output"
+    original = request.get("input_manifest", {}).get(name)
+    if not original:
+        # Older jobs recorded paths only; do not invent content provenance.
+        return "input"
+    stat = path.stat()
+    if stat.st_size != original["bytes"]:
+        return "modified_input"
+    if (stat.st_mtime_ns, stat.st_ctime_ns) == (
+        original["mtime_ns"],
+        original["ctime_ns"],
+    ):
+        return "input"
+    with path.open("rb") as stream:
+        digest = hashlib.file_digest(stream, "sha256").hexdigest()
+    return "input" if digest == original["sha256"] else "modified_input"
+
+
+def workspace_files(work, request):
+    for path in work.rglob("*"):
+        relative = path.relative_to(work)
+        if path.is_symlink() or any(p.startswith(".") for p in relative.parts):
+            continue
+        try:
+            if path.is_file() and path.resolve().is_relative_to(work):
+                name = relative.as_posix()
+                yield dict(
+                    name=name, bytes=path.stat().st_size, role=file_role(path, name, request)
+                )
+        except FileNotFoundError:
+            # A live solver can remove or replace an output while it is indexed.
+            continue
+
+
 def snapshot(project, identifier, *, include_files=False):
     root = resolve(Path(project), identifier)
     request, state = read(root / "request.json"), read(root / "state.json")
@@ -155,7 +207,7 @@ def snapshot(project, identifier, *, include_files=False):
     if status not in TERMINAL and not live and time.time() - request["created_at"] > 3:
         status = "interrupted"
     result = (
-        request
+        {k: v for k, v in request.items() if k != "input_manifest"}
         | state
         | dict(
             status=status,
@@ -168,16 +220,20 @@ def snapshot(project, identifier, *, include_files=False):
     )
     if include_files:
         work = Path(request["work_directory"])
-        files = []
-        for path in work.rglob("*"):
-            relative = path.relative_to(work)
-            if path.is_symlink() or any(p.startswith(".") for p in relative.parts):
-                continue
-            if path.is_file() and path.resolve().is_relative_to(work):
-                files.append(dict(name=relative.as_posix(), bytes=path.stat().st_size))
-            if len(files) >= 200:
-                break
-        result["files"] = files
+        # Put new results before copied project files, including when the visible
+        # index reaches its limit. Files are still served from this job's folder.
+        result["files"] = heapq.nsmallest(
+            200,
+            workspace_files(work, request),
+            key=lambda f: (f["role"] == "input", f["name"]),
+        )
+        result["file_provenance"] = (
+            "shared"
+            if request.get("kind") == "command"
+            else "content"
+            if "input_manifest" in request
+            else "paths_only"
+        )
     return result
 
 

@@ -162,7 +162,7 @@ natural-language rules and scientific acceptance still require independent revie
 
 ## Research director: stop and replan
 
-The director is available in the **0.5.4rc1 preview**; stable 0.5.3 keeps its earlier
+The director is available in the **0.5.4rc2 preview**; stable 0.5.3 keeps its earlier
 progress oversight.
 
 New minimal studies enable a research director by default. The launch settings in
@@ -173,11 +173,19 @@ modes retain their existing supervision.
 
 The director uses the reviewer route with a fresh context and checks execution
 strategy about every five minutes, including when the worker is waiting for a
-long experiment. Native worker turns still checkpoint within five minutes.
+long experiment. Since rc2, new studies can defer model
+reviews of healthy, unchanged work to at most 15 minutes, with operational checks
+at up to one-minute intervals during deferral. A changed record/plan or steering,
+pending replan, transport failure, stale telemetry, runtime risk or near deadline
+restores the shorter cadence. Existing stored study policies retain their cadence.
+The monitor shows this policy and a deferred review's latest scheduled time.
+Native worker turns still checkpoint within five minutes.
 Each director call has a two-minute allowance, separate from the worker's turn
 allowance; invalid or interrupted decisions receive a bounded retry delay.
 It receives remaining wall time, recorded coverage/cost, active experiment
-telemetry and recent plans. It evaluates scientific usefulness and budget
+telemetry and recent plans. The audit repair also identifies evidence changed
+since the last successful strategy review; extensive methods qualification
+remains a separate review. It evaluates scientific usefulness and budget
 feasibility separately. Its role is to obtain useful complete trajectories before
 refining details, without imposing a fixed phase schedule.
 
@@ -207,6 +215,15 @@ reads, idempotent replay and short
 exploratory diagnostics remain available. Acknowledgement records a response,
 not scientific approval. Decisions and responses appear in **Evidence & review**.
 The durable records live under `director/` and `director-acks/`.
+
+The audit repair makes derived journal, bounded-context and report/navigation
+errors visible under **Harness diagnostics** while allowing the study to keep
+working. Recovery contexts cite actual receipts and never create scientific
+approval. Primary scientific-state failure still stops work, and supervisor
+completion requires a persisted final report. After an early error stop, the
+monitor retains its cause and unused wall time even when the original deadline
+has since expired. It also separates role-level cached/uncached input and source
+execution time from submission-to-result latency; native counters are not invoices.
 
 `lab.cancel('exp_ID', reason='...')` can stop a named experiment in the current
 study. `lab.run(..., monitor={...})` optionally publishes bounded live JSON or

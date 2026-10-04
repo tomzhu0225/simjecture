@@ -61,3 +61,77 @@ def test_waiting_for_running_job_does_not_spend_provider_turns(tmp_path, monkeyp
     assert waits == [1] * 5
     assert supervisor.state["status"] == "cancelled"
     assert "waiting_for" not in supervisor.state
+
+
+def test_derived_report_failure_does_not_end_the_campaign(tmp_path, monkeypatch):
+    service = ResearchService.create(
+        tmp_path / "study", "Recovery preserves the claim", wall_seconds=60
+    )
+    instructions = tmp_path / "instructions.txt"
+    instructions.write_text("Diagnose errors and continue within the original wall budget.")
+    supervisor = ResearchSupervisor(
+        argparse.Namespace(
+            campaign=service.root,
+            state_dir=service.root / "supervisor",
+            wall_seconds=60,
+            instructions_file=instructions,
+            backend="codex",
+            model="fixture",
+            judge_model="fixture",
+        )
+    )
+    deadline = supervisor.state["deadline"]
+    for name in [
+        "process_methods",
+        "process_reviews",
+        "maintain_journal",
+        "run_oversight",
+        "recovery_wait",
+        "observe_turn",
+    ]:
+        monkeypatch.setattr(supervisor, name, lambda *args: None)
+    monkeypatch.setattr(supervisor, "prompt", lambda: "Safe recovery context")
+    monkeypatch.setattr(supervisor.service, "cancel_active", lambda: None)
+
+    def broken(*args):
+        raise PermissionError("Generated report directory is unavailable")
+
+    monkeypatch.setattr("conjecture_solver.research_supervisor.write_report", broken)
+    calls = []
+
+    def launch(*args, **kwargs):
+        calls.append(supervisor.state["round"])
+        if len(calls) == 2:
+            supervisor.cancelled = True
+        return 0
+
+    monkeypatch.setattr(supervisor, "launch", launch)
+    assert supervisor.run() == 0
+    assert len(calls) == 2
+    assert supervisor.state["diagnostic_errors"]["report"]["count"] >= 1
+    assert supervisor.state["deadline"] == deadline
+    assert not service.status()["completed"]
+
+
+def test_recovered_report_diagnostics_are_cleared(tmp_path, monkeypatch):
+    service = ResearchService.create(tmp_path / "study", "A diagnostic fixture", wall_seconds=60)
+    instructions = tmp_path / "instructions.txt"
+    instructions.write_text("Keep report recovery visible.")
+    sup = ResearchSupervisor(
+        argparse.Namespace(
+            campaign=service.root,
+            state_dir=service.root / "supervisor",
+            instructions_file=instructions,
+            backend="codex",
+            model="fixture",
+            wall_seconds=60,
+            judge_model="fixture",
+        )
+    )
+    sup.diagnostic_error("navigation", "Markdown destination unavailable")
+    monkeypatch.setattr(
+        "conjecture_solver.research_supervisor.write_report",
+        lambda *args: {"diagnostic_errors": []},
+    )
+    sup.report()
+    assert not sup.state["diagnostic_errors"]

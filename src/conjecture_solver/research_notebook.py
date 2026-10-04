@@ -430,12 +430,16 @@ class NotebookService:
             recent_reviews=len(snapshot["reviews"]),
             notes=len(notebook),
             missing_cases=len(snapshot["audit"]["coverage"]),
+            progress=len(snapshot.get("progress", [])),
+            execution_costs=sum(e.get("measured_wall_seconds") is not None for e in journal),
             accepted_claims=sum(
                 (r.get("verdict") or {}).get("decision") == "approved" for r in snapshot["reviews"]
             ),
             active_experiments=sum(e["status"] in {"queued", "running"} for e in experiments),
         )
-        brief["omitted"] = {key: total - len(brief[key]) for key, total in totals.items()}
+        brief["omitted"] = {
+            key: totals.get(key, len(brief[key])) - len(brief[key]) for key in priority
+        }
         # Reserve space for omission counts too.
         while len(json.dumps(brief, ensure_ascii=False).encode()) > max_bytes:
             key = removable_section()
@@ -444,6 +448,59 @@ class NotebookService:
             brief[key].pop()
             brief["omitted"][key] += 1
         return brief
+
+    def recovery_brief(self, *, max_bytes=16000):
+        """Keep context-formatting defects out of the scientific execution loop."""
+        if not isinstance(max_bytes, int) or not 2048 <= max_bytes <= 64000:
+            raise ValueError("Brief budget must be 2048..64000 bytes")
+        try:
+            return self.brief(max_bytes=max_bytes)
+        except (OSError, ValueError, KeyError, TypeError) as error:
+            # Reading primary scientific state must still succeed. Do not replace
+            # corrupted receipts or review state with an invented empty campaign.
+            snapshot = self.status(compact=True)
+            experiments = snapshot["experiments"]
+            terminal = sorted(
+                (e for e in experiments if e["status"] not in {"queued", "running"}),
+                key=lambda e: e["created_at"],
+                reverse=True,
+            )
+            body = dict(
+                hypothesis=shorten(self.manifest["hypothesis"], 250),
+                authority="Degraded recovery context; only independent verdicts accept claims.",
+                remaining_seconds=snapshot["remaining_seconds"],
+                completed=snapshot["completed"],
+                counts=dict(
+                    experiments=len(experiments),
+                    execution=dict(Counter(e["status"] for e in experiments)),
+                ),
+                current_evidence=dict(
+                    latest_completed={k: terminal[0][k] for k in ("id", "status")}
+                    if terminal
+                    else None,
+                ),
+                active_experiments=[
+                    {k: e[k] for k in ("id", "status")}
+                    for e in experiments
+                    if e["status"] in {"queued", "running"}
+                ][:8],
+                retrieval=dict(
+                    receipts="../experiments/ID.json",
+                    full_ledger="../research_report.json",
+                    notebook="lab.notes(limit=20, offset=0)",
+                    status="lab.status()",
+                ),
+                context_warning=dict(
+                    component="brief",
+                    error=shorten(f"{type(error).__name__}: {error}", 240),
+                    fallback=True,
+                ),
+            )
+            while len(json.dumps(body, ensure_ascii=False).encode()) > max_bytes:
+                if not body["active_experiments"]:
+                    raise ValueError("Recovery context exceeds requested budget") from error
+                body["active_experiments"].pop()
+            return body
 
     def write_brief(self):
         from .research_service import put

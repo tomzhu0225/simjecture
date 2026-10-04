@@ -489,6 +489,8 @@ def agent_tools(root, deadline, project=None, workspace=None):
             """Launch an interactive simulation in a permanent named run folder.
             Project input files are copied into its workspace; run the command in foreground.
             Returns immediately. The browser opens a side monitor with live logs and outputs.
+            Save run-specific figures in the returned work_directory; keep cross-run reports
+            in the conversation files directory. Copied project inputs are not run outputs.
             This is exploration, not independently accepted scientific evidence.
 
             Args:
@@ -863,6 +865,9 @@ def run_external(prompt, root, config, turn, workspace=None, *, wall_seconds=Non
             "job with permanent inputs/outputs and a live browser monitor. "
             f"w.simulation({root.parent.name!r}, 'run-id') reads status, output and files. "
             "Use this for numerical runs instead of untracked background shell processes. "
+            "Save run-specific analysis and figures in that run's returned work_directory; "
+            "keep cross-run reports and comparisons in the shared project files directory. "
+            "Copied project inputs are not outputs of the new run. "
             "Use Markdown, LaTeX equations, language-labelled code fences, and image links "
             "to saved relative file paths or simulation:<run-id>/figure.png. "
             "All numerical attempts, including smoke tests, belong in project files and "

@@ -240,7 +240,7 @@ SCHEMA:
             ),
             guided_commissioning=self.service.manifest.get("guided_commissioning"),
             method=method,
-            snapshot=self.service.brief(),
+            snapshot=self.context_brief(),
             recent_activity=self.state.get("last_turn_trace"),
             no_progress_streak=streak,
             receipt_progress=self.service.progress_summary(

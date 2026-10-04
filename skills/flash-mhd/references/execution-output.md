@@ -62,9 +62,51 @@ placement, or refinement level. In particular:
   diagnostic variable is absent or stale;
 - distinguish checkpoint state from reduced plot output.
 
+For restarts, check actual checkpoint timestamps rather than assuming an insertion
+time from a filename. Make a separate writable copy of a sealed checkpoint for
+intentional edits; a metadata-preserving copy may retain its read-only permissions.
+Keep the original identity and quantify each intended state change. Plot-file
+comparisons must account for their stored precision; do not silently relax a failed
+conservation or identity rule after seeing the result.
+
+Tagged diagnostic CSV can mix strings and numbers. Parse the named numeric columns
+explicitly, and check stage/timestamp pairing before subtracting operator budgets.
+Do not let a mixed string array enter energy arithmetic.
+
 Write compact JSON analysis summaries with a top-level `checks` object and
 quantitative metrics supporting each boolean. Preserve the analysis source and
 raw data that determine those metrics.
+
+For multigroup energy inventories, resolve whether the stored group fields are
+specific energy or energy density from the installed source/metadata. Specific
+energy requires density weighting before volume integration. Check a same-time
+inventory against a native solver budget row; do not infer units from `r001` or
+assume every FLASH build uses the same convention.
+
+When comparing radiation yields, retain the prospectively defined window for
+each realization and also inspect a common interval. A change in a peak's width
+can change the integrated yield without a matching change in the common-window
+emission. Neither difference identifies reconnection heating by itself.
+
+## Diagnostics and intentional stops
+
+Before spending hours on an evolution, exercise its actual analyzer, summary
+writer and packaging on a retained representative state. Include the intentional
+early-stop path: it can follow different code from normal completion. Reuse the
+same diagnostic schema for live and final state inspections so a finalizer does
+not expect keys absent from the reader that produced its records.
+
+NumPy scalars need conversion to Python scalars when writing ordinary JSON;
+`np.generic.item()` covers NumPy booleans as well as integers/floats. Arrays can
+be converted with `tolist()` when a compact array is justified. Keep
+`allow_nan=False`; converting an invalid or missing quantity to zero would hide
+the failure. Write summaries atomically, and preserve raw states, logs and the
+stop reason in a finalizer even if a later analysis check fails.
+
+A failed summary writer does not establish a failed numerical evolution. Inspect
+the native log and retained states, then record the execution and analysis
+limitations separately. Corrected postprocessing is a new analysis artifact;
+the original failed receipt remains part of the history.
 
 ## Failure interpretation
 

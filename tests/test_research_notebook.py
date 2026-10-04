@@ -152,6 +152,90 @@ def test_generated_brief_does_not_count_as_new_research(tmp_path):
     assert durable_signature(s) != before
 
 
+@pytest.mark.parametrize("max_bytes", [2048, 4096, 6000, 8000, 16000])
+def test_compaction_counts_measured_costs_and_progress(tmp_path, max_bytes):
+    from conjecture_solver.research_journal import sync_journal
+
+    s = service(tmp_path)
+    for i in range(17):
+        r = receipt(
+            s,
+            f"exp_{i:03}",
+            payload={"time_ns": i + 1},
+            execution={"wall_seconds": 3000 + i},
+        )
+        s.progress(
+            experiment=r["id"],
+            output="result.json",
+            path="time_ns",
+            quantity="Physical coverage",
+            unit="ns",
+            target=40.0,
+            series=f"mesh-{i}",
+        )
+    sync_journal(s)
+    brief = s.brief(max_bytes=max_bytes)
+    assert len(json.dumps(brief, ensure_ascii=False).encode()) <= max_bytes
+    assert brief["omitted"]["execution_costs"] + len(brief["execution_costs"]) == 17
+    assert brief["omitted"]["progress"] + len(brief["progress"]) == 17
+    assert brief["current_evidence"]["latest_completed"]["id"] == r["id"]
+    assert all(isinstance(v, int) and v >= 0 for v in brief["omitted"].values())
+    for key, value in brief.items():
+        if isinstance(value, list):
+            assert key in brief["omitted"]
+    assert not s.status()["completed"]
+
+
+def test_recovery_context_survives_formatter_failure_with_primary_receipts(tmp_path, monkeypatch):
+    s = service(tmp_path)
+    r = receipt(s)
+    original_hypothesis, deadline = s.manifest["hypothesis"], s.manifest["deadline"]
+
+    def broken(**kwargs):
+        raise KeyError("execution_costs")
+
+    monkeypatch.setattr(s, "brief", broken)
+    b = s.recovery_brief(max_bytes=2048)
+    assert len(json.dumps(b, ensure_ascii=False).encode()) <= 2048
+    assert b["current_evidence"]["latest_completed"]["id"] == r["id"]
+    assert b["context_warning"]["fallback"]
+    assert "execution_costs" in b["context_warning"]["error"]
+    assert not b["completed"]
+    assert s.manifest["hypothesis"] == original_hypothesis and s.manifest["deadline"] == deadline
+
+
+def test_recovery_context_does_not_hide_primary_state_failure(tmp_path, monkeypatch):
+    s = service(tmp_path)
+
+    def broken(**kwargs):
+        raise KeyError("primary_record")
+
+    monkeypatch.setattr(s, "status", broken)
+    with pytest.raises(KeyError, match="primary_record"):
+        s.recovery_brief(max_bytes=2048)
+
+
+def test_primary_report_survives_generated_brief_and_navigation_failure(tmp_path, monkeypatch):
+    from conjecture_solver import research_audit
+
+    s = service(tmp_path)
+    r = receipt(s)
+
+    def brief_broken():
+        raise KeyError("execution_costs")
+
+    def navigation_broken(*args):
+        raise PermissionError("Navigation file is read-only")
+
+    monkeypatch.setattr(s, "write_brief", brief_broken)
+    monkeypatch.setattr(research_audit, "_write_navigation", navigation_broken)
+    report = research_audit.write_report(s, {"status": "running"})
+    saved = json.loads((s.root / "research_report.json").read_text())
+    assert saved["experiments"][0]["id"] == r["id"]
+    assert not saved["completed"]
+    assert {w["component"] for w in report["diagnostic_errors"]} == {"brief", "navigation"}
+
+
 def test_comparison_preserves_null_missing_and_failure_without_fake_zero(tmp_path):
     s = service(tmp_path)
     a = receipt(s, "exp_a")

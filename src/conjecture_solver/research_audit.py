@@ -152,12 +152,21 @@ def write_report(service, state):
     from .research_service import put
 
     snapshot = service.status()
-    sync_journal(service)
-    brief = service.write_brief()
+    errors = []
+    try:
+        sync_journal(service)
+    except (OSError, ValueError, KeyError, TypeError) as error:
+        errors.append(dict(component="journal", error=f"{type(error).__name__}: {error}"[:500]))
+    try:
+        brief = service.write_brief()
+    except (OSError, ValueError, KeyError, TypeError) as error:
+        errors.append(dict(component="brief", error=f"{type(error).__name__}: {error}"[:500]))
+        brief = service.recovery_brief()
     report = dict(
         status=state["status"],
         **snapshot,
         research_brief=brief,
+        diagnostic_errors=errors,
         supervision={
             k: state.get(k)
             for k in (
@@ -176,6 +185,15 @@ def write_report(service, state):
         },
     )
     put(service.root / "research_report.json", report)
+    try:
+        _write_navigation(service, state, snapshot)
+    except (OSError, ValueError, KeyError, TypeError) as error:
+        errors.append(dict(component="navigation", error=f"{type(error).__name__}: {error}"[:500]))
+        put(service.root / "research_report.json", report)
+    return report
+
+
+def _write_navigation(service, state, snapshot):
     # A readable navigation layer; immutable receipt paths remain unchanged.
     from urllib.parse import quote
 

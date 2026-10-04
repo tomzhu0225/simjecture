@@ -67,6 +67,7 @@ def sync_journal(service):
     previous = {}
     for record in records:
         b = record["binding"]
+        execution = record.get("execution") or {}
         family = (b.get("source"), b.get("capability"))
         preceding = previous.get(family)
         implementation = fingerprint(
@@ -91,16 +92,11 @@ def sync_journal(service):
             relationship_scope="Chronology/source comparison; not inferred scientific causality",
             purpose=record.get("purpose"),
             plan=record.get("plan"),
-            measured_wall_seconds=record.get("execution", {}).get("wall_seconds"),
+            measured_wall_seconds=execution.get("wall_seconds"),
             error=record.get("error")
-            or (
-                record.get("execution", {}).get("stderr", "")[-1500:]
-                if record["status"] == "failed"
-                else None
-            ),
+            or (execution.get("stderr", "")[-1500:] if record["status"] == "failed" else None),
             execution_details={
-                k: record.get("execution", {}).get(k)
-                for k in ("returncode", "timed_out", "workspace_exceeded")
+                k: execution.get(k) for k in ("returncode", "timed_out", "workspace_exceeded")
             },
             input_mutations=record.get("input_mutations", []),
             output_findings=record.get("output_findings", []),
