@@ -4,6 +4,10 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+- Separate interactive simulation outputs from copied project inputs in the GUI.
+  Record input hashes for new runs, identify changed inputs, and label command
+  files and cross-run project reports as shared. Preserve older snapshots and
+  expose their limited input provenance without attributing copied results to a run.
 - Fix compact research contexts failing on progress/execution-cost eviction.
   Recover derived journal, context and report/navigation errors with visible
   diagnostics; keep primary scientific-state validation and final-report

@@ -120,6 +120,92 @@ window.WorkspaceMonitor = {
     async function update() {
       await Promise.all(["simulations", "commands"].map(updatePanel));
     }
+    function renderFiles(container, job, p, identifier) {
+      const revision = JSON.stringify([
+        job.kind,
+        job.native,
+        job.files,
+        job.file_provenance,
+      ]);
+      if (container.dataset.revision === revision) return;
+      const inputsOpen = container.querySelector(".run-inputs")?.open || false;
+      container.dataset.revision = revision;
+      container.replaceChildren();
+      const shared = job.kind === "command";
+      const inputs = new Set(job.inputs || []);
+      const rows = (job.files || []).map((file) => ({
+        ...file,
+        role:
+          file.role ||
+          (shared ? "shared" : inputs.has(file.name) ? "input" : "output"),
+      }));
+      const appendFiles = (target, entries, previews) => {
+        for (const file of entries) {
+          const row = node("div");
+          row.dataset.file = file.name;
+          const source = `simulation:${identifier}/${file.name}`;
+          if (previews) {
+            const figure = window.WorkspaceRich.figure(source, file.name, p);
+            if (figure) row.append(figure);
+          }
+          const a = node("a", file.name, "file-row");
+          a.href = window.WorkspaceRich.artifactURL(source, p, false);
+          row.append(a);
+          if (file.role === "modified_input")
+            row.append(
+              node("small", "Changed from the copied input", "field-help"),
+            );
+          target.append(row);
+        }
+      };
+      const outputs = node(
+        "div", undefined, shared ? "run-shared-files" : "run-outputs",
+      );
+      outputs.append(
+        node("h4", shared ? "Project files (shared)" : "Run outputs"),
+        node(
+          "p",
+          shared
+            ? "Commands use the shared project folder. These files are not specific to this command."
+            : "Files created or changed in this simulation’s workspace.",
+          "field-help",
+        ),
+      );
+      const results = rows.filter((file) => file.role !== "input");
+      appendFiles(outputs, results, !shared);
+      if (!results.length)
+        outputs.append(
+          node(
+            "p",
+            shared ? "No project files listed." : "No run outputs saved yet.",
+            "field-help",
+          ),
+        );
+      container.append(outputs);
+      const copied = rows.filter((file) => file.role === "input");
+      if (copied.length) {
+        const details = node("details", undefined, "run-inputs");
+        details.open = inputsOpen;
+        details.append(node("summary", `Copied inputs (${copied.length})`));
+        details.append(
+          node(
+            "p",
+            "Project files copied when this run started. They can include reports and results from other simulations.",
+            "field-help",
+          ),
+        );
+        if (job.file_provenance === "paths_only")
+          details.append(
+            node(
+              "p",
+              "This older run recorded input paths only; changes to those input files cannot be identified retrospectively.",
+              "field-help",
+            ),
+          );
+        appendFiles(details, copied, false);
+        container.append(details);
+      }
+    }
     async function updatePanel(panel) {
       const p = project();
       if (!p || !selected[panel] || inFlight[panel]) return;
@@ -142,6 +228,7 @@ window.WorkspaceMonitor = {
           job.status,
           job.output,
           job.files,
+          job.file_provenance,
           job.error,
         ]);
         if (revision === detailRevision[panel]) return;
@@ -236,28 +323,7 @@ window.WorkspaceMonitor = {
           output.textContent = text;
           output.scrollTop = pinned ? output.scrollHeight : scroll;
         }
-        const files = container.querySelector(".simulation-files");
-        const names = new Set((job.files || []).map((f) => f.name));
-        for (const row of files.querySelectorAll("[data-file]")) {
-          if (!names.has(row.dataset.file)) row.remove();
-        }
-        if (names.size && !files.querySelector("h4"))
-          files.prepend(node("h4", "Saved files"));
-        const existing = new Set(
-          [...files.querySelectorAll("[data-file]")].map((e) => e.dataset.file),
-        );
-        for (const file of job.files || []) {
-          if (existing.has(file.name)) continue;
-          const row = node("div");
-          row.dataset.file = file.name;
-          const source = `simulation:${identifier}/${file.name}`;
-          const figure = window.WorkspaceRich.figure(source, file.name, p);
-          if (figure) row.append(figure);
-          const a = node("a", file.name, "file-row");
-          a.href = window.WorkspaceRich.artifactURL(source, p, false);
-          row.append(a);
-          files.append(row);
-        }
+        renderFiles(container.querySelector(".simulation-files"), job, p, identifier);
       } finally {
         inFlight[panel] = false;
       }

@@ -126,6 +126,15 @@ Conversation-side **Simulations** are exploration results. Recorded experiments
 and completed processes do not by themselves establish scientific acceptance;
 read the independent reviews and the scope of the accepted finding.
 
+Selecting a simulation shows **Run outputs** from its own workspace. **Copied
+inputs** is a separate, collapsed section: the launch snapshot can contain shared
+reports or results from earlier runs, which are not outputs of the selected run.
+New runs record input hashes, so a changed input file appears with the run outputs.
+Older runs have only the recorded input paths; edits to those paths cannot be
+distinguished retrospectively. The **Project files** tab contains shared inputs,
+reports and comparisons for the conversation. Commands work in that shared folder,
+so their files are explicitly labelled shared rather than attributed to one command.
+
 Continuing a study from its detailed view prepares the next phase in the owning
 conversation, after you submit the continuation dialog. Cancel or Escape before
 submission leaves the record unchanged. A busy conversation or existing unlaunched
