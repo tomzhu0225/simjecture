@@ -86,6 +86,23 @@ def test_completed_status_is_published_after_final_report(tmp_path, monkeypatch)
     assert json.loads(report_path.read_text())["completed"]
 
 
+def test_failed_final_report_cannot_publish_completed_status(tmp_path, monkeypatch):
+    _, supervisor = make(tmp_path)
+    monkeypatch.setattr(supervisor, "process_methods", lambda: None)
+    monkeypatch.setattr(supervisor, "process_reviews", lambda: None)
+    monkeypatch.setattr(supervisor.service, "status", lambda: {"completed": True})
+    monkeypatch.setattr(supervisor.service, "cancel_active", lambda: None)
+    monkeypatch.setattr("conjecture_solver.research_supervisor.time.sleep", lambda seconds: None)
+
+    def broken_report(*args):
+        raise PermissionError("Final report cannot be written")
+
+    monkeypatch.setattr("conjecture_solver.research_supervisor.write_report", broken_report)
+    assert supervisor.run() == 1
+    assert supervisor.state["status"] == "paused_external_error"
+    assert "Final report" in supervisor.state["last_error"]
+
+
 def transcript(path, *, text="I will launch the refinement now.", command=None):
     events = [{"type": "item.completed", "item": {"type": "agent_message", "text": text}}]
     if command:

@@ -103,6 +103,32 @@ def test_expired_status_does_not_claim_running(tmp_path):
     assert status["remaining"] == 0
 
 
+def test_expired_budget_retains_early_stop_error_and_actual_elapsed(tmp_path):
+    s = ResearchService.create(tmp_path / "study", "Q")
+    now = time.time()
+    s.manifest.update(created_at=now - 1000, deadline=now - 100)
+    put(s.root / "research.json", s.manifest)
+    (s.root / "supervisor").mkdir()
+    put(
+        s.root / "supervisor/state.json",
+        dict(
+            status="paused_external_error",
+            started_at=now - 1000,
+            deadline=now - 100,
+            updated_at=now - 400,
+            last_error="execution_costs",
+            diagnostic_errors={"brief": {"error": "Context formatter failed", "count": 1}},
+        ),
+    )
+    status = study_status(s.root)
+    assert status["status"] == "budget_exhausted" and status["remaining"] == 0
+    assert status["recorded_error"] == "execution_costs"
+    assert status["elapsed"] == pytest.approx(600)
+    assert status["stopped_with_remaining_seconds"] == pytest.approx(300)
+    assert "stopped early" in status["activity"]
+    assert status["diagnostic_errors"]["brief"]["count"] == 1
+
+
 def test_empty_judge_output_retries_once_and_counts_both_attempts(tmp_path, monkeypatch):
     from conjecture_solver import workspace_agent as agent
 

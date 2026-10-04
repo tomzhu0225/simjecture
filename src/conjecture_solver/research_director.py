@@ -36,6 +36,11 @@ class ResearchDirector:
 
         snapshot = self.service.status(compact=True)
         active = []
+        records = {
+            kind: {r["id"]: r.get("status") for r in self.service._all(kind)}
+            for kind in ("experiments", "notebook", "methods", "reviews", "progress")
+        }
+        previous = self.state.get("director_seen_records", {})
         now = time.time()
         for r in snapshot["experiments"]:
             if r["status"] in {"queued", "running"}:
@@ -54,6 +59,8 @@ class ResearchDirector:
                         if t
                         else None,
                         cancel_requested=r.get("cancel_requested", False),
+                        transport_status=r.get("transport_status")
+                        or ("connected" if r.get("machine", "local") == "local" else "unknown"),
                     )
                 )
         return dict(
@@ -61,10 +68,21 @@ class ResearchDirector:
             operator_protocol=self.service.manifest.get("operator_protocol"),
             operator_steering=steering(self.service.root),
             remaining_seconds=snapshot["remaining_seconds"],
-            snapshot=self.service.brief(max_bytes=8000),
+            snapshot=self.context_brief(max_bytes=8000),
             active_experiments=active,
             previous_decisions=self.service.director_status()[:2],
             pending_replan=self.service.pending_director_replan(),
+            first_strategy_review=not bool(previous),
+            evidence_changes={
+                kind: [
+                    dict(id=identifier, status=status)
+                    for identifier, status in index.items()
+                    if identifier not in previous.get(kind, {})
+                    or previous[kind][identifier] != status
+                ]
+                for kind, index in records.items()
+            },
+            record_index=records,
             authority="Execution strategy only; cannot change hypothesis or approve claims",
         )
 
@@ -92,6 +110,12 @@ diagnostics, or a successful startup do not establish a path to the original obs
 Consider actual costs and numerical limits. Test adaptive timestepping/accuracy, mesh and
 rank scaling, or justified patches/restarts before continuing an unaffordable configuration.
 Do not prescribe fixed phases or hourly schedules. Give a concrete useful next action.
+This is execution strategy review, not a fresh methods or claim audit. Reuse the
+recorded limitations of unchanged cases. Inspect new artifacts only when they bear
+on the current decision; request a separate methods review for extensive qualification.
+Start with evidence_changes and the previous decision. Retrieve selected fields or
+bounded excerpts when possible; avoid printing entire large JSON, CSV or trace files.
+Reopen unchanged sources when a concrete uncertainty affects the execution decision.
 An intentional timing/diagnostic pilot need not reach the full scientific window; evaluate
 whether it has collected enough information and whether its remaining cost is worthwhile.
 
@@ -109,8 +133,68 @@ SCHEMA:
 """
             + json.dumps(DirectorVerdict.model_json_schema())
             + "\nPACKET:\n"
-            + json.dumps(packet)
+            + json.dumps({k: v for k, v in packet.items() if k != "record_index"})
         )
+
+    def director_strategy_signature(self, packet):
+        """Exclude changing clocks/telemetry; retain changes to work and steering."""
+        return fingerprint(
+            dict(
+                active=[
+                    {
+                        k: r.get(k)
+                        for k in (
+                            "id",
+                            "status",
+                            "purpose",
+                            "timeout",
+                            "monitor",
+                            "cancel_requested",
+                        )
+                    }
+                    for r in packet["active_experiments"]
+                ],
+                records=packet["record_index"],
+                operator_steering=packet["operator_steering"],
+                pending_replan=packet["pending_replan"],
+                context_warning=packet["snapshot"].get("context_warning"),
+            )
+        )
+
+    def defer_unchanged_director(self, packet, signature, now, last):
+        policy = self.service.manifest["director_policy"]
+        interval = policy.get("interval_seconds", 300)
+        # Pre-existing studies retain their recorded cadence.
+        maximum = policy.get("unchanged_review_seconds", interval)
+        previous = self.state.get("director_feedback", {})
+        if (
+            now - last >= maximum
+            or self.state.get("director_strategy_signature") != signature
+            or previous.get("decision") != "continue"
+            or previous.get("budget_feasibility") != "feasible"
+            or packet["pending_replan"]
+            or packet["remaining_seconds"] <= maximum
+            or not packet["active_experiments"]
+        ):
+            return False
+        for r in packet["active_experiments"]:
+            t = r.get("telemetry") or {}
+            estimate = r.get("estimated_additional_seconds")
+            elapsed = r.get("elapsed_seconds", 0)
+            timeout = r.get("timeout")
+            if (
+                r["status"] != "running"
+                or r.get("cancel_requested")
+                or r.get("transport_status") != "connected"
+                or not t.get("available")
+                or (r.get("telemetry_age_seconds") or 0) > 60
+                or estimate is None
+                or estimate > packet["remaining_seconds"]
+                or timeout is None
+                or elapsed + estimate > 0.85 * timeout
+            ):
+                return False
+        return True
 
     def run_director(self, *, force=False):
         policy = self.service.manifest.get("director_policy", {})
@@ -124,7 +208,20 @@ SCHEMA:
             return False
         if now < self.state.get("director_retry_after", 0) or self.state["deadline"] - now < 60:
             return False
+        if not force and now < self.state.get("director_next_check_at", 0):
+            return False
         packet = self.director_packet()
+        signature = self.director_strategy_signature(packet)
+        if not force and self.defer_unchanged_director(packet, signature, now, last):
+            self.state["director_deferred_count"] = self.state.get("director_deferred_count", 0) + 1
+            self.state["director_next_review_at"] = last + policy["unchanged_review_seconds"]
+            self.state["director_next_check_at"] = min(
+                now + 60, self.state["director_next_review_at"]
+            )
+            self.save()
+            return False
+        self.state.pop("director_next_review_at", None)
+        self.state.pop("director_next_check_at", None)
         self.state["director_count"] = self.state.get("director_count", 0) + 1
         d = self.directory / f"director-{self.state['director_count']:05d}"
         d.mkdir(exist_ok=True)
@@ -197,6 +294,8 @@ SCHEMA:
                 director_feedback=record,
                 director_retry_after=0,
                 last_director_error=None,
+                director_strategy_signature=signature,
+                director_seen_records=packet["record_index"],
             )
             if verdict["decision"] == "replan":
                 self.state["director_wake_worker"] = True

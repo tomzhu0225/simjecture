@@ -14,7 +14,8 @@ from conjecture_solver.web.server import create_server
 
 @pytest.mark.parametrize("width", [1440, 390])
 @pytest.mark.parametrize("register_target", [True, False])
-def test_recorded_progress_and_cost_are_visible(tmp_path, width, register_target):
+@pytest.mark.parametrize("expired", [True, False])
+def test_recorded_progress_and_cost_are_visible(tmp_path, width, register_target, expired):
     playwright = pytest.importorskip("playwright.sync_api")
     app = SimjectureWebApplication(runs_root=tmp_path / "runs", scan_roots=(tmp_path,))
     s = ResearchService.create(
@@ -36,6 +37,7 @@ def test_recorded_progress_and_cost_are_visible(tmp_path, width, register_target
             binding=s._binding("calc.py", (), (), None),
             outputs=["result.json"],
             execution={"wall_seconds": 13500},
+            finished_at=time.time() + 14000,
             artifacts={"result.json": {"sha256": sha(p), "bytes": p.stat().st_size}},
         ),
     )
@@ -65,6 +67,25 @@ def test_recorded_progress_and_cost_are_visible(tmp_path, width, register_target
         ),
     )
     (s.root / "director").mkdir()
+    (s.root / "supervisor").mkdir()
+    put(
+        s.root / "supervisor/state.json",
+        dict(
+            status="running",
+            deadline=s.manifest["deadline"],
+            diagnostic_errors={
+                "brief": {"error": "Compact context recovery is active", "count": 1}
+            },
+            usage_by_thread={
+                "worker-session": {
+                    "input_tokens": 1000,
+                    "output_tokens": 20,
+                    "cached_input_tokens": 800,
+                }
+            },
+            usage_roles_by_thread={"worker-session": "worker"},
+        ),
+    )
     put(
         s.root / "director" / "director_test.json",
         dict(
@@ -95,6 +116,22 @@ def test_recorded_progress_and_cost_are_visible(tmp_path, width, register_target
             target=20.5,
             estimate_rate=True,
         )
+    s.manifest["director_policy"] = dict(
+        enabled=True, interval_seconds=300, unchanged_review_seconds=900
+    )
+    if expired:
+        now = time.time()
+        s.manifest.update(created_at=now - 1000, deadline=now - 100)
+        state_path = s.root / "supervisor/state.json"
+        state = json.loads(state_path.read_text())
+        state.update(
+            status="paused_external_error",
+            updated_at=now - 400,
+            deadline=now - 100,
+            last_error="execution_costs",
+        )
+        put(state_path, state)
+    put(s.root / "research.json", s.manifest)
     campaign = app.registry.register(s.root)
     server = create_server(app, port=0)
     thread = threading.Thread(target=server.serve_forever, daemon=True)
@@ -114,11 +151,26 @@ def test_recorded_progress_and_cost_are_visible(tmp_path, width, register_target
             playwright.expect(panel).to_contain_text("not scientific evidence")
             director = page.locator(".research-director")
             playwright.expect(director).to_contain_text("budget infeasible")
+            playwright.expect(director).to_contain_text("Strategy review interval:")
             playwright.expect(director).to_contain_text("Awaiting worker plan or challenge")
             playwright.expect(director).to_contain_text("awaiting confirmation")
             playwright.expect(director).to_contain_text(
                 "recorded control error: Temporary worker transport failure"
             )
+            playwright.expect(page.locator(".research-diagnostics")).to_contain_text(
+                "Compact context recovery is active"
+            )
+            playwright.expect(page.locator("#research-trace")).to_contain_text(
+                "800 cached / 200 uncached"
+            )
+            playwright.expect(panel).to_contain_text("Submission to result:")
+            if expired:
+                playwright.expect(page.locator("#research-trace")).to_contain_text(
+                    "Supervisor stopped early: execution_costs"
+                )
+                playwright.expect(page.locator("#research-trace")).to_contain_text(
+                    "remained at the stop."
+                )
             if register_target:
                 playwright.expect(panel).to_contain_text("3D physical time: 2 ns / target 20.5 ns")
                 playwright.expect(panel).to_contain_text("Exceeds remaining wall budget")
@@ -136,7 +188,7 @@ def test_recorded_progress_and_cost_are_visible(tmp_path, width, register_target
             output.mkdir(parents=True, exist_ok=True)
             panel.scroll_into_view_if_needed()
             page.screenshot(
-                path=str(output / f"scientific-progress-{width}-{register_target}.png"),
+                path=str(output / f"scientific-progress-{width}-{register_target}-{expired}.png"),
                 full_page=True,
             )
             assert not errors

@@ -6,12 +6,14 @@ import pytest
 
 from conjecture_solver.research_control import ExperimentMonitor, read_monitor
 from conjecture_solver.research_director import DirectorVerdict
-from conjecture_solver.research_service import ResearchService
+from conjecture_solver.research_service import ResearchService, put
 from conjecture_solver.research_supervisor import ResearchSupervisor
 
 
-def supervisor(tmp_path):
-    s = ResearchService.create(tmp_path / "study", "A full physical trajectory", wall_seconds=900)
+def supervisor(tmp_path, *, wall_seconds=900):
+    s = ResearchService.create(
+        tmp_path / "study", "A full physical trajectory", wall_seconds=wall_seconds
+    )
     instructions = tmp_path / "instructions.txt"
     instructions.write_text(
         "Complete an affordable trajectory then refine; no fixed phase schedule."
@@ -19,7 +21,7 @@ def supervisor(tmp_path):
     args = argparse.Namespace(
         campaign=s.root,
         state_dir=s.root / "supervisor",
-        wall_seconds=900,
+        wall_seconds=wall_seconds,
         instructions_file=instructions,
         backend="codex",
         model="worker",
@@ -31,18 +33,18 @@ def supervisor(tmp_path):
     return sup
 
 
-def active(sup, monkeypatch):
+def active(sup, monkeypatch, *, timeout=700):
     monkeypatch.setattr(sup.service, "_spawn_experiment", lambda record: None)
-    r = sup.service.run("calc.py", outputs=["result.json"], stage="exploration", timeout=700)
+    r = sup.service.run("calc.py", outputs=["result.json"], stage="exploration", timeout=timeout)
     return r
 
 
-def answer(sup, monkeypatch, stops, decision="replan"):
+def answer(sup, monkeypatch, stops, decision="replan", *, budget="infeasible"):
     verdict = dict(
         decision=decision,
         rationale="The measured configuration cannot cover the target in budget.",
         scientific_feasibility="limited",
-        budget_feasibility="infeasible",
+        budget_feasibility=budget,
         stop_experiments=stops,
         next_action=(
             "Commission a cheaper complete trajectory with adaptive stepping and accuracy checks."
@@ -129,9 +131,12 @@ def test_continue_cannot_waive_unacknowledged_replan(tmp_path, monkeypatch):
         pending["id"], response="plan", plan=plan["id"], reason="Measure refinement before scaling."
     )
     assert sup.service.pending_director_replan() is None
-    assert sup.service.run(
-        "calc.py", outputs=["result.json"], stage="exploration", key="new"
-    )["status"] == "queued"
+    assert (
+        sup.service.run("calc.py", outputs=["result.json"], stage="exploration", key="new")[
+            "status"
+        ]
+        == "queued"
+    )
 
 
 def test_pending_replan_survives_bounded_director_history(tmp_path, monkeypatch):
@@ -208,6 +213,70 @@ def test_director_can_redirect_planning_without_experiments(tmp_path, monkeypatc
     assert not sup.service._all("experiments")
 
 
+def healthy_director(tmp_path, monkeypatch):
+    from conjecture_solver.research_service import put
+
+    clock = [1000.0]
+    monkeypatch.setattr("time.time", lambda: clock[0])
+    sup = supervisor(tmp_path, wall_seconds=7200)
+    r = active(sup, monkeypatch, timeout=6000)
+    r.update(status="running", started_at=clock[0])
+
+    def refresh():
+        r["telemetry"] = dict(
+            available=True, observed_at=clock[0], value=10.0, estimated_additional_seconds=100.0
+        )
+        put(sup.service.root / "experiments" / (r["id"] + ".json"), r)
+
+    refresh()
+    answer(sup, monkeypatch, [], decision="continue", budget="feasible")
+    sup.run_director(force=True)
+    return sup, r, clock, refresh
+
+
+def test_unchanged_healthy_job_has_bounded_fewer_model_reviews(tmp_path, monkeypatch):
+    sup, _, clock, refresh = healthy_director(tmp_path, monkeypatch)
+    for elapsed in [300, 600]:
+        clock[0] = 1000 + elapsed
+        refresh()
+        assert not sup.run_director()
+    assert sup.state["director_count"] == 1
+    clock[0] = 1900
+    refresh()
+    sup.run_director()
+    assert sup.state["director_count"] == 2
+    assert sup.state["director_deferred_count"] == 2
+
+
+@pytest.mark.parametrize("change", ["new_plan", "stale_monitor", "runtime_risk", "transport"])
+def test_strategy_change_or_budget_alert_bypasses_deferral(tmp_path, monkeypatch, change):
+    from conjecture_solver.research_service import put
+
+    sup, r, clock, refresh = healthy_director(tmp_path, monkeypatch)
+    clock[0] = 1400
+    refresh()
+    if change == "new_plan":
+        sup.service.note("A new targeted numerical qualification.", kind="next_test")
+    elif change == "stale_monitor":
+        r["telemetry"]["observed_at"] -= 100
+    elif change == "runtime_risk":
+        r["telemetry"]["estimated_additional_seconds"] = 6000
+    else:
+        r["transport_status"] = "unreachable"
+    put(sup.service.root / "experiments" / (r["id"] + ".json"), r)
+    sup.run_director()
+    assert sup.state["director_count"] == 2
+
+
+def test_old_director_policy_retains_five_minute_reviews(tmp_path, monkeypatch):
+    sup, _, clock, refresh = healthy_director(tmp_path, monkeypatch)
+    sup.service.manifest["director_policy"].pop("unchanged_review_seconds")
+    clock[0] = 1400
+    refresh()
+    sup.run_director()
+    assert sup.state["director_count"] == 2
+
+
 def test_strategy_review_runs_while_waiting_and_wakes_worker(tmp_path, monkeypatch):
     sup = supervisor(tmp_path)
     r = active(sup, monkeypatch)
@@ -269,6 +338,26 @@ def test_director_receives_operator_steering_and_claim_remains_fixed(tmp_path):
     p = sup.director_packet()
     assert p["operator_steering"][0]["message"].startswith("Keep this bounded")
     assert p["original_hypothesis"] == "A full physical trajectory"
+
+
+def test_director_delta_uses_last_successful_review_not_last_attempt(tmp_path, monkeypatch):
+    sup = supervisor(tmp_path)
+    r = active(sup, monkeypatch)
+    answer(sup, monkeypatch, [], decision="continue", budget="feasible")
+    assert not sup.run_director(force=True)
+    assert sup.state["director_feedback"]["decision"] == "continue"
+    p = sup.director_packet()
+    assert not p["first_strategy_review"]
+    assert all(not rows for rows in p["evidence_changes"].values())
+    put(sup.root / "experiments" / (r["id"] + ".json"), r | {"status": "succeeded"})
+    note = sup.service.note("A new measured diagnostic needs review", kind="observation")
+    p = sup.director_packet()
+    assert p["evidence_changes"]["experiments"] == [dict(id=r["id"], status="succeeded")]
+    assert p["evidence_changes"]["notebook"] == [dict(id=note["id"], status=None)]
+    answer(sup, monkeypatch, ["exp_unknown"])
+    assert not sup.run_director(force=True)
+    assert sup.director_packet()["evidence_changes"] == p["evidence_changes"]
+    assert "record_index" not in sup.director_prompt(p)
 
 
 def test_director_launch_policy_is_explicit_and_boolean():

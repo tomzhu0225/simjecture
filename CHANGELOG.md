@@ -2,6 +2,21 @@
 
 This project follows semantic versioning. Dates use ISO 8601.
 
+## Unreleased
+
+- Fix compact research contexts failing on progress/execution-cost eviction.
+  Recover derived journal, context and report/navigation errors with visible
+  diagnostics; keep primary scientific-state validation and final-report
+  publication required. Preserve the original hypothesis and wall deadline.
+- Retain early supervisor stop causes and unused budget after expiry. Show
+  cached/uncached usage by role and submission-to-result latency in the monitor.
+- Defer unchanged healthy-job strategy reviews within a 15-minute bound for new
+  studies, while checking operational risk and new evidence at shorter intervals.
+  Retain existing study policies and supply director evidence deltas; independent
+  scientific review and native read-only tools remain available.
+- Document the adaptive aluminium campaign audit and strengthen FLASH guidance
+  for radiation units, comparison windows, JSON output and early-stop analysis.
+
 ## 0.5.4rc1 (preview) — 2026-10-03
 
 - Preserve an unacknowledged replan across subsequent continue decisions and

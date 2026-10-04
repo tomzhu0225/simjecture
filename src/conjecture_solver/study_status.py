@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import math
 import sys
 import threading
 import time
@@ -54,8 +55,14 @@ def study_status(root):
         identity = load_supervisor_record(root)
         if identity and not process_identity_matches(identity):
             status = "interrupted"
+    early_stop = (
+        recorded_status in {"paused_external_error", "interrupted"}
+        and state.get("updated_at", now) < deadline
+    )
     elapsed_end = (
-        min(now, deadline)
+        min(now, state.get("updated_at", now))
+        if early_stop
+        else min(now, deadline)
         if status in {"running", "budget_exhausted"}
         else state.get("updated_at", now)
     )
@@ -67,6 +74,8 @@ def study_status(root):
         activity = status.replace("_", " ")
         if status == "paused_external_error" and state.get("last_error"):
             activity = state.get("provider_attention") or (activity + ": " + state["last_error"])
+        if status == "budget_exhausted" and early_stop:
+            activity += " · stopped early: " + str(state.get("last_error") or recorded_status)
     if state.get("provider_next_retry_at") and status == "running":
         activity = (
             f"Reconnecting provider (attempt {state.get('provider_retry_count', 0)}, "
@@ -90,7 +99,7 @@ def study_status(root):
     }
     from .research_methods import instrument_requirement
 
-    by_role = {}
+    by_role, cache_complete = {}, {}
     for name, counter in by_thread.items():
         role = state.get("usage_roles_by_thread", {}).get(name) or (
             "memory"
@@ -103,9 +112,22 @@ def study_status(root):
             if name.startswith("turn-")
             else "other"
         )
-        row = by_role.setdefault(role, dict(input_tokens=0, output_tokens=0, requests=0))
+        row = by_role.setdefault(
+            role, dict(input_tokens=0, output_tokens=0, requests=0, cached_input_tokens=0)
+        )
         for key in row:
             row[key] += counter.get(key, 0)
+        cache_complete[role] = cache_complete.get(role, True) and bool(
+            counter.get("cache_usage_complete", "cached_input_tokens" in counter)
+        )
+    for role, row in by_role.items():
+        complete = cache_complete[role]
+        row["cache_usage_complete"] = complete
+        row["uncached_input_tokens"] = (
+            row["input_tokens"] - row["cached_input_tokens"]
+            if complete and row["input_tokens"] >= row["cached_input_tokens"]
+            else None
+        )
     usage_details = dict(
         by_role=by_role,
         requests=sum(u.get("requests", 0) for u in counters),
@@ -140,6 +162,13 @@ def study_status(root):
         director_policy=manifest.get("director_policy", {"enabled": False}),
         director_route=state.get("reviewer_route", {}),
         director_decisions=director_decisions,
+        director_next_review_at=state.get("director_next_review_at"),
+        director_deferred_count=state.get("director_deferred_count", 0),
+        diagnostic_errors=state.get("diagnostic_errors", {}),
+        recorded_error=state.get("last_error") if early_stop else None,
+        stopped_with_remaining_seconds=max(0, deadline - state["updated_at"])
+        if early_stop
+        else None,
         live_experiments=[
             {
                 k: e.get(k)
@@ -158,6 +187,12 @@ def study_status(root):
                 status=e["status"],
                 stage=e.get("stage"),
                 wall_seconds=e["execution"]["wall_seconds"],
+                end_to_end_seconds=max(0, e["finished_at"] - e["created_at"])
+                if all(
+                    type(e.get(k)) in {int, float} and math.isfinite(e[k])
+                    for k in ("finished_at", "created_at")
+                )
+                else None,
             )
             for e in reversed(experiments)
             if (e.get("execution") or {}).get("wall_seconds") is not None
