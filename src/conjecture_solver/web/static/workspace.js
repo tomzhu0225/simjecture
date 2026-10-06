@@ -84,27 +84,10 @@ async function api(path, payload) {
 function renderAccount() {
   const h=state.hosting;
   if(hosted && h){const allowed=h.permissions.upload_files;$("file-input").disabled=!allowed;const label=document.querySelector('label[for="file-input"]');if(label){label.hidden=false;label.title=allowed ? "Add project files" : "Sign in to add files";}}
-  let box=$("hosting-account");
-  if(!box){
-    document.body.classList.add("has-account-rail");
-    const rail=el("aside",undefined,"account-rail");rail.setAttribute("aria-label","Workspace and account");
-    const brand=el("a",undefined,"rail-brand");brand.href="/workspace";brand.setAttribute("aria-label","Simjecture");
-    const mark=el("img");mark.src="/favicon.svg";mark.alt="";brand.append(mark);
-    const toggle=el("button","☰","rail-action");toggle.type="button";toggle.title="Toggle conversations";toggle.setAttribute("aria-label","Toggle conversations");toggle.onclick=()=>$("left-sidebar-toggle").click();
-    const fresh=el("button","＋","rail-action");fresh.type="button";fresh.title="New conversation";fresh.setAttribute("aria-label","New conversation");fresh.onclick=()=>$("new-project").click();
-    const monitoring=el("a",undefined,"rail-action rail-monitor");monitoring.href="/monitor";monitoring.title="Experiment monitor";monitoring.setAttribute("aria-label","Experiment monitor");
-    const chart=el("img");chart.src="/assets/monitor-icon.svg";chart.alt="";monitoring.append(chart);
-    const button=el("button",undefined,"account-avatar");button.id="account-button";button.type="button";button.setAttribute("aria-haspopup","dialog");button.setAttribute("aria-expanded","false");button.setAttribute("aria-controls","hosting-account");
-    box=el("section",undefined,"hosting-account account-popover");box.id="hosting-account";box.hidden=true;box.setAttribute("role","dialog");box.setAttribute("aria-label","Your account");
-    const close=()=>{box.hidden=true;button.setAttribute("aria-expanded","false");};
-    button.onclick=()=>{box.hidden=!box.hidden;button.setAttribute("aria-expanded",String(!box.hidden));if(!box.hidden)box.querySelector("a,button")?.focus();};
-    document.addEventListener("pointerdown",e=>{if(!rail.contains(e.target)&&!box.contains(e.target))close();});
-    document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!box.hidden){close();button.focus();}});
-    rail.append(brand,toggle,fresh,monitoring,button);document.body.prepend(rail);document.body.append(box);
-  }
+  const box=$("hosting-account");
   const signature=JSON.stringify(h || state.settings);if(box.dataset.signature===signature)return;box.dataset.signature=signature;
   const account=h?.account;
-  const button=$("account-button");button.replaceChildren();
+  const button=$("account-button");button.disabled=false;button.replaceChildren();
   button.title=account ? account.name || account.login : hosted ? "Sign in" : "Workspace menu";button.setAttribute("aria-label",account ? `Account: ${account.name || account.login}` : hosted ? "Sign in and account" : "Workspace menu");
   const fallback=el("span",account ? (account.name || account.login).slice(0,1).toUpperCase() : "S","avatar-fallback");button.append(fallback);
   if(account){const photo=el("img");photo.src="/api/auth/avatar";photo.alt="";photo.onload=()=>fallback.hidden=true;photo.onerror=()=>photo.remove();button.append(photo);}
@@ -316,7 +299,7 @@ function mountHomeAgent() {
   for (const label of copy.querySelectorAll("label[for]"))
     label.htmlFor = ids[label.htmlFor] || label.htmlFor;
   copy.setAttribute("aria-label", "Agent for a new conversation");
-  $("home-agent-host").replaceChildren(copy);
+  $("home-agent-host").append(copy);
 }
 async function renderAgent(backend, scope = "conversation") {
   const home = scope === "home";
@@ -1560,7 +1543,6 @@ async function boot() {
     $("execution-backend").replaceChildren(new Option("Managed experiments","trusted-template"));
     $("review-model").placeholder="Assigned by the host";
     document.querySelector(".research-tools-heading .lead").textContent="Verified tools provided for this hosted workspace.";
-    const sheet=document.createElement("link");sheet.rel="stylesheet";sheet.href="/assets/hosted.css";document.head.append(sheet);
   }
   const execution = data.settings.execution;
   $("execution-backend").value = execution?.backend || "bubblewrap";
@@ -1649,6 +1631,13 @@ async function boot() {
 for (const item of document.querySelectorAll("[data-view]"))
   item.onclick = () => view(item.dataset.view);
 $("connection-button").onclick = () => view("settings");
+$("rail-toggle").onclick = () => $("left-sidebar-toggle").click();
+$("rail-new-project").onclick = () => $("new-project").click();
+const accountBox=$("hosting-account"), accountButton=$("account-button");
+function closeAccount() {accountBox.hidden=true;accountButton.setAttribute("aria-expanded","false");}
+accountButton.onclick=()=>{accountBox.hidden=!accountBox.hidden;accountButton.setAttribute("aria-expanded",String(!accountBox.hidden));if(!accountBox.hidden)accountBox.querySelector("a,button")?.focus();};
+document.addEventListener("pointerdown",e=>{if(!document.querySelector(".account-rail").contains(e.target)&&!accountBox.contains(e.target))closeAccount();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!accountBox.hidden){closeAccount();accountButton.focus();}});
 mountHomeAgent();
 globalThis.WorkspaceComposer?.mount($("chat-form"), $("chat-input"), document.querySelector("#chat-form .agent-controls"), "conversation");
 globalThis.WorkspaceComposer?.mount($("quick-start"), $("first-request"), document.querySelector("#quick-start .agent-controls"), "home");

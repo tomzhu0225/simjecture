@@ -5,19 +5,8 @@ window.WorkspaceComposer = (() => {
     form.classList.add("prompt-composer");
     if (form.querySelector(".composer-attach")) form.classList.add("has-attachments");
     const toolbar = form.querySelector(".composer-bottom, .start-bottom");
-    const picker = document.createElement("button");
-    picker.type = "button";
-    picker.className = "agent-picker-button";
-    picker.id = `${scope}-agent-picker`;
-    picker.setAttribute("aria-label", "Choose agent and model");
-    picker.setAttribute("aria-haspopup", "dialog");
-    picker.setAttribute("aria-expanded", "false");
-    const summary = document.createElement("span");
-    summary.className = "agent-picker-summary";
-    const chevron = document.createElement("span");
-    chevron.textContent = "⌄";
-    chevron.setAttribute("aria-hidden", "true");
-    picker.append(summary, chevron);
+    const picker = form.querySelector(`#${scope}-agent-picker`);
+    const summary = picker.querySelector(".agent-picker-summary");
     const popup = document.createElement("div");
     popup.className = "agent-picker-popup";
     popup.id = `${scope}-agent-popup`;
@@ -71,7 +60,9 @@ window.WorkspaceComposer = (() => {
       form.classList.toggle("is-multiline", multiline || expanded);
       form.classList.toggle("is-expanded", expanded);
       input.style.height = "0px";
-      const content = input.scrollHeight;
+      // A wrapped placeholder is not a draft. Keep an empty editor on one
+      // line, matching its initial CSS layout on narrow screens.
+      const content = input.value ? input.scrollHeight : line;
       const limit = expanded ? Math.min(window.innerHeight * .56, 560) : Math.min(window.innerHeight * .3, 220);
       input.style.height = `${Math.max(line, expanded ? limit : Math.min(content, limit))}px`;
       input.style.overflowY = content > limit ? "auto" : "hidden";
@@ -108,7 +99,8 @@ window.WorkspaceComposer = (() => {
     const backend = selects[0], model = selects[1];
     const custom = editor.controls.querySelector('input[placeholder="Exact model ID"]');
     const name = model?.value === "__custom__" ? custom?.value : model?.selectedOptions[0]?.textContent;
-    editor.summary.textContent = name || backend?.value || "Choose agent";
+    editor.picker.disabled = !backend?.options.length;
+    editor.summary.textContent = editor.picker.disabled ? "Loading agent…" : name || backend?.value || "Choose agent";
     editor.picker.title = `${backend?.value || "Agent"} · ${name || "Choose model"}`;
     editor.update();
   }

@@ -1,4 +1,6 @@
 :root { --account-rail-width: 56px; }
+/* Hosted HTML declares its mode before scripts or session requests finish. */
+html[data-hosted] :is([data-view="machines"], [data-view="settings"], #connect-research-tool, #tools-open-machines, #continuation-chat) { display: none !important; }
 .has-account-rail .shell { margin-left: var(--account-rail-width); }
 .has-account-rail .sidebar { left: var(--account-rail-width); }
 .account-rail {

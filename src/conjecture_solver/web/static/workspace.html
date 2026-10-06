@@ -31,8 +31,19 @@
     <script src="/assets/workspace-composer.js" defer></script>
     <script src="/assets/workspace.js" defer></script>
   </head>
-  <body>
+  <body class="has-account-rail">
     <a class="skip-link" href="#main-content">Skip to main content</a>
+    <aside class="account-rail" aria-label="Workspace and account">
+      <a href="/workspace" class="rail-brand" aria-label="Simjecture"><img src="/favicon.svg" alt="" /></a>
+      <button id="rail-toggle" class="rail-action" type="button" title="Toggle conversations" aria-label="Toggle conversations">☰</button>
+      <button id="rail-new-project" class="rail-action" type="button" title="New conversation" aria-label="New conversation">＋</button>
+      <a href="/monitor" class="rail-action rail-monitor" title="Experiment monitor" aria-label="Experiment monitor"><img src="/assets/monitor-icon.svg" alt="" /></a>
+      <button id="account-button" class="account-avatar" type="button" title="Loading workspace" aria-label="Loading workspace" aria-haspopup="dialog" aria-expanded="false" aria-controls="hosting-account" disabled><span class="avatar-fallback">S</span></button>
+    </aside>
+    <section id="hosting-account" class="hosting-account account-popover" role="dialog" aria-label="Your account" hidden>
+      <p>Loading workspace…</p>
+      <button id="theme-toggle" class="quiet" type="button">Dark mode</button>
+    </section>
     <div class="shell">
       <aside class="sidebar" id="workspace-sidebar">
         <a href="/workspace" class="brand" aria-label="Simjecture research workspace">
@@ -79,7 +90,7 @@
             type="button"
             aria-controls="execution-warning"
           >
-            Execution status
+            Checking execution…
           </button>
           <div
             id="execution-warning"
@@ -102,11 +113,6 @@
               <summary>Technical details</summary>
               <pre id="execution-warning-diagnostics"></pre>
             </details>
-          </div>
-          <div class="sidebar-utilities">
-            <button id="theme-toggle" class="quiet" type="button">
-              Dark mode
-            </button>
           </div>
         </div>
       </aside>
@@ -152,7 +158,7 @@
               with your agent, then let a focused study run on its own.
             </p>
           </div>
-          <form id="quick-start" class="start-box">
+          <form id="quick-start" class="start-box prompt-composer">
             <label for="first-request" class="sr-only">Your research request</label
             ><textarea
               id="first-request"
@@ -162,11 +168,11 @@
               required
             ></textarea>
             <div class="start-bottom">
-              <div id="home-agent-host"></div>
+              <div id="home-agent-host"><button id="home-agent-picker" class="agent-picker-button" type="button" aria-label="Choose agent and model" aria-haspopup="dialog" aria-expanded="false" disabled><span class="agent-picker-summary">Loading agent…</span><span aria-hidden="true">⌄</span></button></div>
               <button type="submit" class="primary composer-send" aria-label="Send request" title="Send request"><span aria-hidden="true">↑</span></button>
             </div>
           </form>
-          <p id="first-request-help" class="field-help composer-help">Enter to send · Shift + Enter for a new line. Choose your agent from the model menu, or set up an API in Connections.</p>
+          <p id="first-request-help" class="field-help composer-help">Enter to send · Shift + Enter for a new line. Choose your agent from the model menu.</p>
           <div class="section-line">
             <h2>A place to start</h2>
             <span>Choose an example and make it yours</span>
@@ -468,7 +474,7 @@
             <div class="conversation-column" slot="start">
               <div id="interactive-panel">
                 <div id="messages" class="messages" aria-live="polite"></div>
-                <form id="chat-form" class="composer">
+                <form id="chat-form" class="composer prompt-composer has-attachments">
                   <label class="sr-only" for="chat-input"
                     >Message your research agent</label
                   ><textarea
@@ -501,6 +507,7 @@
                   <label class="attach-button composer-attach" for="file-input" title="Add project files"><span aria-hidden="true">＋</span><span class="sr-only">Attach files</span></label>
                   <input id="file-input" type="file" multiple hidden />
                   <div class="composer-bottom">
+                    <button id="conversation-agent-picker" class="agent-picker-button" type="button" aria-label="Choose agent and model" aria-haspopup="dialog" aria-expanded="false" disabled><span class="agent-picker-summary">Loading agent…</span><span aria-hidden="true">⌄</span></button>
                     <div class="agent-controls" aria-label="Conversation agent">
                       <div>
                         <label for="conversation-backend">Agent</label
@@ -840,7 +847,7 @@
     </dialog>
     <dialog id="workspace-details-dialog" class="workspace-details-dialog" aria-labelledby="workspace-details-title">
       <div class="dialog-heading"><h2 id="workspace-details-title">Workspace details</h2><button id="close-workspace-details" class="quiet" type="button" aria-label="Close workspace details">×</button></div>
-      <p id="machine-label">Local workspace</p>
+      <p id="machine-label">Connecting to workspace…</p>
       <p id="connection-indicator" class="connection-dot">Connecting…</p>
       <div class="workspace-detail-links"><a href="/monitor">Experiment monitor ↗</a><a href="https://github.com/tomzhu0225/simjecture" target="_blank" rel="noopener noreferrer">Simjecture on GitHub ↗</a></div>
     </dialog>

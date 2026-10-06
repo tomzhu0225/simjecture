@@ -2,6 +2,13 @@
 
 This project follows semantic versioning. Dates use ISO 8601.
 
+## Unreleased
+
+- Render the account rail and compact chat input in the initial page, before
+  JavaScript or session requests finish. Hosted pages hide local Connections
+  and Machines controls from their first render. Keep the mobile model picker
+  and Send button on one row.
+
 ## 0.6.0 — 2026-10-06
 
 - Add optional `simjecture serve` for a hosted workspace with durable admission,

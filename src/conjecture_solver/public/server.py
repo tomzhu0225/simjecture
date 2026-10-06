@@ -699,6 +699,7 @@ def create_app(root, *, dispatch=True, secure_cookies=True):
         from fastapi.responses import HTMLResponse
 
         html = (WORKSPACE_STATIC / "workspace.html").read_text()
+        html = html.replace('<html lang="en">', '<html lang="en" data-hosted>')
         html = html.replace(
             "<head>",
             '<head><meta name="simjecture-hosted" content="true" />'
