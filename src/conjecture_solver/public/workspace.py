@@ -262,7 +262,7 @@ class HostedWorkspace:
         return root
 
     def project_files(self, identifier):
-        root = self.files_root(identifier)
+        root = self.store.root / "projects" / identifier / "files"
         return [
             {"name": str(p.relative_to(root)), "size": p.stat().st_size}
             for p in sorted(root.rglob("*"))
@@ -273,7 +273,7 @@ class HostedWorkspace:
         from .lab_broker import safe_name
 
         self.require_project(identifier, owner)
-        root = self.files_root(identifier)
+        root = self.store.root / "projects" / identifier / "files"
         path = root / safe_name(name)
         if (
             not path.resolve().is_relative_to(root.resolve())
@@ -491,6 +491,13 @@ class HostedWorkspace:
         raise PermissionError("This operation is managed by the host")
 
     def post(self, name, values, owner):
+        if name == "delete-project":
+            from .deletion import ProjectDeletion
+
+            if set(values) != {"project", "confirm"} or values["confirm"] != values["project"]:
+                raise ValueError("Confirm the conversation identifier before deletion")
+            self.require_project(values["project"], owner)
+            return ProjectDeletion(self.store).request(values["project"], owner)
         if name == "upload":
             if not self.store.account(owner):
                 raise PermissionError("Sign in to add files")
@@ -507,23 +514,30 @@ class HostedWorkspace:
             content = base64.b64decode(values["data"], validate=True)
             if len(content) > 64 * 1024**2:
                 raise ValueError("File exceeds 64 MiB")
-            root = self.files_root(p["id"])
-            path = root / name
-            if path.is_symlink():
-                raise ValueError("Invalid file target")
-            existing = path.stat().st_size if path.is_file() else 0
-            if (
-                sum(f["size"] for f in self.project_files(p["id"])) - existing + len(content)
-                > 512 * 1024**2
-            ):
-                raise ValueError("Project file storage allowance reached")
-            fd, temporary = tempfile.mkstemp(prefix=".executor-upload-", dir=root)
-            try:
-                with os.fdopen(fd, "wb") as stream:
-                    stream.write(content)
-                os.replace(temporary, path)
-            finally:
-                Path(temporary).unlink(missing_ok=True)
+            with self.store.connect(write=True) as db:
+                if not db.execute(
+                    "SELECT id FROM projects WHERE id=? AND deleting=0 AND "
+                    + self.store.owner_clause(),
+                    (p["id"], owner, owner),
+                ).fetchone():
+                    raise LookupError("Conversation not found")
+                root = self.files_root(p["id"])
+                path = root / name
+                if path.is_symlink():
+                    raise ValueError("Invalid file target")
+                existing = path.stat().st_size if path.is_file() else 0
+                if (
+                    sum(f["size"] for f in self.project_files(p["id"])) - existing + len(content)
+                    > 512 * 1024**2
+                ):
+                    raise ValueError("Project file storage allowance reached")
+                fd, temporary = tempfile.mkstemp(prefix=".executor-upload-", dir=root)
+                try:
+                    with os.fdopen(fd, "wb") as stream:
+                        stream.write(content)
+                    os.replace(temporary, path)
+                finally:
+                    Path(temporary).unlink(missing_ok=True)
             return {"name": str(name), "size": len(content), "sha256": sha(path)}
         if name == "tool-demo":
             if set(values) != {"name"}:

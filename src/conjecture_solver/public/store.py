@@ -100,7 +100,9 @@ class Store(Identities):
                     "action": "TEXT",
                     "privileged": "INTEGER NOT NULL DEFAULT 0",
                     "study_brief": "TEXT",
+                    "deleted": "INTEGER NOT NULL DEFAULT 0",
                 },
+                "projects": {"deleting": "INTEGER NOT NULL DEFAULT 0"},
             }
             for table, additions in migrations.items():
                 columns = {row[1] for row in db.execute(f"PRAGMA table_info({table})")}
@@ -227,6 +229,11 @@ class Store(Identities):
             visitor = db.execute("SELECT * FROM visitors WHERE id=?", (owner,)).fetchone()
             if not visitor:
                 raise ValueError("Unknown visitor")
+            if project and not db.execute(
+                "SELECT id FROM projects WHERE id=? AND deleting=0 AND " + self.owner_clause(),
+                (project, owner, owner),
+            ).fetchone():
+                raise ValueError("Conversation is unavailable or being deleted")
             active = db.execute(
                 "SELECT COUNT(*) FROM jobs WHERE "
                 + self.owner_clause()
@@ -295,7 +302,8 @@ class Store(Identities):
     def job(self, identifier, *, owner=None):
         with self.connect() as db:
             row = db.execute(
-                "SELECT * FROM jobs WHERE id=?" + (" AND " + self.owner_clause() if owner else ""),
+                "SELECT * FROM jobs WHERE id=?"
+                + (" AND deleted=0 AND " + self.owner_clause() if owner else ""),
                 (identifier, owner, owner) if owner else (identifier,),
             ).fetchone()
             if not row:
@@ -321,10 +329,10 @@ class Store(Identities):
             ids = db.execute(
                 "SELECT id FROM jobs WHERE "
                 + self.owner_clause()
-                + " ORDER BY created DESC LIMIT 100",
+                + " AND deleted=0 ORDER BY created DESC LIMIT 100",
                 (owner, owner),
             ).fetchall()
-        return [self.job(row[0], owner=owner) for row in ids]
+        return [job for row in ids if (job := self.job(row[0], owner=owner))]
 
     def claim(self, *, max_active=2):
         now = time.time()

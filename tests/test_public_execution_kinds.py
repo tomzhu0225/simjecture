@@ -244,6 +244,12 @@ def test_browser_custom_setup_and_isolated_command_outputs(app):
             with page.expect_download() as info:
                 page.locator("#command-detail a").filter(has_text="generated/diags.json").click()
             assert info.value.suggested_filename == "diags.json"
+            page.get_by_role("button", name="Delete conversation: FLASH 4.8 · custom study").click()
+            page.locator("#confirm-delete").click()
+            playwright.expect(page.locator("#delete-dialog")).not_to_be_visible()
+            playwright.expect(page.locator("#view-home")).to_be_visible()
+            assert store.project(project_id) is None
+            assert not (store.root / "jobs" / job["id"]).exists()
             assert errors == []
             browser.close()
     finally:

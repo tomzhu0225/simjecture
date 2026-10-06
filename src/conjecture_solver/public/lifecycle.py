@@ -1,14 +1,10 @@
 """Temporary guest leases; signed-in projects and billing counters are retained."""
 
-import json
 import secrets
 import shutil
 import time
-from contextlib import suppress
 
-from ..mvp_launch import read_process_identity
-from ..research_service import ResearchService
-from .store import TERMINAL
+from .deletion import quiesce_jobs
 
 
 class GuestLifecycle:
@@ -73,42 +69,8 @@ class GuestLifecycle:
             identifiers = [
                 r[0] for r in db.execute("SELECT id FROM jobs WHERE owner=?", (visitor,))
             ]
-        jobs = [self.store.job(identifier, owner=visitor) for identifier in identifiers]
-        waiting = False
-        for job in jobs:
-            if job["status"] not in TERMINAL:
-                self.store.cancel(job["id"], visitor)
-                waiting = True
-            if job["pid"]:
-                actual = read_process_identity(job["pid"])
-                expected = json.loads(job["process_identity"]) if job["process_identity"] else None
-                if actual and expected and actual.starttime == expected["starttime"]:
-                    waiting = True
-            root = self.store.root / "jobs" / job["id"] / "study"
-            if (root / "research.json").exists():
-                with suppress(ValueError, OSError):
-                    service = ResearchService(root)
-                    for record in service._all("experiments"):
-                        if record["status"] in {"queued", "running"}:
-                            service.cancel(record["id"], reason="Temporary guest session ended")
-                            expected = record.get("worker_identity")
-                            actual = (
-                                read_process_identity(record.get("pid", 0))
-                                if record.get("pid")
-                                else None
-                            )
-                            if actual and expected and actual.starttime == expected["starttime"]:
-                                waiting = True
-                            else:
-                                from ..research_service import put
-
-                                record.update(
-                                    status="cancelled",
-                                    finished_at=time.time(),
-                                    cancellation_confirmed=True,
-                                )
-                                put(service.root / "experiments" / (record["id"] + ".json"), record)
-        if waiting:
+        jobs = [self.store.job(identifier) for identifier in identifiers]
+        if quiesce_jobs(self.store, jobs, "Temporary guest session ended"):
             return
         # Reserve final erasure against a concurrent sign-in before deleting paths.
         with self.store.connect(write=True) as db:

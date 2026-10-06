@@ -89,16 +89,16 @@ class Identities:
                 for r in db.execute(
                     "SELECT id FROM projects WHERE "
                     + self.owner_clause()
-                    + " ORDER BY created DESC",
+                    + " AND deleting=0 ORDER BY created DESC",
                     (owner, owner),
                 )
             ]
-        return [self.project(identifier, owner) for identifier in ids]
+        return [p for identifier in ids if (p := self.project(identifier, owner))]
 
     def project(self, identifier, owner=None):
         with self.connect() as db:
             row = db.execute(
-                "SELECT * FROM projects WHERE id=?"
+                "SELECT * FROM projects WHERE id=? AND deleting=0"
                 + (" AND " + self.owner_clause() if owner else ""),
                 (identifier, owner, owner) if owner else (identifier,),
             ).fetchone()
@@ -132,6 +132,10 @@ class Identities:
         if not job.get("project"):
             return
         with self.connect(write=True) as db:
+            if not db.execute(
+                "SELECT id FROM projects WHERE id=? AND deleting=0", (job["project"],)
+            ).fetchone():
+                return
             if not db.execute(
                 "SELECT 1 FROM messages WHERE job=? AND role='assistant'", (job["id"],)
             ).fetchone():

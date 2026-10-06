@@ -1992,7 +1992,7 @@ $("delete-form").onsubmit = async (event) => {
   const button = $("confirm-delete");
   button.disabled = true;
   try {
-    await api("delete-project", { project: id, confirm: id });
+    const result = await api("delete-project", { project: id, confirm: id });
     if (state.project?.id === id) {
       state.project = null;
       state.messageRevision = "";
@@ -2001,7 +2001,7 @@ $("delete-form").onsubmit = async (event) => {
     }
     $("delete-dialog").close();
     await reloadProjects();
-    toast("Conversation and saved folders deleted");
+    toast(result.message || "Conversation and saved folders deleted");
   } catch (error) {
     $("delete-error").textContent = error.message;
     $("delete-error").hidden = false;

@@ -18,6 +18,7 @@ from pathlib import Path
 from urllib.parse import urlsplit
 
 from ..mvp_launch import read_process_identity
+from .deletion import ProjectDeletion
 from .lifecycle import GuestLifecycle
 from .native import OUTPUTS
 from .oauth import OAUTH_COOKIE, GitHubLogin
@@ -82,6 +83,7 @@ class Dispatcher:
                 elif time.time() - self.stopping[job["pid"]] > 15:
                     with contextlib.suppress(ProcessLookupError):
                         os.killpg(job["pid"], signal.SIGKILL)
+        ProjectDeletion(self.store).tick()
         GuestLifecycle(self.store, lambda: self.settings).tick()
         if not self.store.capacity_available():
             return

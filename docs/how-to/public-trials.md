@@ -10,6 +10,11 @@ agent-authored Python, custom solver inputs and private application builds.
 The hosted Benchmark page shows the shipped official leaderboard, its cost/time
 charts and downloadable results. Model testing, grading and importing results
 stay disabled; these actions remain available in a self-hosted workspace.
+Visitors can delete their own conversations. A deletion immediately hides the
+conversation and its artifacts, cancels queued/running jobs and erases saved
+content once writers stop. Pending cleanup survives restarts. Minimal usage
+counters remain so deletion does not reset allowances; other conversations and
+shared scientific tools are retained.
 The existing `simjecture web` remains a localhost operator tool; its unrestricted
 backend and control token are never proxied to visitors.
 

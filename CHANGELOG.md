@@ -12,6 +12,9 @@ This project follows semantic versioning. Dates use ISO 8601.
   chat input that grows with the draft, and model settings in a popover. Move
   workspace details into a dialog and remove the composer permission footer.
 - Let signed-in visitors upload scientific inputs and retain their projects.
+  Allow visitors to delete their own conversations and associated scientific
+  content. Stop active writers before erasure; resume pending cleanup after a
+  service restart and preserve minimal usage counters.
   Remove guest conversations, files and artifacts after the last tab leaves;
   protect other open tabs, refreshes and sign-in transitions with expiring leases.
   Hosted artifact links download by default; safe image previews remain available.
