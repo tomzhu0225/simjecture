@@ -1,4 +1,4 @@
-# WarpX photon radiation and Z-pinch studies
+# WarpX photon radiation
 
 WarpX supports collisional bremsstrahlung photon production and inverse
 bremsstrahlung absorption. These are separate from quantum synchrotron emission,
@@ -18,7 +18,7 @@ upstream boron collision inputs on 2026-10-06. Both emission and absorption ran
 for 100 steps and produced nonzero photon energy. The reduced electron, ion and
 photon energy sum drifted by less than 1e-10 in each case. These are collision
 operator checks: periodic geometry, a hot electron population and no evolving
-Maxwell fields. They do not commission a Z-pinch implosion.
+Maxwell fields. They do not establish global device validity.
 
 For a controlled absorption comparison, keep the same species distributions,
 seed, density, grid and timestep, and change only the enabled collision operator.
@@ -34,13 +34,6 @@ It does not supply the aluminium Z=13 table. Do not silently substitute boron or
 carbon, invent a table, or extrapolate below the tabulated regime for an aluminium
 claim. A private application build can add independently sourced and validated
 material data; preserve their provenance and commission the changed operator.
-
-A global aluminium Z-pinch radiation-yield study additionally needs the drive,
-geometry, charge states, equation of state, opacity/spectral emission and a
-radiation-transport model. Use a commissioned radiation-MHD tool for that global
-model where appropriate; WarpX can test kinetic patches, hot-electron photon
-production and absorption within their validated regimes. A kinetic emission
-test alone does not establish the experimentally escaping X-ray energy.
 
 References: [WarpX collision and QED parameters](https://warpx.readthedocs.io/en/latest/usage/parameters.html),
 and the installed `Source/Particles/Collision/BinaryCollision/Bremsstrahlung/`

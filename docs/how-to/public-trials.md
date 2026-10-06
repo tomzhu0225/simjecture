@@ -15,6 +15,15 @@ conversation and its artifacts, cancels queued/running jobs and erases saved
 content once writers stop. Pending cleanup survives restarts. Minimal usage
 counters remain so deletion does not reset allowances; other conversations and
 shared scientific tools are retained.
+
+For a global aluminium Z-pinch radiation-yield study, collisional photon support
+alone does not commission the drive, geometry, charge states, equation of state,
+opacity/spectral emission and radiation transport. Use a suitable commissioned
+radiation-MHD model for the global calculation where appropriate. WarpX can test
+kinetic patches, hot-electron photon production and absorption within validated
+material and energy regimes. A kinetic emission test alone does not establish
+the experimentally escaping X-ray yield. The hosted emission tables currently
+cover H, He, B and C; aluminium requires independently sourced and validated data.
 The existing `simjecture web` remains a localhost operator tool; its unrestricted
 backend and control token are never proxied to visitors.
 
