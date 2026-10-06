@@ -1,0 +1,29 @@
+{
+  "re": 100,
+  "nd": 32,
+  "H": 80.0,
+  "L": 80.0,
+  "xc": 40.0,
+  "u": 0.06,
+  "tstart": 240.0,
+  "st_spacing": 0.1647,
+  "phase_steps": 810,
+  "side_sponge_len": 8.0,
+  "out_eq_sponge_len": 6.0,
+  "times_star": [
+    241.51875,
+    243.0375,
+    244.55625,
+    246.075
+  ],
+  "crop_x_over_D": [
+    -2,
+    18
+  ],
+  "crop_y_over_D": [
+    -4,
+    4
+  ],
+  "vorticity_units": "omega D / U",
+  "color_limit": 4.0
+}

@@ -1,0 +1,8 @@
+{
+  "schema_version": "0.1.0",
+  "name": "warp-lbm",
+  "version": "1.0.0",
+  "entrypoint": "SKILL.md",
+  "description": "Contributed 2D cylinder fluid dynamics with NVIDIA Warp MRT-LBM, diagnostics and numerical controls",
+  "capability_names": ["warp-lbm-cylinder-1.0"]
+}

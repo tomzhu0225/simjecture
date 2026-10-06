@@ -530,6 +530,8 @@ def native_agent_tools(store, job, service):
                         "template",
                         "source_root",
                         "features",
+                        "author",
+                        "guide",
                     )
                 }
                 for row in registry(store.root)
@@ -582,6 +584,15 @@ def native_instructions(store):
             "inspect their features and read warpx/references/radiation.md for custom radiation "
             "studies, diagnostics and material/table limits. Langmuir presets do not define "
             "the full binary's capabilities. "
+            + (
+                "Cylinder flow / Warp-LBM is installed for 2D isothermal fluid research. "
+                "Read warp-lbm/SKILL.md and references/interface.md. Its source and "
+                "driver are available under the tool's source_root; the cylinder "
+                "preset is a starting point for custom Reynolds numbers, geometry "
+                "and numerical controls. It is NVIDIA Warp, a separate runtime from WarpX. "
+                if any(row.get("family") == "lbm" for row in rows)
+                else ""
+            )
             + ready_reconnection
             + "For 2D reconnection use the resistive-MHD island-coalescence binary if present; "
             "otherwise compile the appropriate FLASH application. Do not substitute an "

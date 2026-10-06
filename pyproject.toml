@@ -123,6 +123,7 @@ exclude = [
 ]
 
 [tool.hatch.build.targets.wheel.force-include]
+"src/conjecture_solver/vendor/cylinder_lbm/data" = "conjecture_solver/vendor/cylinder_lbm/data"
 "skills" = "conjecture_solver/builtin_skills"
 "capabilities" = "conjecture_solver/builtin_capabilities"
 "integrations/dsh/package.json" = "conjecture_solver/dsh_bundle/package.json"
@@ -143,6 +144,7 @@ testpaths = ["tests"]
 line-length = 100
 target-version = "py311"
 extend-exclude = [
+  "src/conjecture_solver/vendor",
   "demos/agent_roles_validation/record",
   "demos/gray_scott_counterexample/record",
   "demos/collisionless_gem_reconnection/guided",

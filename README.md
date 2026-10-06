@@ -106,7 +106,8 @@ host; neither provides an OS security boundary. Read
   [optional terminal dashboard](docs/getting-started/terminal-ui.md)
 - **Prepare an instrument:** [guided commissioning](docs/how-to/guided-commissioning.md),
   [runtime deployment](docs/how-to/deploy-runtimes.md),
-  [ITER ecosystem pack](docs/how-to/iter-pack.md)
+  [ITER ecosystem pack](docs/how-to/iter-pack.md),
+  [GPU cylinder flow](docs/how-to/cylinder-flow.md)
 - **Add compute:** [SSH workers](docs/how-to/ssh-workers.md)
 - **Evaluate models:** [benchmark and community submissions](docs/how-to/llm-bench.md)
 - **Inspect the science:** [evidence and claims](docs/concepts/evidence-and-claims.md),
@@ -124,6 +125,10 @@ Release changes live in [CHANGELOG.md](CHANGELOG.md); checks and limits are in t
 [documentation index](docs/index.md) covers the full guide set.
 
 ## Contributing
+
+[Zifei Meng](https://github.com/ZifeiMengSPH) contributed the Warp-LBM cylinder-flow
+solver and its domain/grid validation records. It is available as an optional
+research tool and a source of tasks involving fresh numerical simulations.
 
 Researchers, developers and first-time contributors are welcome. Help improve an
 example or guide, reproduce a bug, add a tested diagnostic or scientific capability,

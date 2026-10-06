@@ -25,7 +25,8 @@ can be verified and replayed without an API key or new simulations.
 - **Automate a study:** [headless CLI workflow](how-to/headless-studies.md)
 - **Continue or guide work:** [continuation and steering](how-to/continuation-steering.md)
 - **Prepare a scientific instrument:** [guided commissioning](how-to/guided-commissioning.md),
-  [runtime deployment](how-to/deploy-runtimes.md), [ITER pack](how-to/iter-pack.md)
+  [runtime deployment](how-to/deploy-runtimes.md), [ITER pack](how-to/iter-pack.md),
+  [cylinder flow](how-to/cylinder-flow.md)
 - **Use remote compute:** [SSH workers](how-to/ssh-workers.md) and
   [restricted hosts](how-to/restricted-containers.md)
 - **Inspect a study:** [web monitor](getting-started/web-interface.md),
@@ -91,6 +92,7 @@ how-to/research-memory
 how-to/add-a-capability
 how-to/deploy-runtimes
 how-to/iter-pack
+how-to/cylinder-flow
 how-to/ssh-workers
 how-to/public-trials
 how-to/llm-bench

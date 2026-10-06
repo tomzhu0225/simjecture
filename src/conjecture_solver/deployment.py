@@ -34,6 +34,7 @@ SINGULARITY_EOS_CAPABILITY = "singularity-eos-1.12.1"
 M_ANEOS_CAPABILITY = "m-aneos-1.0"
 OPTAB_CAPABILITY = "optab-1.3.1"
 ITER_PACK_CAPABILITY = "iter-pack-1.0"
+WARP_LBM_CAPABILITY = "warp-lbm-cylinder-1.0"
 PINNED_WARPX_REVISION = "312d507407a1bf6f01ae43fb41b5c3a3700d053c"
 PINNED_ATOMEC_REVISION = "4b05849a1bcf6a9d682673c360ec2ebfb4eceab3"
 PINNED_SINGULARITY_EOS_REVISION = "760ac3f8e106addc13dad8a47b9d4ad75e44ea48"
@@ -43,6 +44,7 @@ PRIVATE_ROOT_ENV = "SIMJECTURE_PRIVATE_ROOT"
 FLASH_BOOTSTRAP_SCRIPT = "skills/flash-mhd/scripts/bootstrap_flash.sh"
 
 _CAPABILITY_CONFIGS = {
+    WARP_LBM_CAPABILITY: "warp-lbm-cylinder-1.0.json",
     ITER_PACK_CAPABILITY: "iter-pack-1.0.json",
     WARPX_CPU_CAPABILITY: "warpx-cpu-26.07.json",
     WARPX_CUDA_CAPABILITY: "warpx-cuda-openpmd-26.07.json",
@@ -85,6 +87,7 @@ def _run_install_command(command, *, capture_output=False):
 
 
 class DeploymentProfile(StrEnum):
+    WARP_LBM = "warp-lbm"
     ITER_PACK = "iter-pack"
     CORE = "core"
     WARPX_CPU = "warpx-cpu"
@@ -97,6 +100,7 @@ class DeploymentProfile(StrEnum):
 
 
 _PROFILE_BY_CAPABILITY = {
+    WARP_LBM_CAPABILITY: DeploymentProfile.WARP_LBM,
     ITER_PACK_CAPABILITY: DeploymentProfile.ITER_PACK,
     WARPX_CPU_CAPABILITY: DeploymentProfile.WARPX_CPU,
     WARPX_CUDA_CAPABILITY: DeploymentProfile.WARPX_CUDA,
@@ -173,6 +177,14 @@ class _BootstrapSpec:
 
 
 _BOOTSTRAP_SPECS = {
+    DeploymentProfile.WARP_LBM: _BootstrapSpec(
+        capability=WARP_LBM_CAPABILITY,
+        script="skills/warp-lbm/scripts/bootstrap.sh",
+        managed_marker="share/build-record.json",
+        pinned_revision="",
+        source_label="Cylinder Warp-LBM",
+        verify_revision=False,
+    ),
     DeploymentProfile.ITER_PACK: _BootstrapSpec(
         capability=ITER_PACK_CAPABILITY,
         script="skills/iter-pack/scripts/bootstrap.sh",
@@ -490,6 +502,10 @@ class DeploymentManager:
             generated = self.runtime_root / "warpx-cuda-openpmd" / "capabilities" / name
             if generated.is_file():
                 return generated
+        if capability == WARP_LBM_CAPABILITY:
+            generated = self.runtime_root / WARP_LBM_CAPABILITY / "capabilities" / name
+            if generated.is_file():
+                return generated
         return self.capability_root / name
 
     def _configured_runtime_root(self, capability: str) -> Path:
@@ -526,7 +542,9 @@ class DeploymentManager:
                 max_wall_seconds=180,
                 max_command_seconds=120,
                 max_workspace_bytes=128 * 1024 * 1024,
-                max_file_bytes=64 * 1024 * 1024,
+                # CUDA JIT compilers can map temporary files larger than 64 MiB.
+                # Keep a bounded allowance while retaining the namespace/RAM limits.
+                max_file_bytes=(128 if installation.device_paths else 64) * 1024 * 1024,
                 max_memory_bytes=4 * 1024 * 1024 * 1024,
             ),
             registry,
@@ -914,7 +932,7 @@ class DeploymentManager:
         git_ref: str | None = None,
     ) -> DeploymentReport:
         spec = spec or _BOOTSTRAP_SPECS[profile]
-        ready = self._already_ready(profile)
+        ready = None if repair else self._already_ready(profile)
         if ready is not None:
             self._write_report(ready)
             return ready
