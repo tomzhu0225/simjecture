@@ -70,14 +70,14 @@ button, .button { transition: background-color 140ms ease, border-color 140ms ea
 /* Keep white button text legible when the dark palette uses pale link colors. */
 .shell .primary:hover:not(:disabled) { background: #5345bb; color: #fff; }
 
-/* One path through the conversation, its selected study and the evidence view. */
+/* Peer views of the same investigation, with the current view selected. */
 .study-navigation { margin: 0 0 20px; font-size: 13px; color: var(--muted); }
-.study-navigation ol { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0; padding: 0; }
-.study-navigation li { display: flex; align-items: center; gap: 8px; min-width: 0; }
-.study-navigation li + li::before { content: "›"; color: var(--muted); }
-.study-navigation a { color: var(--accent); text-decoration: none; }
-.study-navigation a:hover { text-decoration: underline; }
-.study-navigation [aria-current="page"] { color: var(--text); font-weight: 600; }
+.study-navigation ul { display: inline-flex; flex-wrap: wrap; gap: 4px; list-style: none; margin: 0; padding: 4px; max-width: 100%; border-radius: 10px; background: var(--surface-soft); }
+.study-navigation li { display: flex; min-width: 0; }
+.study-navigation a, .study-navigation span { display: block; padding: 7px 12px; border-radius: 7px; line-height: 1.5; color: var(--muted); text-decoration: none; }
+.study-navigation a:hover { color: var(--text); background: var(--white, var(--surface, #fff)); }
+.study-navigation [aria-current="page"] { color: var(--text); font-weight: 600; background: var(--white, var(--surface, #fff)); box-shadow: 0 1px 3px #0000000d; }
+.study-navigation [aria-disabled="true"] { opacity: .55; }
 .study-card.selected-study { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
 .study-card .study-selection { font-size: 12px; margin-left: auto; }
 .study-card h3 a { color: inherit; text-decoration: none; }

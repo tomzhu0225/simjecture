@@ -154,7 +154,39 @@ def test_browser_custom_setup_and_isolated_command_outputs(app):
             page = browser.new_page(viewport={"width": 1440, "height": 1000})
             page.on("pageerror", lambda error: errors.append(str(error)))
             page.goto(origin)
+            page.locator(".example").nth(2).click()
+            playwright.expect(page.locator("#first-request")).to_have_value(
+                re.compile(r"10-minute autonomous research.*within 1%")
+            )
+            playwright.expect(page.locator(".home-modes")).to_contain_text("Interactive")
+            playwright.expect(page.locator(".home-modes")).to_contain_text("independent review")
+            assert page.locator(".setup-strip").count() == 0
+            page.locator('[data-view="benchmarks"]').click()
+            page.locator("#benchmark-leaderboard tbody tr").first.wait_for()
+            playwright.expect(page.locator("#benchmark-ranked-charts")).to_be_visible()
+            playwright.expect(
+                page.locator("#benchmark-time-bars .benchmark-bar-row").first
+            ).to_be_visible()
+            playwright.expect(
+                page.locator("#benchmark-cost-bars .benchmark-bar-row").first
+            ).to_be_visible()
+            playwright.expect(page.locator("#benchmark-tradeoff svg")).to_be_visible()
+            playwright.expect(page.locator("#benchmark-run")).to_be_disabled()
+            playwright.expect(page.locator("#benchmark-import")).to_be_disabled()
+            assert page.locator('#benchmark-source option[value="local"]').evaluate(
+                "o => o.disabled"
+            )
+            page.locator("#benchmark-task-tabs").get_by_role(
+                "button", name="Radiation energy accounting"
+            ).click()
+            playwright.expect(page.locator("#benchmark-task-brief")).to_contain_text("CSV")
+            with page.expect_download() as result:
+                page.locator("#benchmark-export").click()
+            assert result.value.suggested_filename.startswith("simjecture-official-results-")
+            page.locator("#benchmark-your-work > summary").click()
+            playwright.expect(page.locator("#benchmark-tasks button").first).to_be_disabled()
             page.get_by_role("button", name="Research tools", exact=True).click()
+            assert page.locator(".research-tools-intro").count() == 0
             card = page.locator('[data-tool="flash"]')
             choice = card.get_by_label("FLASH 4.8 study setup")
             assert choice.input_value() == "custom-study"
@@ -167,6 +199,13 @@ def test_browser_custom_setup_and_isolated_command_outputs(app):
             choice.select_option("custom-study")
             card.get_by_role("button", name="Prepare in chat", exact=True).click()
             playwright.expect(page.locator("#chat-input")).to_have_value(re.compile("custom study"))
+            playwright.expect(page.locator('#study-navigation [aria-current="page"]')).to_have_text(
+                "Conversation"
+            )
+            assert page.locator("#study-navigation ul").count() == 1
+            assert page.locator("#study-navigation li").nth(1).evaluate(
+                "e => getComputedStyle(e, '::before').content"
+            ) in ("none", "normal")
             cookie = next(
                 c["value"] for c in page.context.cookies() if c["name"] == "simjecture_visitor"
             )

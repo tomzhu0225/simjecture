@@ -7,6 +7,9 @@ interface. The host assigns the model and installs the available scientific tool
 Visitors cannot change providers, install global tools or configure SSH. Signed-in
 visitors can upload scientific files. A commissioned general executor can run
 agent-authored Python, custom solver inputs and private application builds.
+The hosted Benchmark page shows the shipped official leaderboard, its cost/time
+charts and downloadable results. Model testing, grading and importing results
+stay disabled; these actions remain available in a self-hosted workspace.
 The existing `simjecture web` remains a localhost operator tool; its unrestricted
 backend and control token are never proxied to visitors.
 

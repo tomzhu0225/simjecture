@@ -396,39 +396,16 @@ h1 {
   color: var(--accent);
   font-size: 18px;
 }
-.setup-strip {
-  margin: 38px 0 0;
+.home-modes {
+  margin: 28px 0 0;
   padding-top: 24px;
   border-top: 1px solid var(--line);
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px;
 }
-.setup-strip > div {
-  display: grid;
-  grid-template-columns: 28px 1fr;
-  column-gap: 10px;
-}
-.step-no {
-  grid-row: span 2;
-  border: 1px solid #d4dfcb;
-  border-radius: 50%;
-  height: 25px;
-  width: 25px;
-  text-align: center;
-  font-size: 14px;
-  line-height: 23px;
-  color: var(--accent);
-}
-.setup-strip strong {
-  font-size: 14px;
-  font-weight: 600;
-}
-.setup-strip small {
-  font-size: 13px;
-  color: var(--muted);
-  margin-top: 3px;
-}
+.home-modes h3 { margin: 0 0 7px; font-size: 14px; font-weight: 600; }
+.home-modes p { margin: 0; font-size: 13px; line-height: 1.7; color: var(--muted); }
 .panel {
   border: 1px solid var(--line);
   background: white;
@@ -1080,7 +1057,7 @@ dialog p {
   .start-bottom .primary {
     align-self: flex-end;
   }
-  .setup-strip {
+  .home-modes {
     grid-template-columns: 1fr;
     gap: 15px;
   }
@@ -1219,7 +1196,7 @@ dialog p {
   .start-bottom > span {
     font-size: 13px;
   }
-  .setup-strip {
+  .home-modes {
     margin-top: 24px;
   }
 }
@@ -1676,13 +1653,6 @@ h1,
 .example:hover {
   border-color: #b5acec;
   box-shadow: 0 6px 22px #6658d90a;
-}
-.setup-strip {
-  margin-top: 28px;
-}
-.step-no {
-  border-color: #e1dbf5;
-  color: #7e70c2;
 }
 .project-view {
   max-width: none;
@@ -2442,7 +2412,7 @@ wa-split-panel.project-layout::part(divider):hover {
   .agent-controls .model-control {
     max-width: none;
   }
-  .setup-strip {
+  .home-modes {
     gap: 12px;
   }
   .conversation-heading {
@@ -3311,10 +3281,6 @@ wa-split-panel.project-layout {
 .research-tools-heading .eyebrow { font-size: 11px; letter-spacing: .17em; margin: 0; }
 .research-tools-heading .lead { font-size: 14px; color: var(--muted); margin: 0; }
 .research-tools-heading > button { font-size: 12px; white-space: nowrap; padding: 10px 14px; border-radius: 9px; }
-.research-tools-intro { display: flex; align-items: center; gap: 13px; border: 1px solid var(--line); border-radius: 11px; padding: 13px 16px; margin-bottom: 27px; background: var(--white); }
-.research-tools-intro > span { font-size: 23px; color: var(--accent); }
-.research-tools-intro p { font-size: 12px; color: var(--muted); margin: 0; }
-.research-tools-intro strong { color: var(--ink); font-weight: 600; }
 .research-tools-view .inventory-heading { margin: 27px 0 13px; align-items: center; }
 .research-tools-view .inventory-heading h2 { font-size: 15px; letter-spacing: -.1px; }
 .research-tools-view .inventory-heading p { font-size: 11px; }

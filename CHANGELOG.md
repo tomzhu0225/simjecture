@@ -27,6 +27,14 @@ This project follows semantic versioning. Dates use ISO 8601.
   an explicit execution category. Producing files no longer makes a command a
   simulation. Show each hosted command's own retained outputs. Research tools
   offer agent-guided custom studies alongside clearly labelled starter presets.
+- Replace abstract home suggestions with double-pendulum integration, FLASH
+  magnetic-island coalescence, and an autonomous pendulum-period hypothesis study.
+  Introduce Interactive and Autonomous research below them instead of a setup
+  checklist. Remove the redundant Python introduction from Research tools.
+- Show the official benchmark leaderboard, filters, cost/time charts and result
+  downloads in hosted workspaces. Model testing and result import remain disabled.
+- Present Conversation, Study and Evidence & review as peer navigation tabs
+  with an active view, instead of a breadcrumb hierarchy.
 - Make the inspector tabs reachable at narrow widths. Expose native outputs to
   follow-up project analysis, suppress binary console dumps from model context,
   and read executor console output through its original descriptors. Diagnose

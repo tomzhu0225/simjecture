@@ -148,7 +148,7 @@ function md(node, text) {
   window.WorkspaceRich.render(node, String(text || ""), state.project);
 }
 function view(name) {
-  if(hosted && ["settings","machines","benchmarks"].includes(name)) name="home";
+  if(hosted && ["settings","machines"].includes(name)) name="home";
   if (name !== "project") ++state.projectRequest;
   const changed = state.view !== name;
   state.view = name;
@@ -1071,13 +1071,14 @@ async function refreshBenchmarks() {
   const revision = JSON.stringify(pack);
   if (revision === benchmarkRevision) return;
   benchmarkRevision = revision;
-  window.WorkspaceBenchmarks.render(pack, {api, refresh:refreshBenchmarks, toast, readonly:state.readonly});
+  window.WorkspaceBenchmarks.render(pack, {api, refresh:refreshBenchmarks, toast, readonly:state.readonly || hosted, hosted});
   $("benchmark-version").textContent = `Task pack ${pack.version} · finite diagnostic coding contracts`;
   $("benchmark-tasks").replaceChildren();
   for (const task of pack.tasks) {
     const card = el("article", undefined, "tool-card"), button = el("button", "Prepare conversation");
     card.append(el("h2", task.title), el("p", `${task.seconds / 60} minute suggested budget. ${task.fields ? "HDF5 fields and CSV diagnostics." : "CSV diagnostics; no HDF5 dependency."}`));
-    button.disabled = state.readonly;
+    button.disabled = state.readonly || hosted;
+    if(hosted)button.title="Run your own benchmarks in a self-hosted Simjecture workspace.";
     button.onclick = () => action(button, async () => {
       const project = await api("prepare-benchmark", {task:task.id});
       await reloadProjects();
@@ -1096,7 +1097,7 @@ async function refreshBenchmarks() {
     link.href = projectLink(project.id);
     card.append(link, el("p", project.grade?.passed === true ? "Passed the finite numerical contract" : project.grade?.passed === false ? "Incomplete or failed numerical contract" : "Not graded"));
     const button = el("button", "Grade delivered results");
-    button.disabled = state.readonly;
+    button.disabled = state.readonly || hosted;
     button.onclick = () => action(button, async () => {
       button.textContent = "Grading…";
       try {
@@ -1207,7 +1208,7 @@ function researchToolCard(tool) {
   const actions=el("div",undefined,"tool-actions"),install=el("button",toolActionLabel(tool),"secondary");
   install.disabled=tool.state === "working" || state.readonly || hosted;install.onclick=()=>runToolAction(tool,install);if(!hosted)actions.append(install);
   if(hosted && tool.variants?.some(v=>v.tool_id)){
-    const general=state.hosting?.permissions.general_execution;
+    const general=tool.general_execution ?? state.hosting?.permissions.general_execution;
     const choice=el("select");choice.setAttribute("aria-label",`${tool.name} study setup`);
     if(general)choice.add(new Option("Custom study · prepare with agent","custom-study"));
     const presets=el("optgroup");presets.label="Starter presets";
@@ -1230,7 +1231,7 @@ function researchToolCard(tool) {
     demo.onclick=()=>action(demo,async()=>{const result=await api("tool-demo",{name:tool.id});await reloadProjects();mode("interactive");if (!(await openProject(result.project))) return;await monitor.open(result.simulation.id);toast("Diagnostic demo started. Its plots and results will appear in Simulations.");});actions.append(demo);}
   const details=el("button","Details","quiet tool-details-button");details.onclick=()=>openToolDetails(tool);actions.append(details);
   card.append(actions);
-  if(hosted && state.hosting?.permissions.general_execution && tool.variants?.some(v=>v.tool_id))card.append(el("p","Presets are starting points. The agent can prepare custom inputs, simulations and analysis.","tool-preset-help"));
+  if(hosted && (tool.general_execution ?? state.hosting?.permissions.general_execution) && tool.variants?.some(v=>v.tool_id))card.append(el("p","Presets are starting points. The agent can prepare custom inputs, simulations and analysis.","tool-preset-help"));
   return card;
 }
 $("connect-research-tool").onclick=()=>$("custom-tool-dialog").showModal();
@@ -1547,7 +1548,7 @@ async function boot() {
   if(!hosted)renderAccount();
   if(hosted){
     state.hosting=data.hosting;renderHosting();
-    for(const name of ["machines","settings","benchmarks"])document.querySelector(`[data-view="${name}"]`).hidden=true;
+    for(const name of ["machines","settings"])document.querySelector(`[data-view="${name}"]`).hidden=true;
     for(const id of ["connect-research-tool","tools-open-machines","connection-button","continuation-chat"])$(id).hidden=true;
     if(data.hosting.wall_seconds===null){$("brief-hours").removeAttribute("max");$("brief-hours").min="0";$("brief-hours").value="0";document.querySelector('label[for="brief-hours"]').textContent="Time budget (hours; 0 = unlimited)";}else{$("brief-hours").max=String(data.hosting.wall_seconds/3600);$("brief-hours").value=$("brief-hours").max;}
     for(const id of ["execution-backend","study-machines","research-director","review-model","review-effort"])$(id).disabled=true;
@@ -1556,12 +1557,6 @@ async function boot() {
     $("brief-policy").value="answer";
     $("brief-policy").disabled=true;
     $("first-request-help").textContent="Enter to send · Shift + Enter for a new line. The hosted agent and compute are ready.";
-    const trialExample=document.querySelectorAll(".example")[2];
-    trialExample.dataset.example="Prepare a study of a double pendulum using Python. Define the equations and initial conditions, produce a trajectory plot, and test energy conservation and timestep convergence before independent review.";
-    trialExample.querySelector("p").textContent="Test a double pendulum with numerical controls.";
-    const setup=document.querySelector(".setup-strip > div");
-    setup.querySelector("strong").textContent="Start a conversation";
-    setup.querySelector("small").textContent="Agent and compute provided";
     $("execution-backend").replaceChildren(new Option("Managed experiments","trusted-template"));
     $("review-model").placeholder="Assigned by the host";
     document.querySelector(".research-tools-heading .lead").textContent="Verified tools provided for this hosted workspace.";

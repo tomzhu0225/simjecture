@@ -350,6 +350,7 @@ class HostedWorkspace:
                     "registered": True,
                     "readiness": "passed",
                     "action": "hosted",
+                    "general_execution": general,
                     "path": "hosted-tools",
                     "description": descriptions[family]
                     if general
@@ -459,6 +460,24 @@ class HostedWorkspace:
             return self.project(identifier, owner)
         if name == "tools":
             return self.tools()
+        if name == "benchmarks":
+            from ..llm_bench.leaderboard import public_grade, published_reports, summarize
+            from ..llm_bench.official import dashboard
+            from ..llm_bench.pack import catalogue
+
+            pack = catalogue()
+            reports = [r for r in published_reports() if r.get("pack_version") == pack["version"]]
+            return pack | {
+                "official": dashboard(),
+                "leaderboard": summarize(reports),
+                "local_leaderboard": summarize([]),
+                "grade_reports": [public_grade(r) for r in reports],
+                "published_trials": len(reports),
+                "community_trials": 0,
+                "imported_trials": 0,
+                "projects": [],
+                "campaigns": [],
+            }
         if name == "machines":
             return {"machines": [], "local_defaults": {}, "enabled": False}
         if name == "simulation":

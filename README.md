@@ -40,7 +40,8 @@ required. For Python-package installation, SSH forwarding or source setup, see
 The local and hosted versions share a compact, expanding chat input, a persistent
 navigation rail and an account/workspace menu. Agent, model and effort settings
 live in the composer's model menu. The hosted service supplies inference and
-scientific tools; signed-in visitors can add files and retain their work. Guest
+scientific tools and the official benchmark leaderboard; signed-in visitors can
+add files and retain their work. Guest
 conversations and artifacts are temporary and are removed after their last tab
 leaves, with a short grace period for refreshing or signing in.
 

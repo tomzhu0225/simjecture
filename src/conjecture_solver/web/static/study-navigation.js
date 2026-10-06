@@ -18,7 +18,7 @@ window.StudyNavigation = (() => {
   }
   function render(container, { project, campaign, page, title = "" }) {
     container.replaceChildren();
-    const list = document.createElement("ol");
+    const list = document.createElement("ul");
     const items = [
       [project ? "Conversation" : "Workspace", project ? workspace(project, campaign, "interactive") : "/workspace", "conversation"],
       [project ? "Study" : "Standalone study", project ? workspace(project, campaign) : null, "study"],
@@ -30,6 +30,7 @@ window.StudyNavigation = (() => {
       link.textContent = label;
       if (href && step !== page) link.href = href;
       if (step === page) link.setAttribute("aria-current", "page");
+      else if (!href) link.setAttribute("aria-disabled", "true");
       if (step === "study" && title) link.title = title;
       if (step === "evidence" && !campaign) link.title = "Available after a study is started";
       item.append(link);

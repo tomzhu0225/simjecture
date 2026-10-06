@@ -70,6 +70,10 @@ def test_every_admin_mutation_is_rejected_even_without_ui(app):
         "register-tool",
         "upload",
         "prepare-machine",
+        "start-benchmark-campaign",
+        "prepare-benchmark",
+        "grade-benchmark",
+        "import-benchmark-reports",
     ):
         assert client.post("/api/workspace/" + route, json={"project": p["id"]}).status_code == 403
     for payload in ({"model": "another-model"}, {"backend": "codex"}, {"reasoning_effort": "high"}):
@@ -102,6 +106,24 @@ def test_projects_messages_and_studies_are_tenant_scoped(app):
         first.get("/api/workspace/project?id=" + p["id"]).json()["messages"][0]["text"]
         == "Explain the two-stream instability"
     )
+
+
+def test_hosted_benchmarks_expose_only_shipped_public_results(app):
+    client = session(app)
+    p = project(client)
+    root = app.state.store.root
+    (root / "benchmark-reports").mkdir()
+    (root / "benchmark-reports/private.json").write_text('{"private": "tenant data"}')
+    response = client.get("/api/workspace/benchmarks")
+    assert response.status_code == 200
+    data = response.json()
+    assert {t["id"] for t in data["official"]["tasks"]} == {"csv-energy", "rz-diagnostics"}
+    assert any(r["passes"] for t in data["official"]["tasks"] for r in t["rows"])
+    assert data["projects"] == data["campaigns"] == []
+    assert data["local_leaderboard"]["cohorts"] == []
+    assert all(r["pack_version"] == data["version"] for r in data["grade_reports"])
+    assert p["id"] not in response.text and "tenant data" not in response.text
+    assert "private-model-key" not in response.text
 
 
 def test_queue_cancellation_refunds_and_limits_are_separate(app):
