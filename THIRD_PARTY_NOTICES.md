@@ -1,5 +1,12 @@
 # Third-party notices
 
+The Cylinder Warp-LBM solver, scripts and validation records under
+`src/conjecture_solver/vendor/cylinder_lbm` were contributed by
+[Zifei Meng](https://github.com/ZifeiMengSPH) under Apache-2.0. Its LICENSE, NOTICE
+and source provenance are preserved in that directory. Simjecture supplies the
+installer and execution adapter. NVIDIA Warp is a separately installed dependency;
+its package includes its own license and notices.
+
 Simjecture depends on separately distributed open-source
 packages, including HTTPX, NumPy, Pydantic, and SciPy. Their licenses are
 reported by the installed Python distributions and are not replaced by this

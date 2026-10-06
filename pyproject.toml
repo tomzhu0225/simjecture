@@ -143,6 +143,7 @@ testpaths = ["tests"]
 line-length = 100
 target-version = "py311"
 extend-exclude = [
+  "src/conjecture_solver/vendor",
   "demos/agent_roles_validation/record",
   "demos/gray_scott_counterexample/record",
   "demos/collisionless_gem_reconnection/guided",

@@ -62,6 +62,9 @@ def materialize(entry, parameters, destination):
     binary, template = Path(entry["binary"]), Path(entry["template"])
     if digest(binary) != entry["binary_sha256"] or digest(template) != entry["template_sha256"]:
         raise ValueError("The qualified runtime changed; operator requalification is required")
+    for path, checksum in entry.get("identity_files", {}).items():
+        if digest(path) != checksum:
+            raise ValueError("The qualified solver source or driver changed")
     text = template.read_text()
     for key, value in values.items():
         text = text.replace("{{" + key + "}}", str(value))
@@ -76,6 +79,7 @@ def materialize(entry, parameters, destination):
         "kind": "simulation",
         "binary": str(binary),
         "binary_sha256": entry["binary_sha256"],
+        "identity_files": entry.get("identity_files", {}),
         "template_sha256": entry["template_sha256"],
         "parameters": values,
         "scope": entry["scope"],
@@ -205,7 +209,7 @@ def analyze_flash(case):
 
 @contextmanager
 def gpu_lease(case):
-    if case["family"] == "warpx":
+    if case["family"] in {"warpx", "lbm"}:
         import fcntl
 
         with open("/srv/simjecture-public/gpu.lock", "a") as lock:
@@ -223,6 +227,9 @@ def execute_case():
     case = json.loads(Path("native-case.json").read_text())
     if digest(case["binary"]) != case["binary_sha256"]:
         raise ValueError("Native executable changed after qualification")
+    for path, checksum in case.get("identity_files", {}).items():
+        if digest(path) != checksum:
+            raise ValueError("Native solver source or driver changed after qualification")
     environment = dict(os.environ, OMP_NUM_THREADS="1", OPENBLAS_NUM_THREADS="1")
     # Child runtimes use their own environment, not the launcher's injected
     # site-packages. Otherwise CHERAB's NumPy 1.x extensions load public NumPy 2.x.
@@ -238,6 +245,11 @@ def execute_case():
         command = [case["binary"]]
     elif case["family"] == "iter":
         command = [case["binary"], "iter-demo.py"]
+    elif case["family"] == "lbm":
+        Path("lbm-demo.py").write_bytes(Path("native-input.txt").read_bytes())
+        environment["CUDA_VISIBLE_DEVICES"] = "0"
+        environment["WARP_CACHE_PATH"] = str(Path.cwd() / ".warp-cache")
+        command = [case["binary"], "lbm-demo.py"]
     else:
         raise ValueError("Unknown host-owned runtime family")
     started = time.time()
@@ -254,6 +266,13 @@ def execute_case():
         metrics = analyze_warpx(case)
     elif case["family"] == "flash":
         metrics = analyze_flash(case)
+    elif case["family"] == "lbm":
+        import shutil
+
+        metrics = json.loads(Path("lbm-output/summary.json").read_text())
+        if not all(metrics["checks"].values()):
+            raise ValueError("Cylinder-flow numerical health checks failed")
+        shutil.copyfile("lbm-output/evolution.png", "evolution.png")
     else:
         import shutil
 

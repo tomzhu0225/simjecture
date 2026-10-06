@@ -4,6 +4,14 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+- Add Cylinder flow / Warp-LBM, contributed by Zifei Meng under Apache-2.0,
+  with an installer, agent guide, recorded diagnostics, custom studies and a
+  separate inlet-distance research benchmark task. Preserve source and validation
+  provenance; expose contributor credit and launch/preparation actions in the GUI.
+- Bound resident RAM for namespace-confined GPU capability jobs while allowing
+  CUDA address reservations. Give GPU readiness checks a bounded 128 MiB
+  per-file allowance for first-run JIT compilation.
+
 - Render the account rail and compact chat input in the initial page, before
   JavaScript or session requests finish. Hosted pages hide local Connections
   and Machines controls from their first render. Keep the mobile model picker

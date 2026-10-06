@@ -1097,6 +1097,7 @@ async function refreshBenchmarks() {
 }
 
 const toolLabels = {
+  "warp-lbm": ["Cylinder flow", "Warp-LBM · 2D fluid dynamics", "LB"],
   "iter-pack": ["ITER pack", "Diagnostics & data", "IT"],
   "solps": ["SOLPS-ITER", "Edge plasma", "SP"],
   "jorek": ["JOREK", "Tokamak MHD", "JK"],
@@ -1153,6 +1154,7 @@ function renderToolDetails(tool,section=null) {
   $("tool-detail-title").textContent=presentation.name;
   $("tool-detail-category").textContent=presentation.category;
   body.replaceChildren(el("p",tool.description));
+  if(tool.author_url){const credit=el("a",`Contributed by ${tool.author}`);credit.href=tool.author_url;credit.target="_blank";credit.rel="noopener noreferrer";body.append(credit);}
   const explanation=tool.registered === false && tool.installed ?
     "Local builds are present. Connect a capability directory to use one in recorded studies. A managed-profile check does not test these detected builds." : presentation.note;
   body.append(el("div",explanation,`tool-detail-note${presentation.kind === "attention" ? " attention" : ""}`));
@@ -1210,8 +1212,10 @@ function researchToolCard(tool) {
     const check=el("button","Check installed","quiet");check.disabled=tool.state === "working" || state.readonly;
     check.onclick=()=>action(check,async()=>{await api("install",{name:tool.id,action:"check"});await refreshTools();});actions.append(check);
   }
-  if(tool.id === "iter-pack" && tool.installed && !hosted){const demo=el("button","Run demo","quiet");demo.disabled=tool.state === "working" || state.readonly;
-    demo.onclick=()=>action(demo,async()=>{const result=await api("tool-demo",{name:tool.id});await reloadProjects();mode("interactive");if (!(await openProject(result.project))) return;await monitor.open(result.simulation.id);toast("Diagnostic demo started. Its plots and results will appear in Simulations.");});actions.append(demo);}
+  if(["iter-pack","warp-lbm"].includes(tool.id) && tool.installed && !hosted){const demo=el("button",tool.id === "warp-lbm" ? "Run cylinder wake" : "Run demo","quiet");demo.disabled=tool.state === "working" || state.readonly;
+    demo.onclick=()=>action(demo,async()=>{const result=await api("tool-demo",{name:tool.id});await reloadProjects();mode("interactive");if (!(await openProject(result.project))) return;await monitor.open(result.simulation.id);toast("Simulation started. Its plots and results will appear in Simulations.");});actions.append(demo);}
+  if(tool.benchmark && tool.installed){const benchmark=el("button","Prepare benchmark","quiet");benchmark.disabled=state.readonly;
+    benchmark.onclick=()=>action(benchmark,async()=>{const project=await api("projects",{name:tool.benchmark.title});await reloadProjects();if (!(await openProject(project.id)))return;mode("interactive");$("chat-input").value=tool.benchmark.prompt;$("chat-input").dispatchEvent(new Event("input"));$("chat-input").focus();toast("Benchmark task prepared. Choose your agent and send the request.");});actions.append(benchmark);}
   const details=el("button","Details","quiet tool-details-button");details.onclick=()=>openToolDetails(tool);actions.append(details);
   card.append(actions);
   if(hosted && (tool.general_execution ?? state.hosting?.permissions.general_execution) && tool.variants?.some(v=>v.tool_id))card.append(el("p","Presets are starting points. The agent can prepare custom inputs, simulations and analysis.","tool-preset-help"));

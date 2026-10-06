@@ -1,0 +1,17 @@
+{
+  "runtime_root": "../.runtime/warp-lbm-cylinder-1.0",
+  "executable": "bin/python",
+  "identity_files": ["share/build-record.json", "share/installed-requirements.txt", "share/lbm_driver.py", "share/source/cylinder_warp_lbm_solver.py"],
+  "environment": {
+    "MPLBACKEND": "Agg", "PYTHONDONTWRITEBYTECODE": "1", "OMP_NUM_THREADS": "1", "OPENBLAS_NUM_THREADS": "1",
+    "WARP_CACHE_PATH": "/tmp/warp-cache",
+    "SIMJECTURE_LBM_SOURCE": "/opt/acs-capabilities/warp-lbm-cylinder-1.0/share/source/cylinder_warp_lbm_solver.py",
+    "SIMJECTURE_LBM_DRIVER": "/opt/acs-capabilities/warp-lbm-cylinder-1.0/share/lbm_driver.py"
+  },
+  "manifest": {
+    "schema_version": "0.1.0", "name": "warp-lbm-cylinder-1.0", "version": "1.0", "skill": "warp-lbm", "executable_kind": "python-warp",
+    "description": "Cylinder flow with NVIDIA Warp D2Q9 MRT-LBM and smooth PSM, contributed by Zifei Meng. 2D isothermal hydrodynamics; GPU or CPU.",
+    "preflight_resource": "examples/health_check.py", "preflight_result": "lbm_health.json",
+    "preflight_checks": ["checks.completed", "checks.finite_fields", "checks.finite_forces", "checks.positive_density"]
+  }
+}

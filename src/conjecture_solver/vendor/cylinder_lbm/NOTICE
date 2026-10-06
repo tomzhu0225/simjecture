@@ -1,0 +1,7 @@
+Cylinder Warp-LBM
+Copyright 2026 Zifei Meng
+Author: https://github.com/ZifeiMengSPH
+
+Contributed to Simjecture under the Apache License, Version 2.0.
+The solver and supplied validation records are preserved from the 2026-10-06 contribution.
+Simjecture maintains the installation, execution adapter and agent guidance.

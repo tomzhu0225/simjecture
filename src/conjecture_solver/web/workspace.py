@@ -30,6 +30,12 @@ from .workspace_machines import MachineWorkspace
 
 CATALOGUE = [
     (
+        "warp-lbm",
+        "Cylinder flow · Warp-LBM",
+        "2D GPU fluid dynamics · contributed by Zifei Meng",
+        "install",
+    ),
+    (
         "iter-pack",
         "ITER pack · diagnostics & data",
         "CHERAB / Raysect and IMAS · verified demos",
@@ -764,8 +770,7 @@ class Workspace(MachineWorkspace):
                 provider = directory / "provider.json"
                 private_json(
                     provider,
-                    self.api_config()
-                    | {"reasoning_effort": effort or None},
+                    self.api_config() | {"reasoning_effort": effort or None},
                 )
                 config["provider_config"] = str(provider)
             private_json(directory / "models.json", [config])
@@ -1603,6 +1608,13 @@ class Workspace(MachineWorkspace):
                 )
                 if generated.is_file():
                     descriptor = generated
+            if name == "warp-lbm":
+                generated = (
+                    manager.runtime_root
+                    / "warp-lbm-cylinder-1.0/capabilities/warp-lbm-cylinder-1.0.json"
+                )
+                if generated.is_file():
+                    descriptor = generated
             variants = [item for item in detected if item["name"].startswith(name + "-")]
             if variants:
                 variants.sort(
@@ -1674,6 +1686,14 @@ class Workspace(MachineWorkspace):
                     log=self.tool_log(name),
                 )
             )
+            if name == "warp-lbm":
+                from ..cylinder_lbm_benchmark import task
+
+                cards[-1].update(
+                    author="Zifei Meng",
+                    author_url="https://github.com/ZifeiMengSPH",
+                    benchmark=task(),
+                )
         for record in (self.root / "custom-tools").glob("*.json"):
             tool = load(record)
             descriptors = list(Path(tool["path"]).glob("*.json"))
@@ -1832,7 +1852,31 @@ class Workspace(MachineWorkspace):
 
         from ..deployment import DeploymentManager, resolve_project_root
 
-        if text(payload, "name", 60) != "iter-pack":
+        name = text(payload, "name", 60)
+        if name == "warp-lbm":
+            runtime = (
+                DeploymentManager(resolve_project_root()).runtime_root / "warp-lbm-cylinder-1.0"
+            )
+            python, driver = runtime / "bin/python", runtime / "share/lbm_driver.py"
+            if not python.is_file() or not driver.is_file():
+                raise ValueError("Install Cylinder flow before running its example")
+            project = self.create({"name": "Cylinder wake · GPU LBM"})
+            directory = self.directory(project["id"])
+            env = "LD_LIBRARY_PATH=/usr/lib/wsl/lib " if Path("/dev/dxg").exists() else ""
+            command = (
+                env
+                + "MPLBACKEND=Agg "
+                + shlex.quote(str(python))
+                + " "
+                + shlex.quote(str(driver))
+                + " --out cylinder-output"
+            )
+            simulation = self.start_simulation(
+                project["id"],
+                {"name": "Cylinder wake · Re=100", "command": command, "timeout_seconds": 180},
+            )
+            return {"project": project["id"], "simulation": simulation}
+        if name != "iter-pack":
             raise ValueError("No bundled demo for this tool")
         manager = DeploymentManager(resolve_project_root())
         runtime = manager.runtime_root / "iter-pack-1.0"

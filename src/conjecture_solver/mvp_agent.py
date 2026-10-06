@@ -998,6 +998,7 @@ class BubblewrapSandbox:
             resource.RLIMIT_AS,
             ((1 << 47), (1 << 47))
             if self.isolation_backend in {"proot-cooperative", "process-cooperative"}
+            or getattr(self, "_resident_memory_guard", False)
             else (self.config.max_memory_bytes, self.config.max_memory_bytes),
         )
         resource.setrlimit(
@@ -1395,6 +1396,7 @@ class BubblewrapSandbox:
         timed_out = False
         cancelled = False
         workspace_exceeded = False
+        memory_exceeded = False
         heartbeat_count = 0
         measure_workspace = workspace_measure or self.workspace_bytes
         with tempfile.TemporaryFile() as stdout, tempfile.TemporaryFile() as stderr:
@@ -1419,6 +1421,13 @@ class BubblewrapSandbox:
                         self._terminate(process)
                         break
                     if now >= next_workspace_check:
+                        if getattr(self, "_resident_memory_guard", False):
+                            from .resident_memory import process_tree_rss
+
+                            if process_tree_rss(process.pid) > self.config.max_memory_bytes:
+                                memory_exceeded = True
+                                self._terminate(process)
+                                break
                         if measure_workspace() > self.config.max_workspace_bytes:
                             workspace_exceeded = True
                             self._terminate(process)
@@ -1449,10 +1458,21 @@ class BubblewrapSandbox:
             )
             stdout_text, stdout_truncated = self._bounded_stream(stdout)
             stderr_text, stderr_truncated = self._bounded_stream(stderr)
+            if memory_exceeded:
+                stderr_text += (
+                    "\nResident memory budget exceeded; "
+                    "GPU virtual address reservations are not counted as resident memory."
+                )
             elapsed = time.monotonic() - started
             return SandboxCommandResult(
                 isolation_backend=self.isolation_backend,
-                returncode=(None if timed_out or workspace_exceeded else process.returncode),
+                returncode=(
+                    None
+                    if timed_out or workspace_exceeded
+                    else 137
+                    if memory_exceeded
+                    else process.returncode
+                ),
                 stdout=stdout_text,
                 stderr=stderr_text,
                 timed_out=timed_out,
@@ -1584,20 +1604,27 @@ class BubblewrapSandbox:
             )
             return command
 
-        if input_artifacts is not None:
-            return self._run_with_declared_input_view(
-                build_command,
-                input_artifacts=input_artifacts,
-                program_path=program_path,
-                program_sha256=program_sha256,
+        previous_guard = getattr(self, "_resident_memory_guard", False)
+        self._resident_memory_guard = self.isolation_backend == "bubblewrap" and any(
+            path == "/dev/dxg" or path.startswith("/dev/nvidia") for path in installed.device_paths
+        )
+        try:
+            if input_artifacts is not None:
+                return self._run_with_declared_input_view(
+                    build_command,
+                    input_artifacts=input_artifacts,
+                    program_path=program_path,
+                    program_sha256=program_sha256,
+                    timeout_seconds=timeout_seconds,
+                    progress_callback=progress_callback,
+                )
+            return self._run_command(
+                build_command(self.root, []),
                 timeout_seconds=timeout_seconds,
                 progress_callback=progress_callback,
             )
-        return self._run_command(
-            build_command(self.root, []),
-            timeout_seconds=timeout_seconds,
-            progress_callback=progress_callback,
-        )
+        finally:
+            self._resident_memory_guard = previous_guard
 
     def artifact_hashes(self) -> dict[str, str]:
         artifacts: dict[str, str] = {}

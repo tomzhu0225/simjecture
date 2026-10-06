@@ -327,6 +327,11 @@ class HostedWorkspace:
         entries = registry(self.store.root)
         general = bool(self.settings().get("executor_qualified"))
         descriptions = {
+            "lbm": (
+                "2D cylinder wakes, drag and lift with NVIDIA Warp MRT-LBM. "
+                "Contributed by Zifei Meng; prepare custom flow studies with the installed "
+                "source and guide."
+            ),
             "flash": "Hydrodynamics and MHD. Change inputs or build custom applications "
             "from installed read-only FLASH source.",
             "warpx": "GPU particle-in-cell simulations. Prepare custom input files and "
@@ -335,6 +340,7 @@ class HostedWorkspace:
             "Prepare custom Python studies.",
         }
         for family, identifier, name in (
+            ("lbm", "warp-lbm", "Cylinder flow · Warp-LBM"),
             ("flash", "flash", "FLASH 4.8"),
             ("warpx", "warpx-cuda", "WarpX · CUDA"),
             ("iter", "iter-pack", "ITER pack"),
@@ -379,6 +385,14 @@ class HostedWorkspace:
                     },
                 }
             )
+            if family == "lbm":
+                from ..cylinder_lbm_benchmark import task
+
+                tools[-1].update(
+                    author="Zifei Meng",
+                    author_url="https://github.com/ZifeiMengSPH",
+                    benchmark=task(),
+                )
         return tools
 
     def enqueue(self, owner, mode, text, project, action=None):
