@@ -94,8 +94,12 @@ def test_tool_panel_isolates_expansion_preserves_logs_and_scopes_missing_runtime
             page.evaluate("window.originalToolCard=document.querySelector('[data-tool=\"flash\"]')")
             card.get_by_role("button", name="View installations", exact=True).click()
             playwright.expect(page.locator("#tool-details-dialog")).to_be_visible()
-            assert neighbor.bounding_box()["height"] == height
-            assert page.locator("#installed-tool-grid").bounding_box()["height"] == grid
+            # Browser coordinates can differ by tiny subpixel rounding after
+            # opening a dialog; a real card expansion is still rejected.
+            assert neighbor.bounding_box()["height"] == pytest.approx(height, abs=0.05)
+            assert page.locator("#installed-tool-grid").bounding_box()["height"] == pytest.approx(
+                grid, abs=0.05
+            )
             assert page.locator('[data-key="variants-warpx-cpu"]').get_attribute("open") is not None
             page.locator("#tool-details-body").evaluate("e=>e.scrollTop=300")
             warp["log"] = "updated setup log"
