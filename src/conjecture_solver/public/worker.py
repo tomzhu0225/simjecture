@@ -558,7 +558,10 @@ def native_instructions(store):
             "A ready 2D magnetic-island example is flash-island-2d: "
             "simulate_native('flash-island-2d', {}) returns project_outputs['raw-output.zip']. "
             "Use Python's zipfile module to unpack its HDF5 fields for custom plots; "
-            "the archive contains snapshots and the actual flash.par. "
+            "unpack and plot in the same run_command call, since scratch directories are fresh. "
+            "FLASH time is in the 'real scalars' table, not a dataset named 'time'; "
+            "single-block 2D fields use f['magx'][0,0] and f['magy'][0,0]. "
+            "The archive contains snapshots and the actual flash.par. "
             if any(row["id"] == "flash-island-2d" for row in rows)
             else ""
         )

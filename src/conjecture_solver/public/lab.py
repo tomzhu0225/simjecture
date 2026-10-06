@@ -197,6 +197,11 @@ class HostedLab:
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(source, target)
         result["experiment"] = record["id"]
+        result["workspace_note"] = (
+            "Each command starts in a fresh scratch directory populated from project inputs. "
+            "Only declared outputs return to the persistent project. Combine unpacking and "
+            "analysis in one command, or declare extracted files as outputs to use them later."
+        )
         result["status"] = (
             "succeeded"
             if result["metrics"]["returncode"] == 0
@@ -257,6 +262,9 @@ def agent_tools(store, job, service):
         name: str = "Scientific command",
     ) -> str:
         """Run custom scientific commands in an isolated job account with installed solvers.
+
+        Each call uses fresh scratch space; only declared outputs persist between calls.
+        Unpack and analyze an archive in the same command, or retain extracted files.
 
         Args:
             command: Shell command; may run Python, installed solvers, compilers or analysis.

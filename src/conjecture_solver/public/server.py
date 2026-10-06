@@ -766,8 +766,7 @@ def serve(args):
         unix_socket = Path(unix_socket)
         unix_socket.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
         os.umask(0o077)
-    uvicorn.run(
-        app,
+    options = dict(
         host=args.host,
         port=args.port,
         uds=str(unix_socket) if unix_socket else None,
@@ -776,6 +775,17 @@ def serve(args):
         timeout_keep_alive=5,
         limit_concurrency=100,
     )
+    if unix_socket:
+
+        class PrivateSocketServer(uvicorn.Server):
+            async def startup(self, sockets=None):
+                await super().startup(sockets)
+                if unix_socket.exists():
+                    unix_socket.chmod(0o600)
+
+        PrivateSocketServer(uvicorn.Config(app, **options)).run()
+    else:
+        uvicorn.run(app, **options)
     return 0
 
 
