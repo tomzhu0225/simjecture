@@ -27,9 +27,7 @@ def brand_browser():
 @pytest.fixture(scope="module")
 def brand_base_url(tmp_path_factory):
     root = tmp_path_factory.mktemp("brand-browser")
-    app = SimjectureWebApplication(
-        runs_root=root, scan_roots=(root,), allow_mutations=False
-    )
+    app = SimjectureWebApplication(runs_root=root, scan_roots=(root,), allow_mutations=False)
     server = create_server(app, port=0)
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
@@ -117,7 +115,11 @@ def test_brand_images_load_fit_and_follow_theme_through_reload(
         _assert_logo(page, expect, route, theme)
         for new_theme in ["dark" if theme == "light" else "light", theme]:
             toggle = page.locator("#theme-toggle" if route == "/workspace" else "#theme-button")
+            if route == "/workspace":
+                page.locator("#account-button").click()
             toggle.click()
+            if route == "/workspace":
+                page.keyboard.press("Escape")
             expect(page.locator("html")).to_have_attribute("data-theme", new_theme)
             assert page.evaluate("localStorage.getItem('simjecture-theme')") == new_theme
             _assert_logo(page, expect, route, new_theme)
@@ -164,13 +166,9 @@ def test_brand_links_have_accessible_names_and_work_with_keyboard(
 
 
 @pytest.mark.parametrize("theme", ["light", "dark"])
-def test_brand_fits_smallest_previously_saved_sidebar_width(
-    brand_browser, brand_base_url, theme
-):
+def test_brand_fits_smallest_previously_saved_sidebar_width(brand_browser, brand_base_url, theme):
     browser, expect = brand_browser
-    context = browser.new_context(
-        viewport={"width": 1440, "height": 1000}, color_scheme=theme
-    )
+    context = browser.new_context(viewport={"width": 1440, "height": 1000}, color_scheme=theme)
     try:
         # The current drag minimum is 176 px, but existing saved widths as small
         # as 160 px are accepted. The artwork must shrink without clipping.

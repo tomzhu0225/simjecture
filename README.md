@@ -2,7 +2,7 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21945748.svg)](https://doi.org/10.5281/zenodo.21945748)
 
-[Quickstart](#install-and-open-the-workspace) · [Documentation](docs/index.md) ·
+[Try online](https://simjecture.com) · [Quickstart](#install-and-open-the-workspace) · [Documentation](docs/index.md) ·
 [Recorded demo](docs/demos/gray-scott.md) · [Contributing](CONTRIBUTING.md) ·
 [Releases](https://github.com/tomzhu0225/simjecture/releases)
 
@@ -25,10 +25,11 @@ scope; see [scientific limitations](docs/research/limitations.md).
 
 ## Install and open the workspace
 
-On Linux or inside WSL, install **Simjecture 0.5.3**:
+Try the hosted workspace at **[simjecture.com](https://simjecture.com)**, or install
+**Simjecture 0.6.0** on Linux or inside WSL:
 
 ```bash
-curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.3/install.sh | bash
+curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.6.0/install.sh | bash
 ```
 
 The installer verifies the release bundle's checksum, sets up uv, Python 3.12 and
@@ -36,17 +37,18 @@ workspace dependencies, then starts the local GUI. Git and a CLI agent are not
 required. For Python-package installation, SSH forwarding or source setup, see
 [installation options](docs/getting-started/installation.md).
 
-To try the **0.5.4rc2 preview**, including research recovery and clearer simulation files:
+The local and hosted versions share a compact, expanding chat input, a persistent
+navigation rail and an account/workspace menu. Agent, model and effort settings
+live in the composer's model menu. The hosted service supplies inference and
+scientific tools and the official benchmark leaderboard; signed-in visitors can
+add files and retain their work. Guest
+conversations and artifacts are temporary and are removed after their last tab
+leaves, with a short grace period for refreshing or signing in.
 
-```bash
-curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.4rc2/install.sh | bash
-```
-
-The preview includes a default-on research director, live simulation timing,
-recovery from derived-context errors, and separate run outputs, copied inputs and
-shared project files. See its
-[checks and known limits](docs/testing/0.5.4rc2-acceptance.md). Stable 0.5.3 remains
-available above; application versions share the existing research files.
+To operate your own hosted service, see [server mode](docs/how-to/public-trials.md).
+It has a durable queue, separate visitor allowances, GitHub sign-in and an optional
+confined executor for general Python, solver inputs and application builds. It does
+not expose the trusted local operator backend to visitors.
 
 1. In **Connections**, add a compatible API endpoint and key, or select an installed,
    authenticated CLI in the message composer
@@ -83,7 +85,7 @@ Minimal mode is the default: the agent chooses its research strategy while the
 host manages evidence, review and deadlines. Structured and frontier modes are
 also available. See [research modes and evidence](docs/how-to/research-service.md)
 and [architecture](docs/concepts/architecture.md).
-In **0.5.4rc2**, new minimal studies also use a [research director](docs/how-to/minimal-oversight.md#research-director-stop-and-replan)
+New minimal studies also use a [research director](docs/how-to/minimal-oversight.md#research-director-stop-and-replan)
 to check feasibility during long jobs, stop named experiments and request recorded
 replans. Its launch switch and decisions are visible in the workspace; scientific
 claim acceptance remains independent.
@@ -111,15 +113,13 @@ host; neither provides an OS security boundary. Read
   [evaluation status](docs/research/status.md),
   [research and release archive](docs/archive/index.md)
 
-**0.5.3** brings SSH experiment workers, the measured coding-agent leaderboard,
-ledger and recovery repairs, and shared conversation/study/evidence navigation.
-The **0.5.4rc2 preview** adds execution strategy control, recovery from derived
-context/report errors, receipt-backed progress and clearer simulation file categories.
-A resumed Al campaign reached its wall deadline without a recorded supervisor
-error; its reconnection attribution remains unresolved. These changes do not
-establish a scientific result or lower model cost.
+**0.6.0** adds the hosted service and shared chat/account layout, building on the
+SSH experiment workers, measured agent leaderboard, research director, recovery
+repairs and simulation file categories from the preceding releases. Hosted science
+uses the existing evidence service and independent review; an interactive plot or
+successful solver readiness check does not establish an accepted scientific claim.
 Release changes live in [CHANGELOG.md](CHANGELOG.md); checks and limits are in the
-[0.5.3 acceptance record](docs/testing/0.5.3-acceptance.md) and
+[0.6.0 acceptance record](docs/testing/0.6.0-acceptance.md) and
 [archive](docs/archive/index.md). The
 [documentation index](docs/index.md) covers the full guide set.
 

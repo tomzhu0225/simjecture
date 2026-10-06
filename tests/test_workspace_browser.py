@@ -40,12 +40,14 @@ def test_browser_setup_chat_files_and_autonomous_handoff(tmp_path, provider):
                 "API connection saved. Choose its model in a conversation.", exact=True
             ).first.wait_for()
             assert page.locator("#api-key").input_value() == ""
-            page.get_by_role("button", name="New conversation").click()
+            page.locator("#new-project").click()
             assert page.locator("#quick-start #home-backend").count() == 1
+            page.locator("#home-agent-picker").click()
             page.locator("#home-backend").select_option("builtin")
             page.locator("#home-model option[value='fixture-model']").wait_for(state="attached")
             page.locator("#home-model").select_option("fixture-model")
             page.locator("#home-effort").select_option("high")
+            page.keyboard.press("Escape")
             page.locator("#first-request").fill("Grill me to prepare an autonomous investigation.")
             page.locator("#first-request").press("Shift+Enter")
             assert page.locator("#first-request").input_value().endswith("\n")
@@ -57,7 +59,7 @@ def test_browser_setup_chat_files_and_autonomous_handoff(tmp_path, provider):
             ).wait_for(timeout=40000)
             playwright.expect(page.locator("#send-message")).to_be_enabled(timeout=40000)
             assert page.locator(".composer-bottom #conversation-backend").count() == 1
-            route_box = page.locator("#conversation-backend").bounding_box()
+            route_box = page.locator("#conversation-agent-picker").bounding_box()
             send_box = page.locator("#send-message").bounding_box()
             assert (
                 abs(
@@ -135,6 +137,7 @@ def test_browser_setup_chat_files_and_autonomous_handoff(tmp_path, provider):
                     "The completed study found a reviewed counterexample.", exact=True
                 ).wait_for(timeout=30000)
                 playwright.expect(page.locator("#send-message")).to_be_enabled(timeout=30000)
+            page.locator("#conversation-agent-picker").click()
             page.locator("#conversation-model").select_option("fixture-alternate")
             playwright.expect(page.locator("#agent-switch-warning")).to_be_visible()
             playwright.expect(page.locator("#agent-switch-warning")).to_contain_text("cache reuse")
@@ -142,6 +145,7 @@ def test_browser_setup_chat_files_and_autonomous_handoff(tmp_path, provider):
             playwright.expect(page.locator("#agent-switch-warning")).to_be_hidden()
             page.evaluate("renderProject()")
             playwright.expect(page.locator("#agent-switch-warning")).to_be_hidden()
+            page.locator("#conversation-agent-picker").click()
             page.locator("#conversation-model").select_option("fixture-model")
             playwright.expect(page.locator("#agent-switch-warning")).to_be_hidden()
             page.locator("#conversation-model").select_option("fixture-alternate")
@@ -408,7 +412,20 @@ def test_theme_and_confirmed_conversation_deletion(tmp_path):
             page = browser.new_page(viewport={"width": 1440, "height": 1000}, color_scheme="light")
             page.goto(f"http://127.0.0.1:{server.server_port}/#project=" + project["id"])
             page.locator("#chat-input").wait_for()
+            compact = page.locator("#chat-form").bounding_box()["height"]
+            page.locator("#chat-input").fill("A long research draft\n" * 20)
+            playwright.expect(page.locator("#chat-form .composer-expand")).to_be_visible()
+            assert page.locator("#chat-form").bounding_box()["height"] > compact + 100
+            page.get_by_role("button", name="Expand message editor", exact=True).click()
+            playwright.expect(page.locator("#chat-form .composer-expand")).to_have_attribute(
+                "aria-expanded", "true"
+            )
+            page.locator("#chat-input").fill("")
+            playwright.expect(page.locator("#chat-form .composer-expand")).to_be_hidden()
+            assert page.locator("#chat-form").bounding_box()["height"] <= compact + 2
+            page.locator("#account-button").click()
             page.get_by_role("button", name="Switch to dark mode").click()
+            page.keyboard.press("Escape")
             playwright.expect(page.locator("html")).to_have_attribute("data-theme", "dark")
             page.reload()
             playwright.expect(page.locator("html")).to_have_attribute("data-theme", "dark")
@@ -429,7 +446,9 @@ def test_theme_and_confirmed_conversation_deletion(tmp_path):
             playwright.expect(page.locator("#project-list")).to_contain_text(
                 "Your work will appear here"
             )
+            page.locator("#account-button").click()
             page.get_by_role("button", name="Switch to light mode").click()
+            page.keyboard.press("Escape")
             playwright.expect(page.locator("html")).to_have_attribute("data-theme", "light")
             page.set_viewport_size({"width": 390, "height": 844})
             assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
@@ -721,7 +740,10 @@ def test_sidebar_edges_drag_closed_and_reopen(tmp_path):
             playwright.expect(page.locator("#workspace-sidebar")).not_to_be_visible()
             drag("#left-sidebar-toggle", 280)
             playwright.expect(page.locator("#workspace-sidebar")).to_be_visible()
-            assert abs(page.locator("#workspace-sidebar").bounding_box()["width"] - 280) < 2
+            rail = page.locator(".account-rail").bounding_box()["width"]
+            assert (
+                abs(page.locator("#workspace-sidebar").bounding_box()["width"] - (280 - rail)) < 2
+            )
             split = page.locator("#research-layout").bounding_box()
             drag('#research-layout [part="divider"]', split["x"] + split["width"] - 2)
             playwright.expect(page.locator("#research-inspector")).not_to_be_visible()
@@ -739,7 +761,9 @@ def test_sidebar_edges_drag_closed_and_reopen(tmp_path):
             )
             page.get_by_role("button", name="Expand left sidebar").click()
             page.get_by_role("button", name="Expand right sidebar").click()
-            assert abs(page.locator("#workspace-sidebar").bounding_box()["width"] - 280) < 2
+            assert (
+                abs(page.locator("#workspace-sidebar").bounding_box()["width"] - (280 - rail)) < 2
+            )
             page.screenshot(
                 path="artifacts/workspace-preview/expanded-edge-tabs.png", full_page=True
             )

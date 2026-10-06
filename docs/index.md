@@ -5,9 +5,9 @@ counterexample searches and independently reviewed claims. The browser workspace
 is the recommended starting point. Use a compatible API model or an installed
 native agent CLI; terminal automation is also supported.
 
-These guides cover the **Simjecture 0.5.4rc2 preview** and stable **0.5.3**. See the
-[preview checks and limits](testing/0.5.4rc2-acceptance.md) and the
-[stable release scope and checks](testing/0.5.3-acceptance.md).
+These guides cover **Simjecture 0.6.0**, including the shared local/hosted workspace
+and optional server mode. See the [release checks and limits](testing/0.6.0-acceptance.md)
+or [try the hosted workspace](https://simjecture.com).
 
 ## Start in the workspace
 
@@ -92,6 +92,7 @@ how-to/add-a-capability
 how-to/deploy-runtimes
 how-to/iter-pack
 how-to/ssh-workers
+how-to/public-trials
 how-to/llm-bench
 how-to/deepseek-harness
 how-to/simote-agent-roles
@@ -111,6 +112,7 @@ reference/repository-map
 
 development/documentation
 development/releasing
+testing/0.6.0-acceptance
 ```
 
 ```{toctree}

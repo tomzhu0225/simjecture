@@ -86,9 +86,10 @@ window.WorkspacePanels = (() => {
     if (side === "right" && !value && changed) resize();
   }
   function dragSize(side, x) {
+    const rail = document.querySelector(".account-rail")?.getBoundingClientRect().width || 0;
     const width =
       side === "left"
-        ? x
+        ? x - rail
         : $("research-layout").getBoundingClientRect().right - x;
     if (width < 56) {
       set(side, true);
@@ -154,8 +155,8 @@ window.WorkspacePanels = (() => {
         dragSize(
           "left",
           e.key === "End"
-            ? 224
-            : sizes.left + (e.key === "ArrowLeft" ? -24 : 24),
+            ? 224 + (document.querySelector(".account-rail")?.getBoundingClientRect().width || 0)
+            : sizes.left + (e.key === "ArrowLeft" ? -24 : 24) + (document.querySelector(".account-rail")?.getBoundingClientRect().width || 0),
         );
     };
     customElements.whenDefined("wa-split-panel").then(() => {

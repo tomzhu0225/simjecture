@@ -14,6 +14,8 @@
     />
     <link rel="stylesheet" href="/assets/vendor/highlight-github-dark.css" />
     <link rel="stylesheet" href="/assets/workspace.css" />
+    <link rel="stylesheet" href="/assets/account-rail.css" />
+    <link rel="stylesheet" href="/assets/workspace-composer.css" />
     <link rel="stylesheet" href="/assets/interface.css" />
     <script type="module" src="/assets/workspace-components.js"></script>
     <script src="/assets/vendor/marked-18.0.10.umd.js" defer></script>
@@ -26,6 +28,7 @@
     <script src="/assets/workspace-monitor.js" defer></script>
     <script src="/assets/workspace-benchmarks.js" defer></script>
     <script src="/assets/study-navigation.js" defer></script>
+    <script src="/assets/workspace-composer.js" defer></script>
     <script src="/assets/workspace.js" defer></script>
   </head>
   <body>
@@ -105,14 +108,6 @@
               Dark mode
             </button>
           </div>
-          <details class="workspace-details">
-            <summary>Workspace details</summary>
-            <div id="machine-label">Local workspace</div>
-            <span id="connection-indicator" class="connection-dot"
-              >Connecting…</span
-            >
-            <a href="/monitor">Experiment monitor <span>↗</span></a>
-          </details>
         </div>
       </aside>
       <div
@@ -158,20 +153,20 @@
             </p>
           </div>
           <form id="quick-start" class="start-box">
-            <label for="first-request">Your research request</label
+            <label for="first-request" class="sr-only">Your research request</label
             ><textarea
               id="first-request"
               aria-describedby="first-request-help"
-              rows="3"
-              placeholder="I want to understand why my simulation disagrees with the experiment…"
+              rows="1"
+              placeholder="Ask a question or describe your research…"
               required
             ></textarea>
             <div class="start-bottom">
               <div id="home-agent-host"></div>
-              <button type="submit" class="primary">Send <span>↑</span></button>
+              <button type="submit" class="primary composer-send" aria-label="Send request" title="Send request"><span aria-hidden="true">↑</span></button>
             </div>
           </form>
-          <p id="first-request-help" class="field-help composer-help">Enter to send · Shift + Enter for a new line. Choose an installed agent above, or set up an API in Connections.</p>
+          <p id="first-request-help" class="field-help composer-help">Enter to send · Shift + Enter for a new line. Choose your agent from the model menu, or set up an API in Connections.</p>
           <div class="section-line">
             <h2>A place to start</h2>
             <span>Choose an example and make it yours</span>
@@ -179,47 +174,42 @@
           <div class="examples">
             <button
               class="example"
-              data-example="Help me reproduce a result from a paper. First ask which paper and what result I want to reproduce."
+              data-example="Simulate a double pendulum with Python and SciPy for 20 seconds. Use two 1 m links and two 1 kg masses, g=9.81 m/s², initial angles 120° and -10°, and zero initial angular velocities. Save the trajectory CSV, plot the paths of both masses, and report the numerical energy drift. Run the calculation and link the actual plots and outputs."
             >
-              <span class="example-number">01 / REPRODUCE</span>
-              <h3>Start from a paper</h3>
-              <p>Turn a published result into a reproducible experiment.</p>
+              <span class="example-number">01 / PYTHON SIMULATION</span>
+              <h3>Simulate a double pendulum</h3>
+              <p>Follow two swinging masses for 20 seconds. Plot their paths and check energy drift.</p>
               <span class="arrow">↗</span>
             </button>
             <button
               class="example"
-              data-example="Help me understand an unexpected simulation result. Ask me for the output and what I expected before proposing explanations."
+              data-example="Run a 2D magnetic-island coalescence simulation with the installed FLASH resistive-MHD application. Start with its 64×64 normalized setup, resistivity 0.001 and end time 0.05. Preserve the actual inputs and HDF5 fields. Plot magnetic-field lines and field magnitude, compare magnetic and kinetic energy over time, and explain what this run can tell us about reconnection. Use the island-coalescence application rather than an unrelated vortex or shock example. Inspect available binaries and read-only sources to prepare the appropriate application if needed."
             >
-              <span class="example-number">02 / UNDERSTAND</span>
-              <h3>Investigate a discrepancy</h3>
-              <p>Explore what happened and design a test to explain it.</p>
+              <span class="example-number">02 / FLASH · 2D MHD</span>
+              <h3>Explore reconnecting magnetic islands</h3>
+              <p>Run resistive MHD. Plot the field geometry and track magnetic and kinetic energy.</p>
               <span class="arrow">↗</span>
             </button>
             <button
               class="example"
-              data-example="Prepare a short autonomous study to test this claim: explicit Euler integration of y' = -y preserves a nonnegative solution for all positive time steps. Search for a counterexample, record the calculations, and obtain independent review. Use ordinary Python; a well-supported negative result completes the study. Budget 5 minutes."
+              data-example="Prepare a 10-minute autonomous research study with this hypothesis: a lossless 1 m single pendulum released from rest has a period within 1% of 2π√(L/g) for every initial angle from 5° to 120°, with g=9.81 m/s². Use Python to integrate the nonlinear equation, measure periods from the trajectory, and search for a counterexample. Require numerical tolerance controls, retained trajectories, a period-versus-angle plot and independent review. If the claim fails, propose the smallest supported refinement of its amplitude range. Save an editable study brief so I can review and launch the autonomous run."
             >
-              <span class="example-number">03 / TRY SIMJECTURE</span>
-              <h3>Find a first counterexample</h3>
-              <p>A small numerical question. Python is all you need.</p>
+              <span class="example-number">03 / AUTONOMOUS RESEARCH</span>
+              <h3>Does a pendulum keep the same period?</h3>
+              <p>Test a hypothesis across release angles. Seek a counterexample and review the evidence.</p>
               <span class="arrow">↗</span>
             </button>
           </div>
-          <div class="setup-strip">
+          <section class="home-modes" aria-label="Research modes">
             <div>
-              <span class="step-no">1</span><strong>Connect an agent</strong
-              ><small>API endpoint or existing CLI</small>
+              <h3>Interactive</h3>
+              <p>Work with an agent in chat. Write code, run simulations, inspect plots and steer the next experiment.</p>
             </div>
             <div>
-              <span class="step-no">2</span
-              ><strong>Work through your task</strong
-              ><small>Chat, inspect files, prepare experiments</small>
+              <h3>Autonomous research</h3>
+              <p>Set a hypothesis and execution budget. The agent runs experiments, seeks counterexamples and submits evidence for independent review.</p>
             </div>
-            <div>
-              <span class="step-no">3</span><strong>Run a bounded study</strong
-              ><small>Evidence, independent review, a clear result</small>
-            </div>
-          </div>
+          </section>
         </section>
         <section id="view-machines" class="view machines-view" hidden>
           <div class="machines-heading">
@@ -345,7 +335,7 @@
               <h1>Model leaderboard</h1>
               <p class="lead">Measured scientific coding tasks. Compare completion, time and API-equivalent cost.</p></div>
             <div class="benchmark-actions">
-              <button id="benchmark-run" type="button">＋ Test a model</button>
+              <button id="benchmark-run" type="button" disabled>＋ Test a model</button>
               <button id="benchmark-export" class="secondary" type="button">Download results</button>
             </div>
           </div>
@@ -392,7 +382,7 @@
               <div><h3 id="benchmark-plot-title">Cost–time Pareto plot</h3><p id="benchmark-chart-note" class="field-help">Upper left is better. Dashed lines connect the same model's reasoning efforts.</p></div>
 
             </div>
-            <a id="benchmark-methodology-link" class="benchmark-methodology-link" href="https://github.com/tomzhu0225/simjecture/blob/feature/benchmark-leaderboard/docs/how-to/llm-bench.md#leaderboard-and-tradeoffs" target="_blank" rel="noopener noreferrer">Methodology ↗</a>
+            <a id="benchmark-methodology-link" class="benchmark-methodology-link" href="https://github.com/tomzhu0225/simjecture/blob/main/docs/how-to/llm-bench.md#leaderboard-and-tradeoffs" target="_blank" rel="noopener noreferrer">Methodology ↗</a>
             <div id="benchmark-tradeoff"></div>
             <div id="benchmark-series-legend" class="benchmark-series-legend"></div>
             <div id="benchmark-leaderboard"></div>
@@ -426,8 +416,6 @@
               <p class="lead">Use what’s installed. Add a solver when your investigation needs it.</p></div>
             <button id="connect-research-tool" class="secondary" type="button">＋ Connect existing tool</button>
           </div>
-          <div class="research-tools-intro"><span aria-hidden="true">∑</span>
-            <p><strong>Start with Python.</strong> NumPy, SciPy, pandas and plotting are included. External solvers are optional.</p></div>
           <div class="inventory-heading"><h2>Installed <span id="installed-count" class="count-badge">1</span></h2>
             <p>On this computer · includes detected local builds</p></div>
           <div id="installed-tool-grid" class="tool-grid research-tool-grid"></div>
@@ -485,8 +473,8 @@
                     >Message your research agent</label
                   ><textarea
                     id="chat-input"
-                    rows="3"
-                    placeholder="Ask a question, attach your inputs, or describe what you want to achieve…"
+                    rows="1"
+                    placeholder="Ask your research agent…"
                     required
                   ></textarea>
                   <div
@@ -510,10 +498,9 @@
                       ×
                     </button>
                   </div>
+                  <label class="attach-button composer-attach" for="file-input" title="Add project files"><span aria-hidden="true">＋</span><span class="sr-only">Attach files</span></label>
+                  <input id="file-input" type="file" multiple hidden />
                   <div class="composer-bottom">
-                    <label class="attach-button" for="file-input"
-                      >＋ Attach files</label
-                    ><input id="file-input" type="file" multiple hidden />
                     <div class="agent-controls" aria-label="Conversation agent">
                       <div>
                         <label for="conversation-backend">Agent</label
@@ -560,15 +547,11 @@
                       hidden
                     >
                       Stop</button
-                    ><button id="send-message" class="primary" type="submit">
-                      Send ↑
+                    ><button id="send-message" class="primary composer-send" type="submit" aria-label="Send message" title="Send message">
+                      <span aria-hidden="true">↑</span>
                     </button>
                   </div>
                 </form>
-                <p class="composer-note">
-                  The agent can edit project files and run commands on this
-                  machine.
-                </p>
               </div>
               <div id="autonomous-panel" hidden>
                 <div class="section-line">
@@ -803,7 +786,7 @@
                       <code id="project-path"></code>
                       <p class="field-help">
                         Copy large datasets here directly. Browser uploads
-                        support files up to 20 MB.
+                        support files up to 64 MB.
                       </p>
                     </details>
                   </div>
@@ -854,6 +837,12 @@
           </button>
         </div>
       </form>
+    </dialog>
+    <dialog id="workspace-details-dialog" class="workspace-details-dialog" aria-labelledby="workspace-details-title">
+      <div class="dialog-heading"><h2 id="workspace-details-title">Workspace details</h2><button id="close-workspace-details" class="quiet" type="button" aria-label="Close workspace details">×</button></div>
+      <p id="machine-label">Local workspace</p>
+      <p id="connection-indicator" class="connection-dot">Connecting…</p>
+      <div class="workspace-detail-links"><a href="/monitor">Experiment monitor ↗</a><a href="https://github.com/tomzhu0225/simjecture" target="_blank" rel="noopener noreferrer">Simjecture on GitHub ↗</a></div>
     </dialog>
   </body>
 </html>

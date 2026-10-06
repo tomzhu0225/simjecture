@@ -35,6 +35,15 @@ wheels = [
 ]
 
 [[package]]
+name = "annotated-doc"
+version = "0.0.5"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/5a/8e/38aa427ed5402449e226975b649c5dc73ccadfefeb95e6aecb8f8ea4b6b6/annotated_doc-0.0.5.tar.gz", hash = "sha256:c7e58ce09192557605d8bbd92836d7e1d520ac9580096042c0bfd197efacf1bb", size = 10758, upload-time = "2026-07-28T13:50:58.129Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/3e/30/e900b21425a860e195f32e37657aa1f7c7f2b1bfb26f03ca209b90933c06/annotated_doc-0.0.5-py3-none-any.whl", hash = "sha256:117bac03a25ede5df5440e855b32d556049ca169ead221505badf432fed4b101", size = 5302, upload-time = "2026-07-28T13:50:57.239Z" },
+]
+
+[[package]]
 name = "annotated-types"
 version = "0.8.0"
 source = { registry = "https://pypi.org/simple" }
@@ -636,6 +645,23 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/ae/ed/aefcc8cd0ba62a0560c3c18c33925362d46c6075480bfa4df87b28e169a9/docutils-0.21.2.tar.gz", hash = "sha256:3a6b18732edf182daa3cd12775bbb338cf5691468f91eeeb109deff6ebfa986f", size = 2204444, upload-time = "2024-04-23T18:57:18.24Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/8f/d7/9322c609343d929e75e7e5e6255e614fcc67572cfd083959cdef3b7aad79/docutils-0.21.2-py3-none-any.whl", hash = "sha256:dafca5b9e384f0e419294eb4d2ff9fa826435bf15f15b7bd45723e8ad76811b2", size = 587408, upload-time = "2024-04-23T18:57:14.835Z" },
+]
+
+[[package]]
+name = "fastapi"
+version = "0.142.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "annotated-doc" },
+    { name = "opentelemetry-api" },
+    { name = "pydantic" },
+    { name = "starlette" },
+    { name = "typing-extensions" },
+    { name = "typing-inspection" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/56/4f/f7c30a73127e0a8bbffe788369b8359e530b01ae06e2757936fa35bc5e6d/fastapi-0.142.2.tar.gz", hash = "sha256:06366626f2e70576367714d9ab2fe8472e6c8456dba69b399f9f797ab5e92570", size = 466721, upload-time = "2026-09-30T09:51:11.277Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a0/b6/78aaf9141fb46742928c113f3cf6ef2259d538cb02b604b7656c1dc9883c/fastapi-0.142.2-py3-none-any.whl", hash = "sha256:bd5f4d81f1e93a88bcd77caf4dfe3c2dbffc3805407a0007e9a114c18b3a670b", size = 144409, upload-time = "2026-09-30T09:51:09.8Z" },
 ]
 
 [[package]]
@@ -2608,7 +2634,7 @@ wheels = [
 
 [[package]]
 name = "simjecture"
-version = "0.5.4rc2"
+version = "0.6.0"
 source = { editable = "." }
 dependencies = [
     { name = "httpx" },
@@ -2631,6 +2657,13 @@ flash-demo = [
 ]
 process = [
     { name = "psutil" },
+]
+public = [
+    { name = "fastapi" },
+    { name = "h5py" },
+    { name = "psutil" },
+    { name = "smolagents", extra = ["openai"] },
+    { name = "uvicorn" },
 ]
 tui = [
     { name = "textual" },
@@ -2661,7 +2694,9 @@ docs = [
 
 [package.metadata]
 requires-dist = [
+    { name = "fastapi", marker = "extra == 'public'", specifier = ">=0.115,<1" },
     { name = "h5py", marker = "extra == 'flash-demo'", specifier = ">=3.10,<4" },
+    { name = "h5py", marker = "extra == 'public'", specifier = ">=3.10,<4" },
     { name = "h5py", marker = "extra == 'workspace'", specifier = ">=3.10,<4" },
     { name = "httpx", specifier = ">=0.27,<1" },
     { name = "matplotlib", specifier = ">=3.8,<4" },
@@ -2670,13 +2705,16 @@ requires-dist = [
     { name = "pandas", specifier = ">=2.2,<4" },
     { name = "pillow", specifier = ">=10,<13" },
     { name = "psutil", marker = "extra == 'process'", specifier = ">=6,<8" },
+    { name = "psutil", marker = "extra == 'public'", specifier = ">=6,<8" },
     { name = "psutil", marker = "extra == 'workspace'", specifier = ">=6,<8" },
     { name = "pydantic", specifier = ">=2.9,<3" },
     { name = "scipy", specifier = ">=1.12,<2" },
+    { name = "smolagents", extras = ["openai"], marker = "extra == 'public'", specifier = ">=1.24,<2" },
     { name = "smolagents", extras = ["openai"], marker = "extra == 'workspace'", specifier = ">=1.24,<2" },
     { name = "textual", marker = "extra == 'tui'", specifier = ">=2.0,<9" },
+    { name = "uvicorn", marker = "extra == 'public'", specifier = ">=0.30,<1" },
 ]
-provides-extras = ["process", "tui", "dsh", "flash-demo", "workspace"]
+provides-extras = ["process", "tui", "dsh", "flash-demo", "workspace", "public"]
 
 [package.metadata.requires-dev]
 browser = [{ name = "playwright", specifier = ">=1.50,<2" }]

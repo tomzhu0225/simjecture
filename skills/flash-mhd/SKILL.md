@@ -12,9 +12,9 @@ diagnostics, acceptance thresholds, or conclusion.
 
 ## Execution contract
 
-- Use FLASH only when the campaign advertises an installed capability whose
-  manifest names this skill. Do not invent a capability name or assume that
-  this skill includes an executable.
+- Use FLASH only when the operator/campaign advertises an installed capability
+  through its manifest or a qualified hosted tool registry. Do not invent a
+  capability name or assume this skill includes an executable.
 - Keep programs, parameter files, analysis, and outputs in the writable
   workspace. Capability action paths are workspace-relative; the runtime may
   map that workspace to another path only during execution.
@@ -84,6 +84,8 @@ Read these resources as needed:
   before expensive campaigns.
 - [Execution and output](references/execution-output.md): command construction,
   provenance, output inspection, and failure handling.
+- [Hosted HDF5 analysis](references/hosted-analysis.md): scratch/project file
+  persistence, raw-output archives and single-block magnetic-field plotting.
 - [Model validity](references/model-validity.md): fluid-model scope and
   qualification checks, including the limits of FLASH Hall physics.
 - [Local deployment](references/local-deployment.md): operator-side acquisition,

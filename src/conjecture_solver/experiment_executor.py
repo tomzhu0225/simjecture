@@ -66,7 +66,7 @@ def _execute_frozen(
             execution_backend=execution_backend,
             max_command_seconds=timeout,
             max_workspace_bytes=max_workspace_bytes,
-            max_file_bytes=512 * 1024**2,
+            max_file_bytes=min(512 * 1024**2, max_workspace_bytes),
             max_memory_bytes=max_memory_bytes,
             command_heartbeat_seconds=5 if monitor else 30,
         ),

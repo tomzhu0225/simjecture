@@ -11,6 +11,10 @@ calculation supported by the installed `warpx-cpu-26.07` or
 explains the instrument; it does not prescribe the scientific question,
 parameters, diagnostics, or conclusion.
 
+For photon emission, absorption or radiation budgets, read
+`references/radiation.md`. Hosted standalone binaries can have different geometry
+and build features from the pinned PICMI capability; inspect their actual metadata.
+
 ## Execution contract
 
 - Author the PICMI Python program and any analysis programs in the writable

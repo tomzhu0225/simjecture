@@ -40,7 +40,7 @@ jobs:
             --ro-bind /lib64 /lib64 \
             /usr/bin/true
       - name: Install locked test environment
-        run: uv sync --frozen --extra tui --extra dsh --extra workspace --group browser
+        run: uv sync --frozen --extra tui --extra dsh --extra workspace --extra public --group browser
       - name: Install browser test runtime
         run: uv run playwright install --with-deps chromium
       - uses: actions/setup-node@v4

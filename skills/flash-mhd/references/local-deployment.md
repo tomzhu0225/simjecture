@@ -163,3 +163,34 @@ that shadows GFortran's intrinsic module. If the compiler reports `Unexpected EO
 for that file, remove the generated empty file and its generated make dependency
 rule; do not replace intrinsic modules with empty stubs or modify the pristine
 reference source. Record this build-directory compatibility adjustment.
+
+## Building from read-only source in a hosted job
+
+FLASH setup normally links files from the reference source. Its generated build
+may `touch` those headers; `-portable` can also copy read-only modes onto files
+that setup subsequently rewrites. Build in a private writable source copy instead:
+
+```bash
+simjecture_case_dir=$PWD
+mkdir flash-source
+for folder in bin source sites lib; do
+  cp -RL "$FLASH_SOURCE/$folder" flash-source/
+done
+chmod -R u+rwX flash-source
+cd flash-source
+SETUP_SHORTCUTS=$PWD/bin/setup_shortcuts.txt python3 bin/setup.py \
+  magnetoHD/IslandCoalescence -auto -opt -2d +cartesian +ug -nofbs +usm \
+  +hdf5typeio -site="$FLASH_SITE" -objdir="$simjecture_case_dir/build"
+cd "$simjecture_case_dir/build"
+make -j4
+```
+
+Use the operator's actual source/site paths and compatible toolchain. Preserve the
+setup command, build log, compiled executable and relevant initialization source
+as declared outputs. Do not alter the installed reference tree. In the hosted
+executor, declare those outputs explicitly so the build survives the command's
+temporary working directory; executable modes are preserved for subsequent runs.
+General inspection commands may use an empty output list: their console is still
+recorded. Native examples return `project_outputs`, including a raw-output archive,
+for follow-up Python/HDF5 analysis. Read snapshot times from `real scalars` and
+do not assume every application uses the `native_` plotfile prefix.

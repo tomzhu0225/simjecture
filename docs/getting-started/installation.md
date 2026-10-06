@@ -5,13 +5,13 @@
 On Linux or inside an existing WSL distribution:
 
 ```bash
-curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.3/install.sh | bash
+curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.6.0/install.sh | bash
 ```
 
-This command selects stable **0.5.3**, including SSH experiment workers and shared
-conversation/study/evidence navigation. Existing projects, provider settings,
+This command selects stable **0.6.0**, including the compact chat/account layout,
+SSH experiment workers and shared conversation/study/evidence navigation. Existing projects, provider settings,
 runtimes and older program versions are preserved. See
-[release scope and checks](../testing/0.5.3-acceptance.md) and
+[release scope and checks](../testing/0.6.0-acceptance.md) and
 [SSH worker setup](../how-to/ssh-workers.md).
 
 No Git, Python environment or CLI agent setup is required in advance. The bootstrap
@@ -35,7 +35,7 @@ remove older versions or research outputs.
 To install without starting, or choose a different web port:
 
 ```bash
-curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.5.3/install.sh | bash -s -- --no-start
+curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.6.0/install.sh | bash -s -- --no-start
 ~/simjecture/start-workspace --port 8765
 ```
 

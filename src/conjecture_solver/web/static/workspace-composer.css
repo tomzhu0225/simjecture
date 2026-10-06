@@ -1,0 +1,75 @@
+/* A compact input that grows with the draft; settings live in a popover. */
+:is(.composer, .start-box).prompt-composer {
+  position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center; gap: 8px 10px; padding: 9px 12px 9px 20px;
+  border: 1px solid var(--line); border-radius: 30px; background: var(--white, #fff);
+  box-shadow: 0 3px 18px #18132d06; transition: border-radius .14s ease;
+}
+.prompt-composer.has-attachments { grid-template-columns: 32px minmax(0, 1fr) auto; padding-left: 10px; }
+:is(.composer, .start-box).prompt-composer textarea {
+  grid-column: 1; grid-row: 1; width: 100%; min-height: 24px; max-height: none;
+  margin: 0; padding: 0; border: 0; border-radius: 0; resize: none;
+  background: transparent; color: var(--ink); font: inherit; font-size: 16px; line-height: 24px;
+  box-shadow: none; outline: none;
+}
+.prompt-composer.has-attachments textarea { grid-column: 2; }
+.prompt-composer :is(.composer-bottom, .start-bottom) {
+  grid-column: 2; grid-row: 1; display: flex; flex-wrap: nowrap; align-items: center;
+  gap: 6px; border: 0; padding: 0; margin: 0; min-width: 0;
+}
+.prompt-composer.has-attachments .composer-bottom { grid-column: 3; }
+.prompt-composer #home-agent-host { flex: 0 1 auto; min-width: 0; }
+.prompt-composer #agent-label { display: none; }
+.prompt-composer .composer-send {
+  width: 38px; height: 38px; min-width: 38px; padding: 0; margin: 0;
+  border-radius: 50%; font-size: 25px; line-height: 1; box-shadow: none; gap: 0;
+}
+.prompt-composer .composer-send:disabled { background: var(--line); color: var(--muted); opacity: .7; }
+.prompt-composer .composer-attach {
+  grid-column: 1; grid-row: 1; display: grid; place-items: center;
+  width: 32px; height: 36px; margin: 0; padding: 0; font-size: 26px;
+  border-radius: 50%; color: var(--muted); cursor: pointer; font-weight: 400;
+}
+.prompt-composer .composer-attach:hover { color: var(--ink); background: var(--line); }
+.prompt-composer.is-multiline { border-radius: 24px; padding: 16px 12px 10px 18px; }
+.prompt-composer.is-multiline textarea { grid-column: 1 / -1; grid-row: 1; }
+.prompt-composer.is-multiline :is(.composer-bottom, .start-bottom) { grid-column: 2 / -1; grid-row: 2; justify-content: flex-end; }
+.prompt-composer.is-multiline .composer-attach { grid-column: 1; grid-row: 2; }
+.prompt-composer .agent-switch-warning { grid-column: 1 / -1; grid-row: 3; margin: 0; }
+.agent-picker-button {
+  display: flex; align-items: center; gap: 7px; max-width: 180px;
+  padding: 8px 10px; border: 0; border-radius: 20px; background: transparent;
+  color: var(--muted); font: inherit; font-size: 12px; line-height: 20px; min-width: 0;
+}
+.agent-picker-summary { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.agent-picker-button:hover, .agent-picker-button[aria-expanded="true"] { background: var(--line); color: var(--ink); }
+.agent-picker-popup {
+  position: fixed; margin: 0; padding: 18px; border: 1px solid var(--line);
+  border-radius: 18px; background: var(--white, #fff); color: var(--ink);
+  box-shadow: 0 12px 48px #00000026; overflow: auto;
+}
+.agent-picker-popup::backdrop { background: transparent; }
+.agent-picker-popup .agent-controls {
+  display: grid !important; grid-template-columns: 1fr; gap: 14px;
+  padding: 0 !important; margin: 0 !important; background: transparent; border: 0;
+}
+.agent-picker-popup .agent-controls > div { display: grid; gap: 6px; flex: none; max-width: none; width: 100%; }
+.agent-picker-popup .agent-controls label { font-size: 12px; color: var(--muted); margin: 0; font-weight: 500; }
+.agent-picker-popup .agent-controls :is(select, input) { width: 100%; max-width: none; min-width: 0; padding: 9px 10px; font-size: 13px; border: 1px solid var(--line); border-radius: 8px; }
+.agent-picker-popup .agent-controls .quiet { font-size: 12px; padding: 4px 0; text-align: left; }
+.agent-picker-popup .agent-controls .quiet::after { content: none; }
+.agent-picker-popup .agent-controls .field-help { display: block; margin: 0; font-size: 12px; line-height: 1.5; }
+.prompt-composer .composer-expand {
+  position: absolute; top: 10px; right: 12px; display: grid; place-items: center;
+  width: 30px; height: 30px; padding: 0; border: 0; border-radius: 8px;
+  color: var(--muted); background: transparent;
+}
+.prompt-composer .composer-expand:hover { color: var(--ink); background: var(--line); }
+.prompt-composer.has-editor-expand textarea { padding-right: 30px; }
+[data-theme="dark"] :is(.prompt-composer, .agent-picker-popup) { background: #222733; border-color: #394154; }
+[data-theme="dark"] .prompt-composer textarea { background: transparent; }
+@media (max-width: 600px) {
+  .agent-picker-button { max-width: 112px; padding: 8px 6px; font-size: 11px; gap: 4px; }
+  :is(.composer, .start-box).prompt-composer { gap: 6px; padding-right: 8px; }
+  :is(.composer, .start-box).prompt-composer textarea { font-size: 16px; }
+}

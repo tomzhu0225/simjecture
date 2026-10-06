@@ -131,7 +131,9 @@ window.WorkspaceMonitor = {
       const inputsOpen = container.querySelector(".run-inputs")?.open || false;
       container.dataset.revision = revision;
       container.replaceChildren();
-      const shared = job.kind === "command";
+      const shared = job.file_provenance === "shared" ||
+        (job.kind === "command" && !job.file_provenance);
+      const command = job.kind === "command";
       const inputs = new Set(job.inputs || []);
       const rows = (job.files || []).map((file) => ({
         ...file,
@@ -162,12 +164,14 @@ window.WorkspaceMonitor = {
         "div", undefined, shared ? "run-shared-files" : "run-outputs",
       );
       outputs.append(
-        node("h4", shared ? "Project files (shared)" : "Run outputs"),
+        node("h4", shared ? "Project files (shared)" : command ? "Command outputs" : "Run outputs"),
         node(
           "p",
           shared
             ? "Commands use the shared project folder. These files are not specific to this command."
-            : "Files created or changed in this simulation’s workspace.",
+            : command
+              ? "Files retained from this command’s isolated workspace."
+              : "Files created or changed in this simulation’s workspace.",
           "field-help",
         ),
       );

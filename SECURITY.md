@@ -39,9 +39,34 @@ certification for hostile code.
 
 ## Local web boundary
 
-The web interface is a loopback-only operator tool, not a hosted or multi-user
+The `simjecture web` interface is a loopback-only operator tool, not a hosted or multi-user
 service. Do not expose it through a public port or reverse proxy. Use SSH port
 forwarding for remote access. Mutating requests require the per-process browser
 control token, and agent-authored artifacts are delivered under a restrictive
 content-security policy. Use `simjecture web --read-only` when reviewing a record;
 review record contents for private data before sharing them.
+
+## Optional hosted service
+
+`simjecture serve` is a separate, quota-controlled tenant service introduced in
+0.6.0. It shares presentation assets with the operator workspace, not its API or
+control token. Projects, uploads, jobs and verified artifact downloads check
+visitor/account ownership. Model and installation settings remain operator-owned.
+GitHub identity is verified server-side; owner privileges require an explicitly
+configured immutable account ID. OAuth client credentials remain in RAM and must
+be provisioned again after a restart.
+
+General code execution is opt-in and requires a separately commissioned Linux
+broker and a private Unix HTTP gateway. The broker drops to a reserved job UID and
+enforces Landlock, seccomp and resource limits before executing code. It fails
+closed, kills all processes using that UID before collecting files, rejects
+symbolic/hard links and reads console output through its original descriptors.
+Never expose the gateway's trusted client-address path over a localhost TCP port
+that scientific jobs can access.
+
+This namespace-independent profile is not a network namespace, a hardware GPU
+partition or an external security certification. Protect other network services
+on the dedicated host. Keep application/configuration code operator-owned, and
+exclude credentials and unrelated personal data from allowed scientific source
+roots. See [server deployment](docs/how-to/public-trials.md) for configuration,
+guest cleanup, identity, budgets and qualification requirements.

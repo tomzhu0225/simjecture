@@ -319,6 +319,7 @@ window.WorkspaceBenchmarks = (() => {
       const a=node("a");a.href=url;a.download="simjecture-benchmark-grades.json";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
     };
     $("benchmark-run").disabled=actions.readonly;
+    $("benchmark-run").title=actions.hosted ? "Run your own benchmarks in a self-hosted Simjecture workspace." : "";
     $("benchmark-run").onclick=()=>runDialog(pack,actions);
     const campaigns=$("benchmark-campaigns");campaigns.replaceChildren();
     for(const run of pack.campaigns || []) {
@@ -367,6 +368,10 @@ window.WorkspaceBenchmarks = (() => {
     };
     const files=$("benchmark-import-files");
     $("benchmark-import").disabled=actions.readonly;
+    $("benchmark-import").title=actions.hosted ? "Import custom results in a self-hosted Simjecture workspace." : "";
+    $("benchmark-your-work").querySelector(".field-help").textContent=actions.hosted
+      ? "Browse and download the official results here. Testing models and importing custom results are available in a self-hosted Simjecture workspace."
+      : "Test any supported model with your installed agent or API connection. Local and imported runs appear in Community & local. Official results are maintained by Simjecture.";
     $("benchmark-import").onclick=()=>files.click();
     files.onchange=async()=>{
       try {
@@ -388,6 +393,7 @@ window.WorkspaceBenchmarks = (() => {
     if(!pack.official)resultsSource="local";
     const source=$("benchmark-source");source.value=resultsSource;
     source.querySelector('option[value="official"]').disabled=!pack.official;
+    source.querySelector('option[value="local"]').disabled=!!actions.hosted;
     source.onchange=()=>{resultsSource=source.value;render(pack,actions);};
     const official=resultsSource==="official";
     $("benchmark-task-tabs").hidden=!official;

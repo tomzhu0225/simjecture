@@ -25,6 +25,10 @@ Principal command families:
 - `web`: local research workspace and campaign monitor; the composer selects
   a native CLI or configured built-in API agent. `--engine` selects the legacy
   campaign engine, not the default workspace agent;
+- `serve`: optional hosted workspace with visitor admission, GitHub sign-in and
+  an operator-managed queue (`pip install 'simjecture[public]'`). General execution
+  requires a private Unix HTTP socket and a separately commissioned Linux broker;
+  see [server mode](../how-to/public-trials.md);
 - `study`: minimal, structured or frontier studies with recorded launch contracts;
 - `steer`: advisory guidance for an existing minimal study;
 - `llm-benchmark`: prepare, grade, run and publish recorded-diagnostic coding tasks

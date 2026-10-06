@@ -50,7 +50,7 @@ jobs:
       - name: Install uv
         run: python -m pip install uv
       - name: Install locked environment
-        run: uv sync --frozen --extra tui --extra dsh --extra workspace --group browser
+        run: uv sync --frozen --extra tui --extra dsh --extra workspace --extra public --group browser
       - name: Install browser test runtime
         run: uv run playwright install --with-deps chromium
       - uses: actions/setup-node@v4
