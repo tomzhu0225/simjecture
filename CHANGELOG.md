@@ -23,6 +23,10 @@ This project follows semantic versioning. Dates use ISO 8601.
 - Preserve command/source/runtime provenance and per-request inference usage.
   Freeze the queued study brief and honor its shorter execution cutoff. Record
   failed commands and permit fresh retries without treating them as valid evidence.
+- Separate simulations from analysis, plotting, compilation and inspection by
+  an explicit execution category. Producing files no longer makes a command a
+  simulation. Show each hosted command's own retained outputs. Research tools
+  offer agent-guided custom studies alongside clearly labelled starter presets.
 - Make the inspector tabs reachable at narrow widths. Expose native outputs to
   follow-up project analysis, suppress binary console dumps from model context,
   and read executor console output through its original descriptors. Diagnose

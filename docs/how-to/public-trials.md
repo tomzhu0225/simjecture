@@ -219,6 +219,17 @@ frozen at queuing, including requirements and the selected cutoff. A separate
 scientific reviewer uses the existing claim rules. Interactive findings and
 numerical readiness checks are labelled separately from accepted claims.
 
+In Research tools, **Custom study · prepare with agent** opens a conversation
+to choose physics, geometry and diagnostics. **Starter presets** execute an
+installed starting configuration; they do not limit the general executor's
+questions. `run_command` defaults to `kind="command"` for analysis, plotting,
+compilation and inspection; the agent supplies `kind="simulation"` for solver
+or numerical integration runs. This category is recorded independently of
+declared output files. Older untyped custom executions appear in Commands;
+their original receipts remain unchanged. Hosted commands show only their
+retained outputs, while local commands that use a shared project folder keep
+that distinction visible.
+
 Optional native examples use an operator-owned `tools_registry` file. An entry
 is admitted only after qualification through the same recorded experiment launcher
 under the public service account. Binaries and templates are pinned by hash; the

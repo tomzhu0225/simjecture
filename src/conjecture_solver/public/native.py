@@ -73,6 +73,7 @@ def materialize(entry, parameters, destination):
         "tool": entry["id"],
         "name": entry["name"],
         "family": entry["family"],
+        "kind": "simulation",
         "binary": str(binary),
         "binary_sha256": entry["binary_sha256"],
         "template_sha256": entry["template_sha256"],

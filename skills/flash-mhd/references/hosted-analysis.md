@@ -5,6 +5,10 @@ to ITER examples. Each command starts with a fresh scratch directory populated
 from its declared project inputs. Only declared outputs are copied back. Unpack
 and analyze in one command, or declare extracted files as outputs before the next
 command. Inspection-only calls may use `outputs=[]`; their console is retained.
+Use `kind="simulation"` when executing FLASH or another numerical model, and
+`kind="command"` for analysis, plotting, compilation and inspection. Output
+files do not determine the category. Give each call a descriptive name and
+create subdirectories before saving into them, such as `mkdir -p generated`.
 
 `simulate_native` returns `project_outputs`, including the raw-output archive.
 Use that project-relative ZIP path as an input. Native archives contain actual

@@ -3338,6 +3338,8 @@ wa-split-panel.project-layout {
 .research-tool-card .tool-actions button { font-size: 11px; padding: 7px 9px; border-radius: 7px; }
 .research-tool-card .tool-actions .tool-details-button { margin-left: auto; color: var(--muted); }
 .research-tool-card .tool-actions .included-label { font-size: 11px; color: var(--muted); line-height: 30px; }
+.research-tool-card .tool-actions select { flex: 1 1 190px; min-width: 0; font-size: 11px; }
+.research-tool-card .tool-preset-help { margin: 8px 0 0; font-size: 11px; line-height: 1.6; color: var(--muted); }
 .research-tools-footnote { font-size: 11px; color: var(--muted); padding-top: 22px; margin: 0; line-height: 1.7; }
 .tool-details-dialog { width: 730px; max-width: calc(100vw - 32px); max-height: calc(100dvh - 48px); padding: 0; border: 1px solid var(--line); border-radius: 16px; background: var(--white); color: var(--ink); box-shadow: 0 24px 80px #15132d26; }
 .tool-details-dialog[open] { display: flex; flex-direction: column; }

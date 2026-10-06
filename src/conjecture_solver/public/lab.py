@@ -46,13 +46,13 @@ with zipfile.ZipFile(io.BytesIO(data)) as z:
         files.append({"name":str(target),"sha256":hashlib.sha256(target.read_bytes()).hexdigest(),
                       "bytes":target.stat().st_size})
 metrics={k:response[k] for k in ("returncode","stop_reason","seconds","stdout","stderr","missing")}
-result={"tool":"project-command","name":request["name"],"parameters":{},
+result={"tool":"project-command","name":request["name"],"kind":request["kind"],"parameters":{},
         "scope":"Agent-authored command and analysis; independent review is separate.",
         "metrics":metrics,"files":files,
         "confinement":{"uid":response["uid"],"landlock_abi":response["landlock_abi"],
                        "executor_revision":response.get("executor_revision")}}
 Path("result.json").write_text(json.dumps(result,indent=2)+"\\n")
-provenance={"command":request["command"],"inputs":request["inputs"],
+provenance={"command":request["command"],"kind":request["kind"],"inputs":request["inputs"],
             "outputs":request["outputs"],"runtime_index":request["runtime_index"],
             "confinement":result["confinement"]}
 Path("provenance.json").write_text(json.dumps(provenance,indent=2)+"\\n")
@@ -102,11 +102,15 @@ class HostedLab:
             "text": "\n".join(content[start_line - 1 : start_line - 1 + lines])[:40000],
         }
 
-    def run(self, command, outputs, inputs=None, timeout=120, name="Scientific command"):
+    def run(
+        self, command, outputs, inputs=None, timeout=120, name="Scientific command", kind="command"
+    ):
         from .worker import check_running
 
         identifier = self.job["id"]
         check_running(self.store, identifier)
+        if kind not in ("command", "simulation"):
+            raise ValueError("Choose command or simulation as the execution kind")
         if not self.job.get("privileged") and len(
             self.service._all("experiments")
         ) >= self.settings.get("experiments_per_job", 6):
@@ -154,6 +158,7 @@ class HostedLab:
             "modes": {n: 0o700 if self.path(n).stat().st_mode & 0o111 else 0o600 for n in names},
             "timeout": timeout,
             "name": name[:100],
+            "kind": kind,
             "socket": self.settings["executor_socket"],
             "runtime_index": [
                 {k: e.get(k) for k in ("id", "binary_sha256", "source_root")}
@@ -172,7 +177,9 @@ class HostedLab:
             purpose="comparison",
         )
         self.store.event(
-            identifier, "experiment_started", {"experiment": record["id"], "name": name}
+            identifier,
+            "experiment_started",
+            {"experiment": record["id"], "name": name, "execution_kind": kind},
         )
         while record["status"] in {"running", "queued"}:
             check_running(self.store, identifier)
@@ -217,7 +224,7 @@ class HostedLab:
         self.store.event(
             identifier,
             "experiment_finished",
-            {"experiment": record["id"], "status": result["status"]},
+            {"experiment": record["id"], "status": result["status"], "execution_kind": kind},
         )
         return result
 
@@ -260,11 +267,13 @@ def agent_tools(store, job, service):
         inputs: list[str] | None = None,
         timeout: int = 120,
         name: str = "Scientific command",
+        kind: str = "command",
     ) -> str:
         """Run custom scientific commands in an isolated job account with installed solvers.
 
         Each call uses fresh scratch space; only declared outputs persist between calls.
         Unpack and analyze an archive in the same command, or retain extracted files.
+        Create output directories before saving files (for example mkdir -p generated).
 
         Args:
             command: Shell command; may run Python, installed solvers, compilers or analysis.
@@ -272,8 +281,10 @@ def agent_tools(store, job, service):
                 stdout and stderr are always recorded. Named outputs must actually be written.
             inputs: Project input files; omit to include all current project files.
             timeout: Experiment time limit in seconds; guests up to 180, owners up to 86400.
-            name: Short experiment label for the GUI.
+            name: Short descriptive label for the GUI.
+            kind: Use simulation for running a numerical solver or integrating a physical model.
+                Use command for analysis, plots, compilation and inspection, even with outputs.
         """
-        return json.dumps(lab.run(command, outputs, inputs, timeout, name))
+        return json.dumps(lab.run(command, outputs, inputs, timeout, name, kind))
 
     return [write_file, read_file, run_command]

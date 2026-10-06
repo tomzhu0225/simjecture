@@ -104,6 +104,7 @@ class HostedWorkspace:
                     )
             result = {}
             request = {}
+            general_command = (workspace / "lab-request.json").is_file()
             for filename in ("lab-request.json", "native-case.json"):
                 if (workspace / filename).is_file():
                     request = json.loads((workspace / filename).read_text())
@@ -133,7 +134,11 @@ class HostedWorkspace:
             rows.append(
                 {
                     "id": job["id"] + "." + record["id"],
-                    "kind": "command" if request.get("outputs") == [] else "simulation",
+                    "kind": request.get("kind")
+                    if request.get("kind") in ("command", "simulation")
+                    else "command"
+                    if general_command or result.get("tool") == "project-command"
+                    else "simulation",
                     "name": result.get("name", request.get("name", "Numerical experiment")),
                     "status": record["status"],
                     "live": record["status"] in {"queued", "running"},
@@ -200,7 +205,18 @@ class HostedWorkspace:
                 "provider_error": "Reconnecting to the model",
             }
             recent = [
-                {"label": labels[e["kind"]], "status": "recorded", "detail": e.get("message", "")}
+                {
+                    "label": (
+                        "Command running"
+                        if e["kind"] == "experiment_started"
+                        else "Command completed"
+                    )
+                    if e.get("execution_kind") == "command"
+                    and e["kind"] in ("experiment_started", "experiment_finished")
+                    else labels[e["kind"]],
+                    "status": "recorded",
+                    "detail": e.get("message", ""),
+                }
                 for e in events
                 if e["kind"] in labels
             ]
@@ -309,6 +325,15 @@ class HostedWorkspace:
     def tools(self):
         tools = []
         entries = registry(self.store.root)
+        general = bool(self.settings().get("executor_qualified"))
+        descriptions = {
+            "flash": "Hydrodynamics and MHD. Change inputs or build custom applications "
+            "from installed read-only FLASH source.",
+            "warpx": "GPU particle-in-cell simulations. Prepare custom input files and "
+            "analyze fields and particles with Python.",
+            "iter": "Fusion data and synthetic diagnostics with IMAS, Raysect and CHERAB. "
+            "Prepare custom Python studies.",
+        }
         for family, identifier, name in (
             ("flash", "flash", "FLASH 4.8"),
             ("warpx", "warpx-cuda", "WarpX · CUDA"),
@@ -326,7 +351,9 @@ class HostedWorkspace:
                     "readiness": "passed",
                     "action": "hosted",
                     "path": "hosted-tools",
-                    "description": " · ".join(row["name"] for row in rows),
+                    "description": descriptions[family]
+                    if general
+                    else " · ".join(row["name"] for row in rows),
                     "variants": [
                         {
                             "label": row["name"],

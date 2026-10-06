@@ -574,6 +574,9 @@ def native_instructions(store):
             "and templates. Read the installed guides under "
             + settings.get("guides_root", "/opt/simjecture-public/tool-sources/skills")
             + ". Model settings and global installation remain managed by the host. "
+            + "For run_command, label actual solver/integration runs kind='simulation'; "
+            "label analysis, plots, compilation and inspection kind='command'. "
+            "Give each execution a descriptive name. Create output folders before saving files. "
             + ready_reconnection
             + "For 2D reconnection use the resistive-MHD island-coalescence binary if present; "
             "otherwise compile the appropriate FLASH application. Do not substitute an "

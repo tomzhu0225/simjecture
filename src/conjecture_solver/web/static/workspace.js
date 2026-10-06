@@ -873,6 +873,17 @@ Guide me through the missing decisions in plain language. Inspect prerequisites,
   );
 }
 
+async function prepareToolStudy(tool) {
+  const project = await api("projects", { name: `${tool.name} · custom study` });
+  await reloadProjects();
+  mode("interactive");
+  if (!(await openProject(project.id))) return;
+  $("chat-input").value = `Help me prepare a custom study with ${tool.name}. Ask me about the physics, geometry, initial conditions and diagnostics I want, then inspect the installed tools and sources to choose a suitable setup. Use the starter presets where they fit, and prepare custom inputs or a private application build where needed.`;
+  $("chat-input").dispatchEvent(new Event("input"));
+  $("chat-input").focus();
+  toast("Study conversation ready. Describe your problem and send the request.");
+}
+
 const machineAddress = (m) => m.kind === "local" ? "This computer" : `${m.user ? m.user + "@" : ""}${m.host.includes(":") ? "[" + m.host + "]" : m.host}:${m.port}`;
 function machineState(record) {
   if (record.preparation?.status === "working") return ["preparing", "Preparing"];
@@ -1196,11 +1207,19 @@ function researchToolCard(tool) {
   const actions=el("div",undefined,"tool-actions"),install=el("button",toolActionLabel(tool),"secondary");
   install.disabled=tool.state === "working" || state.readonly || hosted;install.onclick=()=>runToolAction(tool,install);if(!hosted)actions.append(install);
   if(hosted && tool.variants?.some(v=>v.tool_id)){
-    const choice=el("select");choice.setAttribute("aria-label",`${tool.name} example`);
-    for(const variant of tool.variants)choice.add(new Option(variant.label,variant.tool_id));
-    const demo=el("button","Run example","secondary");
+    const general=state.hosting?.permissions.general_execution;
+    const choice=el("select");choice.setAttribute("aria-label",`${tool.name} study setup`);
+    if(general)choice.add(new Option("Custom study · prepare with agent","custom-study"));
+    const presets=el("optgroup");presets.label="Starter presets";
+    for(const variant of tool.variants)presets.append(new Option(variant.label,variant.tool_id));
+    choice.append(presets);
+    const demo=el("button",general ? "Prepare in chat" : "Run preset","secondary");
     demo.disabled=state.readonly || state.hosting?.quota.interactive.remaining===0;
-    demo.onclick=()=>action(demo,async()=>{const result=await api("tool-demo",{name:choice.value});await reloadProjects();mode("interactive");await openProject(result.project);toast("Example queued. Its plots and raw outputs will appear in Simulations.");});
+    choice.onchange=()=>demo.textContent=choice.value==="custom-study" ? "Prepare in chat" : "Run preset";
+    demo.onclick=()=>action(demo,async()=>{
+      if(choice.value==="custom-study")return prepareToolStudy(tool);
+      const result=await api("tool-demo",{name:choice.value});await reloadProjects();mode("interactive");await openProject(result.project);toast("Starter preset queued. Follow its run in Simulations.");
+    });
     actions.append(choice,demo);
   }
   if(!tool.installed && tool.action !== "custom"){
@@ -1210,7 +1229,9 @@ function researchToolCard(tool) {
   if(tool.id === "iter-pack" && tool.installed && !hosted){const demo=el("button","Run demo","quiet");demo.disabled=tool.state === "working" || state.readonly;
     demo.onclick=()=>action(demo,async()=>{const result=await api("tool-demo",{name:tool.id});await reloadProjects();mode("interactive");if (!(await openProject(result.project))) return;await monitor.open(result.simulation.id);toast("Diagnostic demo started. Its plots and results will appear in Simulations.");});actions.append(demo);}
   const details=el("button","Details","quiet tool-details-button");details.onclick=()=>openToolDetails(tool);actions.append(details);
-  card.append(actions);return card;
+  card.append(actions);
+  if(hosted && state.hosting?.permissions.general_execution && tool.variants?.some(v=>v.tool_id))card.append(el("p","Presets are starting points. The agent can prepare custom inputs, simulations and analysis.","tool-preset-help"));
+  return card;
 }
 $("connect-research-tool").onclick=()=>$("custom-tool-dialog").showModal();
 for(const id of ["close-custom-tool","cancel-custom-tool"])$(id).onclick=()=>$("custom-tool-dialog").close();
@@ -1228,7 +1249,7 @@ async function refreshTools() {
   for(const button of $("custom-tool-form").querySelectorAll("button[type='submit']"))button.disabled=state.readonly;
   if(state.selectedTool && $("tool-details-dialog").open){const selected=state.tools.find(t=>t.id===state.selectedTool);if(selected)renderToolDetails(selected);}
   // Raw logs and reports do not reshape or rebuild the catalogue while a panel is open.
-  const revision=JSON.stringify(state.tools.map(t=>({id:t.id,presentation:toolPresentation(t),description:t.description,installed:t.installed,action:t.action,registered:t.registered})));
+  const revision=JSON.stringify([state.hosting?.permissions.general_execution,state.tools.map(t=>({id:t.id,presentation:toolPresentation(t),description:t.description,installed:t.installed,action:t.action,registered:t.registered,variants:t.variants}))]);
   if(revision===state.toolsRevision)return;
   const scroll=document.scrollingElement.scrollTop;
   $("installed-tool-grid").replaceChildren();$("available-tool-grid").replaceChildren();
