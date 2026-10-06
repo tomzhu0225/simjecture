@@ -55,7 +55,9 @@ def main():
             output = destination / relative
             output.parent.mkdir(parents=True, exist_ok=True)
             output.write_text(content)
-            for dependency in re.findall(r"""["'](\.[^"']+\.(?:js|css))["']""", content):
+            for dependency in re.findall(r"""["']([^"']+\.(?:js|css))["']""", content):
+                if dependency.startswith(("https:", "http:", "/")):
+                    continue
                 pending.append(path.parent / dependency)
         print(f"Web Awesome: {len(seen)} local modules/styles")
         source, identity = package("@highlightjs/cdn-assets", "11.11.1", root / "hljs")

@@ -10,6 +10,18 @@ The owning conversation is resolved from recorded study ownership, not a browser
 return URL. Standalone CLI studies show **Standalone study**, without inventing a
 conversation. Read-only sessions keep navigation while disabling mutations.
 
+The permanent dark rail has an experiment-monitor button above its bottom account
+button. Open the account menu for theme, workspace details and the GitHub link;
+local workspaces also offer Connections there. The chat input stays compact when
+empty, expands with the draft and offers a larger editor for long messages. Its
+model menu contains the local agent, model and effort choices. Narrow inspector
+tabs have overflow arrows and accept horizontal scrolling or the mouse wheel.
+
+The [hosted service](../how-to/public-trials.md) uses the same layout with
+operator-managed compute and models. Signed-in visitors can upload files and keep
+their work. Guest work is temporary. Clicking a hosted artifact downloads it;
+plots can still be previewed inside the conversation.
+
 The local web interface is the primary human-facing view of a Simjecture
 campaign. It makes the scientific structure visible without replacing the
 durable record. New native studies default to minimal; mode, backend and model
@@ -173,6 +185,10 @@ or DSH. Only the explicit legacy DSH route needs the
 [DSH deployment guide](../how-to/deepseek-harness.md).
 
 ## Local security boundary
+
+For the separate development public trial gateway, see
+[public trials](../how-to/public-trials.md). Its controlled tools and visitor
+sessions do not change the operator workspace's boundary described below.
 
 The local web interface is intentionally an operator tool rather than a hosted service:
 

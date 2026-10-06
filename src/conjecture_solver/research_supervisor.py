@@ -72,6 +72,10 @@ alone requires no solver rerun; an actual scientific limitation still blocks acc
 
 Return only JSON matching the schema. If evidence for THIS TARGET is insufficient,
 choose needs_revision, disposition unresolved, explicit gaps and next_test.
+The schema also has these coherence rules: approved requires evidence_gaps=[] and
+disposition supported or falsified. Put non-blocking scope limitations in rationale,
+not evidence_gaps. Any actual blocking evidence gap requires needs_revision and a
+nonempty evidence_gaps list; do not approve a claim with unresolved evidence gaps.
 TARGET:
 """
         + json.dumps(target)

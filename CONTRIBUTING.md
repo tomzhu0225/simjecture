@@ -49,6 +49,10 @@ additional dependencies only when they are needed for your contribution.
   `uv sync --frozen --group browser`, install Chromium with
   `uv run playwright install chromium`, and run the affected browser tests.
   Add `--extra workspace` to the sync command when testing workspace features
+- **Hosted service:** add `--extra public` and run `tests/test_public*.py`.
+  General executor qualification additionally requires a dedicated Linux host,
+  reserved job accounts, Landlock and libseccomp; the operator examples under
+  `scripts/setup_public_*` must be adapted to that host
 - **DSH integration:** use `uv sync --frozen --extra dsh` and the Node version
   pinned in [CI](.github/workflows/ci.yml), then run `npm ci --prefix integrations/dsh`
   and `SIMJECTURE_MCP_EXECUTABLE="$PWD/.venv/bin/simjecture-mcp" npm test --prefix integrations/dsh`.

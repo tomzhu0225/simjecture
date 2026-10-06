@@ -14,6 +14,8 @@
     />
     <link rel="stylesheet" href="/assets/vendor/highlight-github-dark.css" />
     <link rel="stylesheet" href="/assets/workspace.css" />
+    <link rel="stylesheet" href="/assets/account-rail.css" />
+    <link rel="stylesheet" href="/assets/workspace-composer.css" />
     <link rel="stylesheet" href="/assets/interface.css" />
     <script type="module" src="/assets/workspace-components.js"></script>
     <script src="/assets/vendor/marked-18.0.10.umd.js" defer></script>
@@ -26,6 +28,7 @@
     <script src="/assets/workspace-monitor.js" defer></script>
     <script src="/assets/workspace-benchmarks.js" defer></script>
     <script src="/assets/study-navigation.js" defer></script>
+    <script src="/assets/workspace-composer.js" defer></script>
     <script src="/assets/workspace.js" defer></script>
   </head>
   <body>
@@ -105,14 +108,6 @@
               Dark mode
             </button>
           </div>
-          <details class="workspace-details">
-            <summary>Workspace details</summary>
-            <div id="machine-label">Local workspace</div>
-            <span id="connection-indicator" class="connection-dot"
-              >Connecting…</span
-            >
-            <a href="/monitor">Experiment monitor <span>↗</span></a>
-          </details>
         </div>
       </aside>
       <div
@@ -158,20 +153,20 @@
             </p>
           </div>
           <form id="quick-start" class="start-box">
-            <label for="first-request">Your research request</label
+            <label for="first-request" class="sr-only">Your research request</label
             ><textarea
               id="first-request"
               aria-describedby="first-request-help"
-              rows="3"
-              placeholder="I want to understand why my simulation disagrees with the experiment…"
+              rows="1"
+              placeholder="Ask a question or describe your research…"
               required
             ></textarea>
             <div class="start-bottom">
               <div id="home-agent-host"></div>
-              <button type="submit" class="primary">Send <span>↑</span></button>
+              <button type="submit" class="primary composer-send" aria-label="Send request" title="Send request"><span aria-hidden="true">↑</span></button>
             </div>
           </form>
-          <p id="first-request-help" class="field-help composer-help">Enter to send · Shift + Enter for a new line. Choose an installed agent above, or set up an API in Connections.</p>
+          <p id="first-request-help" class="field-help composer-help">Enter to send · Shift + Enter for a new line. Choose your agent from the model menu, or set up an API in Connections.</p>
           <div class="section-line">
             <h2>A place to start</h2>
             <span>Choose an example and make it yours</span>
@@ -485,8 +480,8 @@
                     >Message your research agent</label
                   ><textarea
                     id="chat-input"
-                    rows="3"
-                    placeholder="Ask a question, attach your inputs, or describe what you want to achieve…"
+                    rows="1"
+                    placeholder="Ask your research agent…"
                     required
                   ></textarea>
                   <div
@@ -510,10 +505,9 @@
                       ×
                     </button>
                   </div>
+                  <label class="attach-button composer-attach" for="file-input" title="Add project files"><span aria-hidden="true">＋</span><span class="sr-only">Attach files</span></label>
+                  <input id="file-input" type="file" multiple hidden />
                   <div class="composer-bottom">
-                    <label class="attach-button" for="file-input"
-                      >＋ Attach files</label
-                    ><input id="file-input" type="file" multiple hidden />
                     <div class="agent-controls" aria-label="Conversation agent">
                       <div>
                         <label for="conversation-backend">Agent</label
@@ -560,15 +554,11 @@
                       hidden
                     >
                       Stop</button
-                    ><button id="send-message" class="primary" type="submit">
-                      Send ↑
+                    ><button id="send-message" class="primary composer-send" type="submit" aria-label="Send message" title="Send message">
+                      <span aria-hidden="true">↑</span>
                     </button>
                   </div>
                 </form>
-                <p class="composer-note">
-                  The agent can edit project files and run commands on this
-                  machine.
-                </p>
               </div>
               <div id="autonomous-panel" hidden>
                 <div class="section-line">
@@ -803,7 +793,7 @@
                       <code id="project-path"></code>
                       <p class="field-help">
                         Copy large datasets here directly. Browser uploads
-                        support files up to 20 MB.
+                        support files up to 64 MB.
                       </p>
                     </details>
                   </div>
@@ -854,6 +844,12 @@
           </button>
         </div>
       </form>
+    </dialog>
+    <dialog id="workspace-details-dialog" class="workspace-details-dialog" aria-labelledby="workspace-details-title">
+      <div class="dialog-heading"><h2 id="workspace-details-title">Workspace details</h2><button id="close-workspace-details" class="quiet" type="button" aria-label="Close workspace details">×</button></div>
+      <p id="machine-label">Local workspace</p>
+      <p id="connection-indicator" class="connection-dot">Connecting…</p>
+      <div class="workspace-detail-links"><a href="/monitor">Experiment monitor ↗</a><a href="https://github.com/tomzhu0225/simjecture" target="_blank" rel="noopener noreferrer">Simjecture on GitHub ↗</a></div>
     </dialog>
   </body>
 </html>

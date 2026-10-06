@@ -33,7 +33,7 @@ window.WorkspaceRich = (() => {
         path.split("/").includes("..")
       )
         return null;
-      return `/api/artifact?${new URLSearchParams({ campaign, path })}`;
+      return `/api/artifact?${new URLSearchParams({ campaign, path, ...(preview ? { preview: "1" } : {}) })}`;
     }
     let path = source,
       simulation = null;
@@ -69,7 +69,7 @@ window.WorkspaceRich = (() => {
     img.src = url;
     img.alt = caption || "Research figure";
     img.loading = "lazy";
-    link.href = url;
+    link.href = artifactURL(source, project, false);
     link.target = "_blank";
     link.rel = "noopener";
     link.append(img);

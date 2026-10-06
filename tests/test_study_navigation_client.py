@@ -591,6 +591,7 @@ def test_study_launch_keeps_original_project_and_does_not_reopen_departed_route(
     run_js(
         """
 const assert = require('node:assert/strict');
+const hosted = false;
 const crypto = require('node:crypto');
 const state = {project:{id:'owner',brief:{},studies:[]},projectRequest:0,
  briefDirty:false,launchKey:null};

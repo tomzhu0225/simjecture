@@ -1,5 +1,6 @@
 "use strict";
 const $ = (id) => document.getElementById(id);
+const hosted = !!document.querySelector('meta[name="simjecture-hosted"]');
 const state = {
   token: "",
   settings: {},
@@ -13,6 +14,7 @@ const state = {
   toolsRevision: "",
   busy: false,
   readonly: false,
+  hosting: null,
   briefDirty: false,
   messageRevision: "",
   studyRevision: "",
@@ -49,7 +51,7 @@ function toast(message, error = false) {
   );
 }
 async function api(path, payload) {
-  const response = await fetch(
+  let response = await fetch(
     path.startsWith("/api/") ? path : `/api/workspace/${path}`,
     payload === undefined
       ? {}
@@ -58,17 +60,78 @@ async function api(path, payload) {
           headers: {
             "Content-Type": "application/json",
             "X-Simjecture-Token": state.token,
+            ...(hosted ? {"X-CSRF-Token": state.token} : {}),
           },
           body: JSON.stringify(payload),
         },
   );
+  if (hosted && response.status === 401 && path === "bootstrap") {
+    const session = await fetch("/api/session", {method:"POST", headers:{"Content-Type":"application/json"},body:"{}"});
+    const sessionData = await session.json();
+    if (!session.ok) throw Error(sessionData.detail || "Unable to start a visitor session");
+    state.token = sessionData.csrf_token;
+    response = await fetch("/api/workspace/bootstrap");
+  }
   const data = await response.json();
   if (!response.ok)
     throw Error(
-      data.error || data.message || `Request failed (${response.status})`,
+      data.error || data.message || (typeof data.detail === "string" ? data.detail : "") || `Request failed (${response.status})`,
     );
+  if (hosted && data.hosting) {state.hosting=data.hosting;renderHosting();}
   return data;
 }
+
+function renderAccount() {
+  const h=state.hosting;
+  if(hosted && h){const allowed=h.permissions.upload_files;$("file-input").disabled=!allowed;const label=document.querySelector('label[for="file-input"]');if(label){label.hidden=false;label.title=allowed ? "Add project files" : "Sign in to add files";}}
+  let box=$("hosting-account");
+  if(!box){
+    document.body.classList.add("has-account-rail");
+    const rail=el("aside",undefined,"account-rail");rail.setAttribute("aria-label","Workspace and account");
+    const brand=el("a",undefined,"rail-brand");brand.href="/workspace";brand.setAttribute("aria-label","Simjecture");
+    const mark=el("img");mark.src="/favicon.svg";mark.alt="";brand.append(mark);
+    const toggle=el("button","☰","rail-action");toggle.type="button";toggle.title="Toggle conversations";toggle.setAttribute("aria-label","Toggle conversations");toggle.onclick=()=>$("left-sidebar-toggle").click();
+    const fresh=el("button","＋","rail-action");fresh.type="button";fresh.title="New conversation";fresh.setAttribute("aria-label","New conversation");fresh.onclick=()=>$("new-project").click();
+    const monitoring=el("a",undefined,"rail-action rail-monitor");monitoring.href="/monitor";monitoring.title="Experiment monitor";monitoring.setAttribute("aria-label","Experiment monitor");
+    const chart=el("img");chart.src="/assets/monitor-icon.svg";chart.alt="";monitoring.append(chart);
+    const button=el("button",undefined,"account-avatar");button.id="account-button";button.type="button";button.setAttribute("aria-haspopup","dialog");button.setAttribute("aria-expanded","false");button.setAttribute("aria-controls","hosting-account");
+    box=el("section",undefined,"hosting-account account-popover");box.id="hosting-account";box.hidden=true;box.setAttribute("role","dialog");box.setAttribute("aria-label","Your account");
+    const close=()=>{box.hidden=true;button.setAttribute("aria-expanded","false");};
+    button.onclick=()=>{box.hidden=!box.hidden;button.setAttribute("aria-expanded",String(!box.hidden));if(!box.hidden)box.querySelector("a,button")?.focus();};
+    document.addEventListener("pointerdown",e=>{if(!rail.contains(e.target)&&!box.contains(e.target))close();});
+    document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!box.hidden){close();button.focus();}});
+    rail.append(brand,toggle,fresh,monitoring,button);document.body.prepend(rail);document.body.append(box);
+  }
+  const signature=JSON.stringify(h || state.settings);if(box.dataset.signature===signature)return;box.dataset.signature=signature;
+  const account=h?.account;
+  const button=$("account-button");button.replaceChildren();
+  button.title=account ? account.name || account.login : hosted ? "Sign in" : "Workspace menu";button.setAttribute("aria-label",account ? `Account: ${account.name || account.login}` : hosted ? "Sign in and account" : "Workspace menu");
+  const fallback=el("span",account ? (account.name || account.login).slice(0,1).toUpperCase() : "S","avatar-fallback");button.append(fallback);
+  if(account){const photo=el("img");photo.src="/api/auth/avatar";photo.alt="";photo.onload=()=>fallback.hidden=true;photo.onerror=()=>photo.remove();button.append(photo);}
+  const theme=$("theme-toggle");
+  box.replaceChildren();
+  box.append(el("small",hosted ? "ACCOUNT" : "SIMJECTURE","account-eyebrow"));
+  box.append(el("strong",account ? account.name || account.login : hosted ? "Guest workspace" : "Local workspace"));
+  if(h){
+  if(h.quota.tier==="owner")box.append(el("small","Owner workspace"));
+  for(const [key,label] of [["interactive","interactive turns"],["research","research campaigns"]]){
+    const q=h.quota[key];box.append(el("small",q.limit===null ? `Unlimited ${label}` : `${q.remaining} / ${q.limit} ${label} available`));
+  }
+  box.append(el("small",h.quota.tier==="owner" ? "No hosted wall-time limit · shared queue" : "Allowance renews over 24 hours · one task at a time"));
+  if(!h.account)box.append(el("small","Temporary workspace. Sign in to keep your files and results."));
+  if(h.account){const out=el("button","Sign out","quiet account-signout");out.onclick=async()=>{await api("/api/auth/logout",{});location.href="/workspace";};box.append(out);}
+  else {const login=el("a",h.login_available ? "Sign in with GitHub" : "GitHub sign-in · being configured","secondary");
+    if(h.login_available)login.href="/api/auth/github/start";else login.setAttribute("aria-disabled","true");box.append(login);}
+  }
+  const menu=el("div",undefined,"account-menu-links");
+  if(!hosted){const connections=el("button","Connections","quiet");connections.onclick=()=>{box.hidden=true;button.setAttribute("aria-expanded","false");view("settings");};menu.append(connections);}
+  const details=el("button","Workspace details","quiet");details.onclick=()=>{box.hidden=true;button.setAttribute("aria-expanded","false");$("workspace-details-dialog").showModal();};menu.append(details);
+  if(theme)menu.append(theme);
+  const github=el("a","GitHub ↗","quiet");github.href="https://github.com/tomzhu0225/simjecture";github.target="_blank";github.rel="noopener noreferrer";menu.append(github);
+  box.append(menu);
+}
+function renderHosting(){if(hosted&&state.hosting)renderAccount();}
+$("close-workspace-details").onclick=()=>$("workspace-details-dialog").close();
 async function action(button, fn) {
   if (button.disabled) return;
   button.disabled = true;
@@ -85,6 +148,7 @@ function md(node, text) {
   window.WorkspaceRich.render(node, String(text || ""), state.project);
 }
 function view(name) {
+  if(hosted && ["settings","machines","benchmarks"].includes(name)) name="home";
   if (name !== "project") ++state.projectRequest;
   const changed = state.view !== name;
   state.view = name;
@@ -194,6 +258,7 @@ function renderSettings() {
   const installed = (s.clis || []).filter((c) => c.path);
   $("connection-button").title = "Configure API connections";
   $("connection-button").disabled = false;
+  if(hosted) $("connection-button").hidden=true;
   $("connection-indicator").textContent = installed.length
     ? `${installed.length} CLI agents detected`
     : s.api_configured
@@ -289,16 +354,16 @@ async function renderAgent(backend, scope = "conversation") {
   controls.customBox.hidden = true;
   controls.custom.value = "";
   controls.note.textContent = "Reading model choices…";
-  controls.backend.disabled = state.readonly;
+  controls.backend.disabled = state.readonly || hosted;
   controls.custom.disabled = state.readonly;
   controls.refresh.disabled = state.readonly;
-  const choices = state.readonly
+  const choices = state.readonly || hosted
     ? {
         models: p.agent?.model
           ? [{ id: p.agent.model, name: p.agent.model }]
           : [],
         default: p.agent?.model || "",
-        note: "Recorded conversation agent · read-only session",
+        note: hosted ? "Provided by Simjecture · model settings managed by the host" : "Recorded conversation agent · read-only session",
       }
     : await api("models", { backend: selected });
   if (
@@ -311,17 +376,19 @@ async function renderAgent(backend, scope = "conversation") {
   const model = current?.model || choices.default || "";
   controls.model.replaceChildren(
     ...choices.models.map((m) => new Option(m.name, m.id)),
-    new Option("Other model…", "__custom__"),
+    ...(hosted ? [] : [new Option("Other model…", "__custom__")]),
   );
   const known = choices.models.some((m) => m.id === model);
   controls.model.value = known ? model : "__custom__";
   controls.customBox.hidden = known;
   controls.custom.value = known ? "" : model;
   controls.effort.value = current?.reasoning_effort || "";
-  controls.effort.disabled = selected === "agy" || state.readonly;
+  controls.effort.disabled = selected === "agy" || state.readonly || hosted;
   if (selected === "agy") controls.effort.value = "";
-  controls.model.disabled = state.readonly;
+  controls.model.disabled = state.readonly || hosted;
+  if(hosted){controls.refresh.hidden=true;controls.customBox.hidden=true;}
   controls.note.textContent = choices.note;
+  globalThis.WorkspaceComposer?.refresh(scope);
   return true;
 }
 function agentPayload(scope = "conversation") {
@@ -335,6 +402,7 @@ function agentPayload(scope = "conversation") {
   };
 }
 async function saveConversationAgent(scope = "conversation") {
+  if(hosted) return state.settings.default_agent;
   const c = agentControls(scope);
   if (c.model.disabled && !state.readonly)
     throw Error(
@@ -359,6 +427,7 @@ async function saveConversationAgent(scope = "conversation") {
     state.homeAgent = result;
     renderProject();
   }
+  globalThis.WorkspaceComposer?.refresh(scope);
   return result;
 }
 function renderProjects() {
@@ -498,12 +567,13 @@ function renderProject(force = false) {
     }
     const agentRow = el("p", `Agent: ${p.agent?.backend || "choose agent"} / ${p.agent?.model || "choose model"}`, "field-help");
     const changeAgent = el("button", "Change agent / model", "secondary"); changeAgent.type = "button";
-    changeAgent.onclick = () => { mode("interactive"); $("conversation-backend").focus(); };
+    changeAgent.onclick = () => { mode("interactive"); globalThis.WorkspaceComposer?.open("conversation"); $("conversation-backend").focus(); };
+    changeAgent.hidden=hosted;
     agentRow.append(document.createTextNode(" "), changeAgent); $("prepared-details").append(agentRow);
     for (const [label, value] of [
       ["Evidence", b.success_criteria],
       ["Constraints", b.constraints || "No additional constraints specified."],
-      ["Time budget", `${b.hours} hours`],
+      ["Time budget", b.hours===0 ? "No hosted time limit" : `${b.hours} hours`],
       ["Execution", b.machine_ids?.length ? b.machine_ids.join(", ") : "This host"],
       [
         "Completion",
@@ -749,7 +819,7 @@ function renderProject(force = false) {
     $("brief-question").value = b.question || "";
     $("brief-criteria").value = b.success_criteria || "";
     $("brief-constraints").value = b.constraints || "";
-    $("brief-hours").value = b.hours || 1;
+    $("brief-hours").value = b.hours ?? 1;
     $("brief-policy").value = b.completion_policy || "answer";
     if (
       b.capability_directory &&
@@ -769,7 +839,10 @@ async function send() {
   // Navigation and new typing may happen while either request is pending.
   await saveConversationAgent();
   await api("message", { project, message });
-  if (state.project?.id === project && input.value === draft) input.value = "";
+  if (state.project?.id === project && input.value === draft) {
+    input.value = "";
+    globalThis.WorkspaceComposer?.update("chat-input");
+  }
   const updated = await api(`project?id=${encodeURIComponent(project)}`);
   if (state.project?.id === project) {
     state.project = updated;
@@ -1106,7 +1179,8 @@ function renderToolDetails(tool,section=null) {
     details.open=opened.has(details.dataset.key);details.append(el("summary","Installation details"),el("pre",tool.log || JSON.stringify(tool.report,null,2)));body.append(details);}
   $("tool-detail-status").textContent=tool.installed ? "Installation is separate from scientific validation." : "Optional research tool";
   const actionButton=$("tool-detail-action");actionButton.textContent=toolActionLabel(tool);
-  actionButton.disabled=tool.state === "working" || state.readonly;
+  actionButton.disabled=tool.state === "working" || state.readonly || hosted;
+  actionButton.hidden=hosted;
   actionButton.onclick=()=>runToolAction(tool,actionButton);
   for(const pre of body.querySelectorAll("details[data-key] pre"))pre.scrollTop=positions.get(pre.parentElement.dataset.key)||0;
   body.scrollTop=section ? 0 : scroll;state.toolDetailsRevision=revision;
@@ -1120,12 +1194,20 @@ function researchToolCard(tool) {
   const note=el("div",p.note,`research-tool-note${p.kind === "attention" ? " attention" : ""}`);
   card.append(top,description,note);
   const actions=el("div",undefined,"tool-actions"),install=el("button",toolActionLabel(tool),"secondary");
-  install.disabled=tool.state === "working" || state.readonly;install.onclick=()=>runToolAction(tool,install);actions.append(install);
+  install.disabled=tool.state === "working" || state.readonly || hosted;install.onclick=()=>runToolAction(tool,install);if(!hosted)actions.append(install);
+  if(hosted && tool.variants?.some(v=>v.tool_id)){
+    const choice=el("select");choice.setAttribute("aria-label",`${tool.name} example`);
+    for(const variant of tool.variants)choice.add(new Option(variant.label,variant.tool_id));
+    const demo=el("button","Run example","secondary");
+    demo.disabled=state.readonly || state.hosting?.quota.interactive.remaining===0;
+    demo.onclick=()=>action(demo,async()=>{const result=await api("tool-demo",{name:choice.value});await reloadProjects();mode("interactive");await openProject(result.project);toast("Example queued. Its plots and raw outputs will appear in Simulations.");});
+    actions.append(choice,demo);
+  }
   if(!tool.installed && tool.action !== "custom"){
     const check=el("button","Check installed","quiet");check.disabled=tool.state === "working" || state.readonly;
     check.onclick=()=>action(check,async()=>{await api("install",{name:tool.id,action:"check"});await refreshTools();});actions.append(check);
   }
-  if(tool.id === "iter-pack" && tool.installed){const demo=el("button","Run demo","quiet");demo.disabled=tool.state === "working" || state.readonly;
+  if(tool.id === "iter-pack" && tool.installed && !hosted){const demo=el("button","Run demo","quiet");demo.disabled=tool.state === "working" || state.readonly;
     demo.onclick=()=>action(demo,async()=>{const result=await api("tool-demo",{name:tool.id});await reloadProjects();mode("interactive");if (!(await openProject(result.project))) return;await monitor.open(result.simulation.id);toast("Diagnostic demo started. Its plots and results will appear in Simulations.");});actions.append(demo);}
   const details=el("button","Details","quiet tool-details-button");details.onclick=()=>openToolDetails(tool);actions.append(details);
   card.append(actions);return card;
@@ -1140,8 +1222,9 @@ async function refreshTools() {
   for(const tool of state.tools){const variants=tool.variants?.length ? tool.variants : [tool];for(const item of variants)if(item.path && !paths.has(item.path)){paths.add(item.path);$("study-tools").add(new Option(item.label || item.name,item.path));}}
   const desired=state.project?.brief?.capability_directory || previous;
   $("study-tools").value=[...$("study-tools").options].some(o=>o.value===desired) ? desired : "";
+  if(hosted){$("study-tools").replaceChildren(new Option("All verified hosted tools","hosted-tools"));$("study-tools").disabled=true;}
   if(state.view!=="tools")return;
-  $("connect-research-tool").disabled=state.readonly;
+  $("connect-research-tool").disabled=state.readonly || hosted;
   for(const button of $("custom-tool-form").querySelectorAll("button[type='submit']"))button.disabled=state.readonly;
   if(state.selectedTool && $("tool-details-dialog").open){const selected=state.tools.find(t=>t.id===state.selectedTool);if(selected)renderToolDetails(selected);}
   // Raw logs and reports do not reshape or rebuild the catalogue while a panel is open.
@@ -1154,7 +1237,8 @@ async function refreshTools() {
   const python=el("article",undefined,"research-tool-card"),top=el("div",undefined,"research-tool-top"),name=el("div",undefined,"research-tool-name");
   name.append(el("h3","Python research stack"),el("small","Numerical exploration"));
   top.append(el("span","PY","research-tool-icon"),name,el("span","✓ Installed","tool-status installed"));
-  python.append(top,el("p","NumPy, SciPy, pandas and plotting. Included with Simjecture.","research-tool-description"),el("div","Ready for numerical exploration","research-tool-note"));
+  const generalPython = !hosted || state.hosting?.permissions.general_execution;
+  python.append(top,el("p",generalPython ? "General Python with NumPy, SciPy, pandas and plotting. Ask your agent to write and run a numerical calculation." : "Numerical libraries support the installed examples.","research-tool-description"),el("div",generalPython ? "Ready for numerical exploration" : "Available through the installed tools","research-tool-note"));
   const included=el("div",undefined,"tool-actions");included.append(el("span","Included with Simjecture","included-label"));python.append(included);$("installed-tool-grid").append(python);
   for(const tool of state.tools)$(tool.installed ? "installed-tool-grid" : "available-tool-grid").append(researchToolCard(tool));
   document.scrollingElement.scrollTop=scroll;state.toolsRevision=revision;
@@ -1294,7 +1378,7 @@ async function renderStudies() {
       ["Provider retry wait", `${Math.round((data.live?.provider_wait_seconds || 0) / 60)} min`],
       [
         "Time remaining",
-        data.live?.remaining === undefined
+        data.live?.remaining === null ? "Unlimited" : data.live?.remaining === undefined
           ? "—"
           : `${Math.max(0, Math.ceil(data.live.remaining / 60))} min`,
       ],
@@ -1439,6 +1523,29 @@ async function boot() {
   const data = await api("bootstrap");
   state.token = data.control_token;
   state.settings = data.settings;
+  if(!hosted)renderAccount();
+  if(hosted){
+    state.hosting=data.hosting;renderHosting();
+    for(const name of ["machines","settings","benchmarks"])document.querySelector(`[data-view="${name}"]`).hidden=true;
+    for(const id of ["connect-research-tool","tools-open-machines","connection-button","continuation-chat"])$(id).hidden=true;
+    if(data.hosting.wall_seconds===null){$("brief-hours").removeAttribute("max");$("brief-hours").min="0";$("brief-hours").value="0";document.querySelector('label[for="brief-hours"]').textContent="Time budget (hours; 0 = unlimited)";}else{$("brief-hours").max=String(data.hosting.wall_seconds/3600);$("brief-hours").value=$("brief-hours").max;}
+    for(const id of ["execution-backend","study-machines","research-director","review-model","review-effort"])$(id).disabled=true;
+    $("research-director").checked=false;
+    $("research-director").closest("label").hidden=true;
+    $("brief-policy").value="answer";
+    $("brief-policy").disabled=true;
+    $("first-request-help").textContent="Enter to send · Shift + Enter for a new line. The hosted agent and compute are ready.";
+    const trialExample=document.querySelectorAll(".example")[2];
+    trialExample.dataset.example="Prepare a study of a double pendulum using Python. Define the equations and initial conditions, produce a trajectory plot, and test energy conservation and timestep convergence before independent review.";
+    trialExample.querySelector("p").textContent="Test a double pendulum with numerical controls.";
+    const setup=document.querySelector(".setup-strip > div");
+    setup.querySelector("strong").textContent="Start a conversation";
+    setup.querySelector("small").textContent="Agent and compute provided";
+    $("execution-backend").replaceChildren(new Option("Managed experiments","trusted-template"));
+    $("review-model").placeholder="Assigned by the host";
+    document.querySelector(".research-tools-heading .lead").textContent="Verified tools provided for this hosted workspace.";
+    const sheet=document.createElement("link");sheet.rel="stylesheet";sheet.href="/assets/hosted.css";document.head.append(sheet);
+  }
   const execution = data.settings.execution;
   $("execution-backend").value = execution?.backend || "bubblewrap";
   let executionNoticeKey = "";
@@ -1464,7 +1571,7 @@ async function boot() {
         localStorage.getItem("simjecture-execution-notice-dismissed") ===
         executionNoticeKey;
     } catch {}
-    const label = cooperative
+    const label = hosted ? "Verified tools ready" : cooperative
       ? "Limited isolation"
       : blocked
         ? "Experiments unavailable"
@@ -1527,6 +1634,8 @@ for (const item of document.querySelectorAll("[data-view]"))
   item.onclick = () => view(item.dataset.view);
 $("connection-button").onclick = () => view("settings");
 mountHomeAgent();
+globalThis.WorkspaceComposer?.mount($("chat-form"), $("chat-input"), document.querySelector("#chat-form .agent-controls"), "conversation");
+globalThis.WorkspaceComposer?.mount($("quick-start"), $("first-request"), document.querySelector("#quick-start .agent-controls"), "home");
 for (const scope of ["home", "conversation"]) {
   const c = agentControls(scope);
   c.backend.onchange = () =>
@@ -1537,6 +1646,7 @@ for (const scope of ["home", "conversation"]) {
       })
       .catch((e) => toast(e.message, true));
   c.model.onchange = () => {
+    globalThis.WorkspaceComposer?.refresh(scope);
     c.customBox.hidden = c.model.value !== "__custom__";
     if (!c.customBox.hidden) {
       c.custom.focus();
@@ -1594,6 +1704,7 @@ $("new-project").onclick = () => {
   renderProjects();
   view("home");
   $("first-request").value = "";
+  globalThis.WorkspaceComposer?.update("first-request");
   $("first-request").focus();
 };
 $("quick-start").onsubmit = (e) => {
@@ -1617,12 +1728,15 @@ $("quick-start").onsubmit = (e) => {
     if (!(await openProject(p.id))) return;
     $("chat-input").value = message;
     if ($("first-request").value === draft) $("first-request").value = "";
+    globalThis.WorkspaceComposer?.update("first-request");
+    globalThis.WorkspaceComposer?.update("chat-input");
     await send();
   });
 };
 for (const b of document.querySelectorAll("[data-example]"))
   b.onclick = () => {
     $("first-request").value = b.dataset.example;
+    globalThis.WorkspaceComposer?.update("first-request");
     $("first-request").focus();
   };
 $("chat-form").onsubmit = (e) => {
@@ -1728,7 +1842,7 @@ async function launchStudy() {
   renderProject();
   await renderStudies();
   toast(
-    "Autonomous research started. You can close this page and return later.",
+    hosted && !state.hosting?.account ? "Research started. Keep a tab open, or sign in to retain the investigation." : "Autonomous research started. You can close this page and return later.",
   );
 }
 $("brief-form").onsubmit = (e) => {
@@ -1844,7 +1958,7 @@ setInterval(async () => {
   }
 }, 2000);
 boot().then(async () => {
-  await refreshMachines();
+  if(!hosted)await refreshMachines();
   const query = new URLSearchParams(location.search);
   const campaign = query.get("continue-study") || query.get("steer-study");
   if (campaign) {

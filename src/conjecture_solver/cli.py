@@ -1065,6 +1065,26 @@ def build_parser() -> argparse.ArgumentParser:
     )
     web.set_defaults(handler=_web)
 
+    serve = subcommands.add_parser(
+        "serve", help="Serve quota-limited public trials behind an HTTPS reverse proxy"
+    )
+    serve.add_argument(
+        "--root", required=True, type=Path, help="Private public-service state directory"
+    )
+    serve.add_argument("--host", default="127.0.0.1")
+    serve.add_argument("--port", default=8788, type=int)
+    serve.add_argument(
+        "--unix-socket", type=Path, help="Private Unix HTTP socket for managed execution"
+    )
+    serve.add_argument("--development-http", action="store_true", help="Local testing only")
+
+    def public_server(args):
+        from .public.server import serve
+
+        return serve(args)
+
+    serve.set_defaults(handler=public_server)
+
     dsh_profile = subcommands.add_parser(
         "dsh-profile",
         help="Print the bundled DeepSeek Harness profile directory",

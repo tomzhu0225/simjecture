@@ -2,6 +2,34 @@
 
 This project follows semantic versioning. Dates use ISO 8601.
 
+## 0.6.0 — 2026-10-06
+
+- Add optional `simjecture serve` for a hosted workspace with durable admission,
+  visitor quotas, a shared queue, GitHub OAuth and verified owner allowances.
+  Provider settings remain operator-owned; OAuth client credentials stay in RAM.
+- Use the same workspace in local and hosted deployments: a permanent dark rail,
+  bottom experiment-monitor and account buttons, account/workspace popup, compact
+  chat input that grows with the draft, and model settings in a popover. Move
+  workspace details into a dialog and remove the composer permission footer.
+- Let signed-in visitors upload scientific inputs and retain their projects.
+  Remove guest conversations, files and artifacts after the last tab leaves;
+  protect other open tabs, refreshes and sign-in transitions with expiring leases.
+  Hosted artifact links download by default; safe image previews remain available.
+- Add an opt-in, fail-closed Linux executor using dedicated job UIDs, Landlock,
+  seccomp and resource limits on hosts without namespaces. General Python,
+  installed solvers, custom inputs and private FLASH builds can run through the
+  existing evidence service. A private Unix HTTP socket separates the gateway
+  from scientific jobs; this profile does not provide a network namespace.
+- Preserve command/source/runtime provenance and per-request inference usage.
+  Freeze the queued study brief and honor its shorter execution cutoff. Record
+  failed commands and permit fresh retries without treating them as valid evidence.
+- Make the inspector tabs reachable at narrow widths. Expose native outputs to
+  follow-up project analysis, suppress binary console dumps from model context,
+  and read executor console output through its original descriptors. Diagnose
+  FLASH snapshots by their recorded times and application-specific filenames.
+- Include the preceding release candidates' director/recovery and simulation
+  provenance fixes. See the release acceptance record for validation and limits.
+
 ## 0.5.4rc2 (preview) — 2026-10-04
 
 - Separate interactive simulation outputs from copied project inputs in the GUI.

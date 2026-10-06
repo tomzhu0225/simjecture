@@ -118,3 +118,13 @@ button, .button { transition: background-color 140ms ease, border-color 140ms ea
   text-transform: uppercase;
 }
 .sidebar .brand small { color: #a4acc1; }
+
+/* Bound the tab strip to the inspector, so every tab stays reachable when
+   the panel is narrow. Web Awesome supplies the overflow arrow buttons. */
+#inspector-tabs { width: 100%; min-width: 0; }
+#inspector-tabs::part(base) { width: 100%; min-width: 0; }
+#inspector-tabs::part(nav) { min-width: 0; max-width: 100%; }
+#inspector-tabs::part(tabs) { flex: 0 0 max-content; }
+#inspector-tabs wa-tab { flex: 0 0 auto; font-size: 12px; padding-inline: 9px; white-space: nowrap; }
+#inspector-tabs::part(scroll-button) { background: var(--paper); color: var(--ink); }
+#inspector-tabs::part(scroll-button__base) { padding-inline: 3px; }
