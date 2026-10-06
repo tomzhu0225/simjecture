@@ -38,6 +38,9 @@ This project follows semantic versioning. Dates use ISO 8601.
   downloads in hosted workspaces. Model testing and result import remain disabled.
 - Present Conversation, Study and Evidence & review as peer navigation tabs
   with an active view, instead of a breadcrumb hierarchy.
+- Expose operator-verified WarpX photon features and add radiation guidance for
+  emission, absorption, energy accounting and material/table limits. Hosted
+  collision qualification does not imply a commissioned aluminium Z-pinch model.
 - Make the inspector tabs reachable at narrow widths. Expose native outputs to
   follow-up project analysis, suppress binary console dumps from model context,
   and read executor console output through its original descriptors. Diagnose

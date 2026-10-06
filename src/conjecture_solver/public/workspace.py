@@ -342,6 +342,14 @@ class HostedWorkspace:
             rows = [entry for entry in entries if entry["family"] == family]
             if not rows:
                 continue
+            description = descriptions[family]
+            if family == "warpx" and any(
+                r.get("features", {}).get("collisional_photons_qualified") for r in rows
+            ):
+                description = (
+                    "GPU particle-in-cell with verified bremsstrahlung photon emission and "
+                    "absorption. Prepare custom inputs and Python diagnostics."
+                )
             tools.append(
                 {
                     "id": identifier,
@@ -352,7 +360,7 @@ class HostedWorkspace:
                     "action": "hosted",
                     "general_execution": general,
                     "path": "hosted-tools",
-                    "description": descriptions[family]
+                    "description": description
                     if general
                     else " · ".join(row["name"] for row in rows),
                     "variants": [

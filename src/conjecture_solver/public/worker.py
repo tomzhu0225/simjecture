@@ -529,6 +529,7 @@ def native_agent_tools(store, job, service):
                         "binary",
                         "template",
                         "source_root",
+                        "features",
                     )
                 }
                 for row in registry(store.root)
@@ -577,6 +578,10 @@ def native_instructions(store):
             + "For run_command, label actual solver/integration runs kind='simulation'; "
             "label analysis, plots, compilation and inspection kind='command'. "
             "Give each execution a descriptive name. Create output folders before saving files. "
+            "Installed WarpX builds may also support collisional photon emission and absorption; "
+            "inspect their features and read warpx/references/radiation.md for custom radiation "
+            "studies, diagnostics and material/table limits. Langmuir presets do not define "
+            "the full binary's capabilities. "
             + ready_reconnection
             + "For 2D reconnection use the resistive-MHD island-coalescence binary if present; "
             "otherwise compile the appropriate FLASH application. Do not substitute an "
