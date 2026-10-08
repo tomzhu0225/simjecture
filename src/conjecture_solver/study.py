@@ -253,6 +253,8 @@ def _run(args):
     if mode == "minimal":
         if not (args.campaign / "research.json").exists() and hypothesis is None:
             raise ValueError("New study requires --hypothesis-file")
+        from .research_finalization import default_report_reserve
+
         service = (
             ResearchService.create(
                 args.campaign,
@@ -262,6 +264,9 @@ def _run(args):
                 execution_backend=args.execution_backend,
                 completion_policy=getattr(args, "completion_policy", None),
                 execution_pool=pool,
+                report_reserve_seconds=default_report_reserve(args.wall_seconds)
+                if not (args.campaign / "research.json").exists()
+                else None,
             )
             if hypothesis is not None
             else ResearchService(args.campaign)

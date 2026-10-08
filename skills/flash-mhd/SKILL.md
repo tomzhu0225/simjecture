@@ -58,8 +58,10 @@ diagnostics, acceptance thresholds, or conclusion.
   MPI/OpenMP topologies, and leave enough wall-time and workspace margin for
   the complete output transaction. Do not assume that more ranks are faster.
    Test the exact experiment launcher at the intended rank count. For single-node
-   Open MPI, use `SIMJECTURE_MPI_HELPER` with `--ranks` and reserve that many CPUs
-   through `lab.run(resources=...)`; do not hide a slot-allocation failure with
+   Open MPI, use `SIMJECTURE_MPI_HELPER` with `--ranks`. When a study execution pool
+   is configured, reserve that many CPUs through `lab.run(resources=...)`. For a
+   local study without an execution pool, omit `machine` and `resources` and use
+   the capability's commissioned launcher. Do not hide a slot-allocation failure with
    oversubscription. A PRoot smoke may pass while larger collectives hang. Record
    that failure separately from hardware throughput. Compare native execution
    only when an operator explicitly configured the trusted process backend.
@@ -82,6 +84,11 @@ Read these resources as needed:
 - [Guided studies](references/guided-studies.md): reuse a supplied anchor, qualify
   the actual HDF5 reader, distinguish pilots from evidence, and check decision rules
   before expensive campaigns.
+- [Cell-centre flux paths](examples/coordinate_paths.py): optional, tested
+  quadrature for uniform 2D Cartesian cell-centred magnetic components. It returns
+  the average potential on the two central rows, not an exact value at the
+  continuum midplane. It is not an AMR, staggered-face or RZ reader and chooses no
+  scientific observable or acceptance threshold.
 - [Execution and output](references/execution-output.md): command construction,
   provenance, output inspection, and failure handling.
 - [Hosted HDF5 analysis](references/hosted-analysis.md): scratch/project file

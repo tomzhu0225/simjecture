@@ -1,0 +1,158 @@
+{
+  "id": "exp_82b9e64be938e71bcdd31e78",
+  "status": "succeeded",
+  "operator_guidance_ids": [],
+  "created_at": 1791439741.2899451,
+  "timeout": 600,
+  "workspace_limit_bytes": 4294967296,
+  "binding": {
+    "source": "calculation.py",
+    "args": [
+      "select",
+      "--state",
+      "macro512.npz",
+      "--di",
+      "0.024",
+      "--half",
+      "0.45",
+      "--nx",
+      "864",
+      "--source-experiment",
+      "exp_b3aeffc4296462890906d872"
+    ],
+    "inputs": {
+      "calculation.py": "ef030822bfce50da0aa95310c94f11bf6f24e0766ee8ca0856ea52eb0ee15844",
+      "select_patch.py": "d582d3c1dd0b10817758ad82990317a71ea6a5469d513562fedad999d9ed3dcc",
+      "prepare_patch.py": "0be359a997ac75af4d376f96f18901ed815e2d1b07e2c48336233f4a35b4e20d",
+      "macro512.npz": "e8d1ef82fb0baafddeaf1b0f8c9e153db6fae069a2a4829cd18e80487bfbd023",
+      "macro512.json": "13a35761198aa1571ab3c0c100068ea31533a20a600d854fb5270c777f01ff1c"
+    },
+    "capability": null,
+    "runtime_sha256": null
+  },
+  "outputs": [
+    "selection.json",
+    "patch.npz",
+    "patch.json",
+    "macro_patch.png",
+    "sheet_profile.npz"
+  ],
+  "commitment": null,
+  "key": "matchedfine-boundary-transfer",
+  "stage": "exploration",
+  "method": null,
+  "review_documents": null,
+  "parent_experiment": "exp_b3aeffc4296462890906d872",
+  "purpose": "diagnostic",
+  "plan": null,
+  "pid": 397534,
+  "worker_identity": {
+    "pid": 397534,
+    "starttime": "2113616",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture/.venv/bin/python3",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/coupled-study",
+      "--execute",
+      "exp_82b9e64be938e71bcdd31e78"
+    ],
+    "launched_at": "2026-10-08T06:09:01.494216+00:00",
+    "run_directory": null
+  },
+  "started_at": 1791439741.4943821,
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "Fontconfig error: Cannot load default config file: No such file: (null)",
+    "timed_out": false,
+    "cancelled": false,
+    "workspace_exceeded": false,
+    "stdout_truncated": false,
+    "stderr_truncated": false,
+    "heartbeat_count": 0,
+    "wall_seconds": 3.7302783300001465,
+    "workspace_bytes": 65087443
+  },
+  "artifacts": {
+    ".cache/fontconfig/2300eef321c393bfd76478a5c0e95b23-le64.cache-9": {
+      "sha256": "be4a2bf520a0eb916fab92b15585e493fa0dae62d7c2dd7e275b01664c14e346",
+      "bytes": 382064
+    },
+    ".cache/fontconfig/3830d5c3ddfd5cd38a049b759396e72e-le64.cache-9": {
+      "sha256": "6cb953b213d173a1439944baba4f785aeb8e08fba3cb8794d99004c34310d453",
+      "bytes": 184
+    },
+    ".cache/fontconfig/4c599c202bc5c08e2d34565a40eac3b2-le64.cache-9": {
+      "sha256": "e2077b9c186aa45489f582008a00a7965a8135d07927d2697f6d07e09f9ae69d",
+      "bytes": 104
+    },
+    ".cache/fontconfig/573ec803664ed168555e0e8b6d0f0c7f-le64.cache-9": {
+      "sha256": "e67dc2bd665d1b1bd952ec5dd357d64bae7b2fbd6f1c9896db3e880f9788c58f",
+      "bytes": 152
+    },
+    ".cache/fontconfig/7ef2298fde41cc6eeb7af42e48b7d293-le64.cache-9": {
+      "sha256": "69cf18e42e3d2705da9c867a36e7e16f3d0e8973c41a5a51118e43c1207756fc",
+      "bytes": 208
+    },
+    ".cache/fontconfig/9b89f8e3dae116d678bbf48e5f21f69b-le64.cache-9": {
+      "sha256": "4fa102166b8aaa98765061eae7abe768aa636c327ad2889f68d33d77de9735b0",
+      "bytes": 68800
+    },
+    ".cache/fontconfig/CACHEDIR.TAG": {
+      "sha256": "05e7633fb31bf1f6f8d89020c16b9f24587fdf7638e951c9745b192f5fc3b682",
+      "bytes": 200
+    },
+    ".cache/fontconfig/d589a48862398ed80a3d6066f4f56f4c-le64.cache-9": {
+      "sha256": "233df56e901146f1c5f71911def868b835fb7e43a0e02644a07a1c829e49cc31",
+      "bytes": 51736
+    },
+    "calculation.py": {
+      "sha256": "ef030822bfce50da0aa95310c94f11bf6f24e0766ee8ca0856ea52eb0ee15844",
+      "bytes": 435
+    },
+    "macro512.json": {
+      "sha256": "13a35761198aa1571ab3c0c100068ea31533a20a600d854fb5270c777f01ff1c",
+      "bytes": 1043
+    },
+    "macro512.npz": {
+      "sha256": "e8d1ef82fb0baafddeaf1b0f8c9e153db6fae069a2a4829cd18e80487bfbd023",
+      "bytes": 6239717
+    },
+    "macro_patch.png": {
+      "sha256": "ab54577395bb4e004e49b7ef798d18bf1d602c847b9bc13c8777cfa3af912f40",
+      "bytes": 332882
+    },
+    "patch.json": {
+      "sha256": "515aa1e52f68df0ead47b17098b56014ddaaa6c9c23eea0b6548632da45f41ba",
+      "bytes": 1764
+    },
+    "patch.npz": {
+      "sha256": "078c357cfa0547a54bc946e80e118ec9dea8a58b06b70ce379f9539cfae07c7e",
+      "bytes": 57991632
+    },
+    "prepare_patch.py": {
+      "sha256": "0be359a997ac75af4d376f96f18901ed815e2d1b07e2c48336233f4a35b4e20d",
+      "bytes": 6968
+    },
+    "select_patch.py": {
+      "sha256": "d582d3c1dd0b10817758ad82990317a71ea6a5469d513562fedad999d9ed3dcc",
+      "bytes": 4222
+    },
+    "selection.json": {
+      "sha256": "36a35e9f8a8fabf78fe8181f0d89d0980d26b9259e253ef40511c7f28114210e",
+      "bytes": 2430
+    },
+    "sheet_profile.npz": {
+      "sha256": "881ba73346835485c2f2ec0601e16a286f96b24b872fc5acdc38846acc3b346b",
+      "bytes": 2902
+    }
+  },
+  "missing_outputs": [],
+  "input_mutations": [],
+  "output_findings": [],
+  "scientific_status": "unreviewed",
+  "finished_at": 1791439746.31744
+}

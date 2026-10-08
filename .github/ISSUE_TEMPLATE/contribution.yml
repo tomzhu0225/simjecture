@@ -1,0 +1,20 @@
+name: Tool, study or improvement
+description: Propose a scientific tool, diagnostic, study or project improvement.
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like to contribute or improve?
+      description: Describe the question or user problem and the result you would like to see.
+    validations:
+      required: true
+  - type: textarea
+    id: starting_point
+    attributes:
+      label: Starting point
+      description: Existing code, a paper, a working example, a proposed hypothesis, or a specific documentation/UI change. For upstream software or data, include its license if known.
+  - type: textarea
+    id: validation
+    attributes:
+      label: How could we check it?
+      description: A numerical control, small reproducible case, or behavior to test. Mention hardware or access requirements and any help you need.

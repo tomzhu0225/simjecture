@@ -1,0 +1,8 @@
+{
+  "id": "director_77310f1cbac90d0ac353f3d2",
+  "response": "plan",
+  "reason": "The completed pilot shows evolution takes 168.6 s of 173.4 s at 256^2, while outputs take about 6.9 s; we corrected the invalid A_z screen and will measure a two-rank 128^2 complete trajectory before budgeting the scan. The 256^2 Seta=1000 pilot itself is exploratory and its old screen is discarded.",
+  "plan": "note_d901f678751c9854f397b3b8",
+  "created_at": 1791430881.1728954,
+  "authority": "Worker response; not scientific approval"
+}

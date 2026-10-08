@@ -1,0 +1,128 @@
+{
+  "commands_priority_order": [
+    {
+      "S": 4000,
+      "n": 384,
+      "args": [
+        "--eta",
+        "0.00025",
+        "--n",
+        "384",
+        "--tmax",
+        "2.15",
+        "--cfl",
+        ".8"
+      ],
+      "timeout": 620
+    },
+    {
+      "S": 4000,
+      "n": 256,
+      "args": [
+        "--eta",
+        "0.00025",
+        "--n",
+        "256",
+        "--tmax",
+        "2.15",
+        "--cfl",
+        ".8"
+      ],
+      "timeout": 240
+    },
+    {
+      "S": 250,
+      "n": 256,
+      "args": [
+        "--eta",
+        "0.004",
+        "--n",
+        "256",
+        "--tmax",
+        "0.6",
+        "--cfl",
+        ".8"
+      ],
+      "timeout": 100
+    },
+    {
+      "S": 500,
+      "n": 256,
+      "args": [
+        "--eta",
+        "0.002",
+        "--n",
+        "256",
+        "--tmax",
+        "0.8",
+        "--cfl",
+        ".8"
+      ],
+      "timeout": 110
+    },
+    {
+      "S": 1000,
+      "n": 256,
+      "args": [
+        "--eta",
+        "0.001",
+        "--n",
+        "256",
+        "--tmax",
+        "1.2",
+        "--cfl",
+        ".8"
+      ],
+      "timeout": 160
+    },
+    {
+      "S": 2000,
+      "n": 256,
+      "args": [
+        "--eta",
+        "0.0005",
+        "--n",
+        "256",
+        "--tmax",
+        "1.6",
+        "--cfl",
+        ".8"
+      ],
+      "timeout": 200
+    },
+    {
+      "S": 250,
+      "n": 384,
+      "args": [
+        "--eta",
+        "0.004",
+        "--n",
+        "384",
+        "--tmax",
+        "0.6",
+        "--cfl",
+        ".8"
+      ],
+      "timeout": 220
+    },
+    {
+      "S": 1000,
+      "n": 384,
+      "args": [
+        "--eta",
+        "0.001",
+        "--n",
+        "384",
+        "--tmax",
+        "1.2",
+        "--cfl",
+        ".8"
+      ],
+      "timeout": 380
+    }
+  ],
+  "review_reserve_seconds": 300,
+  "analysis_seconds": 20,
+  "estimated_seconds": 1591,
+  "policy": "High-S refinement first; reassess before remaining refinement; execute only while preserving reserve. Missing declared coverage stays unresolved, never qualifying by default. No coverage/fit change without review."
+}

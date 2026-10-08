@@ -1,0 +1,8 @@
+{
+  "id": "director_ef4093e4d42e826df2873173",
+  "response": "plan",
+  "reason": "The S_eta=250 mesh is now N=96 (4.8 initial-sheet cells, 6.07 nominal Sweet-Parker cells) and the matched refinement is a three-resistivity subset at S_eta=250, 1000, 4000. Exact grids, tmax values and per-case timeouts are in scan_plan.json. The base plus subset estimate is 1900 seconds with a retained 180-second review reserve, and the low/high base endpoints will be measured before authorizing expensive refinement.",
+  "plan": "note_5c351a0bafaf47eb5ece5b8b",
+  "created_at": 1791431435.7389948,
+  "authority": "Worker response; not scientific approval"
+}

@@ -1,0 +1,109 @@
+{
+  "id": "exp_7052ef4de75c3cf5e51e6e77",
+  "status": "succeeded",
+  "operator_guidance_ids": [],
+  "created_at": 1791432239.7931266,
+  "timeout": 600,
+  "workspace_limit_bytes": 4294967296,
+  "binding": {
+    "source": "analysis.py",
+    "args": [
+      "--qualify",
+      "qualification-v4.json"
+    ],
+    "inputs": {
+      "analysis.py": "d0e1e2866c33a316d397e1c66738ad77c93efd2e1f817747f1966d9c07eaae6d"
+    },
+    "capability": null,
+    "runtime_sha256": null
+  },
+  "outputs": [
+    "qualification-v4.json"
+  ],
+  "commitment": null,
+  "key": "synthetic-qualification-final-v4",
+  "stage": "exploration",
+  "method": null,
+  "review_documents": null,
+  "parent_experiment": null,
+  "purpose": "diagnostic",
+  "plan": null,
+  "pid": 238794,
+  "worker_identity": {
+    "pid": 238794,
+    "starttime": "1363466",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture/.venv/bin/python3",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/island-study",
+      "--execute",
+      "exp_7052ef4de75c3cf5e51e6e77"
+    ],
+    "launched_at": "2026-10-08T04:04:00.036850+00:00",
+    "run_directory": null
+  },
+  "started_at": 1791432240.0369895,
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": 0,
+    "stdout": "{\n  \"kind\": \"analysis_qualification_fixtures\",\n  \"checks\": {\n    \"topology_non_detection\": true,\n    \"secondary_extremum_detection\": true,\n    \"topology_gauge_shift_invariance\": true,\n    \"topology_spatial_window_exclusion\": true,\n    \"two_path_missing_rate_censored\": true,\n    \"known_powerlaw_slope\": true,\n    \"matched_refinement_decision_executed\": true,\n    \"matched_spatial_resolution_increment_qualified\": true,\n    \"known_branch_departure_flagged\": true,\n    \"matched_branch_departure_uses_resistivity_not_case_id\": true,\n    \"common_gauge_Az_path_fixture\": true\n  },\n  \"all_passed\": true,\n  \"metrics\": {\n    \"quiet_extrema\": 0,\n    \"island_extrema\": 1,\n    \"gauge_shifted_extrema\": 1,\n    \"outside_roi_extrema\": 0,\n    \"analytic_Az_path_relative_mismatch\": 0.012274311054462741,\n    \"known_slope\": -0.5000000000000007,\n    \"matched_refinement\": \"persistence_within_margin\",\n    \"branch_fixture_status\": \"departure_over_25pct_detected\",\n    \"matched_resolution_pairs\": [\n      {\n        \"S_eta\": 250.0,\n        \"grid_ratio\": 1.25,\n        \"nominal_cells_delta\": 1.5178932768808213,\n        \"measured_fwhm_cells_delta\": 1.0\n      },\n      {\n        \"S_eta\": 1000.0,\n        \"grid_ratio\": 1.25,\n        \"nominal_cells_delta\": 1.0119288512538818,\n        \"measured_fwhm_cells_delta\": 1.0\n      },\n      {\n        \"S_eta\": 4000.0,\n        \"grid_ratio\": 1.25,\n        \"nominal_cells_delta\": 1.0119288512538818,\n        \"measured_fwhm_cells_delta\": 1.0\n      }\n    ],\n    \"common_branch_departures\": [\n      1000.0\n    ],\n    \"missing_path_complete_set\": false\n  },\n  \"fixtures\": \"synthetic diagnostic qualification only; not scientific evidence\"\n}",
+    "stderr": "Fontconfig error: Cannot load default config file: No such file: (null)",
+    "timed_out": false,
+    "cancelled": false,
+    "workspace_exceeded": false,
+    "stdout_truncated": false,
+    "stderr_truncated": false,
+    "heartbeat_count": 0,
+    "wall_seconds": 1.3137306520002312,
+    "workspace_bytes": 536341
+  },
+  "artifacts": {
+    ".cache/fontconfig/2300eef321c393bfd76478a5c0e95b23-le64.cache-9": {
+      "sha256": "be4a2bf520a0eb916fab92b15585e493fa0dae62d7c2dd7e275b01664c14e346",
+      "bytes": 382064
+    },
+    ".cache/fontconfig/3830d5c3ddfd5cd38a049b759396e72e-le64.cache-9": {
+      "sha256": "6cb953b213d173a1439944baba4f785aeb8e08fba3cb8794d99004c34310d453",
+      "bytes": 184
+    },
+    ".cache/fontconfig/4c599c202bc5c08e2d34565a40eac3b2-le64.cache-9": {
+      "sha256": "e2077b9c186aa45489f582008a00a7965a8135d07927d2697f6d07e09f9ae69d",
+      "bytes": 104
+    },
+    ".cache/fontconfig/573ec803664ed168555e0e8b6d0f0c7f-le64.cache-9": {
+      "sha256": "e67dc2bd665d1b1bd952ec5dd357d64bae7b2fbd6f1c9896db3e880f9788c58f",
+      "bytes": 152
+    },
+    ".cache/fontconfig/7ef2298fde41cc6eeb7af42e48b7d293-le64.cache-9": {
+      "sha256": "69cf18e42e3d2705da9c867a36e7e16f3d0e8973c41a5a51118e43c1207756fc",
+      "bytes": 208
+    },
+    ".cache/fontconfig/9b89f8e3dae116d678bbf48e5f21f69b-le64.cache-9": {
+      "sha256": "4fa102166b8aaa98765061eae7abe768aa636c327ad2889f68d33d77de9735b0",
+      "bytes": 68800
+    },
+    ".cache/fontconfig/CACHEDIR.TAG": {
+      "sha256": "05e7633fb31bf1f6f8d89020c16b9f24587fdf7638e951c9745b192f5fc3b682",
+      "bytes": 200
+    },
+    ".cache/fontconfig/d589a48862398ed80a3d6066f4f56f4c-le64.cache-9": {
+      "sha256": "233df56e901146f1c5f71911def868b835fb7e43a0e02644a07a1c829e49cc31",
+      "bytes": 51736
+    },
+    "analysis.py": {
+      "sha256": "d0e1e2866c33a316d397e1c66738ad77c93efd2e1f817747f1966d9c07eaae6d",
+      "bytes": 31242
+    },
+    "qualification-v4.json": {
+      "sha256": "9e6e3f15004ca1f5a06fbb54a1216fb71538ead21873043f3813a149e9e4d1af",
+      "bytes": 1651
+    }
+  },
+  "missing_outputs": [],
+  "input_mutations": [],
+  "output_findings": [],
+  "scientific_status": "unreviewed",
+  "finished_at": 1791432241.3844965
+}

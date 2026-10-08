@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "source_state_sha256": "e8d1ef82fb0baafddeaf1b0f8c9e153db6fae069a2a4829cd18e80487bfbd023",
+  "source_flash_sha256": "79d2045d47eaecb729d854e170f3679fa75b9948359d3f380f15caab112b2083",
+  "source_time_code": 0.8001113920335353,
+  "patch_sha256": "c7c6d6d1c027e421be20942ffa07d6c415479fab6567a2705f6f5b0435697402",
+  "shape_zx": [
+    576,
+    576
+  ],
+  "bounds_xz_m": [
+    [
+      -0.0003321308291872663,
+      0.0003321308291872663
+    ],
+    [
+      -0.0003321308291872663,
+      0.0003321308291872663
+    ]
+  ],
+  "cell_size_m": [
+    1.153232045789115e-06,
+    1.153232045789115e-06
+  ],
+  "scales": {
+    "length_m": 0.0011071027639575543,
+    "velocity_m_s": 2997924.58,
+    "magnetic_T": 16.355235690756075,
+    "density_m3": 1e+24,
+    "mass_density_kg_m3": 2.368439765614e-05,
+    "ion_mass_kg": 2.277345928475e-29,
+    "electron_mass_kg": 9.1093837139e-31,
+    "ion_skin_depth_m": 2.6570466334981303e-05,
+    "ion_skin_depth_code": 0.024,
+    "omega_ci_reference_s1": 115063663098.55894,
+    "omega_pe_reference_s1": 56414602254294.99
+  },
+  "temperature_ratio_i_e": 1.0,
+  "electric_policy": "ideal",
+  "physics": "Collisionless, fully kinetic electron-ion continuation; no scalar MHD resistivity is evolved in PIC.",
+  "mapping": "Right-handed FLASH (x,y,z) to WarpX (X,Y,Z)=(x,-z,y); n=rho_code*n0; p=p_code*rho0*v0^2; total mass rho=n*(mi+me).",
+  "initial_discrete_divb_scaled": 2.489546939955753e-16,
+  "maximum_drift_over_c": 0.011698031319279129,
+  "maximum_electron_thermal_speed_over_c": 0.09298964587002033,
+  "source_potential_residual": 1.3760034177670742e-08,
+  "scope": "Prepared local initial-value problem only. Patch boundaries, relaxation, collisionless closure and physical scale need scientific review.",
+  "source_experiment": "exp_b3aeffc4296462890906d872",
+  "width_definition": "Half separation of first |J_y|=0.5 |J_y(center)| crossings along Z; J_y=dBx/dZ-dBz/dX, averaged over two source columns closest to X=0, central peak; linear crossing interpolation.",
+  "sheet_half_width_code": 0.014466925003814069,
+  "sheet_half_width_source_cells": 7.407065601952803,
+  "half_width_over_reference_di": 0.6027885418255862,
+  "half_width_over_local_di": 0.5934761743137116,
+  "crossings_z_code": [
+    -0.014466925003814069,
+    0.014466925003814069
+  ],
+  "magnetic_transfer_rms_relative": 0.0002800826384038867,
+  "interior_ampere_rms_relative": 0.0012830811001731883
+}

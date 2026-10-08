@@ -1,0 +1,13 @@
+{
+  "id": "director_96d3f6a16bf7def2238fa94e",
+  "created_at": 1791436640.0740378,
+  "packet_sha256": "ddad3090d0603206c73feac482ecdef5f016dc0f795c898464a8dbe1f6732463",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "The new evidence supports the previous execution strategy. The corrected base run exp_1c6e664e972b5f583f31d498 completed 2,435 steps through 0.8002 inverse reference ion cyclotron frequencies in 411 seconds, retaining approximately 104 MB of diagnostics. Its estimator reports complete candidate-window coverage and eligible bins; these establish diagnostic execution, not scientific qualification. Initialization relaxation, boundary sensitivity, sampling uncertainty and numerical controls remain unresolved. The new 576\u00b2 patch preserves the source, physical mapping and domain while refining cell size, so it is a useful potential spatial control. Budget feasibility remains favorable with approximately 4,491 seconds available. The active larger-patch run has elapsed approximately 572 seconds against its 1,200-second timeout; missing progress telemetry does not establish either a stall or completion. No new worker challenge or pending replan response is recorded, and no scientific claim is accepted.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "feasible",
+  "stop_experiments": [],
+  "next_action": "Let exp_f0950f288da5afe863d02e2c finish within its existing timeout. Meanwhile, analyze the completed base run's retained diagnostics for initialization relaxation, energy behavior and initial moment matching. On larger-patch completion, compare the same physical region over [0.3,0.8], separating field-boundary sensitivity from particle-origin/transit effects. Use that comparison to decide whether the candidate window is viable before launching a control matrix. Benchmark the prepared 576\u00b2 refinement briefly before committing its full trajectory: at unchanged particles per cell and CFL, it has 2.25 times as many cells and requires roughly 1.5 times as many steps, so its cost could exceed a 1,200-second timeout. Record measured throughput and memory, and consider the solver-reported GPU box overhead when choosing an execution adjustment. Preserve explicit stability and plasma/gyro resolution. Select the smallest informative particle/seed and timestep controls from observed uncertainty and cost. Submit the complete prospective measurement contract and qualification evidence to the separate methods reviewer before decisive runs; if boundary or relaxation checks fail, document the limitation and obtain review of any revised conditioning or physical scope."
+}

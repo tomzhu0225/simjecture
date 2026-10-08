@@ -1,0 +1,39 @@
+{
+  "source": "calculation.py",
+  "inputs": [
+    "kinetic.py",
+    "estimator.py",
+    "fine_patch.npz",
+    "fine_patch.json",
+    "base_patch.npz",
+    "base_patch.json",
+    "bigfine_patch.npz",
+    "bigfine_patch.json",
+    "PRESSURE_CONTRACT.md",
+    "kinetic_analysis.py",
+    "qualification.py",
+    "complete_audit.py",
+    "source_qualification.py",
+    "macro_figure.py",
+    "parent_provenance.json",
+    "qualification_summary.json",
+    "source_qualification_summary.json"
+  ],
+  "capability": "warpx-cuda-openpmd-26.07",
+  "scope": "production",
+  "model": "Unchanged root finite collisionless2D3V local pressure prediction: reducedmass25, Ti/Te1, n0=1e24, v0=.01c. Installed CUDA WarpX26.07 explicit Yee/Boris/quadratic/Esirkepov. Historical autonomous FLASH512 source t=.8001113920335353, eta.001 trajectory, not operator anchor. One-way initial-condition continuation; ideal initial E deliberately omits scalarMHDresistiveE. No collisions,radiation,feedback or universal reconnection claim.",
+  "geometry": "Right-handed X,Y,Z=x,-z,y. Source HDF5 79d2045d47eaecb729d854e170f3679fa75b9948359d3f380f15caab112b2083 from parent exp_b3aeffc4296462890906d872; exportedNPZ e8d1ef82fb0baafddeaf1b0f8c9e153db6fae069a2a4829cd18e80487bfbd023. Finite halfpatch.3/.45 absorbingparticles SilverMuellerfields. FixedROI half.04,.015,4x4bins; width first half-center-current crossing halfseparation .014466925,7.407FLASHcells,di.024=>.60279. Current preparedfine576 grid1.15323um. Exact patch hashes/manifests in bound files and parent receipts.",
+  "observable": "Bound PRESSURE_CONTRACT.md v2 unchanged. P=m sum(w dv dv)/area (unit ignorablelength), local species mean subtracted, threevelocitycomponents. A=Frob(P-tr(P)I/3)/(tr(P)/sqrt3). Equalarea then time trapezoids full[.3,.8] referenceOmega_ci, endpoint interpolation. Every primary bincount256/neff512finitepositivetrace; no binsdropped. Secondary8bins count128/neff256, reconstruction1e-10/shear.02. Uncertainty >=.05sampling plus absmeanA grid/timestep/ppc/seed/patch/bin/cadence changes plus sqrt3maximum measured gamma tracecorrection. Support BOTHupper<=.2 only allgates; falsification at leastonelower>.2 only allgates; elseinconclusive. Complete_audit.py implements frozen envelope and diagnostics; stagebound by host, not selfpassedflag.",
+  "validation": "Fresh fullwindow exp_a1842d496f9ccf18d93f7647 current loader/source finished3652steps through.800107 in566.6s at57632ppcseed08. Audit exp_2170ea427cd8f5af2df39f06 verifies retained parent rawdata hashes against actual FLASH/WarpX receipts and recomputes source qualification, raw tensors, current/charge/COM, finite counts, fourthmoments,shear,relaxation,alignedabsorbedenergy/Poyntingbudget. Bound parent_provenance.json contains actual read-only receipts including bothsolvers and transferinputs; historicaldata retainexplorationstatus, notfreshvalidation. Historical qualified fine16,bigfine16,timestep and coarse32 controls plus newfine32 isolate grid,ppc,boundary,timestep. Oldcoarse16COM .0318>.03 FAIL retained, excluded qualifieddecision. Matched32spatial and fixedfineppc gates reported in bound qualification_summary.json. Finepatch boundary samephysicalcellscale comparison givesA differences .00427/.00476,Pmax2.81%,nmax.65%,outercollar.001326. Allcurrentfine32operational gates inspected. Source energyFix notseparatelyclosed; residualconsistencyonly. EM CFL.7 dtomega_pe.1074/dtomega_ce.00548; dx/de.217,dx/lambdaD2.45explicitlyunderresolved, conditionalaccuracythroughcontrols, notgeneralDebyeresolution. Freshseed09 planned onlyafterthisreview and if conservative380s runtimeplusanalysis fits compute deadline; current remaining~420s. Need independentqualification, no historicalmethodapproval imported.",
+  "validation_experiments": [
+    "exp_a1842d496f9ccf18d93f7647",
+    "exp_2170ea427cd8f5af2df39f06",
+    "exp_4b404fe3e1562cfb62f5daee"
+  ],
+  "blocker_experiments": [],
+  "rationale": "Continue frozenparentstudy, not resetphysics. Actual inherited recorded source and controls are reused transparently with exacthashreceiptlineage, current-source fresh actual evolution qualifies implementation. Newfine32removes grid/ppcconfounding due oldCOMfailure. Request approval for prospective freshfine16seed09 evidence only, originalclaimunchanged; numericalflags do notacceptclaim. Allparentexploration stayshistorical. Need targeted methods review before decisive run, no speculativehostinspection.",
+  "limitations": [
+    "Debye underresolved; finite spatial comparison and energy checks qualify only this observable. Conditional uncertainty envelope not rigorous distribution-free confidence. Within-secondary-bin shear unbounded. Nearest-cellPoynting spatial quadrature approximate, operational transfer plateau notproofequilibrium. Light signals reach ROI; matchedpatch field/pressuretrajectories and origin tags complement, notcausal exclusion. SourceenergyFixcorrections notseparatelycounted.",
+    "ParentFLASHsource/kineticcontrols are realread-onlyrecordedhistoricalexploration; notimportedfreshvalidation and no historicalapprovalassumed. Parentcoarse16failedCOMgate retained, notqualifiedsupport. Source/time/window/thresholds/mapping unchanged. Newfreshdecisiveevidence required afterapproval."
+  ]
+}

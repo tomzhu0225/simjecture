@@ -71,3 +71,53 @@ def test_dependency_preparation_preserves_unmanaged_files(tmp_path):
     with pytest.raises(ValueError, match="unmanaged"):
         bootstrap.prepare_runtime_environment("optab", prefix)
     assert valuable.read_text() == "keep"
+
+
+def test_cuda_registration_tracks_nested_active_native_library(tmp_path, monkeypatch):
+    import json
+    import runpy
+    import sys
+    from pathlib import Path
+
+    from conjecture_solver.mvp_skills import MVPCapabilityInstallation
+
+    repo = Path(__file__).parents[1]
+    runtime = tmp_path / ".runtime/warpx-cuda-openpmd"
+    package = runtime / "lib/python3.12/site-packages/pywarpx"
+    nested = package / "site-packages/pywarpx/warpx_pybind_2d.so"
+    for p, value in [
+        (runtime / "bin/python", b"fixture interpreter"),
+        (runtime / "share/build-record.json", b"{}"),
+        (runtime / "conda-meta/history", b"fixture dependencies"),
+        (package / "__init__.py", b""),
+        (package / "libamrex.so", b"fixture amrex"),
+        (nested, b"active solver version one"),
+    ]:
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_bytes(value)
+    (runtime / "bin/python").chmod(0o755)
+    for name in ("cuda-toolkit-12.4", "warpx-cuda-openpmd-deps"):
+        (tmp_path / ".runtime" / name).mkdir()
+    (tmp_path / "capabilities").mkdir()
+    template = "warpx-cuda-openpmd-26.07.json"
+    (tmp_path / "capabilities" / template).write_bytes(
+        (repo / "capabilities" / template).read_bytes()
+    )
+    exists = Path.exists
+
+    def device_exists(path):
+        if str(path).startswith("/dev/"):
+            return str(path) == "/dev/nvidia0"
+        return exists(path)
+
+    monkeypatch.setattr(Path, "exists", device_exists)
+    monkeypatch.setattr(sys, "argv", ["register_cuda_runtime.py", str(tmp_path)])
+    runpy.run_path(str(repo / "scripts/register_cuda_runtime.py"), run_name="__main__")
+    descriptor = runtime / "capabilities" / template
+    config = json.loads(descriptor.read_text())
+    assert str(nested.relative_to(runtime)) in config["identity_files"]
+    installed = MVPCapabilityInstallation.read(descriptor)
+    nested.write_bytes(b"active solver changed while metadata stayed the same")
+    with pytest.raises(RuntimeError, match="changed after campaign discovery"):
+        installed.assert_runtime_identity()
+    assert MVPCapabilityInstallation.read(descriptor).contract_hash != installed.contract_hash

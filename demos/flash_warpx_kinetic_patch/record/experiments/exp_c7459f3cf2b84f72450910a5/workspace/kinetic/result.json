@@ -1,0 +1,130 @@
+{
+  "completed": true,
+  "backend": "CUDA",
+  "gpu": true,
+  "steps": 128,
+  "dt_s": 1.9040530362554446e-15,
+  "dt_omega_pe": 0.10741639471143363,
+  "duration_omegaci": 0.028043176586942043,
+  "elapsed_s": 19.949626762998378,
+  "initialization_seconds": 5.59523359800005,
+  "phase_times": [
+    {
+      "step": 0,
+      "moment_seconds": 1.2469574569986435,
+      "evolve_steps": 32,
+      "evolve_seconds": 2.1648520790004113
+    },
+    {
+      "step": 32,
+      "moment_seconds": 1.0909493610015488,
+      "evolve_steps": 32,
+      "evolve_seconds": 2.035597190999397
+    },
+    {
+      "step": 64,
+      "moment_seconds": 1.2364402300008805,
+      "evolve_steps": 32,
+      "evolve_seconds": 1.9261015160009265
+    },
+    {
+      "step": 96,
+      "moment_seconds": 1.0639405399997486,
+      "evolve_steps": 32,
+      "evolve_seconds": 1.9574982519989135
+    },
+    {
+      "step": 128,
+      "moment_seconds": 1.223752346002584
+    }
+  ],
+  "storage_bytes": 115669778,
+  "initial_field_relative_errors": {
+    "bx": 0.0,
+    "bz": 0.0,
+    "ey": 0.0
+  },
+  "initial_maximum_particle_speed_over_c": {
+    "ions": 0.06959412277085203,
+    "ions_initial_energy_J_per_m": 444.0524235735973,
+    "ions_initial_number_per_m": 4.6025849558120166e+17,
+    "electrons": 0.35034424420679394,
+    "electrons_initial_energy_J_per_m": 454.77592860019445,
+    "electrons_initial_number_per_m": 4.6025849558120166e+17
+  },
+  "patch_sha256": "c7c6d6d1c027e421be20942ffa07d6c415479fab6567a2705f6f5b0435697402",
+  "ppc_per_species": 16,
+  "seed": 20261008,
+  "moment_convention": "Nonrelativistic m*n*<v_prime v_prime>, velocity v=u/sqrt(1+u^2/c^2); local bin mean subtracted.",
+  "isotropy_metric": "Frobenius(P-tr(P)I/3)/(sqrt(3)*tr(P)/3)",
+  "moment_bins_per_axis": 4,
+  "window_candidate": [
+    0.3,
+    0.8
+  ],
+  "boundary_accounting_enabled": true,
+  "poynting_estimator": "E cross B at nearest interior cell centers, normal flux quadrature on each face and trapezoidal sampling; spatial/time quadrature residual retained, not exact boundary flux.",
+  "secondary_bins": 8,
+  "minimum_bin_particles": 64,
+  "window_area_time_mean": {
+    "ions": {
+      "area_time_mean": null,
+      "eligible": false,
+      "reason": "Incomplete window, nonfinite/zero tensor, or at least one bin below frozen count/effective-count policy; bins are never dropped.",
+      "minimum_count": 2182.0,
+      "minimum_effective_count": 2181.9953569838976,
+      "max_pressure_relativistic_trace_correction": 0.0007508114470535398,
+      "window": [
+        0.3,
+        0.8
+      ],
+      "coverage_fraction": null,
+      "times": [
+        0.0,
+        0.007010794146735511,
+        0.014021588293471022,
+        0.021032382440206533,
+        0.028043176586942043
+      ],
+      "area_means": [
+        0.008117324273593369,
+        0.011122657047252453,
+        0.014410026079237673,
+        0.017517496138219648,
+        0.020245162391784158
+      ]
+    },
+    "electrons": {
+      "area_time_mean": null,
+      "eligible": false,
+      "reason": "Incomplete window, nonfinite/zero tensor, or at least one bin below frozen count/effective-count policy; bins are never dropped.",
+      "minimum_count": 2181.0,
+      "minimum_effective_count": 2180.367313268003,
+      "max_pressure_relativistic_trace_correction": 0.01920719597835393,
+      "window": [
+        0.3,
+        0.8
+      ],
+      "coverage_fraction": null,
+      "times": [
+        0.0,
+        0.007010794146735511,
+        0.014021588293471022,
+        0.021032382440206533,
+        0.028043176586942043
+      ],
+      "area_means": [
+        0.00855247862456468,
+        0.019846288447127772,
+        0.02705624069366056,
+        0.03269857573690958,
+        0.04021353660809074
+      ]
+    }
+  },
+  "roi_half_code": [
+    0.04,
+    0.015
+  ],
+  "scope": "Collisionless one-way local continuation. Absorbing boundaries, transfer relaxation and numerical/particle controls remain scientific qualification requirements."
+}

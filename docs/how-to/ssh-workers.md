@@ -1,8 +1,8 @@
 # Run experiments on local and SSH workers
 
-Available from **0.5.3rc2**, execution pools extend minimal-mode studies with
-local and SSH numerical workers. Use the 0.5.3 installer or matching Python package
-on the coordinator.
+Execution pools extend minimal-mode studies with local and SSH numerical
+workers. Install the current stable workspace or matching Python package on the
+coordinator.
 
 One Simjecture workspace owns the research agent, hypothesis, methods, reviews,
 experiment receipts and deadline. Each selected machine runs a headless execution
@@ -63,7 +63,7 @@ new phase. Register the parent's machine IDs first when importing an external st
 
 ## Prepare through the CLI
 
-Install `simjecture[workspace]==0.5.3` on the coordinator.
+Install `simjecture[workspace]` on the coordinator.
 This includes the process monitor and the built-in API agent used in the example.
 A coordinator using only native CLIs can use the smaller `process` extra; managed
 local workers also need the process monitor.
@@ -222,9 +222,8 @@ aggregate RSS limits and receipts, but supplies no OS isolation. Registered runt
 and source files need host permissions to remain read-only. Automatic detection does
 not select this backend. See [restricted hosts](restricted-containers.md).
 
-The native backend, reserved-slot helper and content manifests described here are
-available in the 0.5.4rc2 preview; stable 0.5.3 retains its existing
-Bubblewrap/PRoot choices.
+Earlier studies retain their frozen backend and worker configuration when
+the coordinator is upgraded.
 
 Create a separate machine profile and worker root when changing an execution
 backend that old studies have frozen. Keep the original profile and program generation

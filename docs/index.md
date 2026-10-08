@@ -1,99 +1,135 @@
-# Simjecture documentation
+---
+hide-toc: true
+---
 
-Simjecture helps you turn a scientific question into recorded experiments,
-counterexample searches and independently reviewed claims. The browser workspace
-is the recommended starting point. Use a compatible API model or an installed
-native agent CLI; terminal automation is also supported.
+# Autonomous research with inspectable evidence
 
-These guides cover **Simjecture 0.6.0**, including the shared local/hosted workspace
-and optional server mode. See the [release checks and limits](testing/0.6.0-acceptance.md)
-or [try the hosted workspace](https://simjecture.com).
+```{raw} html
+<p class="sj-eyebrow">Simjecture · Autonomous numerical research</p>
+<p class="sj-lead">Bring a hypothesis and the conditions that matter. Let an agent design experiments, search for counterexamples and test a better explanation—with recorded evidence and independent review.</p>
+<div class="sj-actions">
+  <a class="sj-button primary" href="getting-started/first-run.html">Run your first investigation →</a>
+  <a class="sj-button" href="demos/index.html">Explore recorded studies</a>
+  <a class="sj-button" href="https://simjecture.com">Try online ↗</a>
+</div>
+```
 
-## Start in the workspace
+## How research moves forward
 
-1. [Install Simjecture](getting-started/installation.md) on Linux or WSL
-2. Follow the [workspace walkthrough](getting-started/research-workspace.md) to
-   choose an agent, start a conversation and prepare a study
-3. Try a [small first investigation](getting-started/first-run.md), then inspect
-   its experiments and review
+```{raw} html
+<ol class="sj-loop">
+  <li><strong>Frame the question</strong><span>You and the agent agree on the hypothesis, physical scope and budget.</span></li>
+  <li><strong>Run experiments</strong><span>The agent chooses methods and runs recorded numerical computations.</span></li>
+  <li><strong>Look for a failure</strong><span>Challenge the prediction and check candidate counterexamples.</span></li>
+  <li><strong>Commit a repair</strong><span>Preserve the failed claim and state a justified replacement before testing it.</span></li>
+  <li><strong>Collect fresh evidence</strong><span>Run the committed tests and challenge the revised prediction.</span></li>
+  <li><strong>Review the conclusion</strong><span>A separate context examines the claim, source, results and numerical controls.</span></li>
+</ol>
+<p class="sj-loop-note">Review gaps return the agent to investigation. Human steering can change the next experiment. The selected completion policy determines whether a falsification finishes the study or starts a repair; the deadline can leave it incomplete.</p>
+```
 
-Want to look around first? The [recorded Gray–Scott demo](demos/gray-scott.md)
-can be verified and replayed without an API key or new simulations.
+[Understand the loop](concepts/research-loop.md) ·
+[See what counts as evidence](concepts/evidence-and-claims.md)
 
-## Solve a specific task
+## See the process in a real record
 
-- **Automate a study:** [headless CLI workflow](how-to/headless-studies.md)
-- **Continue or guide work:** [continuation and steering](how-to/continuation-steering.md)
-- **Prepare a scientific instrument:** [guided commissioning](how-to/guided-commissioning.md),
-  [runtime deployment](how-to/deploy-runtimes.md), [ITER pack](how-to/iter-pack.md),
-  [cylinder flow](how-to/cylinder-flow.md)
-- **Use remote compute:** [SSH workers](how-to/ssh-workers.md) and
-  [restricted hosts](how-to/restricted-containers.md)
-- **Inspect a study:** [web monitor](getting-started/web-interface.md),
-  [methods and progress oversight](how-to/minimal-oversight.md),
-  [research memory](how-to/research-memory.md)
-- **Compare models:** [benchmark guide and community results](how-to/llm-bench.md)
-- **Extend the harness:** [add a capability](how-to/add-a-capability.md) or
-  [contribute](https://github.com/tomzhu0225/simjecture/blob/main/CONTRIBUTING.md)
+The [FLASH island-coalescence study](demos/island-coalescence.md) asks whether
+one reconnection-rate scaling survives changes in resistivity and resolution.
+Follow real plasma fields, the original campaign's audit and a fresh minimal-mode
+investigation.
 
-## Understand the evidence
+![Actual FLASH commissioning fields during magnetic-island coalescence](../demos/resistive_mhd_island_coalescence/figures/island_coalescence_evolution.png)
 
-Read [architecture](concepts/architecture.md),
-[evidence and claims](concepts/evidence-and-claims.md),
-[evaluation status](research/status.md) and
-[scientific limitations](research/limitations.md) for what the harness records,
-what has been demonstrated and what still needs scientific judgment.
+For a short, fully inspectable example, the
+[orbital-accuracy investigation](demos/kepler-energy.md) found five counterexamples
+and supported a narrower claim with fresh numerical tests and independent review.
+Ordinary CPU Python is enough to reproduce its experiments.
 
-Current guides describe supported workflows and identify version-specific
-features where needed. Dated audits, model comparisons and acceptance checks live
-in the [research and release archive](archive/index.md). Release changes are in
-[CHANGELOG.md](https://github.com/tomzhu0225/simjecture/blob/main/CHANGELOG.md).
+The [FLASH-to-WarpX investigation](demos/flash-warpx-patch.md) connects a measured
+MHD current sheet to local kinetic calculations. It records successful state
+transfer and completed numerical controls, with the scientific claim unresolved
+at the two-hour cutoff.
+
+```{raw} html
+<div class="sj-cards">
+  <a class="sj-card" href="getting-started/first-run.html"><span class="sj-label">Start investigating</span><strong>From a conversation to a tested claim</strong><p>Prepare a brief, choose a completion policy and follow a study through experiments and review.</p></a>
+  <a class="sj-card" href="concepts/evidence-and-claims.html"><span class="sj-label">Understand the record</span><strong>Why should you trust this result?</strong><p>Trace a conclusion to its numerical inputs, outputs, counterexamples and review decisions.</p></a>
+  <a class="sj-card" href="how-to/guided-commissioning.html"><span class="sj-label">Bring a scientific tool</span><strong>Start from a working instrument</strong><p>Give the agent a verified example, source access, diagnostics and clear physical limits.</p></a>
+  <a class="sj-card" href="how-to/continuation-steering.html"><span class="sj-label">Keep exploring</span><strong>Guide the next experiment</strong><p>Steer at a checkpoint or open a linked continuation with a revised brief and new budget.</p></a>
+</div>
+```
+
+## Choose your working environment
+
+Use [the hosted workspace](https://simjecture.com) with supplied inference and
+compute within usage limits, or [install locally](getting-started/installation.md)
+and choose your own API or native CLI agent. You can run ordinary Python studies,
+add scientific capabilities, and use [SSH workers](how-to/ssh-workers.md) for
+numerical experiments. [Server mode](how-to/public-trials.md) supports an operated
+service with per-visitor allowances.
+
+The sidebar identifies the documentation build version. Current walkthroughs and
+historical records are labelled separately. See [research status](research/status.md),
+[release checks](archive/index.md), or
+[contribute a tool or study](https://github.com/tomzhu0225/simjecture/blob/main/CONTRIBUTING.md).
 
 ```{toctree}
 :hidden:
-:caption: Getting started
+:caption: Start here
 
+concepts/research-loop
 getting-started/installation
-getting-started/research-workspace
 getting-started/first-run
-getting-started/web-interface
-getting-started/terminal-ui
+getting-started/research-workspace
 ```
 
 ```{toctree}
 :hidden:
-:caption: Demonstrations
+:caption: Research records
 
+demos/index
+demos/island-coalescence
+demos/flash-warpx-patch
+demos/kepler-energy
 demos/gray-scott
 demos/collisionless-gem
 ```
 
 ```{toctree}
 :hidden:
-:caption: Explanation
+:caption: Understand the system
 
-concepts/architecture
 concepts/evidence-and-claims
+concepts/architecture
 research/limitations
 research/status
 ```
 
 ```{toctree}
 :hidden:
-:caption: How-to guides
+:caption: Work with Simjecture
 
 how-to/headless-studies
 how-to/research-service
 how-to/continuation-steering
-how-to/guided-commissioning
-how-to/restricted-containers
 how-to/minimal-oversight
 how-to/research-memory
+getting-started/web-interface
+getting-started/terminal-ui
+```
+
+```{toctree}
+:hidden:
+:caption: Tools and deployment
+
+how-to/guided-commissioning
+how-to/multi-tool-studies
 how-to/add-a-capability
 how-to/deploy-runtimes
 how-to/iter-pack
 how-to/cylinder-flow
 how-to/ssh-workers
+how-to/restricted-containers
 how-to/public-trials
 how-to/llm-bench
 how-to/deepseek-harness
@@ -102,24 +138,12 @@ how-to/simote-agent-roles
 
 ```{toctree}
 :hidden:
-:caption: Reference
+:caption: Reference and contributing
 
 reference/cli
 reference/repository-map
-```
-
-```{toctree}
-:hidden:
-:caption: Development
-
+development/contributing
 development/documentation
 development/releasing
-testing/0.6.0-acceptance
-```
-
-```{toctree}
-:hidden:
-:caption: Archive
-
 archive/index
 ```

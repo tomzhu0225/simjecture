@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "source_sha256": "79d2045d47eaecb729d854e170f3679fa75b9948359d3f380f15caab112b2083",
+  "source_name": "source.h5",
+  "source_time_code": 0.8001113920335353,
+  "flash_shape_zx": [
+    512,
+    512
+  ],
+  "cell_size_code": [
+    0.001953125,
+    0.001953125
+  ],
+  "bounds_xz_code": [
+    [
+      -0.5,
+      0.5
+    ],
+    [
+      -0.5,
+      0.5
+    ]
+  ],
+  "rotation": "Right-handed (X,Y,Z)=(x,-z,y); FLASH Bz=uz=0 in this application. Thus B_W=(Bx,0,By), J_W,y=-J_FLASH,z.",
+  "units": "FLASH normalized UnitSystem=none; mu0=1; pressure is total scalar fluid pressure. No SI mapping is inferred by this helper.",
+  "eta_code": 0.001,
+  "potential_relative_edge_residual": 1.3760034177670742e-08,
+  "potential_definition": "Bx=-dAy/dZ, Bz=dAy/dX; least-squares reconstruction, zero mean; original B arrays are also retained.",
+  "handoff_sha256": "e8d1ef82fb0baafddeaf1b0f8c9e153db6fae069a2a4829cd18e80487bfbd023",
+  "scope": "Transfer/initialization material only; not kinetic qualification or claim evidence."
+}

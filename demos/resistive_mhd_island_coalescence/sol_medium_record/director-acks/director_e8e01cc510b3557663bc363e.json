@@ -1,0 +1,8 @@
+{
+  "id": "director_e8e01cc510b3557663bc363e",
+  "response": "plan",
+  "reason": "Endpoint-first bounded production schedule; reserve300s and reconsider remaining refinement after actual high-S cost.",
+  "plan": "note_306d236c0207ceab1e1875c8",
+  "created_at": 1791438692.1159024,
+  "authority": "Worker response; not scientific approval"
+}

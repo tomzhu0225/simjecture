@@ -30,7 +30,7 @@ backend and control token are never proxied to visitors.
 ## Deployment
 
 ```bash
-pip install 'simjecture[public]==0.6.0'
+pip install 'simjecture[public]'
 simjecture serve --root /srv/simjecture-public/data --port 8788
 ```
 

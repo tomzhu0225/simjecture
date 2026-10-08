@@ -5,14 +5,16 @@
 On Linux or inside an existing WSL distribution:
 
 ```bash
-curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.6.0/install.sh | bash
+curl -fsSL https://github.com/tomzhu0225/simjecture/releases/latest/download/install.sh | bash
 ```
 
-This command selects stable **0.6.0**, including the compact chat/account layout,
-SSH experiment workers and shared conversation/study/evidence navigation. Existing projects, provider settings,
-runtimes and older program versions are preserved. See
-[release scope and checks](../testing/0.6.0-acceptance.md) and
-[SSH worker setup](../how-to/ssh-workers.md).
+This command selects the latest stable release. The downloaded installer pins
+its own release bundle and checksum, so an installation does not mix files from
+different versions. Existing projects, provider settings, runtimes and older
+program versions are preserved. For reproducibility, select a versioned installer
+from the [release page](https://github.com/tomzhu0225/simjecture/releases) and record
+its version and checksum with your study. See [release checks](../archive/index.md)
+and [SSH worker setup](../how-to/ssh-workers.md).
 
 No Git, Python environment or CLI agent setup is required in advance. The bootstrap
 fetches the versioned workspace bundle and verifies its SHA-256 checksum, installs uv
@@ -35,7 +37,7 @@ remove older versions or research outputs.
 To install without starting, or choose a different web port:
 
 ```bash
-curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.6.0/install.sh | bash -s -- --no-start
+curl -fsSL https://github.com/tomzhu0225/simjecture/releases/latest/download/install.sh | bash -s -- --no-start
 ~/simjecture/start-workspace --port 8765
 ```
 

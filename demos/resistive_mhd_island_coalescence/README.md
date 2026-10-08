@@ -203,3 +203,21 @@ uv run simjecture web artifacts/resistive-mhd-island-coalescence-dsh-0001 \
 
 The web page is a projection of the durable ledger and activity record. It
 does not turn the anchor, a plot, or model prose into scientific evidence.
+
+
+### Visual walkthrough and continuation
+
+The separate `continuation_record/` preserves the later 30-minute continuation;
+the parent record is unchanged. `visual_data/` contains compact plotting arrays
+with source hashes, selected-frame metadata and the original scientific/report
+status. These operator-rendered figures do not add a scientific verdict.
+
+From the repository root, redraw the field sequences, patch view, pressure maps
+and evidence maps without solver runs or model calls:
+
+```bash
+uv run --extra flash-demo python scripts/render_plasma_walkthroughs.py
+```
+
+The renderer writes PNG, PDF and SVG to `docs/_static/demos/`. It verifies the
+plotting-bundle hashes and checks pressure-map means against the recorded analysis.

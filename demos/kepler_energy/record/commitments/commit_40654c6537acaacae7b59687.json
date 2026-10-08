@@ -1,0 +1,54 @@
+{
+  "id": "commit_40654c6537acaacae7b59687",
+  "created_at": 1791429639.1278973,
+  "statement": "For the planar Kepler problem with GM=a=1 over 20 periods, fixed-step kick-drift-kick leapfrog has maximum sampled position error below 0.01a for the following finite cases only: (e,N)=(0,2048),(0.3,2048),(0.6,4096),(0.6,8192), where N is steps per 2\u03c0 period. This is a resolution-qualified finite-case replacement; it makes no claim for intervening N, other eccentricities, or arbitrary higher-resolution monotonicity.",
+  "parent": "root",
+  "acceptance": "Each named case must complete 20 periods with maximum sampled Euclidean position error versus the same-time analytic Kepler solution <0.01a. Kepler-equation residual, initial-state mismatch, and period consistency must each be <=1e-11; an independently converged DOP853 integration must agree with the exact-reference maximum position error to <=1e-7a. Also report maximum relative energy error. The separate e=0.6,N=2048 probe is an out-of-domain falsifier probe, not part of the repair acceptance set.",
+  "rationale": "Corrected prospective contract after the initial commitment exposed an argv-binding problem: each committed label now selects exactly one tuple so the fresh execution matches its declared case. The original energy implication failed because bounded energy error did not control accumulated phase error. These finite resolution cases were prospectively chosen conservatively, and the lower-resolution e=0.6,N=2048 probe will challenge broader readings.",
+  "bindings": [
+    {
+      "source": "calculation.py",
+      "args": [
+        "e0_N2048"
+      ],
+      "inputs": {
+        "calculation.py": "2d7ff5c25811d5e03270f0a4effc05a493942473eed3391312dca10e4ef3bef3"
+      },
+      "capability": null,
+      "runtime_sha256": null
+    },
+    {
+      "source": "calculation.py",
+      "args": [
+        "e03_N2048"
+      ],
+      "inputs": {
+        "calculation.py": "2d7ff5c25811d5e03270f0a4effc05a493942473eed3391312dca10e4ef3bef3"
+      },
+      "capability": null,
+      "runtime_sha256": null
+    },
+    {
+      "source": "calculation.py",
+      "args": [
+        "e06_N4096"
+      ],
+      "inputs": {
+        "calculation.py": "2d7ff5c25811d5e03270f0a4effc05a493942473eed3391312dca10e4ef3bef3"
+      },
+      "capability": null,
+      "runtime_sha256": null
+    },
+    {
+      "source": "calculation.py",
+      "args": [
+        "e06_N8192"
+      ],
+      "inputs": {
+        "calculation.py": "2d7ff5c25811d5e03270f0a4effc05a493942473eed3391312dca10e4ef3bef3"
+      },
+      "capability": null,
+      "runtime_sha256": null
+    }
+  ]
+}

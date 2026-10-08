@@ -1,0 +1,13 @@
+{
+  "id": "director_3189b2c067a23b5f438ffb94",
+  "created_at": 1791432934.0629773,
+  "packet_sha256": "ec9b8ab9d766e88f3cd3e726a93bb59e1b459d988d3160dd4b974011cfd00771",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "replan",
+  "rationale": "The latest methods verdict requires revision. New recorded qualification reports passing mixed uncertainty bounds, nonzero-Bx gauge reconstruction, incomplete-case serialization and numerical-sensitivity classification; archived-pilot analysis also succeeds. These address concrete blockers, but independent production approval remains pending. Scientific usefulness is still limited to commissioning and one exploratory resistivity; interval coverage and exponent persistence remain untested. Budget feasibility is separate: the unchanged 1,325-second simulation forecast exceeds the 1,168-second remainder by about 157 seconds, or 337 seconds when retaining the recorded 180-second review reserve, before analysis and methods overhead. The full planned matrix is therefore unaffordable on its current forecast. The worker's endpoint-first plan remains useful, but its subsequent commitments need revision. No experiments are active.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "infeasible",
+  "stop_experiments": [],
+  "next_action": "Acknowledge this latest replan with a recorded budgeted plan or reasoned challenge. Align scan_plan.json and RESULTS.md with the repaired asymmetric branch rule and comparison on identical base/refined resistivity subsets; both still contain older descriptions. Submit the new qualification and archived-analysis receipts for independent methods review without repeating unchanged commissioning. After approval, obtain the planned low and high base endpoints, recording actual wall cost, timestep counts, both-path/full-and-decimated window crossings and eligibility. Use those measurements to budget an affordable distinct-resistivity base study while preserving analysis and the 180-second review reserve. Do not commit the expensive high-end refinement from the present extrapolation. Assess whether a documented, qualified shorter terminal horizon can retain every required window-bracketing output and diagnostic; retain the original flux window, physics and eligibility rules. Undertake a matched three-point refinement only if its updated total forecast fits. Otherwise preserve the useful base evidence and report exponent persistence as unresolved. Missing-window cases remain censored, and independent review must assess conclusions."
+}

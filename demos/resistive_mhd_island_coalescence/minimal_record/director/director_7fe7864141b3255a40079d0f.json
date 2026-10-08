@@ -1,0 +1,21 @@
+{
+  "id": "director_7fe7864141b3255a40079d0f",
+  "created_at": 1791433687.152048,
+  "packet_sha256": "ad7d6ad16952428af57c17f2eb27a3c6f5cf4920dcd82251dcc841e8752eabf2",
+  "control_actions": [
+    {
+      "experiment": "exp_81db920f97d08ffcaf40fb10",
+      "status": "running",
+      "cancellation_confirmed": false
+    }
+  ],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "replan",
+  "rationale": "The worker acknowledged the previous replan and completed its targeted low-end test. However, S_eta=250 at N=120 remains ineligible: A_z mismatch is 0.2176 against the unchanged 0.15 limit. The new S_eta=1000, N=128 case also reached the flux window but failed that screen with mismatch 0.2026. These are eligibility failures, not physical counterexamples. The recorded N=256 middle-case archive passed the same screen at 0.0505, so spatial recovery is plausible but unproven. Scientific usefulness remains limited by the absence of eligible prospective lower cases and meaningful refinement. Separately, the worker's high-end-first plan is too fragile: its 376-second forecast minus the packet's 135 seconds elapsed leaves approximately 241 seconds of work; against 450 seconds remaining and the recorded 180-second review reserve, only about 29 seconds remain for eligibility recovery, additional cases and analysis. Actual remaining runtime is unknown because no trajectory telemetry is supplied. Stop the expensive high-end experiment while preserving its partial data, and redirect toward an affordable eligible trajectory and coverage recovery. This accepts no scientific claim.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "at_risk",
+  "stop_experiments": [
+    "exp_81db920f97d08ffcaf40fb10"
+  ],
+  "next_action": "Acknowledge this latest replan with a recorded plan or reasoned challenge. Preserve the stopped high-end states, logs and receipt; classify window completeness from recorded outputs rather than assuming completion. Immediately compare the preserved S_eta=1000 N=128 and N=256 archives under the approved diagnostics to determine whether the eligibility difference supports spatial recovery or reveals an implementation defect. Keep this investigation bounded to the execution blocker. If the diagnostics remain valid, use the already planned N=160 middle-case refinement as one targeted full-window recovery test: measured N=128 cost gives approximately 53 seconds under cubic mesh scaling, an uncertain estimate to record before launch. Retain the flux window, physics and eligibility thresholds. If an implementation defect is found, repair and qualify it through a targeted independent methods review before further decisive collection. On successful recovery, budget enough distinct eligible resistivities for the committed fit, using measured costs and preserving analysis plus the 180-second review reserve; recover the low endpoint only with a justified mesh forecast. Do not launch another expensive high-end trajectory or repeated mesh trials without a credible completion budget. If interval coverage or matched refinement cannot fit, report those exact gaps and an inconclusive assessment. Update RESULTS.md and the execution plan with the failed screens, stop, receipts and revised costs; commissioning remains exploration."
+}

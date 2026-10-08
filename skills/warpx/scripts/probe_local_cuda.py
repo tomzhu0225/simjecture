@@ -53,6 +53,7 @@ def main() -> int:
     args = parser.parse_args()
 
     import amrex.space2d as amrex
+    import cupy as cp
     import openpmd_api as io
 
     smi = subprocess.run(
@@ -71,6 +72,11 @@ def main() -> int:
 
     openpmd_hdf5 = bool(io.variants.get("hdf5", False))
     openpmd_roundtrip = openpmd_hdf5 and hdf5_roundtrip(args.workdir)
+    # Importing a host-only package or reading AMReX build flags cannot establish
+    # that Python-side field/particle callbacks can execute on the device.
+    values = cp.arange(8, dtype=cp.float64)
+    kernel_ok = float(cp.sum(values * values)) == 140.0
+    cp.cuda.runtime.deviceSynchronize()
     result = {
         "amrex": {
             "gpu_backend": str(amrex.Config.gpu_backend),
@@ -95,11 +101,12 @@ def main() -> int:
     )
     result["checks"] = {
         "cuda_warpx": usable,
+        "cupy_device_kernel": kernel_ok,
         "openpmd_hdf5_reader": openpmd_hdf5,
         "openpmd_hdf5_roundtrip": openpmd_roundtrip,
     }
     print(json.dumps(result, indent=2, sort_keys=True))
-    if not usable:
+    if not usable or not kernel_ok:
         return 1
     if args.require_openpmd and not openpmd_roundtrip:
         return 1

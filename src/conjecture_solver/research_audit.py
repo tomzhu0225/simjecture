@@ -117,7 +117,9 @@ def study_findings(snapshot, manifest):
     estimate = (sum(durations) / len(durations)) if durations else None
     outstanding = sum(c["missing"] for c in coverage)
     estimate_total = estimate * outstanding if estimate else None
-    review_reserve = min(300, max(0, manifest["deadline"] - manifest["created_at"]) * 0.05)
+    review_reserve = manifest.get("finalization_policy", {}).get(
+        "reserve_seconds", min(300, max(0, manifest["deadline"] - manifest["created_at"]) * 0.05)
+    )
     budget_warning = None
     if snapshot["remaining_seconds"] < review_reserve + (estimate_total or 0):
         budget_warning = (
@@ -210,6 +212,11 @@ def _write_navigation(service, state, snapshot):
         "- [Machine-readable report](research_report.json)",
         "",
     ]
+    finishing = snapshot.get("finalization", {})
+    if finishing:
+        index += [f"Report assessment: {finishing.get('report_status', 'not_started')}.", ""]
+        if finishing.get("report"):
+            index += [f"- [Frozen report]({quote(finishing['report'])})", ""]
     for number, experiment in enumerate(
         sorted(snapshot["experiments"], key=lambda e: e["created_at"]), 1
     ):

@@ -1,0 +1,262 @@
+{
+  "id": "exp_eef180c184d79e03a3485285",
+  "status": "succeeded",
+  "operator_guidance_ids": [],
+  "created_at": 1791444763.963182,
+  "timeout": 600,
+  "execution_deadline": 1791446084.1515079,
+  "workspace_limit_bytes": 4294967296,
+  "binding": {
+    "source": "guided/flash_islands.py",
+    "args": [
+      "--eta",
+      "0.001",
+      "--nx",
+      "128",
+      "--ny",
+      "128",
+      "--alpha",
+      "20",
+      "--tmax",
+      "1.2",
+      "--plot-interval",
+      "0.05",
+      "--ranks",
+      "4",
+      "--iprocs",
+      "2",
+      "--jprocs",
+      "2",
+      "--output",
+      "guided/anchor_run",
+      "--summary",
+      "guided/flash_anchor_validation.json",
+      "--overwrite"
+    ],
+    "inputs": {
+      "guided/flash_islands.py": "26f348973b4edeb761f6a25f7023f6c3ea22660f61297a4a58c3d6cc49991588",
+      "guided/extract_flash.py": "28608ddeab7d71584abd32ce910b66621d8ba9cc49d2bb44eb1ead3922e509a0",
+      "guided/kinetic_patch.py": "4b01a091e35c9b65ad08240bf6596e1c486ee924c0230cd3e1d098385c2e1124",
+      "guided/operator_gpu_validation.json": "0378a94e4a404a776595b77ccf1ba2c250bcf2d38bf55070dc8b930c4490e9fa",
+      "guided/operator_transfer_validation.json": "091da359eb3d1852cba60e47d6391bef7e30aba9f8dcb859a0facae553e224b7",
+      "guided/prepare_patch.py": "0be359a997ac75af4d376f96f18901ed815e2d1b07e2c48336233f4a35b4e20d"
+    },
+    "capability": "flash-island-coalescence-resistive-mhd-4.8",
+    "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+  },
+  "outputs": [
+    "guided/flash_anchor_validation.json"
+  ],
+  "commitment": null,
+  "key": "guided-anchor",
+  "stage": "exploration",
+  "method": null,
+  "review_documents": null,
+  "parent_experiment": null,
+  "purpose": "validation",
+  "plan": null,
+  "pid": 491007,
+  "worker_identity": {
+    "pid": 491007,
+    "starttime": "2615883",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture/.venv/bin/python3",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/coupled-extension-study",
+      "--execute",
+      "exp_eef180c184d79e03a3485285"
+    ],
+    "launched_at": "2026-10-08T07:32:44.183679+00:00",
+    "run_directory": null
+  },
+  "started_at": 1791444764.1838768,
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": 0,
+    "stdout": "{\"checks\": {\"completed\": true, \"representation\": true, \"physics_controls\": true, \"boundaries\": true, \"diagnostics\": true, \"numerical_regime\": true, \"flux_window_reached\": true, \"scientific_evidence_eligible\": false}, \"metrics\": {\"l_over_eta_nominal\": 1000.0, \"flux_low\": 0.01, \"flux_high\": 0.05, \"flux_low_crossing_time\": 0.26033823854649724, \"flux_high_crossing_time\": 1.0763841963235288, \"reconnection_time\": 0.8160459577770316, \"normalized_flux_slope\": 0.0490168471748367, \"flux_path_max_abs_mismatch\": 4.657228519738127e-05, \"max_abs_divb\": 9.36140054363932e-13, \"max_boundary_normal_fraction\": 0.031049113904913106, \"initial_sheet_cells\": 6.4, \"plot_file_count\": 24}}",
+    "stderr": "",
+    "timed_out": false,
+    "cancelled": false,
+    "workspace_exceeded": false,
+    "stdout_truncated": false,
+    "stderr_truncated": false,
+    "heartbeat_count": 0,
+    "wall_seconds": 24.611946451997937,
+    "workspace_bytes": 21127483
+  },
+  "artifacts": {
+    "guided/anchor_run/.simjecture-flash-guided-output": {
+      "sha256": "67d1f5ea486320558047f5cff49a53b2b0f1eaca0f699ba9abc1c1f60bcedc67",
+      "bytes": 49
+    },
+    "guided/anchor_run/flash.par": {
+      "sha256": "d85dd7177a73bf7184934b2ff33e5b2b5e615a69b0bcc550ed0d7f24d9eceac1",
+      "bytes": 1779
+    },
+    "guided/anchor_run/flash_run.dat": {
+      "sha256": "ee3297f2204fbcaf25c439dcacfa499de70d08f0b240cbad7b66c088930b05a4",
+      "bytes": 357436
+    },
+    "guided/anchor_run/flash_run.log": {
+      "sha256": "ceb31063e44d62bfc434db1638ad26cbeab2d2439152395675f0c17e003945b6",
+      "bytes": 151493
+    },
+    "guided/anchor_run/flash_run_forced_hdf5_plt_cnt_0000": {
+      "sha256": "89bdf099a287a58dc601af8d3daba69fabeff62704112db9800106258ea0e932",
+      "bytes": 580876
+    },
+    "guided/anchor_run/flash_run_hdf5_chk_0000": {
+      "sha256": "2c6c0e8b954ad619f1b946eb46691a4f8cbc3578e19a472086afa25e8d4e3d9a",
+      "bytes": 2950412
+    },
+    "guided/anchor_run/flash_run_hdf5_chk_0001": {
+      "sha256": "9efd763136ee529cda1631a859b4e8ce201fcca704296025db0576648ed133a7",
+      "bytes": 2950412
+    },
+    "guided/anchor_run/flash_run_hdf5_plt_cnt_0000": {
+      "sha256": "fa913c777e4a6553c4d2c56c5c22aa3638f6ca2f94d56ae1ff0883ecd383c28a",
+      "bytes": 580876
+    },
+    "guided/anchor_run/flash_run_hdf5_plt_cnt_0001": {
+      "sha256": "c6fcead437721eb87622e3eb0b9718b1c63bc41dd158d645b12fc35d97235af6",
+      "bytes": 580876
+    },
+    "guided/anchor_run/flash_run_hdf5_plt_cnt_0002": {
+      "sha256": "20f6c30350d2fb09d511fa218eabce2e82b78d50f8830504c9723bbd8e5ae00c",
+      "bytes": 580876
+    },
+    "guided/anchor_run/flash_run_hdf5_plt_cnt_0003": {
+      "sha256": "1e242ab35a957a91a1f6d507547c67f8b68d142073d997ee003d68fbc4e9284e",
+      "bytes": 580876
+    },
+    "guided/anchor_run/flash_run_hdf5_plt_cnt_0004": {
+      "sha256": "f24c1bdb9167b5fbe1e0d5f1941af2a3be65ac5d38032b75ff9d12ecd3355577",
+      "bytes": 580876
+    },
+    "guided/anchor_run/flash_run_hdf5_plt_cnt_0005": {
+      "sha256": "517c7d58d4cfc62f2a3bb994af6c46451efd018dc2d519c85048309eaa0137b3",
+      "bytes": 580876
+    },
+    "guided/anchor_run/flash_run_hdf5_plt_cnt_0006": {
+      "sha256": "10ee6025dced3fd8efb21a1c43aa672a46650398c92d72ee9f26c970e2e684fc",
+      "bytes": 580876
+    },
+    "guided/anchor_run/flash_run_hdf5_plt_cnt_0007": {
+      "sha256": "c0578ab57e3ee72a9258e2c51e9eedf3b09c0c265b4d363f5c74a82cc4baa045",
+      "bytes": 580876
+    },
+    "guided/anchor_run/flash_run_hdf5_plt_cnt_0008": {
+      "sha256": "cd0cc12b2d7d7e5c6c40f58a0e5b20a1713d59cff38860a71e978484aeac5a6b",
+      "bytes": 580876
+    },
+    "guided/anchor_run/flash_run_hdf5_plt_cnt_0009": {
+      "sha256": "9d68380976ec7a8145061c97a5994c2cb34347a485dce06d0c32143d98ae96ce",
+      "bytes": 580876
+    },
+    "guided/anchor_run/flash_run_hdf5_plt_cnt_0010": {
+      "sha256": "a1bc41cc9d08b7d30c178507e757f36148a70ba3896719b6a93a6975516a11ae",
+      "bytes": 580876
+    },
+    "guided/anchor_run/flash_run_hdf5_plt_cnt_0011": {
+      "sha256": "955601a68b931b4bb59ee091d9689f9adb4f4c14a6e2592e4d14bad06cf663f0",
+      "bytes": 580876
+    },
+    "guided/anchor_run/flash_run_hdf5_plt_cnt_0012": {
+      "sha256": "5aa4912b4cf24b4fb4d645c7b621df60936b000f3c25887b7dd9a919b8bbf63e",
+      "bytes": 580876
+    },
+    "guided/anchor_run/flash_run_hdf5_plt_cnt_0013": {
+      "sha256": "72d4b18c7e18fea05881d0caff1298a122c0842a0bbbbf5bb9aa34fdc5104aa7",
+      "bytes": 580876
+    },
+    "guided/anchor_run/flash_run_hdf5_plt_cnt_0014": {
+      "sha256": "e627c029cf365fc5e4ed495080bfcd4220e81444f6e871890deabdf676d39877",
+      "bytes": 580876
+    },
+    "guided/anchor_run/flash_run_hdf5_plt_cnt_0015": {
+      "sha256": "9a3e2d36aed2824a643255638b70e0ccd1133fa791d73b58949481b8a9fd2c19",
+      "bytes": 580876
+    },
+    "guided/anchor_run/flash_run_hdf5_plt_cnt_0016": {
+      "sha256": "a23b804f4c430588e793e0d72f7e7c0c47c04877b7e8d7443a0fa79920797d37",
+      "bytes": 580876
+    },
+    "guided/anchor_run/flash_run_hdf5_plt_cnt_0017": {
+      "sha256": "7af9e313e3e51616428b9ebe9a0a8ad0ca4e531c79d5bdaa62c54233cde1aefa",
+      "bytes": 580876
+    },
+    "guided/anchor_run/flash_run_hdf5_plt_cnt_0018": {
+      "sha256": "e26a9eab5d342bb0637cf313ac687fa6cb2d8034b11d9c0c16e9f84b6b0e82bc",
+      "bytes": 580876
+    },
+    "guided/anchor_run/flash_run_hdf5_plt_cnt_0019": {
+      "sha256": "41ab40972874d346887b2bac7b0f8352dd1fa63ddc2ff77cbe09a437a4b0d647",
+      "bytes": 580876
+    },
+    "guided/anchor_run/flash_run_hdf5_plt_cnt_0020": {
+      "sha256": "e0de4a835e005a005150a532c3d93f4c1cb942e306a19c217efa473ec0612298",
+      "bytes": 580876
+    },
+    "guided/anchor_run/flash_run_hdf5_plt_cnt_0021": {
+      "sha256": "efbcc6a11757dd74653e27fbb8fd5f1f2b977a4cd8a06d81076eb5bed09a219e",
+      "bytes": 580876
+    },
+    "guided/anchor_run/flash_run_hdf5_plt_cnt_0022": {
+      "sha256": "b4ef28ef326579f8cd8292a2087321ae16c80cd27a39428e542068f0d70f9146",
+      "bytes": 580876
+    },
+    "guided/anchor_run/flash_run_hdf5_plt_cnt_0023": {
+      "sha256": "ede3bbe6025dc9e963124c4e30f3e731acb5665c505588288be6cc9d994c57ce",
+      "bytes": 580876
+    },
+    "guided/anchor_run/launcher_stderr.txt": {
+      "sha256": "b02b461e24dcd2e6b070047f42137aa8a806941ce4796a6bb96cf4a506dd057d",
+      "bytes": 504
+    },
+    "guided/anchor_run/launcher_stdout.txt": {
+      "sha256": "84e87c520d02a262f7aee81c8cddc513eb257f974d47f1de59d8e274fdf6c577",
+      "bytes": 142272
+    },
+    "guided/extract_flash.py": {
+      "sha256": "28608ddeab7d71584abd32ce910b66621d8ba9cc49d2bb44eb1ead3922e509a0",
+      "bytes": 5159
+    },
+    "guided/flash_anchor_validation.json": {
+      "sha256": "f64f382c707c3193cc44f66b3e74f1b1ee1a456f7c426763d8964fdfdf6ed84f",
+      "bytes": 9563
+    },
+    "guided/flash_islands.py": {
+      "sha256": "26f348973b4edeb761f6a25f7023f6c3ea22660f61297a4a58c3d6cc49991588",
+      "bytes": 14588
+    },
+    "guided/kinetic_patch.py": {
+      "sha256": "4b01a091e35c9b65ad08240bf6596e1c486ee924c0230cd3e1d098385c2e1124",
+      "bytes": 12276
+    },
+    "guided/operator_gpu_validation.json": {
+      "sha256": "0378a94e4a404a776595b77ccf1ba2c250bcf2d38bf55070dc8b930c4490e9fa",
+      "bytes": 1317
+    },
+    "guided/operator_transfer_validation.json": {
+      "sha256": "091da359eb3d1852cba60e47d6391bef7e30aba9f8dcb859a0facae553e224b7",
+      "bytes": 1355
+    },
+    "guided/prepare_patch.py": {
+      "sha256": "0be359a997ac75af4d376f96f18901ed815e2d1b07e2c48336233f4a35b4e20d",
+      "bytes": 6968
+    }
+  },
+  "missing_outputs": [],
+  "input_mutations": [],
+  "output_findings": [
+    {
+      "path": "guided/flash_anchor_validation.json",
+      "kind": "eligibility_annotation",
+      "detail": "Output declares non-evidence. Resolve this annotation against the host-recorded stage and actual limitations during independent review; do not rerun a solver merely to remove metadata."
+    }
+  ],
+  "scientific_status": "unreviewed",
+  "finished_at": 1791444789.931831
+}

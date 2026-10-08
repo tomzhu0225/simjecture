@@ -92,7 +92,11 @@ def wait_for_provider(supervisor, error):
     supervisor.save()
     started = time.monotonic()
     try:
-        while time.time() < state["provider_next_retry_at"] and not supervisor.boundary():
+        while (
+            time.time() < state["provider_next_retry_at"]
+            and not supervisor.boundary()
+            and not getattr(supervisor, "finalization_due", lambda: False)()
+        ):
             time.sleep(min(0.25, max(0, state["provider_next_retry_at"] - time.time())))
     finally:
         state["provider_wait_seconds"] = (

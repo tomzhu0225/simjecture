@@ -1,0 +1,13 @@
+{
+  "id": "director_2cc26d6f2b89e4ba851fe82f",
+  "created_at": 1791434962.3248494,
+  "packet_sha256": "1acc280513221c0d9ada53aba780f7131069dc5d288d864e5839966767d01a9b",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "No new evidence or operator steering changes the previous decision, and the earlier replan was acknowledged. The active 512\u00b2 FLASH refinement addresses the recorded source-resolution blocker. It has consumed about 738 seconds against a 1,200-second timeout; missing timestep telemetry prevents a reliable completion forecast, but does not justify stopping it. The completed GPU pilot already supplies sufficient timing information. At its mapping and measured throughput, the candidate [0.3,0.8] inverse-reference-ion-cyclotron-frequency trajectory would require about 3,043 steps and 430 seconds of evolution, before initialization, diagnostics and controls. This supports an affordable next end-to-end test within the remaining 6,149 seconds, conditional on recalculation for the refined transfer. Scientific feasibility remains limited by source qualification, relaxation, boundary sensitivity and numerical controls. No pressure-closure conclusion is accepted.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "feasible",
+  "stop_experiments": [],
+  "next_action": "Keep exp_b3aeffc4296462890906d872 running within its existing timeout. Prepare the complete-window exploratory kinetic submission now. When refinement finishes, compare the measured source sheet profile, document the selected mapping and width/di, and recalculate steps, particle count, runtime and storage. Launch an affordable trajectory through the candidate relaxation interval and at least a 0.5 inverse-reference-ion-cyclotron-frequency observation window, retaining explicit EM CFL and plasma/gyro resolution. Use diagnostic cadence sufficient for time-and-area averaging, informed by the measured diagnostic cost. Follow with a larger-patch control entirely inside the supplied source domain, preserving the physical measurement region and cell scale; distinguish field-boundary sensitivity from particle transit. If refinement times out, inspect preserved progress and diagnose timestep or rank cost before relaunching. Prioritize full-window feasibility over further startup diagnostics. Before decisive evidence, freeze the required measurement and uncertainty rules and obtain separate methods review of qualification and controls."
+}

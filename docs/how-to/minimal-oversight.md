@@ -162,8 +162,7 @@ natural-language rules and scientific acceptance still require independent revie
 
 ## Research director: stop and replan
 
-The director is available in the **0.5.4rc2 preview**; stable 0.5.3 keeps its earlier
-progress oversight.
+Earlier studies retain their saved progress-oversight policy when upgraded.
 
 New minimal studies enable a research director by default. The launch settings in
 the workspace expose the switch, reviewer/director model and effort; CLI launches
@@ -197,6 +196,14 @@ Failed control calls retain the valid decision and their individual errors, so
 other requested stops and worker replanning can proceed. Available partial data
 are retained; the host does not claim a confirmed stop until it is observed.
 The usual independent methods and claim reviews remain in force.
+
+The director also sees whether the worker is waiting for experiments. It can use
+`continue` with `wake_worker=true` to resume the worker for a concrete parallel
+task, such as submitting completed qualification for review, while leaving the
+simulations running. A `next_action` sentence alone does not wake a parked worker.
+This adds no replan-acknowledgement gate and grants no scientific approval. The
+decision card in **Evidence & review** shows when a worker wake-up was requested.
+Ordinary waits still avoid unnecessary provider turns.
 
 The worker reads `lab.director_status()` and records its response:
 
@@ -232,3 +239,44 @@ not scientific evidence. Receipt-backed `lab.progress` remains the recorded
 metric interface; neither kind of target changes scientific acceptance.
 SSH monitoring requires a prepared worker advertising that feature. Older frozen
 workers remain usable without a monitor; prepare a new worker/study to add monitoring.
+
+## Protected time for a final report
+
+New minimal studies launched from the CLI or GUI reserve the last quarter of the
+wall budget for reporting, with a 10-minute maximum and a 2-minute minimum
+(capped at half of very short budgets). A 30-minute continuation therefore has
+22.5 minutes for numerical work and 7.5 minutes for finishing. Existing studies
+keep their saved policy; a continuation receives a new policy and deadline.
+
+The host bounds experiment execution and agent turns at the numerical cutoff.
+It then wakes the worker to update `research/RESULTS.md`, with findings, figures,
+provenance and limitations. Bounded exploratory postprocessing remains available
+through `lab.analyze` during the first 40% of the reserve. Native provider tools
+remain available; the cutoff controls registered experiments, not every possible
+command a provider can execute.
+
+A separate reviewer assesses the frozen report. A useful report may be accepted
+while the hypothesis remains unresolved. This assessment never promotes exploratory
+results, imports parent approvals or approves a scientific claim. Normal claim
+review remains separate. If needed, the host allows one report revision and review
+within the original deadline. Provider failure or an unfinished review leaves an
+explicitly unreviewed report; the host does not infer a scientific answer.
+
+**Evidence & review → Report & finalization** shows the numerical cutoff, finishing
+phase, report assessment and frozen report link. `lab.status()` and
+`research_report.json` expose the same information. Editing the narrative after
+assessment marks it as changed since review. Both the original study and its
+continuation remain independently inspectable.
+
+Reports open with whether a credible counterexample was found, then distinguish
+**falsified**, **supported within the tested scope**, and **unresolved**. The absence
+of a counterexample alone does not establish support. An unresolved report must
+explain the specific obstacle to judgment and the next discriminating test.
+Report review and the independent claim verdict are shown separately: finishing
+the document cannot silently turn an exploratory result into accepted evidence.
+
+Admitted diagnostic jobs survive the numerical cutoff until their own drafting
+deadline. The host waits for their receipts and resumes the writer before freezing
+the report. Unused drafting time becomes review time; a report-review transport
+failure can receive one retry within the original study deadline. It never grants
+an extra scientific run or extends the operator's wall budget.

@@ -1,0 +1,84 @@
+{
+  "id": "exp_8af27e3cd54b28150684158d",
+  "status": "succeeded",
+  "operator_guidance_ids": [],
+  "created_at": 1791437855.2146897,
+  "timeout": 600,
+  "workspace_limit_bytes": 4099842892,
+  "binding": {
+    "source": "qualify.py",
+    "args": [],
+    "inputs": {
+      "qualify.py": "a3b6ca7491294b1ac8caabb33c265a0728db11a2f1e809cc28c108f082ee8150",
+      "cfl04.json": "9602c3e8154443659e57d0ac672a3044635d9ee9fb23c8c7acac2b002cbe5c00",
+      "cfl08.json": "7eb3d1da0176c3640f86ec01d5741f18dbf373f492c7034bbd40814842332528"
+    },
+    "capability": null,
+    "runtime_sha256": null
+  },
+  "outputs": [
+    "qualification.json"
+  ],
+  "commitment": null,
+  "key": null,
+  "stage": "exploration",
+  "method": null,
+  "review_documents": null,
+  "parent_experiment": "exp_22b4b0e7c2fcdc0417ce7387",
+  "purpose": "diagnostic",
+  "plan": null,
+  "pid": 343289,
+  "worker_identity": {
+    "pid": 343289,
+    "starttime": "1925008",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture/.venv/bin/python3",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/island-sol-medium-study",
+      "--execute",
+      "exp_8af27e3cd54b28150684158d"
+    ],
+    "launched_at": "2026-10-08T05:37:35.406027+00:00",
+    "run_directory": null
+  },
+  "started_at": 1791437855.4061751,
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": 0,
+    "stdout": "{\"parents\": [\"exp_450f204fb0aa5b05e30c9f0c\", \"exp_22b4b0e7c2fcdc0417ce7387\"], \"rates\": [0.049621048445179096, 0.049532317415521825], \"relative_rate_difference\": 0.0017881732135366368, \"crossing_time_changes\": {\"flux_low_crossing_time\": 0.00010766122730399008, \"flux_high_crossing_time\": 0.0015517068983641469}, \"conservation\": [{\"mass_relative_drift\": 1.0181493426131283e-09, \"energy_relative_drift\": 8.066925469174535e-06, \"floor_hits_sampled\": 0, \"floor_correction_budget\": null, \"floor_correction_budget_reason\": \"Solver does not output integrated floor/source corrections; sampled states and total budgets constrain but cannot exclude between-output corrections.\"}, {\"mass_relative_drift\": 8.194860345867028e-10, \"energy_relative_drift\": 1.0476360755573566e-05, \"floor_hits_sampled\": 0, \"floor_correction_budget\": null, \"floor_correction_budget_reason\": \"Solver does not output integrated floor/source corrections; sampled states and total budgets constrain but cannot exclude between-output corrections.\"}], \"windows\": [{\"min_sheet_fwhm_cells\": 8, \"max_secondary_extrema\": 0, \"sample_count\": 34}, {\"min_sheet_fwhm_cells\": 8, \"max_secondary_extrema\": 0, \"sample_count\": 34}], \"checks\": [{\"completed\": true, \"representation\": true, \"physics_controls\": true, \"boundaries\": true, \"diagnostics\": true, \"numerical_regime\": true, \"flux_window_reached\": true}, {\"completed\": true, \"representation\": true, \"physics_controls\": true, \"boundaries\": true, \"diagnostics\": true, \"numerical_regime\": true, \"flux_window_reached\": true}], \"costs\": [189.79251207200286, 102.13496227799988]}",
+    "stderr": "",
+    "timed_out": false,
+    "cancelled": false,
+    "workspace_exceeded": false,
+    "stdout_truncated": false,
+    "stderr_truncated": false,
+    "heartbeat_count": 0,
+    "wall_seconds": 0.053517165997618577,
+    "workspace_bytes": 113239
+  },
+  "artifacts": {
+    "cfl04.json": {
+      "sha256": "9602c3e8154443659e57d0ac672a3044635d9ee9fb23c8c7acac2b002cbe5c00",
+      "bytes": 55303
+    },
+    "cfl08.json": {
+      "sha256": "7eb3d1da0176c3640f86ec01d5741f18dbf373f492c7034bbd40814842332528",
+      "bytes": 55280
+    },
+    "qualification.json": {
+      "sha256": "4cf124aff47283f9526f26442f3e2cdc1dd26cd0fdf6712a18148ab014d75cd4",
+      "bytes": 1894
+    },
+    "qualify.py": {
+      "sha256": "a3b6ca7491294b1ac8caabb33c265a0728db11a2f1e809cc28c108f082ee8150",
+      "bytes": 762
+    }
+  },
+  "missing_outputs": [],
+  "input_mutations": [],
+  "output_findings": [],
+  "scientific_status": "unreviewed",
+  "finished_at": 1791437855.4834542
+}

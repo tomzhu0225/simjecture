@@ -1,0 +1,94 @@
+{
+  "id": "exp_868c1e8f20b754137bfd0680",
+  "status": "succeeded",
+  "operator_guidance_ids": [],
+  "created_at": 1791440627.8855193,
+  "timeout": 439.5499198436737,
+  "workspace_limit_bytes": 3855056870,
+  "binding": {
+    "source": "loader_equivalence.py",
+    "args": [],
+    "inputs": {
+      "loader_equivalence.py": "f605a92de57029ce91fe568efb67b4f839af55074bd67f749edd30fce401b2a3",
+      "kinetic.py": "8ba8f3a8565a41fc72623d95cb1eb3a793cfbc9543d4dc10cd17825de800641b",
+      "kinetic_before_chunks.py": "c63038d1cbb87a787e52f00483d459b4bb5f16d5bf7b93da68584c656761aa05",
+      "fine_patch.npz": "c7c6d6d1c027e421be20942ffa07d6c415479fab6567a2705f6f5b0435697402",
+      "fine_patch.json": "1eda87349b19795cb5b1f86b72e601caf734cd85c43718619e03ffd30cfdce69"
+    },
+    "capability": null,
+    "runtime_sha256": null
+  },
+  "outputs": [
+    "equivalence.json"
+  ],
+  "commitment": null,
+  "key": "chunk-loader-equivalence",
+  "stage": "exploration",
+  "method": null,
+  "review_documents": null,
+  "parent_experiment": "exp_ba37bf1a0947ae8cb2591db0",
+  "purpose": "diagnostic",
+  "plan": null,
+  "pid": 421379,
+  "worker_identity": {
+    "pid": 421379,
+    "starttime": "2202275",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture/.venv/bin/python3",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/coupled-study",
+      "--execute",
+      "exp_868c1e8f20b754137bfd0680"
+    ],
+    "launched_at": "2026-10-08T06:23:48.040373+00:00",
+    "run_directory": null
+  },
+  "started_at": 1791440628.0404844,
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "",
+    "timed_out": false,
+    "cancelled": false,
+    "workspace_exceeded": false,
+    "stdout_truncated": false,
+    "stderr_truncated": false,
+    "heartbeat_count": 0,
+    "wall_seconds": 0.7577329489977274,
+    "workspace_bytes": 25379030
+  },
+  "artifacts": {
+    "equivalence.json": {
+      "sha256": "372c7c7eb59eaf413d2a20115d993d94317242a1b0f0541c20fe9ac3cfb3465e",
+      "bytes": 2970
+    },
+    "fine_patch.json": {
+      "sha256": "1eda87349b19795cb5b1f86b72e601caf734cd85c43718619e03ffd30cfdce69",
+      "bytes": 1764
+    },
+    "fine_patch.npz": {
+      "sha256": "c7c6d6d1c027e421be20942ffa07d6c415479fab6567a2705f6f5b0435697402",
+      "bytes": 25335424
+    },
+    "kinetic.py": {
+      "sha256": "8ba8f3a8565a41fc72623d95cb1eb3a793cfbc9543d4dc10cd17825de800641b",
+      "bytes": 18473
+    },
+    "kinetic_before_chunks.py": {
+      "sha256": "c63038d1cbb87a787e52f00483d459b4bb5f16d5bf7b93da68584c656761aa05",
+      "bytes": 18594
+    },
+    "loader_equivalence.py": {
+      "sha256": "f605a92de57029ce91fe568efb67b4f839af55074bd67f749edd30fce401b2a3",
+      "bytes": 1805
+    }
+  },
+  "missing_outputs": [],
+  "input_mutations": [],
+  "output_findings": [],
+  "scientific_status": "unreviewed",
+  "finished_at": 1791440629.8921924
+}

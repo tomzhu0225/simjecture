@@ -1,0 +1,21 @@
+{
+  "id": "review_9e9e9a5528a825b402183851",
+  "status": "resolved",
+  "created_at": 1791429539.4873295,
+  "experiments": [
+    "exp_70ff32e6d28ef9ccd7312295"
+  ],
+  "conclusion": "The original finite-grid implication is falsified. In the requested circular case e=0, N=256 steps per 2\u03c0 period over 20 periods, the recorded maximum relative energy error is 9.06e-8 (<0.001), while maximum position error against the same-time Kepler solution is 0.02528 a (>0.01a). The implementation explicitly applies half-kick, full-drift, half-kick. The exact solution uses E-e sin(E)=t; the reported residual, initial position mismatch, and period consistency are at floating-point scale. This is a direct counterexample within the immutable test grid, not an extrapolation. The separate DOP853 check in e=0.6,N=128 agrees with the analytic reference to 8.2e-10 a, but does not independently reproduce the circular counterexample. The full requested grid and trajectories/figures are retained in the experiment.",
+  "claim": "root",
+  "disposition": "falsified",
+  "verdict": {
+    "claim_id": "root",
+    "decision": "approved",
+    "disposition": "falsified",
+    "rationale": "Experiment exp_70ff32e6d28ef9ccd7312295 provides a controlled counterexample within the specified domain: e=0, N=256, starting at periapsis and sampling every step through twenty periods. Maximum relative energy error is 9.06373915920966e-8, below 0.001, while maximum same-time position error is 0.02528217910087521a, above 0.01a. I inspected the recorded source, valid JSON, all twelve retained trajectory cases, and figure; their hashes match the record. The source implements the correct inverse-square acceleration and half-kick/full-drift/half-kick update. Velocities reconstructed from retained positions reproduce stored energy errors within 1.7e-14 across the grid; update residuals and angular-momentum drift are also at floating-point scale. For the decisive circular case, the retained reference equals (cos(t), sin(t)) exactly, independently establishing the same-time reference without relying on the eccentric-orbit solver. Initial conditions, sampling, and duration are correct. Actual twenty-period evolution supplies numerical commissioning: circular position errors decrease by approximately four under timestep halving, consistent with second-order convergence, while energy remains bounded. The complete finite-grid challenge yields five counterexamples among six cases satisfying the energy antecedent; cases failing that antecedent are not counterexamples. The failure reflects accumulated phase error despite small energy error. The DOP853 comparison covers a different case and is unnecessary for this circular counterexample. The figure omits the decisive circular case, but its complete retained trajectory establishes the result. No repair is required to accept this original claim's falsification.",
+    "evidence_gaps": [],
+    "next_test": null
+  },
+  "packet_sha256": "32646d6c99e1bc6d6773247c52d7ea1a25c028049aaa9ec8c7964dc8309bc40c",
+  "resolved_at": 1791429591.6824176
+}

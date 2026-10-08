@@ -1,0 +1,59 @@
+{
+  "scope": "Post-run operator diagnosis, separate from the original agent record. No new simulation or accepted scaling verdict.",
+  "analytic_control": {
+    "potential": "A_z=x*(y^2+0.005)",
+    "grid": [
+      96,
+      96
+    ],
+    "original_relative_mismatch": 1.0360457586875635,
+    "coordinate_consistent_relative_mismatch": 1.0600628943607376e-13,
+    "independent_reference": "Exact average of the two central analytic A_z rows, with a common gauge."
+  },
+  "source_sha256": {
+    "postrun_coordinate_check.py": "2e17c99a1b09979950f298e63da38fa45e81b8740672be2735eb301cd14bca0d",
+    "coordinate_paths.py": "e36e44b5b41305ec4a7012b3cedc4012c9164e0aee07ce0ae3077d958d672989"
+  },
+  "recorded_cases": [
+    {
+      "experiment": "exp_c82be7437f3086601d26cdc7",
+      "nx": 96,
+      "original_max_relative_mismatch": 0.24863599721718233,
+      "coordinate_consistent_max_relative_mismatch": 1.9836613298989047e-07,
+      "window_states": 9,
+      "archive_sha256": "20ddaa4165866de9250dab6fb77102687d893d42f17013c3ff70520eda7e02c7"
+    },
+    {
+      "experiment": "exp_9782e73d183bd77e86261640",
+      "nx": 120,
+      "original_max_relative_mismatch": 0.21757458662753548,
+      "coordinate_consistent_max_relative_mismatch": 1.3749920498806343e-07,
+      "window_states": 9,
+      "archive_sha256": "1afb5214e0c81e49e8e9179676fd31ab48de0e52570abdff08769a9b3cdf61f3"
+    },
+    {
+      "experiment": "exp_9e3db9fe2b479941a809ebd9",
+      "nx": 128,
+      "original_max_relative_mismatch": 0.20255612378575164,
+      "coordinate_consistent_max_relative_mismatch": 1.8551024913783826e-07,
+      "window_states": 16,
+      "archive_sha256": "0538008e7647dd52fe98e7e4006824ab8dd6b5f37c84a28496dff24daefe1f5d"
+    },
+    {
+      "experiment": "exp_e7019f81e0a9d3630488f26e",
+      "nx": 160,
+      "original_max_relative_mismatch": 0.1773812772755523,
+      "coordinate_consistent_max_relative_mismatch": 1.495942485043062e-07,
+      "window_states": 16,
+      "archive_sha256": "59f245887cab4d79a6c14fe7bcc84a6a86e552f0311f3255a8921d7b791b9d7d"
+    },
+    {
+      "experiment": "exp_bed50fd68869aa9e6441647b",
+      "nx": 256,
+      "original_max_relative_mismatch": 0.1274343314096816,
+      "coordinate_consistent_max_relative_mismatch": 1.3433759019124923e-07,
+      "window_states": 16,
+      "archive_sha256": "bc4d540b838abcbeb24a7be1321f0c903de99f871ac6011e60096f0d4f8c1f15"
+    }
+  ]
+}

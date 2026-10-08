@@ -1,0 +1,150 @@
+{
+  "status": "prospective_not_yet_run",
+  "capability": "flash-island-coalescence-resistive-mhd-4.8",
+  "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80",
+  "flash_executable_sha256": "40cf57b987e85f9befc01abae4e89f27c230d1eb42391ba3abea8655a0f7024b",
+  "mpi_ranks": 4,
+  "iprocs": 2,
+  "jprocs": 2,
+  "plot_interval": 0.05,
+  "flux_window": [
+    0.01,
+    0.05
+  ],
+  "eta_values": [
+    0.004,
+    0.002,
+    0.001,
+    0.0005,
+    0.00025
+  ],
+  "seta_values": [
+    250,
+    500,
+    1000,
+    2000,
+    4000
+  ],
+  "base_grid": [
+    96,
+    128,
+    128,
+    192,
+    256
+  ],
+  "refined_seta_values": [
+    250,
+    1000,
+    4000
+  ],
+  "refined_grid": [
+    120,
+    160,
+    320
+  ],
+  "tmax_by_seta": [
+    0.8,
+    1.0,
+    1.25,
+    1.75,
+    2.6
+  ],
+  "timeout_seconds": {
+    "base": [
+      600,
+      600,
+      600,
+      600,
+      600
+    ],
+    "refined": [
+      600,
+      600,
+      1000
+    ]
+  },
+  "cost_estimate_seconds": {
+    "basis": "four-rank agent-driver 128^2 t=1.2 validation 22.58s and 256^2 t=1.2 pilot 173.37s; cubic-in-N, linear-in-t sensitivity estimate",
+    "base_family": 535,
+    "refined_family": 790,
+    "total": 1325,
+    "limitations": "Observed scaling was derived at eta=0.001 only; other eta may change timestep count and crossing time. Refinement is limited prospectively to S_eta=250, 1000, and 4000, the minimum three-point fit spanning the nominal interval; n=3 gives a wide confidence interval. Each refined mesh is 1.25x its matched base mesh and adds at least one cell across nominal delta_SP. Forecast excludes reviewer latency and analysis overhead; retain at least 180 seconds for independent review. Missing flux windows are censored. Current budget does not cover full predicted base+refinement matrix plus 180 s final review and review/analysis overhead. After production approval, run low/high base endpoints first, update cost from realized steps/window crossings, then continue distinct base cases only if analysis and review reserve remain; defer all refinement unless a fresh measured forecast fits."
+  },
+  "cases": [
+    {
+      "family": "base",
+      "eta": 0.004,
+      "seta": 250,
+      "grid": 96,
+      "tmax": 0.8,
+      "timeout": 600,
+      "key": "base-s250"
+    },
+    {
+      "family": "base",
+      "eta": 0.00025,
+      "seta": 4000,
+      "grid": 256,
+      "tmax": 2.6,
+      "timeout": 600,
+      "key": "base-s4000"
+    },
+    {
+      "family": "base",
+      "eta": 0.002,
+      "seta": 500,
+      "grid": 128,
+      "tmax": 1.0,
+      "timeout": 600,
+      "key": "base-s500"
+    },
+    {
+      "family": "base",
+      "eta": 0.001,
+      "seta": 1000,
+      "grid": 128,
+      "tmax": 1.25,
+      "timeout": 600,
+      "key": "base-s1000"
+    },
+    {
+      "family": "base",
+      "eta": 0.0005,
+      "seta": 2000,
+      "grid": 192,
+      "tmax": 1.75,
+      "timeout": 600,
+      "key": "base-s2000"
+    },
+    {
+      "family": "refined",
+      "eta": 0.004,
+      "seta": 250,
+      "grid": 120,
+      "tmax": 0.8,
+      "timeout": 600,
+      "key": "refined-s250"
+    },
+    {
+      "family": "refined",
+      "eta": 0.001,
+      "seta": 1000,
+      "grid": 160,
+      "tmax": 1.25,
+      "timeout": 600,
+      "key": "refined-s1000"
+    },
+    {
+      "family": "refined",
+      "eta": 0.00025,
+      "seta": 4000,
+      "grid": 320,
+      "tmax": 2.6,
+      "timeout": 1000,
+      "key": "refined-s4000"
+    }
+  ],
+  "resolution_policy": "initial sheet requires >=4 cells (N/alpha), nominal Sweet-Parker width requires >=4 cells, and measured central-current FWHM requires >=4 cells during the flux window; matched refinement uses 1.25x N and adds >=1 nominal-width cell (about 5 versus 4 at S_eta=1000/4000). S_eta=250 base uses N=96 to satisfy N/alpha>=4. Failures remain ineligible.",
+  "decision": "Require all four finite positive rates from Bx/By paths at 0.05 and decimated 0.10 cadence. Fit eligible families by OLS(log normalized R, log nominal S_eta), two-sided 95% Student-t intervals (n-2 df); enumerate all 2^n mixed per-case low/high rate-envelope combinations and envelope slopes/CIs. For branch assessment form each case's full asymmetric log-residual interval; departure requires its whole interval to lie beyond +/-ln(1.25), and robust branch falsification requires the same matched S_eta departure at both grids. Compare refinement only on identical matched S_eta points; persistence requires conservative Delta-p interval wholly inside +/-0.10. Disagreement is unresolved numerical sensitivity, not a physical falsifier. A band violation is decisive only when matched base and refined conservative intervals are both disjoint from [-0.60,-0.40] on the same side; overlap never rejects. Missing paths/windows and failed numerical, pre-plasmoid or resolution screens are explicit ineligibility/censoring. Finite samples do not establish a continuous-domain or universal claim. Physical falsification is blocked whenever matched spatial refinement is not meaningful; incompatible base/refined slopes are classified as unresolved numerical sensitivity before testing band or branch falsification.",
+  "planned_execution_policy": "No decisive run until production method approval. Given the current remaining budget, prioritize low and high base endpoints, then the remaining distinct-resistivity base points if affordable; hold matched 1.25x refinement. If matched refinement cannot be run, persistence stays unresolved."
+}

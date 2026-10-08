@@ -1,0 +1,21 @@
+{
+  "id": "director_d187e6bce34f75c5cb8dff54",
+  "created_at": 1791437443.8446867,
+  "packet_sha256": "81a8416db7db36b3327898b95dd47e735a309d8b6356a85a62202f533f83847a",
+  "control_actions": [
+    {
+      "experiment": "exp_eb0cf8a51978118487d20196",
+      "status": "running",
+      "cancellation_confirmed": false
+    }
+  ],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "replan",
+  "rationale": "The new evidence resolves useful implementation blockers: the repaired pilot records actual absorbed-particle energy and finite estimated Poynting outflow, and corrected cell-overlap analysis improves initial matching without changing the transferred physics. The worker has recorded a prospective measurement contract; independent kinetic qualification remains outstanding. Scientific feasibility is limited by the previously recorded resolution, relaxation, boundary and uncertainty requirements. These exploratory results do not establish the hypothesis. Budget feasibility has deteriorated relative to the worker's estimated combined 700\u20131,000 seconds. Updated operational telemetry places the fine-grid run at approximately 0.050 after 136 seconds, forecasting another 2,041 seconds against only about 1,064 seconds remaining before its timeout. The base particle-count control is progressing substantially faster. These mutable forecasts are uncertain, and shared GPU contention may contribute, but continuing both unchanged risks spending scarce time on an incomplete spatial control while leaving reviewed decisive evidence and other necessary controls uncollected.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "at_risk",
+  "stop_experiments": [
+    "exp_eb0cf8a51978118487d20196"
+  ],
+  "next_action": "Preserve the fine-grid run's partial diagnostics and let exp_3a4cd829f718a2211536f64c complete within its existing timeout. Require the worker to acknowledge this replan with a recorded replacement plan or reasoned challenge. Use the stopped run's timing information and completed accounting pilot to distinguish initialization, evolution, boundary-buffer and diagnostic costs; investigate shared GPU contention before relaunching concurrent controls. After the base control finishes, benchmark the required refinement alone over enough steps to measure sustained throughput and actual absorption accounting. Adjust GPU box layout, accounting-buffer handling or independently justified output cadence if needed, preserving cumulative loss accounting, the source, mapping, measurement region, full physical window and explicit stability limits. Commit a full-window refinement only when measured cost supports completion with time remaining for necessary qualification, fresh reviewed evidence and independent review. Compare the completed particle-count control using the same estimator and report its accounted energy residual. Submit the prospective contract and targeted qualification summaries to the separate methods reviewer now; this director decision does not qualify them. Do not extend an unaffordable configuration, shorten the hypothesis window or promote coarse exploratory trajectories to decisive evidence."
+}

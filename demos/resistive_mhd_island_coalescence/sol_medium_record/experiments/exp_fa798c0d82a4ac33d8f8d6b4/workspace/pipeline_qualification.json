@@ -1,0 +1,334 @@
+{
+  "parents": [
+    "exp_22b4b0e7c2fcdc0417ce7387",
+    "exp_45fced4d67b6d6b304622ac3"
+  ],
+  "valid_cases": [
+    {
+      "experiment": "exp_22b4b0e7c2fcdc0417ce7387",
+      "S": 1000.0,
+      "n": 256,
+      "rate": 0.049532317415521825,
+      "cadence_path_sensitivity": 0.0002044714270240374,
+      "stage": "exploration",
+      "unavailable_variants": [],
+      "crossing_bracket_rate_bounds": {
+        "crossing_time_bounds": [
+          [
+            0.2501969384325592,
+            0.2755288169263313
+          ],
+          [
+            1.0504346230159614,
+            1.075103551040627
+          ]
+        ],
+        "rate_bounds": [
+          0.04849033743775421,
+          0.0516191770479177
+        ],
+        "reason": null,
+        "decision_role": "Conservative cadence-only bracket diagnostic; not silently substituted for sensitivity envelope or used alone to reject exponent band"
+      },
+      "physical_eligible": true,
+      "convergence_status": "qualified_matched_pair",
+      "log_margin": 0.01,
+      "eligible": true,
+      "window": {
+        "min_sheet_fwhm_cells": 8,
+        "max_secondary_extrema": 0,
+        "sample_count": 34
+      },
+      "conservation": {
+        "mass_relative_drift": 8.194860345867028e-10,
+        "energy_relative_drift": 1.0476360755573566e-05,
+        "floor_hits_sampled": 0,
+        "floor_correction_budget": null,
+        "floor_correction_budget_reason": "Solver does not output integrated floor/source corrections; sampled states and total budgets constrain but cannot exclude between-output corrections."
+      }
+    },
+    {
+      "experiment": "exp_45fced4d67b6d6b304622ac3",
+      "S": 1000.0,
+      "n": 384,
+      "rate": 0.04964289881291125,
+      "cadence_path_sensitivity": 0.00015283058823630912,
+      "stage": "exploration",
+      "unavailable_variants": [],
+      "crossing_bracket_rate_bounds": {
+        "crossing_time_bounds": [
+          [
+            0.25038177243226084,
+            0.27539501721636883
+          ],
+          [
+            1.0500171731981849,
+            1.0752119827404132
+          ]
+        ],
+        "rate_bounds": [
+          0.048494828996450315,
+          0.05163807888931463
+        ],
+        "reason": null,
+        "decision_role": "Conservative cadence-only bracket diagnostic; not silently substituted for sensitivity envelope or used alone to reject exponent band"
+      },
+      "physical_eligible": true,
+      "convergence_status": "qualified_matched_pair",
+      "log_margin": 0.01,
+      "eligible": true,
+      "window": {
+        "min_sheet_fwhm_cells": 10,
+        "max_secondary_extrema": 0,
+        "sample_count": 34
+      },
+      "conservation": {
+        "mass_relative_drift": 6.354090587024075e-10,
+        "energy_relative_drift": 5.442509333430934e-06,
+        "floor_hits_sampled": 0,
+        "floor_correction_budget": null,
+        "floor_correction_budget_reason": "Solver does not output integrated floor/source corrections; sampled states and total budgets constrain but cannot exclude between-output corrections."
+      }
+    }
+  ],
+  "qualified_gap": {
+    "1000.0": 0.002230021721585299
+  },
+  "missing_refinement": [
+    {
+      "experiment": "exp_22b4b0e7c2fcdc0417ce7387",
+      "S": 1000.0,
+      "n": 256,
+      "rate": 0.049532317415521825,
+      "cadence_path_sensitivity": 0.0002044714270240374,
+      "stage": "exploration",
+      "unavailable_variants": [],
+      "crossing_bracket_rate_bounds": {
+        "crossing_time_bounds": [
+          [
+            0.2501969384325592,
+            0.2755288169263313
+          ],
+          [
+            1.0504346230159614,
+            1.075103551040627
+          ]
+        ],
+        "rate_bounds": [
+          0.04849033743775421,
+          0.0516191770479177
+        ],
+        "reason": null,
+        "decision_role": "Conservative cadence-only bracket diagnostic; not silently substituted for sensitivity envelope or used alone to reject exponent band"
+      },
+      "physical_eligible": true,
+      "convergence_status": "unresolved_missing_or_ineligible_refinement",
+      "log_margin": null,
+      "eligible": false,
+      "window": {
+        "min_sheet_fwhm_cells": 8,
+        "max_secondary_extrema": 0,
+        "sample_count": 34
+      },
+      "conservation": {
+        "mass_relative_drift": 8.194860345867028e-10,
+        "energy_relative_drift": 1.0476360755573566e-05,
+        "floor_hits_sampled": 0,
+        "floor_correction_budget": null,
+        "floor_correction_budget_reason": "Solver does not output integrated floor/source corrections; sampled states and total budgets constrain but cannot exclude between-output corrections."
+      }
+    }
+  ],
+  "ineligible_refinement": [
+    {
+      "experiment": "exp_22b4b0e7c2fcdc0417ce7387",
+      "S": 1000.0,
+      "n": 256,
+      "rate": 0.049532317415521825,
+      "cadence_path_sensitivity": 0.0002044714270240374,
+      "stage": "exploration",
+      "unavailable_variants": [],
+      "crossing_bracket_rate_bounds": {
+        "crossing_time_bounds": [
+          [
+            0.2501969384325592,
+            0.2755288169263313
+          ],
+          [
+            1.0504346230159614,
+            1.075103551040627
+          ]
+        ],
+        "rate_bounds": [
+          0.04849033743775421,
+          0.0516191770479177
+        ],
+        "reason": null,
+        "decision_role": "Conservative cadence-only bracket diagnostic; not silently substituted for sensitivity envelope or used alone to reject exponent band"
+      },
+      "physical_eligible": true,
+      "convergence_status": "unresolved_missing_or_ineligible_refinement",
+      "log_margin": null,
+      "eligible": false,
+      "window": {
+        "min_sheet_fwhm_cells": 8,
+        "max_secondary_extrema": 0,
+        "sample_count": 34
+      },
+      "conservation": {
+        "mass_relative_drift": 8.194860345867028e-10,
+        "energy_relative_drift": 1.0476360755573566e-05,
+        "floor_hits_sampled": 0,
+        "floor_correction_budget": null,
+        "floor_correction_budget_reason": "Solver does not output integrated floor/source corrections; sampled states and total budgets constrain but cannot exclude between-output corrections."
+      }
+    },
+    {
+      "experiment": "exp_45fced4d67b6d6b304622ac3",
+      "S": 1000.0,
+      "n": 384,
+      "rate": 0.04964289881291125,
+      "cadence_path_sensitivity": 0.00015283058823630912,
+      "stage": "exploration",
+      "unavailable_variants": [],
+      "crossing_bracket_rate_bounds": {
+        "crossing_time_bounds": [
+          [
+            0.25038177243226084,
+            0.27539501721636883
+          ],
+          [
+            1.0500171731981849,
+            1.0752119827404132
+          ]
+        ],
+        "rate_bounds": [
+          0.048494828996450315,
+          0.05163807888931463
+        ],
+        "reason": null,
+        "decision_role": "Conservative cadence-only bracket diagnostic; not silently substituted for sensitivity envelope or used alone to reject exponent band"
+      },
+      "physical_eligible": false,
+      "convergence_status": "unresolved_missing_or_ineligible_refinement",
+      "log_margin": null,
+      "eligible": false,
+      "window": {
+        "min_sheet_fwhm_cells": 2,
+        "max_secondary_extrema": 0,
+        "sample_count": 34
+      },
+      "conservation": {
+        "mass_relative_drift": 6.354090587024075e-10,
+        "energy_relative_drift": 5.442509333430934e-06,
+        "floor_hits_sampled": 0,
+        "floor_correction_budget": null,
+        "floor_correction_budget_reason": "Solver does not output integrated floor/source corrections; sampled states and total budgets constrain but cannot exclude between-output corrections."
+      }
+    }
+  ],
+  "censored": [
+    {
+      "experiment": "exp_22b4b0e7c2fcdc0417ce7387",
+      "S": 1000.0,
+      "n": 256,
+      "rate": null,
+      "cadence_path_sensitivity": null,
+      "stage": "exploration",
+      "unavailable_variants": [
+        {
+          "path": "by",
+          "stride": 1,
+          "reason": "Does not reach both crossing thresholds"
+        },
+        {
+          "path": "by",
+          "stride": 2,
+          "reason": "Does not reach both crossing thresholds"
+        },
+        {
+          "path": "bx",
+          "stride": 1,
+          "reason": "Does not reach both crossing thresholds"
+        },
+        {
+          "path": "bx",
+          "stride": 2,
+          "reason": "Does not reach both crossing thresholds"
+        }
+      ],
+      "crossing_bracket_rate_bounds": {
+        "rate_bounds": null,
+        "reason": "Window not reached"
+      },
+      "physical_eligible": false,
+      "convergence_status": "unresolved_missing_or_ineligible_refinement",
+      "log_margin": null,
+      "eligible": false,
+      "window": {
+        "min_sheet_fwhm_cells": 8,
+        "max_secondary_extrema": 0,
+        "sample_count": 34
+      },
+      "conservation": {
+        "mass_relative_drift": 8.194860345867028e-10,
+        "energy_relative_drift": 1.0476360755573566e-05,
+        "floor_hits_sampled": 0,
+        "floor_correction_budget": null,
+        "floor_correction_budget_reason": "Solver does not output integrated floor/source corrections; sampled states and total budgets constrain but cannot exclude between-output corrections."
+      }
+    },
+    {
+      "experiment": "exp_45fced4d67b6d6b304622ac3",
+      "S": 1000.0,
+      "n": 384,
+      "rate": 0.04964289881291125,
+      "cadence_path_sensitivity": 0.00015283058823630912,
+      "stage": "exploration",
+      "unavailable_variants": [],
+      "crossing_bracket_rate_bounds": {
+        "crossing_time_bounds": [
+          [
+            0.25038177243226084,
+            0.27539501721636883
+          ],
+          [
+            1.0500171731981849,
+            1.0752119827404132
+          ]
+        ],
+        "rate_bounds": [
+          0.048494828996450315,
+          0.05163807888931463
+        ],
+        "reason": null,
+        "decision_role": "Conservative cadence-only bracket diagnostic; not silently substituted for sensitivity envelope or used alone to reject exponent band"
+      },
+      "physical_eligible": true,
+      "convergence_status": "unresolved_missing_or_ineligible_refinement",
+      "log_margin": null,
+      "eligible": false,
+      "window": {
+        "min_sheet_fwhm_cells": 10,
+        "max_secondary_extrema": 0,
+        "sample_count": 34
+      },
+      "conservation": {
+        "mass_relative_drift": 6.354090587024075e-10,
+        "energy_relative_drift": 5.442509333430934e-06,
+        "floor_hits_sampled": 0,
+        "floor_correction_budget": null,
+        "floor_correction_budget_reason": "Solver does not output integrated floor/source corrections; sampled states and total budgets constrain but cannot exclude between-output corrections."
+      }
+    }
+  ],
+  "checks": {
+    "matched_pair_qualified": true,
+    "missing_refinement_unresolved": true,
+    "ineligible_refinement_unresolved": true,
+    "missing_window_and_variants_explicit": true,
+    "brackets_enclose_interpolated_rate": true
+  },
+  "figure_stage": "exploration",
+  "scope": "Implementation qualification with actual recorded commissioning fields; synthetic modifications test failure paths only, not physical evidence."
+}

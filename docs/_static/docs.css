@@ -1,0 +1,49 @@
+/* The application and documentation share the approved violet brand assets. */
+body { --content-width: 52rem; --sidebar-width: 17rem; }
+.content { padding-bottom: 3rem; }
+.sidebar-brand { padding: 1.65rem 1.35rem .9rem; }
+.sidebar-logo { max-width: 190px; width: 100%; }
+.project-links { display: grid; gap: .55rem; padding: .4rem 1.4rem 1.25rem; border-bottom: 1px solid var(--color-background-border); margin-bottom: .8rem; }
+.project-links a { display: flex; justify-content: space-between; font-size: .85rem; text-decoration: none; }
+.docs-version { color: var(--color-foreground-secondary); font-size: .72rem; letter-spacing: .035em; margin-bottom: .35rem; }
+.sidebar-tree .caption { font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; margin-top: 1.6rem; }
+.sidebar-tree a { padding-top: .45rem; padding-bottom: .45rem; }
+.sidebar-tree .current > .reference { border-radius: .4rem; }
+h1 { font-size: clamp(2rem, 4vw, 2.8rem); line-height: 1.12; letter-spacing: -.035em; font-weight: 720; }
+h2 { letter-spacing: -.02em; margin-top: 2.6rem; padding-top: .35rem; }
+p, li { line-height: 1.72; }
+article p { max-width: 76ch; }
+article img { border-radius: .65rem; }
+.highlight { border-radius: .6rem; }
+.admonition { border-radius: .5rem; box-shadow: none; }
+.table-wrapper { border-radius: .5rem; }
+.sj-eyebrow { color: var(--color-brand-content); font-size: .74rem; font-weight: 700; letter-spacing: .11em; text-transform: uppercase; margin: .75rem 0; }
+.sj-lead { font-size: 1.16rem; color: var(--color-foreground-secondary); max-width: 64ch; line-height: 1.7; }
+.sj-actions { display: flex; flex-wrap: wrap; gap: .7rem; margin: 1.5rem 0 2.2rem; }
+.sj-button { display: inline-flex; align-items: center; padding: .72rem 1rem; border-radius: .55rem; border: 1px solid var(--color-background-border); font-weight: 650; text-decoration: none !important; font-size: .9rem; }
+.sj-button.primary { background: #6658d9; border-color: #6658d9; color: white; }
+.sj-button.primary:hover { background: #5546c7; color: white; }
+.sj-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin: 1.6rem 0 2.4rem; }
+.sj-card { display: block; padding: 1.35rem; border: 1px solid var(--color-background-border); background: var(--color-background-secondary); border-radius: .7rem; text-decoration: none !important; transition: border-color .15s ease; }
+.sj-card:hover { border-color: var(--color-brand-primary); }
+.sj-card strong { display: block; color: var(--color-foreground-primary); font-size: 1.02rem; margin: .45rem 0 .6rem; }
+.sj-card p { margin: 0; font-size: .9rem; color: var(--color-foreground-secondary); line-height: 1.6; }
+.sj-card .sj-label { font-size: .68rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--color-brand-content); }
+.sj-record { border: 1px solid var(--color-background-border); border-radius: .75rem; padding: 1.4rem 1.5rem; margin: 1.75rem 0; }
+.sj-record p:last-child { margin-bottom: 0; }
+.sj-loop { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; counter-reset: stage; margin: 1.5rem 0; padding: 0; list-style: none; }
+.sj-loop li { counter-increment: stage; padding: 1rem; border: 1px solid var(--color-background-border); border-radius: .6rem; line-height: 1.5; }
+.sj-loop li::before { content: "0" counter(stage); display: block; color: var(--color-brand-content); font-size: .72rem; font-weight: 700; letter-spacing: .08em; margin-bottom: .45rem; }
+.sj-loop strong { display: block; margin-bottom: .35rem; }
+.sj-loop span { color: var(--color-foreground-secondary); font-size: .87rem; }
+.sj-loop-note { padding: .9rem 1.1rem; border-left: 3px solid var(--color-brand-primary); background: var(--color-background-secondary); font-size: .9rem; }
+:is(.sj-card, .sj-button, .project-links a):focus-visible { outline: 3px solid var(--color-brand-primary); outline-offset: 4px; }
+@media (max-width: 650px) {
+  .sj-cards { grid-template-columns: 1fr; }
+  .sj-loop { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sj-actions { gap: .55rem; }
+  .sj-button { padding: .65rem .8rem; }
+  .sj-record { padding: 1rem; }
+}
+@media (prefers-reduced-motion: reduce) { .sj-card { transition: none; } }
+@media print { .sj-actions, .project-links { display: none; } }

@@ -108,6 +108,7 @@ class ResearchService(
         execution_backend=None,
         completion_policy=None,
         execution_pool=None,
+        report_reserve_seconds=None,
     ):
         root = Path(root).resolve()
         root.mkdir(parents=True, exist_ok=True)
@@ -129,6 +130,12 @@ class ResearchService(
                 "execution_pool"
             ):
                 raise ValueError("Execution pool is immutable within a study")
+            if (
+                report_reserve_seconds is not None
+                and report_reserve_seconds
+                != existing.manifest.get("finalization_policy", {}).get("reserve_seconds")
+            ):
+                raise ValueError("Report reserve is immutable within a study")
             return existing
         execution_backend = execution_backend or "bubblewrap"
         completion_policy = completion_policy or "repair"
@@ -142,6 +149,11 @@ class ResearchService(
             )
         if not hypothesis.strip() or not _positive_finite_seconds(wall_seconds):
             raise ValueError("Require a hypothesis and positive finite deadline")
+        if report_reserve_seconds is not None and (
+            not _positive_finite_seconds(report_reserve_seconds)
+            or report_reserve_seconds >= wall_seconds
+        ):
+            raise ValueError("Report reserve must be positive and smaller than the wall budget")
         for name in ["research", "experiments", "commitments", "reviews"]:
             (root / name).mkdir(exist_ok=True)
         registry = (
@@ -168,6 +180,16 @@ class ResearchService(
                 hypothesis=hypothesis,
                 created_at=now,
                 deadline=now + wall_seconds,
+                **(
+                    {
+                        "finalization_policy": {
+                            "reserve_seconds": report_reserve_seconds,
+                            "compute_deadline": now + wall_seconds - report_reserve_seconds,
+                        }
+                    }
+                    if report_reserve_seconds is not None
+                    else {}
+                ),
                 capabilities=str(Path(capabilities).resolve()) if capabilities else None,
                 capability_hashes=registry.hashes | remote_capabilities,
                 max_experiment_bytes=4 * 1024**3,
@@ -383,6 +405,15 @@ class ResearchService(
             path = self.root / "experiments" / (identifier + ".json")
             if path.exists():
                 return self._read("experiments", identifier)
+            from .research_finalization import execution_deadline
+
+            cutoff = execution_deadline(
+                self.manifest, diagnostic=stage == "exploration" and purpose == "diagnostic"
+            )
+            if time.time() >= cutoff:
+                raise ValueError(
+                    "Protected report time: experiment admission is closed; finish RESULTS.md"
+                )
             self.check_director(stage, purpose, timeout)
             if time.time() >= self.manifest["deadline"]:
                 raise ValueError("Study deadline exhausted")
@@ -414,7 +445,7 @@ class ResearchService(
                     resources,
                     reservation=job_identifier(self, {"id": identifier}),
                     receipt=path,
-                    deadline=self.manifest["deadline"],
+                    deadline=cutoff,
                     require_monitor=monitor is not None,
                 )
             workspace = self.root / "experiments" / identifier / "workspace"
@@ -432,7 +463,8 @@ class ResearchService(
                 status="queued",
                 operator_guidance_ids=[r["id"] for r in steering(self.root)],
                 created_at=time.time(),
-                timeout=min(timeout, self.manifest["deadline"] - time.time()),
+                timeout=min(timeout, cutoff - time.time()),
+                execution_deadline=cutoff,
                 workspace_limit_bytes=workspace_limit,
                 **identity,
                 **({"machine": selected_machine} if selected_machine else {}),
@@ -512,7 +544,10 @@ class ResearchService(
         try:
             from .experiment_executor import execute_frozen
 
-            timeout = min(record["timeout"], self.manifest["deadline"] - time.time())
+            timeout = min(
+                record["timeout"],
+                record.get("execution_deadline", self.manifest["deadline"]) - time.time(),
+            )
             if timeout <= 0:
                 raise ValueError("Study deadline exhausted before launch")
             record.update(
@@ -585,7 +620,27 @@ class ResearchService(
         return self.review_status(identifier)
 
     def review_status(self, identifier):
-        return self._read("reviews", identifier)
+        request = self._read("reviews", identifier)
+        if request["status"] == "queued":
+            request["blocked_by_claims"] = self.review_blockers(request)
+        return request
+
+    def review_blockers(self, request):
+        """Claims whose falsification must be accepted before reviewing repair support."""
+        claim = request.get("claim", "root")
+        if (
+            self.manifest["schema_version"] < 2
+            or claim == "root"
+            or request.get("disposition") != "supported"
+        ):
+            return []
+        failures = {
+            r["claim"]
+            for r in self._all("reviews")
+            if r.get("verdict", {}).get("decision") == "approved"
+            and r["verdict"]["disposition"] == "falsified"
+        }
+        return [a["id"] for a in self.lineage(claim)[:-1] if a["id"] not in failures]
 
     @staticmethod
     def review_body(request):
@@ -791,6 +846,9 @@ class ResearchService(
     def status(self, *, compact=False):
         self.reconcile_workers()
         reviews = self._all("reviews")
+        for request in reviews:
+            if request["status"] == "queued":
+                request["blocked_by_claims"] = self.review_blockers(request)
         accepted = [r for r in reviews if r.get("verdict", {}).get("decision") == "approved"]
         original_supported = any(
             r["claim"] == "root" and r["verdict"]["disposition"] == "supported" for r in accepted
@@ -801,7 +859,10 @@ class ResearchService(
         repair_supported = any(
             r["claim"] != "root" and r["verdict"]["disposition"] == "supported" for r in accepted
         )
+        from .research_finalization import report_status
+
         snapshot = dict(
+            finalization=report_status(self.root, self.manifest),
             workflow="minimal",
             hypothesis=self.manifest["hypothesis"],
             remaining_seconds=max(0, self.manifest["deadline"] - time.time()),
@@ -810,6 +871,11 @@ class ResearchService(
                 k: self.manifest[k] for k in ["max_experiment_bytes", "max_total_bytes"]
             },
             completion_policy=self.manifest.get("completion_policy", "repair"),
+            original_disposition="supported"
+            if original_supported
+            else "falsified"
+            if original_falsified
+            else "unresolved",
             completed=original_supported
             or (
                 original_falsified
@@ -887,20 +953,31 @@ class ResearchService(
                 for c in snapshot["commitments"]
             ]
             snapshot["reviews"] = [
-                {k: r.get(k) for k in ["id", "created_at", "claim", "status", "verdict"]}
+                {
+                    k: r.get(k)
+                    for k in ["id", "created_at", "claim", "status", "verdict", "blocked_by_claims"]
+                }
                 for r in snapshot["reviews"]
             ]
         return snapshot
 
-    def cancel_active(self):
+    def cancel_active(self, *, preserve_diagnostics=False):
         from .execution_pool import cancel_remote
 
+        def cancellable(record):
+            return record["status"] in {"queued", "running"} and not (
+                preserve_diagnostics
+                and record.get("purpose") == "diagnostic"
+                and record.get("stage") == "exploration"
+                and record.get("execution_deadline", 0) > time.time()
+            )
+
         for record in self._all("experiments"):
-            if record.get("machine") and record["status"] in {"queued", "running"}:
+            if record.get("machine") and cancellable(record):
                 cancel_remote(self, record)
         with self.lock():
             for record in self._all("experiments"):
-                if record["status"] in ["queued", "running"]:
+                if cancellable(record):
                     if record.get("machine"):
                         continue
                     if record.get("worker_identity"):

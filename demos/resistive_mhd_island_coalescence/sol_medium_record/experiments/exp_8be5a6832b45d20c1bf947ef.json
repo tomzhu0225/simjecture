@@ -1,0 +1,162 @@
+{
+  "id": "exp_8be5a6832b45d20c1bf947ef",
+  "status": "succeeded",
+  "operator_guidance_ids": [],
+  "created_at": 1791439553.3958404,
+  "timeout": 380,
+  "workspace_limit_bytes": 1067553120,
+  "binding": {
+    "source": "calculation.py",
+    "args": [
+      "--eta",
+      ".001",
+      "--n",
+      "384",
+      "--tmax",
+      "1.2",
+      "--cfl",
+      ".8"
+    ],
+    "inputs": {
+      "calculation.py": "d5aa9ebf5cfb75e2e786b4bca12a2119fefed95a332b3519d4a8565ce7505aaf",
+      "guided_reader.py": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b",
+      "study_analysis.py": "d89b5970bae938cc8f2721ef666ce773a83b10cc9014b1ba2cccf545a79ac969",
+      "protocol.json": "c7da462155b9b58e328b041b7b0eed85271365a1da26b4318ecdc11631843d8f"
+    },
+    "capability": "flash-island-coalescence-resistive-mhd-4.8",
+    "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+  },
+  "outputs": [
+    "result.json",
+    "raw_fields.npz",
+    "case/flash.par",
+    "case/execution.log"
+  ],
+  "commitment": null,
+  "key": "evidence-.001-384",
+  "monitor": {
+    "path": "case/execution.log",
+    "format": "flash",
+    "value_key": "value",
+    "quantity": "Physical time",
+    "unit": "s",
+    "target": 1.2,
+    "baseline": 0.0
+  },
+  "stage": "evidence",
+  "method": "method_3300b8c9381d0853ddf03442",
+  "review_documents": [
+    "result.json"
+  ],
+  "pid": 393922,
+  "worker_identity": {
+    "pid": 393922,
+    "starttime": "2094826",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture/.venv/bin/python3",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/island-sol-medium-study",
+      "--execute",
+      "exp_8be5a6832b45d20c1bf947ef"
+    ],
+    "launched_at": "2026-10-08T06:05:53.553288+00:00",
+    "run_directory": null
+  },
+  "started_at": 1791439553.5534317,
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": 0,
+    "stdout": "{\"rate\": 0.04964289881291125, \"window\": {\"min_sheet_fwhm_cells\": 10, \"max_secondary_extrema\": 0, \"sample_count\": 34}, \"conservation\": {\"mass_relative_drift\": 6.354090587024075e-10, \"energy_relative_drift\": 5.442509333430934e-06, \"floor_hits_sampled\": 0, \"floor_correction_budget\": null, \"floor_correction_budget_reason\": \"Solver does not output integrated floor/source corrections; sampled states and total budgets constrain but cannot exclude between-output corrections.\"}}",
+    "stderr": "",
+    "timed_out": false,
+    "cancelled": false,
+    "workspace_exceeded": false,
+    "stdout_truncated": false,
+    "stderr_truncated": false,
+    "heartbeat_count": 63,
+    "wall_seconds": 317.35877385300046,
+    "workspace_bytes": 203469686
+  },
+  "artifacts": {
+    "calculation.py": {
+      "sha256": "d5aa9ebf5cfb75e2e786b4bca12a2119fefed95a332b3519d4a8565ce7505aaf",
+      "bytes": 5367
+    },
+    "case/execution.log": {
+      "sha256": "ca4f37b8df1d5b084f0ac7844cb1bcba7fff9ab5dceb4661dd676756b53d36c4",
+      "bytes": 216548
+    },
+    "case/flash.par": {
+      "sha256": "53b1d22d27d62852e7b562c52ca5484370679124687a496c522675a538ada791",
+      "bytes": 1781
+    },
+    "case/flash_run.dat": {
+      "sha256": "17338c3d36c750220163233284971380ed91e4a43f556c7826b015ba09ae8d92",
+      "bytes": 541441
+    },
+    "case/flash_run.log": {
+      "sha256": "2f86ef3a37f0a1e7ecdef3bfe3cb813370faffe1394b42edfae7d9627ef6a3da",
+      "bytes": 216450
+    },
+    "case/flash_run_forced_hdf5_plt_cnt_0000": {
+      "sha256": "ca784606875c1c0d218397f036a497e9bb8159cdce8ce427d55f2f6a6bddc0d7",
+      "bytes": 4775180
+    },
+    "case/flash_run_hdf5_chk_0000": {
+      "sha256": "7a5fa6869766bf250dc69a2403dd75bd164a152cddb06f373ec20c12587e432e",
+      "bytes": 26027276
+    },
+    "case/flash_run_hdf5_chk_0001": {
+      "sha256": "5ced07c5ca062fadfb34700355fad17864c71022ae932c7d0a16d5b35d721362",
+      "bytes": 26027276
+    },
+    "checkpoint.json": {
+      "sha256": "7936a5db2418ed42e88401c8b45a9fca2116ad4ceddb337993c899fdc0df8d40",
+      "bytes": 33
+    },
+    "guided_reader.py": {
+      "sha256": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b",
+      "bytes": 14667
+    },
+    "protocol.json": {
+      "sha256": "c7da462155b9b58e328b041b7b0eed85271365a1da26b4318ecdc11631843d8f",
+      "bytes": 4138
+    },
+    "raw_fields.npz": {
+      "sha256": "719a0b2df80b19f8e283daa79371f3c3d6265f7fdc78d10149da9cf761940561",
+      "bytes": 145576081
+    },
+    "result.json": {
+      "sha256": "92b2d43f4a070ff974f34dd992f3f226b6e9b7cdb09b97dd004c07428902cdbd",
+      "bytes": 55319
+    },
+    "study_analysis.py": {
+      "sha256": "d89b5970bae938cc8f2721ef666ce773a83b10cc9014b1ba2cccf545a79ac969",
+      "bytes": 8129
+    }
+  },
+  "missing_outputs": [],
+  "input_mutations": [],
+  "output_findings": [],
+  "scientific_status": "unreviewed",
+  "finished_at": 1791439871.1895661,
+  "telemetry": {
+    "path": "case/execution.log",
+    "format": "flash",
+    "value_key": "value",
+    "quantity": "Physical time",
+    "unit": "s",
+    "target": 1.2,
+    "baseline": 0.0,
+    "observed_at": 1791439871.0777318,
+    "elapsed_seconds": 317.35877385300046,
+    "authority": "Mutable operational telemetry; not scientific evidence",
+    "available": true,
+    "step": 2302,
+    "timestep": 0.00049309,
+    "value": 1.2,
+    "estimated_additional_seconds": 0.0
+  }
+}

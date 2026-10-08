@@ -12,6 +12,7 @@ from .agent_supervisor import AgentSupervisor, parse_judge_stream
 from .provider_retry import ProviderFailure, provider_failure, provider_recovered, wait_for_provider
 from .research_audit import write_report
 from .research_director import ResearchDirector
+from .research_finalization import ResearchFinalization
 from .research_journal import AutomaticJournal, sync_journal
 from .research_oversight import ResearchOversight, durable_signature
 from .research_service import ResearchService, ResearchVerdict, fingerprint, put
@@ -86,7 +87,9 @@ TARGET:
     )
 
 
-class ResearchSupervisor(AutomaticJournal, ResearchOversight, ResearchDirector, AgentSupervisor):
+class ResearchSupervisor(
+    ResearchFinalization, AutomaticJournal, ResearchOversight, ResearchDirector, AgentSupervisor
+):
     def __init__(self, args):
         args.workflow = "frontier"  # Reuse native session resumption and inactivity watchdog.
         super().__init__(args)
@@ -452,20 +455,55 @@ Completion policy: {self.service.manifest.get("completion_policy", "repair")}.
 Uncertainty and model-turn endings do not complete the study.
 Do not edit service records or other studies. Resume from lab.status() and your notes.
 """
+        if self.service.manifest.get("finalization_policy"):
+            header += "\nProtected report policy: " + json.dumps(
+                self.service.manifest["finalization_policy"]
+            )
+            header += (
+                "\nFinish numerical work before compute_deadline; the remaining wall time is "
+                "reserved for a current RESULTS.md and independent report assessment. "
+                "This does not change the hypothesis or scientific acceptance rules.\n"
+            )
         header += "\nOperator task and resources:\n" + self.service.manifest["operator_protocol"]
         (self.service.work / "RESEARCH_GUIDE.md").write_text(header)
         return header
 
     def worker_checkpoint_requested(self):
+        if getattr(self, "_finalizing", False):
+            return False
+        if self.finalization_due():
+            return True
         # A durable review request is sufficient; don't rely on the CLI ending its turn.
-        return any(r["status"] == "queued" for r in self.service._all("reviews")) or any(
+        return any(
+            r["status"] == "queued" and not self.service.review_blockers(r)
+            for r in self.service._all("reviews")
+        ) or any(
             m["status"] == "queued" and m.get("retry_after", 0) <= time.time()
             for m in self.service._all("methods")
         )
 
     def process_reviews(self):
-        for request in self.service.status()["reviews"]:
-            if request["status"] != "queued" or self.boundary():
+        requests = sorted(
+            self.service.status()["reviews"],
+            key=lambda r: (
+                len(self.service.lineage(r.get("claim", "root"))),
+                r.get("created_at", 0),
+                r["id"],
+            ),
+        )
+        for request in requests:
+            if (
+                request["status"] != "queued"
+                or self.boundary()
+                or (
+                    getattr(self, "launch_deadline", None) is not None
+                    and time.time() >= self.launch_deadline
+                )
+            ):
+                continue
+            # Recheck after each ancestor verdict. A blocked repair must not spend
+            # reviewer calls or interrupt the worker fixing its parent's evidence.
+            if self.service.review_blockers(request):
                 continue
             body = self.service.review_body(request)
             packet = self.service.packet(body)
@@ -480,7 +518,9 @@ Do not edit service records or other studies. Resume from lab.status() and your 
                 put(directory / "packet.json", packet)
                 prompt = research_review_prompt(packet)
                 rc = self.launch(directory, prompt, judge=True)
-                if self.boundary():
+                if self.boundary() or (
+                    self.finalization_due() and not getattr(self, "_finalizing", False)
+                ):
                     return
                 try:
                     if rc:
@@ -517,11 +557,23 @@ Do not edit service records or other studies. Resume from lab.status() and your 
             try:
                 while not self.boundary():
                     try:
+                        if self.finalization_due():
+                            self.finalize_report()
+                            if self.service.status()["completed"] and not self.boundary():
+                                write_report(self.service, self.state | {"status": "completed"})
+                                self.state["status"] = "completed"
+                                self.save()
+                                return 0
+                            time.sleep(min(1, max(0, self.state["deadline"] - time.time())))
+                            continue
                         self.process_methods()
+                        if self.finalization_due():
+                            continue
                         self.process_reviews()
                         snapshot = self.service.status()
                         self.state.pop("last_error", None)
                         if snapshot["completed"]:
+                            self.finalize_report()
                             self.service.cancel_active()
                             snapshot = self.service.status()
                             # Completion is the publication barrier for the final report.
@@ -532,6 +584,8 @@ Do not edit service records or other studies. Resume from lab.status() and your 
                             return 0
                         if self.boundary():
                             break
+                        if self.finalization_due():
+                            continue
                         self.run_director()
                         if self.state.pop("director_wake_worker", False):
                             self.state.pop("waiting_for", None)

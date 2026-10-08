@@ -13,6 +13,13 @@ existing test module. Keep it small enough to explain and review on its own.
 Discuss large changes or scientific-policy changes with the maintainer before
 investing in an implementation.
 
+For scientific tools, diagnostics and studies, the
+[contribution map](docs/development/contributing.md) links each kind of contribution
+to a concrete starting point. [Open a contribution proposal](https://github.com/tomzhu0225/simjecture/issues/new/choose)
+if you would like help choosing the scope. Domain review and clear documentation
+are as useful as code: a well-explained numerical limitation can improve the next
+research run.
+
 ## Report a problem
 
 Include the exact package version and Git commit, operating system, execution
@@ -44,6 +51,7 @@ additional dependencies only when they are needed for your contribution.
   then run `uv run simjecture schemas --output schemas --check` and relevant tests
 - **Documentation:** use `uv sync --frozen --group docs`, then
   `uv run --group docs sphinx-build -W --keep-going -b html docs docs/_build/html`.
+  Run `uv run python scripts/check_docs_links.py docs/_build/html` as well.
   Check changed examples and links; see [documentation development](docs/development/documentation.md)
 - **Browser UI:** add the `browser` dependency group with
   `uv sync --frozen --group browser`, install Chromium with

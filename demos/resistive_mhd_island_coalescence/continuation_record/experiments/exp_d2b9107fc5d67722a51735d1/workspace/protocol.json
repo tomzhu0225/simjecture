@@ -1,0 +1,47 @@
+{
+  "model": "Supplied 2D compressible single-fluid MHD, gamma=5/3, alpha=20, temperature=3, pressureOffset=6, spatially uniform explicit eta; no physical variant",
+  "normalization": "L0=B0=rho0=vA0=1; S_eta=1/eta is nominal inverse resistivity",
+  "observable": "Guided center-flux increment from By integral, cross-checked with independent Bx path; R=0.04/(first t(flux=.05)-first t(flux=.01))",
+  "window": [
+    0.01,
+    0.05
+  ],
+  "S_scan": [
+    250,
+    500,
+    1000,
+    2000,
+    4000
+  ],
+  "base_grid": 256,
+  "refinement_grid": 384,
+  "refined_S": [
+    250,
+    1000
+  ],
+  "numerics": "HLLD, second order MC, constrained magnetic divergence control, adaptive CFL=.8 conditional on .4 parity; diffusion timestep factor=.8; dtmax=.01; four MPI ranks 2x2; cadence=.025",
+  "eligibility": {
+    "base_FWHM_cells_min": 4,
+    "refined_FWHM_cells_min": 6,
+    "refined_rate_relative_change_max": 0.1,
+    "max_abs_divb": 1e-09,
+    "flux_path_abs_mismatch_max": 0.0005,
+    "boundary_normal_fraction_max": 0.05,
+    "mass_drift_max": 1e-05,
+    "energy_drift_max": 0.001,
+    "sampled_floor_hits_max": 0,
+    "secondary_extrema_max": 0,
+    "topology_scope": "Symmetric center sheet |x|<.25, cumulative By along y=0; secondary flux extrema prominence>=1e-4 separated by>=4 cells. Field/current plots and diagnostic line profiles audited; subthreshold, off-axis and between-output islands are not excluded. No noise/perturbation added."
+  },
+  "uncertainty": "Deterministic numerical sensitivity, not a rigorous continuum bound or random sampling CI. Per-case relative log-rate margin is 2 times observed matched-grid log-rate difference (use largest matched difference for unrefined cases), plus maximum relative variation among both flux paths and cadence-decimated trajectories, plus fresh S500 measured absolute log-rate CFL parity difference from cfl_control.json (borrowed across S, empirical). Use at least .01 log-rate margin. Also report conservative first-crossing bracket bounds. Report residual-based Student-t 95% regression intervals separately as model-fit diagnostics, not independent stochastic replicates. Missing cadence/path variants are explicit unresolved diagnostic failures, never silently ignored. Only physically eligible matched pairs passing <=10% difference supply convergence information; declared refinement cases require their own qualified pair. Missing gaps are null/unresolved, never zero. Borrowed margins for intermediate cases come only from qualified pairs. Crossing brackets are conservative cadence-only diagnostics; adjacent slopes diagnose curvature, while exclusion uses joint feasibility/refinement persistence.",
+  "fit": "OLS log(R) versus log(S), full five-point base grid and common two-point base/refined grids at S250/S1000 (endpoint exponent only; refined curvature cannot be tested); adjacent slopes as curvature diagnostics. Propagate per-case log-rate boxes linearly to OLS slope min/max. Linear feasibility over slope p and intercept a tests whether all eligible rate boxes admit a single power law with p in [-.60,-.40].",
+  "decision": "Request falsification only if eligible converged observations give a numerical slope interval disjoint from [-.60,-.40], or no power law in that band fits their predeclared error boxes and that exclusion persists on common refined samples. Band overlap alone is inconclusive. Support can be finite sampled consistency only; do not assert proof for all continuously varying S. Underresolved, secondary-island or unreached-window cases are exclusions/censoring, never counterexamples. Original universal scope remains unchanged. Two-point refinement does not verify curvature: infeasible five-point law without refined curvature is unresolved rather than a fresh persistent-curvature falsification.",
+  "cost_policy": "Continuation fresh five-point N256 scan tmax=.6,.85,1.2,1.6,2.15 and N384 S250/S1000; high-S matched-grid historical diagnostic only. Maintain compute deadline and 450s report reserve. Missing refinement or coverage remains unresolved.",
+  "limitations": [
+    "No integrated floor/source correction output; sampled positivity and budgets cannot exclude all corrections",
+    "No dimensional calibration or kinetic physics",
+    "FWHM and refinement are empirical resolution diagnostics, not certified continuum error enclosures",
+    "Continuous parameter-domain universal support is beyond finite scan",
+    "Fresh high-S refinement not budgeted; inherited N384 high-S remains historical unreviewed context. Fresh production inference restricted to qualified low/middle pairs; intermediate and high base cases use borrowed sensitivity explicitly."
+  ]
+}

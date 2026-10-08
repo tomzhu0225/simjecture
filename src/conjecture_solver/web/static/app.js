@@ -1627,6 +1627,21 @@ function renderResearchTrace() {
     panel.append(element("p", "field-help",
       `Instrument family: any of ${rule.prefixes.join(" or ")}. ${rule.satisfied ? `Matched by ${rule.matching_capabilities.join(", ")}` : "No matching instrument available"}. Scientific qualification is reviewed separately.`));
   }
+  if (engine.finalization?.reserve_seconds) {
+    const finish = engine.finalization, section = element("section", "research-director");
+    section.append(element("h3", null, "Report & finalization"),
+      element("p", null, `${finish.phase || "research"} · report ${(finish.report_status || "not_started").replaceAll("_", " ")}`),
+      element("p", "field-help", `Numerical work ends by ${new Date(finish.compute_deadline * 1000).toLocaleTimeString()}. ${formatDuration(finish.reserve_seconds)} is reserved for writing and independent report review. Report acceptance does not approve scientific claims.`));
+    if (finish.assessment?.summary) section.append(element("p", null, finish.assessment.summary));
+    for (const issue of finish.assessment?.issues || []) section.append(element("p", "warning-list", issue));
+    if (finish.error) section.append(element("p", "warning-list", finish.error));
+    if (finish.report) {
+      const link = element("a", null, "Open frozen report");
+      link.href = artifactUrl(finish.report); link.target = "_blank"; link.rel = "noopener";
+      section.append(link);
+    }
+    panel.append(section);
+  }
   if (engine.director_policy?.enabled || engine.director_decisions?.length) {
     const director = element("section", "research-director");
     director.append(element("h3", null, "Research director · strategy & control"),
@@ -1643,6 +1658,7 @@ function renderResearchTrace() {
       const card = element("article", "trace-event"), copy = element("div", "trace-copy");
       copy.append(element("strong", null, `${d.decision === "replan" ? "Stop / replan" : "Continue strategy"} · budget ${d.budget_feasibility} · science ${d.scientific_feasibility}`),
         element("p", null, d.rationale), element("p", null, `Next action: ${d.next_action}`));
+      if (d.wake_worker) copy.append(element("p", "field-help", "Worker wake-up requested · prepare or analyze work while experiments continue."));
       for (const action of d.control_actions || []) copy.append(element("p", "field-help", `Stop requested: ${action.experiment} · ${action.status} · ${action.cancellation_confirmed ? "stop confirmed" : "awaiting confirmation"}${action.error ? ` · recorded control error: ${action.error}` : ""} · partial data retained when available`));
       copy.append(element("p", "field-help", d.acknowledgement ? `Worker ${d.acknowledgement.response}: ${d.acknowledgement.reason}` : d.decision === "replan" ? "Awaiting worker plan or challenge" : "No replan acknowledgement required"));
       card.append(element("span", "event-mark", d.decision === "replan" ? "↻" : "✓"), copy);director.append(card);

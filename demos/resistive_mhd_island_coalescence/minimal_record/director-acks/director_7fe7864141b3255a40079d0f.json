@@ -1,0 +1,8 @@
+{
+  "id": "director_7fe7864141b3255a40079d0f",
+  "response": "plan",
+  "reason": "Stopped and preserved the S_eta=4000 partial output at 217.35 s. Remaining 347 s can accommodate the requested archive comparison, one ~53 s N=160 recovery case if diagnostics agree, and the 180 s final-review reserve. No further high-end run or repeated mesh trials are planned.",
+  "plan": "note_f9948aefb2ff74fedcc76e99",
+  "created_at": 1791433720.96324,
+  "authority": "Worker response; not scientific approval"
+}

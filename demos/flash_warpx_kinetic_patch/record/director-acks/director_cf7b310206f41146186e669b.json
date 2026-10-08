@@ -1,0 +1,8 @@
+{
+  "id": "director_cf7b310206f41146186e669b",
+  "response": "plan",
+  "reason": "Actual transfer is ready; bounded GPU evolution can run while FLASH refinement finishes and avoids unsupported throughput extrapolation.",
+  "plan": "note_43a5c978dcc200dcf1706474",
+  "created_at": 1791434311.5996778,
+  "authority": "Worker response; not scientific approval"
+}

@@ -57,7 +57,7 @@ records without the field continue to mean Bubblewrap.
 
 ## Explicit trusted native processes
 
-This option is available in the 0.5.4rc2 preview.
+Select this backend explicitly for a trusted host when it is appropriate.
 
 PRoot can pass a basic probe while failing a larger MPI launch. On the audited P40
 host, the same 16-rank collective completed natively but hung under PRoot, including

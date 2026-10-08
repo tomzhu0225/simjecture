@@ -1,0 +1,770 @@
+{
+  "id": "method_7b98c4b241090fe1ba84ead8",
+  "status": "resolved",
+  "created_at": 1791435287.0752451,
+  "binding": {
+    "source": "calculation.py",
+    "inputs": {
+      "calculation.py": "ef030822bfce50da0aa95310c94f11bf6f24e0766ee8ca0856ea52eb0ee15844",
+      "flash_driver.py": "73ed49055856adb3c30f8a5f4f3aaebe9e18a496fa955bf027b7400368b588d0",
+      "extract_flash.py": "28608ddeab7d71584abd32ce910b66621d8ba9cc49d2bb44eb1ead3922e509a0"
+    },
+    "capability": "flash-island-coalescence-resistive-mhd-4.8",
+    "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+  },
+  "sources": {
+    "calculation.py": "\"\"\"Study entry point; all solver and data-transfer sources are explicit inputs.\"\"\"\nimport sys\nif sys.argv[1] == 'flash':\n    import flash_driver\n    sys.argv.pop(1)\n    raise SystemExit(flash_driver.main())\nif sys.argv[1] == 'pic':\n    import kinetic\n    sys.argv.pop(1)\n    kinetic.cli()\nelif sys.argv[1] == 'select':\n    import select_patch\n    sys.argv.pop(1)\n    select_patch.main()\nelse:\n    raise ValueError('Unknown operation')\n",
+    "flash_driver.py": "\"\"\"Run and diagnose the operator-supplied FLASH island-coalescence application.\n\nThis program is guided commissioning material. Its outputs are permanently\nnon-evidentiary context; a campaign must collect fresh evidence prospectively.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport argparse\nimport hashlib\nimport json\nimport math\nimport os\nimport shutil\nimport subprocess\nfrom pathlib import Path\nfrom typing import Any\n\nimport h5py\nimport numpy as np\n\n_WORKSPACE_MARKER = \".simjecture-flash-guided-output\"\n\n\ndef _sha256(path: Path) -> str:\n    digest = hashlib.sha256()\n    with path.open(\"rb\") as stream:\n        for chunk in iter(lambda: stream.read(1024 * 1024), b\"\"):\n            digest.update(chunk)\n    return digest.hexdigest()\n\n\ndef _named_values(dataset: h5py.Dataset) -> dict[str, Any]:\n    values: dict[str, Any] = {}\n    for row in dataset[()]:\n        name = row[\"name\"].decode().strip().casefold()\n        value = row[\"value\"]\n        if isinstance(value, bytes):\n            value = value.decode().strip()\n        elif hasattr(value, \"item\"):\n            value = value.item()\n        values[name] = value\n    return values\n\n\ndef _center_flux(bx: np.ndarray, by: np.ndarray) -> tuple[float, float]:\n    ny, nx = bx.shape\n    dx = 1.0 / nx\n    dy = 1.0 / ny\n    x = -0.5 + (np.arange(nx) + 0.5) * dx\n    y = -0.5 + (np.arange(ny) + 0.5) * dy\n\n    from_left = np.cumsum(by, axis=1) * dx - 0.5 * by * dx\n    near_x = np.argsort(np.abs(x))[:2]\n    along_y = from_left[:, near_x].mean(axis=1)\n    fit_y = np.argsort(np.abs(y))[:8]\n    design_y = np.column_stack((np.ones(8), y[fit_y] ** 2, y[fit_y] ** 4))\n    flux_from_by = float(np.linalg.lstsq(design_y, along_y[fit_y], rcond=None)[0][0])\n\n    from_bottom = np.cumsum(-bx, axis=0) * dy - 0.5 * (-bx) * dy\n    near_y = np.argsort(np.abs(y))[:2]\n    along_x = from_bottom[near_y, :].mean(axis=0)\n    fit_x = np.argsort(np.abs(x))[:8]\n    design_x = np.column_stack((np.ones(8), x[fit_x] ** 2, x[fit_x] ** 4))\n    flux_from_bx = float(np.linalg.lstsq(design_x, along_x[fit_x], rcond=None)[0][0])\n    return flux_from_by, flux_from_bx\n\n\ndef _crossing(times: np.ndarray, values: np.ndarray, target: float) -> float | None:\n    indices = np.flatnonzero(values >= target)\n    if not len(indices):\n        return None\n    index = int(indices[0])\n    if index == 0:\n        return float(times[0])\n    dv = values[index] - values[index - 1]\n    if dv <= 0:\n        return None\n    fraction = (target - values[index - 1]) / dv\n    return float(times[index - 1] + fraction * (times[index] - times[index - 1]))\n\n\ndef _parameters(args: argparse.Namespace) -> str:\n    return f\"\"\"run_comment = \"Guided FLASH island-coalescence anchor\"\nlog_file = \"flash_run.log\"\nbasenm = \"flash_run_\"\n\nUnitSystem = \"none\"\ngeometry = \"cartesian\"\nxmin = -0.5\nxmax = 0.5\nymin = -0.5\nymax = 0.5\n\nxl_boundary_type = \"reflecting\"\nxr_boundary_type = \"reflecting\"\nyl_boundary_type = \"reflecting\"\nyr_boundary_type = \"reflecting\"\n\nsim_alpha = {args.alpha:.17g}\nsim_temperature = 3.0\nsim_pressureOffset = 6.0\n\ngamma = 1.6666666666666667\neosModeInit = \"dens_pres\"\neos_singleSpeciesA = 1.0\neos_singleSpeciesZ = 1.0\nsmlrho = 1.0e-12\nsmallp = 1.0e-12\nsmallt = 1.0e-12\n\nuseHydro = .true.\norder = 2\nslopeLimiter = \"mc\"\nLimitedSlopeBeta = 1.0\ncharLimiting = .true.\nuse_avisc = .false.\nuse_flattening = .false.\nuse_steepening = .false.\nuse_upwindTVD = .false.\nRiemannSolver = \"HLLD\"\nentropy = .false.\nshockDetect = .false.\n\nkilldivb = .true.\nE_modification = .true.\nE_upwind = .false.\nenergyFix = .true.\nForceHydroLimit = .false.\n\nuseDiffuse = .true.\nuseDiffuseTherm = .false.\nuseDiffuseSpecies = .false.\nuseDiffuseComputeDtTherm = .false.\nuseDiffuseComputeDtVisc = .false.\nuseDiffuseComputeDtSpecies = .false.\nuseDiffuseComputeDtMagnetic = .true.\ndt_diff_factor = 0.8\nuseMagneticResistivity = .true.\nresistivitySolver = \"explicit\"\nresistivityForm = \"parallel\"\nresistivity = {args.eta:.17g}\n\nrestart = .false.\nnend = 10000\ntmax = {args.tmax:.17g}\ndr_shortenLastStepBeforeTMax = .true.\ncfl = {args.cfl:.17g}\ndtinit = 1.0e-6\ndtmin = 1.0e-14\ndtmax = 1.0e-2\ntstep_change_factor = 1.2\n\nplotFileNumber = 0\ncheckpointFileNumber = 0\nplotFileIntervalTime = {args.plot_interval:.17g}\ncheckpointFileIntervalTime = 1000.0\nplot_var_1 = \"dens\"\nplot_var_2 = \"pres\"\nplot_var_3 = \"velx\"\nplot_var_4 = \"vely\"\nplot_var_5 = \"magx\"\nplot_var_6 = \"magy\"\nplot_var_7 = \"magp\"\nplot_var_8 = \"divb\"\n\niGridSize = {args.nx}\njGridSize = {args.ny}\nkGridSize = 1\niProcs = {args.iprocs}\njProcs = {args.jprocs}\nkProcs = 1\n\"\"\"\n\n\ndef _contained_path(raw: str, *, label: str) -> Path:\n    requested = Path(raw)\n    if requested.is_absolute():\n        raise ValueError(f\"{label} must be relative to the workspace\")\n    workspace = Path.cwd().resolve()\n    resolved = (workspace / requested).resolve()\n    if resolved == workspace or not resolved.is_relative_to(workspace):\n        raise ValueError(f\"{label} must be a contained workspace child\")\n    return resolved\n\n\ndef _analyze(output: Path, args: argparse.Namespace) -> dict[str, Any]:\n    files = sorted(output.glob(\"flash_run_hdf5_plt_cnt_*\"))\n    if len(files) < 2:\n        raise RuntimeError(\"FLASH produced fewer than two regular plot files\")\n\n    rows: list[dict[str, float]] = []\n    initial_runtime: dict[str, Any] = {}\n    initial_logical: dict[str, Any] = {}\n    initial_string: dict[str, Any] = {}\n    initial_integer: dict[str, Any] = {}\n    state_finite = True\n    state_positive = True\n    max_divergence = 0.0\n    max_boundary_fraction = 0.0\n    for path in files:\n        with h5py.File(path, \"r\") as handle:\n            required = {\"dens\", \"pres\", \"velx\", \"vely\", \"magx\", \"magy\", \"divb\"}\n            missing = required.difference(handle.keys())\n            if missing:\n                raise RuntimeError(f\"{path.name} lacks datasets: {sorted(missing)}\")\n            real_scalars = _named_values(handle[\"real scalars\"])\n            if not initial_runtime:\n                initial_runtime = _named_values(handle[\"real runtime parameters\"])\n                initial_logical = _named_values(handle[\"logical runtime parameters\"])\n                initial_string = _named_values(handle[\"string runtime parameters\"])\n                initial_integer = _named_values(handle[\"integer scalars\"])\n            fields = {name: np.asarray(handle[name][0, 0], dtype=float) for name in required}\n            state_finite = state_finite and all(\n                np.isfinite(field).all() for field in fields.values()\n            )\n            state_positive = state_positive and bool(\n                np.min(fields[\"dens\"]) > 0 and np.min(fields[\"pres\"]) > 0\n            )\n            bx = fields[\"magx\"]\n            by = fields[\"magy\"]\n            flux_by, flux_bx = _center_flux(bx, by)\n            bmax = max(float(np.max(np.abs(bx))), float(np.max(np.abs(by))), 1.0e-300)\n            boundary_normal = max(\n                float(np.max(np.abs(bx[:, [0, -1]]))),\n                float(np.max(np.abs(by[[0, -1], :]))),\n            )\n            max_boundary_fraction = max(max_boundary_fraction, boundary_normal / bmax)\n            divergence = float(np.max(np.abs(fields[\"divb\"])))\n            max_divergence = max(max_divergence, divergence)\n            rows.append(\n                {\n                    \"time\": float(real_scalars[\"time\"]),\n                    \"flux_from_by\": flux_by,\n                    \"flux_from_bx\": flux_bx,\n                    \"max_abs_divb\": divergence,\n                    \"max_abs_velocity\": max(\n                        float(np.max(np.abs(fields[\"velx\"]))),\n                        float(np.max(np.abs(fields[\"vely\"]))),\n                    ),\n                }\n            )\n\n    times = np.asarray([row[\"time\"] for row in rows])\n    flux_by = np.asarray([row[\"flux_from_by\"] for row in rows])\n    flux_bx = np.asarray([row[\"flux_from_bx\"] for row in rows])\n    flux_by -= flux_by[0]\n    flux_bx -= flux_bx[0]\n    for row, value_by, value_bx in zip(rows, flux_by, flux_bx, strict=True):\n        row[\"reconnected_flux_from_by\"] = float(value_by)\n        row[\"reconnected_flux_from_bx\"] = float(value_bx)\n\n    low_time = _crossing(times, flux_by, args.flux_low)\n    high_time = _crossing(times, flux_by, args.flux_high)\n    reconnection_time = (\n        high_time - low_time\n        if low_time is not None and high_time is not None and high_time > low_time\n        else None\n    )\n    rate = (\n        (args.flux_high - args.flux_low) / reconnection_time\n        if reconnection_time is not None\n        else None\n    )\n    path_mismatch = float(np.max(np.abs(flux_by - flux_bx)))\n    sheet_cells = (1.0 / args.alpha) / (1.0 / args.ny)\n    realized_eta = float(initial_runtime.get(\"resistivity\", math.nan))\n    realized_resistive_path = (\n        bool(initial_logical.get(\"usediffuse\", False))\n        and bool(initial_logical.get(\"usemagneticresistivity\", False))\n        and str(initial_string.get(\"resistivitysolver\", \"\")).casefold() == \"explicit\"\n    )\n    realized_grid = (\n        int(initial_integer.get(\"nxb\", -1)) == args.nx\n        and int(initial_integer.get(\"nyb\", -1)) == args.ny\n        and int(initial_integer.get(\"dimensionality\", -1)) == 2\n    )\n    checks = {\n        \"completed\": True,\n        \"representation\": realized_grid and state_finite and state_positive,\n        \"physics_controls\": realized_resistive_path\n        and math.isclose(realized_eta, args.eta, rel_tol=1.0e-12),\n        \"boundaries\": max_boundary_fraction < 0.05,\n        \"diagnostics\": bool(np.all(np.diff(times) > 0)) and path_mismatch < 5.0e-4,\n        \"numerical_regime\": sheet_cells >= 4.0 and max_divergence < 1.0e-9,\n        \"flux_window_reached\": reconnection_time is not None,\n        \"scientific_evidence_eligible\": False,\n    }\n    return {\n        \"schema_version\": \"0.1.0\",\n        \"kind\": \"guided_flash_island_coalescence_anchor\",\n        \"scientific_status\": \"permanently_non_evidentiary\",\n        \"checks\": checks,\n        \"metrics\": {\n            \"l_over_eta_nominal\": 1.0 / args.eta,\n            \"flux_low\": args.flux_low,\n            \"flux_high\": args.flux_high,\n            \"flux_low_crossing_time\": low_time,\n            \"flux_high_crossing_time\": high_time,\n            \"reconnection_time\": reconnection_time,\n            \"normalized_flux_slope\": rate,\n            \"flux_path_max_abs_mismatch\": path_mismatch,\n            \"max_abs_divb\": max_divergence,\n            \"max_boundary_normal_fraction\": max_boundary_fraction,\n            \"initial_sheet_cells\": sheet_cells,\n            \"plot_file_count\": len(files),\n        },\n        \"realized\": {\n            \"eta\": realized_eta,\n            \"resistivity_solver\": initial_string.get(\"resistivitysolver\"),\n            \"use_diffuse\": bool(initial_logical.get(\"usediffuse\", False)),\n            \"use_magnetic_resistivity\": bool(initial_logical.get(\"usemagneticresistivity\", False)),\n            \"nx\": args.nx,\n            \"ny\": args.ny,\n            \"alpha\": args.alpha,\n            \"tmax\": args.tmax,\n            \"mpi_ranks\": args.ranks,\n        },\n        \"timeseries\": rows,\n    }\n\n\ndef main() -> int:\n    parser = argparse.ArgumentParser()\n    parser.add_argument(\"--cfl\", type=float, default=0.4)\n    parser.add_argument(\"--select-time\", type=float, default=0.8)\n    parser.add_argument(\"--eta\", type=float, required=True)\n    parser.add_argument(\"--nx\", type=int, default=128)\n    parser.add_argument(\"--ny\", type=int, default=128)\n    parser.add_argument(\"--alpha\", type=float, default=20.0)\n    parser.add_argument(\"--tmax\", type=float, default=1.2)\n    parser.add_argument(\"--plot-interval\", type=float, default=0.05)\n    parser.add_argument(\"--flux-low\", type=float, default=0.01)\n    parser.add_argument(\"--flux-high\", type=float, default=0.05)\n    parser.add_argument(\"--ranks\", type=int, default=4)\n    parser.add_argument(\"--iprocs\", type=int, default=2)\n    parser.add_argument(\"--jprocs\", type=int, default=2)\n    parser.add_argument(\"--output\", required=True)\n    parser.add_argument(\"--summary\", required=True)\n    parser.add_argument(\"--overwrite\", action=\"store_true\")\n    args = parser.parse_args()\n\n    if not 0 < args.eta < 1 or args.alpha <= 0 or args.tmax <= 0:\n        raise ValueError(\"eta, alpha, and tmax must define a positive bounded run\")\n    if args.nx < 32 or args.ny < 32 or args.nx % 2 or args.ny % 2:\n        raise ValueError(\"nx and ny must be even and at least 32\")\n    if args.ranks != args.iprocs * args.jprocs:\n        raise ValueError(\"ranks must equal iprocs*jprocs\")\n    if not 0 <= args.flux_low < args.flux_high:\n        raise ValueError(\"flux thresholds must be ordered and nonnegative\")\n\n    executable = Path(os.environ[\"FLASH_EXECUTABLE\"]).resolve()\n    launcher = Path(os.environ[\"FLASH_MPI_LAUNCHER\"]).resolve()\n    if not executable.is_file() or not os.access(executable, os.X_OK):\n        raise FileNotFoundError(\"FLASH_EXECUTABLE is unavailable\")\n    if not launcher.is_file() or not os.access(launcher, os.X_OK):\n        raise FileNotFoundError(\"FLASH_MPI_LAUNCHER is unavailable\")\n\n    output = _contained_path(args.output, label=\"output\")\n    summary = _contained_path(args.summary, label=\"summary\")\n    if output.exists():\n        if not args.overwrite:\n            raise FileExistsError(f\"output exists: {output}\")\n        marker = output / _WORKSPACE_MARKER\n        if output.is_symlink() or not marker.is_file():\n            raise ValueError(\"refusing to replace an unmarked output directory\")\n        shutil.rmtree(output)\n    output.mkdir(parents=True)\n    (output / _WORKSPACE_MARKER).write_text(\"Owned by the Simjecture guided FLASH controller.\\n\")\n    parfile = output / \"flash.par\"\n    parfile.write_text(_parameters(args))\n    command = (\n        str(launcher),\n        \"-np\",\n        str(args.ranks),\n        str(executable),\n        \"-par_file\",\n        parfile.name,\n    )\n    with (\n        (output / \"launcher_stdout.txt\").open(\"wb\") as stdout,\n        (output / \"launcher_stderr.txt\").open(\"wb\") as stderr,\n    ):\n        completed = subprocess.run(\n            command,\n            cwd=output,\n            stdin=subprocess.DEVNULL,\n            stdout=stdout,\n            stderr=stderr,\n            check=False,\n        )\n    if completed.returncode != 0:\n        raise RuntimeError(f\"FLASH exited with status {completed.returncode}\")\n\n    payload = _analyze(output, args)\n    # Scientific extension: realized global budgets and fixed source-time selection.\n    budget = []\n    selected = None\n    for path in sorted(output.glob(\"flash_run_hdf5_plt_cnt_*\")):\n        with h5py.File(path, \"r\") as f:\n            t = float(_named_values(f[\"real scalars\"])[\"time\"])\n            d,p,vx,vy,bx,by = [f[k][0,0].astype(float) for k in (\"dens\",\"pres\",\"velx\",\"vely\",\"magx\",\"magy\")]\n            budget.append(dict(time=t, mass=float(d.mean()), energy=float((1.5*p + 0.5*d*(vx*vx+vy*vy) + 0.5*(bx*bx+by*by)).mean())))\n            if selected is None and t >= args.select_time:\n                selected = path\n    if selected is None:\n        raise ValueError(\"No source snapshot at fixed prospective time\")\n    shutil.copyfile(selected, \"source.h5\")\n    from extract_flash import export\n    handoff = export(Path(\"source.h5\"), Path(\"state.npz\"))\n    payload[\"budgets\"] = budget\n    payload[\"mass_relative_drift\"] = (budget[-1][\"mass\"]-budget[0][\"mass\"])/budget[0][\"mass\"]\n    payload[\"energy_relative_drift\"] = (budget[-1][\"energy\"]-budget[0][\"energy\"])/budget[0][\"energy\"]\n    payload[\"selected_source\"] = json.loads(Path(\"state.json\").read_text())\n    payload[\"scientific_status\"] = \"fresh_campaign_trajectory_requires_independent_qualification\"\n    payload[\"kind\"] = \"campaign_flash_islands\"\n    payload[\"checks\"].pop(\"scientific_evidence_eligible\", None)\n    payload[\"provenance\"] = {\n        \"command\": list(command),\n        \"flash_executable_sha256\": _sha256(executable),\n        \"parameter_file_sha256\": _sha256(parfile),\n    }\n    summary.parent.mkdir(parents=True, exist_ok=True)\n    summary.write_text(json.dumps(payload, indent=2, sort_keys=True) + \"\\n\")\n    print(json.dumps({\"checks\": payload[\"checks\"], \"metrics\": payload[\"metrics\"]}))\n    return 0\n\n\nif __name__ == \"__main__\":\n    raise SystemExit(main())\n",
+    "extract_flash.py": "\"\"\"Export a uniform 2D FLASH state and a fitted flux potential for kinetic follow-up.\n\nThis is a one-way data-transfer helper, not a two-way MHD/PIC coupler. It preserves\ncode units; the kinetic launcher must supply an explicit dimensional mapping.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport argparse\nimport hashlib\nimport json\nfrom pathlib import Path\n\nimport h5py\nimport numpy as np\nfrom scipy.fft import dctn, idctn\n\n\ndef potential(bx, bz, dx, dz):\n    \"\"\"Least-squares Ay from edge-averaged Bz=dAy/dx and Bx=-dAy/dz.\n\n    The graph-gradient normal equation uses natural boundaries and a fixed zero\n    mean. A DCT diagonalizes its Neumann Laplacian on the uniform cell-center grid.\n    \"\"\"\n    nz, nx = bx.shape\n    gx = 0.5 * (bz[:, 1:] + bz[:, :-1])\n    gz = -0.5 * (bx[1:, :] + bx[:-1, :])\n    rhs = np.zeros_like(bx)\n    rhs[:, :-1] -= gx / dx\n    rhs[:, 1:] += gx / dx\n    rhs[:-1, :] -= gz / dz\n    rhs[1:, :] += gz / dz\n    eigen = (4 * np.sin(np.pi * np.arange(nx) / (2 * nx)) ** 2 / dx**2)[None, :]\n    eigen = eigen + (4 * np.sin(np.pi * np.arange(nz) / (2 * nz)) ** 2 / dz**2)[:, None]\n    eigen[0, 0] = 1.0\n    modes = dctn(rhs, type=2, norm=\"ortho\") / eigen\n    modes[0, 0] = 0.0\n    ay = idctn(modes, type=2, norm=\"ortho\")\n    residual = np.sqrt(\n        np.mean((np.diff(ay, axis=1) / dx - gx) ** 2)\n        + np.mean((np.diff(ay, axis=0) / dz - gz) ** 2)\n    )\n    scale = np.sqrt(np.mean(gx**2) + np.mean(gz**2))\n    return ay, float(residual / max(scale, np.finfo(float).tiny))\n\n\ndef named(dataset):\n    return {row[\"name\"].decode().strip(): row[\"value\"].item() for row in dataset[()]}\n\n\ndef export(source: Path, output: Path):\n    with h5py.File(source) as f:\n        bounds = f[\"bounding box\"][:].astype(float)\n        strings = {\n            row[\"name\"].decode().strip().lower(): row[\"value\"].decode().strip().lower()\n            for row in f[\"string runtime parameters\"]\n        }\n        if strings.get(\"unitsystem\") != \"none\" or strings.get(\"geometry\") != \"cartesian\":\n            raise ValueError(\"This handoff requires the normalized Cartesian FLASH application\")\n        if f[\"dens\"].shape[1] != 1:\n            raise ValueError(\"This handoff requires a 2D FLASH state\")\n        # Fail explicitly on AMR/multiple blocks. A production extension needs a\n        # checked covering-grid reconstruction, not a silent choice of block 0.\n        assert bounds.shape[0] == 1, \"Only a uniform, single-output-block FLASH file is supported\"\n        state = {\n            name: f[key][0, 0].astype(float)\n            for name, key in {\n                \"rho\": \"dens\",\n                \"pressure\": \"pres\",\n                \"ux\": \"velx\",\n                \"uz\": \"vely\",\n                \"bx\": \"magx\",\n                \"bz\": \"magy\",\n            }.items()\n        }\n        nz, nx = state[\"rho\"].shape\n        xmin, xmax = bounds[0, 0]\n        zmin, zmax = bounds[0, 1]\n        dx, dz = (xmax - xmin) / nx, (zmax - zmin) / nz\n        x = xmin + (np.arange(nx) + 0.5) * dx\n        z = zmin + (np.arange(nz) + 0.5) * dz\n        time_code = float(named(f[\"real scalars\"])[\"time\"])\n        params = named(f[\"real runtime parameters\"])\n    assert all(np.isfinite(v).all() for v in state.values())\n    assert state[\"rho\"].min() > 0 and state[\"pressure\"].min() > 0\n    ay, residual = potential(state[\"bx\"], state[\"bz\"], dx, dz)\n    output.parent.mkdir(parents=True, exist_ok=True)\n    if output.exists() or output.with_suffix(\".json\").exists():\n        raise FileExistsError(\"Use a new handoff output path\")\n    np.savez_compressed(output, x=x, z=z, ay=ay, **state)\n    manifest = {\n        \"schema_version\": 1,\n        \"source_sha256\": hashlib.sha256(source.read_bytes()).hexdigest(),\n        \"source_name\": source.name,\n        \"source_time_code\": time_code,\n        \"flash_shape_zx\": [nz, nx],\n        \"cell_size_code\": [dx, dz],\n        \"bounds_xz_code\": [[xmin, xmax], [zmin, zmax]],\n        \"rotation\": (\n            \"Right-handed (X,Y,Z)=(x,-z,y); FLASH Bz=uz=0 in this application. \"\n            \"Thus B_W=(Bx,0,By), J_W,y=-J_FLASH,z.\"\n        ),\n        \"units\": (\n            \"FLASH normalized UnitSystem=none; mu0=1; pressure is total scalar fluid pressure. \"\n            \"No SI mapping is inferred by this helper.\"\n        ),\n        \"eta_code\": float(params.get(\"resistivity\", 0.0)),\n        \"potential_relative_edge_residual\": residual,\n        \"potential_definition\": (\n            \"Bx=-dAy/dZ, Bz=dAy/dX; least-squares reconstruction, zero mean; \"\n            \"original B arrays are also retained.\"\n        ),\n        \"handoff_sha256\": hashlib.sha256(output.read_bytes()).hexdigest(),\n        \"scope\": (\n            \"Transfer/initialization material only; not kinetic qualification or claim evidence.\"\n        ),\n    }\n    output.with_suffix(\".json\").write_text(json.dumps(manifest, indent=2) + \"\\n\")\n    return manifest\n\n\nif __name__ == \"__main__\":\n    parser = argparse.ArgumentParser(description=__doc__)\n    parser.add_argument(\"--flash-file\", type=Path, required=True)\n    parser.add_argument(\"--output\", type=Path, required=True)\n    args = parser.parse_args()\n    print(json.dumps(export(args.flash_file, args.output), indent=2))\n"
+  },
+  "scope": "production",
+  "model": "Fresh normalized resistive FLASH island-coalescence initial-value trajectory, eta=0.001, alpha=20, gamma=5/3, scalar total pressure; MHD is the source, not a kinetic pressure closure measurement. No Hall/collisionless terms claimed.",
+  "geometry": "2D Cartesian [-0.5,0.5]^2 reflecting boundaries; uniform512^2; four MPI ranks2x2. Right-handed handoff (X,Y,Z)=(x,-z,y). Source first regular output >=t0.8, fixed prospectively; source HDF5 and export hashes retained.",
+  "observable": "Production qualification of macroscopic initial-condition source for later separately qualified kinetic hypothesis measurement. Central Jy profile half-width is half separation between first |Jy| half-center-magnitude crossings along Z, average central two X columns. Density/total scalar p/flow/B and fitted Ay retained. Nominal source command flash --eta .001 --nx512 --ny512 --tmax .85 --plot-interval .05 --output macro --summary result.json.",
+  "validation": "Real FLASH trajectories completed at256 and512; mass drift<=1.7e-10, total scalar energy drift<=5.4e-6, divB<1e-9, positive states. Source half-width0.0147433 vs0.0144669, 1.9% change, finest7.41 half-width cells. Potential relative edge residual1.38e-8. Recorded refined transfer exp_488007f309373427b7394eb2 reports independent field interpolation and Ampere mismatch and source profile comparisons; use these metrics, not helper passed flags. Conditional source acceptance: positive finite, scaled divB<=1e-8, energy residual<=1e-3, finest width >=6 cells, refinement width change<=5%, p/rho/B RMS comparisons<=5% in centralregion; flow errors judged in v0 absolute units. Fresh evidence replay required; exploration is not relabeled.",
+  "rationale": "FLASH represents the supplied macroscopic trajectory and its actual transferred source. 256-grid width was observed inadequate;512 refinement fixes that specific blocker. Full kinetic controls and pressure observable require another method; this request permits source evidence only.",
+  "evidence": [
+    {
+      "record": {
+        "id": "exp_858f535fafc4884126e44323",
+        "status": "succeeded",
+        "operator_guidance_ids": [],
+        "created_at": 1791433961.7101526,
+        "timeout": 600,
+        "workspace_limit_bytes": 4294967296,
+        "binding": {
+          "source": "calculation.py",
+          "args": [
+            "flash",
+            "--eta",
+            "0.001",
+            "--nx",
+            "256",
+            "--ny",
+            "256",
+            "--tmax",
+            "1.0",
+            "--plot-interval",
+            "0.05",
+            "--output",
+            "macro",
+            "--summary",
+            "result.json"
+          ],
+          "inputs": {
+            "calculation.py": "ef030822bfce50da0aa95310c94f11bf6f24e0766ee8ca0856ea52eb0ee15844",
+            "flash_driver.py": "73ed49055856adb3c30f8a5f4f3aaebe9e18a496fa955bf027b7400368b588d0",
+            "extract_flash.py": "28608ddeab7d71584abd32ce910b66621d8ba9cc49d2bb44eb1ead3922e509a0"
+          },
+          "capability": "flash-island-coalescence-resistive-mhd-4.8",
+          "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+        },
+        "outputs": [
+          "result.json",
+          "source.h5",
+          "state.npz",
+          "state.json"
+        ],
+        "commitment": null,
+        "key": "macro256",
+        "stage": "exploration",
+        "method": null,
+        "review_documents": null,
+        "pid": 279061,
+        "worker_identity": {
+          "pid": 279061,
+          "starttime": "1535658",
+          "argv": [
+            "/home/tomzhu0225/src/simjecture/.venv/bin/python3",
+            "-m",
+            "conjecture_solver.research_service",
+            "--root",
+            "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/coupled-study",
+            "--execute",
+            "exp_858f535fafc4884126e44323"
+          ],
+          "launched_at": "2026-10-08T04:32:41.873456+00:00",
+          "run_directory": null
+        },
+        "started_at": 1791433961.87358,
+        "execution": {
+          "isolation_backend": "bubblewrap",
+          "returncode": 0,
+          "stdout": "{\"checks\": {\"completed\": true, \"representation\": true, \"physics_controls\": true, \"boundaries\": true, \"diagnostics\": true, \"numerical_regime\": true, \"flux_window_reached\": false}, \"metrics\": {\"l_over_eta_nominal\": 1000.0, \"flux_low\": 0.01, \"flux_high\": 0.05, \"flux_low_crossing_time\": 0.2588430248389068, \"flux_high_crossing_time\": null, \"reconnection_time\": null, \"normalized_flux_slope\": null, \"flux_path_max_abs_mismatch\": 2.5131346740269594e-05, \"max_abs_divb\": 2.660982545421575e-12, \"max_boundary_normal_fraction\": 0.017253876258230553, \"initial_sheet_cells\": 12.8, \"plot_file_count\": 20}}",
+          "stderr": "",
+          "timed_out": false,
+          "cancelled": false,
+          "workspace_exceeded": false,
+          "stdout_truncated": false,
+          "stderr_truncated": false,
+          "heartbeat_count": 4,
+          "wall_seconds": 126.98986077100017,
+          "workspace_bytes": 73192235
+        },
+        "artifacts": {
+          "calculation.py": {
+            "sha256": "ef030822bfce50da0aa95310c94f11bf6f24e0766ee8ca0856ea52eb0ee15844",
+            "bytes": 435
+          },
+          "extract_flash.py": {
+            "sha256": "28608ddeab7d71584abd32ce910b66621d8ba9cc49d2bb44eb1ead3922e509a0",
+            "bytes": 5159
+          },
+          "flash_driver.py": {
+            "sha256": "73ed49055856adb3c30f8a5f4f3aaebe9e18a496fa955bf027b7400368b588d0",
+            "bytes": 16098
+          },
+          "macro/.simjecture-flash-guided-output": {
+            "sha256": "67d1f5ea486320558047f5cff49a53b2b0f1eaca0f699ba9abc1c1f60bcedc67",
+            "bytes": 49
+          },
+          "macro/flash.par": {
+            "sha256": "2bb2e45f65ac8df629a7b4279d5f7c6092c0d2f6a8b9cc38399ab2ecdedb68de",
+            "bytes": 1793
+          },
+          "macro/flash_run.dat": {
+            "sha256": "95381c56198d6279decc94d40c3ce092e17bc0f986e41e9a74e66127075ac82b",
+            "bytes": 590321
+          },
+          "macro/flash_run.log": {
+            "sha256": "cc300c671abbdda7f0511b47175fcc1f5f8a1b252f0ca92dd8d4b9e4a889b459",
+            "bytes": 223703
+          },
+          "macro/flash_run_forced_hdf5_plt_cnt_0000": {
+            "sha256": "88b4db1433d165966f102b00359bb00e90a3ce074ba0dc6e51eb8ba7dab19abe",
+            "bytes": 2153740
+          },
+          "macro/flash_run_hdf5_chk_0000": {
+            "sha256": "fa4d0b11f0b3236dbbe0bc65a8d26d14a53d1f526cb51ef6425cd66de3b2bbeb",
+            "bytes": 11605260
+          },
+          "macro/flash_run_hdf5_chk_0001": {
+            "sha256": "516e36a9070319763ba785396c7881347ca5551451bb8a53cf1c151653c152f0",
+            "bytes": 11605260
+          },
+          "macro/flash_run_hdf5_plt_cnt_0000": {
+            "sha256": "d333f55837968a81c9877d55e945cce86a04a591b07712ffa1c9c4cd5c6df778",
+            "bytes": 2153740
+          },
+          "macro/flash_run_hdf5_plt_cnt_0001": {
+            "sha256": "541be1e92127ae72d2a4e6d4d2aa0fcfb7a3b2c2727adc72a6430459ef1869c4",
+            "bytes": 2153740
+          },
+          "macro/flash_run_hdf5_plt_cnt_0002": {
+            "sha256": "ff7700c53e410474eb97515f13d834b4a6b637495dd948c005438c0f73394279",
+            "bytes": 2153740
+          },
+          "macro/flash_run_hdf5_plt_cnt_0003": {
+            "sha256": "95dea0405ed72803d12edf5cb6154cb62bbeb67f68e538ef0a99ce7975935233",
+            "bytes": 2153740
+          },
+          "macro/flash_run_hdf5_plt_cnt_0004": {
+            "sha256": "7476607d9f0ad91fac5841f506199e162f83688c84dcb10956d06e1ba2e09eae",
+            "bytes": 2153740
+          },
+          "macro/flash_run_hdf5_plt_cnt_0005": {
+            "sha256": "e35a7fc0b628ccc4df65b78d5909cb0b2b06c258ca1530344d5c9afd568e2bcf",
+            "bytes": 2153740
+          },
+          "macro/flash_run_hdf5_plt_cnt_0006": {
+            "sha256": "81bc243531b5d9f9c5e427ede826d599cef81d4d24a5de322256bb16dcf02202",
+            "bytes": 2153740
+          },
+          "macro/flash_run_hdf5_plt_cnt_0007": {
+            "sha256": "3748259819f0b680ef31f979258ce71b95f9dfd0d7c1b545ed5c2c5780f3ad5e",
+            "bytes": 2153740
+          },
+          "macro/flash_run_hdf5_plt_cnt_0008": {
+            "sha256": "5b5d60f6dcdca6a7451d7d4d162f06c805c690cefc68dfe024b382caef92e112",
+            "bytes": 2153740
+          },
+          "macro/flash_run_hdf5_plt_cnt_0009": {
+            "sha256": "a133d07c63375660619bad6e64436be005d253afc0e6df384738f322a717acd0",
+            "bytes": 2153740
+          },
+          "macro/flash_run_hdf5_plt_cnt_0010": {
+            "sha256": "1d49343763eb65d5bdf0ab2fb20d34f1a260a68a67f6918c5f3fa6f25c43068f",
+            "bytes": 2153740
+          },
+          "macro/flash_run_hdf5_plt_cnt_0011": {
+            "sha256": "a0109f16f21747fb2452874d57fe676a4912c01cee622fd5f2b777345e1a7d0e",
+            "bytes": 2153740
+          },
+          "macro/flash_run_hdf5_plt_cnt_0012": {
+            "sha256": "494bcfb8c7731026a35dd9d769a567701c54d44851651f74a5c0453363e60ff9",
+            "bytes": 2153740
+          },
+          "macro/flash_run_hdf5_plt_cnt_0013": {
+            "sha256": "30bc3718ad18228376ef7ac350363a48456d537dd1e27bd1eba3d62c618c2c23",
+            "bytes": 2153740
+          },
+          "macro/flash_run_hdf5_plt_cnt_0014": {
+            "sha256": "976ca51a75a11d7fa5b85b52081e445ea57c0f379cf41d29523f6cb5862b8bd8",
+            "bytes": 2153740
+          },
+          "macro/flash_run_hdf5_plt_cnt_0015": {
+            "sha256": "d7870dc2c1a80dab63ea7f9d0fef67d170f7afe659db421fdb8135276e0f662a",
+            "bytes": 2153740
+          },
+          "macro/flash_run_hdf5_plt_cnt_0016": {
+            "sha256": "1653e6cb6985a04164543859350c6f9200319732d3e68789f811abb44d624e46",
+            "bytes": 2153740
+          },
+          "macro/flash_run_hdf5_plt_cnt_0017": {
+            "sha256": "06f2b4fd03b4f2ea76452d1b4f9665107fe0fc2fd8739a95e8917686f6da9f17",
+            "bytes": 2153740
+          },
+          "macro/flash_run_hdf5_plt_cnt_0018": {
+            "sha256": "dc19542336817e465606fa81a7069a95c155c5118c94b32645eb24b6756cff35",
+            "bytes": 2153740
+          },
+          "macro/flash_run_hdf5_plt_cnt_0019": {
+            "sha256": "917f4743207ae95c6374c8ae102c94e20944eb7854fda5c07ae6128f15e9247e",
+            "bytes": 2153740
+          },
+          "macro/launcher_stderr.txt": {
+            "sha256": "b02b461e24dcd2e6b070047f42137aa8a806941ce4796a6bb96cf4a506dd057d",
+            "bytes": 504
+          },
+          "macro/launcher_stdout.txt": {
+            "sha256": "17a89d2cd13476d6455aba25036a850dcb8c7ff58ccf39a7879bbc5911decea8",
+            "bytes": 233220
+          },
+          "result.json": {
+            "sha256": "2189196c180d35c65e4fbd8bf2998a73d90ef3b4815e42cf92a2bec8b5d0d637",
+            "bytes": 11691
+          },
+          "source.h5": {
+            "sha256": "1653e6cb6985a04164543859350c6f9200319732d3e68789f811abb44d624e46",
+            "bytes": 2153740
+          },
+          "state.json": {
+            "sha256": "9e087ee7da74b481b76b80b10e79d28c991f8f31125e0a1402cf8178a3c473a0",
+            "bytes": 1040
+          },
+          "state.npz": {
+            "sha256": "7a0329d97fc72d1f5c4c52fbb4cabb3d1da701077b86e700b2d246eb01c597fe",
+            "bytes": 1515422
+          }
+        },
+        "missing_outputs": [],
+        "input_mutations": [],
+        "output_findings": [
+          {
+            "path": "result.json",
+            "kind": "failed_checks",
+            "detail": [
+              "flux_window_reached"
+            ]
+          }
+        ],
+        "scientific_status": "unreviewed",
+        "finished_at": 1791434089.744399
+      },
+      "documents": {
+        "result.json": "{\n  \"budgets\": [\n    {\n      \"energy\": 9.388503915464533,\n      \"mass\": 1.025488066541584,\n      \"time\": 0.0\n    },\n    {\n      \"energy\": 9.388505230225336,\n      \"mass\": 1.0254880668144324,\n      \"time\": 0.05025218073420108\n    },\n    {\n      \"energy\": 9.388505700650654,\n      \"mass\": 1.0254880669272097,\n      \"time\": 0.10027519002840754\n    },\n    {\n      \"energy\": 9.388506072040414,\n      \"mass\": 1.0254880670036073,\n      \"time\": 0.15020705418870262\n    },\n    {\n      \"energy\": 9.388507059000329,\n      \"mass\": 1.0254880665706878,\n      \"time\": 0.20015702619928694\n    },\n    {\n      \"energy\": 9.388508476233127,\n      \"mass\": 1.0254880665706878,\n      \"time\": 0.2503313899073324\n    },\n    {\n      \"energy\": 9.388510234373467,\n      \"mass\": 1.0254880664797383,\n      \"time\": 0.3002887666177893\n    },\n    {\n      \"energy\": 9.388512414486467,\n      \"mass\": 1.025488066712569,\n      \"time\": 0.3504105244670088\n    },\n    {\n      \"energy\": 9.388515063842444,\n      \"mass\": 1.0254880667598627,\n      \"time\": 0.4002196675860557\n    },\n    {\n      \"energy\": 9.388518182446889,\n      \"mass\": 1.0254880669890554,\n      \"time\": 0.45006976955757155\n    },\n    {\n      \"energy\": 9.388521685481305,\n      \"mass\": 1.025488067585684,\n      \"time\": 0.5003526274752498\n    },\n    {\n      \"energy\": 9.388525284988386,\n      \"mass\": 1.0254880671818682,\n      \"time\": 0.5503595528531208\n    },\n    {\n      \"energy\": 9.388528737134884,\n      \"mass\": 1.025488067411061,\n      \"time\": 0.6002609223836084\n    },\n    {\n      \"energy\": 9.38853185583254,\n      \"mass\": 1.0254880665634118,\n      \"time\": 0.650297961112948\n    },\n    {\n      \"energy\": 9.388534666567264,\n      \"mass\": 1.0254880665015662,\n      \"time\": 0.7000122489870156\n    },\n    {\n      \"energy\": 9.388537348620225,\n      \"mass\": 1.0254880665706878,\n      \"time\": 0.7503169755295096\n    },\n    {\n      \"energy\": 9.388540185221025,\n      \"mass\": 1.0254880668289843,\n      \"time\": 0.8002032631186956\n    },\n    {\n      \"energy\": 9.388543870993267,\n      \"mass\": 1.0254880668217083,\n      \"time\": 0.8500852295939664\n    },\n    {\n      \"energy\": 9.388548805609103,\n      \"mass\": 1.0254880669781414,\n      \"time\": 0.9000102093909076\n    },\n    {\n      \"energy\": 9.388554464273902,\n      \"mass\": 1.0254880666398094,\n      \"time\": 0.9500140250981451\n    }\n  ],\n  \"checks\": {\n    \"boundaries\": true,\n    \"completed\": true,\n    \"diagnostics\": true,\n    \"flux_window_reached\": false,\n    \"numerical_regime\": true,\n    \"physics_controls\": true,\n    \"representation\": true\n  },\n  \"energy_relative_drift\": 5.384117621352384e-06,\n  \"kind\": \"campaign_flash_islands\",\n  \"mass_relative_drift\": 9.578407686667427e-11,\n  \"metrics\": {\n    \"flux_high\": 0.05,\n    \"flux_high_crossing_time\": null,\n    \"flux_low\": 0.01,\n    \"flux_low_crossing_time\": 0.2588430248389068,\n    \"flux_path_max_abs_mismatch\": 2.5131346740269594e-05,\n    \"initial_sheet_cells\": 12.8,\n    \"l_over_eta_nominal\": 1000.0,\n    \"max_abs_divb\": 2.660982545421575e-12,\n    \"max_boundary_normal_fraction\": 0.017253876258230553,\n    \"normalized_flux_slope\": null,\n    \"plot_file_count\": 20,\n    \"reconnection_time\": null\n  },\n  \"provenance\": {\n    \"command\": [\n      \"/usr/bin/orterun\",\n      \"-np\",\n      \"4\",\n      \"/opt/acs-capabilities/flash-island-coalescence-resistive-mhd-4.8/bin/flash4\",\n      \"-par_file\",\n      \"flash.par\"\n    ],\n    \"flash_executable_sha256\": \"40cf57b987e85f9befc01abae4e89f27c230d1eb42391ba3abea8655a0f7024b\",\n    \"parameter_file_sha256\": \"2bb2e45f65ac8df629a7b4279d5f7c6092c0d2f6a8b9cc38399ab2ecdedb68de\"\n  },\n  \"realized\": {\n    \"alpha\": 20.0,\n    \"eta\": 0.001,\n    \"mpi_ranks\": 4,\n    \"nx\": 256,\n    \"ny\": 256,\n    \"resistivity_solver\": \"explicit\",\n    \"tmax\": 1.0,\n    \"use_diffuse\": true,\n    \"use_magnetic_resistivity\": true\n  },\n  \"schema_version\": \"0.1.0\",\n  \"scientific_status\": \"fresh_campaign_trajectory_requires_independent_qualification\",\n  \"selected_source\": {\n    \"bounds_xz_code\": [\n      [\n        -0.5,\n        0.5\n      ],\n      [\n        -0.5,\n        0.5\n      ]\n    ],\n    \"cell_size_code\": [\n      0.00390625,\n      0.00390625\n    ],\n    \"eta_code\": 0.001,\n    \"flash_shape_zx\": [\n      256,\n      256\n    ],\n    \"handoff_sha256\": \"7a0329d97fc72d1f5c4c52fbb4cabb3d1da701077b86e700b2d246eb01c597fe\",\n    \"potential_definition\": \"Bx=-dAy/dZ, Bz=dAy/dX; least-squares reconstruction, zero mean; original B arrays are also retained.\",\n    \"potential_relative_edge_residual\": 1.382872103330448e-08,\n    \"rotation\": \"Right-handed (X,Y,Z)=(x,-z,y); FLASH Bz=uz=0 in this application. Thus B_W=(Bx,0,By), J_W,y=-J_FLASH,z.\",\n    \"schema_version\": 1,\n    \"scope\": \"Transfer/initialization material only; not kinetic qualification or claim evidence.\",\n    \"source_name\": \"source.h5\",\n    \"source_sha256\": \"1653e6cb6985a04164543859350c6f9200319732d3e68789f811abb44d624e46\",\n    \"source_time_code\": 0.8002032631186956,\n    \"units\": \"FLASH normalized UnitSystem=none; mu0=1; pressure is total scalar fluid pressure. No SI mapping is inferred by this helper.\"\n  },\n  \"timeseries\": [\n    {\n      \"flux_from_bx\": 0.00015226000141410617,\n      \"flux_from_by\": 7.631795029647162e-05,\n      \"max_abs_divb\": 2.6201263381153694e-14,\n      \"max_abs_velocity\": 0.0,\n      \"reconnected_flux_from_bx\": 0.0,\n      \"reconnected_flux_from_by\": 0.0,\n      \"time\": 0.0\n    },\n    {\n      \"flux_from_bx\": 0.002069758623775897,\n      \"flux_from_by\": 0.0019986423235671407,\n      \"max_abs_divb\": 1.092903545441004e-12,\n      \"max_abs_velocity\": 0.07459914684295654,\n      \"reconnected_flux_from_bx\": 0.0019174986223617907,\n      \"reconnected_flux_from_by\": 0.0019223243732706691,\n      \"time\": 0.05025218073420108\n    },\n    {\n      \"flux_from_bx\": 0.003914519309944351,\n      \"flux_from_by\": 0.0038441753814820725,\n      \"max_abs_divb\": 1.2585488207150775e-12,\n      \"max_abs_velocity\": 0.15277574956417084,\n      \"reconnected_flux_from_bx\": 0.003762259308530245,\n      \"reconnected_flux_from_by\": 0.003767857431185601,\n      \"time\": 0.10027519002840754\n    },\n    {\n      \"flux_from_bx\": 0.005774562210376643,\n      \"flux_from_by\": 0.005702436991403546,\n      \"max_abs_divb\": 1.7976731214730535e-12,\n      \"max_abs_velocity\": 0.23299406468868256,\n      \"reconnected_flux_from_bx\": 0.0056223022089625365,\n      \"reconnected_flux_from_by\": 0.005626119041107074,\n      \"time\": 0.15020705418870262\n    },\n    {\n      \"flux_from_bx\": 0.007711747641749864,\n      \"flux_from_by\": 0.007635857014011259,\n      \"max_abs_divb\": 1.5942802633617248e-12,\n      \"max_abs_velocity\": 0.3113616108894348,\n      \"reconnected_flux_from_bx\": 0.007559487640335758,\n      \"reconnected_flux_from_by\": 0.0075595390637147875,\n      \"time\": 0.20015702619928694\n    },\n    {\n      \"flux_from_bx\": 0.009781138765362126,\n      \"flux_from_by\": 0.009699948448721905,\n      \"max_abs_divb\": 1.744382416291046e-12,\n      \"max_abs_velocity\": 0.38821348547935486,\n      \"reconnected_flux_from_bx\": 0.00962887876394802,\n      \"reconnected_flux_from_by\": 0.009623630498425434,\n      \"time\": 0.2503313899073324\n    },\n    {\n      \"flux_from_bx\": 0.011996239116655262,\n      \"flux_from_by\": 0.01190897563605331,\n      \"max_abs_divb\": 1.6981971384666394e-12,\n      \"max_abs_velocity\": 0.46642717719078064,\n      \"reconnected_flux_from_bx\": 0.011843979115241156,\n      \"reconnected_flux_from_by\": 0.011832657685756838,\n      \"time\": 0.3002887666177893\n    },\n    {\n      \"flux_from_bx\": 0.01437473306729942,\n      \"flux_from_by\": 0.014281943539695911,\n      \"max_abs_divb\": 1.822542117224657e-12,\n      \"max_abs_velocity\": 0.5479152202606201,\n      \"reconnected_flux_from_bx\": 0.014222473065885314,\n      \"reconnected_flux_from_by\": 0.01420562558939944,\n      \"time\": 0.3504105244670088\n    },\n    {\n      \"flux_from_bx\": 0.016881826842592314,\n      \"flux_from_by\": 0.016784322702602543,\n      \"max_abs_divb\": 1.7905676941154525e-12,\n      \"max_abs_velocity\": 0.6350485682487488,\n      \"reconnected_flux_from_bx\": 0.016729566841178208,\n      \"reconnected_flux_from_by\": 0.01670800475230607,\n      \"time\": 0.4002196675860557\n    },\n    {\n      \"flux_from_bx\": 0.019494074503597855,\n      \"flux_from_by\": 0.01939382605511164,\n      \"max_abs_divb\": 1.9380053117856733e-12,\n      \"max_abs_velocity\": 0.7246702909469604,\n      \"reconnected_flux_from_bx\": 0.01934181450218375,\n      \"reconnected_flux_from_by\": 0.019317508104815168,\n      \"time\": 0.45006976955757155\n    },\n    {\n      \"flux_from_bx\": 0.02218316816388465,\n      \"flux_from_by\": 0.022082094766026746,\n      \"max_abs_divb\": 2.277289468111121e-12,\n      \"max_abs_velocity\": 0.8106635212898254,\n      \"reconnected_flux_from_bx\": 0.022030908162470542,\n      \"reconnected_flux_from_by\": 0.022005776815730273,\n      \"time\": 0.5003526274752498\n    },\n    {\n      \"flux_from_bx\": 0.024861450167735548,\n      \"flux_from_by\": 0.02476131932274072,\n      \"max_abs_divb\": 2.1724844145865063e-12,\n      \"max_abs_velocity\": 0.8841662406921387,\n      \"reconnected_flux_from_bx\": 0.02470919016632144,\n      \"reconnected_flux_from_by\": 0.024685001372444247,\n      \"time\": 0.5503595528531208\n    },\n    {\n      \"flux_from_bx\": 0.027498175437909105,\n      \"flux_from_by\": 0.027400095950433464,\n      \"max_abs_divb\": 2.1671553440683056e-12,\n      \"max_abs_velocity\": 0.9406748414039612,\n      \"reconnected_flux_from_bx\": 0.027345915436495,\n      \"reconnected_flux_from_by\": 0.02732377800013699,\n      \"time\": 0.6002609223836084\n    },\n    {\n      \"flux_from_bx\": 0.030078464284301273,\n      \"flux_from_by\": 0.02998314977171534,\n      \"max_abs_divb\": 2.147615418834903e-12,\n      \"max_abs_velocity\": 0.9710422158241272,\n      \"reconnected_flux_from_bx\": 0.029926204282887166,\n      \"reconnected_flux_from_by\": 0.02990683182141887,\n      \"time\": 0.650297961112948\n    },\n    {\n      \"flux_from_bx\": 0.032582547965361634,\n      \"flux_from_by\": 0.03248945613612464,\n      \"max_abs_divb\": 2.2293278334473143e-12,\n      \"max_abs_velocity\": 0.9809679985046387,\n      \"reconnected_flux_from_bx\": 0.03243028796394753,\n      \"reconnected_flux_from_by\": 0.032413138185828166,\n      \"time\": 0.7000122489870156\n    },\n    {\n      \"flux_from_bx\": 0.03505789910443013,\n      \"flux_from_by\": 0.03496676698141709,\n      \"max_abs_divb\": 2.1600499167107046e-12,\n      \"max_abs_velocity\": 0.976698100566864,\n      \"reconnected_flux_from_bx\": 0.03490563910301602,\n      \"reconnected_flux_from_by\": 0.03489044903112062,\n      \"time\": 0.7503169755295096\n    },\n    {\n      \"flux_from_bx\": 0.03747124609795802,\n      \"flux_from_by\": 0.03738137336213709,\n      \"max_abs_divb\": 2.3661073100811336e-12,\n      \"max_abs_velocity\": 0.9674530029296875,\n      \"reconnected_flux_from_bx\": 0.03731898609654392,\n      \"reconnected_flux_from_by\": 0.037305055411840614,\n      \"time\": 0.8002032631186956\n    },\n    {\n      \"flux_from_bx\": 0.03985818474252056,\n      \"flux_from_by\": 0.0397690067743459,\n      \"max_abs_divb\": 2.660982545421575e-12,\n      \"max_abs_velocity\": 0.9561185836791992,\n      \"reconnected_flux_from_bx\": 0.03970592474110645,\n      \"reconnected_flux_from_by\": 0.03969268882404943,\n      \"time\": 0.8500852295939664\n    },\n    {\n      \"flux_from_bx\": 0.04223672987629711,\n      \"flux_from_by\": 0.04214759872744044,\n      \"max_abs_divb\": 2.561506562415161e-12,\n      \"max_abs_velocity\": 0.9419592618942261,\n      \"reconnected_flux_from_bx\": 0.042084469874883006,\n      \"reconnected_flux_from_by\": 0.04207128077714397,\n      \"time\": 0.9000102093909076\n    },\n    {\n      \"flux_from_bx\": 0.04462096798944514,\n      \"flux_from_by\": 0.04453164902733975,\n      \"max_abs_divb\": 2.568611989772762e-12,\n      \"max_abs_velocity\": 0.9284145832061768,\n      \"reconnected_flux_from_bx\": 0.044468707988031035,\n      \"reconnected_flux_from_by\": 0.044455331077043275,\n      \"time\": 0.9500140250981451\n    }\n  ]\n}\n",
+        "state.json": "{\n  \"schema_version\": 1,\n  \"source_sha256\": \"1653e6cb6985a04164543859350c6f9200319732d3e68789f811abb44d624e46\",\n  \"source_name\": \"source.h5\",\n  \"source_time_code\": 0.8002032631186956,\n  \"flash_shape_zx\": [\n    256,\n    256\n  ],\n  \"cell_size_code\": [\n    0.00390625,\n    0.00390625\n  ],\n  \"bounds_xz_code\": [\n    [\n      -0.5,\n      0.5\n    ],\n    [\n      -0.5,\n      0.5\n    ]\n  ],\n  \"rotation\": \"Right-handed (X,Y,Z)=(x,-z,y); FLASH Bz=uz=0 in this application. Thus B_W=(Bx,0,By), J_W,y=-J_FLASH,z.\",\n  \"units\": \"FLASH normalized UnitSystem=none; mu0=1; pressure is total scalar fluid pressure. No SI mapping is inferred by this helper.\",\n  \"eta_code\": 0.001,\n  \"potential_relative_edge_residual\": 1.382872103330448e-08,\n  \"potential_definition\": \"Bx=-dAy/dZ, Bz=dAy/dX; least-squares reconstruction, zero mean; original B arrays are also retained.\",\n  \"handoff_sha256\": \"7a0329d97fc72d1f5c4c52fbb4cabb3d1da701077b86e700b2d246eb01c597fe\",\n  \"scope\": \"Transfer/initialization material only; not kinetic qualification or claim evidence.\"\n}\n"
+      },
+      "sources": {
+        "calculation.py": "\"\"\"Study entry point; all solver and data-transfer sources are explicit inputs.\"\"\"\nimport sys\nif sys.argv[1] == 'flash':\n    import flash_driver\n    sys.argv.pop(1)\n    raise SystemExit(flash_driver.main())\nif sys.argv[1] == 'pic':\n    import kinetic\n    sys.argv.pop(1)\n    kinetic.cli()\nelif sys.argv[1] == 'select':\n    import select_patch\n    sys.argv.pop(1)\n    select_patch.main()\nelse:\n    raise ValueError('Unknown operation')\n",
+        "flash_driver.py": "\"\"\"Run and diagnose the operator-supplied FLASH island-coalescence application.\n\nThis program is guided commissioning material. Its outputs are permanently\nnon-evidentiary context; a campaign must collect fresh evidence prospectively.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport argparse\nimport hashlib\nimport json\nimport math\nimport os\nimport shutil\nimport subprocess\nfrom pathlib import Path\nfrom typing import Any\n\nimport h5py\nimport numpy as np\n\n_WORKSPACE_MARKER = \".simjecture-flash-guided-output\"\n\n\ndef _sha256(path: Path) -> str:\n    digest = hashlib.sha256()\n    with path.open(\"rb\") as stream:\n        for chunk in iter(lambda: stream.read(1024 * 1024), b\"\"):\n            digest.update(chunk)\n    return digest.hexdigest()\n\n\ndef _named_values(dataset: h5py.Dataset) -> dict[str, Any]:\n    values: dict[str, Any] = {}\n    for row in dataset[()]:\n        name = row[\"name\"].decode().strip().casefold()\n        value = row[\"value\"]\n        if isinstance(value, bytes):\n            value = value.decode().strip()\n        elif hasattr(value, \"item\"):\n            value = value.item()\n        values[name] = value\n    return values\n\n\ndef _center_flux(bx: np.ndarray, by: np.ndarray) -> tuple[float, float]:\n    ny, nx = bx.shape\n    dx = 1.0 / nx\n    dy = 1.0 / ny\n    x = -0.5 + (np.arange(nx) + 0.5) * dx\n    y = -0.5 + (np.arange(ny) + 0.5) * dy\n\n    from_left = np.cumsum(by, axis=1) * dx - 0.5 * by * dx\n    near_x = np.argsort(np.abs(x))[:2]\n    along_y = from_left[:, near_x].mean(axis=1)\n    fit_y = np.argsort(np.abs(y))[:8]\n    design_y = np.column_stack((np.ones(8), y[fit_y] ** 2, y[fit_y] ** 4))\n    flux_from_by = float(np.linalg.lstsq(design_y, along_y[fit_y], rcond=None)[0][0])\n\n    from_bottom = np.cumsum(-bx, axis=0) * dy - 0.5 * (-bx) * dy\n    near_y = np.argsort(np.abs(y))[:2]\n    along_x = from_bottom[near_y, :].mean(axis=0)\n    fit_x = np.argsort(np.abs(x))[:8]\n    design_x = np.column_stack((np.ones(8), x[fit_x] ** 2, x[fit_x] ** 4))\n    flux_from_bx = float(np.linalg.lstsq(design_x, along_x[fit_x], rcond=None)[0][0])\n    return flux_from_by, flux_from_bx\n\n\ndef _crossing(times: np.ndarray, values: np.ndarray, target: float) -> float | None:\n    indices = np.flatnonzero(values >= target)\n    if not len(indices):\n        return None\n    index = int(indices[0])\n    if index == 0:\n        return float(times[0])\n    dv = values[index] - values[index - 1]\n    if dv <= 0:\n        return None\n    fraction = (target - values[index - 1]) / dv\n    return float(times[index - 1] + fraction * (times[index] - times[index - 1]))\n\n\ndef _parameters(args: argparse.Namespace) -> str:\n    return f\"\"\"run_comment = \"Guided FLASH island-coalescence anchor\"\nlog_file = \"flash_run.log\"\nbasenm = \"flash_run_\"\n\nUnitSystem = \"none\"\ngeometry = \"cartesian\"\nxmin = -0.5\nxmax = 0.5\nymin = -0.5\nymax = 0.5\n\nxl_boundary_type = \"reflecting\"\nxr_boundary_type = \"reflecting\"\nyl_boundary_type = \"reflecting\"\nyr_boundary_type = \"reflecting\"\n\nsim_alpha = {args.alpha:.17g}\nsim_temperature = 3.0\nsim_pressureOffset = 6.0\n\ngamma = 1.6666666666666667\neosModeInit = \"dens_pres\"\neos_singleSpeciesA = 1.0\neos_singleSpeciesZ = 1.0\nsmlrho = 1.0e-12\nsmallp = 1.0e-12\nsmallt = 1.0e-12\n\nuseHydro = .true.\norder = 2\nslopeLimiter = \"mc\"\nLimitedSlopeBeta = 1.0\ncharLimiting = .true.\nuse_avisc = .false.\nuse_flattening = .false.\nuse_steepening = .false.\nuse_upwindTVD = .false.\nRiemannSolver = \"HLLD\"\nentropy = .false.\nshockDetect = .false.\n\nkilldivb = .true.\nE_modification = .true.\nE_upwind = .false.\nenergyFix = .true.\nForceHydroLimit = .false.\n\nuseDiffuse = .true.\nuseDiffuseTherm = .false.\nuseDiffuseSpecies = .false.\nuseDiffuseComputeDtTherm = .false.\nuseDiffuseComputeDtVisc = .false.\nuseDiffuseComputeDtSpecies = .false.\nuseDiffuseComputeDtMagnetic = .true.\ndt_diff_factor = 0.8\nuseMagneticResistivity = .true.\nresistivitySolver = \"explicit\"\nresistivityForm = \"parallel\"\nresistivity = {args.eta:.17g}\n\nrestart = .false.\nnend = 10000\ntmax = {args.tmax:.17g}\ndr_shortenLastStepBeforeTMax = .true.\ncfl = {args.cfl:.17g}\ndtinit = 1.0e-6\ndtmin = 1.0e-14\ndtmax = 1.0e-2\ntstep_change_factor = 1.2\n\nplotFileNumber = 0\ncheckpointFileNumber = 0\nplotFileIntervalTime = {args.plot_interval:.17g}\ncheckpointFileIntervalTime = 1000.0\nplot_var_1 = \"dens\"\nplot_var_2 = \"pres\"\nplot_var_3 = \"velx\"\nplot_var_4 = \"vely\"\nplot_var_5 = \"magx\"\nplot_var_6 = \"magy\"\nplot_var_7 = \"magp\"\nplot_var_8 = \"divb\"\n\niGridSize = {args.nx}\njGridSize = {args.ny}\nkGridSize = 1\niProcs = {args.iprocs}\njProcs = {args.jprocs}\nkProcs = 1\n\"\"\"\n\n\ndef _contained_path(raw: str, *, label: str) -> Path:\n    requested = Path(raw)\n    if requested.is_absolute():\n        raise ValueError(f\"{label} must be relative to the workspace\")\n    workspace = Path.cwd().resolve()\n    resolved = (workspace / requested).resolve()\n    if resolved == workspace or not resolved.is_relative_to(workspace):\n        raise ValueError(f\"{label} must be a contained workspace child\")\n    return resolved\n\n\ndef _analyze(output: Path, args: argparse.Namespace) -> dict[str, Any]:\n    files = sorted(output.glob(\"flash_run_hdf5_plt_cnt_*\"))\n    if len(files) < 2:\n        raise RuntimeError(\"FLASH produced fewer than two regular plot files\")\n\n    rows: list[dict[str, float]] = []\n    initial_runtime: dict[str, Any] = {}\n    initial_logical: dict[str, Any] = {}\n    initial_string: dict[str, Any] = {}\n    initial_integer: dict[str, Any] = {}\n    state_finite = True\n    state_positive = True\n    max_divergence = 0.0\n    max_boundary_fraction = 0.0\n    for path in files:\n        with h5py.File(path, \"r\") as handle:\n            required = {\"dens\", \"pres\", \"velx\", \"vely\", \"magx\", \"magy\", \"divb\"}\n            missing = required.difference(handle.keys())\n            if missing:\n                raise RuntimeError(f\"{path.name} lacks datasets: {sorted(missing)}\")\n            real_scalars = _named_values(handle[\"real scalars\"])\n            if not initial_runtime:\n                initial_runtime = _named_values(handle[\"real runtime parameters\"])\n                initial_logical = _named_values(handle[\"logical runtime parameters\"])\n                initial_string = _named_values(handle[\"string runtime parameters\"])\n                initial_integer = _named_values(handle[\"integer scalars\"])\n            fields = {name: np.asarray(handle[name][0, 0], dtype=float) for name in required}\n            state_finite = state_finite and all(\n                np.isfinite(field).all() for field in fields.values()\n            )\n            state_positive = state_positive and bool(\n                np.min(fields[\"dens\"]) > 0 and np.min(fields[\"pres\"]) > 0\n            )\n            bx = fields[\"magx\"]\n            by = fields[\"magy\"]\n            flux_by, flux_bx = _center_flux(bx, by)\n            bmax = max(float(np.max(np.abs(bx))), float(np.max(np.abs(by))), 1.0e-300)\n            boundary_normal = max(\n                float(np.max(np.abs(bx[:, [0, -1]]))),\n                float(np.max(np.abs(by[[0, -1], :]))),\n            )\n            max_boundary_fraction = max(max_boundary_fraction, boundary_normal / bmax)\n            divergence = float(np.max(np.abs(fields[\"divb\"])))\n            max_divergence = max(max_divergence, divergence)\n            rows.append(\n                {\n                    \"time\": float(real_scalars[\"time\"]),\n                    \"flux_from_by\": flux_by,\n                    \"flux_from_bx\": flux_bx,\n                    \"max_abs_divb\": divergence,\n                    \"max_abs_velocity\": max(\n                        float(np.max(np.abs(fields[\"velx\"]))),\n                        float(np.max(np.abs(fields[\"vely\"]))),\n                    ),\n                }\n            )\n\n    times = np.asarray([row[\"time\"] for row in rows])\n    flux_by = np.asarray([row[\"flux_from_by\"] for row in rows])\n    flux_bx = np.asarray([row[\"flux_from_bx\"] for row in rows])\n    flux_by -= flux_by[0]\n    flux_bx -= flux_bx[0]\n    for row, value_by, value_bx in zip(rows, flux_by, flux_bx, strict=True):\n        row[\"reconnected_flux_from_by\"] = float(value_by)\n        row[\"reconnected_flux_from_bx\"] = float(value_bx)\n\n    low_time = _crossing(times, flux_by, args.flux_low)\n    high_time = _crossing(times, flux_by, args.flux_high)\n    reconnection_time = (\n        high_time - low_time\n        if low_time is not None and high_time is not None and high_time > low_time\n        else None\n    )\n    rate = (\n        (args.flux_high - args.flux_low) / reconnection_time\n        if reconnection_time is not None\n        else None\n    )\n    path_mismatch = float(np.max(np.abs(flux_by - flux_bx)))\n    sheet_cells = (1.0 / args.alpha) / (1.0 / args.ny)\n    realized_eta = float(initial_runtime.get(\"resistivity\", math.nan))\n    realized_resistive_path = (\n        bool(initial_logical.get(\"usediffuse\", False))\n        and bool(initial_logical.get(\"usemagneticresistivity\", False))\n        and str(initial_string.get(\"resistivitysolver\", \"\")).casefold() == \"explicit\"\n    )\n    realized_grid = (\n        int(initial_integer.get(\"nxb\", -1)) == args.nx\n        and int(initial_integer.get(\"nyb\", -1)) == args.ny\n        and int(initial_integer.get(\"dimensionality\", -1)) == 2\n    )\n    checks = {\n        \"completed\": True,\n        \"representation\": realized_grid and state_finite and state_positive,\n        \"physics_controls\": realized_resistive_path\n        and math.isclose(realized_eta, args.eta, rel_tol=1.0e-12),\n        \"boundaries\": max_boundary_fraction < 0.05,\n        \"diagnostics\": bool(np.all(np.diff(times) > 0)) and path_mismatch < 5.0e-4,\n        \"numerical_regime\": sheet_cells >= 4.0 and max_divergence < 1.0e-9,\n        \"flux_window_reached\": reconnection_time is not None,\n        \"scientific_evidence_eligible\": False,\n    }\n    return {\n        \"schema_version\": \"0.1.0\",\n        \"kind\": \"guided_flash_island_coalescence_anchor\",\n        \"scientific_status\": \"permanently_non_evidentiary\",\n        \"checks\": checks,\n        \"metrics\": {\n            \"l_over_eta_nominal\": 1.0 / args.eta,\n            \"flux_low\": args.flux_low,\n            \"flux_high\": args.flux_high,\n            \"flux_low_crossing_time\": low_time,\n            \"flux_high_crossing_time\": high_time,\n            \"reconnection_time\": reconnection_time,\n            \"normalized_flux_slope\": rate,\n            \"flux_path_max_abs_mismatch\": path_mismatch,\n            \"max_abs_divb\": max_divergence,\n            \"max_boundary_normal_fraction\": max_boundary_fraction,\n            \"initial_sheet_cells\": sheet_cells,\n            \"plot_file_count\": len(files),\n        },\n        \"realized\": {\n            \"eta\": realized_eta,\n            \"resistivity_solver\": initial_string.get(\"resistivitysolver\"),\n            \"use_diffuse\": bool(initial_logical.get(\"usediffuse\", False)),\n            \"use_magnetic_resistivity\": bool(initial_logical.get(\"usemagneticresistivity\", False)),\n            \"nx\": args.nx,\n            \"ny\": args.ny,\n            \"alpha\": args.alpha,\n            \"tmax\": args.tmax,\n            \"mpi_ranks\": args.ranks,\n        },\n        \"timeseries\": rows,\n    }\n\n\ndef main() -> int:\n    parser = argparse.ArgumentParser()\n    parser.add_argument(\"--cfl\", type=float, default=0.4)\n    parser.add_argument(\"--select-time\", type=float, default=0.8)\n    parser.add_argument(\"--eta\", type=float, required=True)\n    parser.add_argument(\"--nx\", type=int, default=128)\n    parser.add_argument(\"--ny\", type=int, default=128)\n    parser.add_argument(\"--alpha\", type=float, default=20.0)\n    parser.add_argument(\"--tmax\", type=float, default=1.2)\n    parser.add_argument(\"--plot-interval\", type=float, default=0.05)\n    parser.add_argument(\"--flux-low\", type=float, default=0.01)\n    parser.add_argument(\"--flux-high\", type=float, default=0.05)\n    parser.add_argument(\"--ranks\", type=int, default=4)\n    parser.add_argument(\"--iprocs\", type=int, default=2)\n    parser.add_argument(\"--jprocs\", type=int, default=2)\n    parser.add_argument(\"--output\", required=True)\n    parser.add_argument(\"--summary\", required=True)\n    parser.add_argument(\"--overwrite\", action=\"store_true\")\n    args = parser.parse_args()\n\n    if not 0 < args.eta < 1 or args.alpha <= 0 or args.tmax <= 0:\n        raise ValueError(\"eta, alpha, and tmax must define a positive bounded run\")\n    if args.nx < 32 or args.ny < 32 or args.nx % 2 or args.ny % 2:\n        raise ValueError(\"nx and ny must be even and at least 32\")\n    if args.ranks != args.iprocs * args.jprocs:\n        raise ValueError(\"ranks must equal iprocs*jprocs\")\n    if not 0 <= args.flux_low < args.flux_high:\n        raise ValueError(\"flux thresholds must be ordered and nonnegative\")\n\n    executable = Path(os.environ[\"FLASH_EXECUTABLE\"]).resolve()\n    launcher = Path(os.environ[\"FLASH_MPI_LAUNCHER\"]).resolve()\n    if not executable.is_file() or not os.access(executable, os.X_OK):\n        raise FileNotFoundError(\"FLASH_EXECUTABLE is unavailable\")\n    if not launcher.is_file() or not os.access(launcher, os.X_OK):\n        raise FileNotFoundError(\"FLASH_MPI_LAUNCHER is unavailable\")\n\n    output = _contained_path(args.output, label=\"output\")\n    summary = _contained_path(args.summary, label=\"summary\")\n    if output.exists():\n        if not args.overwrite:\n            raise FileExistsError(f\"output exists: {output}\")\n        marker = output / _WORKSPACE_MARKER\n        if output.is_symlink() or not marker.is_file():\n            raise ValueError(\"refusing to replace an unmarked output directory\")\n        shutil.rmtree(output)\n    output.mkdir(parents=True)\n    (output / _WORKSPACE_MARKER).write_text(\"Owned by the Simjecture guided FLASH controller.\\n\")\n    parfile = output / \"flash.par\"\n    parfile.write_text(_parameters(args))\n    command = (\n        str(launcher),\n        \"-np\",\n        str(args.ranks),\n        str(executable),\n        \"-par_file\",\n        parfile.name,\n    )\n    with (\n        (output / \"launcher_stdout.txt\").open(\"wb\") as stdout,\n        (output / \"launcher_stderr.txt\").open(\"wb\") as stderr,\n    ):\n        completed = subprocess.run(\n            command,\n            cwd=output,\n            stdin=subprocess.DEVNULL,\n            stdout=stdout,\n            stderr=stderr,\n            check=False,\n        )\n    if completed.returncode != 0:\n        raise RuntimeError(f\"FLASH exited with status {completed.returncode}\")\n\n    payload = _analyze(output, args)\n    # Scientific extension: realized global budgets and fixed source-time selection.\n    budget = []\n    selected = None\n    for path in sorted(output.glob(\"flash_run_hdf5_plt_cnt_*\")):\n        with h5py.File(path, \"r\") as f:\n            t = float(_named_values(f[\"real scalars\"])[\"time\"])\n            d,p,vx,vy,bx,by = [f[k][0,0].astype(float) for k in (\"dens\",\"pres\",\"velx\",\"vely\",\"magx\",\"magy\")]\n            budget.append(dict(time=t, mass=float(d.mean()), energy=float((1.5*p + 0.5*d*(vx*vx+vy*vy) + 0.5*(bx*bx+by*by)).mean())))\n            if selected is None and t >= args.select_time:\n                selected = path\n    if selected is None:\n        raise ValueError(\"No source snapshot at fixed prospective time\")\n    shutil.copyfile(selected, \"source.h5\")\n    from extract_flash import export\n    handoff = export(Path(\"source.h5\"), Path(\"state.npz\"))\n    payload[\"budgets\"] = budget\n    payload[\"mass_relative_drift\"] = (budget[-1][\"mass\"]-budget[0][\"mass\"])/budget[0][\"mass\"]\n    payload[\"energy_relative_drift\"] = (budget[-1][\"energy\"]-budget[0][\"energy\"])/budget[0][\"energy\"]\n    payload[\"selected_source\"] = json.loads(Path(\"state.json\").read_text())\n    payload[\"scientific_status\"] = \"fresh_campaign_trajectory_requires_independent_qualification\"\n    payload[\"kind\"] = \"campaign_flash_islands\"\n    payload[\"checks\"].pop(\"scientific_evidence_eligible\", None)\n    payload[\"provenance\"] = {\n        \"command\": list(command),\n        \"flash_executable_sha256\": _sha256(executable),\n        \"parameter_file_sha256\": _sha256(parfile),\n    }\n    summary.parent.mkdir(parents=True, exist_ok=True)\n    summary.write_text(json.dumps(payload, indent=2, sort_keys=True) + \"\\n\")\n    print(json.dumps({\"checks\": payload[\"checks\"], \"metrics\": payload[\"metrics\"]}))\n    return 0\n\n\nif __name__ == \"__main__\":\n    raise SystemExit(main())\n",
+        "extract_flash.py": "\"\"\"Export a uniform 2D FLASH state and a fitted flux potential for kinetic follow-up.\n\nThis is a one-way data-transfer helper, not a two-way MHD/PIC coupler. It preserves\ncode units; the kinetic launcher must supply an explicit dimensional mapping.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport argparse\nimport hashlib\nimport json\nfrom pathlib import Path\n\nimport h5py\nimport numpy as np\nfrom scipy.fft import dctn, idctn\n\n\ndef potential(bx, bz, dx, dz):\n    \"\"\"Least-squares Ay from edge-averaged Bz=dAy/dx and Bx=-dAy/dz.\n\n    The graph-gradient normal equation uses natural boundaries and a fixed zero\n    mean. A DCT diagonalizes its Neumann Laplacian on the uniform cell-center grid.\n    \"\"\"\n    nz, nx = bx.shape\n    gx = 0.5 * (bz[:, 1:] + bz[:, :-1])\n    gz = -0.5 * (bx[1:, :] + bx[:-1, :])\n    rhs = np.zeros_like(bx)\n    rhs[:, :-1] -= gx / dx\n    rhs[:, 1:] += gx / dx\n    rhs[:-1, :] -= gz / dz\n    rhs[1:, :] += gz / dz\n    eigen = (4 * np.sin(np.pi * np.arange(nx) / (2 * nx)) ** 2 / dx**2)[None, :]\n    eigen = eigen + (4 * np.sin(np.pi * np.arange(nz) / (2 * nz)) ** 2 / dz**2)[:, None]\n    eigen[0, 0] = 1.0\n    modes = dctn(rhs, type=2, norm=\"ortho\") / eigen\n    modes[0, 0] = 0.0\n    ay = idctn(modes, type=2, norm=\"ortho\")\n    residual = np.sqrt(\n        np.mean((np.diff(ay, axis=1) / dx - gx) ** 2)\n        + np.mean((np.diff(ay, axis=0) / dz - gz) ** 2)\n    )\n    scale = np.sqrt(np.mean(gx**2) + np.mean(gz**2))\n    return ay, float(residual / max(scale, np.finfo(float).tiny))\n\n\ndef named(dataset):\n    return {row[\"name\"].decode().strip(): row[\"value\"].item() for row in dataset[()]}\n\n\ndef export(source: Path, output: Path):\n    with h5py.File(source) as f:\n        bounds = f[\"bounding box\"][:].astype(float)\n        strings = {\n            row[\"name\"].decode().strip().lower(): row[\"value\"].decode().strip().lower()\n            for row in f[\"string runtime parameters\"]\n        }\n        if strings.get(\"unitsystem\") != \"none\" or strings.get(\"geometry\") != \"cartesian\":\n            raise ValueError(\"This handoff requires the normalized Cartesian FLASH application\")\n        if f[\"dens\"].shape[1] != 1:\n            raise ValueError(\"This handoff requires a 2D FLASH state\")\n        # Fail explicitly on AMR/multiple blocks. A production extension needs a\n        # checked covering-grid reconstruction, not a silent choice of block 0.\n        assert bounds.shape[0] == 1, \"Only a uniform, single-output-block FLASH file is supported\"\n        state = {\n            name: f[key][0, 0].astype(float)\n            for name, key in {\n                \"rho\": \"dens\",\n                \"pressure\": \"pres\",\n                \"ux\": \"velx\",\n                \"uz\": \"vely\",\n                \"bx\": \"magx\",\n                \"bz\": \"magy\",\n            }.items()\n        }\n        nz, nx = state[\"rho\"].shape\n        xmin, xmax = bounds[0, 0]\n        zmin, zmax = bounds[0, 1]\n        dx, dz = (xmax - xmin) / nx, (zmax - zmin) / nz\n        x = xmin + (np.arange(nx) + 0.5) * dx\n        z = zmin + (np.arange(nz) + 0.5) * dz\n        time_code = float(named(f[\"real scalars\"])[\"time\"])\n        params = named(f[\"real runtime parameters\"])\n    assert all(np.isfinite(v).all() for v in state.values())\n    assert state[\"rho\"].min() > 0 and state[\"pressure\"].min() > 0\n    ay, residual = potential(state[\"bx\"], state[\"bz\"], dx, dz)\n    output.parent.mkdir(parents=True, exist_ok=True)\n    if output.exists() or output.with_suffix(\".json\").exists():\n        raise FileExistsError(\"Use a new handoff output path\")\n    np.savez_compressed(output, x=x, z=z, ay=ay, **state)\n    manifest = {\n        \"schema_version\": 1,\n        \"source_sha256\": hashlib.sha256(source.read_bytes()).hexdigest(),\n        \"source_name\": source.name,\n        \"source_time_code\": time_code,\n        \"flash_shape_zx\": [nz, nx],\n        \"cell_size_code\": [dx, dz],\n        \"bounds_xz_code\": [[xmin, xmax], [zmin, zmax]],\n        \"rotation\": (\n            \"Right-handed (X,Y,Z)=(x,-z,y); FLASH Bz=uz=0 in this application. \"\n            \"Thus B_W=(Bx,0,By), J_W,y=-J_FLASH,z.\"\n        ),\n        \"units\": (\n            \"FLASH normalized UnitSystem=none; mu0=1; pressure is total scalar fluid pressure. \"\n            \"No SI mapping is inferred by this helper.\"\n        ),\n        \"eta_code\": float(params.get(\"resistivity\", 0.0)),\n        \"potential_relative_edge_residual\": residual,\n        \"potential_definition\": (\n            \"Bx=-dAy/dZ, Bz=dAy/dX; least-squares reconstruction, zero mean; \"\n            \"original B arrays are also retained.\"\n        ),\n        \"handoff_sha256\": hashlib.sha256(output.read_bytes()).hexdigest(),\n        \"scope\": (\n            \"Transfer/initialization material only; not kinetic qualification or claim evidence.\"\n        ),\n    }\n    output.with_suffix(\".json\").write_text(json.dumps(manifest, indent=2) + \"\\n\")\n    return manifest\n\n\nif __name__ == \"__main__\":\n    parser = argparse.ArgumentParser(description=__doc__)\n    parser.add_argument(\"--flash-file\", type=Path, required=True)\n    parser.add_argument(\"--output\", type=Path, required=True)\n    args = parser.parse_args()\n    print(json.dumps(export(args.flash_file, args.output), indent=2))\n"
+      },
+      "raw_artifacts": {
+        "source.h5": {
+          "sha256": "1653e6cb6985a04164543859350c6f9200319732d3e68789f811abb44d624e46",
+          "bytes": 2153740
+        },
+        "state.npz": {
+          "sha256": "7a0329d97fc72d1f5c4c52fbb4cabb3d1da701077b86e700b2d246eb01c597fe",
+          "bytes": 1515422
+        }
+      },
+      "output_findings": [
+        {
+          "path": "result.json",
+          "kind": "failed_checks",
+          "detail": [
+            "flux_window_reached"
+          ]
+        }
+      ]
+    },
+    {
+      "record": {
+        "id": "exp_b3aeffc4296462890906d872",
+        "status": "succeeded",
+        "operator_guidance_ids": [],
+        "created_at": 1791434180.443646,
+        "timeout": 1200,
+        "workspace_limit_bytes": 4294967296,
+        "binding": {
+          "source": "calculation.py",
+          "args": [
+            "flash",
+            "--eta",
+            "0.001",
+            "--nx",
+            "512",
+            "--ny",
+            "512",
+            "--tmax",
+            "0.85",
+            "--plot-interval",
+            "0.05",
+            "--output",
+            "macro",
+            "--summary",
+            "result.json"
+          ],
+          "inputs": {
+            "calculation.py": "ef030822bfce50da0aa95310c94f11bf6f24e0766ee8ca0856ea52eb0ee15844",
+            "flash_driver.py": "73ed49055856adb3c30f8a5f4f3aaebe9e18a496fa955bf027b7400368b588d0",
+            "extract_flash.py": "28608ddeab7d71584abd32ce910b66621d8ba9cc49d2bb44eb1ead3922e509a0"
+          },
+          "capability": "flash-island-coalescence-resistive-mhd-4.8",
+          "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+        },
+        "outputs": [
+          "result.json",
+          "source.h5",
+          "state.npz",
+          "state.json"
+        ],
+        "commitment": null,
+        "key": "macro512",
+        "stage": "exploration",
+        "method": null,
+        "review_documents": null,
+        "pid": 284134,
+        "worker_identity": {
+          "pid": 284134,
+          "starttime": "1557531",
+          "argv": [
+            "/home/tomzhu0225/src/simjecture/.venv/bin/python3",
+            "-m",
+            "conjecture_solver.research_service",
+            "--root",
+            "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/coupled-study",
+            "--execute",
+            "exp_b3aeffc4296462890906d872"
+          ],
+          "launched_at": "2026-10-08T04:36:20.609981+00:00",
+          "run_directory": null
+        },
+        "started_at": 1791434180.6101038,
+        "execution": {
+          "isolation_backend": "bubblewrap",
+          "returncode": 0,
+          "stdout": "{\"checks\": {\"completed\": true, \"representation\": true, \"physics_controls\": true, \"boundaries\": true, \"diagnostics\": true, \"numerical_regime\": true, \"flux_window_reached\": false}, \"metrics\": {\"l_over_eta_nominal\": 1000.0, \"flux_low\": 0.01, \"flux_high\": 0.05, \"flux_low_crossing_time\": 0.2583590221401517, \"flux_high_crossing_time\": null, \"reconnection_time\": null, \"normalized_flux_slope\": null, \"flux_path_max_abs_mismatch\": 6.744131837210787e-06, \"max_abs_divb\": 6.746603276042151e-12, \"max_boundary_normal_fraction\": 0.0076819382953009, \"initial_sheet_cells\": 25.6, \"plot_file_count\": 17}}",
+          "stderr": "",
+          "timed_out": false,
+          "cancelled": false,
+          "workspace_exceeded": false,
+          "stdout_truncated": false,
+          "stderr_truncated": false,
+          "heartbeat_count": 32,
+          "wall_seconds": 968.5119490329998,
+          "workspace_bytes": 260889528
+        },
+        "artifacts": {
+          "calculation.py": {
+            "sha256": "ef030822bfce50da0aa95310c94f11bf6f24e0766ee8ca0856ea52eb0ee15844",
+            "bytes": 435
+          },
+          "extract_flash.py": {
+            "sha256": "28608ddeab7d71584abd32ce910b66621d8ba9cc49d2bb44eb1ead3922e509a0",
+            "bytes": 5159
+          },
+          "flash_driver.py": {
+            "sha256": "73ed49055856adb3c30f8a5f4f3aaebe9e18a496fa955bf027b7400368b588d0",
+            "bytes": 16098
+          },
+          "macro/.simjecture-flash-guided-output": {
+            "sha256": "67d1f5ea486320558047f5cff49a53b2b0f1eaca0f699ba9abc1c1f60bcedc67",
+            "bytes": 49
+          },
+          "macro/flash.par": {
+            "sha256": "40521beb62638675c1a3423358ae5e4bd9ac877ae0ffb72deef7f0c67bf47eb7",
+            "bytes": 1811
+          },
+          "macro/flash_run.dat": {
+            "sha256": "60cfba0b04d3e52a59c2e0ad0fef498590bab8d7e207fc03e986835c0182b28e",
+            "bytes": 986766
+          },
+          "macro/flash_run.log": {
+            "sha256": "f8168b325ea9a5832a8ad0b3ac6cc1300bf12f9a0f6d8b50e3c8f5e3583437d8",
+            "bytes": 347698
+          },
+          "macro/flash_run_forced_hdf5_plt_cnt_0000": {
+            "sha256": "f90a95f64719594a520f2c64826c22ee0cbd894ce4262820d64e58a320b648f1",
+            "bytes": 8445196
+          },
+          "macro/flash_run_hdf5_chk_0000": {
+            "sha256": "de3007db5189ef5f35a60aa57e110a4d2cc57d80aedf76ba5d787ba5b4f080ca",
+            "bytes": 46216460
+          },
+          "macro/flash_run_hdf5_chk_0001": {
+            "sha256": "4b097acb3da03587ac9d58be7632d74527de89671895c86f693af50fc33f9ff1",
+            "bytes": 46216460
+          },
+          "macro/flash_run_hdf5_plt_cnt_0000": {
+            "sha256": "4f3cca886d65b4139e9d23384df483bd85b1ebc8456a1a291655b9529bf3641b",
+            "bytes": 8445196
+          },
+          "macro/flash_run_hdf5_plt_cnt_0001": {
+            "sha256": "71a746a2c4a99f0893414fd3f509296b94aba77dba4766e19fcc1b32f2cd9f6a",
+            "bytes": 8445196
+          },
+          "macro/flash_run_hdf5_plt_cnt_0002": {
+            "sha256": "7fd14871149306bdbf02429505a514b8ef740847a1ca067b67c9d98c0049abc3",
+            "bytes": 8445196
+          },
+          "macro/flash_run_hdf5_plt_cnt_0003": {
+            "sha256": "baa2751adcd9fa31daef1b6920e7ac51b57976c9acb0fec3087463f9faa14cc3",
+            "bytes": 8445196
+          },
+          "macro/flash_run_hdf5_plt_cnt_0004": {
+            "sha256": "c52eeda14f7c552d27f663a9eeaa852a8f0d6de24abf75b7ac7bfd99a54dfebc",
+            "bytes": 8445196
+          },
+          "macro/flash_run_hdf5_plt_cnt_0005": {
+            "sha256": "500fa13a932c5688cfa48d785e42dd9d6beb1f0755051a64a737dfac4593096e",
+            "bytes": 8445196
+          },
+          "macro/flash_run_hdf5_plt_cnt_0006": {
+            "sha256": "a40bc5cff096cba7fc756dab3217b55ae80279c2476ea39ec740c45dbb5d47f6",
+            "bytes": 8445196
+          },
+          "macro/flash_run_hdf5_plt_cnt_0007": {
+            "sha256": "1b52b1ff713d492fb2b96467d61cb1e8a0b61c8f90e2f794dd108517814f9546",
+            "bytes": 8445196
+          },
+          "macro/flash_run_hdf5_plt_cnt_0008": {
+            "sha256": "e19b2b46137fadad3d24915f36fba7b839cc6e3fae254787e748139519d730be",
+            "bytes": 8445196
+          },
+          "macro/flash_run_hdf5_plt_cnt_0009": {
+            "sha256": "3c3beadea4a79759f8af33bdce89097d522a5d275d267d0e39e28e517894c106",
+            "bytes": 8445196
+          },
+          "macro/flash_run_hdf5_plt_cnt_0010": {
+            "sha256": "2182bd140003b5985420258760a6511705a3fa1ded2fecc74091efff584afbd7",
+            "bytes": 8445196
+          },
+          "macro/flash_run_hdf5_plt_cnt_0011": {
+            "sha256": "cf49c16589c8a68dadae8136d71716c909e46e8467e53cbf2497d99c65525e81",
+            "bytes": 8445196
+          },
+          "macro/flash_run_hdf5_plt_cnt_0012": {
+            "sha256": "cda6c384faa3c00f33bb50a17666860d95de75c30660412f017bc1fda87d1cef",
+            "bytes": 8445196
+          },
+          "macro/flash_run_hdf5_plt_cnt_0013": {
+            "sha256": "c7086fc36e60013c7e4e61ab0c0fc79df3fea36b31d25d88e6bd5caa2c5d7c53",
+            "bytes": 8445196
+          },
+          "macro/flash_run_hdf5_plt_cnt_0014": {
+            "sha256": "557601ff2df6eeb827880560440d3c96e07c00d933128c7a3308c724e8ca56a0",
+            "bytes": 8445196
+          },
+          "macro/flash_run_hdf5_plt_cnt_0015": {
+            "sha256": "d457cf238808412b825e75e235aa1db83dd80f1cd31c71c8f5077d3b1547e025",
+            "bytes": 8445196
+          },
+          "macro/flash_run_hdf5_plt_cnt_0016": {
+            "sha256": "79d2045d47eaecb729d854e170f3679fa75b9948359d3f380f15caab112b2083",
+            "bytes": 8445196
+          },
+          "macro/launcher_stderr.txt": {
+            "sha256": "b02b461e24dcd2e6b070047f42137aa8a806941ce4796a6bb96cf4a506dd057d",
+            "bytes": 504
+          },
+          "macro/launcher_stdout.txt": {
+            "sha256": "a0920c82d42b158b66a69ade98b2274f624fb883f37c792684d2bc6633d70cb9",
+            "bytes": 388256
+          },
+          "result.json": {
+            "sha256": "eba7054b59dfad584cf82f8d6eb8147fe99f0dd9c4e307513387c71249c6e1b2",
+            "bytes": 10348
+          },
+          "source.h5": {
+            "sha256": "79d2045d47eaecb729d854e170f3679fa75b9948359d3f380f15caab112b2083",
+            "bytes": 8445196
+          },
+          "state.json": {
+            "sha256": "13a35761198aa1571ab3c0c100068ea31533a20a600d854fb5270c777f01ff1c",
+            "bytes": 1043
+          },
+          "state.npz": {
+            "sha256": "e8d1ef82fb0baafddeaf1b0f8c9e153db6fae069a2a4829cd18e80487bfbd023",
+            "bytes": 6239717
+          }
+        },
+        "missing_outputs": [],
+        "input_mutations": [],
+        "output_findings": [
+          {
+            "path": "result.json",
+            "kind": "failed_checks",
+            "detail": [
+              "flux_window_reached"
+            ]
+          }
+        ],
+        "scientific_status": "unreviewed",
+        "finished_at": 1791435150.4036174
+      },
+      "documents": {
+        "result.json": "{\n  \"budgets\": [\n    {\n      \"energy\": 9.38849516653999,\n      \"mass\": 1.0254838464998102,\n      \"time\": 0.0\n    },\n    {\n      \"energy\": 9.388495534579128,\n      \"mass\": 1.0254838465734792,\n      \"time\": 0.05013316905023449\n    },\n    {\n      \"energy\": 9.388495749102903,\n      \"mass\": 1.0254838463006308,\n      \"time\": 0.10015057947332891\n    },\n    {\n      \"energy\": 9.388496135414833,\n      \"mass\": 1.0254838465634748,\n      \"time\": 0.15006920941227475\n    },\n    {\n      \"energy\": 9.388496603353707,\n      \"mass\": 1.0254838463270062,\n      \"time\": 0.2002004201454483\n    },\n    {\n      \"energy\": 9.388497154479326,\n      \"mass\": 1.0254838463142733,\n      \"time\": 0.250091782600585\n    },\n    {\n      \"energy\": 9.388497821809244,\n      \"mass\": 1.0254838461987674,\n      \"time\": 0.30017975039239947\n    },\n    {\n      \"energy\": 9.388498615763154,\n      \"mass\": 1.0254838464652494,\n      \"time\": 0.3501971078228644\n    },\n    {\n      \"energy\": 9.38849956094542,\n      \"mass\": 1.0254838464015847,\n      \"time\": 0.4001183893018292\n    },\n    {\n      \"energy\": 9.388500647358834,\n      \"mass\": 1.0254838465698413,\n      \"time\": 0.450081220002301\n    },\n    {\n      \"energy\": 9.388501836983473,\n      \"mass\": 1.0254838464752538,\n      \"time\": 0.5000800452330326\n    },\n    {\n      \"energy\": 9.38850305416602,\n      \"mass\": 1.0254838463897613,\n      \"time\": 0.5501620706293111\n    },\n    {\n      \"energy\": 9.388504219828288,\n      \"mass\": 1.0254838465407374,\n      \"time\": 0.6000891019201801\n    },\n    {\n      \"energy\": 9.388505272623252,\n      \"mass\": 1.0254838464024942,\n      \"time\": 0.6501066449960259\n    },\n    {\n      \"energy\": 9.388506217959078,\n      \"mass\": 1.025483846359748,\n      \"time\": 0.7001113023640055\n    },\n    {\n      \"energy\": 9.38850708994635,\n      \"mass\": 1.0254838465243665,\n      \"time\": 0.750077280197842\n    },\n    {\n      \"energy\": 9.388507986622754,\n      \"mass\": 1.0254838463342821,\n      \"time\": 0.8001113920335353\n    }\n  ],\n  \"checks\": {\n    \"boundaries\": true,\n    \"completed\": true,\n    \"diagnostics\": true,\n    \"flux_window_reached\": false,\n    \"numerical_regime\": true,\n    \"physics_controls\": true,\n    \"representation\": true\n  },\n  \"energy_relative_drift\": 1.365509864664399e-06,\n  \"kind\": \"campaign_flash_islands\",\n  \"mass_relative_drift\": -1.6141457155824987e-10,\n  \"metrics\": {\n    \"flux_high\": 0.05,\n    \"flux_high_crossing_time\": null,\n    \"flux_low\": 0.01,\n    \"flux_low_crossing_time\": 0.2583590221401517,\n    \"flux_path_max_abs_mismatch\": 6.744131837210787e-06,\n    \"initial_sheet_cells\": 25.6,\n    \"l_over_eta_nominal\": 1000.0,\n    \"max_abs_divb\": 6.746603276042151e-12,\n    \"max_boundary_normal_fraction\": 0.0076819382953009,\n    \"normalized_flux_slope\": null,\n    \"plot_file_count\": 17,\n    \"reconnection_time\": null\n  },\n  \"provenance\": {\n    \"command\": [\n      \"/usr/bin/orterun\",\n      \"-np\",\n      \"4\",\n      \"/opt/acs-capabilities/flash-island-coalescence-resistive-mhd-4.8/bin/flash4\",\n      \"-par_file\",\n      \"flash.par\"\n    ],\n    \"flash_executable_sha256\": \"40cf57b987e85f9befc01abae4e89f27c230d1eb42391ba3abea8655a0f7024b\",\n    \"parameter_file_sha256\": \"40521beb62638675c1a3423358ae5e4bd9ac877ae0ffb72deef7f0c67bf47eb7\"\n  },\n  \"realized\": {\n    \"alpha\": 20.0,\n    \"eta\": 0.001,\n    \"mpi_ranks\": 4,\n    \"nx\": 512,\n    \"ny\": 512,\n    \"resistivity_solver\": \"explicit\",\n    \"tmax\": 0.85,\n    \"use_diffuse\": true,\n    \"use_magnetic_resistivity\": true\n  },\n  \"schema_version\": \"0.1.0\",\n  \"scientific_status\": \"fresh_campaign_trajectory_requires_independent_qualification\",\n  \"selected_source\": {\n    \"bounds_xz_code\": [\n      [\n        -0.5,\n        0.5\n      ],\n      [\n        -0.5,\n        0.5\n      ]\n    ],\n    \"cell_size_code\": [\n      0.001953125,\n      0.001953125\n    ],\n    \"eta_code\": 0.001,\n    \"flash_shape_zx\": [\n      512,\n      512\n    ],\n    \"handoff_sha256\": \"e8d1ef82fb0baafddeaf1b0f8c9e153db6fae069a2a4829cd18e80487bfbd023\",\n    \"potential_definition\": \"Bx=-dAy/dZ, Bz=dAy/dX; least-squares reconstruction, zero mean; original B arrays are also retained.\",\n    \"potential_relative_edge_residual\": 1.3760034177670742e-08,\n    \"rotation\": \"Right-handed (X,Y,Z)=(x,-z,y); FLASH Bz=uz=0 in this application. Thus B_W=(Bx,0,By), J_W,y=-J_FLASH,z.\",\n    \"schema_version\": 1,\n    \"scope\": \"Transfer/initialization material only; not kinetic qualification or claim evidence.\",\n    \"source_name\": \"source.h5\",\n    \"source_sha256\": \"79d2045d47eaecb729d854e170f3679fa75b9948359d3f380f15caab112b2083\",\n    \"source_time_code\": 0.8001113920335353,\n    \"units\": \"FLASH normalized UnitSystem=none; mu0=1; pressure is total scalar fluid pressure. No SI mapping is inferred by this helper.\"\n  },\n  \"timeseries\": [\n    {\n      \"flux_from_bx\": 3.812618996334894e-05,\n      \"flux_from_by\": 1.907187112993724e-05,\n      \"max_abs_divb\": 5.384581669432009e-14,\n      \"max_abs_velocity\": 0.0,\n      \"reconnected_flux_from_bx\": 0.0,\n      \"reconnected_flux_from_by\": 0.0,\n      \"time\": 0.0\n    },\n    {\n      \"flux_from_bx\": 0.001963270652357292,\n      \"flux_from_by\": 0.0019454381047493813,\n      \"max_abs_divb\": 2.6787461138155777e-12,\n      \"max_abs_velocity\": 0.07494324445724487,\n      \"reconnected_flux_from_bx\": 0.001925144462393943,\n      \"reconnected_flux_from_by\": 0.001926366233619444,\n      \"time\": 0.05013316905023449\n    },\n    {\n      \"flux_from_bx\": 0.003813829165238641,\n      \"flux_from_by\": 0.0037961953901752064,\n      \"max_abs_divb\": 3.492511835290202e-12,\n      \"max_abs_velocity\": 0.15392376482486725,\n      \"reconnected_flux_from_bx\": 0.003775702975275292,\n      \"reconnected_flux_from_by\": 0.0037771235190452693,\n      \"time\": 0.10015057947332891\n    },\n    {\n      \"flux_from_bx\": 0.0056743212482073735,\n      \"flux_from_by\": 0.005656241845671346,\n      \"max_abs_divb\": 4.515499085755437e-12,\n      \"max_abs_velocity\": 0.23514239490032196,\n      \"reconnected_flux_from_bx\": 0.005636195058244024,\n      \"reconnected_flux_from_by\": 0.0056371699745414085,\n      \"time\": 0.15006920941227475\n    },\n    {\n      \"flux_from_bx\": 0.007617342267499202,\n      \"flux_from_by\": 0.00759828881518624,\n      \"max_abs_divb\": 4.472866521609831e-12,\n      \"max_abs_velocity\": 0.31484726071357727,\n      \"reconnected_flux_from_bx\": 0.0075792160775358525,\n      \"reconnected_flux_from_by\": 0.0075792169440563025,\n      \"time\": 0.2002004201454483\n    },\n    {\n      \"flux_from_bx\": 0.00967341309322804,\n      \"flux_from_by\": 0.00965300184097912,\n      \"max_abs_divb\": 4.941824727211497e-12,\n      \"max_abs_velocity\": 0.39257922768592834,\n      \"reconnected_flux_from_bx\": 0.009635286903264692,\n      \"reconnected_flux_from_by\": 0.009633929969849181,\n      \"time\": 0.250091782600585\n    },\n    {\n      \"flux_from_bx\": 0.01189286133399534,\n      \"flux_from_by\": 0.011870876839276765,\n      \"max_abs_divb\": 4.813927034774679e-12,\n      \"max_abs_velocity\": 0.4732186496257782,\n      \"reconnected_flux_from_bx\": 0.011854735144031991,\n      \"reconnected_flux_from_by\": 0.011851804968146827,\n      \"time\": 0.30017975039239947\n    },\n    {\n      \"flux_from_bx\": 0.014267082155528457,\n      \"flux_from_by\": 0.014243639146773644,\n      \"max_abs_divb\": 5.201172825763933e-12,\n      \"max_abs_velocity\": 0.5560675263404846,\n      \"reconnected_flux_from_bx\": 0.014228955965565108,\n      \"reconnected_flux_from_by\": 0.014224567275643706,\n      \"time\": 0.3501971078228644\n    },\n    {\n      \"flux_from_bx\": 0.016782575160191996,\n      \"flux_from_by\": 0.016757856158911216,\n      \"max_abs_divb\": 5.226041821515537e-12,\n      \"max_abs_velocity\": 0.6429409980773926,\n      \"reconnected_flux_from_bx\": 0.016744448970228646,\n      \"reconnected_flux_from_by\": 0.016738784287781278,\n      \"time\": 0.4001183893018292\n    },\n    {\n      \"flux_from_bx\": 0.019407012945225937,\n      \"flux_from_by\": 0.019381509324624163,\n      \"max_abs_divb\": 5.236699962551938e-12,\n      \"max_abs_velocity\": 0.7317124605178833,\n      \"reconnected_flux_from_bx\": 0.019368886755262587,\n      \"reconnected_flux_from_by\": 0.019362437453494225,\n      \"time\": 0.450081220002301\n    },\n    {\n      \"flux_from_bx\": 0.022089559080111763,\n      \"flux_from_by\": 0.02206376062944114,\n      \"max_abs_divb\": 5.115907697472721e-12,\n      \"max_abs_velocity\": 0.8176102638244629,\n      \"reconnected_flux_from_bx\": 0.022051432890148413,\n      \"reconnected_flux_from_by\": 0.022044688758311202,\n      \"time\": 0.5000800452330326\n    },\n    {\n      \"flux_from_bx\": 0.024781976488913195,\n      \"flux_from_by\": 0.024756354397432654,\n      \"max_abs_divb\": 5.5209170568559784e-12,\n      \"max_abs_velocity\": 0.8951755166053772,\n      \"reconnected_flux_from_bx\": 0.024743850298949845,\n      \"reconnected_flux_from_by\": 0.024737282526302716,\n      \"time\": 0.5501620706293111\n    },\n    {\n      \"flux_from_bx\": 0.027430103807711135,\n      \"flux_from_by\": 0.027404960809943014,\n      \"max_abs_divb\": 5.6132876125047915e-12,\n      \"max_abs_velocity\": 0.9541290402412415,\n      \"reconnected_flux_from_bx\": 0.027391977617747785,\n      \"reconnected_flux_from_by\": 0.027385888938813076,\n      \"time\": 0.6000891019201801\n    },\n    {\n      \"flux_from_bx\": 0.030018655074666153,\n      \"flux_from_by\": 0.029994208618424677,\n      \"max_abs_divb\": 6.0538241086760536e-12,\n      \"max_abs_velocity\": 0.9887048006057739,\n      \"reconnected_flux_from_bx\": 0.029980528884702803,\n      \"reconnected_flux_from_by\": 0.02997513674729474,\n      \"time\": 0.6501066449960259\n    },\n    {\n      \"flux_from_bx\": 0.032543818796301846,\n      \"flux_from_by\": 0.03251994527998505,\n      \"max_abs_divb\": 6.23856521997368e-12,\n      \"max_abs_velocity\": 1.0028996467590332,\n      \"reconnected_flux_from_bx\": 0.032505692606338496,\n      \"reconnected_flux_from_by\": 0.032500873408855116,\n      \"time\": 0.7001113023640055\n    },\n    {\n      \"flux_from_bx\": 0.03500711878941407,\n      \"flux_from_by\": 0.034983755440257405,\n      \"max_abs_divb\": 6.494360604847316e-12,\n      \"max_abs_velocity\": 1.0026297569274902,\n      \"reconnected_flux_from_bx\": 0.03496899259945072,\n      \"reconnected_flux_from_by\": 0.03496468356912747,\n      \"time\": 0.750077280197842\n    },\n    {\n      \"flux_from_bx\": 0.037430438236762606,\n      \"flux_from_by\": 0.037407411989587185,\n      \"max_abs_divb\": 6.746603276042151e-12,\n      \"max_abs_velocity\": 0.9967864751815796,\n      \"reconnected_flux_from_bx\": 0.037392312046799256,\n      \"reconnected_flux_from_by\": 0.03738834011845725,\n      \"time\": 0.8001113920335353\n    }\n  ]\n}\n",
+        "state.json": "{\n  \"schema_version\": 1,\n  \"source_sha256\": \"79d2045d47eaecb729d854e170f3679fa75b9948359d3f380f15caab112b2083\",\n  \"source_name\": \"source.h5\",\n  \"source_time_code\": 0.8001113920335353,\n  \"flash_shape_zx\": [\n    512,\n    512\n  ],\n  \"cell_size_code\": [\n    0.001953125,\n    0.001953125\n  ],\n  \"bounds_xz_code\": [\n    [\n      -0.5,\n      0.5\n    ],\n    [\n      -0.5,\n      0.5\n    ]\n  ],\n  \"rotation\": \"Right-handed (X,Y,Z)=(x,-z,y); FLASH Bz=uz=0 in this application. Thus B_W=(Bx,0,By), J_W,y=-J_FLASH,z.\",\n  \"units\": \"FLASH normalized UnitSystem=none; mu0=1; pressure is total scalar fluid pressure. No SI mapping is inferred by this helper.\",\n  \"eta_code\": 0.001,\n  \"potential_relative_edge_residual\": 1.3760034177670742e-08,\n  \"potential_definition\": \"Bx=-dAy/dZ, Bz=dAy/dX; least-squares reconstruction, zero mean; original B arrays are also retained.\",\n  \"handoff_sha256\": \"e8d1ef82fb0baafddeaf1b0f8c9e153db6fae069a2a4829cd18e80487bfbd023\",\n  \"scope\": \"Transfer/initialization material only; not kinetic qualification or claim evidence.\"\n}\n"
+      },
+      "sources": {
+        "calculation.py": "\"\"\"Study entry point; all solver and data-transfer sources are explicit inputs.\"\"\"\nimport sys\nif sys.argv[1] == 'flash':\n    import flash_driver\n    sys.argv.pop(1)\n    raise SystemExit(flash_driver.main())\nif sys.argv[1] == 'pic':\n    import kinetic\n    sys.argv.pop(1)\n    kinetic.cli()\nelif sys.argv[1] == 'select':\n    import select_patch\n    sys.argv.pop(1)\n    select_patch.main()\nelse:\n    raise ValueError('Unknown operation')\n",
+        "flash_driver.py": "\"\"\"Run and diagnose the operator-supplied FLASH island-coalescence application.\n\nThis program is guided commissioning material. Its outputs are permanently\nnon-evidentiary context; a campaign must collect fresh evidence prospectively.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport argparse\nimport hashlib\nimport json\nimport math\nimport os\nimport shutil\nimport subprocess\nfrom pathlib import Path\nfrom typing import Any\n\nimport h5py\nimport numpy as np\n\n_WORKSPACE_MARKER = \".simjecture-flash-guided-output\"\n\n\ndef _sha256(path: Path) -> str:\n    digest = hashlib.sha256()\n    with path.open(\"rb\") as stream:\n        for chunk in iter(lambda: stream.read(1024 * 1024), b\"\"):\n            digest.update(chunk)\n    return digest.hexdigest()\n\n\ndef _named_values(dataset: h5py.Dataset) -> dict[str, Any]:\n    values: dict[str, Any] = {}\n    for row in dataset[()]:\n        name = row[\"name\"].decode().strip().casefold()\n        value = row[\"value\"]\n        if isinstance(value, bytes):\n            value = value.decode().strip()\n        elif hasattr(value, \"item\"):\n            value = value.item()\n        values[name] = value\n    return values\n\n\ndef _center_flux(bx: np.ndarray, by: np.ndarray) -> tuple[float, float]:\n    ny, nx = bx.shape\n    dx = 1.0 / nx\n    dy = 1.0 / ny\n    x = -0.5 + (np.arange(nx) + 0.5) * dx\n    y = -0.5 + (np.arange(ny) + 0.5) * dy\n\n    from_left = np.cumsum(by, axis=1) * dx - 0.5 * by * dx\n    near_x = np.argsort(np.abs(x))[:2]\n    along_y = from_left[:, near_x].mean(axis=1)\n    fit_y = np.argsort(np.abs(y))[:8]\n    design_y = np.column_stack((np.ones(8), y[fit_y] ** 2, y[fit_y] ** 4))\n    flux_from_by = float(np.linalg.lstsq(design_y, along_y[fit_y], rcond=None)[0][0])\n\n    from_bottom = np.cumsum(-bx, axis=0) * dy - 0.5 * (-bx) * dy\n    near_y = np.argsort(np.abs(y))[:2]\n    along_x = from_bottom[near_y, :].mean(axis=0)\n    fit_x = np.argsort(np.abs(x))[:8]\n    design_x = np.column_stack((np.ones(8), x[fit_x] ** 2, x[fit_x] ** 4))\n    flux_from_bx = float(np.linalg.lstsq(design_x, along_x[fit_x], rcond=None)[0][0])\n    return flux_from_by, flux_from_bx\n\n\ndef _crossing(times: np.ndarray, values: np.ndarray, target: float) -> float | None:\n    indices = np.flatnonzero(values >= target)\n    if not len(indices):\n        return None\n    index = int(indices[0])\n    if index == 0:\n        return float(times[0])\n    dv = values[index] - values[index - 1]\n    if dv <= 0:\n        return None\n    fraction = (target - values[index - 1]) / dv\n    return float(times[index - 1] + fraction * (times[index] - times[index - 1]))\n\n\ndef _parameters(args: argparse.Namespace) -> str:\n    return f\"\"\"run_comment = \"Guided FLASH island-coalescence anchor\"\nlog_file = \"flash_run.log\"\nbasenm = \"flash_run_\"\n\nUnitSystem = \"none\"\ngeometry = \"cartesian\"\nxmin = -0.5\nxmax = 0.5\nymin = -0.5\nymax = 0.5\n\nxl_boundary_type = \"reflecting\"\nxr_boundary_type = \"reflecting\"\nyl_boundary_type = \"reflecting\"\nyr_boundary_type = \"reflecting\"\n\nsim_alpha = {args.alpha:.17g}\nsim_temperature = 3.0\nsim_pressureOffset = 6.0\n\ngamma = 1.6666666666666667\neosModeInit = \"dens_pres\"\neos_singleSpeciesA = 1.0\neos_singleSpeciesZ = 1.0\nsmlrho = 1.0e-12\nsmallp = 1.0e-12\nsmallt = 1.0e-12\n\nuseHydro = .true.\norder = 2\nslopeLimiter = \"mc\"\nLimitedSlopeBeta = 1.0\ncharLimiting = .true.\nuse_avisc = .false.\nuse_flattening = .false.\nuse_steepening = .false.\nuse_upwindTVD = .false.\nRiemannSolver = \"HLLD\"\nentropy = .false.\nshockDetect = .false.\n\nkilldivb = .true.\nE_modification = .true.\nE_upwind = .false.\nenergyFix = .true.\nForceHydroLimit = .false.\n\nuseDiffuse = .true.\nuseDiffuseTherm = .false.\nuseDiffuseSpecies = .false.\nuseDiffuseComputeDtTherm = .false.\nuseDiffuseComputeDtVisc = .false.\nuseDiffuseComputeDtSpecies = .false.\nuseDiffuseComputeDtMagnetic = .true.\ndt_diff_factor = 0.8\nuseMagneticResistivity = .true.\nresistivitySolver = \"explicit\"\nresistivityForm = \"parallel\"\nresistivity = {args.eta:.17g}\n\nrestart = .false.\nnend = 10000\ntmax = {args.tmax:.17g}\ndr_shortenLastStepBeforeTMax = .true.\ncfl = {args.cfl:.17g}\ndtinit = 1.0e-6\ndtmin = 1.0e-14\ndtmax = 1.0e-2\ntstep_change_factor = 1.2\n\nplotFileNumber = 0\ncheckpointFileNumber = 0\nplotFileIntervalTime = {args.plot_interval:.17g}\ncheckpointFileIntervalTime = 1000.0\nplot_var_1 = \"dens\"\nplot_var_2 = \"pres\"\nplot_var_3 = \"velx\"\nplot_var_4 = \"vely\"\nplot_var_5 = \"magx\"\nplot_var_6 = \"magy\"\nplot_var_7 = \"magp\"\nplot_var_8 = \"divb\"\n\niGridSize = {args.nx}\njGridSize = {args.ny}\nkGridSize = 1\niProcs = {args.iprocs}\njProcs = {args.jprocs}\nkProcs = 1\n\"\"\"\n\n\ndef _contained_path(raw: str, *, label: str) -> Path:\n    requested = Path(raw)\n    if requested.is_absolute():\n        raise ValueError(f\"{label} must be relative to the workspace\")\n    workspace = Path.cwd().resolve()\n    resolved = (workspace / requested).resolve()\n    if resolved == workspace or not resolved.is_relative_to(workspace):\n        raise ValueError(f\"{label} must be a contained workspace child\")\n    return resolved\n\n\ndef _analyze(output: Path, args: argparse.Namespace) -> dict[str, Any]:\n    files = sorted(output.glob(\"flash_run_hdf5_plt_cnt_*\"))\n    if len(files) < 2:\n        raise RuntimeError(\"FLASH produced fewer than two regular plot files\")\n\n    rows: list[dict[str, float]] = []\n    initial_runtime: dict[str, Any] = {}\n    initial_logical: dict[str, Any] = {}\n    initial_string: dict[str, Any] = {}\n    initial_integer: dict[str, Any] = {}\n    state_finite = True\n    state_positive = True\n    max_divergence = 0.0\n    max_boundary_fraction = 0.0\n    for path in files:\n        with h5py.File(path, \"r\") as handle:\n            required = {\"dens\", \"pres\", \"velx\", \"vely\", \"magx\", \"magy\", \"divb\"}\n            missing = required.difference(handle.keys())\n            if missing:\n                raise RuntimeError(f\"{path.name} lacks datasets: {sorted(missing)}\")\n            real_scalars = _named_values(handle[\"real scalars\"])\n            if not initial_runtime:\n                initial_runtime = _named_values(handle[\"real runtime parameters\"])\n                initial_logical = _named_values(handle[\"logical runtime parameters\"])\n                initial_string = _named_values(handle[\"string runtime parameters\"])\n                initial_integer = _named_values(handle[\"integer scalars\"])\n            fields = {name: np.asarray(handle[name][0, 0], dtype=float) for name in required}\n            state_finite = state_finite and all(\n                np.isfinite(field).all() for field in fields.values()\n            )\n            state_positive = state_positive and bool(\n                np.min(fields[\"dens\"]) > 0 and np.min(fields[\"pres\"]) > 0\n            )\n            bx = fields[\"magx\"]\n            by = fields[\"magy\"]\n            flux_by, flux_bx = _center_flux(bx, by)\n            bmax = max(float(np.max(np.abs(bx))), float(np.max(np.abs(by))), 1.0e-300)\n            boundary_normal = max(\n                float(np.max(np.abs(bx[:, [0, -1]]))),\n                float(np.max(np.abs(by[[0, -1], :]))),\n            )\n            max_boundary_fraction = max(max_boundary_fraction, boundary_normal / bmax)\n            divergence = float(np.max(np.abs(fields[\"divb\"])))\n            max_divergence = max(max_divergence, divergence)\n            rows.append(\n                {\n                    \"time\": float(real_scalars[\"time\"]),\n                    \"flux_from_by\": flux_by,\n                    \"flux_from_bx\": flux_bx,\n                    \"max_abs_divb\": divergence,\n                    \"max_abs_velocity\": max(\n                        float(np.max(np.abs(fields[\"velx\"]))),\n                        float(np.max(np.abs(fields[\"vely\"]))),\n                    ),\n                }\n            )\n\n    times = np.asarray([row[\"time\"] for row in rows])\n    flux_by = np.asarray([row[\"flux_from_by\"] for row in rows])\n    flux_bx = np.asarray([row[\"flux_from_bx\"] for row in rows])\n    flux_by -= flux_by[0]\n    flux_bx -= flux_bx[0]\n    for row, value_by, value_bx in zip(rows, flux_by, flux_bx, strict=True):\n        row[\"reconnected_flux_from_by\"] = float(value_by)\n        row[\"reconnected_flux_from_bx\"] = float(value_bx)\n\n    low_time = _crossing(times, flux_by, args.flux_low)\n    high_time = _crossing(times, flux_by, args.flux_high)\n    reconnection_time = (\n        high_time - low_time\n        if low_time is not None and high_time is not None and high_time > low_time\n        else None\n    )\n    rate = (\n        (args.flux_high - args.flux_low) / reconnection_time\n        if reconnection_time is not None\n        else None\n    )\n    path_mismatch = float(np.max(np.abs(flux_by - flux_bx)))\n    sheet_cells = (1.0 / args.alpha) / (1.0 / args.ny)\n    realized_eta = float(initial_runtime.get(\"resistivity\", math.nan))\n    realized_resistive_path = (\n        bool(initial_logical.get(\"usediffuse\", False))\n        and bool(initial_logical.get(\"usemagneticresistivity\", False))\n        and str(initial_string.get(\"resistivitysolver\", \"\")).casefold() == \"explicit\"\n    )\n    realized_grid = (\n        int(initial_integer.get(\"nxb\", -1)) == args.nx\n        and int(initial_integer.get(\"nyb\", -1)) == args.ny\n        and int(initial_integer.get(\"dimensionality\", -1)) == 2\n    )\n    checks = {\n        \"completed\": True,\n        \"representation\": realized_grid and state_finite and state_positive,\n        \"physics_controls\": realized_resistive_path\n        and math.isclose(realized_eta, args.eta, rel_tol=1.0e-12),\n        \"boundaries\": max_boundary_fraction < 0.05,\n        \"diagnostics\": bool(np.all(np.diff(times) > 0)) and path_mismatch < 5.0e-4,\n        \"numerical_regime\": sheet_cells >= 4.0 and max_divergence < 1.0e-9,\n        \"flux_window_reached\": reconnection_time is not None,\n        \"scientific_evidence_eligible\": False,\n    }\n    return {\n        \"schema_version\": \"0.1.0\",\n        \"kind\": \"guided_flash_island_coalescence_anchor\",\n        \"scientific_status\": \"permanently_non_evidentiary\",\n        \"checks\": checks,\n        \"metrics\": {\n            \"l_over_eta_nominal\": 1.0 / args.eta,\n            \"flux_low\": args.flux_low,\n            \"flux_high\": args.flux_high,\n            \"flux_low_crossing_time\": low_time,\n            \"flux_high_crossing_time\": high_time,\n            \"reconnection_time\": reconnection_time,\n            \"normalized_flux_slope\": rate,\n            \"flux_path_max_abs_mismatch\": path_mismatch,\n            \"max_abs_divb\": max_divergence,\n            \"max_boundary_normal_fraction\": max_boundary_fraction,\n            \"initial_sheet_cells\": sheet_cells,\n            \"plot_file_count\": len(files),\n        },\n        \"realized\": {\n            \"eta\": realized_eta,\n            \"resistivity_solver\": initial_string.get(\"resistivitysolver\"),\n            \"use_diffuse\": bool(initial_logical.get(\"usediffuse\", False)),\n            \"use_magnetic_resistivity\": bool(initial_logical.get(\"usemagneticresistivity\", False)),\n            \"nx\": args.nx,\n            \"ny\": args.ny,\n            \"alpha\": args.alpha,\n            \"tmax\": args.tmax,\n            \"mpi_ranks\": args.ranks,\n        },\n        \"timeseries\": rows,\n    }\n\n\ndef main() -> int:\n    parser = argparse.ArgumentParser()\n    parser.add_argument(\"--cfl\", type=float, default=0.4)\n    parser.add_argument(\"--select-time\", type=float, default=0.8)\n    parser.add_argument(\"--eta\", type=float, required=True)\n    parser.add_argument(\"--nx\", type=int, default=128)\n    parser.add_argument(\"--ny\", type=int, default=128)\n    parser.add_argument(\"--alpha\", type=float, default=20.0)\n    parser.add_argument(\"--tmax\", type=float, default=1.2)\n    parser.add_argument(\"--plot-interval\", type=float, default=0.05)\n    parser.add_argument(\"--flux-low\", type=float, default=0.01)\n    parser.add_argument(\"--flux-high\", type=float, default=0.05)\n    parser.add_argument(\"--ranks\", type=int, default=4)\n    parser.add_argument(\"--iprocs\", type=int, default=2)\n    parser.add_argument(\"--jprocs\", type=int, default=2)\n    parser.add_argument(\"--output\", required=True)\n    parser.add_argument(\"--summary\", required=True)\n    parser.add_argument(\"--overwrite\", action=\"store_true\")\n    args = parser.parse_args()\n\n    if not 0 < args.eta < 1 or args.alpha <= 0 or args.tmax <= 0:\n        raise ValueError(\"eta, alpha, and tmax must define a positive bounded run\")\n    if args.nx < 32 or args.ny < 32 or args.nx % 2 or args.ny % 2:\n        raise ValueError(\"nx and ny must be even and at least 32\")\n    if args.ranks != args.iprocs * args.jprocs:\n        raise ValueError(\"ranks must equal iprocs*jprocs\")\n    if not 0 <= args.flux_low < args.flux_high:\n        raise ValueError(\"flux thresholds must be ordered and nonnegative\")\n\n    executable = Path(os.environ[\"FLASH_EXECUTABLE\"]).resolve()\n    launcher = Path(os.environ[\"FLASH_MPI_LAUNCHER\"]).resolve()\n    if not executable.is_file() or not os.access(executable, os.X_OK):\n        raise FileNotFoundError(\"FLASH_EXECUTABLE is unavailable\")\n    if not launcher.is_file() or not os.access(launcher, os.X_OK):\n        raise FileNotFoundError(\"FLASH_MPI_LAUNCHER is unavailable\")\n\n    output = _contained_path(args.output, label=\"output\")\n    summary = _contained_path(args.summary, label=\"summary\")\n    if output.exists():\n        if not args.overwrite:\n            raise FileExistsError(f\"output exists: {output}\")\n        marker = output / _WORKSPACE_MARKER\n        if output.is_symlink() or not marker.is_file():\n            raise ValueError(\"refusing to replace an unmarked output directory\")\n        shutil.rmtree(output)\n    output.mkdir(parents=True)\n    (output / _WORKSPACE_MARKER).write_text(\"Owned by the Simjecture guided FLASH controller.\\n\")\n    parfile = output / \"flash.par\"\n    parfile.write_text(_parameters(args))\n    command = (\n        str(launcher),\n        \"-np\",\n        str(args.ranks),\n        str(executable),\n        \"-par_file\",\n        parfile.name,\n    )\n    with (\n        (output / \"launcher_stdout.txt\").open(\"wb\") as stdout,\n        (output / \"launcher_stderr.txt\").open(\"wb\") as stderr,\n    ):\n        completed = subprocess.run(\n            command,\n            cwd=output,\n            stdin=subprocess.DEVNULL,\n            stdout=stdout,\n            stderr=stderr,\n            check=False,\n        )\n    if completed.returncode != 0:\n        raise RuntimeError(f\"FLASH exited with status {completed.returncode}\")\n\n    payload = _analyze(output, args)\n    # Scientific extension: realized global budgets and fixed source-time selection.\n    budget = []\n    selected = None\n    for path in sorted(output.glob(\"flash_run_hdf5_plt_cnt_*\")):\n        with h5py.File(path, \"r\") as f:\n            t = float(_named_values(f[\"real scalars\"])[\"time\"])\n            d,p,vx,vy,bx,by = [f[k][0,0].astype(float) for k in (\"dens\",\"pres\",\"velx\",\"vely\",\"magx\",\"magy\")]\n            budget.append(dict(time=t, mass=float(d.mean()), energy=float((1.5*p + 0.5*d*(vx*vx+vy*vy) + 0.5*(bx*bx+by*by)).mean())))\n            if selected is None and t >= args.select_time:\n                selected = path\n    if selected is None:\n        raise ValueError(\"No source snapshot at fixed prospective time\")\n    shutil.copyfile(selected, \"source.h5\")\n    from extract_flash import export\n    handoff = export(Path(\"source.h5\"), Path(\"state.npz\"))\n    payload[\"budgets\"] = budget\n    payload[\"mass_relative_drift\"] = (budget[-1][\"mass\"]-budget[0][\"mass\"])/budget[0][\"mass\"]\n    payload[\"energy_relative_drift\"] = (budget[-1][\"energy\"]-budget[0][\"energy\"])/budget[0][\"energy\"]\n    payload[\"selected_source\"] = json.loads(Path(\"state.json\").read_text())\n    payload[\"scientific_status\"] = \"fresh_campaign_trajectory_requires_independent_qualification\"\n    payload[\"kind\"] = \"campaign_flash_islands\"\n    payload[\"checks\"].pop(\"scientific_evidence_eligible\", None)\n    payload[\"provenance\"] = {\n        \"command\": list(command),\n        \"flash_executable_sha256\": _sha256(executable),\n        \"parameter_file_sha256\": _sha256(parfile),\n    }\n    summary.parent.mkdir(parents=True, exist_ok=True)\n    summary.write_text(json.dumps(payload, indent=2, sort_keys=True) + \"\\n\")\n    print(json.dumps({\"checks\": payload[\"checks\"], \"metrics\": payload[\"metrics\"]}))\n    return 0\n\n\nif __name__ == \"__main__\":\n    raise SystemExit(main())\n",
+        "extract_flash.py": "\"\"\"Export a uniform 2D FLASH state and a fitted flux potential for kinetic follow-up.\n\nThis is a one-way data-transfer helper, not a two-way MHD/PIC coupler. It preserves\ncode units; the kinetic launcher must supply an explicit dimensional mapping.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport argparse\nimport hashlib\nimport json\nfrom pathlib import Path\n\nimport h5py\nimport numpy as np\nfrom scipy.fft import dctn, idctn\n\n\ndef potential(bx, bz, dx, dz):\n    \"\"\"Least-squares Ay from edge-averaged Bz=dAy/dx and Bx=-dAy/dz.\n\n    The graph-gradient normal equation uses natural boundaries and a fixed zero\n    mean. A DCT diagonalizes its Neumann Laplacian on the uniform cell-center grid.\n    \"\"\"\n    nz, nx = bx.shape\n    gx = 0.5 * (bz[:, 1:] + bz[:, :-1])\n    gz = -0.5 * (bx[1:, :] + bx[:-1, :])\n    rhs = np.zeros_like(bx)\n    rhs[:, :-1] -= gx / dx\n    rhs[:, 1:] += gx / dx\n    rhs[:-1, :] -= gz / dz\n    rhs[1:, :] += gz / dz\n    eigen = (4 * np.sin(np.pi * np.arange(nx) / (2 * nx)) ** 2 / dx**2)[None, :]\n    eigen = eigen + (4 * np.sin(np.pi * np.arange(nz) / (2 * nz)) ** 2 / dz**2)[:, None]\n    eigen[0, 0] = 1.0\n    modes = dctn(rhs, type=2, norm=\"ortho\") / eigen\n    modes[0, 0] = 0.0\n    ay = idctn(modes, type=2, norm=\"ortho\")\n    residual = np.sqrt(\n        np.mean((np.diff(ay, axis=1) / dx - gx) ** 2)\n        + np.mean((np.diff(ay, axis=0) / dz - gz) ** 2)\n    )\n    scale = np.sqrt(np.mean(gx**2) + np.mean(gz**2))\n    return ay, float(residual / max(scale, np.finfo(float).tiny))\n\n\ndef named(dataset):\n    return {row[\"name\"].decode().strip(): row[\"value\"].item() for row in dataset[()]}\n\n\ndef export(source: Path, output: Path):\n    with h5py.File(source) as f:\n        bounds = f[\"bounding box\"][:].astype(float)\n        strings = {\n            row[\"name\"].decode().strip().lower(): row[\"value\"].decode().strip().lower()\n            for row in f[\"string runtime parameters\"]\n        }\n        if strings.get(\"unitsystem\") != \"none\" or strings.get(\"geometry\") != \"cartesian\":\n            raise ValueError(\"This handoff requires the normalized Cartesian FLASH application\")\n        if f[\"dens\"].shape[1] != 1:\n            raise ValueError(\"This handoff requires a 2D FLASH state\")\n        # Fail explicitly on AMR/multiple blocks. A production extension needs a\n        # checked covering-grid reconstruction, not a silent choice of block 0.\n        assert bounds.shape[0] == 1, \"Only a uniform, single-output-block FLASH file is supported\"\n        state = {\n            name: f[key][0, 0].astype(float)\n            for name, key in {\n                \"rho\": \"dens\",\n                \"pressure\": \"pres\",\n                \"ux\": \"velx\",\n                \"uz\": \"vely\",\n                \"bx\": \"magx\",\n                \"bz\": \"magy\",\n            }.items()\n        }\n        nz, nx = state[\"rho\"].shape\n        xmin, xmax = bounds[0, 0]\n        zmin, zmax = bounds[0, 1]\n        dx, dz = (xmax - xmin) / nx, (zmax - zmin) / nz\n        x = xmin + (np.arange(nx) + 0.5) * dx\n        z = zmin + (np.arange(nz) + 0.5) * dz\n        time_code = float(named(f[\"real scalars\"])[\"time\"])\n        params = named(f[\"real runtime parameters\"])\n    assert all(np.isfinite(v).all() for v in state.values())\n    assert state[\"rho\"].min() > 0 and state[\"pressure\"].min() > 0\n    ay, residual = potential(state[\"bx\"], state[\"bz\"], dx, dz)\n    output.parent.mkdir(parents=True, exist_ok=True)\n    if output.exists() or output.with_suffix(\".json\").exists():\n        raise FileExistsError(\"Use a new handoff output path\")\n    np.savez_compressed(output, x=x, z=z, ay=ay, **state)\n    manifest = {\n        \"schema_version\": 1,\n        \"source_sha256\": hashlib.sha256(source.read_bytes()).hexdigest(),\n        \"source_name\": source.name,\n        \"source_time_code\": time_code,\n        \"flash_shape_zx\": [nz, nx],\n        \"cell_size_code\": [dx, dz],\n        \"bounds_xz_code\": [[xmin, xmax], [zmin, zmax]],\n        \"rotation\": (\n            \"Right-handed (X,Y,Z)=(x,-z,y); FLASH Bz=uz=0 in this application. \"\n            \"Thus B_W=(Bx,0,By), J_W,y=-J_FLASH,z.\"\n        ),\n        \"units\": (\n            \"FLASH normalized UnitSystem=none; mu0=1; pressure is total scalar fluid pressure. \"\n            \"No SI mapping is inferred by this helper.\"\n        ),\n        \"eta_code\": float(params.get(\"resistivity\", 0.0)),\n        \"potential_relative_edge_residual\": residual,\n        \"potential_definition\": (\n            \"Bx=-dAy/dZ, Bz=dAy/dX; least-squares reconstruction, zero mean; \"\n            \"original B arrays are also retained.\"\n        ),\n        \"handoff_sha256\": hashlib.sha256(output.read_bytes()).hexdigest(),\n        \"scope\": (\n            \"Transfer/initialization material only; not kinetic qualification or claim evidence.\"\n        ),\n    }\n    output.with_suffix(\".json\").write_text(json.dumps(manifest, indent=2) + \"\\n\")\n    return manifest\n\n\nif __name__ == \"__main__\":\n    parser = argparse.ArgumentParser(description=__doc__)\n    parser.add_argument(\"--flash-file\", type=Path, required=True)\n    parser.add_argument(\"--output\", type=Path, required=True)\n    args = parser.parse_args()\n    print(json.dumps(export(args.flash_file, args.output), indent=2))\n"
+      },
+      "raw_artifacts": {
+        "source.h5": {
+          "sha256": "79d2045d47eaecb729d854e170f3679fa75b9948359d3f380f15caab112b2083",
+          "bytes": 8445196
+        },
+        "state.npz": {
+          "sha256": "e8d1ef82fb0baafddeaf1b0f8c9e153db6fae069a2a4829cd18e80487bfbd023",
+          "bytes": 6239717
+        }
+      },
+      "output_findings": [
+        {
+          "path": "result.json",
+          "kind": "failed_checks",
+          "detail": [
+            "flux_window_reached"
+          ]
+        }
+      ]
+    },
+    {
+      "record": {
+        "id": "exp_488007f309373427b7394eb2",
+        "status": "succeeded",
+        "operator_guidance_ids": [],
+        "created_at": 1791435224.3798683,
+        "timeout": 600,
+        "workspace_limit_bytes": 4294967296,
+        "binding": {
+          "source": "calculation.py",
+          "args": [
+            "select",
+            "--state",
+            "macro512.npz",
+            "--comparison-state",
+            "macro256.npz",
+            "--di",
+            "0.024",
+            "--half",
+            "0.3",
+            "--nx",
+            "384",
+            "--source-experiment",
+            "exp_b3aeffc4296462890906d872"
+          ],
+          "inputs": {
+            "calculation.py": "ef030822bfce50da0aa95310c94f11bf6f24e0766ee8ca0856ea52eb0ee15844",
+            "select_patch.py": "d582d3c1dd0b10817758ad82990317a71ea6a5469d513562fedad999d9ed3dcc",
+            "prepare_patch.py": "0be359a997ac75af4d376f96f18901ed815e2d1b07e2c48336233f4a35b4e20d",
+            "macro512.npz": "e8d1ef82fb0baafddeaf1b0f8c9e153db6fae069a2a4829cd18e80487bfbd023",
+            "macro512.json": "13a35761198aa1571ab3c0c100068ea31533a20a600d854fb5270c777f01ff1c",
+            "macro256.npz": "7a0329d97fc72d1f5c4c52fbb4cabb3d1da701077b86e700b2d246eb01c597fe"
+          },
+          "capability": null,
+          "runtime_sha256": null
+        },
+        "outputs": [
+          "selection.json",
+          "patch.npz",
+          "patch.json",
+          "macro_patch.png",
+          "sheet_profile.npz"
+        ],
+        "commitment": null,
+        "key": "refined-base",
+        "stage": "exploration",
+        "method": null,
+        "review_documents": null,
+        "parent_experiment": "exp_b3aeffc4296462890906d872",
+        "purpose": "diagnostic",
+        "plan": null,
+        "pid": 302769,
+        "worker_identity": {
+          "pid": 302769,
+          "starttime": "1661924",
+          "argv": [
+            "/home/tomzhu0225/src/simjecture/.venv/bin/python3",
+            "-m",
+            "conjecture_solver.research_service",
+            "--root",
+            "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/coupled-study",
+            "--execute",
+            "exp_488007f309373427b7394eb2"
+          ],
+          "launched_at": "2026-10-08T04:53:44.564052+00:00",
+          "run_directory": null
+        },
+        "started_at": 1791435224.5641658,
+        "execution": {
+          "isolation_backend": "bubblewrap",
+          "returncode": 0,
+          "stdout": "",
+          "stderr": "Fontconfig error: Cannot load default config file: No such file: (null)",
+          "timed_out": false,
+          "cancelled": false,
+          "workspace_exceeded": false,
+          "stdout_truncated": false,
+          "stderr_truncated": false,
+          "heartbeat_count": 0,
+          "wall_seconds": 1.7143657599990547,
+          "workspace_bytes": 19826141
+        },
+        "artifacts": {
+          ".cache/fontconfig/2300eef321c393bfd76478a5c0e95b23-le64.cache-9": {
+            "sha256": "be4a2bf520a0eb916fab92b15585e493fa0dae62d7c2dd7e275b01664c14e346",
+            "bytes": 382064
+          },
+          ".cache/fontconfig/3830d5c3ddfd5cd38a049b759396e72e-le64.cache-9": {
+            "sha256": "6cb953b213d173a1439944baba4f785aeb8e08fba3cb8794d99004c34310d453",
+            "bytes": 184
+          },
+          ".cache/fontconfig/4c599c202bc5c08e2d34565a40eac3b2-le64.cache-9": {
+            "sha256": "e2077b9c186aa45489f582008a00a7965a8135d07927d2697f6d07e09f9ae69d",
+            "bytes": 104
+          },
+          ".cache/fontconfig/573ec803664ed168555e0e8b6d0f0c7f-le64.cache-9": {
+            "sha256": "e67dc2bd665d1b1bd952ec5dd357d64bae7b2fbd6f1c9896db3e880f9788c58f",
+            "bytes": 152
+          },
+          ".cache/fontconfig/7ef2298fde41cc6eeb7af42e48b7d293-le64.cache-9": {
+            "sha256": "69cf18e42e3d2705da9c867a36e7e16f3d0e8973c41a5a51118e43c1207756fc",
+            "bytes": 208
+          },
+          ".cache/fontconfig/9b89f8e3dae116d678bbf48e5f21f69b-le64.cache-9": {
+            "sha256": "4fa102166b8aaa98765061eae7abe768aa636c327ad2889f68d33d77de9735b0",
+            "bytes": 68800
+          },
+          ".cache/fontconfig/CACHEDIR.TAG": {
+            "sha256": "05e7633fb31bf1f6f8d89020c16b9f24587fdf7638e951c9745b192f5fc3b682",
+            "bytes": 200
+          },
+          ".cache/fontconfig/d589a48862398ed80a3d6066f4f56f4c-le64.cache-9": {
+            "sha256": "233df56e901146f1c5f71911def868b835fb7e43a0e02644a07a1c829e49cc31",
+            "bytes": 51736
+          },
+          "calculation.py": {
+            "sha256": "ef030822bfce50da0aa95310c94f11bf6f24e0766ee8ca0856ea52eb0ee15844",
+            "bytes": 435
+          },
+          "macro256.npz": {
+            "sha256": "7a0329d97fc72d1f5c4c52fbb4cabb3d1da701077b86e700b2d246eb01c597fe",
+            "bytes": 1515422
+          },
+          "macro512.json": {
+            "sha256": "13a35761198aa1571ab3c0c100068ea31533a20a600d854fb5270c777f01ff1c",
+            "bytes": 1043
+          },
+          "macro512.npz": {
+            "sha256": "e8d1ef82fb0baafddeaf1b0f8c9e153db6fae069a2a4829cd18e80487bfbd023",
+            "bytes": 6239717
+          },
+          "macro_patch.png": {
+            "sha256": "de4a5944499a2aa85328a671cbc6e4cdbe5382ad1a4176b921a623de0cb13ead",
+            "bytes": 333123
+          },
+          "patch.json": {
+            "sha256": "316e8beefde5488c6de26a61ccdf33e70e5af9a32f8a848a3fc967b26a2e9598",
+            "bytes": 1766
+          },
+          "patch.npz": {
+            "sha256": "9cbfc57ca5fa7c26faab39bb9fd08658fc639156d52422cb825611597562d568",
+            "bytes": 11214400
+          },
+          "prepare_patch.py": {
+            "sha256": "0be359a997ac75af4d376f96f18901ed815e2d1b07e2c48336233f4a35b4e20d",
+            "bytes": 6968
+          },
+          "select_patch.py": {
+            "sha256": "d582d3c1dd0b10817758ad82990317a71ea6a5469d513562fedad999d9ed3dcc",
+            "bytes": 4222
+          },
+          "selection.json": {
+            "sha256": "d43ab2103f70f845dbbe434bc3b807181a52a1c1c4a0574998a1f8cfb8ee7799",
+            "bytes": 2695
+          },
+          "sheet_profile.npz": {
+            "sha256": "881ba73346835485c2f2ec0601e16a286f96b24b872fc5acdc38846acc3b346b",
+            "bytes": 2902
+          }
+        },
+        "missing_outputs": [],
+        "input_mutations": [],
+        "output_findings": [],
+        "scientific_status": "unreviewed",
+        "finished_at": 1791435227.4337366
+      },
+      "documents": {
+        "selection.json": "{\n  \"schema_version\": 1,\n  \"source_state_sha256\": \"e8d1ef82fb0baafddeaf1b0f8c9e153db6fae069a2a4829cd18e80487bfbd023\",\n  \"source_flash_sha256\": \"79d2045d47eaecb729d854e170f3679fa75b9948359d3f380f15caab112b2083\",\n  \"source_time_code\": 0.8001113920335353,\n  \"patch_sha256\": \"9cbfc57ca5fa7c26faab39bb9fd08658fc639156d52422cb825611597562d568\",\n  \"shape_zx\": [\n    384,\n    384\n  ],\n  \"bounds_xz_m\": [\n    [\n      -0.0003321308291872663,\n      0.0003321308291872663\n    ],\n    [\n      -0.0003321308291872663,\n      0.0003321308291872663\n    ]\n  ],\n  \"cell_size_m\": [\n    1.7298480686837032e-06,\n    1.7298480686837032e-06\n  ],\n  \"scales\": {\n    \"length_m\": 0.0011071027639575543,\n    \"velocity_m_s\": 2997924.58,\n    \"magnetic_T\": 16.355235690756075,\n    \"density_m3\": 1e+24,\n    \"mass_density_kg_m3\": 2.368439765614e-05,\n    \"ion_mass_kg\": 2.277345928475e-29,\n    \"electron_mass_kg\": 9.1093837139e-31,\n    \"ion_skin_depth_m\": 2.6570466334981303e-05,\n    \"ion_skin_depth_code\": 0.024,\n    \"omega_ci_reference_s1\": 115063663098.55894,\n    \"omega_pe_reference_s1\": 56414602254294.99\n  },\n  \"temperature_ratio_i_e\": 1.0,\n  \"electric_policy\": \"ideal\",\n  \"physics\": \"Collisionless, fully kinetic electron-ion continuation; no scalar MHD resistivity is evolved in PIC.\",\n  \"mapping\": \"Right-handed FLASH (x,y,z) to WarpX (X,Y,Z)=(x,-z,y); n=rho_code*n0; p=p_code*rho0*v0^2; total mass rho=n*(mi+me).\",\n  \"initial_discrete_divb_scaled\": 2.7924331978304966e-16,\n  \"maximum_drift_over_c\": 0.01168584388934757,\n  \"maximum_electron_thermal_speed_over_c\": 0.09293856223339958,\n  \"source_potential_residual\": 1.3760034177670742e-08,\n  \"scope\": \"Prepared local initial-value problem only. Patch boundaries, relaxation, collisionless closure and physical scale need scientific review.\",\n  \"source_experiment\": \"exp_b3aeffc4296462890906d872\",\n  \"width_definition\": \"Half separation of first |J_y|=0.5 |J_y(center)| crossings along Z; J_y=dBx/dZ-dBz/dX, averaged over two source columns closest to X=0, central peak; linear crossing interpolation.\",\n  \"sheet_half_width_code\": 0.014466925003814069,\n  \"sheet_half_width_source_cells\": 7.407065601952803,\n  \"half_width_over_reference_di\": 0.6027885418255862,\n  \"half_width_over_local_di\": 0.5934761743137116,\n  \"crossings_z_code\": [\n    -0.014466925003814069,\n    0.014466925003814069\n  ],\n  \"magnetic_transfer_rms_relative\": 0.0003252619619454983,\n  \"interior_ampere_rms_relative\": 0.0028657703470711254,\n  \"source_refinement_relative_rms_in_central_region\": {\n    \"rho\": 0.0011270463885662554,\n    \"pressure\": 0.0002131166331101971,\n    \"bx\": 0.0011534139426766078,\n    \"bz\": 0.0007761872248350734,\n    \"ux\": 0.0070216364179324945,\n    \"uz\": 0.001367738266599941\n  }\n}\n",
+        "patch.json": "{\n  \"schema_version\": 1,\n  \"source_state_sha256\": \"e8d1ef82fb0baafddeaf1b0f8c9e153db6fae069a2a4829cd18e80487bfbd023\",\n  \"source_flash_sha256\": \"79d2045d47eaecb729d854e170f3679fa75b9948359d3f380f15caab112b2083\",\n  \"source_time_code\": 0.8001113920335353,\n  \"patch_sha256\": \"9cbfc57ca5fa7c26faab39bb9fd08658fc639156d52422cb825611597562d568\",\n  \"shape_zx\": [\n    384,\n    384\n  ],\n  \"bounds_xz_m\": [\n    [\n      -0.0003321308291872663,\n      0.0003321308291872663\n    ],\n    [\n      -0.0003321308291872663,\n      0.0003321308291872663\n    ]\n  ],\n  \"cell_size_m\": [\n    1.7298480686837032e-06,\n    1.7298480686837032e-06\n  ],\n  \"scales\": {\n    \"length_m\": 0.0011071027639575543,\n    \"velocity_m_s\": 2997924.58,\n    \"magnetic_T\": 16.355235690756075,\n    \"density_m3\": 1e+24,\n    \"mass_density_kg_m3\": 2.368439765614e-05,\n    \"ion_mass_kg\": 2.277345928475e-29,\n    \"electron_mass_kg\": 9.1093837139e-31,\n    \"ion_skin_depth_m\": 2.6570466334981303e-05,\n    \"ion_skin_depth_code\": 0.024,\n    \"omega_ci_reference_s1\": 115063663098.55894,\n    \"omega_pe_reference_s1\": 56414602254294.99\n  },\n  \"temperature_ratio_i_e\": 1.0,\n  \"electric_policy\": \"ideal\",\n  \"physics\": \"Collisionless, fully kinetic electron-ion continuation; no scalar MHD resistivity is evolved in PIC.\",\n  \"mapping\": \"Right-handed FLASH (x,y,z) to WarpX (X,Y,Z)=(x,-z,y); n=rho_code*n0; p=p_code*rho0*v0^2; total mass rho=n*(mi+me).\",\n  \"initial_discrete_divb_scaled\": 2.7924331978304966e-16,\n  \"maximum_drift_over_c\": 0.01168584388934757,\n  \"maximum_electron_thermal_speed_over_c\": 0.09293856223339958,\n  \"source_potential_residual\": 1.3760034177670742e-08,\n  \"scope\": \"Prepared local initial-value problem only. Patch boundaries, relaxation, collisionless closure and physical scale need scientific review.\"\n}\n"
+      },
+      "sources": {
+        "calculation.py": "\"\"\"Study entry point; all solver and data-transfer sources are explicit inputs.\"\"\"\nimport sys\nif sys.argv[1] == 'flash':\n    import flash_driver\n    sys.argv.pop(1)\n    raise SystemExit(flash_driver.main())\nif sys.argv[1] == 'pic':\n    import kinetic\n    sys.argv.pop(1)\n    kinetic.cli()\nelif sys.argv[1] == 'select':\n    import select_patch\n    sys.argv.pop(1)\n    select_patch.main()\nelse:\n    raise ValueError('Unknown operation')\n",
+        "select_patch.py": "\"\"\"Fixed central-sheet width and audited FLASH-to-Yee-grid handoff.\"\"\"\nimport argparse,json,hashlib\nfrom pathlib import Path\nfrom types import SimpleNamespace\nimport numpy as np\nfrom scipy.interpolate import RectBivariateSpline\nfrom prepare_patch import prepare\n\ndef main():\n p=argparse.ArgumentParser();p.add_argument('--comparison-state',type=Path);p.add_argument('--state',type=Path,required=True);p.add_argument('--half',type=float,default=.3);p.add_argument('--nx',type=int,default=384);p.add_argument('--di',type=float,default=.03);p.add_argument('--va',type=float,default=.01);p.add_argument('--source-experiment',required=True);a=p.parse_args()\n f=np.load(a.state);x,z=f['x'],f['z'];dx=x[1]-x[0];dz=z[1]-z[0]\n j=np.gradient(f['bx'],dz,axis=0)-np.gradient(f['bz'],dx,axis=1)\n # Average central two x columns; linear interpolated first half-magnitude crossings.\n profile=j[:,np.argsort(abs(x))[:2]].mean(axis=1)\n peak=float(abs(profile[np.argsort(abs(z))[:2]].mean()))\n crossings=[]\n for side in [-1,1]:\n  ii=np.flatnonzero(z*side>0);ii=ii[np.argsort(abs(z[ii]))]\n  for k in range(len(ii)-1):\n   l,r=ii[k:k+2]\n   if abs(profile[l])>=peak/2 and abs(profile[r])<peak/2:\n    crossings.append(float(z[l]+(peak/2-abs(profile[l]))/(abs(profile[r])-abs(profile[l]))*(z[r]-z[l])));break\n if len(crossings)!=2:raise ValueError('Missing two central-sheet half-maximum crossings')\n width=(crossings[1]-crossings[0])/2\n m=prepare(SimpleNamespace(state=a.state,output=Path('patch.npz'),center_x=0.,center_z=0.,half_width=a.half,nx=a.nx,nz=a.nx,mass_ratio=25.,density=1e24,skin_depth_code=a.di,temperature_ratio=1.,va_over_c=a.va,electric='ideal'))\n with np.load('patch.npz') as q:\n  xc,zc=q['x']/m['scales']['length_m'],q['z']/m['scales']['length_m']; bxc=(q['bx'][:,:-1]+q['bx'][:,1:])/2;bzc=(q['bz'][:-1,:]+q['bz'][1:,:])/2\n  sx=RectBivariateSpline(z,x,f['bx'])(zc,xc)*m['scales']['magnetic_T'];sz=RectBivariateSpline(z,x,f['bz'])(zc,xc)*m['scales']['magnetic_T']\n  b_error=float(np.sqrt(np.mean((bxc-sx)**2+(bzc-sz)**2)/np.mean(sx*sx+sz*sz)))\n  jy=np.gradient(bxc,m['cell_size_m'][1],axis=0)-np.gradient(bzc,m['cell_size_m'][0],axis=1)\n  from scipy.constants import mu_0\n  mask=(abs(zc[:,None])<.08)&(abs(xc[None,:])<.08)\n  current_error=float(np.sqrt(np.mean((jy[mask]/mu_0-q['jy'][mask])**2)/np.mean(q['jy'][mask]**2)))\n m.update(source_experiment=a.source_experiment,width_definition='Half separation of first |J_y|=0.5 |J_y(center)| crossings along Z; J_y=dBx/dZ-dBz/dX, averaged over two source columns closest to X=0, central peak; linear crossing interpolation.',sheet_half_width_code=width,sheet_half_width_source_cells=width/dz,half_width_over_reference_di=width/a.di,half_width_over_local_di=width/a.di*np.sqrt(float(f['rho'][np.ix_(np.argsort(abs(z))[:2],np.argsort(abs(x))[:2])].mean())),crossings_z_code=crossings,magnetic_transfer_rms_relative=b_error,interior_ampere_rms_relative=current_error)\n if a.comparison_state:\n  g=np.load(a.comparison_state);xx=x[abs(x)<.08];zz=z[abs(z)<.08]\n  comparisons={}\n  for key in ('rho','pressure','bx','bz','ux','uz'):\n   v=RectBivariateSpline(z,x,f[key])(zz,xx);u=RectBivariateSpline(g['z'],g['x'],g[key])(zz,xx)\n   comparisons[key]=float(np.sqrt(np.mean((v-u)**2))/max(np.sqrt(np.mean(v*v)),1e-300))\n  m['source_refinement_relative_rms_in_central_region']=comparisons\n Path('selection.json').write_text(json.dumps(m,indent=2)+'\\n')\n import matplotlib;matplotlib.use('Agg');import matplotlib.pyplot as plt\n from matplotlib.patches import Rectangle\n fig,axs=plt.subplots(1,2,figsize=(11,4))\n axs[0].streamplot(x,z,f['bx'],f['bz'],density=1,color='k',linewidth=.4)\n im=axs[0].pcolormesh(x,z,np.hypot(f['bx'],f['bz']),shading='auto');fig.colorbar(im,ax=axs[0],label='|B| code')\n im=axs[1].pcolormesh(x,z,j,shading='auto',cmap='RdBu_r');fig.colorbar(im,ax=axs[1],label='J_y code')\n for ax in axs:\n  ax.add_patch(Rectangle((-a.half,-a.half),2*a.half,2*a.half,fill=False,edgecolor='red'))\n  ax.add_patch(Rectangle((-.04,-.015),.08,.03,fill=False,edgecolor='lime'))\n  ax.set(xlabel='X=x FLASH',ylabel='Z=y FLASH',aspect='equal')\n fig.tight_layout();fig.savefig('macro_patch.png',dpi=160)\n np.savez_compressed('sheet_profile.npz',z=z,current=profile)\nif __name__=='__main__':main()\n",
+        "prepare_patch.py": "\"\"\"Prepare a SI, divergence-free Yee-grid patch from an exported FLASH state.\n\nThe dimensional scale and collisionless realization are operator/model choices,\nnot information that can be inferred from a normalized MHD snapshot alone.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport argparse\nimport hashlib\nimport json\nfrom pathlib import Path\n\nimport numpy as np\nfrom scipy.constants import c, e, epsilon_0, m_e, mu_0\nfrom scipy.interpolate import RectBivariateSpline\n\n\ndef prepare(a):\n    metadata = json.loads(a.state.with_suffix(\".json\").read_text())\n    if hashlib.sha256(a.state.read_bytes()).hexdigest() != metadata[\"handoff_sha256\"]:\n        raise ValueError(\"FLASH export hash does not match its handoff manifest\")\n    with np.load(a.state, allow_pickle=False) as f:\n        data = {k: f[k].copy() for k in f.files}\n    if a.output.exists() or a.output.with_suffix(\".json\").exists():\n        raise FileExistsError(\"Use a new prepared-patch output path\")\n    x, z = data[\"x\"], data[\"z\"]\n    bounds = np.array(\n        [\n            [a.center_x - a.half_width, a.center_x + a.half_width],\n            [a.center_z - a.half_width, a.center_z + a.half_width],\n        ]\n    )\n    if not (\n        x[2] < bounds[0, 0] < bounds[0, 1] < x[-3] and z[2] < bounds[1, 0] < bounds[1, 1] < z[-3]\n    ):\n        raise ValueError(\"Patch needs at least two source-grid cells of interpolation clearance\")\n    if (\n        min(a.nx, a.nz) < 8\n        or min(a.mass_ratio, a.density, a.skin_depth_code, a.temperature_ratio) <= 0\n    ):\n        raise ValueError(\"Require positive physical scales and at least eight cells per axis\")\n    if not 0 < a.va_over_c < 0.1:\n        raise ValueError(\"Use an explicit nonrelativistic Alfven-speed scale\")\n    mi, me = a.mass_ratio * m_e, m_e\n    n0, v0 = a.density, a.va_over_c * c\n    rho0 = n0 * (mi + me)\n    b0 = v0 * np.sqrt(mu_0 * rho0)\n    di = np.sqrt(mi / (mu_0 * n0 * e**2))\n    l0 = di / a.skin_depth_code\n    xn = np.linspace(*bounds[0], a.nx + 1)\n    zn = np.linspace(*bounds[1], a.nz + 1)\n    xc, zc = (xn[:-1] + xn[1:]) / 2, (zn[:-1] + zn[1:]) / 2\n    dx, dz = (xn[1] - xn[0]) * l0, (zn[1] - zn[0]) * l0\n    splines = {k: RectBivariateSpline(z, x, v, kx=3, ky=3) for k, v in data.items() if v.ndim == 2}\n    ay = splines[\"ay\"](zn, xn) * b0 * l0\n    bx = -np.diff(ay, axis=0) / dz\n    bz = np.diff(ay, axis=1) / dx\n    div = np.diff(bx, axis=1) / dx + np.diff(bz, axis=0) / dz\n\n    def sample(name):\n        return splines[name](zc, xc)\n\n    density = sample(\"rho\") * n0\n    pressure = sample(\"pressure\") * rho0 * v0 * v0\n    if density.min() <= 0 or pressure.min() <= 0:\n        raise ValueError(\"Cubic transfer produced nonpositive density/pressure\")\n    jy = -(splines[\"ay\"](zc, xc, dx=2) + splines[\"ay\"](zc, xc, dy=2)) * b0 / (mu_0 * l0)\n    bulk = np.stack([sample(\"ux\") * v0, np.zeros_like(density), sample(\"uz\") * v0], axis=-1)\n    relative_drift = np.stack([np.zeros_like(jy), jy / (e * density), np.zeros_like(jy)], axis=-1)\n    ui = bulk + me / (mi + me) * relative_drift\n    ue = bulk - mi / (mi + me) * relative_drift\n    te = pressure / (density * (1 + a.temperature_ratio))\n    ti = a.temperature_ratio * te\n    bx_node = -splines[\"ay\"](zn, xn, dx=1) * b0\n    bz_node = splines[\"ay\"](zn, xn, dy=1) * b0\n    ey = v0 * (splines[\"ux\"](zn, xn) * bz_node - splines[\"uz\"](zn, xn) * bx_node)\n    if a.electric == \"resistive\":\n        jcode = -(splines[\"ay\"](zn, xn, dx=2) + splines[\"ay\"](zn, xn, dy=2))\n        ey += metadata[\"eta_code\"] * jcode * b0 * v0\n    a.output.parent.mkdir(parents=True, exist_ok=True)\n    # All arrays here are (z,x[,component]); the WarpX launcher transposes them.\n    np.savez_compressed(\n        a.output,\n        bx=bx,\n        bz=bz,\n        ey=ey,\n        n=density,\n        p=pressure,\n        ui=ui,\n        ue=ue,\n        ti=ti,\n        te=te,\n        jy=jy,\n        x=xc * l0,\n        z=zc * l0,\n    )\n    bcenter = np.sqrt(((bx[:, :-1] + bx[:, 1:]) / 2) ** 2 + ((bz[:-1] + bz[1:]) / 2) ** 2)\n    meta = {\n        \"schema_version\": 1,\n        \"source_state_sha256\": hashlib.sha256(a.state.read_bytes()).hexdigest(),\n        \"source_flash_sha256\": metadata[\"source_sha256\"],\n        \"source_time_code\": metadata[\"source_time_code\"],\n        \"patch_sha256\": hashlib.sha256(a.output.read_bytes()).hexdigest(),\n        \"shape_zx\": [a.nz, a.nx],\n        \"bounds_xz_m\": (bounds * l0).tolist(),\n        \"cell_size_m\": [dx, dz],\n        \"scales\": {\n            \"length_m\": l0,\n            \"velocity_m_s\": v0,\n            \"magnetic_T\": b0,\n            \"density_m3\": n0,\n            \"mass_density_kg_m3\": rho0,\n            \"ion_mass_kg\": mi,\n            \"electron_mass_kg\": me,\n            \"ion_skin_depth_m\": di,\n            \"ion_skin_depth_code\": a.skin_depth_code,\n            \"omega_ci_reference_s1\": e * b0 / mi,\n            \"omega_pe_reference_s1\": np.sqrt(n0 * e**2 / (epsilon_0 * me)),\n        },\n        \"temperature_ratio_i_e\": a.temperature_ratio,\n        \"electric_policy\": a.electric,\n        \"physics\": (\n            \"Collisionless, fully kinetic electron-ion continuation; \"\n            \"no scalar MHD resistivity is evolved in PIC.\"\n        ),\n        \"mapping\": (\n            \"Right-handed FLASH (x,y,z) to WarpX (X,Y,Z)=(x,-z,y); \"\n            \"n=rho_code*n0; p=p_code*rho0*v0^2; total mass rho=n*(mi+me).\"\n        ),\n        \"initial_discrete_divb_scaled\": float(\n            np.max(np.abs(div)) * min(dx, dz) / max(bcenter.max(), 1e-300)\n        ),\n        \"maximum_drift_over_c\": float(\n            max(np.linalg.norm(ui, axis=-1).max(), np.linalg.norm(ue, axis=-1).max()) / c\n        ),\n        \"maximum_electron_thermal_speed_over_c\": float(np.sqrt(te.max() / me) / c),\n        \"source_potential_residual\": metadata[\"potential_relative_edge_residual\"],\n        \"scope\": (\n            \"Prepared local initial-value problem only. Patch boundaries, relaxation, \"\n            \"collisionless closure and physical scale need scientific review.\"\n        ),\n    }\n    a.output.with_suffix(\".json\").write_text(json.dumps(meta, indent=2) + \"\\n\")\n    return meta\n\n\nif __name__ == \"__main__\":\n    p = argparse.ArgumentParser(description=__doc__)\n    p.add_argument(\"--state\", type=Path, required=True)\n    p.add_argument(\"--output\", type=Path, required=True)\n    p.add_argument(\"--nx\", type=int, default=64)\n    p.add_argument(\"--nz\", type=int, default=64)\n    p.add_argument(\"--center-x\", type=float, default=0.0)\n    p.add_argument(\"--center-z\", type=float, default=0.0)\n    p.add_argument(\"--half-width\", type=float, default=0.12)\n    p.add_argument(\"--skin-depth-code\", type=float, default=0.02)\n    p.add_argument(\"--density\", type=float, default=1e24)\n    p.add_argument(\"--mass-ratio\", type=float, default=25)\n    p.add_argument(\"--va-over-c\", type=float, default=0.01)\n    p.add_argument(\"--temperature-ratio\", type=float, default=1.0)\n    p.add_argument(\"--electric\", choices=[\"ideal\", \"resistive\"], default=\"ideal\")\n    print(json.dumps(prepare(p.parse_args()), indent=2))\n"
+      },
+      "raw_artifacts": {
+        "patch.npz": {
+          "sha256": "9cbfc57ca5fa7c26faab39bb9fd08658fc639156d52422cb825611597562d568",
+          "bytes": 11214400
+        },
+        "macro_patch.png": {
+          "sha256": "de4a5944499a2aa85328a671cbc6e4cdbe5382ad1a4176b921a623de0cb13ead",
+          "bytes": 333123
+        },
+        "sheet_profile.npz": {
+          "sha256": "881ba73346835485c2f2ec0601e16a286f96b24b872fc5acdc38846acc3b346b",
+          "bytes": 2902
+        }
+      },
+      "output_findings": []
+    }
+  ],
+  "validation_experiments": [
+    "exp_858f535fafc4884126e44323",
+    "exp_b3aeffc4296462890906d872",
+    "exp_488007f309373427b7394eb2"
+  ],
+  "blockers": [],
+  "limitations": [
+    "Finite resistive scalar-pressure source, no two-way coupling. Source spatial refinement is two-level, not asymptotic order proof. No global reconnection-rate claim; helper flux window was not reached. No pressure hypothesis support is requested from FLASH."
+  ],
+  "verdict": {
+    "decision": "revise",
+    "rationale": "The recorded evolution and refinement support limited FLASH source readiness, but the proposal is labeled production while explicitly excluding the kinetic hypothesis measurement. Approval requires either an instrument-scoped source proposal or a qualified production measurement implementation.",
+    "findings": [
+      "Instrument-family identity is satisfied by FLASH under the host's any_of rule. WarpX is not a missing identity prerequisite.",
+      "The requested evidence confirms that the 256-grid sheet half-width spans only 3.77 cells. The refined selection reports 7.41 cells and approximately 1.9% width change. Recorded central-region density, pressure and magnetic-field comparisons meet the proposed 5% tolerance; flow comparisons are reported as relative errors despite the declared absolute-v0 convention.",
+      "Fresh FLASH receipts record actual evolution, small mass and reconstructed-energy drift, and preserved source/export hashes. The transfer summary reports magnetic RMS mismatch 0.000325 and interior Ampere mismatch 0.00287. Raw HDF5, NPZ and plotted contents were not independently inspected.",
+      "The unreached helper flux window does not invalidate source commissioning or falsify the pressure hypothesis. FLASH exploration purpose is unspecified in the host records; the PIC pilot is explicitly exploration/validation.",
+      "Both solvers have fresh receipts linked through transferred-data hashes. The completed CUDA pilot covers only 0.03365 inverse reference ion cyclotron frequencies. The refined 0.8-duration run is pending in this snapshot and uses changed kinetic source, so the earlier pilot cannot qualify that implementation.",
+      "Inspection of the recorded kinetic code finds that the final area-time mean averages every bin, bypassing the minimum-particle eligibility mask used for exploratory summaries. Effective counts are calculated but do not govern that mean. Boundary isolation, bin-scale shear, uncertainty and numerical controls remain unqualified.",
+      "Progress includes substantive refinement and transfer work, with no demonstrated repeated-polling or intention-only stall. Approximately 5777 seconds remain. The pilot's same-case linear estimate for duration 0.8 is about 650 seconds, but changed physical scale, diagnostics and controls prevent treating this as a forecast for the active run."
+    ],
+    "next_action": "Resubmit the FLASH source proposal with scope=instrument and an explicitly versioned source-selection qualification analysis.",
+    "prerequisites": [
+      "Resolve the scope mismatch: use instrument scope for the declared FLASH source capability, or retain production scope and supply the implemented kinetic hypothesis measurement with relevant commissioning. Source approval must explicitly exclude authorization of pressure-hypothesis evidence.",
+      "For source instrument approval, bind or explicitly version the selection/transfer analysis implementing the declared width and refinement observable; specify the central comparison region, normalization of scaled divB, and numerical absolute-v0 flow tolerance. Document whether floor and energyFix corrections materially affect the reported conservation qualification, rather than equating small reconstructed-energy drift with correction accounting.",
+      "If retaining production scope, make the area-time estimator enforce a prospectively declared eligibility/effective-count policy and preserve qualified spatial coverage; freeze mapping, region, window, uncertainty and acceptance rules. Qualify the changed implementation with a small linked evolution benchmark and relevant initialization/current/charge, energy and boundary accounting, larger-patch, particle/seed, spatial/bin and timestep controls, including relaxation and nonrelativistic-pressure suitability. The completed hypothesis experiment matrix is not required for methods approval."
+    ],
+    "evidence_requests": []
+  },
+  "reviewed_at": 1791435439.0608325,
+  "packet_sha256": "9e7737908bfbb323754be57b7a7252ab936b84e1d2c36128bc222580c357255f"
+}

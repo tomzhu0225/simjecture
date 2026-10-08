@@ -1,0 +1,13 @@
+{
+  "id": "director_4aafdd696a4608d0befe06c8",
+  "created_at": 1791438988.4334106,
+  "packet_sha256": "55d85484d97d24d34d89eb18fea703c0050822a752e7c0033d1585a8c790e537",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "The worker acknowledged the previous replan with a bounded, endpoint-first plan and a 300-second review reserve. The new methods verdict permits prospective collection with the repaired pipeline; it accepts no scientific claim. The active S_eta=4000 resolution pair directly addresses the outstanding endpoint and refinement gap, so neither run warrants stopping now. Scientific usefulness remains limited until completed outputs establish window coverage and eligibility. Budget feasibility remains at risk: the mutable telemetry forecasts roughly 501 additional seconds for the refined run, slightly beyond its approximately 489 seconds of remaining timeout. This is an uncertain operational forecast, not evidence of eventual completion or censoring. The coarse run appears substantially closer to its target. Continuing these bounded runs is defensible; committing the remaining full batch without reassessment is not.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "at_risk",
+  "stop_experiments": [],
+  "next_action": "Keep both endpoint runs within their recorded caps. As soon as the coarse run finishes, inspect its recorded flux-window coverage, eligibility and actual cost while the refinement continues. Assess the completed refined output or preserved partial data before committing further expensive refinement. Record an updated remaining-cost calculation that includes the outstanding distinct-resistivity measurements, analysis/report work and at least 300 seconds for independent review. Launch affordable declared cases individually only while that reserve remains protected. If the refined run is censored or underresolved, identify the specific blocker and assess a bounded, qualified continuation or numerical alternative before spending further time; do not automatically repeat it. Preserve the frozen coverage and fit rules unless methods review approves a change. Update RESULTS.md with the resolved methods verdict, current receipt statuses and costs. Report any unresolved endpoint, refinement or sampling gaps explicitly, without promoting exploratory commissioning into decisive evidence."
+}

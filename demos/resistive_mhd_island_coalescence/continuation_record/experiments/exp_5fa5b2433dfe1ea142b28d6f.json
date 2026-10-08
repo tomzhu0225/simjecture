@@ -1,0 +1,100 @@
+{
+  "id": "exp_5fa5b2433dfe1ea142b28d6f",
+  "status": "succeeded",
+  "operator_guidance_ids": [],
+  "created_at": 1791445159.9236634,
+  "timeout": 40,
+  "execution_deadline": 1791446259.9094124,
+  "workspace_limit_bytes": 4294967296,
+  "binding": {
+    "source": "qualify_continuation.py",
+    "args": [],
+    "inputs": {
+      "qualify_continuation.py": "77617c537f23481c22de74a3f0eda7e88553c3f9a6fa0100e3a2f48ee9696575",
+      "guided_reader.py": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b",
+      "study_analysis.py": "dd560e99fd4ea7cd27b4ae9de298ea8fef7d292db47d92979df0c7df4740f9f7",
+      "cfl08.json": "fe67729038d3af60d7986380b03a117608f7c900353ce5b460a1fb94c2315698",
+      "cfl04.json": "5bb8ca583652dbad19071b53b16698fddf393215f702e0a01386d6b845030af9"
+    },
+    "capability": "flash-island-coalescence-resistive-mhd-4.8",
+    "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+  },
+  "outputs": [
+    "qualification.json",
+    "cfl_control.json"
+  ],
+  "commitment": null,
+  "key": "fresh-parity-analysis",
+  "stage": "exploration",
+  "method": null,
+  "review_documents": null,
+  "parent_experiment": "exp_f4615601bac4bd9ea59211c3",
+  "purpose": "diagnostic",
+  "plan": null,
+  "pid": 498844,
+  "worker_identity": {
+    "pid": 498844,
+    "starttime": "2655479",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture/.venv/bin/python3",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/island-sol-medium-extension-study",
+      "--execute",
+      "exp_5fa5b2433dfe1ea142b28d6f"
+    ],
+    "launched_at": "2026-10-08T07:39:20.107084+00:00",
+    "run_directory": null
+  },
+  "started_at": 1791445160.1071434,
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": 0,
+    "stdout": "{\"experiments\": [\"exp_27bae5c10115cc47b7ee511a\", \"exp_f4615601bac4bd9ea59211c3\"], \"rates\": {\"cfl08\": 0.06545347930361681, \"cfl04\": 0.06551771939244827}, \"absolute_log_rate_difference\": 0.0009809804693347779, \"relative_difference\": 0.0009804994652922172, \"inputs_sha256\": {\"cfl08.json\": \"fe67729038d3af60d7986380b03a117608f7c900353ce5b460a1fb94c2315698\", \"cfl04.json\": \"5bb8ca583652dbad19071b53b16698fddf393215f702e0a01386d6b845030af9\"}, \"variants\": {\"cfl08\": [0.06545347930361681, 0.06545311171088333, 0.06544749684505283, 0.06544680933167159], \"cfl04\": [0.06551771939244827, 0.06551732846614361, 0.06551174806124803, 0.06551104316248844]}, \"scope\": \"Fresh S500 full-window parity; borrowing to other S is empirical, not demonstrated whole-domain timestep accuracy.\"}",
+    "stderr": "",
+    "timed_out": false,
+    "cancelled": false,
+    "workspace_exceeded": false,
+    "stdout_truncated": false,
+    "stderr_truncated": false,
+    "heartbeat_count": 0,
+    "wall_seconds": 1.059175428999879,
+    "workspace_bytes": 114025
+  },
+  "artifacts": {
+    "cfl04.json": {
+      "sha256": "5bb8ca583652dbad19071b53b16698fddf393215f702e0a01386d6b845030af9",
+      "bytes": 43323
+    },
+    "cfl08.json": {
+      "sha256": "fe67729038d3af60d7986380b03a117608f7c900353ce5b460a1fb94c2315698",
+      "bytes": 43304
+    },
+    "cfl_control.json": {
+      "sha256": "7900ea224cea48d94847124ef820342497ee26e9fcebc12f75b4bef86ce7295c",
+      "bytes": 891
+    },
+    "guided_reader.py": {
+      "sha256": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b",
+      "bytes": 14667
+    },
+    "qualification.json": {
+      "sha256": "7004a59f2a404e2b1d3d69bce4782079b4788bfc3b86b98606d90abc0c6efc98",
+      "bytes": 2016
+    },
+    "qualify_continuation.py": {
+      "sha256": "77617c537f23481c22de74a3f0eda7e88553c3f9a6fa0100e3a2f48ee9696575",
+      "bytes": 1119
+    },
+    "study_analysis.py": {
+      "sha256": "dd560e99fd4ea7cd27b4ae9de298ea8fef7d292db47d92979df0c7df4740f9f7",
+      "bytes": 8705
+    }
+  },
+  "missing_outputs": [],
+  "input_mutations": [],
+  "output_findings": [],
+  "scientific_status": "unreviewed",
+  "finished_at": 1791445161.1949432
+}

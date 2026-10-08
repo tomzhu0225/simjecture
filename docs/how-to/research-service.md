@@ -1,4 +1,8 @@
-# Agent-owned research: minimal mode
+# Minimal-mode research API
+
+For the scientific workflow, start with [the research loop](../concepts/research-loop.md)
+and [evidence and claims](../concepts/evidence-and-claims.md). This guide documents
+the agent-facing operations used by that workflow.
 
 `simjecture study` defaults to minimal mode for new native-agent studies. The
 native agent chooses its plan, writes code and uses its existing tools; the
@@ -52,7 +56,7 @@ the numerical instrument registry field in the browser/TUI. With no registry,
 minimal exposes only the Python numerical sandbox. Its identity is bound to the receipt. Native tools are
 available for exploration; execution success alone does not accept a claim.
 
-## Exploratory analysis and advisory progress (0.5.4rc2 preview)
+## Exploratory analysis and advisory progress
 
 `lab.run` defaults to evidence collection. When the study requires methods review,
 this gate also applies to evidence-producing postprocessing. For diagnostics,

@@ -637,7 +637,10 @@ def discover_recent_runs(
                 continue
             try:
                 snapshot = load_run_snapshot(run_dir)
-            except OSError:
+            except (OSError, ValueError):
+                # A partial export or an invalid study must not prevent other
+                # campaigns from being discovered. Explicit loads and resumes
+                # still enforce the study's integrity checks.
                 continue
             found[key] = RecentRun(
                 run_directory=snapshot.identity.run_directory,

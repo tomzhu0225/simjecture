@@ -1,0 +1,125 @@
+{
+  "id": "exp_e441d15856a4cb51f299ec82",
+  "status": "succeeded",
+  "operator_guidance_ids": [],
+  "created_at": 1791446243.8652377,
+  "timeout": 20.286270141601562,
+  "execution_deadline": 1791446264.1515079,
+  "workspace_limit_bytes": 4294967296,
+  "binding": {
+    "source": "report_package.py",
+    "args": [],
+    "inputs": {
+      "report_package.py": "2321c9bb5d123cb9fe51fb3fa95f3408ab0994636b8e5ba4b0dc0d9a3885358e",
+      "RESULTS.md": "cbe250540807f93934c756b4af44b970184f8e51021e53430662f95b0bcebfcf",
+      "evidence_index.json": "1f7bd0945e085ccbd3306189120e984b527de6b9d28376ad90d12bf05ec959d5",
+      "qualification_summary.json": "f81b6561517c6f37729f8fa4334545a35259f56ebdeac5324ecad9ed9878b3b6",
+      "source_qualification_summary.json": "16df38ebf5daef88dee53a6e6d5caa457dabede3f31cae6917e200e6f6cb13f8",
+      "parent_provenance.json": "8bce9bb43136a629e185f86103b9713067a749c3f5eabfc72924e423da02d18e",
+      "figures/macro_patch.png": "276d74cecbce8e5e3687e29fd794f7521db98f0edf1ca7467f9263a75e84ec94",
+      "figures/fine32_kinetic_fields.png": "3ad3cd5bd5afc549fa5d5bcdb9a60cf44052fe2dd355a96f47bb96b0cca4f3ef",
+      "figures/fine32_pressure_tensor.png": "3e2ca8825ccff551dd831605c7b5f648eb4993e2e3cb81da6900f327d5dd9c98",
+      "figures/pressure_controls.png": "b55ac591449a54d57954b719acf38db3a45a646d32bcaae58d466e2cfee59e05"
+    },
+    "capability": null,
+    "runtime_sha256": null
+  },
+  "outputs": [
+    "report_snapshot.json",
+    "review_report.md"
+  ],
+  "commitment": null,
+  "key": "current-report-assessment-package",
+  "stage": "exploration",
+  "method": null,
+  "review_documents": null,
+  "parent_experiment": "exp_2170ea427cd8f5af2df39f06",
+  "purpose": "diagnostic",
+  "plan": null,
+  "pid": 531844,
+  "worker_identity": {
+    "pid": 531844,
+    "starttime": "2763873",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture/.venv/bin/python3",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/coupled-extension-study",
+      "--execute",
+      "exp_e441d15856a4cb51f299ec82"
+    ],
+    "launched_at": "2026-10-08T07:57:24.056421+00:00",
+    "run_directory": null
+  },
+  "started_at": 1791446244.0566273,
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "",
+    "timed_out": false,
+    "cancelled": false,
+    "workspace_exceeded": false,
+    "stdout_truncated": false,
+    "stderr_truncated": false,
+    "heartbeat_count": 0,
+    "wall_seconds": 0.05473398599860957,
+    "workspace_bytes": 1682114
+  },
+  "artifacts": {
+    "RESULTS.md": {
+      "sha256": "cbe250540807f93934c756b4af44b970184f8e51021e53430662f95b0bcebfcf",
+      "bytes": 17505
+    },
+    "evidence_index.json": {
+      "sha256": "1f7bd0945e085ccbd3306189120e984b527de6b9d28376ad90d12bf05ec959d5",
+      "bytes": 23892
+    },
+    "figures/fine32_kinetic_fields.png": {
+      "sha256": "3ad3cd5bd5afc549fa5d5bcdb9a60cf44052fe2dd355a96f47bb96b0cca4f3ef",
+      "bytes": 415369
+    },
+    "figures/fine32_pressure_tensor.png": {
+      "sha256": "3e2ca8825ccff551dd831605c7b5f648eb4993e2e3cb81da6900f327d5dd9c98",
+      "bytes": 152053
+    },
+    "figures/macro_patch.png": {
+      "sha256": "276d74cecbce8e5e3687e29fd794f7521db98f0edf1ca7467f9263a75e84ec94",
+      "bytes": 373409
+    },
+    "figures/pressure_controls.png": {
+      "sha256": "b55ac591449a54d57954b719acf38db3a45a646d32bcaae58d466e2cfee59e05",
+      "bytes": 494042
+    },
+    "parent_provenance.json": {
+      "sha256": "8bce9bb43136a629e185f86103b9713067a749c3f5eabfc72924e423da02d18e",
+      "bytes": 65459
+    },
+    "qualification_summary.json": {
+      "sha256": "f81b6561517c6f37729f8fa4334545a35259f56ebdeac5324ecad9ed9878b3b6",
+      "bytes": 77282
+    },
+    "report_package.py": {
+      "sha256": "2321c9bb5d123cb9fe51fb3fa95f3408ab0994636b8e5ba4b0dc0d9a3885358e",
+      "bytes": 927
+    },
+    "report_snapshot.json": {
+      "sha256": "b4027072ae9d10601f8668e33a0fa8b6aa5e54f5166b1b9785570e1d45484d48",
+      "bytes": 42883
+    },
+    "review_report.md": {
+      "sha256": "cbe250540807f93934c756b4af44b970184f8e51021e53430662f95b0bcebfcf",
+      "bytes": 17505
+    },
+    "source_qualification_summary.json": {
+      "sha256": "16df38ebf5daef88dee53a6e6d5caa457dabede3f31cae6917e200e6f6cb13f8",
+      "bytes": 1788
+    }
+  },
+  "missing_outputs": [],
+  "input_mutations": [],
+  "output_findings": [],
+  "scientific_status": "unreviewed",
+  "finished_at": 1791446245.262631
+}

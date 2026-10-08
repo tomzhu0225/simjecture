@@ -4,6 +4,56 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+## 0.6.1 — 2026-10-08
+
+- Include cylinder-flow validation data in source distributions as well as
+  wheels. Check the sdist-to-wheel build in CI and leave bulky research archives
+  and demo figure bundles in the repository/docs distribution.
+
+- Preserve two neutral 30-minute plasma continuations and add field-led visual
+  walkthroughs with real evidence maps, FLASH evolution, kinetic patch geometry,
+  spatial pressure maps, hashed plotting bundles and PDF/SVG exports.
+- Fix report-finalization edge cases observed in those trials: preserve admitted
+  diagnostic jobs, resume the writer after asynchronous analysis, allocate unused
+  drafting time to review and allow one deadline-bound review transport retry.
+
+- Reserve finishing time in new minimal studies for a current scientific report,
+  independent report assessment and a bounded revision. Enforce numerical and
+  native-agent cutoffs, expose the phase in the GUI, and bind report assessment
+  to frozen bytes. An accepted unresolved report does not approve any claim.
+  Existing studies retain their original deadline policy.
+
+- Let the research director explicitly resume a waiting worker for independent
+  analysis or review preparation while simulations continue. Expose the waiting
+  state to the director and show wake-up requests in Evidence & review.
+
+- Isolate incomplete or invalid study records during automatic run discovery so
+  a compact audit cannot prevent the web interface from opening other campaigns.
+  Explicit study loads and resumes continue to enforce snapshot integrity.
+
+- Preserve a fresh one-hour minimal FLASH audit and an explicitly separate,
+  tested post-run correction for an agent-authored half-cell coordinate error.
+  Keep the classic record and all original scientific receipts unchanged.
+
+- Keep WSL's Linux-side NVIDIA utility path during CUDA installation so the
+  post-build readiness probe can find `nvidia-smi` after toolchain isolation.
+  Install CuPy inside the CUDA runtime, test an actual device kernel, and exclude
+  user-site Python packages from runtime launch/probing. Register the managed
+  dependency history as part of CUDA capability identity.
+
+- Add operator-tested FLASH-to-WarpX state-transfer helpers for a guided local
+  kinetic follow-up, with numerical tests for flux reconstruction, coordinate
+  rotation, pressure/current mapping, divergence and changed-input detection.
+- Make WarpX, EOS and opacity skill instructions distinguish minimal methods
+  review from classic instrument contracts. Document multi-tool evidence handoffs.
+
+- Rebuild the documentation around the autonomous research loop and evidence
+  system, with a responsive Furo theme, current-mode explanations, a repair-loop
+  tutorial and clearly labelled historical records.
+- Process ancestor claim reviews before repair reviews. Keep repair-support
+  requests pending while ancestor falsifications are missing, expose the blocking
+  claims and allow the worker to address them without repeated reviewer calls.
+
 - Add Cylinder flow / Warp-LBM, contributed by Zifei Meng under Apache-2.0,
   with an installer, agent guide, recorded diagnostics, custom studies and a
   separate inlet-distance research benchmark task. Preserve source and validation

@@ -1,0 +1,28 @@
+name: Bug report
+description: Something failed, behaved unexpectedly, or was difficult to use.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A small reproduction is very helpful. Remove API keys, credentials and private data from logs. For sensitive security reports, follow SECURITY.md instead.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: What did you expect, and what did you observe?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: How can we reproduce it?
+      description: Commands, inputs or interface steps. Include a short log or screenshot if useful.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Version and environment
+      description: Package version or Git commit, OS, local/hosted workspace, agent and execution backend. Mention relevant solver or hardware details.
+    validations:
+      required: true

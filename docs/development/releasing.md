@@ -21,8 +21,11 @@ Zenodo then archives each new GitHub Release and assigns a version DOI.
 
 ## Publish a version
 
-1. Update the version in `pyproject.toml`, `CITATION.cff`, `docs/conf.py`,
+1. Update the version in `pyproject.toml`, `CITATION.cff`,
    `src/conjecture_solver/__init__.py`, `scripts/install-workspace.sh`, and the changelog.
+   The docs build reads its version from `pyproject.toml`; general installation
+   links resolve the latest stable release automatically. Historical study and
+   acceptance records keep their original versions.
    Run `uv lock` and build both Python distributions (`uv build`) and the checksummed
    workspace bundle (`python scripts/package_workspace.py --output dist`).
    Verify the installer with `python scripts/verify_workspace_install.py --release-dir dist
@@ -39,15 +42,20 @@ publication paths and cannot be treated as a rehearsal.
 
 ## Preview policy
 
-Ship user-facing changes first as explicit release candidates (`0.5.3rc1`, `0.5.3rc2`, …).
-Use matching GitHub tags (`v0.5.3rc1`) and mark the GitHub release **prerelease**, without
-moving the stable/latest release. PyPI receives the PEP 440 prerelease version; ordinary
-stable installs do not automatically select it. The optional npm bundle uses the matching
-SemVer spelling (`0.5.3-rc.1`). Document a versioned, one-command installer URL so testing
-is repeatable. Never replace an already published preview's artifacts with different code.
+Ship user-facing changes first as explicit release candidates (`X.Y.Zrc1`,
+`X.Y.Zrc2`, …). Use matching GitHub tags (`vX.Y.Zrc1`) and mark the GitHub release
+**prerelease**, without moving the stable/latest release. PyPI receives the PEP
+440 prerelease version; ordinary stable installs do not automatically select it.
+If a matching npm bundle is released, use SemVer spelling (`X.Y.Z-rc.1`).
 
-Record setup, interface, simulation and session-continuity feedback against the exact
-preview version. Publish a new candidate for fixes. The installer keeps versioned program
-folders and stable research-data folders; retain old versions during the preview period.
-After user testing and release checks pass, publish the approved final version (for this series, `0.5.3`) as stable and update the default
-installer link. A preview is not a claim of scientific qualification for solver applications.
+Use the versioned installer URL in that candidate's release notes so preview
+checks can be repeated. Never replace an already published release's artifacts
+with different code, including a preview. A fix needs a new version.
+
+Record setup, interface, simulation and session-continuity feedback against the
+exact candidate. The installer keeps versioned program folders and stable
+research-data folders; retain old versions during the preview period. After user
+testing and release checks pass, publish the approved final version as stable.
+General guides continue using the latest-stable installer; no per-page link sweep
+is needed. A preview does not establish scientific qualification for solver
+applications.

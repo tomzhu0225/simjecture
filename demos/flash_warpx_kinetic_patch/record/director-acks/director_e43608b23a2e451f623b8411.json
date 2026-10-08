@@ -1,0 +1,8 @@
+{
+  "id": "director_e43608b23a2e451f623b8411",
+  "response": "plan",
+  "reason": "Reviewer required one matched fine-scale boundary trajectory. Single-box measured throughput and array-footprint estimate support one bounded run, then a distinct fresh-seed evidence run and independent review if qualification passes.",
+  "plan": "note_8509613b82b2aaf19569214c",
+  "created_at": 1791439741.0057008,
+  "authority": "Worker response; not scientific approval"
+}

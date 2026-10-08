@@ -1,0 +1,67 @@
+{
+  "parents": [
+    "exp_450f204fb0aa5b05e30c9f0c",
+    "exp_22b4b0e7c2fcdc0417ce7387"
+  ],
+  "rates": [
+    0.049621048445179096,
+    0.049532317415521825
+  ],
+  "relative_rate_difference": 0.0017881732135366368,
+  "crossing_time_changes": {
+    "flux_low_crossing_time": 0.00010766122730399008,
+    "flux_high_crossing_time": 0.0015517068983641469
+  },
+  "conservation": [
+    {
+      "mass_relative_drift": 1.0181493426131283e-09,
+      "energy_relative_drift": 8.066925469174535e-06,
+      "floor_hits_sampled": 0,
+      "floor_correction_budget": null,
+      "floor_correction_budget_reason": "Solver does not output integrated floor/source corrections; sampled states and total budgets constrain but cannot exclude between-output corrections."
+    },
+    {
+      "mass_relative_drift": 8.194860345867028e-10,
+      "energy_relative_drift": 1.0476360755573566e-05,
+      "floor_hits_sampled": 0,
+      "floor_correction_budget": null,
+      "floor_correction_budget_reason": "Solver does not output integrated floor/source corrections; sampled states and total budgets constrain but cannot exclude between-output corrections."
+    }
+  ],
+  "windows": [
+    {
+      "min_sheet_fwhm_cells": 8,
+      "max_secondary_extrema": 0,
+      "sample_count": 34
+    },
+    {
+      "min_sheet_fwhm_cells": 8,
+      "max_secondary_extrema": 0,
+      "sample_count": 34
+    }
+  ],
+  "checks": [
+    {
+      "completed": true,
+      "representation": true,
+      "physics_controls": true,
+      "boundaries": true,
+      "diagnostics": true,
+      "numerical_regime": true,
+      "flux_window_reached": true
+    },
+    {
+      "completed": true,
+      "representation": true,
+      "physics_controls": true,
+      "boundaries": true,
+      "diagnostics": true,
+      "numerical_regime": true,
+      "flux_window_reached": true
+    }
+  ],
+  "costs": [
+    189.79251207200286,
+    102.13496227799988
+  ]
+}

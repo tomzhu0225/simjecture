@@ -1,0 +1,13 @@
+{
+  "id": "director_736e75fa6a8c3d5fcdd99a5f",
+  "created_at": 1791439765.4375,
+  "packet_sha256": "c48ccf02aa865d1c3d7ea5894f577141e79a27b7dd648d8ed505522e46c32aa5",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "replan",
+  "rationale": "The worker acknowledged the previous replan with a sensible recovery plan: preserve the timed-out endpoint, inspect actual window coverage, and avoid restarting from zero. New receipts complete the five distinct-resistivity base trajectories, but refinement qualification remains unresolved. The S_eta=4000 refinement timed out after 620 seconds; its preserved log reaches t\u22482.023, compared with the coarse upper flux crossing at t\u22481.960. This makes postprocessing recovery worth attempting immediately, but does not establish the refined crossing or eligibility. The two active refinements address declared gaps and remain useful. Budget feasibility is at risk: with approximately 587 seconds remaining, their mutable forecasts are about 35 and 190 additional seconds. The longer forecast plus the worker's 100-second recovery/analysis allowance and 300-second review reserve consumes essentially all remaining time. Throughput may improve when the shorter run ends, but that is not guaranteed. No scientific conclusion is accepted.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "at_risk",
+  "stop_experiments": [],
+  "next_action": "Acknowledge this latest replan with an updated critical-path calculation or reasoned challenge. Immediately pursue the recorded, separately reviewed postprocessing recovery of exp_0994411061cacfc10dc58ebb while the active refinements run. Bind recovery to the preserved evidence-stage parent's hashes and unchanged measurement rules; establish both flux crossings, required window samples, eligibility and numerical sensitivities before treating it as a usable pair. Preserve the timeout receipt. If coverage is missing, retain censoring and assess whether any usable checkpoint continuation can fit the remaining budget; do not rerun from zero. Keep both active refinements within their caps while reassessing their cost against the 300-second independent-review reserve. Commit no additional trajectory without demonstrated margin for recovery, plots, reporting and review. Prepare the review package now from completed receipts and add recovered or newly completed pairs when available. Update RESULTS.md, which still describes completed cases and the resolved method as pending. Submit the qualified outputs, actual-field figures, uncertainty analysis and explicit unresolved gaps for independent review before the reserve is consumed; missing refinement must remain unresolved."
+}

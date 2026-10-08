@@ -1,0 +1,13 @@
+{
+  "id": "director_d05a0964c8638d034168d59d",
+  "created_at": 1791432315.8507164,
+  "packet_sha256": "6e7c5d545e0f1dc1b3962b720a1e75c3abe7a4c3a6d7e1b92e38cca6fbeb9fa6",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "The worker acknowledged the previous replan and has now recorded targeted qualification: qualification-v4 reports passing missing-path censoring, topology detection and gauge invariance, multi-point fitting, matched refinement and branch-departure fixtures. The archived-pilot analysis now executes and serializes the matched comparison and conservation checks. These are useful readiness improvements, not scientific claim evidence; interval coverage and refinement persistence remain untested, and the latest independent methods verdict still requires revision. The endpoint-first strategy remains defensible. scan_plan.json now proposes 1.25x refinements at N=120/160/320 and estimates 1,325 seconds of simulation, versus the previous 1,900 seconds. With about 1,789 seconds remaining, retaining the recorded 180-second review reserve leaves roughly 284 seconds for methods review, analysis and other overhead. Budget remains at risk because costs and window completion outside S_eta=1000 are unmeasured. RESULTS.md and the acknowledgement still describe the older N=144/192/384 refinement, so the prospective record needs alignment before production. No experiments are active.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "at_risk",
+  "stop_experiments": [],
+  "next_action": "Immediately align RESULTS.md and the recorded plan with the intended refinement grids, costs and implemented decision rules, then submit the revised identities, fixture receipts and archived-pilot analysis for independent methods review, explicitly including the reduced 1.25x refinement. Avoid further unchanged pilot reruns unless that review identifies a concrete gap. After methods approval, run the planned S_eta=250 and 4000 base endpoints first and record actual wall cost, timestep counts, full flux-window completion and eligibility. Use those measurements to update the remaining completion estimate, including analysis and review overhead. Complete affordable distinct-resistivity base coverage, then undertake the matched three-point refinement only if its measured forecast fits while preserving the review reserve. If measured current-sheet resolution or window completion fails, retain the case as ineligible or censored and assess an affordable qualified repair. If refinement cannot fit, preserve the base results and report persistence as unresolved. This continue decision provides no methods or claim approval."
+}

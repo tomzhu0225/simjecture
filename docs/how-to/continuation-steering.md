@@ -1,6 +1,6 @@
 # Continue and steer an investigation
 
-Available in 0.5.3 for minimal studies.
+Continuation and steering apply to minimal studies.
 
 ## Continue after a deadline or change direction
 

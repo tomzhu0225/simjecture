@@ -1,0 +1,69 @@
+{
+  "parent": "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/island-sol-medium-study",
+  "hypothesis": "In the supplied two-dimensional, uniform-resistivity, compressible-MHD island-coalescence system, every spatially resolved, pre-plasmoid case over the nominal inverse-resistivity interval S_eta = 1/eta in [250, 4000] belongs to one unbroken Sweet-Parker-like branch: the normalized reconnection rate follows R proportional to S_eta^p with -0.60 <= p <= -0.40, and the inferred exponent persists under at least one spatial-resolution refinement.\n",
+  "authority": "Historical context only. Unreviewed remains unreviewed; no evidence, method approval or fresh validation is imported.",
+  "execution_counts": {
+    "failed": 5,
+    "succeeded": 18,
+    "cancelled": 1
+  },
+  "last_stop": "budget_exhausted",
+  "last_error": null,
+  "recent_worker_notes": [
+    {
+      "id": "note_5a41bca73a54a2c1bc12731e",
+      "kind": "next_test",
+      "statement": "Recovery critical path: current~480s; middle refinement remaining~100s concurrent with recovery qualification+methods estimated80s, recovered evidence/report20s, review300s. No additional evolution. Low refinement completed163.1s; five base complete. High preserved fields reach2.00037 and both crossings. Freeze archive actual parameter and all81 HDF5 hashes; recovery source refuses non-evidence parents and mismatched hashes. Original timeout remains an execution failure, not physical censoring of the reached window."
+    },
+    {
+      "id": "note_29339b8b7a71bcb64bef4f20",
+      "kind": "next_test",
+      "statement": "Latest replan response: no documented cap-amendment API available. Keep high-S refinement to620s. If timeout, inspect preserved fields for actual .01-.05 crossings; recover complete measurement via separately reviewed frozen postprocessing of stage-evidence parent, never relabel exploratory data. If window missing, retain censoring and evaluate qualified checkpoint continuation, not restart from zero. Remaining base2000 estimated160s can run concurrently with endpoint. Additional refinements need re-cost after terminal endpoint; estimated N384 low170 and middle317 can run concurrently if capacity and time permit; analysis/recovery/method100s and review300s protected. With~880s, full plan tight and conditional."
+    },
+    {
+      "id": "note_edb026e2992d41c526fcae5f",
+      "kind": "next_test",
+      "statement": "Updated costs: completed N256 S250 t.6=54.4s and S4000 t2.15=198.8s. Remaining base500/1000/2000 estimated75+110+150=335s; high384 remaining~330s runs concurrently with these bases. Further N384 S250/S1000 estimated170+317=487s after high endpoint inspection. Analysis/report20s plus review300s. Critical-path total approx1142s against1180s leaves ~38s slack; defer optional refinement if slowdown threatens reserve. No change to frozen coverage/fit."
+    },
+    {
+      "id": "note_306d236c0207ceab1e1875c8",
+      "kind": "next_test",
+      "statement": "Budget replan: high-S N384 --eta .00025 --tmax2.15 --cfl.8 cap620s first; estimated570s from completed N384 t1.2=316.7s. Five baseline N256 commands and optional lower/middle refinement exact args/caps in production_plan.json. No full-batch launch: stop further expensive refinement if remaining time threatens >=300s review reserve. Full planned solver estimate1591s exceeds available budget once review included, so full coverage conditional and gaps reported. No original hypothesis change."
+    },
+    {
+      "id": "note_9264ddd3c21ba1c4724d8dc8",
+      "kind": "next_test",
+      "statement": "Respond to stopped 384 pilot with a one-rank topology timing/parity test at the same eta=.001, N=384, tmax=.15, CFL=.4, cadence=.025. Compare cost per physical time against stopped four-rank data and fields against a short four-rank repeat only if needed. Single-rank removes MPI overhead and contention without changing discretization or physics. Then complete the affordable configuration through its flux window and freeze production rules. Full-range refinement is conditional on measured cost, not the previous optimistic estimate."
+    }
+  ],
+  "reviews": [],
+  "selected_files": [
+    "RESULTS.md",
+    "calculation.py",
+    "campaign_inputs.json",
+    "campaign_manifest.json",
+    "cfl04.json",
+    "cfl08.json",
+    "evidence_0.json",
+    "evidence_1.json",
+    "evidence_2.json",
+    "evidence_3.json",
+    "evidence_4.json",
+    "evidence_5.json",
+    "evidence_6.json",
+    "guided/anchor_validation.json",
+    "guided/island_coalescence.py",
+    "guided/operator_validation.json",
+    "guided_reader.py",
+    "literature_basis.md",
+    "origin.json",
+    "production_plan.json",
+    "protocol.json",
+    "qualify.py",
+    "qualify_pipeline.py",
+    "recovery.py",
+    "refine384.json",
+    "study_analysis.py"
+  ],
+  "full_record": "summary.json"
+}

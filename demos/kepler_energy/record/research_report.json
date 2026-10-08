@@ -1,0 +1,1435 @@
+{
+  "status": "completed",
+  "workflow": "minimal",
+  "hypothesis": "For the planar Kepler problem with GM=1 and semimajor axis a=1, a fixed-step kick-drift-kick leapfrog integration whose maximum sampled relative energy error stays below 0.001 also keeps its maximum position error below 0.01a over twenty orbital periods. Test eccentricities e in {0, 0.3, 0.6} and {64, 128, 256, 512} equal timesteps per orbital period, starting at periapsis. Position error is measured against the exact Kepler orbit at the same physical time.\n",
+  "remaining_seconds": 800.4746935367584,
+  "deadline": 1791430674.4996314,
+  "resource_limits": {
+    "max_experiment_bytes": 4294967296,
+    "max_total_bytes": 8589934592
+  },
+  "completion_policy": "repair",
+  "completed": true,
+  "experiments": [
+    {
+      "id": "exp_084c13fbf06a58ffd855107e",
+      "status": "succeeded",
+      "operator_guidance_ids": [],
+      "created_at": 1791429643.0151174,
+      "timeout": 120,
+      "workspace_limit_bytes": 4294967296,
+      "binding": {
+        "source": "calculation.py",
+        "args": [
+          "e0_N2048"
+        ],
+        "inputs": {
+          "calculation.py": "2d7ff5c25811d5e03270f0a4effc05a493942473eed3391312dca10e4ef3bef3"
+        },
+        "capability": null,
+        "runtime_sha256": null
+      },
+      "outputs": [
+        "result.json",
+        "trajectories.npz",
+        "errors.png"
+      ],
+      "commitment": "commit_40654c6537acaacae7b59687",
+      "key": "repair-e0-N2048",
+      "pid": 155716,
+      "worker_identity": {
+        "pid": 155716,
+        "starttime": "1103788",
+        "argv": [
+          "/home/tomzhu0225/src/simjecture/.venv/bin/python3",
+          "-m",
+          "conjecture_solver.research_service",
+          "--root",
+          "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/kepler-study-fixed",
+          "--execute",
+          "exp_084c13fbf06a58ffd855107e"
+        ],
+        "launched_at": "2026-10-08T03:20:43.185673+00:00",
+        "run_directory": null
+      },
+      "started_at": 1791429643.1858082,
+      "execution": {
+        "isolation_backend": "bubblewrap",
+        "returncode": 0,
+        "stdout": "",
+        "stderr": "Fontconfig error: Cannot load default config file: No such file: (null)",
+        "timed_out": false,
+        "cancelled": false,
+        "workspace_exceeded": false,
+        "stdout_truncated": false,
+        "stderr_truncated": false,
+        "heartbeat_count": 0,
+        "wall_seconds": 1.6624651050005923,
+        "workspace_bytes": 2106788
+      },
+      "artifacts": {
+        ".cache/fontconfig/2300eef321c393bfd76478a5c0e95b23-le64.cache-9": {
+          "sha256": "be4a2bf520a0eb916fab92b15585e493fa0dae62d7c2dd7e275b01664c14e346",
+          "bytes": 382064
+        },
+        ".cache/fontconfig/3830d5c3ddfd5cd38a049b759396e72e-le64.cache-9": {
+          "sha256": "6cb953b213d173a1439944baba4f785aeb8e08fba3cb8794d99004c34310d453",
+          "bytes": 184
+        },
+        ".cache/fontconfig/4c599c202bc5c08e2d34565a40eac3b2-le64.cache-9": {
+          "sha256": "e2077b9c186aa45489f582008a00a7965a8135d07927d2697f6d07e09f9ae69d",
+          "bytes": 104
+        },
+        ".cache/fontconfig/573ec803664ed168555e0e8b6d0f0c7f-le64.cache-9": {
+          "sha256": "e67dc2bd665d1b1bd952ec5dd357d64bae7b2fbd6f1c9896db3e880f9788c58f",
+          "bytes": 152
+        },
+        ".cache/fontconfig/7ef2298fde41cc6eeb7af42e48b7d293-le64.cache-9": {
+          "sha256": "69cf18e42e3d2705da9c867a36e7e16f3d0e8973c41a5a51118e43c1207756fc",
+          "bytes": 208
+        },
+        ".cache/fontconfig/9b89f8e3dae116d678bbf48e5f21f69b-le64.cache-9": {
+          "sha256": "4fa102166b8aaa98765061eae7abe768aa636c327ad2889f68d33d77de9735b0",
+          "bytes": 68800
+        },
+        ".cache/fontconfig/CACHEDIR.TAG": {
+          "sha256": "05e7633fb31bf1f6f8d89020c16b9f24587fdf7638e951c9745b192f5fc3b682",
+          "bytes": 200
+        },
+        ".cache/fontconfig/d589a48862398ed80a3d6066f4f56f4c-le64.cache-9": {
+          "sha256": "233df56e901146f1c5f71911def868b835fb7e43a0e02644a07a1c829e49cc31",
+          "bytes": 51736
+        },
+        "calculation.py": {
+          "sha256": "2d7ff5c25811d5e03270f0a4effc05a493942473eed3391312dca10e4ef3bef3",
+          "bytes": 4283
+        },
+        "errors.png": {
+          "sha256": "4e1bded1c274a6157145ddc097043da666ffddec00c29b997899beb87aac7a0f",
+          "bytes": 148060
+        },
+        "result.json": {
+          "sha256": "a1b7d59c3d4553c7388f0d47657caf2a36a860ab2868baa8b619a46a57e9698e",
+          "bytes": 919
+        },
+        "trajectories.npz": {
+          "sha256": "d752634130657737d31542c28bf1408865f914e318283c3de5a5e683b009c8e4",
+          "bytes": 1450078
+        }
+      },
+      "missing_outputs": [],
+      "input_mutations": [],
+      "output_findings": [],
+      "scientific_status": "reviewed",
+      "finished_at": 1791429644.8736968,
+      "review_ids": [
+        "review_91da2f71f73cfdcb1b8e34d6"
+      ]
+    },
+    {
+      "id": "exp_13f2a87e5162dfa757f15bdc",
+      "status": "succeeded",
+      "operator_guidance_ids": [],
+      "created_at": 1791429651.9925208,
+      "timeout": 120,
+      "workspace_limit_bytes": 4294967296,
+      "binding": {
+        "source": "calculation.py",
+        "args": [
+          "e06_N4096"
+        ],
+        "inputs": {
+          "calculation.py": "2d7ff5c25811d5e03270f0a4effc05a493942473eed3391312dca10e4ef3bef3"
+        },
+        "capability": null,
+        "runtime_sha256": null
+      },
+      "outputs": [
+        "result.json",
+        "trajectories.npz",
+        "errors.png"
+      ],
+      "commitment": "commit_40654c6537acaacae7b59687",
+      "key": "repair-e06-N4096",
+      "pid": 156010,
+      "worker_identity": {
+        "pid": 156010,
+        "starttime": "1104686",
+        "argv": [
+          "/home/tomzhu0225/src/simjecture/.venv/bin/python3",
+          "-m",
+          "conjecture_solver.research_service",
+          "--root",
+          "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/kepler-study-fixed",
+          "--execute",
+          "exp_13f2a87e5162dfa757f15bdc"
+        ],
+        "launched_at": "2026-10-08T03:20:52.150590+00:00",
+        "run_directory": null
+      },
+      "started_at": 1791429652.1507287,
+      "execution": {
+        "isolation_backend": "bubblewrap",
+        "returncode": 0,
+        "stdout": "",
+        "stderr": "Fontconfig error: Cannot load default config file: No such file: (null)",
+        "timed_out": false,
+        "cancelled": false,
+        "workspace_exceeded": false,
+        "stdout_truncated": false,
+        "stderr_truncated": false,
+        "heartbeat_count": 0,
+        "wall_seconds": 2.266716166999686,
+        "workspace_bytes": 4272655
+      },
+      "artifacts": {
+        ".cache/fontconfig/2300eef321c393bfd76478a5c0e95b23-le64.cache-9": {
+          "sha256": "be4a2bf520a0eb916fab92b15585e493fa0dae62d7c2dd7e275b01664c14e346",
+          "bytes": 382064
+        },
+        ".cache/fontconfig/3830d5c3ddfd5cd38a049b759396e72e-le64.cache-9": {
+          "sha256": "6cb953b213d173a1439944baba4f785aeb8e08fba3cb8794d99004c34310d453",
+          "bytes": 184
+        },
+        ".cache/fontconfig/4c599c202bc5c08e2d34565a40eac3b2-le64.cache-9": {
+          "sha256": "e2077b9c186aa45489f582008a00a7965a8135d07927d2697f6d07e09f9ae69d",
+          "bytes": 104
+        },
+        ".cache/fontconfig/573ec803664ed168555e0e8b6d0f0c7f-le64.cache-9": {
+          "sha256": "e67dc2bd665d1b1bd952ec5dd357d64bae7b2fbd6f1c9896db3e880f9788c58f",
+          "bytes": 152
+        },
+        ".cache/fontconfig/7ef2298fde41cc6eeb7af42e48b7d293-le64.cache-9": {
+          "sha256": "69cf18e42e3d2705da9c867a36e7e16f3d0e8973c41a5a51118e43c1207756fc",
+          "bytes": 208
+        },
+        ".cache/fontconfig/9b89f8e3dae116d678bbf48e5f21f69b-le64.cache-9": {
+          "sha256": "4fa102166b8aaa98765061eae7abe768aa636c327ad2889f68d33d77de9735b0",
+          "bytes": 68800
+        },
+        ".cache/fontconfig/CACHEDIR.TAG": {
+          "sha256": "05e7633fb31bf1f6f8d89020c16b9f24587fdf7638e951c9745b192f5fc3b682",
+          "bytes": 200
+        },
+        ".cache/fontconfig/d589a48862398ed80a3d6066f4f56f4c-le64.cache-9": {
+          "sha256": "233df56e901146f1c5f71911def868b835fb7e43a0e02644a07a1c829e49cc31",
+          "bytes": 51736
+        },
+        "calculation.py": {
+          "sha256": "2d7ff5c25811d5e03270f0a4effc05a493942473eed3391312dca10e4ef3bef3",
+          "bytes": 4283
+        },
+        "errors.png": {
+          "sha256": "18f4330d3b02a18fcb3705de819c361bb37048643b7401b78b9df7571c32c2dc",
+          "bytes": 213127
+        },
+        "result.json": {
+          "sha256": "cbcfd827f7e8db20202ee67d03b0582edf771b99e354eeb53451d98f9c91cd48",
+          "bytes": 934
+        },
+        "trajectories.npz": {
+          "sha256": "932b31a20dfb489297b56fc298a28576b467dc2d892a514f12bf25e4a40139ed",
+          "bytes": 3550863
+        }
+      },
+      "missing_outputs": [],
+      "input_mutations": [],
+      "output_findings": [],
+      "scientific_status": "reviewed",
+      "finished_at": 1791429654.4412985,
+      "review_ids": [
+        "review_91da2f71f73cfdcb1b8e34d6"
+      ]
+    },
+    {
+      "id": "exp_5d1bbee42a8dc38ea8c5c889",
+      "status": "succeeded",
+      "operator_guidance_ids": [],
+      "created_at": 1791429713.3605275,
+      "timeout": 120,
+      "workspace_limit_bytes": 4294967296,
+      "binding": {
+        "source": "calculation.py",
+        "args": [
+          "e06_N2048"
+        ],
+        "inputs": {
+          "calculation.py": "2d7ff5c25811d5e03270f0a4effc05a493942473eed3391312dca10e4ef3bef3"
+        },
+        "capability": null,
+        "runtime_sha256": null
+      },
+      "outputs": [
+        "result.json",
+        "trajectories.npz",
+        "errors.png"
+      ],
+      "commitment": null,
+      "key": "challenge-e06-N2048",
+      "pid": 158623,
+      "worker_identity": {
+        "pid": 158623,
+        "starttime": "1110822",
+        "argv": [
+          "/home/tomzhu0225/src/simjecture/.venv/bin/python3",
+          "-m",
+          "conjecture_solver.research_service",
+          "--root",
+          "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/kepler-study-fixed",
+          "--execute",
+          "exp_5d1bbee42a8dc38ea8c5c889"
+        ],
+        "launched_at": "2026-10-08T03:21:53.521582+00:00",
+        "run_directory": null
+      },
+      "started_at": 1791429713.5217183,
+      "execution": {
+        "isolation_backend": "bubblewrap",
+        "returncode": 0,
+        "stdout": "",
+        "stderr": "Fontconfig error: Cannot load default config file: No such file: (null)",
+        "timed_out": false,
+        "cancelled": false,
+        "workspace_exceeded": false,
+        "stdout_truncated": false,
+        "stderr_truncated": false,
+        "heartbeat_count": 0,
+        "wall_seconds": 1.6128575550010282,
+        "workspace_bytes": 2403015
+      },
+      "artifacts": {
+        ".cache/fontconfig/2300eef321c393bfd76478a5c0e95b23-le64.cache-9": {
+          "sha256": "be4a2bf520a0eb916fab92b15585e493fa0dae62d7c2dd7e275b01664c14e346",
+          "bytes": 382064
+        },
+        ".cache/fontconfig/3830d5c3ddfd5cd38a049b759396e72e-le64.cache-9": {
+          "sha256": "6cb953b213d173a1439944baba4f785aeb8e08fba3cb8794d99004c34310d453",
+          "bytes": 184
+        },
+        ".cache/fontconfig/4c599c202bc5c08e2d34565a40eac3b2-le64.cache-9": {
+          "sha256": "e2077b9c186aa45489f582008a00a7965a8135d07927d2697f6d07e09f9ae69d",
+          "bytes": 104
+        },
+        ".cache/fontconfig/573ec803664ed168555e0e8b6d0f0c7f-le64.cache-9": {
+          "sha256": "e67dc2bd665d1b1bd952ec5dd357d64bae7b2fbd6f1c9896db3e880f9788c58f",
+          "bytes": 152
+        },
+        ".cache/fontconfig/7ef2298fde41cc6eeb7af42e48b7d293-le64.cache-9": {
+          "sha256": "69cf18e42e3d2705da9c867a36e7e16f3d0e8973c41a5a51118e43c1207756fc",
+          "bytes": 208
+        },
+        ".cache/fontconfig/9b89f8e3dae116d678bbf48e5f21f69b-le64.cache-9": {
+          "sha256": "4fa102166b8aaa98765061eae7abe768aa636c327ad2889f68d33d77de9735b0",
+          "bytes": 68800
+        },
+        ".cache/fontconfig/CACHEDIR.TAG": {
+          "sha256": "05e7633fb31bf1f6f8d89020c16b9f24587fdf7638e951c9745b192f5fc3b682",
+          "bytes": 200
+        },
+        ".cache/fontconfig/d589a48862398ed80a3d6066f4f56f4c-le64.cache-9": {
+          "sha256": "233df56e901146f1c5f71911def868b835fb7e43a0e02644a07a1c829e49cc31",
+          "bytes": 51736
+        },
+        "calculation.py": {
+          "sha256": "2d7ff5c25811d5e03270f0a4effc05a493942473eed3391312dca10e4ef3bef3",
+          "bytes": 4283
+        },
+        "errors.png": {
+          "sha256": "2ac2afe0b5033ce689d2708a5c7a96091236388bb45dbdb99dff4114306cd58d",
+          "bytes": 233386
+        },
+        "result.json": {
+          "sha256": "f3b48952c0d35fc5dbd6d9ede67f825443d0bbfd87efe79c177f4eddcf9e9a7f",
+          "bytes": 932
+        },
+        "trajectories.npz": {
+          "sha256": "2f6ddb5feb17e0d5e9d603f20e837ca68ebd46fa379047b4ee2735d96d82213b",
+          "bytes": 1660966
+        }
+      },
+      "missing_outputs": [],
+      "input_mutations": [],
+      "output_findings": [],
+      "scientific_status": "unreviewed",
+      "finished_at": 1791429715.1562033,
+      "review_ids": []
+    },
+    {
+      "id": "exp_70ff32e6d28ef9ccd7312295",
+      "status": "succeeded",
+      "operator_guidance_ids": [],
+      "created_at": 1791429505.1440804,
+      "timeout": 120,
+      "workspace_limit_bytes": 4294967296,
+      "binding": {
+        "source": "calculation.py",
+        "args": [],
+        "inputs": {
+          "calculation.py": "8f4c1146351120db3c7aaad7bbe2d233a88672aaf3411407d9071b89ddbf83d5"
+        },
+        "capability": null,
+        "runtime_sha256": null
+      },
+      "outputs": [
+        "result.json",
+        "trajectories.npz",
+        "errors.png"
+      ],
+      "commitment": null,
+      "key": "full-grid-v1",
+      "pid": 152082,
+      "worker_identity": {
+        "pid": 152082,
+        "starttime": "1090001",
+        "argv": [
+          "/home/tomzhu0225/src/simjecture/.venv/bin/python3",
+          "-m",
+          "conjecture_solver.research_service",
+          "--root",
+          "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/kepler-study-fixed",
+          "--execute",
+          "exp_70ff32e6d28ef9ccd7312295"
+        ],
+        "launched_at": "2026-10-08T03:18:25.303822+00:00",
+        "run_directory": null
+      },
+      "started_at": 1791429505.3039832,
+      "execution": {
+        "isolation_backend": "bubblewrap",
+        "returncode": 0,
+        "stdout": "",
+        "stderr": "Fontconfig error: Cannot load default config file: No such file: (null)",
+        "timed_out": false,
+        "cancelled": false,
+        "workspace_exceeded": false,
+        "stdout_truncated": false,
+        "stderr_truncated": false,
+        "heartbeat_count": 0,
+        "wall_seconds": 1.7136510349992022,
+        "workspace_bytes": 3145530
+      },
+      "artifacts": {
+        ".cache/fontconfig/2300eef321c393bfd76478a5c0e95b23-le64.cache-9": {
+          "sha256": "be4a2bf520a0eb916fab92b15585e493fa0dae62d7c2dd7e275b01664c14e346",
+          "bytes": 382064
+        },
+        ".cache/fontconfig/3830d5c3ddfd5cd38a049b759396e72e-le64.cache-9": {
+          "sha256": "6cb953b213d173a1439944baba4f785aeb8e08fba3cb8794d99004c34310d453",
+          "bytes": 184
+        },
+        ".cache/fontconfig/4c599c202bc5c08e2d34565a40eac3b2-le64.cache-9": {
+          "sha256": "e2077b9c186aa45489f582008a00a7965a8135d07927d2697f6d07e09f9ae69d",
+          "bytes": 104
+        },
+        ".cache/fontconfig/573ec803664ed168555e0e8b6d0f0c7f-le64.cache-9": {
+          "sha256": "e67dc2bd665d1b1bd952ec5dd357d64bae7b2fbd6f1c9896db3e880f9788c58f",
+          "bytes": 152
+        },
+        ".cache/fontconfig/7ef2298fde41cc6eeb7af42e48b7d293-le64.cache-9": {
+          "sha256": "69cf18e42e3d2705da9c867a36e7e16f3d0e8973c41a5a51118e43c1207756fc",
+          "bytes": 208
+        },
+        ".cache/fontconfig/9b89f8e3dae116d678bbf48e5f21f69b-le64.cache-9": {
+          "sha256": "4fa102166b8aaa98765061eae7abe768aa636c327ad2889f68d33d77de9735b0",
+          "bytes": 68800
+        },
+        ".cache/fontconfig/CACHEDIR.TAG": {
+          "sha256": "05e7633fb31bf1f6f8d89020c16b9f24587fdf7638e951c9745b192f5fc3b682",
+          "bytes": 200
+        },
+        ".cache/fontconfig/d589a48862398ed80a3d6066f4f56f4c-le64.cache-9": {
+          "sha256": "233df56e901146f1c5f71911def868b835fb7e43a0e02644a07a1c829e49cc31",
+          "bytes": 51736
+        },
+        "calculation.py": {
+          "sha256": "8f4c1146351120db3c7aaad7bbe2d233a88672aaf3411407d9071b89ddbf83d5",
+          "bytes": 3894
+        },
+        "errors.png": {
+          "sha256": "ea2f19cccc1e9c7dd4a1fb7d7872c5afe56003c250889c2567620f6f12a19cd5",
+          "bytes": 422952
+        },
+        "result.json": {
+          "sha256": "c3d39ca9d5e753e1eb45a47ed92c00483070cf4a1909b5974419f710f5c56fdb",
+          "bytes": 7029
+        },
+        "trajectories.npz": {
+          "sha256": "4bf4a07875f7acb38e02c7dc850e826b6cb91e95387731716b481668775b2469",
+          "bytes": 2208207
+        }
+      },
+      "missing_outputs": [],
+      "input_mutations": [],
+      "output_findings": [],
+      "scientific_status": "reviewed",
+      "finished_at": 1791429507.0452602,
+      "review_ids": [
+        "review_9e9e9a5528a825b402183851"
+      ]
+    },
+    {
+      "id": "exp_affe2b99eebe88e0f1007a6f",
+      "status": "succeeded",
+      "operator_guidance_ids": [],
+      "created_at": 1791429643.2208455,
+      "timeout": 120,
+      "workspace_limit_bytes": 4291816912,
+      "binding": {
+        "source": "calculation.py",
+        "args": [
+          "e03_N2048"
+        ],
+        "inputs": {
+          "calculation.py": "2d7ff5c25811d5e03270f0a4effc05a493942473eed3391312dca10e4ef3bef3"
+        },
+        "capability": null,
+        "runtime_sha256": null
+      },
+      "outputs": [
+        "result.json",
+        "trajectories.npz",
+        "errors.png"
+      ],
+      "commitment": "commit_40654c6537acaacae7b59687",
+      "key": "repair-e03-N2048",
+      "pid": 155722,
+      "worker_identity": {
+        "pid": 155722,
+        "starttime": "1103809",
+        "argv": [
+          "/home/tomzhu0225/src/simjecture/.venv/bin/python3",
+          "-m",
+          "conjecture_solver.research_service",
+          "--root",
+          "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/kepler-study-fixed",
+          "--execute",
+          "exp_affe2b99eebe88e0f1007a6f"
+        ],
+        "launched_at": "2026-10-08T03:20:43.403122+00:00",
+        "run_directory": null
+      },
+      "started_at": 1791429643.4032474,
+      "execution": {
+        "isolation_backend": "bubblewrap",
+        "returncode": 0,
+        "stdout": "",
+        "stderr": "Fontconfig error: Cannot load default config file: No such file: (null)",
+        "timed_out": false,
+        "cancelled": false,
+        "workspace_exceeded": false,
+        "stdout_truncated": false,
+        "stderr_truncated": false,
+        "heartbeat_count": 0,
+        "wall_seconds": 1.7128735210008017,
+        "workspace_bytes": 2332689
+      },
+      "artifacts": {
+        ".cache/fontconfig/2300eef321c393bfd76478a5c0e95b23-le64.cache-9": {
+          "sha256": "be4a2bf520a0eb916fab92b15585e493fa0dae62d7c2dd7e275b01664c14e346",
+          "bytes": 382064
+        },
+        ".cache/fontconfig/3830d5c3ddfd5cd38a049b759396e72e-le64.cache-9": {
+          "sha256": "6cb953b213d173a1439944baba4f785aeb8e08fba3cb8794d99004c34310d453",
+          "bytes": 184
+        },
+        ".cache/fontconfig/4c599c202bc5c08e2d34565a40eac3b2-le64.cache-9": {
+          "sha256": "e2077b9c186aa45489f582008a00a7965a8135d07927d2697f6d07e09f9ae69d",
+          "bytes": 104
+        },
+        ".cache/fontconfig/573ec803664ed168555e0e8b6d0f0c7f-le64.cache-9": {
+          "sha256": "e67dc2bd665d1b1bd952ec5dd357d64bae7b2fbd6f1c9896db3e880f9788c58f",
+          "bytes": 152
+        },
+        ".cache/fontconfig/7ef2298fde41cc6eeb7af42e48b7d293-le64.cache-9": {
+          "sha256": "69cf18e42e3d2705da9c867a36e7e16f3d0e8973c41a5a51118e43c1207756fc",
+          "bytes": 208
+        },
+        ".cache/fontconfig/9b89f8e3dae116d678bbf48e5f21f69b-le64.cache-9": {
+          "sha256": "4fa102166b8aaa98765061eae7abe768aa636c327ad2889f68d33d77de9735b0",
+          "bytes": 68800
+        },
+        ".cache/fontconfig/CACHEDIR.TAG": {
+          "sha256": "05e7633fb31bf1f6f8d89020c16b9f24587fdf7638e951c9745b192f5fc3b682",
+          "bytes": 200
+        },
+        ".cache/fontconfig/d589a48862398ed80a3d6066f4f56f4c-le64.cache-9": {
+          "sha256": "233df56e901146f1c5f71911def868b835fb7e43a0e02644a07a1c829e49cc31",
+          "bytes": 51736
+        },
+        "calculation.py": {
+          "sha256": "2d7ff5c25811d5e03270f0a4effc05a493942473eed3391312dca10e4ef3bef3",
+          "bytes": 4283
+        },
+        "errors.png": {
+          "sha256": "6e32ee82338ad926676b716aad13af5a7067c9af3b20d0e7ab49686d2a388211",
+          "bytes": 186786
+        },
+        "result.json": {
+          "sha256": "e2ef573d9a4e666db832a618d75f59465d06cb7765069676d944a71eb77f2586",
+          "bytes": 936
+        },
+        "trajectories.npz": {
+          "sha256": "88f8c186f6a3c6ce1904c714103902a3fae76da42c671a6cef0897c7d4c6490f",
+          "bytes": 1637236
+        }
+      },
+      "missing_outputs": [],
+      "input_mutations": [],
+      "output_findings": [],
+      "scientific_status": "reviewed",
+      "finished_at": 1791429645.13953,
+      "review_ids": [
+        "review_91da2f71f73cfdcb1b8e34d6"
+      ]
+    },
+    {
+      "id": "exp_c528e177145130b1c958ea00",
+      "status": "succeeded",
+      "operator_guidance_ids": [],
+      "created_at": 1791429696.7626438,
+      "timeout": 120,
+      "workspace_limit_bytes": 4294967296,
+      "binding": {
+        "source": "calculation.py",
+        "args": [
+          "e06_N8192"
+        ],
+        "inputs": {
+          "calculation.py": "2d7ff5c25811d5e03270f0a4effc05a493942473eed3391312dca10e4ef3bef3"
+        },
+        "capability": null,
+        "runtime_sha256": null
+      },
+      "outputs": [
+        "result.json",
+        "trajectories.npz",
+        "errors.png"
+      ],
+      "commitment": "commit_40654c6537acaacae7b59687",
+      "key": "repair-e06-N8192",
+      "pid": 157541,
+      "worker_identity": {
+        "pid": 157541,
+        "starttime": "1109163",
+        "argv": [
+          "/home/tomzhu0225/src/simjecture/.venv/bin/python3",
+          "-m",
+          "conjecture_solver.research_service",
+          "--root",
+          "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/kepler-study-fixed",
+          "--execute",
+          "exp_c528e177145130b1c958ea00"
+        ],
+        "launched_at": "2026-10-08T03:21:36.938012+00:00",
+        "run_directory": null
+      },
+      "started_at": 1791429696.9381273,
+      "execution": {
+        "isolation_backend": "bubblewrap",
+        "returncode": 0,
+        "stdout": "",
+        "stderr": "Fontconfig error: Cannot load default config file: No such file: (null)",
+        "timed_out": false,
+        "cancelled": false,
+        "workspace_exceeded": false,
+        "stdout_truncated": false,
+        "stderr_truncated": false,
+        "heartbeat_count": 0,
+        "wall_seconds": 3.3721263959996577,
+        "workspace_bytes": 7869359
+      },
+      "artifacts": {
+        ".cache/fontconfig/2300eef321c393bfd76478a5c0e95b23-le64.cache-9": {
+          "sha256": "be4a2bf520a0eb916fab92b15585e493fa0dae62d7c2dd7e275b01664c14e346",
+          "bytes": 382064
+        },
+        ".cache/fontconfig/3830d5c3ddfd5cd38a049b759396e72e-le64.cache-9": {
+          "sha256": "6cb953b213d173a1439944baba4f785aeb8e08fba3cb8794d99004c34310d453",
+          "bytes": 184
+        },
+        ".cache/fontconfig/4c599c202bc5c08e2d34565a40eac3b2-le64.cache-9": {
+          "sha256": "e2077b9c186aa45489f582008a00a7965a8135d07927d2697f6d07e09f9ae69d",
+          "bytes": 104
+        },
+        ".cache/fontconfig/573ec803664ed168555e0e8b6d0f0c7f-le64.cache-9": {
+          "sha256": "e67dc2bd665d1b1bd952ec5dd357d64bae7b2fbd6f1c9896db3e880f9788c58f",
+          "bytes": 152
+        },
+        ".cache/fontconfig/7ef2298fde41cc6eeb7af42e48b7d293-le64.cache-9": {
+          "sha256": "69cf18e42e3d2705da9c867a36e7e16f3d0e8973c41a5a51118e43c1207756fc",
+          "bytes": 208
+        },
+        ".cache/fontconfig/9b89f8e3dae116d678bbf48e5f21f69b-le64.cache-9": {
+          "sha256": "4fa102166b8aaa98765061eae7abe768aa636c327ad2889f68d33d77de9735b0",
+          "bytes": 68800
+        },
+        ".cache/fontconfig/CACHEDIR.TAG": {
+          "sha256": "05e7633fb31bf1f6f8d89020c16b9f24587fdf7638e951c9745b192f5fc3b682",
+          "bytes": 200
+        },
+        ".cache/fontconfig/d589a48862398ed80a3d6066f4f56f4c-le64.cache-9": {
+          "sha256": "233df56e901146f1c5f71911def868b835fb7e43a0e02644a07a1c829e49cc31",
+          "bytes": 51736
+        },
+        "calculation.py": {
+          "sha256": "2d7ff5c25811d5e03270f0a4effc05a493942473eed3391312dca10e4ef3bef3",
+          "bytes": 4283
+        },
+        "errors.png": {
+          "sha256": "9d94c323f41e5bec6bf022da46236629a90c99ffa89468fe73be7e56fc333437",
+          "bytes": 201715
+        },
+        "result.json": {
+          "sha256": "0ed64c2a8de4b7fbd2f216d9d4b8cbc6314066d1b90845ebee58dbd4730b608e",
+          "bytes": 939
+        },
+        "trajectories.npz": {
+          "sha256": "a549b78d44f75456a78c3d1fb4c57d5ada47f3f698835664ba41dbad22e28eda",
+          "bytes": 7158974
+        }
+      },
+      "missing_outputs": [],
+      "input_mutations": [],
+      "output_findings": [],
+      "scientific_status": "reviewed",
+      "finished_at": 1791429700.3395813,
+      "review_ids": [
+        "review_91da2f71f73cfdcb1b8e34d6"
+      ]
+    }
+  ],
+  "commitments": [
+    {
+      "id": "commit_40654c6537acaacae7b59687",
+      "created_at": 1791429639.1278973,
+      "statement": "For the planar Kepler problem with GM=a=1 over 20 periods, fixed-step kick-drift-kick leapfrog has maximum sampled position error below 0.01a for the following finite cases only: (e,N)=(0,2048),(0.3,2048),(0.6,4096),(0.6,8192), where N is steps per 2\u03c0 period. This is a resolution-qualified finite-case replacement; it makes no claim for intervening N, other eccentricities, or arbitrary higher-resolution monotonicity.",
+      "parent": "root",
+      "acceptance": "Each named case must complete 20 periods with maximum sampled Euclidean position error versus the same-time analytic Kepler solution <0.01a. Kepler-equation residual, initial-state mismatch, and period consistency must each be <=1e-11; an independently converged DOP853 integration must agree with the exact-reference maximum position error to <=1e-7a. Also report maximum relative energy error. The separate e=0.6,N=2048 probe is an out-of-domain falsifier probe, not part of the repair acceptance set.",
+      "rationale": "Corrected prospective contract after the initial commitment exposed an argv-binding problem: each committed label now selects exactly one tuple so the fresh execution matches its declared case. The original energy implication failed because bounded energy error did not control accumulated phase error. These finite resolution cases were prospectively chosen conservatively, and the lower-resolution e=0.6,N=2048 probe will challenge broader readings.",
+      "bindings": [
+        {
+          "source": "calculation.py",
+          "args": [
+            "e0_N2048"
+          ],
+          "inputs": {
+            "calculation.py": "2d7ff5c25811d5e03270f0a4effc05a493942473eed3391312dca10e4ef3bef3"
+          },
+          "capability": null,
+          "runtime_sha256": null
+        },
+        {
+          "source": "calculation.py",
+          "args": [
+            "e03_N2048"
+          ],
+          "inputs": {
+            "calculation.py": "2d7ff5c25811d5e03270f0a4effc05a493942473eed3391312dca10e4ef3bef3"
+          },
+          "capability": null,
+          "runtime_sha256": null
+        },
+        {
+          "source": "calculation.py",
+          "args": [
+            "e06_N4096"
+          ],
+          "inputs": {
+            "calculation.py": "2d7ff5c25811d5e03270f0a4effc05a493942473eed3391312dca10e4ef3bef3"
+          },
+          "capability": null,
+          "runtime_sha256": null
+        },
+        {
+          "source": "calculation.py",
+          "args": [
+            "e06_N8192"
+          ],
+          "inputs": {
+            "calculation.py": "2d7ff5c25811d5e03270f0a4effc05a493942473eed3391312dca10e4ef3bef3"
+          },
+          "capability": null,
+          "runtime_sha256": null
+        }
+      ]
+    },
+    {
+      "id": "commit_eeddb5ff5af4d419817a455a",
+      "created_at": 1791429622.0336418,
+      "statement": "For the planar Kepler problem with GM=a=1 over 20 periods, fixed-step kick-drift-kick leapfrog has maximum sampled position error below 0.01a for the following finite cases only: (e,N)=(0,2048),(0.3,2048),(0.6,4096),(0.6,8192), where N is steps per 2\u03c0 period. This is a resolution-qualified finite-case replacement; it makes no claim for intervening N, other eccentricities, or arbitrary higher-resolution monotonicity.",
+      "parent": "root",
+      "acceptance": "Each named case must complete 20 periods with maximum sampled Euclidean position error versus the same-time analytic Kepler solution <0.01a. Kepler-equation residual, initial-state mismatch, and period consistency must each be <=1e-11; an independently converged DOP853 integration must agree with the exact-reference maximum position error to <=1e-7a. Also report maximum relative energy error. The separate e=0.6,N=2048 probe is an out-of-domain falsifier probe, not part of the repair acceptance set.",
+      "rationale": "The original implication failed because bounded energy error did not control accumulated phase error. Rather than fit a universal threshold from the original grid, this repair states four prospective, conservative finite resolution cases. N=2048 is well above the known circular N=512 pass and the e=0.3 N=512 failure; N=4096 is chosen for e=0.6 based on its more severe periapsis dynamics. A lower-resolution e=0.6,N=2048 probe is included to seek a further counterexample to any broader reading.",
+      "bindings": [
+        {
+          "source": "calculation.py",
+          "args": [
+            "e0_N2048"
+          ],
+          "inputs": {
+            "calculation.py": "3c6bc1a30ba092c93b3bd4b0637f5458e9a4301423e74e785ef9bfe6ea260255"
+          },
+          "capability": null,
+          "runtime_sha256": null
+        },
+        {
+          "source": "calculation.py",
+          "args": [
+            "e03_N2048"
+          ],
+          "inputs": {
+            "calculation.py": "3c6bc1a30ba092c93b3bd4b0637f5458e9a4301423e74e785ef9bfe6ea260255"
+          },
+          "capability": null,
+          "runtime_sha256": null
+        },
+        {
+          "source": "calculation.py",
+          "args": [
+            "e06_N4096"
+          ],
+          "inputs": {
+            "calculation.py": "3c6bc1a30ba092c93b3bd4b0637f5458e9a4301423e74e785ef9bfe6ea260255"
+          },
+          "capability": null,
+          "runtime_sha256": null
+        },
+        {
+          "source": "calculation.py",
+          "args": [
+            "e06_N8192"
+          ],
+          "inputs": {
+            "calculation.py": "3c6bc1a30ba092c93b3bd4b0637f5458e9a4301423e74e785ef9bfe6ea260255"
+          },
+          "capability": null,
+          "runtime_sha256": null
+        }
+      ]
+    }
+  ],
+  "reviews": [
+    {
+      "id": "review_91da2f71f73cfdcb1b8e34d6",
+      "status": "resolved",
+      "created_at": 1791429785.8610017,
+      "experiments": [
+        "exp_084c13fbf06a58ffd855107e",
+        "exp_affe2b99eebe88e0f1007a6f",
+        "exp_13f2a87e5162dfa757f15bdc",
+        "exp_c528e177145130b1c958ea00"
+      ],
+      "conclusion": "Support commit_40654c6537acaacae7b59687 only for its four declared tuples: e=0,N=2048; e=0.3,N=2048; e=0.6,N=4096; e=0.6,N=8192. Fresh committed experiments show maximum same-time position errors 0.0003951, 0.001546, 0.006428, and 0.001607 a, respectively, all below 0.01a. Analytic Kepler residuals are <=1.5e-14, initial position mismatch is zero, period closure mismatch <=2.5e-16a, and independent DOP853-to-analytic maximum position discrepancies <=8.2e-10a. The KDK source uses the stated half-kick/full-drift/half-kick update. This is an exhaustive challenge of the replacement finite set, with independent integrations and exact-reference controls. Separately, the original claim remains falsified; the recorded e=0.6,N=2048 probe has energy error 6.97e-5 and position error 0.02571a, outside the replacement scope. No intermediate resolutions or monotonicity are claimed.",
+      "claim": "commit_40654c6537acaacae7b59687",
+      "disposition": "supported",
+      "challenge": {
+        "strategy": "Exhaustively test every tuple in the prospectively committed finite replacement set; try to falsify its position bound using the same-time analytic orbit and an independently converged DOP853 cross-check, while preserving the lower-resolution high-eccentricity stress probe and original-grid counterexamples as controls on broader extrapolation.",
+        "experiments": [
+          "exp_084c13fbf06a58ffd855107e",
+          "exp_affe2b99eebe88e0f1007a6f",
+          "exp_13f2a87e5162dfa757f15bdc",
+          "exp_c528e177145130b1c958ea00"
+        ],
+        "outcome": "All four committed tuples satisfy max position error <0.01a and exact-reference/IVP controls. The separate e=0.6,N=2048 probe remains a counterexample to the broader energy-only implication, but is outside the finite replacement set."
+      },
+      "verdict": {
+        "claim_id": "commit_40654c6537acaacae7b59687",
+        "decision": "approved",
+        "disposition": "supported",
+        "rationale": "The four fresh, prospectively bound experiments exhaustively test the target's finite domain. Inspected trajectories reproduce maximum sampled position errors of 0.000395133526a for (0,2048), 0.001546212650a for (0.3,2048), 0.006427882597a for (0.6,4096), and 0.001606946203a for (0.6,8192), respectively in exp_084c13fbf06a58ffd855107e, exp_affe2b99eebe88e0f1007a6f, exp_13f2a87e5162dfa757f15bdc, and exp_c528e177145130b1c958ea00. Every integration step is retained through twenty periods, with correct periapsis initial conditions. Source inspection establishes inverse-square acceleration and the stated half-kick/full-drift/half-kick method. Algebraic checks of retained positions reproduce its update to within 2.4e-16; reconstructed velocities reproduce stored relative energy errors within 2.5e-13, and angular momentum remains conserved to floating-point accuracy. These are actual evolution controls. Recorded resolution comparisons provide additional commissioning: eccentricity 0.6 position errors decrease by approximately four at each halving from N=2048 to 4096 to 8192, consistent with second-order convergence. The exact reference has the correct Kepler parameterization and initial velocity; independently auditing its retained coordinates verifies Kepler residuals and period consistency well within 1e-11. Recorded DOP853 comparisons agree with the analytic reference within 8.2e-10a and give KDK error maxima agreeing within that tolerance, comfortably satisfying the committed 1e-7a criterion. DOP853 trajectories are not retained, but the directly audited analytic reference independently establishes the target bound. Source and artifact hashes match, JSON is valid, all retained arrays are finite, figures were inspected, and output_findings contain no failures. The commitment predates all four executions and retains the original 0.01a bound rather than fitting an observed extremum. Replacing the energy-only implication with explicit resolution cases is scientifically justified by accumulated phase error despite bounded energy error. Parent counterexamples remain retained in exp_70ff32e6d28ef9ccd7312295 and review_9e9e9a5528a825b402183851; the successful parent circular N=512 result also remains documented. The additional retained probe exp_5d1bbee42a8dc38ea8c5c889 has position error 0.0257091a despite energy error 6.97459e-5, reinforcing the resolution qualification. Its exclusion was declared prospectively, not introduced after failure. Support applies only to the four named cases under the protocol's periapsis initialization and sampled-error definition; it establishes neither minimum necessary resolutions nor interpolation, continuous-time error bounds, or arbitrary higher-resolution monotonicity.",
+        "evidence_gaps": [],
+        "next_test": null
+      },
+      "packet_sha256": "3655f846bb878b0ff5ac7761b42eb19f69598d9e00d197cd22ac28ad48eafa78",
+      "resolved_at": 1791429874.0057108
+    },
+    {
+      "id": "review_9e9e9a5528a825b402183851",
+      "status": "resolved",
+      "created_at": 1791429539.4873295,
+      "experiments": [
+        "exp_70ff32e6d28ef9ccd7312295"
+      ],
+      "conclusion": "The original finite-grid implication is falsified. In the requested circular case e=0, N=256 steps per 2\u03c0 period over 20 periods, the recorded maximum relative energy error is 9.06e-8 (<0.001), while maximum position error against the same-time Kepler solution is 0.02528 a (>0.01a). The implementation explicitly applies half-kick, full-drift, half-kick. The exact solution uses E-e sin(E)=t; the reported residual, initial position mismatch, and period consistency are at floating-point scale. This is a direct counterexample within the immutable test grid, not an extrapolation. The separate DOP853 check in e=0.6,N=128 agrees with the analytic reference to 8.2e-10 a, but does not independently reproduce the circular counterexample. The full requested grid and trajectories/figures are retained in the experiment.",
+      "claim": "root",
+      "disposition": "falsified",
+      "verdict": {
+        "claim_id": "root",
+        "decision": "approved",
+        "disposition": "falsified",
+        "rationale": "Experiment exp_70ff32e6d28ef9ccd7312295 provides a controlled counterexample within the specified domain: e=0, N=256, starting at periapsis and sampling every step through twenty periods. Maximum relative energy error is 9.06373915920966e-8, below 0.001, while maximum same-time position error is 0.02528217910087521a, above 0.01a. I inspected the recorded source, valid JSON, all twelve retained trajectory cases, and figure; their hashes match the record. The source implements the correct inverse-square acceleration and half-kick/full-drift/half-kick update. Velocities reconstructed from retained positions reproduce stored energy errors within 1.7e-14 across the grid; update residuals and angular-momentum drift are also at floating-point scale. For the decisive circular case, the retained reference equals (cos(t), sin(t)) exactly, independently establishing the same-time reference without relying on the eccentric-orbit solver. Initial conditions, sampling, and duration are correct. Actual twenty-period evolution supplies numerical commissioning: circular position errors decrease by approximately four under timestep halving, consistent with second-order convergence, while energy remains bounded. The complete finite-grid challenge yields five counterexamples among six cases satisfying the energy antecedent; cases failing that antecedent are not counterexamples. The failure reflects accumulated phase error despite small energy error. The DOP853 comparison covers a different case and is unnecessary for this circular counterexample. The figure omits the decisive circular case, but its complete retained trajectory establishes the result. No repair is required to accept this original claim's falsification.",
+        "evidence_gaps": [],
+        "next_test": null
+      },
+      "packet_sha256": "32646d6c99e1bc6d6773247c52d7ea1a25c028049aaa9ec8c7964dc8309bc40c",
+      "resolved_at": 1791429591.6824176
+    }
+  ],
+  "methods": [],
+  "capability_additions": [],
+  "progress": [],
+  "audit": {
+    "recommended_review_reserve_seconds": 60.0,
+    "budget_warning": null,
+    "execution_counts": {
+      "succeeded": 6
+    },
+    "scientific_status": "accepted",
+    "coverage": [
+      {
+        "commitment": "commit_40654c6537acaacae7b59687",
+        "planned": 4,
+        "missing": 0,
+        "missing_cases": []
+      },
+      {
+        "commitment": "commit_eeddb5ff5af4d419817a455a",
+        "planned": 4,
+        "missing": 4,
+        "missing_cases": [
+          [
+            "e0_N2048"
+          ],
+          [
+            "e03_N2048"
+          ],
+          [
+            "e06_N4096"
+          ],
+          [
+            "e06_N8192"
+          ]
+        ]
+      }
+    ],
+    "estimated_serial_validation_seconds": 8.227126519333979,
+    "estimate_note": "Heuristic from completed jobs, excluding analysis/review; not a guarantee.",
+    "flagged_experiments": [],
+    "no_independent_review": false
+  },
+  "research_brief": {
+    "hypothesis": "For the planar Kepler problem with GM=1 and semimajor axis a=1, a fixed-step kick-drift-kick leapfrog integration whose maximum sampled relative energy error stays below 0.001 also keeps its maximum position error below 0.01a over twenty orbital periods. Test eccentricities e in {0, 0.3, 0.6} and {64, 128, 256, 512} equal timesteps per orbital period, starting at periapsis. Position error is measured against the exact Kepler orbit at the same physical time.\n",
+    "authority": "Worker notes are unreviewed; only independent verdicts accept claims.",
+    "remaining_seconds": 800.473215341568,
+    "completed": true,
+    "counts": {
+      "experiments": 6,
+      "notes": 0,
+      "execution": {
+        "succeeded": 6
+      }
+    },
+    "retrieval": {
+      "guide": "RESEARCH_GUIDE.md",
+      "full_ledger": "../research_report.json",
+      "receipts": "../experiments/ID.json",
+      "notebook": "lab.notes(limit=20, offset=0)"
+    },
+    "budget_warning": null,
+    "progress": [],
+    "current_evidence": {
+      "latest_completed": {
+        "id": "exp_5d1bbee42a8dc38ea8c5c889",
+        "status": "succeeded"
+      },
+      "latest_method": null,
+      "latest_review": {
+        "id": "review_91da2f71f73cfdcb1b8e34d6",
+        "status": "resolved"
+      }
+    },
+    "automatic_journal": [
+      {
+        "id": "exp_5d1bbee42a8dc38ea8c5c889",
+        "execution": "succeeded",
+        "source": "calculation.py",
+        "args": [
+          "e06_N2048"
+        ],
+        "implementation": "f297e848842d13143c6d2f96ac51ce5a47a33710d2b798c7a5c7b34775d0d1a7",
+        "preceding_attempt_same_entrypoint": "exp_c528e177145130b1c958ea00",
+        "implementation_changed": false,
+        "explicit_parent": null,
+        "results": {
+          "result.json": {
+            "sha256": "f3b48952c0d35fc5dbd6d9ede67f825443d0bbfd87efe79c177f4eddcf9e9a7f",
+            "reported_values": {
+              "units.GM": 1,
+              "units.a": 1,
+              "units.period": 6.283185307179586,
+              "window_periods": 20,
+              "method": "fixed-step kick-drift-kick leapfrog; half kick, full drift, half kick",
+              "energy_normalization": "|E(t)-E(0)|/|E(0)|, E(0)=-1/2",
+              "position_normalization": "Euclidean position error divided by a=1"
+            },
+            "scope": "Scalar excerpt only; full artifact remains in the receipt"
+          }
+        },
+        "error": null,
+        "execution_details": {
+          "returncode": 0,
+          "timed_out": false,
+          "workspace_exceeded": false
+        },
+        "measured_wall_seconds": 1.6128575550010282,
+        "input_mutations": []
+      },
+      {
+        "id": "exp_c528e177145130b1c958ea00",
+        "execution": "succeeded",
+        "source": "calculation.py",
+        "args": [
+          "e06_N8192"
+        ],
+        "implementation": "f297e848842d13143c6d2f96ac51ce5a47a33710d2b798c7a5c7b34775d0d1a7",
+        "preceding_attempt_same_entrypoint": "exp_13f2a87e5162dfa757f15bdc",
+        "implementation_changed": false,
+        "explicit_parent": null,
+        "results": {
+          "result.json": {
+            "sha256": "0ed64c2a8de4b7fbd2f216d9d4b8cbc6314066d1b90845ebee58dbd4730b608e",
+            "reported_values": {
+              "units.GM": 1,
+              "units.a": 1,
+              "units.period": 6.283185307179586,
+              "window_periods": 20,
+              "method": "fixed-step kick-drift-kick leapfrog; half kick, full drift, half kick",
+              "energy_normalization": "|E(t)-E(0)|/|E(0)|, E(0)=-1/2",
+              "position_normalization": "Euclidean position error divided by a=1"
+            },
+            "scope": "Scalar excerpt only; full artifact remains in the receipt"
+          }
+        },
+        "error": null,
+        "execution_details": {
+          "returncode": 0,
+          "timed_out": false,
+          "workspace_exceeded": false
+        },
+        "measured_wall_seconds": 3.3721263959996577,
+        "input_mutations": []
+      },
+      {
+        "id": "exp_13f2a87e5162dfa757f15bdc",
+        "execution": "succeeded",
+        "source": "calculation.py",
+        "args": [
+          "e06_N4096"
+        ],
+        "implementation": "f297e848842d13143c6d2f96ac51ce5a47a33710d2b798c7a5c7b34775d0d1a7",
+        "preceding_attempt_same_entrypoint": "exp_affe2b99eebe88e0f1007a6f",
+        "implementation_changed": false,
+        "explicit_parent": null,
+        "results": {
+          "result.json": {
+            "sha256": "cbcfd827f7e8db20202ee67d03b0582edf771b99e354eeb53451d98f9c91cd48",
+            "reported_values": {
+              "units.GM": 1,
+              "units.a": 1,
+              "units.period": 6.283185307179586,
+              "window_periods": 20,
+              "method": "fixed-step kick-drift-kick leapfrog; half kick, full drift, half kick",
+              "energy_normalization": "|E(t)-E(0)|/|E(0)|, E(0)=-1/2",
+              "position_normalization": "Euclidean position error divided by a=1"
+            },
+            "scope": "Scalar excerpt only; full artifact remains in the receipt"
+          }
+        },
+        "error": null,
+        "execution_details": {
+          "returncode": 0,
+          "timed_out": false,
+          "workspace_exceeded": false
+        },
+        "measured_wall_seconds": 2.266716166999686,
+        "input_mutations": []
+      },
+      {
+        "id": "exp_affe2b99eebe88e0f1007a6f",
+        "execution": "succeeded",
+        "source": "calculation.py",
+        "args": [
+          "e03_N2048"
+        ],
+        "implementation": "f297e848842d13143c6d2f96ac51ce5a47a33710d2b798c7a5c7b34775d0d1a7",
+        "preceding_attempt_same_entrypoint": "exp_084c13fbf06a58ffd855107e",
+        "implementation_changed": false,
+        "explicit_parent": null,
+        "results": {
+          "result.json": {
+            "sha256": "e2ef573d9a4e666db832a618d75f59465d06cb7765069676d944a71eb77f2586",
+            "reported_values": {
+              "units.GM": 1,
+              "units.a": 1,
+              "units.period": 6.283185307179586,
+              "window_periods": 20,
+              "method": "fixed-step kick-drift-kick leapfrog; half kick, full drift, half kick",
+              "energy_normalization": "|E(t)-E(0)|/|E(0)|, E(0)=-1/2",
+              "position_normalization": "Euclidean position error divided by a=1"
+            },
+            "scope": "Scalar excerpt only; full artifact remains in the receipt"
+          }
+        },
+        "error": null,
+        "execution_details": {
+          "returncode": 0,
+          "timed_out": false,
+          "workspace_exceeded": false
+        },
+        "measured_wall_seconds": 1.7128735210008017,
+        "input_mutations": []
+      },
+      {
+        "id": "exp_084c13fbf06a58ffd855107e",
+        "execution": "succeeded",
+        "source": "calculation.py",
+        "args": [
+          "e0_N2048"
+        ],
+        "implementation": "f297e848842d13143c6d2f96ac51ce5a47a33710d2b798c7a5c7b34775d0d1a7",
+        "preceding_attempt_same_entrypoint": "exp_70ff32e6d28ef9ccd7312295",
+        "implementation_changed": true,
+        "explicit_parent": null,
+        "results": {
+          "result.json": {
+            "sha256": "a1b7d59c3d4553c7388f0d47657caf2a36a860ab2868baa8b619a46a57e9698e",
+            "reported_values": {
+              "units.GM": 1,
+              "units.a": 1,
+              "units.period": 6.283185307179586,
+              "window_periods": 20,
+              "method": "fixed-step kick-drift-kick leapfrog; half kick, full drift, half kick",
+              "energy_normalization": "|E(t)-E(0)|/|E(0)|, E(0)=-1/2",
+              "position_normalization": "Euclidean position error divided by a=1"
+            },
+            "scope": "Scalar excerpt only; full artifact remains in the receipt"
+          }
+        },
+        "error": null,
+        "execution_details": {
+          "returncode": 0,
+          "timed_out": false,
+          "workspace_exceeded": false
+        },
+        "measured_wall_seconds": 1.6624651050005923,
+        "input_mutations": []
+      },
+      {
+        "id": "exp_70ff32e6d28ef9ccd7312295",
+        "execution": "succeeded",
+        "source": "calculation.py",
+        "args": [],
+        "implementation": "e5d954cc3009be86a4dc4e58aee14d594260428e2bbb29cab5b8d1474cfaf993",
+        "preceding_attempt_same_entrypoint": null,
+        "implementation_changed": false,
+        "explicit_parent": null,
+        "results": {
+          "result.json": {
+            "sha256": "c3d39ca9d5e753e1eb45a47ed92c00483070cf4a1909b5974419f710f5c56fdb",
+            "reported_values": {
+              "units.GM": 1,
+              "units.a": 1,
+              "units.period": 6.283185307179586,
+              "window_periods": 20,
+              "method": "fixed-step kick-drift-kick leapfrog; half kick, full drift, half kick",
+              "energy_normalization": "|E(t)-E(0)|/|E(0)|, E(0)=-1/2",
+              "position_normalization": "Euclidean position error divided by a=1"
+            },
+            "scope": "Scalar excerpt only; full artifact remains in the receipt"
+          }
+        },
+        "error": null,
+        "execution_details": {
+          "returncode": 0,
+          "timed_out": false,
+          "workspace_exceeded": false
+        },
+        "measured_wall_seconds": 1.7136510349992022,
+        "input_mutations": []
+      }
+    ],
+    "execution_costs": [
+      {
+        "id": "exp_5d1bbee42a8dc38ea8c5c889",
+        "source": "calculation.py",
+        "runtime_sha256": null,
+        "args": [
+          "e06_N2048"
+        ],
+        "stage": "evidence",
+        "purpose": null,
+        "measured_wall_seconds": 1.6128575550010282
+      },
+      {
+        "id": "exp_c528e177145130b1c958ea00",
+        "source": "calculation.py",
+        "runtime_sha256": null,
+        "args": [
+          "e06_N8192"
+        ],
+        "stage": "evidence",
+        "purpose": null,
+        "measured_wall_seconds": 3.3721263959996577
+      },
+      {
+        "id": "exp_13f2a87e5162dfa757f15bdc",
+        "source": "calculation.py",
+        "runtime_sha256": null,
+        "args": [
+          "e06_N4096"
+        ],
+        "stage": "evidence",
+        "purpose": null,
+        "measured_wall_seconds": 2.266716166999686
+      },
+      {
+        "id": "exp_affe2b99eebe88e0f1007a6f",
+        "source": "calculation.py",
+        "runtime_sha256": null,
+        "args": [
+          "e03_N2048"
+        ],
+        "stage": "evidence",
+        "purpose": null,
+        "measured_wall_seconds": 1.7128735210008017
+      },
+      {
+        "id": "exp_084c13fbf06a58ffd855107e",
+        "source": "calculation.py",
+        "runtime_sha256": null,
+        "args": [
+          "e0_N2048"
+        ],
+        "stage": "evidence",
+        "purpose": null,
+        "measured_wall_seconds": 1.6624651050005923
+      },
+      {
+        "id": "exp_70ff32e6d28ef9ccd7312295",
+        "source": "calculation.py",
+        "runtime_sha256": null,
+        "args": [],
+        "stage": "evidence",
+        "purpose": null,
+        "measured_wall_seconds": 1.7136510349992022
+      }
+    ],
+    "controller_summaries": [
+      {
+        "authority": "controller_summary_unreviewed",
+        "notes": [
+          {
+            "kind": "observation",
+            "statement": "All four receipts report successful execution, return code 0, and no timeout or workspace overrun. Their excerpts specify GM=a=1, twenty periods, kick-drift-kick leapfrog, relative energy error normalized by |E(0)|=1/2, and position error normalized by a. Execution success does not validate the physics.",
+            "experiments": [
+              "exp_70ff32e6d28ef9ccd7312295",
+              "exp_084c13fbf06a58ffd855107e",
+              "exp_affe2b99eebe88e0f1007a6f",
+              "exp_13f2a87e5162dfa757f15bdc"
+            ]
+          },
+          {
+            "kind": "observation",
+            "statement": "The supplied excerpts contain no measured energy or position maxima. Later argument labels are e0_N2048, e03_N2048, and e06_N4096, suggesting resolutions outside the requested 64\u2013512 grid; the excerpts do not confirm which configurations actually ran. The initial run has no arguments and no exposed case list.",
+            "experiments": [
+              "exp_70ff32e6d28ef9ccd7312295",
+              "exp_084c13fbf06a58ffd855107e",
+              "exp_affe2b99eebe88e0f1007a6f",
+              "exp_13f2a87e5162dfa757f15bdc"
+            ]
+          },
+          {
+            "kind": "interpretation",
+            "statement": "Interpretation: these receipts leave the threshold implication unresolved; they establish neither a scientific counterexample nor a demonstrated execution defect. The implementation identifier changes between the initial run and the later runs, but chronology and source differences establish no causal or hypothesis relationship. This journal is unreviewed memory, not an adjudication.",
+            "experiments": [
+              "exp_70ff32e6d28ef9ccd7312295",
+              "exp_084c13fbf06a58ffd855107e",
+              "exp_affe2b99eebe88e0f1007a6f",
+              "exp_13f2a87e5162dfa757f15bdc"
+            ]
+          },
+          {
+            "kind": "question",
+            "statement": "Which requested cases were actually executed, what were their paired maximum errors, and at what times were errors sampled? What changed between implementations, and how were periapsis initialization and the exact same-time Kepler reference checked? Those details are absent from the supplied excerpts.",
+            "experiments": [
+              "exp_70ff32e6d28ef9ccd7312295",
+              "exp_084c13fbf06a58ffd855107e",
+              "exp_affe2b99eebe88e0f1007a6f",
+              "exp_13f2a87e5162dfa757f15bdc"
+            ]
+          },
+          {
+            "kind": "next_test",
+            "statement": "Run the original twelve-case grid over twenty periods with one documented implementation and an independently checked same-time Kepler reference. Report realized e and N, sampling times, paired maximum energy and position errors, and times of those maxima. Retain trajectories for any case with energy maximum <0.001 and position maximum \u22650.01a, then independently reproduce that case to distinguish numerical behavior from implementation or reference defects.",
+            "experiments": [
+              "exp_70ff32e6d28ef9ccd7312295",
+              "exp_084c13fbf06a58ffd855107e",
+              "exp_affe2b99eebe88e0f1007a6f",
+              "exp_13f2a87e5162dfa757f15bdc"
+            ]
+          }
+        ],
+        "packet_sha256": "5581c061b880d46744ef34660a30fffe4ae58ae9515def364e5221a25929f106"
+      }
+    ],
+    "accepted_claims": [
+      {
+        "id": "review_91da2f71f73cfdcb1b8e34d6",
+        "claim": "commit_40654c6537acaacae7b59687",
+        "disposition": "supported"
+      },
+      {
+        "id": "review_9e9e9a5528a825b402183851",
+        "claim": "root",
+        "disposition": "falsified"
+      }
+    ],
+    "recent_reviews": [
+      {
+        "id": "review_91da2f71f73cfdcb1b8e34d6",
+        "claim": "commit_40654c6537acaacae7b59687",
+        "status": "resolved",
+        "next_test": null
+      },
+      {
+        "id": "review_9e9e9a5528a825b402183851",
+        "claim": "root",
+        "status": "resolved",
+        "next_test": null
+      }
+    ],
+    "methods": [],
+    "missing_cases": [
+      {
+        "commitment": "commit_40654c6537acaacae7b59687",
+        "missing": 0,
+        "planned": 4
+      },
+      {
+        "commitment": "commit_eeddb5ff5af4d419817a455a",
+        "missing": 4,
+        "planned": 4
+      }
+    ],
+    "notes": [],
+    "active_experiments": [],
+    "recent_experiments": [
+      {
+        "id": "exp_5d1bbee42a8dc38ea8c5c889",
+        "status": "succeeded",
+        "stage": "evidence",
+        "purpose": null,
+        "parent_experiment": null,
+        "plan": null,
+        "scientific_status": "unreviewed",
+        "output_findings": []
+      },
+      {
+        "id": "exp_c528e177145130b1c958ea00",
+        "status": "succeeded",
+        "stage": "evidence",
+        "purpose": null,
+        "parent_experiment": null,
+        "plan": null,
+        "scientific_status": "reviewed",
+        "output_findings": []
+      },
+      {
+        "id": "exp_13f2a87e5162dfa757f15bdc",
+        "status": "succeeded",
+        "stage": "evidence",
+        "purpose": null,
+        "parent_experiment": null,
+        "plan": null,
+        "scientific_status": "reviewed",
+        "output_findings": []
+      },
+      {
+        "id": "exp_affe2b99eebe88e0f1007a6f",
+        "status": "succeeded",
+        "stage": "evidence",
+        "purpose": null,
+        "parent_experiment": null,
+        "plan": null,
+        "scientific_status": "reviewed",
+        "output_findings": []
+      },
+      {
+        "id": "exp_084c13fbf06a58ffd855107e",
+        "status": "succeeded",
+        "stage": "evidence",
+        "purpose": null,
+        "parent_experiment": null,
+        "plan": null,
+        "scientific_status": "reviewed",
+        "output_findings": []
+      },
+      {
+        "id": "exp_70ff32e6d28ef9ccd7312295",
+        "status": "succeeded",
+        "stage": "evidence",
+        "purpose": null,
+        "parent_experiment": null,
+        "plan": null,
+        "scientific_status": "reviewed",
+        "output_findings": []
+      }
+    ],
+    "omitted": {
+      "notes": 0,
+      "controller_summaries": 0,
+      "recent_experiments": 0,
+      "automatic_journal": 0,
+      "methods": 0,
+      "recent_reviews": 0,
+      "missing_cases": 0,
+      "progress": 0,
+      "execution_costs": 0,
+      "accepted_claims": 0,
+      "active_experiments": 0
+    }
+  },
+  "diagnostic_errors": [],
+  "supervision": {
+    "round": 6,
+    "no_progress_streak": 0,
+    "session_recoveries": null,
+    "oversight_count": null,
+    "oversight_feedback": null,
+    "usage_by_thread": {
+      "01a11984-7961-7be3-8fc6-2c6833b98ac5": {
+        "input_tokens": 1048476,
+        "cached_input_tokens": 988416,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 11115,
+        "reasoning_output_tokens": 4591
+      },
+      "01a11985-7f78-7991-9039-24463edc672c": {
+        "input_tokens": 107579,
+        "cached_input_tokens": 85376,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 2032,
+        "reasoning_output_tokens": 420
+      },
+      "01a11987-4cc2-7872-8849-343a47fed55e": {
+        "input_tokens": 17382,
+        "cached_input_tokens": 12288,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 1015,
+        "reasoning_output_tokens": 287
+      },
+      "01a11989-418c-72c1-8a25-2f2c9fc963e6": {
+        "input_tokens": 353194,
+        "cached_input_tokens": 295936,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 3672,
+        "reasoning_output_tokens": 857
+      }
+    },
+    "usage_incomplete_turns": 2,
+    "provider_retry_count": null,
+    "journal_summary_count": 1,
+    "journal_summary_seconds": 27.01396665500033,
+    "journal_summary_error": null
+  }
+}

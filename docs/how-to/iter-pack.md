@@ -1,6 +1,6 @@
 # ITER ecosystem pack
 
-Simjecture 0.5.2 integrates open-source fusion tools without requiring a
+Simjecture integrates open-source fusion tools without requiring a
 particular model backend. Installation and numerical readiness are deterministic;
 agent-guided preparation uses the user's selected model, including DeepSeek Flash.
 This is a Simjecture integration, not an ITER-endorsed distribution.

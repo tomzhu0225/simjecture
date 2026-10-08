@@ -5,7 +5,8 @@
     "OMP_PLACES": "cores",
     "OMP_PROC_BIND": "spread",
     "OPENBLAS_NUM_THREADS": "1",
-    "PYTHONDONTWRITEBYTECODE": "1"
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONNOUSERSITE": "1"
   },
   "executable": "bin/python",
   "manifest": {

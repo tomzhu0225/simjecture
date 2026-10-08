@@ -1,0 +1,248 @@
+{
+  "id": "exp_aeb0d8442b3e9d877cd2e442",
+  "status": "succeeded",
+  "operator_guidance_ids": [],
+  "created_at": 1791431251.152903,
+  "timeout": 300,
+  "workspace_limit_bytes": 4294967296,
+  "binding": {
+    "source": "calculation.py",
+    "args": [
+      "--eta",
+      "0.001",
+      "--nx",
+      "128",
+      "--ny",
+      "128",
+      "--alpha",
+      "20",
+      "--tmax",
+      "1.2",
+      "--plot-interval",
+      "0.05",
+      "--ranks",
+      "4",
+      "--iprocs",
+      "2",
+      "--jprocs",
+      "2",
+      "--output",
+      "validation_final_n128/run",
+      "--summary",
+      "validation_final_n128/result.json",
+      "--archive",
+      "validation_final_n128/raw.tar.gz",
+      "--family",
+      "base"
+    ],
+    "inputs": {
+      "calculation.py": "67cb947a9d45f85e86cb7f2b7211a8c498d649fc6cb66bad0cb83177e2adb97e",
+      "analysis.py": "f94208e5470890b3ba1206ed19b4e3f4e6f5f59f8c39e1da158a5282bd97aabc",
+      "scan_plan.json": "4d82be0d096aa3d62adc9ef7a45bd323eed05209f52476c0f9ec602cefb197da"
+    },
+    "capability": "flash-island-coalescence-resistive-mhd-4.8",
+    "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+  },
+  "outputs": [
+    "validation_final_n128/result.json",
+    "validation_final_n128/raw.tar.gz"
+  ],
+  "commitment": null,
+  "key": "validate-final-driver-128",
+  "stage": "exploration",
+  "method": null,
+  "review_documents": null,
+  "parent_experiment": "exp_bed50fd68869aa9e6441647b",
+  "purpose": "validation",
+  "plan": null,
+  "pid": 200368,
+  "worker_identity": {
+    "pid": 200368,
+    "starttime": "1264602",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture/.venv/bin/python3",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/island-study",
+      "--execute",
+      "exp_aeb0d8442b3e9d877cd2e442"
+    ],
+    "launched_at": "2026-10-08T03:47:31.341027+00:00",
+    "run_directory": null
+  },
+  "started_at": 1791431251.341158,
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": 0,
+    "stdout": "{\"checks\": {\"completed\": true, \"representation\": true, \"physics_controls\": true, \"boundaries\": true, \"diagnostics\": true, \"numerical_regime\": true, \"nominal_spatial_resolution\": true, \"preplasmoid_screen\": true, \"flux_window_reached\": true}, \"metrics\": {\"l_over_eta_nominal\": 1000.0, \"flux_low\": 0.01, \"flux_high\": 0.05, \"flux_low_crossing_time\": 0.26033823854649724, \"flux_high_crossing_time\": 1.0763841963235288, \"reconnection_time\": 0.8160459577770316, \"normalized_flux_slope\": 0.0490168471748367, \"normalized_reconnection_rate\": 0.05754248936527651, \"normalization\": \"(dPsi/dt)/(B_up^2/sqrt(rho_up)); B_up and rho_up are initial-state means at x=0, 0.08<=|y|<=0.12; L=1\", \"B_up\": 0.9271269083023072, \"rho_up\": 1.0182239055633544, \"nominal_eta_inverse\": 1000.0, \"flux_path_max_abs_mismatch\": 4.657228519738127e-05, \"max_abs_divb\": 9.36140054363932e-13, \"max_boundary_normal_fraction\": 0.031049113904913106, \"initial_sheet_cells\": 6.4, \"nominal_sp_sheet_width_cells\": 4.047715405015525, \"minimum_measured_current_fwhm_cells\": 4.0, \"secondary_extrema_count_peak\": 0.0, \"plasmoid_rule\": \"none detected if no secondary A_z extrema with local prominence >=0.005 for |x| in [0.04,0.22] during flux window\", \"plot_file_count\": 24}}",
+    "stderr": "",
+    "timed_out": false,
+    "cancelled": false,
+    "workspace_exceeded": false,
+    "stdout_truncated": false,
+    "stderr_truncated": false,
+    "heartbeat_count": 0,
+    "wall_seconds": 22.575811300001078,
+    "workspace_bytes": 28372131
+  },
+  "artifacts": {
+    "analysis.py": {
+      "sha256": "f94208e5470890b3ba1206ed19b4e3f4e6f5f59f8c39e1da158a5282bd97aabc",
+      "bytes": 14042
+    },
+    "calculation.py": {
+      "sha256": "67cb947a9d45f85e86cb7f2b7211a8c498d649fc6cb66bad0cb83177e2adb97e",
+      "bytes": 19706
+    },
+    "scan_plan.json": {
+      "sha256": "4d82be0d096aa3d62adc9ef7a45bd323eed05209f52476c0f9ec602cefb197da",
+      "bytes": 3165
+    },
+    "validation_final_n128/raw.tar.gz": {
+      "sha256": "9515985d459d6a0d1b712cd79508210b8b7b5738d24a1b7c6524ad572f396444",
+      "bytes": 7246933
+    },
+    "validation_final_n128/result.json": {
+      "sha256": "0fccfbf938de3c33e6e865da897031b0accd4d199cbee90d52d0687ff62e88a4",
+      "bytes": 12028
+    },
+    "validation_final_n128/run/.simjecture-flash-guided-output": {
+      "sha256": "67d1f5ea486320558047f5cff49a53b2b0f1eaca0f699ba9abc1c1f60bcedc67",
+      "bytes": 49
+    },
+    "validation_final_n128/run/flash.par": {
+      "sha256": "d85dd7177a73bf7184934b2ff33e5b2b5e615a69b0bcc550ed0d7f24d9eceac1",
+      "bytes": 1779
+    },
+    "validation_final_n128/run/flash_run.dat": {
+      "sha256": "ee3297f2204fbcaf25c439dcacfa499de70d08f0b240cbad7b66c088930b05a4",
+      "bytes": 357436
+    },
+    "validation_final_n128/run/flash_run.log": {
+      "sha256": "5885b268fcb1c98ca17e2d3f9349a47a4815c46dc8159143dc3d66fce6a6f231",
+      "bytes": 151493
+    },
+    "validation_final_n128/run/flash_run_forced_hdf5_plt_cnt_0000": {
+      "sha256": "50f339bb1306e462701137c00768f7ca546f361fc7584583073ff69269c99412",
+      "bytes": 580876
+    },
+    "validation_final_n128/run/flash_run_hdf5_chk_0000": {
+      "sha256": "2a99937b671bf6199af80acb5e6c98abca25ae7a934fb9ed93994069282e9820",
+      "bytes": 2950412
+    },
+    "validation_final_n128/run/flash_run_hdf5_chk_0001": {
+      "sha256": "bfa60fa0402e466da6e119866912ddfd9590fa5381cba95e3e098f11f846d57f",
+      "bytes": 2950412
+    },
+    "validation_final_n128/run/flash_run_hdf5_plt_cnt_0000": {
+      "sha256": "2ab53f2938c92b6f7a26a1dec6515a5974153d2ca9c8ad507db29fe428bce631",
+      "bytes": 580876
+    },
+    "validation_final_n128/run/flash_run_hdf5_plt_cnt_0001": {
+      "sha256": "2548dc7ef04312fa0b005c21c029c17ae9d8c6cc4dd9eda0de585183ea14a177",
+      "bytes": 580876
+    },
+    "validation_final_n128/run/flash_run_hdf5_plt_cnt_0002": {
+      "sha256": "86f28138fbc7226ed28b1f086e0edf091d6b3fe11e4c97f4134a748f411c94ab",
+      "bytes": 580876
+    },
+    "validation_final_n128/run/flash_run_hdf5_plt_cnt_0003": {
+      "sha256": "6ee767e5cb13b4b93e3446d5563b3678e02a03132a695cab0852192fd54e4f4e",
+      "bytes": 580876
+    },
+    "validation_final_n128/run/flash_run_hdf5_plt_cnt_0004": {
+      "sha256": "8c2f2319984ab0fa0e97b790570f462033700a4f4d5aae8c9973547f42205e08",
+      "bytes": 580876
+    },
+    "validation_final_n128/run/flash_run_hdf5_plt_cnt_0005": {
+      "sha256": "6bc340dcafd78f40d0b58004bfc6767eabb62694a461e517ca3fd85a76a0feed",
+      "bytes": 580876
+    },
+    "validation_final_n128/run/flash_run_hdf5_plt_cnt_0006": {
+      "sha256": "6afe031c74af0991c56ccb55ee0e1121e5588c6c2a9e7dc53b4eb8098399e0b1",
+      "bytes": 580876
+    },
+    "validation_final_n128/run/flash_run_hdf5_plt_cnt_0007": {
+      "sha256": "a74f33e0754788c23e0f30d32be14499f3c2aadf1717507a7589e7a287a6729e",
+      "bytes": 580876
+    },
+    "validation_final_n128/run/flash_run_hdf5_plt_cnt_0008": {
+      "sha256": "02a33d19740f616654471ceaf87044c12670101641f015402fcf0ba19c3ac639",
+      "bytes": 580876
+    },
+    "validation_final_n128/run/flash_run_hdf5_plt_cnt_0009": {
+      "sha256": "8302a7d352d6850a454dbf97cdd13fb88f89c6aec2b709e47cd4539b3dabc161",
+      "bytes": 580876
+    },
+    "validation_final_n128/run/flash_run_hdf5_plt_cnt_0010": {
+      "sha256": "3f4b65d9c260a5c9c65065507213ae6311ba02a04c5743660ba2f6ba33d9ac68",
+      "bytes": 580876
+    },
+    "validation_final_n128/run/flash_run_hdf5_plt_cnt_0011": {
+      "sha256": "91baf6eec9e14d9bc266f9c954792220a92a064848ddd0388c063b03034206d5",
+      "bytes": 580876
+    },
+    "validation_final_n128/run/flash_run_hdf5_plt_cnt_0012": {
+      "sha256": "b6e0d0a78de7c16b3a9a32669c233894573429e485830e735c4a7463581878d3",
+      "bytes": 580876
+    },
+    "validation_final_n128/run/flash_run_hdf5_plt_cnt_0013": {
+      "sha256": "94cc9a87d4987163e42360e9a16d774465dceefaa8e259006766dae95ed9b278",
+      "bytes": 580876
+    },
+    "validation_final_n128/run/flash_run_hdf5_plt_cnt_0014": {
+      "sha256": "12c8e4ef1a8c0f9070ea5b5841e6373ccc52b79c75c0c91aca0892a99be71535",
+      "bytes": 580876
+    },
+    "validation_final_n128/run/flash_run_hdf5_plt_cnt_0015": {
+      "sha256": "3ee26013c69ef92a771161c8a0820174f7912a5acac2900a75bcbee91c7867df",
+      "bytes": 580876
+    },
+    "validation_final_n128/run/flash_run_hdf5_plt_cnt_0016": {
+      "sha256": "4f60d81100e044006748e2a4d57c1a4587a3f6286e99de1f94bb5d384750a65f",
+      "bytes": 580876
+    },
+    "validation_final_n128/run/flash_run_hdf5_plt_cnt_0017": {
+      "sha256": "482ae68c59dc245c35137df636d96784178591f6ed3cd234ad421b5ec1c5de42",
+      "bytes": 580876
+    },
+    "validation_final_n128/run/flash_run_hdf5_plt_cnt_0018": {
+      "sha256": "17353b9e83272fe224eaaed6ca2460e6f6a49626106b42a13bccf44876b6d2fa",
+      "bytes": 580876
+    },
+    "validation_final_n128/run/flash_run_hdf5_plt_cnt_0019": {
+      "sha256": "8a4dbba56f4e58c0ad2a968c0e547e4a16d30a725776106a2f956c0a17adf803",
+      "bytes": 580876
+    },
+    "validation_final_n128/run/flash_run_hdf5_plt_cnt_0020": {
+      "sha256": "a1c6c6956010c657c369f896e0319cd01f0607543678e7fc3f1c6743834fdc81",
+      "bytes": 580876
+    },
+    "validation_final_n128/run/flash_run_hdf5_plt_cnt_0021": {
+      "sha256": "e92f72fa5d7f3c11c9a725432b20c1ad361516fbc5e98dab4991cf68724e867a",
+      "bytes": 580876
+    },
+    "validation_final_n128/run/flash_run_hdf5_plt_cnt_0022": {
+      "sha256": "87a29f52238665acb939fc287994d41dc73c69db72f501e05320b6917838a81c",
+      "bytes": 580876
+    },
+    "validation_final_n128/run/flash_run_hdf5_plt_cnt_0023": {
+      "sha256": "f38d5a237169bed7c51b91b671092bda357f967f43b04a39ba511aca23767593",
+      "bytes": 580876
+    },
+    "validation_final_n128/run/launcher_stderr.txt": {
+      "sha256": "b02b461e24dcd2e6b070047f42137aa8a806941ce4796a6bb96cf4a506dd057d",
+      "bytes": 504
+    },
+    "validation_final_n128/run/launcher_stdout.txt": {
+      "sha256": "9c4ddc07288d76934eafef91ce5c77355b3d0a49cd478075f3c79afe80afe603",
+      "bytes": 142272
+    }
+  },
+  "missing_outputs": [],
+  "input_mutations": [],
+  "output_findings": [],
+  "scientific_status": "unreviewed",
+  "finished_at": 1791431273.9918537
+}

@@ -1,9 +1,16 @@
 # Preserve autonomous run artifacts byte-for-byte, including model-authored
 # formatting. Generated figures likewise need not satisfy source whitespace
 # checks.
-demos/gray_scott_counterexample/record/** -whitespace
-demos/collisionless_gem_reconnection/record/** -whitespace
+demos/gray_scott_counterexample/record/** -text -whitespace
+demos/collisionless_gem_reconnection/record/** -text -whitespace
+demos/kepler_energy/record/** -text -whitespace
+demos/resistive_mhd_island_coalescence/minimal_record/** -text -whitespace
+demos/resistive_mhd_island_coalescence/sol_medium_record/** -text -whitespace
+demos/flash_warpx_kinetic_patch/record/** -text -whitespace
 docs/_static/demos/*.svg -whitespace
 
 *.npz binary
 *.png binary
+
+demos/resistive_mhd_island_coalescence/continuation_record/** -text -whitespace
+demos/flash_warpx_kinetic_patch/continuation_record/** -text -whitespace

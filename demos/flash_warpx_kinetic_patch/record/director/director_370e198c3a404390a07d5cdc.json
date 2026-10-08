@@ -1,0 +1,13 @@
+{
+  "id": "director_370e198c3a404390a07d5cdc",
+  "created_at": 1791436252.058767,
+  "packet_sha256": "d4341698e9601faca8a0fee16ecb63c47121076e2d74c3357fd12dd9ea674737",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "The worker acknowledged the previous replan and executed its bounded interface check. exp_1fab1917db2fe15cdc126997 succeeded in 7.41 seconds, exercising initial and evolved moments with the repaired level=0 accessor. Its estimator correctly returned an inconclusive result for incomplete window coverage. Both active trajectories bind identical kinetic and estimator code hashes; their different aggregate implementation hashes reflect different patch inputs. Scientific feasibility remains limited by initialization relaxation, boundary sensitivity, sampling uncertainty and numerical controls. Budget feasibility is favorable: the earlier complete-window base trajectory cost 277 seconds, and the revised pilot measured approximately 0.109 seconds per evolution step with modest moment overhead. The larger-patch estimate of 624 seconds remains provisional, particularly because both runs share the single GPU. With approximately 4,880 seconds remaining and 1,200-second run timeouts, continuing this useful exploratory pair is defensible. Missing progress telemetry does not establish either stalled execution or scientific-window completion. No scientific claim is accepted.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "feasible",
+  "stop_experiments": [],
+  "next_action": "Let exp_1c6e664e972b5f583f31d498 and exp_f0950f288da5afe863d02e2c complete within their existing timeouts. Retrieve bounded progress and timing summaries when available to measure actual cost under concurrent GPU use. On completion, compare the unchanged physical interior region across the candidate [0.3,0.8] window, checking complete coverage, every-bin eligibility, relaxation, energy behavior and relativistic pressure correction. Assess field-boundary sensitivity separately from particle-origin/transit diagnostics. Use the observed discrepancies and measured cost to select the smallest informative particle/seed, spatial and timestep controls; preserve explicit stability and plasma/gyro resolution. If either run times out, inspect preserved progress before choosing a restart or execution adjustment instead of repeating it unchanged. Submit the complete prospective measurement contract and qualification evidence to the separate methods reviewer before decisive evidence."
+}

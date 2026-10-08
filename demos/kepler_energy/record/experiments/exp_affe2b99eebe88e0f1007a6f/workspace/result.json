@@ -1,0 +1,28 @@
+{
+  "units": {
+    "GM": 1,
+    "a": 1,
+    "period": 6.283185307179586
+  },
+  "window_periods": 20,
+  "method": "fixed-step kick-drift-kick leapfrog; half kick, full drift, half kick",
+  "energy_normalization": "|E(t)-E(0)|/|E(0)|, E(0)=-1/2",
+  "position_normalization": "Euclidean position error divided by a=1",
+  "cases": [
+    {
+      "e": 0.3,
+      "steps_per_period": 2048,
+      "dt": 0.0030679615757712823,
+      "sample_count": 40961,
+      "max_rel_energy_error": 5.117124418418942e-06,
+      "max_position_error_a": 0.0015462126496544688,
+      "max_abs_phase_error_rad": 0.002208844639238764,
+      "kepler_max_residual": 1.4210854715202004e-14,
+      "initial_position_error": 0.0,
+      "initial_velocity_error": 0.0,
+      "period_consistency_error": 2.3364771791928897e-16,
+      "independent_ivp_max_position_error": 8.151189424767695e-10,
+      "kdk_vs_ivp_max_position_difference": 0.001546213464722447
+    }
+  ]
+}

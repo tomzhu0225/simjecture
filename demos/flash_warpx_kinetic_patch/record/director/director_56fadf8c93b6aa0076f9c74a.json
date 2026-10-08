@@ -1,0 +1,13 @@
+{
+  "id": "director_56fadf8c93b6aa0076f9c74a",
+  "created_at": 1791440440.2078767,
+  "packet_sha256": "7dda1b06ebee9e9872fd33a10ec7a350799ffc318dd519324db728c9e067b72d",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "evidence_changes is empty; the previous continue decision and acknowledged conditional completion plan remain applicable. Operational telemetry now reports physical evolution to approximately 0.549, with an estimated 174 seconds to the declared 0.8 target. This supports continuing the targeted enlarged-patch control, but establishes neither numerical qualification nor boundary robustness. Its scientific usefulness is clear: it addresses the methods reviewer's outstanding requirement at matched fine cell scale. Scientific feasibility remains limited by the boundary comparison, qualification of the changed loader, and unresolved fine-scale particle-count qualification. Budget feasibility remains at risk. The telemetry estimate plus the worker's 260-second fresh-evidence estimate and 200-second review allowance totals approximately 634 seconds against 689 seconds remaining, leaving only about 55 seconds for comparison, methods resolution and overhead. These estimates can change; there is no comfortable completion margin. Stopping the sole relevant control now is not justified.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "at_risk",
+  "stop_experiments": [],
+  "next_action": "Continue exp_ba37bf1a0947ae8cb2591db0 within its existing timeout. Immediately prepare the compact independent-review package and obtain separate methods qualification of the loader change, using its bounded diff and inexpensive initialization-equivalence checks. On completion, compare the matched fine-scale trajectories over the unchanged region and complete [0.3,0.8] window against the frozen boundary, initialization, eligibility and numerical gates. Recalculate the remaining cost from actual runtime, including comparison, methods resolution, fresh evidence and independent review. Launch the distinct fresh-seed evidence run only if those qualifications and the remaining budget support completion and assessment. Keep the coarse particle-count control's limited applicability explicit; ask the methods reviewer whether additional fine-scale qualification is required. If required qualifications or evidence cannot fit, preserve the completed exploratory trajectories and document the original test as unresolved. Do not shorten the window, relax gates or interpret progress telemetry as scientific evidence."
+}

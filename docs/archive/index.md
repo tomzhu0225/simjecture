@@ -14,32 +14,14 @@ open scientific goals.
 
 ## Release acceptance
 
-- [0.5.4rc2 research recovery and simulation files](../testing/0.5.4rc2-acceptance.md)
-- [0.5.4rc1 execution controls and validation](../testing/0.5.4rc1-acceptance.md)
-- [0.5.3 stable scope and validation](../testing/0.5.3-acceptance.md)
-- [0.5.3rc4 scope and validation](../testing/0.5.3rc4-acceptance.md)
-- [0.5.3rc3 benchmark presentation](../testing/0.5.3rc3-acceptance.md)
-- [0.5.3rc2 workers and research tools](../testing/0.5.3rc2-acceptance.md)
-- [0.5.3rc1 scope and validation](../testing/0.5.3rc1-acceptance.md)
-- [Earlier installer acceptance](../testing/rc2-installation-acceptance.md)
-- [Continuation acceptance](../testing/rc3-continuation-acceptance.md)
-- [ITER pack acceptance](../testing/iter-pack-acceptance.md)
-- [SSH worker acceptance](../testing/ssh-workers-acceptance.md)
+These pages are indexed automatically from their dated acceptance records.
+They retain the versions and commands actually tested.
 
 ```{toctree}
-:hidden:
+:glob:
+:maxdepth: 1
 
-../testing/0.5.4rc2-acceptance
-../testing/0.5.4rc1-acceptance
-../testing/0.5.3-acceptance
-../testing/0.5.3rc4-acceptance
-../testing/0.5.3rc3-acceptance
-../testing/0.5.3rc2-acceptance
-../testing/0.5.3rc1-acceptance
-../testing/rc2-installation-acceptance
-../testing/rc3-continuation-acceptance
-../testing/iter-pack-acceptance
-../testing/ssh-workers-acceptance
+../testing/*acceptance
 ```
 
 ## Model evaluations and adapter checks
@@ -65,10 +47,22 @@ For current benchmark instructions and interpretation, use the
 
 ## Campaign audits and historical plans
 
+The original [classic architecture](classic-architecture.md) and
+[classic evidence model](classic-evidence-and-claims.md) explain historical
+campaigns. Current studies are introduced in [the research loop](../concepts/research-loop.md).
+
+```{toctree}
+:hidden:
+
+classic-architecture
+classic-evidence-and-claims
+```
+
 Original scientific records remain intact. Read each report's qualifications and
 corrections together with the claimed result.
 
 - [Run 0004 audit](../research/run-0004.md)
+- [Demo refresh and harness audit, 2026-10-08](../research/demo-audit-20261008.md)
 - [Historical next-step plan](../research/next-steps.md)
 - [Continuation and steering research note](../research/continuation-steering-rc3.md)
 - [Stagnation deep audit, 2026-09-29](../research/stagnation-deep-audit-20260929.md)
@@ -82,6 +76,7 @@ corrections together with the claimed result.
 :hidden:
 
 ../research/run-0004
+../research/demo-audit-20261008
 ../research/next-steps
 ../research/continuation-steering-rc3
 ../research/stagnation-deep-audit-20260929

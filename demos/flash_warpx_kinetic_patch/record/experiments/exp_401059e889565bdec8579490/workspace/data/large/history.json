@@ -1,0 +1,784 @@
+[
+  {
+    "field_activity": {
+      "Bx_roi_rms": 6.024103209122263,
+      "By_roi_rms": 0.0,
+      "Bz_roi_rms": 0.07282463003864234,
+      "Ex_roi_rms": 0.0,
+      "Ey_roi_rms": 659190.0288763824,
+      "Ez_roi_rms": 0.0
+    },
+    "step": 0,
+    "time_s": 0.0,
+    "time_omegaci": 0.0,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.018278389547428293,
+      "p90_departure": 0.023127945431438736
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.01479987243780037,
+      "p90_departure": 0.023423052355859997
+    }
+  },
+  {
+    "field_activity": {
+      "Bx_roi_rms": 5.9795061982219115,
+      "By_roi_rms": 0.7923652137723106,
+      "Bz_roi_rms": 0.5281752525282296,
+      "Ex_roi_rms": 417240202.35516065,
+      "Ey_roi_rms": 39221317.54314858,
+      "Ez_roi_rms": 468599773.7882646
+    },
+    "step": 76,
+    "time_s": 2.1706204613312451e-13,
+    "time_omegaci": 0.0249759541477457,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.024907932580098893,
+      "p90_departure": 0.032573642704744235
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.039944446953781965,
+      "p90_departure": 0.05333441279271834
+    }
+  },
+  {
+    "field_activity": {
+      "Bx_roi_rms": 5.813799992661291,
+      "By_roi_rms": 0.8993901434965338,
+      "Bz_roi_rms": 0.6142938339191066,
+      "Ex_roi_rms": 491439807.2989608,
+      "Ey_roi_rms": 42731459.957733445,
+      "Ez_roi_rms": 460680128.43593353
+    },
+    "step": 152,
+    "time_s": 4.3412409226624903e-13,
+    "time_omegaci": 0.0499519082954914,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.0338628493306105,
+      "p90_departure": 0.04683143534544744
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.0531251549696436,
+      "p90_departure": 0.07343118459020886
+    }
+  },
+  {
+    "field_activity": {
+      "Bx_roi_rms": 5.65203165173661,
+      "By_roi_rms": 0.7988732178812135,
+      "Bz_roi_rms": 0.6701434001364173,
+      "Ex_roi_rms": 480090911.82459766,
+      "Ey_roi_rms": 46210672.220137,
+      "Ez_roi_rms": 474200916.3792049
+    },
+    "step": 228,
+    "time_s": 6.511861383993736e-13,
+    "time_omegaci": 0.0749278624432371,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.03810297094072171,
+      "p90_departure": 0.052994271529974504
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.06315972022950007,
+      "p90_departure": 0.09058203525134007
+    }
+  },
+  {
+    "field_activity": {
+      "Bx_roi_rms": 5.493804236920344,
+      "By_roi_rms": 0.8513545682105549,
+      "Bz_roi_rms": 0.8182981173662767,
+      "Ex_roi_rms": 492692117.00552505,
+      "Ey_roi_rms": 46438440.35185728,
+      "Ez_roi_rms": 487409293.59611326
+    },
+    "step": 304,
+    "time_s": 8.682481845324981e-13,
+    "time_omegaci": 0.0999038165909828,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.03903322424478564,
+      "p90_departure": 0.055034823491316
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.0670705884210159,
+      "p90_departure": 0.09737033357389138
+    }
+  },
+  {
+    "field_activity": {
+      "Bx_roi_rms": 5.493416687149803,
+      "By_roi_rms": 0.9504500353904077,
+      "Bz_roi_rms": 0.7586625125281156,
+      "Ex_roi_rms": 466190920.45530975,
+      "Ey_roi_rms": 48353354.89884241,
+      "Ez_roi_rms": 473354601.0489938
+    },
+    "step": 380,
+    "time_s": 1.0853102306656226e-12,
+    "time_omegaci": 0.1248797707387285,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.050636929384954635,
+      "p90_departure": 0.071286580064792
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.06209843531970244,
+      "p90_departure": 0.08577932965867946
+    }
+  },
+  {
+    "field_activity": {
+      "Bx_roi_rms": 5.522942406177886,
+      "By_roi_rms": 1.0169166082251166,
+      "Bz_roi_rms": 0.7644005414612677,
+      "Ex_roi_rms": 477562163.7907554,
+      "Ey_roi_rms": 47285193.52460495,
+      "Ez_roi_rms": 519344128.38778305
+    },
+    "step": 456,
+    "time_s": 1.3023722767987472e-12,
+    "time_omegaci": 0.1498557248864742,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.05061640413070666,
+      "p90_departure": 0.08531631266759915
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.06299304606707262,
+      "p90_departure": 0.08679180951264237
+    }
+  },
+  {
+    "field_activity": {
+      "Bx_roi_rms": 5.50180226890178,
+      "By_roi_rms": 1.0403622428212596,
+      "Bz_roi_rms": 0.6926451897786678,
+      "Ex_roi_rms": 487060572.49159515,
+      "Ey_roi_rms": 48643904.831860356,
+      "Ez_roi_rms": 496202662.8101748
+    },
+    "step": 532,
+    "time_s": 1.5194343229318718e-12,
+    "time_omegaci": 0.1748316790342199,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.05368815469445777,
+      "p90_departure": 0.0774266476139065
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.06397204827575813,
+      "p90_departure": 0.08510471505969075
+    }
+  },
+  {
+    "field_activity": {
+      "Bx_roi_rms": 5.618599506258711,
+      "By_roi_rms": 1.022213030703927,
+      "Bz_roi_rms": 0.6549639640310855,
+      "Ex_roi_rms": 539968002.4348415,
+      "Ey_roi_rms": 45715491.769062184,
+      "Ez_roi_rms": 484645225.8395049
+    },
+    "step": 608,
+    "time_s": 1.7364963690649961e-12,
+    "time_omegaci": 0.1998076331819656,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.06144106066604733,
+      "p90_departure": 0.07179518927911913
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.05004628823813825,
+      "p90_departure": 0.0851724077391704
+    }
+  },
+  {
+    "field_activity": {
+      "Bx_roi_rms": 5.670174568433601,
+      "By_roi_rms": 0.9995635611301873,
+      "Bz_roi_rms": 0.647652767668041,
+      "Ex_roi_rms": 528905705.45624197,
+      "Ey_roi_rms": 292155882.00144476,
+      "Ez_roi_rms": 478232960.85212946
+    },
+    "step": 684,
+    "time_s": 1.953558415198121e-12,
+    "time_omegaci": 0.22478358732971132,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.05869982133314634,
+      "p90_departure": 0.07740492081239987
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.060425703259367095,
+      "p90_departure": 0.09443344972776947
+    }
+  },
+  {
+    "field_activity": {
+      "Bx_roi_rms": 5.560589014710037,
+      "By_roi_rms": 1.0146001196368066,
+      "Bz_roi_rms": 0.7053346881157037,
+      "Ex_roi_rms": 510060067.5265221,
+      "Ey_roi_rms": 164265723.27449745,
+      "Ez_roi_rms": 546899638.8104473
+    },
+    "step": 760,
+    "time_s": 2.1706204613312452e-12,
+    "time_omegaci": 0.249759541477457,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.05644448154404284,
+      "p90_departure": 0.08013834646254928
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.06818458369796765,
+      "p90_departure": 0.08826277280077413
+    }
+  },
+  {
+    "field_activity": {
+      "Bx_roi_rms": 5.3794002852574545,
+      "By_roi_rms": 1.0112794422997768,
+      "Bz_roi_rms": 0.6617584653079319,
+      "Ex_roi_rms": 532706445.2625167,
+      "Ey_roi_rms": 207781292.69862795,
+      "Ez_roi_rms": 521918706.6938472
+    },
+    "step": 836,
+    "time_s": 2.3876825074643696e-12,
+    "time_omegaci": 0.27473549562520266,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.05818432500509912,
+      "p90_departure": 0.07718701041778134
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.0590384134277937,
+      "p90_departure": 0.07637855363414388
+    }
+  },
+  {
+    "field_activity": {
+      "Bx_roi_rms": 5.307453395196609,
+      "By_roi_rms": 0.9131227515787952,
+      "Bz_roi_rms": 0.7001427934340984,
+      "Ex_roi_rms": 491716174.3716053,
+      "Ey_roi_rms": 64056945.557350606,
+      "Ez_roi_rms": 538933734.8831793
+    },
+    "step": 912,
+    "time_s": 2.6047445535974944e-12,
+    "time_omegaci": 0.2997114497729484,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.05764677460523952,
+      "p90_departure": 0.07791280139854462
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.05793929855697676,
+      "p90_departure": 0.08275362394382517
+    }
+  },
+  {
+    "field_activity": {
+      "Bx_roi_rms": 5.7674641572074705,
+      "By_roi_rms": 0.9543234409241186,
+      "Bz_roi_rms": 0.6630750893309508,
+      "Ex_roi_rms": 546873058.0208899,
+      "Ey_roi_rms": 95230696.00454511,
+      "Ez_roi_rms": 557973414.9156959
+    },
+    "step": 988,
+    "time_s": 2.8218065997306187e-12,
+    "time_omegaci": 0.32468740392069406,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.06156585501296735,
+      "p90_departure": 0.0878942568601861
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.06741452738767703,
+      "p90_departure": 0.08765866308330955
+    }
+  },
+  {
+    "field_activity": {
+      "Bx_roi_rms": 5.312056116482604,
+      "By_roi_rms": 0.9867908241729179,
+      "Bz_roi_rms": 0.6870895375447446,
+      "Ex_roi_rms": 530923567.3970789,
+      "Ey_roi_rms": 81888632.32288978,
+      "Ez_roi_rms": 523881248.19656295
+    },
+    "step": 1064,
+    "time_s": 3.0388686458637435e-12,
+    "time_omegaci": 0.3496633580684398,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.05505302154092137,
+      "p90_departure": 0.07403082734581456
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.05791590712590064,
+      "p90_departure": 0.08921208779234123
+    }
+  },
+  {
+    "field_activity": {
+      "Bx_roi_rms": 5.83483106314644,
+      "By_roi_rms": 1.0179703256703994,
+      "Bz_roi_rms": 0.6875328717000524,
+      "Ex_roi_rms": 510368278.8610431,
+      "Ey_roi_rms": 41919018.726001546,
+      "Ez_roi_rms": 517399024.5734421
+    },
+    "step": 1140,
+    "time_s": 3.255930691996868e-12,
+    "time_omegaci": 0.3746393122161855,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.05429644515729067,
+      "p90_departure": 0.09487427710657781
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.06022952812380576,
+      "p90_departure": 0.07490875999247171
+    }
+  },
+  {
+    "field_activity": {
+      "Bx_roi_rms": 5.413650902607517,
+      "By_roi_rms": 0.9985052280089005,
+      "Bz_roi_rms": 0.7873418612229186,
+      "Ex_roi_rms": 516357919.8138491,
+      "Ey_roi_rms": 75928572.35273387,
+      "Ez_roi_rms": 513473504.7521816
+    },
+    "step": 1216,
+    "time_s": 3.4729927381299922e-12,
+    "time_omegaci": 0.3996152663639312,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.06329983645014825,
+      "p90_departure": 0.09093997825397204
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.060654462540198226,
+      "p90_departure": 0.07684857746696194
+    }
+  },
+  {
+    "field_activity": {
+      "Bx_roi_rms": 5.476311390185776,
+      "By_roi_rms": 0.9415908963421197,
+      "Bz_roi_rms": 0.7196397335518856,
+      "Ex_roi_rms": 561847347.2967085,
+      "Ey_roi_rms": 94135074.00949173,
+      "Ez_roi_rms": 532816509.6976727
+    },
+    "step": 1292,
+    "time_s": 3.690054784263117e-12,
+    "time_omegaci": 0.42459122051167686,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.06634246450294015,
+      "p90_departure": 0.09586715031394151
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.07319938827695907,
+      "p90_departure": 0.08356172426851016
+    }
+  },
+  {
+    "field_activity": {
+      "Bx_roi_rms": 5.7042342429266615,
+      "By_roi_rms": 1.0312656054076352,
+      "Bz_roi_rms": 0.7779627399290096,
+      "Ex_roi_rms": 546529601.6301064,
+      "Ey_roi_rms": 52966326.826672815,
+      "Ez_roi_rms": 571089672.3585901
+    },
+    "step": 1368,
+    "time_s": 3.907116830396242e-12,
+    "time_omegaci": 0.44956717465942264,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.06689473916261396,
+      "p90_departure": 0.08787022187282448
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.0675333182997031,
+      "p90_departure": 0.09013489403939445
+    }
+  },
+  {
+    "field_activity": {
+      "Bx_roi_rms": 5.597877855342759,
+      "By_roi_rms": 1.0460941024259813,
+      "Bz_roi_rms": 0.7642732178518948,
+      "Ex_roi_rms": 550373757.6715266,
+      "Ey_roi_rms": 74693732.76583736,
+      "Ez_roi_rms": 576970659.4116342
+    },
+    "step": 1444,
+    "time_s": 4.124178876529366e-12,
+    "time_omegaci": 0.4745431288071683,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.057034674782182215,
+      "p90_departure": 0.08471512107778467
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.07344293953575706,
+      "p90_departure": 0.08623266521757139
+    }
+  },
+  {
+    "field_activity": {
+      "Bx_roi_rms": 5.452901345429579,
+      "By_roi_rms": 1.0420245980620473,
+      "Bz_roi_rms": 0.7091936878048172,
+      "Ex_roi_rms": 546565149.627099,
+      "Ey_roi_rms": 50955320.93950749,
+      "Ez_roi_rms": 547204492.6721492
+    },
+    "step": 1520,
+    "time_s": 4.3412409226624905e-12,
+    "time_omegaci": 0.499519082954914,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.0562036235805409,
+      "p90_departure": 0.08203786818430425
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.07205114218735009,
+      "p90_departure": 0.0948006143797684
+    }
+  },
+  {
+    "field_activity": {
+      "Bx_roi_rms": 5.531573691182177,
+      "By_roi_rms": 1.0938515653214145,
+      "Bz_roi_rms": 0.841629501724484,
+      "Ex_roi_rms": 567677974.8351676,
+      "Ey_roi_rms": 81255523.47285552,
+      "Ez_roi_rms": 570372355.2884614
+    },
+    "step": 1596,
+    "time_s": 4.558302968795615e-12,
+    "time_omegaci": 0.5244950371026597,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.053718699588545124,
+      "p90_departure": 0.08491616351932293
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.07518160900336991,
+      "p90_departure": 0.09725551619315369
+    }
+  },
+  {
+    "field_activity": {
+      "Bx_roi_rms": 5.635672856444107,
+      "By_roi_rms": 1.1227785240852237,
+      "Bz_roi_rms": 0.8213104261540901,
+      "Ex_roi_rms": 567971533.8667156,
+      "Ey_roi_rms": 86004289.5952548,
+      "Ez_roi_rms": 536551814.66664994
+    },
+    "step": 1672,
+    "time_s": 4.775365014928739e-12,
+    "time_omegaci": 0.5494709912504053,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.0566912632861709,
+      "p90_departure": 0.07805788067381057
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.07380862957638568,
+      "p90_departure": 0.10818088182669183
+    }
+  },
+  {
+    "field_activity": {
+      "Bx_roi_rms": 5.6610817373404245,
+      "By_roi_rms": 1.0571946433241168,
+      "Bz_roi_rms": 0.7393562799963371,
+      "Ex_roi_rms": 599762130.4334683,
+      "Ey_roi_rms": 68906321.54916064,
+      "Ez_roi_rms": 570760771.5365521
+    },
+    "step": 1748,
+    "time_s": 4.992427061061864e-12,
+    "time_omegaci": 0.5744469453981511,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.061562884370746015,
+      "p90_departure": 0.07657102041056738
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.07903773770406655,
+      "p90_departure": 0.11215751929576476
+    }
+  },
+  {
+    "field_activity": {
+      "Bx_roi_rms": 5.721801511964483,
+      "By_roi_rms": 0.9897475841595101,
+      "Bz_roi_rms": 0.7228109220837721,
+      "Ex_roi_rms": 530819170.3712674,
+      "Ey_roi_rms": 58318171.48674325,
+      "Ez_roi_rms": 541283943.0638875
+    },
+    "step": 1824,
+    "time_s": 5.209489107194989e-12,
+    "time_omegaci": 0.5994228995458968,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.059338601029339105,
+      "p90_departure": 0.07816919447631064
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.06436744567420082,
+      "p90_departure": 0.10333561279855538
+    }
+  },
+  {
+    "field_activity": {
+      "Bx_roi_rms": 5.81244150291317,
+      "By_roi_rms": 0.9993628994612163,
+      "Bz_roi_rms": 0.7231249264074187,
+      "Ex_roi_rms": 496704021.75369596,
+      "Ey_roi_rms": 45789751.21680147,
+      "Ez_roi_rms": 535625792.34354377
+    },
+    "step": 1900,
+    "time_s": 5.426551153328113e-12,
+    "time_omegaci": 0.6243988536936425,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.05065410631583919,
+      "p90_departure": 0.08310378115878243
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.06736021331726294,
+      "p90_departure": 0.09098377927461815
+    }
+  },
+  {
+    "field_activity": {
+      "Bx_roi_rms": 5.842412235075984,
+      "By_roi_rms": 0.9124192561693549,
+      "Bz_roi_rms": 0.7682417988175532,
+      "Ex_roi_rms": 502695013.8094941,
+      "Ey_roi_rms": 48121930.32691837,
+      "Ez_roi_rms": 587024383.7034491
+    },
+    "step": 1976,
+    "time_s": 5.6436131994612375e-12,
+    "time_omegaci": 0.6493748078413881,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.061100998816007605,
+      "p90_departure": 0.07172793094067587
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.0632778133012051,
+      "p90_departure": 0.0912579955414226
+    }
+  },
+  {
+    "field_activity": {
+      "Bx_roi_rms": 5.8673888603108075,
+      "By_roi_rms": 0.9808552239607228,
+      "Bz_roi_rms": 0.7840918040597897,
+      "Ex_roi_rms": 591171418.801412,
+      "Ey_roi_rms": 51145845.23175609,
+      "Ez_roi_rms": 567139078.4733279
+    },
+    "step": 2052,
+    "time_s": 5.860675245594362e-12,
+    "time_omegaci": 0.6743507619891339,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.0683197292158957,
+      "p90_departure": 0.08288269026619105
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.07889035076372576,
+      "p90_departure": 0.0978227959030204
+    }
+  },
+  {
+    "field_activity": {
+      "Bx_roi_rms": 5.851617195745008,
+      "By_roi_rms": 1.0625196395203174,
+      "Bz_roi_rms": 0.7068679651534504,
+      "Ex_roi_rms": 569353887.2954351,
+      "Ey_roi_rms": 52287180.02817535,
+      "Ez_roi_rms": 569199202.2487757
+    },
+    "step": 2128,
+    "time_s": 6.077737291727487e-12,
+    "time_omegaci": 0.6993267161368796,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.06105731282470654,
+      "p90_departure": 0.09169381340602714
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.0647340107785278,
+      "p90_departure": 0.09062450441178146
+    }
+  },
+  {
+    "field_activity": {
+      "Bx_roi_rms": 5.747949647280609,
+      "By_roi_rms": 1.0992910673315444,
+      "Bz_roi_rms": 0.8110229074222244,
+      "Ex_roi_rms": 587457504.2834877,
+      "Ey_roi_rms": 57005706.07453906,
+      "Ez_roi_rms": 554000891.0829638
+    },
+    "step": 2204,
+    "time_s": 6.294799337860611e-12,
+    "time_omegaci": 0.7243026702846254,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.054825658297584776,
+      "p90_departure": 0.08573294719940444
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.07266033489447626,
+      "p90_departure": 0.09356268967278837
+    }
+  },
+  {
+    "field_activity": {
+      "Bx_roi_rms": 5.611278392424792,
+      "By_roi_rms": 1.176300018016314,
+      "Bz_roi_rms": 0.8080923394567472,
+      "Ex_roi_rms": 568170837.1639047,
+      "Ey_roi_rms": 43576370.69771193,
+      "Ez_roi_rms": 530360550.0060665
+    },
+    "step": 2280,
+    "time_s": 6.511861383993736e-12,
+    "time_omegaci": 0.749278624432371,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.060327033259918006,
+      "p90_departure": 0.07729424775714068
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.0721554407735415,
+      "p90_departure": 0.09879962457601596
+    }
+  },
+  {
+    "field_activity": {
+      "Bx_roi_rms": 5.518010558131984,
+      "By_roi_rms": 1.1845690419523414,
+      "Bz_roi_rms": 0.9104186716418299,
+      "Ex_roi_rms": 571657312.3555627,
+      "Ey_roi_rms": 58304051.5119762,
+      "Ez_roi_rms": 547536885.1835139
+    },
+    "step": 2356,
+    "time_s": 6.72892343012686e-12,
+    "time_omegaci": 0.7742545785801167,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.05578497377040076,
+      "p90_departure": 0.08203197148467656
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.09186078582908797,
+      "p90_departure": 0.11807432421706979
+    }
+  },
+  {
+    "field_activity": {
+      "Bx_roi_rms": 5.530500514753478,
+      "By_roi_rms": 1.128981514646524,
+      "Bz_roi_rms": 0.8730298218966737,
+      "Ex_roi_rms": 565287258.709322,
+      "Ey_roi_rms": 70586375.72228776,
+      "Ez_roi_rms": 548943140.2589589
+    },
+    "step": 2432,
+    "time_s": 6.9459854762599845e-12,
+    "time_omegaci": 0.7992305327278624,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.055493248010034274,
+      "p90_departure": 0.07513644466784788
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.07718169722903367,
+      "p90_departure": 0.10033932574672008
+    }
+  },
+  {
+    "field_activity": {
+      "Bx_roi_rms": 5.53590546531631,
+      "By_roi_rms": 1.1341704937082415,
+      "Bz_roi_rms": 0.8709504074019729,
+      "Ex_roi_rms": 572070659.1697265,
+      "Ey_roi_rms": 71304982.20208807,
+      "Ez_roi_rms": 556719808.583963
+    },
+    "step": 2435,
+    "time_s": 6.954553714923134e-12,
+    "time_omegaci": 0.800216425654747,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.055012555261382795,
+      "p90_departure": 0.07443365023631796
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.07662913129275656,
+      "p90_departure": 0.10002931659967634
+    }
+  }
+]

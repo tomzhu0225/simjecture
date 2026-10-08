@@ -1,0 +1,89 @@
+{
+  "id": "exp_269229c0cfd7a394281e5796",
+  "status": "succeeded",
+  "operator_guidance_ids": [],
+  "created_at": 1791438166.3914852,
+  "timeout": 600,
+  "workspace_limit_bytes": 4294967296,
+  "binding": {
+    "source": "qualify.py",
+    "args": [],
+    "inputs": {
+      "qualify.py": "4f8126865b8b1550ff4dd9c9c75ba639511d336a047669924308e633d409cb72",
+      "cfl04.json": "9602c3e8154443659e57d0ac672a3044635d9ee9fb23c8c7acac2b002cbe5c00",
+      "cfl08.json": "7eb3d1da0176c3640f86ec01d5741f18dbf373f492c7034bbd40814842332528",
+      "refine384.json": "f7dd48ad432f61ba041d90d635db6b3593babea176f6c5a274b280f2020ba878"
+    },
+    "capability": null,
+    "runtime_sha256": null
+  },
+  "outputs": [
+    "qualification.json"
+  ],
+  "commitment": null,
+  "key": null,
+  "stage": "exploration",
+  "method": null,
+  "review_documents": null,
+  "parent_experiment": "exp_45fced4d67b6d6b304622ac3",
+  "purpose": "diagnostic",
+  "plan": null,
+  "pid": 350688,
+  "worker_identity": {
+    "pid": 350688,
+    "starttime": "1956126",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture/.venv/bin/python3",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/island-sol-medium-study",
+      "--execute",
+      "exp_269229c0cfd7a394281e5796"
+    ],
+    "launched_at": "2026-10-08T05:42:46.559820+00:00",
+    "run_directory": null
+  },
+  "started_at": 1791438166.5599375,
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": 0,
+    "stdout": "{\"parents\": [\"exp_450f204fb0aa5b05e30c9f0c\", \"exp_22b4b0e7c2fcdc0417ce7387\"], \"rates\": [0.049621048445179096, 0.049532317415521825], \"relative_rate_difference\": 0.0017881732135366368, \"crossing_time_changes\": {\"flux_low_crossing_time\": 0.00010766122730399008, \"flux_high_crossing_time\": 0.0015517068983641469}, \"conservation\": [{\"mass_relative_drift\": 1.0181493426131283e-09, \"energy_relative_drift\": 8.066925469174535e-06, \"floor_hits_sampled\": 0, \"floor_correction_budget\": null, \"floor_correction_budget_reason\": \"Solver does not output integrated floor/source corrections; sampled states and total budgets constrain but cannot exclude between-output corrections.\"}, {\"mass_relative_drift\": 8.194860345867028e-10, \"energy_relative_drift\": 1.0476360755573566e-05, \"floor_hits_sampled\": 0, \"floor_correction_budget\": null, \"floor_correction_budget_reason\": \"Solver does not output integrated floor/source corrections; sampled states and total budgets constrain but cannot exclude between-output corrections.\"}], \"windows\": [{\"min_sheet_fwhm_cells\": 8, \"max_secondary_extrema\": 0, \"sample_count\": 34}, {\"min_sheet_fwhm_cells\": 8, \"max_secondary_extrema\": 0, \"sample_count\": 34}], \"checks\": [{\"completed\": true, \"representation\": true, \"physics_controls\": true, \"boundaries\": true, \"diagnostics\": true, \"numerical_regime\": true, \"flux_window_reached\": true}, {\"completed\": true, \"representation\": true, \"physics_controls\": true, \"boundaries\": true, \"diagnostics\": true, \"numerical_regime\": true, \"flux_window_reached\": true}], \"costs\": [189.79251207200286, 102.13496227799988], \"refinement\": {\"experiment\": \"exp_45fced4d67b6d6b304622ac3\", \"rate\": 0.04964289881291125, \"relative_change_from256\": 0.0022325100693707522, \"window\": {\"min_sheet_fwhm_cells\": 10, \"max_secondary_extrema\": 0, \"sample_count\": 34}, \"metrics\": {\"l_over_eta_nominal\": 1000.0, \"flux_low\": 0.01, \"flux_high\": 0.05, \"flux_low_crossing_time\": 0.2587089906492562, \"flux_high_crossing_time\": 1.0644637099847978, \"reconnection_time\": 0.8057547193355417, \"normalized_flux_slope\": 0.04964289881291125, \"flux_path_max_abs_mismatch\": 1.180594544127403e-05, \"max_abs_divb\": 3.999467423909664e-12, \"max_boundary_normal_fraction\": 0.011543072790735227, \"initial_sheet_cells\": 19.200000000000003, \"plot_file_count\": 49}, \"conservation\": {\"mass_relative_drift\": 6.354090587024075e-10, \"energy_relative_drift\": 5.442509333430934e-06, \"floor_hits_sampled\": 0, \"floor_correction_budget\": null, \"floor_correction_budget_reason\": \"Solver does not output integrated floor/source corrections; sampled states and total budgets constrain but cannot exclude between-output corrections.\"}, \"realized\": {\"eta\": 0.001, \"resistivity_solver\": \"explicit\", \"use_diffuse\": true, \"use_magnetic_resistivity\": true, \"nx\": 384, \"ny\": 384, \"alpha\": 20.0, \"tmax\": 1.2, \"mpi_ranks\": 4}, \"executable_sha256\": \"40cf57b987e85f9befc01abae4e89f27c230d1eb42391ba3abea8655a0f7024b\", \"cost_seconds\": 315.19219315999726}}",
+    "stderr": "",
+    "timed_out": false,
+    "cancelled": false,
+    "workspace_exceeded": false,
+    "stdout_truncated": false,
+    "stderr_truncated": false,
+    "heartbeat_count": 0,
+    "wall_seconds": 0.05270635199849494,
+    "workspace_bytes": 170598
+  },
+  "artifacts": {
+    "cfl04.json": {
+      "sha256": "9602c3e8154443659e57d0ac672a3044635d9ee9fb23c8c7acac2b002cbe5c00",
+      "bytes": 55303
+    },
+    "cfl08.json": {
+      "sha256": "7eb3d1da0176c3640f86ec01d5741f18dbf373f492c7034bbd40814842332528",
+      "bytes": 55280
+    },
+    "qualification.json": {
+      "sha256": "79ae47f2eeac8787fca8b4e3011c2323ecfa36474a0cad60600103478dcb6cda",
+      "bytes": 3500
+    },
+    "qualify.py": {
+      "sha256": "4f8126865b8b1550ff4dd9c9c75ba639511d336a047669924308e633d409cb72",
+      "bytes": 1195
+    },
+    "refine384.json": {
+      "sha256": "f7dd48ad432f61ba041d90d635db6b3593babea176f6c5a274b280f2020ba878",
+      "bytes": 55320
+    }
+  },
+  "missing_outputs": [],
+  "input_mutations": [],
+  "output_findings": [],
+  "scientific_status": "unreviewed",
+  "finished_at": 1791438166.6357026
+}

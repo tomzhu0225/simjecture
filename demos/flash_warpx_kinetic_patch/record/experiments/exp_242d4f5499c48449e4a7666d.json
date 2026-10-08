@@ -1,0 +1,152 @@
+{
+  "id": "exp_242d4f5499c48449e4a7666d",
+  "status": "succeeded",
+  "operator_guidance_ids": [],
+  "created_at": 1791434180.6573904,
+  "timeout": 600,
+  "workspace_limit_bytes": 4200627211,
+  "binding": {
+    "source": "calculation.py",
+    "args": [
+      "select",
+      "--state",
+      "macro256.npz",
+      "--source-experiment",
+      "exp_858f535fafc4884126e44323"
+    ],
+    "inputs": {
+      "calculation.py": "ef030822bfce50da0aa95310c94f11bf6f24e0766ee8ca0856ea52eb0ee15844",
+      "select_patch.py": "da52972aeb0c06847191c719c019f7115058a9c0c87e45a1cd6e85bd1f3e4af1",
+      "prepare_patch.py": "0be359a997ac75af4d376f96f18901ed815e2d1b07e2c48336233f4a35b4e20d",
+      "macro256.npz": "7a0329d97fc72d1f5c4c52fbb4cabb3d1da701077b86e700b2d246eb01c597fe",
+      "macro256.json": "9e087ee7da74b481b76b80b10e79d28c991f8f31125e0a1402cf8178a3c473a0"
+    },
+    "capability": null,
+    "runtime_sha256": null
+  },
+  "outputs": [
+    "selection.json",
+    "patch.npz",
+    "patch.json",
+    "macro_patch.png",
+    "sheet_profile.npz"
+  ],
+  "commitment": null,
+  "key": null,
+  "stage": "exploration",
+  "method": null,
+  "review_documents": null,
+  "parent_experiment": "exp_858f535fafc4884126e44323",
+  "purpose": "diagnostic",
+  "plan": null,
+  "pid": 284136,
+  "worker_identity": {
+    "pid": 284136,
+    "starttime": "1557552",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture/.venv/bin/python3",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/coupled-study",
+      "--execute",
+      "exp_242d4f5499c48449e4a7666d"
+    ],
+    "launched_at": "2026-10-08T04:36:20.827633+00:00",
+    "run_directory": null
+  },
+  "started_at": 1791434180.8277822,
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "Fontconfig error: Cannot load default config file: No such file: (null)",
+    "timed_out": false,
+    "cancelled": false,
+    "workspace_exceeded": false,
+    "stdout_truncated": false,
+    "stderr_truncated": false,
+    "heartbeat_count": 0,
+    "wall_seconds": 1.5652610430006462,
+    "workspace_bytes": 13468071
+  },
+  "artifacts": {
+    ".cache/fontconfig/2300eef321c393bfd76478a5c0e95b23-le64.cache-9": {
+      "sha256": "be4a2bf520a0eb916fab92b15585e493fa0dae62d7c2dd7e275b01664c14e346",
+      "bytes": 382064
+    },
+    ".cache/fontconfig/3830d5c3ddfd5cd38a049b759396e72e-le64.cache-9": {
+      "sha256": "6cb953b213d173a1439944baba4f785aeb8e08fba3cb8794d99004c34310d453",
+      "bytes": 184
+    },
+    ".cache/fontconfig/4c599c202bc5c08e2d34565a40eac3b2-le64.cache-9": {
+      "sha256": "e2077b9c186aa45489f582008a00a7965a8135d07927d2697f6d07e09f9ae69d",
+      "bytes": 104
+    },
+    ".cache/fontconfig/573ec803664ed168555e0e8b6d0f0c7f-le64.cache-9": {
+      "sha256": "e67dc2bd665d1b1bd952ec5dd357d64bae7b2fbd6f1c9896db3e880f9788c58f",
+      "bytes": 152
+    },
+    ".cache/fontconfig/7ef2298fde41cc6eeb7af42e48b7d293-le64.cache-9": {
+      "sha256": "69cf18e42e3d2705da9c867a36e7e16f3d0e8973c41a5a51118e43c1207756fc",
+      "bytes": 208
+    },
+    ".cache/fontconfig/9b89f8e3dae116d678bbf48e5f21f69b-le64.cache-9": {
+      "sha256": "4fa102166b8aaa98765061eae7abe768aa636c327ad2889f68d33d77de9735b0",
+      "bytes": 68800
+    },
+    ".cache/fontconfig/CACHEDIR.TAG": {
+      "sha256": "05e7633fb31bf1f6f8d89020c16b9f24587fdf7638e951c9745b192f5fc3b682",
+      "bytes": 200
+    },
+    ".cache/fontconfig/d589a48862398ed80a3d6066f4f56f4c-le64.cache-9": {
+      "sha256": "233df56e901146f1c5f71911def868b835fb7e43a0e02644a07a1c829e49cc31",
+      "bytes": 51736
+    },
+    "calculation.py": {
+      "sha256": "ef030822bfce50da0aa95310c94f11bf6f24e0766ee8ca0856ea52eb0ee15844",
+      "bytes": 435
+    },
+    "macro256.json": {
+      "sha256": "9e087ee7da74b481b76b80b10e79d28c991f8f31125e0a1402cf8178a3c473a0",
+      "bytes": 1040
+    },
+    "macro256.npz": {
+      "sha256": "7a0329d97fc72d1f5c4c52fbb4cabb3d1da701077b86e700b2d246eb01c597fe",
+      "bytes": 1515422
+    },
+    "macro_patch.png": {
+      "sha256": "4a47679973ef6580e1df00d1948c0f82d0bf2e9ef99fe35001c384d313a9774c",
+      "bytes": 271802
+    },
+    "patch.json": {
+      "sha256": "1f9195c5e6ff8cea9dfff1f252154b20067a80782a13906d04117cbe47fa5623",
+      "bytes": 1768
+    },
+    "patch.npz": {
+      "sha256": "2af71211db2ddfd3824222d77f36245740357d68a43e4a59f7981d0054455697",
+      "bytes": 11159280
+    },
+    "prepare_patch.py": {
+      "sha256": "0be359a997ac75af4d376f96f18901ed815e2d1b07e2c48336233f4a35b4e20d",
+      "bytes": 6968
+    },
+    "select_patch.py": {
+      "sha256": "da52972aeb0c06847191c719c019f7115058a9c0c87e45a1cd6e85bd1f3e4af1",
+      "bytes": 3764
+    },
+    "selection.json": {
+      "sha256": "a4542f43ee25314c8b2698ba2c6d762a31d530d35c472bf4947a686aeffceb0c",
+      "bytes": 2434
+    },
+    "sheet_profile.npz": {
+      "sha256": "4323532511a2e78680b5f7bdde8147cd8a474ae84aa4dea9d27b20a292eec79d",
+      "bytes": 1710
+    }
+  },
+  "missing_outputs": [],
+  "input_mutations": [],
+  "output_findings": [],
+  "scientific_status": "unreviewed",
+  "finished_at": 1791434183.3166997
+}

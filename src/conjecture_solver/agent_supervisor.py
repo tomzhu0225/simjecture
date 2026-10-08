@@ -236,6 +236,8 @@ class AgentSupervisor:
         remaining = (
             float("inf") if self.state["deadline"] is None else self.state["deadline"] - time.time()
         )
+        if getattr(self, "launch_deadline", None) is not None:
+            remaining = min(remaining, self.launch_deadline - time.time())
         duration = float("inf") if unbounded else min(self.args.turn_seconds, remaining)
         if duration <= 0:
             return 124
@@ -444,7 +446,16 @@ class AgentSupervisor:
                     )
                     handoff_since = (handoff_since or time.monotonic()) if handoff else None
                     handoff = handoff_since is not None and time.monotonic() - handoff_since >= 2
-                    if boundary or handoff or time.monotonic() >= min(limit, slice_limit):
+                    call_expired = (
+                        getattr(self, "launch_deadline", None) is not None
+                        and time.time() >= self.launch_deadline
+                    )
+                    if (
+                        boundary
+                        or handoff
+                        or call_expired
+                        or time.monotonic() >= min(limit, slice_limit)
+                    ):
                         turn_timed_out = boundary is None
                         os.killpg(child.pid, signal.SIGTERM)
                         try:

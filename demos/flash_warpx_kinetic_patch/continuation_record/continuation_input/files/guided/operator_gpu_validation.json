@@ -1,0 +1,33 @@
+{
+  "experiment": "exp_7e2e636e6cb66b9713bb1c85",
+  "status": "succeeded",
+  "runtime_sha256": "d56f0e12c7e6a52cb7f1f6ad3790633549749e3c48595478c9cb3fefdc460c7f",
+  "result": {
+    "completed": true,
+    "backend": "CUDA",
+    "gpu": true,
+    "steps": 64,
+    "dt_s": 8.225509116623556e-15,
+    "dt_omega_pe": 0.4640388251533953,
+    "duration_omegaci": 0.06057326142779507,
+    "elapsed_s": 1.517781553999157,
+    "initial_field_relative_errors": {
+      "bx": 0.0,
+      "bz": 0.0,
+      "ey": 0.0
+    },
+    "initial_maximum_particle_speed_over_c": {
+      "ions": 0.06310613947832093,
+      "electrons": 0.3268633972392519
+    },
+    "patch_sha256": "fc59aacd0857a4bd52e6320e1d373cbc64b18776bdbc986a61d77d481c8bf945",
+    "ppc_per_species": 16,
+    "seed": 20261008,
+    "moment_convention": "Nonrelativistic m*n*<v_prime v_prime>, velocity v=u/sqrt(1+u^2/c^2); local bin mean subtracted.",
+    "isotropy_metric": "Frobenius(P-tr(P)I/3)/(sqrt(3)*tr(P)/3)",
+    "moment_bins_per_axis": 8,
+    "roi_linear_fraction": 0.5,
+    "scope": "Collisionless one-way local continuation. Absorbing boundaries, transfer relaxation and numerical/particle controls remain scientific qualification requirements."
+  },
+  "scope": "Final operator commissioning through the actual sandbox launcher; permanently non-evidentiary."
+}

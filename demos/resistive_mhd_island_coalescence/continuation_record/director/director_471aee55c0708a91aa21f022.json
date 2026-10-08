@@ -1,0 +1,14 @@
+{
+  "id": "director_471aee55c0708a91aa21f022",
+  "created_at": 1791445505.4518752,
+  "packet_sha256": "3e992a203fb98f0727d6b3c3f3faa55a750a87ffe422a45dabfbdde852610c3e",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "The previous qualification blockers have been addressed: fresh full-window CFL parity replaces the historical contribution, and the renewed method review permits prospective collection with the two-point refinement limitation explicit. The completed S_eta=250 baseline reaches the declared flux window; its last retained time below tmax does not censor that observable. Keep the active S_eta=1000 baseline/refinement pair running because it can supply useful matched spatial sensitivity. Scientific feasibility remains limited until qualified matched pairs and broader resistivity coverage are available; unchanged topology and borrowed-error limitations remain applicable. Budget feasibility is at risk: the worker acknowledges that the approximately 1043-second serial plan exceeds the allowance, and concurrency savings remain uncertain. The refinement's operational forecast fits its timeout and the compute allowance, while the baseline's startup-only forecast is insufficient grounds for stopping it. Telemetry establishes neither convergence nor a scientific conclusion.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "at_risk",
+  "stop_experiments": [],
+  "wake_worker": true,
+  "next_action": "While both experiments continue, prepare receipt-linked field/current plots and the quantitative report inputs from completed outputs, labeling commissioning, exploration and prospective evidence separately. Prepare the matched-pair analysis so it can run promptly when the S_eta=1000 pair finishes. Record an updated remaining-cost estimate using terminal costs and established throughput rather than startup extrapolation. When capacity becomes available, prioritize the declared S_eta=250, N=384 refinement to complete the common two-point refinement coverage, then collect additional distinct baseline resistivities only where full-window completion plus analysis fits. Document missing coverage and retain censoring or failed eligibility as unresolved gaps. Reassess concurrency and timeout headroom before each launch; do not spend the remaining allowance polishing early-time diagnostics. Finish numerical work before compute_deadline=1791446079.9094124 and preserve the 450-second report reserve. Submit resulting scientific interpretations to independent review; this continuation accepts no claims."
+}
