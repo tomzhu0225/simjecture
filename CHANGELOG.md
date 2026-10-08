@@ -4,6 +4,12 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+- Add operator-tested FLASH-to-WarpX state-transfer helpers for a guided local
+  kinetic follow-up, with numerical tests for flux reconstruction, coordinate
+  rotation, pressure/current mapping, divergence and changed-input detection.
+- Make WarpX, EOS and opacity skill instructions distinguish minimal methods
+  review from classic instrument contracts. Document multi-tool evidence handoffs.
+
 - Rebuild the documentation around the autonomous research loop and evidence
   system, with a responsive Furo theme, current-mode explanations, a repair-loop
   tutorial and clearly labelled historical records.

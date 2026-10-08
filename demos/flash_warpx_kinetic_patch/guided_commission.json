@@ -1,0 +1,50 @@
+{
+  "schema_version": "0.1.0",
+  "name": "flash-warpx-kinetic-patch-v1",
+  "description": "One-way FLASH-to-WarpX kinetic follow-up: a working FLASH island trajectory and tested coordinate, flux-potential, dimensional and particle-initialization helpers. Supplied checks are non-evidentiary.",
+  "capability": "flash-island-coalescence-resistive-mhd-4.8",
+  "program_path": "guided/flash_islands.py",
+  "validated_argv": [
+    "guided/flash_islands.py",
+    "--eta",
+    "0.001",
+    "--nx",
+    "128",
+    "--ny",
+    "128",
+    "--alpha",
+    "20",
+    "--tmax",
+    "1.2",
+    "--plot-interval",
+    "0.05",
+    "--ranks",
+    "4",
+    "--iprocs",
+    "2",
+    "--jprocs",
+    "2",
+    "--output",
+    "guided/anchor_run",
+    "--summary",
+    "guided/flash_anchor_validation.json",
+    "--overwrite"
+  ],
+  "validation_summary_path": "guided/flash_anchor_validation.json",
+  "operator_validation": "The same FLASH wrapper and executable completed a fresh ResearchService anchor. The extraction, SI mapping and fully kinetic CPU initializer separately completed recorded exploratory launches; initial loaded E/B fields matched the prepared data exactly. GPU readiness is checked separately before the campaign. These establish execution and transfer readiness only.",
+  "limitations": [
+    "Every supplied operator/anchor artifact is permanently non-evidentiary. The study must generate its own FLASH trajectory and fresh WarpX evidence.",
+    "One-way initial-condition transfer is not a two-way MHD/PIC coupler.",
+    "The kinetic realization is collisionless and reduced-mass-ratio; scalar FLASH resistivity is not evolved by PIC.",
+    "Physical scaling, patch/boundary effects, initialization relaxation, particle/grid controls and pressure diagnostics require independent methods review.",
+    "The source exporter supports the normalized 2D, single-output-block island application with zero out-of-plane initial field/flow, not general FLASH AMR states."
+  ],
+  "files": [
+    "guided/flash_islands.py",
+    "guided/extract_flash.py",
+    "guided/prepare_patch.py",
+    "guided/kinetic_patch.py",
+    "guided/flash_anchor_validation.json",
+    "guided/operator_transfer_validation.json"
+  ]
+}

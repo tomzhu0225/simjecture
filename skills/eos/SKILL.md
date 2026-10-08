@@ -24,9 +24,13 @@ skill as a substitute for an opacity-table capability.
   Capability action paths are workspace-relative.
 - Treat the exact executable identity, model name, material or composition
   input, units, and analysis source as provenance.
-- Use `stage=workbench` while repairing inputs or checking the interface.
-  Workbench artifacts are permanently non-evidentiary. Use `stage=evidence`
-  only with a frozen, prospectively commissioned program and command set.
+- In minimal mode use `lab.run(..., capability=NAME, stage="exploration")`
+  while repairing inputs or checking the interface. Submit `lab.method` with
+  the source, inputs, runtime and actual validation receipt IDs before decisive
+  `stage="evidence"` runs. Use `lab.analyze` for exploratory postprocessing.
+  In classic mode, use `run_capability` with `stage="workbench"` and the
+  instrument's prospective evidence contract. Exploratory artifacts remain
+  non-evidentiary; do not construct classic instrument claims in minimal mode.
 - Treat a zero process exit status as execution success only. It does not
   establish physical validity, numerical convergence, or support for a claim.
 
@@ -40,9 +44,10 @@ Each capability is a different code. Name the model that actually ran.
 | `singularity-eos-1.12.1` | Singularity-EOS 1.12.x | Named analytic or tabulated closures through a query driver or Python module |
 | `m-aneos-1.0` | M-ANEOS 1.0.x | Semi-analytic total-material Helmholtz EOS from an operator-supplied parameter set |
 
-Execute workspace Python with `run_capability`, selecting the advertised
-capability. The first argv item is the workspace-relative program. There is no
-shell. Ordinary `run_python` does not contain these packages.
+Select the advertised capability through the active API above. With classic
+`run_capability`, the first argv item is the workspace-relative Python program;
+with minimal `lab.run`, it is the `source` argument. These launches have no shell.
+The general Python runtime does not automatically contain the optional EOS package.
 
 Read [execution and output](references/execution-output.md) for launch
 variables, units, and the query JSON contract. Read

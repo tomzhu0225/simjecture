@@ -117,6 +117,7 @@ getting-started/terminal-ui
 :caption: Tools and deployment
 
 how-to/guided-commissioning
+how-to/multi-tool-studies
 how-to/add-a-capability
 how-to/deploy-runtimes
 how-to/iter-pack

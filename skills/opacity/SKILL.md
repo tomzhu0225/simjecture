@@ -28,9 +28,13 @@ capability.
   Capability action paths are workspace-relative.
 - Treat the exact executable identity, process switches, abundance table,
   atomic database, frequency grid, and analysis source as provenance.
-- Use `stage=workbench` while repairing inputs or checking the interface.
-  Workbench artifacts are permanently non-evidentiary. Use `stage=evidence`
-  only with a frozen, prospectively commissioned program and command set.
+- In minimal mode use `lab.run(..., capability=NAME, stage="exploration")`
+  while repairing inputs or checking the interface. Submit `lab.method` with
+  the source, inputs, runtime and actual validation receipt IDs before decisive
+  `stage="evidence"` runs. Use `lab.analyze` for exploratory postprocessing.
+  In classic mode, use `run_capability` with `stage="workbench"` and the
+  instrument's prospective evidence contract. Exploratory artifacts remain
+  non-evidentiary; do not construct classic instrument claims in minimal mode.
 - Treat a zero process exit status as execution success only. It does not
   establish physical validity or support for a claim.
 
@@ -40,9 +44,10 @@ capability.
 |---|---|---|
 | `optab-1.3.1` | Optab 1.3.x | Monochromatic and mean opacities from user-supplied chemical abundances |
 
-Execute workspace Python with `run_capability` on `optab-1.3.1`. The first argv
-item is the workspace-relative program. There is no shell. Ordinary
-`run_python` does not contain Optab.
+Select `optab-1.3.1` through the active API above. With classic `run_capability`,
+the first argv item is the workspace-relative Python program; with minimal
+`lab.run`, it is the `source` argument. These launches have no shell. The general
+Python runtime does not automatically contain Optab.
 
 Read [execution and output](references/execution-output.md) for launch
 variables and output fields. Read

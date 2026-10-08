@@ -17,6 +17,14 @@ and build features from the pinned PICMI capability; inspect their actual metada
 
 ## Execution contract
 
+Use the API advertised by the active study. In minimal mode, call
+`lab.run("program.py", args=[...], capability=NAME, inputs=[...], outputs=[...],
+stage="exploration")` while commissioning. Submit `lab.method` with the source,
+input/runtime identity and actual validation receipt IDs before decisive
+`stage="evidence"` runs. `lab.analyze` records exploratory postprocessing.
+The `run_capability`, workbench stages and instrument-claim contracts described
+below are the classic API; do not create that hierarchy in a minimal study.
+
 - Author the PICMI Python program and any analysis programs in the writable
   workspace using workspace-relative action paths such as `probe.py`, never
   `/work/probe.py`. The sandbox maps the working directory to `/work` only at
@@ -54,11 +62,11 @@ and build features from the pinned PICMI capability; inspect their actual metada
    species distributions, time-integration scheme, and runtime. For
    electromagnetic calculations, read `references/time-integration.md` before
    fixing the timestep.
-3. Iterate on unknown interfaces and candidate programs in the workbench. Before
-   promoting a stable WarpX program, register a prospective evidence contract on
-   its instrument claim and transition to the complete physical commissioning
-   contract. Workbench success cannot be promoted retroactively; the evidence-stage
-   qualification must generate fresh artifacts from the frozen source.
+3. Iterate on unknown interfaces and candidate programs in exploration. In minimal
+   mode, submit the stable source and commissioning receipts for methods review.
+   In classic mode, register the instrument claim's prospective evidence contract.
+   Exploratory success cannot be promoted retroactively into claim evidence;
+   decisive runs use the frozen, reviewed source and fresh outputs.
 4. Begin workbench development with an inexpensive anchor that exercises the intended model and
    diagnostic path. Make the program emit a compact JSON commissioning summary
    with qualification booleans below a top-level `checks` object, and register
