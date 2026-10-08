@@ -30,7 +30,10 @@ skills/warpx/scripts/bootstrap_local_cuda.sh --jobs 8
 The script detects the GPU compute capability unless `--arch` is supplied. It
 creates project-local environments under `.runtime/`, builds only the 2D CUDA
 Python binding, installs openPMD/HDF5 support, and runs a post-install probe.
-It does not change the source revision. Dependency environments resume after
+The runtime includes CuPy for Python-side GPU field/particle callbacks. Launchers
+and capability descriptors disable user-site Python packages so a host-only install
+cannot hide missing runtime dependencies. The WSL NVIDIA utility directory remains
+available after build-toolchain isolation. It does not change the source revision. Dependency environments resume after
 interrupted downloads and share a package cache with other installers.
 
 The bootstrap writes a host-specific descriptor in
@@ -67,7 +70,7 @@ skills/warpx/scripts/run_local_cuda.sh \
   skills/warpx/scripts/probe_local_cuda.py --require-openpmd
 ```
 
-The probe must report `cuda_warpx`, `openpmd_hdf5_reader`, and
+The probe must report `cuda_warpx`, `cupy_device_kernel`, `openpmd_hdf5_reader`, and
 `openpmd_hdf5_roundtrip` as true. This proves GPU-aware AMReX was loaded and
 that openPMD can create and read an HDF5 series. It does not replace the WarpX
 field-diagnostic smoke test, which proves the producer path.

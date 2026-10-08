@@ -79,6 +79,8 @@ RUNTIME_PACKAGES = {
     "cuda-io": ["hdf5=1.14.6=nompi_*", "cmake", "ninja", "make", "pkg-config"],
     "cuda-python": [
         "python=3.12",
+        "cupy",
+        "cuda-version=12.4",
         "pip",
         "git",
         "setuptools",

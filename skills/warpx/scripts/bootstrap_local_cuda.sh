@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+export PYTHONNOUSERSITE=1
 
 # Reproduce the non-MPI 2D CUDA + openPMD WarpX runtime on a Linux/WSL host.
 # The source tree is intentionally supplied by the caller: deployments must
@@ -73,7 +74,9 @@ observed="$("$python_root/bin/git" -C "$source_tree" rev-parse HEAD)"
 
 # Keep Windows toolchains out of discovery under WSL. HDF5_ROOT and the
 # non-MPI build prefix prevent a Windows/MPI HDF5 config from being selected.
-export PATH="$cuda_root/bin:$io_root/bin:$python_root/bin:/usr/local/bin:/usr/bin:/bin"
+# WSL exposes nvidia-smi alongside its driver libraries. Keep that Linux-side
+# directory while excluding Windows toolchains from CMake discovery.
+export PATH="$cuda_root/bin:$io_root/bin:$python_root/bin:/usr/lib/wsl/lib:/usr/local/bin:/usr/bin:/bin"
 export CUDA_PATH="$cuda_root"
 export HDF5_ROOT="$io_root"
 export CMAKE_PREFIX_PATH="$io_root"

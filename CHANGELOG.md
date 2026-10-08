@@ -4,6 +4,12 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+- Keep WSL's Linux-side NVIDIA utility path during CUDA installation so the
+  post-build readiness probe can find `nvidia-smi` after toolchain isolation.
+  Install CuPy inside the CUDA runtime, test an actual device kernel, and exclude
+  user-site Python packages from runtime launch/probing. Register the managed
+  dependency history as part of CUDA capability identity.
+
 - Add operator-tested FLASH-to-WarpX state-transfer helpers for a guided local
   kinetic follow-up, with numerical tests for flux reconstruction, coordinate
   rotation, pressure/current mapping, divergence and changed-input detection.

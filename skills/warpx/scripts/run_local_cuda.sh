@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+export PYTHONNOUSERSITE=1
 
 # Launch the project-local WarpX CUDA runtime under WSL. The WSL driver stub
 # must precede Ubuntu's libcuda, and the source-built wheel bundles pyAMReX in
@@ -25,6 +26,9 @@ if [[ ! -x "$cuda_root/bin/nvcc" ]]; then
 fi
 
 export CUDA_PATH="$cuda_root"
+# CuPy's conda package discovers target-layout CUDA headers via CONDA_PREFIX.
+# These launchers execute Python directly instead of activating the environment.
+export CONDA_PREFIX="$python_root"
 driver_path=""
 [[ -d /usr/lib/wsl/lib ]] && driver_path="/usr/lib/wsl/lib:"
 io_path=""

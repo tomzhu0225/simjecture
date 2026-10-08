@@ -31,7 +31,7 @@
     "--overwrite"
   ],
   "validation_summary_path": "guided/flash_anchor_validation.json",
-  "operator_validation": "The same FLASH wrapper and executable completed a fresh ResearchService anchor. The extraction, SI mapping and fully kinetic CPU initializer separately completed recorded exploratory launches; initial loaded E/B fields matched the prepared data exactly. GPU readiness is checked separately before the campaign. These establish execution and transfer readiness only.",
+  "operator_validation": "The exact guided FLASH anchor completed through ResearchService. The extraction, SI mapping and fully kinetic CPU initializer completed linked exploratory launches. A separate Bubblewrap/CUDA launch completed 64 PIC steps with E/B initialization matching the prepared patch exactly; see operator transfer/GPU summaries. These establish execution and transfer readiness only.",
   "limitations": [
     "Every supplied operator/anchor artifact is permanently non-evidentiary. The study must generate its own FLASH trajectory and fresh WarpX evidence.",
     "One-way initial-condition transfer is not a two-way MHD/PIC coupler.",
@@ -45,6 +45,7 @@
     "guided/prepare_patch.py",
     "guided/kinetic_patch.py",
     "guided/flash_anchor_validation.json",
-    "guided/operator_transfer_validation.json"
+    "guided/operator_transfer_validation.json",
+    "guided/operator_gpu_validation.json"
   ]
 }

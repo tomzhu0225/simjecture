@@ -1,7 +1,8 @@
 # From a FLASH current sheet to a kinetic WarpX patch
 
-**Guided commissioning completed on CPU; GPU qualification and the autonomous
-study are in preparation. No physical conclusion is claimed yet.**
+**Guided commissioning passed on CPU and CUDA through the actual experiment
+launcher. A two-hour autonomous study is prepared; no physical conclusion is
+claimed from commissioning.**
 
 This example investigates whether a resolved MHD current sheet remains adequately
 represented by isotropic ion/electron pressures when followed with collisionless

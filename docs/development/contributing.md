@@ -38,6 +38,13 @@ The [FLASH record](../demos/island-coalescence.md) shows why scientific review c
 remain useful after a campaign ends; the [Kepler record](../demos/kepler-energy.md)
 provides a small example with no-key verification and numerical reproduction.
 
+A concrete open example is the
+[radiation tool-selection proposal](https://github.com/tomzhu0225/simjecture/tree/main/research/proposals/tool-selection-radiation):
+can an agent identify an inadequate material model and choose an appropriate
+source or generator without a prescribed tool chain? It is a proposed study,
+with operator-readiness requirements and no claimed result. Contributions to its
+material data, conversion checks or radiation commissioning would be useful.
+
 ## Development and credit
 
 [CONTRIBUTING.md](https://github.com/tomzhu0225/simjecture/blob/main/CONTRIBUTING.md)

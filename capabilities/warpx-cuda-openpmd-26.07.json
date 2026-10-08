@@ -10,7 +10,9 @@
     "OMP_NUM_THREADS": "1",
     "OPENBLAS_NUM_THREADS": "1",
     "PYTHONDONTWRITEBYTECODE": "1",
-    "PYTHONPATH": "/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx/site-packages:/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages"
+    "PYTHONPATH": "/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx/site-packages:/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages",
+    "PYTHONNOUSERSITE": "1",
+    "CONDA_PREFIX": "/opt/acs-capabilities/warpx-cuda-openpmd-26.07"
   },
   "executable": "bin/python",
   "manifest": {

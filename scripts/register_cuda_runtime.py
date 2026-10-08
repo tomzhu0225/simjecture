@@ -9,13 +9,17 @@ runtime = root / ".runtime/warpx-cuda-openpmd"
 config = json.loads((root / "capabilities/warpx-cuda-openpmd-26.07.json").read_text())
 config["runtime_root"] = str(runtime)
 package = runtime / "lib/python3.12/site-packages/pywarpx"
-solver_libraries = sorted(package.glob("*.so"))
+# Source-built wheels can place the active binding and pyAMReX under a nested
+# site-packages directory. Include those native libraries in the frozen identity.
+solver_libraries = sorted(package.rglob("*.so"))
 if not solver_libraries:
     raise SystemExit("The compiled WarpX Python library is missing")
 config["identity_files"] = sorted(
     set(config.get("identity_files", []))
     | {str(path.relative_to(runtime)) for path in solver_libraries}
 )
+if (runtime / "conda-meta/history").is_file():
+    config["identity_files"].append("conda-meta/history")
 config["read_only_mounts"] = {
     "/opt/acs-dependencies/cuda": str(root / ".runtime/cuda-toolkit-12.4"),
     "/opt/acs-dependencies/io": str(root / ".runtime/warpx-cuda-openpmd-deps"),
