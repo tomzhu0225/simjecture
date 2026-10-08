@@ -4,6 +4,12 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+- Add optional local workspaces and project collections, with a workspace switcher,
+  shared instructions/files, unchanged conversation paths and frozen context for
+  agent turns and autonomous studies. Expose the same records through JSON CLI
+  commands and scoped HTTP APIs. Existing users open Personal without a setup flow;
+  the hosted trial retains its existing account-scoped interface.
+
 ## 0.6.1 — 2026-10-08
 
 - Include cylinder-flow validation data in source distributions as well as

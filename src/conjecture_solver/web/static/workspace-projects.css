@@ -1,0 +1,40 @@
+.sidebar .brand { margin-bottom: 12px; }
+.workspace-switcher { display:flex; align-items:center; justify-content:space-between; width:100%; padding:9px 10px; margin-bottom:14px; border:1px solid #383d4d; border-radius:9px; background:#202532; color:#e0e5ef; font-size:13px; text-align:left; }
+.workspace-switcher span:first-child { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.workspace-resources { margin:0 0 10px; }
+.workspace-resources summary { display:flex; justify-content:space-between; cursor:pointer; padding:9px 12px; font-size:13px; color:#adb8c9; list-style:none; }
+.workspace-resources summary::-webkit-details-marker { display:none; }
+.workspace-resources[open] { border-radius:10px; background:#ffffff06; }
+.collection-sidebar { border-top:1px solid #ffffff12; padding-top:10px; margin-top:4px; display:flex; flex-direction:column; max-height:30vh; min-height:0; }
+#collection-list { overflow:auto; min-height:0; }
+.collection-sidebar .sidebar-label { display:flex; align-items:center; justify-content:space-between; margin-top:0; }
+.collection-sidebar .sidebar-label button { color:#b7c2d3; background:none; border:0; padding:0 5px; font-size:20px; }
+.collection-link { display:flex; align-items:center; gap:9px; width:100%; text-align:left; color:#b7c2d3; font-size:13px; border:0; background:none; padding:8px 10px; border-radius:8px; }
+.collection-link:hover,.collection-link.selected { background:#ffffff10; color:#fff; }
+.collection-link span { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.organization-dialog { width:min(530px,calc(100vw - 32px)); max-height:85vh; overflow:auto; border:1px solid var(--line); background:var(--paper); color:var(--ink); border-radius:18px; padding:26px; }
+.organization-dialog::backdrop { background:#080c1477; backdrop-filter:blur(3px); }
+.organization-dialog .dialog-heading { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.organization-dialog h2 { margin:0; font-size:22px; }
+.organization-dialog .dialog-heading button { background:none; border:0; color:var(--muted); padding:4px 8px; font-size:24px; }
+.organization-dialog form { display:grid; gap:10px; margin-top:22px; }
+.organization-dialog label { font-size:13px; font-weight:600; }
+.organization-dialog input,.organization-dialog textarea { width:100%; min-width:0; border:1px solid var(--line); background:var(--white); color:var(--ink); padding:10px 12px; border-radius:9px; font-size:14px; }
+.organization-inline { display:flex; gap:10px; }
+.space-choice { width:100%; display:flex; align-items:center; justify-content:space-between; gap:12px; margin:6px 0; padding:13px; border:1px solid var(--line); border-radius:10px; background:var(--white); color:var(--ink); text-align:left; font-size:14px; }
+.space-choice[aria-current] { border-color:var(--accent); background:var(--soft); }
+.collection-view { max-width:1080px; margin:auto; padding:50px clamp(20px,4vw,60px); }
+.collection-heading { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; }
+.collection-heading h1 { margin:0; font-size:32px; letter-spacing:-.8px; }
+.collection-conversations { display:grid; gap:10px; margin:30px 0; }
+.collection-conversation { display:flex; align-items:center; justify-content:space-between; gap:16px; text-align:left; padding:18px 20px; border:1px solid var(--line); background:var(--white); color:var(--ink); border-radius:12px; font-size:15px; }
+.collection-conversation small { color:var(--muted); font-size:12px; flex-shrink:0; }
+.collection-context { border-top:1px solid var(--line); padding-top:12px; font-size:14px; }
+.collection-context .section-line { flex-wrap:wrap; gap:12px; }
+#collection-files { display:flex; flex-wrap:wrap; gap:8px; }
+#collection-files a { border:1px solid var(--line); padding:7px 12px; border-radius:8px; background:var(--white); }
+#collection-instructions { white-space:pre-wrap; color:var(--muted); }
+.context-pill { border:1px solid var(--line); border-radius:8px; background:var(--soft); color:var(--accent); font-size:13px; padding:5px 10px; margin-bottom:15px; }
+.conversation-collection { display:flex; gap:7px; align-items:center; color:var(--muted); font-size:12px; }
+.conversation-collection select { max-width:240px; background:transparent; color:var(--ink); border:0; font-size:12px; padding:2px; }
+@media(max-width:600px) { .collection-heading { flex-direction:column; }.collection-view { padding:25px 20px; }.collection-conversation { align-items:flex-start; flex-direction:column; gap:5px; } }

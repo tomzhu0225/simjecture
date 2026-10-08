@@ -26,6 +26,7 @@ from urllib.parse import urlsplit
 from ..mvp_launch import ProcessIdentity, process_identity_matches, read_process_identity
 from ..research_service import put
 from ..workspace_agent import contained, model_for, public_error
+from ..workspace_projects import ProjectCollections
 from .workspace_machines import MachineWorkspace
 
 CATALOGUE = [
@@ -107,7 +108,7 @@ def spawn(command, directory, log):
     return identity.model_dump(mode="json") if identity else {}
 
 
-class Workspace(MachineWorkspace):
+class Workspace(MachineWorkspace, ProjectCollections):
     def __init__(self, root):
         self.root = Path(root).resolve()
         self.settings_path = self.root / "connection.json"
@@ -605,6 +606,11 @@ class Workspace(MachineWorkspace):
 
     def create(self, payload):
         name = text(payload, "name", 160) or "Untitled research"
+        collection = payload.get("collection")
+        if collection is not None and not isinstance(collection, str):
+            raise ValueError("Supply a project ID or null")
+        if collection:
+            self.collection_path(collection)
         agent = (
             self.select_agent(None, payload["agent"])
             if payload.get("agent")
@@ -630,6 +636,7 @@ class Workspace(MachineWorkspace):
                     studies=[],
                     brief=None,
                     agent=agent,
+                    collection=collection or None,
                 ),
             )
             self.write_index(directory)
@@ -1202,6 +1209,14 @@ class Workspace(MachineWorkspace):
                     f"Related studies: {json.dumps(project['studies'])}\n"
                     f"CURRENT USER REQUEST:\n{message}\n"
                     f"Study preparation guidance:\n{text(payload, 'preparation')}"
+                )
+            context_path = turn / "project-context"
+            context = self.freeze_context(identifier, context_path)
+            prompt += self.context_prompt(context, str(context_path))
+            if not context and continuing and project.get("previous_collection"):
+                prompt += (
+                    "\nThis conversation currently has no shared project. "
+                    "Any shared project instructions from earlier turns no longer apply.\n"
                 )
             if project.get("continuation_draft"):
                 prompt += (
@@ -1975,33 +1990,44 @@ class Workspace(MachineWorkspace):
                 "They are preparation, not accepted evidence. "
                 "Keep conclusions bounded to the agreed question and tested domain."
             )
-            request = NativeStudyRequest(
-                hypothesis=brief["question"],
-                instruction=instruction,
-                campaign_id="study-" + campaign_id,
-                output_directory=str(root),
-                engine="native",
-                mode="minimal",
-                backend=config["backend"],
-                model=config["model"],
-                judge_model=text(payload, "judge_model", 200)
-                or config.get("judge_model")
-                or config["model"],
-                reasoning_effort=config.get("reasoning_effort") or None,
-                judge_reasoning_effort=payload.get("judge_reasoning_effort") or None,
-                director_enabled=payload.get("director_enabled", True),
-                provider_config=str(frozen) if config["backend"] == "builtin" else None,
-                completion_policy=brief["completion_policy"],
-                max_wall_seconds=brief["hours"] * 3600,
-                max_command_seconds=600,
-                capability_directory=capability_directory,
-                execution_backend=payload.get("execution_backend", self.execution["backend"]),
-                machine_registry=str(self.machine_registry.root)
-                if brief.get("machine_ids")
-                else None,
-                machine_ids=brief.get("machine_ids", []),
-            )
-            plan = materialize_native(request)
+            # Freeze before materializing the scientific contract. Keep the snapshot
+            # outside research until materialize_native has created the run directory.
+            context_staging = self.root / "context-staging" / uuid.uuid4().hex
+            try:
+                context = self.freeze_context(identifier, context_staging)
+                instruction += self.context_prompt(context, "project_context/context.json")
+                request = NativeStudyRequest(
+                    hypothesis=brief["question"],
+                    instruction=instruction,
+                    campaign_id="study-" + campaign_id,
+                    output_directory=str(root),
+                    engine="native",
+                    mode="minimal",
+                    backend=config["backend"],
+                    model=config["model"],
+                    judge_model=text(payload, "judge_model", 200)
+                    or config.get("judge_model")
+                    or config["model"],
+                    reasoning_effort=config.get("reasoning_effort") or None,
+                    judge_reasoning_effort=payload.get("judge_reasoning_effort") or None,
+                    director_enabled=payload.get("director_enabled", True),
+                    provider_config=str(frozen) if config["backend"] == "builtin" else None,
+                    completion_policy=brief["completion_policy"],
+                    max_wall_seconds=brief["hours"] * 3600,
+                    max_command_seconds=600,
+                    capability_directory=capability_directory,
+                    execution_backend=payload.get("execution_backend", self.execution["backend"]),
+                    machine_registry=str(self.machine_registry.root)
+                    if brief.get("machine_ids")
+                    else None,
+                    machine_ids=brief.get("machine_ids", []),
+                )
+                plan = materialize_native(request)
+                if context:
+                    shutil.move(str(context_staging), root / "research" / "project_context")
+            finally:
+                if context_staging.exists():
+                    shutil.rmtree(context_staging)
             if project.get("continuation_draft"):
                 from ..research_continuation import attach
                 from ..research_service import ResearchService

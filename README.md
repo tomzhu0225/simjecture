@@ -111,6 +111,11 @@ The [first-study tutorial](https://drawingsword.com/simjecture/getting-started/f
 counterexample-and-repair workflow. [Headless studies](https://drawingsword.com/simjecture/how-to/headless-studies.html)
 cover terminal launches and automation.
 
+For longer-running work, optional [projects and workspaces](docs/how-to/projects-and-workspaces.md)
+group conversations and shared context, or keep separate local lab environments.
+The default remains a single personal workspace. CLI and HTTP interfaces expose
+the same project operations for external agents and scripts.
+
 ## Bring your instruments and compute
 
 Ordinary Python studies work without an external solver. Optional capabilities

@@ -20,7 +20,7 @@ window.WorkspaceRich = (() => {
           url.pathname = "/api/workspace/preview";
         url.searchParams.set("preview", "1");
       }
-      return url.pathname + url.search;
+      return window.workspaceURL ? workspaceURL(url.pathname + url.search) : url.pathname + url.search;
     }
     if (source.startsWith("study:")) {
       const slash = source.indexOf("/", 6);
@@ -56,7 +56,8 @@ window.WorkspaceRich = (() => {
     const params = new URLSearchParams({ id: project.id, path });
     if (simulation) params.set("simulation", simulation);
     if (preview) params.set("preview", "1");
-    return `/api/workspace/${simulation ? "simulation-file" : preview ? "preview" : "file"}?${params}`;
+    const url = `/api/workspace/${simulation ? "simulation-file" : preview ? "preview" : "file"}?${params}`;
+    return window.workspaceURL ? workspaceURL(url) : url;
   }
   function figure(source, caption, project) {
     if (!figureTypes.test(source.split("?")[0])) return null;

@@ -52,7 +52,7 @@ function toast(message, error = false) {
 }
 async function api(path, payload) {
   let response = await fetch(
-    path.startsWith("/api/") ? path : `/api/workspace/${path}`,
+    workspaceURL(path.startsWith("/api/") ? path : `/api/workspace/${path}`),
     payload === undefined
       ? {}
       : {
@@ -144,7 +144,7 @@ function view(name) {
     if (active) item.setAttribute("aria-current", "page");
     else item.removeAttribute("aria-current");
   }
-  if (!state.routing)
+  if (!state.routing && name !== "collection")
     location.hash =
       name === "project"
         ? projectHash(state.project.id, { view: state.mode })
@@ -219,6 +219,12 @@ async function followRoute({ reveal = true } = {}) {
         await monitor.open(params.get("simulation") || params.get("command"), {
           reveal,
         });
+    } else if (params.get("collection") && globalThis.WorkspaceProjects?.select(params.get("collection"), false)) {
+      if (params.get("view") === "new") {
+        state.project = null;
+        view("home");
+        renderProjects();
+      }
     } else
       view(
         ["settings", "tools", "benchmarks", "machines"].includes(location.hash.slice(1))
@@ -441,10 +447,12 @@ function renderProjects() {
     row.append(button, remove);
     $("project-list").append(row);
   }
+  globalThis.WorkspaceProjects?.render();
 }
 async function reloadProjects() {
   const boot = await api("bootstrap");
   state.projects = boot.projects;
+  globalThis.WorkspaceProjects?.update(boot);
   renderProjects();
 }
 async function openProject(id) {
@@ -455,6 +463,7 @@ async function openProject(id) {
   $("agent-switch-warning").hidden = true;
   const sameProject = state.project?.id === id;
   state.project = project;
+  globalThis.WorkspaceProjects?.setSelected(project.collection);
   state.routeStudy = window.StudyNavigation.selected(project, sameProject ? state.routeStudy : null);
   state.briefDirty = false;
   state.messageRevision = "";
@@ -780,7 +789,7 @@ function renderProject(force = false) {
   for (const file of p.files) {
     const row = el("div", undefined, "file-row"),
       link = el("a", file.name);
-    link.href = `/api/workspace/file?id=${encodeURIComponent(p.id)}&path=${encodeURIComponent(file.name)}`;
+    link.href = workspaceURL(`/api/workspace/file?id=${encodeURIComponent(p.id)}&path=${encodeURIComponent(file.name)}`);
     link.title = file.name;
     row.append(link, el("small", bytes(file.bytes)));
     $("project-files").append(row);
@@ -1621,6 +1630,7 @@ async function boot() {
   executionWarning();
   state.projects = data.projects;
   state.readonly = !data.allow_mutations;
+  globalThis.WorkspaceProjects?.init(data);
   $("readonly").hidden = !state.readonly;
   renderSettings();
   renderProjects();
@@ -1633,7 +1643,7 @@ async function boot() {
   await followRoute({ reveal: false });
 }
 for (const item of document.querySelectorAll("[data-view]"))
-  item.onclick = () => view(item.dataset.view);
+  item.onclick = () => {if(item.dataset.view === "home")globalThis.WorkspaceProjects?.setSelected(null); view(item.dataset.view);};
 $("connection-button").onclick = () => view("settings");
 $("rail-toggle").onclick = () => $("left-sidebar-toggle").click();
 $("rail-new-project").onclick = () => $("new-project").click();
@@ -1712,6 +1722,8 @@ $("new-project").onclick = () => {
   state.project = null;
   renderProjects();
   view("home");
+  const collection = globalThis.WorkspaceProjects?.selected();
+  if (collection) location.hash = new URLSearchParams({collection, view:"new"}).toString();
   $("first-request").value = "";
   globalThis.WorkspaceComposer?.update("first-request");
   $("first-request").focus();
@@ -1730,6 +1742,7 @@ $("quick-start").onsubmit = (e) => {
     const p = await api("projects", {
       name: message.split("\n")[0].slice(0, 80),
       agent,
+      collection: globalThis.WorkspaceProjects?.selected(),
     });
     await reloadProjects();
     if (request !== state.projectRequest) return;
@@ -1940,17 +1953,19 @@ function sizeInspector() {
 narrow.addEventListener("change", sizeInspector);
 sizeInspector();
 let polling = false,
-  ticks = 0;
+  ticks = 0, organizationTicks = 0;
 setInterval(async () => {
   if (polling || !state.token) return;
   polling = true;
   try {
+    if (!hosted && ++organizationTicks % 5 === 0) await reloadProjects();
     if (state.view === "project" && state.project) {
       const id = state.project.id;
       const project = await api(`project?id=${encodeURIComponent(id)}`);
       if (state.project?.id === id) {
         state.project = project;
         renderProject();
+        globalThis.WorkspaceProjects?.render();
         if (state.mode === "autonomous") await renderStudies();
       }
     }

@@ -144,6 +144,11 @@ only when a continuation is submitted.
 
 ## Permanent files, arranged by project
 
+For optional conversation collections and separate local lab environments, see
+[Projects and workspaces](../how-to/projects-and-workspaces.md). You can continue
+using a single conversation without setting either up. The folders below retain
+their historical `projects/` name and each represent one conversation.
+
 Project and study folders use names you can recognize:
 
 ```text

@@ -158,13 +158,30 @@ class SimjectureWebApplication:
         self.default_engine = default_engine
         self._monitors: dict[str, MVPRunMonitor] = {}
         self._lock = threading.RLock()
-        from .workspace import Workspace
+        from ..workspace_projects import WorkspaceDirectory
 
-        self.workspace = Workspace(self.runs_root / ".workspace")
-        for project in self.workspace.projects():
+        self.workspaces = WorkspaceDirectory(self.runs_root)
+        self.workspace = self.workspaces.open()
+        for project in self.all_conversations():
             for study in project.get("studies", []):
                 if Path(study["path"]).is_dir():
                     self.registry.register(study["path"])
+
+    def all_conversations(self):
+        return [p for workspace in self.workspaces.all() for p in workspace.projects()]
+
+    def workspace_context(self, token, root):
+        for space in self.workspaces.list():
+            context = self.workspaces.open(space["id"]).campaign_context(token, root)
+            if context:
+                return (
+                    context if space["id"] == "personal" else context | {"workspace": space["id"]}
+                )
+        return None
+
+    def maintain_workspaces(self, operation):
+        for workspace in self.workspaces.all():
+            getattr(workspace, operation)()
 
     @property
     def initial_campaign(self) -> str | None:
@@ -200,7 +217,7 @@ class SimjectureWebApplication:
             self.registry.refresh()
             # Native/operator launches can add a study after the server starts.
             # Reconcile the same workspace records used during initialization.
-            for project in self.workspace.projects():
+            for project in self.all_conversations():
                 studies = project.get("studies")
                 for study in studies if isinstance(studies, list) else []:
                     if not isinstance(study, dict) or not isinstance(study.get("path"), str):
@@ -308,7 +325,7 @@ class SimjectureWebApplication:
             return {
                 "schema_version": API_SCHEMA_VERSION,
                 "campaign": token,
-                "workspace_context": self.workspace.campaign_context(token, root),
+                "workspace_context": self.workspace_context(token, root),
                 "display_name": _campaign_display_name(snapshot, root),
                 "revision": revision,
                 "snapshot": payload,
