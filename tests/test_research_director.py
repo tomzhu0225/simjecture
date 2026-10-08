@@ -39,13 +39,14 @@ def active(sup, monkeypatch, *, timeout=700):
     return r
 
 
-def answer(sup, monkeypatch, stops, decision="replan", *, budget="infeasible"):
+def answer(sup, monkeypatch, stops, decision="replan", *, budget="infeasible", wake_worker=False):
     verdict = dict(
         decision=decision,
         rationale="The measured configuration cannot cover the target in budget.",
         scientific_feasibility="limited",
         budget_feasibility=budget,
         stop_experiments=stops,
+        wake_worker=wake_worker,
         next_action=(
             "Commission a cheaper complete trajectory with adaptive stepping and accuracy checks."
         ),
@@ -277,12 +278,16 @@ def test_old_director_policy_retains_five_minute_reviews(tmp_path, monkeypatch):
     assert sup.state["director_count"] == 2
 
 
-def test_strategy_review_runs_while_waiting_and_wakes_worker(tmp_path, monkeypatch):
+@pytest.mark.parametrize("decision,wake", [("replan", False), ("continue", True)])
+def test_strategy_review_runs_while_waiting_and_wakes_worker(tmp_path, monkeypatch, decision, wake):
     sup = supervisor(tmp_path)
     r = active(sup, monkeypatch)
     sup.state["waiting_for"] = [r["id"]]
     sup.state["last_director_at"] = time.time() - 400
-    answer(sup, monkeypatch, [])
+    packet = sup.director_packet()
+    assert packet["worker_waiting_for"] == [r["id"]]
+    assert "next_action alone" in sup.director_prompt(packet)
+    answer(sup, monkeypatch, [], decision=decision, wake_worker=wake)
     original = sup.launch
     worker = []
 
@@ -298,7 +303,21 @@ def test_strategy_review_runs_while_waiting_and_wakes_worker(tmp_path, monkeypat
     monkeypatch.setattr("conjecture_solver.research_supervisor.write_report", lambda *args: None)
     monkeypatch.setattr(sup.service, "cancel_active", lambda: None)
     assert sup.run() == 0
-    assert worker and sup.service.director_status()[0]["decision"] == "replan"
+    assert worker and sup.service.director_status()[0]["decision"] == decision
+    assert sup.service._read("experiments", r["id"])["status"] == "queued"
+    if decision == "continue":
+        assert sup.service.pending_director_replan() is None
+
+
+def test_continue_without_wakeup_leaves_worker_parked(tmp_path, monkeypatch):
+    sup = supervisor(tmp_path)
+    r = active(sup, monkeypatch)
+    sup.state["waiting_for"] = [r["id"]]
+    answer(sup, monkeypatch, [], decision="continue")
+    assert not sup.run_director(force=True)
+    assert not sup.state.get("director_wake_worker")
+    assert sup.state["waiting_for"] == [r["id"]]
+    assert not sup.service._read("experiments", r["id"]).get("cancel_requested")
 
 
 def test_flash_live_timing_is_not_claim_evidence(tmp_path):

@@ -197,6 +197,14 @@ other requested stops and worker replanning can proceed. Available partial data
 are retained; the host does not claim a confirmed stop until it is observed.
 The usual independent methods and claim reviews remain in force.
 
+The director also sees whether the worker is waiting for experiments. It can use
+`continue` with `wake_worker=true` to resume the worker for a concrete parallel
+task, such as submitting completed qualification for review, while leaving the
+simulations running. A `next_action` sentence alone does not wake a parked worker.
+This adds no replan-acknowledgement gate and grants no scientific approval. The
+decision card in **Evidence & review** shows when a worker wake-up was requested.
+Ordinary waits still avoid unnecessary provider turns.
+
 The worker reads `lab.director_status()` and records its response:
 
 ```python

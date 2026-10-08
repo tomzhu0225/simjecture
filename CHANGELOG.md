@@ -4,6 +4,14 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+- Let the research director explicitly resume a waiting worker for independent
+  analysis or review preparation while simulations continue. Expose the waiting
+  state to the director and show wake-up requests in Evidence & review.
+
+- Isolate incomplete or invalid study records during automatic run discovery so
+  a compact audit cannot prevent the web interface from opening other campaigns.
+  Explicit study loads and resumes continue to enforce snapshot integrity.
+
 - Preserve a fresh one-hour minimal FLASH audit and an explicitly separate,
   tested post-run correction for an agent-authored half-cell coordinate error.
   Keep the classic record and all original scientific receipts unchanged.

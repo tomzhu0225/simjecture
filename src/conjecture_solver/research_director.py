@@ -19,6 +19,13 @@ class DirectorVerdict(BaseModel):
     scientific_feasibility: Literal["adequate", "limited", "unknown"]
     budget_feasibility: Literal["feasible", "at_risk", "infeasible", "unknown"]
     stop_experiments: list[str] = Field(default_factory=list, max_length=8)
+    wake_worker: bool = Field(
+        default=False,
+        description=(
+            "Resume an idle worker for concrete work that can proceed while experiments run, "
+            "without stopping those experiments or requiring a strategy change."
+        ),
+    )
     next_action: str = Field(min_length=16, max_length=2400)
 
     @model_validator(mode="after")
@@ -70,6 +77,7 @@ class ResearchDirector:
             remaining_seconds=snapshot["remaining_seconds"],
             snapshot=self.context_brief(max_bytes=8000),
             active_experiments=active,
+            worker_waiting_for=list(self.state.get("waiting_for", [])),
             previous_decisions=self.service.director_status()[:2],
             pending_replan=self.service.pending_director_replan(),
             first_strategy_review=not bool(previous),
@@ -129,6 +137,13 @@ defensible. Explain uncertainty rather than inventing missing measurements. Ackn
 worker challenges and assess their recorded plan. Stops preserve partial data and history.
 A continue review does not waive the pending_replan worker response. A later replan
 replaces the earlier response requirement; the worker must acknowledge that latest replan.
+When worker_waiting_for is nonempty, the worker is parked until an experiment finishes
+unless you explicitly wake it. A continue decision with next_action alone does not
+deliver immediate parallel work. Set wake_worker=true when a concrete useful task can
+proceed now, such as submitting completed qualification for review or analyzing existing
+outputs while a simulation continues. Keep useful experiments running. Do not wake the
+worker merely to poll, restate limitations or wait again. A replan always wakes it and
+retains its acknowledgement requirement; a continue wake-up adds no new approval gate.
 SCHEMA:
 """
             + json.dumps(DirectorVerdict.model_json_schema())
@@ -297,11 +312,12 @@ SCHEMA:
                 director_strategy_signature=signature,
                 director_seen_records=packet["record_index"],
             )
-            if verdict["decision"] == "replan":
+            wake_worker = verdict["decision"] == "replan" or verdict["wake_worker"]
+            if wake_worker:
                 self.state["director_wake_worker"] = True
             self.event("research_director", decision=identifier, verdict=verdict)
             self.save()
-            return verdict["decision"] == "replan"
+            return wake_worker
         except (ValueError, KeyError, OSError) as error:
             self.state.update(
                 last_director_error=str(error)[:500], director_retry_after=time.time() + 120
