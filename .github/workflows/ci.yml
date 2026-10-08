@@ -68,6 +68,8 @@ jobs:
         run: uv run ruff check .
       - name: Test
         run: uv run pytest --cov=conjecture_solver --cov-report=term-missing
+      - name: Build source distribution and wheel from it
+        run: uv build --out-dir /tmp/simjecture-python-distributions
       - name: Validate packaged workspace install
         run: |
           uv run python scripts/package_workspace.py --output dist

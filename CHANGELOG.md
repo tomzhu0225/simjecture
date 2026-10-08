@@ -4,6 +4,10 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+- Include cylinder-flow validation data in source distributions as well as
+  wheels. Check the sdist-to-wheel build in CI and leave bulky research archives
+  and demo figure bundles in the repository/docs distribution.
+
 - Preserve two neutral 30-minute plasma continuations and add field-led visual
   walkthroughs with real evidence maps, FLASH evolution, kinetic patch geometry,
   spatial pressure maps, hashed plotting bundles and PDF/SVG exports.
