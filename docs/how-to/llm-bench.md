@@ -1,6 +1,7 @@
 # Compare scientific coding agents
 
-**Simjecture Bench 0.3.0** is the experimental task pack shipped with 0.5.3.
+**Simjecture Bench 0.3.0** is the versioned experimental task pack.
+Its task definitions have a separate version from the application.
 Its version is independent of the harness version. It packages finite diagnostic
 coding tasks from the aluminium RZ investigation; passing does not establish a
 physical mechanism, approve a scientific claim, or measure general research ability.

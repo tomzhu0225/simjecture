@@ -1,150 +1,143 @@
 # Simjecture
 
+[![PyPI](https://img.shields.io/pypi/v/simjecture)](https://pypi.org/project/simjecture/)
+[![CI](https://github.com/tomzhu0225/simjecture/actions/workflows/ci.yml/badge.svg)](https://github.com/tomzhu0225/simjecture/actions/workflows/ci.yml)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21945748.svg)](https://doi.org/10.5281/zenodo.21945748)
 
-[Try online](https://simjecture.com) · [Quickstart](#install-and-open-the-workspace) · [Documentation](docs/index.md) ·
-[Recorded demo](docs/demos/gray-scott.md) · [Contributing](CONTRIBUTING.md) ·
-[Releases](https://github.com/tomzhu0225/simjecture/releases)
+[Try online](https://simjecture.com) · [Documentation](https://drawingsword.com/simjecture/) ·
+[Research loop](docs/concepts/research-loop.md) · [Recorded studies](docs/demos/index.md) ·
+[Contributing](CONTRIBUTING.md)
 
 **Hypothesize. Simulate. Falsify.**
 
-Simjecture is a research workspace for computational science. Work with an agent to
-turn a question into a bounded study, run experiments, search for counterexamples,
-and test repairs to failed hypotheses. The harness records what ran and requires
-independent review before a scientific claim can close.
+Simjecture runs autonomous numerical investigations from a human-defined scientific
+question. An agent designs experiments, searches for counterexamples and tests
+revised hypotheses. The evidence system preserves what ran and a separate reviewer
+examines whether the results justify the conclusion.
 
-Use a compatible API model or an installed native agent CLI. Start in the browser
-workspace; terminal and headless workflows are available when you need automation.
+You set the question, physical scope and budget. The agent chooses how to work.
+You can inspect intermediate results, steer the investigation and continue it in a
+new phase. The result is a research record you can follow from hypothesis to code,
+measurements, counterexamples and review.
 
-![Recorded Gray–Scott fields and pattern measurements](docs/_static/demos/gray-scott-result.png)
+## The research loop
 
-A [recorded Gray–Scott study](docs/demos/gray-scott.md) found a finite-domain
-counterexample. You can inspect its code, evidence and review without an API key or
-new simulations. Simulation results remain conditional on the model and numerical
-scope; see [scientific limitations](docs/research/limitations.md).
+![Human direction, autonomous investigation, recorded experiments, independent review, and fresh tests of committed repairs](docs/_static/architecture/research-loop.svg)
 
-## Install and open the workspace
+A counterexample must survive the relevant numerical controls. Under the **repair**
+completion policy, the agent then proposes the smallest justified change to the
+hypothesis, commits its predictions before testing them, and collects fresh
+validation evidence. Missing evidence sends the work back through the loop.
 
-Try the hosted workspace at **[simjecture.com](https://simjecture.com)**, or install
-**Simjecture 0.6.0** on Linux or inside WSL:
+The **answer** policy can also finish with a reviewed falsification of the original
+claim. New browser studies default to answer; the CLI defaults to repair. Both use
+minimal mode by default: flexible agent strategy, recorded experiments and explicit
+scientific acceptance. A deadline can leave the question unresolved.
+
+Read [how the loop works](docs/concepts/research-loop.md) or
+[how evidence is checked](docs/concepts/evidence-and-claims.md).
+
+## Follow a real investigation
+
+[**Magnetic-island coalescence with FLASH**](docs/demos/island-coalescence.md)
+asks whether one reconnection-rate scaling survives changes in resistivity and
+resolution. Explore actual field evolution, the historical campaign and its
+statistical correction, and a separate fresh minimal-mode investigation.
+
+![FLASH magnetic-island coalescence: current density and field evolution](demos/resistive_mhd_island_coalescence/figures/island_coalescence_evolution.png)
+
+*Actual 2D commissioning fields. The linked study separates instrument readiness
+from evidence for the scaling hypothesis.*
+
+The [orbital-accuracy walkthrough](docs/demos/kepler-energy.md) uses the current
+minimal workflow to investigate a concrete question: **does small energy error
+imply an accurate trajectory?** It connects the operator's brief, actual numerical
+experiments, hypothesis revisions and independent review. It found five counterexamples in the original case matrix, then supported a
+four-case repair using fresh simulations and independent review. The retained
+record can be verified without a model call.
+
+Earlier records remain available. In the
+[historical Gray–Scott study](docs/demos/gray-scott.md), the harness rejected an
+attempt to close a claim using evidence commissioned for a different claim. The
+agent registered the missing contract and ran fresh experiments before closing it.
+That record documents the classic workflow; it is not presented as a new-version run.
+
+## What the evidence system preserves
+
+| Question you should be able to ask | Recorded material |
+|---|---|
+| What was being tested? | Original hypothesis, operator requirements and committed repairs |
+| What actually ran? | Frozen source and inputs, command, runtime identity and execution receipt |
+| Where did this number come from? | Output files, hashes and the experiment cited by the claim |
+| What challenged the result? | Counterexamples, controls, failed attempts and review gaps |
+| Why did the investigation finish? | Independent review, completion policy and budget or stop reason |
+
+A repaired claim cannot reuse old exploratory results as fresh validation. Changed
+committed source, missing committed cases and altered recorded outputs are checked
+by the service. Numerical adequacy and scientific interpretation remain review
+judgments. See [the evidence guide](docs/concepts/evidence-and-claims.md).
+
+## Try it
+
+Open **[simjecture.com](https://simjecture.com)** for the hosted workspace with
+supplied inference and compute within usage limits. Signed-in visitors can upload
+files and retain projects. Guest conversations and artifacts are temporary.
+
+For your own Linux or WSL machine, install the latest stable release:
 
 ```bash
-curl -fsSL https://github.com/tomzhu0225/simjecture/releases/download/v0.6.0/install.sh | bash
+curl -fsSL https://github.com/tomzhu0225/simjecture/releases/latest/download/install.sh | bash
 ```
 
-The installer verifies the release bundle's checksum, sets up uv, Python 3.12 and
-workspace dependencies, then starts the local GUI. Git and a CLI agent are not
-required. For Python-package installation, SSH forwarding or source setup, see
-[installation options](docs/getting-started/installation.md).
+The installer verifies the release bundle and prepares Python and the browser
+workspace. Reopen it with `~/simjecture/start-workspace`. Research files live under
+`~/simjecture/artifacts/projects`. See [installation options](docs/getting-started/installation.md).
 
-The local and hosted versions share a compact, expanding chat input, a persistent
-navigation rail and an account/workspace menu. Agent, model and effort settings
-live in the composer's model menu. The hosted service supplies inference and
-scientific tools and the official benchmark leaderboard; signed-in visitors can
-add files and retain their work. Guest
-conversations and artifacts are temporary and are removed after their last tab
-leaves, with a short grace period for refreshing or signing in.
+1. Choose a compatible API model or an authenticated native agent in the workspace.
+2. Discuss your question and prepare a study brief with **Autonomous research**.
+3. Review its hypothesis, evidence requirements, completion policy and budget.
+4. Start the investigation and follow its experiments and **Evidence & review**.
 
-To operate your own hosted service, see [server mode](docs/how-to/public-trials.md).
-It has a durable queue, separate visitor allowances, GitHub sign-in and an optional
-confined executor for general Python, solver inputs and application builds. It does
-not expose the trusted local operator backend to visitors.
+The [first-study tutorial](docs/getting-started/first-run.md) walks through the full
+counterexample-and-repair workflow. [Headless studies](docs/how-to/headless-studies.md)
+cover terminal launches and automation.
 
-1. In **Connections**, add a compatible API endpoint and key, or select an installed,
-   authenticated CLI in the message composer
-2. Start a conversation with your question, paper or simulation outputs
-3. Open **Autonomous research**, prepare a study with the agent, and review its
-   question, evidence requirements and budget before starting
-4. Follow the recorded experiments and independent review in the study view
+## Bring your instruments and compute
 
-Reopen the workspace with `~/simjecture/start-workspace`. Research files stay under
-`~/simjecture/artifacts/projects`, separate from versioned application folders.
-Keep the server terminal open or use a session manager. Ubuntu/Debian may request
-sudo to install Bubblewrap; restricted hosts may need additional execution setup.
+Ordinary Python studies work without an external solver. Optional capabilities
+include WarpX, operator-supplied FLASH, EOS/opacity tools, ITER diagnostics and
+[GPU cylinder flow](docs/how-to/cylinder-flow.md). The cylinder solver and its
+validation records were contributed by [Zifei Meng](https://github.com/ZifeiMengSPH).
 
-Follow the [workspace walkthrough](docs/getting-started/research-workspace.md) for
-agent selection and your first investigation, or try the
-[no-key recorded demo](docs/demos/gray-scott.md#audit-or-replay) first.
+- [Commission a scientific instrument](docs/how-to/guided-commissioning.md) or
+  [add your own capability](docs/how-to/add-a-capability.md).
+- [Run experiments on local or SSH workers](docs/how-to/ssh-workers.md).
+- [Steer or continue an investigation](docs/how-to/continuation-steering.md).
+- [Compare agents on recorded diagnostic tasks](docs/how-to/llm-bench.md).
+- [Operate a hosted service](docs/how-to/public-trials.md).
 
-## What you can do
+Native agents retain their existing tools and run with their host-account access.
+Numerical experiments use the selected execution backend, Bubblewrap by default.
+Read [security guidance](SECURITY.md) and
+[restricted-host setup](docs/how-to/restricted-containers.md) when deploying workers.
 
-- **Investigate a question:** work interactively, then launch a bounded autonomous
-  study with recorded evidence and independent methods/claim review
-- **Challenge and repair hypotheses:** search for counterexamples, preserve claim
-  ancestry, and test committed predictions with fresh evidence
-- **Use scientific instruments:** commission optional WarpX, operator-supplied
-  FLASH, EOS/opacity tools and ITER diagnostics, or add your own capability
-- **Run local or SSH experiments:** select numerical workers and track resource
-  reservations, execution receipts and recovery
-- **Continue an investigation:** prepare a linked phase with a new budget and
-  selected prior files, or send advisory guidance at a checkpoint
-- **Compare coding agents:** run task-scoped benchmarks over recorded diagnostics
-  and inspect completion, time, cost and missing measurements
+## Contribute
 
-Minimal mode is the default: the agent chooses its research strategy while the
-host manages evidence, review and deadlines. Structured and frontier modes are
-also available. See [research modes and evidence](docs/how-to/research-service.md)
-and [architecture](docs/concepts/architecture.md).
-New minimal studies also use a [research director](docs/how-to/minimal-oversight.md#research-director-stop-and-replan)
-to check feasibility during long jobs, stop named experiments and request recorded
-replans. Its launch switch and decisions are visible in the workspace; scientific
-claim acceptance remains independent.
+Help us test the research process on meaningful questions. Contributions can add
+scientific instruments, validated diagnostics, reproducible studies, numerical
+review, documentation or infrastructure. Start with [CONTRIBUTING.md](CONTRIBUTING.md)
+or [open an issue](https://github.com/tomzhu0225/simjecture/issues) to discuss a study
+or a substantial change.
 
-Numerical experiments use Bubblewrap by default. Native agents are trusted
-same-account processes with host tools; the experiment sandbox does not enclose
-them. Explicit cooperative PRoot and native process execution require a trusted
-host; neither provides an OS security boundary. Read
-[security guidance](SECURITY.md) before running sensitive workloads and
-[restricted-host setup](docs/how-to/restricted-containers.md) when needed.
-
-## Find your next step
-
-- **Use the workspace:** [first investigation](docs/getting-started/first-run.md),
-  [continue or steer a study](docs/how-to/continuation-steering.md)
-- **Automate from a terminal:** [headless studies](docs/how-to/headless-studies.md),
-  [command reference](docs/reference/cli.md),
-  [optional terminal dashboard](docs/getting-started/terminal-ui.md)
-- **Prepare an instrument:** [guided commissioning](docs/how-to/guided-commissioning.md),
-  [runtime deployment](docs/how-to/deploy-runtimes.md),
-  [ITER ecosystem pack](docs/how-to/iter-pack.md),
-  [GPU cylinder flow](docs/how-to/cylinder-flow.md)
-- **Add compute:** [SSH workers](docs/how-to/ssh-workers.md)
-- **Evaluate models:** [benchmark and community submissions](docs/how-to/llm-bench.md)
-- **Inspect the science:** [evidence and claims](docs/concepts/evidence-and-claims.md),
-  [evaluation status](docs/research/status.md),
-  [research and release archive](docs/archive/index.md)
-
-**0.6.0** adds the hosted service and shared chat/account layout, building on the
-SSH experiment workers, measured agent leaderboard, research director, recovery
-repairs and simulation file categories from the preceding releases. Hosted science
-uses the existing evidence service and independent review; an interactive plot or
-successful solver readiness check does not establish an accepted scientific claim.
-Release changes live in [CHANGELOG.md](CHANGELOG.md); checks and limits are in the
-[0.6.0 acceptance record](docs/testing/0.6.0-acceptance.md) and
-[archive](docs/archive/index.md). The
-[documentation index](docs/index.md) covers the full guide set.
-
-## Contributing
-
-[Zifei Meng](https://github.com/ZifeiMengSPH) contributed the Warp-LBM cylinder-flow
-solver and its domain/grid validation records. It is available as an optional
-research tool and a source of tasks involving fresh numerical simulations.
-
-Researchers, developers and first-time contributors are welcome. Help improve an
-example or guide, reproduce a bug, add a tested diagnostic or scientific capability,
-review numerical methods, or share benchmark results.
-
-Pick a small task in [CONTRIBUTING.md](CONTRIBUTING.md), which includes setup and
-checks for each kind of change. [Open an issue](https://github.com/tomzhu0225/simjecture/issues)
-to discuss an idea or reproducible problem; discuss large changes before implementing
-them. For security-sensitive reports, follow [SECURITY.md](SECURITY.md).
+[Release notes](CHANGELOG.md) · [Release checks](docs/archive/index.md) ·
+[Research status](docs/research/status.md) · [Historical records](docs/archive/index.md)
 
 ## Citation and license
 
-Use [CITATION.cff](CITATION.cff) and cite the exact version and Git commit used for a
-result. The [concept DOI](https://doi.org/10.5281/zenodo.21945748) identifies the software
-release series.
+Use [CITATION.cff](CITATION.cff) and identify the exact version and Git commit used
+for a result. The [concept DOI](https://doi.org/10.5281/zenodo.21945748) identifies
+the release series.
 
-Copyright 2026 Bowen Zhu and contributors. Licensed under the
-[Apache License 2.0](LICENSE). See [third-party notices](THIRD_PARTY_NOTICES.md) for
-upstream attribution and redistribution requirements.
+Copyright 2026 Bowen Zhu and contributors. Licensed under [Apache 2.0](LICENSE).
+See [third-party notices](THIRD_PARTY_NOTICES.md) for upstream attribution and
+redistribution requirements.

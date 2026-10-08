@@ -4,6 +4,13 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+- Rebuild the documentation around the autonomous research loop and evidence
+  system, with a responsive Furo theme, current-mode explanations, a repair-loop
+  tutorial and clearly labelled historical records.
+- Process ancestor claim reviews before repair reviews. Keep repair-support
+  requests pending while ancestor falsifications are missing, expose the blocking
+  claims and allow the worker to address them without repeated reviewer calls.
+
 - Add Cylinder flow / Warp-LBM, contributed by Zifei Meng under Apache-2.0,
   with an installer, agent guide, recorded diagnostics, custom studies and a
   separate inlet-distance research benchmark task. Preserve source and validation

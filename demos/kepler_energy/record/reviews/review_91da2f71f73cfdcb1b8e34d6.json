@@ -1,0 +1,34 @@
+{
+  "id": "review_91da2f71f73cfdcb1b8e34d6",
+  "status": "resolved",
+  "created_at": 1791429785.8610017,
+  "experiments": [
+    "exp_084c13fbf06a58ffd855107e",
+    "exp_affe2b99eebe88e0f1007a6f",
+    "exp_13f2a87e5162dfa757f15bdc",
+    "exp_c528e177145130b1c958ea00"
+  ],
+  "conclusion": "Support commit_40654c6537acaacae7b59687 only for its four declared tuples: e=0,N=2048; e=0.3,N=2048; e=0.6,N=4096; e=0.6,N=8192. Fresh committed experiments show maximum same-time position errors 0.0003951, 0.001546, 0.006428, and 0.001607 a, respectively, all below 0.01a. Analytic Kepler residuals are <=1.5e-14, initial position mismatch is zero, period closure mismatch <=2.5e-16a, and independent DOP853-to-analytic maximum position discrepancies <=8.2e-10a. The KDK source uses the stated half-kick/full-drift/half-kick update. This is an exhaustive challenge of the replacement finite set, with independent integrations and exact-reference controls. Separately, the original claim remains falsified; the recorded e=0.6,N=2048 probe has energy error 6.97e-5 and position error 0.02571a, outside the replacement scope. No intermediate resolutions or monotonicity are claimed.",
+  "claim": "commit_40654c6537acaacae7b59687",
+  "disposition": "supported",
+  "challenge": {
+    "strategy": "Exhaustively test every tuple in the prospectively committed finite replacement set; try to falsify its position bound using the same-time analytic orbit and an independently converged DOP853 cross-check, while preserving the lower-resolution high-eccentricity stress probe and original-grid counterexamples as controls on broader extrapolation.",
+    "experiments": [
+      "exp_084c13fbf06a58ffd855107e",
+      "exp_affe2b99eebe88e0f1007a6f",
+      "exp_13f2a87e5162dfa757f15bdc",
+      "exp_c528e177145130b1c958ea00"
+    ],
+    "outcome": "All four committed tuples satisfy max position error <0.01a and exact-reference/IVP controls. The separate e=0.6,N=2048 probe remains a counterexample to the broader energy-only implication, but is outside the finite replacement set."
+  },
+  "verdict": {
+    "claim_id": "commit_40654c6537acaacae7b59687",
+    "decision": "approved",
+    "disposition": "supported",
+    "rationale": "The four fresh, prospectively bound experiments exhaustively test the target's finite domain. Inspected trajectories reproduce maximum sampled position errors of 0.000395133526a for (0,2048), 0.001546212650a for (0.3,2048), 0.006427882597a for (0.6,4096), and 0.001606946203a for (0.6,8192), respectively in exp_084c13fbf06a58ffd855107e, exp_affe2b99eebe88e0f1007a6f, exp_13f2a87e5162dfa757f15bdc, and exp_c528e177145130b1c958ea00. Every integration step is retained through twenty periods, with correct periapsis initial conditions. Source inspection establishes inverse-square acceleration and the stated half-kick/full-drift/half-kick method. Algebraic checks of retained positions reproduce its update to within 2.4e-16; reconstructed velocities reproduce stored relative energy errors within 2.5e-13, and angular momentum remains conserved to floating-point accuracy. These are actual evolution controls. Recorded resolution comparisons provide additional commissioning: eccentricity 0.6 position errors decrease by approximately four at each halving from N=2048 to 4096 to 8192, consistent with second-order convergence. The exact reference has the correct Kepler parameterization and initial velocity; independently auditing its retained coordinates verifies Kepler residuals and period consistency well within 1e-11. Recorded DOP853 comparisons agree with the analytic reference within 8.2e-10a and give KDK error maxima agreeing within that tolerance, comfortably satisfying the committed 1e-7a criterion. DOP853 trajectories are not retained, but the directly audited analytic reference independently establishes the target bound. Source and artifact hashes match, JSON is valid, all retained arrays are finite, figures were inspected, and output_findings contain no failures. The commitment predates all four executions and retains the original 0.01a bound rather than fitting an observed extremum. Replacing the energy-only implication with explicit resolution cases is scientifically justified by accumulated phase error despite bounded energy error. Parent counterexamples remain retained in exp_70ff32e6d28ef9ccd7312295 and review_9e9e9a5528a825b402183851; the successful parent circular N=512 result also remains documented. The additional retained probe exp_5d1bbee42a8dc38ea8c5c889 has position error 0.0257091a despite energy error 6.97459e-5, reinforcing the resolution qualification. Its exclusion was declared prospectively, not introduced after failure. Support applies only to the four named cases under the protocol's periapsis initialization and sampled-error definition; it establishes neither minimum necessary resolutions nor interpolation, continuous-time error bounds, or arbitrary higher-resolution monotonicity.",
+    "evidence_gaps": [],
+    "next_test": null
+  },
+  "packet_sha256": "3655f846bb878b0ff5ac7761b42eb19f69598d9e00d197cd22ac28ad48eafa78",
+  "resolved_at": 1791429874.0057108
+}

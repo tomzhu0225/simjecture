@@ -79,7 +79,7 @@ silently change an existing study's provider. Do not place keys in chat messages
    unless you have specified otherwise. Ordinary Python needs no simulation plugin.
 4. Review the agent's proposal and press **Start research**. Manual fields are tucked
    under **Review or edit the study details**. The autonomous worker records experiments and submits evidence to
-   a separate tool-free reviewer. Watch progress in the project or experiment monitor.
+   a separate reviewer context. Codex reviewers can inspect relevant material with read-only tools. Watch progress in the project or experiment monitor.
 5. Open the result, evidence ledger, and simulation files from the study card. Once
    the report is saved, the interactive agent explains it in the same conversation.
    This waits for any active interactive task to finish. The study card links to the

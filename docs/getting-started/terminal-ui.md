@@ -3,7 +3,7 @@
 The local [Web interface](web-interface.md) is the primary interactive client
 beginning with v0.1.1. The Textual dashboard remains supported for SSH,
 headless, and accessibility-constrained workflows, but new visualization and
-interaction work targets the browser. It remains available in 0.5.3.
+interaction work targets the browser. It remains available as an optional interface.
 
 The terminal interface supports minimal studies as well as classic MVP campaigns.
 Minimal studies use `research.json`, experiment receipts and `research_report.json`;

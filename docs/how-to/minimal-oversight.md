@@ -162,8 +162,7 @@ natural-language rules and scientific acceptance still require independent revie
 
 ## Research director: stop and replan
 
-The director is available in the **0.5.4rc2 preview**; stable 0.5.3 keeps its earlier
-progress oversight.
+Earlier studies retain their saved progress-oversight policy when upgraded.
 
 New minimal studies enable a research director by default. The launch settings in
 the workspace expose the switch, reviewer/director model and effort; CLI launches

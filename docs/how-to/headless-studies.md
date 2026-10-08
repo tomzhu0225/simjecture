@@ -17,7 +17,7 @@ Install Bubblewrap using your distribution's package manager (for example,
 and check whether this host permits the required namespaces:
 
 ```bash
-uv tool install 'simjecture==0.5.3'
+uv tool install simjecture
 simjecture doctor --execution-backend bubblewrap
 ```
 

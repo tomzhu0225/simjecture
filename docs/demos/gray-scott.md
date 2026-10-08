@@ -1,4 +1,11 @@
-# Recorded demo: Gray–Scott counterexample
+# Historical record: Gray–Scott counterexample
+
+```{note}
+This is a preserved **version 0.1 classic-workflow** record. For the current
+minimal workflow, start with the [orbital investigation](kepler-energy.md) and
+[research-loop guide](../concepts/research-loop.md). The original numerical
+artifacts and decisions below have not been rewritten.
+```
 
 This completed 23.8-minute campaign is the primary version 0.1 autonomous
 demonstration. The agent received one natural-language hypothesis and no

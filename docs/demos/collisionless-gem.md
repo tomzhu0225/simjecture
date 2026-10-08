@@ -1,4 +1,10 @@
-# Recorded demo: collisionless GEM reconnection
+# Historical record: collisionless GEM reconnection
+
+```{note}
+This record uses the **version 0.1 classic workflow**. Its original scientific
+scope and audit corrections remain in force. See [recorded investigations](index.md)
+for a current minimal-mode example and other research records.
+```
 
 This completed 177-minute campaign is the primary version 0.1 plasma
 demonstration. It used a two-dimensional, three-velocity, fully kinetic

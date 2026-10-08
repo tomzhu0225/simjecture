@@ -1,5 +1,9 @@
 # Demonstrations
 
+Start with the [current minimal-workflow orbital investigation](../docs/demos/kepler-energy.md).
+The Gray–Scott, GEM and role-validation campaigns below are preserved historical
+records with their original workflow, artifacts and interpretations.
+
 Release demonstrations are recorded scientific runs, not hand-written examples
 that merely exercise an API. Portable recorded runs include the exact natural-
 language input, durable claim ledger, transcript, final report, generated
