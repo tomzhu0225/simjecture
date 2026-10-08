@@ -458,14 +458,29 @@ Do not edit service records or other studies. Resume from lab.status() and your 
 
     def worker_checkpoint_requested(self):
         # A durable review request is sufficient; don't rely on the CLI ending its turn.
-        return any(r["status"] == "queued" for r in self.service._all("reviews")) or any(
+        return any(
+            r["status"] == "queued" and not self.service.review_blockers(r)
+            for r in self.service._all("reviews")
+        ) or any(
             m["status"] == "queued" and m.get("retry_after", 0) <= time.time()
             for m in self.service._all("methods")
         )
 
     def process_reviews(self):
-        for request in self.service.status()["reviews"]:
+        requests = sorted(
+            self.service.status()["reviews"],
+            key=lambda r: (
+                len(self.service.lineage(r.get("claim", "root"))),
+                r.get("created_at", 0),
+                r["id"],
+            ),
+        )
+        for request in requests:
             if request["status"] != "queued" or self.boundary():
+                continue
+            # Recheck after each ancestor verdict. A blocked repair must not spend
+            # reviewer calls or interrupt the worker fixing its parent's evidence.
+            if self.service.review_blockers(request):
                 continue
             body = self.service.review_body(request)
             packet = self.service.packet(body)

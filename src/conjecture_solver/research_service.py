@@ -585,7 +585,27 @@ class ResearchService(
         return self.review_status(identifier)
 
     def review_status(self, identifier):
-        return self._read("reviews", identifier)
+        request = self._read("reviews", identifier)
+        if request["status"] == "queued":
+            request["blocked_by_claims"] = self.review_blockers(request)
+        return request
+
+    def review_blockers(self, request):
+        """Claims whose falsification must be accepted before reviewing repair support."""
+        claim = request.get("claim", "root")
+        if (
+            self.manifest["schema_version"] < 2
+            or claim == "root"
+            or request.get("disposition") != "supported"
+        ):
+            return []
+        failures = {
+            r["claim"]
+            for r in self._all("reviews")
+            if r.get("verdict", {}).get("decision") == "approved"
+            and r["verdict"]["disposition"] == "falsified"
+        }
+        return [a["id"] for a in self.lineage(claim)[:-1] if a["id"] not in failures]
 
     @staticmethod
     def review_body(request):
@@ -791,6 +811,9 @@ class ResearchService(
     def status(self, *, compact=False):
         self.reconcile_workers()
         reviews = self._all("reviews")
+        for request in reviews:
+            if request["status"] == "queued":
+                request["blocked_by_claims"] = self.review_blockers(request)
         accepted = [r for r in reviews if r.get("verdict", {}).get("decision") == "approved"]
         original_supported = any(
             r["claim"] == "root" and r["verdict"]["disposition"] == "supported" for r in accepted
@@ -887,7 +910,10 @@ class ResearchService(
                 for c in snapshot["commitments"]
             ]
             snapshot["reviews"] = [
-                {k: r.get(k) for k in ["id", "created_at", "claim", "status", "verdict"]}
+                {
+                    k: r.get(k)
+                    for k in ["id", "created_at", "claim", "status", "verdict", "blocked_by_claims"]
+                }
                 for r in snapshot["reviews"]
             ]
         return snapshot
