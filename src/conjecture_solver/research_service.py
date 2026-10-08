@@ -961,15 +961,23 @@ class ResearchService(
             ]
         return snapshot
 
-    def cancel_active(self):
+    def cancel_active(self, *, preserve_diagnostics=False):
         from .execution_pool import cancel_remote
 
+        def cancellable(record):
+            return record["status"] in {"queued", "running"} and not (
+                preserve_diagnostics
+                and record.get("purpose") == "diagnostic"
+                and record.get("stage") == "exploration"
+                and record.get("execution_deadline", 0) > time.time()
+            )
+
         for record in self._all("experiments"):
-            if record.get("machine") and record["status"] in {"queued", "running"}:
+            if record.get("machine") and cancellable(record):
                 cancel_remote(self, record)
         with self.lock():
             for record in self._all("experiments"):
-                if record["status"] in ["queued", "running"]:
+                if cancellable(record):
                     if record.get("machine"):
                         continue
                     if record.get("worker_identity"):

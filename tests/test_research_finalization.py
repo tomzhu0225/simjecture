@@ -221,3 +221,70 @@ def test_native_activity_cannot_extend_absolute_call_boundary(tmp_path):
     assert time.monotonic() - started < 8
     assert sup.boundary() is None
     assert "child_pid" not in sup.state
+
+
+def test_cutoff_preserves_diagnostic_admitted_into_drafting_time(tmp_path, monkeypatch):
+    sup = fixture(tmp_path)
+    s = sup.service
+    monkeypatch.setattr(s, "_spawn_experiment", lambda record: None)
+    analysis = s.analyze("calc.py", outputs=["out.json"])
+    simulation = s.run("calc.py", outputs=["sim.json"], stage="exploration")
+    s.cancel_active(preserve_diagnostics=True)
+    assert s._read("experiments", analysis["id"])["status"] == "queued"
+    assert s._read("experiments", simulation["id"])["status"] == "cancelled"
+    s.cancel_active()
+    assert s._read("experiments", analysis["id"])["status"] == "cancelled"
+
+
+def test_draft_resumes_after_async_analysis_before_freezing_report(tmp_path, monkeypatch):
+    sup = fixture(tmp_path)
+    monkeypatch.setattr(sup.service, "_spawn_experiment", lambda record: None)
+    calls = []
+    job = []
+
+    def launch(directory, prompt, judge=False):
+        calls.append(judge)
+        if judge:
+            assert (sup.service.work / "RESULTS.md").read_text() == "Analysis incorporated."
+            answer(directory)
+        elif not job:
+            job.append(sup.service.analyze("calc.py", outputs=["out.json"]))
+            (sup.service.work / "RESULTS.md").write_text("Analysis pending.")
+        else:
+            assert "incorporate" in prompt
+            (sup.service.work / "RESULTS.md").write_text("Analysis incorporated.")
+        return 0
+
+    def finish_job(seconds):
+        put(
+            sup.root / "experiments" / (job[0]["id"] + ".json"),
+            job[0] | {"status": "succeeded", "finished_at": time.time()},
+        )
+
+    monkeypatch.setattr(sup, "launch", launch)
+    monkeypatch.setattr("conjecture_solver.research_finalization.time.sleep", finish_job)
+    sup.finalize_report()
+    assert calls == [False, False, True]
+    assert sup.service.status()["finalization"]["report_status"] == "reviewed"
+    assert not sup.service.status()["completed"]
+
+
+def test_report_timeout_uses_remaining_budget_for_one_retry(tmp_path, monkeypatch):
+    sup = fixture(tmp_path)
+    calls = []
+
+    def launch(directory, prompt, judge=False):
+        calls.append(judge)
+        if not judge:
+            (sup.service.work / "RESULTS.md").write_text("A useful unresolved report.")
+        elif len(calls) == 2:
+            return 124
+        else:
+            answer(directory)
+        return 0
+
+    monkeypatch.setattr(sup, "launch", launch)
+    sup.finalize_report()
+    assert calls == [False, True, True]
+    assert sup.service.status()["finalization"]["report_status"] == "reviewed"
+    assert not sup.service.status()["completed"]

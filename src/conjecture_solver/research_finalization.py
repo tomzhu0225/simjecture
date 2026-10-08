@@ -145,6 +145,52 @@ class ResearchFinalization:
         put(directory / "packet.json", packet)
         return directory, packet
 
+    def _draft_report(self, prompt, seconds):
+        """Harvest asynchronous analysis and wake its author within one draft allowance."""
+        until = min(self.state["deadline"] - 5, time.time() + seconds)
+        for attempt in range(3):
+            if self.boundary() or time.time() >= until:
+                break
+            previous = self.service._all("experiments")
+            before = {r["id"] for r in previous}
+            pending = {r["id"] for r in previous if r["status"] in {"queued", "running"}}
+            self._finish_call(
+                "draft" if not attempt else "analysis-followup", prompt, until - time.time()
+            )
+            analyses = [
+                r
+                for r in self.service._all("experiments")
+                if r.get("purpose") == "diagnostic"
+                and r.get("stage") == "exploration"
+                and (
+                    r["id"] not in before
+                    or r["id"] in pending
+                    or r["status"] in {"queued", "running"}
+                )
+            ]
+            if not analyses:
+                break
+            identifiers = {r["id"] for r in analyses}
+            while time.time() < until and not self.boundary():
+                active = [
+                    r
+                    for r in self.service.status()["experiments"]
+                    if r["id"] in identifiers and r["status"] in {"queued", "running"}
+                ]
+                if not active:
+                    break
+                time.sleep(min(1, max(0, until - time.time())))
+            prompt = (
+                "Resume final report drafting. Recorded diagnostic jobs have now "
+                "settled or reached "
+                "the drafting boundary. Inspect these receipts and incorporate their "
+                "actual results "
+                "into research/RESULTS.md before returning: "
+                + json.dumps(sorted(identifiers))
+                + ". Replace stale pending/running statements, link the finished figures, and keep "
+                "their original evidence stages. Do not launch new simulations or change the claim."
+            )
+
     def _assess_report(self, seconds):
         from .agent_supervisor import parse_judge_stream
         from .research_service import put
@@ -162,6 +208,12 @@ class ResearchFinalization:
             "or unresolved. "
             "Absence of a counterexample alone is not support. An unresolved report must identify "
             "the specific obstacle to judgment and a discriminating next test. "
+            "This is a report audit, not a repeat of the entire methods qualification. "
+            "Use existing review decisions and check the report's material claims "
+            "against receipts. "
+            "If you find a clear blocking omission or contradiction, return "
+            "needs_revision promptly "
+            "with concrete corrections; do not exhaust the budget auditing unrelated details. "
             "Check that conclusions follow from actual results, units and uncertainty are clear, "
             "failures and limits are explained, figures are traceable, and "
             "parent/exploratory results "
@@ -174,6 +226,7 @@ class ResearchFinalization:
             + json.dumps(ReportAssessment.model_json_schema())
             + "\nRead the frozen packet at: "
             + str(frozen / "packet.json")
+            + f"\nReturn a structured verdict within {max(0, seconds):.0f} seconds. "
             + "\nStudy root: "
             + str(self.root)
         )
@@ -207,7 +260,7 @@ class ResearchFinalization:
         self._finalizing = True
         remaining = max(0, self.state["deadline"] - time.time() - 5)
         budget = min(remaining, self.service.manifest["finalization_policy"]["reserve_seconds"])
-        self.service.cancel_active()
+        self.service.cancel_active(preserve_diagnostics=True)
         self._finish_state(phase="writing report", report_status="drafting")
         try:
             prompt = (
@@ -231,7 +284,7 @@ class ResearchFinalization:
                 "Bounded lab.analyze postprocessing is available during drafting. "
                 "A separate reviewer will assess the report within this same wall budget."
             )
-            self._finish_call("draft", prompt, budget * 0.4)
+            self._draft_report(prompt, budget * 0.4)
             self.service.cancel_active()
             if self.boundary():
                 return
@@ -248,9 +301,17 @@ class ResearchFinalization:
                     self.event("final_claim_review_deferred", error=str(error))
                 finally:
                     self.launch_deadline = previous
-            verdict = self._assess_report(
-                min(budget * 0.3, self.state["deadline"] - time.time() - 5)
-            )
+            # Donate unused drafting time to review rather than losing it to a
+            # fixed fraction. A transport timeout gets one remaining-budget retry.
+            left = max(0, self.state["deadline"] - time.time() - 5)
+            try:
+                verdict = self._assess_report(left * 0.65)
+            except ValueError as error:
+                left = self.state["deadline"] - time.time() - 5
+                if left < 20 or self.boundary():
+                    raise
+                self.event("report_review_retry", error=str(error), remaining_seconds=left)
+                verdict = self._assess_report(left)
             if verdict.decision == "needs_revision" and self.state["deadline"] - time.time() > 30:
                 left = self.state["deadline"] - time.time() - 5
                 self._finish_state(phase="revising report")

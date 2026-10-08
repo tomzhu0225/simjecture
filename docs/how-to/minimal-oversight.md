@@ -274,3 +274,9 @@ of a counterexample alone does not establish support. An unresolved report must
 explain the specific obstacle to judgment and the next discriminating test.
 Report review and the independent claim verdict are shown separately: finishing
 the document cannot silently turn an exploratory result into accepted evidence.
+
+Admitted diagnostic jobs survive the numerical cutoff until their own drafting
+deadline. The host waits for their receipts and resumes the writer before freezing
+the report. Unused drafting time becomes review time; a report-review transport
+failure can receive one retry within the original study deadline. It never grants
+an extra scientific run or extends the operator's wall budget.
