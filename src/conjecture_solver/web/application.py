@@ -57,6 +57,7 @@ VISIBLE_RECORDS = frozenset(
         "mvp_report.json",
         "research.json",
         "research_report.json",
+        "finalization.json",
         "study-mode.json",
         "RESULTS_INDEX.md",
         "STUDY_LEDGER.md",
@@ -688,6 +689,7 @@ def _engine_projection(
             usage_details=status["usage_details"],
             instrument_requirement=status["instrument_requirement"],
             receipt_progress=status.get("receipt_progress", []),
+            finalization=status.get("finalization", {}),
             director_policy=status.get("director_policy", {}),
             director_route=status.get("director_route", {}),
             director_decisions=status.get("director_decisions", []),
@@ -865,7 +867,14 @@ def _artifact_index(root: Path, *, raw_claims: list[dict[str, Any]]) -> list[dic
             continue
         if not (
             relative.startswith(
-                ("workspace/", "research/", "experiments/", "commitments/", "reviews/")
+                (
+                    "workspace/",
+                    "research/",
+                    "experiments/",
+                    "commitments/",
+                    "reviews/",
+                    "report_reviews/",
+                )
             )
             or relative in VISIBLE_RECORDS
         ):

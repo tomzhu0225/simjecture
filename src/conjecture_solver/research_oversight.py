@@ -318,7 +318,7 @@ SCHEMA:
         for method in self.service._all("methods"):
             if method["status"] == "queued" and method.get("retry_after", 0) <= time.time():
                 self.run_oversight(method)
-                if self.boundary():
+                if self.boundary() or getattr(self, "finalization_due", lambda: False)():
                     break
 
     def recovery_wait(self):
@@ -329,5 +329,9 @@ SCHEMA:
         until = min(self.state["deadline"], time.time() + min(60, 2 ** min(streak - 5, 6)))
         self.state["activity"] = "Recovering stalled research session"
         self.save()
-        while time.time() < until and not self.boundary():
+        while (
+            time.time() < until
+            and not self.boundary()
+            and not getattr(self, "finalization_due", lambda: False)()
+        ):
             time.sleep(max(0, min(1, until - time.time())))

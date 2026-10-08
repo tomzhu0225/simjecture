@@ -733,7 +733,7 @@ def _specification(service, record):
         id=job_identifier(service, record),
         binding=record["binding"],
         outputs=record["outputs"],
-        deadline=service.manifest["deadline"],
+        deadline=record.get("execution_deadline", service.manifest["deadline"]),
         timeout=record["timeout"],
         workspace_bytes=record["workspace_limit_bytes"],
         resources=record["resources"],

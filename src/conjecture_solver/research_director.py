@@ -75,6 +75,7 @@ class ResearchDirector:
             operator_protocol=self.service.manifest.get("operator_protocol"),
             operator_steering=steering(self.service.root),
             remaining_seconds=snapshot["remaining_seconds"],
+            finalization=snapshot.get("finalization", {}),
             snapshot=self.context_brief(max_bytes=8000),
             active_experiments=active,
             worker_waiting_for=list(self.state.get("waiting_for", [])),
@@ -117,7 +118,9 @@ Evaluate SCIENTIFIC usefulness and BUDGET feasibility separately. New files, cor
 diagnostics, or a successful startup do not establish a path to the original observable.
 Consider actual costs and numerical limits. Test adaptive timestepping/accuracy, mesh and
 rank scaling, or justified patches/restarts before continuing an unaffordable configuration.
-Do not prescribe fixed phases or hourly schedules. Give a concrete useful next action.
+Respect the host finalization.compute_deadline when present: numerical work must fit
+before that cutoff, leaving the protected report reserve. Otherwise do not prescribe
+fixed phases or hourly schedules. Give a concrete useful next action.
 This is execution strategy review, not a fresh methods or claim audit. Reuse the
 recorded limitations of unchanged cases. Inspect new artifacts only when they bear
 on the current decision; request a separate methods review for extensive qualification.

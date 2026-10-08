@@ -1627,6 +1627,21 @@ function renderResearchTrace() {
     panel.append(element("p", "field-help",
       `Instrument family: any of ${rule.prefixes.join(" or ")}. ${rule.satisfied ? `Matched by ${rule.matching_capabilities.join(", ")}` : "No matching instrument available"}. Scientific qualification is reviewed separately.`));
   }
+  if (engine.finalization?.reserve_seconds) {
+    const finish = engine.finalization, section = element("section", "research-director");
+    section.append(element("h3", null, "Report & finalization"),
+      element("p", null, `${finish.phase || "research"} · report ${(finish.report_status || "not_started").replaceAll("_", " ")}`),
+      element("p", "field-help", `Numerical work ends by ${new Date(finish.compute_deadline * 1000).toLocaleTimeString()}. ${formatDuration(finish.reserve_seconds)} is reserved for writing and independent report review. Report acceptance does not approve scientific claims.`));
+    if (finish.assessment?.summary) section.append(element("p", null, finish.assessment.summary));
+    for (const issue of finish.assessment?.issues || []) section.append(element("p", "warning-list", issue));
+    if (finish.error) section.append(element("p", "warning-list", finish.error));
+    if (finish.report) {
+      const link = element("a", null, "Open frozen report");
+      link.href = artifactUrl(finish.report); link.target = "_blank"; link.rel = "noopener";
+      section.append(link);
+    }
+    panel.append(section);
+  }
   if (engine.director_policy?.enabled || engine.director_decisions?.length) {
     const director = element("section", "research-director");
     director.append(element("h3", null, "Research director · strategy & control"),

@@ -158,7 +158,10 @@ def study_status(root):
         from .research_service import ResearchService
 
         director_decisions = ResearchService(root).director_status()
+    from .research_finalization import report_status
+
     return dict(
+        finalization=report_status(root, manifest),
         director_policy=manifest.get("director_policy", {"enabled": False}),
         director_route=state.get("reviewer_route", {}),
         director_decisions=director_decisions,
@@ -452,6 +455,12 @@ def minimal_snapshot(root):
                 + status["activity"]
                 + ".\n\n"
                 + conclusion
+            )
+        finishing = status.get("finalization", {})
+        if finishing:
+            conclusion = (
+                f"Report: {finishing.get('report_status', 'not_started').replace('_', ' ')}. "
+                "Report assessment and scientific claim approval are separate.\n\n" + conclusion
             )
         report = TerminalReportSummary(
             status=status["status"],

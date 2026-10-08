@@ -4,6 +4,12 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+- Reserve finishing time in new minimal studies for a current scientific report,
+  independent report assessment and a bounded revision. Enforce numerical and
+  native-agent cutoffs, expose the phase in the GUI, and bind report assessment
+  to frozen bytes. An accepted unresolved report does not approve any claim.
+  Existing studies retain their original deadline policy.
+
 - Let the research director explicitly resume a waiting worker for independent
   analysis or review preparation while simulations continue. Expose the waiting
   state to the director and show wake-up requests in Evidence & review.
