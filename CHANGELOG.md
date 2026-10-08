@@ -4,6 +4,8 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+## 0.6.1 — 2026-10-08
+
 - Include cylinder-flow validation data in source distributions as well as
   wheels. Check the sdist-to-wheel build in CI and leave bulky research archives
   and demo figure bundles in the repository/docs distribution.
