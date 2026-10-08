@@ -1,0 +1,31 @@
+{
+  "experiments": [
+    "exp_27bae5c10115cc47b7ee511a",
+    "exp_f4615601bac4bd9ea59211c3"
+  ],
+  "rates": {
+    "cfl08": 0.06545347930361681,
+    "cfl04": 0.06551771939244827
+  },
+  "absolute_log_rate_difference": 0.0009809804693347779,
+  "relative_difference": 0.0009804994652922172,
+  "inputs_sha256": {
+    "cfl08.json": "fe67729038d3af60d7986380b03a117608f7c900353ce5b460a1fb94c2315698",
+    "cfl04.json": "5bb8ca583652dbad19071b53b16698fddf393215f702e0a01386d6b845030af9"
+  },
+  "variants": {
+    "cfl08": [
+      0.06545347930361681,
+      0.06545311171088333,
+      0.06544749684505283,
+      0.06544680933167159
+    ],
+    "cfl04": [
+      0.06551771939244827,
+      0.06551732846614361,
+      0.06551174806124803,
+      0.06551104316248844
+    ]
+  },
+  "scope": "Fresh S500 full-window parity; borrowing to other S is empirical, not demonstrated whole-domain timestep accuracy."
+}

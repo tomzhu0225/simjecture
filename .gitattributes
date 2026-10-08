@@ -11,3 +11,6 @@ docs/_static/demos/*.svg -whitespace
 
 *.npz binary
 *.png binary
+
+demos/resistive_mhd_island_coalescence/continuation_record/** -text -whitespace
+demos/flash_warpx_kinetic_patch/continuation_record/** -text -whitespace

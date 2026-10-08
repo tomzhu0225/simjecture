@@ -95,3 +95,49 @@ The [FLASH operating guidance](https://github.com/tomzhu0225/simjecture/blob/mai
 collects the reusable lessons. The diagnostic correction, editorial plots and
 this audit were produced by the operator after the corresponding runs; they are
 not autonomous recoveries or accepted new scientific evidence.
+
+## Thirty-minute continuation trials
+
+Both studies received separate 1,800-second continuations from commit
+`4d76a14f443b42d06dfec8d6539df7d7b01feabd`, with unchanged original hypotheses,
+requirements and model/effort routes. No interpretation of the exponent was
+supplied. Frozen parent manifest, experiment, method and claim-review hashes were
+checked after both runs: none changed. The original records remain intact.
+
+| Observation | Island continuation | FLASH → WarpX continuation |
+|---|---|---|
+| Recorded executions | 12 succeeded; 1 diagnostic cancelled | 5 succeeded |
+| New numerical work | Five base cases and two matched refinements completed | Fine 576² / 32-ppc full-window control completed in 566.6 s |
+| Native input / cached / output tokens | 4,527,873 / 3,925,376 / 20,873 | 4,066,383 / 3,548,544 / 33,144 |
+| Scientific outcome | Unresolved; no accepted claim review | Unresolved; no accepted claim review |
+| Report outcome | Narrative retained; review timed out; stale pending-analysis passage remains | Quantitative narrative retained; review timed out |
+
+The director wake-up change was exercised by both models: report and control
+preparation proceeded while numerical jobs continued. The coupled director
+explicitly deferred the fresh-seed run when its measured cost no longer fit the
+compute allowance. These are observed behaviors, not a general completion-rate
+or token-efficiency benchmark.
+
+The protected report phase also exposed two concrete host defects. First,
+entering finalization cancelled an analysis job even though its admission
+permitted execution into the drafting window. The worker reran it successfully,
+but the report-drafting call ended before incorporating its terminal result.
+Second, report review received a fixed 135-second call allowance. Both reviews
+hit that limit and the host marked finalization finished despite remaining wall
+time. The original reports and failed review status are preserved; no verdict
+was inferred from reviewer commentary.
+
+**Subsequent fixes, after the trials ended:** preserve admitted diagnostic work
+at the numerical cutoff, wait for its receipt within the draft allowance and
+resume the writer to incorporate it. Donate unused drafting time to review and
+allow one bounded remaining-budget retry after a review transport failure.
+Ask report reviewers to return clear blocking corrections promptly rather than
+repeating the entire methods audit. Sixty-three focused tests passed, including
+regressions for each observed transition. These later corrections have not yet
+been validated by another paid plasma campaign; the two trials cannot establish
+their real-model completion rate.
+
+The new field/evidence figures are operator renderings from the preserved arrays.
+Their plotting bundles retain source hashes and selection metadata; they add no
+claim approvals. The full raw simulations, original compact records and new
+continuation records remain distinct.

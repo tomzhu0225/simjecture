@@ -1,0 +1,100 @@
+{
+  "parent": "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/coupled-study",
+  "hypothesis": "In a prospectively selected, numerically resolved current-sheet region of the supplied two-dimensional FLASH island-coalescence model, a collisionless electron-ion kinetic continuation at ion-scale sheet width remains adequately represented by isotropic species pressures: the time- and area-averaged departure A_s = ||P_s - tr(P_s)I/3||_F / (sqrt(3) tr(P_s)/3) is no greater than 0.20 for both ions and electrons in an independently qualified interior measurement region, after the initialization transient and over a window lasting at least half an inverse reference ion cyclotron frequency. A spatially resolved MHD sheet is thus sufficient for this particular local isotropic-pressure prediction.\n\nUse a reduced ion/electron mass ratio of 25 and initially equal ion/electron scalar temperatures, with a nonrelativistic dimensional mapping of the normalized MHD state. Select the source state, region, physical scale, observation window and numerical decision rule prospectively, before decisive kinetic evidence. Target measured sheet half-width / ion skin depth between 0.5 and 2, and state its exact definition. The finite realization and its conditioning assumptions must be explicit. This tests local kinetic pressure behavior, not a universal reconnection rate, global two-way MHD-PIC accuracy, or a radiation claim. A transfer transient, underresolved/noisy pressure diagnostic or boundary-contaminated signal is not a scientific counterexample.\n",
+  "authority": "Historical context only. Unreviewed remains unreviewed; no evidence, method approval or fresh validation is imported.",
+  "execution_counts": {
+    "failed": 6,
+    "succeeded": 32,
+    "cancelled": 2
+  },
+  "last_stop": "budget_exhausted",
+  "last_error": null,
+  "recent_worker_notes": [
+    {
+      "id": "note_8a24d9ebaba3d421177b53e0",
+      "kind": "implementation",
+      "statement": "exp_384054bea0a8f18b9657db85 failed at loading on resident-memory budget, not physical evolution. Repaired agent-owned loader to process16384cells per velocity batch, preserving all position draws then ion/electron normal draw order, weights/per-cell whitening/speciesflow/temperatures and particle count. Free full particle coordinate/proper-velocity copies between species diagnostics. Further methods review required because loader implementation changed. Large physical patch remains864^2/16ppc andsamecellscale/seed/CFL/window."
+    },
+    {
+      "id": "note_8509613b82b2aaf19569214c",
+      "kind": "next_test",
+      "statement": "Approved method_d50d91dc872fd3c760280b33 still requires matchedfine-cellboundarycontrol. Prepare864square half.45 withsame dx=.00104167code as576half.3, same source/mapping/seed16ppc/CFL.7, samefixedROI/window. Particle count23,887,872total; per-particlecorestate~2.3GB device plusfields/buffers, within20GBRTX4000Ada commissioningcapacity estimate, not a measuredpeak. Single864box based documented576singleboxparity; estimated258*2.25=581s, allow750s withtimeout900. Rawfields/momentscompactoutputs predicted~550MB; respect8GBtotalstorage. Thenfreshfine576seed20261009evidence~260s and independentreviewreserve200s, conditionalonallboundarygates. Do notconfoundseed/ppc changes: matchedboundaryseed08, freshseed09samefine16ppc. Existing16->32ppccontrolcoarseuncertaintyenvelopeexplicit; remainingfi"
+    },
+    {
+      "id": "note_db4cb4ecba93202f57526af0",
+      "kind": "next_test",
+      "statement": "Single576-box layout exp_c7459f3cf2b84f72450910a5 reduces128-stepcost59.7->20.5s withpressuretensorparity checked against25boxes. Initialfields matchprepared exactly. Evolution~.063s/step suggests~230s for3653steps; allow~450s including32diagnostics/absorption growth, timeout900s. Runoneisolatedfullrefinement, thenuseobservedgrid/ppc errors tobudgetoneCFLcontrol/freshseed evidence. Keepfull.8coverage/window/source/physics, no further startup tuning."
+    },
+    {
+      "id": "note_db9b378f2e48d0e5014c6a29",
+      "kind": "next_test",
+      "statement": "Acknowledge director stop of concurrent fine-grid control. Preserve partialmoments/history/progress and compare actual stage costs. Let32ppc basefinish; then run isolated128-step refined pilot with accounting, samephysics/CFL and fewer secondarydiagnostics if justified, recording initialization,evolution,primary/secondarymoment andscrape costs. Use measured isolationcost for complete0.8 trajectory, not tiny-startup extrapolation. Submit full prospective contract and remainingqualification gaps to independent methods reviewer as soon as current-source completedreceipt exists (lab.method requires that validation). Reserve>=600s for fresh evidence/review; do not shorten window or use coarse exploratory result as evidence."
+    },
+    {
+      "id": "note_b5172bcac3606c0507df452a",
+      "kind": "next_test",
+      "statement": "Boundary accounting pilot exp_2c7f98586e1d9af48038642a now exercises actual absorption and finite Poynting outflow. Corrected overlap analysis exp_df299a9f339cf71489f99850 removes the prior whole-cell reference bias without changing transfer. Prospectively freeze PRESSURE_CONTRACT.md before evidence. Run576-square spatial control (same16ppc/seed) and384-square32ppc control (same seed) through0.8 with absorbed energy, flux and secondary tensors; estimated combined cost700-1000s with128-cellGPUboxes. Source and physical window unchanged."
+    }
+  ],
+  "reviews": [],
+  "selected_files": [
+    "PRESSURE_CONTRACT.md",
+    "RESULTS.md",
+    "base_patch.json",
+    "bigfine_patch.json",
+    "calculation.py",
+    "data/base/history.json",
+    "data/base/reduced/field_energy.txt",
+    "data/base/reduced/particle_energy.txt",
+    "data/base/result.json",
+    "data/bigfine/history.json",
+    "data/bigfine/reduced/field_energy.txt",
+    "data/bigfine/reduced/particle_energy.txt",
+    "data/bigfine/result.json",
+    "data/fine/history.json",
+    "data/fine/reduced/field_energy.txt",
+    "data/fine/reduced/particle_energy.txt",
+    "data/fine/result.json",
+    "data/large/history.json",
+    "data/large/reduced/field_energy.txt",
+    "data/large/reduced/particle_energy.txt",
+    "data/large/result.json",
+    "data/particles/history.json",
+    "data/particles/reduced/field_energy.txt",
+    "data/particles/reduced/particle_energy.txt",
+    "data/particles/result.json",
+    "data/timestep/history.json",
+    "data/timestep/reduced/field_energy.txt",
+    "data/timestep/reduced/particle_energy.txt",
+    "data/timestep/result.json",
+    "estimator.py",
+    "extract_flash.py",
+    "fine_patch.json",
+    "flash_driver.py",
+    "guided/extract_flash.py",
+    "guided/flash_anchor_validation.json",
+    "guided/flash_islands.py",
+    "guided/kinetic_patch.py",
+    "guided/operator_gpu_validation.json",
+    "guided/operator_transfer_validation.json",
+    "guided/prepare_patch.py",
+    "kinetic.py",
+    "kinetic_analysis.py",
+    "kinetic_batched.py",
+    "kinetic_before_chunks.py",
+    "kinetic_method_request.json",
+    "kinetic_method_request_v2.json",
+    "kinetic_pre_budget.py",
+    "large_patch.json",
+    "loader_equivalence.py",
+    "macro256.json",
+    "macro512.json",
+    "macro512_summary.json",
+    "pilot_patch.json",
+    "prepare_patch.py",
+    "refined_selection.json",
+    "select_patch.py",
+    "source_qualification.py"
+  ],
+  "full_record": "summary.json"
+}

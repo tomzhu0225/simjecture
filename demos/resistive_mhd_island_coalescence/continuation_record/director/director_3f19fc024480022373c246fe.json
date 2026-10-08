@@ -1,0 +1,14 @@
+{
+  "id": "director_3f19fc024480022373c246fe",
+  "created_at": 1791445124.4921072,
+  "packet_sha256": "dd3a576d4ac4f10d3b13d1a2b0a20c4052391123859fcb120ea1402b4cdf3f8c",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "There is no previous director decision. The new method verdict identifies two repairable blockers: an unqualified historical CFL contribution and a three-point refinement declaration backed by only two planned points. The worker has acknowledged both and launched the requested fresh parity control. Keep that experiment running: its matched CFL=0.8 trajectory reached the complete flux window in 55.9 seconds, making this targeted qualification worthwhile. Scientific usefulness remains limited because fresh scaling and refinement evidence are still pending. Budget feasibility is at risk: the approximately 950-second campaign estimate nearly consumes the packet's 1041-second compute allowance before remaining qualification and method review. Historical costs inform planning but do not guarantee current throughput. No scientific claim is accepted.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "at_risk",
+  "stop_experiments": [],
+  "wake_worker": true,
+  "next_action": "While the parity control runs, correct the protocol's refinement description to the intended two-point common fit, explicitly retaining its inability to test refined curvature, and prepare the analysis repair and renewed methods submission. Replace the historical CFL margin with the measured fresh comparison once available; if parity is inadequate, use qualified controls and re-cost production. Before decisive launches, record a remaining-cost estimate using current timings and historical per-case costs, including qualification and review overhead. Prioritize complete measurement-window trajectories across distinct resistivities and the declared meaningful matched refinements. Do not launch an unaffordable batch or add early-time diagnostic polishing. Require numerical work to finish before compute_deadline=1791446079.9094124, preserving the 450-second report reserve. Any coverage reduction must be documented and reviewed; missing refinement remains unresolved. Prepare receipt-linked report and figure inputs from completed outputs while computation continues."
+}

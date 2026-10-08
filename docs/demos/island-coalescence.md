@@ -5,11 +5,52 @@ coalescence model across its declared resistivity range?** This plasma example
 connects a real FLASH simulation, field diagnostics, numerical qualification and
 an autonomous attempt to test a scaling hypothesis.
 
-![Four FLASH states showing current density and magnetic-field contours during island coalescence](../../demos/resistive_mhd_island_coalescence/figures/island_coalescence_evolution.png)
+## Read the plasma fields
 
-*Preserved commissioning run: 2D FLASH 4.8, 128 × 128 cells, four MPI ranks,
-uniform resistivity. These are actual computed fields. The commissioning run
-establishes a working instrument; it is not evidence for a scaling law.*
+![Four fresh 384 by 384 FLASH snapshots showing density, magnetic field lines and current-sheet evolution](../_static/demos/island-field-walkthrough.png)
+
+The upper row shows density with magnetic field lines; the lower row shows the
+out-of-plane current. Follow the central current sheet across the four actual
+output times. Each row uses a shared color scale. These fields come from the
+fresh $S_\eta=1000$, $384^2$ refinement run—not the older commissioning example.
+[Download PDF](../_static/demos/island-field-walkthrough.pdf) ·
+[Open SVG](../_static/demos/island-field-walkthrough.svg).
+
+## Follow the evidence
+
+![Actual island-coalescence evidence map: five base cases, two matched refinements and the unresolved original hypothesis](../_static/demos/island-evidence-map.png)
+
+The 30-minute continuation completed **all five $256^2$ baseline cases and both
+planned $384^2$ refinements**. The rate changes under refinement were 0.136% at
+$S_\eta=250$ and 0.223% at $S_\eta=1000$. The two-point endpoint exponents were
+−0.42793 and −0.42730. Those matched points are consistent with the stated band;
+they do not establish its persistence across the full range.
+
+The five-point base-grid fit gave −0.40785, with slight curvature that did not
+fit the chosen 1% error boxes. Only two common refined points were available,
+so the curvature test could not be repeated on the refined grid. **The original
+hypothesis remains unresolved.** No repair claim was accepted.
+
+The map summarizes actual experiment receipts and relationships. It is an
+editorial evidence map; the formal claim graph still contains the open original
+claim. Method approval permits evidence collection and is separate from claim
+approval. Final postprocessing was recorded as exploration after a changed-input
+binding blocked its evidence-stage submission. The report reviewer timed out,
+so the original narrative remains unreviewed, including its stale pending-analysis
+passage. The quantities above are read from the completed analysis receipt.
+[Download evidence-map PDF](../_static/demos/island-evidence-map.pdf).
+
+| Follow a figure or result | Original record |
+|---|---|
+| Fresh $384^2$ field trajectory | [Execution receipt](../../demos/resistive_mhd_island_coalescence/continuation_record/experiments/exp_3cfeb359d713c480a5352496.json) |
+| Rates, fits, uncertainty and coverage | [Completed exploratory analysis](../../demos/resistive_mhd_island_coalescence/continuation_record/experiments/exp_cff9836110ed71a44c1d6620/workspace/analysis.json) |
+| Figure arrays and source hashes | [Plotting provenance](../../demos/resistive_mhd_island_coalescence/visual_data/provenance.json) |
+| Report review outcome | [Preserved finalization record](../../demos/resistive_mhd_island_coalescence/continuation_record/finalization.json) |
+
+The continuation retained the original question, GPT-6.1 Sol medium worker and
+Sol high reviewer. The operator supplied no suggested scientific interpretation.
+Its numerical cutoff preserved the final 7.5 minutes for reporting; subsequent
+report-scheduling repairs are documented in the [demo audit](../research/demo-audit-20261008.md).
 
 ## The physical question
 
@@ -28,6 +69,13 @@ must be established before interpreting a fit. This single-fluid model does not
 resolve electron-scale kinetic reconnection.
 
 ## The classic campaign remains available
+
+![Four FLASH states showing current density and magnetic-field contours during island coalescence](../../demos/resistive_mhd_island_coalescence/figures/island_coalescence_evolution.png)
+
+*Preserved commissioning run: 2D FLASH 4.8, 128 × 128 cells, four MPI ranks,
+uniform resistivity. These are actual computed fields. The commissioning run
+establishes a working instrument; it is not evidence for a scaling law.*
+
 
 The [original demo](https://github.com/tomzhu0225/simjecture/tree/main/demos/resistive_mhd_island_coalescence)
 retains the guided input, plotting code, field and profile figures, a real GUI

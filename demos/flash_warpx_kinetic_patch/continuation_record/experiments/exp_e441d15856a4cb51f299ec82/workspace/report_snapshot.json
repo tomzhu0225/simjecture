@@ -1,0 +1,387 @@
+{
+  "kind": "report_assessment_package",
+  "scientific_status": "unresolved",
+  "accepted_scientific_verdict": null,
+  "fresh_evidence_collected": false,
+  "report_markdown": "# FLASH-to-WarpX local pressure continuation\n\n**No credible scientific counterexample was found. The original hypothesis is unresolved**, rather than independently supported or falsified. Completed exploratory continuations give mean pressure departures 0.0438\u20130.0513 for ions and 0.0532\u20130.0652 for electrons, below the 0.20 bound. The fresh matched-control run and inherited controls qualify a finite measurement method; they do not replace prospective decisive evidence.\n\nIndependent production-method review `method_36bc7797591f08c0559a8f02` returned **continue**, authorizing prospective evidence collection only. It independently reproduced the fresh fine32 means from the recorded raw tensors. No accepted scientific claim verdict or completed repair exists. The proposed fresh-seed evidence could not fit after review: historical fine16 required 257.9 seconds, fresh fine32 required 566.6 seconds, and approximately 61 seconds of compute time remained when the approval became available. Director replan `director_02bc5f8bef9f79770a3ee00f` was acknowledged; the full window and scientific thresholds were preserved.\n\n## Finite realization and provenance\n\nThe autonomous parent investigation generated an actual resistive FLASH island-coalescence trajectory; the supplied operator anchor is not the source. FLASH uses scalar resistivity 0.001, alpha=20, gamma=5/3, reflecting boundaries and adaptive CFL=0.4. The 512\u00b2 source is the first recorded state at or after normalized time 0.8, realized at 0.8001113920335353 in parent `exp_b3aeffc4296462890906d872`. The 256\u00b2 comparison is `exp_858f535fafc4884126e44323`. Parent receipts remain historical and can be inspected through `parent_provenance.json` and its absolute receipt paths. The continuation repeats only the required permanently non-evidentiary anchor as `exp_eef180c184d79e03a3485285`.\n\nThe source HDF5 SHA256 is `79d2045d47eaecb729d854e170f3679fa75b9948359d3f380f15caab112b2083`; the exported NPZ SHA256 is `e8d1ef82fb0baafddeaf1b0f8c9e153db6fae069a2a4829cd18e80487bfbd023`. The actual field/current plot is retained as [macro_patch.png](figures/macro_patch.png), with both patch sizes and the fixed measurement region overlaid. Extraction reconstructs flux potential and retains original B, density, scalar pressure and flow. The right-handed rotation is (X,Y,Z)=(x,-z,y), so kinetic JY is minus FLASH Jz. `extract_flash.py`, `prepare_patch.py`, `select_patch.py` and their historical receipts document the transfer; no analytic sheet replaces the source.\n\nThe selected central sheet half-width is half the distance between the first half-center-magnitude current crossings along Z, using the average of the two source columns closest to X=0 and linear crossing interpolation. Width is 0.014466925 code lengths or 7.407 FLASH cells, changing about 1.9% under 256\u2192512 refinement. Reference ion skin depth is 0.024 code lengths: width/di=0.60279, about 0.59 using local central density. This is a resolved finite profile comparison, not asymptotic MHD convergence. Source energyFix corrections are not separately counted; reconstructed energy drift about 1.37e-6 is a consistency check, not a closed correction budget.\n\nThe additional dimensional choices are physical electron mass, ion mass 25me, initial Ti/Te=1, reference per-species density 1e24 m^-3 and velocity scale 0.01c. They give L0=1.107102764 mm, B0=16.35523569 T, reference di=26.57046633 micrometers and Omega_ci=1.150636631e11 s^-1. Density is rho_code*n0 and total pressure is p_code*n0*(mi+me)*v0\u00b2. Species drifts preserve center-of-mass flow and Ampere current. Cubic interpolation of the measured flux potential followed by a discrete Yee curl deliberately projects B; fine-patch transfer RMS error is 2.800826e-4 (0.0280%), interior Ampere residual 1.283081e-3 (0.1283%) and scaled divB about 2.5e-16 on the fine patch. The exact fine input SHA256 is `c7c6d6d1c027e421be20942ffa07d6c415479fab6567a2705f6f5b0435697402`; large fine input is `078c357cfa0547a54bc946e80e118ec9dea8a58b06b70ce379f9539cfae07c7e`.\n\nThis is a collisionless, one-way initial-condition continuation. PIC excludes FLASH scalar resistivity and initially uses the ideal motional electric field. There is no injection, collision operator, radiation or two-way feedback. Absorbing particles and Silver\u2013Mueller field boundaries define the finite realization; particle travel and field-boundary sensitivity must be considered separately.\n\n## Observable and unchanged decision\n\n`PRESSURE_CONTRACT.md` prospectively fixes |X|<0.04, |Z|<0.015 code lengths, 4\u00d74 equal-area bins and the full interval t Omega_ci in [0.3,0.8], exactly half an inverse reference cyclotron frequency. Physical window is approximately 2.607\u20136.953 ps, lasting 4.345 ps. Pressure retains three velocity components and subtracts each species' local weighted mean:\n\n$$P_s=m_s\\sum_p w_p(v_p-\\bar v_s)(v_p-\\bar v_s)^T/(\\text{bin area}),\\qquad\nA_s=\\frac{\\|P_s-\\operatorname{tr}(P_s)I/3\\|_F}{\\operatorname{tr}(P_s)/\\sqrt{3}}.$$\n\nThe primary observable averages local A over equal areas and then trapezoid-integrates in actual time, interpolating the exact endpoints. It does not take a norm after averaging tensors. Every bracketing/interior bin needs count\u2265256, effective count\u2265512 and a finite positive-trace tensor. No bins are dropped. Secondary 8\u00d78 bins separately require count\u2265128 and effective count\u2265256. Their covariance reconstruction measures between-sub-bin flow broadening; unresolved shear within those smaller bins remains a limitation.\n\nThe uncertainty allowance is at least 0.05 sampling, plus measured absolute changes from grid, timestep, particle count, seed, patch, bins and cadence, plus sqrt(3) times the maximum measured relativistic trace correction. It is a conservative conditional control envelope, not a rigorous distribution-free confidence interval. Support needs both upper endpoints\u22640.20 and every frozen qualification gate. Falsification needs a lower endpoint>0.20 for at least one species with every gate qualified. Missing or failed gates mean inconclusive; the bound, region and window will not be fitted to observations.\n\n## Historical full-window controls\n\nThe first four rows below are exploratory parent observations; the last is a fresh continuation commissioning observation. None is decisive hypothesis evidence. Fine is 576\u00b2 over half-size 0.3; enlarged fine is 864\u00b2 over half-size 0.45 with the same 1.15323 micrometer cells. The CUDA runtime is the installed non-MPI 2D WarpX 26.07 with explicit Yee, Boris, quadratic shape and Esirkepov deposition.\n\n| Case and parent experiment | Mean A ions | Mean A electrons | Wall seconds | Accounted energy residual |\n|---|---:|---:|---:|---:|\n| Fine16 `exp_55205438f03261250c2f8238` | 0.047019 | 0.058001 | 257.9 | -0.001037 |\n| Enlarged fine16 `exp_ba37bf1a0947ae8cb2591db0` | 0.051290 | 0.053239 | 553.5 | -0.001130 |\n| Fine16 half timestep `exp_ec59942cf4fe18f457b92418` | 0.047157 | 0.054596 | 571.9 | -0.001106 |\n| Coarse384/32ppc `exp_3a4cd829f718a2211536f64c` | 0.047939 | 0.065205 | 415.2 | -0.000790 |\n| Fresh fine576/32ppc `exp_a1842d496f9ccf18d93f7647` | 0.043828 | 0.059550 | 566.6 | -0.000494 |\n\nFine and enlarged fine initial pressure-bin RMS errors are below 0.69%, density RMS below 0.53%, current RMS below 4.50%, and COM velocity error is 0.01383v0 and 0.01610v0 respectively. Fine minimum effective counts exceed 2141. All recorded fine/enlarged/timestep initialization, secondary reconstruction, operational relaxation and aligned energy gates pass. Fourth-moment two-sigma sampling estimates are about 0.02, below the retained 0.05 allowance. Measured relativistic trace correction is approximately 0.00077 for ions and 0.02047 for electrons across the boundary pair; it is included in the envelope rather than dismissed from v0/c alone.\n\nEnlarging the fine patch changes mean A by +0.004271 (ions) and -0.004762 (electrons). Maximum mean pressure differences are 0.97% and 2.81%, density differences 0.65% and 0.52%. The larger patch electron outer-collar-origin fraction is 0.001326; approximately 5.49% originate outside the smaller patch. Finite field signals are not causally excluded. Independent methods review found maximum paired magnetic-RMS differences 0.0182B0 and electric-RMS differences 2.17B0*v0. Modest pressure sensitivity therefore does not mean that the fields themselves are boundary-insensitive. The pressure/density trajectories provide conditional boundary sensitivity, while origin tags bound a different particle effect. Small-patch electrons show a larger 4.20% collar-origin fraction, so the enlarged-patch comparison is essential.\n\nHalving the timestep changes mean A by +0.000138 and -0.003405; maximum pressure differences are below 0.74%. Fine dt=1.90405e-15 s gives EM CFL=0.7, dt*omega_pe=0.1074 and dt*Omega_ce=0.00548. Cell/de\u22480.217 and cell/reference Debye\u22482.45: the grid is explicitly Debye-underresolved. A matched-particle spatial comparison and the energy controls are required for this particular pressure observable; these runs do not establish general PIC accuracy.\n\nAbsorbed-particle energy and nearest-interior-cell Poynting flux are tracked at aligned field/particle sample steps. Flux-cadence sensitivities are 4.18e-6 (fine), 4.42e-5 (enlarged) and 1.71e-5 (half timestep) of initial total energy. Native and live particle energies agree to roundoff. Nearest-cell spatial flux quadrature is approximate; these residuals bound gross numerical source/loss behavior rather than prove exact physical conservation.\n\nThe older coarse16 case `exp_1c6e664e972b5f583f31d498` fails the amended COM gate: 0.0318v0>0.03v0. It is retained as a failed qualification, never treated as a scientific counterexample or qualified support. The qualifying coarse32 case has COM error 0.01932v0. The new fine32 case separates the grid comparison from particle count, instead of bypassing that failure. The batched large-patch loader was introduced only to repair memory exhaustion; `exp_868c1e8f20b754137bfd0680` records its deterministic loading check, and actual enlarged evolution qualifies that implementation within its scope. The current fine32 source uses the unchanged full-array fine loader.\n\n## Fresh continuation findings and independent review\n\n`exp_a1842d496f9ccf18d93f7647` completed all 3652 steps to t*Omega_ci=0.800106882. Minimum effective particle counts were 4325.42 (ions) and 4355.41 (electrons), well above the frozen 512 requirement. Exact initial Bx/Bz/Ey errors were zero. Initial pressure-bin RMS errors were 0.392%/0.405%, density RMS 0.270%, current RMS 4.648%, COM velocity RMS 0.01107v0 and charge imbalance zero. The aligned accounted-energy residual was -0.04937%, flux-cadence sensitivity 5.22e-6 and native/live particle-energy mismatch 3.75e-16 of initial energy. All reported initialization, secondary-bin, operational relaxation and aligned-energy gates passed in commissioning. The electron half-window A change was 0.02900, close to the frozen 0.030 limit; ions changed 0.00413. Scalar-pressure transition changes across the relaxation intervals were 0.0568%/0.3978%, density changes 0.4459%/0.5925%. Thus the operational gate passes narrowly for electron anisotropy; elapsed time alone and a broad equilibrium claim are not justified.\n\nThe independent recorded audit `exp_2170ea427cd8f5af2df39f06` recomputed pressure tensors, complete-window means and gate measurements. It checked copied parent raw-artifact hashes against their original receipts; that check preserves provenance, not evidence eligibility. Source audit recomputation gives central-region 256\u2192512 relative RMS differences of 0.1127% in density, 0.02131% in pressure, 0.1153% in Bx and 0.07762% in Bz. The source/extraction/patch identities link actual autonomous FLASH evolution to actual WarpX evolution. The operator anchor stays non-evidentiary.\n\n| Control, fixed source and window | Absolute mean-A change ions/electrons | Maximum pressure difference | Maximum density difference | Frozen gate outcome |\n|---|---:|---:|---:|---|\n| Matched32ppc spatial384\u2192576 | 0.004112 / 0.005655 | 1.406% | 0.951% | Pass: A\u22640.02, P\u22645%, n\u22643% |\n| Fixedfine576 ppc16\u219232 | 0.003191 / 0.001549 | 1.295% | 0.750% | Pass: A\u22640.03 |\n| Fine16 timestep halving | 0.000138 / 0.003405 | 0.738% | 0.339% | Pass: A\u22640.01, P\u22643% |\n| Fine16 same-cell larger patch | 0.004271 / 0.004762 | 2.811% | 0.652% | Pass: A\u22640.02, P/n\u22645%, large collar\u22641% |\n\nThe particle/grid comparison no longer conflates the failed coarse16 COM case with a qualifying spatial control. That failure remains in the audit and is excluded from required qualified cases. The new fine32 calculation does not scientifically falsify the root: its departure is low and its commissioning gates pass, but it was deliberately exploration.\n\nA complete uncertainty interval cannot yet be stated because the prospective seed control and decisive observation are absent. The audited fourth-moment sampling estimates are about 0.014\u20130.022; the sampling allowance remains at least 0.05. Secondary8-bin versus primary4-bin mean-A changes reach 0.03274 for ions and 0.02784 for electrons among the qualified controls, while cadence-decimation changes are at most 0.000611. Bin changes mix finer-scale physics and positive norm noise and enter the conservative allowance; they are not erased because the mean remains below 0.20. Maximum measured relativistic trace corrections are about 0.00079/0.02070 and must also enter the allowance. Finite controls bound observed sensitivity, not all systematic errors or distribution-free confidence.\n\n## Figures and inspectable artifacts\n\nAll figures below were produced from actual retained fields and moments by `exp_2170ea427cd8f5af2df39f06`, with SHA256 identities and exact recorded paths in [evidence_index.json](evidence_index.json). Copied images retain those hashes. Historical figures remain historical observations; the fresh fine32 panels are commissioning observations.\n\n![Actual FLASH field and current, with patches and measurement region](figures/macro_patch.png)\n\n![Fresh fine32 initial and final magnetic fields](figures/fine32_kinetic_fields.png)\n\n![Fresh fine32 pressure components and final local tensor departures](figures/fine32_pressure_tensor.png)\n\n![Actual numerical-control trajectories](figures/pressure_controls.png)\n\nThe control plot includes the failed coarse16 case for comparison; its presence does not qualify it. Local final-A color limits are 0\u20130.20, so the retained numeric tensors, rather than the color scale alone, govern interpretation. Pressure component plots normalize each diagonal/off-diagonal component by the area-mean scalar pressure; the decision still uses local tensor departures before averaging.\n\nRaw decisive-diagnostic material for the fresh control is in [moments.npz](../experiments/exp_a1842d496f9ccf18d93f7647/workspace/kinetic/moments.npz), [history.json](../experiments/exp_a1842d496f9ccf18d93f7647/workspace/kinetic/history.json), [initial fields](../experiments/exp_a1842d496f9ccf18d93f7647/workspace/kinetic/initial_fields.npz), [final fields](../experiments/exp_a1842d496f9ccf18d93f7647/workspace/kinetic/final_fields.npz) and its reduced-energy files. [Audit analysis](../experiments/exp_2170ea427cd8f5af2df39f06/workspace/analysis.json) contains every case and gate; [source qualification](../experiments/exp_2170ea427cd8f5af2df39f06/workspace/source_qualification.json) preserves the macro comparison. [parent_provenance.json](parent_provenance.json) links the original read-only FLASH/WarpX receipts and raw hashes. [PRESSURE_CONTRACT.md](PRESSURE_CONTRACT.md) contains the unchanged prospective rules.\n\n## What remains unresolved\n\nThe concrete next test is the reviewed fine576/16ppc, seed20261009 continuation through0.8, under `method_36bc7797591f08c0559a8f02`. It must use the exact transferred fine patch and recorded arguments: `pic --patch fine_patch.npz --output kinetic --duration-omegaci 0.8 --diagnostics 32 --moment-bins 4 --ppc 16 --max-grid-size 576 --seed 20261009 --minimum-bin-particles 256 --boundary-accounting --secondary-bins 8`. Declare every loader/estimator/patch/manifest dependency and collect fresh evidence only under an applicable reviewed binding. Then compare the new seed, enforce every gate, form the complete frozen uncertainty envelope and request independent adjudication. A shortened startup run would not discriminate the original hypothesis.\n\nEven if that finite test supports the root, limitations remain: Debye-underresolved cells, unresolved within-secondary-bin shear, approximate boundary-flux quadrature, operational rather than causal transient exclusion, field-boundary sensitivity and separately uncounted FLASH energyFix corrections. The measured pressure behavior is encouraging and the matched controls improve readiness; the absent prospective evidence is the immediate reason support is not established. There is no accepted counterexample to repair, and the scientific statement has not been weakened or replaced.\n\nThe operator supplied the solver installations, anchor and initial extraction/transfer/PIC helpers. Autonomous scientific decisions include source time, refinement, sheet definition, mapping, patch/region/window, estimator, diagnostic extensions, numerical controls and review submissions. No universal reconnection-rate, radiation, global two-way-coupling or general isotropic-pressure result follows from this finite study.\n",
+  "evidence_index": {
+    "scientific_assessment": "Unresolved; no credible counterexample; no accepted claim verdict. No prospective evidence collected.",
+    "method": {
+      "id": "method_36bc7797591f08c0559a8f02",
+      "decision": "continue",
+      "scope": "Production evidence authorization only"
+    },
+    "historical_receipt_index": "parent_provenance.json",
+    "current_records": [
+      {
+        "id": "exp_eef180c184d79e03a3485285",
+        "stage": "exploration",
+        "status": "succeeded",
+        "purpose": "validation",
+        "receipt": "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/coupled-extension-study/experiments/exp_eef180c184d79e03a3485285.json",
+        "workspace": "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/coupled-extension-study/experiments/exp_eef180c184d79e03a3485285/workspace",
+        "source": "guided/flash_islands.py",
+        "source_and_inputs": {
+          "guided/flash_islands.py": "26f348973b4edeb761f6a25f7023f6c3ea22660f61297a4a58c3d6cc49991588",
+          "guided/extract_flash.py": "28608ddeab7d71584abd32ce910b66621d8ba9cc49d2bb44eb1ead3922e509a0",
+          "guided/kinetic_patch.py": "4b01a091e35c9b65ad08240bf6596e1c486ee924c0230cd3e1d098385c2e1124",
+          "guided/operator_gpu_validation.json": "0378a94e4a404a776595b77ccf1ba2c250bcf2d38bf55070dc8b930c4490e9fa",
+          "guided/operator_transfer_validation.json": "091da359eb3d1852cba60e47d6391bef7e30aba9f8dcb859a0facae553e224b7",
+          "guided/prepare_patch.py": "0be359a997ac75af4d376f96f18901ed815e2d1b07e2c48336233f4a35b4e20d"
+        },
+        "outputs": {
+          "guided/flash_anchor_validation.json": {
+            "sha256": "f64f382c707c3193cc44f66b3e74f1b1ee1a456f7c426763d8964fdfdf6ed84f",
+            "bytes": 9563
+          }
+        }
+      },
+      {
+        "id": "exp_a1842d496f9ccf18d93f7647",
+        "stage": "exploration",
+        "status": "succeeded",
+        "purpose": "validation",
+        "receipt": "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/coupled-extension-study/experiments/exp_a1842d496f9ccf18d93f7647.json",
+        "workspace": "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/coupled-extension-study/experiments/exp_a1842d496f9ccf18d93f7647/workspace",
+        "source": "calculation.py",
+        "source_and_inputs": {
+          "calculation.py": "ef030822bfce50da0aa95310c94f11bf6f24e0766ee8ca0856ea52eb0ee15844",
+          "kinetic.py": "c63038d1cbb87a787e52f00483d459b4bb5f16d5bf7b93da68584c656761aa05",
+          "estimator.py": "44e914ad2780edabf2754f4fae734fd9b5811d6d8b5db094e57f6e379d0be0d4",
+          "fine_patch.npz": "c7c6d6d1c027e421be20942ffa07d6c415479fab6567a2705f6f5b0435697402",
+          "fine_patch.json": "1eda87349b19795cb5b1f86b72e601caf734cd85c43718619e03ffd30cfdce69",
+          "PRESSURE_CONTRACT.md": "951bc96f13fc7491975b84097cda5939e0e53295169b9765d275400f7d624b4f",
+          "parent_provenance.json": "8bce9bb43136a629e185f86103b9713067a749c3f5eabfc72924e423da02d18e"
+        },
+        "outputs": {
+          "kinetic/final_fields.npz": {
+            "sha256": "faa3b5b6a8170d888e4d0e2928860e16d85807174b3a5b5db232aaa778421e5e",
+            "bytes": 15270468
+          },
+          "kinetic/history.json": {
+            "sha256": "0ee0155407d229c76f55fb0889bc2dba5387b32d6fb6fbf0e9935880cb54c2e6",
+            "bytes": 31861
+          },
+          "kinetic/initial_fields.npz": {
+            "sha256": "6f63ae6e1008323600b2c9f5d771c8a45a77832e00d632b89d7dcca5480f241a",
+            "bytes": 5788015
+          },
+          "kinetic/moments.npz": {
+            "sha256": "75009266a85562af393a72e40df0e1834677a2c8735a8c6b87f9a1d294c8a204",
+            "bytes": 1009972
+          },
+          "kinetic/reduced/field_energy.txt": {
+            "sha256": "f0b77331f24c92501f68fd53d33773cc0276cc32dbb072fc1edda56b6fc049e1",
+            "bytes": 2991
+          },
+          "kinetic/reduced/particle_energy.txt": {
+            "sha256": "8659aa4fa71bfb3262fb969d6560816e3d474b0898ce3d8dbef6746ffb5d75f2",
+            "bytes": 5120
+          },
+          "kinetic/result.json": {
+            "sha256": "8be43e655497873c4b3dac42293970d0eb02a11f4da86ac7cf78f72f7692a58e",
+            "bytes": 11307
+          },
+          "kinetic/warpx_used_inputs": {
+            "sha256": "3a8b1764a8cf3ab3369bfe601c4f95e55c679300457ca98d15e75c3408ca40db",
+            "bytes": 4903
+          }
+        }
+      },
+      {
+        "id": "exp_4b404fe3e1562cfb62f5daee",
+        "stage": "exploration",
+        "status": "succeeded",
+        "purpose": "diagnostic",
+        "receipt": "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/coupled-extension-study/experiments/exp_4b404fe3e1562cfb62f5daee.json",
+        "workspace": "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/coupled-extension-study/experiments/exp_4b404fe3e1562cfb62f5daee/workspace",
+        "source": "qualification.py",
+        "source_and_inputs": {
+          "qualification.py": "7485b0047e42c5b563681cd78a5355de39030a7e52ffb9b49fcb68556435484a",
+          "kinetic_analysis.py": "ee457cc1118222f245fadf31519af9036d56e093f6a27f9ca7c50268d035e765",
+          "estimator.py": "44e914ad2780edabf2754f4fae734fd9b5811d6d8b5db094e57f6e379d0be0d4",
+          "parent_provenance.json": "8bce9bb43136a629e185f86103b9713067a749c3f5eabfc72924e423da02d18e",
+          "data/fine/history.json": "9181c8b4533c313ef51cc64bd94f8cf887c7d58822a869982ae66b7ee9256d05",
+          "data/fine/warpx_used_inputs": "3a8b1764a8cf3ab3369bfe601c4f95e55c679300457ca98d15e75c3408ca40db",
+          "data/fine/initial_fields.npz": "6f63ae6e1008323600b2c9f5d771c8a45a77832e00d632b89d7dcca5480f241a",
+          "data/fine/moments.npz": "1b7ce1e3d9739cbe8aa3e69f54c10ed4d9e0751c6ce2c4b5bb9826c4aa4ea6e9",
+          "data/fine/result.json": "55f744d9cb294f555515d8a2d1e917a87eb15b8d46db8bf7cfef2223473fb9ee",
+          "data/fine/final_fields.npz": "687b3126910ba5a95ab74c4a37cc91bde7a0c5836961155d5aaaab6860fb6169",
+          "data/fine/reduced/field_energy.txt": "78a51efef93331429d6394f1af58dad19780b8233d6f63719759706f43699225",
+          "data/fine/reduced/particle_energy.txt": "6f0fe04ecf4bd6428133f4bf5cdc4263a801f4c2aec37058d025e3c31f483073",
+          "fine_patch.npz": "c7c6d6d1c027e421be20942ffa07d6c415479fab6567a2705f6f5b0435697402",
+          "fine_patch.json": "1eda87349b19795cb5b1f86b72e601caf734cd85c43718619e03ffd30cfdce69",
+          "data/bigfine/history.json": "aaca7c3e8b949ecf93f457a718d5d521b8c30743fc0a7290962d83452fae7eff",
+          "data/bigfine/warpx_used_inputs": "ee46732047e6286f7fc130a55500b06cb5afb1422a0ca703f71d1bb7b7faf4e7",
+          "data/bigfine/initial_fields.npz": "84bdd2bc9713c850a560433f6f0aa50f35fcf2e882f63e61b835a591d2771030",
+          "data/bigfine/moments.npz": "f40c0000313e44783ee507b30f46b96e723b059039362d9084163f95eb1fe3b2",
+          "data/bigfine/result.json": "54e98fb6446493ac3e30234739bf7118a76224e28cae534f0e6ee4127dcb0e3a",
+          "data/bigfine/final_fields.npz": "867d811342ab41e1e11e3280a9cb34cd50f25515c7b81ab1118e793df27536c4",
+          "data/bigfine/reduced/field_energy.txt": "86566baedb12dc291b8c42f38930e4d8d32230b4c1371d58f2908248ac9d4964",
+          "data/bigfine/reduced/particle_energy.txt": "b5c354a2d9eea24d24f7a37feb92b78e2bc4c4a3fd5ad13b0d3363b3c454524d",
+          "bigfine_patch.npz": "078c357cfa0547a54bc946e80e118ec9dea8a58b06b70ce379f9539cfae07c7e",
+          "bigfine_patch.json": "515aa1e52f68df0ead47b17098b56014ddaaa6c9c23eea0b6548632da45f41ba",
+          "data/timestep/history.json": "0f6cb2bb9ba9ad21eadbbe3d734c91188deaa32e2f56bc77f0870f025ba01f4a",
+          "data/timestep/warpx_used_inputs": "d35e2e9f463978b98a35bd0bda2b3e206afe4c2b051bca7d13ed1cfdcf3ed151",
+          "data/timestep/initial_fields.npz": "6f63ae6e1008323600b2c9f5d771c8a45a77832e00d632b89d7dcca5480f241a",
+          "data/timestep/moments.npz": "21e0826507805e55b5f630e824d895fd8a6ad12b4418912685fdffb528fde30a",
+          "data/timestep/result.json": "efe5979ed8006280fdcff7b5cfbdce334a40d450f6c7092be7a0249ab42356e8",
+          "data/timestep/final_fields.npz": "15d821d47457ff7e511f0fbfee9a575948644e120399bf4d78f353fbbdb671e7",
+          "data/timestep/reduced/field_energy.txt": "51b7b166cadd308a876afde3f50068cc76266c4ca42e3dd9073cf35f8f958c7f",
+          "data/timestep/reduced/particle_energy.txt": "9eef996061ed17ef9c77abebc30c99a5d97736684d430686cb3fa31dd6290998",
+          "data/particles/history.json": "3325177d481fbf641cbeb33fc988cba5ec9c55b934f628fe5d30d928976c3cac",
+          "data/particles/warpx_used_inputs": "9640d145a6e58fa956dd9968eb13b911f0acb3f159ce425b09a07f8c7c1bbe3d",
+          "data/particles/initial_fields.npz": "2316f2b07f286e73c893544b13b6f9e78117cd3b34dd136bcc316d609c4ca72e",
+          "data/particles/moments.npz": "5d3fd373aa9e47bddf5dba47599e05a7e19082a3dfbbb3c92d20218ec5bb39f0",
+          "data/particles/result.json": "afee1e305d2552629189ab5c48f792443401fa1d3699a9ba7ce26c64193d6c9e",
+          "data/particles/final_fields.npz": "0034934d9de5ec56acca08b5e652bcac33c06c1791438d214e829a51819ebe30",
+          "data/particles/reduced/field_energy.txt": "655da56d5644d8672842b68aaa08796d20834865793fc2720b90fc84efa4ba49",
+          "data/particles/reduced/particle_energy.txt": "43f1b7be114814d60c126e70368c0b47c0ac48e300f22775b1ac18e0424f5618",
+          "base_patch.npz": "9cbfc57ca5fa7c26faab39bb9fd08658fc639156d52422cb825611597562d568",
+          "base_patch.json": "316e8beefde5488c6de26a61ccdf33e70e5af9a32f8a848a3fc967b26a2e9598",
+          "data/base/history.json": "352b1508fa0bf184ad34a19ce0fd18d7cf80f2c824a9a0f65667ec9e2543c09b",
+          "data/base/warpx_used_inputs": "1adfa6d63d3cd7dcfb23b7373b140f4a46a8a5df6bed97f6c148d33fec9a7d56",
+          "data/base/initial_fields.npz": "2316f2b07f286e73c893544b13b6f9e78117cd3b34dd136bcc316d609c4ca72e",
+          "data/base/moments.npz": "c930de69f31b5923713c36a90c3145f535653f84825f711df76badc711cdc903",
+          "data/base/result.json": "47d04e504df184afd3b47d7f07c247c0a5a7e156dc087adf30e997b4a2f4fbd3",
+          "data/base/final_fields.npz": "e378c54de929102945921b0dfc9237efdbb7b1239d8b1215c736d0b887f59418",
+          "data/base/reduced/field_energy.txt": "cf8a3346ec8d815c8ca5c1afd473b640482b83b2286957c6d9a745834a53b135",
+          "data/base/reduced/particle_energy.txt": "7fc2762701874d6a460a0b946a6cec041a946a7f1c0a16bb803b9ae1c9790dd3"
+        },
+        "outputs": {
+          "analysis.json": {
+            "sha256": "4fdaca6062a233df745bcee7708e701b28a01755858e4bc56ee9fcbc5eaad604",
+            "bytes": 63189
+          },
+          "base_kinetic_fields.png": {
+            "sha256": "92403261b95b71611fc808693c57a95a55e1f78334292daaff1ad2a2bdaf8f73",
+            "bytes": 418060
+          },
+          "base_pressure_tensor.png": {
+            "sha256": "3b2b2774e0998d53ef6db84e236eb8f17514ea8e0da8aef84d33bfb4b34ca1d0",
+            "bytes": 160600
+          },
+          "bigfine_kinetic_fields.png": {
+            "sha256": "737c779d6eb54e91964c4c74569a7a6db1c8625ba8550f1dc11a795ee4d50e74",
+            "bytes": 481544
+          },
+          "bigfine_pressure_tensor.png": {
+            "sha256": "36a89424fd7b37ef5774073cf1b1dbb05f5c4679e5712fd8cd54d78af7c47620",
+            "bytes": 154861
+          },
+          "fine_kinetic_fields.png": {
+            "sha256": "fcac2c06d8be395327d9424db249e1c44228c360a0211143bb23801da3967cb3",
+            "bytes": 440991
+          },
+          "fine_pressure_tensor.png": {
+            "sha256": "d0df8274d0a3d10e242e69b5742263e8892ce3539f16a065ab2c088744aaf8f8",
+            "bytes": 153602
+          },
+          "particles_kinetic_fields.png": {
+            "sha256": "53145224c2e381f6279755e70eb3e2257246ed3f94a520722c123c5601622bd4",
+            "bytes": 399279
+          },
+          "particles_pressure_tensor.png": {
+            "sha256": "b9e069b1422d294575dbca11bc295c45bfd1e6118931fd6076d0cd79064ef7d1",
+            "bytes": 156275
+          },
+          "pressure_controls.png": {
+            "sha256": "66c1d6ee27b816fee23d29cb3406779a94c8a8b63647b7f1191463f22f503fae",
+            "bytes": 462522
+          },
+          "timestep_kinetic_fields.png": {
+            "sha256": "6e7245a78e1beed259f666c5c94dd283d9bef5a17bc573790927d239c1d1bb8a",
+            "bytes": 437350
+          },
+          "timestep_pressure_tensor.png": {
+            "sha256": "80c3af212cc9faa57367569d74d71540d7745e63757fe5e48e94270e5b86c331",
+            "bytes": 154028
+          }
+        }
+      },
+      {
+        "id": "exp_2170ea427cd8f5af2df39f06",
+        "stage": "exploration",
+        "status": "succeeded",
+        "purpose": "diagnostic",
+        "receipt": "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/coupled-extension-study/experiments/exp_2170ea427cd8f5af2df39f06.json",
+        "workspace": "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/coupled-extension-study/experiments/exp_2170ea427cd8f5af2df39f06/workspace",
+        "source": "complete_audit.py",
+        "source_and_inputs": {
+          "complete_audit.py": "050e95f6124bc5efd8abde3d4addf999525b0125913ec3b33913399943be612f",
+          "kinetic_analysis.py": "ee457cc1118222f245fadf31519af9036d56e093f6a27f9ca7c50268d035e765",
+          "estimator.py": "44e914ad2780edabf2754f4fae734fd9b5811d6d8b5db094e57f6e379d0be0d4",
+          "parent_provenance.json": "8bce9bb43136a629e185f86103b9713067a749c3f5eabfc72924e423da02d18e",
+          "data/fine/history.json": "9181c8b4533c313ef51cc64bd94f8cf887c7d58822a869982ae66b7ee9256d05",
+          "data/fine/warpx_used_inputs": "3a8b1764a8cf3ab3369bfe601c4f95e55c679300457ca98d15e75c3408ca40db",
+          "data/fine/initial_fields.npz": "6f63ae6e1008323600b2c9f5d771c8a45a77832e00d632b89d7dcca5480f241a",
+          "data/fine/moments.npz": "1b7ce1e3d9739cbe8aa3e69f54c10ed4d9e0751c6ce2c4b5bb9826c4aa4ea6e9",
+          "data/fine/result.json": "55f744d9cb294f555515d8a2d1e917a87eb15b8d46db8bf7cfef2223473fb9ee",
+          "data/fine/final_fields.npz": "687b3126910ba5a95ab74c4a37cc91bde7a0c5836961155d5aaaab6860fb6169",
+          "data/fine/reduced/field_energy.txt": "78a51efef93331429d6394f1af58dad19780b8233d6f63719759706f43699225",
+          "data/fine/reduced/particle_energy.txt": "6f0fe04ecf4bd6428133f4bf5cdc4263a801f4c2aec37058d025e3c31f483073",
+          "fine_patch.npz": "c7c6d6d1c027e421be20942ffa07d6c415479fab6567a2705f6f5b0435697402",
+          "fine_patch.json": "1eda87349b19795cb5b1f86b72e601caf734cd85c43718619e03ffd30cfdce69",
+          "data/bigfine/history.json": "aaca7c3e8b949ecf93f457a718d5d521b8c30743fc0a7290962d83452fae7eff",
+          "data/bigfine/warpx_used_inputs": "ee46732047e6286f7fc130a55500b06cb5afb1422a0ca703f71d1bb7b7faf4e7",
+          "data/bigfine/initial_fields.npz": "84bdd2bc9713c850a560433f6f0aa50f35fcf2e882f63e61b835a591d2771030",
+          "data/bigfine/moments.npz": "f40c0000313e44783ee507b30f46b96e723b059039362d9084163f95eb1fe3b2",
+          "data/bigfine/result.json": "54e98fb6446493ac3e30234739bf7118a76224e28cae534f0e6ee4127dcb0e3a",
+          "data/bigfine/final_fields.npz": "867d811342ab41e1e11e3280a9cb34cd50f25515c7b81ab1118e793df27536c4",
+          "data/bigfine/reduced/field_energy.txt": "86566baedb12dc291b8c42f38930e4d8d32230b4c1371d58f2908248ac9d4964",
+          "data/bigfine/reduced/particle_energy.txt": "b5c354a2d9eea24d24f7a37feb92b78e2bc4c4a3fd5ad13b0d3363b3c454524d",
+          "bigfine_patch.npz": "078c357cfa0547a54bc946e80e118ec9dea8a58b06b70ce379f9539cfae07c7e",
+          "bigfine_patch.json": "515aa1e52f68df0ead47b17098b56014ddaaa6c9c23eea0b6548632da45f41ba",
+          "data/timestep/history.json": "0f6cb2bb9ba9ad21eadbbe3d734c91188deaa32e2f56bc77f0870f025ba01f4a",
+          "data/timestep/warpx_used_inputs": "d35e2e9f463978b98a35bd0bda2b3e206afe4c2b051bca7d13ed1cfdcf3ed151",
+          "data/timestep/initial_fields.npz": "6f63ae6e1008323600b2c9f5d771c8a45a77832e00d632b89d7dcca5480f241a",
+          "data/timestep/moments.npz": "21e0826507805e55b5f630e824d895fd8a6ad12b4418912685fdffb528fde30a",
+          "data/timestep/result.json": "efe5979ed8006280fdcff7b5cfbdce334a40d450f6c7092be7a0249ab42356e8",
+          "data/timestep/final_fields.npz": "15d821d47457ff7e511f0fbfee9a575948644e120399bf4d78f353fbbdb671e7",
+          "data/timestep/reduced/field_energy.txt": "51b7b166cadd308a876afde3f50068cc76266c4ca42e3dd9073cf35f8f958c7f",
+          "data/timestep/reduced/particle_energy.txt": "9eef996061ed17ef9c77abebc30c99a5d97736684d430686cb3fa31dd6290998",
+          "data/particles/history.json": "3325177d481fbf641cbeb33fc988cba5ec9c55b934f628fe5d30d928976c3cac",
+          "data/particles/warpx_used_inputs": "9640d145a6e58fa956dd9968eb13b911f0acb3f159ce425b09a07f8c7c1bbe3d",
+          "data/particles/initial_fields.npz": "2316f2b07f286e73c893544b13b6f9e78117cd3b34dd136bcc316d609c4ca72e",
+          "data/particles/moments.npz": "5d3fd373aa9e47bddf5dba47599e05a7e19082a3dfbbb3c92d20218ec5bb39f0",
+          "data/particles/result.json": "afee1e305d2552629189ab5c48f792443401fa1d3699a9ba7ce26c64193d6c9e",
+          "data/particles/final_fields.npz": "0034934d9de5ec56acca08b5e652bcac33c06c1791438d214e829a51819ebe30",
+          "data/particles/reduced/field_energy.txt": "655da56d5644d8672842b68aaa08796d20834865793fc2720b90fc84efa4ba49",
+          "data/particles/reduced/particle_energy.txt": "43f1b7be114814d60c126e70368c0b47c0ac48e300f22775b1ac18e0424f5618",
+          "base_patch.npz": "9cbfc57ca5fa7c26faab39bb9fd08658fc639156d52422cb825611597562d568",
+          "base_patch.json": "316e8beefde5488c6de26a61ccdf33e70e5af9a32f8a848a3fc967b26a2e9598",
+          "data/base/history.json": "352b1508fa0bf184ad34a19ce0fd18d7cf80f2c824a9a0f65667ec9e2543c09b",
+          "data/base/warpx_used_inputs": "1adfa6d63d3cd7dcfb23b7373b140f4a46a8a5df6bed97f6c148d33fec9a7d56",
+          "data/base/initial_fields.npz": "2316f2b07f286e73c893544b13b6f9e78117cd3b34dd136bcc316d609c4ca72e",
+          "data/base/moments.npz": "c930de69f31b5923713c36a90c3145f535653f84825f711df76badc711cdc903",
+          "data/base/result.json": "47d04e504df184afd3b47d7f07c247c0a5a7e156dc087adf30e997b4a2f4fbd3",
+          "data/base/final_fields.npz": "e378c54de929102945921b0dfc9237efdbb7b1239d8b1215c736d0b887f59418",
+          "data/base/reduced/field_energy.txt": "cf8a3346ec8d815c8ca5c1afd473b640482b83b2286957c6d9a745834a53b135",
+          "data/base/reduced/particle_energy.txt": "7fc2762701874d6a460a0b946a6cec041a946a7f1c0a16bb803b9ae1c9790dd3",
+          "qualification.py": "7485b0047e42c5b563681cd78a5355de39030a7e52ffb9b49fcb68556435484a",
+          "source_qualification.py": "46e1cf532996e0f762f17bb679c7bd4cfb5a29c27fcd82d99281314e7b931363",
+          "macro_figure.py": "0570b774a93fa7a4132847a944d2046548a3e8e65c5ee5a3337d6fabf717bd10",
+          "macro256.npz": "7a0329d97fc72d1f5c4c52fbb4cabb3d1da701077b86e700b2d246eb01c597fe",
+          "macro512.npz": "e8d1ef82fb0baafddeaf1b0f8c9e153db6fae069a2a4829cd18e80487bfbd023",
+          "source512.h5": "79d2045d47eaecb729d854e170f3679fa75b9948359d3f380f15caab112b2083",
+          "macro512_summary.json": "eba7054b59dfad584cf82f8d6eb8147fe99f0dd9c4e307513387c71249c6e1b2",
+          "refined_selection.json": "d43ab2103f70f845dbbe434bc3b807181a52a1c1c4a0574998a1f8cfb8ee7799",
+          "data/fine32/progress.json": "2b78d5a071a9b68679f1918c9b8be1a539abf13d52043d57d599fe5b2420a282",
+          "data/fine32/history.json": "0ee0155407d229c76f55fb0889bc2dba5387b32d6fb6fbf0e9935880cb54c2e6",
+          "data/fine32/warpx_used_inputs": "3a8b1764a8cf3ab3369bfe601c4f95e55c679300457ca98d15e75c3408ca40db",
+          "data/fine32/initial_fields.npz": "6f63ae6e1008323600b2c9f5d771c8a45a77832e00d632b89d7dcca5480f241a",
+          "data/fine32/moments.npz": "75009266a85562af393a72e40df0e1834677a2c8735a8c6b87f9a1d294c8a204",
+          "data/fine32/result.json": "8be43e655497873c4b3dac42293970d0eb02a11f4da86ac7cf78f72f7692a58e",
+          "data/fine32/final_fields.npz": "faa3b5b6a8170d888e4d0e2928860e16d85807174b3a5b5db232aaa778421e5e",
+          "data/fine32/reduced/field_energy.txt": "f0b77331f24c92501f68fd53d33773cc0276cc32dbb072fc1edda56b6fc049e1",
+          "data/fine32/reduced/particle_energy.txt": "8659aa4fa71bfb3262fb969d6560816e3d474b0898ce3d8dbef6746ffb5d75f2",
+          "data/fine32/fields/openpmd_001826.h5": "8d9b0d4120175bdeb535a6afbda8f2426d9df72636621dd694ba6248ba75dbde",
+          "data/fine32/fields/openpmd_000000.h5": "c9367e787ef9b4cd0be933136c31fe7552136fcb9687c658a93488c09dca341c",
+          "data/fine32/fields/paraview.pmd": "70cdbee5690cb452b621ef5a3129fa9237410b4f93d41ec84ec2887b3f64e6cc",
+          "data/fine32/fields/openpmd_000913.h5": "bc8166f1b2e6bd6a8c2e6ae7bf7d6fa4ad3848429b155baed6e75228d4be3fe7",
+          "data/fine32/fields/openpmd_002739.h5": "502ec141e8238c4fb6fe4cdc8efc429a2ab39cd50452ed257d528d364ee9566b",
+          "data/fine32/fields/openpmd_003652.h5": "71a5c5b5673223c3e13d4dfc0a7e2590fe8301378a1c8c1e5834f24e4d717c2d"
+        },
+        "outputs": {
+          "analysis.json": {
+            "sha256": "f81b6561517c6f37729f8fa4334545a35259f56ebdeac5324ecad9ed9878b3b6",
+            "bytes": 77282
+          },
+          "base_kinetic_fields.png": {
+            "sha256": "92403261b95b71611fc808693c57a95a55e1f78334292daaff1ad2a2bdaf8f73",
+            "bytes": 418060
+          },
+          "base_pressure_tensor.png": {
+            "sha256": "3b2b2774e0998d53ef6db84e236eb8f17514ea8e0da8aef84d33bfb4b34ca1d0",
+            "bytes": 160600
+          },
+          "bigfine_kinetic_fields.png": {
+            "sha256": "737c779d6eb54e91964c4c74569a7a6db1c8625ba8550f1dc11a795ee4d50e74",
+            "bytes": 481544
+          },
+          "bigfine_pressure_tensor.png": {
+            "sha256": "36a89424fd7b37ef5774073cf1b1dbb05f5c4679e5712fd8cd54d78af7c47620",
+            "bytes": 154861
+          },
+          "fine32_kinetic_fields.png": {
+            "sha256": "3ad3cd5bd5afc549fa5d5bcdb9a60cf44052fe2dd355a96f47bb96b0cca4f3ef",
+            "bytes": 415369
+          },
+          "fine32_pressure_tensor.png": {
+            "sha256": "3e2ca8825ccff551dd831605c7b5f648eb4993e2e3cb81da6900f327d5dd9c98",
+            "bytes": 152053
+          },
+          "fine_kinetic_fields.png": {
+            "sha256": "fcac2c06d8be395327d9424db249e1c44228c360a0211143bb23801da3967cb3",
+            "bytes": 440991
+          },
+          "fine_pressure_tensor.png": {
+            "sha256": "d0df8274d0a3d10e242e69b5742263e8892ce3539f16a065ab2c088744aaf8f8",
+            "bytes": 153602
+          },
+          "macro_patch.png": {
+            "sha256": "276d74cecbce8e5e3687e29fd794f7521db98f0edf1ca7467f9263a75e84ec94",
+            "bytes": 373409
+          },
+          "particles_kinetic_fields.png": {
+            "sha256": "53145224c2e381f6279755e70eb3e2257246ed3f94a520722c123c5601622bd4",
+            "bytes": 399279
+          },
+          "particles_pressure_tensor.png": {
+            "sha256": "b9e069b1422d294575dbca11bc295c45bfd1e6118931fd6076d0cd79064ef7d1",
+            "bytes": 156275
+          },
+          "pressure_controls.png": {
+            "sha256": "b55ac591449a54d57954b719acf38db3a45a646d32bcaae58d466e2cfee59e05",
+            "bytes": 494042
+          },
+          "source_qualification.json": {
+            "sha256": "16df38ebf5daef88dee53a6e6d5caa457dabede3f31cae6917e200e6f6cb13f8",
+            "bytes": 1788
+          },
+          "timestep_kinetic_fields.png": {
+            "sha256": "6e7245a78e1beed259f666c5c94dd283d9bef5a17bc573790927d239c1d1bb8a",
+            "bytes": 437350
+          },
+          "timestep_pressure_tensor.png": {
+            "sha256": "80c3af212cc9faa57367569d74d71540d7745e63757fe5e48e94270e5b86c331",
+            "bytes": 154028
+          }
+        }
+      }
+    ],
+    "figure_experiment": "exp_2170ea427cd8f5af2df39f06",
+    "report_sha256": "cbe250540807f93934c756b4af44b970184f8e51021e53430662f95b0bcebfcf",
+    "next_test": {
+      "source": "calculation.py",
+      "args": [
+        "pic",
+        "--patch",
+        "fine_patch.npz",
+        "--output",
+        "kinetic",
+        "--duration-omegaci",
+        "0.8",
+        "--diagnostics",
+        "32",
+        "--moment-bins",
+        "4",
+        "--ppc",
+        "16",
+        "--max-grid-size",
+        "576",
+        "--seed",
+        "20261009",
+        "--minimum-bin-particles",
+        "256",
+        "--boundary-accounting",
+        "--secondary-bins",
+        "8"
+      ],
+      "required_stage": "evidence",
+      "forecast_seconds": 380,
+      "status": "Deferred: demonstrated full-window cost exceeded compute time remaining after methods review."
+    }
+  },
+  "assessment_request": "Independently assess report accuracy and sufficiency. Methods authorization and fresh commissioning do not support the root. No credible qualified counterexample and no supported original/repair are claimed. Identify any report correction and retain unresolved outcome if no decisive evidence."
+}

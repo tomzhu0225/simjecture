@@ -40,22 +40,23 @@ Read [how the loop works](https://drawingsword.com/simjecture/concepts/research-
 ## Follow a real investigation
 
 [**Magnetic-island coalescence with FLASH**](https://drawingsword.com/simjecture/demos/island-coalescence.html)
-asks whether one reconnection-rate scaling survives changes in resistivity and
-resolution. Explore actual field evolution, the historical campaign and its
-statistical correction, and a separate one-hour minimal-mode audit that remained
-unresolved, with a tested post-run correction to its coordinate diagnostic.
-A second one-hour Sol-worker run collected a broader scan and refinement dataset;
-its final scientific review also remained incomplete.
+shows density, magnetic geometry and a current sheet evolving in a real MHD
+calculation. Follow five resistivity cases, two refinements and their evidence
+map to see what was measured and why the full-range question remains open.
+The classic campaign and subsequent diagnostic audits remain available.
 
-![FLASH magnetic-island coalescence: current density and field evolution](https://raw.githubusercontent.com/tomzhu0225/simjecture/main/demos/resistive_mhd_island_coalescence/figures/island_coalescence_evolution.png)
-
-*Actual 2D commissioning fields. The linked study separates instrument readiness
-from evidence for the scaling hypothesis.*
+![Four fresh FLASH snapshots: density with magnetic field lines above, current density below](https://raw.githubusercontent.com/tomzhu0225/simjecture/main/docs/_static/demos/island-field-walkthrough.png)
 
 [**FLASH → WarpX kinetic follow-up**](https://drawingsword.com/simjecture/demos/flash-warpx-patch.html)
-transfers an actual MHD current sheet into particle simulations and compares
-spatial, timestep and boundary controls. Its two-hour audit shows both the working
-handoff and the qualification gaps that prevented a final scientific verdict.
+follows an actual MHD current sheet into a kinetic particle simulation. The visual
+walkthrough locates the patch, opens its pressure-measurement region, and connects
+field maps and numerical controls to the unresolved scientific claim.
+
+![Actual FLASH source, pressure-measurement region and evolved WarpX field](https://raw.githubusercontent.com/tomzhu0225/simjecture/main/docs/_static/demos/coupled-field-handoff.png)
+
+Both plasma investigations include preserved continuation records, downloadable
+figures and explicit distinctions between a completed simulation, an approved
+method and an accepted scientific conclusion.
 
 The [orbital-accuracy walkthrough](https://drawingsword.com/simjecture/demos/kepler-energy.html) uses the current
 minimal workflow to investigate a concrete question: **does small energy error

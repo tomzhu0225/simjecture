@@ -1,0 +1,28 @@
+Rerun the supplied original island-coalescence hypothesis with the current minimal research service. Use the installed, operator-supplied FLASH 4.8 island-coalescence capability and the original guided commissioning package. The physical question, nominal inverse-resistivity range and exponent band remain those in hypothesis.txt. The source executable has the same SHA-256 identity as the historical anchor. This is a fresh investigation; all old figures, fits, validation summaries and prior campaign dispositions are context only.
+
+Start by reproducing the exact guided anchor through lab.reproduce_anchor. Use its working launcher, HDF5 reader and flux diagnostics as a starting point. Read-only reference source for the compiled FLASH application is available under the capability's share/source directory, with build metadata in share/build-record.json. Keep the reference installation unchanged. Create an agent-owned driver and analysis for the new evidence, and obtain methods review through lab.method before decisive instrument-backed runs. Use the modern lab API and method reviews; do not construct the classic instrument-claim hierarchy.
+
+Choose and record the observable, normalization, fit rule, current-sheet resolution and pre-plasmoid eligibility checks, flux/time window, refinement policy and statistical decision before collecting decisive outputs. Use enough distinct resistivities for a scaling study and include a meaningful refinement. Record numerical controls and actual source/runtime/parameter identities. A case that does not reach the observation window is censored, not a physical counterexample. The supplied S_eta=1/eta is a nominal inverse-resistivity control, not a dimensional Lundquist number.
+
+An interval that overlaps the allowed exponent band [-0.60,-0.40] does not reject that whole band merely because one endpoint lies outside. The historical campaign made that interpretation error; this warning is a methodological lesson, not evidence or a prescribed answer. Distinguish finite sampled results, numerical uncertainty and any untested continuous-domain claim. Do not claim universal Sweet-Parker falsification from this bounded model.
+
+The completion policy is repair. If the original claim is scientifically falsified, propose a minimally justified replacement, commit its predictions and exact commands before fresh tests, and challenge it independently. Preserve counterexamples and rejected methods or claim reviews. If the evidence remains inconclusive, continue useful work within the wall budget and report the exact remaining scientific gaps.
+
+Use this machine's CPU MPI runtime. The wall budget is one hour. Choose your own allocation of commissioning, scans, refinement and review; prefer affordable complete trajectories and estimate cost before expensive work. Do not spend the campaign on a simulation that cannot reach the chosen measurement window. Four MPI ranks per experiment is the commissioned starting configuration. Keep declared outputs compact enough to review while retaining the raw diagnostics or field states needed to audit every decisive quantity. General native tools remain available for context and code work.
+
+Maintain a readable RESULTS.md with receipt and review IDs. Include field/current-density plots and scaling/uncertainty plots drawn from the actual recorded outputs. State whether each figure is fresh commissioning, exploration or claim evidence. Work inside the study research directory and its experiment workspaces; do not change the repository, previous campaigns or installed FLASH source. The demonstration will attribute operator framing and later editorial plots separately from autonomous experiments and independent review.
+
+
+CONTINUATION — additional 30-minute wall budget
+Continue your own previous investigation from its frozen continuation record. The original
+hypothesis and scientific requirements are unchanged. Inspect the actual parent receipts,
+sources and results to decide which further simulations, checks or analysis are worthwhile.
+Selected small working files are available under inherited/; the parent path in the frozen
+continuation record provides read-only context and access to retained larger artifacts.
+Do not modify the parent, shared runtimes or repository. Historical findings keep their
+original status. You may reuse them transparently in the report without calling them fresh
+validation. The host reserves finishing time for RESULTS.md and independent report assessment.
+Deliver a current quantitative report with figures, provenance, numerical limitations and
+what you learned. Distinguish falsified, supported within tested scope, and unresolved.
+If unresolved, explain the concrete obstacle and the next discriminating test. Choose the
+research strategy yourself; no particular scientific conclusion is requested.

@@ -1,0 +1,40 @@
+{
+  "source": "calculation.py",
+  "inputs": [
+    "kinetic.py",
+    "estimator.py",
+    "base_patch.npz",
+    "base_patch.json",
+    "large_patch.npz",
+    "large_patch.json",
+    "fine_patch.npz",
+    "fine_patch.json",
+    "PRESSURE_CONTRACT.md"
+  ],
+  "capability": "warpx-cuda-openpmd-26.07",
+  "scope": "production",
+  "model": "Actual fully kinetic collisionless 2D3V electron-ion continuation of this study FLASH512 source, massratio25 Ti/Te1 v0/c.01 n0=1e24. Explicit Yee+Boris quadratic+Esirkepov, one-way initial transfer; no radiation/collisions or two-way accuracy claim. FLASH source qualified by method_f66541247ec5cb3b0cc262c6. Exact source512 HDF5/NPZ hashes and finite conditioning in PRESSURE_CONTRACT.md, bound input. Original local pressure claim is tested unchanged.",
+  "geometry": "Right-handed (X,Y,Z)=(x,-z,y). Finite patches halfsize.3 and.45 code units inside [-.5,.5] source, absorbing particles/SilverMueller field boundaries. Region |X|<.04 |Z|<.015 code lengths fixed4x4 bins. Source t=.8001113920335353, half-width.014466925 code/7.407FLASH cells; di_ref=.024 code ->width/di.603. Finest candidate PIC grid576-square forhalf.3; 384base and576larger have same dx.",
+  "observable": "Implemented estimator.py: local weighted velocity covariance P=m sum(w dv dv)/binarea (unit ignorable length); A=Frob(P-tr(P)I/3)/(sqrt3 tr(P)/3). Equalarea then actualtime trapezoid over exact [.3,.8] inverse referenceOmega_ci, bracketing endpoints interpolation. EVERYbin/interior+bracketing sample count>=256 neff>=512 finitepositive; incomplete or ineligible ->null/inconclusive, neverdropbins. Bound contract uncertaintyU>=.05sampling +absoluteA differences of spatial,timestep,ppc,seed,patch,bin/cadence controls +sqrt3*maxmeasuredgamma tracecorrection. Support upper<=.2 BOTHspecies; counterexample lower>.2 at leastone species onlywithallqualificationgates. Finite-control envelope not rigorousdistributionfree confidence theorem. Secondary8bins reconstructprimarycovariance and boundshearbroadening; perparticle4thmoments recorded. Operational rules amended in boundPRESSURE_CONTRACT.md v2: exact-overlapscalarpressurebinRMS<=3%; independentmassweightedCOMrms<=.03v0; secondarycount128/neff256finiteall, broadening<=.02andwithin-sub-binshearunresolved. RelaxationP/ntransition[.2,.3)->[.3,.4)<=5%, Ahalfwindowdifference<=.03, E/thermal<=.01. SpatialA<=.02/P<=5%/n<=3%; timestepA<=.01/P<=3%. Aligned energyresidual<=.005, decimatedfluxquadrature<=.001, live/nativeparticleE<=.002; missing orfailedgate inconclusive. No tolerance relaxation.",
+  "validation": "Recorded actualFLASH256/512 evolution and exactlinkedtransfer; initialdiscretefieldmatchzero, transferB RMS3.25e-4/current2.87e-3, scaleddivBnear3e-16. Fixedsource512 halfwidthconverges1.9%. Corrected exactcell-bin overlap exp_df299a9f339cf71489f99850 gives initialdensityRMS<1%, speciespressuremeanwithin.2%, currentRMS10-11% andchargefraction<6e-15. Completed current-estimator base/large pair exp_1c6e664e972b5f583f31d498/exp_f0950f288da5afe863d02e2c through.8002, allprimarybinsneff>925. BoundaryA mean differences.0021/.0013, maxpressuremean2.8%, density1.1%, largerpatchcollarorigin.002; fieldsignalsnotcausallyexcluded but controlledbyactualpatchcomparison. Measuredrelativegamma pressuretracecorrection<=.0206 electrons. InteriorEenergy/thermal<=.0016, earlyfieldrelaxation assessed fromhistory, cannotinferfromelapsedtimealone. Newboundaryaccountingbenchmark exp_2c7f98586e1d9af48038642a exercisesACTUALabsorption5.1J/m andfiniteoutflow; fieldsamplingflux approximate, notexactbudget. Currentlyactive32ppccontrol exp_3a4cd829f718a2211536f64c usesnewsource andwillprovide4thmoment/shear/fullbudgetvalidation. Requiredspatial and timestepcontrols remainqualificationgates; finecontrol canceled for forecastoverrun, preservedexp_eb0cf8a51978118487d20196. Needisolatedrefine pilot/replayafterbasefinishes. Debye gridratio3.68coarse2.45fineis explicit unresolvedaccuracyrequirement, not assumedresolved. Completehypothesisexperimentmatrixnotyetcollected; requestingtargetedreviewofprospectivecontractandneededqualifications beforeevidence. Revisionaudit exp_26be479ab60888f2d3d8d280 and exp_277f0bbeff32e2198b640b53 implements per-bin scalarpressureRMS, independentCOM, operationalrelaxation/secondary/energygates. Finefull exp_55205438f03261250c2f8238 passesallimplementedgates and reaches.8001; maxgrid576layoutpressureparity4e-15 reducesactualruntime258s. Finecounterpartactualdebyegridratio2.45; rootfinitepressureaccuracyconditionalonobservedgrid/timestepstability, notgeneralDebye-resolvedclaim. Coarse16ppcbasefailedCOM.0318v0>.03 andnotusedasqualifiedsupport; retainednumericalcomparisonasqualificationdiagnostic. Coarse32ppcbenchmarkpassesCOM.0193andenergyresidual-.000790, flowfailureisnotignored. LargercoarsepatchpassedCOM.027, relaxationandprimarycounts but lackedcurrentbudget/secondarydiagnostics; askreviewerexplicitly whetheritsfield/pressureandorigincontrolcanqualifyfiner-gridregionorrequiresreplacement. Final timestephalving exp_ec59942cf4fe18f457b92418completed7304stepsto.8001withsamefinitephysics/source andruntime573s; freshanalysislinked. Fresh evidenceplannedfine576half.3ppc16CFL.7seed20261009, complete.8duration; replicatecomparedtosameconfigurationseed20261008commissioningandcontrolenvelope. Aseedcomparisoncanservethechallengeonlyifreviewedmethodpermits. Needreviewedfreshscientificevidence; nooldexplorationisrelabeled. Versionedkinetic_analysis.py SHA256 ee457cc1118222f245fadf31519af9036d56e093f6a27f9ca7c50268d035e765",
+  "validation_experiments": [
+    "exp_b3aeffc4296462890906d872",
+    "exp_488007f309373427b7394eb2",
+    "exp_1c6e664e972b5f583f31d498",
+    "exp_f0950f288da5afe863d02e2c",
+    "exp_df299a9f339cf71489f99850",
+    "exp_2c7f98586e1d9af48038642a",
+    "exp_3a4cd829f718a2211536f64c",
+    "exp_26be479ab60888f2d3d8d280",
+    "exp_277f0bbeff32e2198b640b53",
+    "exp_55205438f03261250c2f8238",
+    "exp_ec59942cf4fe18f457b92418",
+    "exp_c7459f3cf2b84f72450910a5"
+  ],
+  "blocker_experiments": [],
+  "rationale": "Directorrequestsprospectivemethodsreviewnow. SourceisactualrecordedFLASHdata, notanalyticHarris. Affordablecompletedwindowallowsnumericalcontrols; forecastunderconcurrencywasadverseandfinejobstopped. Boundcontractretainsuncertainty/transient/boundary/debyeissues instead of usinglowexploratoryA as support. Kineticanalysis.py versionSHA 1a542311954f5f3922c3b47fffa6794921ce998337dee0d63c276d612b7bf084 implements independentfrozentensoranalysis, overlaps,budgetandplots; sources auditable inresearch.",
+  "limitations": [
+    "SourceenergyFixcorrectionsnotseparatelybounded; reconstructedMHDenergyisconsistencyonly. OpenPIC fluxatnearestcellcenters/cadencemayleavequadratureresidual. Debyelengthunderresolutionneedsactualrefinementaccuracyqualification. Windowrelaxation andboundarycomparisonareconditionalfinitecontrols, notuniversalphysicalisolation. Freshapproved evidence required; noexploratoryoutputisrelabeled.",
+    "Older16ppcbaseCOMfailednewgate; retainfailure. Oldercoarseboundarypairdoesnotcontainnewbudget/secondarydiagnostics; revieweradjudicatestransferabilityandanyrequiredreplacement. Nearest-cellPoynting quadratureestimatedwithactualcommonendpointsandcadencesensitivity, notexactboundaryconservation."
+  ]
+}

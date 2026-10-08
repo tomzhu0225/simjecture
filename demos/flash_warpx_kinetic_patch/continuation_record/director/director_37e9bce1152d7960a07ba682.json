@@ -1,0 +1,14 @@
+{
+  "id": "director_37e9bce1152d7960a07ba682",
+  "created_at": 1791445119.7539425,
+  "packet_sha256": "c431467d3cc154a5aa89d52cfea92a0c5b93c9311c490a3e874a7e98953dff67",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "This is the first strategy review; no previous decision or pending replan applies. The new fine576/32ppc full-window control addresses a useful ambiguity: comparison with historical coarse384/32ppc isolates grid sensitivity, while comparison with fine576/16ppc assesses particle-count sensitivity. Historical receipts demonstrate full-window trajectories, and recorded methods reviews permit prospective collection without accepting scientific claims. Retain the existing COM, relaxation, energy, boundary and accuracy gates; the older coarse COM failure remains consequential. Scientific feasibility is limited by outstanding qualification, not by lack of an end-to-end trajectory. Budget feasibility is at risk for the complete review-and-fresh-evidence sequence, although the current control is affordable: its declared 450-second total estimate and 650-second timeout fit within the packet's 1049-second compute allowance at 140 seconds elapsed. No telemetry establishes current progress or a reliable completion forecast.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "at_risk",
+  "stop_experiments": [],
+  "wake_worker": true,
+  "next_action": "Keep exp_a1842d496f9ccf18d93f7647 running. Wake the worker now to assemble the compact qualification package from completed parent artifacts: exact receipt/hash lineage, quantitative initialization and COM checks, matched fine-grid enlarged-patch comparison, timestep, relaxation, eligibility and aligned energy results. Prepare the review submission and quantitative report figures while this control runs. On completion, evaluate matched-32ppc spatial differences and fixed-fine particle-count differences against the frozen gates, explicitly retaining the failed coarse COM gate. Submit the current implementation and qualification package for independent methods review. Launch the planned fresh-seed evidence only if authorized by that review and its conservative runtime plus analysis fits before finalization.compute_deadline=1791446084.1515079. Preserve the 450-second report reserve. If qualification fails or fresh evidence cannot fit, finish a quantitative unresolved report identifying the failed gate and next discriminating test; do not relax the window, thresholds or physics."
+}

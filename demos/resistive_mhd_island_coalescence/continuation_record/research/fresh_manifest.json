@@ -1,0 +1,38 @@
+[
+  {
+    "experiment": "exp_bfe4f90373621f5d11794fe6",
+    "json": "fresh_S250_N256.json",
+    "stage": "fresh_evidence"
+  },
+  {
+    "experiment": "exp_3cfeb359d713c480a5352496",
+    "json": "fresh_S1000_N384.json",
+    "stage": "fresh_evidence",
+    "raw": "figure_raw.npz"
+  },
+  {
+    "experiment": "exp_bb0ee141588fbdda53787492",
+    "json": "fresh_S1000_N256.json",
+    "stage": "fresh_evidence"
+  },
+  {
+    "experiment": "exp_e1d0b9057facbbb61adf0d9c",
+    "json": "fresh_S250_N384.json",
+    "stage": "fresh_evidence"
+  },
+  {
+    "experiment": "exp_d2b9107fc5d67722a51735d1",
+    "json": "fresh_S4000_N256.json",
+    "stage": "fresh_evidence"
+  },
+  {
+    "experiment": "exp_67bf2fd4c24cf7a2e06afc43",
+    "json": "fresh_S2000_N256.json",
+    "stage": "fresh_evidence"
+  },
+  {
+    "experiment": "exp_06f4378ece55c0f9fd6f2672",
+    "json": "fresh_S500_N256.json",
+    "stage": "fresh_evidence"
+  }
+]

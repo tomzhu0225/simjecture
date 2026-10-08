@@ -1,7 +1,7 @@
 # From a FLASH current sheet to a kinetic WarpX patch
 
 **Can a current sheet resolved by an MHD calculation remain nearly isotropic
-when followed with kinetic particles at ion scales?** This two-hour study links
+when followed with kinetic particles at ion scales?** This two-hour study and its 30-minute continuation link
 actual FLASH output to WarpX initial conditions, then tests pressure-tensor
 behavior in a local region.
 
@@ -10,13 +10,74 @@ unresolved at its cutoff**, with no accepted scientific verdict. It demonstrates
 a working, traceable two-solver investigation and its remaining qualification
 gaps, rather than a validated general MHD closure.
 
+## Follow the actual geometry
+
+![The FLASH source current sheet, the fixed measurement region, and the evolved kinetic out-of-plane field](../_static/demos/coupled-field-handoff.png)
+
+The left panel locates the standard and enlarged kinetic domains in the actual
+FLASH source. The middle panel enlarges the fixed pressure-measurement region;
+the grid shows its 16 spatial bins. The right panel shows the out-of-plane field
+at the end of the fresh WarpX control. Boundary responses are visible near the
+patch edges; the pressure observable applies to the yellow central region.
+[Download PDF](../_static/demos/coupled-field-handoff.pdf) ·
+[Open SVG](../_static/demos/coupled-field-handoff.svg).
+
+FLASH evolves resistive fluid MHD. The local WarpX problem instead evolves
+collisionless particles and electromagnetic fields. The handoff preserves a
+recorded source state and declares the coordinate rotation and dimensional
+mapping. It is a **one-way initial-condition transfer**: kinetic fields are not
+fed back into FLASH.
+
+## Look inside the pressure measurement
+
+![Spatial maps of time-averaged pressure-tensor departure in the ion and electron measurement bins](../_static/demos/coupled-pressure-map.png)
+
+These tiles use the actual particle moments from the fresh $576^2$, 32-particle
+control. Each averages the local three-component pressure-tensor departure over
+$t\Omega_{ci}=0.3$–$0.8$; there is no spatial smoothing. The area/time means are
+**0.04383 for ions and 0.05955 for electrons**, below the hypothesized 0.20 threshold.
+The color scale retains that threshold so the size of the departure is visible.
+[Download pressure-map PDF](../_static/demos/coupled-pressure-map.pdf).
+
+The new run separates particle-count sensitivity from grid sensitivity. Its
+matched-grid changes were 0.00411 and 0.00565; its fixed-grid particle-count changes
+were 0.00319 and 0.00155 for ions and electrons. The recorded control checks pass,
+but these are commissioning findings. The next prospective fresh-seed evidence
+run could not fit the remaining compute allowance. **The original hypothesis
+remains unresolved**, with no accepted claim verdict.
+
+## Follow the evidence and the next test
+
+![Actual FLASH-to-WarpX evidence map connecting the source, transfer, controls, unresolved claim and deferred fresh-seed experiment](../_static/demos/coupled-evidence-map.png)
+
+Gray nodes preserve historical parent controls; blue nodes show fresh
+commissioning. The dashed experiment is explicitly unrun. This map summarizes
+recorded dependencies; it does not add a supported claim or an invented repair
+to the formal claim graph. [Download evidence-map PDF](../_static/demos/coupled-evidence-map.pdf).
+
+The 30-minute continuation completed five recorded jobs, including the 567-second
+kinetic trajectory and the combined source/control analysis. Both directors
+resumed useful worker preparation while simulations continued. At the end, the
+coupled director deferred an unaffordable run and requested a quantitative report.
+The report was written; its independent reviewer timed out before returning a
+verdict. This is retained as a limitation of this trial, with subsequent repairs
+in the [demo audit](../research/demo-audit-20261008.md).
+
+| Follow a figure or result | Original record |
+|---|---|
+| Fresh kinetic control | [Execution receipt](../../demos/flash_warpx_kinetic_patch/continuation_record/experiments/exp_a1842d496f9ccf18d93f7647.json) |
+| Source and control comparisons | [Combined analysis](../../demos/flash_warpx_kinetic_patch/continuation_record/experiments/exp_2170ea427cd8f5af2df39f06/workspace/analysis.json) |
+| Figure arrays and source hashes | [Plotting provenance](../../demos/flash_warpx_kinetic_patch/visual_data/provenance.json) |
+| Report review outcome | [Preserved finalization record](../../demos/flash_warpx_kinetic_patch/continuation_record/finalization.json) |
+
+## The bounded question
+
 ![The selected FLASH magnetic field and current density, with kinetic patch and measurement region marked](../../demos/flash_warpx_kinetic_patch/record/experiments/exp_82b9e64be938e71bcdd31e78/workspace/macro_patch.png)
 
 *Agent-generated view of the actual $512^2$ FLASH source. The red rectangle marks
 the enlarged kinetic domain; the green rectangle marks the pressure measurement
 region. Coordinates and fields are normalized. This is recorded exploration.*
 
-## The bounded question
 
 The operator supplied a resistive island-coalescence application and working
 transfer helpers. GPT-6.1 Sol at high effort served as worker, with a separate

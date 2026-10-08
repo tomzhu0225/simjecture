@@ -4,6 +4,13 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+- Preserve two neutral 30-minute plasma continuations and add field-led visual
+  walkthroughs with real evidence maps, FLASH evolution, kinetic patch geometry,
+  spatial pressure maps, hashed plotting bundles and PDF/SVG exports.
+- Fix report-finalization edge cases observed in those trials: preserve admitted
+  diagnostic jobs, resume the writer after asynchronous analysis, allocate unused
+  drafting time to review and allow one deadline-bound review transport retry.
+
 - Reserve finishing time in new minimal studies for a current scientific report,
   independent report assessment and a bounded revision. Enforce numerical and
   native-agent cutoffs, expose the phase in the GUI, and bind report assessment

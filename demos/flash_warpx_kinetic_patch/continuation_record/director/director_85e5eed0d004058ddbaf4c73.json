@@ -1,0 +1,14 @@
+{
+  "id": "director_85e5eed0d004058ddbaf4c73",
+  "created_at": 1791445503.180137,
+  "packet_sha256": "24f89797e4543ee0e909301027ddf79fef03e4684302328a44ea9617f35b74de",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "The previous continue decision remains defensible. The new audit, exp_4b404fe3e1562cfb62f5daee, preserves historical exploratory status and supplies quantitative qualification results and figures. Its reported matched-patch and timestep gates pass; the historical coarse16 center-of-mass flow gate still fails. These are unreviewed qualification findings, not scientific acceptance. The running fine576/32ppc full-window control remains useful for separating grid sensitivity from particle-count sensitivity. No telemetry establishes its progress or completion forecast. Budget feasibility remains at risk: at packet time it had consumed 526 seconds, exceeding the recorded 450-second estimate, although its remaining configured timeout was approximately 124 seconds within the 664-second compute allowance. A subsequent fresh-seed run also requires methods review, storage availability and sufficient analysis time. The worker completed useful parallel analysis and drafted RESULTS.md, but source-audit and macro-figure submissions were blocked by storage reservation. That submission blocker does not justify stopping the useful kinetic control; review preparation can proceed now.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "at_risk",
+  "stop_experiments": [],
+  "wake_worker": true,
+  "next_action": "Keep exp_a1842d496f9ccf18d93f7647 running. Wake the worker to prepare and submit the completed historical qualification package and current implementation for independent methods review, explicitly identifying the unfinished matched32ppc control, historical exploratory status, failed coarse16 flow gate and retained limitations. This is concrete review work while the simulation runs. Prepare the report's control comparisons from the completed audit figures. Defer the storage-blocked source audit and macro-figure submissions until reservation becomes available; preserve existing artifacts. When the control finishes, analyze its full frozen window, add matched32ppc grid and fixed-fine particle-count comparisons, and supply those results to the reviewer. Reassess the fresh-seed runtime using actual completed costs, allowing for loading, diagnostics, analysis and storage. Launch fresh decisive evidence only after methods authorization and only if its conservative completion estimate fits before compute_deadline=1791446084.1515079. Preserve the 450-second report reserve. If qualification fails or that sequence cannot fit, complete the quantitative unresolved report with the specific obstacle and next discriminating test; retain the original window, physical assumptions and decision gates."
+}

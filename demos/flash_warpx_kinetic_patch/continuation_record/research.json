@@ -1,0 +1,187 @@
+{
+  "schema_version": 3,
+  "study_id": "508a8749e0784d6390b891d919aa2caf",
+  "methods_required": true,
+  "workflow": "minimal",
+  "completion_policy": "repair",
+  "execution_backend": "bubblewrap",
+  "hypothesis": "In a prospectively selected, numerically resolved current-sheet region of the supplied two-dimensional FLASH island-coalescence model, a collisionless electron-ion kinetic continuation at ion-scale sheet width remains adequately represented by isotropic species pressures: the time- and area-averaged departure A_s = ||P_s - tr(P_s)I/3||_F / (sqrt(3) tr(P_s)/3) is no greater than 0.20 for both ions and electrons in an independently qualified interior measurement region, after the initialization transient and over a window lasting at least half an inverse reference ion cyclotron frequency. A spatially resolved MHD sheet is thus sufficient for this particular local isotropic-pressure prediction.\n\nUse a reduced ion/electron mass ratio of 25 and initially equal ion/electron scalar temperatures, with a nonrelativistic dimensional mapping of the normalized MHD state. Select the source state, region, physical scale, observation window and numerical decision rule prospectively, before decisive kinetic evidence. Target measured sheet half-width / ion skin depth between 0.5 and 2, and state its exact definition. The finite realization and its conditioning assumptions must be explicit. This tests local kinetic pressure behavior, not a universal reconnection rate, global two-way MHD-PIC accuracy, or a radiation claim. A transfer transient, underresolved/noisy pressure diagnostic or boundary-contaminated signal is not a scientific counterexample.\n",
+  "created_at": 1791444734.1515079,
+  "deadline": 1791446534.1515079,
+  "finalization_policy": {
+    "reserve_seconds": 450.0,
+    "compute_deadline": 1791446084.1515079
+  },
+  "capabilities": "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/coupled-final-capabilities",
+  "capability_hashes": {
+    "flash-island-coalescence-resistive-mhd-4.8": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80",
+    "warpx-cpu-26.07": "c0c871796b0e09d9b8ada76f2b3129e9de44f02af3cf88b4b42bc53b255c4e16",
+    "warpx-cuda-openpmd-26.07": "d56f0e12c7e6a52cb7f1f6ad3790633549749e3c48595478c9cb3fefdc460c7f"
+  },
+  "max_experiment_bytes": 4294967296,
+  "max_total_bytes": 8589934592,
+  "operator_protocol": "Purpose: make an actual, inspectable two-solver autonomous research study. Use FLASH for a fresh macroscopic island-coalescence trajectory, identify a physically interesting current sheet, and use WarpX for a genuinely data-dependent local kinetic follow-up. GPT-6.1 Sol is the action/worker model, with a separate high-effort reviewer context. You have two hours after operator commissioning; decide your own order, allocation, controls, patch selection and refinements. Aim for an affordable complete trajectory and a scientifically interpretable test before enlarging it.\n\nUse the modern minimal lab API. This launch uses local capabilities without an execution pool: omit lab.run machine/resources arguments and use the commissioned MPI rank arguments directly. The installation contains flash-island-coalescence-resistive-mhd-4.8 and warpx-cuda-openpmd-26.07 (2D, non-MPI CUDA/openPMD), plus a CPU fallback. Use lab.run(..., capability=..., stage='exploration') for commissioning, lab.analyze for exploratory postprocessing, and reviewed lab.method definitions before decisive runs. Some older capability skills describe classic instrument claims; do not build that classic hierarchy here. The independent reviewer must require real receipts from BOTH FLASH and WarpX linked through the actual transferred data. The capability-prefix list is an any-of execution allowance, not evidence that both have been used.\n\nThe guided FLASH program is an execution starting point. Its exact anchor is permanently non-evidentiary. Fresh MHD source fields for a scientific handoff must come from this study's own recorded FLASH run. Preserve the source HDF5 file hash and time, its experiment ID, extraction/transfer sources, coordinate transformation, dimensional scales and the exact transferred inputs to WarpX. A separately launched textbook Harris sheet without a measured FLASH-to-kinetic relationship does not satisfy this task.\n\nThe supplied extract_flash.py reconstructs a flux potential from a single uniform normalized FLASH output block and retains original magnetic fields, density, scalar pressure and flow. It explicitly rotates FLASH (x,y,z) to WarpX (X,Y,Z)=(x,-z,y). prepare_patch.py interpolates that potential and forms a discrete curl on a Yee grid, maps density/pressure/velocity into SI units, and splits currents into species drifts while preserving center-of-mass flow. kinetic_patch.py loads these fields and neutral paired particles through WarpX callbacks, runs explicit electromagnetic PIC and records openPMD fields, reduced energies and locally binned velocity-covariance tensors. These are operator-authored commissioning helpers; inspect them and revise agent-owned copies if needed. Their smoke defaults, pressure summaries and initial controls do not qualify the scientific hypothesis.\n\nThe normalized MHD snapshot does not specify a species mass, temperature partition, physical length/density scale or collision frequency. Record these extra choices. The initial ion/electron mass ratio is 25, Ti/Te=1, with target measured sheet-width/di in [0.5,2]. Use a low enough vA/c to justify the nonrelativistic pressure convention, and check this against a measured relativistic correction or control if necessary. Match the source's density, total pressure, bulk flow, magnetic topology and Ampere current within justified tolerances; preserve any deliberate projection, interpolation or equilibrium adjustment and show its size. Do not silently replace the source with a convenient analytic equilibrium. If a locally fitted surrogate is scientifically necessary, record the fit residual and its relation to the original fields, then obtain review of the changed scope.\n\nThis is one-way initial-condition transfer, not a two-way embedded PIC coupler. PIC is collisionless, whereas the FLASH instrument evolves a scalar resistivity. Do not interpret a difference in their global reconnection rates as an isolated kinetic correction. Use the finite local pressure-closure question in hypothesis.txt. Make the local region/window robust to absorbing boundaries and initialization relaxation; check a larger patch with the same physical measurement region and cell scale, and distinguish field-boundary signals from particle transit. If the window required by the hypothesis cannot be isolated, report that limitation instead of choosing an arbitrarily short startup window and calling the original claim supported.\n\nBefore decisive evidence, freeze the source-state selection, sheet-width definition, species-pressure/velocity convention, spatial bins, eligible-particle/noise policy, measurement region and physical time window, uncertainty rule, physical mapping and acceptance criterion. Resolve the kinetic scales needed for the observable; enforce explicit EM CFL and inspect plasma/gyro time resolution. Use meaningful particle-count/seed and spatial/time controls, based on observed error and cost. Separate shear/bulk-flow broadening from thermal pressure by subtracting local mean velocity. Check current and charge balance, discrete div B, energy/boundary flux behavior and initial moment matching. The helper's median/p90 plots are exploratory; they do not implement the root's time-and-area-averaged decision automatically.\n\nDo not run unneeded full-domain kinetic simulations or mechanically reproduce a previous GEM benchmark. Use a compact evidence index and targeted reads of summaries; do not repeatedly ingest full HDF5 arrays, large native logs or complete prior transcripts. Retain raw fields/moments needed to audit decisive measurements, and reference exact paths/hashes. Declare all input files (including transferred NPZ and JSON) in each lab submission: inputs are not implicitly shared across experiment workspaces.\n\nIf the original pressure-closure claim is falsified by qualified data, propose the smallest scientifically useful repair, commit its commands and predictions before collecting fresh validation, and challenge it. An accepted falsification alone does not finish this repair-policy study. Preserve failed attempts, methods feedback and unresolved gaps. Continue useful work until a supported original/repair or the wall cutoff, without claiming that running both solvers alone proves the physics.\n\nKeep RESULTS.md readable, with the macro-to-patch rationale, source/experiment/review links, final scope and limitations. Produce actual FLASH field/current plots with the chosen patch overlaid, initial/final kinetic fields, pressure-tensor/anisotropy measurements and numerical-control comparisons. Attribute operator commissioning separately from autonomous scientific decisions. Work in this study's research and experiment directories; do not edit the repository, previous campaigns, shared runtimes or private reference source.\n\nBackground: Li et al. (2023), 'Numerical Study of Magnetic Island Coalescence Using Magnetohydrodynamics With Adaptively Embedded Particle-In-Cell Model', https://arxiv.org/abs/2212.07980; and Makwana et al. (2017), 'Two-way coupling of magnetohydrodynamic simulations with embedded particle-in-cell simulations', https://arxiv.org/abs/1708.02877. These motivate local kinetic checks and patch-size controls; they do not establish this study's result. Read further primary sources as needed using your native tools.\n\n\nCONTINUATION \u2014 additional 30-minute wall budget\nContinue your own previous investigation from its frozen continuation record. The original\nhypothesis and scientific requirements are unchanged. Inspect the actual parent receipts,\nsources and results to decide which further simulations, checks or analysis are worthwhile.\nSelected small working files are available under inherited/; the parent path in the frozen\ncontinuation record provides read-only context and access to retained larger artifacts.\nDo not modify the parent, shared runtimes or repository. Historical findings keep their\noriginal status. You may reuse them transparently in the report without calling them fresh\nvalidation. The host reserves finishing time for RESULTS.md and independent report assessment.\nDeliver a current quantitative report with figures, provenance, numerical limitations and\nwhat you learned. Distinguish falsified, supported within tested scope, and unresolved.\nIf unresolved, explain the concrete obstacle and the next discriminating test. Choose the\nresearch strategy yourself; no particular scientific conclusion is requested.\n",
+  "protocol_sha256": "bacbfcf05f344f4425f7faea993e4340ed5d7bcadbe6290fa05210d255e676d0",
+  "requirements": {
+    "require_method_review": true,
+    "required_capability_prefixes": [
+      "flash-",
+      "warpx-"
+    ]
+  },
+  "guided_commissioning": {
+    "available": true,
+    "schema_version": "0.1.0",
+    "name": "flash-warpx-kinetic-patch-v1",
+    "description": "One-way FLASH-to-WarpX kinetic follow-up: a working FLASH island trajectory and tested coordinate, flux-potential, dimensional and particle-initialization helpers. Supplied checks are non-evidentiary.",
+    "capability": "flash-island-coalescence-resistive-mhd-4.8",
+    "program_path": "guided/flash_islands.py",
+    "validated_argv": [
+      "guided/flash_islands.py",
+      "--eta",
+      "0.001",
+      "--nx",
+      "128",
+      "--ny",
+      "128",
+      "--alpha",
+      "20",
+      "--tmax",
+      "1.2",
+      "--plot-interval",
+      "0.05",
+      "--ranks",
+      "4",
+      "--iprocs",
+      "2",
+      "--jprocs",
+      "2",
+      "--output",
+      "guided/anchor_run",
+      "--summary",
+      "guided/flash_anchor_validation.json",
+      "--overwrite"
+    ],
+    "validation_summary_path": "guided/flash_anchor_validation.json",
+    "operator_validation": "The exact guided FLASH anchor completed through ResearchService. The extraction, SI mapping and fully kinetic CPU initializer completed linked exploratory launches. A separate Bubblewrap/CUDA launch completed 64 PIC steps with E/B initialization matching the prepared patch exactly; see operator transfer/GPU summaries. These establish execution and transfer readiness only.",
+    "limitations": [
+      "Every supplied operator/anchor artifact is permanently non-evidentiary. The study must generate its own FLASH trajectory and fresh WarpX evidence.",
+      "One-way initial-condition transfer is not a two-way MHD/PIC coupler.",
+      "The kinetic realization is collisionless and reduced-mass-ratio; scalar FLASH resistivity is not evolved by PIC.",
+      "Physical scaling, patch/boundary effects, initialization relaxation, particle/grid controls and pressure diagnostics require independent methods review.",
+      "The source exporter supports the normalized 2D, single-output-block island application with zero out-of-plane initial field/flow, not general FLASH AMR states."
+    ],
+    "files": [
+      {
+        "path": "guided/extract_flash.py",
+        "bytes": 5159,
+        "sha256": "28608ddeab7d71584abd32ce910b66621d8ba9cc49d2bb44eb1ead3922e509a0"
+      },
+      {
+        "path": "guided/flash_anchor_validation.json",
+        "bytes": 9563,
+        "sha256": "f64f382c707c3193cc44f66b3e74f1b1ee1a456f7c426763d8964fdfdf6ed84f"
+      },
+      {
+        "path": "guided/flash_islands.py",
+        "bytes": 14588,
+        "sha256": "26f348973b4edeb761f6a25f7023f6c3ea22660f61297a4a58c3d6cc49991588"
+      },
+      {
+        "path": "guided/kinetic_patch.py",
+        "bytes": 12276,
+        "sha256": "4b01a091e35c9b65ad08240bf6596e1c486ee924c0230cd3e1d098385c2e1124"
+      },
+      {
+        "path": "guided/operator_gpu_validation.json",
+        "bytes": 1317,
+        "sha256": "0378a94e4a404a776595b77ccf1ba2c250bcf2d38bf55070dc8b930c4490e9fa"
+      },
+      {
+        "path": "guided/operator_transfer_validation.json",
+        "bytes": 1355,
+        "sha256": "091da359eb3d1852cba60e47d6391bef7e30aba9f8dcb859a0facae553e224b7"
+      },
+      {
+        "path": "guided/prepare_patch.py",
+        "bytes": 6968,
+        "sha256": "0be359a997ac75af4d376f96f18901ed815e2d1b07e2c48336233f4a35b4e20d"
+      }
+    ],
+    "package_sha256": "f0f25f6073d287bc459c7ad1c9953525d1eabb04ee2931a1a186c4ef50f47839",
+    "scientific_evidence_eligible": false,
+    "policy": "operator_validated_starting_point_not_campaign_evidence"
+  },
+  "continuation": {
+    "parent": "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/coupled-study",
+    "created_at": 1791444734.2041774,
+    "parent_manifest_sha256": "7b367c313ab38d6d8d28c5e03bf405f8a56b5aacd497cf5795441a34b4b923c1",
+    "snapshot_sha256": "0a2fcc6e151a2550a773cea77768732c4656b0d4ca0420f3f57d37f3e48db5cb",
+    "brief_sha256": "7862046c11430118a934493268cba5f8634dd199296e63361e6fa3b3e367f50e",
+    "files": {
+      "PRESSURE_CONTRACT.md": "951bc96f13fc7491975b84097cda5939e0e53295169b9765d275400f7d624b4f",
+      "RESULTS.md": "cd524eb1d78f66268cf2cd2dd05ac98fad787d7b248715ee5292c3daed035187",
+      "base_patch.json": "316e8beefde5488c6de26a61ccdf33e70e5af9a32f8a848a3fc967b26a2e9598",
+      "bigfine_patch.json": "515aa1e52f68df0ead47b17098b56014ddaaa6c9c23eea0b6548632da45f41ba",
+      "calculation.py": "ef030822bfce50da0aa95310c94f11bf6f24e0766ee8ca0856ea52eb0ee15844",
+      "data/base/history.json": "352b1508fa0bf184ad34a19ce0fd18d7cf80f2c824a9a0f65667ec9e2543c09b",
+      "data/base/reduced/field_energy.txt": "cf8a3346ec8d815c8ca5c1afd473b640482b83b2286957c6d9a745834a53b135",
+      "data/base/reduced/particle_energy.txt": "7fc2762701874d6a460a0b946a6cec041a946a7f1c0a16bb803b9ae1c9790dd3",
+      "data/base/result.json": "47d04e504df184afd3b47d7f07c247c0a5a7e156dc087adf30e997b4a2f4fbd3",
+      "data/bigfine/history.json": "aaca7c3e8b949ecf93f457a718d5d521b8c30743fc0a7290962d83452fae7eff",
+      "data/bigfine/reduced/field_energy.txt": "86566baedb12dc291b8c42f38930e4d8d32230b4c1371d58f2908248ac9d4964",
+      "data/bigfine/reduced/particle_energy.txt": "b5c354a2d9eea24d24f7a37feb92b78e2bc4c4a3fd5ad13b0d3363b3c454524d",
+      "data/bigfine/result.json": "54e98fb6446493ac3e30234739bf7118a76224e28cae534f0e6ee4127dcb0e3a",
+      "data/fine/history.json": "9181c8b4533c313ef51cc64bd94f8cf887c7d58822a869982ae66b7ee9256d05",
+      "data/fine/reduced/field_energy.txt": "78a51efef93331429d6394f1af58dad19780b8233d6f63719759706f43699225",
+      "data/fine/reduced/particle_energy.txt": "6f0fe04ecf4bd6428133f4bf5cdc4263a801f4c2aec37058d025e3c31f483073",
+      "data/fine/result.json": "55f744d9cb294f555515d8a2d1e917a87eb15b8d46db8bf7cfef2223473fb9ee",
+      "data/large/history.json": "4ecd4975057e479ee63a4e6bb6d9a5919caa11119727d3bba5464a101b665d7b",
+      "data/large/reduced/field_energy.txt": "ebc96c2371908907ab0381a183bb5db42ce14c4f5b9582be9e7bab7d05f2874e",
+      "data/large/reduced/particle_energy.txt": "1927ebdf8295c7c3f9b4e27be4c24e2f1e5b2bc7c412e56382c417f300103756",
+      "data/large/result.json": "e0258e217f04788ab9cae4248169384a77b480a57468d52ca2b1a1d98e8b198d",
+      "data/particles/history.json": "3325177d481fbf641cbeb33fc988cba5ec9c55b934f628fe5d30d928976c3cac",
+      "data/particles/reduced/field_energy.txt": "655da56d5644d8672842b68aaa08796d20834865793fc2720b90fc84efa4ba49",
+      "data/particles/reduced/particle_energy.txt": "43f1b7be114814d60c126e70368c0b47c0ac48e300f22775b1ac18e0424f5618",
+      "data/particles/result.json": "afee1e305d2552629189ab5c48f792443401fa1d3699a9ba7ce26c64193d6c9e",
+      "data/timestep/history.json": "0f6cb2bb9ba9ad21eadbbe3d734c91188deaa32e2f56bc77f0870f025ba01f4a",
+      "data/timestep/reduced/field_energy.txt": "51b7b166cadd308a876afde3f50068cc76266c4ca42e3dd9073cf35f8f958c7f",
+      "data/timestep/reduced/particle_energy.txt": "9eef996061ed17ef9c77abebc30c99a5d97736684d430686cb3fa31dd6290998",
+      "data/timestep/result.json": "efe5979ed8006280fdcff7b5cfbdce334a40d450f6c7092be7a0249ab42356e8",
+      "estimator.py": "44e914ad2780edabf2754f4fae734fd9b5811d6d8b5db094e57f6e379d0be0d4",
+      "extract_flash.py": "28608ddeab7d71584abd32ce910b66621d8ba9cc49d2bb44eb1ead3922e509a0",
+      "fine_patch.json": "1eda87349b19795cb5b1f86b72e601caf734cd85c43718619e03ffd30cfdce69",
+      "flash_driver.py": "73ed49055856adb3c30f8a5f4f3aaebe9e18a496fa955bf027b7400368b588d0",
+      "guided/extract_flash.py": "28608ddeab7d71584abd32ce910b66621d8ba9cc49d2bb44eb1ead3922e509a0",
+      "guided/flash_anchor_validation.json": "f64f382c707c3193cc44f66b3e74f1b1ee1a456f7c426763d8964fdfdf6ed84f",
+      "guided/flash_islands.py": "26f348973b4edeb761f6a25f7023f6c3ea22660f61297a4a58c3d6cc49991588",
+      "guided/kinetic_patch.py": "4b01a091e35c9b65ad08240bf6596e1c486ee924c0230cd3e1d098385c2e1124",
+      "guided/operator_gpu_validation.json": "0378a94e4a404a776595b77ccf1ba2c250bcf2d38bf55070dc8b930c4490e9fa",
+      "guided/operator_transfer_validation.json": "091da359eb3d1852cba60e47d6391bef7e30aba9f8dcb859a0facae553e224b7",
+      "guided/prepare_patch.py": "0be359a997ac75af4d376f96f18901ed815e2d1b07e2c48336233f4a35b4e20d",
+      "kinetic.py": "c63038d1cbb87a787e52f00483d459b4bb5f16d5bf7b93da68584c656761aa05",
+      "kinetic_analysis.py": "ee457cc1118222f245fadf31519af9036d56e093f6a27f9ca7c50268d035e765",
+      "kinetic_batched.py": "8ba8f3a8565a41fc72623d95cb1eb3a793cfbc9543d4dc10cd17825de800641b",
+      "kinetic_before_chunks.py": "c63038d1cbb87a787e52f00483d459b4bb5f16d5bf7b93da68584c656761aa05",
+      "kinetic_method_request.json": "da3deac308188e228851912d1a03278257189a6b7e6c1141eb0f0311b4289d97",
+      "kinetic_method_request_v2.json": "70e9d33afd027c209c02e58e3275f392afcbd45dd482191ce0823685c5e21473",
+      "kinetic_pre_budget.py": "9e8b11b64be17880a1be51cd8066231e6a76de3527f32daa53114b768014b4f6",
+      "large_patch.json": "cc14291a76ef2276bf7e687d19995e71b653ae8badb822d9cbbcffa2ddcbccbb",
+      "loader_equivalence.py": "f605a92de57029ce91fe568efb67b4f839af55074bd67f749edd30fce401b2a3",
+      "macro256.json": "9e087ee7da74b481b76b80b10e79d28c991f8f31125e0a1402cf8178a3c473a0",
+      "macro512.json": "13a35761198aa1571ab3c0c100068ea31533a20a600d854fb5270c777f01ff1c",
+      "macro512_summary.json": "eba7054b59dfad584cf82f8d6eb8147fe99f0dd9c4e307513387c71249c6e1b2",
+      "pilot_patch.json": "1f9195c5e6ff8cea9dfff1f252154b20067a80782a13906d04117cbe47fa5623",
+      "prepare_patch.py": "0be359a997ac75af4d376f96f18901ed815e2d1b07e2c48336233f4a35b4e20d",
+      "refined_selection.json": "d43ab2103f70f845dbbe434bc3b807181a52a1c1c4a0574998a1f8cfb8ee7799",
+      "select_patch.py": "d582d3c1dd0b10817758ad82990317a71ea6a5469d513562fedad999d9ed3dcc",
+      "source_qualification.py": "46e1cf532996e0f762f17bb679c7bd4cfb5a29c27fcd82d99281314e7b931363"
+    }
+  },
+  "director_policy": {
+    "enabled": true,
+    "interval_seconds": 300,
+    "review_seconds": 120,
+    "unchanged_review_seconds": 900
+  }
+}

@@ -8,6 +8,13 @@ operations.
 
 ## Plasma research
 
+Start with the pictures: both plasma walkthroughs include actual field maps,
+evidence maps, short explanations of each measurement and downloadable figures.
+Their linked receipts distinguish completed work from outstanding tests.
+
+![A real FLASH current sheet, the kinetic measurement region and the evolved WarpX field](../_static/demos/coupled-field-handoff.png)
+
+
 [**Magnetic-island coalescence with FLASH**](island-coalescence.md) investigates
 reconnection-rate scaling in a 2D resistive-MHD model. The classic campaign,
 original field figures and later statistical correction remain available. A

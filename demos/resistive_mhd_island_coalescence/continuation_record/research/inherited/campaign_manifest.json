@@ -1,0 +1,43 @@
+[
+  {
+    "experiment": "exp_e94a72802e57f0848a0009f1",
+    "json": "evidence_0.json",
+    "stage": "evidence"
+  },
+  {
+    "experiment": "exp_248a68db0bbe5af30965f781",
+    "json": "evidence_1.json",
+    "stage": "evidence"
+  },
+  {
+    "experiment": "exp_49024ba434ed878193c528a5",
+    "json": "evidence_2.json",
+    "stage": "evidence"
+  },
+  {
+    "experiment": "exp_6f79bf4efaa69e1b133e070f",
+    "json": "evidence_3.json",
+    "stage": "evidence"
+  },
+  {
+    "experiment": "exp_71036c76cc76352d4d71cbda",
+    "json": "evidence_4.json",
+    "stage": "evidence"
+  },
+  {
+    "experiment": "exp_b7941ad7af6db96c755aabf7",
+    "json": "evidence_5.json",
+    "stage": "evidence"
+  },
+  {
+    "experiment": "exp_8be5a6832b45d20c1bf947ef",
+    "json": "evidence_6.json",
+    "stage": "evidence"
+  },
+  {
+    "experiment": "exp_0994411061cacfc10dc58ebb",
+    "json": "result.json",
+    "raw": "raw_fields.npz",
+    "stage": "evidence_recovered"
+  }
+]

@@ -1,0 +1,34 @@
+{
+  "scope": "Actual launcher transfer/initialization commissioning only; not scientific evidence.",
+  "source_flash_experiment": "exp_bed50fd68869aa9e6441647b",
+  "extract": "exp_9e235bb120ee7b350a9b4400",
+  "prepare": "exp_c879beadb9c00cd9959fda6d",
+  "cpu_kinetic": "exp_c8c13f40661a6886dc895f1d",
+  "kinetic_result": {
+    "completed": true,
+    "backend": null,
+    "gpu": false,
+    "steps": 8,
+    "dt_s": 8.225509116623556e-15,
+    "dt_omega_pe": 0.4640388251533953,
+    "duration_omegaci": 0.007571657678474384,
+    "elapsed_s": 0.37590881699907186,
+    "initial_field_relative_errors": {
+      "bx": 0.0,
+      "bz": 0.0,
+      "ey": 0.0
+    },
+    "initial_maximum_particle_speed_over_c": {
+      "ions": 0.06310613947832093,
+      "electrons": 0.3268633972392519
+    },
+    "patch_sha256": "fc59aacd0857a4bd52e6320e1d373cbc64b18776bdbc986a61d77d481c8bf945",
+    "ppc_per_species": 16,
+    "seed": 20261008,
+    "moment_convention": "Nonrelativistic m*n*<v_prime v_prime>, velocity v=u/sqrt(1+u^2/c^2); local bin mean subtracted.",
+    "isotropy_metric": "Frobenius(P-tr(P)I/3)/(sqrt(3)*tr(P)/3)",
+    "moment_bins_per_axis": 8,
+    "roi_linear_fraction": 0.5,
+    "scope": "Collisionless one-way local continuation. Absorbing boundaries, transfer relaxation and numerical/particle controls remain scientific qualification requirements."
+  }
+}

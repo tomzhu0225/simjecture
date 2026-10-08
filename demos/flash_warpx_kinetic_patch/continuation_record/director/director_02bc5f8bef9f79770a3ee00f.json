@@ -1,0 +1,14 @@
+{
+  "id": "director_02bc5f8bef9f79770a3ee00f",
+  "created_at": 1791446022.8172743,
+  "packet_sha256": "b92fef597e2a14b52284fe10b4bd92cb081bd64e04f757ae2cabdd5337e49fad",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "replan",
+  "rationale": "The completed fine32 control and audit resolve the previous execution uncertainty. The audit reports matched-32ppc spatial mean-A differences of 0.00411/0.00565 and fixed-fine particle-count differences of 0.00319/0.00155 for ions/electrons, with the recorded control gates passing. Independent methods review permits prospective collection but accepts no scientific claim. Scientific feasibility remains limited by the recorded numerical and boundary qualifications and the absence of prospective decisive evidence. Budget feasibility for the planned fresh-seed run is now infeasible: only 113 seconds of compute allowance remained at packet time, versus approximately 258 seconds for historical fine16, a declared 380-second fresh-run forecast, and 567 seconds for the completed fine32 control. Analysis adds further cost. The reviewed full-window run cannot defensibly fit before the compute deadline. No experiments are active. Redirect to the quantitative report and independent assessment, preserving historical exploratory status and the protected reporting reserve.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "infeasible",
+  "stop_experiments": [],
+  "wake_worker": true,
+  "next_action": "Acknowledge this replan and record that the prospective fresh-seed run is deferred because its demonstrated costs exceed the remaining compute allowance. Do not launch a shortened substitute or relax the frozen physics, window or qualification gates. Update RESULTS.md immediately: replace stale running-control and pending-methods statements with the completed receipts and resolved methods verdict; add fine32 full-window means, matched spatial and particle-count comparisons, source qualification and the retained failed coarse16 gate. Link the completed macro, kinetic-field, pressure-tensor and control figures with exact artifact provenance. Distinguish historical exploration, fresh commissioning observations, methods authorization and accepted scientific evidence. Submit the current report and compact evidence index for independent report/scientific assessment in a separate fresh context. Pending that assessment, describe the original hypothesis as unresolved and identify the next discriminating test as the reviewed fine576/16ppc seed20261009 full-window run with the frozen uncertainty and qualification rules. Finish numerical work by compute_deadline=1791446084.1515079 and preserve the 450-second report reserve."
+}
