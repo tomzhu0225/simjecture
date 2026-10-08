@@ -1,0 +1,8 @@
+{
+  "id": "director_d70aa976f3f0b33b0238ce61",
+  "response": "plan",
+  "reason": "Confirmed full-window completion but failed the prospective A_z closure criterion; preserve N=96 as ineligible, inspect its archive, and use one preplanned N=120 targeted mesh test before reallocating budget. The N=120 test costs about 20 s extrapolated from the observed N=96 10.07 s trajectory and is diagnostic, not a relaxation of the screen.",
+  "plan": "note_5fbba5500bac9519d4ee18f2",
+  "created_at": 1791433321.0796816,
+  "authority": "Worker response; not scientific approval"
+}

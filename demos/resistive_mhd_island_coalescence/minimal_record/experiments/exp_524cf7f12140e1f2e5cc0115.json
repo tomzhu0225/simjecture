@@ -1,0 +1,139 @@
+{
+  "id": "exp_524cf7f12140e1f2e5cc0115",
+  "status": "succeeded",
+  "operator_guidance_ids": [],
+  "created_at": 1791433053.0468776,
+  "timeout": 120,
+  "workspace_limit_bytes": 4294967296,
+  "binding": {
+    "source": "analysis.py",
+    "args": [
+      "--case",
+      "exploratory/pilot_s1000_256/result.json",
+      "exploratory/pilot_s1000_256/raw.tar.gz",
+      "--outdir",
+      "current-check-plots",
+      "--output",
+      "current-check.json"
+    ],
+    "inputs": {
+      "analysis.py": "a2fb378f7b0da40a2ad85bfadda44682a23a86dc37a0edd37dde0db308c4be94",
+      "exploratory/pilot_s1000_256/result.json": "c09e9824a0e933eceab4428e27fada465cce639bd6282a7ea51c7b8ec9f7fab2",
+      "exploratory/pilot_s1000_256/raw.tar.gz": "bc4d540b838abcbeb24a7be1321f0c903de99f871ac6011e60096f0d4f8c1f15"
+    },
+    "capability": null,
+    "runtime_sha256": null
+  },
+  "outputs": [
+    "current-check.json",
+    "current-check-plots/scaling_uncertainty.png",
+    "current-check-plots/branch_residuals.png",
+    "current-check-plots/field_current_pilot_s1000_256.png"
+  ],
+  "commitment": null,
+  "key": null,
+  "stage": "exploration",
+  "method": null,
+  "review_documents": null,
+  "parent_experiment": "exp_bed50fd68869aa9e6441647b",
+  "purpose": "diagnostic",
+  "plan": null,
+  "pid": 261548,
+  "worker_identity": {
+    "pid": 261548,
+    "starttime": "1444791",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture/.venv/bin/python3",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/island-study",
+      "--execute",
+      "exp_524cf7f12140e1f2e5cc0115"
+    ],
+    "launched_at": "2026-10-08T04:17:33.209250+00:00",
+    "run_directory": null
+  },
+  "started_at": 1791433053.209368,
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": 0,
+    "stdout": "{\n  \"n_cases\": 1,\n  \"n_eligible\": 1,\n  \"base_fit\": {\n    \"n\": 1,\n    \"defined\": false,\n    \"reason\": \"fewer than three eligible cases\"\n  },\n  \"base_matched_fit\": {\n    \"n\": 0,\n    \"defined\": false,\n    \"reason\": \"fewer than three eligible cases\"\n  },\n  \"refined_fit\": {\n    \"n\": 0,\n    \"defined\": false,\n    \"reason\": \"fewer than three eligible cases\"\n  },\n  \"refinement_persistence\": {\n    \"status\": \"inconclusive_too_few_matched_cases\",\n    \"base_fit\": {\n      \"n\": 0,\n      \"defined\": false,\n      \"reason\": \"fewer than three eligible cases\"\n    },\n    \"refined_fit\": {\n      \"n\": 0,\n      \"defined\": false,\n      \"reason\": \"fewer than three eligible cases\"\n    },\n    \"margin\": 0.1\n  },\n  \"assessment\": {\n    \"finite_sample_assessment\": \"inconclusive\",\n    \"base_all_band_status\": \"inconclusive\",\n    \"base_matched_band_status\": \"inconclusive\",\n    \"refined_band_status\": \"inconclusive\",\n    \"same_side_matched_band_violation\": false,\n    \"common_branch_departure_resistivities\": [],\n    \"limitations\": \"OLS t intervals use residual variation in deterministic points; path and 0.10-cadence envelope is included, but spatial uncertainty is represented only by matched base/refined comparisons. Sampling is finite and does not prove a continuous-domain claim.\"\n  }\n}",
+    "stderr": "Fontconfig error: Cannot load default config file: No such file: (null)\n/work/analysis.py:511: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.\n  plt.legend(fontsize=8)\n/work/analysis.py:526: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.\n  ax.grid(True,which=\"both\",alpha=.25);ax.legend(fontsize=8)",
+    "timed_out": false,
+    "cancelled": false,
+    "workspace_exceeded": false,
+    "stdout_truncated": false,
+    "stderr_truncated": false,
+    "heartbeat_count": 0,
+    "wall_seconds": 2.0678827030005777,
+    "workspace_bytes": 33338448
+  },
+  "artifacts": {
+    ".cache/fontconfig/2300eef321c393bfd76478a5c0e95b23-le64.cache-9": {
+      "sha256": "be4a2bf520a0eb916fab92b15585e493fa0dae62d7c2dd7e275b01664c14e346",
+      "bytes": 382064
+    },
+    ".cache/fontconfig/3830d5c3ddfd5cd38a049b759396e72e-le64.cache-9": {
+      "sha256": "6cb953b213d173a1439944baba4f785aeb8e08fba3cb8794d99004c34310d453",
+      "bytes": 184
+    },
+    ".cache/fontconfig/4c599c202bc5c08e2d34565a40eac3b2-le64.cache-9": {
+      "sha256": "e2077b9c186aa45489f582008a00a7965a8135d07927d2697f6d07e09f9ae69d",
+      "bytes": 104
+    },
+    ".cache/fontconfig/573ec803664ed168555e0e8b6d0f0c7f-le64.cache-9": {
+      "sha256": "e67dc2bd665d1b1bd952ec5dd357d64bae7b2fbd6f1c9896db3e880f9788c58f",
+      "bytes": 152
+    },
+    ".cache/fontconfig/7ef2298fde41cc6eeb7af42e48b7d293-le64.cache-9": {
+      "sha256": "69cf18e42e3d2705da9c867a36e7e16f3d0e8973c41a5a51118e43c1207756fc",
+      "bytes": 208
+    },
+    ".cache/fontconfig/9b89f8e3dae116d678bbf48e5f21f69b-le64.cache-9": {
+      "sha256": "4fa102166b8aaa98765061eae7abe768aa636c327ad2889f68d33d77de9735b0",
+      "bytes": 68800
+    },
+    ".cache/fontconfig/CACHEDIR.TAG": {
+      "sha256": "05e7633fb31bf1f6f8d89020c16b9f24587fdf7638e951c9745b192f5fc3b682",
+      "bytes": 200
+    },
+    ".cache/fontconfig/d589a48862398ed80a3d6066f4f56f4c-le64.cache-9": {
+      "sha256": "233df56e901146f1c5f71911def868b835fb7e43a0e02644a07a1c829e49cc31",
+      "bytes": 51736
+    },
+    "analysis.py": {
+      "sha256": "a2fb378f7b0da40a2ad85bfadda44682a23a86dc37a0edd37dde0db308c4be94",
+      "bytes": 35913
+    },
+    "current-check-plots/branch_residuals.png": {
+      "sha256": "a2ec7a31e5d6e1f01922b73b10f4c3aa0b64eb7490c6167dbfa5b1b491283dbf",
+      "bytes": 44275
+    },
+    "current-check-plots/field_current_pilot_s1000_256.png": {
+      "sha256": "4ed39927e849f559d37c7f565edc81eef0bacb6c809dbecdbf882af59e1250df",
+      "bytes": 445596
+    },
+    "current-check-plots/scaling_uncertainty.png": {
+      "sha256": "ef352385f7401d0c70fdc1e7c03938771662ec596dc645218502c42b38282b54",
+      "bytes": 68982
+    },
+    "current-check.json": {
+      "sha256": "6a016bebc0b4d001e162b300a210bc856224bc1940c129d01e00cc942d947ab3",
+      "bytes": 5294
+    },
+    "exploratory/pilot_s1000_256/raw.tar.gz": {
+      "sha256": "bc4d540b838abcbeb24a7be1321f0c903de99f871ac6011e60096f0d4f8c1f15",
+      "bytes": 32224763
+    },
+    "exploratory/pilot_s1000_256/result.json": {
+      "sha256": "c09e9824a0e933eceab4428e27fada465cce639bd6282a7ea51c7b8ec9f7fab2",
+      "bytes": 10177
+    }
+  },
+  "missing_outputs": [],
+  "input_mutations": [],
+  "output_findings": [],
+  "scientific_status": "unreviewed",
+  "finished_at": 1791433055.351126
+}

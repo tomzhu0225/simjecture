@@ -11,7 +11,10 @@ operations.
 [**Magnetic-island coalescence with FLASH**](island-coalescence.md) investigates
 reconnection-rate scaling in a 2D resistive-MHD model. The classic campaign,
 original field figures and later statistical correction remain available. A
-separate minimal-mode investigation starts from the same commissioned instrument.
+separate one-hour minimal run used the same commissioned instrument and remained
+unresolved after its eligibility checks. A post-run coordinate correction explains
+false diagnostic rejections; the original decisions and partial results remain
+preserved alongside the classic record.
 
 ## A complete minimal-workflow example
 

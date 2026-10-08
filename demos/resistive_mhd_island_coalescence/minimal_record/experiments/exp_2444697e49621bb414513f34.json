@@ -1,0 +1,251 @@
+{
+  "id": "exp_2444697e49621bb414513f34",
+  "status": "succeeded",
+  "operator_guidance_ids": [],
+  "created_at": 1791430886.6871789,
+  "timeout": 300,
+  "workspace_limit_bytes": 4294967296,
+  "binding": {
+    "source": "calculation.py",
+    "args": [
+      "--eta",
+      "0.001",
+      "--nx",
+      "128",
+      "--ny",
+      "128",
+      "--alpha",
+      "20",
+      "--tmax",
+      "1.2",
+      "--plot-interval",
+      "0.05",
+      "--ranks",
+      "2",
+      "--iprocs",
+      "1",
+      "--jprocs",
+      "2",
+      "--output",
+      "pilot_s1000_128_2rank/run",
+      "--summary",
+      "pilot_s1000_128_2rank/result.json",
+      "--archive",
+      "pilot_s1000_128_2rank/raw.tar.gz",
+      "--family",
+      "base"
+    ],
+    "inputs": {
+      "calculation.py": "5b78ee552063e171888b8dc028685b66062dae13a98f08c77e50d9224a1224ab"
+    },
+    "capability": "flash-island-coalescence-resistive-mhd-4.8",
+    "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+  },
+  "outputs": [
+    "pilot_s1000_128_2rank/result.json",
+    "pilot_s1000_128_2rank/raw.tar.gz"
+  ],
+  "commitment": null,
+  "key": "pilot-S1000-N128-2r",
+  "stage": "exploration",
+  "method": null,
+  "review_documents": null,
+  "parent_experiment": "exp_9569a8e06fda35f472250ff6",
+  "purpose": "parity",
+  "plan": "note_d901f678751c9854f397b3b8",
+  "pid": 187508,
+  "worker_identity": {
+    "pid": 187508,
+    "starttime": "1228155",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture/.venv/bin/python3",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/island-study",
+      "--execute",
+      "exp_2444697e49621bb414513f34"
+    ],
+    "launched_at": "2026-10-08T03:41:26.856820+00:00",
+    "run_directory": null
+  },
+  "started_at": 1791430886.8569355,
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": 0,
+    "stdout": "{\"checks\": {\"completed\": true, \"representation\": true, \"physics_controls\": true, \"boundaries\": true, \"diagnostics\": true, \"numerical_regime\": true, \"nominal_spatial_resolution\": false, \"flux_window_reached\": true, \"scientific_evidence_eligible\": false}, \"metrics\": {\"l_over_eta_nominal\": 1000.0, \"flux_low\": 0.01, \"flux_high\": 0.05, \"flux_low_crossing_time\": 0.2603382385464973, \"flux_high_crossing_time\": 1.076384196323529, \"reconnection_time\": 0.8160459577770317, \"normalized_flux_slope\": 0.049016847174836696, \"normalized_reconnection_rate\": 0.0575424893652765, \"normalization\": \"(dPsi/dt)/(B_up^2/sqrt(rho_up)); B_up and rho_up are initial-state means at x=0, 0.08<=|y|<=0.12; L=1\", \"B_up\": 0.9271269083023072, \"rho_up\": 1.0182239055633544, \"nominal_eta_inverse\": 1000.0, \"flux_path_max_abs_mismatch\": 4.657228519738127e-05, \"max_abs_divb\": 7.833733661755105e-13, \"max_boundary_normal_fraction\": 0.031049113904913106, \"initial_sheet_cells\": 6.4, \"nominal_sp_sheet_width_cells\": 4.047715405015525, \"minimum_measured_current_fwhm_cells\": 4.0, \"secondary_extrema_count_peak\": 0.0, \"plasmoid_rule\": \"none detected if no secondary A_z extrema with local prominence >=0.005 for |x| in [0.04,0.22] during flux window\", \"plot_file_count\": 24}}",
+    "stderr": "",
+    "timed_out": false,
+    "cancelled": false,
+    "workspace_exceeded": false,
+    "stdout_truncated": false,
+    "stderr_truncated": false,
+    "heartbeat_count": 1,
+    "wall_seconds": 41.967640220998874,
+    "workspace_bytes": 28353767
+  },
+  "artifacts": {
+    "calculation.py": {
+      "sha256": "5b78ee552063e171888b8dc028685b66062dae13a98f08c77e50d9224a1224ab",
+      "bytes": 18838
+    },
+    "pilot_s1000_128_2rank/raw.tar.gz": {
+      "sha256": "2ef7297e10bf2c41420d79bc4d2d2e711bc657e2376f471f4654c06cde068d69",
+      "bytes": 7248912
+    },
+    "pilot_s1000_128_2rank/result.json": {
+      "sha256": "f771be7960593d88f38b5e3ad8afeac5e6a2bb00188462fde9f1d491f38ab6a1",
+      "bytes": 10202
+    },
+    "pilot_s1000_128_2rank/run/.simjecture-flash-guided-output": {
+      "sha256": "67d1f5ea486320558047f5cff49a53b2b0f1eaca0f699ba9abc1c1f60bcedc67",
+      "bytes": 49
+    },
+    "pilot_s1000_128_2rank/run/flash.par": {
+      "sha256": "925bb8887dcada3aa3acf3c0f959c44263331ac14cff07a80bef69a708b9755b",
+      "bytes": 1779
+    },
+    "pilot_s1000_128_2rank/run/flash_run.dat": {
+      "sha256": "322fe227a37497eacf4711122d3a0c9f18b5baefdd50af10ed1a784da4be1682",
+      "bytes": 357436
+    },
+    "pilot_s1000_128_2rank/run/flash_run.log": {
+      "sha256": "7bd766870c036764dd0325f3a596d0200ba88b49de4257a85bb194eed4893bf9",
+      "bytes": 151483
+    },
+    "pilot_s1000_128_2rank/run/flash_run_forced_hdf5_plt_cnt_0000": {
+      "sha256": "96da4fe988915b84deb9f7b07a2435b6863258fd9009ef05f32a48e13cf225ce",
+      "bytes": 580876
+    },
+    "pilot_s1000_128_2rank/run/flash_run_hdf5_chk_0000": {
+      "sha256": "7bb4ee5f33798a5aee6af924d8bf15949f46efdaac1c92f0acfba6f451d09d43",
+      "bytes": 2950412
+    },
+    "pilot_s1000_128_2rank/run/flash_run_hdf5_chk_0001": {
+      "sha256": "d97a46bb281ef12dfdb09587b5109075e9da613c830375d9ac4524973e9033ae",
+      "bytes": 2950412
+    },
+    "pilot_s1000_128_2rank/run/flash_run_hdf5_plt_cnt_0000": {
+      "sha256": "10c33b8fe925c842b3255502117301860d7d18b2539ce6fcc8f405d78583d66d",
+      "bytes": 580876
+    },
+    "pilot_s1000_128_2rank/run/flash_run_hdf5_plt_cnt_0001": {
+      "sha256": "e02360b1f218f67a28cc7a3f428a2ce169e642c5018b332e7ff0645697454054",
+      "bytes": 580876
+    },
+    "pilot_s1000_128_2rank/run/flash_run_hdf5_plt_cnt_0002": {
+      "sha256": "cc0c3de3bbefc59a4d1e8ee8dd916e2aeb225660910d6eac8aa1feda856b178d",
+      "bytes": 580876
+    },
+    "pilot_s1000_128_2rank/run/flash_run_hdf5_plt_cnt_0003": {
+      "sha256": "00a9454765451a1b26d14c013ca3e63f93c5e57760e04bc1714aa97f344b7e3f",
+      "bytes": 580876
+    },
+    "pilot_s1000_128_2rank/run/flash_run_hdf5_plt_cnt_0004": {
+      "sha256": "3cf31d4f9c0faffbcf155edf24645050fcaffbc094cc47907e47928d1ab2223c",
+      "bytes": 580876
+    },
+    "pilot_s1000_128_2rank/run/flash_run_hdf5_plt_cnt_0005": {
+      "sha256": "e51c38d6acbc55c9aa5ee88564d391522f7bc31c41d163c43e6771d1454a7b17",
+      "bytes": 580876
+    },
+    "pilot_s1000_128_2rank/run/flash_run_hdf5_plt_cnt_0006": {
+      "sha256": "1e3932132032c511d2bc60208ee71460f36b31643142b512e5e31c51a136b7ea",
+      "bytes": 580876
+    },
+    "pilot_s1000_128_2rank/run/flash_run_hdf5_plt_cnt_0007": {
+      "sha256": "d5f236ecf4e86edc781e962aa272e3a51c2349a2225ac4d876dd6f4763a95575",
+      "bytes": 580876
+    },
+    "pilot_s1000_128_2rank/run/flash_run_hdf5_plt_cnt_0008": {
+      "sha256": "d18a0021ec35f659559e18765c624da05d380a5bc246297c31e3c0777a9a09ab",
+      "bytes": 580876
+    },
+    "pilot_s1000_128_2rank/run/flash_run_hdf5_plt_cnt_0009": {
+      "sha256": "a5617f37c3bff9c23ce188a5507abdb0f2f0522cb7117d26b7921790431d3287",
+      "bytes": 580876
+    },
+    "pilot_s1000_128_2rank/run/flash_run_hdf5_plt_cnt_0010": {
+      "sha256": "aabbb2aeee443705ff2d83768017ddd00ae6d4076f13ac210edfa39d1e098df6",
+      "bytes": 580876
+    },
+    "pilot_s1000_128_2rank/run/flash_run_hdf5_plt_cnt_0011": {
+      "sha256": "c5ffe418d2d50e5cff5b2f83c5ada3cee98fcc4927d837dfc7fc77ac8635936c",
+      "bytes": 580876
+    },
+    "pilot_s1000_128_2rank/run/flash_run_hdf5_plt_cnt_0012": {
+      "sha256": "6e3232ffa1ab97a411a9ce249b293a335ed42188b2acdb0b33b6f57784c16ef0",
+      "bytes": 580876
+    },
+    "pilot_s1000_128_2rank/run/flash_run_hdf5_plt_cnt_0013": {
+      "sha256": "bc1b9f23a65ba4563c270b8ea11bbf2c8e21447283fa3b01d19483a20088e529",
+      "bytes": 580876
+    },
+    "pilot_s1000_128_2rank/run/flash_run_hdf5_plt_cnt_0014": {
+      "sha256": "5ec208117454d8cc17bde4f18a5a5710b887a68dd8c2e10d9aa9abae0d131829",
+      "bytes": 580876
+    },
+    "pilot_s1000_128_2rank/run/flash_run_hdf5_plt_cnt_0015": {
+      "sha256": "a3efd693bee1748c3d1916e3a58ac809dd7486ee1f25c4ef5ae99e0790af2bc0",
+      "bytes": 580876
+    },
+    "pilot_s1000_128_2rank/run/flash_run_hdf5_plt_cnt_0016": {
+      "sha256": "97c9d3ca68b77d03763d0a3cdc1b11047ae9611d4aa76327df1d3cca61dd73ab",
+      "bytes": 580876
+    },
+    "pilot_s1000_128_2rank/run/flash_run_hdf5_plt_cnt_0017": {
+      "sha256": "005dc379be0683a742149122f35f01c535535689225964e75bb489b155ba2890",
+      "bytes": 580876
+    },
+    "pilot_s1000_128_2rank/run/flash_run_hdf5_plt_cnt_0018": {
+      "sha256": "4ce49eab10e6e0e14f7f7564f2c7015178c1636b247500e94db8c48725f5098f",
+      "bytes": 580876
+    },
+    "pilot_s1000_128_2rank/run/flash_run_hdf5_plt_cnt_0019": {
+      "sha256": "20c987f6a25b5af4f4c453c0d89882e655b10df08fd1f7c00c226b9aa454ba69",
+      "bytes": 580876
+    },
+    "pilot_s1000_128_2rank/run/flash_run_hdf5_plt_cnt_0020": {
+      "sha256": "c5ce188826070cb67e2c3fa9ab71d3f6fa4e297f03329d28eafd9dd7f2ad6177",
+      "bytes": 580876
+    },
+    "pilot_s1000_128_2rank/run/flash_run_hdf5_plt_cnt_0021": {
+      "sha256": "995fa9a61f1e6f2a35de07583bd1c5aeee23d9bb9b5ae458d60f443d756aaf6c",
+      "bytes": 580876
+    },
+    "pilot_s1000_128_2rank/run/flash_run_hdf5_plt_cnt_0022": {
+      "sha256": "c96f9460ee2f5742fe2a37192ef612d263a30bedcc3ca34461baacf0f72a6184",
+      "bytes": 580876
+    },
+    "pilot_s1000_128_2rank/run/flash_run_hdf5_plt_cnt_0023": {
+      "sha256": "ba59b0d67e0b8f440dd546e8c302ba9c203eb00a545bb39d076a61dff040fd88",
+      "bytes": 580876
+    },
+    "pilot_s1000_128_2rank/run/launcher_stderr.txt": {
+      "sha256": "1fcb6afd4d0b45a7f3817eb2ef25934e9d2b29dfeae0e91af5e9accc2c0f6412",
+      "bytes": 336
+    },
+    "pilot_s1000_128_2rank/run/launcher_stdout.txt": {
+      "sha256": "83443de27306c342675de0ff6ef65bfae7023fbe6e52337ba560a7f9c956ac73",
+      "bytes": 142008
+    }
+  },
+  "missing_outputs": [],
+  "input_mutations": [],
+  "output_findings": [
+    {
+      "path": "pilot_s1000_128_2rank/result.json",
+      "kind": "eligibility_annotation",
+      "detail": "Output declares non-evidence. Resolve this annotation against the host-recorded stage and actual limitations during independent review; do not rerun a solver merely to remove metadata."
+    },
+    {
+      "path": "pilot_s1000_128_2rank/result.json",
+      "kind": "failed_checks",
+      "detail": [
+        "nominal_spatial_resolution"
+      ]
+    }
+  ],
+  "scientific_status": "unreviewed",
+  "finished_at": 1791430928.9094281
+}

@@ -4,6 +4,10 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+- Preserve a fresh one-hour minimal FLASH audit and an explicitly separate,
+  tested post-run correction for an agent-authored half-cell coordinate error.
+  Keep the classic record and all original scientific receipts unchanged.
+
 - Keep WSL's Linux-side NVIDIA utility path during CUDA installation so the
   post-build readiness probe can find `nvidia-smi` after toolchain isolation.
   Install CuPy inside the CUDA runtime, test an actual device kernel, and exclude

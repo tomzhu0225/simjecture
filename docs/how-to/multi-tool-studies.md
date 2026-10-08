@@ -40,7 +40,10 @@ are not automatically available in the next one.
 Treat conversion and interpolation as numerical methods. Test them on a case
 with independently known quantities, then inspect the realized downstream state.
 A file that loads successfully may still have swapped coordinates or the wrong
-energy normalization.
+energy normalization. The [island audit](../demos/island-coalescence.md#post-run-correction-a-half-cell-error-in-the-diagnostic)
+shows a concrete failure: mixing cell-centre and boundary origins produced false
+15%-threshold rejections. A known analytic potential exposed the error that the
+worker and its reviewer had missed.
 
 ## Review the combined conclusion
 

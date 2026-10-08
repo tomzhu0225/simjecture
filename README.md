@@ -5,8 +5,8 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21945748.svg)](https://doi.org/10.5281/zenodo.21945748)
 
 [Try online](https://simjecture.com) · [Documentation](https://drawingsword.com/simjecture/) ·
-[Research loop](docs/concepts/research-loop.md) · [Recorded studies](docs/demos/index.md) ·
-[Contributing](CONTRIBUTING.md)
+[Research loop](https://drawingsword.com/simjecture/concepts/research-loop.html) · [Recorded studies](https://drawingsword.com/simjecture/demos/index.html) ·
+[Contributing](https://github.com/tomzhu0225/simjecture/blob/main/CONTRIBUTING.md)
 
 **Hypothesize. Simulate. Falsify.**
 
@@ -22,7 +22,7 @@ measurements, counterexamples and review.
 
 ## The research loop
 
-![Human direction, autonomous investigation, recorded experiments, independent review, and fresh tests of committed repairs](docs/_static/architecture/research-loop.svg)
+![Human direction, autonomous investigation, recorded experiments, independent review, and fresh tests of committed repairs](https://raw.githubusercontent.com/tomzhu0225/simjecture/main/docs/_static/architecture/research-loop.svg)
 
 A counterexample must survive the relevant numerical controls. Under the **repair**
 completion policy, the agent then proposes the smallest justified change to the
@@ -34,22 +34,23 @@ claim. New browser studies default to answer; the CLI defaults to repair. Both u
 minimal mode by default: flexible agent strategy, recorded experiments and explicit
 scientific acceptance. A deadline can leave the question unresolved.
 
-Read [how the loop works](docs/concepts/research-loop.md) or
-[how evidence is checked](docs/concepts/evidence-and-claims.md).
+Read [how the loop works](https://drawingsword.com/simjecture/concepts/research-loop.html) or
+[how evidence is checked](https://drawingsword.com/simjecture/concepts/evidence-and-claims.html).
 
 ## Follow a real investigation
 
-[**Magnetic-island coalescence with FLASH**](docs/demos/island-coalescence.md)
+[**Magnetic-island coalescence with FLASH**](https://drawingsword.com/simjecture/demos/island-coalescence.html)
 asks whether one reconnection-rate scaling survives changes in resistivity and
 resolution. Explore actual field evolution, the historical campaign and its
-statistical correction, and a separate fresh minimal-mode investigation.
+statistical correction, and a separate one-hour minimal-mode audit that remained
+unresolved, with a tested post-run correction to its coordinate diagnostic.
 
-![FLASH magnetic-island coalescence: current density and field evolution](demos/resistive_mhd_island_coalescence/figures/island_coalescence_evolution.png)
+![FLASH magnetic-island coalescence: current density and field evolution](https://raw.githubusercontent.com/tomzhu0225/simjecture/main/demos/resistive_mhd_island_coalescence/figures/island_coalescence_evolution.png)
 
 *Actual 2D commissioning fields. The linked study separates instrument readiness
 from evidence for the scaling hypothesis.*
 
-The [orbital-accuracy walkthrough](docs/demos/kepler-energy.md) uses the current
+The [orbital-accuracy walkthrough](https://drawingsword.com/simjecture/demos/kepler-energy.html) uses the current
 minimal workflow to investigate a concrete question: **does small energy error
 imply an accurate trajectory?** It connects the operator's brief, actual numerical
 experiments, hypothesis revisions and independent review. It found five counterexamples in the original case matrix, then supported a
@@ -57,7 +58,7 @@ four-case repair using fresh simulations and independent review. The retained
 record can be verified without a model call.
 
 Earlier records remain available. In the
-[historical Gray–Scott study](docs/demos/gray-scott.md), the harness rejected an
+[historical Gray–Scott study](https://drawingsword.com/simjecture/demos/gray-scott.html), the harness rejected an
 attempt to close a claim using evidence commissioned for a different claim. The
 agent registered the missing contract and ran fresh experiments before closing it.
 That record documents the classic workflow; it is not presented as a new-version run.
@@ -75,7 +76,7 @@ That record documents the classic workflow; it is not presented as a new-version
 A repaired claim cannot reuse old exploratory results as fresh validation. Changed
 committed source, missing committed cases and altered recorded outputs are checked
 by the service. Numerical adequacy and scientific interpretation remain review
-judgments. See [the evidence guide](docs/concepts/evidence-and-claims.md).
+judgments. See [the evidence guide](https://drawingsword.com/simjecture/concepts/evidence-and-claims.html).
 
 ## Try it
 
@@ -91,53 +92,53 @@ curl -fsSL https://github.com/tomzhu0225/simjecture/releases/latest/download/ins
 
 The installer verifies the release bundle and prepares Python and the browser
 workspace. Reopen it with `~/simjecture/start-workspace`. Research files live under
-`~/simjecture/artifacts/projects`. See [installation options](docs/getting-started/installation.md).
+`~/simjecture/artifacts/projects`. See [installation options](https://drawingsword.com/simjecture/getting-started/installation.html).
 
 1. Choose a compatible API model or an authenticated native agent in the workspace.
 2. Discuss your question and prepare a study brief with **Autonomous research**.
 3. Review its hypothesis, evidence requirements, completion policy and budget.
 4. Start the investigation and follow its experiments and **Evidence & review**.
 
-The [first-study tutorial](docs/getting-started/first-run.md) walks through the full
-counterexample-and-repair workflow. [Headless studies](docs/how-to/headless-studies.md)
+The [first-study tutorial](https://drawingsword.com/simjecture/getting-started/first-run.html) walks through the full
+counterexample-and-repair workflow. [Headless studies](https://drawingsword.com/simjecture/how-to/headless-studies.html)
 cover terminal launches and automation.
 
 ## Bring your instruments and compute
 
 Ordinary Python studies work without an external solver. Optional capabilities
 include WarpX, operator-supplied FLASH, EOS/opacity tools, ITER diagnostics and
-[GPU cylinder flow](docs/how-to/cylinder-flow.md). The cylinder solver and its
+[GPU cylinder flow](https://drawingsword.com/simjecture/how-to/cylinder-flow.html). The cylinder solver and its
 validation records were contributed by [Zifei Meng](https://github.com/ZifeiMengSPH).
 
-- [Commission a scientific instrument](docs/how-to/guided-commissioning.md) or
-  [add your own capability](docs/how-to/add-a-capability.md).
-- [Run experiments on local or SSH workers](docs/how-to/ssh-workers.md).
-- [Steer or continue an investigation](docs/how-to/continuation-steering.md).
-- [Compare agents on recorded diagnostic tasks](docs/how-to/llm-bench.md).
-- [Operate a hosted service](docs/how-to/public-trials.md).
+- [Commission a scientific instrument](https://drawingsword.com/simjecture/how-to/guided-commissioning.html) or
+  [add your own capability](https://drawingsword.com/simjecture/how-to/add-a-capability.html).
+- [Run experiments on local or SSH workers](https://drawingsword.com/simjecture/how-to/ssh-workers.html).
+- [Steer or continue an investigation](https://drawingsword.com/simjecture/how-to/continuation-steering.html).
+- [Compare agents on recorded diagnostic tasks](https://drawingsword.com/simjecture/how-to/llm-bench.html).
+- [Operate a hosted service](https://drawingsword.com/simjecture/how-to/public-trials.html).
 
 Native agents retain their existing tools and run with their host-account access.
 Numerical experiments use the selected execution backend, Bubblewrap by default.
-Read [security guidance](SECURITY.md) and
-[restricted-host setup](docs/how-to/restricted-containers.md) when deploying workers.
+Read [security guidance](https://github.com/tomzhu0225/simjecture/blob/main/SECURITY.md) and
+[restricted-host setup](https://drawingsword.com/simjecture/how-to/restricted-containers.html) when deploying workers.
 
 ## Contribute
 
 Help us test the research process on meaningful questions. Contributions can add
 scientific instruments, validated diagnostics, reproducible studies, numerical
-review, documentation or infrastructure. Start with [CONTRIBUTING.md](CONTRIBUTING.md)
+review, documentation or infrastructure. Start with [CONTRIBUTING.md](https://github.com/tomzhu0225/simjecture/blob/main/CONTRIBUTING.md)
 or [open an issue](https://github.com/tomzhu0225/simjecture/issues) to discuss a study
 or a substantial change.
 
-[Release notes](CHANGELOG.md) · [Release checks](docs/archive/index.md) ·
-[Research status](docs/research/status.md) · [Historical records](docs/archive/index.md)
+[Release notes](https://github.com/tomzhu0225/simjecture/blob/main/CHANGELOG.md) · [Release checks](https://drawingsword.com/simjecture/archive/index.html) ·
+[Research status](https://drawingsword.com/simjecture/research/status.html) · [Historical records](https://drawingsword.com/simjecture/archive/index.html)
 
 ## Citation and license
 
-Use [CITATION.cff](CITATION.cff) and identify the exact version and Git commit used
+Use [CITATION.cff](https://github.com/tomzhu0225/simjecture/blob/main/CITATION.cff) and identify the exact version and Git commit used
 for a result. The [concept DOI](https://doi.org/10.5281/zenodo.21945748) identifies
 the release series.
 
-Copyright 2026 Bowen Zhu and contributors. Licensed under [Apache 2.0](LICENSE).
-See [third-party notices](THIRD_PARTY_NOTICES.md) for upstream attribution and
+Copyright 2026 Bowen Zhu and contributors. Licensed under [Apache 2.0](https://github.com/tomzhu0225/simjecture/blob/main/LICENSE).
+See [third-party notices](https://github.com/tomzhu0225/simjecture/blob/main/THIRD_PARTY_NOTICES.md) for upstream attribution and
 redistribution requirements.

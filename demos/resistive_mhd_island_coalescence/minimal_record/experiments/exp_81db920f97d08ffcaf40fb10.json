@@ -1,0 +1,255 @@
+{
+  "id": "exp_81db920f97d08ffcaf40fb10",
+  "status": "cancelled",
+  "operator_guidance_ids": [],
+  "created_at": 1791433469.676439,
+  "timeout": 585.418918132782,
+  "workspace_limit_bytes": 4294967296,
+  "binding": {
+    "source": "calculation.py",
+    "args": [
+      "--eta",
+      "0.00025",
+      "--nx",
+      "256",
+      "--ny",
+      "256",
+      "--alpha",
+      "20",
+      "--tmax",
+      "2.6",
+      "--plot-interval",
+      "0.05",
+      "--ranks",
+      "4",
+      "--iprocs",
+      "2",
+      "--jprocs",
+      "2",
+      "--output",
+      "evidence/s4000_n256/run",
+      "--summary",
+      "evidence/s4000_n256/result.json",
+      "--archive",
+      "evidence/s4000_n256/raw.tar.gz",
+      "--family",
+      "base"
+    ],
+    "inputs": {
+      "calculation.py": "91e227f87d338afb723e49d327842c5c90c645c6444b0065e76d830e352735a8",
+      "analysis.py": "d5a6fd48b9d626f2fc1f93813c993ffbb426da7a85e7d9b8dc2460185a7fcdf6",
+      "scan_plan.json": "13f3d4706cfd506dee0dcd7f41f2e3519cc7071ca7438a3d24bd4de9b2368bd2"
+    },
+    "capability": "flash-island-coalescence-resistive-mhd-4.8",
+    "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+  },
+  "outputs": [
+    "evidence/s4000_n256/result.json",
+    "evidence/s4000_n256/raw.tar.gz"
+  ],
+  "commitment": null,
+  "key": "base-s4000",
+  "stage": "evidence",
+  "method": "method_f75c0653e79695559ea0db0d",
+  "review_documents": null,
+  "parent_experiment": null,
+  "purpose": "comparison",
+  "plan": "note_be282a509a0fbbf2a3b6a2da",
+  "pid": 269691,
+  "worker_identity": {
+    "pid": 269691,
+    "starttime": "1486454",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture/.venv/bin/python3",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/island-study",
+      "--execute",
+      "exp_81db920f97d08ffcaf40fb10"
+    ],
+    "launched_at": "2026-10-08T04:24:29.842812+00:00",
+    "run_directory": null
+  },
+  "started_at": 1791433469.8429382,
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": -15,
+    "stdout": "",
+    "stderr": "",
+    "timed_out": false,
+    "cancelled": true,
+    "workspace_exceeded": false,
+    "stdout_truncated": false,
+    "stderr_truncated": false,
+    "heartbeat_count": 7,
+    "wall_seconds": 217.34748350399968,
+    "workspace_bytes": 73411086
+  },
+  "artifacts": {
+    "analysis.py": {
+      "sha256": "d5a6fd48b9d626f2fc1f93813c993ffbb426da7a85e7d9b8dc2460185a7fcdf6",
+      "bytes": 38412
+    },
+    "calculation.py": {
+      "sha256": "91e227f87d338afb723e49d327842c5c90c645c6444b0065e76d830e352735a8",
+      "bytes": 23818
+    },
+    "evidence/s4000_n256/run/.simjecture-flash-guided-output": {
+      "sha256": "67d1f5ea486320558047f5cff49a53b2b0f1eaca0f699ba9abc1c1f60bcedc67",
+      "bytes": 49
+    },
+    "evidence/s4000_n256/run/flash.par": {
+      "sha256": "6b1bfb3a6beeadb2e20cf67ba058f495cbc4d38b64238e5feebe4cb2dc6306a2",
+      "bytes": 1814
+    },
+    "evidence/s4000_n256/run/flash_run.dat": {
+      "sha256": "a9c45ab03d35b23971f5032d6a3a05826c41aacc22f647ac7fe98fa57f10d66a",
+      "bytes": 817566
+    },
+    "evidence/s4000_n256/run/flash_run.log": {
+      "sha256": "95a253bc038fc0be4a1c89548ac52d3e7e034a90cf785474be2b8392f497d31d",
+      "bytes": 291071
+    },
+    "evidence/s4000_n256/run/flash_run_hdf5_chk_0000": {
+      "sha256": "0aaa7a01580e6ab82f3a81033cf16d9479bdefa46fda10d26c53aa359e84cec9",
+      "bytes": 11605260
+    },
+    "evidence/s4000_n256/run/flash_run_hdf5_plt_cnt_0000": {
+      "sha256": "4aa10a8152ad8a2119608760e644e8e3e276018be9c54f34b6ea3f2dbc37cb1d",
+      "bytes": 2153740
+    },
+    "evidence/s4000_n256/run/flash_run_hdf5_plt_cnt_0001": {
+      "sha256": "18d3adf6c18fd3797e4e27f8b9e7e85d4fbdf5dc3db91474db8dca1699d9699d",
+      "bytes": 2153740
+    },
+    "evidence/s4000_n256/run/flash_run_hdf5_plt_cnt_0002": {
+      "sha256": "37d8a2b697632bb20a9c60074146a58a3368d10779e613cf1720855bef7defb1",
+      "bytes": 2153740
+    },
+    "evidence/s4000_n256/run/flash_run_hdf5_plt_cnt_0003": {
+      "sha256": "9cbefe1338e05825533069accea315078999e11475103f5ac8fc856849797cc4",
+      "bytes": 2153740
+    },
+    "evidence/s4000_n256/run/flash_run_hdf5_plt_cnt_0004": {
+      "sha256": "1f4a76579232ac3c3e14bf95f0ecc282cfbd89787daeaba1d4c0d15187cf0aff",
+      "bytes": 2153740
+    },
+    "evidence/s4000_n256/run/flash_run_hdf5_plt_cnt_0005": {
+      "sha256": "4972cba34886e56a5777ff52ae099e7e3b15a84d1f6da5bb8281447c4ac9911c",
+      "bytes": 2153740
+    },
+    "evidence/s4000_n256/run/flash_run_hdf5_plt_cnt_0006": {
+      "sha256": "75ac6d731f3e86095b9c8f91fc5f72b8606cb329fb4bcf0385cedf8b2a240152",
+      "bytes": 2153740
+    },
+    "evidence/s4000_n256/run/flash_run_hdf5_plt_cnt_0007": {
+      "sha256": "9817399b5ccd74a2783ac7cc3fde3caa7d51480fbe19b405aba8f72d711ae933",
+      "bytes": 2153740
+    },
+    "evidence/s4000_n256/run/flash_run_hdf5_plt_cnt_0008": {
+      "sha256": "bcc69de1e5437d5d1ef3e725d061d424eee720d1ad60da6beebe7172701b18b5",
+      "bytes": 2153740
+    },
+    "evidence/s4000_n256/run/flash_run_hdf5_plt_cnt_0009": {
+      "sha256": "8ce056869065b4e82f87683e2739f1d7540bafb9b689fbfd2de2d846280a4d5c",
+      "bytes": 2153740
+    },
+    "evidence/s4000_n256/run/flash_run_hdf5_plt_cnt_0010": {
+      "sha256": "c730c15b431347f82dcb5cff3d87f4b8416b399f3f9c18057e5f4d5ff512718a",
+      "bytes": 2153740
+    },
+    "evidence/s4000_n256/run/flash_run_hdf5_plt_cnt_0011": {
+      "sha256": "0f062f97be10e19d9ffce9e6e37ff6bcddad281310fbbfe25ae363e2f93698bc",
+      "bytes": 2153740
+    },
+    "evidence/s4000_n256/run/flash_run_hdf5_plt_cnt_0012": {
+      "sha256": "e77b46ae175900e958f0f4f2b6fe265c5ea19798a23e859117592b2bca809ae7",
+      "bytes": 2153740
+    },
+    "evidence/s4000_n256/run/flash_run_hdf5_plt_cnt_0013": {
+      "sha256": "63c7ffedda89ea960fc69ac21f165d078e2664cf70651163a49c72bbd1e57740",
+      "bytes": 2153740
+    },
+    "evidence/s4000_n256/run/flash_run_hdf5_plt_cnt_0014": {
+      "sha256": "f1bad19106796e7922e427d38f30845a7b0697fc1ea51a68eab78719c22e18b8",
+      "bytes": 2153740
+    },
+    "evidence/s4000_n256/run/flash_run_hdf5_plt_cnt_0015": {
+      "sha256": "0c9d9608cda0c2172b7c9464808525af7117b327cc35705dad15dade201c28b7",
+      "bytes": 2153740
+    },
+    "evidence/s4000_n256/run/flash_run_hdf5_plt_cnt_0016": {
+      "sha256": "ae1dfa9725125ae19245ca5f21e08c5915c35a4539a5888cd281c4e54359accd",
+      "bytes": 2153740
+    },
+    "evidence/s4000_n256/run/flash_run_hdf5_plt_cnt_0017": {
+      "sha256": "2b52d231d4db44d3fc449f35f2e85cee087be0938a1365872380a8aa145ced5e",
+      "bytes": 2153740
+    },
+    "evidence/s4000_n256/run/flash_run_hdf5_plt_cnt_0018": {
+      "sha256": "4f9b84e4e06694eb03fd0ae39d1868b778abfc96a32c8b5c30b05eee859d3ed0",
+      "bytes": 2153740
+    },
+    "evidence/s4000_n256/run/flash_run_hdf5_plt_cnt_0019": {
+      "sha256": "032352f1085b7d6d8de5d1772e87ee1bd93aeb43d81cf2f9f1e591ee2f911294",
+      "bytes": 2153740
+    },
+    "evidence/s4000_n256/run/flash_run_hdf5_plt_cnt_0020": {
+      "sha256": "7195b61744f86e49aa7fd6a2c91f71cc51a3fd0f59c6b73ab54b9146ece69e4f",
+      "bytes": 2153740
+    },
+    "evidence/s4000_n256/run/flash_run_hdf5_plt_cnt_0021": {
+      "sha256": "6b10c0f1da1ce4c500290f0f96c09c3694939aebd818670680a222646636dbbd",
+      "bytes": 2153740
+    },
+    "evidence/s4000_n256/run/flash_run_hdf5_plt_cnt_0022": {
+      "sha256": "64addc5c8245b65b0fd674a9d4324e85c66888717605507ed04645d6815efb0a",
+      "bytes": 2153740
+    },
+    "evidence/s4000_n256/run/flash_run_hdf5_plt_cnt_0023": {
+      "sha256": "ecdc0f743022309e639d3d7dcc98e2f80a4992fa43374739f8d72d1904130c1c",
+      "bytes": 2153740
+    },
+    "evidence/s4000_n256/run/flash_run_hdf5_plt_cnt_0024": {
+      "sha256": "734eb20f9a40425fcaff2a7b3b9d59ffb6ed02592a41df9478dc3807eb1a45e0",
+      "bytes": 2153740
+    },
+    "evidence/s4000_n256/run/flash_run_hdf5_plt_cnt_0025": {
+      "sha256": "f4e8230cdc0cc197ce7d153f2502f5dfda786cc69d74e0eacb59154db5961128",
+      "bytes": 2153740
+    },
+    "evidence/s4000_n256/run/flash_run_hdf5_plt_cnt_0026": {
+      "sha256": "6eb4432a02904ab35b4015eb371c7dd5360a5d45a4320bb7bf5b14d6ce2c47da",
+      "bytes": 2153740
+    },
+    "evidence/s4000_n256/run/flash_run_hdf5_plt_cnt_0027": {
+      "sha256": "72905f6c47703107bc13bb051ab01704156c69660e102d1a52337b033e5143a2",
+      "bytes": 2153740
+    },
+    "evidence/s4000_n256/run/launcher_stderr.txt": {
+      "sha256": "b02b461e24dcd2e6b070047f42137aa8a806941ce4796a6bb96cf4a506dd057d",
+      "bytes": 504
+    },
+    "evidence/s4000_n256/run/launcher_stdout.txt": {
+      "sha256": "4cc920b05a8a492b841f06b9c809f98e8cbc9958b565e270760159518ed41bf4",
+      "bytes": 322391
+    },
+    "scan_plan.json": {
+      "sha256": "13f3d4706cfd506dee0dcd7f41f2e3519cc7071ca7438a3d24bd4de9b2368bd2",
+      "bytes": 5481
+    }
+  },
+  "missing_outputs": [
+    "evidence/s4000_n256/result.json",
+    "evidence/s4000_n256/raw.tar.gz"
+  ],
+  "input_mutations": [],
+  "output_findings": [],
+  "scientific_status": "unreviewed",
+  "finished_at": 1791433687.3916745,
+  "cancellation_confirmed": true,
+  "stop_reason": "director_7fe7864141b3255a40079d0f: The worker acknowledged the previous replan and completed its targeted low-end test. However, S_eta=250 at N=120 remains ineligible: A_z mismatch is 0.2176 against the unchanged 0.15 limit. The new S_eta=1000, N=128 case also reached the flux window but failed that screen with mismatch 0.2026. These are eligibility failures, not physical counterexamples. The recorded N=256 middle-case archive passed the same screen at 0.0505, so spatial recovery is plausible but unproven. Scientific usefulness remains limited by the absence of eligible prospective lower cases and meaningful refinement. Separately, the worker's high-end-first plan is too fragile: its 376-second forecast minus the packet's 135 seconds elapsed leaves approximately 241 seconds of work; against 450 seconds remaining and the recorded 180-second review reserve, only about 29 seconds remain for eligibility recovery, additional cases and analysis. Actual remaining runtime is unknown because no trajectory telemetry is supplied. Stop the expensive high-end experiment while preserving its partial data, and redirect toward an affordable eligible trajectory and coverage recovery. This accepts no scientific claim.",
+  "stop_requested_at": 1791433687.155618,
+  "cancel_requested": true
+}

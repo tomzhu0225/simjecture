@@ -1,0 +1,75 @@
+{
+  "kind": "analysis_qualification_fixtures",
+  "checks": {
+    "topology_non_detection": true,
+    "secondary_extremum_detection": true,
+    "topology_gauge_shift_invariance": true,
+    "topology_spatial_window_exclusion": true,
+    "two_path_missing_rate_censored": true,
+    "incomplete_case_serializes_without_plot_rate": true,
+    "known_powerlaw_slope": true,
+    "mixed_asymmetric_envelope_enumerates_2_power_n": true,
+    "mixed_bounds_include_a_false_branch_guard": true,
+    "matched_refinement_decision_executed": true,
+    "matched_spatial_resolution_increment_qualified": true,
+    "known_branch_departure_flagged": true,
+    "matched_branch_departure_uses_resistivity_not_case_id": true,
+    "mixed_rate_envelopes_cover_all_endpoint_choices": true,
+    "asymmetric_uncertainty_does_not_create_false_branch": true,
+    "incomplete_case_has_null_rate_and_serializes": true,
+    "grid_disagreement_is_not_physical_falsification": true,
+    "common_gauge_Az_path_fixture": true
+  },
+  "all_passed": true,
+  "metrics": {
+    "quiet_extrema": 0,
+    "island_extrema": 1,
+    "gauge_shifted_extrema": 1,
+    "outside_roi_extrema": 0,
+    "analytic_Az_path_relative_mismatch": 0.0036446788996894845,
+    "known_slope": -0.5000000000000007,
+    "matched_refinement": "persistence_within_margin",
+    "branch_fixture_status": "departure_over_25pct_detected",
+    "matched_resolution_pairs": [
+      {
+        "S_eta": 250.0,
+        "grid_ratio": 1.25,
+        "nominal_cells_delta": 1.5178932768808213,
+        "measured_fwhm_cells_delta": 1.0
+      },
+      {
+        "S_eta": 1000.0,
+        "grid_ratio": 1.25,
+        "nominal_cells_delta": 1.0119288512538818,
+        "measured_fwhm_cells_delta": 1.0
+      },
+      {
+        "S_eta": 4000.0,
+        "grid_ratio": 1.25,
+        "nominal_cells_delta": 1.0119288512538818,
+        "measured_fwhm_cells_delta": 1.0
+      }
+    ],
+    "common_branch_departures": [
+      1000.0
+    ],
+    "missing_path_complete_set": false,
+    "incomplete_serialized_rate": null,
+    "incomplete_case_rate_and_bounds": [
+      null,
+      null,
+      null
+    ],
+    "mixed_rate_slope_range": [
+      -0.5325183902940755,
+      -0.4226494542528443
+    ],
+    "brute_mixed_slope_range": [
+      -0.5325183902940755,
+      -0.4226494542528443
+    ],
+    "grid_disagreement_assessment": "inconclusive_numerical_refinement_sensitivity",
+    "nonzero_Bx_fixture_path_mismatch": 0.0036446788996894845
+  },
+  "fixtures": "synthetic diagnostic qualification only; not scientific evidence"
+}

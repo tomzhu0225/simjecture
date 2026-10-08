@@ -1,0 +1,8 @@
+{
+  "id": "director_3189b2c067a23b5f438ffb94",
+  "response": "plan",
+  "reason": "The current 1097 s remainder cannot cover the 1325 s base-plus-refinement estimate and 180 s final-review reserve. Analyzer fixes will go to methods review first; if approved, the five base trajectories are prioritized with endpoints first. The N=120/160/320 refinement is held unless measured remaining time can cover its full cost and review reserve; otherwise persistence stays explicitly unresolved.",
+  "plan": "note_c178c7ca664897362f3c295a",
+  "created_at": 1791432981.8087375,
+  "authority": "Worker response; not scientific approval"
+}

@@ -1,0 +1,114 @@
+{
+  "protocol": {
+    "flux_window": [
+      0.01,
+      0.05
+    ],
+    "observable": "fixed-window mean normalized flux-transfer rate",
+    "fit": "OLS(log R, log S_eta), two-sided 95% Student-t intervals; enumerate every per-case low/high rate-envelope combination (2^n fits) and take the full slope/CI envelope",
+    "allowed_p": [
+      -0.6,
+      -0.4
+    ],
+    "resolution_rule": "at least 4 cells per nominal delta_SP/L=S_eta^-1/2 and measured central-sheet |Jz| FWHM at least 4 cells; each matched refinement is 1.25x N and adds at least one nominal-width cell",
+    "eligibility": "both flux paths must produce finite positive full-window rates at full and decimated cadence; all numeric/conservation/floor checks pass; common-gauge A_z path mismatch<=0.15; resolved; and no detected secondary A_z extrema of full-domain prominence>=0.005 in |x|=[0.04,0.22]",
+    "branch_rule": "form the fitted residual interval from each case's asymmetric rate bounds; departure requires its entire interval to lie beyond +/-ln(1.25). Robust claim falsification requires the same matched S_eta departure in both grids",
+    "persistence_rule": "compare refined slope with the base fit on the identical refined S_eta subset; conservative difference interval must lie wholly within +/-0.10 to establish finite-sample persistence, wholly outside to indicate incompatibility, otherwise inconclusive",
+    "decision": "a band violation is decisive only when matched base and refined conservative 95% intervals are disjoint from the allowed band on the same side; overlapping intervals are not rejection. Refinement incompatibility is numerical sensitivity, not a physical falsifier. No finite set proves a continuous-domain or universal claim."
+  },
+  "n_cases": 1,
+  "n_eligible": 1,
+  "cases": [
+    {
+      "id": "pilot_s1000_256",
+      "eta": 0.001,
+      "family": "base",
+      "eta_inverse": 1000.0,
+      "nx": 256,
+      "ny": 256,
+      "rate": 0.059860054003853705,
+      "rate_path_min": 0.05975463432768943,
+      "rate_path_max": 0.059866223833938075,
+      "eligible": true,
+      "reached_window": true,
+      "resolved": true,
+      "preplasmoid": true,
+      "numerically_valid": true,
+      "A_z_paths_ok": true,
+      "path_rates": {
+        "by_dt005": 0.05985388417376933,
+        "by_dt010": 0.05975463432768943,
+        "bx_dt005": 0.059866223833938075,
+        "bx_dt010": 0.05976640928107591
+      },
+      "output_cadence_sensitivity_fraction": 0.0016672932827538345,
+      "fine_flux_path_sensitivity_fraction": 0.00020614181483952134,
+      "censor_reasons": [],
+      "resolution_cells_SP": 8.09543081003105,
+      "initial_sheet_cells": 12.8,
+      "measured_current_fwhm_cells": 8.0,
+      "secondary_extrema_count_recomputed": 0,
+      "max_relative_A_z_path_mismatch": 0.1274343314096816,
+      "max_relative_mass_drift": 8.215650382226158e-15,
+      "max_relative_total_energy_drift": 8.06693988497642e-06,
+      "minimum_saved_density": 0.952323853969574,
+      "minimum_saved_pressure": 5.86309289932251,
+      "correction_counters_available": false,
+      "correction_counter_limit": "no per-step floor/E_modification counters are exposed in the archived dat/log; plot-state minima do not rule out intermediate corrections",
+      "archive": "exploratory/pilot_s1000_256/raw.tar.gz",
+      "summary": "exploratory/pilot_s1000_256/result.json"
+    }
+  ],
+  "base_fit": {
+    "n": 1,
+    "defined": false,
+    "reason": "fewer than three eligible cases"
+  },
+  "base_matched_fit": {
+    "n": 0,
+    "defined": false,
+    "reason": "fewer than three eligible cases"
+  },
+  "refined_fit": {
+    "n": 0,
+    "defined": false,
+    "reason": "fewer than three eligible cases"
+  },
+  "refinement_persistence": {
+    "status": "inconclusive_too_few_matched_cases",
+    "base_fit": {
+      "n": 0,
+      "defined": false,
+      "reason": "fewer than three eligible cases"
+    },
+    "refined_fit": {
+      "n": 0,
+      "defined": false,
+      "reason": "fewer than three eligible cases"
+    },
+    "margin": 0.1
+  },
+  "assessment": {
+    "finite_sample_assessment": "inconclusive",
+    "base_all_band_status": "inconclusive",
+    "base_matched_band_status": "inconclusive",
+    "refined_band_status": "inconclusive",
+    "same_side_matched_band_violation": false,
+    "common_branch_departure_resistivities": [],
+    "limitations": "OLS t intervals use residual variation in deterministic points; path and 0.10-cadence envelope is included, but spatial uncertainty is represented only by matched base/refined comparisons. Sampling is finite and does not prove a continuous-domain claim."
+  },
+  "conservation_and_floor_rules": {
+    "max_relative_mass_drift": 1e-08,
+    "max_relative_total_energy_drift": 0.0001,
+    "minimum_saved_density_and_pressure": 1e-10,
+    "per_step_correction_counters_available": false,
+    "limit": "Native budget tracks mass/total energy; archived runtime exposes no per-step floor/E_modification counters. Saved minima and dat drift do not exclude intermediate corrections."
+  },
+  "figures": {
+    "scaling": "reviewfix-plots/scaling_uncertainty.png",
+    "branch_residuals": "reviewfix-plots/branch_residuals.png",
+    "fields_current": [
+      "reviewfix-plots/field_current_pilot_s1000_256.png"
+    ]
+  }
+}

@@ -1,0 +1,260 @@
+{
+  "id": "exp_9e3db9fe2b479941a809ebd9",
+  "status": "succeeded",
+  "operator_guidance_ids": [],
+  "created_at": 1791433416.4200952,
+  "timeout": 600,
+  "workspace_limit_bytes": 4294967296,
+  "binding": {
+    "source": "calculation.py",
+    "args": [
+      "--eta",
+      "0.001",
+      "--nx",
+      "128",
+      "--ny",
+      "128",
+      "--alpha",
+      "20",
+      "--tmax",
+      "1.25",
+      "--plot-interval",
+      "0.05",
+      "--ranks",
+      "4",
+      "--iprocs",
+      "2",
+      "--jprocs",
+      "2",
+      "--output",
+      "evidence/s1000_n128/run",
+      "--summary",
+      "evidence/s1000_n128/result.json",
+      "--archive",
+      "evidence/s1000_n128/raw.tar.gz",
+      "--family",
+      "base"
+    ],
+    "inputs": {
+      "calculation.py": "91e227f87d338afb723e49d327842c5c90c645c6444b0065e76d830e352735a8",
+      "analysis.py": "d5a6fd48b9d626f2fc1f93813c993ffbb426da7a85e7d9b8dc2460185a7fcdf6",
+      "scan_plan.json": "13f3d4706cfd506dee0dcd7f41f2e3519cc7071ca7438a3d24bd4de9b2368bd2"
+    },
+    "capability": "flash-island-coalescence-resistive-mhd-4.8",
+    "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+  },
+  "outputs": [
+    "evidence/s1000_n128/result.json",
+    "evidence/s1000_n128/raw.tar.gz"
+  ],
+  "commitment": null,
+  "key": "base-s1000",
+  "stage": "evidence",
+  "method": "method_f75c0653e79695559ea0db0d",
+  "review_documents": null,
+  "parent_experiment": null,
+  "purpose": "comparison",
+  "plan": null,
+  "pid": 268663,
+  "worker_identity": {
+    "pid": 268663,
+    "starttime": "1481129",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture/.venv/bin/python3",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/island-study",
+      "--execute",
+      "exp_9e3db9fe2b479941a809ebd9"
+    ],
+    "launched_at": "2026-10-08T04:23:36.589579+00:00",
+    "run_directory": null
+  },
+  "started_at": 1791433416.5897343,
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": 0,
+    "stdout": "{\"checks\": {\"completed\": true, \"representation\": true, \"physics_controls\": true, \"boundaries\": true, \"diagnostics\": true, \"numerical_regime\": true, \"nominal_spatial_resolution\": true, \"preplasmoid_screen\": true, \"az_path_consistency\": false, \"conservation\": true, \"saved_state_floor_margin\": true, \"flux_window_reached\": true}, \"metrics\": {\"l_over_eta_nominal\": 1000.0, \"flux_low\": 0.01, \"flux_high\": 0.05, \"flux_low_crossing_time\": 0.26033823854649724, \"flux_high_crossing_time\": 1.0763841963235288, \"reconnection_time\": 0.8160459577770316, \"normalized_flux_slope\": 0.0490168471748367, \"normalized_reconnection_rate\": 0.05754248936527651, \"normalization\": \"(dPsi/dt)/(B_up^2/sqrt(rho_up)); B_up and rho_up are initial-state means at x=0, 0.08<=|y|<=0.12; L=1\", \"B_up\": 0.9271269083023072, \"rho_up\": 1.0182239055633544, \"nominal_eta_inverse\": 1000.0, \"flux_path_max_abs_mismatch\": 4.657228519738127e-05, \"max_abs_divb\": 9.36140054363932e-13, \"max_boundary_normal_fraction\": 0.031049113904913106, \"max_relative_mass_drift\": 4.884981308350689e-15, \"max_relative_total_energy_drift\": 1.751020967999395e-05, \"minimum_saved_density\": 0.9672830700874329, \"minimum_saved_pressure\": 5.865620136260986, \"density_floor\": 1e-12, \"pressure_floor\": 1e-12, \"saved_state_floor_margin_rule\": \"minimum density and pressure exceed 100 times their respective configured floors\", \"floor_energyfix_correction_counters_available\": false, \"floor_energyfix_counter_limit\": \"installed runtime exposes no per-step correction counters in recorded dat/log; minima cover plot snapshots only and cannot rule out intermediate corrections\", \"initial_sheet_cells\": 6.4, \"nominal_sp_sheet_width_cells\": 4.047715405015525, \"minimum_measured_current_fwhm_cells\": 4.0, \"maximum_secondary_extrema_count\": 0.0, \"max_relative_A_z_path_mismatch\": 0.20255612378575164, \"A_z_path_consistency_tolerance\": 0.15, \"plasmoid_rule\": \"none detected if no secondary A_z extrema of gauge-invariant full-domain prominence >=0.005 in |x|=[0.04,0.22] during the saved flux-window states\", \"plot_file_count\": 25}}",
+    "stderr": "",
+    "timed_out": false,
+    "cancelled": false,
+    "workspace_exceeded": false,
+    "stdout_truncated": false,
+    "stderr_truncated": false,
+    "heartbeat_count": 0,
+    "wall_seconds": 27.107016874000692,
+    "workspace_bytes": 29306697
+  },
+  "artifacts": {
+    "analysis.py": {
+      "sha256": "d5a6fd48b9d626f2fc1f93813c993ffbb426da7a85e7d9b8dc2460185a7fcdf6",
+      "bytes": 38412
+    },
+    "calculation.py": {
+      "sha256": "91e227f87d338afb723e49d327842c5c90c645c6444b0065e76d830e352735a8",
+      "bytes": 23818
+    },
+    "evidence/s1000_n128/raw.tar.gz": {
+      "sha256": "0538008e7647dd52fe98e7e4006824ab8dd6b5f37c84a28496dff24daefe1f5d",
+      "bytes": 7540727
+    },
+    "evidence/s1000_n128/result.json": {
+      "sha256": "95683ba473ed02ee8c80d30c34d021225bae96691b50da796d9f9c35cd712e07",
+      "bytes": 14717
+    },
+    "evidence/s1000_n128/run/.simjecture-flash-guided-output": {
+      "sha256": "67d1f5ea486320558047f5cff49a53b2b0f1eaca0f699ba9abc1c1f60bcedc67",
+      "bytes": 49
+    },
+    "evidence/s1000_n128/run/flash.par": {
+      "sha256": "709d48a5367898a78b369bb2e5b246b70383656e591e85c94953a95604d1b104",
+      "bytes": 1783
+    },
+    "evidence/s1000_n128/run/flash_run.dat": {
+      "sha256": "4fe9c3a4eaec05d8225a37736eaa38f70ff957d5f15a642f3b54de071d087781",
+      "bytes": 372711
+    },
+    "evidence/s1000_n128/run/flash_run.log": {
+      "sha256": "e2ce82057bb19831307b6d705280bf7eb79680018b177f4fbb86b7ec9fd5a4e7",
+      "bytes": 156587
+    },
+    "evidence/s1000_n128/run/flash_run_forced_hdf5_plt_cnt_0000": {
+      "sha256": "c7c48b00d3cea7c43b8257fd44d4b9cd3713f7bea2e9c6dc94c4b03de35f73ca",
+      "bytes": 580876
+    },
+    "evidence/s1000_n128/run/flash_run_hdf5_chk_0000": {
+      "sha256": "9f8f48f8a303027023c300f677101824bd999256589614f96c2eaf6285cc1dd6",
+      "bytes": 2950412
+    },
+    "evidence/s1000_n128/run/flash_run_hdf5_chk_0001": {
+      "sha256": "e49517a19162040d8c8843bd8cb7e576a7443d3f5ae1db7edc50fe862137482d",
+      "bytes": 2950412
+    },
+    "evidence/s1000_n128/run/flash_run_hdf5_plt_cnt_0000": {
+      "sha256": "0b3e136ae53fd83eca75b362fb5fd0099e0480fd3b52d69885351da24457a546",
+      "bytes": 580876
+    },
+    "evidence/s1000_n128/run/flash_run_hdf5_plt_cnt_0001": {
+      "sha256": "6a76b98e7d7e49c3f9c44e279707c2bb4c7149d3b5a68e91aa89acd3af668e61",
+      "bytes": 580876
+    },
+    "evidence/s1000_n128/run/flash_run_hdf5_plt_cnt_0002": {
+      "sha256": "1917587f5a316a258ebe2c139391ed1c0a3a042e33b6a99abbd59965b2fd1d80",
+      "bytes": 580876
+    },
+    "evidence/s1000_n128/run/flash_run_hdf5_plt_cnt_0003": {
+      "sha256": "f5805bf68dbf3a99ff1b35ad6c27f687a5785188d7516a3d397a8a10aba0be5f",
+      "bytes": 580876
+    },
+    "evidence/s1000_n128/run/flash_run_hdf5_plt_cnt_0004": {
+      "sha256": "c6627febfc00ce3bf56156c52ce03e2554b9a31e38649426eda0ca0134ec1732",
+      "bytes": 580876
+    },
+    "evidence/s1000_n128/run/flash_run_hdf5_plt_cnt_0005": {
+      "sha256": "420d15ee86ce0aa8616a16ff343e094ce7516c01b6a482c3ed94f1c8ff07b495",
+      "bytes": 580876
+    },
+    "evidence/s1000_n128/run/flash_run_hdf5_plt_cnt_0006": {
+      "sha256": "8dfba6737ff7855e0116c9f3b7438eade101e1d108d3cfe522e45515f491019a",
+      "bytes": 580876
+    },
+    "evidence/s1000_n128/run/flash_run_hdf5_plt_cnt_0007": {
+      "sha256": "eca7087de994e6fa38437d3f695f43ccd9aae33066cd9103fc9e128f1eb941bf",
+      "bytes": 580876
+    },
+    "evidence/s1000_n128/run/flash_run_hdf5_plt_cnt_0008": {
+      "sha256": "6cbf47eb8f7ae966253d1ba08ca67e177f18d6eebfdb1e9eeaee372b0f980e30",
+      "bytes": 580876
+    },
+    "evidence/s1000_n128/run/flash_run_hdf5_plt_cnt_0009": {
+      "sha256": "cef018f5e10cad0b1f40ef278c765eb4b3e7b99a7b72e4b786bb5e7294a7fa6b",
+      "bytes": 580876
+    },
+    "evidence/s1000_n128/run/flash_run_hdf5_plt_cnt_0010": {
+      "sha256": "093a56b3a9792bf44aef8e83335857f14048680896f85a81f71335154dbf6d9f",
+      "bytes": 580876
+    },
+    "evidence/s1000_n128/run/flash_run_hdf5_plt_cnt_0011": {
+      "sha256": "8f246e0c1b360c16166df9ccbcdc5da25374fa8f09c78fae4e29de8db9945215",
+      "bytes": 580876
+    },
+    "evidence/s1000_n128/run/flash_run_hdf5_plt_cnt_0012": {
+      "sha256": "cc4230bee4281cbc22a2929545cd2c5cf578fc9775b5a716563b899e49dca5c4",
+      "bytes": 580876
+    },
+    "evidence/s1000_n128/run/flash_run_hdf5_plt_cnt_0013": {
+      "sha256": "684373830dfe8a9e2b7bd247a3c79d1ea36f9037981a2bdb41ee667dee521f4c",
+      "bytes": 580876
+    },
+    "evidence/s1000_n128/run/flash_run_hdf5_plt_cnt_0014": {
+      "sha256": "14d516bc46453d0a110748e3e7618a431975bd4dadc20dcf23bc1e81eb599f61",
+      "bytes": 580876
+    },
+    "evidence/s1000_n128/run/flash_run_hdf5_plt_cnt_0015": {
+      "sha256": "ce95e807a2a49058239ddfe6bdc4dba861f82241825bcb25dcc5b542794ff165",
+      "bytes": 580876
+    },
+    "evidence/s1000_n128/run/flash_run_hdf5_plt_cnt_0016": {
+      "sha256": "64046ba1c11362068caf9b297a7f81099a64da54fd7be3c32ce5f7219832c91f",
+      "bytes": 580876
+    },
+    "evidence/s1000_n128/run/flash_run_hdf5_plt_cnt_0017": {
+      "sha256": "fc54cbd4d3a6f39c5946f3391bde26c51210669154bffc16bc978e2bb5649a55",
+      "bytes": 580876
+    },
+    "evidence/s1000_n128/run/flash_run_hdf5_plt_cnt_0018": {
+      "sha256": "9345c40bd2a291a98c813984a7dad2181a3a10dcb4444ed6c2112bf17be0227b",
+      "bytes": 580876
+    },
+    "evidence/s1000_n128/run/flash_run_hdf5_plt_cnt_0019": {
+      "sha256": "c674df743243519939feeb6a6d2d250d14a9560dc0e157aa230bd74fa00f21cf",
+      "bytes": 580876
+    },
+    "evidence/s1000_n128/run/flash_run_hdf5_plt_cnt_0020": {
+      "sha256": "d024a112b848ee27b8624b2cbcd1f4d0f54f79bb0006a0c179afeb23220c6324",
+      "bytes": 580876
+    },
+    "evidence/s1000_n128/run/flash_run_hdf5_plt_cnt_0021": {
+      "sha256": "27d9a69a20b65bae9a6c4b77d6e6ef61e90c2d314c55b77c86e3991d87afc29f",
+      "bytes": 580876
+    },
+    "evidence/s1000_n128/run/flash_run_hdf5_plt_cnt_0022": {
+      "sha256": "bd5cd4d8dbcf0705afcef03f95c39327ee622049ad88f3d82d0bbd9cb7f1d2a7",
+      "bytes": 580876
+    },
+    "evidence/s1000_n128/run/flash_run_hdf5_plt_cnt_0023": {
+      "sha256": "78831221db018fc1c2bcc0b26958940070e73afc3de1e28fc8922a153d9521f9",
+      "bytes": 580876
+    },
+    "evidence/s1000_n128/run/flash_run_hdf5_plt_cnt_0024": {
+      "sha256": "d421d9b74fba2899d7a2b83adba9fe7f49b24718ff1a8ccc6d351309e91f277e",
+      "bytes": 580876
+    },
+    "evidence/s1000_n128/run/launcher_stderr.txt": {
+      "sha256": "b02b461e24dcd2e6b070047f42137aa8a806941ce4796a6bb96cf4a506dd057d",
+      "bytes": 504
+    },
+    "evidence/s1000_n128/run/launcher_stdout.txt": {
+      "sha256": "fcd92b8a8bdd64332eba277b66417fe2fa3c5f8b7617fdc74e393c79244c8806",
+      "bytes": 148308
+    },
+    "scan_plan.json": {
+      "sha256": "13f3d4706cfd506dee0dcd7f41f2e3519cc7071ca7438a3d24bd4de9b2368bd2",
+      "bytes": 5481
+    }
+  },
+  "missing_outputs": [],
+  "input_mutations": [],
+  "output_findings": [
+    {
+      "path": "evidence/s1000_n128/result.json",
+      "kind": "failed_checks",
+      "detail": [
+        "az_path_consistency"
+      ]
+    }
+  ],
+  "scientific_status": "unreviewed",
+  "finished_at": 1791433443.7782683
+}

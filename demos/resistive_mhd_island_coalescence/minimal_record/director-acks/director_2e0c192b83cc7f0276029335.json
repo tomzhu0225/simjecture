@@ -1,0 +1,8 @@
+{
+  "id": "director_2e0c192b83cc7f0276029335",
+  "response": "plan",
+  "reason": "No new instrument runs will precede the source and fixture qualification/method review. The 1,900-second scan forecast exceeds the 2,090-second remaining budget once qualification/review is included, so the low/high base endpoints will be measured first; the matched refinement proceeds only if the actual remaining budget preserves the final-review reserve.",
+  "plan": "note_b617b407c5fa42722fdee84f",
+  "created_at": 1791431994.1956708,
+  "authority": "Worker response; not scientific approval"
+}

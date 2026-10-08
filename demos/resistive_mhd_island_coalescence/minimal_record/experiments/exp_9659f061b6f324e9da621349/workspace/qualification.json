@@ -1,0 +1,27 @@
+{
+  "kind": "analysis_qualification_fixtures",
+  "checks": {
+    "topology_non_detection": true,
+    "secondary_extremum_detection": true,
+    "topology_gauge_shift_invariance": true,
+    "topology_spatial_window_exclusion": true,
+    "two_path_missing_rate_censored": true,
+    "known_powerlaw_slope": true,
+    "matched_refinement_decision_executed": true,
+    "known_branch_departure_flagged": true,
+    "common_gauge_Az_path_fixture": true
+  },
+  "all_passed": true,
+  "metrics": {
+    "quiet_extrema": 0,
+    "island_extrema": 1,
+    "gauge_shifted_extrema": 1,
+    "outside_roi_extrema": 0,
+    "analytic_Az_path_relative_mismatch": 0.012274311054462741,
+    "known_slope": -0.5000000000000007,
+    "matched_refinement": "persistence_within_margin",
+    "branch_fixture_status": "departure_over_25pct_detected",
+    "missing_path_complete_set": false
+  },
+  "fixtures": "synthetic diagnostic qualification only; not scientific evidence"
+}

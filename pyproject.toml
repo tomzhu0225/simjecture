@@ -148,6 +148,7 @@ extend-exclude = [
   "demos/agent_roles_validation/record",
   "demos/gray_scott_counterexample/record",
   "demos/kepler_energy/record",
+  "demos/resistive_mhd_island_coalescence/minimal_record",
   "demos/collisionless_gem_reconnection/guided",
   "demos/collisionless_gem_reconnection/record",
 ]

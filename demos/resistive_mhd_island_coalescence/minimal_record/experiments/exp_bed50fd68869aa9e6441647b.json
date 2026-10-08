@@ -1,0 +1,242 @@
+{
+  "id": "exp_bed50fd68869aa9e6441647b",
+  "status": "succeeded",
+  "operator_guidance_ids": [],
+  "created_at": 1791430599.873968,
+  "timeout": 600,
+  "workspace_limit_bytes": 4294967296,
+  "binding": {
+    "source": "calculation.py",
+    "args": [
+      "--eta",
+      "0.001",
+      "--nx",
+      "256",
+      "--ny",
+      "256",
+      "--alpha",
+      "20",
+      "--tmax",
+      "1.2",
+      "--plot-interval",
+      "0.05",
+      "--ranks",
+      "4",
+      "--iprocs",
+      "2",
+      "--jprocs",
+      "2",
+      "--output",
+      "pilot_s1000_256/run",
+      "--summary",
+      "pilot_s1000_256/result.json",
+      "--archive",
+      "pilot_s1000_256/raw.tar.gz"
+    ],
+    "inputs": {
+      "calculation.py": "f54565721e9d234c692013d7de400706eea330b7d18e96cf401bfa2e452f7fee"
+    },
+    "capability": "flash-island-coalescence-resistive-mhd-4.8",
+    "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+  },
+  "outputs": [
+    "pilot_s1000_256/result.json",
+    "pilot_s1000_256/raw.tar.gz"
+  ],
+  "commitment": null,
+  "key": "pilot-S1000-N256",
+  "stage": "exploration",
+  "method": null,
+  "review_documents": null,
+  "parent_experiment": null,
+  "purpose": "validation",
+  "plan": null,
+  "pid": 182540,
+  "worker_identity": {
+    "pid": 182540,
+    "starttime": "1199474",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture/.venv/bin/python3",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/island-study",
+      "--execute",
+      "exp_bed50fd68869aa9e6441647b"
+    ],
+    "launched_at": "2026-10-08T03:36:40.037509+00:00",
+    "run_directory": null
+  },
+  "started_at": 1791430600.03767,
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": 0,
+    "stdout": "{\"checks\": {\"completed\": true, \"representation\": true, \"physics_controls\": true, \"boundaries\": true, \"diagnostics\": true, \"numerical_regime\": true, \"nominal_spatial_resolution\": true, \"flux_window_reached\": true, \"scientific_evidence_eligible\": false}, \"metrics\": {\"l_over_eta_nominal\": 1000.0, \"flux_low\": 0.01, \"flux_high\": 0.05, \"flux_low_crossing_time\": 0.2588430248389068, \"flux_high_crossing_time\": 1.065083614681507, \"reconnection_time\": 0.8062405898426002, \"normalized_flux_slope\": 0.04961298215934412, \"normalized_reconnection_rate\": 0.05985388417376933, \"normalization\": \"(dPsi/dt)/(B_up^2/sqrt(rho_up)); B_up and rho_up are initial-state means at x=0, 0.08<=|y|<=0.12; L=1\", \"B_up\": 0.915013080293482, \"rho_up\": 1.0202420570633628, \"nominal_eta_inverse\": 1000.0, \"flux_path_max_abs_mismatch\": 2.5131346740269594e-05, \"max_abs_divb\": 2.6929569685307797e-12, \"max_boundary_normal_fraction\": 0.017253876258230553, \"initial_sheet_cells\": 12.8, \"nominal_sp_sheet_width_cells\": 8.09543081003105, \"minimum_measured_current_fwhm_cells\": 8.0, \"secondary_extrema_count_peak\": 0.0, \"plasmoid_rule\": \"none detected if no secondary A_z extrema with local prominence >=0.005 for |x| in [0.04,0.22] during flux window\", \"plot_file_count\": 24}}",
+    "stderr": "",
+    "timed_out": false,
+    "cancelled": false,
+    "workspace_exceeded": false,
+    "stdout_truncated": false,
+    "stderr_truncated": false,
+    "heartbeat_count": 5,
+    "wall_seconds": 173.37456161199952,
+    "workspace_bytes": 110572916
+  },
+  "artifacts": {
+    "calculation.py": {
+      "sha256": "f54565721e9d234c692013d7de400706eea330b7d18e96cf401bfa2e452f7fee",
+      "bytes": 18096
+    },
+    "pilot_s1000_256/raw.tar.gz": {
+      "sha256": "bc4d540b838abcbeb24a7be1321f0c903de99f871ac6011e60096f0d4f8c1f15",
+      "bytes": 32224763
+    },
+    "pilot_s1000_256/result.json": {
+      "sha256": "c09e9824a0e933eceab4428e27fada465cce639bd6282a7ea51c7b8ec9f7fab2",
+      "bytes": 10177
+    },
+    "pilot_s1000_256/run/.simjecture-flash-guided-output": {
+      "sha256": "67d1f5ea486320558047f5cff49a53b2b0f1eaca0f699ba9abc1c1f60bcedc67",
+      "bytes": 49
+    },
+    "pilot_s1000_256/run/flash.par": {
+      "sha256": "4eb31636c00ad13324479fa05a7a6f57ad4e4cd79a032608e75febacfc20b3da",
+      "bytes": 1779
+    },
+    "pilot_s1000_256/run/flash_run.dat": {
+      "sha256": "4de7153197751435e2376de0baa2d3c0c3ecb103ffe78d6440d04eaaea8b27b7",
+      "bytes": 716281
+    },
+    "pilot_s1000_256/run/flash_run.log": {
+      "sha256": "4780ff6a09328b4f2b5b2818aa0f76d88cfabd6e5070e113c87779900c38c157",
+      "bytes": 264491
+    },
+    "pilot_s1000_256/run/flash_run_forced_hdf5_plt_cnt_0000": {
+      "sha256": "075eeb1c0f726f115aa1b5d05444cdb9741e57cb0b4fefb9e518ea63a5a8636a",
+      "bytes": 2153740
+    },
+    "pilot_s1000_256/run/flash_run_hdf5_chk_0000": {
+      "sha256": "c45d5c3aa234d7078bad9c1ab6ccf7c37da0175619e83d5b8507d182ca632898",
+      "bytes": 11605260
+    },
+    "pilot_s1000_256/run/flash_run_hdf5_chk_0001": {
+      "sha256": "af91235b8bf3428cfbab7ac40847daa493bd3f020174937e06ade6d274078e0d",
+      "bytes": 11605260
+    },
+    "pilot_s1000_256/run/flash_run_hdf5_plt_cnt_0000": {
+      "sha256": "c77df78d5723f8e8e387c797ddf69a2682d6ba06a865fabeb76ae0d670a8633e",
+      "bytes": 2153740
+    },
+    "pilot_s1000_256/run/flash_run_hdf5_plt_cnt_0001": {
+      "sha256": "076becd1ea5f14f1f45a253b912b2ae2d61567d6f51711c3f58dba1914323c88",
+      "bytes": 2153740
+    },
+    "pilot_s1000_256/run/flash_run_hdf5_plt_cnt_0002": {
+      "sha256": "ec2b0075d1ee75579c936df8cd0c5957402c3696980aa3a365ac701828c86a4a",
+      "bytes": 2153740
+    },
+    "pilot_s1000_256/run/flash_run_hdf5_plt_cnt_0003": {
+      "sha256": "c5c9841d9df1cfcc1590939d555d7e2ebb9983d8b2d1b7d02336c6d071c6a840",
+      "bytes": 2153740
+    },
+    "pilot_s1000_256/run/flash_run_hdf5_plt_cnt_0004": {
+      "sha256": "13d9ba47462b641236fc1657e38d89cb34fe9a460b0ed059d069deb245ebe29f",
+      "bytes": 2153740
+    },
+    "pilot_s1000_256/run/flash_run_hdf5_plt_cnt_0005": {
+      "sha256": "105fdbf945219bc29a541ec0c30019949002cc742a135e75a533b2e9a3544e10",
+      "bytes": 2153740
+    },
+    "pilot_s1000_256/run/flash_run_hdf5_plt_cnt_0006": {
+      "sha256": "813891c590a553abb70f22a5e347ef3d8d438c15baecc985c5440349a0ff837b",
+      "bytes": 2153740
+    },
+    "pilot_s1000_256/run/flash_run_hdf5_plt_cnt_0007": {
+      "sha256": "aff2c431d09847594f1fc25a7335f39f9e6944952b47acdf1cea29bd31a18368",
+      "bytes": 2153740
+    },
+    "pilot_s1000_256/run/flash_run_hdf5_plt_cnt_0008": {
+      "sha256": "8be0876d54be0ac5f81ec035e8dc0182ef6e097b48c41857bfea7182b7ea2030",
+      "bytes": 2153740
+    },
+    "pilot_s1000_256/run/flash_run_hdf5_plt_cnt_0009": {
+      "sha256": "aca698f43408e10c1db5779af1a89ee38d64ff3671dd6fca749b10e2e60a1f64",
+      "bytes": 2153740
+    },
+    "pilot_s1000_256/run/flash_run_hdf5_plt_cnt_0010": {
+      "sha256": "23187d1a00852d2c0724e56106a914b9fec37b35b0219546ae1a490b9edf1819",
+      "bytes": 2153740
+    },
+    "pilot_s1000_256/run/flash_run_hdf5_plt_cnt_0011": {
+      "sha256": "fd6b42c005058041f536950decd27bfae631f6f8ac3df75e2b9b72f49fc4bf1c",
+      "bytes": 2153740
+    },
+    "pilot_s1000_256/run/flash_run_hdf5_plt_cnt_0012": {
+      "sha256": "cb43f009a1899099e2f94c761c90db47bbd6e08a4af62d5defff357338c4bb18",
+      "bytes": 2153740
+    },
+    "pilot_s1000_256/run/flash_run_hdf5_plt_cnt_0013": {
+      "sha256": "275a505f62192363f7f8b06fb24cddbfb9533f0612e5ca9c22e341011ddf79ea",
+      "bytes": 2153740
+    },
+    "pilot_s1000_256/run/flash_run_hdf5_plt_cnt_0014": {
+      "sha256": "5c260793e626768145490abccf13cc995c106b31a2821114413408a99dbf35de",
+      "bytes": 2153740
+    },
+    "pilot_s1000_256/run/flash_run_hdf5_plt_cnt_0015": {
+      "sha256": "9ef8da792b051d973fc14b303c480d8306875bf09a77becc188fe3875a960233",
+      "bytes": 2153740
+    },
+    "pilot_s1000_256/run/flash_run_hdf5_plt_cnt_0016": {
+      "sha256": "a3de39a16bbc732977c24404b39701c54b5cbf8b4518c2512c344b195a021499",
+      "bytes": 2153740
+    },
+    "pilot_s1000_256/run/flash_run_hdf5_plt_cnt_0017": {
+      "sha256": "f0588d9fb1dd665e7a1f0055aec66604aca68be107289abb8c97d4dc73499448",
+      "bytes": 2153740
+    },
+    "pilot_s1000_256/run/flash_run_hdf5_plt_cnt_0018": {
+      "sha256": "0a6565b2a3865a7e9da746512d1e00dc32989226fd962e863cf82104490f1668",
+      "bytes": 2153740
+    },
+    "pilot_s1000_256/run/flash_run_hdf5_plt_cnt_0019": {
+      "sha256": "bc17933080be5a8244f8aa7b9d38a88177916add0a6b1939edef450875bb31bf",
+      "bytes": 2153740
+    },
+    "pilot_s1000_256/run/flash_run_hdf5_plt_cnt_0020": {
+      "sha256": "1eb626b97babab52ce9c227b1ae5f07f00feed5d70a7519a45f2c4bddaa38aba",
+      "bytes": 2153740
+    },
+    "pilot_s1000_256/run/flash_run_hdf5_plt_cnt_0021": {
+      "sha256": "c5d05c866ce1f86adabd18c4ab33b055e990149c2acc7f0d650cc71096bab50c",
+      "bytes": 2153740
+    },
+    "pilot_s1000_256/run/flash_run_hdf5_plt_cnt_0022": {
+      "sha256": "407863b8013329eed25113c80c926abd67299d7a98f7fd2eda636fe7b5d334bc",
+      "bytes": 2153740
+    },
+    "pilot_s1000_256/run/flash_run_hdf5_plt_cnt_0023": {
+      "sha256": "1e4b60357a59c65b551daf4ca4113f0913253d0402d1dd25a77c19f7c123b759",
+      "bytes": 2153740
+    },
+    "pilot_s1000_256/run/launcher_stderr.txt": {
+      "sha256": "b02b461e24dcd2e6b070047f42137aa8a806941ce4796a6bb96cf4a506dd057d",
+      "bytes": 504
+    },
+    "pilot_s1000_256/run/launcher_stdout.txt": {
+      "sha256": "254bf5193194ef5e80e060594064d0d33ce232a40be4a85e2818801d7d44bfaa",
+      "bytes": 282756
+    }
+  },
+  "missing_outputs": [],
+  "input_mutations": [],
+  "output_findings": [
+    {
+      "path": "pilot_s1000_256/result.json",
+      "kind": "eligibility_annotation",
+      "detail": "Output declares non-evidence. Resolve this annotation against the host-recorded stage and actual limitations during independent review; do not rerun a solver merely to remove metadata."
+    }
+  ],
+  "scientific_status": "unreviewed",
+  "finished_at": 1791430773.5626364
+}

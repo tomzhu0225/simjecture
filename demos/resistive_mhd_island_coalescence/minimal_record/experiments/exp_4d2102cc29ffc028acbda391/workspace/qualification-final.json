@@ -1,0 +1,52 @@
+{
+  "kind": "analysis_qualification_fixtures",
+  "checks": {
+    "topology_non_detection": true,
+    "secondary_extremum_detection": true,
+    "topology_gauge_shift_invariance": true,
+    "topology_spatial_window_exclusion": true,
+    "two_path_missing_rate_censored": true,
+    "known_powerlaw_slope": true,
+    "matched_refinement_decision_executed": true,
+    "matched_spatial_resolution_increment_qualified": true,
+    "known_branch_departure_flagged": true,
+    "matched_branch_departure_uses_resistivity_not_case_id": true,
+    "common_gauge_Az_path_fixture": true
+  },
+  "all_passed": true,
+  "metrics": {
+    "quiet_extrema": 0,
+    "island_extrema": 1,
+    "gauge_shifted_extrema": 1,
+    "outside_roi_extrema": 0,
+    "analytic_Az_path_relative_mismatch": 0.012274311054462741,
+    "known_slope": -0.5000000000000007,
+    "matched_refinement": "persistence_within_margin",
+    "branch_fixture_status": "departure_over_25pct_detected",
+    "matched_resolution_pairs": [
+      {
+        "S_eta": 250.0,
+        "grid_ratio": 1.25,
+        "nominal_cells_delta": 1.5178932768808213,
+        "measured_fwhm_cells_delta": 1.0
+      },
+      {
+        "S_eta": 1000.0,
+        "grid_ratio": 1.25,
+        "nominal_cells_delta": 1.0119288512538818,
+        "measured_fwhm_cells_delta": 1.0
+      },
+      {
+        "S_eta": 4000.0,
+        "grid_ratio": 1.25,
+        "nominal_cells_delta": 1.0119288512538818,
+        "measured_fwhm_cells_delta": 1.0
+      }
+    ],
+    "common_branch_departures": [
+      1000.0
+    ],
+    "missing_path_complete_set": false
+  },
+  "fixtures": "synthetic diagnostic qualification only; not scientific evidence"
+}

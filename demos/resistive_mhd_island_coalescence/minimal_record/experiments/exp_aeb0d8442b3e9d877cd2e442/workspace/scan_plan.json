@@ -1,0 +1,41 @@
+{
+  "status": "prospective_not_yet_run",
+  "capability": "flash-island-coalescence-resistive-mhd-4.8",
+  "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80",
+  "flash_executable_sha256": "40cf57b987e85f9befc01abae4e89f27c230d1eb42391ba3abea8655a0f7024b",
+  "mpi_ranks": 4,
+  "iprocs": 2,
+  "jprocs": 2,
+  "plot_interval": 0.05,
+  "flux_window": [0.01, 0.05],
+  "eta_values": [0.004, 0.002, 0.001, 0.0005, 0.00025],
+  "seta_values": [250, 500, 1000, 2000, 4000],
+  "base_grid": [64, 96, 128, 192, 256],
+  "refined_grid": [96, 144, 192, 288, 384],
+  "tmax_by_seta": [0.8, 1.0, 1.25, 1.75, 2.6],
+  "timeout_seconds": {
+    "base": [600, 600, 600, 600, 600],
+    "refined": [600, 600, 600, 600, 1600]
+  },
+  "cost_estimate_seconds": {
+    "basis": "four-rank 128^2 t=1.2 anchor 20.46s and 256^2 t=1.2 pilot 173.37s; cubic-in-N, linear-in-t sensitivity estimate",
+    "base_family": 508,
+    "refined_family": 1730,
+    "total": 2238,
+    "limitations": "Observed scaling was derived at eta=0.001 only; other eta may change timestep count and crossing time. Total forecast excludes reviewer latency and analysis overhead; retain about 180 seconds for independent review. Missing flux windows are censored."
+  },
+  "cases": [
+    {"family":"base","eta":0.004,"seta":250,"grid":64,"tmax":0.8,"timeout":600,"key":"base-s250"},
+    {"family":"base","eta":0.002,"seta":500,"grid":96,"tmax":1.0,"timeout":600,"key":"base-s500"},
+    {"family":"base","eta":0.001,"seta":1000,"grid":128,"tmax":1.25,"timeout":600,"key":"base-s1000"},
+    {"family":"base","eta":0.0005,"seta":2000,"grid":192,"tmax":1.75,"timeout":600,"key":"base-s2000"},
+    {"family":"base","eta":0.00025,"seta":4000,"grid":256,"tmax":2.6,"timeout":600,"key":"base-s4000"},
+    {"family":"refined","eta":0.004,"seta":250,"grid":96,"tmax":0.8,"timeout":600,"key":"refined-s250"},
+    {"family":"refined","eta":0.002,"seta":500,"grid":144,"tmax":1.0,"timeout":600,"key":"refined-s500"},
+    {"family":"refined","eta":0.001,"seta":1000,"grid":192,"tmax":1.25,"timeout":600,"key":"refined-s1000"},
+    {"family":"refined","eta":0.0005,"seta":2000,"grid":288,"tmax":1.75,"timeout":600,"key":"refined-s2000"},
+    {"family":"refined","eta":0.00025,"seta":4000,"grid":384,"tmax":2.6,"timeout":1600,"key":"refined-s4000"}
+  ],
+  "resolution_policy": "minimum 4 nominal Sweet-Parker widths per L and >=4 measured central-current FWHM cells during the flux window; refined family targets >=6 nominal cells. This minimum is a prospectively justified, method-reviewed budget adjustment; failures remain ineligible.",
+  "decision": "Fit each resolution family separately only with at least three numerically valid, resolved, full-window, pre-plasmoid cases. OLS(log normalized R, log nominal S_eta); two-sided 95% Student-t slope interval with n-2 degrees of freedom. Expand the interval to the envelope of fits using both flux-path rate endpoints. Reject the allowed band only if this full interval is disjoint from [-0.60,-0.40]. Report overlap, too few eligible cases, or discordant families as inconclusive. No continuous-domain or universal claim follows from these finite samples."
+}

@@ -1,0 +1,60 @@
+{
+  "protocol": {
+    "flux_window": [
+      0.01,
+      0.05
+    ],
+    "observable": "fixed-window mean normalized flux-transfer rate",
+    "fit": "OLS(log R, log S_eta), two-sided 95% Student-t interval; conservative exponent interval unions the CI with endpoint fits from the two flux paths",
+    "allowed_p": [
+      -0.6,
+      -0.4
+    ],
+    "resolution_rule": "at least 4 cells per nominal delta_SP/L=S_eta^-1/2 and measured central-sheet |Jz| FWHM at least 4 cells; the paired 1.5x family targets at least 6 nominal cells",
+    "eligibility": "full flux window, resolved, finite rate and zero detected secondary A_z extrema at prominence 0.005 in |x|=[0.04,0.22]",
+    "decision": "reject band only if the complete 95% interval is disjoint from [-0.60,-0.40]; otherwise inconclusive; unresolved or plasmoid cases are excluded/censored"
+  },
+  "n_cases": 1,
+  "n_eligible": 1,
+  "cases": [
+    {
+      "id": "pilot_s1000_256",
+      "eta": 0.001,
+      "family": "base",
+      "eta_inverse": 1000.0,
+      "nx": 256,
+      "ny": 256,
+      "rate": 0.059860054003853705,
+      "rate_path_min": 0.05985388417376933,
+      "rate_path_max": 0.059866223833938075,
+      "eligible": true,
+      "reached_window": true,
+      "resolved": true,
+      "preplasmoid": true,
+      "numerically_valid": true,
+      "resolution_cells_SP": 8.09543081003105,
+      "measured_current_fwhm_cells": 8.0,
+      "secondary_extrema_count_recomputed": 0,
+      "archive": "exploratory/pilot_s1000_256/raw.tar.gz",
+      "summary": "exploratory/pilot_s1000_256/result.json"
+    }
+  ],
+  "base_fit": {
+    "n": 1,
+    "defined": false,
+    "reason": "fewer than three eligible cases"
+  },
+  "refined_fit": {
+    "n": 0,
+    "defined": false,
+    "reason": "fewer than three eligible cases"
+  },
+  "base_decision": "inconclusive",
+  "refined_decision": "inconclusive",
+  "figures": {
+    "scaling": "plots-v3/scaling_uncertainty.png",
+    "fields_current": [
+      "plots-v3/field_current_pilot_s1000_256.png"
+    ]
+  }
+}

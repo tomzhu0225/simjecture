@@ -1,0 +1,4 @@
+{
+  "require_method_review": true,
+  "required_capability_prefixes": ["flash-"]
+}
