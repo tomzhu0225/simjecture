@@ -1,0 +1,224 @@
+{
+  "id": "exp_eb0cf8a51978118487d20196",
+  "status": "cancelled",
+  "operator_guidance_ids": [],
+  "created_at": 1791437273.0971208,
+  "timeout": 1200,
+  "workspace_limit_bytes": 4294967296,
+  "binding": {
+    "source": "calculation.py",
+    "args": [
+      "pic",
+      "--patch",
+      "fine_patch.npz",
+      "--output",
+      "kinetic",
+      "--duration-omegaci",
+      "0.8",
+      "--diagnostics",
+      "32",
+      "--moment-bins",
+      "4",
+      "--ppc",
+      "16",
+      "--max-grid-size",
+      "128",
+      "--boundary-accounting",
+      "--secondary-bins",
+      "8"
+    ],
+    "inputs": {
+      "calculation.py": "ef030822bfce50da0aa95310c94f11bf6f24e0766ee8ca0856ea52eb0ee15844",
+      "kinetic.py": "c63038d1cbb87a787e52f00483d459b4bb5f16d5bf7b93da68584c656761aa05",
+      "estimator.py": "44e914ad2780edabf2754f4fae734fd9b5811d6d8b5db094e57f6e379d0be0d4",
+      "base_patch.npz": "9cbfc57ca5fa7c26faab39bb9fd08658fc639156d52422cb825611597562d568",
+      "base_patch.json": "316e8beefde5488c6de26a61ccdf33e70e5af9a32f8a848a3fc967b26a2e9598",
+      "large_patch.npz": "6fc676f1969f788ec2ff9ea7a47dd549ce91c92de3e68d18797aacd33fb08718",
+      "large_patch.json": "cc14291a76ef2276bf7e687d19995e71b653ae8badb822d9cbbcffa2ddcbccbb",
+      "fine_patch.npz": "c7c6d6d1c027e421be20942ffa07d6c415479fab6567a2705f6f5b0435697402",
+      "fine_patch.json": "1eda87349b19795cb5b1f86b72e601caf734cd85c43718619e03ffd30cfdce69",
+      "PRESSURE_CONTRACT.md": "f02b8c2dc538456eeb2b565dd924b9895b138a4b83b834fe0b22f0e9e0851f61"
+    },
+    "capability": "warpx-cuda-openpmd-26.07",
+    "runtime_sha256": "d56f0e12c7e6a52cb7f1f6ad3790633549749e3c48595478c9cb3fefdc460c7f"
+  },
+  "outputs": [
+    "kinetic/result.json",
+    "kinetic/history.json",
+    "kinetic/moments.npz",
+    "kinetic/initial_fields.npz",
+    "kinetic/final_fields.npz",
+    "kinetic/reduced/field_energy.txt",
+    "kinetic/reduced/particle_energy.txt",
+    "kinetic/warpx_used_inputs",
+    "kinetic/progress.json"
+  ],
+  "commitment": null,
+  "key": "control-grid",
+  "monitor": {
+    "path": "kinetic/progress.json",
+    "format": "json",
+    "value_key": "duration_omegaci",
+    "quantity": "Physical time",
+    "unit": "Omega_ci^-1",
+    "target": 0.8,
+    "baseline": 0.0
+  },
+  "stage": "exploration",
+  "method": null,
+  "review_documents": [
+    "kinetic/result.json",
+    "kinetic/history.json"
+  ],
+  "parent_experiment": null,
+  "purpose": "validation",
+  "plan": null,
+  "pid": 336053,
+  "worker_identity": {
+    "pid": 336053,
+    "starttime": "1866796",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture/.venv/bin/python3",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/coupled-study",
+      "--execute",
+      "exp_eb0cf8a51978118487d20196"
+    ],
+    "launched_at": "2026-10-08T05:27:53.250151+00:00",
+    "run_directory": null
+  },
+  "started_at": 1791437273.250268,
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": -15,
+    "stdout": "Initializing AMReX (26.07)...\nInitializing CUDA...\nCUDA initialized with 1 device.\nAMReX (26.07) initialized\nWarpX (312d507407a1)\n\n                                   ___\n    __        __             ___  /  /\n    \\ \\      / /_ _ _ __ _ __\\  \\/  /\n     \\ \\ /\\ / / _` | '__| '_ \\\\    /\n      \\ V  V / (_| | |  | |_) /    \\\n       \\_/\\_/ \\__,_|_|  | .__/__/\\  \\\n                        |_|       \\__\\\n\nLevel 0: dt = 1.904053036e-15 ; dx = 1.153232046e-06 ; dz = 1.153232046e-06\n\nGrids Summary:\n  Level 0   25 grids  331776 cells  100 % of domain\n            smallest grid: 64 x 64  biggest grid: 128 x 128\n\n-------------------------------------------------------------------------------\n--------------------------- MAIN EM PIC PARAMETERS ----------------------------\n-------------------------------------------------------------------------------\nPrecision:            | DOUBLE\nParticle precision:   | DOUBLE\nGeometry:             | 2D (XZ)\nOperation mode:       | Electromagnetic\n                      | - vacuum\n-------------------------------------------------------------------------------\nCurrent Deposition:   | Esirkepov \nGuard cells           | - ng_alloc_J  = (4,4)\n (allocated for J)    | \nParticle Pusher:      | Boris \nCharge Deposition:    | standard \nField Gathering:      | energy-conserving \nParticle Shape Factor:| 2\n-------------------------------------------------------------------------------\nMaxwell Solver:       | Yee \n-------------------------------------------------------------------------------\nFor full input parameters, see the file: /work/kinetic/warpx_used_inputs\n\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ FIRST STEP ]\n*\n* --> [!!!] [Performance] [raised once]\n*     Too many boxes per GPU!\n*     It looks like you split your simulation domain in too many boxes (25),\n*     which results in an average number of (25) per GPU. This causes severe\n*     overhead in the communication of border/guard regions.\n*     On GPUs, consider using 1-8 boxes per GPU that together fill each GPU's\n*     memory sufficiently. If you do not rely on dynamic load-balancing, then\n*     one large box per GPU is ideal.\n*     Consider increasing the amr.blocking_factor and amr.max_grid_size\n*     parameters and/or using more MPI ranks.\n*     More information:\n*     https://warpx.readthedocs.io/en/latest/usage/workflows/domain_decomposition.html\n*     @ Raised by: ALL\n*\n********************************************************************************\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ THE END ]\n*\n* --> [!!!] [Performance] [raised once]\n*     Too many boxes per GPU!\n*     It looks like you split your simulation domain in too many boxes (25),\n*     which results in an average number of (25) per GPU. This causes severe\n*     overhead in the communication of border/guard regions.\n*     On GPUs, consider using 1-8 boxes per GPU that together fill each GPU's\n*     memory sufficiently. If you do not rely on dynamic load-balancing, then\n*     one large box per GPU is ideal.\n*     Consider increasing the amr.blocking_factor and amr.max_grid_size\n*     parameters and/or using more MPI ranks.\n*     More information:\n*     https://warpx.readthedocs.io/en/latest/usage/workflows/domain_decomposition.html\n*     @ Raised by: ALL\n*\n********************************************************************************\n\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ FIRST STEP ]\n*\n* --> [!!!] [Performance] [raised once]\n*     Too many boxes per GPU!\n*     It looks like you split your simulation domain in too many boxes (25),\n*     which results in an average number of (25) per GPU. This causes severe\n*     overhead in the communication of border/guard regions.\n*     On GPUs, consider using 1-8 boxes per GPU that together fill each GPU's\n*     memory sufficiently. If you do not rely on dynamic load-balancing, then\n*     one large box per GPU is ideal.\n*     Consider increasing the amr.blocking_factor and amr.max_grid_size\n*     parameters and/or using more MPI ranks.\n*     More information:\n*     https://warpx.readthedocs.io/en/latest/usage/workflows/domain_decomposition.html\n*     @ Raised by: ALL\n*\n********************************************************************************\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ THE END ]\n*\n* --> [!!!] [Performance] [raised once]\n*     Too many boxes per GPU!\n*     It looks like you split your simulation domain in too many boxes (25),\n*     which results in an average number of (25) per GPU. This causes severe\n*     overhead in the communication of border/guard regions.\n*     On GPUs, consider using 1-8 boxes per GPU that together fill each GPU's\n*     memory sufficiently. If you do not rely on dynamic load-balancing, then\n*     one large box per GPU is ideal.\n*     Consider increasing the amr.blocking_factor and amr.max_grid_size\n*     parameters and/or using more MPI ranks.\n*     More information:\n*     https://warpx.readthedocs.io/en/latest/usage/workflows/domain_decomposition.html\n*     @ Raised by: ALL\n*\n********************************************************************************\n\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ FIRST STEP ]\n*\n* --> [!!!] [Performance] [raised once]\n*     Too many boxes per GPU!\n*     It looks like you split your simulation domain in too many boxes (25),\n*     which results in an average number of (25) per GPU. This causes severe\n*     overhead in the communication of border/guard regions.\n*     On GPUs, consider using 1-8 boxes per GPU that together fill each GPU's\n*     memory sufficiently. If you do not rely on dynamic load-balancing, then\n*     one large box per GPU is ideal.\n*     Consider increasing the amr.blocking_factor and amr.max_grid_size\n*     parameters and/or using more MPI ranks.\n*     More information:\n*     https://warpx.readthedocs.io/en/latest/usage/workflows/domain_decomposition.html\n*     @ Raised by: ALL\n*\n********************************************************************************\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ THE END ]\n*\n* --> [!!!] [Performance] [raised once]\n*     Too many boxes per GPU!\n*     It looks like you split your simulation domain in too many boxes (25),\n*     which results in an average number of (25) per GPU. This causes severe\n*     overhead in the communication of border/guard regions.\n*     On GPUs, consider using 1-8 boxes per GPU that together fill each GPU's\n*     memory sufficiently. If you do not rely on dynamic load-balancing, then\n*     one large box per GPU is ideal.\n*     Consider increasing the amr.blocking_factor and amr.max_grid_size\n*     parameters and/or using more MPI ranks.\n*     More information:\n*     https://warpx.readthedocs.io/en/latest/usage/workflows/domain_decomposition.html\n*     @ Raised by: ALL\n*\n********************************************************************************\n\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ FIRST STEP ]\n*\n* --> [!!!] [Performance] [raised once]\n*     Too many boxes per GPU!\n*     It looks like you split your simulation domain in too many boxes (25),\n*     which results in an average number of (25) per GPU. This causes severe\n*     overhead in the communication of border/guard regions.\n*     On GPUs, consider using 1-8 boxes per GPU that together fill each GPU's\n*     memory sufficiently. If you do not rely on dynamic load-balancing, then\n*     one large box per GPU is ideal.\n*     Consider increasing the amr.blocking_factor and amr.max_grid_size\n*     parameters and/or using more MPI ranks.\n*     More information:\n*     https://warpx.readthedocs.io/en/latest/usage/workflows/domain_decomposition.html\n*     @ Raised by: ALL\n*\n********************************************************************************",
+    "stderr": "/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx/site-packages/pywarpx/fields.py:336: UserWarning: The fields wrapper is now obsolete and should not be used. The\n            recommended way of obtaining the MultiFabs is directly from the register.\n            This is done using the 'sim.fields.get' routine where 'sim' is a PICMI\n            Simulation instance or the 'warpx' instance of pywarpx.WarpX.\n  return MultiFabWrapper(mf_name=\"Bfield_fp_external\", idir=0, level=level)\n/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx/site-packages/pywarpx/fields.py:344: UserWarning: The fields wrapper is now obsolete and should not be used. The\n            recommended way of obtaining the MultiFabs is directly from the register.\n            This is done using the 'sim.fields.get' routine where 'sim' is a PICMI\n            Simulation instance or the 'warpx' instance of pywarpx.WarpX.\n  return MultiFabWrapper(mf_name=\"Bfield_fp_external\", idir=2, level=level)\n/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx/site-packages/pywarpx/fields.py:340: UserWarning: The fields wrapper is now obsolete and should not be used. The\n            recommended way of obtaining the MultiFabs is directly from the register.\n            This is done using the 'sim.fields.get' routine where 'sim' is a PICMI\n            Simulation instance or the 'warpx' instance of pywarpx.WarpX.\n  return MultiFabWrapper(mf_name=\"Bfield_fp_external\", idir=1, level=level)\n/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx/site-packages/pywarpx/fields.py:328: UserWarning: The fields wrapper is now obsolete and should not be used. The\n            recommended way of obtaining the MultiFabs is directly from the register.\n            This is done using the 'sim.fields.get' routine where 'sim' is a PICMI\n            Simulation instance or the 'warpx' instance of pywarpx.WarpX.\n  return MultiFabWrapper(mf_name=\"Efield_fp_external\", idir=1, level=level)\n/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx/site-packages/pywarpx/fields.py:324: UserWarning: The fields wrapper is now obsolete and should not be used. The\n            recommended way of obtaining the MultiFabs is directly from the register.\n            This is done using the 'sim.fields.get' routine where 'sim' is a PICMI\n            Simulation instance or the 'warpx' instance of pywarpx.WarpX.\n  return MultiFabWrapper(mf_name=\"Efield_fp_external\", idir=0, level=level)\n/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx/site-packages/pywarpx/fields.py:332: UserWarning: The fields wrapper is now obsolete and should not be used. The\n            recommended way of obtaining the MultiFabs is directly from the register.\n            This is done using the 'sim.fields.get' routine where 'sim' is a PICMI\n            Simulation instance or the 'warpx' instance of pywarpx.WarpX.\n  return MultiFabWrapper(mf_name=\"Efield_fp_external\", idir=2, level=level)\n/work/kinetic.py:51: UserWarning: ParticleContainerWrapper(\"ions\") is deprecated. Use sim.particles.get(\"ions\") instead.\n  pc = particle_containers.ParticleContainerWrapper(name)\n/work/kinetic.py:51: UserWarning: ParticleContainerWrapper(\"electrons\") is deprecated. Use sim.particles.get(\"electrons\") instead.\n  pc = particle_containers.ParticleContainerWrapper(name)\n/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx/site-packages/pywarpx/fields.py:276: UserWarning: The fields wrapper is now obsolete and should not be used. The\n            recommended way of obtaining the MultiFabs is directly from the register.\n            This is done using the 'sim.fields.get' routine where 'sim' is a PICMI\n            Simulation instance or the 'warpx' instance of pywarpx.WarpX.\n  return MultiFabWrapper(mf_name=\"Bfield_aux\", idir=0, level=level)\n/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx/site-packages/pywarpx/fields.py:280: UserWarning: The fields wrapper is now obsolete and should not be used. The\n            recommended way of obtaining the MultiFabs is directly from the register.\n            This is done using the 'sim.fields.get' routine where 'sim' is a PICMI\n            Simulation instance or the 'warpx' instance of pywarpx.WarpX.\n  return MultiFabWrapper(mf_name=\"Bfield_aux\", idir=1, level=level)\n/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx/site-packages/pywarpx/fields.py:284: UserWarning: The fields wrapper is now obsolete and should not be used. The\n            recommended way of obtaining the MultiFabs is directly from the register.\n            This is done using the 'sim.fields.get' routine where 'sim' is a PICMI\n            Simulation instance or the 'warpx' instance of pywarpx.WarpX.\n  return MultiFabWrapper(mf_name=\"Bfield_aux\", idir=2, level=level)\n/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx/site-packages/pywarpx/fields.py:264: UserWarning: The fields wrapper is now obsolete and should not be used. The\n            recommended way of obtaining the MultiFabs is directly from the register.\n            This is done using the 'sim.fields.get' routine where 'sim' is a PICMI\n            Simulation instance or the 'warpx' instance of pywarpx.WarpX.\n  return MultiFabWrapper(mf_name=\"Efield_aux\", idir=0, level=level)\n/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx/site-packages/pywarpx/fields.py:268: UserWarning: The fields wrapper is now obsolete and should not be used. The\n            recommended way of obtaining the MultiFabs is directly from the register.\n            This is done using the 'sim.fields.get' routine where 'sim' is a PICMI\n            Simulation instance or the 'warpx' instance of pywarpx.WarpX.\n  return MultiFabWrapper(mf_name=\"Efield_aux\", idir=1, level=level)\n/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx/site-packages/pywarpx/fields.py:272: UserWarning: The fields wrapper is now obsolete and should not be used. The\n            recommended way of obtaining the MultiFabs is directly from the register.\n            This is done using the 'sim.fields.get' routine where 'sim' is a PICMI\n            Simulation instance or the 'warpx' instance of pywarpx.WarpX.\n  return MultiFabWrapper(mf_name=\"Efield_aux\", idir=2, level=level)\n/work/kinetic.py:80: UserWarning: ParticleContainerWrapper(\"ions\") is deprecated. Use sim.particles.get(\"ions\") instead.\n  pc = particle_containers.ParticleContainerWrapper(name)\n/work/kinetic.py:80: UserWarning: ParticleContainerWrapper(\"electrons\") is deprecated. Use sim.particles.get(\"electrons\") instead.\n  pc = particle_containers.ParticleContainerWrapper(name)\n/work/kinetic.py:289: UserWarning: ParticleContainerWrapper(\"ions\") is deprecated. Use sim.particles.get(\"ions\") instead.\n  budget=dict(absorbed_particle_energy_J_per_m=lost_energy,estimated_poynting_outflow_J_per_m=poynting_energy,instant_boundary_poynting_W_per_m=flux,live_particle_energy_J_per_m=sum(particle_containers.ParticleContainerWrapper(sp).get_species_energy_sum() for sp in ('ions','electrons')))\n/work/kinetic.py:289: UserWarning: ParticleContainerWrapper(\"electrons\") is deprecated. Use sim.particles.get(\"electrons\") instead.\n  budget=dict(absorbed_particle_energy_J_per_m=lost_energy,estimated_poynting_outflow_J_per_m=poynting_energy,instant_boundary_poynting_W_per_m=flux,live_particle_energy_J_per_m=sum(particle_containers.ParticleContainerWrapper(sp).get_species_energy_sum() for sp in ('ions','electrons')))",
+    "timed_out": false,
+    "cancelled": true,
+    "workspace_exceeded": false,
+    "stdout_truncated": false,
+    "stderr_truncated": false,
+    "heartbeat_count": 33,
+    "wall_seconds": 168.90524518200255,
+    "workspace_bytes": 115323114
+  },
+  "artifacts": {
+    ".cupy/kernel_cache/2e0ccd5ce1515fda0d5da739feb0aedee1e4e3cb.cubin": {
+      "sha256": "03a63b043b00d9e4b7595d35a3458f07d152f8952349eecd4eb05fdeeb7a84e5",
+      "bytes": 4807
+    },
+    ".cupy/kernel_cache/e0da47d6cd30dbfec1c30d83a96c4e88904749af.cubin": {
+      "sha256": "6d2b9fed78cf0f2d23ad08bdc244629ba048c1f9e92a23772c159015a25a456b",
+      "bytes": 4551
+    },
+    ".cupy/kernel_cache/eddffdc4d1518d80183f9cbf368dfb857adcccdf.cubin": {
+      "sha256": "3b0ec62fd0b3ac51320e370918e281ec4e6195e147a9f2845b083960c9689199",
+      "bytes": 4935
+    },
+    "PRESSURE_CONTRACT.md": {
+      "sha256": "f02b8c2dc538456eeb2b565dd924b9895b138a4b83b834fe0b22f0e9e0851f61",
+      "bytes": 5221
+    },
+    "base_patch.json": {
+      "sha256": "316e8beefde5488c6de26a61ccdf33e70e5af9a32f8a848a3fc967b26a2e9598",
+      "bytes": 1766
+    },
+    "base_patch.npz": {
+      "sha256": "9cbfc57ca5fa7c26faab39bb9fd08658fc639156d52422cb825611597562d568",
+      "bytes": 11214400
+    },
+    "calculation.py": {
+      "sha256": "ef030822bfce50da0aa95310c94f11bf6f24e0766ee8ca0856ea52eb0ee15844",
+      "bytes": 435
+    },
+    "estimator.py": {
+      "sha256": "44e914ad2780edabf2754f4fae734fd9b5811d6d8b5db094e57f6e379d0be0d4",
+      "bytes": 1878
+    },
+    "fine_patch.json": {
+      "sha256": "1eda87349b19795cb5b1f86b72e601caf734cd85c43718619e03ffd30cfdce69",
+      "bytes": 1764
+    },
+    "fine_patch.npz": {
+      "sha256": "c7c6d6d1c027e421be20942ffa07d6c415479fab6567a2705f6f5b0435697402",
+      "bytes": 25335424
+    },
+    "kinetic/fields/openpmd_000000.h5": {
+      "sha256": "b140cba7d6c56db4be9e98daeb50c02de58a2e43985021e694d92856fdd33af6",
+      "bytes": 47227432
+    },
+    "kinetic/fields/paraview.pmd": {
+      "sha256": "70cdbee5690cb452b621ef5a3129fa9237410b4f93d41ec84ec2887b3f64e6cc",
+      "bytes": 16
+    },
+    "kinetic/history.json": {
+      "sha256": "939a8775261572c393b4defd41c611cb205d179534f31ec98488b0a97346113d",
+      "bytes": 3659
+    },
+    "kinetic/initial_fields.npz": {
+      "sha256": "6f63ae6e1008323600b2c9f5d771c8a45a77832e00d632b89d7dcca5480f241a",
+      "bytes": 5788015
+    },
+    "kinetic/moments.npz": {
+      "sha256": "d7a5cea93706116dc76bc0d5660932bd634cfee52c29b9a83bb9b10c734d58f1",
+      "bytes": 117003
+    },
+    "kinetic/progress.json": {
+      "sha256": "a9f6c6d49cffa179422337acb9041347679715dd9beaa7497b61d2fa8fd26a18",
+      "bytes": 89
+    },
+    "kinetic/reduced/field_energy.txt": {
+      "sha256": "9152e147e61e5605ec8bc1a22e8cf251ed3c33f159817276b8ddaf582e538bd5",
+      "bytes": 415
+    },
+    "kinetic/reduced/particle_energy.txt": {
+      "sha256": "aac85a2d3822662d8358487f5d8beff5a5e8d0289ca435bbbde67ca754d296c8",
+      "bytes": 717
+    },
+    "kinetic/warpx_used_inputs": {
+      "sha256": "91b31633185ebeed32397f3f06aaf4d3a36eae1bf40ff62f51e022bcac3c7e7d",
+      "bytes": 4903
+    },
+    "kinetic.py": {
+      "sha256": "c63038d1cbb87a787e52f00483d459b4bb5f16d5bf7b93da68584c656761aa05",
+      "bytes": 18594
+    },
+    "large_patch.json": {
+      "sha256": "cc14291a76ef2276bf7e687d19995e71b653ae8badb822d9cbbcffa2ddcbccbb",
+      "bytes": 1765
+    },
+    "large_patch.npz": {
+      "sha256": "6fc676f1969f788ec2ff9ea7a47dd549ce91c92de3e68d18797aacd33fb08718",
+      "bytes": 25585325
+    }
+  },
+  "missing_outputs": [
+    "kinetic/result.json",
+    "kinetic/final_fields.npz"
+  ],
+  "input_mutations": [],
+  "output_findings": [],
+  "scientific_status": "unreviewed",
+  "finished_at": 1791437444.147044,
+  "cancellation_confirmed": true,
+  "stop_reason": "director_d187e6bce34f75c5cb8dff54: The new evidence resolves useful implementation blockers: the repaired pilot records actual absorbed-particle energy and finite estimated Poynting outflow, and corrected cell-overlap analysis improves initial matching without changing the transferred physics. The worker has recorded a prospective measurement contract; independent kinetic qualification remains outstanding. Scientific feasibility is limited by the previously recorded resolution, relaxation, boundary and uncertainty requirements. These exploratory results do not establish the hypothesis. Budget feasibility has deteriorated relative to the worker's estimated combined 700\u20131,000 seconds. Updated operational telemetry places the fine-grid run at approximately 0.050 after 136 seconds, forecasting another 2,041 seconds against only about 1,064 seconds remaining before its timeout. The base particle-count control is progressing substantially faster. These mutable forecasts are uncertain, and shared GPU contention may contribute, but continuing both unchanged risks spending scarce time on an incomplete spatial control while leaving reviewed decisive evidence and other necessary controls uncollected.",
+  "stop_requested_at": 1791437443.849256,
+  "cancel_requested": true,
+  "telemetry": {
+    "path": "kinetic/progress.json",
+    "format": "json",
+    "value_key": "duration_omegaci",
+    "quantity": "Physical time",
+    "unit": "Omega_ci^-1",
+    "target": 0.8,
+    "baseline": 0.0,
+    "observed_at": 1791437444.0842595,
+    "elapsed_seconds": 168.90524518200255,
+    "authority": "Mutable operational telemetry; not scientific evidence",
+    "available": true,
+    "value": 0.07492786244323578,
+    "estimated_additional_seconds": 1634.4852658975053
+  }
+}

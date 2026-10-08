@@ -58,9 +58,9 @@ its rate is not automatically a corrected global MHD rate. An EOS evaluation
 alone does not establish radiative transport. Compare controls that can separate
 handoff artifacts from the physical mechanism being claimed.
 
-The [FLASH-to-WarpX example under commissioning](https://github.com/tomzhu0225/simjecture/tree/main/demos/flash_warpx_kinetic_patch)
-provides source-controlled transfer helpers and clearly labels its current
-qualification status. The separate
+The [recorded FLASH-to-WarpX investigation](../demos/flash-warpx-patch.md)
+provides source-controlled transfer helpers, completed kinetic controls and an
+audit of its unresolved outcome. The separate
 [radiation tool-selection proposal](https://github.com/tomzhu0225/simjecture/tree/main/research/proposals/tool-selection-radiation)
 is a prospective design, not a recorded result.
 

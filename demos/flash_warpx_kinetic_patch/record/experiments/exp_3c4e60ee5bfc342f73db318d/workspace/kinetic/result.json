@@ -1,0 +1,62 @@
+{
+  "completed": true,
+  "backend": "CUDA",
+  "gpu": true,
+  "steps": 128,
+  "dt_s": 2.2848636435065735e-15,
+  "dt_omega_pe": 0.1288996736537226,
+  "duration_omegaci": 0.03365181190433104,
+  "elapsed_s": 26.849678581000262,
+  "initialization_seconds": 3.6774692360013432,
+  "phase_times": [
+    {
+      "step": 0,
+      "moment_seconds": 0.558597010000085,
+      "evolve_steps": 32,
+      "evolve_seconds": 3.8917187600000034
+    },
+    {
+      "step": 32,
+      "moment_seconds": 0.8419686560009723,
+      "evolve_steps": 32,
+      "evolve_seconds": 4.695935449000899
+    },
+    {
+      "step": 64,
+      "moment_seconds": 1.1493848589998379,
+      "evolve_steps": 32,
+      "evolve_seconds": 4.88184308900054
+    },
+    {
+      "step": 96,
+      "moment_seconds": 1.0337580340001296,
+      "evolve_steps": 32,
+      "evolve_seconds": 4.585596429000361
+    },
+    {
+      "step": 128,
+      "moment_seconds": 1.5099533770007838
+    }
+  ],
+  "storage_bytes": 78946260,
+  "initial_field_relative_errors": {
+    "bx": 0.0,
+    "bz": 0.0,
+    "ey": 0.0
+  },
+  "initial_maximum_particle_speed_over_c": {
+    "ions": 0.06905522184788472,
+    "electrons": 0.32776099559499094
+  },
+  "patch_sha256": "2af71211db2ddfd3824222d77f36245740357d68a43e4a59f7981d0054455697",
+  "ppc_per_species": 16,
+  "seed": 20261008,
+  "moment_convention": "Nonrelativistic m*n*<v_prime v_prime>, velocity v=u/sqrt(1+u^2/c^2); local bin mean subtracted.",
+  "isotropy_metric": "Frobenius(P-tr(P)I/3)/(sqrt(3)*tr(P)/3)",
+  "moment_bins_per_axis": 8,
+  "roi_half_code": [
+    0.04,
+    0.015
+  ],
+  "scope": "Collisionless one-way local continuation. Absorbing boundaries, transfer relaxation and numerical/particle controls remain scientific qualification requirements."
+}

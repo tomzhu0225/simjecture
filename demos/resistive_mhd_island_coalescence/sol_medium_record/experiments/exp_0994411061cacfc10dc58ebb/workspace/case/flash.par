@@ -1,0 +1,89 @@
+run_comment = "Guided FLASH island-coalescence anchor"
+log_file = "flash_run.log"
+basenm = "flash_run_"
+
+UnitSystem = "none"
+geometry = "cartesian"
+xmin = -0.5
+xmax = 0.5
+ymin = -0.5
+ymax = 0.5
+
+xl_boundary_type = "reflecting"
+xr_boundary_type = "reflecting"
+yl_boundary_type = "reflecting"
+yr_boundary_type = "reflecting"
+
+sim_alpha = 20
+sim_temperature = 3.0
+sim_pressureOffset = 6.0
+
+gamma = 1.6666666666666667
+eosModeInit = "dens_pres"
+eos_singleSpeciesA = 1.0
+eos_singleSpeciesZ = 1.0
+smlrho = 1.0e-12
+smallp = 1.0e-12
+smallt = 1.0e-12
+
+useHydro = .true.
+order = 2
+slopeLimiter = "mc"
+LimitedSlopeBeta = 1.0
+charLimiting = .true.
+use_avisc = .false.
+use_flattening = .false.
+use_steepening = .false.
+use_upwindTVD = .false.
+RiemannSolver = "HLLD"
+entropy = .false.
+shockDetect = .false.
+
+killdivb = .true.
+E_modification = .true.
+E_upwind = .false.
+energyFix = .true.
+ForceHydroLimit = .false.
+
+useDiffuse = .true.
+useDiffuseTherm = .false.
+useDiffuseSpecies = .false.
+useDiffuseComputeDtTherm = .false.
+useDiffuseComputeDtVisc = .false.
+useDiffuseComputeDtSpecies = .false.
+useDiffuseComputeDtMagnetic = .true.
+dt_diff_factor = 0.8
+useMagneticResistivity = .true.
+resistivitySolver = "explicit"
+resistivityForm = "parallel"
+resistivity = 0.00025000000000000001
+
+restart = .false.
+nend = 1000000
+tmax = 2.1499999999999999
+dr_shortenLastStepBeforeTMax = .true.
+cfl = 0.8
+dtinit = 1.0e-6
+dtmin = 1.0e-14
+dtmax = 1.0e-2
+tstep_change_factor = 1.2
+
+plotFileNumber = 0
+checkpointFileNumber = 0
+plotFileIntervalTime = 0.025000000000000001
+checkpointFileIntervalTime = 1000.0
+plot_var_1 = "dens"
+plot_var_2 = "pres"
+plot_var_3 = "velx"
+plot_var_4 = "vely"
+plot_var_5 = "magx"
+plot_var_6 = "magy"
+plot_var_7 = "magp"
+plot_var_8 = "divb"
+
+iGridSize = 384
+jGridSize = 384
+kGridSize = 1
+iProcs = 2
+jProcs = 2
+kProcs = 1

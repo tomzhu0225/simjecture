@@ -16,6 +16,11 @@ unresolved after its eligibility checks. A post-run coordinate correction explai
 false diagnostic rejections; the original decisions and partial results remain
 preserved alongside the classic record.
 
+[**A FLASH current sheet followed with WarpX**](flash-warpx-patch.md) connects a
+fresh MHD source to local kinetic calculations. Its two-hour record includes
+actual state transfer, GPU performance recovery and completed numerical controls,
+with the final scientific question left unresolved.
+
 ## A complete minimal-workflow example
 
 [**Does energy conservation guarantee an accurate orbit?**](kepler-energy.md)

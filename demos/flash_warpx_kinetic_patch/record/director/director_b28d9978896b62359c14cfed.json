@@ -1,0 +1,13 @@
+{
+  "id": "director_b28d9978896b62359c14cfed",
+  "created_at": 1791439185.7161334,
+  "packet_sha256": "aaeb3090ce3c3fe859082490dbea9b867974e4b460a88f99972d61feea91b7b0",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "evidence_changes records no new completed experiments, methods responses or reviews. The previous decision therefore remains applicable, including the recorded initialization, coarse-flow and boundary-control limitations. The worker identifies the refinement and timestep comparison as commissioning results pending methods approval and fresh evidence; that distinction is appropriate. The active timestep-halving run addresses a specific accuracy blocker for an already completed full-window trajectory. Continuing it is scientifically useful. Operational telemetry reports physical time 0.549 toward 0.8 after approximately 402 seconds, with approximately 181 seconds forecast remaining\u2014within its 900-second timeout. This mutable forecast supports continuation but establishes neither accuracy nor qualification. Budget feasibility remains at risk: approximately 1,929 seconds remain, and methods resolution, any required replacement boundary control, fresh reviewed evidence and independent scientific review are still outstanding. No stop is justified for the sole active experiment.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "at_risk",
+  "stop_experiments": [],
+  "next_action": "Continue exp_ec59942cf4fe18f457b92418 in isolation within its existing timeout. Submit the completed compact audit and revised contract to the separate methods reviewer now, if not already submitted; the packet records no new response. Ask specifically whether the existing boundary and particle controls can qualify the finer-grid measurement, keeping their missing diagnostics and coarse-flow failure explicit. When the timestep run finishes, compare the frozen [0.3,0.8] estimator, scalar pressures, eligibility, relaxation and aligned energy accounting against declared tolerances, and record actual runtime. Use that measured cost and the methods response to choose the smallest necessary fresh evidence configuration and seed comparison. Cost any required replacement boundary run before launching it, preserving time for independent review. Do not add another pilot or control matrix without a specific unresolved blocker, shorten the scientific window, relax tolerances or promote commissioning trajectories to decisive evidence. If qualification cannot fit the remaining budget, preserve the complete exploratory trajectories and report the original test as unresolved."
+}

@@ -1,0 +1,245 @@
+{
+  "completed": true,
+  "backend": "CUDA",
+  "gpu": true,
+  "steps": 2435,
+  "dt_s": 2.8560795543832174e-15,
+  "dt_omega_pe": 0.1611245920671533,
+  "duration_omegaci": 0.800216425654747,
+  "elapsed_s": 276.8819201059996,
+  "initialization_seconds": 2.3107785929969396,
+  "phase_times": [
+    {
+      "step": 0,
+      "moment_seconds": 0.20138261199826957,
+      "evolve_steps": 76,
+      "evolve_seconds": 7.170393934000458
+    },
+    {
+      "step": 76,
+      "moment_seconds": 0.3892447270009143,
+      "evolve_steps": 76,
+      "evolve_seconds": 7.997852211003192
+    },
+    {
+      "step": 152,
+      "moment_seconds": 0.4335145659970294,
+      "evolve_steps": 76,
+      "evolve_seconds": 8.427889992002747
+    },
+    {
+      "step": 228,
+      "moment_seconds": 0.3613781329986523,
+      "evolve_steps": 76,
+      "evolve_seconds": 8.2808841929982
+    },
+    {
+      "step": 304,
+      "moment_seconds": 0.40003998300016974,
+      "evolve_steps": 76,
+      "evolve_seconds": 8.126438326002244
+    },
+    {
+      "step": 380,
+      "moment_seconds": 0.40292800400129636,
+      "evolve_steps": 76,
+      "evolve_seconds": 8.41708885099797
+    },
+    {
+      "step": 456,
+      "moment_seconds": 0.3326746339989768,
+      "evolve_steps": 76,
+      "evolve_seconds": 8.18470183199679
+    },
+    {
+      "step": 532,
+      "moment_seconds": 0.366503774002922,
+      "evolve_steps": 76,
+      "evolve_seconds": 8.555005080001138
+    },
+    {
+      "step": 608,
+      "moment_seconds": 0.40425701099957223,
+      "evolve_steps": 76,
+      "evolve_seconds": 8.105741718998615
+    },
+    {
+      "step": 684,
+      "moment_seconds": 0.36405110899795545,
+      "evolve_steps": 76,
+      "evolve_seconds": 8.025855444000626
+    },
+    {
+      "step": 760,
+      "moment_seconds": 0.307082988001639,
+      "evolve_steps": 76,
+      "evolve_seconds": 9.079005776002305
+    },
+    {
+      "step": 836,
+      "moment_seconds": 0.3984702900015691,
+      "evolve_steps": 76,
+      "evolve_seconds": 8.679063715000666
+    },
+    {
+      "step": 912,
+      "moment_seconds": 0.48746508000112954,
+      "evolve_steps": 76,
+      "evolve_seconds": 8.441282140000112
+    },
+    {
+      "step": 988,
+      "moment_seconds": 0.5147111029982625,
+      "evolve_steps": 76,
+      "evolve_seconds": 8.262404446999426
+    },
+    {
+      "step": 1064,
+      "moment_seconds": 0.37964425799873425,
+      "evolve_steps": 76,
+      "evolve_seconds": 8.222559551999439
+    },
+    {
+      "step": 1140,
+      "moment_seconds": 0.3596666779994848,
+      "evolve_steps": 76,
+      "evolve_seconds": 8.118943199999194
+    },
+    {
+      "step": 1216,
+      "moment_seconds": 0.32536960499783163,
+      "evolve_steps": 76,
+      "evolve_seconds": 7.979488966997451
+    },
+    {
+      "step": 1292,
+      "moment_seconds": 0.30589315600082045,
+      "evolve_steps": 76,
+      "evolve_seconds": 8.277641638000205
+    },
+    {
+      "step": 1368,
+      "moment_seconds": 0.36328505300116376,
+      "evolve_steps": 76,
+      "evolve_seconds": 8.17911399500008
+    },
+    {
+      "step": 1444,
+      "moment_seconds": 0.370975386002101,
+      "evolve_steps": 76,
+      "evolve_seconds": 8.35471103099917
+    },
+    {
+      "step": 1520,
+      "moment_seconds": 0.35305058100129827,
+      "evolve_steps": 76,
+      "evolve_seconds": 8.294626197999605
+    },
+    {
+      "step": 1596,
+      "moment_seconds": 0.35262687700014794,
+      "evolve_steps": 76,
+      "evolve_seconds": 8.38375021200045
+    },
+    {
+      "step": 1672,
+      "moment_seconds": 0.3781507559979218,
+      "evolve_steps": 76,
+      "evolve_seconds": 8.26500872500037
+    },
+    {
+      "step": 1748,
+      "moment_seconds": 0.29353380499742343,
+      "evolve_steps": 76,
+      "evolve_seconds": 7.98384158999761
+    },
+    {
+      "step": 1824,
+      "moment_seconds": 0.3282816120008647,
+      "evolve_steps": 76,
+      "evolve_seconds": 8.061074091998307
+    },
+    {
+      "step": 1900,
+      "moment_seconds": 0.31533851499989396,
+      "evolve_steps": 76,
+      "evolve_seconds": 7.972483286997885
+    },
+    {
+      "step": 1976,
+      "moment_seconds": 0.30458764799914206,
+      "evolve_steps": 76,
+      "evolve_seconds": 7.970129132001603
+    },
+    {
+      "step": 2052,
+      "moment_seconds": 0.2983835230006662,
+      "evolve_steps": 76,
+      "evolve_seconds": 8.256290679000813
+    },
+    {
+      "step": 2128,
+      "moment_seconds": 0.35046032900208957,
+      "evolve_steps": 76,
+      "evolve_seconds": 8.10660471400115
+    },
+    {
+      "step": 2204,
+      "moment_seconds": 0.3471124919997237,
+      "evolve_steps": 76,
+      "evolve_seconds": 7.079325422997499
+    },
+    {
+      "step": 2280,
+      "moment_seconds": 0.28205443900151295,
+      "evolve_steps": 76,
+      "evolve_seconds": 8.199845601000561
+    },
+    {
+      "step": 2356,
+      "moment_seconds": 0.36034130200278014,
+      "evolve_steps": 76,
+      "evolve_seconds": 8.274043077999522
+    },
+    {
+      "step": 2432,
+      "moment_seconds": 0.35591840900087846,
+      "evolve_steps": 3,
+      "evolve_seconds": 0.32344410000223434
+    },
+    {
+      "step": 2435,
+      "moment_seconds": 0.18974441599857528
+    }
+  ],
+  "storage_bytes": 104254774,
+  "initial_field_relative_errors": {
+    "bx": 0.0,
+    "bz": 0.0,
+    "ey": 0.0
+  },
+  "initial_maximum_particle_speed_over_c": {
+    "ions": 0.06902892467717185,
+    "electrons": 0.3270013977328076
+  },
+  "patch_sha256": "9cbfc57ca5fa7c26faab39bb9fd08658fc639156d52422cb825611597562d568",
+  "ppc_per_species": 16,
+  "seed": 20261008,
+  "moment_convention": "Nonrelativistic m*n*<v_prime v_prime>, velocity v=u/sqrt(1+u^2/c^2); local bin mean subtracted.",
+  "isotropy_metric": "Frobenius(P-tr(P)I/3)/(sqrt(3)*tr(P)/3)",
+  "moment_bins_per_axis": 4,
+  "window_candidate": [
+    0.3,
+    0.8
+  ],
+  "minimum_bin_particles": 256,
+  "window_area_time_mean": {
+    "ions": 0.062266125236092595,
+    "electrons": 0.0685052989924662
+  },
+  "roi_half_code": [
+    0.04,
+    0.015
+  ],
+  "scope": "Collisionless one-way local continuation. Absorbing boundaries, transfer relaxation and numerical/particle controls remain scientific qualification requirements."
+}

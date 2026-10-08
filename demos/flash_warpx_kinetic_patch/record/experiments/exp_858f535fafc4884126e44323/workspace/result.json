@@ -1,0 +1,368 @@
+{
+  "budgets": [
+    {
+      "energy": 9.388503915464533,
+      "mass": 1.025488066541584,
+      "time": 0.0
+    },
+    {
+      "energy": 9.388505230225336,
+      "mass": 1.0254880668144324,
+      "time": 0.05025218073420108
+    },
+    {
+      "energy": 9.388505700650654,
+      "mass": 1.0254880669272097,
+      "time": 0.10027519002840754
+    },
+    {
+      "energy": 9.388506072040414,
+      "mass": 1.0254880670036073,
+      "time": 0.15020705418870262
+    },
+    {
+      "energy": 9.388507059000329,
+      "mass": 1.0254880665706878,
+      "time": 0.20015702619928694
+    },
+    {
+      "energy": 9.388508476233127,
+      "mass": 1.0254880665706878,
+      "time": 0.2503313899073324
+    },
+    {
+      "energy": 9.388510234373467,
+      "mass": 1.0254880664797383,
+      "time": 0.3002887666177893
+    },
+    {
+      "energy": 9.388512414486467,
+      "mass": 1.025488066712569,
+      "time": 0.3504105244670088
+    },
+    {
+      "energy": 9.388515063842444,
+      "mass": 1.0254880667598627,
+      "time": 0.4002196675860557
+    },
+    {
+      "energy": 9.388518182446889,
+      "mass": 1.0254880669890554,
+      "time": 0.45006976955757155
+    },
+    {
+      "energy": 9.388521685481305,
+      "mass": 1.025488067585684,
+      "time": 0.5003526274752498
+    },
+    {
+      "energy": 9.388525284988386,
+      "mass": 1.0254880671818682,
+      "time": 0.5503595528531208
+    },
+    {
+      "energy": 9.388528737134884,
+      "mass": 1.025488067411061,
+      "time": 0.6002609223836084
+    },
+    {
+      "energy": 9.38853185583254,
+      "mass": 1.0254880665634118,
+      "time": 0.650297961112948
+    },
+    {
+      "energy": 9.388534666567264,
+      "mass": 1.0254880665015662,
+      "time": 0.7000122489870156
+    },
+    {
+      "energy": 9.388537348620225,
+      "mass": 1.0254880665706878,
+      "time": 0.7503169755295096
+    },
+    {
+      "energy": 9.388540185221025,
+      "mass": 1.0254880668289843,
+      "time": 0.8002032631186956
+    },
+    {
+      "energy": 9.388543870993267,
+      "mass": 1.0254880668217083,
+      "time": 0.8500852295939664
+    },
+    {
+      "energy": 9.388548805609103,
+      "mass": 1.0254880669781414,
+      "time": 0.9000102093909076
+    },
+    {
+      "energy": 9.388554464273902,
+      "mass": 1.0254880666398094,
+      "time": 0.9500140250981451
+    }
+  ],
+  "checks": {
+    "boundaries": true,
+    "completed": true,
+    "diagnostics": true,
+    "flux_window_reached": false,
+    "numerical_regime": true,
+    "physics_controls": true,
+    "representation": true
+  },
+  "energy_relative_drift": 5.384117621352384e-06,
+  "kind": "campaign_flash_islands",
+  "mass_relative_drift": 9.578407686667427e-11,
+  "metrics": {
+    "flux_high": 0.05,
+    "flux_high_crossing_time": null,
+    "flux_low": 0.01,
+    "flux_low_crossing_time": 0.2588430248389068,
+    "flux_path_max_abs_mismatch": 2.5131346740269594e-05,
+    "initial_sheet_cells": 12.8,
+    "l_over_eta_nominal": 1000.0,
+    "max_abs_divb": 2.660982545421575e-12,
+    "max_boundary_normal_fraction": 0.017253876258230553,
+    "normalized_flux_slope": null,
+    "plot_file_count": 20,
+    "reconnection_time": null
+  },
+  "provenance": {
+    "command": [
+      "/usr/bin/orterun",
+      "-np",
+      "4",
+      "/opt/acs-capabilities/flash-island-coalescence-resistive-mhd-4.8/bin/flash4",
+      "-par_file",
+      "flash.par"
+    ],
+    "flash_executable_sha256": "40cf57b987e85f9befc01abae4e89f27c230d1eb42391ba3abea8655a0f7024b",
+    "parameter_file_sha256": "2bb2e45f65ac8df629a7b4279d5f7c6092c0d2f6a8b9cc38399ab2ecdedb68de"
+  },
+  "realized": {
+    "alpha": 20.0,
+    "eta": 0.001,
+    "mpi_ranks": 4,
+    "nx": 256,
+    "ny": 256,
+    "resistivity_solver": "explicit",
+    "tmax": 1.0,
+    "use_diffuse": true,
+    "use_magnetic_resistivity": true
+  },
+  "schema_version": "0.1.0",
+  "scientific_status": "fresh_campaign_trajectory_requires_independent_qualification",
+  "selected_source": {
+    "bounds_xz_code": [
+      [
+        -0.5,
+        0.5
+      ],
+      [
+        -0.5,
+        0.5
+      ]
+    ],
+    "cell_size_code": [
+      0.00390625,
+      0.00390625
+    ],
+    "eta_code": 0.001,
+    "flash_shape_zx": [
+      256,
+      256
+    ],
+    "handoff_sha256": "7a0329d97fc72d1f5c4c52fbb4cabb3d1da701077b86e700b2d246eb01c597fe",
+    "potential_definition": "Bx=-dAy/dZ, Bz=dAy/dX; least-squares reconstruction, zero mean; original B arrays are also retained.",
+    "potential_relative_edge_residual": 1.382872103330448e-08,
+    "rotation": "Right-handed (X,Y,Z)=(x,-z,y); FLASH Bz=uz=0 in this application. Thus B_W=(Bx,0,By), J_W,y=-J_FLASH,z.",
+    "schema_version": 1,
+    "scope": "Transfer/initialization material only; not kinetic qualification or claim evidence.",
+    "source_name": "source.h5",
+    "source_sha256": "1653e6cb6985a04164543859350c6f9200319732d3e68789f811abb44d624e46",
+    "source_time_code": 0.8002032631186956,
+    "units": "FLASH normalized UnitSystem=none; mu0=1; pressure is total scalar fluid pressure. No SI mapping is inferred by this helper."
+  },
+  "timeseries": [
+    {
+      "flux_from_bx": 0.00015226000141410617,
+      "flux_from_by": 7.631795029647162e-05,
+      "max_abs_divb": 2.6201263381153694e-14,
+      "max_abs_velocity": 0.0,
+      "reconnected_flux_from_bx": 0.0,
+      "reconnected_flux_from_by": 0.0,
+      "time": 0.0
+    },
+    {
+      "flux_from_bx": 0.002069758623775897,
+      "flux_from_by": 0.0019986423235671407,
+      "max_abs_divb": 1.092903545441004e-12,
+      "max_abs_velocity": 0.07459914684295654,
+      "reconnected_flux_from_bx": 0.0019174986223617907,
+      "reconnected_flux_from_by": 0.0019223243732706691,
+      "time": 0.05025218073420108
+    },
+    {
+      "flux_from_bx": 0.003914519309944351,
+      "flux_from_by": 0.0038441753814820725,
+      "max_abs_divb": 1.2585488207150775e-12,
+      "max_abs_velocity": 0.15277574956417084,
+      "reconnected_flux_from_bx": 0.003762259308530245,
+      "reconnected_flux_from_by": 0.003767857431185601,
+      "time": 0.10027519002840754
+    },
+    {
+      "flux_from_bx": 0.005774562210376643,
+      "flux_from_by": 0.005702436991403546,
+      "max_abs_divb": 1.7976731214730535e-12,
+      "max_abs_velocity": 0.23299406468868256,
+      "reconnected_flux_from_bx": 0.0056223022089625365,
+      "reconnected_flux_from_by": 0.005626119041107074,
+      "time": 0.15020705418870262
+    },
+    {
+      "flux_from_bx": 0.007711747641749864,
+      "flux_from_by": 0.007635857014011259,
+      "max_abs_divb": 1.5942802633617248e-12,
+      "max_abs_velocity": 0.3113616108894348,
+      "reconnected_flux_from_bx": 0.007559487640335758,
+      "reconnected_flux_from_by": 0.0075595390637147875,
+      "time": 0.20015702619928694
+    },
+    {
+      "flux_from_bx": 0.009781138765362126,
+      "flux_from_by": 0.009699948448721905,
+      "max_abs_divb": 1.744382416291046e-12,
+      "max_abs_velocity": 0.38821348547935486,
+      "reconnected_flux_from_bx": 0.00962887876394802,
+      "reconnected_flux_from_by": 0.009623630498425434,
+      "time": 0.2503313899073324
+    },
+    {
+      "flux_from_bx": 0.011996239116655262,
+      "flux_from_by": 0.01190897563605331,
+      "max_abs_divb": 1.6981971384666394e-12,
+      "max_abs_velocity": 0.46642717719078064,
+      "reconnected_flux_from_bx": 0.011843979115241156,
+      "reconnected_flux_from_by": 0.011832657685756838,
+      "time": 0.3002887666177893
+    },
+    {
+      "flux_from_bx": 0.01437473306729942,
+      "flux_from_by": 0.014281943539695911,
+      "max_abs_divb": 1.822542117224657e-12,
+      "max_abs_velocity": 0.5479152202606201,
+      "reconnected_flux_from_bx": 0.014222473065885314,
+      "reconnected_flux_from_by": 0.01420562558939944,
+      "time": 0.3504105244670088
+    },
+    {
+      "flux_from_bx": 0.016881826842592314,
+      "flux_from_by": 0.016784322702602543,
+      "max_abs_divb": 1.7905676941154525e-12,
+      "max_abs_velocity": 0.6350485682487488,
+      "reconnected_flux_from_bx": 0.016729566841178208,
+      "reconnected_flux_from_by": 0.01670800475230607,
+      "time": 0.4002196675860557
+    },
+    {
+      "flux_from_bx": 0.019494074503597855,
+      "flux_from_by": 0.01939382605511164,
+      "max_abs_divb": 1.9380053117856733e-12,
+      "max_abs_velocity": 0.7246702909469604,
+      "reconnected_flux_from_bx": 0.01934181450218375,
+      "reconnected_flux_from_by": 0.019317508104815168,
+      "time": 0.45006976955757155
+    },
+    {
+      "flux_from_bx": 0.02218316816388465,
+      "flux_from_by": 0.022082094766026746,
+      "max_abs_divb": 2.277289468111121e-12,
+      "max_abs_velocity": 0.8106635212898254,
+      "reconnected_flux_from_bx": 0.022030908162470542,
+      "reconnected_flux_from_by": 0.022005776815730273,
+      "time": 0.5003526274752498
+    },
+    {
+      "flux_from_bx": 0.024861450167735548,
+      "flux_from_by": 0.02476131932274072,
+      "max_abs_divb": 2.1724844145865063e-12,
+      "max_abs_velocity": 0.8841662406921387,
+      "reconnected_flux_from_bx": 0.02470919016632144,
+      "reconnected_flux_from_by": 0.024685001372444247,
+      "time": 0.5503595528531208
+    },
+    {
+      "flux_from_bx": 0.027498175437909105,
+      "flux_from_by": 0.027400095950433464,
+      "max_abs_divb": 2.1671553440683056e-12,
+      "max_abs_velocity": 0.9406748414039612,
+      "reconnected_flux_from_bx": 0.027345915436495,
+      "reconnected_flux_from_by": 0.02732377800013699,
+      "time": 0.6002609223836084
+    },
+    {
+      "flux_from_bx": 0.030078464284301273,
+      "flux_from_by": 0.02998314977171534,
+      "max_abs_divb": 2.147615418834903e-12,
+      "max_abs_velocity": 0.9710422158241272,
+      "reconnected_flux_from_bx": 0.029926204282887166,
+      "reconnected_flux_from_by": 0.02990683182141887,
+      "time": 0.650297961112948
+    },
+    {
+      "flux_from_bx": 0.032582547965361634,
+      "flux_from_by": 0.03248945613612464,
+      "max_abs_divb": 2.2293278334473143e-12,
+      "max_abs_velocity": 0.9809679985046387,
+      "reconnected_flux_from_bx": 0.03243028796394753,
+      "reconnected_flux_from_by": 0.032413138185828166,
+      "time": 0.7000122489870156
+    },
+    {
+      "flux_from_bx": 0.03505789910443013,
+      "flux_from_by": 0.03496676698141709,
+      "max_abs_divb": 2.1600499167107046e-12,
+      "max_abs_velocity": 0.976698100566864,
+      "reconnected_flux_from_bx": 0.03490563910301602,
+      "reconnected_flux_from_by": 0.03489044903112062,
+      "time": 0.7503169755295096
+    },
+    {
+      "flux_from_bx": 0.03747124609795802,
+      "flux_from_by": 0.03738137336213709,
+      "max_abs_divb": 2.3661073100811336e-12,
+      "max_abs_velocity": 0.9674530029296875,
+      "reconnected_flux_from_bx": 0.03731898609654392,
+      "reconnected_flux_from_by": 0.037305055411840614,
+      "time": 0.8002032631186956
+    },
+    {
+      "flux_from_bx": 0.03985818474252056,
+      "flux_from_by": 0.0397690067743459,
+      "max_abs_divb": 2.660982545421575e-12,
+      "max_abs_velocity": 0.9561185836791992,
+      "reconnected_flux_from_bx": 0.03970592474110645,
+      "reconnected_flux_from_by": 0.03969268882404943,
+      "time": 0.8500852295939664
+    },
+    {
+      "flux_from_bx": 0.04223672987629711,
+      "flux_from_by": 0.04214759872744044,
+      "max_abs_divb": 2.561506562415161e-12,
+      "max_abs_velocity": 0.9419592618942261,
+      "reconnected_flux_from_bx": 0.042084469874883006,
+      "reconnected_flux_from_by": 0.04207128077714397,
+      "time": 0.9000102093909076
+    },
+    {
+      "flux_from_bx": 0.04462096798944514,
+      "flux_from_by": 0.04453164902733975,
+      "max_abs_divb": 2.568611989772762e-12,
+      "max_abs_velocity": 0.9284145832061768,
+      "reconnected_flux_from_bx": 0.044468707988031035,
+      "reconnected_flux_from_by": 0.044455331077043275,
+      "time": 0.9500140250981451
+    }
+  ]
+}

@@ -1,0 +1,148 @@
+{
+  "id": "exp_aafe125dd7b6603fe90fb0cf",
+  "status": "failed",
+  "operator_guidance_ids": [],
+  "created_at": 1791437446.5026224,
+  "timeout": 100,
+  "workspace_limit_bytes": 4294967296,
+  "binding": {
+    "source": "calculation.py",
+    "args": [
+      "--eta",
+      ".001",
+      "--n",
+      "384",
+      "--tmax",
+      ".15",
+      "--ranks",
+      "1"
+    ],
+    "inputs": {
+      "calculation.py": "8c92d5fe6c70641680b975a834d69e76c81e210d6e70d2c55e759749586bbae8",
+      "guided_reader.py": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b"
+    },
+    "capability": "flash-island-coalescence-resistive-mhd-4.8",
+    "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+  },
+  "outputs": [
+    "result.json",
+    "raw_fields.npz",
+    "case/flash.par",
+    "case/execution.log"
+  ],
+  "commitment": null,
+  "key": "rank1-384-pilot",
+  "monitor": {
+    "path": "case/execution.log",
+    "format": "flash",
+    "value_key": "value",
+    "quantity": "Physical time",
+    "unit": "s",
+    "target": 0.15,
+    "baseline": 0.0
+  },
+  "stage": "exploration",
+  "method": null,
+  "review_documents": null,
+  "parent_experiment": null,
+  "purpose": "timing",
+  "plan": "note_9264ddd3c21ba1c4724d8dc8",
+  "pid": 338231,
+  "worker_identity": {
+    "pid": 338231,
+    "starttime": "1884137",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture/.venv/bin/python3",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/island-sol-medium-study",
+      "--execute",
+      "exp_aafe125dd7b6603fe90fb0cf"
+    ],
+    "launched_at": "2026-10-08T05:30:46.688967+00:00",
+    "run_directory": null
+  },
+  "started_at": 1791437446.689263,
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": null,
+    "stdout": "",
+    "stderr": "",
+    "timed_out": true,
+    "cancelled": false,
+    "workspace_exceeded": false,
+    "stdout_truncated": false,
+    "stderr_truncated": false,
+    "heartbeat_count": 19,
+    "wall_seconds": 100.02010485600113,
+    "workspace_bytes": 40494534
+  },
+  "artifacts": {
+    "calculation.py": {
+      "sha256": "8c92d5fe6c70641680b975a834d69e76c81e210d6e70d2c55e759749586bbae8",
+      "bytes": 5213
+    },
+    "case/execution.log": {
+      "sha256": "ee1a5363997be930a43019c0f40e5b8027de863cd175a7808b35502965b2f233",
+      "bytes": 21931
+    },
+    "case/flash.par": {
+      "sha256": "83a8a8e8608bf1eba741acb2ace3db1722f063024177cc12986a4d9ce71f91fe",
+      "bytes": 1797
+    },
+    "case/flash_run.dat": {
+      "sha256": "b302788ed8601ee76b301b15690fead9065511e14107836530c000c823c4141c",
+      "bytes": 53816
+    },
+    "case/flash_run.log": {
+      "sha256": "cf47bc8adc82f82f6405232df040b988ef88482ebe9d8e5e84dc81ffd383724b",
+      "bytes": 44294
+    },
+    "case/flash_run_hdf5_chk_0000": {
+      "sha256": "c2cc63106fb2775d4c8f11584c874796ef9f75fc6aaa75073770b95af91cea26",
+      "bytes": 26027276
+    },
+    "case/flash_run_hdf5_plt_cnt_0000": {
+      "sha256": "df28baa9a23c3abc78355c80d40d05f9470bd8a24bd3fe20cbcc054786911b08",
+      "bytes": 4775180
+    },
+    "case/flash_run_hdf5_plt_cnt_0001": {
+      "sha256": "db79e44a945058656b5b857959dd92326aaa0ed4f5c533229a03a15c1d571ab4",
+      "bytes": 4775180
+    },
+    "case/flash_run_hdf5_plt_cnt_0002": {
+      "sha256": "965940656999c33cd06364b7cb7813136e27a4acf518af1d8666f9cd363a5214",
+      "bytes": 4775180
+    },
+    "guided_reader.py": {
+      "sha256": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b",
+      "bytes": 14667
+    }
+  },
+  "missing_outputs": [
+    "result.json",
+    "raw_fields.npz"
+  ],
+  "input_mutations": [],
+  "output_findings": [],
+  "scientific_status": "unreviewed",
+  "finished_at": 1791437546.7951741,
+  "telemetry": {
+    "path": "case/execution.log",
+    "format": "flash",
+    "value_key": "value",
+    "quantity": "Physical time",
+    "unit": "s",
+    "target": 0.15,
+    "baseline": 0.0,
+    "observed_at": 1791437546.7718093,
+    "elapsed_seconds": 100.02010485600113,
+    "authority": "Mutable operational telemetry; not scientific evidence",
+    "available": true,
+    "step": 227,
+    "timestep": 0.00030885,
+    "value": 0.062008,
+    "estimated_additional_seconds": 141.93280006594713
+  }
+}

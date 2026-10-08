@@ -1,0 +1,107 @@
+{
+  "completed": true,
+  "backend": "CUDA",
+  "gpu": true,
+  "steps": 64,
+  "dt_s": 1.9040530362554446e-15,
+  "dt_omega_pe": 0.10741639471143363,
+  "duration_omegaci": 0.014021588293471022,
+  "elapsed_s": 20.6776336719995,
+  "initialization_seconds": 9.04987199199968,
+  "phase_times": [
+    {
+      "step": 0,
+      "moment_seconds": 0.9765576569989207,
+      "evolve_steps": 32,
+      "evolve_seconds": 3.986334283999895
+    },
+    {
+      "step": 32,
+      "moment_seconds": 0.9414648839992878,
+      "evolve_steps": 32,
+      "evolve_seconds": 4.1971014800001285
+    },
+    {
+      "step": 64,
+      "moment_seconds": 1.018679125001654
+    }
+  ],
+  "storage_bytes": 257224210,
+  "initial_field_relative_errors": {
+    "bx": 0.0,
+    "bz": 0.0,
+    "ey": 0.0
+  },
+  "initial_maximum_particle_speed_over_c": {
+    "ions": 0.06959412277085203,
+    "ions_initial_energy_J_per_m": 444.0524235735973,
+    "ions_initial_number_per_m": 4.6025849558120166e+17,
+    "electrons": 0.35034424420679394,
+    "electrons_initial_energy_J_per_m": 454.77592860019445,
+    "electrons_initial_number_per_m": 4.6025849558120166e+17
+  },
+  "patch_sha256": "c7c6d6d1c027e421be20942ffa07d6c415479fab6567a2705f6f5b0435697402",
+  "ppc_per_species": 16,
+  "seed": 20261008,
+  "moment_convention": "Nonrelativistic m*n*<v_prime v_prime>, velocity v=u/sqrt(1+u^2/c^2); local bin mean subtracted.",
+  "isotropy_metric": "Frobenius(P-tr(P)I/3)/(sqrt(3)*tr(P)/3)",
+  "moment_bins_per_axis": 4,
+  "window_candidate": [
+    0.3,
+    0.8
+  ],
+  "minimum_bin_particles": 256,
+  "window_area_time_mean": {
+    "ions": {
+      "area_time_mean": null,
+      "eligible": false,
+      "reason": "Incomplete window, nonfinite/zero tensor, or at least one bin below frozen count/effective-count policy; bins are never dropped.",
+      "minimum_count": 2190.0,
+      "minimum_effective_count": 2189.997637414064,
+      "max_pressure_relativistic_trace_correction": 0.0007458140856793396,
+      "window": [
+        0.3,
+        0.8
+      ],
+      "coverage_fraction": null,
+      "times": [
+        0.0,
+        0.007010794146735511,
+        0.014021588293471022
+      ],
+      "area_means": [
+        0.008117324273593414,
+        0.011122657047252358,
+        0.014410026079237779
+      ]
+    },
+    "electrons": {
+      "area_time_mean": null,
+      "eligible": false,
+      "reason": "Incomplete window, nonfinite/zero tensor, or at least one bin below frozen count/effective-count policy; bins are never dropped.",
+      "minimum_count": 2163.0,
+      "minimum_effective_count": 2162.3834092286925,
+      "max_pressure_relativistic_trace_correction": 0.01988951166962644,
+      "window": [
+        0.3,
+        0.8
+      ],
+      "coverage_fraction": null,
+      "times": [
+        0.0,
+        0.007010794146735511,
+        0.014021588293471022
+      ],
+      "area_means": [
+        0.008552478624564822,
+        0.019846288447127755,
+        0.027056240693660426
+      ]
+    }
+  },
+  "roi_half_code": [
+    0.04,
+    0.015
+  ],
+  "scope": "Collisionless one-way local continuation. Absorbing boundaries, transfer relaxation and numerical/particle controls remain scientific qualification requirements."
+}

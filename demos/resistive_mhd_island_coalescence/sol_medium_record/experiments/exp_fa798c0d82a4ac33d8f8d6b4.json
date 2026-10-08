@@ -1,0 +1,168 @@
+{
+  "id": "exp_fa798c0d82a4ac33d8f8d6b4",
+  "status": "succeeded",
+  "operator_guidance_ids": [],
+  "created_at": 1791438545.459914,
+  "timeout": 90,
+  "workspace_limit_bytes": 4294967296,
+  "binding": {
+    "source": "qualify_pipeline.py",
+    "args": [],
+    "inputs": {
+      "qualify_pipeline.py": "bf88288fde4e52b8189f3edf42c72fa51e5ea10baf3ed83d0bf5830a3e12344e",
+      "study_analysis.py": "d89b5970bae938cc8f2721ef666ce773a83b10cc9014b1ba2cccf545a79ac969",
+      "guided_reader.py": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b",
+      "protocol.json": "c7da462155b9b58e328b041b7b0eed85271365a1da26b4318ecdc11631843d8f",
+      "cfl08.json": "7eb3d1da0176c3640f86ec01d5741f18dbf373f492c7034bbd40814842332528",
+      "refine384.json": "f7dd48ad432f61ba041d90d635db6b3593babea176f6c5a274b280f2020ba878",
+      "qualify_raw.npz": "719a0b2df80b19f8e283daa79371f3c3d6265f7fdc78d10149da9cf761940561"
+    },
+    "capability": null,
+    "runtime_sha256": null
+  },
+  "outputs": [
+    "pipeline_qualification.json",
+    "analysis.json",
+    "field_current.png",
+    "scaling.png",
+    "plot_fields.npz"
+  ],
+  "commitment": null,
+  "key": null,
+  "stage": "exploration",
+  "method": null,
+  "review_documents": null,
+  "parent_experiment": "exp_45fced4d67b6d6b304622ac3",
+  "purpose": "diagnostic",
+  "plan": null,
+  "pid": 359077,
+  "worker_identity": {
+    "pid": 359077,
+    "starttime": "1994032",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture/.venv/bin/python3",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/island-sol-medium-study",
+      "--execute",
+      "exp_fa798c0d82a4ac33d8f8d6b4"
+    ],
+    "launched_at": "2026-10-08T05:49:05.644432+00:00",
+    "run_directory": null
+  },
+  "started_at": 1791438545.6446743,
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": 0,
+    "stdout": "{\"fits\": {\"256\": null}, \"matched_fits\": {\"256\": null}}\n{\"fits\": {\"256\": null, \"384\": null}, \"matched_fits\": {\"256\": null, \"384\": null}}\n{\"fits\": {\"256\": null, \"384\": null}, \"matched_fits\": {\"256\": null, \"384\": null}}\n{\"fits\": {\"256\": null, \"384\": null}, \"matched_fits\": {\"256\": null, \"384\": null}}",
+    "stderr": "Fontconfig error: Cannot load default config file: No such file: (null)",
+    "timed_out": false,
+    "cancelled": false,
+    "workspace_exceeded": false,
+    "stdout_truncated": false,
+    "stderr_truncated": false,
+    "heartbeat_count": 0,
+    "wall_seconds": 3.5241894729988417,
+    "workspace_bytes": 149080170
+  },
+  "artifacts": {
+    ".cache/fontconfig/2300eef321c393bfd76478a5c0e95b23-le64.cache-9": {
+      "sha256": "be4a2bf520a0eb916fab92b15585e493fa0dae62d7c2dd7e275b01664c14e346",
+      "bytes": 382064
+    },
+    ".cache/fontconfig/3830d5c3ddfd5cd38a049b759396e72e-le64.cache-9": {
+      "sha256": "6cb953b213d173a1439944baba4f785aeb8e08fba3cb8794d99004c34310d453",
+      "bytes": 184
+    },
+    ".cache/fontconfig/4c599c202bc5c08e2d34565a40eac3b2-le64.cache-9": {
+      "sha256": "e2077b9c186aa45489f582008a00a7965a8135d07927d2697f6d07e09f9ae69d",
+      "bytes": 104
+    },
+    ".cache/fontconfig/573ec803664ed168555e0e8b6d0f0c7f-le64.cache-9": {
+      "sha256": "e67dc2bd665d1b1bd952ec5dd357d64bae7b2fbd6f1c9896db3e880f9788c58f",
+      "bytes": 152
+    },
+    ".cache/fontconfig/7ef2298fde41cc6eeb7af42e48b7d293-le64.cache-9": {
+      "sha256": "69cf18e42e3d2705da9c867a36e7e16f3d0e8973c41a5a51118e43c1207756fc",
+      "bytes": 208
+    },
+    ".cache/fontconfig/9b89f8e3dae116d678bbf48e5f21f69b-le64.cache-9": {
+      "sha256": "4fa102166b8aaa98765061eae7abe768aa636c327ad2889f68d33d77de9735b0",
+      "bytes": 68800
+    },
+    ".cache/fontconfig/CACHEDIR.TAG": {
+      "sha256": "05e7633fb31bf1f6f8d89020c16b9f24587fdf7638e951c9745b192f5fc3b682",
+      "bytes": 200
+    },
+    ".cache/fontconfig/d589a48862398ed80a3d6066f4f56f4c-le64.cache-9": {
+      "sha256": "233df56e901146f1c5f71911def868b835fb7e43a0e02644a07a1c829e49cc31",
+      "bytes": 51736
+    },
+    "analysis.json": {
+      "sha256": "60b8a34350d965d6a70ee7f3a5ca7e02f6e686b46097e2560101b4397766d70b",
+      "bytes": 8006
+    },
+    "bad_refine.json": {
+      "sha256": "631363f61b80bce8b78758342b1474dfb0be2130863118276e3d9381f4143d8c",
+      "bytes": 44569
+    },
+    "cfl08.json": {
+      "sha256": "7eb3d1da0176c3640f86ec01d5741f18dbf373f492c7034bbd40814842332528",
+      "bytes": 55280
+    },
+    "field_current.png": {
+      "sha256": "15978ba5fbdfe713b9688c501447923961453acba49473a776d330562a2fed76",
+      "bytes": 424148
+    },
+    "guided_reader.py": {
+      "sha256": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b",
+      "bytes": 14667
+    },
+    "manifest.json": {
+      "sha256": "de2021d9e86b317b88cbba84e61f80e4a6c102878c835b459074eff7193d087f",
+      "bytes": 218
+    },
+    "pipeline_qualification.json": {
+      "sha256": "b01664e5bbaa9ef9aeef0fe37a6c572b5936fa48731ae5b3cb8a50ab4d039742",
+      "bytes": 11232
+    },
+    "plot_fields.npz": {
+      "sha256": "87516e2bd4033dcdc8db5c552bf1a8cb6815b59643f438919b782d07ef6dd83a",
+      "bytes": 2286664
+    },
+    "protocol.json": {
+      "sha256": "c7da462155b9b58e328b041b7b0eed85271365a1da26b4318ecdc11631843d8f",
+      "bytes": 4138
+    },
+    "qualify_pipeline.py": {
+      "sha256": "bf88288fde4e52b8189f3edf42c72fa51e5ea10baf3ed83d0bf5830a3e12344e",
+      "bytes": 2033
+    },
+    "qualify_raw.npz": {
+      "sha256": "719a0b2df80b19f8e283daa79371f3c3d6265f7fdc78d10149da9cf761940561",
+      "bytes": 145576081
+    },
+    "refine384.json": {
+      "sha256": "f7dd48ad432f61ba041d90d635db6b3593babea176f6c5a274b280f2020ba878",
+      "bytes": 55320
+    },
+    "scaling.png": {
+      "sha256": "9746fc4a1bad7b93b28ca9c8f1f35730b39a54b5a90522ca7d4791bbb81c6c71",
+      "bytes": 54188
+    },
+    "study_analysis.py": {
+      "sha256": "d89b5970bae938cc8f2721ef666ce773a83b10cc9014b1ba2cccf545a79ac969",
+      "bytes": 8129
+    },
+    "truncated.json": {
+      "sha256": "8d80af880484c3a8a9cd1b35654792110feb78d94738d1748efc6d0610e8447e",
+      "bytes": 32049
+    }
+  },
+  "missing_outputs": [],
+  "input_mutations": [],
+  "output_findings": [],
+  "scientific_status": "unreviewed",
+  "finished_at": 1791438549.3963757
+}

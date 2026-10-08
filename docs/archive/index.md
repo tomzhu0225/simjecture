@@ -62,6 +62,7 @@ Original scientific records remain intact. Read each report's qualifications and
 corrections together with the claimed result.
 
 - [Run 0004 audit](../research/run-0004.md)
+- [Demo refresh and harness audit, 2026-10-08](../research/demo-audit-20261008.md)
 - [Historical next-step plan](../research/next-steps.md)
 - [Continuation and steering research note](../research/continuation-steering-rc3.md)
 - [Stagnation deep audit, 2026-09-29](../research/stagnation-deep-audit-20260929.md)
@@ -75,6 +76,7 @@ corrections together with the claimed result.
 :hidden:
 
 ../research/run-0004
+../research/demo-audit-20261008
 ../research/next-steps
 ../research/continuation-steering-rc3
 ../research/stagnation-deep-audit-20260929

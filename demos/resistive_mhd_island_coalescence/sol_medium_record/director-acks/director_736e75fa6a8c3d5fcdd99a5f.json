@@ -1,0 +1,8 @@
+{
+  "id": "director_736e75fa6a8c3d5fcdd99a5f",
+  "response": "plan",
+  "reason": "Recorded hash-bound recovery in parallel with final existing trajectory, no new simulation; prepare review now.",
+  "plan": "note_5a41bca73a54a2c1bc12731e",
+  "created_at": 1791439808.9186754,
+  "authority": "Worker response; not scientific approval"
+}

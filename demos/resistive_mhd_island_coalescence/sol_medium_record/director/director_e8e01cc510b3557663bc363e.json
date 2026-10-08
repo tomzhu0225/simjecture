@@ -1,0 +1,13 @@
+{
+  "id": "director_e8e01cc510b3557663bc363e",
+  "created_at": 1791438627.940117,
+  "packet_sha256": "0b888b5d98135c8cb05bb5c827691293b4384aa6fce39a7d5b2e112247c8ef94",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "replan",
+  "rationale": "The worker addressed the methods review's implementation blockers and preserved the failed qualification attempt. Experiment exp_fa798c0d82a4ac33d8f8d6b4 records checks for qualifying pairs, missing or ineligible refinement, missing windows and crossing brackets. This supports resubmitting the repaired method; it does not establish production approval or physical scaling. The previous decision's affordable S_eta=1000 trajectory remains useful qualification, while high-S refinement remains unresolved. Budget feasibility has worsened: the methods review estimated about 1,931 seconds for the planned trajectories, analysis and review reserve, exceeding the packet's 1,710 seconds remaining before further review or overruns. That estimate transfers throughput across resistivities and is uncertain, but the unchanged batch has no defensible margin. No experiments are active to stop. Redirect toward the unresolved endpoint and a bounded campaign plan.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "at_risk",
+  "stop_experiments": [],
+  "next_action": "Acknowledge this replan with a recorded measured-cost plan or reasoned challenge. Immediately resubmit the repaired bound sources and qualification receipt to lab.method; avoid further diagnostic polish unless review identifies a blocker. Record exact prospective commands, individual run caps, analysis/report costs and at least the declared 300-second independent-review reserve. After methods approval, prioritize one complete S_eta=4000 refinement trajectory through the flux window, using the exploratory crossing near t=1.96 to choose its limit. The measured 384-square S_eta=1000 run suggests roughly 570 seconds to t=2.15 by simple extrapolation; treat this as an uncertain planning estimate, not guaranteed throughput. Set a bounded cap that preserves time for useful remaining measurements and review. Assess its completed window, eligibility and actual cost before committing further expensive runs. Select remaining distinct-resistivity and refinement work that fits the updated budget; obtain methods review for changes to the frozen coverage or fit policy. If full coverage cannot fit, report the reviewed sampled results and exact unresolved cases without changing the original hypothesis. Keep commissioning and qualification exploratory, distinguish censoring from underresolution, and update RESULTS.md with current statuses, costs and receipt IDs."
+}

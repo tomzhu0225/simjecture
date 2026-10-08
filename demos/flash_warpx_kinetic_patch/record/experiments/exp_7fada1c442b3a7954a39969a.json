@@ -1,0 +1,157 @@
+{
+  "id": "exp_7fada1c442b3a7954a39969a",
+  "status": "failed",
+  "operator_guidance_ids": [],
+  "created_at": 1791435814.3883932,
+  "timeout": 1200,
+  "workspace_limit_bytes": 4294967296,
+  "binding": {
+    "source": "calculation.py",
+    "args": [
+      "pic",
+      "--patch",
+      "base_patch.npz",
+      "--output",
+      "kinetic",
+      "--duration-omegaci",
+      "0.8",
+      "--diagnostics",
+      "32",
+      "--moment-bins",
+      "4",
+      "--ppc",
+      "16",
+      "--minimum-bin-particles",
+      "256"
+    ],
+    "inputs": {
+      "calculation.py": "ef030822bfce50da0aa95310c94f11bf6f24e0766ee8ca0856ea52eb0ee15844",
+      "kinetic.py": "155d3b2d84858ce03b664743155564823dce75d3f99b6085f725a808c22fa47e",
+      "estimator.py": "697f7c1bc2d01f7967bb8d1700171ba14be3aa610ca45673fdf51facdfab1179",
+      "base_patch.npz": "9cbfc57ca5fa7c26faab39bb9fd08658fc639156d52422cb825611597562d568",
+      "base_patch.json": "316e8beefde5488c6de26a61ccdf33e70e5af9a32f8a848a3fc967b26a2e9598"
+    },
+    "capability": "warpx-cuda-openpmd-26.07",
+    "runtime_sha256": "d56f0e12c7e6a52cb7f1f6ad3790633549749e3c48595478c9cb3fefdc460c7f"
+  },
+  "outputs": [
+    "kinetic/result.json",
+    "kinetic/history.json",
+    "kinetic/moments.npz",
+    "kinetic/initial_fields.npz",
+    "kinetic/final_fields.npz",
+    "kinetic/reduced/field_energy.txt",
+    "kinetic/reduced/particle_energy.txt",
+    "kinetic/warpx_used_inputs"
+  ],
+  "commitment": null,
+  "key": "paired-base",
+  "stage": "exploration",
+  "method": null,
+  "review_documents": [
+    "kinetic/result.json",
+    "kinetic/history.json"
+  ],
+  "parent_experiment": "exp_488007f309373427b7394eb2",
+  "purpose": "validation",
+  "plan": null,
+  "pid": 312288,
+  "worker_identity": {
+    "pid": 312288,
+    "starttime": "1720926",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture/.venv/bin/python3",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/coupled-study",
+      "--execute",
+      "exp_7fada1c442b3a7954a39969a"
+    ],
+    "launched_at": "2026-10-08T05:03:34.542328+00:00",
+    "run_directory": null
+  },
+  "started_at": 1791435814.542446,
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": 139,
+    "stdout": "Initializing AMReX (26.07)...\nInitializing CUDA...\nCUDA initialized with 1 device.\nAMReX (26.07) initialized\nWarpX (312d507407a1)\n\n                                   ___\n    __        __             ___  /  /\n    \\ \\      / /_ _ _ __ _ __\\  \\/  /\n     \\ \\ /\\ / / _` | '__| '_ \\\\    /\n      \\ V  V / (_| | |  | |_) /    \\\n       \\_/\\_/ \\__,_|_|  | .__/__/\\  \\\n                        |_|       \\__\\\n\nLevel 0: dt = 2.856079554e-15 ; dx = 1.729848069e-06 ; dz = 1.729848069e-06\n\nGrids Summary:\n  Level 0   36 grids  147456 cells  100 % of domain\n            smallest grid: 64 x 64  biggest grid: 64 x 64\n\n-------------------------------------------------------------------------------\n--------------------------- MAIN EM PIC PARAMETERS ----------------------------\n-------------------------------------------------------------------------------\nPrecision:            | DOUBLE\nParticle precision:   | DOUBLE\nGeometry:             | 2D (XZ)\nOperation mode:       | Electromagnetic\n                      | - vacuum\n-------------------------------------------------------------------------------\nCurrent Deposition:   | Esirkepov \nGuard cells           | - ng_alloc_J  = (4,4)\n (allocated for J)    | \nParticle Pusher:      | Boris \nCharge Deposition:    | standard \nField Gathering:      | energy-conserving \nParticle Shape Factor:| 2\n-------------------------------------------------------------------------------\nMaxwell Solver:       | Yee \n-------------------------------------------------------------------------------\nFor full input parameters, see the file: /work/kinetic/warpx_used_inputs\n\n\n\nTinyProfiler total time across processes [min...avg...max]: 2.331 ... 2.331 ... 2.331\n\n--------------------------------------------------------------------------------------------\nName                                         NCalls  Excl. Min  Excl. Avg  Excl. Max   Max %\n--------------------------------------------------------------------------------------------\nwarpx_py_particleloader                           1      1.547      1.547      1.547  66.38%\nwarpx_py_loadExternalFields                       1     0.2286     0.2286     0.2286   9.81%\nParticleContainer::Redistribute_impl()            4     0.2016     0.2016     0.2016   8.65%\nMultiReducedDiags::ComputeDiags()                 1    0.02716    0.02716    0.02716   1.17%\namrex::packBuffer                                 4    0.02549    0.02549    0.02549   1.09%\nWarpXOpenPMDPlot::WriteOpenPMDFields::D2H()     360    0.01748    0.01748    0.01748   0.75%\nWarpXOpenPMDPlot::SeriesFlush()()                 1    0.01509    0.01509    0.01509   0.65%\nParticleContainer::ReserveForRedistribute()       4    0.01494    0.01494    0.01494   0.64%\nFabArray::setVal()                               25   0.006625   0.006625   0.006625   0.28%\namrex::unpackBuffer                               4   0.006272   0.006272   0.006272   0.27%\nRedistribute_partition                            4   0.004842   0.004842   0.004842   0.21%\nsample::Coarsen()                                10   0.004414   0.004414   0.004414   0.19%\nWarpX::InitData()                                 1   0.002489   0.002489   0.002489   0.11%\nParticleCopyPlan::build                           4   0.001653   0.001653   0.001653   0.07%\nWarpXOpenPMDPlot::WriteOpenPMDFields()            1   0.001513   0.001513   0.001513   0.06%\nFlushFormatOpenPMD::WriteToFile()                 1  0.0005787  0.0005787  0.0005787   0.02%\nDiagnostics::FilterComputePackFlush()             1  0.0001411  0.0001411  0.0001411   0.01%\nOther                                            95     0.0147     0.0147     0.0147   0.63%\n--------------------------------------------------------------------------------------------\n\n--------------------------------------------------------------------------------------------\nName                                         NCalls  Incl. Min  Incl. Avg  Incl. Max   Max %\n--------------------------------------------------------------------------------------------\nwarpx_py_particleloader                           1      1.793      1.793      1.793  76.94%\nWarpX::InitData()                                 1     0.3238     0.3238     0.3238  13.89%\nParticleContainer::Redistribute_impl()            4     0.2597     0.2597     0.2597  11.14%\nwarpx_py_loadExternalFields                       1     0.2286     0.2286     0.2286   9.81%\nDiagnostics::FilterComputePackFlush()             1     0.0443     0.0443     0.0443   1.90%\nFlushFormatOpenPMD::WriteToFile()                 1    0.03505    0.03505    0.03505   1.50%\nWarpXOpenPMDPlot::WriteOpenPMDFields()            1    0.03408    0.03408    0.03408   1.46%\nMultiReducedDiags::ComputeDiags()                 1    0.02716    0.02716    0.02716   1.17%\namrex::packBuffer                                 4    0.02549    0.02549    0.02549   1.09%\nWarpXOpenPMDPlot::WriteOpenPMDFields::D2H()     360    0.01748    0.01748    0.01748   0.75%\nWarpXOpenPMDPlot::SeriesFlush()()                 1    0.01509    0.01509    0.01509   0.65%\nParticleContainer::ReserveForRedistribute()       4    0.01494    0.01494    0.01494   0.64%\nFabArray::setVal()                               25   0.006625   0.006625   0.006625   0.28%\namrex::unpackBuffer                               4   0.006272   0.006272   0.006272   0.27%\nParticleCopyPlan::build                           4    0.00503    0.00503    0.00503   0.22%\nRedistribute_partition                            4   0.004842   0.004842   0.004842   0.21%\nsample::Coarsen()                                10   0.004414   0.004414   0.004414   0.19%\nOther                                            95    0.01937    0.01937    0.01937   0.83%\n--------------------------------------------------------------------------------------------\n\nDevice Memory Usage:\n------------------------------------------------------------------------------------------\nName                                         Nalloc  Nfree    AvgMem    MaxMem  CurrentMem\n------------------------------------------------------------------------------------------\nwarpx_py_particleloader                          24      4    99 MiB   288 MiB     288 MiB\nParticleContainer::ReserveForRedistribute()     700      0    83 MiB   283 MiB     283 MiB\nThe_Arena::Initialize()                           1      1   202   B   256 MiB       0   B\namrex::packBuffer                                 2      2    13 MiB   140 MiB       0   B\nRedistribute_partition                           20     20  5587 KiB    53 MiB       0   B\nWarpX::InitData()                               579      0    29 MiB    31 MiB      31 MiB\nResizeRandomSeed                                  2      2    13 MiB    13 MiB       0   B\nParticleCopyPlan::buildCopiesAtomicScatter        2      2   917 KiB  8977 KiB       0   B\nDiagnostics::FilterComputePackFlush()           144    144  3631   B  3087 KiB       0   B\nFillBoundary_nowait()                             6      0   211 KiB   240 KiB     240 KiB\nParticleContainer::Redistribute_impl()            6      2  3439   B   218 KiB    2560   B\nMultiReducedDiags::ComputeDiags()                 8      8  1580   B   144 KiB       0   B\nFabArray::setVal()                               31     10   103 KiB   114 KiB      94 KiB\nFabArray::ParallelCopy_nowait()                   1      1     3   B    43 KiB       0   B\nUnprofiled                                       43      8  8849   B  8960   B    8960   B\nDenseBins<T>::buildGPU                           12      2  2257   B  3328   B    2560   B\nParticleBufferMap::define                         8      0  1810   B  2048   B    2048   B\nParticleCopyPlan::build                          24     24   130   B  1280   B       0   B\nBilinearFilter::ComputeStencils()                 2      0   505   B   512   B     512   B\n------------------------------------------------------------------------------------------\n\nManaged Memory Usage:\n---------------------------------------------------------\nName                             Nalloc  AvgMem    MaxMem\n---------------------------------------------------------\nThe_Managed_Arena::Initialize()       1   6   B  8192 KiB\n---------------------------------------------------------\n\nPinned Memory Usage:\n------------------------------------------------------------------------------------------\nName                                         Nalloc  Nfree    AvgMem    MaxMem  CurrentMem\n------------------------------------------------------------------------------------------\nwarpx_py_particleloader                          78     76    20 MiB   151 MiB     512   B\nParticleContainer::Redistribute_impl()           16     14  3179 KiB   140 MiB    1536   B\nUnprofiled                                      170    135    76 KiB    18 MiB    8960   B\nWarpXOpenPMDPlot::WriteOpenPMDFields::D2H()     360    360    86 KiB    11 MiB       0   B\nThe_Pinned_Arena::Initialize()                    1      1     5   B  8192 KiB       0   B\nFillBoundary_nowait()                             6      0   211 KiB   240 KiB     240 KiB\nFabArray::setVal()                               31     10   103 KiB   114 KiB      94 KiB\nFabArray::ParallelCopy_nowait()                   1      1     3   B    43 KiB       0   B\namrex::unpackBuffer                              70      0  5237   B    17 KiB      17 KiB\namrex::packBuffer                                 2      0   174   B   512   B     512   B\nMultiReducedDiags::ComputeDiags()                 8      8     2   B   256   B       0   B\nParticleCopyPlan::build                           4      4    25   B   256   B       0   B\nRedistribute_partition                            2      2     0   B   256   B       0   B\nWarpX::InitData()                                 3      3     0   B   256   B       0   B\n------------------------------------------------------------------------------------------\n\nTotal GPU global memory (MB): 20474\nFree  GPU global memory (MB): 18400\n[The         Arena] max space allocated (MB): 833\n[The         Arena] max space used      (MB): 818\n[The Managed Arena] max space allocated (MB): 8\n[The Managed Arena] max space used      (MB): 0\n[The  Pinned Arena] max space allocated (MB): 440\n[The  Pinned Arena] max space used      (MB): 292",
+    "stderr": "/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx/site-packages/pywarpx/fields.py:336: UserWarning: The fields wrapper is now obsolete and should not be used. The\n            recommended way of obtaining the MultiFabs is directly from the register.\n            This is done using the 'sim.fields.get' routine where 'sim' is a PICMI\n            Simulation instance or the 'warpx' instance of pywarpx.WarpX.\n  return MultiFabWrapper(mf_name=\"Bfield_fp_external\", idir=0, level=level)\n/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx/site-packages/pywarpx/fields.py:344: UserWarning: The fields wrapper is now obsolete and should not be used. The\n            recommended way of obtaining the MultiFabs is directly from the register.\n            This is done using the 'sim.fields.get' routine where 'sim' is a PICMI\n            Simulation instance or the 'warpx' instance of pywarpx.WarpX.\n  return MultiFabWrapper(mf_name=\"Bfield_fp_external\", idir=2, level=level)\n/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx/site-packages/pywarpx/fields.py:340: UserWarning: The fields wrapper is now obsolete and should not be used. The\n            recommended way of obtaining the MultiFabs is directly from the register.\n            This is done using the 'sim.fields.get' routine where 'sim' is a PICMI\n            Simulation instance or the 'warpx' instance of pywarpx.WarpX.\n  return MultiFabWrapper(mf_name=\"Bfield_fp_external\", idir=1, level=level)\n/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx/site-packages/pywarpx/fields.py:328: UserWarning: The fields wrapper is now obsolete and should not be used. The\n            recommended way of obtaining the MultiFabs is directly from the register.\n            This is done using the 'sim.fields.get' routine where 'sim' is a PICMI\n            Simulation instance or the 'warpx' instance of pywarpx.WarpX.\n  return MultiFabWrapper(mf_name=\"Efield_fp_external\", idir=1, level=level)\n/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx/site-packages/pywarpx/fields.py:324: UserWarning: The fields wrapper is now obsolete and should not be used. The\n            recommended way of obtaining the MultiFabs is directly from the register.\n            This is done using the 'sim.fields.get' routine where 'sim' is a PICMI\n            Simulation instance or the 'warpx' instance of pywarpx.WarpX.\n  return MultiFabWrapper(mf_name=\"Efield_fp_external\", idir=0, level=level)\n/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx/site-packages/pywarpx/fields.py:332: UserWarning: The fields wrapper is now obsolete and should not be used. The\n            recommended way of obtaining the MultiFabs is directly from the register.\n            This is done using the 'sim.fields.get' routine where 'sim' is a PICMI\n            Simulation instance or the 'warpx' instance of pywarpx.WarpX.\n  return MultiFabWrapper(mf_name=\"Efield_fp_external\", idir=2, level=level)\n/work/kinetic.py:51: UserWarning: ParticleContainerWrapper(\"ions\") is deprecated. Use sim.particles.get(\"ions\") instead.\n  pc = particle_containers.ParticleContainerWrapper(name)\n/work/kinetic.py:51: UserWarning: ParticleContainerWrapper(\"electrons\") is deprecated. Use sim.particles.get(\"electrons\") instead.\n  pc = particle_containers.ParticleContainerWrapper(name)\n/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx/site-packages/pywarpx/fields.py:276: UserWarning: The fields wrapper is now obsolete and should not be used. The\n            recommended way of obtaining the MultiFabs is directly from the register.\n            This is done using the 'sim.fields.get' routine where 'sim' is a PICMI\n            Simulation instance or the 'warpx' instance of pywarpx.WarpX.\n  return MultiFabWrapper(mf_name=\"Bfield_aux\", idir=0, level=level)\n/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx/site-packages/pywarpx/fields.py:280: UserWarning: The fields wrapper is now obsolete and should not be used. The\n            recommended way of obtaining the MultiFabs is directly from the register.\n            This is done using the 'sim.fields.get' routine where 'sim' is a PICMI\n            Simulation instance or the 'warpx' instance of pywarpx.WarpX.\n  return MultiFabWrapper(mf_name=\"Bfield_aux\", idir=1, level=level)\n/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx/site-packages/pywarpx/fields.py:284: UserWarning: The fields wrapper is now obsolete and should not be used. The\n            recommended way of obtaining the MultiFabs is directly from the register.\n            This is done using the 'sim.fields.get' routine where 'sim' is a PICMI\n            Simulation instance or the 'warpx' instance of pywarpx.WarpX.\n  return MultiFabWrapper(mf_name=\"Bfield_aux\", idir=2, level=level)\n/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx/site-packages/pywarpx/fields.py:264: UserWarning: The fields wrapper is now obsolete and should not be used. The\n            recommended way of obtaining the MultiFabs is directly from the register.\n            This is done using the 'sim.fields.get' routine where 'sim' is a PICMI\n            Simulation instance or the 'warpx' instance of pywarpx.WarpX.\n  return MultiFabWrapper(mf_name=\"Efield_aux\", idir=0, level=level)\n/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx/site-packages/pywarpx/fields.py:268: UserWarning: The fields wrapper is now obsolete and should not be used. The\n            recommended way of obtaining the MultiFabs is directly from the register.\n            This is done using the 'sim.fields.get' routine where 'sim' is a PICMI\n            Simulation instance or the 'warpx' instance of pywarpx.WarpX.\n  return MultiFabWrapper(mf_name=\"Efield_aux\", idir=1, level=level)\n/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx/site-packages/pywarpx/fields.py:272: UserWarning: The fields wrapper is now obsolete and should not be used. The\n            recommended way of obtaining the MultiFabs is directly from the register.\n            This is done using the 'sim.fields.get' routine where 'sim' is a PICMI\n            Simulation instance or the 'warpx' instance of pywarpx.WarpX.\n  return MultiFabWrapper(mf_name=\"Efield_aux\", idir=2, level=level)\n/work/kinetic.py:80: UserWarning: ParticleContainerWrapper(\"ions\") is deprecated. Use sim.particles.get(\"ions\") instead.\n  pc = particle_containers.ParticleContainerWrapper(name)\nTraceback (most recent call last):\n  File \"/work/calculation.py\", line 10, in <module>\n    kinetic.cli()\n  File \"/work/kinetic.py\", line 340, in cli\n    main(p.parse_args())\n  File \"/work/kinetic.py\", line 246, in main\n    measurement = moments(sim, meta, a.moment_bins, [a.roi_x,a.roi_z])\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/kinetic.py\", line 86, in moments\n    origin=np.concatenate(pc.get_particle_real_arrays(\"origin_r\",copy_to_host=True))\n                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: ParticleContainerWrapper.get_particle_real_arrays() missing 1 required positional argument: 'level'",
+    "timed_out": false,
+    "cancelled": false,
+    "workspace_exceeded": false,
+    "stdout_truncated": false,
+    "stderr_truncated": false,
+    "heartbeat_count": 0,
+    "wall_seconds": 4.945730212999479,
+    "workspace_bytes": 29580818
+  },
+  "artifacts": {
+    ".cupy/kernel_cache/2e0ccd5ce1515fda0d5da739feb0aedee1e4e3cb.cubin": {
+      "sha256": "03a63b043b00d9e4b7595d35a3458f07d152f8952349eecd4eb05fdeeb7a84e5",
+      "bytes": 4807
+    },
+    ".cupy/kernel_cache/e0da47d6cd30dbfec1c30d83a96c4e88904749af.cubin": {
+      "sha256": "6d2b9fed78cf0f2d23ad08bdc244629ba048c1f9e92a23772c159015a25a456b",
+      "bytes": 4551
+    },
+    ".cupy/kernel_cache/eddffdc4d1518d80183f9cbf368dfb857adcccdf.cubin": {
+      "sha256": "3b0ec62fd0b3ac51320e370918e281ec4e6195e147a9f2845b083960c9689199",
+      "bytes": 4935
+    },
+    "base_patch.json": {
+      "sha256": "316e8beefde5488c6de26a61ccdf33e70e5af9a32f8a848a3fc967b26a2e9598",
+      "bytes": 1766
+    },
+    "base_patch.npz": {
+      "sha256": "9cbfc57ca5fa7c26faab39bb9fd08658fc639156d52422cb825611597562d568",
+      "bytes": 11214400
+    },
+    "calculation.py": {
+      "sha256": "ef030822bfce50da0aa95310c94f11bf6f24e0766ee8ca0856ea52eb0ee15844",
+      "bytes": 435
+    },
+    "estimator.py": {
+      "sha256": "697f7c1bc2d01f7967bb8d1700171ba14be3aa610ca45673fdf51facdfab1179",
+      "bytes": 1872
+    },
+    "kinetic/fields/openpmd_000000.h5": {
+      "sha256": "6a0fc33c0219ee298a68774a63428d45db9747c9b3014d59831eaad0b533d320",
+      "bytes": 15770152
+    },
+    "kinetic/fields/paraview.pmd": {
+      "sha256": "70cdbee5690cb452b621ef5a3129fa9237410b4f93d41ec84ec2887b3f64e6cc",
+      "bytes": 16
+    },
+    "kinetic/initial_fields.npz": {
+      "sha256": "2316f2b07f286e73c893544b13b6f9e78117cd3b34dd136bcc316d609c4ca72e",
+      "bytes": 2557333
+    },
+    "kinetic/reduced/field_energy.txt": {
+      "sha256": "a8eee7c1a5381431b9d01b9a88bbb0bd6059a0ee26183bde0502b2e9c798bb29",
+      "bytes": 151
+    },
+    "kinetic/reduced/particle_energy.txt": {
+      "sha256": "55abcf056bf0f438b4c7d8d81b198ae2c338bf360c24fabe0df13005025aeaad",
+      "bytes": 264
+    },
+    "kinetic/warpx_used_inputs": {
+      "sha256": "1adfa6d63d3cd7dcfb23b7373b140f4a46a8a5df6bed97f6c148d33fec9a7d56",
+      "bytes": 4632
+    },
+    "kinetic.py": {
+      "sha256": "155d3b2d84858ce03b664743155564823dce75d3f99b6085f725a808c22fa47e",
+      "bytes": 15504
+    }
+  },
+  "missing_outputs": [
+    "kinetic/result.json",
+    "kinetic/history.json",
+    "kinetic/moments.npz",
+    "kinetic/final_fields.npz"
+  ],
+  "input_mutations": [],
+  "output_findings": [],
+  "scientific_status": "unreviewed",
+  "finished_at": 1791435821.194592
+}

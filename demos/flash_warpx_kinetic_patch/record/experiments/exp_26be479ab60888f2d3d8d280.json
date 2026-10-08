@@ -1,0 +1,299 @@
+{
+  "id": "exp_26be479ab60888f2d3d8d280",
+  "status": "succeeded",
+  "operator_guidance_ids": [],
+  "created_at": 1791438340.2835364,
+  "timeout": 600,
+  "workspace_limit_bytes": 4294967296,
+  "binding": {
+    "source": "kinetic_analysis.py",
+    "args": [
+      "--case",
+      "base",
+      "data/base",
+      "base_patch.npz",
+      "--case",
+      "large",
+      "data/large",
+      "large_patch.npz",
+      "--case",
+      "particles",
+      "data/particles",
+      "base_patch.npz"
+    ],
+    "inputs": {
+      "kinetic_analysis.py": "0bbac4731f923ec1706961e56fd2f712a84ba36934807ce6df8de803e1d844fa",
+      "estimator.py": "44e914ad2780edabf2754f4fae734fd9b5811d6d8b5db094e57f6e379d0be0d4",
+      "base_patch.npz": "9cbfc57ca5fa7c26faab39bb9fd08658fc639156d52422cb825611597562d568",
+      "base_patch.json": "316e8beefde5488c6de26a61ccdf33e70e5af9a32f8a848a3fc967b26a2e9598",
+      "large_patch.npz": "6fc676f1969f788ec2ff9ea7a47dd549ce91c92de3e68d18797aacd33fb08718",
+      "large_patch.json": "cc14291a76ef2276bf7e687d19995e71b653ae8badb822d9cbbcffa2ddcbccbb",
+      "data/large/history.json": "4ecd4975057e479ee63a4e6bb6d9a5919caa11119727d3bba5464a101b665d7b",
+      "data/large/warpx_used_inputs": "e09956a5a7da7fd25be1968cf922a6015bfcdff12d7807e98efb83afd9d7122b",
+      "data/large/initial_fields.npz": "7e276ef92a97f91ed6f3e43cb367a2926dfb83974adb5a437b99401347443ff5",
+      "data/large/moments.npz": "6eff590d046bb217a63c0b837f1311d109453e3f80d7ba2833050c1219016483",
+      "data/large/result.json": "e0258e217f04788ab9cae4248169384a77b480a57468d52ca2b1a1d98e8b198d",
+      "data/large/final_fields.npz": "5dc579090beae4d436707c805e2c0907ef440efd55109f8a85ff1455da46e0d7",
+      "data/particles/history.json": "3325177d481fbf641cbeb33fc988cba5ec9c55b934f628fe5d30d928976c3cac",
+      "data/particles/warpx_used_inputs": "9640d145a6e58fa956dd9968eb13b911f0acb3f159ce425b09a07f8c7c1bbe3d",
+      "data/particles/initial_fields.npz": "2316f2b07f286e73c893544b13b6f9e78117cd3b34dd136bcc316d609c4ca72e",
+      "data/particles/moments.npz": "5d3fd373aa9e47bddf5dba47599e05a7e19082a3dfbbb3c92d20218ec5bb39f0",
+      "data/particles/result.json": "afee1e305d2552629189ab5c48f792443401fa1d3699a9ba7ce26c64193d6c9e",
+      "data/particles/final_fields.npz": "0034934d9de5ec56acca08b5e652bcac33c06c1791438d214e829a51819ebe30",
+      "data/base/history.json": "352b1508fa0bf184ad34a19ce0fd18d7cf80f2c824a9a0f65667ec9e2543c09b",
+      "data/base/warpx_used_inputs": "1adfa6d63d3cd7dcfb23b7373b140f4a46a8a5df6bed97f6c148d33fec9a7d56",
+      "data/base/initial_fields.npz": "2316f2b07f286e73c893544b13b6f9e78117cd3b34dd136bcc316d609c4ca72e",
+      "data/base/moments.npz": "c930de69f31b5923713c36a90c3145f535653f84825f711df76badc711cdc903",
+      "data/base/result.json": "47d04e504df184afd3b47d7f07c247c0a5a7e156dc087adf30e997b4a2f4fbd3",
+      "data/base/final_fields.npz": "e378c54de929102945921b0dfc9237efdbb7b1239d8b1215c736d0b887f59418",
+      "data/large/reduced/field_energy.txt": "ebc96c2371908907ab0381a183bb5db42ce14c4f5b9582be9e7bab7d05f2874e",
+      "data/large/reduced/particle_energy.txt": "1927ebdf8295c7c3f9b4e27be4c24e2f1e5b2bc7c412e56382c417f300103756",
+      "data/particles/reduced/field_energy.txt": "655da56d5644d8672842b68aaa08796d20834865793fc2720b90fc84efa4ba49",
+      "data/particles/reduced/particle_energy.txt": "43f1b7be114814d60c126e70368c0b47c0ac48e300f22775b1ac18e0424f5618",
+      "data/base/reduced/field_energy.txt": "cf8a3346ec8d815c8ca5c1afd473b640482b83b2286957c6d9a745834a53b135",
+      "data/base/reduced/particle_energy.txt": "7fc2762701874d6a460a0b946a6cec041a946a7f1c0a16bb803b9ae1c9790dd3"
+    },
+    "capability": null,
+    "runtime_sha256": null
+  },
+  "outputs": [
+    "analysis.json",
+    "pressure_controls.png",
+    "base_kinetic_fields.png",
+    "large_kinetic_fields.png",
+    "particles_kinetic_fields.png",
+    "base_pressure_tensor.png",
+    "large_pressure_tensor.png",
+    "particles_pressure_tensor.png"
+  ],
+  "commitment": null,
+  "key": "secondary-policy-audit",
+  "stage": "exploration",
+  "method": null,
+  "review_documents": null,
+  "parent_experiment": "exp_3a4cd829f718a2211536f64c",
+  "purpose": "diagnostic",
+  "plan": null,
+  "pid": 354991,
+  "worker_identity": {
+    "pid": 354991,
+    "starttime": "1973515",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture/.venv/bin/python3",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/coupled-study",
+      "--execute",
+      "exp_26be479ab60888f2d3d8d280"
+    ],
+    "launched_at": "2026-10-08T05:45:40.446290+00:00",
+    "run_directory": null
+  },
+  "started_at": 1791438340.4465404,
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "Fontconfig error: Cannot load default config file: No such file: (null)\n/work/kinetic_analysis.py:98: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.\n  for ax,title in zip(axs.flat,['Area mean tensor departure','Mean scalar pressure / initial','Mean density / initial','Finite control comparison']):ax.set(xlabel='t Omega_ci reference',title=title);ax.legend(fontsize=7)",
+    "timed_out": false,
+    "cancelled": false,
+    "workspace_exceeded": false,
+    "stdout_truncated": false,
+    "stderr_truncated": false,
+    "heartbeat_count": 0,
+    "wall_seconds": 2.978591947001405,
+    "workspace_bytes": 81018007
+  },
+  "artifacts": {
+    ".cache/fontconfig/2300eef321c393bfd76478a5c0e95b23-le64.cache-9": {
+      "sha256": "be4a2bf520a0eb916fab92b15585e493fa0dae62d7c2dd7e275b01664c14e346",
+      "bytes": 382064
+    },
+    ".cache/fontconfig/3830d5c3ddfd5cd38a049b759396e72e-le64.cache-9": {
+      "sha256": "6cb953b213d173a1439944baba4f785aeb8e08fba3cb8794d99004c34310d453",
+      "bytes": 184
+    },
+    ".cache/fontconfig/4c599c202bc5c08e2d34565a40eac3b2-le64.cache-9": {
+      "sha256": "e2077b9c186aa45489f582008a00a7965a8135d07927d2697f6d07e09f9ae69d",
+      "bytes": 104
+    },
+    ".cache/fontconfig/573ec803664ed168555e0e8b6d0f0c7f-le64.cache-9": {
+      "sha256": "e67dc2bd665d1b1bd952ec5dd357d64bae7b2fbd6f1c9896db3e880f9788c58f",
+      "bytes": 152
+    },
+    ".cache/fontconfig/7ef2298fde41cc6eeb7af42e48b7d293-le64.cache-9": {
+      "sha256": "69cf18e42e3d2705da9c867a36e7e16f3d0e8973c41a5a51118e43c1207756fc",
+      "bytes": 208
+    },
+    ".cache/fontconfig/9b89f8e3dae116d678bbf48e5f21f69b-le64.cache-9": {
+      "sha256": "4fa102166b8aaa98765061eae7abe768aa636c327ad2889f68d33d77de9735b0",
+      "bytes": 68800
+    },
+    ".cache/fontconfig/CACHEDIR.TAG": {
+      "sha256": "05e7633fb31bf1f6f8d89020c16b9f24587fdf7638e951c9745b192f5fc3b682",
+      "bytes": 200
+    },
+    ".cache/fontconfig/d589a48862398ed80a3d6066f4f56f4c-le64.cache-9": {
+      "sha256": "233df56e901146f1c5f71911def868b835fb7e43a0e02644a07a1c829e49cc31",
+      "bytes": 51736
+    },
+    "analysis.json": {
+      "sha256": "53530ba89a3009aefa24b4c4005ecf0d6cdb7d8ece3bd3b1c434203480583667",
+      "bytes": 29673
+    },
+    "base_kinetic_fields.png": {
+      "sha256": "92403261b95b71611fc808693c57a95a55e1f78334292daaff1ad2a2bdaf8f73",
+      "bytes": 418060
+    },
+    "base_patch.json": {
+      "sha256": "316e8beefde5488c6de26a61ccdf33e70e5af9a32f8a848a3fc967b26a2e9598",
+      "bytes": 1766
+    },
+    "base_patch.npz": {
+      "sha256": "9cbfc57ca5fa7c26faab39bb9fd08658fc639156d52422cb825611597562d568",
+      "bytes": 11214400
+    },
+    "base_pressure_tensor.png": {
+      "sha256": "3b2b2774e0998d53ef6db84e236eb8f17514ea8e0da8aef84d33bfb4b34ca1d0",
+      "bytes": 160600
+    },
+    "data/base/final_fields.npz": {
+      "sha256": "e378c54de929102945921b0dfc9237efdbb7b1239d8b1215c736d0b887f59418",
+      "bytes": 6801840
+    },
+    "data/base/history.json": {
+      "sha256": "352b1508fa0bf184ad34a19ce0fd18d7cf80f2c824a9a0f65667ec9e2543c09b",
+      "bytes": 22037
+    },
+    "data/base/initial_fields.npz": {
+      "sha256": "2316f2b07f286e73c893544b13b6f9e78117cd3b34dd136bcc316d609c4ca72e",
+      "bytes": 2557333
+    },
+    "data/base/moments.npz": {
+      "sha256": "c930de69f31b5923713c36a90c3145f535653f84825f711df76badc711cdc903",
+      "bytes": 278831
+    },
+    "data/base/reduced/field_energy.txt": {
+      "sha256": "cf8a3346ec8d815c8ca5c1afd473b640482b83b2286957c6d9a745834a53b135",
+      "bytes": 2985
+    },
+    "data/base/reduced/particle_energy.txt": {
+      "sha256": "7fc2762701874d6a460a0b946a6cec041a946a7f1c0a16bb803b9ae1c9790dd3",
+      "bytes": 5114
+    },
+    "data/base/result.json": {
+      "sha256": "47d04e504df184afd3b47d7f07c247c0a5a7e156dc087adf30e997b4a2f4fbd3",
+      "bytes": 10993
+    },
+    "data/base/warpx_used_inputs": {
+      "sha256": "1adfa6d63d3cd7dcfb23b7373b140f4a46a8a5df6bed97f6c148d33fec9a7d56",
+      "bytes": 4632
+    },
+    "data/large/final_fields.npz": {
+      "sha256": "5dc579090beae4d436707c805e2c0907ef440efd55109f8a85ff1455da46e0d7",
+      "bytes": 15280997
+    },
+    "data/large/history.json": {
+      "sha256": "4ecd4975057e479ee63a4e6bb6d9a5919caa11119727d3bba5464a101b665d7b",
+      "bytes": 22035
+    },
+    "data/large/initial_fields.npz": {
+      "sha256": "7e276ef92a97f91ed6f3e43cb367a2926dfb83974adb5a437b99401347443ff5",
+      "bytes": 5782102
+    },
+    "data/large/moments.npz": {
+      "sha256": "6eff590d046bb217a63c0b837f1311d109453e3f80d7ba2833050c1219016483",
+      "bytes": 278725
+    },
+    "data/large/reduced/field_energy.txt": {
+      "sha256": "ebc96c2371908907ab0381a183bb5db42ce14c4f5b9582be9e7bab7d05f2874e",
+      "bytes": 2985
+    },
+    "data/large/reduced/particle_energy.txt": {
+      "sha256": "1927ebdf8295c7c3f9b4e27be4c24e2f1e5b2bc7c412e56382c417f300103756",
+      "bytes": 5114
+    },
+    "data/large/result.json": {
+      "sha256": "e0258e217f04788ab9cae4248169384a77b480a57468d52ca2b1a1d98e8b198d",
+      "bytes": 10983
+    },
+    "data/large/warpx_used_inputs": {
+      "sha256": "e09956a5a7da7fd25be1968cf922a6015bfcdff12d7807e98efb83afd9d7122b",
+      "bytes": 4640
+    },
+    "data/particles/final_fields.npz": {
+      "sha256": "0034934d9de5ec56acca08b5e652bcac33c06c1791438d214e829a51819ebe30",
+      "bytes": 6796514
+    },
+    "data/particles/history.json": {
+      "sha256": "3325177d481fbf641cbeb33fc988cba5ec9c55b934f628fe5d30d928976c3cac",
+      "bytes": 31788
+    },
+    "data/particles/initial_fields.npz": {
+      "sha256": "2316f2b07f286e73c893544b13b6f9e78117cd3b34dd136bcc316d609c4ca72e",
+      "bytes": 2557333
+    },
+    "data/particles/moments.npz": {
+      "sha256": "5d3fd373aa9e47bddf5dba47599e05a7e19082a3dfbbb3c92d20218ec5bb39f0",
+      "bytes": 1008737
+    },
+    "data/particles/reduced/field_energy.txt": {
+      "sha256": "655da56d5644d8672842b68aaa08796d20834865793fc2720b90fc84efa4ba49",
+      "bytes": 2985
+    },
+    "data/particles/reduced/particle_energy.txt": {
+      "sha256": "43f1b7be114814d60c126e70368c0b47c0ac48e300f22775b1ac18e0424f5618",
+      "bytes": 5114
+    },
+    "data/particles/result.json": {
+      "sha256": "afee1e305d2552629189ab5c48f792443401fa1d3699a9ba7ce26c64193d6c9e",
+      "bytes": 11233
+    },
+    "data/particles/warpx_used_inputs": {
+      "sha256": "9640d145a6e58fa956dd9968eb13b911f0acb3f159ce425b09a07f8c7c1bbe3d",
+      "bytes": 4901
+    },
+    "estimator.py": {
+      "sha256": "44e914ad2780edabf2754f4fae734fd9b5811d6d8b5db094e57f6e379d0be0d4",
+      "bytes": 1878
+    },
+    "kinetic_analysis.py": {
+      "sha256": "0bbac4731f923ec1706961e56fd2f712a84ba36934807ce6df8de803e1d844fa",
+      "bytes": 14708
+    },
+    "large_kinetic_fields.png": {
+      "sha256": "2ae50b2b0e4f80b64df89b18bde1617e36c299fa53dcf0ecaa101161e50c77c1",
+      "bytes": 486661
+    },
+    "large_patch.json": {
+      "sha256": "cc14291a76ef2276bf7e687d19995e71b653ae8badb822d9cbbcffa2ddcbccbb",
+      "bytes": 1765
+    },
+    "large_patch.npz": {
+      "sha256": "6fc676f1969f788ec2ff9ea7a47dd549ce91c92de3e68d18797aacd33fb08718",
+      "bytes": 25585325
+    },
+    "large_pressure_tensor.png": {
+      "sha256": "fbfee44c0cdf32caa28c6c209142f6f5fb9f936049e3c46bd021b730fd406381",
+      "bytes": 159162
+    },
+    "particles_kinetic_fields.png": {
+      "sha256": "53145224c2e381f6279755e70eb3e2257246ed3f94a520722c123c5601622bd4",
+      "bytes": 399279
+    },
+    "particles_pressure_tensor.png": {
+      "sha256": "b9e069b1422d294575dbca11bc295c45bfd1e6118931fd6076d0cd79064ef7d1",
+      "bytes": 156275
+    },
+    "pressure_controls.png": {
+      "sha256": "849ba3b67d7001768510c3c138782ebc407e950e867791ff239b789c076f603f",
+      "bytes": 395056
+    }
+  },
+  "missing_outputs": [],
+  "input_mutations": [],
+  "output_findings": [],
+  "scientific_status": "unreviewed",
+  "finished_at": 1791438344.5744936
+}

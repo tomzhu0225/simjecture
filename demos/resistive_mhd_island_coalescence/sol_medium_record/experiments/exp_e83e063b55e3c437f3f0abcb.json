@@ -1,0 +1,162 @@
+{
+  "id": "exp_e83e063b55e3c437f3f0abcb",
+  "status": "cancelled",
+  "operator_guidance_ids": [],
+  "created_at": 1791437319.2425075,
+  "timeout": 400,
+  "workspace_limit_bytes": 3568254546,
+  "binding": {
+    "source": "calculation.py",
+    "args": [
+      "--eta",
+      ".001",
+      "--n",
+      "384",
+      "--tmax",
+      "1.2"
+    ],
+    "inputs": {
+      "calculation.py": "079baf59f1f36d1a403e935caa24dacaef61baef1c9f75690ff25cb715d14da0",
+      "guided_reader.py": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b"
+    },
+    "capability": "flash-island-coalescence-resistive-mhd-4.8",
+    "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+  },
+  "outputs": [
+    "result.json",
+    "raw_fields.npz",
+    "case/flash.par",
+    "case/execution.log"
+  ],
+  "commitment": null,
+  "key": "refinement-pilot",
+  "monitor": {
+    "path": "case/execution.log",
+    "format": "flash",
+    "value_key": "value",
+    "quantity": "Physical time",
+    "unit": "s",
+    "target": 1.2,
+    "baseline": 0.0
+  },
+  "stage": "exploration",
+  "method": null,
+  "review_documents": null,
+  "parent_experiment": null,
+  "purpose": "validation",
+  "plan": null,
+  "pid": 336347,
+  "worker_identity": {
+    "pid": 336347,
+    "starttime": "1871411",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture/.venv/bin/python3",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/island-sol-medium-study",
+      "--execute",
+      "exp_e83e063b55e3c437f3f0abcb"
+    ],
+    "launched_at": "2026-10-08T05:28:39.435940+00:00",
+    "run_directory": null
+  },
+  "started_at": 1791437319.4362032,
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": -15,
+    "stdout": "",
+    "stderr": "",
+    "timed_out": false,
+    "cancelled": true,
+    "workspace_exceeded": false,
+    "stdout_truncated": false,
+    "stderr_truncated": false,
+    "heartbeat_count": 14,
+    "wall_seconds": 75.06286026900125,
+    "workspace_bytes": 54932286
+  },
+  "artifacts": {
+    "calculation.py": {
+      "sha256": "079baf59f1f36d1a403e935caa24dacaef61baef1c9f75690ff25cb715d14da0",
+      "bytes": 5110
+    },
+    "case/execution.log": {
+      "sha256": "b554ab14704c984c71bdb914a9ca1ef7c455020920d3496fbdf18306c850fb26",
+      "bytes": 48391
+    },
+    "case/flash.par": {
+      "sha256": "b2339d422e64405415aaf17c5132c5311a4c328b26734164568e8b63658a303f",
+      "bytes": 1781
+    },
+    "case/flash_run.dat": {
+      "sha256": "511447e0fde2f47514264ffd9c7adeefee763979f330bcd5a3e37f1264431cae",
+      "bytes": 118676
+    },
+    "case/flash_run.log": {
+      "sha256": "f6f9aba08b856fee918829a030116ea149b8c8359d1405c062775a543d336265",
+      "bytes": 65305
+    },
+    "case/flash_run_hdf5_chk_0000": {
+      "sha256": "f6431aae4880b4cfc2eae0a318897fd732f44ad198a5db6a193b2a0d0948374a",
+      "bytes": 26027276
+    },
+    "case/flash_run_hdf5_plt_cnt_0000": {
+      "sha256": "4ac96bde078d3e8dd864ff9fac90d793b4cc3b230d628043ef04643f1bdeda2c",
+      "bytes": 4775180
+    },
+    "case/flash_run_hdf5_plt_cnt_0001": {
+      "sha256": "eb3b535b1b869d3a41e375d8f07d30c2ba005a66d96c380565eb6c2c2be33bbd",
+      "bytes": 4775180
+    },
+    "case/flash_run_hdf5_plt_cnt_0002": {
+      "sha256": "2bbc1db6b75cd067fc8e522537f86db24f565dfce1abf700093d265fa8ce45c1",
+      "bytes": 4775180
+    },
+    "case/flash_run_hdf5_plt_cnt_0003": {
+      "sha256": "534232c697423400c8cf30eee39ddc802df27ccd6c8b4a701b745954978548a4",
+      "bytes": 4775180
+    },
+    "case/flash_run_hdf5_plt_cnt_0004": {
+      "sha256": "b98088a4433a5f0355dd55cbfe309a4166befda5215218a5163f460180bee563",
+      "bytes": 4775180
+    },
+    "case/flash_run_hdf5_plt_cnt_0005": {
+      "sha256": "aa0e94dfc851d8ede039b9036e4b66ec115ba61b8816ed7f9e17536512aa3db2",
+      "bytes": 4775180
+    },
+    "guided_reader.py": {
+      "sha256": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b",
+      "bytes": 14667
+    }
+  },
+  "missing_outputs": [
+    "result.json",
+    "raw_fields.npz"
+  ],
+  "input_mutations": [],
+  "output_findings": [],
+  "scientific_status": "unreviewed",
+  "finished_at": 1791437394.5957067,
+  "cancellation_confirmed": true,
+  "stop_reason": "director_f5e8870c1233cbb0b356d39f: The previous continue decision authorized bounded endpoint pilots to establish window accessibility and cost. Those pilots now show exploratory access to the declared flux window: S=250 crossed by t=0.523, and preserved S=4000 fields crossed by t=1.960 despite the solver timeout. The 9.23-second archive analysis is not a new evolution cost. High-S sheet FWHM is only four cells, so these outputs do not establish resolved scaling or refinement persistence. The worker's shorter trajectory limits address substantial unnecessary evolution, and its acknowledgment of high-S underresolution is appropriate. However, the proposed 1800\u20132200-second scan/refinement estimate lacks measured refinement completion support. Updated mutable telemetry for the active 384\u00b2 pilot reports t=0.0842 after 45.3 seconds, with approximately 600 additional seconds forecast against a 400-second timeout. This early forecast can change, but it already supplies useful timing information and indicates likely censoring under the current cap. With approximately 2922 seconds remaining at packet creation, continuing toward that timeout is less useful than testing an affordable refinement strategy. No methods review or independently accepted scientific claim is recorded.",
+  "stop_requested_at": 1791437394.4838667,
+  "cancel_requested": true,
+  "telemetry": {
+    "path": "case/execution.log",
+    "format": "flash",
+    "value_key": "value",
+    "quantity": "Physical time",
+    "unit": "s",
+    "target": 1.2,
+    "baseline": 0.0,
+    "observed_at": 1791437394.5630822,
+    "elapsed_seconds": 75.06286026900125,
+    "authority": "Mutable operational telemetry; not scientific evidence",
+    "available": true,
+    "step": 503,
+    "timestep": 0.00030652,
+    "value": 0.14715,
+    "estimated_additional_seconds": 537.0705568074615
+  }
+}

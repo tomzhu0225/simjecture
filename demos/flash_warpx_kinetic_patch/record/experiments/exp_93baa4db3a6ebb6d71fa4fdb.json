@@ -1,0 +1,110 @@
+{
+  "id": "exp_93baa4db3a6ebb6d71fa4fdb",
+  "status": "succeeded",
+  "operator_guidance_ids": [],
+  "created_at": 1791435735.8503413,
+  "timeout": 600,
+  "workspace_limit_bytes": 4294967296,
+  "binding": {
+    "source": "source_qualification.py",
+    "args": [
+      "--coarse",
+      "macro256.npz",
+      "--fine",
+      "macro512.npz",
+      "--selection",
+      "refined_selection.json",
+      "--hdf5",
+      "source512.h5",
+      "--summary",
+      "macro512_summary.json"
+    ],
+    "inputs": {
+      "source_qualification.py": "46e1cf532996e0f762f17bb679c7bd4cfb5a29c27fcd82d99281314e7b931363",
+      "macro256.npz": "7a0329d97fc72d1f5c4c52fbb4cabb3d1da701077b86e700b2d246eb01c597fe",
+      "macro512.npz": "e8d1ef82fb0baafddeaf1b0f8c9e153db6fae069a2a4829cd18e80487bfbd023",
+      "refined_selection.json": "d43ab2103f70f845dbbe434bc3b807181a52a1c1c4a0574998a1f8cfb8ee7799",
+      "source512.h5": "79d2045d47eaecb729d854e170f3679fa75b9948359d3f380f15caab112b2083",
+      "macro512_summary.json": "eba7054b59dfad584cf82f8d6eb8147fe99f0dd9c4e307513387c71249c6e1b2"
+    },
+    "capability": null,
+    "runtime_sha256": null
+  },
+  "outputs": [
+    "source_qualification.json"
+  ],
+  "commitment": null,
+  "key": null,
+  "stage": "exploration",
+  "method": null,
+  "review_documents": null,
+  "parent_experiment": "exp_b3aeffc4296462890906d872",
+  "purpose": "diagnostic",
+  "plan": null,
+  "pid": 310859,
+  "worker_identity": {
+    "pid": 310859,
+    "starttime": "1713071",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture/.venv/bin/python3",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/coupled-study",
+      "--execute",
+      "exp_93baa4db3a6ebb6d71fa4fdb"
+    ],
+    "launched_at": "2026-10-08T05:02:16.005279+00:00",
+    "run_directory": null
+  },
+  "started_at": 1791435736.0054076,
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "",
+    "timed_out": false,
+    "cancelled": false,
+    "workspace_exceeded": false,
+    "stdout_truncated": false,
+    "stderr_truncated": false,
+    "heartbeat_count": 0,
+    "wall_seconds": 0.40620195500014233,
+    "workspace_bytes": 16217361
+  },
+  "artifacts": {
+    "macro256.npz": {
+      "sha256": "7a0329d97fc72d1f5c4c52fbb4cabb3d1da701077b86e700b2d246eb01c597fe",
+      "bytes": 1515422
+    },
+    "macro512.npz": {
+      "sha256": "e8d1ef82fb0baafddeaf1b0f8c9e153db6fae069a2a4829cd18e80487bfbd023",
+      "bytes": 6239717
+    },
+    "macro512_summary.json": {
+      "sha256": "eba7054b59dfad584cf82f8d6eb8147fe99f0dd9c4e307513387c71249c6e1b2",
+      "bytes": 10348
+    },
+    "refined_selection.json": {
+      "sha256": "d43ab2103f70f845dbbe434bc3b807181a52a1c1c4a0574998a1f8cfb8ee7799",
+      "bytes": 2695
+    },
+    "source512.h5": {
+      "sha256": "79d2045d47eaecb729d854e170f3679fa75b9948359d3f380f15caab112b2083",
+      "bytes": 8445196
+    },
+    "source_qualification.json": {
+      "sha256": "16df38ebf5daef88dee53a6e6d5caa457dabede3f31cae6917e200e6f6cb13f8",
+      "bytes": 1788
+    },
+    "source_qualification.py": {
+      "sha256": "46e1cf532996e0f762f17bb679c7bd4cfb5a29c27fcd82d99281314e7b931363",
+      "bytes": 2195
+    }
+  },
+  "missing_outputs": [],
+  "input_mutations": [],
+  "output_findings": [],
+  "scientific_status": "unreviewed",
+  "finished_at": 1791435737.3903291
+}

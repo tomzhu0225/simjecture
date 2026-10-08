@@ -1,0 +1,13 @@
+{
+  "id": "director_9850cd46921942af21f2b752",
+  "created_at": 1791437013.9121506,
+  "packet_sha256": "6f1593ff30c241cbef351ca94f1534f6bc8dae107414444a587c0b5e6a01bbec",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "This is the first strategy review; there is no previous decision or pending replan. The fresh anchor completed in 24.39 seconds and reached its declared flux window, providing a working commissioning baseline rather than claim evidence. The two active endpoint pilots are defensible bounded tests of the new driver and window accessibility: both use n=256, adaptive timestep controls and 450-second timeouts. Their driver requests tmax=3, but neither live progress nor partial field outputs are available locally, so completion cost and window coverage remain unknown. Its checkpoint is written only after solver completion and cannot currently guide intervention. With about 3299 seconds remaining, these bounded pilots are worth finishing; they do not yet establish a resolved scaling study or affordable refinement.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "at_risk",
+  "stop_experiments": [],
+  "next_action": "Let the two endpoint pilots finish within their existing caps. Immediately extract actual physical time reached, flux-window crossings, measured solver and analysis cost, and sampled sheet-resolution and eligibility diagnostics. Record a concrete campaign cost estimate covering distinct resistivities, meaningful refinement and independent review before launching a larger batch. If either pilot is censored or too costly, use its preserved logs to identify the limiting timestep or runtime cost and test a cheaper complete exploratory trajectory with unchanged physics; qualify mesh, rank, cadence or timestep changes explicitly. Add a live FLASH monitor to subsequent runs so execution decisions need not wait for final analysis. Once an affordable trajectory and usable diagnostics are demonstrated, commit the measurement, fit, uncertainty and refinement rules and obtain production methods review before decisive runs."
+}

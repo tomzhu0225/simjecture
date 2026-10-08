@@ -149,6 +149,8 @@ extend-exclude = [
   "demos/gray_scott_counterexample/record",
   "demos/kepler_energy/record",
   "demos/resistive_mhd_island_coalescence/minimal_record",
+  "demos/resistive_mhd_island_coalescence/sol_medium_record",
+  "demos/flash_warpx_kinetic_patch/record",
   "demos/collisionless_gem_reconnection/guided",
   "demos/collisionless_gem_reconnection/record",
 ]

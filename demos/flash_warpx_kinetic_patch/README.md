@@ -1,8 +1,18 @@
 # From a FLASH current sheet to a kinetic WarpX patch
 
-**Guided commissioning passed on CPU and CUDA through the actual experiment
-launcher. A two-hour autonomous study is prepared; no physical conclusion is
-claimed from commissioning.**
+**The two-hour autonomous study ran actual FLASH-to-WarpX transfers and completed
+spatial, timestep, particle-count and boundary controls. It ended unresolved at
+the cutoff, with no accepted scientific verdict.** Guided commissioning passed
+on CPU and CUDA through the actual experiment launcher before the research clock.
+
+Read the [recorded investigation](../../docs/demos/flash-warpx-patch.md) for the
+source-to-patch relationship, measured results, failures and remaining gaps.
+The [compact audit](record/manifest.json) retains 581 files and all 40 execution
+receipts, with bulk states explicitly omitted. Verify it without a model call:
+
+```bash
+uv run python scripts/verify_research_audit.py demos/flash_warpx_kinetic_patch/record
+```
 
 This example investigates whether a resolved MHD current sheet remains adequately
 represented by isotropic ion/electron pressures when followed with collisionless

@@ -44,11 +44,18 @@ asks whether one reconnection-rate scaling survives changes in resistivity and
 resolution. Explore actual field evolution, the historical campaign and its
 statistical correction, and a separate one-hour minimal-mode audit that remained
 unresolved, with a tested post-run correction to its coordinate diagnostic.
+A second one-hour Sol-worker run collected a broader scan and refinement dataset;
+its final scientific review also remained incomplete.
 
 ![FLASH magnetic-island coalescence: current density and field evolution](https://raw.githubusercontent.com/tomzhu0225/simjecture/main/demos/resistive_mhd_island_coalescence/figures/island_coalescence_evolution.png)
 
 *Actual 2D commissioning fields. The linked study separates instrument readiness
 from evidence for the scaling hypothesis.*
+
+[**FLASH → WarpX kinetic follow-up**](https://drawingsword.com/simjecture/demos/flash-warpx-patch.html)
+transfers an actual MHD current sheet into particle simulations and compares
+spatial, timestep and boundary controls. Its two-hour audit shows both the working
+handoff and the qualification gaps that prevented a final scientific verdict.
 
 The [orbital-accuracy walkthrough](https://drawingsword.com/simjecture/demos/kepler-energy.html) uses the current
 minimal workflow to investigate a concrete question: **does small energy error

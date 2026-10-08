@@ -1,0 +1,235 @@
+{
+  "id": "exp_401059e889565bdec8579490",
+  "status": "succeeded",
+  "operator_guidance_ids": [],
+  "created_at": 1791436854.1778455,
+  "timeout": 600,
+  "workspace_limit_bytes": 4294967296,
+  "binding": {
+    "source": "kinetic_analysis.py",
+    "args": [
+      "--case",
+      "base",
+      "data/base",
+      "base_patch.npz",
+      "--case",
+      "large",
+      "data/large",
+      "large_patch.npz"
+    ],
+    "inputs": {
+      "kinetic_analysis.py": "4c6bdf4872232543ea0366a2a698a0ac23a32409063ad21c1b8f1b276659915a",
+      "estimator.py": "44e914ad2780edabf2754f4fae734fd9b5811d6d8b5db094e57f6e379d0be0d4",
+      "base_patch.npz": "9cbfc57ca5fa7c26faab39bb9fd08658fc639156d52422cb825611597562d568",
+      "base_patch.json": "316e8beefde5488c6de26a61ccdf33e70e5af9a32f8a848a3fc967b26a2e9598",
+      "large_patch.npz": "6fc676f1969f788ec2ff9ea7a47dd549ce91c92de3e68d18797aacd33fb08718",
+      "large_patch.json": "cc14291a76ef2276bf7e687d19995e71b653ae8badb822d9cbbcffa2ddcbccbb",
+      "data/large/history.json": "4ecd4975057e479ee63a4e6bb6d9a5919caa11119727d3bba5464a101b665d7b",
+      "data/large/warpx_used_inputs": "e09956a5a7da7fd25be1968cf922a6015bfcdff12d7807e98efb83afd9d7122b",
+      "data/large/initial_fields.npz": "7e276ef92a97f91ed6f3e43cb367a2926dfb83974adb5a437b99401347443ff5",
+      "data/large/moments.npz": "6eff590d046bb217a63c0b837f1311d109453e3f80d7ba2833050c1219016483",
+      "data/large/result.json": "e0258e217f04788ab9cae4248169384a77b480a57468d52ca2b1a1d98e8b198d",
+      "data/large/final_fields.npz": "5dc579090beae4d436707c805e2c0907ef440efd55109f8a85ff1455da46e0d7",
+      "data/base/history.json": "352b1508fa0bf184ad34a19ce0fd18d7cf80f2c824a9a0f65667ec9e2543c09b",
+      "data/base/warpx_used_inputs": "1adfa6d63d3cd7dcfb23b7373b140f4a46a8a5df6bed97f6c148d33fec9a7d56",
+      "data/base/initial_fields.npz": "2316f2b07f286e73c893544b13b6f9e78117cd3b34dd136bcc316d609c4ca72e",
+      "data/base/moments.npz": "c930de69f31b5923713c36a90c3145f535653f84825f711df76badc711cdc903",
+      "data/base/result.json": "47d04e504df184afd3b47d7f07c247c0a5a7e156dc087adf30e997b4a2f4fbd3",
+      "data/base/final_fields.npz": "e378c54de929102945921b0dfc9237efdbb7b1239d8b1215c736d0b887f59418",
+      "data/large/reduced/field_energy.txt": "ebc96c2371908907ab0381a183bb5db42ce14c4f5b9582be9e7bab7d05f2874e",
+      "data/large/reduced/particle_energy.txt": "1927ebdf8295c7c3f9b4e27be4c24e2f1e5b2bc7c412e56382c417f300103756",
+      "data/base/reduced/field_energy.txt": "cf8a3346ec8d815c8ca5c1afd473b640482b83b2286957c6d9a745834a53b135",
+      "data/base/reduced/particle_energy.txt": "7fc2762701874d6a460a0b946a6cec041a946a7f1c0a16bb803b9ae1c9790dd3"
+    },
+    "capability": null,
+    "runtime_sha256": null
+  },
+  "outputs": [
+    "analysis.json",
+    "pressure_controls.png",
+    "base_kinetic_fields.png",
+    "large_kinetic_fields.png"
+  ],
+  "commitment": null,
+  "key": "paired-analysis",
+  "stage": "exploration",
+  "method": null,
+  "review_documents": null,
+  "parent_experiment": "exp_f0950f288da5afe863d02e2c",
+  "purpose": "diagnostic",
+  "plan": null,
+  "pid": 329762,
+  "worker_identity": {
+    "pid": 329762,
+    "starttime": "1824904",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture/.venv/bin/python3",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/coupled-study",
+      "--execute",
+      "exp_401059e889565bdec8579490"
+    ],
+    "launched_at": "2026-10-08T05:20:54.390650+00:00",
+    "run_directory": null
+  },
+  "started_at": 1791436854.3908112,
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "Fontconfig error: Cannot load default config file: No such file: (null)\n/work/kinetic_analysis.py:45: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.\n  for ax,title in zip(axs.flat,['Area mean tensor departure','Mean scalar pressure / initial','Mean density / initial','Finite control comparison']):ax.set(xlabel='t Omega_ci reference',title=title);ax.legend(fontsize=7)",
+    "timed_out": false,
+    "cancelled": false,
+    "workspace_exceeded": false,
+    "stdout_truncated": false,
+    "stderr_truncated": false,
+    "heartbeat_count": 0,
+    "wall_seconds": 2.2257267460008734,
+    "workspace_bytes": 69614526
+  },
+  "artifacts": {
+    ".cache/fontconfig/2300eef321c393bfd76478a5c0e95b23-le64.cache-9": {
+      "sha256": "be4a2bf520a0eb916fab92b15585e493fa0dae62d7c2dd7e275b01664c14e346",
+      "bytes": 382064
+    },
+    ".cache/fontconfig/3830d5c3ddfd5cd38a049b759396e72e-le64.cache-9": {
+      "sha256": "6cb953b213d173a1439944baba4f785aeb8e08fba3cb8794d99004c34310d453",
+      "bytes": 184
+    },
+    ".cache/fontconfig/4c599c202bc5c08e2d34565a40eac3b2-le64.cache-9": {
+      "sha256": "e2077b9c186aa45489f582008a00a7965a8135d07927d2697f6d07e09f9ae69d",
+      "bytes": 104
+    },
+    ".cache/fontconfig/573ec803664ed168555e0e8b6d0f0c7f-le64.cache-9": {
+      "sha256": "e67dc2bd665d1b1bd952ec5dd357d64bae7b2fbd6f1c9896db3e880f9788c58f",
+      "bytes": 152
+    },
+    ".cache/fontconfig/7ef2298fde41cc6eeb7af42e48b7d293-le64.cache-9": {
+      "sha256": "69cf18e42e3d2705da9c867a36e7e16f3d0e8973c41a5a51118e43c1207756fc",
+      "bytes": 208
+    },
+    ".cache/fontconfig/9b89f8e3dae116d678bbf48e5f21f69b-le64.cache-9": {
+      "sha256": "4fa102166b8aaa98765061eae7abe768aa636c327ad2889f68d33d77de9735b0",
+      "bytes": 68800
+    },
+    ".cache/fontconfig/CACHEDIR.TAG": {
+      "sha256": "05e7633fb31bf1f6f8d89020c16b9f24587fdf7638e951c9745b192f5fc3b682",
+      "bytes": 200
+    },
+    ".cache/fontconfig/d589a48862398ed80a3d6066f4f56f4c-le64.cache-9": {
+      "sha256": "233df56e901146f1c5f71911def868b835fb7e43a0e02644a07a1c829e49cc31",
+      "bytes": 51736
+    },
+    "analysis.json": {
+      "sha256": "a89b9cf8ba8a779513c302d8d44ba1fc26f4985b40e522eec1cfe78c0cd02dda",
+      "bytes": 15479
+    },
+    "base_kinetic_fields.png": {
+      "sha256": "92403261b95b71611fc808693c57a95a55e1f78334292daaff1ad2a2bdaf8f73",
+      "bytes": 418060
+    },
+    "base_patch.json": {
+      "sha256": "316e8beefde5488c6de26a61ccdf33e70e5af9a32f8a848a3fc967b26a2e9598",
+      "bytes": 1766
+    },
+    "base_patch.npz": {
+      "sha256": "9cbfc57ca5fa7c26faab39bb9fd08658fc639156d52422cb825611597562d568",
+      "bytes": 11214400
+    },
+    "data/base/final_fields.npz": {
+      "sha256": "e378c54de929102945921b0dfc9237efdbb7b1239d8b1215c736d0b887f59418",
+      "bytes": 6801840
+    },
+    "data/base/history.json": {
+      "sha256": "352b1508fa0bf184ad34a19ce0fd18d7cf80f2c824a9a0f65667ec9e2543c09b",
+      "bytes": 22037
+    },
+    "data/base/initial_fields.npz": {
+      "sha256": "2316f2b07f286e73c893544b13b6f9e78117cd3b34dd136bcc316d609c4ca72e",
+      "bytes": 2557333
+    },
+    "data/base/moments.npz": {
+      "sha256": "c930de69f31b5923713c36a90c3145f535653f84825f711df76badc711cdc903",
+      "bytes": 278831
+    },
+    "data/base/reduced/field_energy.txt": {
+      "sha256": "cf8a3346ec8d815c8ca5c1afd473b640482b83b2286957c6d9a745834a53b135",
+      "bytes": 2985
+    },
+    "data/base/reduced/particle_energy.txt": {
+      "sha256": "7fc2762701874d6a460a0b946a6cec041a946a7f1c0a16bb803b9ae1c9790dd3",
+      "bytes": 5114
+    },
+    "data/base/result.json": {
+      "sha256": "47d04e504df184afd3b47d7f07c247c0a5a7e156dc087adf30e997b4a2f4fbd3",
+      "bytes": 10993
+    },
+    "data/base/warpx_used_inputs": {
+      "sha256": "1adfa6d63d3cd7dcfb23b7373b140f4a46a8a5df6bed97f6c148d33fec9a7d56",
+      "bytes": 4632
+    },
+    "data/large/final_fields.npz": {
+      "sha256": "5dc579090beae4d436707c805e2c0907ef440efd55109f8a85ff1455da46e0d7",
+      "bytes": 15280997
+    },
+    "data/large/history.json": {
+      "sha256": "4ecd4975057e479ee63a4e6bb6d9a5919caa11119727d3bba5464a101b665d7b",
+      "bytes": 22035
+    },
+    "data/large/initial_fields.npz": {
+      "sha256": "7e276ef92a97f91ed6f3e43cb367a2926dfb83974adb5a437b99401347443ff5",
+      "bytes": 5782102
+    },
+    "data/large/moments.npz": {
+      "sha256": "6eff590d046bb217a63c0b837f1311d109453e3f80d7ba2833050c1219016483",
+      "bytes": 278725
+    },
+    "data/large/reduced/field_energy.txt": {
+      "sha256": "ebc96c2371908907ab0381a183bb5db42ce14c4f5b9582be9e7bab7d05f2874e",
+      "bytes": 2985
+    },
+    "data/large/reduced/particle_energy.txt": {
+      "sha256": "1927ebdf8295c7c3f9b4e27be4c24e2f1e5b2bc7c412e56382c417f300103756",
+      "bytes": 5114
+    },
+    "data/large/result.json": {
+      "sha256": "e0258e217f04788ab9cae4248169384a77b480a57468d52ca2b1a1d98e8b198d",
+      "bytes": 10983
+    },
+    "data/large/warpx_used_inputs": {
+      "sha256": "e09956a5a7da7fd25be1968cf922a6015bfcdff12d7807e98efb83afd9d7122b",
+      "bytes": 4640
+    },
+    "estimator.py": {
+      "sha256": "44e914ad2780edabf2754f4fae734fd9b5811d6d8b5db094e57f6e379d0be0d4",
+      "bytes": 1878
+    },
+    "kinetic_analysis.py": {
+      "sha256": "4c6bdf4872232543ea0366a2a698a0ac23a32409063ad21c1b8f1b276659915a",
+      "bytes": 7193
+    },
+    "large_kinetic_fields.png": {
+      "sha256": "2ae50b2b0e4f80b64df89b18bde1617e36c299fa53dcf0ecaa101161e50c77c1",
+      "bytes": 486661
+    },
+    "large_patch.json": {
+      "sha256": "cc14291a76ef2276bf7e687d19995e71b653ae8badb822d9cbbcffa2ddcbccbb",
+      "bytes": 1765
+    },
+    "large_patch.npz": {
+      "sha256": "6fc676f1969f788ec2ff9ea7a47dd549ce91c92de3e68d18797aacd33fb08718",
+      "bytes": 25585325
+    },
+    "pressure_controls.png": {
+      "sha256": "fa7ca848758cd79d2aa7e697a9d1a2d705cab7fd2d1391cce7ebce1be5751f11",
+      "bytes": 307205
+    }
+  },
+  "missing_outputs": [],
+  "input_mutations": [],
+  "output_findings": [],
+  "scientific_status": "unreviewed",
+  "finished_at": 1791436858.0069964
+}

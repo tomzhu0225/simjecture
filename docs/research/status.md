@@ -33,6 +33,11 @@ in the agent's diagnostic caused false eligibility rejections and was missed in
 methods review. Recorded decisions are inspectable judgments, not automatic
 scientific correctness.
 
+The [two-solver FLASH-to-WarpX study](../demos/flash-warpx-patch.md) also completed
+real state transfer and numerical controls while leaving its claim unresolved.
+The [demo refresh audit](demo-audit-20261008.md) records the observed agent errors,
+harness fixes and remaining limitations separately.
+
 ## Not demonstrated
 
 - Reliable execution of arbitrary acceptable natural-language hypotheses.

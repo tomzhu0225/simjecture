@@ -1,0 +1,21 @@
+{
+  "id": "director_f5e8870c1233cbb0b356d39f",
+  "created_at": 1791437394.4800127,
+  "packet_sha256": "5b47da17d1cd74b40ea81dc66ed63311c167df653d1134eb3a7397aae9d3d11f",
+  "control_actions": [
+    {
+      "experiment": "exp_e83e063b55e3c437f3f0abcb",
+      "status": "running",
+      "cancellation_confirmed": false
+    }
+  ],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "replan",
+  "rationale": "The previous continue decision authorized bounded endpoint pilots to establish window accessibility and cost. Those pilots now show exploratory access to the declared flux window: S=250 crossed by t=0.523, and preserved S=4000 fields crossed by t=1.960 despite the solver timeout. The 9.23-second archive analysis is not a new evolution cost. High-S sheet FWHM is only four cells, so these outputs do not establish resolved scaling or refinement persistence. The worker's shorter trajectory limits address substantial unnecessary evolution, and its acknowledgment of high-S underresolution is appropriate. However, the proposed 1800\u20132200-second scan/refinement estimate lacks measured refinement completion support. Updated mutable telemetry for the active 384\u00b2 pilot reports t=0.0842 after 45.3 seconds, with approximately 600 additional seconds forecast against a 400-second timeout. This early forecast can change, but it already supplies useful timing information and indicates likely censoring under the current cap. With approximately 2922 seconds remaining at packet creation, continuing toward that timeout is less useful than testing an affordable refinement strategy. No methods review or independently accepted scientific claim is recorded.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "at_risk",
+  "stop_experiments": [
+    "exp_e83e063b55e3c437f3f0abcb"
+  ],
+  "next_action": "Preserve the stopped pilot's logs and partial fields, and record a response to this replan. Use its measured steps, timestep and wall cost to revise the campaign estimate, separating solver evolution, analysis and concurrent resource contention. Immediately compare a justified alternative rank layout or other numerical cost control over a short comparable interval at 384\u00b2; retain the physical model and qualify timestep changes for stability and accuracy. Select the configuration with a credible cost to reach the relevant flux window, then demonstrate a complete exploratory trajectory and a useful refinement comparison rather than launching five unqualified refinement runs. The existing 256\u00b2 endpoint trajectories can guide shorter run limits; archival analysis must retain its parent provenance and actual final output time. Freeze measurement, eligibility, fit, uncertainty and refinement rules and obtain lab.method review before decisive runs. Budget the resulting distinct-resistivity study, meaningful refinement and independent review from measured costs. If full-range resolution remains unaffordable, explicitly report that gap and investigate an affordable resolved subset without redefining the hypothesis or treating censoring or underresolution as a counterexample."
+}

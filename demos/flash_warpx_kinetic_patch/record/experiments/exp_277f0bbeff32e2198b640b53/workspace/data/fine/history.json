@@ -1,0 +1,988 @@
+[
+  {
+    "energy_boundary_accounting": {
+      "absorbed_particle_energy_J_per_m": 0.0,
+      "estimated_poynting_outflow_J_per_m": 0.0,
+      "instant_boundary_poynting_W_per_m": -4007180547.7109995,
+      "live_particle_energy_J_per_m": 898.8283521737917
+    },
+    "field_activity": {
+      "Bx_roi_rms": 5.72559791246484,
+      "By_roi_rms": 0.0,
+      "Bz_roi_rms": 0.06897301237356326,
+      "Ex_roi_rms": 0.0,
+      "Ey_roi_rms": 601797.2505281767,
+      "Ez_roi_rms": 0.0
+    },
+    "step": 0,
+    "time_s": 0.0,
+    "time_omegaci": 0.0,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.006801462289785029,
+      "p90_departure": 0.011756825793860316
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.008324433302334937,
+      "p90_departure": 0.012610012664029516
+    }
+  },
+  {
+    "energy_boundary_accounting": {
+      "absorbed_particle_energy_J_per_m": 5.86568389234763,
+      "estimated_poynting_outflow_J_per_m": 0.009640800302793491,
+      "instant_boundary_poynting_W_per_m": 92837084020.3885,
+      "live_particle_energy_J_per_m": 890.809235604243
+    },
+    "field_activity": {
+      "Bx_roi_rms": 5.630861725709665,
+      "By_roi_rms": 0.6357803885694933,
+      "Bz_roi_rms": 0.4252205612237594,
+      "Ex_roi_rms": 444980366.26882464,
+      "Ey_roi_rms": 33974623.63540116,
+      "Ez_roi_rms": 452928978.6962508
+    },
+    "step": 114,
+    "time_s": 2.1706204613312068e-13,
+    "time_omegaci": 0.02497595414774526,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.019489607693679335,
+      "p90_departure": 0.027487246990700834
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.03351618932393309,
+      "p90_departure": 0.04368626680272069
+    }
+  },
+  {
+    "energy_boundary_accounting": {
+      "absorbed_particle_energy_J_per_m": 11.220743548098623,
+      "estimated_poynting_outflow_J_per_m": 0.03097644354720213,
+      "instant_boundary_poynting_W_per_m": 103748580074.23474,
+      "live_particle_energy_J_per_m": 885.4591650050006
+    },
+    "field_activity": {
+      "Bx_roi_rms": 5.523942168367075,
+      "By_roi_rms": 0.7644079639359391,
+      "Bz_roi_rms": 0.5040963465075148,
+      "Ex_roi_rms": 494826606.9460704,
+      "Ey_roi_rms": 34886402.78847975,
+      "Ez_roi_rms": 527718239.80577713
+    },
+    "step": 228,
+    "time_s": 4.3412409226624136e-13,
+    "time_omegaci": 0.04995190829549052,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.028530500591680177,
+      "p90_departure": 0.03667356616536657
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.048222326082874696,
+      "p90_departure": 0.0574071847631419
+    }
+  },
+  {
+    "energy_boundary_accounting": {
+      "absorbed_particle_energy_J_per_m": 16.364528704057264,
+      "estimated_poynting_outflow_J_per_m": 0.05187496364909722,
+      "instant_boundary_poynting_W_per_m": 88809450905.33461,
+      "live_particle_energy_J_per_m": 880.3266270486147
+    },
+    "field_activity": {
+      "Bx_roi_rms": 5.423067215746669,
+      "By_roi_rms": 0.701591470396607,
+      "Bz_roi_rms": 0.5826948290004372,
+      "Ex_roi_rms": 492160106.3885931,
+      "Ey_roi_rms": 31778487.455748435,
+      "Ez_roi_rms": 532289195.955527
+    },
+    "step": 342,
+    "time_s": 6.511861383993621e-13,
+    "time_omegaci": 0.07492786244323578,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.02791112288205652,
+      "p90_departure": 0.04240593205023829
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.04591282242520657,
+      "p90_departure": 0.06323203969160117
+    }
+  },
+  {
+    "energy_boundary_accounting": {
+      "absorbed_particle_energy_J_per_m": 21.395277925777336,
+      "estimated_poynting_outflow_J_per_m": 0.07086101106265456,
+      "instant_boundary_poynting_W_per_m": 86127142126.8117,
+      "live_particle_energy_J_per_m": 875.275052942313
+    },
+    "field_activity": {
+      "Bx_roi_rms": 5.317979765418322,
+      "By_roi_rms": 0.7342339866117674,
+      "Bz_roi_rms": 0.5561060409591289,
+      "Ex_roi_rms": 485486463.8309317,
+      "Ey_roi_rms": 34493413.27124971,
+      "Ez_roi_rms": 483980718.1336432
+    },
+    "step": 456,
+    "time_s": 8.682481845324827e-13,
+    "time_omegaci": 0.09990381659098103,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.029679520614674125,
+      "p90_departure": 0.04260422571588932
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.0461071152529642,
+      "p90_departure": 0.07107352290404742
+    }
+  },
+  {
+    "energy_boundary_accounting": {
+      "absorbed_particle_energy_J_per_m": 26.351998256875238,
+      "estimated_poynting_outflow_J_per_m": 0.08995306788445041,
+      "instant_boundary_poynting_W_per_m": 89786216858.91344,
+      "live_particle_energy_J_per_m": 870.2912474231866
+    },
+    "field_activity": {
+      "Bx_roi_rms": 5.221116495730342,
+      "By_roi_rms": 0.7634085915340115,
+      "Bz_roi_rms": 0.549092126287821,
+      "Ex_roi_rms": 511476194.7661906,
+      "Ey_roi_rms": 37303705.37342892,
+      "Ez_roi_rms": 480616672.95459634
+    },
+    "step": 570,
+    "time_s": 1.0853102306656034e-12,
+    "time_omegaci": 0.12487977073872629,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.034523878593647694,
+      "p90_departure": 0.04382382713961845
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.047930832913468654,
+      "p90_departure": 0.05985251664267409
+    }
+  },
+  {
+    "energy_boundary_accounting": {
+      "absorbed_particle_energy_J_per_m": 31.173242273902897,
+      "estimated_poynting_outflow_J_per_m": 0.10959651953507576,
+      "instant_boundary_poynting_W_per_m": 91207669456.69177,
+      "live_particle_energy_J_per_m": 865.423808747182
+    },
+    "field_activity": {
+      "Bx_roi_rms": 5.071965298641439,
+      "By_roi_rms": 0.7847732808373927,
+      "Bz_roi_rms": 0.6308337298992746,
+      "Ex_roi_rms": 506411483.0447512,
+      "Ey_roi_rms": 172338841.3277239,
+      "Ez_roi_rms": 486652869.1689883
+    },
+    "step": 684,
+    "time_s": 1.3023722767987242e-12,
+    "time_omegaci": 0.14985572488647156,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.03204675500157739,
+      "p90_departure": 0.05462434021322194
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.044996893094428315,
+      "p90_departure": 0.05960698197806087
+    }
+  },
+  {
+    "energy_boundary_accounting": {
+      "absorbed_particle_energy_J_per_m": 35.97090310364452,
+      "estimated_poynting_outflow_J_per_m": 0.12863762748196642,
+      "instant_boundary_poynting_W_per_m": 84236248870.81763,
+      "live_particle_energy_J_per_m": 860.6071564569247
+    },
+    "field_activity": {
+      "Bx_roi_rms": 5.258188269692992,
+      "By_roi_rms": 0.7565285182241244,
+      "Bz_roi_rms": 0.5904842923265846,
+      "Ex_roi_rms": 480953058.79945683,
+      "Ey_roi_rms": 99874237.8491634,
+      "Ez_roi_rms": 489294829.5827133
+    },
+    "step": 798,
+    "time_s": 1.5194343229318449e-12,
+    "time_omegaci": 0.1748316790342168,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.041019074974592167,
+      "p90_departure": 0.06426003980891314
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.04488613408611063,
+      "p90_departure": 0.06456599332028973
+    }
+  },
+  {
+    "energy_boundary_accounting": {
+      "absorbed_particle_energy_J_per_m": 40.7069708203665,
+      "estimated_poynting_outflow_J_per_m": 0.14694110975180427,
+      "instant_boundary_poynting_W_per_m": 84411219407.56241,
+      "live_particle_energy_J_per_m": 855.8315863237632
+    },
+    "field_activity": {
+      "Bx_roi_rms": 5.177377148973197,
+      "By_roi_rms": 0.7123428157126441,
+      "Bz_roi_rms": 0.5873766014421576,
+      "Ex_roi_rms": 492090528.7126253,
+      "Ey_roi_rms": 35501787.052282125,
+      "Ez_roi_rms": 510001950.12914145
+    },
+    "step": 912,
+    "time_s": 1.7364963690649654e-12,
+    "time_omegaci": 0.19980763318196207,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.04235155357134017,
+      "p90_departure": 0.059056024930354584
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.03999652767617644,
+      "p90_departure": 0.05894300163241822
+    }
+  },
+  {
+    "energy_boundary_accounting": {
+      "absorbed_particle_energy_J_per_m": 45.450338064951474,
+      "estimated_poynting_outflow_J_per_m": 0.16562737072280004,
+      "instant_boundary_poynting_W_per_m": 87763154730.01288,
+      "live_particle_energy_J_per_m": 851.0723198502154
+    },
+    "field_activity": {
+      "Bx_roi_rms": 5.382289685872351,
+      "By_roi_rms": 0.7750412202277387,
+      "Bz_roi_rms": 0.6351450407953952,
+      "Ex_roi_rms": 509509894.83916986,
+      "Ey_roi_rms": 43460552.086827345,
+      "Ez_roi_rms": 506164670.52010864
+    },
+    "step": 1026,
+    "time_s": 1.953558415198086e-12,
+    "time_omegaci": 0.22478358732970732,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.04062045410245946,
+      "p90_departure": 0.06047823545080795
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.04377614918979345,
+      "p90_departure": 0.058550675617257374
+    }
+  },
+  {
+    "energy_boundary_accounting": {
+      "absorbed_particle_energy_J_per_m": 50.134430855145034,
+      "estimated_poynting_outflow_J_per_m": 0.18550915242022822,
+      "instant_boundary_poynting_W_per_m": 95426693994.02423,
+      "live_particle_energy_J_per_m": 846.3545879438714
+    },
+    "field_activity": {
+      "Bx_roi_rms": 5.146955463270842,
+      "By_roi_rms": 0.8024515210608149,
+      "Bz_roi_rms": 0.5385017800988138,
+      "Ex_roi_rms": 519983532.44547534,
+      "Ey_roi_rms": 35672775.48217325,
+      "Ez_roi_rms": 490730379.6744748
+    },
+    "step": 1140,
+    "time_s": 2.170620461331207e-12,
+    "time_omegaci": 0.24975954147745258,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.04368392030635468,
+      "p90_departure": 0.059281472293926996
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.04035013029395527,
+      "p90_departure": 0.07300924887134648
+    }
+  },
+  {
+    "energy_boundary_accounting": {
+      "absorbed_particle_energy_J_per_m": 54.85661955785321,
+      "estimated_poynting_outflow_J_per_m": 0.20530052093501014,
+      "instant_boundary_poynting_W_per_m": 86930091702.57956,
+      "live_particle_energy_J_per_m": 841.609772275524
+    },
+    "field_activity": {
+      "Bx_roi_rms": 5.224308218100837,
+      "By_roi_rms": 0.7486203161043177,
+      "Bz_roi_rms": 0.5339455447477411,
+      "Ex_roi_rms": 529407876.6133887,
+      "Ey_roi_rms": 44165733.161652826,
+      "Ez_roi_rms": 543832743.1881323
+    },
+    "step": 1254,
+    "time_s": 2.3876825074643276e-12,
+    "time_omegaci": 0.27473549562519783,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.042108785319670015,
+      "p90_departure": 0.054828340021220875
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.049817934077855834,
+      "p90_departure": 0.05898619317065872
+    }
+  },
+  {
+    "energy_boundary_accounting": {
+      "absorbed_particle_energy_J_per_m": 59.57590773356453,
+      "estimated_poynting_outflow_J_per_m": 0.22675100943049992,
+      "instant_boundary_poynting_W_per_m": 110713751407.0033,
+      "live_particle_energy_J_per_m": 836.8667781533245
+    },
+    "field_activity": {
+      "Bx_roi_rms": 5.283555344754277,
+      "By_roi_rms": 0.9045695993428221,
+      "Bz_roi_rms": 0.5106184572228152,
+      "Ex_roi_rms": 515693887.99605286,
+      "Ey_roi_rms": 47174867.671374306,
+      "Ez_roi_rms": 510516359.257266
+    },
+    "step": 1368,
+    "time_s": 2.6047445535974483e-12,
+    "time_omegaci": 0.2997114497729431,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.0445967634396074,
+      "p90_departure": 0.06034526362474997
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.045322522867533695,
+      "p90_departure": 0.0678289809664639
+    }
+  },
+  {
+    "energy_boundary_accounting": {
+      "absorbed_particle_energy_J_per_m": 64.28220721128623,
+      "estimated_poynting_outflow_J_per_m": 0.24859465199291755,
+      "instant_boundary_poynting_W_per_m": 90552595718.6593,
+      "live_particle_energy_J_per_m": 832.1665749899703
+    },
+    "field_activity": {
+      "Bx_roi_rms": 5.251095666285739,
+      "By_roi_rms": 0.8146611370701603,
+      "Bz_roi_rms": 0.4899855575909901,
+      "Ex_roi_rms": 508907338.6785045,
+      "Ey_roi_rms": 49448755.38971213,
+      "Ez_roi_rms": 521870379.6738452
+    },
+    "step": 1482,
+    "time_s": 2.821806599730569e-12,
+    "time_omegaci": 0.32468740392068834,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.04642578952078233,
+      "p90_departure": 0.06446553337894918
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.053688522643360576,
+      "p90_departure": 0.06100591452486005
+    }
+  },
+  {
+    "energy_boundary_accounting": {
+      "absorbed_particle_energy_J_per_m": 68.9869121139541,
+      "estimated_poynting_outflow_J_per_m": 0.2701397056128086,
+      "instant_boundary_poynting_W_per_m": 107962566224.27948,
+      "live_particle_energy_J_per_m": 827.4461847344319
+    },
+    "field_activity": {
+      "Bx_roi_rms": 5.363823302932127,
+      "By_roi_rms": 0.7770879790874016,
+      "Bz_roi_rms": 0.513493335635552,
+      "Ex_roi_rms": 518239040.8498259,
+      "Ey_roi_rms": 26310133.31780998,
+      "Ez_roi_rms": 503984522.0758134
+    },
+    "step": 1596,
+    "time_s": 3.0388686458636898e-12,
+    "time_omegaci": 0.3496633580684336,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.04835151856643219,
+      "p90_departure": 0.05992174924148585
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.04978061632640441,
+      "p90_departure": 0.06025805645936054
+    }
+  },
+  {
+    "energy_boundary_accounting": {
+      "absorbed_particle_energy_J_per_m": 73.69064500873263,
+      "estimated_poynting_outflow_J_per_m": 0.2922576545225042,
+      "instant_boundary_poynting_W_per_m": 95831227335.84413,
+      "live_particle_energy_J_per_m": 822.7016487626775
+    },
+    "field_activity": {
+      "Bx_roi_rms": 5.406489173446169,
+      "By_roi_rms": 0.7689364344327044,
+      "Bz_roi_rms": 0.50978075372433,
+      "Ex_roi_rms": 545246598.5553182,
+      "Ey_roi_rms": 33845704.39473148,
+      "Ez_roi_rms": 516798820.49914944
+    },
+    "step": 1710,
+    "time_s": 3.25593069199681e-12,
+    "time_omegaci": 0.37463931221617885,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.04989563032376082,
+      "p90_departure": 0.06027693110522122
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.05181156364137099,
+      "p90_departure": 0.06077187580168039
+    }
+  },
+  {
+    "energy_boundary_accounting": {
+      "absorbed_particle_energy_J_per_m": 78.37840991325821,
+      "estimated_poynting_outflow_J_per_m": 0.31210060559277447,
+      "instant_boundary_poynting_W_per_m": 87000837723.57158,
+      "live_particle_energy_J_per_m": 818.0151486108318
+    },
+    "field_activity": {
+      "Bx_roi_rms": 5.451948020706821,
+      "By_roi_rms": 0.8075203509320447,
+      "Bz_roi_rms": 0.5092638896636302,
+      "Ex_roi_rms": 523037222.28264,
+      "Ey_roi_rms": 36203865.84043112,
+      "Ez_roi_rms": 540103379.3893626
+    },
+    "step": 1824,
+    "time_s": 3.472992738129931e-12,
+    "time_omegaci": 0.39961526636392414,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.04496906977227974,
+      "p90_departure": 0.05945309472706739
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.05273201740794785,
+      "p90_departure": 0.06946183965462645
+    }
+  },
+  {
+    "energy_boundary_accounting": {
+      "absorbed_particle_energy_J_per_m": 83.09586092132523,
+      "estimated_poynting_outflow_J_per_m": 0.33102629774340026,
+      "instant_boundary_poynting_W_per_m": 87379644611.13306,
+      "live_particle_energy_J_per_m": 813.2756048451304
+    },
+    "field_activity": {
+      "Bx_roi_rms": 5.409341643346431,
+      "By_roi_rms": 0.7388268966332928,
+      "Bz_roi_rms": 0.5586741493796906,
+      "Ex_roi_rms": 531632250.7971202,
+      "Ey_roi_rms": 46582380.46901068,
+      "Ez_roi_rms": 534948479.091039
+    },
+    "step": 1938,
+    "time_s": 3.690054784263052e-12,
+    "time_omegaci": 0.4245912205116694,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.042973411095830596,
+      "p90_departure": 0.0576232752304361
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.0501208442970667,
+      "p90_departure": 0.06574358161813809
+    }
+  },
+  {
+    "energy_boundary_accounting": {
+      "absorbed_particle_energy_J_per_m": 87.83694077525651,
+      "estimated_poynting_outflow_J_per_m": 0.3497017918779821,
+      "instant_boundary_poynting_W_per_m": 84695524376.52586,
+      "live_particle_energy_J_per_m": 808.5321169295587
+    },
+    "field_activity": {
+      "Bx_roi_rms": 5.30749448511719,
+      "By_roi_rms": 0.7225654867855722,
+      "Bz_roi_rms": 0.5863384375735408,
+      "Ex_roi_rms": 509926751.7158991,
+      "Ey_roi_rms": 33783634.64502319,
+      "Ez_roi_rms": 524265118.3281449
+    },
+    "step": 2052,
+    "time_s": 3.907116830396172e-12,
+    "time_omegaci": 0.44956717465941465,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.04460269568657471,
+      "p90_departure": 0.057800229179922266
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.049728377810796656,
+      "p90_departure": 0.07011204308410837
+    }
+  },
+  {
+    "energy_boundary_accounting": {
+      "absorbed_particle_energy_J_per_m": 92.58247387893174,
+      "estimated_poynting_outflow_J_per_m": 0.3675269608684673,
+      "instant_boundary_poynting_W_per_m": 79544786705.3419,
+      "live_particle_energy_J_per_m": 803.7778547666024
+    },
+    "field_activity": {
+      "Bx_roi_rms": 5.282750526621346,
+      "By_roi_rms": 0.7654569211491925,
+      "Bz_roi_rms": 0.634256713108621,
+      "Ex_roi_rms": 544749278.515668,
+      "Ey_roi_rms": 38538916.96505185,
+      "Ez_roi_rms": 528823717.40603113
+    },
+    "step": 2166,
+    "time_s": 4.124178876529293e-12,
+    "time_omegaci": 0.4745431288071599,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.046472829785530426,
+      "p90_departure": 0.0595849488122662
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.05724119430316503,
+      "p90_departure": 0.07906081395711562
+    }
+  },
+  {
+    "energy_boundary_accounting": {
+      "absorbed_particle_energy_J_per_m": 97.36320261465414,
+      "estimated_poynting_outflow_J_per_m": 0.3847627896066503,
+      "instant_boundary_poynting_W_per_m": 79265369609.24918,
+      "live_particle_energy_J_per_m": 798.9749188097323
+    },
+    "field_activity": {
+      "Bx_roi_rms": 5.370960938384275,
+      "By_roi_rms": 0.7817019260090866,
+      "Bz_roi_rms": 0.5211337110179576,
+      "Ex_roi_rms": 513136507.00451475,
+      "Ey_roi_rms": 37446590.09798304,
+      "Ez_roi_rms": 537016506.7882473
+    },
+    "step": 2280,
+    "time_s": 4.341240922662414e-12,
+    "time_omegaci": 0.49951908295490516,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.04591072679046225,
+      "p90_departure": 0.056354166921185556
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.05429252431854338,
+      "p90_departure": 0.06811482039287181
+    }
+  },
+  {
+    "energy_boundary_accounting": {
+      "absorbed_particle_energy_J_per_m": 102.07261079006376,
+      "estimated_poynting_outflow_J_per_m": 0.4023474241320183,
+      "instant_boundary_poynting_W_per_m": 82758667652.27795,
+      "live_particle_energy_J_per_m": 794.2607025285495
+    },
+    "field_activity": {
+      "Bx_roi_rms": 5.41313452313671,
+      "By_roi_rms": 0.8267618823977767,
+      "Bz_roi_rms": 0.5510861171247831,
+      "Ex_roi_rms": 560498657.113425,
+      "Ey_roi_rms": 42846992.86167737,
+      "Ez_roi_rms": 536070674.8632182
+    },
+    "step": 2394,
+    "time_s": 4.558302968795534e-12,
+    "time_omegaci": 0.5244950371026503,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.05376082018743268,
+      "p90_departure": 0.06369701114439033
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.04653102608494113,
+      "p90_departure": 0.07410713031246494
+    }
+  },
+  {
+    "energy_boundary_accounting": {
+      "absorbed_particle_energy_J_per_m": 106.8284492451444,
+      "estimated_poynting_outflow_J_per_m": 0.4206068270852621,
+      "instant_boundary_poynting_W_per_m": 85482655771.3992,
+      "live_particle_energy_J_per_m": 789.514255028782
+    },
+    "field_activity": {
+      "Bx_roi_rms": 5.432347602841261,
+      "By_roi_rms": 1.0012604004104098,
+      "Bz_roi_rms": 0.5522884379860901,
+      "Ex_roi_rms": 525658829.6820345,
+      "Ey_roi_rms": 39641306.42303852,
+      "Ez_roi_rms": 540006170.5204351
+    },
+    "step": 2508,
+    "time_s": 4.775365014928655e-12,
+    "time_omegaci": 0.5494709912503957,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.050442700323627715,
+      "p90_departure": 0.06529888780750175
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.047886386302977785,
+      "p90_departure": 0.06982889419705807
+    }
+  },
+  {
+    "energy_boundary_accounting": {
+      "absorbed_particle_energy_J_per_m": 111.58923889273596,
+      "estimated_poynting_outflow_J_per_m": 0.43810088709573436,
+      "instant_boundary_poynting_W_per_m": 75706831954.55215,
+      "live_particle_energy_J_per_m": 784.7460091919937
+    },
+    "field_activity": {
+      "Bx_roi_rms": 5.378671648695867,
+      "By_roi_rms": 1.0047841438139202,
+      "Bz_roi_rms": 0.4966073592405043,
+      "Ex_roi_rms": 504273157.0331745,
+      "Ey_roi_rms": 24031415.1564298,
+      "Ez_roi_rms": 517527983.9577471
+    },
+    "step": 2622,
+    "time_s": 4.9924270610617755e-12,
+    "time_omegaci": 0.5744469453981409,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.05131156733398202,
+      "p90_departure": 0.059699585326337984
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.05099873482141156,
+      "p90_departure": 0.06113556760266703
+    }
+  },
+  {
+    "energy_boundary_accounting": {
+      "absorbed_particle_energy_J_per_m": 116.25745774172573,
+      "estimated_poynting_outflow_J_per_m": 0.4550269782423633,
+      "instant_boundary_poynting_W_per_m": 80249416023.02766,
+      "live_particle_energy_J_per_m": 780.0708967071962
+    },
+    "field_activity": {
+      "Bx_roi_rms": 5.296167475694823,
+      "By_roi_rms": 0.9719498557366867,
+      "Bz_roi_rms": 0.496881212621457,
+      "Ex_roi_rms": 491766680.1682009,
+      "Ey_roi_rms": 30097378.51567454,
+      "Ez_roi_rms": 519459258.43276113
+    },
+    "step": 2736,
+    "time_s": 5.209489107194897e-12,
+    "time_omegaci": 0.5994228995458862,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.04560382017381269,
+      "p90_departure": 0.0542982786631543
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.04967704977489017,
+      "p90_departure": 0.06706537529072537
+    }
+  },
+  {
+    "energy_boundary_accounting": {
+      "absorbed_particle_energy_J_per_m": 121.00333879031514,
+      "estimated_poynting_outflow_J_per_m": 0.47195229584858744,
+      "instant_boundary_poynting_W_per_m": 75699704587.80566,
+      "live_particle_energy_J_per_m": 775.3149782800555
+    },
+    "field_activity": {
+      "Bx_roi_rms": 5.182267930849472,
+      "By_roi_rms": 0.8496756477937393,
+      "Bz_roi_rms": 0.512185816729026,
+      "Ex_roi_rms": 522551620.5025158,
+      "Ey_roi_rms": 41069838.515641294,
+      "Ez_roi_rms": 504196176.5490946
+    },
+    "step": 2850,
+    "time_s": 5.426551153328017e-12,
+    "time_omegaci": 0.6243988536936315,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.04503341157952273,
+      "p90_departure": 0.05685950886854264
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.05466782502992798,
+      "p90_departure": 0.0775157730199407
+    }
+  },
+  {
+    "energy_boundary_accounting": {
+      "absorbed_particle_energy_J_per_m": 125.70514991345654,
+      "estimated_poynting_outflow_J_per_m": 0.49077079714783495,
+      "instant_boundary_poynting_W_per_m": 97693126028.98837,
+      "live_particle_energy_J_per_m": 770.6092326013292
+    },
+    "field_activity": {
+      "Bx_roi_rms": 5.189497467251091,
+      "By_roi_rms": 0.8675907508813617,
+      "Bz_roi_rms": 0.5053335742414542,
+      "Ex_roi_rms": 534641900.5754174,
+      "Ey_roi_rms": 48160578.4505946,
+      "Ez_roi_rms": 545337791.4584073
+    },
+    "step": 2964,
+    "time_s": 5.643613199461138e-12,
+    "time_omegaci": 0.6493748078413767,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.04990666885038417,
+      "p90_departure": 0.05714821809236188
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.059516784503980485,
+      "p90_departure": 0.07212079637447699
+    }
+  },
+  {
+    "energy_boundary_accounting": {
+      "absorbed_particle_energy_J_per_m": 130.39143786597907,
+      "estimated_poynting_outflow_J_per_m": 0.5102775275579008,
+      "instant_boundary_poynting_W_per_m": 82041016881.49225,
+      "live_particle_energy_J_per_m": 765.9234577057434
+    },
+    "field_activity": {
+      "Bx_roi_rms": 5.184282167610047,
+      "By_roi_rms": 0.8769228926778335,
+      "Bz_roi_rms": 0.5262170436909523,
+      "Ex_roi_rms": 504054599.21228534,
+      "Ey_roi_rms": 60757431.189788245,
+      "Ez_roi_rms": 549498295.2628019
+    },
+    "step": 3078,
+    "time_s": 5.8606752455942585e-12,
+    "time_omegaci": 0.6743507619891219,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.0474132850193023,
+      "p90_departure": 0.06610642508068307
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.05880914541016237,
+      "p90_departure": 0.0861393358960607
+    }
+  },
+  {
+    "energy_boundary_accounting": {
+      "absorbed_particle_energy_J_per_m": 135.05450954590884,
+      "estimated_poynting_outflow_J_per_m": 0.5273382336634329,
+      "instant_boundary_poynting_W_per_m": 75155567316.08795,
+      "live_particle_energy_J_per_m": 761.2553436592366
+    },
+    "field_activity": {
+      "Bx_roi_rms": 5.126892931312135,
+      "By_roi_rms": 0.8315979369473105,
+      "Bz_roi_rms": 0.5576999635078872,
+      "Ex_roi_rms": 513453169.58832437,
+      "Ey_roi_rms": 45262631.78045843,
+      "Ez_roi_rms": 556152959.2271874
+    },
+    "step": 3192,
+    "time_s": 6.0777372917273796e-12,
+    "time_omegaci": 0.6993267161368673,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.049088808196736666,
+      "p90_departure": 0.0590633595441974
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.06988879847012092,
+      "p90_departure": 0.08901104497013063
+    }
+  },
+  {
+    "energy_boundary_accounting": {
+      "absorbed_particle_energy_J_per_m": 139.75361887537215,
+      "estimated_poynting_outflow_J_per_m": 0.5444239390719104,
+      "instant_boundary_poynting_W_per_m": 82271359342.46954,
+      "live_particle_energy_J_per_m": 756.5600849519512
+    },
+    "field_activity": {
+      "Bx_roi_rms": 5.204512681200123,
+      "By_roi_rms": 0.7771578579882341,
+      "Bz_roi_rms": 0.6651652227300959,
+      "Ex_roi_rms": 492158194.1706683,
+      "Ey_roi_rms": 36081313.65838753,
+      "Ez_roi_rms": 521538560.6982559
+    },
+    "step": 3306,
+    "time_s": 6.2947993378605e-12,
+    "time_omegaci": 0.7243026702846125,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.046279583824087395,
+      "p90_departure": 0.06539723823722789
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.07422641415266815,
+      "p90_departure": 0.09082672398893607
+    }
+  },
+  {
+    "energy_boundary_accounting": {
+      "absorbed_particle_energy_J_per_m": 144.40440414237656,
+      "estimated_poynting_outflow_J_per_m": 0.5622206618760724,
+      "instant_boundary_poynting_W_per_m": 81706849848.90253,
+      "live_particle_energy_J_per_m": 751.9133425179851
+    },
+    "field_activity": {
+      "Bx_roi_rms": 5.290715567667198,
+      "By_roi_rms": 0.6827450784240995,
+      "Bz_roi_rms": 0.5707031935494955,
+      "Ex_roi_rms": 528714527.09359825,
+      "Ey_roi_rms": 50186838.87920367,
+      "Ez_roi_rms": 554669431.4675379
+    },
+    "step": 3420,
+    "time_s": 6.51186138399362e-12,
+    "time_omegaci": 0.7492786244323577,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.04636057516713045,
+      "p90_departure": 0.06552980201183922
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.0781188493343632,
+      "p90_departure": 0.08812242199890413
+    }
+  },
+  {
+    "energy_boundary_accounting": {
+      "absorbed_particle_energy_J_per_m": 149.0565240593621,
+      "estimated_poynting_outflow_J_per_m": 0.5809496257626108,
+      "instant_boundary_poynting_W_per_m": 90860987045.55045,
+      "live_particle_energy_J_per_m": 747.2585102780677
+    },
+    "field_activity": {
+      "Bx_roi_rms": 5.315704743990483,
+      "By_roi_rms": 0.7504456230011742,
+      "Bz_roi_rms": 0.5438213918711515,
+      "Ex_roi_rms": 523590728.4993207,
+      "Ey_roi_rms": 44223109.69543432,
+      "Ez_roi_rms": 534235645.0435418
+    },
+    "step": 3534,
+    "time_s": 6.728923430126741e-12,
+    "time_omegaci": 0.774254578580103,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.05124385068044886,
+      "p90_departure": 0.06072176442693178
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.07315257404374959,
+      "p90_departure": 0.09722693490540793
+    }
+  },
+  {
+    "energy_boundary_accounting": {
+      "absorbed_particle_energy_J_per_m": 153.67608544908555,
+      "estimated_poynting_outflow_J_per_m": 0.5998552917330597,
+      "instant_boundary_poynting_W_per_m": 83334974959.28998,
+      "live_particle_energy_J_per_m": 742.6425335443159
+    },
+    "field_activity": {
+      "Bx_roi_rms": 5.23757265239244,
+      "By_roi_rms": 0.7540300493420197,
+      "Bz_roi_rms": 0.48880372540195494,
+      "Ex_roi_rms": 534990061.1397463,
+      "Ey_roi_rms": 31657248.296557967,
+      "Ez_roi_rms": 527294411.9632749
+    },
+    "step": 3648,
+    "time_s": 6.945985476259862e-12,
+    "time_omegaci": 0.7992305327278483,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.04658097147561598,
+      "p90_departure": 0.07047190486764097
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.0811556400998101,
+      "p90_departure": 0.09867769421547484
+    }
+  },
+  {
+    "energy_boundary_accounting": {
+      "absorbed_particle_energy_J_per_m": 153.839677120635,
+      "estimated_poynting_outflow_J_per_m": 0.6004715466965886,
+      "instant_boundary_poynting_W_per_m": 78492177907.42593,
+      "live_particle_energy_J_per_m": 742.4743402761125
+    },
+    "field_activity": {
+      "Bx_roi_rms": 5.251942316998256,
+      "By_roi_rms": 0.7587290982364583,
+      "Bz_roi_rms": 0.48029900653902735,
+      "Ex_roi_rms": 541474317.8730143,
+      "Ey_roi_rms": 32298267.12340987,
+      "Ez_roi_rms": 541553370.0233759
+    },
+    "step": 3652,
+    "time_s": 6.9536016884048834e-12,
+    "time_omegaci": 0.8001068819961902,
+    "ions": {
+      "eligible_bins": 16,
+      "median_departure": 0.046141019181340164,
+      "p90_departure": 0.0680191417594569
+    },
+    "electrons": {
+      "eligible_bins": 16,
+      "median_departure": 0.08150633892243721,
+      "p90_departure": 0.1027202690429341
+    }
+  }
+]

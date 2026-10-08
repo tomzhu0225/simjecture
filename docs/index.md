@@ -45,6 +45,11 @@ For a short, fully inspectable example, the
 and supported a narrower claim with fresh numerical tests and independent review.
 Ordinary CPU Python is enough to reproduce its experiments.
 
+The [FLASH-to-WarpX investigation](demos/flash-warpx-patch.md) connects a measured
+MHD current sheet to local kinetic calculations. It records successful state
+transfer and completed numerical controls, with the scientific claim unresolved
+at the two-hour cutoff.
+
 ```{raw} html
 <div class="sj-cards">
   <a class="sj-card" href="getting-started/first-run.html"><span class="sj-label">Start investigating</span><strong>From a conversation to a tested claim</strong><p>Prepare a brief, choose a completion policy and follow a study through experiments and review.</p></a>
@@ -84,6 +89,7 @@ getting-started/research-workspace
 
 demos/index
 demos/island-coalescence
+demos/flash-warpx-patch
 demos/kepler-energy
 demos/gray-scott
 demos/collisionless-gem

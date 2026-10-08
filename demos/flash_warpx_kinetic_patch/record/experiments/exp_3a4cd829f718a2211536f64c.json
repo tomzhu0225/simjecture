@@ -1,0 +1,245 @@
+{
+  "id": "exp_3a4cd829f718a2211536f64c",
+  "status": "succeeded",
+  "operator_guidance_ids": [],
+  "created_at": 1791437274.3276503,
+  "timeout": 1200,
+  "workspace_limit_bytes": 2221234829,
+  "binding": {
+    "source": "calculation.py",
+    "args": [
+      "pic",
+      "--patch",
+      "base_patch.npz",
+      "--output",
+      "kinetic",
+      "--duration-omegaci",
+      "0.8",
+      "--diagnostics",
+      "32",
+      "--moment-bins",
+      "4",
+      "--ppc",
+      "32",
+      "--max-grid-size",
+      "128",
+      "--boundary-accounting",
+      "--secondary-bins",
+      "8"
+    ],
+    "inputs": {
+      "calculation.py": "ef030822bfce50da0aa95310c94f11bf6f24e0766ee8ca0856ea52eb0ee15844",
+      "kinetic.py": "c63038d1cbb87a787e52f00483d459b4bb5f16d5bf7b93da68584c656761aa05",
+      "estimator.py": "44e914ad2780edabf2754f4fae734fd9b5811d6d8b5db094e57f6e379d0be0d4",
+      "base_patch.npz": "9cbfc57ca5fa7c26faab39bb9fd08658fc639156d52422cb825611597562d568",
+      "base_patch.json": "316e8beefde5488c6de26a61ccdf33e70e5af9a32f8a848a3fc967b26a2e9598",
+      "large_patch.npz": "6fc676f1969f788ec2ff9ea7a47dd549ce91c92de3e68d18797aacd33fb08718",
+      "large_patch.json": "cc14291a76ef2276bf7e687d19995e71b653ae8badb822d9cbbcffa2ddcbccbb",
+      "fine_patch.npz": "c7c6d6d1c027e421be20942ffa07d6c415479fab6567a2705f6f5b0435697402",
+      "fine_patch.json": "1eda87349b19795cb5b1f86b72e601caf734cd85c43718619e03ffd30cfdce69",
+      "PRESSURE_CONTRACT.md": "f02b8c2dc538456eeb2b565dd924b9895b138a4b83b834fe0b22f0e9e0851f61"
+    },
+    "capability": "warpx-cuda-openpmd-26.07",
+    "runtime_sha256": "d56f0e12c7e6a52cb7f1f6ad3790633549749e3c48595478c9cb3fefdc460c7f"
+  },
+  "outputs": [
+    "kinetic/result.json",
+    "kinetic/history.json",
+    "kinetic/moments.npz",
+    "kinetic/initial_fields.npz",
+    "kinetic/final_fields.npz",
+    "kinetic/reduced/field_energy.txt",
+    "kinetic/reduced/particle_energy.txt",
+    "kinetic/warpx_used_inputs",
+    "kinetic/progress.json"
+  ],
+  "commitment": null,
+  "key": "control-particles",
+  "monitor": {
+    "path": "kinetic/progress.json",
+    "format": "json",
+    "value_key": "duration_omegaci",
+    "quantity": "Physical time",
+    "unit": "Omega_ci^-1",
+    "target": 0.8,
+    "baseline": 0.0
+  },
+  "stage": "exploration",
+  "method": null,
+  "review_documents": [
+    "kinetic/result.json",
+    "kinetic/history.json"
+  ],
+  "parent_experiment": null,
+  "purpose": "validation",
+  "plan": null,
+  "pid": 336057,
+  "worker_identity": {
+    "pid": 336057,
+    "starttime": "1866919",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture/.venv/bin/python3",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/coupled-study",
+      "--execute",
+      "exp_3a4cd829f718a2211536f64c"
+    ],
+    "launched_at": "2026-10-08T05:27:54.491005+00:00",
+    "run_directory": null
+  },
+  "started_at": 1791437274.4911237,
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": 0,
+    "stdout": "Initializing AMReX (26.07)...\nInitializing CUDA...\nCUDA initialized with 1 device.\nAMReX (26.07) initialized\nWarpX (312d507407a1)\n\n                                   ___\n    __        __             ___  /  /\n    \\ \\      / /_ _ _ __ _ __\\  \\/  /\n     \\ \\ /\\ / / _` | '__| '_ \\\\    /\n      \\ V  V / (_| | |  | |_) /    \\\n       \\_/\\_/ \\__,_|_|  | .__/__/\\  \\\n                        |_|       \\__\\\n\nLevel 0: dt = 2.856079554e-15 ; dx = 1.729848069e-06 ; dz = 1.729848069e-06\n\nGrids Summary:\n  Level 0   9 grids  147456 cells  100 % of domain\n            smallest grid: 128 x 128  biggest grid: 128 x 128\n\n-------------------------------------------------------------------------------\n--------------------------- MAIN EM PIC PARAMETERS ----------------------------\n-------------------------------------------------------------------------------\nPrecision:            | DOUBLE\nParticle precision:   | DOUBLE\nGeometry:             | 2D (XZ)\nOperation mode:       | Electromagnetic\n                      | - vacuum\n-------------------------------------------------------------------------------\nCurrent Deposition:   | Esirkepov \nGuard cells           | - ng_alloc_J  = (4,4)\n (allocated for J)    | \nParticle Pusher:      | Boris \nCharge Deposition:    | standard \nField Gathering:      | energy-conserving \nParticle Shape Factor:| 2\n-------------------------------------------------------------------------------\nMaxwell Solver:       | Yee \n-------------------------------------------------------------------------------\nFor full input parameters, see the file: /work/kinetic/warpx_used_inputs\n\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ FIRST STEP ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ THE END ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ FIRST STEP ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ THE END ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ FIRST STEP ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ THE END ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ FIRST STEP ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ THE END ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ FIRST STEP ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ THE END ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ FIRST STEP ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ THE END ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ FIRST STEP ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ THE END ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ FIRST STEP ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ THE END ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ FIRST STEP ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ THE END ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ FIRST STEP ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ THE END ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ FIRST STEP ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ THE END ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ FIRST STEP ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ THE END ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ FIRST STEP ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ THE END ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ FIRST STEP ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ THE END ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ FIRST STEP ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ THE END ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ FIRST STEP ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ THE END ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ FIRST STEP ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ THE END ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ FIRST STEP ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ THE END ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ FIRST STEP ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ THE END ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ FIRST STEP ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ THE END ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ FIRST STEP ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ THE END ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ FIRST STEP ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ THE END ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ FIRST STEP ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ THE END ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ FIRST STEP ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ THE END ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ FIRST STEP ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ THE END ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ FIRST STEP ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ THE END ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ FIRST STEP ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ THE END ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ FIRST STEP ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ THE END ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n\n**** WARNINGS ******************************************************************\n* GLOBAL warning list  after  [ FIRST STEP ]\n*\n* No recorded warnings.\n********************************************************************************\n\n\n**** WARNINGS **************************************************\n... sandbox output truncated ...\n     2.496      2.496      2.496   0.60%\nFillBoundaryAndSync_nowait()                                   14610      2.485      2.485      2.485   0.60%\nFilter::ApplyStencil(MultiFab)                                  7311       1.77       1.77       1.77   0.43%\nWarpX::EvolveB()                                                4870      1.693      1.693      1.693   0.41%\nMultiFab::Copy()                                               22149      1.623      1.623      1.623   0.39%\namrex::packBuffer                                               4874      1.618      1.618      1.618   0.39%\namrex::Copy()                                                  22149      1.599      1.599      1.599   0.39%\nFabArray::setVal()                                              7350      1.257      1.257      1.257   0.30%\nPhysicalParticleContainer::PushP()                               132      1.146      1.146      1.146   0.28%\nParticleCopyPlan::buildCopiesAtomicScatter                      4874      1.118      1.118      1.118   0.27%\nOther                                                         135374      3.532      3.532      3.532   0.85%\n-------------------------------------------------------------------------------------------------------------\n\n\n\nBEGIN REGION WarpX::Evolve()\n\n-------------------------------------------------------------------------------------------------------------\nName                                                          NCalls  Excl. Min  Excl. Avg  Excl. Max   Max %\n-------------------------------------------------------------------------------------------------------------\nParticleBoundaryBuffer::gatherParticles::filterAndTransform   175320      113.5      113.5      113.5  27.35%\nParticleBoundaryBuffer::gatherParticles::count_out_of_bounds  175320      47.51      47.51      47.51  11.45%\nWarpXParticleContainer::DepositCurrent::CurrentDeposition      43830      45.72      45.72      45.72  11.01%\nPhysicalParticleContainer::Evolve::GatherAndPush               43830      39.34      39.34      39.34   9.48%\nParticleBoundaryBuffer::gatherParticles::resize               175320      30.27      30.27      30.27   7.29%\nRedistribute_partition                                          4870      21.57      21.57      21.57   5.20%\nParticleContainer::SortParticlesForDeposition()                 1216      16.29      16.29      16.29   3.92%\nWarpXParticleContainer::ApplyBoundaryConditions()               4870      11.71      11.71      11.71   2.82%\nFillBoundary_nowait()                                          36753       7.88       7.88       7.88   1.90%\nPermutationForDeposition()                                     10944      6.282      6.282      6.282   1.51%\nParticleCopyPlan::build                                         4870      2.269      2.269      2.269   0.55%\nFilter::ApplyStencil(MultiFab)                                  7310      1.769      1.769      1.769   0.43%\nWarpX::EvolveB()                                                4870      1.693      1.693      1.693   0.41%\nParticleBoundaryBuffer::gatherParticles                         2435      1.652      1.652      1.652   0.40%\namrex::Copy()                                                  22143      1.599      1.599      1.599   0.39%\namrex::packBuffer                                               4870      1.574      1.574      1.574   0.38%\nFabArray::setVal()                                              7325      1.253      1.253      1.253   0.30%\nPhysicalParticleContainer::PushP()                               132      1.146      1.146      1.146   0.28%\nPhysicalParticleContainer::Evolve()                             4870     0.7258     0.7258     0.7258   0.17%\nParticleContainer::Redistribute_impl()                          4870     0.5562     0.5562     0.5562   0.13%\nWarpX::SyncCurrent()                                            2435     0.1937     0.1937     0.1937   0.05%\nWarpX::Evolve::step                                             2435     0.1635     0.1635     0.1635   0.04%\nWarpX::OneStep_nosub()                                          2435    0.07893    0.07893    0.07893   0.02%\nMultiFab::Copy()                                               22143    0.02451    0.02451    0.02451   0.01%\nFillBoundaryAndSync_nowait()                                   14610    0.01607    0.01607    0.01607   0.00%\nFillBoundary_nowait(Vector)                                     4946    0.01425    0.01425    0.01425   0.00%\nFabArray<FAB>::SumBoundary()                                    7305     0.0118     0.0118     0.0118   0.00%\nFillBoundaryAndSync_nowait(Vector)                              4870    0.01034    0.01034    0.01034   0.00%\nablastr::utils::communication::SumBoundary                      7305    0.01007    0.01007    0.01007   0.00%\nFabArray<FAB>::SumBoundary_nowait()                             7305    0.00961    0.00961    0.00961   0.00%\nWarpX::OneStep()                                                2435   0.004831   0.004831   0.004831   0.00%\nWarpX::Evolve()                                                   33   0.002275   0.002275   0.002275   0.00%\nREG::WarpX::Evolve()                                              33  0.0002765  0.0002765  0.0002765   0.00%\nOther                                                         139795      3.606      3.606      3.606   0.87%\n-------------------------------------------------------------------------------------------------------------\n\n-------------------------------------------------------------------------------------------------------------\nName                                                          NCalls  Incl. Min  Incl. Avg  Incl. Max   Max %\n-------------------------------------------------------------------------------------------------------------\nREG::WarpX::Evolve()                                              33      358.5      358.5      358.5  86.36%\nWarpX::Evolve()                                                   33      358.5      358.5      358.5  86.36%\nWarpX::Evolve::step                                             2435      358.4      358.4      358.4  86.35%\nParticleBoundaryBuffer::gatherParticles                         2435        193        193        193  46.49%\nParticleBoundaryBuffer::gatherParticles::filterAndTransform   175320      113.5      113.5      113.5  27.35%\nWarpX::OneStep()                                                2435      98.43      98.43      98.43  23.71%\nWarpX::OneStep_nosub()                                          2435      98.42      98.42      98.42  23.71%\nPhysicalParticleContainer::Evolve()                             4870      85.79      85.79      85.79  20.67%\nParticleBoundaryBuffer::gatherParticles::count_out_of_bounds  175320      47.51      47.51      47.51  11.45%\nWarpXParticleContainer::DepositCurrent::CurrentDeposition      43830      45.72      45.72      45.72  11.01%\nPhysicalParticleContainer::Evolve::GatherAndPush               43830      39.34      39.34      39.34   9.48%\nParticleBoundaryBuffer::gatherParticles::resize               175320      30.27      30.27      30.27   7.29%\nParticleContainer::Redistribute_impl()                          4870      28.39      28.39      28.39   6.84%\nParticleContainer::SortParticlesForDeposition()                 1216      22.57      22.57      22.57   5.44%\nRedistribute_partition                                          4870      21.57      21.57      21.57   5.20%\nWarpXParticleContainer::ApplyBoundaryConditions()               4870      11.71      11.71      11.71   2.82%\nFillBoundary_nowait()                                          36753       7.92       7.92       7.92   1.91%\nWarpX::SyncCurrent()                                            2435      6.524      6.524      6.524   1.57%\nPermutationForDeposition()                                     10944      6.282      6.282      6.282   1.51%\nParticleCopyPlan::build                                         4870      3.483      3.483      3.483   0.84%\nablastr::utils::communication::SumBoundary                      7305      2.957      2.957      2.957   0.71%\nFabArray<FAB>::SumBoundary()                                    7305      2.947      2.947      2.947   0.71%\nFabArray<FAB>::SumBoundary_nowait()                             7305      2.929      2.929      2.929   0.71%\nFillBoundary_nowait(Vector)                                     4946      2.546      2.546      2.546   0.61%\nFillBoundaryAndSync_nowait(Vector)                              4870      2.496      2.496      2.496   0.60%\nFillBoundaryAndSync_nowait()                                   14610      2.485      2.485      2.485   0.60%\nFilter::ApplyStencil(MultiFab)                                  7310      1.769      1.769      1.769   0.43%\nWarpX::EvolveB()                                                4870      1.693      1.693      1.693   0.41%\nMultiFab::Copy()                                               22143      1.623      1.623      1.623   0.39%\namrex::Copy()                                                  22143      1.599      1.599      1.599   0.39%\namrex::packBuffer                                               4870      1.574      1.574      1.574   0.38%\nFabArray::setVal()                                              7325      1.253      1.253      1.253   0.30%\nPhysicalParticleContainer::PushP()                               132      1.146      1.146      1.146   0.28%\nOther                                                         139795      4.006      4.006      4.006   0.97%\n-------------------------------------------------------------------------------------------------------------\n\nEND REGION WarpX::Evolve()\nDevice Memory Usage:\n---------------------------------------------------------------------------------------\nName                                                         Nalloc    AvgMem    MaxMem\n---------------------------------------------------------------------------------------\nParticleContainer::SortParticlesForDeposition()               21888   532 MiB   581 MiB\nwarpx_py_particleloader                                          24  6374 KiB   576 MiB\nParticleContainer::ReserveForRedistribute()                     160  5400 KiB   514 MiB\namrex::packBuffer                                              4872   276 KiB   256 MiB\nThe_Arena::Initialize()                                           1     1   B   256 MiB\nRedistribute_partition                                       438320   125 KiB    96 MiB\nWarpX::InitData()                                               147    29 MiB    29 MiB\nParticleCopyPlan::buildCopiesAtomicScatter                    43832    17 KiB    16 MiB\nResizeRandomSeed                                                  2    13 MiB    13 MiB\nPermutationForDeposition()                                    43776   117 KiB  4179 KiB\nParticleBoundaryBuffer::gatherParticles::filterAndTransform  525960   872 KiB  4116 KiB\nDiagnostics::FilterComputePackFlush()                           306   400   B  2679 KiB\nWarpX::SyncCurrent()                                          65745    10 KiB  1320 KiB\nFillBoundary_nowait()                                        306822    87 KiB   339 KiB\nParticleContainer::Redistribute_impl()                            6  1024   B   217 KiB\nUnprofiled                                                      111  9008   B   152 KiB\nMultiReducedDiags::ComputeDiags()                               264    79   B   144 KiB\nParticleBoundaryBuffer::gatherParticles                      184824    86 KiB   108 KiB\nFabArray::setVal()                                               46    29 KiB    32 KiB\nFabArray::ParallelCopy_nowait()                                   6     0   B  8704   B\nDenseBins<T>::buildGPU                                           12  2558   B  3328   B\nParticleBufferMap::define                                         8  2046   B  2048   B\nParticleCopyPlan::build                                       29244    16   B  1280   B\namrex::Copy()                                                  7305     4   B  1280   B\nBilinearFilter::ComputeStencils()                                 2   511   B   512   B\n---------------------------------------------------------------------------------------\n\nManaged Memory Usage:\n---------------------------------------------------------\nName                             Nalloc  AvgMem    MaxMem\n---------------------------------------------------------\nThe_Managed_Arena::Initialize()       1   0   B  8192 KiB\n---------------------------------------------------------\n\nPinned Memory Usage:\n---------------------------------------------------------------------------------------\nName                                                         Nalloc    AvgMem    MaxMem\n---------------------------------------------------------------------------------------\nwarpx_py_particleloader                                          80   545 KiB   292 MiB\nParticleContainer::Redistribute_impl()                         9752    61 KiB   256 MiB\nUnprofiled                                                     8714  1085 KiB    36 MiB\nWarpXOpenPMDPlot::WriteOpenPMDFields::D2H()                     540  1769   B    11 MiB\nParticleBoundaryBuffer::gatherParticles::resize               55864  3167 KiB  9435 KiB\nThe_Pinned_Arena::Initialize()                                    1     0   B  8192 KiB\nFillBoundary_nowait()                                         14622    85 KiB    93 KiB\nParticleBoundaryBuffer::gatherParticles::filterAndTransform    4752    34 KiB    36 KiB\nFabArray::setVal()                                               46    29 KiB    32 KiB\nFabArray::ParallelCopy_nowait()                                   6     0   B  8704   B\namrex::unpackBuffer                                              16  4054   B  4096   B\namrex::Copy()                                                  7305     4   B  1280   B\namrex::packBuffer                                                 2   507   B   512   B\nRedistribute_partition                                        43832     4   B   256   B\nParticleCopyPlan::build                                        4874     2   B   256   B\nParticleBoundaryBuffer::gatherParticles                      175320   118   B   256   B\nWarpX::InitData()                                                 3     0   B   256   B\nMultiReducedDiags::ComputeDiags()                               264     0   B   256   B\nDiagnostics::FilterComputePackFlush()                            90     0   B   256   B\n---------------------------------------------------------------------------------------\n\nTotal GPU global memory (MB): 20474\nFree  GPU global memory (MB): 17218\n[The         Arena] max space allocated (MB): 2004\n[The         Arena] max space used      (MB): 1502\n[The Managed Arena] max space allocated (MB): 8\n[The Managed Arena] max space used      (MB): 0\n[The  Pinned Arena] max space allocated (MB): 584\n[The  Pinned Arena] max space used      (MB): 548\nAMReX (26.07) finalized",
+    "stderr": "/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx/site-packages/pywarpx/fields.py:336: UserWarning: The fields wrapper is now obsolete and should not be used. The\n            recommended way of obtaining the MultiFabs is directly from the register.\n            This is done using the 'sim.fields.get' routine where 'sim' is a PICMI\n            Simulation instance or the 'warpx' instance of pywarpx.WarpX.\n  return MultiFabWrapper(mf_name=\"Bfield_fp_external\", idir=0, level=level)\n/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx/site-packages/pywarpx/fields.py:344: UserWarning: The fields wrapper is now obsolete and should not be used. The\n            recommended way of obtaining the MultiFabs is directly from the register.\n            This is done using the 'sim.fields.get' routine where 'sim' is a PICMI\n            Simulation instance or the 'warpx' instance of pywarpx.WarpX.\n  return MultiFabWrapper(mf_name=\"Bfield_fp_external\", idir=2, level=level)\n/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx/site-packages/pywarpx/fields.py:340: UserWarning: The fields wrapper is now obsolete and should not be used. The\n            recommended way of obtaining the MultiFabs is directly from the register.\n            This is done using the 'sim.fields.get' routine where 'sim' is a PICMI\n            Simulation instance or the 'warpx' instance of pywarpx.WarpX.\n  return MultiFabWrapper(mf_name=\"Bfield_fp_external\", idir=1, level=level)\n/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx/site-packages/pywarpx/fields.py:328: UserWarning: The fields wrapper is now obsolete and should not be used. The\n            recommended way of obtaining the MultiFabs is directly from the register.\n            This is done using the 'sim.fields.get' routine where 'sim' is a PICMI\n            Simulation instance or the 'warpx' instance of pywarpx.WarpX.\n  return MultiFabWrapper(mf_name=\"Efield_fp_external\", idir=1, level=level)\n/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx/site-packages/pywarpx/fields.py:324: UserWarning: The fields wrapper is now obsolete and should not be used. The\n            recommended way of obtaining the MultiFabs is directly from the register.\n            This is done using the 'sim.fields.get' routine where 'sim' is a PICMI\n            Simulation instance or the 'warpx' instance of pywarpx.WarpX.\n  return MultiFabWrapper(mf_name=\"Efield_fp_external\", idir=0, level=level)\n/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx/site-packages/pywarpx/fields.py:332: UserWarning: The fields wrapper is now obsolete and should not be used. The\n            recommended way of obtaining the MultiFabs is directly from the register.\n            This is done using the 'sim.fields.get' routine where 'sim' is a PICMI\n            Simulation instance or the 'warpx' instance of pywarpx.WarpX.\n  return MultiFabWrapper(mf_name=\"Efield_fp_external\", idir=2, level=level)\n/work/kinetic.py:51: UserWarning: ParticleContainerWrapper(\"ions\") is deprecated. Use sim.particles.get(\"ions\") instead.\n  pc = particle_containers.ParticleContainerWrapper(name)\n/work/kinetic.py:51: UserWarning: ParticleContainerWrapper(\"electrons\") is deprecated. Use sim.particles.get(\"electrons\") instead.\n  pc = particle_containers.ParticleContainerWrapper(name)\n/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx/site-packages/pywarpx/fields.py:276: UserWarning: The fields wrapper is now obsolete and should not be used. The\n            recommended way of obtaining the MultiFabs is directly from the register.\n            This is done using the 'sim.fields.get' routine where 'sim' is a PICMI\n            Simulation instance or the 'warpx' instance of pywarpx.WarpX.\n  return MultiFabWrapper(mf_name=\"Bfield_aux\", idir=0, level=level)\n/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx/site-packages/pywarpx/fields.py:280: UserWarning: The fields wrapper is now obsolete and should not be used. The\n            recommended way of obtaining the MultiFabs is directly from the register.\n            This is done using the 'sim.fields.get' routine where 'sim' is a PICMI\n            Simulation instance or the 'warpx' instance of pywarpx.WarpX.\n  return MultiFabWrapper(mf_name=\"Bfield_aux\", idir=1, level=level)\n/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx/site-packages/pywarpx/fields.py:284: UserWarning: The fields wrapper is now obsolete and should not be used. The\n            recommended way of obtaining the MultiFabs is directly from the register.\n            This is done using the 'sim.fields.get' routine where 'sim' is a PICMI\n            Simulation instance or the 'warpx' instance of pywarpx.WarpX.\n  return MultiFabWrapper(mf_name=\"Bfield_aux\", idir=2, level=level)\n/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx/site-packages/pywarpx/fields.py:264: UserWarning: The fields wrapper is now obsolete and should not be used. The\n            recommended way of obtaining the MultiFabs is directly from the register.\n            This is done using the 'sim.fields.get' routine where 'sim' is a PICMI\n            Simulation instance or the 'warpx' instance of pywarpx.WarpX.\n  return MultiFabWrapper(mf_name=\"Efield_aux\", idir=0, level=level)\n/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx/site-packages/pywarpx/fields.py:268: UserWarning: The fields wrapper is now obsolete and should not be used. The\n            recommended way of obtaining the MultiFabs is directly from the register.\n            This is done using the 'sim.fields.get' routine where 'sim' is a PICMI\n            Simulation instance or the 'warpx' instance of pywarpx.WarpX.\n  return MultiFabWrapper(mf_name=\"Efield_aux\", idir=1, level=level)\n/opt/acs-capabilities/warpx-cuda-openpmd-26.07/lib/python3.12/site-packages/pywarpx/site-packages/pywarpx/fields.py:272: UserWarning: The fields wrapper is now obsolete and should not be used. The\n            recommended way of obtaining the MultiFabs is directly from the register.\n            This is done using the 'sim.fields.get' routine where 'sim' is a PICMI\n            Simulation instance or the 'warpx' instance of pywarpx.WarpX.\n  return MultiFabWrapper(mf_name=\"Efield_aux\", idir=2, level=level)\n/work/kinetic.py:80: UserWarning: ParticleContainerWrapper(\"ions\") is deprecated. Use sim.particles.get(\"ions\") instead.\n  pc = particle_containers.ParticleContainerWrapper(name)\n/work/kinetic.py:80: UserWarning: ParticleContainerWrapper(\"electrons\") is deprecated. Use sim.particles.get(\"electrons\") instead.\n  pc = particle_containers.ParticleContainerWrapper(name)\n/work/kinetic.py:289: UserWarning: ParticleContainerWrapper(\"ions\") is deprecated. Use sim.particles.get(\"ions\") instead.\n  budget=dict(absorbed_particle_energy_J_per_m=lost_energy,estimated_poynting_outflow_J_per_m=poynting_energy,instant_boundary_poynting_W_per_m=flux,live_particle_energy_J_per_m=sum(particle_containers.ParticleContainerWrapper(sp).get_species_energy_sum() for sp in ('ions','electrons')))\n/work/kinetic.py:289: UserWarning: ParticleContainerWrapper(\"electrons\") is deprecated. Use sim.particles.get(\"electrons\") instead.\n  budget=dict(absorbed_particle_energy_J_per_m=lost_energy,estimated_poynting_outflow_J_per_m=poynting_energy,instant_boundary_poynting_W_per_m=flux,live_particle_energy_J_per_m=sum(particle_containers.ParticleContainerWrapper(sp).get_species_energy_sum() for sp in ('ions','electrons')))",
+    "timed_out": false,
+    "cancelled": false,
+    "workspace_exceeded": false,
+    "stdout_truncated": true,
+    "stderr_truncated": false,
+    "heartbeat_count": 82,
+    "wall_seconds": 415.8272527170011,
+    "workspace_bytes": 167220485
+  },
+  "artifacts": {
+    ".cupy/kernel_cache/2e0ccd5ce1515fda0d5da739feb0aedee1e4e3cb.cubin": {
+      "sha256": "03a63b043b00d9e4b7595d35a3458f07d152f8952349eecd4eb05fdeeb7a84e5",
+      "bytes": 4807
+    },
+    ".cupy/kernel_cache/e0da47d6cd30dbfec1c30d83a96c4e88904749af.cubin": {
+      "sha256": "6d2b9fed78cf0f2d23ad08bdc244629ba048c1f9e92a23772c159015a25a456b",
+      "bytes": 4551
+    },
+    ".cupy/kernel_cache/eddffdc4d1518d80183f9cbf368dfb857adcccdf.cubin": {
+      "sha256": "3b0ec62fd0b3ac51320e370918e281ec4e6195e147a9f2845b083960c9689199",
+      "bytes": 4935
+    },
+    "PRESSURE_CONTRACT.md": {
+      "sha256": "f02b8c2dc538456eeb2b565dd924b9895b138a4b83b834fe0b22f0e9e0851f61",
+      "bytes": 5221
+    },
+    "base_patch.json": {
+      "sha256": "316e8beefde5488c6de26a61ccdf33e70e5af9a32f8a848a3fc967b26a2e9598",
+      "bytes": 1766
+    },
+    "base_patch.npz": {
+      "sha256": "9cbfc57ca5fa7c26faab39bb9fd08658fc639156d52422cb825611597562d568",
+      "bytes": 11214400
+    },
+    "calculation.py": {
+      "sha256": "ef030822bfce50da0aa95310c94f11bf6f24e0766ee8ca0856ea52eb0ee15844",
+      "bytes": 435
+    },
+    "estimator.py": {
+      "sha256": "44e914ad2780edabf2754f4fae734fd9b5811d6d8b5db094e57f6e379d0be0d4",
+      "bytes": 1878
+    },
+    "fine_patch.json": {
+      "sha256": "1eda87349b19795cb5b1f86b72e601caf734cd85c43718619e03ffd30cfdce69",
+      "bytes": 1764
+    },
+    "fine_patch.npz": {
+      "sha256": "c7c6d6d1c027e421be20942ffa07d6c415479fab6567a2705f6f5b0435697402",
+      "bytes": 25335424
+    },
+    "kinetic/fields/openpmd_000000.h5": {
+      "sha256": "35b50b74ef1596bf52b796f9bf0caae619ec7127148ac8e9256e970ce1e0c5b3",
+      "bytes": 15770152
+    },
+    "kinetic/fields/openpmd_000608.h5": {
+      "sha256": "41a4d50bdfb6e6ef18fdea57873cd021b7d99e9bc0942e557e80a1df7777a195",
+      "bytes": 15770152
+    },
+    "kinetic/fields/openpmd_001216.h5": {
+      "sha256": "021d0bf121edd6278f46894e94926b3c2861078d77d5e7759daa2baa66ef22c6",
+      "bytes": 15770152
+    },
+    "kinetic/fields/openpmd_001824.h5": {
+      "sha256": "e1af8fae49e45825012371558cd8d789ee7777ce00a0147587457c843e35a4ac",
+      "bytes": 15770152
+    },
+    "kinetic/fields/openpmd_002432.h5": {
+      "sha256": "6f796b979e751cebfaf01fd3c14cbb49c20bd240807e738d8e42a8416eb2a797",
+      "bytes": 15770152
+    },
+    "kinetic/fields/openpmd_002435.h5": {
+      "sha256": "a746de93bbd8240c3739cba2f0d82550b49f597aa1bd77ab6fbc8c8531b211b9",
+      "bytes": 15770152
+    },
+    "kinetic/fields/paraview.pmd": {
+      "sha256": "70cdbee5690cb452b621ef5a3129fa9237410b4f93d41ec84ec2887b3f64e6cc",
+      "bytes": 16
+    },
+    "kinetic/final_fields.npz": {
+      "sha256": "0034934d9de5ec56acca08b5e652bcac33c06c1791438d214e829a51819ebe30",
+      "bytes": 6796514
+    },
+    "kinetic/history.json": {
+      "sha256": "3325177d481fbf641cbeb33fc988cba5ec9c55b934f628fe5d30d928976c3cac",
+      "bytes": 31788
+    },
+    "kinetic/initial_fields.npz": {
+      "sha256": "2316f2b07f286e73c893544b13b6f9e78117cd3b34dd136bcc316d609c4ca72e",
+      "bytes": 2557333
+    },
+    "kinetic/moments.npz": {
+      "sha256": "5d3fd373aa9e47bddf5dba47599e05a7e19082a3dfbbb3c92d20218ec5bb39f0",
+      "bytes": 1008737
+    },
+    "kinetic/progress.json": {
+      "sha256": "51a900dc827d892da4bab5059f332626a200bbd4cc3ac92dab40b40af9a42690",
+      "bytes": 87
+    },
+    "kinetic/reduced/field_energy.txt": {
+      "sha256": "655da56d5644d8672842b68aaa08796d20834865793fc2720b90fc84efa4ba49",
+      "bytes": 2985
+    },
+    "kinetic/reduced/particle_energy.txt": {
+      "sha256": "43f1b7be114814d60c126e70368c0b47c0ac48e300f22775b1ac18e0424f5618",
+      "bytes": 5114
+    },
+    "kinetic/result.json": {
+      "sha256": "afee1e305d2552629189ab5c48f792443401fa1d3699a9ba7ce26c64193d6c9e",
+      "bytes": 11233
+    },
+    "kinetic/warpx_used_inputs": {
+      "sha256": "9640d145a6e58fa956dd9968eb13b911f0acb3f159ce425b09a07f8c7c1bbe3d",
+      "bytes": 4901
+    },
+    "kinetic.py": {
+      "sha256": "c63038d1cbb87a787e52f00483d459b4bb5f16d5bf7b93da68584c656761aa05",
+      "bytes": 18594
+    },
+    "large_patch.json": {
+      "sha256": "cc14291a76ef2276bf7e687d19995e71b653ae8badb822d9cbbcffa2ddcbccbb",
+      "bytes": 1765
+    },
+    "large_patch.npz": {
+      "sha256": "6fc676f1969f788ec2ff9ea7a47dd549ce91c92de3e68d18797aacd33fb08718",
+      "bytes": 25585325
+    }
+  },
+  "missing_outputs": [],
+  "input_mutations": [],
+  "output_findings": [],
+  "scientific_status": "unreviewed",
+  "finished_at": 1791437692.21156,
+  "telemetry": {
+    "path": "kinetic/progress.json",
+    "format": "json",
+    "value_key": "duration_omegaci",
+    "quantity": "Physical time",
+    "unit": "Omega_ci^-1",
+    "target": 0.8,
+    "baseline": 0.0,
+    "observed_at": 1791437692.110072,
+    "elapsed_seconds": 415.8272527170011,
+    "authority": "Mutable operational telemetry; not scientific evidence",
+    "available": true,
+    "value": 0.800216425654747,
+    "estimated_additional_seconds": 0.0
+  }
+}

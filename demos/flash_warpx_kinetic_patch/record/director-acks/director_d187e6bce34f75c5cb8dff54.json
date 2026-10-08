@@ -1,0 +1,8 @@
+{
+  "id": "director_d187e6bce34f75c5cb8dff54",
+  "response": "plan",
+  "reason": "Concurrent GPU forecast contradicts isolated pilot estimate. Isolated sustained timing and completed accounting control are the smallest tests before an expensive replay.",
+  "plan": "note_db9b378f2e48d0e5014c6a29",
+  "created_at": 1791437518.4750795,
+  "authority": "Worker response; not scientific approval"
+}

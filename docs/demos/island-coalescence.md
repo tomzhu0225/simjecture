@@ -65,6 +65,11 @@ incomplete-measurement handling, uncertainty propagation and the rule for
 comparing refinement results. The worker preserved those decisions and revised
 its sources; approval of a method did not establish the physical claim.
 
+Production approval arrived 46 minutes into the 60-minute budget, leaving about
+14 minutes for final evidence collection and review. The classic campaign had
+six hours and a different model/backend; these records do not isolate a workflow
+or model advantage under matched conditions.
+
 | Part of the record | Observed outcome |
 |---|---|
 | Recorded executions | 25 succeeded, 5 failed, 1 was cancelled; these include analysis and qualification jobs as well as simulations |
@@ -90,6 +95,12 @@ at the lower cell boundary.** Its vertical path included an extra half-cell
 contribution. The horizontal path used the first cell-centre row, so the two
 paths did not represent the same coordinates. The worker's qualification fixture
 and independent methods review missed the error.
+
+The reviewer had identified earlier gauge and path-alignment defects and
+requested corrections, including a fixture with nonzero $B_x$. The final repair
+still contained the half-cell mistake, and its fixture accepted discrepancies
+below 0.15 rather than establishing agreement with the exact potential. The
+review caught useful problems but did not verify that this repair was correct.
 
 A separate post-run calculation applied consistent quadrature to the *same*
 retained fields. It compares the average potential on the two central cell-centre
@@ -153,6 +164,57 @@ that identity independently of future releases. Reported native counters totalle
 tokens. Ten turns have incomplete usage reporting; these counters are not an
 invoice. A separate CUDA compilation overlapped part of the run, so its wall time
 is not a controlled comparison with another model or campaign.
+
+## A second one-hour run with Sol as worker
+
+An operator-requested follow-up used **GPT-6.1 Sol at medium effort as worker**,
+with Sol at high effort in the separate review context. The hypothesis, original
+instructions, requirements, commissioning files and FLASH runtime identity were
+unchanged. The post-run coordinate correction was not supplied to this worker.
+The research service and supervisor matched the Luna run; a separate web
+run-discovery fix was applied during monitoring.
+
+This run reached a much broader numerical dataset, but also ended at the cutoff
+**without an accepted scientific verdict**:
+
+| Work | Recorded result |
+|---|---|
+| Baseline scan | Five completed $256^2$ evidence trajectories at $S_\eta=250,500,1000,2000,4000$ |
+| Refinement | Completed $384^2$ runs at 250 and 1000; preserved 4000 output contains the full measurement window despite a later timeout |
+| Recovery | Independent methods review approved hash-bound postprocessing of the timed-out evidence run; the timeout receipt remains unchanged |
+| Recorded executions | 18 succeeded, 5 failed, 1 cancelled, including qualification and analysis jobs |
+| Final analysis | Four baseline cases and three matched refinement cases passed its implemented eligibility screens; the 500 case failed the cadence-decimated window check |
+| Scientific review | No claim review was recorded before the wall cutoff |
+
+The final processing reports a four-case baseline exponent of approximately
+$-0.4111$ and a three-case refined exponent of $-0.4126$. Their residual-based
+95% intervals overlap the proposed exponent band. A separate joint power-law
+feasibility calculation flags curvature under the agent's empirical error boxes;
+that is an unreviewed result, not an accepted physical falsification.
+
+The workflow still lost time at the analysis boundary. Campaign plotting tried
+to import Matplotlib inside the FLASH runtime, where it was unavailable. The
+worker replaced that rendering with SVG, but the changed source/binding and
+final exploratory analysis were not approved for decisive processing before
+termination. Its report also contains stale intermediate statuses; the receipts
+and final host disposition are authoritative.
+
+The [212-file compact audit](https://github.com/tomzhu0225/simjecture/tree/main/demos/resistive_mhd_island_coalescence/sol_medium_record)
+preserves the original sources, outputs, figures and reviews. It includes the
+successful diagnostic recovery as exploration, without promoting it to a new
+evidence receipt. Bulk fields and native provider streams are omitted.
+
+```bash
+uv run python scripts/verify_research_audit.py \
+  demos/resistive_mhd_island_coalescence/sol_medium_record
+```
+
+Reported native counters totalled 8,903,040 input tokens, including 8,186,624 cached
+tokens, and 63,788 output tokens; four turns have incomplete usage reporting.
+Compared with the Luna record, this run produced more simulation coverage and
+used fewer reported tokens. Both remain unresolved. The runs shared this machine
+with different concurrent work and each model was sampled once, so this is an
+observed case comparison rather than a controlled model ranking.
 
 ## Reproduce the instrument or contribute a stronger test
 

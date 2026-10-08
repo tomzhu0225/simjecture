@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "source_sha256": "79d2045d47eaecb729d854e170f3679fa75b9948359d3f380f15caab112b2083",
+  "fine_state_sha256": "e8d1ef82fb0baafddeaf1b0f8c9e153db6fae069a2a4829cd18e80487bfbd023",
+  "source_time": 0.8001113920335353,
+  "central_comparison_region_code": [
+    [
+      -0.08,
+      0.08
+    ],
+    [
+      -0.08,
+      0.08
+    ]
+  ],
+  "comparisons": {
+    "rho": {
+      "rms_absolute_code": 0.001141627553457743,
+      "rms_relative": 0.0011270463885662547
+    },
+    "pressure": {
+      "rms_absolute_code": 0.001322741119315319,
+      "rms_relative": 0.00021311663311023105
+    },
+    "bx": {
+      "rms_absolute_code": 0.0007781214359118378,
+      "rms_relative": 0.0011534139426766063
+    },
+    "bz": {
+      "rms_absolute_code": 2.1319429739233646e-05,
+      "rms_relative": 0.0007761872248350766
+    },
+    "ux": {
+      "rms_absolute_code": 0.0004501292405665863,
+      "rms_relative": 0.007021636417932517
+    },
+    "uz": {
+      "rms_absolute_code": 7.47295351575163e-05,
+      "rms_relative": 0.0013677382665999598
+    }
+  },
+  "scaled_divb_definition": "max(abs(divB))*source_cell_size/max(abs(B))",
+  "scaled_divb": 1.3895533148059434e-14,
+  "width": 0.014466925003814069,
+  "width_cells": 7.407065601952803,
+  "floor_occupation_density": 0,
+  "floor_occupation_pressure": 0,
+  "energy_drift": 1.365509864664399e-06,
+  "mass_drift": -1.6141457155824987e-10,
+  "energy_fix_accounting": "energyFix is enabled; separate correction totals are not supplied in these diagnostics. Reconstructed energy drift is a consistency residual, not an independently closed physical conservation budget.",
+  "limitations": [
+    "Output density/pressure far above floor; unseen corrections between outputs are not bounded independently. This is source readiness only."
+  ]
+}

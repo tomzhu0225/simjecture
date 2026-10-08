@@ -10,8 +10,8 @@ does not turn an older campaign into a new run.
 | Study | What you can inspect |
 |---|---|
 | [Kepler orbital accuracy](kepler_energy/) | Completed counterexample-and-repair loop: original code/arrays, fresh validation and accepted reviews; no-key verification and numerical reproduction |
-| [FLASH island coalescence](../docs/demos/island-coalescence.md) | A separate one-hour minimal run ended unresolved; its audit and a tested post-run coordinate correction are preserved alongside the classic record |
-| [FLASH → WarpX kinetic patch](flash_warpx_kinetic_patch/) | Tested transfer helpers and CPU/CUDA commissioning; the two-hour autonomous investigation is running, with no scientific result claimed yet |
+| [FLASH island coalescence](../docs/demos/island-coalescence.md) | Two one-hour minimal runs with Luna and Sol workers; broader coverage with Sol, both unresolved; preserved classic record and a separately tested correction to Luna's coordinate diagnostic |
+| [FLASH → WarpX kinetic patch](flash_warpx_kinetic_patch/) | Actual state transfer, completed numerical controls and performance recovery; preserved two-hour audit with no accepted scientific verdict |
 
 A recorded execution is different from an accepted scientific conclusion. Each
 example states what is retained, what is omitted, and which claims remain open.

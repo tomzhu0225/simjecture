@@ -36,6 +36,21 @@ independent geometry check. Test the observable on an actual time sequence befor
 launching a parameter matrix. Confirm time values and output cadence from the files.
 A reader that opens HDF5 successfully has not necessarily reconstructed the field.
 
+For path-integrated magnetic potentials, place both integration paths and their
+gauge constants at the same physical coordinates. A cell-centre origin and a
+cell-boundary quadrature differ by a half-cell contribution. Test against an
+independent analytic potential with nonzero components, unequal cell spacings
+and a shifted origin; a loose agreement threshold between two reconstructions
+can miss a shared defect. The optional
+[uniform cell-centre helper](../examples/coordinate_paths.py) supplies this narrow
+operation. Include it in the recorded input list when importing a copied helper.
+
+Check cadence controls over the same complete observation window. Striding a
+saved array can discard its final sample and remove the upper threshold crossing.
+Choose and qualify an endpoint policy prospectively, and leave enough trajectory
+margin for every required control. Apply per-case eligibility checks as each
+case arrives rather than discovering a missing control only after the scan.
+
 If field arrays are absent, first check whether this is a scalar summary, plot output
 or checkpoint and whether the relevant output was enabled. A missing dataset is an
 I/O/diagnostic problem, not evidence that the corresponding physical field is zero.
@@ -46,6 +61,18 @@ Keep failed checks and censored cases explicit. Record revised analysis rather t
 editing frozen outputs. Changing only a display label or eligibility annotation is
 not a reason to repeat expensive evolution; explain the annotation to review. Actual
 changes to physics, initial conditions or solver numerics need appropriate new runs.
+
+Exercise the final analysis command in its actual runtime, including its imports.
+A solver environment may contain NumPy and HDF5 but no plotting library. Keep
+display-only plotting separate from frozen measurements where practical, so a
+figure repair does not needlessly change the numerical implementation identity.
+Do not bypass the study's capability or methods requirements to run an analysis.
+
+A solver timeout after the measurement window does not automatically invalidate
+all preceding fields. Inspect preserved output and seek review of hash-bound
+postprocessing under the unchanged measurement rules. Retain the failed receipt,
+distinguish processing completion from evolution completion, and do not relabel
+exploratory recovery as a new successful evidence run.
 
 ## Separate a pilot's question from the scientific question
 

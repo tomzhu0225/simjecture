@@ -1,0 +1,236 @@
+{
+  "id": "exp_858f535fafc4884126e44323",
+  "status": "succeeded",
+  "operator_guidance_ids": [],
+  "created_at": 1791433961.7101526,
+  "timeout": 600,
+  "workspace_limit_bytes": 4294967296,
+  "binding": {
+    "source": "calculation.py",
+    "args": [
+      "flash",
+      "--eta",
+      "0.001",
+      "--nx",
+      "256",
+      "--ny",
+      "256",
+      "--tmax",
+      "1.0",
+      "--plot-interval",
+      "0.05",
+      "--output",
+      "macro",
+      "--summary",
+      "result.json"
+    ],
+    "inputs": {
+      "calculation.py": "ef030822bfce50da0aa95310c94f11bf6f24e0766ee8ca0856ea52eb0ee15844",
+      "flash_driver.py": "73ed49055856adb3c30f8a5f4f3aaebe9e18a496fa955bf027b7400368b588d0",
+      "extract_flash.py": "28608ddeab7d71584abd32ce910b66621d8ba9cc49d2bb44eb1ead3922e509a0"
+    },
+    "capability": "flash-island-coalescence-resistive-mhd-4.8",
+    "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+  },
+  "outputs": [
+    "result.json",
+    "source.h5",
+    "state.npz",
+    "state.json"
+  ],
+  "commitment": null,
+  "key": "macro256",
+  "stage": "exploration",
+  "method": null,
+  "review_documents": null,
+  "pid": 279061,
+  "worker_identity": {
+    "pid": 279061,
+    "starttime": "1535658",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture/.venv/bin/python3",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/coupled-study",
+      "--execute",
+      "exp_858f535fafc4884126e44323"
+    ],
+    "launched_at": "2026-10-08T04:32:41.873456+00:00",
+    "run_directory": null
+  },
+  "started_at": 1791433961.87358,
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": 0,
+    "stdout": "{\"checks\": {\"completed\": true, \"representation\": true, \"physics_controls\": true, \"boundaries\": true, \"diagnostics\": true, \"numerical_regime\": true, \"flux_window_reached\": false}, \"metrics\": {\"l_over_eta_nominal\": 1000.0, \"flux_low\": 0.01, \"flux_high\": 0.05, \"flux_low_crossing_time\": 0.2588430248389068, \"flux_high_crossing_time\": null, \"reconnection_time\": null, \"normalized_flux_slope\": null, \"flux_path_max_abs_mismatch\": 2.5131346740269594e-05, \"max_abs_divb\": 2.660982545421575e-12, \"max_boundary_normal_fraction\": 0.017253876258230553, \"initial_sheet_cells\": 12.8, \"plot_file_count\": 20}}",
+    "stderr": "",
+    "timed_out": false,
+    "cancelled": false,
+    "workspace_exceeded": false,
+    "stdout_truncated": false,
+    "stderr_truncated": false,
+    "heartbeat_count": 4,
+    "wall_seconds": 126.98986077100017,
+    "workspace_bytes": 73192235
+  },
+  "artifacts": {
+    "calculation.py": {
+      "sha256": "ef030822bfce50da0aa95310c94f11bf6f24e0766ee8ca0856ea52eb0ee15844",
+      "bytes": 435
+    },
+    "extract_flash.py": {
+      "sha256": "28608ddeab7d71584abd32ce910b66621d8ba9cc49d2bb44eb1ead3922e509a0",
+      "bytes": 5159
+    },
+    "flash_driver.py": {
+      "sha256": "73ed49055856adb3c30f8a5f4f3aaebe9e18a496fa955bf027b7400368b588d0",
+      "bytes": 16098
+    },
+    "macro/.simjecture-flash-guided-output": {
+      "sha256": "67d1f5ea486320558047f5cff49a53b2b0f1eaca0f699ba9abc1c1f60bcedc67",
+      "bytes": 49
+    },
+    "macro/flash.par": {
+      "sha256": "2bb2e45f65ac8df629a7b4279d5f7c6092c0d2f6a8b9cc38399ab2ecdedb68de",
+      "bytes": 1793
+    },
+    "macro/flash_run.dat": {
+      "sha256": "95381c56198d6279decc94d40c3ce092e17bc0f986e41e9a74e66127075ac82b",
+      "bytes": 590321
+    },
+    "macro/flash_run.log": {
+      "sha256": "cc300c671abbdda7f0511b47175fcc1f5f8a1b252f0ca92dd8d4b9e4a889b459",
+      "bytes": 223703
+    },
+    "macro/flash_run_forced_hdf5_plt_cnt_0000": {
+      "sha256": "88b4db1433d165966f102b00359bb00e90a3ce074ba0dc6e51eb8ba7dab19abe",
+      "bytes": 2153740
+    },
+    "macro/flash_run_hdf5_chk_0000": {
+      "sha256": "fa4d0b11f0b3236dbbe0bc65a8d26d14a53d1f526cb51ef6425cd66de3b2bbeb",
+      "bytes": 11605260
+    },
+    "macro/flash_run_hdf5_chk_0001": {
+      "sha256": "516e36a9070319763ba785396c7881347ca5551451bb8a53cf1c151653c152f0",
+      "bytes": 11605260
+    },
+    "macro/flash_run_hdf5_plt_cnt_0000": {
+      "sha256": "d333f55837968a81c9877d55e945cce86a04a591b07712ffa1c9c4cd5c6df778",
+      "bytes": 2153740
+    },
+    "macro/flash_run_hdf5_plt_cnt_0001": {
+      "sha256": "541be1e92127ae72d2a4e6d4d2aa0fcfb7a3b2c2727adc72a6430459ef1869c4",
+      "bytes": 2153740
+    },
+    "macro/flash_run_hdf5_plt_cnt_0002": {
+      "sha256": "ff7700c53e410474eb97515f13d834b4a6b637495dd948c005438c0f73394279",
+      "bytes": 2153740
+    },
+    "macro/flash_run_hdf5_plt_cnt_0003": {
+      "sha256": "95dea0405ed72803d12edf5cb6154cb62bbeb67f68e538ef0a99ce7975935233",
+      "bytes": 2153740
+    },
+    "macro/flash_run_hdf5_plt_cnt_0004": {
+      "sha256": "7476607d9f0ad91fac5841f506199e162f83688c84dcb10956d06e1ba2e09eae",
+      "bytes": 2153740
+    },
+    "macro/flash_run_hdf5_plt_cnt_0005": {
+      "sha256": "e35a7fc0b628ccc4df65b78d5909cb0b2b06c258ca1530344d5c9afd568e2bcf",
+      "bytes": 2153740
+    },
+    "macro/flash_run_hdf5_plt_cnt_0006": {
+      "sha256": "81bc243531b5d9f9c5e427ede826d599cef81d4d24a5de322256bb16dcf02202",
+      "bytes": 2153740
+    },
+    "macro/flash_run_hdf5_plt_cnt_0007": {
+      "sha256": "3748259819f0b680ef31f979258ce71b95f9dfd0d7c1b545ed5c2c5780f3ad5e",
+      "bytes": 2153740
+    },
+    "macro/flash_run_hdf5_plt_cnt_0008": {
+      "sha256": "5b5d60f6dcdca6a7451d7d4d162f06c805c690cefc68dfe024b382caef92e112",
+      "bytes": 2153740
+    },
+    "macro/flash_run_hdf5_plt_cnt_0009": {
+      "sha256": "a133d07c63375660619bad6e64436be005d253afc0e6df384738f322a717acd0",
+      "bytes": 2153740
+    },
+    "macro/flash_run_hdf5_plt_cnt_0010": {
+      "sha256": "1d49343763eb65d5bdf0ab2fb20d34f1a260a68a67f6918c5f3fa6f25c43068f",
+      "bytes": 2153740
+    },
+    "macro/flash_run_hdf5_plt_cnt_0011": {
+      "sha256": "a0109f16f21747fb2452874d57fe676a4912c01cee622fd5f2b777345e1a7d0e",
+      "bytes": 2153740
+    },
+    "macro/flash_run_hdf5_plt_cnt_0012": {
+      "sha256": "494bcfb8c7731026a35dd9d769a567701c54d44851651f74a5c0453363e60ff9",
+      "bytes": 2153740
+    },
+    "macro/flash_run_hdf5_plt_cnt_0013": {
+      "sha256": "30bc3718ad18228376ef7ac350363a48456d537dd1e27bd1eba3d62c618c2c23",
+      "bytes": 2153740
+    },
+    "macro/flash_run_hdf5_plt_cnt_0014": {
+      "sha256": "976ca51a75a11d7fa5b85b52081e445ea57c0f379cf41d29523f6cb5862b8bd8",
+      "bytes": 2153740
+    },
+    "macro/flash_run_hdf5_plt_cnt_0015": {
+      "sha256": "d7870dc2c1a80dab63ea7f9d0fef67d170f7afe659db421fdb8135276e0f662a",
+      "bytes": 2153740
+    },
+    "macro/flash_run_hdf5_plt_cnt_0016": {
+      "sha256": "1653e6cb6985a04164543859350c6f9200319732d3e68789f811abb44d624e46",
+      "bytes": 2153740
+    },
+    "macro/flash_run_hdf5_plt_cnt_0017": {
+      "sha256": "06f2b4fd03b4f2ea76452d1b4f9665107fe0fc2fd8739a95e8917686f6da9f17",
+      "bytes": 2153740
+    },
+    "macro/flash_run_hdf5_plt_cnt_0018": {
+      "sha256": "dc19542336817e465606fa81a7069a95c155c5118c94b32645eb24b6756cff35",
+      "bytes": 2153740
+    },
+    "macro/flash_run_hdf5_plt_cnt_0019": {
+      "sha256": "917f4743207ae95c6374c8ae102c94e20944eb7854fda5c07ae6128f15e9247e",
+      "bytes": 2153740
+    },
+    "macro/launcher_stderr.txt": {
+      "sha256": "b02b461e24dcd2e6b070047f42137aa8a806941ce4796a6bb96cf4a506dd057d",
+      "bytes": 504
+    },
+    "macro/launcher_stdout.txt": {
+      "sha256": "17a89d2cd13476d6455aba25036a850dcb8c7ff58ccf39a7879bbc5911decea8",
+      "bytes": 233220
+    },
+    "result.json": {
+      "sha256": "2189196c180d35c65e4fbd8bf2998a73d90ef3b4815e42cf92a2bec8b5d0d637",
+      "bytes": 11691
+    },
+    "source.h5": {
+      "sha256": "1653e6cb6985a04164543859350c6f9200319732d3e68789f811abb44d624e46",
+      "bytes": 2153740
+    },
+    "state.json": {
+      "sha256": "9e087ee7da74b481b76b80b10e79d28c991f8f31125e0a1402cf8178a3c473a0",
+      "bytes": 1040
+    },
+    "state.npz": {
+      "sha256": "7a0329d97fc72d1f5c4c52fbb4cabb3d1da701077b86e700b2d246eb01c597fe",
+      "bytes": 1515422
+    }
+  },
+  "missing_outputs": [],
+  "input_mutations": [],
+  "output_findings": [
+    {
+      "path": "result.json",
+      "kind": "failed_checks",
+      "detail": [
+        "flux_window_reached"
+      ]
+    }
+  ],
+  "scientific_status": "unreviewed",
+  "finished_at": 1791434089.744399
+}

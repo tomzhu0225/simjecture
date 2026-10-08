@@ -1,0 +1,593 @@
+{
+  "protocol": {
+    "model": "Supplied 2D compressible single-fluid MHD, gamma=5/3, alpha=20, temperature=3, pressureOffset=6, spatially uniform explicit eta; no physical variant",
+    "normalization": "L0=B0=rho0=vA0=1; S_eta=1/eta is nominal inverse resistivity",
+    "observable": "Guided center-flux increment from By integral, cross-checked with independent Bx path; R=0.04/(first t(flux=.05)-first t(flux=.01))",
+    "window": [
+      0.01,
+      0.05
+    ],
+    "S_scan": [
+      250,
+      500,
+      1000,
+      2000,
+      4000
+    ],
+    "base_grid": 256,
+    "refinement_grid": 384,
+    "refined_S": [
+      250,
+      1000,
+      4000
+    ],
+    "numerics": "HLLD, second order MC, constrained magnetic divergence control, adaptive CFL=.8 conditional on .4 parity; diffusion timestep factor=.8; dtmax=.01; four MPI ranks 2x2; cadence=.025",
+    "eligibility": {
+      "base_FWHM_cells_min": 4,
+      "refined_FWHM_cells_min": 6,
+      "refined_rate_relative_change_max": 0.1,
+      "max_abs_divb": 1e-09,
+      "flux_path_abs_mismatch_max": 0.0005,
+      "boundary_normal_fraction_max": 0.05,
+      "mass_drift_max": 1e-05,
+      "energy_drift_max": 0.001,
+      "sampled_floor_hits_max": 0,
+      "secondary_extrema_max": 0,
+      "topology_scope": "Symmetric center sheet |x|<.25, cumulative By along y=0; secondary flux extrema prominence>=1e-4 separated by>=4 cells. Field/current plots and diagnostic line profiles audited; subthreshold, off-axis and between-output islands are not excluded. No noise/perturbation added."
+    },
+    "uncertainty": "Deterministic numerical sensitivity, not a rigorous continuum bound or random sampling CI. Per-case relative log-rate margin is 2 times observed matched-grid log-rate difference (use largest matched difference for unrefined cases), plus maximum relative variation among both flux paths and cadence-decimated trajectories, plus CFL parity difference. Use at least .01 log-rate margin. Also report conservative first-crossing bracket bounds. Report residual-based Student-t 95% regression intervals separately as model-fit diagnostics, not independent stochastic replicates. Missing cadence/path variants are explicit unresolved diagnostic failures, never silently ignored. Only physically eligible matched pairs passing <=10% difference supply convergence information; declared refinement cases require their own qualified pair. Missing gaps are null/unresolved, never zero. Borrowed margins for intermediate cases come only from qualified pairs. Crossing brackets are conservative cadence-only diagnostics; adjacent slopes diagnose curvature, while exclusion uses joint feasibility/refinement persistence.",
+    "fit": "OLS log(R) versus log(S), full five-point base grid and common three-point base/refined grids; adjacent slopes as curvature diagnostics. Propagate per-case log-rate boxes linearly to OLS slope min/max. Linear feasibility over slope p and intercept a tests whether all eligible rate boxes admit a single power law with p in [-.60,-.40].",
+    "decision": "Request falsification only if eligible converged observations give a numerical slope interval disjoint from [-.60,-.40], or no power law in that band fits their predeclared error boxes and that exclusion persists on common refined samples. Band overlap alone is inconclusive. Support can be finite sampled consistency only; do not assert proof for all continuously varying S. Underresolved, secondary-island or unreached-window cases are exclusions/censoring, never counterexamples. Original universal scope remains unchanged.",
+    "cost_policy": "Five base trajectories and three refinement trajectories with tmax=.6,.8,1.2,1.6,2.15 as applicable; first demonstrate full 384^2 CFL=.8 trajectory. Adjust tmax upward if a case is censored, retaining prior receipt. At least 300 seconds independent-review reserve.",
+    "limitations": [
+      "No integrated floor/source correction output; sampled positivity and budgets cannot exclude all corrections",
+      "No dimensional calibration or kinetic physics",
+      "FWHM and refinement are empirical resolution diagnostics, not certified continuum error enclosures",
+      "Continuous parameter-domain universal support is beyond finite scan"
+    ]
+  },
+  "cases": [
+    {
+      "experiment": "exp_e94a72802e57f0848a0009f1",
+      "S": 250.0,
+      "n": 256,
+      "rate": 0.08964507098448177,
+      "cadence_path_sensitivity": 0.0014301658408118324,
+      "stage": "evidence",
+      "unavailable_variants": [],
+      "crossing_bracket_rate_bounds": {
+        "crossing_time_bounds": [
+          [
+            0.07581397059207884,
+            0.10003844307715468
+          ],
+          [
+            0.5006516867176211,
+            0.5254352170821212
+          ]
+        ],
+        "rate_bounds": [
+          0.08896376742037673,
+          0.09984692377244106
+        ],
+        "reason": null,
+        "decision_role": "Conservative cadence-only bracket diagnostic; not silently substituted for sensitivity envelope or used alone to reject exponent band"
+      },
+      "physical_eligible": true,
+      "convergence_status": "qualified_matched_pair",
+      "log_margin": 0.01,
+      "eligible": true,
+      "window": {
+        "min_sheet_fwhm_cells": 14,
+        "max_secondary_extrema": 0,
+        "sample_count": 19
+      },
+      "conservation": {
+        "mass_relative_drift": 5.853471041206149e-10,
+        "energy_relative_drift": 3.221936226704969e-06,
+        "floor_hits_sampled": 0,
+        "floor_correction_budget": null,
+        "floor_correction_budget_reason": "Solver does not output integrated floor/source corrections; sampled states and total budgets constrain but cannot exclude between-output corrections."
+      }
+    },
+    {
+      "experiment": "exp_248a68db0bbe5af30965f781",
+      "S": 500.0,
+      "n": 256,
+      "rate": 0.06545347930361681,
+      "cadence_path_sensitivity": 9.140433851846006e-05,
+      "stage": "evidence",
+      "unavailable_variants": [
+        {
+          "path": "by",
+          "stride": 2,
+          "reason": "Does not reach both crossing thresholds"
+        },
+        {
+          "path": "bx",
+          "stride": 2,
+          "reason": "Does not reach both crossing thresholds"
+        }
+      ],
+      "crossing_bracket_rate_bounds": {
+        "crossing_time_bounds": [
+          [
+            0.12578228105674064,
+            0.15063118460129127
+          ],
+          [
+            0.7502054792852563,
+            0.7751689217202764
+          ]
+        ],
+        "rate_bounds": [
+          0.06159658590932585,
+          0.06671400084135354
+        ],
+        "reason": null,
+        "decision_role": "Conservative cadence-only bracket diagnostic; not silently substituted for sensitivity envelope or used alone to reject exponent band"
+      },
+      "physical_eligible": false,
+      "convergence_status": "borrowed_qualified_pair",
+      "log_margin": 0.01,
+      "eligible": false,
+      "window": {
+        "min_sheet_fwhm_cells": 10,
+        "max_secondary_extrema": 0,
+        "sample_count": 27
+      },
+      "conservation": {
+        "mass_relative_drift": 7.130591672677156e-10,
+        "energy_relative_drift": 4.592624618160457e-06,
+        "floor_hits_sampled": 0,
+        "floor_correction_budget": null,
+        "floor_correction_budget_reason": "Solver does not output integrated floor/source corrections; sampled states and total budgets constrain but cannot exclude between-output corrections."
+      }
+    },
+    {
+      "experiment": "exp_49024ba434ed878193c528a5",
+      "S": 1000.0,
+      "n": 256,
+      "rate": 0.049532317415521825,
+      "cadence_path_sensitivity": 0.0002044714270240374,
+      "stage": "evidence",
+      "unavailable_variants": [],
+      "crossing_bracket_rate_bounds": {
+        "crossing_time_bounds": [
+          [
+            0.2501969384325592,
+            0.2755288169263313
+          ],
+          [
+            1.0504346230159614,
+            1.075103551040627
+          ]
+        ],
+        "rate_bounds": [
+          0.04849033743775421,
+          0.0516191770479177
+        ],
+        "reason": null,
+        "decision_role": "Conservative cadence-only bracket diagnostic; not silently substituted for sensitivity envelope or used alone to reject exponent band"
+      },
+      "physical_eligible": true,
+      "convergence_status": "qualified_matched_pair",
+      "log_margin": 0.01,
+      "eligible": true,
+      "window": {
+        "min_sheet_fwhm_cells": 8,
+        "max_secondary_extrema": 0,
+        "sample_count": 34
+      },
+      "conservation": {
+        "mass_relative_drift": 8.194860345867028e-10,
+        "energy_relative_drift": 1.0476360755573566e-05,
+        "floor_hits_sampled": 0,
+        "floor_correction_budget": null,
+        "floor_correction_budget_reason": "Solver does not output integrated floor/source corrections; sampled states and total budgets constrain but cannot exclude between-output corrections."
+      }
+    },
+    {
+      "experiment": "exp_6f79bf4efaa69e1b133e070f",
+      "S": 2000.0,
+      "n": 256,
+      "rate": 0.03808204626739012,
+      "cadence_path_sensitivity": 4.861836297871051e-05,
+      "stage": "evidence",
+      "unavailable_variants": [],
+      "crossing_bracket_rate_bounds": {
+        "crossing_time_bounds": [
+          [
+            0.40005688088828356,
+            0.42552895533228535
+          ],
+          [
+            1.4504142001816855,
+            1.4754668975858758
+          ]
+        ],
+        "rate_bounds": [
+          0.03719511570371405,
+          0.03902875975727187
+        ],
+        "reason": null,
+        "decision_role": "Conservative cadence-only bracket diagnostic; not silently substituted for sensitivity envelope or used alone to reject exponent band"
+      },
+      "physical_eligible": true,
+      "convergence_status": "borrowed_qualified_pair",
+      "log_margin": 0.01,
+      "eligible": true,
+      "window": {
+        "min_sheet_fwhm_cells": 6,
+        "max_secondary_extrema": 0,
+        "sample_count": 44
+      },
+      "conservation": {
+        "mass_relative_drift": 9.507457043866907e-10,
+        "energy_relative_drift": 1.7931853422581412e-05,
+        "floor_hits_sampled": 0,
+        "floor_correction_budget": null,
+        "floor_correction_budget_reason": "Solver does not output integrated floor/source corrections; sampled states and total budgets constrain but cannot exclude between-output corrections."
+      }
+    },
+    {
+      "experiment": "exp_71036c76cc76352d4d71cbda",
+      "S": 4000.0,
+      "n": 256,
+      "rate": 0.02859291439687963,
+      "cadence_path_sensitivity": 0.0003857411018630231,
+      "stage": "evidence",
+      "unavailable_variants": [],
+      "crossing_bracket_rate_bounds": {
+        "crossing_time_bounds": [
+          [
+            0.5507079188302875,
+            0.5754237870607655
+          ],
+          [
+            1.9500654665271346,
+            1.9752486279279378
+          ]
+        ],
+        "rate_bounds": [
+          0.028079225637108875,
+          0.029098492063421105
+        ],
+        "reason": null,
+        "decision_role": "Conservative cadence-only bracket diagnostic; not silently substituted for sensitivity envelope or used alone to reject exponent band"
+      },
+      "physical_eligible": true,
+      "convergence_status": "qualified_matched_pair",
+      "log_margin": 0.01,
+      "eligible": true,
+      "window": {
+        "min_sheet_fwhm_cells": 4,
+        "max_secondary_extrema": 0,
+        "sample_count": 58
+      },
+      "conservation": {
+        "mass_relative_drift": 7.237019872263772e-10,
+        "energy_relative_drift": 2.5797657797976825e-05,
+        "floor_hits_sampled": 0,
+        "floor_correction_budget": null,
+        "floor_correction_budget_reason": "Solver does not output integrated floor/source corrections; sampled states and total budgets constrain but cannot exclude between-output corrections."
+      }
+    },
+    {
+      "experiment": "exp_b7941ad7af6db96c755aabf7",
+      "S": 250.0,
+      "n": 384,
+      "rate": 0.08976682728952913,
+      "cadence_path_sensitivity": 0.0015082110831650015,
+      "stage": "evidence",
+      "unavailable_variants": [],
+      "crossing_bracket_rate_bounds": {
+        "crossing_time_bounds": [
+          [
+            0.07548867484439362,
+            0.10033393686965958
+          ],
+          [
+            0.5004564460470229,
+            0.5254895587068745
+          ]
+        ],
+        "rate_bounds": [
+          0.08888871429911212,
+          0.0999693820830987
+        ],
+        "reason": null,
+        "decision_role": "Conservative cadence-only bracket diagnostic; not silently substituted for sensitivity envelope or used alone to reject exponent band"
+      },
+      "physical_eligible": true,
+      "convergence_status": "qualified_matched_pair",
+      "log_margin": 0.01,
+      "eligible": true,
+      "window": {
+        "min_sheet_fwhm_cells": 22,
+        "max_secondary_extrema": 0,
+        "sample_count": 19
+      },
+      "conservation": {
+        "mass_relative_drift": 3.21646043133228e-10,
+        "energy_relative_drift": 1.6079524514100996e-06,
+        "floor_hits_sampled": 0,
+        "floor_correction_budget": null,
+        "floor_correction_budget_reason": "Solver does not output integrated floor/source corrections; sampled states and total budgets constrain but cannot exclude between-output corrections."
+      }
+    },
+    {
+      "experiment": "exp_8be5a6832b45d20c1bf947ef",
+      "S": 1000.0,
+      "n": 384,
+      "rate": 0.04964289881291125,
+      "cadence_path_sensitivity": 0.00015283058823630912,
+      "stage": "evidence",
+      "unavailable_variants": [],
+      "crossing_bracket_rate_bounds": {
+        "crossing_time_bounds": [
+          [
+            0.25038177243226084,
+            0.27539501721636883
+          ],
+          [
+            1.0500171731981849,
+            1.0752119827404132
+          ]
+        ],
+        "rate_bounds": [
+          0.048494828996450315,
+          0.05163807888931463
+        ],
+        "reason": null,
+        "decision_role": "Conservative cadence-only bracket diagnostic; not silently substituted for sensitivity envelope or used alone to reject exponent band"
+      },
+      "physical_eligible": true,
+      "convergence_status": "qualified_matched_pair",
+      "log_margin": 0.01,
+      "eligible": true,
+      "window": {
+        "min_sheet_fwhm_cells": 10,
+        "max_secondary_extrema": 0,
+        "sample_count": 34
+      },
+      "conservation": {
+        "mass_relative_drift": 6.354090587024075e-10,
+        "energy_relative_drift": 5.442509333430934e-06,
+        "floor_hits_sampled": 0,
+        "floor_correction_budget": null,
+        "floor_correction_budget_reason": "Solver does not output integrated floor/source corrections; sampled states and total budgets constrain but cannot exclude between-output corrections."
+      }
+    },
+    {
+      "experiment": "exp_0994411061cacfc10dc58ebb",
+      "S": 4000.0,
+      "n": 384,
+      "rate": 0.028596487811383582,
+      "cadence_path_sensitivity": 0.0001913008604375353,
+      "stage": "evidence_recovered",
+      "unavailable_variants": [],
+      "crossing_bracket_rate_bounds": {
+        "crossing_time_bounds": [
+          [
+            0.5500811440926864,
+            0.5751121484771412
+          ],
+          [
+            1.9504808801349045,
+            1.9751803229606104
+          ]
+        ],
+        "rate_bounds": [
+          0.028068221912649873,
+          0.029083109917576132
+        ],
+        "reason": null,
+        "decision_role": "Conservative cadence-only bracket diagnostic; not silently substituted for sensitivity envelope or used alone to reject exponent band"
+      },
+      "physical_eligible": true,
+      "convergence_status": "qualified_matched_pair",
+      "log_margin": 0.01,
+      "eligible": true,
+      "window": {
+        "min_sheet_fwhm_cells": 6,
+        "max_secondary_extrema": 0,
+        "sample_count": 58
+      },
+      "conservation": {
+        "mass_relative_drift": 5.676110692576231e-10,
+        "energy_relative_drift": 2.0535719425174292e-05,
+        "floor_hits_sampled": 0,
+        "floor_correction_budget": null,
+        "floor_correction_budget_reason": "Solver does not output integrated floor/source corrections; sampled states and total budgets constrain but cannot exclude between-output corrections."
+      }
+    }
+  ],
+  "matched_log_rate_differences": {
+    "250.0": 0.001357282598428356,
+    "1000.0": 0.002230021721585299,
+    "4000.0": 0.00012496771676639618
+  },
+  "fits": {
+    "256": {
+      "p": -0.41112719200885445,
+      "intercept": -0.14869997585816108,
+      "numerical_slope_interval": [
+        -0.4193711636710771,
+        -0.4028832203466318
+      ],
+      "residual_95pct_interval": [
+        -0.43949170990176384,
+        -0.38276267411594506
+      ],
+      "residuals_log": [
+        0.006825637710270893,
+        -0.016463938567339742,
+        0.005625326293588362,
+        0.004012974563480487
+      ],
+      "band_powerlaw_feasible": false,
+      "S": [
+        250.0,
+        1000.0,
+        2000.0,
+        4000.0
+      ]
+    },
+    "384": {
+      "p": -0.4125861094443926,
+      "intercept": -0.13925981599349235,
+      "numerical_slope_interval": [
+        -0.41979958464883743,
+        -0.4053726342399478
+      ],
+      "residual_95pct_interval": [
+        -0.520508012129969,
+        -0.3046642067588162
+      ],
+      "residuals_log": [
+        0.006798116046741853,
+        -0.013596232093485483,
+        0.006798116046741853
+      ],
+      "band_powerlaw_feasible": false,
+      "S": [
+        250.0,
+        1000.0,
+        4000.0
+      ]
+    }
+  },
+  "matched_fits": {
+    "256": {
+      "p": -0.41214164580224577,
+      "intercept": -0.14356748607610825,
+      "numerical_slope_interval": [
+        -0.4193551210066906,
+        -0.40492817059780095
+      ],
+      "residual_95pct_interval": [
+        -0.5279424249776603,
+        -0.2963408666268312
+      ],
+      "residuals_log": [
+        0.007294414901405144,
+        -0.014588829802810288,
+        0.007294414901405144
+      ],
+      "band_powerlaw_feasible": false,
+      "S": [
+        250.0,
+        1000.0,
+        4000.0
+      ]
+    },
+    "384": {
+      "p": -0.4125861094443926,
+      "intercept": -0.13925981599349235,
+      "numerical_slope_interval": [
+        -0.41979958464883743,
+        -0.4053726342399478
+      ],
+      "residual_95pct_interval": [
+        -0.520508012129969,
+        -0.3046642067588162
+      ],
+      "residuals_log": [
+        0.006798116046741853,
+        -0.013596232093485483,
+        0.006798116046741853
+      ],
+      "band_powerlaw_feasible": false,
+      "S": [
+        250.0,
+        1000.0,
+        4000.0
+      ]
+    }
+  },
+  "common_S": [
+    250.0,
+    1000.0,
+    4000.0
+  ],
+  "adjacent_slopes": {
+    "256": [
+      {
+        "S": [
+          250.0,
+          1000.0
+        ],
+        "p": -0.4279270701089116,
+        "numerical_interval": [
+          -0.44235402051780126,
+          -0.413500119700022
+        ],
+        "decision_role": "Curvature diagnostic; rejection uses joint band feasibility and common-refinement persistence"
+      },
+      {
+        "S": [
+          1000.0,
+          2000.0
+        ],
+        "p": -0.37925911913711047,
+        "numerical_interval": [
+          -0.40811301995488974,
+          -0.3504052183193312
+        ],
+        "decision_role": "Curvature diagnostic; rejection uses joint band feasibility and common-refinement persistence"
+      },
+      {
+        "S": [
+          2000.0,
+          4000.0
+        ],
+        "p": -0.4134533238540501,
+        "numerical_interval": [
+          -0.44230722467182937,
+          -0.3845994230362708
+        ],
+        "decision_role": "Curvature diagnostic; rejection uses joint band feasibility and common-refinement persistence"
+      }
+    ],
+    "384": [
+      {
+        "S": [
+          250.0,
+          1000.0
+        ],
+        "p": -0.4272975219064272,
+        "numerical_interval": [
+          -0.44172447231531686,
+          -0.4128705714975376
+        ],
+        "decision_role": "Curvature diagnostic; rejection uses joint band feasibility and common-refinement persistence"
+      },
+      {
+        "S": [
+          1000.0,
+          4000.0
+        ],
+        "p": -0.39787469698235817,
+        "numerical_interval": [
+          -0.4123016473912478,
+          -0.38344774657346853
+        ],
+        "decision_role": "Curvature diagnostic; rejection uses joint band feasibility and common-refinement persistence"
+      }
+    ]
+  },
+  "declared_refinement_coverage_complete": true,
+  "limitations": [
+    "Numerical sensitivity margins are empirical, not certified continuum error bars.",
+    "Finite samples cannot prove continuous-domain universality.",
+    "Topology veto cannot exclude off-axis, subthreshold or between-output islands."
+  ],
+  "figures": {
+    "scaling.svg": "Stage labels and case IDs in cases",
+    "field_current.svg": {
+      "experiment": "exp_0994411061cacfc10dc58ebb",
+      "stage": "evidence_recovered"
+    }
+  }
+}

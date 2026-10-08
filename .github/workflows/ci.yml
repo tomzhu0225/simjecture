@@ -100,6 +100,8 @@ jobs:
         run: |
           uv run python demos/kepler_energy/verify_record.py
           uv run python demos/resistive_mhd_island_coalescence/verify_minimal_record.py
+          uv run python scripts/verify_research_audit.py demos/resistive_mhd_island_coalescence/sol_medium_record
+          uv run python scripts/verify_research_audit.py demos/flash_warpx_kinetic_patch/record
           uv run python demos/resistive_mhd_island_coalescence/postrun_coordinate_check.py
           uv run python demos/gray_scott_counterexample/verify_record.py
           uv run python demos/collisionless_gem_reconnection/verify_record.py

@@ -1,0 +1,100 @@
+{
+  "schema_version": 3,
+  "study_id": "234f98cade434717ba54edfaa602f0c8",
+  "methods_required": true,
+  "workflow": "minimal",
+  "completion_policy": "repair",
+  "execution_backend": "bubblewrap",
+  "hypothesis": "In the supplied two-dimensional, uniform-resistivity, compressible-MHD island-coalescence system, every spatially resolved, pre-plasmoid case over the nominal inverse-resistivity interval S_eta = 1/eta in [250, 4000] belongs to one unbroken Sweet-Parker-like branch: the normalized reconnection rate follows R proportional to S_eta^p with -0.60 <= p <= -0.40, and the inferred exponent persists under at least one spatial-resolution refinement.\n",
+  "created_at": 1791436663.2172644,
+  "deadline": 1791440263.2172644,
+  "capabilities": "/home/tomzhu0225/src/simjecture/artifacts/docs-refresh-20261008/island-capabilities",
+  "capability_hashes": {
+    "flash-island-coalescence-resistive-mhd-4.8": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+  },
+  "max_experiment_bytes": 4294967296,
+  "max_total_bytes": 8589934592,
+  "operator_protocol": "Rerun the supplied original island-coalescence hypothesis with the current minimal research service. Use the installed, operator-supplied FLASH 4.8 island-coalescence capability and the original guided commissioning package. The physical question, nominal inverse-resistivity range and exponent band remain those in hypothesis.txt. The source executable has the same SHA-256 identity as the historical anchor. This is a fresh investigation; all old figures, fits, validation summaries and prior campaign dispositions are context only.\n\nStart by reproducing the exact guided anchor through lab.reproduce_anchor. Use its working launcher, HDF5 reader and flux diagnostics as a starting point. Read-only reference source for the compiled FLASH application is available under the capability's share/source directory, with build metadata in share/build-record.json. Keep the reference installation unchanged. Create an agent-owned driver and analysis for the new evidence, and obtain methods review through lab.method before decisive instrument-backed runs. Use the modern lab API and method reviews; do not construct the classic instrument-claim hierarchy.\n\nChoose and record the observable, normalization, fit rule, current-sheet resolution and pre-plasmoid eligibility checks, flux/time window, refinement policy and statistical decision before collecting decisive outputs. Use enough distinct resistivities for a scaling study and include a meaningful refinement. Record numerical controls and actual source/runtime/parameter identities. A case that does not reach the observation window is censored, not a physical counterexample. The supplied S_eta=1/eta is a nominal inverse-resistivity control, not a dimensional Lundquist number.\n\nAn interval that overlaps the allowed exponent band [-0.60,-0.40] does not reject that whole band merely because one endpoint lies outside. The historical campaign made that interpretation error; this warning is a methodological lesson, not evidence or a prescribed answer. Distinguish finite sampled results, numerical uncertainty and any untested continuous-domain claim. Do not claim universal Sweet-Parker falsification from this bounded model.\n\nThe completion policy is repair. If the original claim is scientifically falsified, propose a minimally justified replacement, commit its predictions and exact commands before fresh tests, and challenge it independently. Preserve counterexamples and rejected methods or claim reviews. If the evidence remains inconclusive, continue useful work within the wall budget and report the exact remaining scientific gaps.\n\nUse this machine's CPU MPI runtime. The wall budget is one hour. Choose your own allocation of commissioning, scans, refinement and review; prefer affordable complete trajectories and estimate cost before expensive work. Do not spend the campaign on a simulation that cannot reach the chosen measurement window. Four MPI ranks per experiment is the commissioned starting configuration. Keep declared outputs compact enough to review while retaining the raw diagnostics or field states needed to audit every decisive quantity. General native tools remain available for context and code work.\n\nMaintain a readable RESULTS.md with receipt and review IDs. Include field/current-density plots and scaling/uncertainty plots drawn from the actual recorded outputs. State whether each figure is fresh commissioning, exploration or claim evidence. Work inside the study research directory and its experiment workspaces; do not change the repository, previous campaigns or installed FLASH source. The demonstration will attribute operator framing and later editorial plots separately from autonomous experiments and independent review.\n",
+  "protocol_sha256": "9e9677baa4c7adbf0f99ea9efbf495d46c56192e97ce3f37c934485af31fd3f2",
+  "requirements": {
+    "require_method_review": true,
+    "required_capability_prefixes": [
+      "flash-"
+    ]
+  },
+  "guided_commissioning": {
+    "available": true,
+    "schema_version": "0.1.0",
+    "name": "flash-resistive-mhd-island-coalescence-v1",
+    "description": "A license-safe guided starting point for a two-dimensional compressible resistive-MHD island-coalescence scaling campaign using an operator-supplied FLASH 4.8 executable.",
+    "capability": "flash-island-coalescence-resistive-mhd-4.8",
+    "program_path": "guided/island_coalescence.py",
+    "validated_argv": [
+      "guided/island_coalescence.py",
+      "--eta",
+      "0.001",
+      "--nx",
+      "128",
+      "--ny",
+      "128",
+      "--alpha",
+      "20",
+      "--tmax",
+      "1.2",
+      "--plot-interval",
+      "0.05",
+      "--ranks",
+      "4",
+      "--iprocs",
+      "2",
+      "--jprocs",
+      "2",
+      "--output",
+      "guided/anchor_run",
+      "--summary",
+      "guided/anchor_validation.json",
+      "--overwrite"
+    ],
+    "validation_summary_path": "guided/anchor_validation.json",
+    "operator_validation": "The exact application command completed through the Simjecture capability sandbox on four MPI ranks, wrote 24 readable HDF5 states, realized the explicit uniform-resistivity path, and passed representation, physics-control, boundary, diagnostic, and numerical-regime checks. A separate force-free magnetic-diffusion manufactured solution reproduced analytic resistive decay to 4.27e-5 relative amplitude error. Both records are permanently non-evidentiary.",
+    "limitations": [
+      "The supplied anchor, output, metrics, manufactured-solution result, and literature notes are permanently non-evidentiary context; the campaign must collect fresh prospective observations.",
+      "This is a normalized two-dimensional compressible single-fluid resistive-MHD analogue of island coalescence, not an exact reproduction of an isothermal reduced-MHD benchmark.",
+      "S_eta = 1/eta is a nominal inverse-resistivity control; a scientific analysis must record its normalization and must not silently relabel it as a dimensional Lundquist number.",
+      "The compiled application exposes explicit uniform resistivity and does not contain kinetic electron physics.",
+      "The known-runnable anchor uses one grid, one resistivity, and one finite flux window; it cannot establish a scaling or convergence.",
+      "No FLASH source, binary, component, or modification is redistributed. The operator must obtain and build FLASH under its upstream license."
+    ],
+    "files": [
+      {
+        "path": "guided/anchor_validation.json",
+        "bytes": 9563,
+        "sha256": "f64f382c707c3193cc44f66b3e74f1b1ee1a456f7c426763d8964fdfdf6ed84f"
+      },
+      {
+        "path": "guided/island_coalescence.py",
+        "bytes": 14667,
+        "sha256": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b"
+      },
+      {
+        "path": "guided/operator_validation.json",
+        "bytes": 1665,
+        "sha256": "08ac3d4b43a6cafdabbf6f078c3fb3dfce542082a10f08852de267e5d70f537d"
+      },
+      {
+        "path": "literature_basis.md",
+        "bytes": 2329,
+        "sha256": "b3837a433a90125145174939e149ac059e3af5982ccc567ad7ba7e491bc886a9"
+      }
+    ],
+    "package_sha256": "8cd0062066592513c23f48b4a0b531a1e5386a882aac4a65d0e33d2f85d0bc80",
+    "scientific_evidence_eligible": false,
+    "policy": "operator_validated_starting_point_not_campaign_evidence"
+  },
+  "director_policy": {
+    "enabled": true,
+    "interval_seconds": 300,
+    "review_seconds": 120,
+    "unchanged_review_seconds": 900
+  }
+}
