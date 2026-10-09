@@ -524,11 +524,12 @@ function renderStudyNavigation(data) {
     campaign,
     page: "evidence",
     title: data.display_name || "",
+    space: context?.workspace,
   });
   const returned = document.getElementById("conversation-return");
   returned.textContent = context ? "Back to this conversation" : "Workspace";
   returned.href = context
-    ? window.StudyNavigation.workspace(context.project_id, campaign, "interactive")
+    ? window.StudyNavigation.workspace(context.project_id, campaign, "interactive", {space:context.workspace})
     : "/workspace";
   returned.title = context?.project_name || "Open the research workspace";
 }
@@ -539,7 +540,7 @@ function renderControls(controls) {
     link.hidden = !state.selectedCampaign || !state.allowMutations || state.snapshot?.engine?.mode !== "minimal" || (query === "steer-study" && (state.snapshot?.engine?.remaining_seconds <= 0 || ["completed", "cancelled", "budget_exhausted"].includes(state.snapshot?.engine?.status)));
     const context = state.snapshot?.workspace_context;
     const route = context
-      ? window.StudyNavigation.workspace(context.project_id, state.selectedCampaign)
+      ? window.StudyNavigation.workspace(context.project_id, state.selectedCampaign, "autonomous", {space:context.workspace})
       : "/workspace";
     const target = new URL(route, location.href);
     target.searchParams.set(query, state.selectedCampaign || "");

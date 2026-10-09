@@ -4,6 +4,21 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+## 0.6.2rc1 — 2026-10-09
+
+- Add optional local workspaces and project collections, with a workspace switcher,
+  shared instructions/files, unchanged conversation paths and frozen context for
+  agent turns and autonomous studies. Expose the same records through JSON CLI
+  commands and scoped HTTP APIs. Existing users open Personal without a setup flow;
+  the hosted trial retains its existing account-scoped interface.
+- Preserve project selection when reloading a new-conversation page and keep
+  study navigation linked to its owning workspace. Collect research tools,
+  machines, benchmarks and connections under Resources; the single-user view
+  keeps these controls expanded by default.
+- Include a project/workspace guide covering CLI operations, context provenance,
+  private data storage and the distinction between local organisation and hosted
+  account isolation. No private device assets are distributed with this candidate.
+
 ## 0.6.1 — 2026-10-08
 
 - Include cylinder-flow validation data in source distributions as well as

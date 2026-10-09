@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="/assets/workspace.css" />
     <link rel="stylesheet" href="/assets/account-rail.css" />
     <link rel="stylesheet" href="/assets/workspace-composer.css" />
+    <link rel="stylesheet" href="/assets/workspace-projects.css" />
     <link rel="stylesheet" href="/assets/interface.css" />
     <script type="module" src="/assets/workspace-components.js"></script>
     <script src="/assets/vendor/marked-18.0.10.umd.js" defer></script>
@@ -24,6 +25,7 @@
     <script src="/assets/vendor/katex-auto-render-0.18.4.min.js" defer></script>
     <script src="/assets/markdown.js" defer></script>
     <script src="/assets/vendor/highlight-11.11.1.min.js" defer></script>
+    <script src="/assets/workspace-projects.js" defer></script>
     <script src="/assets/workspace-rich.js" defer></script>
     <script src="/assets/workspace-monitor.js" defer></script>
     <script src="/assets/workspace-benchmarks.js" defer></script>
@@ -44,12 +46,23 @@
       <p>Loading workspace…</p>
       <button id="theme-toggle" class="quiet" type="button">Dark mode</button>
     </section>
+    <dialog id="spaces-dialog" class="organization-dialog" aria-labelledby="spaces-title">
+      <div class="dialog-heading"><h2 id="spaces-title">Your workspaces</h2><button type="button" data-close-organization="spaces-dialog" aria-label="Close workspaces">×</button></div>
+      <p class="field-help">Separate places for your research. Switching leaves running work in progress.</p>
+      <div id="spaces-list"></div>
+      <form id="create-space-form"><label for="new-space-name">New workspace</label><div class="organization-inline"><input id="new-space-name" maxlength="160" placeholder="Lab or team name" required /><button class="primary" type="submit">Create</button></div><p id="space-error" class="field-help" role="alert"></p></form>
+    </dialog>
+    <dialog id="collection-dialog" class="organization-dialog" aria-labelledby="collection-editor-title">
+      <div class="dialog-heading"><h2 id="collection-editor-title">New project</h2><button type="button" data-close-organization="collection-dialog" aria-label="Close project settings">×</button></div>
+      <form id="collection-form"><label for="collection-name">Name</label><input id="collection-name" maxlength="160" required /><label for="collection-summary">Description</label><input id="collection-summary" maxlength="2000" /><label for="collection-guidance">Shared instructions</label><textarea id="collection-guidance" rows="5" maxlength="20000" placeholder="What should an agent know when working on this project?"></textarea><p class="field-help">Conversations can have their own questions. Existing study records stay unchanged.</p><p id="collection-error" class="field-help" role="alert"></p><button class="primary" type="submit">Save project</button></form>
+    </dialog>
     <div class="shell">
       <aside class="sidebar" id="workspace-sidebar">
         <a href="/workspace" class="brand" aria-label="Simjecture research workspace">
           <img class="brand-logo brand-logo-dark" src="/assets/brand/simjecture-lockup-dark.svg" width="289" height="64" alt="" aria-hidden="true" />
           <small>Research workspace</small>
         </a>
+        <button id="workspace-switcher" class="workspace-switcher" type="button" aria-haspopup="dialog" hidden><span id="workspace-name">Personal</span><span aria-hidden="true">⌄</span></button>
         <button id="new-project" class="new-project">
           ＋ <span>New conversation</span>
         </button>
@@ -57,6 +70,7 @@
           <button data-view="home" class="nav-item active" aria-current="page">
             <span aria-hidden="true">⌂</span> Overview
           </button>
+          <details class="workspace-resources" open><summary>Resources <span aria-hidden="true">⌄</span></summary>
           <button data-view="tools" class="nav-item">
             <span aria-hidden="true">◇</span> Research tools
           </button>
@@ -74,7 +88,12 @@
           >
             <span aria-hidden="true">⚙</span> Connections
           </button>
+          </details>
         </nav>
+        <section id="collection-sidebar" class="collection-sidebar" hidden aria-label="Projects">
+          <div class="sidebar-label">PROJECTS <button id="new-collection" type="button" title="New project" aria-label="New project">＋</button></div>
+          <div id="collection-list"></div>
+        </section>
         <div class="sidebar-label">CONVERSATIONS</div>
         <div id="project-list" class="project-list">
           <p class="muted">Your work will appear here.</p>
@@ -146,11 +165,18 @@
         <span aria-hidden="true">›</span>
       </button>
       <main id="main-content" tabindex="-1">
+        <section id="view-collection" class="view collection-view" hidden>
+          <div class="collection-heading"><div><p class="eyebrow">PROJECT</p><h1 id="collection-title"></h1><p id="collection-description" class="lead"></p></div><button id="edit-collection" class="quiet" type="button">Project settings</button></div>
+          <button id="collection-new-chat" class="primary" type="button">＋ New conversation</button>
+          <div id="collection-conversations" class="collection-conversations"></div>
+          <section class="collection-context"><div class="section-line"><h2>Shared context</h2><label class="secondary" for="collection-upload">Add files</label><input id="collection-upload" type="file" multiple hidden /></div><p class="field-help">Available to conversations in this project. Each agent turn and study keeps its own snapshot.</p><div id="collection-files"></div><p id="collection-instructions"></p></section>
+        </section>
         <div id="readonly" class="banner" hidden>
           This session is read-only. You can inspect projects and results.
         </div>
         <section id="view-home" class="view home-view">
           <div class="page-intro">
+            <button id="home-collection" class="context-pill" type="button" hidden></button>
             <p class="eyebrow">YOUR RESEARCH WORKSPACE</p>
             <h1>What are we investigating?</h1>
             <p class="lead">
@@ -451,6 +477,7 @@
           <div class="project-heading">
             <div>
               <h1 id="project-title"></h1>
+              <label id="conversation-collection-label" class="conversation-collection" hidden>Project <select id="conversation-collection" aria-label="Conversation project"></select></label>
             </div>
             <div class="mode-switch" role="group" aria-label="Research mode">
               <button id="interactive-mode" class="selected">

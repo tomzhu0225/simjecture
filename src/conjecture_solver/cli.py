@@ -722,6 +722,13 @@ def build_parser() -> argparse.ArgumentParser:
         )
     )
 
+    from .workspace_cli import configure as configure_workspace
+
+    for kind in ("workspace", "project", "conversation"):
+        configure_workspace(
+            subcommands.add_parser(kind, help=f"Manage local {kind}s (JSON output)"), kind
+        )
+
     schemas = subcommands.add_parser("schemas")
     schemas.add_argument("--output", default="schemas")
     schemas.add_argument("--check", action="store_true")

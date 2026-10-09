@@ -4,8 +4,11 @@
 // A campaign's owning conversation comes from the server, never a return URL.
 window.StudyNavigation = (() => {
   function workspace(project, campaign, view = "autonomous", options = {}) {
-    const params = { project, view, ...(campaign ? { study: campaign } : {}), ...options };
-    return `/workspace#${new URLSearchParams(params)}`;
+    const {space, ...rest} = options;
+    const selectedSpace = space || new URLSearchParams(globalThis.location?.search || "").get("workspace");
+    const query = selectedSpace && selectedSpace !== "personal" ? `?${new URLSearchParams({workspace:selectedSpace})}` : "";
+    const params = { project, view, ...(campaign ? { study: campaign } : {}), ...rest };
+    return `/workspace${query}#${new URLSearchParams(params)}`;
   }
   function evidence(campaign) {
     return `/monitor?${new URLSearchParams({ campaign })}`;
@@ -16,12 +19,12 @@ window.StudyNavigation = (() => {
     if (requested && project?.continuation_draft?.campaign === requested) return requested;
     return studies.at(-1)?.campaign || project?.continuation_draft?.campaign || null;
   }
-  function render(container, { project, campaign, page, title = "" }) {
+  function render(container, { project, campaign, page, title = "", space }) {
     container.replaceChildren();
     const list = document.createElement("ul");
     const items = [
-      [project ? "Conversation" : "Workspace", project ? workspace(project, campaign, "interactive") : "/workspace", "conversation"],
-      [project ? "Study" : "Standalone study", project ? workspace(project, campaign) : null, "study"],
+      [project ? "Conversation" : "Workspace", project ? workspace(project, campaign, "interactive", {space}) : "/workspace", "conversation"],
+      [project ? "Study" : "Standalone study", project ? workspace(project, campaign, "autonomous", {space}) : null, "study"],
       ["Evidence & review", campaign ? evidence(campaign) : null, "evidence"],
     ];
     for (const [label, href, step] of items) {

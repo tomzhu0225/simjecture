@@ -63,6 +63,8 @@ STATIC_ASSETS = frozenset(
         "brand/favicon.ico",
         "workspace.html",
         "workspace.js",
+        "workspace-projects.js",
+        "workspace-projects.css",
         "workspace-theme.js",
         "workspace-panels.js",
         "workspace.css",
@@ -116,7 +118,9 @@ class SimjectureHTTPServer(ThreadingHTTPServer):
         ):
             self._machine_poll_at = time.monotonic() + POLL_SECONDS
             self._machine_poll_thread = threading.Thread(
-                target=self.application.workspace.poll_machine_availability, daemon=True
+                target=self.application.maintain_workspaces,
+                args=("poll_machine_availability",),
+                daemon=True,
             )
             self._machine_poll_thread.start()
         if not self.application.allow_mutations or time.monotonic() < self._handoff_at:
@@ -125,7 +129,9 @@ class SimjectureHTTPServer(ThreadingHTTPServer):
             return
         self._handoff_at = time.monotonic() + 5
         self._handoff_thread = threading.Thread(
-            target=self.application.workspace.deliver_study_reports, daemon=True
+            target=self.application.maintain_workspaces,
+            args=("deliver_study_reports",),
+            daemon=True,
         )
         self._handoff_thread.start()
 
@@ -242,7 +248,7 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
         endpoint = urlsplit(self.path).path
         maximum = (
             96 * 1024**2
-            if endpoint == "/api/workspace/upload"
+            if endpoint in {"/api/workspace/upload", "/api/workspace/collection-file"}
             else 4 * 1024**2
             if endpoint == "/api/workspace/import-benchmark-reports"
             else MAX_REQUEST_BYTES
@@ -288,19 +294,27 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def _workspace_get(self, parsed):
-        workspace = self.server.application.workspace
         query = parse_qs(parsed.query)
         endpoint = parsed.path.removeprefix("/api/workspace/")
         try:
+            space = self._one_value(query, "workspace") if "workspace" in query else "personal"
+            workspace = self.server.application.workspaces.open(space)
             if endpoint == "bootstrap":
                 self._json(
                     dict(
                         settings=workspace.settings(),
                         projects=workspace.projects(),
+                        collections=workspace.collections(),
+                        workspaces=self.server.application.workspaces.list(),
+                        workspace_id=space,
                         control_token=self.server.control_token,
                         allow_mutations=self.server.application.allow_mutations,
                     )
                 )
+            elif endpoint == "collections":
+                self._json(workspace.collections())
+            elif endpoint == "collection":
+                self._json(workspace.collection(self._one_value(query, "id")))
             elif endpoint == "project":
                 self._json(workspace.project(self._one_value(query, "id")))
             elif endpoint == "simulation":
@@ -367,10 +381,14 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
                         else "",
                     )
                 )
-            elif endpoint in {"file", "preview", "simulation-file"}:
+            elif endpoint in {"file", "preview", "simulation-file", "collection-download"}:
                 from ..workspace_agent import contained
 
-                project = workspace.directory(self._one_value(query, "id"))
+                project = (
+                    workspace.collection_path(self._one_value(query, "id"))
+                    if endpoint == "collection-download"
+                    else workspace.directory(self._one_value(query, "id"))
+                )
                 root = project / "files"
                 if endpoint == "simulation-file":
                     from .jobs import read, resolve
@@ -424,7 +442,20 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
         workspace = self.server.application.workspace
         endpoint = parsed.path.removeprefix("/api/workspace/")
         try:
-            if endpoint == "settings":
+            query = parse_qs(parsed.query)
+            space = self._one_value(query, "workspace") if "workspace" in query else "personal"
+            workspace = self.server.application.workspaces.open(space)
+            if endpoint == "workspaces":
+                result = self.server.application.workspaces.create(payload)
+            elif endpoint == "collections":
+                result = workspace.save_collection(payload)
+            elif endpoint == "assign-collection":
+                result = workspace.assign_collection(
+                    payload.get("project"), payload.get("collection")
+                )
+            elif endpoint == "collection-file":
+                result = workspace.collection_file(payload)
+            elif endpoint == "settings":
                 result = workspace.save_settings(payload)
             elif endpoint == "test":
                 result = workspace.test_connection()

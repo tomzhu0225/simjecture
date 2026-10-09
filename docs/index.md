@@ -110,6 +110,7 @@ research/status
 :caption: Work with Simjecture
 
 how-to/headless-studies
+how-to/projects-and-workspaces
 how-to/research-service
 how-to/continuation-steering
 how-to/minimal-oversight
