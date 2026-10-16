@@ -103,7 +103,8 @@ class ResearchService(
 ):
     def __init__(self, root):
         self.root = Path(root).resolve(strict=True)
-        self.manifest = json.loads((self.root / "research.json").read_text())
+        self._manifest_stamp = None
+        self._manifest = self.manifest
         self.work = self.root / "research"
         self.verify_guidance()
         if self.manifest.get("continuation"):
@@ -117,8 +118,12 @@ class ResearchService(
         stat = (self.root / "research.json").stat()
         stamp = (stat.st_ino, stat.st_mtime_ns, stat.st_size)
         if stamp != self._manifest_stamp:
-            self._manifest = json.loads((self.root / "research.json").read_text())
-            self._manifest_stamp = stamp
+            with (self.root / "research.json").open() as source:
+                self._manifest = json.load(source)
+                # Atomic replacement can occur between stat() and open(). Bind
+                # the cache to the file actually read, not the earlier path stat.
+                stat = os.fstat(source.fileno())
+                self._manifest_stamp = (stat.st_ino, stat.st_mtime_ns, stat.st_size)
         return self._manifest
 
     @manifest.setter
