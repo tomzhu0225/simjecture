@@ -152,6 +152,48 @@ def test_real_process_pause_resume_and_deadline(tmp_path):
             process.wait(timeout=10)
 
 
+def test_cli_extension_keeps_the_live_supervisor_past_its_original_deadline(tmp_path):
+    from conjecture_solver.study_status import study_status
+
+    root = tmp_path / "study"
+    # Pre-create without a report reserve so this short test exercises the research loop.
+    service = ResearchService.create(
+        root, "A lifecycle fixture, not scientific evidence.", wall_seconds=5,
+    )
+    before = service.manifest["deadline"]
+    process = start_fixture(
+        tmp_path, root,
+        'import json,time\n'
+        'print(json.dumps({"type":"thread.started","thread_id":"fixture"}),flush=True)\n'
+        'time.sleep(60)\n',
+        wall=16,
+    )
+    try:
+        running = wait_state(root, lambda s: bool(s.get("child_pid")))
+        result = subprocess.run(
+            [sys.executable, "-m", "conjecture_solver.cli", "study", "extend",
+             "--campaign", str(root), "--hours", "0.01", "--request-key", "live-extension"],
+            capture_output=True, text=True, check=True,
+        )
+        assert json.loads(result.stdout)["new_deadline"] == before + 36
+        while time.time() < before + .3:
+            assert process.poll() is None
+            time.sleep(.1)
+        current = study_status(root)
+        assert current["status"] == "running"
+        assert current["state"]["run_id"] == running["run_id"]
+        assert current["remaining"] > 20
+        assert current["budget_control"]["revision"] == 1
+        # No experiment receipt or independent scientific approval is invented.
+        assert not service._all("reviews") and not service.status()["completed"]
+        put(root / "supervisor/control.json", {"command": "pause"})
+        assert process.wait(timeout=10) == 0
+    finally:
+        if process.poll() is None:
+            process.terminate()
+            process.wait(timeout=10)
+
+
 @pytest.mark.parametrize("message", ["quota exhausted", "401 unauthorized"])
 def test_provider_failure_pauses_without_scientific_completion(tmp_path, message):
     root = tmp_path / "study"

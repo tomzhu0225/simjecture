@@ -535,6 +535,20 @@ function renderStudyNavigation(data) {
 }
 
 function renderControls(controls) {
+  window.StudyBudget.render(document.getElementById("study-budget"), {
+    campaign:state.selectedCampaign, budget:state.snapshot?.engine?.budget_control,
+    readonly:!state.allowMutations,
+    submit:async payload => {
+      const response = await fetch("/api/workspace/extend-study", {
+        method:"POST", headers:{"Content-Type":"application/json", "X-Simjecture-Token":state.controlToken},
+        body:JSON.stringify(payload),
+      });
+      const result = await response.json();
+      if (!response.ok) throw Error(result.error || result.message || "Unable to extend study time");
+      return result;
+    },
+    onSaved:async () => { await refreshSnapshot(true); },
+  });
   for (const [id, query] of [["continue-study-link", "continue-study"], ["steer-study-link", "steer-study"]]) {
     const link = document.getElementById(id);
     link.hidden = !state.selectedCampaign || !state.allowMutations || state.snapshot?.engine?.mode !== "minimal" || (query === "steer-study" && (state.snapshot?.engine?.remaining_seconds <= 0 || ["completed", "cancelled", "budget_exhausted"].includes(state.snapshot?.engine?.status)));

@@ -143,6 +143,20 @@ class CampaignRegistry:
 class SimjectureWebApplication:
     """Project campaigns and execute the small set of reviewed operator controls."""
 
+    def extend_study(self, token, payload):
+        from ..research_budget import budget_status, extend_budget
+
+        self._require_mutations()
+        root = self.registry.resolve(token)
+        if not (root / "research.json").exists():
+            raise ValueError("Live budget extension currently requires a minimal study")
+        event = extend_budget(
+            root, hours=payload.get("hours"), reason=payload.get("reason", ""),
+            key=payload.get("request_key"), request_id=payload.get("request_id"),
+            expected_deadline=payload.get("expected_deadline"),
+        )
+        return dict(extension=event, budget=budget_status(root))
+
     def __init__(
         self,
         *,
@@ -728,6 +742,7 @@ def _engine_projection(
             instrument_requirement=status["instrument_requirement"],
             receipt_progress=status.get("receipt_progress", []),
             finalization=status.get("finalization", {}),
+            budget_control=status.get("budget_control", {}),
             report_assessments=status.get("report_assessments", []),
             worker_wait=status.get("worker_wait", {}),
             director_policy=status.get("director_policy", {}),
@@ -1047,6 +1062,8 @@ def _revision(snapshot: Any, *, root: Path, live: bool) -> str:
         "hypothesis_ledger.json",
         "mvp_report.json",
         "research_report.json",
+        "research.json",
+        "budget_requests",
         "supervisor/state.json",
         "worker_wait.json",
         "finalization.json",

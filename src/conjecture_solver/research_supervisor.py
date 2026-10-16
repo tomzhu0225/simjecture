@@ -95,6 +95,21 @@ TARGET:
 class ResearchSupervisor(
     ResearchFinalization, AutomaticJournal, ResearchOversight, ResearchDirector, AgentSupervisor
 ):
+    def boundary(self):
+        if hasattr(self, "service"):
+            manifest = self.service.manifest
+            revision = len(manifest.get("budget_extensions", []))
+            if revision != self.state.get("budget_revision", 0):
+                self.state.update(
+                    deadline=manifest["deadline"], budget_revision=revision, last_director_at=0
+                )
+                for name in ("director_next_check_at", "director_next_review_at", "waiting_for"):
+                    self.state.pop(name, None)
+                self.service.wake_worker("Operator extended the campaign budget; refresh the plan")
+                self.event("budget_updated", revision=revision, deadline=manifest["deadline"])
+                self.save()
+        return super().boundary()
+
     def __init__(self, args):
         args.workflow = "frontier"  # Reuse native session resumption and inactivity watchdog.
         super().__init__(args)
@@ -154,6 +169,7 @@ class Client:
     def director_status(self): return self._call('director_status')
     def director_ack(self, decision, **kw):
         return self._call('director_ack', decision=decision, **kw)
+    def request_time(self, **kw): return self._call('request_time', **kw)
     def machines(self): return self._call('machines')
     def fetch_remote(self, **kw): return self._call('fetch_remote', **kw)
     def read_instrument(self, capability, **kw):
@@ -494,6 +510,9 @@ scientifically adequate repair, not a bound fitted to observations. Execution su
 never proves the hypothesis. Batch cheap calculations; for long solvers use separately
 recorded cases so one timeout does not discard a whole matrix. Inspect pilot output
 schema before a large run. Check remaining_seconds in lab.status() to budget validation.
+Operator budget extensions appear in lab.status()['budget']; use its live clock.
+You may call lab.request_time(hours=..., reason=...) to ask for time, but only the
+operator can grant it. Continue planning against the current deadline until granted.
 While jobs run you may keep doing useful work, or end this turn to wait. The host
 will resume you when a recorded job finishes; do not poll repeatedly just to fill time.
 Completion policy: {self.service.manifest.get("completion_policy", "repair")}.

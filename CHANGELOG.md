@@ -4,6 +4,12 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+- Extend active minimal studies from the workspace, experiment monitor, CLI or local
+  operator API. Deadline changes are live, idempotent and recorded with their
+  original budget; the director replans without restarting numerical jobs. Agents
+  can request time, while grants remain an operator action. Individual experiment
+  limits, report reserves and scientific contracts remain unchanged.
+
 - Accept lists of text for study brief success criteria and constraints, preserving
   their items as paragraphs and enforcing the existing 20,000-character limit.
   Clarify native-agent brief instructions and distinguish invalid types from

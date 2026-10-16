@@ -233,8 +233,8 @@ def submit(root, message, *, key=None):
             request_key=key,
             scope=(
                 "Planning guidance, not evidence or a retrospective contract "
-                "change. New requirements/hypothesis/budget need a continuation "
-                "phase."
+                "change. Use the operator budget control for more time, or a continuation "
+                "phase for new requirements or a hypothesis."
             ),
         )
         (service.root / "operator_steering/messages").mkdir(parents=True, exist_ok=True)

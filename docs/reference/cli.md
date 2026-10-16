@@ -77,6 +77,12 @@ phase with a fresh explicit budget and selected context; see
 are equivalent launchers. The browser and TUI share the same native mode choices. Legacy `mvp` and DSH/API
 remain explicit legacy routes. See [the guide](../how-to/research-service.md).
 
+For an active minimal study, `simjecture study budget --campaign DIR` reads the
+authoritative clock and `simjecture study extend --campaign DIR --hours 12
+--request-key KEY` grants additional time without restarting the supervisor.
+See [live budget extensions](../how-to/extend-study.md) for the operator API,
+agent requests, audit records and individual experiment limits.
+
 Minimal studies can select `--machine-registry DIR --machine ID`, repeating
 `--machine` to choose a pool. Placement and resource requests are recorded by
 `Lab.run`; local execution remains the default when no pool is selected.

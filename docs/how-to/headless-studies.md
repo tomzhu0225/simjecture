@@ -51,6 +51,10 @@ The launch prints activity, backend/model, remaining time and experiment/review
 counts. Redirected output uses periodic plain status lines; `--quiet` suppresses
 progress. A study can make paid provider requests through the agent you selected.
 
+An operator can [extend an active study](extend-study.md) without relaunching it:
+`simjecture study extend --campaign ./runs/my-study --hours 12`.
+Use `simjecture study budget --campaign ./runs/my-study` for its current clock.
+
 Mode, agent and numerical execution are separate choices:
 
 - `--backend` and `--model` choose the native agent and its configured model

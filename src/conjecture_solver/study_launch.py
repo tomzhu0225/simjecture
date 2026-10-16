@@ -138,8 +138,12 @@ def materialize_native(request, *, resume=False):
         state = read(directory / "state.json")
         if state.get("status") in ["completed", "cancelled", "budget_exhausted"]:
             raise ResumeError("Study is terminal; create a new study to change its budget")
-        if state.get("deadline", time.time() + 1) <= time.time():
-            raise ResumeError("The original wall-time deadline has expired")
+        deadline = (
+            read(root / "research.json").get("deadline", state.get("deadline"))
+            if request.mode == "minimal" else state.get("deadline")
+        )
+        if deadline is not None and deadline <= time.time():
+            raise ResumeError("The current wall-time deadline has expired")
         (directory / "control.json").unlink(missing_ok=True)
     operator = root / "operator_input"
     operator.mkdir(exist_ok=True)

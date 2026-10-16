@@ -31,6 +31,7 @@ class Element {
   append(...children) { this.children.push(...children); }
   replaceChildren(...children) { this.children = children; }
   setAttribute(name, value) { this.attributes[name] = value; }
+  querySelector() { return null; }
   querySelectorAll() { return []; }
 }
 const document = {createElement: tag => new Element(tag)};
@@ -504,6 +505,7 @@ def test_monitor_return_and_action_links_use_server_ownership_and_respect_readon
     run_js(
         DOM
         + navigation_source()
+        + (STATIC / "study-budget.js").read_text()
         + f"const owned={json.dumps(owned)}, readonly={json.dumps(readonly)};\n"
         + """
 const elements = new Map();

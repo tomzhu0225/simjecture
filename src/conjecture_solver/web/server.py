@@ -57,6 +57,7 @@ STATIC_ASSETS = frozenset(
         "workspace-composer.css",
         "workspace-composer.js",
         "study-navigation.js",
+        "study-budget.js",
         "brand/simjecture-lockup-light.svg",
         "brand/simjecture-lockup-dark.svg",
         "brand/favicon.svg",
@@ -364,6 +365,7 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
                                 "backend",
                                 "model",
                                 "mode",
+                                "budget_control",
                                 "provider_attention",
                                 "provider_wait_seconds",
                                 "usage",
@@ -476,6 +478,8 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
 
                 root = self.server.application.registry.resolve(payload.get("campaign"))
                 result = submit(root, payload.get("message"), key=payload.get("request_key"))
+            elif endpoint == "extend-study":
+                result = self.server.application.extend_study(payload.get("campaign"), payload)
             elif endpoint == "new-study":
                 result = workspace.new_study(payload.get("project"))
             elif endpoint == "prepare":

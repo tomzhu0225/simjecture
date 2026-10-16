@@ -121,6 +121,7 @@ how-to/headless-studies
 how-to/projects-and-workspaces
 how-to/research-service
 how-to/continuation-steering
+how-to/extend-study
 how-to/minimal-oversight
 how-to/research-memory
 getting-started/web-interface

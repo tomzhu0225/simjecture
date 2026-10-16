@@ -15,6 +15,12 @@ from .research_resources import StorageIncrease
 from .research_service import fingerprint, put
 
 
+class TimeRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    hours: float = Field(gt=0, allow_inf_nan=False)
+    reason: str = Field(min_length=16, max_length=2400)
+
+
 class DirectorVerdict(BaseModel):
     model_config = ConfigDict(extra="forbid")
     decision: Literal["continue", "replan"]
@@ -46,6 +52,9 @@ class DirectorVerdict(BaseModel):
     registration_tuning: RegistrationTuning | None = Field(
         default=None,
         description="Tune remote registration probe timeout and retries when delegated.",
+    )
+    time_request: TimeRequest | None = Field(
+        default=None, description="Ask the operator for additional hours; never grants time."
     )
 
     @model_validator(mode="after")
@@ -104,6 +113,7 @@ class ResearchDirector:
             operator_protocol=self.service.manifest.get("operator_protocol"),
             operator_steering=steering(self.service.root),
             remaining_seconds=snapshot["remaining_seconds"],
+            budget=snapshot["budget"],
             finalization=snapshot.get("finalization", {}),
             snapshot=self.context_brief(max_bytes=8000),
             active_experiments=active,
@@ -141,6 +151,9 @@ The worker owns implementation and can respond with a recorded plan or reasoned 
 Respect new operator steering within the original scientific contract.
 You do not accept scientific claims or change the original hypothesis, operator constraints,
 deadline or evidence rules. Independent scientific review remains a separate fresh context.
+You may ask the operator for additional hours using time_request (hours and a concrete reason).
+This is a request only: plan against the current authoritative budget until it is granted.
+budget.extensions records operator-authorized changes; update forecasts when it changes.
 Read-only source/data/documentation inspection is available. Do not modify files, send
 control commands yourself or run simulations. Return a structured decision for the host.
 When resource_policy.director_can_increase is true, you may set storage_increase to larger
@@ -247,6 +260,7 @@ claim review accepts unresolved, while exploratory reports use report assessment
                 resource_policy=packet.get("resource_policy"),
                 registration=packet.get("registration"),
                 worker_wait=packet.get("worker_wait"),
+                budget_revision=packet.get("budget", {}).get("revision", 0),
             )
         )
 
@@ -342,6 +356,11 @@ claim review accepts unresolved, while exploratory reports use report assessment
                     self.args.turn_seconds = original_allowance
             if self.boundary():
                 return False
+            if packet.get("budget", {}).get("revision", 0) != len(
+                self.service.manifest.get("budget_extensions", [])
+            ):
+                self.event("director_budget_changed", action="Replan using the new operator budget")
+                return False
             if rc:
                 raise ValueError(f"Director exited with {rc}")
             verdict = DirectorVerdict.model_validate(
@@ -371,6 +390,13 @@ claim review accepts unresolved, while exploratory reports use report assessment
                 **verdict,
             )
             put(folder / (identifier + ".json"), record)
+            if verdict["time_request"]:
+                record["time_request_action"] = self.service.request_time(
+                    **verdict["time_request"], requested_by="director",
+                    key="director-" + str(packet["budget"]["revision"]) + "-"
+                    + fingerprint(verdict["time_request"])[:40],
+                )
+                put(folder / (identifier + ".json"), record)
             if verdict["report_assessment"]:
                 try:
                     request = self.service.assess_report(

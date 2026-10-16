@@ -39,7 +39,10 @@ def active(sup, monkeypatch, *, timeout=700):
     return r
 
 
-def answer(sup, monkeypatch, stops, decision="replan", *, budget="infeasible", wake_worker=False):
+def answer(
+    sup, monkeypatch, stops, decision="replan", *, budget="infeasible",
+    wake_worker=False, time_request=None,
+):
     verdict = dict(
         decision=decision,
         rationale="The measured configuration cannot cover the target in budget.",
@@ -47,6 +50,7 @@ def answer(sup, monkeypatch, stops, decision="replan", *, budget="infeasible", w
         budget_feasibility=budget,
         stop_experiments=stops,
         wake_worker=wake_worker,
+        time_request=time_request,
         next_action=(
             "Commission a cheaper complete trajectory with adaptive stepping and accuracy checks."
         ),
@@ -70,6 +74,32 @@ def answer(sup, monkeypatch, stops, decision="replan", *, budget="infeasible", w
         return 0
 
     monkeypatch.setattr(sup, "launch", launch)
+
+
+def test_director_requests_time_but_cannot_apply_a_stale_budget_decision(tmp_path, monkeypatch):
+    from conjecture_solver.research_budget import extend_budget
+
+    sup = supervisor(tmp_path)
+    job = active(sup, monkeypatch)
+    original = sup.state["deadline"]
+    answer(sup, monkeypatch, [], decision="continue", time_request={
+        "hours": 6, "reason": "Allow the measured collision and relaxation window",
+    })
+    assert not sup.run_director(force=True)
+    assert sup.service._all("budget_requests")[0]["hours"] == 6
+    assert sup.state["deadline"] == original
+    assert not sup.service._read("experiments", job["id"]).get("cancel_requested")
+    prior_launch = sup.launch
+
+    def changing_budget(*args, **kwargs):
+        extend_budget(sup.root, hours=6, key="operator-grant")
+        return prior_launch(*args, **kwargs)
+
+    monkeypatch.setattr(sup, "launch", changing_budget)
+    assert not sup.run_director(force=True)
+    assert sup.state["deadline"] == original + 21600
+    assert len(sup.service._all("director")) == 1
+    assert sup.state["last_director_at"] == 0
 
 
 def test_director_stops_named_experiment_and_requires_artifact_plan(tmp_path, monkeypatch):

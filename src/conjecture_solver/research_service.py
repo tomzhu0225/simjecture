@@ -26,6 +26,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from .mvp_agent import BubblewrapSandbox
 from .mvp_skills import MVPCapabilityRegistry
+from .research_budget import BudgetRequests
 from .research_control import ControlService, ExperimentMonitor
 from .research_development import DevelopmentService
 from .research_guidance import GuidedResearch
@@ -89,6 +90,7 @@ def _positive_finite_seconds(value):
 
 
 class ResearchService(
+    BudgetRequests,
     GuidedResearch,
     MethodService,
     NotebookService,
@@ -108,6 +110,22 @@ class ResearchService(
             from .research_continuation import verify
 
             verify(self)
+
+    @property
+    def manifest(self):
+        # Atomic operator updates must reach long-lived supervisors and Lab clients.
+        stat = (self.root / "research.json").stat()
+        stamp = (stat.st_ino, stat.st_mtime_ns, stat.st_size)
+        if stamp != self._manifest_stamp:
+            self._manifest = json.loads((self.root / "research.json").read_text())
+            self._manifest_stamp = stamp
+        return self._manifest
+
+    @manifest.setter
+    def manifest(self, value):
+        self._manifest = value
+        stat = (self.root / "research.json").stat()
+        self._manifest_stamp = (stat.st_ino, stat.st_mtime_ns, stat.st_size)
 
     @classmethod
     def create(
@@ -938,6 +956,11 @@ class ResearchService(
             capability_additions=self._all("capability_additions"),
             progress=self.progress_summary(max(0, self.manifest["deadline"] - time.time())),
         )
+        from .research_budget import budget_status
+
+        snapshot["budget"] = budget_status(
+            self.root, manifest=self.manifest, experiments=snapshot["experiments"]
+        )
         for experiment in snapshot["experiments"]:
             linked = [r for r in reviews if experiment["id"] in r.get("experiments", [])]
             experiment["review_ids"] = [r["id"] for r in linked]
@@ -1154,6 +1177,9 @@ class Lab:
     def director_ack(self, decision, **kwargs):
         return self._service.director_ack(decision, **kwargs)
 
+    def request_time(self, **kwargs):
+        return self._service.request_time(**kwargs)
+
     def commit(self, statement, **kwargs):
         return self._service.commit(statement, **kwargs)
 
@@ -1206,6 +1232,7 @@ def main():
             "cancel",
             "director_status",
             "director_ack",
+            "request_time",
             "analyze",
             "progress",
             "reproduce_anchor",

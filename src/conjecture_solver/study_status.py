@@ -44,7 +44,10 @@ def study_status(root):
     reviews.sort(key=lambda r: r.get("created_at", 0))
     now = time.time()
     started = manifest.get("created_at") or state.get("started_at", now)
-    deadline = state.get("deadline", manifest.get("deadline", now))
+    deadline = (
+        manifest["deadline"] if manifest.get("budget_extensions")
+        else state.get("deadline", manifest.get("deadline", now))
+    )
     status = state.get("status", "initialized")
     recorded_status = status
     if deadline <= now and status not in {"completed", "cancelled"}:
@@ -191,9 +194,12 @@ def study_status(root):
         resource_policy = service.resource_policy()
         solver_development = service.solver_development_status()
         registration = service.registration_status()
+    from .research_budget import budget_status
     from .research_finalization import report_status
 
     return dict(
+        budget_control=budget_status(root, manifest=manifest, experiments=experiments)
+        if mode == "minimal" else {"supported": False, "can_extend": False},
         finalization=report_status(root, manifest),
         report_assessments=[read(p) for p in sorted((root / "report_requests").glob("*.json"))],
         worker_wait=worker_wait,

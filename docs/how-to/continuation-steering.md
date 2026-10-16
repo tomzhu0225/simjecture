@@ -2,6 +2,10 @@
 
 Continuation and steering apply to minimal studies.
 
+For more time on the same active question, use [Extend time](extend-study.md).
+This updates the current study's clock with an operator audit record. A continuation
+is for a finished study, a revised question or a new phase with its own scope.
+
 ## Continue after a deadline or change direction
 
 Open the study in **Autonomous research**, or open its **experiment monitor**.
@@ -79,8 +83,9 @@ simjecture steer --campaign runs/phase-2 \
 
 Guidance is advisory. It does not rewrite commitments, change acceptance rules,
 extend time or interrupt active simulations. Use the existing Pause/Stop controls
-for execution control. For new requirements, a new hypothesis or more time, use
-**Continue investigation**. This keeps the original contracts auditable while
+for execution control. Use **Extend time** for an active study's budget, and
+**Continue investigation** for new requirements, a new hypothesis or an ended study.
+This keeps the original contracts auditable while
 leaving the research agent free to plan its next experiments.
 
 ## Review and status recovery

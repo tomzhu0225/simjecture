@@ -78,6 +78,28 @@ button, .button { transition: background-color 140ms ease, border-color 140ms ea
 .study-navigation a:hover { color: var(--text); background: var(--white, var(--surface, #fff)); }
 .study-navigation [aria-current="page"] { color: var(--text); font-weight: 600; background: var(--white, var(--surface, #fff)); box-shadow: 0 1px 3px #0000000d; }
 .study-navigation [aria-disabled="true"] { opacity: .55; }
+
+.study-budget { margin: 12px 0; }
+.study-budget button, .study-budget-dialog button { min-height: 36px; padding: 7px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface, #fff); color: var(--text); font: inherit; font-size: 13px; cursor: pointer; }
+.study-budget button:hover, .study-budget-dialog button:hover { border-color: var(--accent); }
+.study-budget-dialog button[type="submit"] { background: #6658d9; border-color: #6658d9; color: #fff; }
+.study-budget-dialog button:disabled { cursor: wait; opacity: .6; }
+.study-budget-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+.study-budget-request { margin-top: 10px; padding: 12px; border: 1px solid var(--line); border-radius: 10px; }
+.study-budget-request p, .study-budget details p { overflow-wrap: anywhere; }
+.study-budget-dialog { width: min(540px, calc(100vw - 32px)); max-height: calc(100dvh - 40px); box-sizing: border-box; overflow: auto; padding: 24px; border: 1px solid var(--line); border-radius: 16px; color: var(--text); background: var(--surface, var(--white, #fff)); box-shadow: 0 20px 80px #0003; }
+.study-budget-dialog::backdrop { background: #07121b80; }
+.study-budget-dialog { font-family: var(--ui-font); font-size: 14px; line-height: 1.5; }
+.study-budget-dialog form { display: block; padding: 0; }
+.study-budget-dialog .field-help { color: var(--muted); font-size: 13px; }
+.study-budget-dialog .form-error:empty { display: none; }
+.study-budget-dialog h2 { margin: 0 0 12px; }
+.study-budget-dialog label { display: grid; gap: 6px; margin: 16px 0 10px; }
+.study-budget-dialog input, .study-budget-dialog textarea { width: 100%; min-width: 0; box-sizing: border-box; padding: 10px; font: inherit; color: var(--text); background: var(--surface, var(--white, #fff)); border: 1px solid var(--line); border-radius: 8px; }
+.study-budget-presets, .study-budget-dialog .study-controls { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.study-budget-preview { display: grid; gap: 5px; margin: 18px 0; }
+.study-budget-preview dt { color: var(--muted); font-size: 12px; }
+.study-budget-preview dd { margin: 0 0 8px; overflow-wrap: anywhere; }
 .study-card.selected-study { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
 .study-card .study-selection { font-size: 12px; margin-left: auto; }
 .study-card h3 a { color: inherit; text-decoration: none; }

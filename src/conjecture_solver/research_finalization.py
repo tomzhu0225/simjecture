@@ -44,6 +44,10 @@ def report_status(root, manifest):
     result = dict(policy, **_read(root / "finalization.json"))
     result.setdefault("phase", "research")
     result.setdefault("report_status", "not_started")
+    if result.get("finished_at") and result.get("budget_revision", 0) != len(
+        manifest.get("budget_extensions", [])
+    ):
+        result.update(phase="research", budget_superseded=True)
     result["compute_remaining_seconds"] = max(0, policy["compute_deadline"] - time.time())
     if result.get("report_status") == "reviewed":
         try:
@@ -323,13 +327,20 @@ class ResearchFinalization:
         """One bounded draft/review/revision cycle; never extends the study deadline."""
         if not self.service.manifest.get("finalization_policy"):
             return
-        if _read(self.root / "finalization.json").get("finished_at"):
+        revision = len(self.service.manifest.get("budget_extensions", []))
+        prior = _read(self.root / "finalization.json")
+        if prior.get("finished_at") and prior.get("budget_revision", 0) == revision:
             return
         self._finalizing = True
         remaining = max(0, self.state["deadline"] - time.time() - 5)
         budget = min(remaining, self.service.manifest["finalization_policy"]["reserve_seconds"])
+        # A mid-report extension must not donate hours of new research time to this review.
+        finish_deadline = min(self.state["deadline"] - 5, time.time() + budget)
         self.service.cancel_active(preserve_diagnostics=True)
-        self._finish_state(phase="writing report", report_status="drafting")
+        self._finish_state(
+            phase="writing report", report_status="drafting", budget_revision=revision,
+            finished_at=None, error=None,
+        )
         try:
             prompt = (
                 self.prompt()
@@ -361,7 +372,7 @@ class ResearchFinalization:
             if any(r["status"] == "queued" for r in self.service._all("reviews")):
                 previous = getattr(self, "launch_deadline", None)
                 self.launch_deadline = min(
-                    self.state["deadline"] - budget * 0.4, time.time() + budget * 0.2
+                    finish_deadline - budget * 0.4, time.time() + budget * 0.2
                 )
                 try:
                     self.process_reviews()
@@ -371,17 +382,17 @@ class ResearchFinalization:
                     self.launch_deadline = previous
             # Donate unused drafting time to review rather than losing it to a
             # fixed fraction. A transport timeout gets one remaining-budget retry.
-            left = max(0, self.state["deadline"] - time.time() - 5)
+            left = max(0, finish_deadline - time.time())
             try:
                 verdict = self._assess_report(left * 0.65)
             except ValueError as error:
-                left = self.state["deadline"] - time.time() - 5
+                left = finish_deadline - time.time()
                 if left < 20 or self.boundary():
                     raise
                 self.event("report_review_retry", error=str(error), remaining_seconds=left)
                 verdict = self._assess_report(left)
-            if verdict.decision == "needs_revision" and self.state["deadline"] - time.time() > 30:
-                left = self.state["deadline"] - time.time() - 5
+            if verdict.decision == "needs_revision" and finish_deadline - time.time() > 30:
+                left = finish_deadline - time.time()
                 self._finish_state(phase="revising report")
                 self._finish_call(
                     "revision",
@@ -391,7 +402,7 @@ class ResearchFinalization:
                     + verdict.model_dump_json(),
                     left * 0.4,
                 )
-                self._assess_report(self.state["deadline"] - time.time() - 5)
+                self._assess_report(finish_deadline - time.time())
         except (OSError, ValueError, RuntimeError) as error:
             self._finish_state(report_status="unreviewed", error=str(error)[:1000])
             self.event("report_finalization_incomplete", error=str(error))

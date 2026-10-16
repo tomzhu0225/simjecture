@@ -18,9 +18,14 @@ MODES = ("minimal", "structured", "frontier")
 
 
 def configure_parser(parser):
+    parser.add_argument("operation", nargs="?", choices=("extend", "budget"))
     parser.add_argument("--campaign", type=Path, required=True)
     parser.add_argument("--hypothesis-file", type=Path)
-    parser.add_argument("--instructions-file", type=Path, required=True)
+    parser.add_argument("--instructions-file", type=Path)
+    parser.add_argument("--hours", type=float, help="Additional wall hours for study extend")
+    parser.add_argument("--reason", default="", help="Reason for the budget extension")
+    parser.add_argument("--request-key", help="Idempotency key for a budget extension")
+    parser.add_argument("--request-id", help="Agent time request being granted")
     parser.add_argument(
         "--mode",
         "--workflow",
@@ -121,6 +126,22 @@ def selected_mode(root, requested=None, state_dir=None):
 
 
 def run(args):
+    if getattr(args, "operation", None):
+        import uuid
+
+        from .research_budget import budget_status, extend_budget
+
+        root = args.campaign.expanduser().resolve()
+        result = (
+            extend_budget(
+                root, hours=args.hours, reason=args.reason,
+                key=args.request_key or uuid.uuid4().hex, request_id=args.request_id,
+            ) if args.operation == "extend" else budget_status(root)
+        )
+        print(json.dumps(result, indent=2))
+        return 0
+    if not args.instructions_file:
+        raise ValueError("Provide --instructions-file when launching or resuming a study")
     root = args.campaign.expanduser().resolve()
     root.parent.mkdir(parents=True, exist_ok=True)
     digest = hashlib.sha256(str(root).encode()).hexdigest()[:20]

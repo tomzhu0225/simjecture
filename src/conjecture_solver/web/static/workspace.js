@@ -1415,6 +1415,19 @@ async function renderStudies() {
       metrics.append(item);
     }
     card.append(metrics);
+    const budget = el("div");
+    window.StudyBudget.render(budget, {
+      campaign:study.campaign, budget:data.live?.budget_control, readonly:state.readonly,
+      submit:payload => api("extend-study", payload),
+      onSaved:async () => {
+        toast("Study time extended. The director will update its plan.");
+        state.studyRevision = "";
+        if (state.project?.id === projectId) await renderStudies();
+      },
+    });
+    const budgetHistory = budget.querySelector("details[data-budget-history]");
+    if (budgetHistory && openDetails.has(budgetHistory.dataset.key)) budgetHistory.open = true;
+    card.append(budget);
     card.append(el("p", data.live?.activity || "", "field-help"));
     if (data.live?.usage_details) {
       const usage = data.live.usage_details;

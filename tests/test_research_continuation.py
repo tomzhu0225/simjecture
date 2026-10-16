@@ -11,6 +11,49 @@ from conjecture_solver.research_service import ResearchService, put
 from conjecture_solver.study_status import study_status
 
 
+def test_operator_budget_is_live_atomic_and_separate_from_agent_requests(tmp_path):
+    from concurrent.futures import ThreadPoolExecutor
+
+    from conjecture_solver.research_budget import budget_status, extend_budget
+    from tests.test_research_oversight import make
+
+    service, supervisor = make(tmp_path)
+    original = service.manifest.copy()
+    request = service.request_time(hours=12, reason="Allow time for collision and relaxation")
+    assert service.manifest["deadline"] == original["deadline"]
+    service.wait("Await the operator's budget decision", for_operator=True)
+    arguments = dict(hours=12, key="operator-budget-1", request_id=request["id"])
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        results = list(pool.map(lambda _: extend_budget(service.root, **arguments), range(2)))
+    assert results[0] == results[1]
+    # Existing service/supervisor objects must see the update without reconstruction.
+    assert service.manifest["deadline"] == original["deadline"] + 43200
+    assert supervisor.boundary() is None
+    assert supervisor.state["deadline"] == service.manifest["deadline"]
+    assert supervisor.service.waiting_status()["status"] == "woken"
+    assert supervisor.state["last_director_at"] == 0
+    assert supervisor.director_packet()["budget"]["revision"] == 1
+    clock = budget_status(service.root)
+    assert clock["requests"][0]["status"] == "granted"
+    assert len(clock["extensions"]) == 1
+    assert service.manifest["hypothesis"] == original["hypothesis"]
+    assert service.manifest["created_at"] == original["created_at"]
+    from conjecture_solver.web.application import SimjectureWebApplication, WebApplicationError
+
+    app = SimjectureWebApplication(initial_run=service.root, allow_mutations=False)
+    with pytest.raises(WebApplicationError, match="read-only"):
+        app.extend_study(app.initial_campaign, dict(hours=1, request_key="read-only"))
+    assert budget_status(service.root)["revision"] == 1
+    with pytest.raises(ValueError, match="different budget"):
+        extend_budget(service.root, **(arguments | {"hours": 6}))
+    with pytest.raises(ValueError, match="budget changed"):
+        extend_budget(service.root, hours=1, key="stale-preview",
+                      expected_deadline=original["deadline"])
+    put(supervisor.path, supervisor.state | {"status": "completed"})
+    with pytest.raises(ValueError, match="Continue investigation"):
+        extend_budget(service.root, hours=1, key="finished-study")
+
+
 def test_expired_parent_continues_without_changing_history(tmp_path):
     parent = ResearchService.create(tmp_path / "parent", "Original physical question")
     parent.freeze_protocol("Keep an independent energy balance")

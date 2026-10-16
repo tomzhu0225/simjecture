@@ -130,6 +130,41 @@ def test_reviewed_unresolved_report_never_approves_claim(tmp_path, monkeypatch):
     assert sup.service.status()["finalization"]["report_status"] == "changed_since_review"
 
 
+def test_extension_during_reporting_preserves_the_reserve_and_allows_a_fresh_report(
+    tmp_path, monkeypatch,
+):
+    from conjecture_solver.research_budget import extend_budget
+
+    sup = fixture(tmp_path)
+    original = sup.state["deadline"]
+    calls = []
+
+    def launch(directory, prompt, judge=False):
+        calls.append((judge, sup.launch_deadline))
+        if judge:
+            if len(calls) == 2:
+                extend_budget(sup.root, hours=12, key="during-report")
+                sup.boundary()
+            answer(directory)
+        else:
+            (sup.service.work / "RESULTS.md").write_text(f"Bounded report, pass {len(calls)}")
+        return 0
+
+    monkeypatch.setattr(sup, "launch", launch)
+    sup.finalize_report()
+    assert sup.state["deadline"] == original + 43200
+    assert report_status(sup.root, sup.service.manifest)["budget_superseded"]
+    assert all(deadline <= original for _, deadline in calls)
+    assert not sup.service.status()["completed"]
+    sup.finalize_report()
+    status = report_status(sup.root, sup.service.manifest)
+    assert status["budget_revision"] == 1 and status["report_status"] == "reviewed"
+    assert not status.get("budget_superseded")
+    assert all(deadline <= time.time() + 200 for _, deadline in calls)
+    sup.finalize_report()
+    assert len(calls) == 4
+
+
 def test_report_request_during_draft_is_fulfilled_by_final_reviewer(tmp_path, monkeypatch):
     sup = fixture(tmp_path)
     requests = []
