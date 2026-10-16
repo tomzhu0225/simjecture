@@ -524,7 +524,11 @@ def test_terminal_timeout_stops_descendant_commands(tmp_path):
     assert "timed out" in result
     child_pid = int((tmp_path / "child.pid").read_text())
     stat = Path(f"/proc/{child_pid}/stat")
-    assert not stat.exists() or stat.read_text().split(") ")[1].split()[0] in {"Z", "X"}
+    try:
+        state = stat.read_text().split(") ")[1].split()[0]
+    except (FileNotFoundError, ProcessLookupError):
+        return  # The stopped child has already been reaped.
+    assert state in {"Z", "X"}, f"Timed-out child {child_pid} is still in state {state}"
 
 
 def test_conversation_agents_are_independent_and_api_credentials_are_optional(
