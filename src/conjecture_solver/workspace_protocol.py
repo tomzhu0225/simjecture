@@ -9,6 +9,15 @@ interactive conversations retain their existing completion policy.
 import copy
 import json
 
+
+class ProviderRequestFailure(BaseException):
+    """Leave the agent loop so the supervisor, not the model, retries transport."""
+
+    def __init__(self, cause):
+        super().__init__("Provider request failed")
+        self.cause = cause
+
+
 ACTION_INSTRUCTION = (
     "When work remains, make the next structured tool call in this same response. "
     "A progress sentence may accompany that call; do not send a standalone promise "

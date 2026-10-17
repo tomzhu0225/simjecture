@@ -47,8 +47,9 @@ def test_operator_budget_is_live_atomic_and_separate_from_agent_requests(tmp_pat
     with pytest.raises(ValueError, match="different budget"):
         extend_budget(service.root, **(arguments | {"hours": 6}))
     with pytest.raises(ValueError, match="budget changed"):
-        extend_budget(service.root, hours=1, key="stale-preview",
-                      expected_deadline=original["deadline"])
+        extend_budget(
+            service.root, hours=1, key="stale-preview", expected_deadline=original["deadline"]
+        )
     put(supervisor.path, supervisor.state | {"status": "completed"})
     with pytest.raises(ValueError, match="Continue investigation"):
         extend_budget(service.root, hours=1, key="finished-study")
@@ -200,7 +201,7 @@ def test_empty_judge_output_retries_once_and_counts_both_attempts(tmp_path, monk
     )
     assert json.loads(result)["decision"] == "revise"
     assert len(calls) == 2
-    assert calls[1]["extra_body"]["thinking"]["type"] == "disabled"
+    assert all("extra_body" not in call for call in calls)  # Retain provider reasoning mode.
     assert sum(v["output_tokens"] for k, v in events if k == "usage") == 32788
     assert [v["finish_reason"] for k, v in events if k == "review_response"] == ["length", "stop"]
 

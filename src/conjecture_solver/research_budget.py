@@ -34,6 +34,7 @@ def _text(value, name, limit, *, required=False):
 
 def budget_status(root, *, manifest=None, experiments=None):
     """A fresh clock for operator interfaces and external watchdogs."""
+    from .research_limits import operating_limits
     from .study_status import supervisor_directory
 
     root = Path(root)
@@ -53,22 +54,27 @@ def budget_status(root, *, manifest=None, experiments=None):
         experiments = [_read(p) for p in (root / "experiments").glob("*.json")]
     return dict(
         supported=bool(manifest),
+        operating_limits=operating_limits(root),
         can_extend=bool(
-            deadline and deadline > now and state.get("status") not in TERMINAL
+            deadline
+            and deadline > now
+            and state.get("status") not in TERMINAL
             and not manifest.get("hosted_runtime_policy", {}).get("unbounded")
         ),
         deadline=deadline,
         compute_deadline=manifest.get("finalization_policy", {}).get("compute_deadline", deadline),
         remaining_seconds=max(0, deadline - now) if deadline is not None else 0,
         total_seconds=deadline - manifest.get("created_at", deadline) if deadline else 0,
-        original_deadline=manifest.get("original_deadline", events[0].get("previous_deadline")
-                                       if events else deadline),
+        original_deadline=manifest.get(
+            "original_deadline", events[0].get("previous_deadline") if events else deadline
+        ),
         revision=len(events),
         extensions=events,
         requests=requests[-8:],
         experiment_limits=[
             {k: e.get(k) for k in ("id", "timeout", "execution_deadline", "started_at")}
-            for e in experiments if e.get("status") in {"queued", "running"}
+            for e in experiments
+            if e.get("status") in {"queued", "running"}
         ],
         scope="Extra campaign time does not change individual experiment limits or evidence rules.",
     )
@@ -86,7 +92,9 @@ def extend_budget(
     reason = _text(reason, "a reason", 2400)
     actor = _text(
         "operator:" + getuser() if actor is None else actor,
-        "the operator identity", 160, required=True,
+        "the operator identity",
+        160,
+        required=True,
     )
     if request_id is not None:
         request_id = _text(request_id, "a time-request ID", 120, required=True)
@@ -98,8 +106,11 @@ def extend_budget(
         events = manifest.get("budget_extensions", [])
         for event in events:
             if event.get("request_key") == key:
-                if (event["additional_seconds"] != seconds or event.get("reason", "") != reason
-                        or event.get("request_id") != request_id):
+                if (
+                    event["additional_seconds"] != seconds
+                    or event.get("reason", "") != reason
+                    or event.get("request_id") != request_id
+                ):
                     raise ValueError("Request key already used for a different budget extension")
                 return event
         now = time.time()
@@ -130,9 +141,14 @@ def extend_budget(
             "compute_deadline", previous
         )
         event = dict(
-            id="extension_" + uuid.uuid4().hex, request_key=key, created_at=now,
-            actor=actor, reason=reason, additional_seconds=seconds,
-            previous_deadline=previous, new_deadline=deadline,
+            id="extension_" + uuid.uuid4().hex,
+            request_key=key,
+            created_at=now,
+            actor=actor,
+            reason=reason,
+            additional_seconds=seconds,
+            previous_deadline=previous,
+            new_deadline=deadline,
             request_id=request_id,
             scope="Operator budget authorization only; existing experiment limits are unchanged.",
         )
@@ -165,8 +181,12 @@ class BudgetRequests:
                         raise ValueError("Request key already used for a different time request")
                     return request
             record = dict(
-                id="time_" + uuid.uuid4().hex, created_at=time.time(), hours=hours,
-                reason=reason, requested_by=requested_by, request_key=key,
+                id="time_" + uuid.uuid4().hex,
+                created_at=time.time(),
+                hours=hours,
+                reason=reason,
+                requested_by=requested_by,
+                request_key=key,
                 authority="Request only; the operator must authorize any additional budget.",
             )
             (self.root / "budget_requests").mkdir(exist_ok=True)

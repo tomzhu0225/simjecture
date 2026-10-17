@@ -1420,6 +1420,12 @@ async function renderStudies() {
     window.StudyBudget.render(budget, {
       campaign:study.campaign, budget:data.live?.budget_control, readonly:state.readonly,
       submit:payload => api("extend-study", payload),
+      submitLimits:hosted ? undefined : payload => api("study-limits", payload),
+      onLimitsSaved:async () => {
+        toast("Run settings saved. New worker and review calls will use them.");
+        state.studyRevision = "";
+        if (state.project?.id === projectId) await renderStudies();
+      },
       onSaved:async () => {
         toast("Study time extended. The director will update its plan.");
         state.studyRevision = "";
@@ -1430,6 +1436,7 @@ async function renderStudies() {
     if (budgetHistory && openDetails.has(budgetHistory.dataset.key)) budgetHistory.open = true;
     card.append(budget);
     card.append(el("p", data.live?.activity || "", "field-help"));
+    if (data.live?.background_review) card.append(el("p", "Director reviewing alongside the worker", "field-help"));
     if (data.live?.usage_details) {
       const usage = data.live.usage_details;
       card.append(el("p", `${usage.requests} tracked requests; ${usage.requests_without_usage} without usage yet. Cache usage ${usage.cache_usage_complete ? "reported" : "not fully reported"}. ${usage.cost_note}`, "field-help"));

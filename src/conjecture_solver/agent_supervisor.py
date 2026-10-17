@@ -251,6 +251,13 @@ class AgentSupervisor:
         duration = float("inf") if unbounded else min(self.args.turn_seconds, remaining)
         if duration <= 0:
             return 124
+        if judge and (self.root / "review_objects").is_dir():
+            prompt += (
+                f"\nRead-only review object store: {self.root / 'review_objects'}. "
+                "Source/packet references contain complete hashed files. Use native read-only "
+                "file tools or read_review_asset with the reference SHA256 and byte offsets. "
+                "Omitted content remains uninspected until retrieved; it is not absent evidence."
+            )
         (directory / "task.txt").write_text(prompt)
         worker_backend = getattr(self.args, "backend", "agy")
         backend = self.review_backend() if judge else worker_backend
@@ -258,7 +265,9 @@ class AgentSupervisor:
         provider_config = getattr(self.args, "provider_config", None)
         if judge:
             route = review_route(
-                worker_backend, executable, provider_config,
+                worker_backend,
+                executable,
+                provider_config,
                 judge_backend=getattr(self.args, "judge_backend", None),
                 judge_executable=getattr(self.args, "judge_executable", None),
                 judge_provider_config=getattr(self.args, "judge_provider_config", None),
@@ -285,9 +294,14 @@ class AgentSupervisor:
                 str(max(1, remaining)),
             ]
             if judge:
-                command += ["--judge"]
+                command += ["--judge", "--review-root", str(self.root)]
             elif self.workflow == "frontier":
                 command += ["--session-dir", str(self.directory / "worker-session")]
+                from .research_limits import operating_limits
+
+                actions = operating_limits(self.root)["worker_action_limit"]
+                if actions is not None:
+                    command += ["--action-limit", str(actions)]
         elif backend in {"codex", "codex-glm"}:
             cursor = self.state.get("worker_cursor") if self.workflow == "frontier" else None
             command = [executable, "exec"]
@@ -391,6 +405,12 @@ class AgentSupervisor:
                 stdin=prompt_stream if prompt_on_stdin else subprocess.DEVNULL,
             )
             self.state["child_pid"] = child.pid
+            if getattr(self, "record_review_identity", False):
+                from .mvp_launch import read_process_identity
+
+                identity = read_process_identity(child.pid, command, run_directory=directory)
+                if identity:
+                    atomic_json(directory / "child_identity.json", identity.model_dump(mode="json"))
             if backend == "builtin":
                 self.state["active_usage_directory"] = str(directory)
             self.state["activity"] = (
@@ -421,6 +441,8 @@ class AgentSupervisor:
             handoff_since = None
             try:
                 while child.poll() is None:
+                    if not judge:
+                        getattr(self, "supervise_worker", lambda directory: None)(directory)
                     size = (directory / "response.json").stat().st_size
                     if size != observed_bytes:
                         observed_bytes = size

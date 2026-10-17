@@ -10,6 +10,45 @@ window.StudyBudget = (() => {
   const date = (seconds) => new Date(seconds * 1000).toLocaleString();
   const hours = (seconds) => Number((seconds / 3600).toFixed(2));
 
+  function editLimits(options) {
+    const dialog = node("dialog", undefined, "study-budget-dialog");
+    dialog.setAttribute("aria-label", "Study run settings");
+    const form = node("form");
+    form.append(node("h2", "Run settings"), node("p", "These operating settings do not extend the campaign deadline or grant more storage, memory, or compute.", "field-help"));
+    const fields = {};
+    for (const [key, title, help] of [
+      ["worker_action_limit", "Actions per worker turn", "Blank allows the worker to continue within the campaign budget."],
+      ["worker_checkpoint_seconds", "Worker checkpoint after (seconds)", "Blank avoids a forced interruption. The director reviews progress alongside the worker."],
+      ["review_seconds", "Review allowance (seconds)", "Blank uses the study's recorded review or turn allowance. Every review stays within the campaign deadline."],
+    ]) {
+      const label = node("label", title), input = node("input");
+      input.type = "number"; input.min = "1"; input.step = key === "worker_action_limit" ? "1" : "any";
+      input.value = options.budget.operating_limits?.[key] ?? "";
+      label.append(input); form.append(label, node("p", help, "field-help")); fields[key] = input;
+    }
+    const why = node("label", "Reason"), reason = node("textarea");
+    reason.required = true; reason.maxLength = 2400; reason.rows = 2;
+    why.append(reason); form.append(why);
+    const error = node("p", "", "form-error"); error.setAttribute("role", "alert"); form.append(error);
+    const controls = node("div", undefined, "study-controls");
+    const cancel = node("button", "Cancel", "secondary"), save = node("button", "Save settings", "primary");
+    cancel.type = "button"; save.type = "submit"; cancel.onclick = () => dialog.close();
+    controls.append(cancel, save); form.append(controls);
+    let busy = false;
+    form.onsubmit = async event => {
+      event.preventDefault(); if (busy) return;
+      busy = true; save.disabled = true; cancel.disabled = true;
+      const limits = Object.fromEntries(Object.entries(fields).map(([k, input]) => [k, input.value === "" ? null : Number(input.value)]));
+      try {
+        await options.submitLimits({campaign:options.campaign, limits, reason:reason.value});
+        dialog.close(); await (options.onLimitsSaved || options.onSaved)();
+      } catch (e) { error.textContent = e.message; busy = false; save.disabled = false; cancel.disabled = false; }
+    };
+    dialog.addEventListener("cancel", event => { if (busy) event.preventDefault(); });
+    dialog.addEventListener("close", () => dialog.remove());
+    dialog.append(form); document.body.append(dialog); dialog.showModal(); fields.worker_action_limit.focus();
+  }
+
   function open({campaign, budget, request, submit, onSaved}) {
     const dialog = node("dialog", undefined, "study-budget-dialog");
     dialog.setAttribute("aria-label", "Extend study time");
@@ -89,6 +128,10 @@ window.StudyBudget = (() => {
     container.classList.add("study-budget");
     const row = node("div", undefined, "study-budget-heading");
     row.append(node("span", `Deadline · ${date(budget.deadline)}`, "field-help"));
+    if (!readonly && options.submitLimits && budget.operating_limits && budget.remaining_seconds > 0) {
+      const settings = node("button", "Run settings", "secondary"); settings.type = "button";
+      settings.onclick = () => editLimits(options); row.append(settings);
+    }
     if (budget.can_extend && !readonly) {
       const extend = node("button", "Extend time", "secondary"); extend.type = "button";
       extend.onclick = () => open(options); row.append(extend);

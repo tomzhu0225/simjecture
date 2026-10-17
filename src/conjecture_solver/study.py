@@ -19,7 +19,8 @@ MODES = ("minimal", "structured", "frontier")
 
 
 def configure_parser(parser):
-    parser.add_argument("operation", nargs="?", choices=("extend", "budget"))
+    parser.add_argument("operation", nargs="?", choices=("extend", "budget", "limits"))
+    parser.add_argument("--limits-file", type=Path, help="JSON operating settings for study limits")
     parser.add_argument("--campaign", type=Path, required=True)
     parser.add_argument("--hypothesis-file", type=Path)
     parser.add_argument("--instructions-file", type=Path)
@@ -62,7 +63,9 @@ def configure_parser(parser):
     )
     parser.add_argument("--state-dir", type=Path)
     parser.add_argument(
-        "--capabilities", type=Path, default=Path("auto"),
+        "--capabilities",
+        type=Path,
+        default=Path("auto"),
         help="auto (default): all available tools; directory: restrict; none: Python only",
     )
     parser.add_argument("--machine-registry", type=Path, help="Local/SSH worker registry directory")
@@ -83,7 +86,8 @@ def configure_parser(parser):
     parser.add_argument("--model")
     parser.add_argument("--judge-model")
     parser.add_argument(
-        "--judge-backend", choices=["codex-glm", "codex", "grok", "agy", "builtin"],
+        "--judge-backend",
+        choices=["codex-glm", "codex", "grok", "agy", "builtin"],
         help="Director and reviewer backend; defaults to the worker backend",
     )
     parser.add_argument("--judge-executable")
@@ -104,15 +108,21 @@ def configure_parser(parser):
     )
     parser.add_argument("--quiet", action="store_true", help="Suppress live terminal progress")
     parser.add_argument(
-        "--allow-solver-development", action=argparse.BooleanOptionalAction, default=None,
+        "--allow-solver-development",
+        action=argparse.BooleanOptionalAction,
+        default=None,
         help="Allow private experimental solver forks (new minimal studies default to allowed)",
     )
     parser.add_argument(
-        "--director-storage-increases", action="store_true", default=None,
+        "--director-storage-increases",
+        action="store_true",
+        default=None,
         help="Delegate recorded storage allowance increases to the director (minimal)",
     )
     parser.add_argument(
-        "--director-registration-tuning", action=argparse.BooleanOptionalAction, default=None,
+        "--director-registration-tuning",
+        action=argparse.BooleanOptionalAction,
+        default=None,
         help="Delegate probe deadlines/retries to the director (new minimal studies default on)",
     )
     parser.set_defaults(handler=run)
@@ -137,6 +147,23 @@ def selected_mode(root, requested=None, state_dir=None):
 
 def run(args):
     if getattr(args, "operation", None):
+        if args.operation == "limits":
+            from .research_limits import configure_limits, operating_limits
+
+            root = args.campaign.expanduser().resolve()
+            if not (root / "research.json").is_file():
+                raise ValueError("Operating settings require an existing minimal study")
+            result = (
+                configure_limits(
+                    root,
+                    json.loads(args.limits_file.read_text()),
+                    reason=args.reason or "Operator changed study operating settings",
+                )
+                if args.limits_file
+                else dict(limits=operating_limits(root))
+            )
+            print(json.dumps(result))
+            return 0
         import uuid
 
         from .research_budget import budget_status, extend_budget
@@ -144,9 +171,14 @@ def run(args):
         root = args.campaign.expanduser().resolve()
         result = (
             extend_budget(
-                root, hours=args.hours, reason=args.reason,
-                key=args.request_key or uuid.uuid4().hex, request_id=args.request_id,
-            ) if args.operation == "extend" else budget_status(root)
+                root,
+                hours=args.hours,
+                reason=args.reason,
+                key=args.request_key or uuid.uuid4().hex,
+                request_id=args.request_id,
+            )
+            if args.operation == "extend"
+            else budget_status(root)
         )
         print(json.dumps(result, indent=2))
         return 0
@@ -211,8 +243,10 @@ def _run(args):
         args.allow_solver_development = saved_development
     else:
         args.allow_solver_development = (
-            requested_development if requested_development is not None else True
-        ) if mode == "minimal" else None
+            (requested_development if requested_development is not None else True)
+            if mode == "minimal"
+            else None
+        )
     from .mvp_guidance import MVPGuidedCommissioningPackage
 
     guided = (
@@ -249,13 +283,16 @@ def _run(args):
             from .web.inventory import automatic_tool_paths, freeze_available_tools
 
             paths = automatic_tool_paths()
-            parent_capabilities = read(getattr(args, "continue_from", None) / "research.json").get(
-                "capabilities"
-            ) if getattr(args, "continue_from", None) else None
+            parent_capabilities = (
+                read(getattr(args, "continue_from", None) / "research.json").get("capabilities")
+                if getattr(args, "continue_from", None)
+                else None
+            )
             if parent_capabilities:
                 paths.insert(0, parent_capabilities)
             args.capabilities = freeze_available_tools(
-                paths, args.campaign.parent / ".simjecture-tools" / uuid.uuid4().hex,
+                paths,
+                args.campaign.parent / ".simjecture-tools" / uuid.uuid4().hex,
             )
         else:
             args.capabilities = None
@@ -288,8 +325,11 @@ def _run(args):
         chosen = getattr(args, field, None)
         setattr(args, field, chosen or saved)
     review = review_route(
-        args.backend, args.executable, args.provider_config,
-        judge_backend=args.judge_backend, judge_executable=args.judge_executable,
+        args.backend,
+        args.executable,
+        args.provider_config,
+        judge_backend=args.judge_backend,
+        judge_executable=args.judge_executable,
         judge_provider_config=args.judge_provider_config,
     )
     if previous:
@@ -297,9 +337,10 @@ def _run(args):
             previous["backend"],
             saved_request.get("agent_executable") or previous["backend"],
             saved_request.get("provider_config"),
-            **{field: saved_request.get(field) or saved_review.get(field) for field in (
-                "judge_backend", "judge_executable", "judge_provider_config"
-            )},
+            **{
+                field: saved_request.get(field) or saved_review.get(field)
+                for field in ("judge_backend", "judge_executable", "judge_provider_config")
+            },
         )
         if review != original_review:
             raise ValueError("Reviewer backend is part of the saved launch contract")
@@ -383,7 +424,8 @@ def _run(args):
                 else None,
                 allow_solver_development=args.allow_solver_development,
                 method_review_scope=existing_research.get("method_review_scope", "study")
-                if existing_research else "used_instruments",
+                if existing_research
+                else "used_instruments",
             )
             if hypothesis is not None
             else ResearchService(args.campaign)
@@ -481,7 +523,8 @@ def _run(args):
             allow_solver_development=args.allow_solver_development,
             capability_directory=str(args.capabilities) if args.capabilities else None,
             method_review_scope=supervisor.service.manifest.get("method_review_scope", "study")
-            if mode == "minimal" else "study",
+            if mode == "minimal"
+            else "study",
             agent_executable=args.executable,
             provider_config=getattr(args, "provider_config", None),
             machine_registry=str(machine_registry) if machine_registry else None,
@@ -495,7 +538,8 @@ def _run(args):
         # The request schema normalizes whitespace. Preserve the exact frozen
         # hypothesis for resumes, which compare it with the service manifest.
         (operator / "hypothesis.txt").write_text(
-            hypothesis or (
+            hypothesis
+            or (
                 supervisor.service.manifest["hypothesis"]
                 if mode == "minimal"
                 else CampaignKernel.open_existing(args.campaign).hypothesis

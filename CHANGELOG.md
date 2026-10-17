@@ -4,6 +4,18 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+- Remove automatic five-minute worker interruption and the built-in research
+  adapter's default action ceiling. Run director assessments concurrently with
+  workers, preserve their usage accounting, and expose recorded operating settings
+  in the study CLI and browser. Retain deadlines, resource reservations and review
+  gates. Review retries retain provider reasoning mode, and public API agents also
+  use provider output defaults unless their operator specifies a plan limit.
+
+- Preserve complete hashed review sources/results with ranged read-only access
+  instead of rejecting large files or evidence packets. Add paged file, skill,
+  webpage and remote source reads; spool and rotate console logs rather than
+  failing verbose jobs; stream large local artifact downloads.
+
 - Use provider output-token defaults for built-in API workers and reviewers.
   Remove the implicit 8K worker and 32K reviewer ceilings, honor an explicit
   provider-profile `max_tokens`, and record output-budget selection in request

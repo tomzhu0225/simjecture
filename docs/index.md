@@ -123,6 +123,7 @@ how-to/research-service
 how-to/continuation-steering
 how-to/extend-study
 how-to/minimal-oversight
+how-to/operating-limits
 how-to/research-memory
 getting-started/web-interface
 getting-started/terminal-ui

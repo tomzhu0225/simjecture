@@ -102,7 +102,8 @@ class MethodService(RegistrationService):
         worker = pool["workers"][machine]
         return self.probe_registration(
             MachineRegistry(pool["registry"]).transport(machine, frozen=worker),
-            name=name, machine=machine,
+            name=name,
+            machine=machine,
             validate=lambda probe: self._validate_remote_registration(name, machine, pool, probe),
         )
 
@@ -118,9 +119,11 @@ class MethodService(RegistrationService):
         if probe["capacity"] != worker["profile"]["config"] or not probe["execution"]["available"]:
             raise ValueError("Worker capacity or exact experiment launcher is unavailable")
         for entry in pool["capabilities"].values():
-            if entry["machine"] == machine and probe["capabilities"].get(
-                entry["worker_capability"], {}
-            ).get("contract_sha256") != entry["runtime_sha256"]:
+            if (
+                entry["machine"] == machine
+                and probe["capabilities"].get(entry["worker_capability"], {}).get("contract_sha256")
+                != entry["runtime_sha256"]
+            ):
                 raise ValueError(
                     "Existing capability identity is immutable; restore it and use a new name"
                 )
@@ -163,8 +166,9 @@ class MethodService(RegistrationService):
                 raise ValueError("Existing capability identity is immutable; use a new name")
             if prior is not None:
                 if development is not None:
-                    previous = next((r for r in self._all("capability_additions")
-                                     if r["name"] == name), {})
+                    previous = next(
+                        (r for r in self._all("capability_additions") if r["name"] == name), {}
+                    )
                     if previous.get("development") != development:
                         raise ValueError("Registered development provenance is immutable")
                 return dict(name=name, runtime_sha256=prior)
@@ -209,10 +213,14 @@ class MethodService(RegistrationService):
             ):
                 raise ValueError("Method needs independent review; end this turn for the host")
         elif stage == "evidence" and (
-            (self.manifest.get("methods_required", False) and (
-                self.manifest.get("method_review_scope", "study") == "study"
-                or binding["capability"] or requirements.get("require_method_review", False)
-            ))
+            (
+                self.manifest.get("methods_required", False)
+                and (
+                    self.manifest.get("method_review_scope", "study") == "study"
+                    or binding["capability"]
+                    or requirements.get("require_method_review", False)
+                )
+            )
             or any(r["name"] == binding["capability"] for r in self._all("capability_additions"))
         ):
             raise ValueError(
@@ -271,24 +279,20 @@ class MethodService(RegistrationService):
         prefixes = self.manifest.get("requirements", {}).get("required_capability_prefixes", [])
         if prefixes and not any((capability or "").startswith(p) for p in prefixes):
             raise ValueError("Proposed method violates required capabilities")
-        sources = {}
-        for name in binding["inputs"]:
-            path = self._source(name)
-            if path.stat().st_size > 131072:
-                if name == source or path.suffix.lower() in {".py", ".f90", ".h", ".sh"}:
-                    raise ValueError("Method source exceeds 128 KiB; provide a compact interface")
-                continue
-            if name == source or path.suffix.lower() in {
-                ".py",
-                ".f90",
-                ".h",
-                ".par",
-                ".txt",
-                ".json",
-                ".md",
-                ".sh",
-            }:
-                sources[name] = path.read_text()
+        from .review_assets import source_views
+
+        sources, source_references = source_views(
+            self.root,
+            self.work,
+            binding["inputs"],
+            [
+                n
+                for n in binding["inputs"]
+                if n == source
+                or self._source(n).suffix.lower()
+                in {".py", ".f90", ".h", ".par", ".txt", ".json", ".md", ".sh"}
+            ],
+        )
         evidence = []
         from .research_audit import review_documents
         from .research_service import sha
@@ -307,13 +311,19 @@ class MethodService(RegistrationService):
             for name, meta in r.get("artifacts", {}).items():
                 if sha(w / name) != meta["sha256"]:
                     raise ValueError("Commissioning artifact changed")
-            docs, raw, findings = review_documents(w, r, require_document=False)
-            validation_sources = {
-                name: (w / name).read_text()
-                for name in r["binding"]["inputs"]
-                if (name == r["binding"]["source"] or name.endswith((".py", ".F90", ".f90")))
-                and (w / name).stat().st_size <= 131072
-            }
+            docs, raw, findings = review_documents(
+                w, r, require_document=False, review_root=self.root
+            )
+            validation_sources, validation_references = source_views(
+                self.root,
+                w,
+                r["binding"]["inputs"],
+                [
+                    n
+                    for n in r["binding"]["inputs"]
+                    if n == r["binding"]["source"] or n.endswith((".py", ".F90", ".f90"))
+                ],
+            )
             from .research_receipts import receipt_projection
 
             evidence.append(
@@ -321,6 +331,7 @@ class MethodService(RegistrationService):
                     record=receipt_projection(self, r),
                     documents=docs,
                     sources=validation_sources,
+                    source_references=validation_references,
                     raw_artifacts=raw,
                     output_findings=findings,
                 )
@@ -343,10 +354,12 @@ class MethodService(RegistrationService):
         body = dict(
             binding=binding,
             sources=sources,
+            source_references=source_references,
             solver_development=dict(
                 policy=self.solver_development_policy(),
-                registration=next((r for r in self._all("capability_additions")
-                                   if r["name"] == capability), None),
+                registration=next(
+                    (r for r in self._all("capability_additions") if r["name"] == capability), None
+                ),
             ),
             **fields,
             evidence=evidence,
@@ -354,8 +367,6 @@ class MethodService(RegistrationService):
             blockers=list(blockers),
             **({"limitations": list(limitations)} if limitations else {}),
         )
-        if len(json.dumps(body).encode()) > 700_000:
-            raise ValueError("Method packet exceeds 700 KiB")
         identifier = "method_" + fingerprint(body)[:24]
         with self.lock():
             directory = self.root / "methods"

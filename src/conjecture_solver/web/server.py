@@ -6,6 +6,7 @@ import hmac
 import ipaddress
 import json
 import mimetypes
+import re
 import secrets
 import threading
 import time
@@ -371,6 +372,7 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
                                 "usage",
                                 "usage_details",
                                 "instrument_requirement",
+                                "background_review",
                             )
                         },
                         steering=steering(root),
@@ -392,6 +394,7 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
                     else workspace.directory(self._one_value(query, "id"))
                 )
                 root = project / "files"
+                requested_path = self._one_value(query, "path")
                 if endpoint == "simulation-file":
                     from .jobs import read, resolve
 
@@ -401,13 +404,22 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
                         if read(job / "request.json").get("kind") == "command"
                         else job / "workspace"
                     )
+                    if requested_path.startswith("__console__/"):
+                        name = requested_path.removeprefix("__console__/")
+                        if name != "output.log" and not re.fullmatch(
+                            r"output\.[0-9]{6}\.log\.gz", name
+                        ):
+                            raise ValueError("Unknown console archive")
+                        root, requested_path = job, name
                 if root.is_symlink() or not root.resolve().is_relative_to(project.resolve()):
                     raise ValueError("Invalid artifact directory")
-                path = contained(root, self._one_value(query, "path"))
-                if not path.is_file() or path.stat().st_size > MAX_ARTIFACT_BYTES:
-                    raise ValueError("File is missing or exceeds 64 MB")
-                body = path.read_bytes()
+                path = contained(root, requested_path)
+                if not path.is_file():
+                    raise ValueError("File is missing")
+                size = path.stat().st_size
                 preview = endpoint == "preview" or query.get("preview") == ["1"]
+                if preview and size > MAX_ARTIFACT_BYTES:
+                    raise ValueError("Figure preview exceeds 64 MiB; download the full file")
                 if preview and path.suffix.lower() not in {
                     ".png",
                     ".jpg",
@@ -430,11 +442,13 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
                     + "; filename*=UTF-8''"
                     + quote(path.name),
                 )
-                self.send_header("Content-Length", str(len(body)))
+                self.send_header("Content-Length", str(size))
                 for key, value in ARTIFACT_SECURITY_HEADERS.items():
                     self.send_header(key, value)
                 self.end_headers()
-                self.wfile.write(body)
+                with path.open("rb") as stream:
+                    while chunk := stream.read(64 * 1024):
+                        self.wfile.write(chunk)
             else:
                 raise WebApplicationError("Workspace endpoint not found", status=404)
         except (ValueError, OSError) as error:
@@ -480,6 +494,8 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
                 result = submit(root, payload.get("message"), key=payload.get("request_key"))
             elif endpoint == "extend-study":
                 result = self.server.application.extend_study(payload.get("campaign"), payload)
+            elif endpoint == "study-limits":
+                result = self.server.application.study_limits(payload.get("campaign"), payload)
             elif endpoint == "new-study":
                 result = workspace.new_study(payload.get("project"))
             elif endpoint == "prepare":

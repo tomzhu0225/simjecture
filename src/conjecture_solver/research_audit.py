@@ -63,22 +63,33 @@ def output_findings(workspace, outputs):
     return findings
 
 
-def review_documents(workspace, record, *, require_document=True):
+def review_documents(workspace, record, *, require_document=True, review_root=None):
     """Read compact text only. Raw arrays stay hashed, listed, and explicitly uninspected."""
     selected = record.get("review_documents")
     if selected is None:
         selected = [
             p
             for p in record["outputs"]
-            if Path(p).suffix.lower() in TEXT_SUFFIXES
-            and (workspace / p).is_file()
-            and (workspace / p).stat().st_size <= 262144
+            if Path(p).suffix.lower() in TEXT_SUFFIXES and (workspace / p).is_file()
         ]
     documents = {}
     for name in selected:
         path = workspace / name
-        if not path.is_file() or path.stat().st_size > 262144:
-            raise ValueError("Review documents must exist and be at most 256 KiB")
+        if not path.is_file():
+            raise ValueError("Review documents must exist")
+        if path.stat().st_size > 32768:
+            from .review_assets import freeze_file
+
+            documents[name] = dict(
+                reference=freeze_file(
+                    review_root or workspace,
+                    path,
+                    expected_sha256=record.get("artifacts", {}).get(name, {}).get("sha256"),
+                ),
+                inspected=False,
+                note="Retrieve relevant ranges; not inspected inline",
+            )
+            continue
         try:
             documents[name] = path.read_text()
         except UnicodeError as error:

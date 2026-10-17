@@ -143,6 +143,19 @@ class CampaignRegistry:
 class SimjectureWebApplication:
     """Project campaigns and execute the small set of reviewed operator controls."""
 
+    def study_limits(self, token, payload):
+        from ..research_budget import budget_status
+        from ..research_limits import configure_limits
+
+        self._require_mutations()
+        root = self.registry.resolve(token)
+        result = configure_limits(
+            root,
+            payload.get("limits"),
+            reason=payload.get("reason") or "Operator changed study settings",
+        )
+        return result | dict(budget=budget_status(root))
+
     def extend_study(self, token, payload):
         from ..research_budget import budget_status, extend_budget
 
@@ -151,8 +164,11 @@ class SimjectureWebApplication:
         if not (root / "research.json").exists():
             raise ValueError("Live budget extension currently requires a minimal study")
         event = extend_budget(
-            root, hours=payload.get("hours"), reason=payload.get("reason", ""),
-            key=payload.get("request_key"), request_id=payload.get("request_id"),
+            root,
+            hours=payload.get("hours"),
+            reason=payload.get("reason", ""),
+            key=payload.get("request_key"),
+            request_id=payload.get("request_id"),
             expected_deadline=payload.get("expected_deadline"),
         )
         return dict(extension=event, budget=budget_status(root))
@@ -532,8 +548,6 @@ class SimjectureWebApplication:
             size = path.stat().st_size
         except OSError as error:
             raise WebApplicationError("artifact could not be read", status=404) from error
-        if size > MAX_ARTIFACT_BYTES:
-            raise WebApplicationError("artifact is too large for browser delivery", status=413)
         content_type = mimetypes.guess_type(path.name)[0] or "application/octet-stream"
         if path.suffix.lower() in TEXT_SUFFIXES and content_type == "application/octet-stream":
             content_type = "text/plain; charset=utf-8"
@@ -755,6 +769,7 @@ def _engine_projection(
             worker_wait=status.get("worker_wait", {}),
             director_policy=status.get("director_policy", {}),
             director_route=status.get("director_route", {}),
+            background_review=status.get("background_review"),
             director_decisions=status.get("director_decisions", []),
             resource_limits=status.get("resource_limits", {}),
             resource_policy=status.get("resource_policy", {}),

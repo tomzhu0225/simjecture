@@ -317,7 +317,8 @@ class ResearchService(
                 runtime = remote["runtime_sha256"]
             else:
                 registry = MVPCapabilityRegistry.discover(
-                    self.manifest["capabilities"], names=(capability,),
+                    self.manifest["capabilities"],
+                    names=(capability,),
                 )
                 runtime = registry.get(capability).contract_hash
             if runtime != self.capability_hashes().get(capability):
@@ -801,23 +802,31 @@ class ResearchService(
             for relative, meta in record["artifacts"].items():
                 if sha(workspace / relative) != meta["sha256"]:
                     raise ValueError("Recorded artifact was changed after execution")
-            sources = {}
-            for p in record["binding"]["inputs"]:
-                code = p == record["binding"]["source"] or p.endswith((".py", ".sh"))
-                size = (workspace / p).stat().st_size
-                if code and size > 131072:
-                    raise ValueError("Review requires complete source files of at most 128 KiB")
-                if code or (p.endswith((".json", ".txt", ".par")) and size <= 131072):
-                    sources[p] = (workspace / p).read_text()
+            from .review_assets import source_views
+
+            sources, source_references = source_views(
+                self.root,
+                workspace,
+                record["binding"]["inputs"],
+                [
+                    p
+                    for p in record["binding"]["inputs"]
+                    if p == record["binding"]["source"]
+                    or p.endswith((".py", ".sh", ".f90", ".F90", ".json", ".txt", ".par"))
+                ],
+            )
             from .research_audit import review_documents
 
-            documents, raw_artifacts, findings = review_documents(workspace, record)
+            documents, raw_artifacts, findings = review_documents(
+                workspace, record, review_root=self.root
+            )
             from .research_receipts import receipt_projection
 
             packet["experiments"].append(
                 dict(
                     record=receipt_projection(self, record),
                     sources=sources,
+                    source_references=source_references,
                     documents=documents,
                     raw_artifacts=raw_artifacts,
                     output_findings=findings,
@@ -827,8 +836,6 @@ class ResearchService(
             tested = [e["record"]["binding"] for e in packet["experiments"]]
             if any(b not in tested for b in commitment["bindings"]):
                 raise ValueError("Repair evidence omits a prospectively required case")
-        if len(json.dumps(packet).encode()) > 1_000_000:
-            raise ValueError("Review packet exceeds 1 MB; use compact summaries")
         return packet
 
     def record_verdict(self, identifier, verdict, *, packet_sha256):

@@ -180,6 +180,9 @@ class ResearchOversight:
         self.save()
 
     def oversight_prompt(self, packet):
+        from .review_assets import packet_view
+
+        packet = packet_view(self.root, packet)
         return (
             """You independently review research METHODS and PROGRESS, not scientific completion.
 You may inspect relevant source, data and documentation with read-only native tools.

@@ -538,6 +538,15 @@ function renderControls(controls) {
   window.StudyBudget.render(document.getElementById("study-budget"), {
     campaign:state.selectedCampaign, budget:state.snapshot?.engine?.budget_control,
     readonly:!state.allowMutations,
+    submitLimits:async payload => {
+      const response = await fetch("/api/workspace/study-limits", {
+        method:"POST", headers:{"Content-Type":"application/json", "X-Simjecture-Token":state.controlToken},
+        body:JSON.stringify(payload),
+      });
+      const result = await response.json();
+      if (!response.ok) throw Error(result.error || "Unable to save run settings");
+      return result;
+    },
     submit:async payload => {
       const response = await fetch("/api/workspace/extend-study", {
         method:"POST", headers:{"Content-Type":"application/json", "X-Simjecture-Token":state.controlToken},
@@ -1700,6 +1709,7 @@ function renderResearchTrace() {
     director.append(element("h3", null, "Research director · strategy & control"),
       element("p", "field-help", "Stops individual experiments and requests replans. Scientific claim acceptance remains separate."));
     const route = engine.director_route || {};
+    if (engine.background_review) director.append(element("p", "field-help", "Reviewing alongside the worker · separate context"));
     if (route.model) director.append(element("p", "field-help", `Director route: ${[route.backend, route.model, route.reasoning_effort].filter(Boolean).join(" · ")}`));
     if (engine.resource_limits?.max_experiment_bytes) director.append(element("p", "field-help", `Storage allowance: ${formatBytes(engine.resource_limits.max_experiment_bytes)} per experiment and file · ${formatBytes(engine.resource_limits.max_total_bytes)} shared study allowance. ${engine.resource_policy?.director_can_increase ? "Director may increase allowances with a recorded reason." : "Storage increases require operator delegation."}`));
     const registration = engine.registration || {};

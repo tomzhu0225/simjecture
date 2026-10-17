@@ -5,6 +5,12 @@ Audited on **17 October 2026**, against commit
 This is an inventory of first-party limits, not a promise that every limit is well chosen.
 The recommendations below are assessments; this audit does **not** change those limits.
 
+**Follow-up repair:** the subsequent [operating-settings changes](../how-to/operating-limits.md)
+remove the periodic worker interruption and default action ceiling, preserve reasoning
+mode on review retries, add concurrent direction and ranged evidence access, remove the
+public adapter's inherited output ceiling, and rotate console logs. The tables below
+remain a snapshot of the audited commit, not the current effective defaults.
+
 The most consequential findings are:
 
 - The built-in research adapter's **8,192-token worker / 32,768-token reviewer output ceilings have been removed** in [PR #26](https://github.com/tomzhu0225/simjecture/pull/26). Requests now omit `max_tokens` unless explicitly configured. Provider limits still apply.

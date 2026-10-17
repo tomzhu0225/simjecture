@@ -369,13 +369,17 @@ def budget_model(store, job, config, role):
             )
             return result
 
+    output_limit = config.get(role + "_max_tokens", config.get("max_tokens"))
+    if output_limit is not None and (type(output_limit) is not int or output_limit < 1):
+        raise ValueError("max_tokens must be a positive integer or omitted for provider defaults")
+    output_options = {"max_tokens": output_limit} if output_limit is not None else {}
     return BudgetModel(
         model_id=config["model"],
         api_base=config["base_url"],
         api_key=config["api_key"],
-        client_kwargs={"max_retries": 0, "timeout": 60},
+        client_kwargs={"max_retries": 0, "timeout": config.get("request_timeout_seconds", 600)},
         retry=False,
-        max_tokens=config.get(role + "_max_tokens", 8192 if role == "reviewer" else 4096),
+        **output_options,
     )
 
 

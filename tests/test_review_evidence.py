@@ -27,7 +27,8 @@ def test_large_excerpt_requests_narrower_path_without_dumping_it(tmp_path):
     r = receipt(s, payload={"big": "x" * 15000, "scalar": 4})
     request = {"experiment": r["id"], "output": "result.json"}
     result = fetch_evidence(s, [request])[0]
-    assert "narrower" in result["error"] and "value" not in result
+    assert "narrower" in result["note"] and "value" not in result
+    assert result["reference"]["sha256"] == r["artifacts"]["result.json"]["sha256"]
     assert fetch_evidence(s, [request | {"path": "scalar"}])[0]["value"] == 4
 
 

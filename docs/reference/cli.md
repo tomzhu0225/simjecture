@@ -44,6 +44,11 @@ Use each subcommand's `--help` output as the authoritative option reference. CLI
 defaults are tested and versioned with the source; documentation examples avoid
 duplicating the complete argument surface.
 
+`simjecture study limits --campaign PATH` inspects operating allowances. Add
+`--limits-file FILE --reason TEXT` to update them without changing the scientific
+contract or campaign deadline. The same control is **Run settings** in the browser;
+see [operating settings](../how-to/operating-limits.md).
+
 For live campaigns, prefer hypothesis and instruction files over long shell
 arguments so the exact operator input can be reviewed before launch.
 `--instruction-file` is accepted for the same reason. The primary Web client

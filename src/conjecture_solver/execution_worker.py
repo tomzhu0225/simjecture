@@ -587,9 +587,11 @@ class Worker:
             "bytes": metadata["bytes"],
         }
 
-    def read_instrument(self, capability, root="runtime", path=".", max_bytes=16000):
+    def read_instrument(self, capability, root="runtime", path=".", max_bytes=16000, offset=0):
         if not isinstance(max_bytes, int) or not 0 < max_bytes <= 65536:
             raise ValueError("Use a bounded source excerpt")
+        if type(offset) is not int or offset < 0:
+            raise ValueError("Use a nonnegative byte or directory-entry offset")
         installed = self.registry().get(capability)
         installed.assert_runtime_identity()
         roots = {"runtime": installed.runtime_root} | {
@@ -599,18 +601,29 @@ class Worker:
             raise ValueError("Read only registered instrument roots")
         target = roots[root] if path == "." else contained(roots[root], path)
         if target.is_dir():
+            entries = [p for p in sorted(target.iterdir()) if not p.is_symlink()]
+            selected = entries[offset : offset + 100]
             return {
-                "entries": [
-                    {"name": p.name, "directory": p.is_dir()}
-                    for p in sorted(target.iterdir())[:100]
-                    if not p.is_symlink()
-                ]
+                "entries": [{"name": p.name, "directory": p.is_dir()} for p in selected],
+                "next_offset": offset + len(selected)
+                if offset + len(selected) < len(entries)
+                else None,
             }
         if not target.is_file():
             raise ValueError("Instrument file not found")
         with target.open("rb") as stream:
-            text = stream.read(max_bytes).decode("utf-8")
-        return {"content": text, "truncated": target.stat().st_size > max_bytes}
+            stream.seek(offset)
+            block = stream.read(max_bytes + 3)
+        from .review_assets import decode_page
+
+        content, consumed = decode_page(block, max_bytes)
+        end = offset + consumed
+        return {
+            "content": content,
+            "offset": offset,
+            "next_offset": end if end < target.stat().st_size else None,
+            "truncated": end < target.stat().st_size,
+        }
 
     def call(self, request):
         if request.get("protocol") != PROTOCOL:

@@ -42,6 +42,11 @@ and operator requirements. It should distinguish an isolated operator test from 
 benchmark that evolves the actual solver. Physics validity remains a scientific
 judgment; this is not an automatic proof of solver correctness.
 
+Large source and result files are preserved through hashed references and paged
+read-only retrieval. Director reviews can run alongside a worker without a periodic
+forced interruption. See [operating settings](operating-limits.md) for the browser
+controls, CLI and exact scope of these allowances.
+
 ## Optional explicit operator requirements
 
 Pass `--requirements-file requirements.json` when launching a minimal study:

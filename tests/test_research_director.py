@@ -71,8 +71,15 @@ def active(sup, monkeypatch, *, timeout=700):
 
 
 def answer(
-    sup, monkeypatch, stops, decision="replan", *, budget="infeasible",
-    wake_worker=False, time_request=None, park_worker=False,
+    sup,
+    monkeypatch,
+    stops,
+    decision="replan",
+    *,
+    budget="infeasible",
+    wake_worker=False,
+    time_request=None,
+    park_worker=False,
 ):
     verdict = dict(
         decision=decision,
@@ -90,7 +97,6 @@ def answer(
 
     def launch(directory, prompt, **kwargs):
         assert kwargs["judge"]
-        assert sup.args.turn_seconds <= 120
         assert "MVP research strategy" in prompt
         (directory / "response.json").write_text(
             json.dumps(
@@ -114,9 +120,16 @@ def test_director_requests_time_but_cannot_apply_a_stale_budget_decision(tmp_pat
     sup = supervisor(tmp_path)
     job = active(sup, monkeypatch)
     original = sup.state["deadline"]
-    answer(sup, monkeypatch, [], decision="continue", time_request={
-        "hours": 6, "reason": "Allow the measured collision and relaxation window",
-    })
+    answer(
+        sup,
+        monkeypatch,
+        [],
+        decision="continue",
+        time_request={
+            "hours": 6,
+            "reason": "Allow the measured collision and relaxation window",
+        },
+    )
     assert not sup.run_director(force=True)
     assert sup.service._all("budget_requests")[0]["hours"] == 6
     assert sup.state["deadline"] == original

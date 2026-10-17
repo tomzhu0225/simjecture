@@ -216,6 +216,11 @@ def snapshot(project, identifier, *, include_files=False):
             elapsed_seconds=max(0, state.get("finished_at", time.time()) - request["created_at"]),
             output=tail(root / "output.log"),
             controller_output=tail(root / "controller.log", 2000),
+            console_logs=[
+                dict(name=f"__console__/{p.name}", bytes=p.stat().st_size, role="console")
+                for p in sorted(root.glob("output.*"))
+                if p.is_file() and not p.is_symlink()
+            ],
         )
     )
     if include_files:
@@ -275,16 +280,19 @@ def run(root):
     put(root / "state.json", state)
     child = None
     try:
-        with (root / "output.log").open("ab", buffering=0) as output:
+        from ..console_log import ConsoleLog
+
+        with (root / "output.log").open("a+b", buffering=0) as output:
             child = subprocess.Popen(
                 ["/bin/bash", "-c", request["command"]],
                 cwd=request["work_directory"],
-                stdout=output,
-                stderr=output,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
                 stdin=subprocess.DEVNULL,
                 start_new_session=True,
                 env=os.environ | {"PYTHONUNBUFFERED": "1"},
             )
+            console = ConsoleLog(child.stdout, output, root)
             identity = read_process_identity(child.pid)
             if identity:
                 put(root / "child.json", identity.model_dump(mode="json"))
@@ -295,8 +303,10 @@ def run(root):
                 if time.time() >= deadline:
                     state["status"] = "timed_out"
                     break
-                if (root / "output.log").stat().st_size > 64 * 1024**2:
-                    state.update(status="failed", error="Console output exceeded 64 MB")
+                if console.error:
+                    state.update(
+                        status="failed", error=f"Cannot retain console output: {console.error}"
+                    )
                     break
                 time.sleep(0.2)
             if child.poll() is None:
@@ -307,6 +317,13 @@ def run(root):
                     os.killpg(child.pid, signal.SIGKILL)
                     child.wait()
             state["returncode"] = child.returncode
+            with contextlib.suppress(ProcessLookupError):
+                os.killpg(child.pid, signal.SIGKILL)
+            console.join()
+            if console.error:
+                state.update(
+                    status="failed", error=f"Cannot retain console output: {console.error}"
+                )
             if state["status"] == "running":
                 state["status"] = "succeeded" if child.returncode == 0 else "failed"
     except Exception as error:

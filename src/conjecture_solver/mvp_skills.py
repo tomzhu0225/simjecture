@@ -115,10 +115,7 @@ class MVPSkillCatalog:
 
     @property
     def hashes(self) -> dict[str, str]:
-        return {
-            name: item.content_hash
-            for name, item in sorted(self._skills.items())
-        }
+        return {name: item.content_hash for name, item in sorted(self._skills.items())}
 
     def descriptors(self) -> tuple[dict[str, Any], ...]:
         return tuple(
@@ -133,7 +130,9 @@ class MVPSkillCatalog:
             for item in sorted(self._skills.values(), key=lambda value: value.manifest.name)
         )
 
-    def read(self, name: str, relative: str | None, *, max_chars: int) -> dict[str, Any]:
+    def read(
+        self, name: str, relative: str | None, *, max_chars: int, offset: int | None = None
+    ) -> dict[str, Any]:
         try:
             installed = self._skills[name]
         except KeyError as error:
@@ -150,8 +149,15 @@ class MVPSkillCatalog:
         if not path.is_relative_to(installed.root) or not path.is_file():
             raise ValueError("requested skill resource is not a file")
         content = path.read_text(errors="replace")
-        truncated = len(content) > max_chars
-        if truncated:
+        total_chars = len(content)
+        if offset is not None:
+            if type(offset) is not int or offset < 0:
+                raise ValueError("Choose a nonnegative character offset")
+            content = content[offset : offset + max_chars]
+        truncated = (
+            len(content) > max_chars if offset is None else offset + len(content) < total_chars
+        )
+        if truncated and offset is None:
             half = max(1, max_chars // 2)
             content = content[:half] + "\n... skill content truncated ...\n" + content[-half:]
         return {
@@ -162,6 +168,17 @@ class MVPSkillCatalog:
             "content_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
             "skill_sha256": installed.content_hash,
             "truncated": truncated,
+            **(
+                {
+                    "offset": offset,
+                    "total_chars": total_chars,
+                    "next_offset": offset + len(content)
+                    if offset + len(content) < total_chars
+                    else None,
+                }
+                if offset is not None
+                else {}
+            ),
         }
 
     def read_bytes(
@@ -244,9 +261,7 @@ class MVPCapabilityManifest(StrictModel):
             label="capability preflight resource",
         )
         if not path.parts or path.parts[0] != "examples" or path.suffix != ".py":
-            raise ValueError(
-                "capability preflight resource must be a Python file under examples/"
-            )
+            raise ValueError("capability preflight resource must be a Python file under examples/")
         result_path = _relative_path(
             self.preflight_result,
             label="capability preflight result",
@@ -255,8 +270,7 @@ class MVPCapabilityManifest(StrictModel):
             raise ValueError("capability preflight result must be a JSON workspace path")
         for check in self.preflight_checks:
             if not check or any(
-                not part.replace("_", "").replace("-", "").isalnum()
-                for part in check.split(".")
+                not part.replace("_", "").replace("-", "").isalnum() for part in check.split(".")
             ):
                 raise ValueError("capability preflight checks must be dot-separated keys")
         return self
@@ -301,7 +315,10 @@ class MVPCapabilityConfig(StrictModel):
         if any("\x00" in key or "\x00" in value for key, value in self.environment.items()):
             raise ValueError("capability environment cannot contain NUL bytes")
         reserved = {
-            "HOME", "PATH", "SIMJECTURE_CPU_SLOTS", "SIMJECTURE_MPI_HELPER",
+            "HOME",
+            "PATH",
+            "SIMJECTURE_CPU_SLOTS",
+            "SIMJECTURE_MPI_HELPER",
             "SIMJECTURE_EXECUTION_BACKEND",
         }.intersection(self.environment)
         if reserved:
@@ -315,9 +332,7 @@ class MVPCapabilityConfig(StrictModel):
                 or not destination_path.is_relative_to("/opt/acs-dependencies")
                 or ".." in destination_path.parts
             ):
-                raise ValueError(
-                    "capability dependency mounts must target /opt/acs-dependencies"
-                )
+                raise ValueError("capability dependency mounts must target /opt/acs-dependencies")
             if not source or "\x00" in source:
                 raise ValueError("capability dependency source is invalid")
         for device in self.device_paths:
@@ -391,8 +406,7 @@ def _dependency_identity(root: Path) -> str:
     digest = hashlib.sha256()
     manifest = root / ".simjecture-source-manifest.json"
     if manifest.exists() or manifest.is_symlink():
-        if (manifest.is_symlink() or not manifest.is_file()
-                or manifest.stat().st_size > 8 * 1024**2):
+        if manifest.is_symlink() or not manifest.is_file() or manifest.stat().st_size > 8 * 1024**2:
             raise ValueError("Dependency source manifest must be a bounded regular file")
         raw = manifest.read_bytes()
         files = json.loads(raw)
@@ -483,9 +497,7 @@ class MVPCapabilityInstallation:
         for source, destination in self.read_only_mounts:
             expected = dict(self.dependency_identities)[destination]
             if _dependency_identity(source) != expected:
-                raise RuntimeError(
-                    f"capability dependency {destination!r} changed after discovery"
-                )
+                raise RuntimeError(f"capability dependency {destination!r} changed after discovery")
 
     @classmethod
     def read(cls, path: str | Path) -> MVPCapabilityInstallation:
@@ -525,16 +537,12 @@ class MVPCapabilityInstallation:
         for destination, relative_source in sorted(config.read_only_mounts.items()):
             source = (config_path.parent / relative_source).resolve()
             if not source.is_dir():
-                raise FileNotFoundError(
-                    f"capability dependency is unavailable: {source}"
-                )
+                raise FileNotFoundError(f"capability dependency is unavailable: {source}")
             mounts.append((source, destination))
             dependency_identities.append((destination, _dependency_identity(source)))
         for device in config.device_paths:
             if not Path(device).exists():
-                raise FileNotFoundError(
-                    f"capability device is unavailable: {device}"
-                )
+                raise FileNotFoundError(f"capability device is unavailable: {device}")
         return cls(
             manifest=config.manifest,
             runtime_root=runtime_root,
@@ -611,17 +619,12 @@ class MVPCapabilityRegistry:
 
     @property
     def hashes(self) -> dict[str, str]:
-        return {
-            name: item.contract_hash
-            for name, item in sorted(self._capabilities.items())
-        }
+        return {name: item.contract_hash for name, item in sorted(self._capabilities.items())}
 
     def descriptors(self) -> tuple[dict[str, Any], ...]:
         return tuple(
             item.descriptor()
-            for item in sorted(
-                self._capabilities.values(), key=lambda value: value.manifest.name
-            )
+            for item in sorted(self._capabilities.values(), key=lambda value: value.manifest.name)
         )
 
 
@@ -638,9 +641,7 @@ def discover_builtin_mvp_resources(
     packaged_skills = Path(__file__).resolve().parent / "builtin_skills"
     packaged_capabilities = Path(__file__).resolve().parent / "builtin_capabilities"
     skill_root = (
-        packaged_skills
-        if project_root is None and packaged_skills.is_dir()
-        else root / "skills"
+        packaged_skills if project_root is None and packaged_skills.is_dir() else root / "skills"
     )
     capability_root = (
         packaged_capabilities
@@ -654,7 +655,5 @@ def discover_builtin_mvp_resources(
     )
     for descriptor in capabilities.descriptors():
         if descriptor["skill"] not in skills:
-            raise ValueError(
-                f"capability {descriptor['name']!r} references an unavailable skill"
-            )
+            raise ValueError(f"capability {descriptor['name']!r} references an unavailable skill")
     return skills, capabilities

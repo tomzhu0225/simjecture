@@ -1,7 +1,7 @@
 """Built-in agent transport using Hugging Face smolagents, shared by chat and studies.
 
 This is a cooperative local agent, like the supported external CLIs. Numerical
-evidence still goes through ResearchService. Reviewers receive no tools.
+evidence still goes through ResearchService. API reviewers can read only recorded review assets.
 """
 
 from __future__ import annotations
@@ -11,6 +11,7 @@ import contextlib
 import hashlib
 import importlib.util
 import json
+import math
 import os
 import signal
 import subprocess
@@ -44,6 +45,9 @@ def read_provider(path, *, api_only=False):
 def model_for(
     config, model=None, timeout=90, max_tokens=None, *, native_tools=False, completion_check=None
 ):
+    timeout = config.get("request_timeout_seconds", timeout)
+    if type(timeout) not in (int, float) or not math.isfinite(timeout) or timeout <= 0:
+        raise ValueError("request_timeout_seconds must be positive and finite")
     output_limit = max_tokens if max_tokens is not None else config.get("max_tokens")
     if output_limit is not None and (
         isinstance(output_limit, bool) or not isinstance(output_limit, int) or output_limit <= 0
@@ -168,6 +172,10 @@ def model_for(
                         error_type=type(error).__name__,
                         http_status=getattr(error, "status_code", None),
                     )
+                    if getattr(self, "abort_on_request_error", False):
+                        from .workspace_protocol import ProviderRequestFailure
+
+                        raise ProviderRequestFailure(error) from error
                     raise
                 finally:
                     self.usage_request_id = None
@@ -284,6 +292,7 @@ def model_for(
         api_base=config["base_url"],
         api_key=config.get("api_key") or "local",
         client_kwargs={"timeout": timeout, "max_retries": 1},
+        retry=False,  # The SDK and persistent supervisor own transport recovery.
         **extra,
     )
 
@@ -318,32 +327,58 @@ def agent_tools(root, deadline, project=None, workspace=None):
     skills = research_skills()
 
     @tool
-    def read_skill(name: str, path: str = "SKILL.md") -> str:
+    def read_skill(name: str, path: str = "SKILL.md", offset: int = 0) -> str:
         """Read an installed research skill or its reference/example file.
 
         Args:
             name: Skill name from AVAILABLE SIMJECTURE RESEARCH SKILLS.
             path: Relative resource inside that skill; defaults to SKILL.md.
+            offset: Character offset; follow next_offset to read the complete resource.
         """
-        resource = skills.read(name, path, max_chars=32000)
+        resource = skills.read(name, path, max_chars=32000, offset=offset)
         emit("activity", state="working", label="Reading skill", detail=f"{name}/{path}")
         return json.dumps(resource)
 
     @tool
-    def read_file(path: str) -> str:
+    def read_file(path: str, offset: int = 0, max_bytes: int = 64000) -> str:
         """Read a UTF-8 project file or list a directory.
 
         Args:
             path: Relative path in the working directory; use . to list files.
+            offset: Byte offset for a file or entry offset for a directory.
+            max_bytes: File page size, 1..256000; follow next_offset for more.
         """
         p = contained(root, path)
+        if type(offset) is not int or offset < 0 or not 1 <= max_bytes <= 256000:
+            raise ValueError("Choose a nonnegative offset and a bounded page size")
         if p.is_dir():
-            return "\n".join(x.name + ("/" if x.is_dir() else "") for x in sorted(p.iterdir()))[
-                :20000
-            ]
-        if p.stat().st_size > 256000:
-            return "File exceeds 256 KB. Use a focused analysis command to inspect it."
-        return p.read_text()
+            entries = sorted(p.iterdir())
+            selected = entries[offset : offset + 200]
+            return json.dumps(
+                dict(
+                    entries=[x.name + ("/" if x.is_dir() else "") for x in selected],
+                    next_offset=offset + len(selected)
+                    if offset + len(selected) < len(entries)
+                    else None,
+                )
+            )
+        with p.open("rb") as stream:
+            stream.seek(offset)
+            block = stream.read(max_bytes + 3)
+        from .review_assets import decode_page
+
+        content, consumed = decode_page(block, max_bytes)
+        if offset == 0 and consumed == p.stat().st_size:
+            return content
+        end = offset + consumed
+        return json.dumps(
+            dict(
+                content=content,
+                offset=offset,
+                next_offset=end if end < p.stat().st_size else None,
+                total_bytes=p.stat().st_size,
+            )
+        )
 
     @tool
     def write_file(path: str, content: str) -> str:
@@ -411,48 +446,86 @@ def agent_tools(root, deadline, project=None, workspace=None):
         environment["PATH"] = (
             str(Path(sys.executable).parent) + os.pathsep + environment.get("PATH", "")
         )
-        with subprocess.Popen(
-            ["/bin/bash", "-c", command],
-            cwd=root,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True,
-            env=environment,
-            start_new_session=True,
-        ) as child:
+        from .console_log import ConsoleLog
+        from .web.jobs import tail
+
+        logs = contained(root, f"tool_logs/{uuid.uuid4().hex}")
+        logs.mkdir(parents=True)
+        timed_out = False
+        with (
+            (logs / "output.log").open("w+b", buffering=0) as output,
+            subprocess.Popen(
+                ["/bin/bash", "-c", command],
+                cwd=root,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                env=environment,
+                start_new_session=True,
+            ) as child,
+        ):
+            console = ConsoleLog(child.stdout, output, logs)
             ACTIVE_COMMANDS.add(child.pid)
             try:
-                output, _ = child.communicate(timeout=timeout)
+                child.wait(timeout=timeout)
             except subprocess.TimeoutExpired:
-                os.killpg(child.pid, signal.SIGKILL)
-                output, _ = child.communicate()
-                return "Command timed out.\n" + output[-24000:]
+                timed_out = True
             finally:
-                if child.poll() is None:
+                with contextlib.suppress(ProcessLookupError):
                     os.killpg(child.pid, signal.SIGKILL)
-                    child.wait()
+                child.wait()
+                console.join()
                 ACTIVE_COMMANDS.discard(child.pid)
-        return f"Exit code: {child.returncode}\n{output[-24000:]}"
+            if console.error:
+                raise OSError(f"Could not retain tool output: {console.error}")
+        label = "Command timed out." if timed_out else f"Exit code: {child.returncode}"
+        return (
+            label
+            + "\n"
+            + tail(logs / "output.log")
+            + f"\nFull console and rotated archives: {logs.relative_to(root)}/"
+        )
 
     @tool
-    def fetch_page(url: str) -> str:
+    def fetch_page(url: str, offset: int = 0) -> str:
         """Fetch a public web page or textual resource for research, preserving its URL.
 
         Args:
             url: HTTP or HTTPS URL to retrieve.
+            offset: Byte offset; follow next_offset to retrieve further pages.
         """
         import httpx
 
+        from .review_assets import decode_page
+
         if not url.startswith(("https://", "http://")):
             raise ValueError("Use an HTTP or HTTPS URL")
-        with httpx.stream("GET", url, follow_redirects=True, timeout=30) as response:
+        if type(offset) is not int or offset < 0:
+            raise ValueError("Choose a nonnegative byte offset")
+        with httpx.stream(
+            "GET",
+            url,
+            headers={"Range": f"bytes={offset}-{offset + 100003}"},
+            follow_redirects=True,
+            timeout=30,
+        ) as response:
             response.raise_for_status()
             body = b""
-            for chunk in response.iter_bytes():
-                body += chunk
-                if len(body) >= 100000:
+            skip = 0 if response.status_code == 206 else offset
+            for chunk in response.iter_bytes(chunk_size=65536):
+                removed = min(skip, len(chunk))
+                skip -= removed
+                body += chunk[removed:]
+                if len(body) >= 100004:
                     break
-        return url + "\n" + body[:100000].decode(errors="replace")
+        content, consumed = decode_page(body, 100000)
+        return json.dumps(
+            dict(
+                url=url,
+                content=content,
+                offset=offset,
+                next_offset=offset + consumed if len(body) > consumed else None,
+            )
+        )
 
     tools = [read_file, write_file, terminal, fetch_page, read_skill]
     if project is not None and workspace is not None:
@@ -567,8 +640,11 @@ def agent_tools(root, deadline, project=None, workspace=None):
                     inherited_files=inherited_files,
                     machine_ids=machine_ids,
                     allow_solver_development=allow_solver_development,
-                    **({"capability_directory": capability_directory}
-                       if capability_directory is not None else {}),
+                    **(
+                        {"capability_directory": capability_directory}
+                        if capability_directory is not None
+                        else {}
+                    ),
                 ),
             )
             emit("brief", brief=brief)
@@ -658,21 +734,55 @@ def run_agent(
     project=None,
     workspace=None,
     session_dir=None,
+    action_limit=None,
+    review_root=None,
 ):
     if judge and session_dir is not None:
         raise ValueError("Independent reviewers cannot resume a worker session")
     deadline = time.time() + wall_seconds if wall_seconds is not None else float("inf")
-    native_tools = not judge and (
-        "deepseek" in (model or config["model"]).lower()
-        or urlparse(config["base_url"]).hostname == "api.deepseek.com"
+    native_tools = (judge and review_root is not None) or (
+        not judge
+        and (
+            "deepseek" in (model or config["model"]).lower()
+            or urlparse(config["base_url"]).hostname == "api.deepseek.com"
+        )
     )
     llm = model_for(
         config,
         model,
-        timeout=min(600, max(1, wall_seconds or 600)),
+        timeout=config.get("request_timeout_seconds") or max(1, wall_seconds or 600),
         native_tools=native_tools,
     )
     if judge:
+        review_tools = []
+        if review_root is not None:
+            from smolagents import tool
+
+            from .review_assets import read_asset
+
+            @tool
+            def read_review_asset(
+                sha256: str, json_path: str = "", offset: int = 0, max_bytes: int = 16384
+            ) -> str:
+                """Read a complete recorded review object through verified byte pages.
+
+                Args:
+                    sha256: SHA256 from the supplied source or packet reference.
+                    json_path: Optional object.keys or array[0] selection in a JSON object.
+                    offset: Byte offset into the complete file or selected JSON encoding.
+                    max_bytes: Page size from 1 to 65536; next_offset reaches further pages.
+                """
+                return json.dumps(
+                    read_asset(
+                        review_root,
+                        sha256,
+                        json_path=json_path or None,
+                        offset=offset,
+                        max_bytes=max_bytes,
+                    )
+                )
+
+            review_tools = [read_review_asset]
         messages = [
             {
                 "role": "user",
@@ -680,17 +790,11 @@ def run_agent(
                 + "\nReturn the requested verdict JSON concisely; omit any preamble.",
             }
         ]
-        for attempt in range(2):
+        attempt = 0
+        while attempt < 2:
             if time.time() >= deadline:
                 raise ValueError("Independent review deadline exhausted")
-            options = {}
-            deepseek = (
-                "deepseek" in (model or config["model"]).lower()
-                or urlparse(config["base_url"]).hostname == "api.deepseek.com"
-            )
-            if attempt and deepseek:
-                # Avoid spending a second full budget entirely in provider reasoning.
-                options["extra_body"] = {"thinking": {"type": "disabled"}}
+            options = {"tools_to_call_from": review_tools} if review_tools else {}
             response = llm.generate(messages, **options)
             if response.token_usage:
                 emit(
@@ -715,13 +819,36 @@ def run_agent(
                 empty=not bool(response.content and response.content.strip()),
             )
             if response.tool_calls:
-                raise ValueError("Independent reviewer attempted a tool call")
+                if not review_tools:
+                    raise ValueError("Independent reviewer attempted a tool call")
+                calls = json.loads(response.model_dump_json())["tool_calls"]
+                messages.append(dict(role="assistant", content=response.content, tool_calls=calls))
+                for call in response.tool_calls:
+                    try:
+                        if call.function.name != "read_review_asset":
+                            raise ValueError("Reviewer can only read recorded review assets")
+                        arguments = call.function.arguments
+                        if isinstance(arguments, str):
+                            arguments = json.loads(arguments)
+                        result = read_review_asset(**arguments)
+                        emit("review_read", tool="read_review_asset", arguments=arguments)
+                    except (ValueError, TypeError, KeyError, OSError) as error:
+                        result = json.dumps(dict(error=str(error)))
+                    messages.append(dict(role="tool", tool_call_id=call.id, content=result))
+                continue
             if response.content and response.content.strip() and finish != "length":
                 return response.content
+            attempt += 1
         raise ValueError(
             "Independent reviewer returned empty or truncated output after two bounded attempts"
         )
-    from .workspace_protocol import agent_type, step_messages
+    from .workspace_protocol import ProviderRequestFailure, agent_type, step_messages
+
+    llm.abort_on_request_error = True
+
+    action_limit = action_limit if action_limit is not None else config.get("action_limit")
+    if action_limit is not None and (type(action_limit) is not int or action_limit < 1):
+        raise ValueError("action_limit must be a positive integer or omitted")
 
     ToolCallingAgent = agent_type(native_tools=native_tools, checkpoint=session_dir is not None)
 
@@ -744,7 +871,7 @@ def run_agent(
     agent = ToolCallingAgent(
         tools=agent_tools(root, deadline, project, workspace),
         model=llm,
-        max_steps=sys.maxsize if wall_seconds is None else 24,
+        max_steps=action_limit or sys.maxsize,
         return_full_result=True,
         verbosity_level=-1,
         step_callbacks=[step_event],
@@ -789,23 +916,34 @@ def run_agent(
     llm.conversation_history = history
     llm.reasoning_records = session.get("reasoning_records", [])
     llm.reasoning_messages = session.get("reasoning_messages", {})
+    previous_reasoning_messages = dict(llm.reasoning_messages)
     previous_reasoning = len(llm.reasoning_records)
     if session_root is not None:
         emit("session", resumed=bool(history), backend="builtin")
+    transport_failed = False
     with contextlib.redirect_stdout(sys.stderr):
         # Tool/step events use the original stream while library chatter stays out of JSONL.
         try:
             result = agent.run(prompt)
+        except ProviderRequestFailure as error:
+            transport_failed = True
+            raise error.cause from None
         finally:
             if session_root is not None:
                 # Research turns already receive a fresh durable evidence brief.
                 # Retain the preceding turn's exact calls/results for continuity,
                 # without repeatedly appending full briefs for a day-long study.
                 # Earlier evidence remains in files, receipts and the research journal.
-                messages = [] if session_dir is not None else list(history)
+                # A reconnect that fails before doing any work must not erase
+                # the preceding turn's executed receipts or private reasoning.
+                preserve_previous = transport_failed and not any(
+                    getattr(step, "tool_calls", None) and getattr(step, "observations", None)
+                    for step in agent.memory.steps
+                )
+                messages = list(history) if preserve_previous or session_dir is None else []
                 from smolagents.memory import FinalAnswerStep
 
-                for step in agent.memory.steps:
+                for step in [] if preserve_previous else agent.memory.steps:
                     if isinstance(step, FinalAnswerStep):
                         messages.append({"role": "assistant", "content": str(step.output)})
                         continue
@@ -816,10 +954,16 @@ def run_agent(
                     history=messages,
                     reasoning_records=(
                         llm.reasoning_records[previous_reasoning:]
-                        if session_dir is not None
+                        if session_dir is not None and not preserve_previous
                         else llm.reasoning_records
                     ),
-                    reasoning_messages={} if session_dir is not None else llm.reasoning_messages,
+                    reasoning_messages=(
+                        previous_reasoning_messages
+                        if preserve_previous
+                        else {}
+                        if session_dir is not None
+                        else llm.reasoning_messages
+                    ),
                 )
         if result.state != "success":
             return (
@@ -991,6 +1135,8 @@ def main(argv=None):
     parser.add_argument("--workspace", type=Path)
     parser.add_argument("--project")
     parser.add_argument("--session-dir", type=Path)
+    parser.add_argument("--action-limit", type=int)
+    parser.add_argument("--review-root", type=Path)
     args = parser.parse_args(argv)
     config = read_provider(args.provider_config, api_only=args.judge)
     workspace = None
@@ -1041,6 +1187,8 @@ def main(argv=None):
                 project=args.project,
                 workspace=workspace,
                 session_dir=args.session_dir,
+                action_limit=args.action_limit,
+                review_root=args.review_root,
             )
         emit("result", subtype="success", result=answer)
         return 0

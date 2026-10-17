@@ -45,7 +45,8 @@ def study_status(root):
     now = time.time()
     started = manifest.get("created_at") or state.get("started_at", now)
     deadline = (
-        manifest["deadline"] if manifest.get("budget_extensions")
+        manifest["deadline"]
+        if manifest.get("budget_extensions")
         else state.get("deadline", manifest.get("deadline", now))
     )
     status = state.get("status", "initialized")
@@ -199,12 +200,14 @@ def study_status(root):
 
     return dict(
         budget_control=budget_status(root, manifest=manifest, experiments=experiments)
-        if mode == "minimal" else {"supported": False, "can_extend": False},
+        if mode == "minimal"
+        else {"supported": False, "can_extend": False},
         finalization=report_status(root, manifest),
         report_assessments=[read(p) for p in sorted((root / "report_requests").glob("*.json"))],
         worker_wait=worker_wait,
         director_policy=manifest.get("director_policy", {"enabled": False}),
         director_route=state.get("reviewer_route", {}),
+        background_review=state.get("background_review"),
         director_decisions=director_decisions,
         resource_limits=resource_limits,
         resource_policy=resource_policy,

@@ -95,6 +95,124 @@ def test_invalid_profile_output_budget_is_rejected_before_request(limit):
         wa.model_for(dict(model="deepseek-flash", base_url="http://127.0.0.1:1", max_tokens=limit))
 
 
+def test_research_turn_can_deliver_after_more_than_24_actions(tmp_path, api):
+    url, requests, responses = api
+    (tmp_path / "a").write_text("input")
+    responses.extend(response((f"read-{i}", "read_file", {"path": "a"})) for i in range(26))
+    responses.extend(
+        [
+            response(("write", "write_file", {"path": "result.txt", "content": "delivered"})),
+            response(("finish", "final_answer", {"answer": "done"})),
+        ]
+    )
+    answer = wa.run_agent(
+        "Complete the task",
+        tmp_path,
+        dict(model="deepseek-flash", base_url=url, request_timeout_seconds=5),
+        wall_seconds=180,
+        session_dir=tmp_path / "session",
+    )
+    assert answer == "done" and len(requests) == 28
+    assert (tmp_path / "result.txt").read_text() == "delivered"
+
+
+def test_api_reviewer_reads_verified_asset_and_keeps_native_history(tmp_path, api):
+    from conjecture_solver.review_assets import freeze_json
+
+    url, requests, responses = api
+    reference = freeze_json(tmp_path, {"large": "x" * 300000, "measured": {"value": 0.17}})
+    responses.extend(
+        [
+            response(
+                (
+                    "read-evidence",
+                    "read_review_asset",
+                    {"sha256": reference["sha256"], "json_path": "measured.value"},
+                )
+            ),
+            response(text='{"decision":"revise"}'),
+        ]
+    )
+    answer = wa.run_agent(
+        "Inspect the recorded value and review it",
+        tmp_path,
+        dict(model="deepseek-flash", base_url=url),
+        judge=True,
+        review_root=tmp_path,
+        wall_seconds=30,
+    )
+    assert json.loads(answer)["decision"] == "revise"
+    assert len(requests) == 2
+    assert [t["function"]["name"] for t in requests[0]["tools"]] == ["read_review_asset"]
+    wire = requests[1]["messages"]
+    receipt = next(m for m in wire if m.get("tool_call_id") == "read-evidence")
+    assert json.loads(receipt["content"])["content"] == "0.17"
+    assistant = next(m for m in wire if m.get("tool_calls"))
+    assert assistant["reasoning_content"] == "private-reasoning"
+
+
+def test_worker_transport_failure_leaves_agent_loop_for_supervisor(tmp_path, monkeypatch):
+    import httpx
+    import smolagents.models
+    from openai import OpenAI, RateLimitError
+
+    from conjecture_solver.workspace_sessions import load_session, save_session
+
+    calls = []
+    config = dict(model="deepseek-flash", base_url="https://provider.example/v1")
+    session_dir = tmp_path / "session"
+    previous = dict(
+        history=[{"role": "assistant", "content": "Earlier verified observation"}],
+        reasoning_records=[
+            dict(markers=["Earlier verified observation"], reasoning_content="private-reasoning")
+        ],
+        reasoning_messages={"previous-message": "private-reasoning"},
+    )
+    save_session(session_dir, config, **previous)
+
+    def provider(request):
+        calls.append(request)
+        return httpx.Response(429, json={"error": {"message": "rate limit", "type": "rate_limit"}})
+
+    monkeypatch.setattr(smolagents.models, "RETRY_WAIT", 0)
+    monkeypatch.setattr(
+        smolagents.models.OpenAIServerModel,
+        "create_client",
+        lambda self: OpenAI(
+            **self.client_kwargs, http_client=httpx.Client(transport=httpx.MockTransport(provider))
+        ),
+    )
+    with pytest.raises(RateLimitError):
+        wa.run_agent(
+            "Continue the investigation", tmp_path, config, wall_seconds=30, session_dir=session_dir
+        )
+    assert len(calls) == 2  # One SDK retry; no hidden library retries or model action loop.
+    saved = load_session(session_dir, config)
+    assert all(saved[key] == value for key, value in previous.items())
+
+
+@pytest.mark.parametrize("role", ["researcher", "reviewer"])
+@pytest.mark.parametrize("limit", [None, 65536])
+def test_public_adapter_uses_provider_defaults_or_explicit_plan_limit(tmp_path, api, role, limit):
+    from conjecture_solver.public.store import Store
+    from conjecture_solver.public.worker import budget_model
+
+    url, requests, responses = api
+    store = Store(tmp_path)
+    _, owner = store.create_visitor("test-owner")
+    job = store.enqueue(owner["id"], "research", "A bounded scientific hypothesis")
+    store.claim()
+    config = dict(model="deepseek-flash", base_url=url, api_key="test-key")
+    if limit is not None:
+        config[role + "_max_tokens"] = limit
+    responses.append(response(text="Recorded answer"))
+    result = budget_model(store, job["id"], config, role).generate(
+        [{"role": "user", "content": "Review the record"}]
+    )
+    assert result.content == "Recorded answer" and len(requests) == 1
+    assert requests[0].get("max_tokens") == limit
+
+
 def test_native_parallel_results_preserve_ids_and_reasoning(tmp_path, api):
     url, requests, responses = api
     (tmp_path / "a").write_text("alpha")
@@ -283,6 +401,7 @@ def test_research_worker_continues_after_action_limit_with_executed_receipts(tmp
         model="deepseek-flash",
         wall_seconds=60,
         session_dir=session_dir,
+        action_limit=24,
     )
     assert "incomplete" in answer
     assert len(requests) == 24  # No extra tool-free summary request.

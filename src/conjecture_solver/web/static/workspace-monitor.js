@@ -125,6 +125,7 @@ window.WorkspaceMonitor = {
         job.kind,
         job.native,
         job.files,
+        job.console_logs,
         job.file_provenance,
       ]);
       if (container.dataset.revision === revision) return;
@@ -186,6 +187,10 @@ window.WorkspaceMonitor = {
           ),
         );
       container.append(outputs);
+      if (job.console_logs?.length) {
+        const logs = node("details"); logs.append(node("summary", "Complete console logs"));
+        appendFiles(logs, job.console_logs, false); container.append(logs);
+      }
       const copied = rows.filter((file) => file.role === "input");
       if (copied.length) {
         const details = node("details", undefined, "run-inputs");

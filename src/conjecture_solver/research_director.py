@@ -4,12 +4,14 @@ from __future__ import annotations
 
 import json
 import time
+from pathlib import Path
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from .agent_supervisor import parse_judge_stream
+from .agent_supervisor import AgentSupervisor, parse_judge_stream
 from .research_development import development_guidance
+from .research_limits import OperatingLimits, configure_limits, operating_limits
 from .research_registration import RegistrationTuning
 from .research_resources import StorageIncrease
 from .research_service import fingerprint, put
@@ -55,6 +57,11 @@ class DirectorVerdict(BaseModel):
     )
     time_request: TimeRequest | None = Field(
         default=None, description="Ask the operator for additional hours; never grants time."
+    )
+    operating_limits: OperatingLimits | None = Field(
+        default=None,
+        description="Adjust worker action/checkpoint and reviewer allowances; "
+        "null values remove local ceilings. Operator wall/resource budgets remain authoritative.",
     )
 
     @model_validator(mode="after")
@@ -136,6 +143,7 @@ class ResearchDirector:
             pending_replan=self.service.pending_director_replan(),
             resource_limits=snapshot["resource_limits"],
             resource_policy=snapshot["resource_policy"],
+            operating_limits=operating_limits(self.root),
             registration=snapshot["registration"],
             solver_development=snapshot["solver_development"],
             first_strategy_review=not bool(previous),
@@ -156,6 +164,10 @@ class ResearchDirector:
         )
 
     def director_prompt(self, packet):
+        from .review_assets import packet_view
+
+        development_policy = packet["solver_development"]["policy"]
+        packet = packet_view(self.root, packet)
         return (
             """You are the research director responsible for useful science within the remaining
 wall budget. You can request host-executed stops of named experiments and require a replan.
@@ -165,6 +177,11 @@ You do not accept scientific claims or change the original hypothesis, operator 
 deadline or evidence rules. Independent scientific review remains a separate fresh context.
 You may ask the operator for additional hours using time_request (hours and a concrete reason).
 This is a request only: plan against the current authoritative budget until it is granted.
+You may adjust operating_limits (worker_action_limit, worker_checkpoint_seconds, review_seconds)
+when a local allowance obstructs useful work. Explicit null removes that local ceiling;
+omitted fields retain their values. Changes apply to subsequent calls and cannot grant
+more campaign wall time, memory, compute or storage. Prefer natural handoffs over interrupting
+a working model request. Use observed timing and errors, not assumptions about model size.
 budget.extensions records operator-authorized changes; update forecasts when it changes.
 Read-only source/data/documentation inspection is available. Do not modify files, send
 control commands yourself or run simulations. Return a structured decision for the host.
@@ -243,7 +260,7 @@ wake-up or new operator guidance resumes the worker. Parking cannot accompany a 
 or a wake-up. Validate a claimed API blocker against the actual error and allowed values;
 claim review accepts unresolved, while exploratory reports use report assessment.
 """
-            + development_guidance(packet["solver_development"]["policy"])
+            + development_guidance(development_policy)
             + "\nSCHEMA:\n"
             + json.dumps(DirectorVerdict.model_json_schema())
             + "\nPACKET:\n"
@@ -322,7 +339,136 @@ claim review accepts unresolved, while exploratory reports use report assessment
                 return False
         return True
 
-    def run_director(self, *, force=False):
+    def review_allowance(self):
+        from .research_limits import operating_limits
+
+        selected = operating_limits(self.root)["review_seconds"]
+        if selected is None:
+            selected = self.service.manifest.get("director_policy", {}).get("review_seconds")
+        return selected or getattr(self.args, "turn_seconds", None) or 600
+
+    def supervise_worker(self, directory):
+        # Only the main supervisor thread applies decisions and writes its state.
+        # The background transport has its own state, process identity and log files.
+        from .research_oversight import trace_summary
+
+        if time.time() >= getattr(self, "_next_live_director_check", 0):
+            self._next_live_director_check = time.time() + 10
+            pending = getattr(self, "_director_pending", None)
+            if pending is None:
+                policy = self.service.manifest.get("director_policy", {})
+                last = self.state.get("last_director_at", self.state.get("started_at", 0))
+                if not policy.get("enabled") or time.time() - last < policy.get(
+                    "interval_seconds", 300
+                ):
+                    return
+                self.state["last_turn_trace"] = trace_summary(directory / "response.json")
+            self.run_director(background=True)
+
+    def stop_background_director(self):
+        pending = getattr(self, "_director_pending", None)
+        if pending:
+            pending["runner"].cancelled = True
+        executor = getattr(self, "_director_executor", None)
+        if executor:
+            executor.shutdown(wait=True, cancel_futures=True)
+        self._director_executor = None
+        if pending:
+            self.collect_director_usage(pending)
+        self._director_pending = None
+        self.state.pop("background_review", None)
+
+    def recover_background_director(self):
+        """Called only after acquiring the campaign lock; never signal an unverified PID."""
+        import os
+        import signal
+        from contextlib import suppress
+        from types import SimpleNamespace
+
+        from .mvp_launch import ProcessIdentity, process_identity_matches
+        from .provider_usage import request_accounting
+
+        previous = self.state.pop("background_review", None)
+        if not previous:
+            return
+        directory = Path(previous["directory"]).resolve()
+        if directory.parent != self.directory or not directory.name.startswith("director-"):
+            raise ValueError("Saved background review belongs to a different controller")
+        identity_file = directory / "child_identity.json"
+        if identity_file.is_file():
+            identity = ProcessIdentity.model_validate_json(identity_file.read_text())
+            if identity.run_directory != str(directory):
+                raise ValueError("Background process identity belongs to a different review")
+            with suppress(ProcessLookupError):
+                if process_identity_matches(identity) and os.getpgid(identity.pid) == identity.pid:
+                    os.killpg(identity.pid, signal.SIGTERM)
+                    until = time.monotonic() + 5
+                    while process_identity_matches(identity) and time.monotonic() < until:
+                        time.sleep(0.05)
+                    if process_identity_matches(identity):
+                        os.killpg(identity.pid, signal.SIGKILL)
+        # A dead controller could not run its transport's usage-finalization block.
+        recovered = dict(usage_by_thread={}, usage_roles_by_thread={})
+        trace = directory / "response.json"
+        usage = request_accounting(trace)
+        key = directory.name
+        if usage is None:
+            for line in trace.read_text().splitlines() if trace.exists() else []:
+                try:
+                    event = json.loads(line)
+                except ValueError:
+                    continue
+                if event.get("type") == "thread.started":
+                    key = event.get("thread_id") or key
+                if event.get("type") == "turn.completed":
+                    usage = event.get("usage")
+        if usage:
+            recovered["usage_by_thread"][key] = usage
+            recovered["usage_roles_by_thread"][key] = "director"
+        else:
+            recovered["usage_unreported_threads"] = {key: "director"}
+            recovered["usage_incomplete_turns"] = 1
+        self.collect_director_usage(
+            dict(runner=SimpleNamespace(state=recovered), directory=directory)
+        )
+        self.event("director_recovered", directory=str(directory), decision="Reassess fresh state")
+        self.save()
+
+    def collect_director_usage(self, pending):
+        if pending.get("usage_collected"):
+            return
+        pending["usage_collected"] = True
+        state = pending["runner"].state
+        for name in ("usage_by_thread", "usage_roles_by_thread", "usage_unreported_threads"):
+            entries = state.get(name, {})
+            self.state.setdefault(name, {}).update(
+                {pending["directory"].name if k == "." else k: v for k, v in entries.items()}
+            )
+        for name in (
+            "usage_incomplete_turns",
+            "usage_unidentified_calls",
+            "failed_provider_turn_seconds",
+        ):
+            self.state[name] = self.state.get(name, 0) + state.get(name, 0)
+        self.state["usage_updated_at"] = time.time()
+        self.save()
+
+    def run_director(self, *, force=False, background=False):
+        pending = getattr(self, "_director_pending", None)
+        if pending:
+            if not pending["future"].done():
+                return False
+            self._director_pending = None
+            self.state.pop("background_review", None)
+            try:
+                rc = pending["future"].result()
+            except (OSError, ValueError, RuntimeError) as error:
+                self.collect_director_usage(pending)
+                return self.director_error(error)
+            self.collect_director_usage(pending)
+            return self.finish_director(
+                pending["directory"], pending["packet"], pending["signature"], rc
+            )
         policy = self.service.manifest.get("director_policy", {})
         if not policy.get("enabled") or self.boundary():
             return False
@@ -331,7 +477,8 @@ claim review accepts unresolved, while exploratory reports use report assessment
         if not force and now - last < policy.get("interval_seconds", 300):
             return False
         if (
-            not self.service._all("experiments")
+            not background
+            and not self.service._all("experiments")
             and self.state.get("round", 0) < 2
             and not self.service._all("registration_attempts")
             and not (self.service.work / "RESULTS.md").is_file()
@@ -358,11 +505,37 @@ claim review accepts unresolved, while exploratory reports use report assessment
         d.mkdir(exist_ok=True)
         put(d / "packet.json", packet)
         self.save()
+        if background:
+            import copy
+            from concurrent.futures import ThreadPoolExecutor
+
+            args = copy.copy(self.args)
+            args.state_dir = d
+            args.turn_seconds = self.review_allowance()
+            runner = AgentSupervisor(args)
+            runner.record_review_identity = True
+            runner.state["deadline"] = min(
+                self.state["deadline"],
+                time.time() + args.turn_seconds,
+                getattr(self, "launch_deadline", None) or self.state["deadline"],
+            )
+            runner.launch_deadline = runner.state["deadline"]
+            executor = getattr(self, "_director_executor", None)
+            if executor is None:
+                executor = self._director_executor = ThreadPoolExecutor(max_workers=1)
+            future = executor.submit(runner.launch, d, self.director_prompt(packet), judge=True)
+            self._director_pending = dict(
+                future=future, runner=runner, directory=d, packet=packet, signature=signature
+            )
+            self.state["background_review"] = dict(
+                role="director", started_at=time.time(), directory=str(d), status="running"
+            )
+            self.event("director_started", directory=str(d), concurrent_with_worker=True)
+            self.save()
+            return False
         try:
             original_allowance = getattr(self.args, "turn_seconds", None)
-            self.args.turn_seconds = min(
-                original_allowance or 120, policy.get("review_seconds", 120)
-            )
+            self.args.turn_seconds = self.review_allowance()
             try:
                 rc = self.launch(d, self.director_prompt(packet), judge=True)
             finally:
@@ -370,6 +543,12 @@ claim review accepts unresolved, while exploratory reports use report assessment
                     del self.args.turn_seconds
                 else:
                     self.args.turn_seconds = original_allowance
+        except (OSError, ValueError, RuntimeError) as error:
+            return self.director_error(error)
+        return self.finish_director(d, packet, signature, rc)
+
+    def finish_director(self, d, packet, signature, rc):
+        try:
             if self.boundary():
                 return False
             if packet.get("budget", {}).get("revision", 0) != len(
@@ -379,11 +558,22 @@ claim review accepts unresolved, while exploratory reports use report assessment
                 return False
             if rc:
                 raise ValueError(f"Director exited with {rc}")
-            verdict = DirectorVerdict.model_validate(
+            validated = DirectorVerdict.model_validate(
                 parse_judge_stream(
                     d / "response.json", self.review_backend(), allow_readonly_tools=True
                 )
-            ).model_dump()
+            )
+            verdict = validated.model_dump()
+            # Compare before applying this decision's own report/cancellation actions.
+            # Those host actions must not be mistaken for concurrent worker progress.
+            records_changed = verdict["park_worker"] and any(
+                {r["id"]: r.get("status") for r in self.service._all(kind)} != index
+                for kind, index in packet["record_index"].items()
+            )
+            if validated.operating_limits is not None:
+                verdict["operating_limits"] = validated.operating_limits.model_dump(
+                    exclude_unset=True
+                )
             known = {r["id"] for r in packet["active_experiments"]}
             if any(i not in known for i in verdict["stop_experiments"]):
                 raise ValueError(
@@ -406,10 +596,21 @@ claim review accepts unresolved, while exploratory reports use report assessment
                 **verdict,
             )
             put(folder / (identifier + ".json"), record)
+            if verdict["operating_limits"] is not None:
+                record["operating_limits_action"] = configure_limits(
+                    self.root,
+                    verdict["operating_limits"],
+                    actor=identifier,
+                    reason=verdict["rationale"][:2400],
+                )
+                put(folder / (identifier + ".json"), record)
             if verdict["time_request"]:
                 record["time_request_action"] = self.service.request_time(
-                    **verdict["time_request"], requested_by="director",
-                    key="director-" + str(packet["budget"]["revision"]) + "-"
+                    **verdict["time_request"],
+                    requested_by="director",
+                    key="director-"
+                    + str(packet["budget"]["revision"])
+                    + "-"
                     + fingerprint(verdict["time_request"])[:40],
                 )
                 put(folder / (identifier + ".json"), record)
@@ -480,6 +681,10 @@ claim review accepts unresolved, while exploratory reports use report assessment
                 self.state["director_wake_worker"] = True
             if verdict["park_worker"]:
                 try:
+                    if records_changed:
+                        raise ValueError(
+                            "Worker records changed during review; reassess before parking"
+                        )
                     if self.service.pending_director_replan() or wake_worker:
                         raise ValueError(
                             "Resolve the pending replan or granted recovery before parking"
@@ -515,9 +720,12 @@ claim review accepts unresolved, while exploratory reports use report assessment
             self.save()
             return wake_worker
         except (ValueError, KeyError, OSError) as error:
-            self.state.update(
-                last_director_error=str(error)[:500], director_retry_after=time.time() + 120
-            )
-            self.event("director_invalid", error=str(error))
-            self.save()
-            return False
+            return self.director_error(error)
+
+    def director_error(self, error):
+        self.state.update(
+            last_director_error=str(error)[:500], director_retry_after=time.time() + 120
+        )
+        self.event("director_invalid", error=str(error))
+        self.save()
+        return False

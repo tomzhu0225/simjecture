@@ -86,6 +86,14 @@ class ResearchFinalization:
         # Native workers have an inactivity timeout, so use an additional absolute
         # per-call boundary for both workers and supervisory reviewers.
         previous = getattr(self, "launch_deadline", None)
+        previous_turn = getattr(self.args, "turn_seconds", None)
+        from .research_limits import operating_limits
+
+        limits = operating_limits(self.root)
+        if not judge:
+            self.worker_slice_seconds = limits["worker_checkpoint_seconds"]
+        elif not directory.name.startswith("journal-summary-") and limits["review_seconds"]:
+            self.args.turn_seconds = limits["review_seconds"]
         policy = self.service.manifest.get("finalization_policy")
         if policy and not getattr(self, "_finalizing", False):
             self.launch_deadline = min(
@@ -95,6 +103,10 @@ class ResearchFinalization:
             return super().launch(directory, prompt, judge=judge)
         finally:
             self.launch_deadline = previous
+            if previous_turn is not None:
+                self.args.turn_seconds = previous_turn
+            elif hasattr(self.args, "turn_seconds"):
+                del self.args.turn_seconds
 
     def _finish_state(self, **updates):
         from .research_service import put
@@ -333,6 +345,7 @@ class ResearchFinalization:
         prior = _read(self.root / "finalization.json")
         if prior.get("finished_at") and prior.get("budget_revision", 0) == revision:
             return
+        self.stop_background_director()
         self._finalizing = True
         remaining = max(0, self.state["deadline"] - time.time() - 5)
         budget = min(remaining, self.service.manifest["finalization_policy"]["reserve_seconds"])
@@ -340,8 +353,11 @@ class ResearchFinalization:
         finish_deadline = min(self.state["deadline"] - 5, time.time() + budget)
         self.service.cancel_active(preserve_diagnostics=True)
         self._finish_state(
-            phase="writing report", report_status="drafting", budget_revision=revision,
-            finished_at=None, error=None,
+            phase="writing report",
+            report_status="drafting",
+            budget_revision=revision,
+            finished_at=None,
+            error=None,
         )
         try:
             prompt = (

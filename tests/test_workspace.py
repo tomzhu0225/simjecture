@@ -371,7 +371,10 @@ def test_autonomous_api_reuses_supervisor_and_accepts_negative_result(tmp_path, 
         judges = [
             r for r in requests if "independent scientific reviewer" in json.dumps(r["messages"])
         ]
-        assert judges and all(not r.get("tools") for r in judges)
+        assert judges and all(
+            {t["function"]["name"] for t in r.get("tools", [])} <= {"read_review_asset"}
+            for r in judges
+        )
     finally:
         with contextlib.suppress(Exception):
             app.control(launched["campaign"], "cancel")
