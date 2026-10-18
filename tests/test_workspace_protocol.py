@@ -389,7 +389,9 @@ def test_research_worker_continues_after_action_limit_with_executed_receipts(tmp
     from conjecture_solver.workspace_sessions import load_session
 
     url, requests, responses = api
-    config = dict(model="profile-default", base_url=url, api_key="test-secret")
+    config = dict(
+        model="profile-default", base_url=url, api_key="test-secret", request_timeout_seconds=5
+    )
     route = {**config, "model": "deepseek-flash"}
     session_dir = tmp_path / "supervisor/worker-session"
     (tmp_path / "input.txt").write_text("observed input")

@@ -549,9 +549,10 @@ Do not edit service records or other studies. Resume from lab.status() and your 
             return False
         if self.finalization_due():
             return True
+        pending = self.service.pending_director_replan()
         # A durable review request is sufficient; don't rely on the CLI ending its turn.
         return (
-            bool(self.service.pending_director_replan())
+            bool(pending and pending["id"] != getattr(self, "_worker_replan_at_launch", None))
             or any(
                 r["status"] == "queued" and not self.service.review_blockers(r)
                 for r in self.service._all("reviews")

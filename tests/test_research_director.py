@@ -215,6 +215,70 @@ def test_continue_cannot_waive_unacknowledged_replan(tmp_path, monkeypatch):
     )
 
 
+@pytest.mark.parametrize("arrives_midturn", [False, True])
+def test_replan_interrupts_old_turn_but_successor_can_acknowledge(
+    tmp_path, monkeypatch, arrives_midturn
+):
+    import sys
+
+    sup = supervisor(tmp_path)
+    directive = dict(
+        id="director_recovery",
+        decision="replan",
+        created_at=time.time(),
+        next_action="Record a bounded plan and acknowledge before continuing.",
+    )
+    folder = sup.root / "director"
+    folder.mkdir(exist_ok=True)
+
+    def deliver(_directory=None):
+        put(folder / (directive["id"] + ".json"), directive)
+
+    executable = tmp_path / "worker"
+    executable.write_text(
+        f"#!{sys.executable}\nimport json,sys,time\n"
+        "from conjecture_solver.research_service import ResearchService\n"
+        "print(json.dumps({'type':'thread.started','thread_id':'replan-worker'}),flush=True)\n"
+        "if 'Start before the new directive' in sys.argv[-1]: time.sleep(60)\n"
+        # The broken harness kills this worker after two seconds, before it can respond.
+        "time.sleep(4)\n"
+        f"service=ResearchService({str(sup.root)!r})\n"
+        "pending=service.pending_director_replan()\n"
+        "try: service.check_director('evidence',None,600)\n"
+        "except ValueError: pass\n"
+        "else: raise AssertionError('Replan gate was waived')\n"
+        "plan=service.note('Reanalyze the recorded outputs with corrected denominators.',"
+        "kind='next_test')\n"
+        "service.director_ack(pending['id'],response='plan',plan=plan['id'],"
+        "reason='Use the existing trajectory for source-bound reanalysis.')\n"
+        "service.check_director('evidence',None,600)\n"
+        "service.note('Worker recovered and completed useful work after acknowledgement.')\n"
+        "print(json.dumps({'type':'turn.completed','usage':{'input_tokens':1,'output_tokens':1}}),flush=True)\n"
+    )
+    executable.chmod(0o700)
+    sup.args.executable = str(executable)
+    sup.args.turn_seconds = 20
+    if arrives_midturn:
+        monkeypatch.setattr(sup, "supervise_worker", deliver)
+        old = sup.directory / "turn-before-directive"
+        old.mkdir()
+        assert sup.launch(old, "Start before the new directive") == 124
+        assert sup.service.pending_director_replan()["id"] == directive["id"]
+    else:
+        deliver()
+    monkeypatch.setattr(sup, "supervise_worker", lambda directory: None)
+    for _ in range(10):
+        assert sup.worker_checkpoint_requested()  # Relaunching alone never clears the gate.
+    successor = sup.directory / "turn-respond-to-directive"
+    successor.mkdir()
+    assert directive["id"] in (prompt := sup.prompt())
+    assert sup.launch(successor, prompt) == 0
+    assert sup.service.pending_director_replan() is None
+    assert not sup.worker_checkpoint_requested()
+    assert len(sup.service._all("director-acks")) == 1
+    assert not sup.service.status()["completed"]
+
+
 def test_pending_replan_survives_bounded_director_history(tmp_path, monkeypatch):
     sup = supervisor(tmp_path)
     active(sup, monkeypatch)

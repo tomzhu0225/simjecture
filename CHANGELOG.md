@@ -4,6 +4,10 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+- Let a worker acknowledge the replan supplied at the start of its turn. A new
+  directive can still interrupt an older turn; an already-delivered directive no
+  longer causes an endless two-second interruption and relaunch cycle.
+
 - Remove automatic five-minute worker interruption and the built-in research
   adapter's default action ceiling. Run director assessments concurrently with
   workers, preserve their usage accounting, and expose recorded operating settings
