@@ -15,6 +15,10 @@ The host still handles explicit review handoffs, replans, pauses, cancellation,
 inactivity and the authorized deadline. It also keeps the protected reporting phase.
 Removing a periodic interruption does not remove those controls.
 
+A new director replan can interrupt an older worker turn. The successor gets time
+to acknowledge that replan with a recorded plan or reasoned challenge. The pending
+response still gates experiments; it must not repeatedly interrupt its own response turn.
+
 | Setting | Default | Effect of an explicit value |
 |---|---|---|
 | `worker_action_limit` | `null` | End a built-in API turn after that many actions; preserve an incomplete checkpoint. |

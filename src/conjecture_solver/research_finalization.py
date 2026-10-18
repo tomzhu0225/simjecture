@@ -87,11 +87,16 @@ class ResearchFinalization:
         # per-call boundary for both workers and supervisory reviewers.
         previous = getattr(self, "launch_deadline", None)
         previous_turn = getattr(self.args, "turn_seconds", None)
+        previous_replan = getattr(self, "_worker_replan_at_launch", None)
         from .research_limits import operating_limits
 
         limits = operating_limits(self.root)
         if not judge:
             self.worker_slice_seconds = limits["worker_checkpoint_seconds"]
+            # The incoming turn must get time to answer its supplied directive.
+            # A different directive arriving during this turn still needs a handoff.
+            pending = self.service.pending_director_replan()
+            self._worker_replan_at_launch = pending["id"] if pending else None
         elif not directory.name.startswith("journal-summary-") and limits["review_seconds"]:
             self.args.turn_seconds = limits["review_seconds"]
         policy = self.service.manifest.get("finalization_policy")
@@ -103,6 +108,7 @@ class ResearchFinalization:
             return super().launch(directory, prompt, judge=judge)
         finally:
             self.launch_deadline = previous
+            self._worker_replan_at_launch = previous_replan
             if previous_turn is not None:
                 self.args.turn_seconds = previous_turn
             elif hasattr(self.args, "turn_seconds"):
