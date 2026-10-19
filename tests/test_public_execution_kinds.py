@@ -188,16 +188,20 @@ def test_browser_custom_setup_and_isolated_command_outputs(app):
             page.get_by_role("button", name="Research tools", exact=True).click()
             assert page.locator(".research-tools-intro").count() == 0
             card = page.locator('[data-tool="flash"]')
-            choice = card.get_by_label("FLASH 4.8 study setup")
+            card.get_by_role("button", name="View FLASH details", exact=True).click()
+            dialog = page.get_by_role("dialog", name="FLASH", exact=True)
+            playwright.expect(dialog).to_be_visible()
+            choice = dialog.get_by_label("FLASH 4.8 study setup")
             assert choice.input_value() == "custom-study"
-            assert card.locator('optgroup[label="Starter presets"]').count() == 1
-            assert "custom applications" in card.inner_text()
+            assert dialog.locator('optgroup[label="Starter presets"]').count() == 1
+            assert "custom applications" in dialog.inner_text()
             choice.select_option("flash-2d")
             playwright.expect(
-                card.get_by_role("button", name="Run preset", exact=True)
+                dialog.get_by_role("button", name="Run preset", exact=True)
             ).to_be_visible()
             choice.select_option("custom-study")
-            card.get_by_role("button", name="Prepare in chat", exact=True).click()
+            dialog.get_by_role("button", name="Prepare in chat", exact=True).click()
+            playwright.expect(dialog).not_to_be_visible()
             playwright.expect(page.locator("#chat-input")).to_have_value(re.compile("custom study"))
             playwright.expect(page.locator('#study-navigation [aria-current="page"]')).to_have_text(
                 "Conversation"
