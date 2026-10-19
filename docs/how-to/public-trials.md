@@ -236,8 +236,9 @@ frozen at queuing, including requirements and the selected cutoff. A separate
 scientific reviewer uses the existing claim rules. Interactive findings and
 numerical readiness checks are labelled separately from accepted claims.
 
-In Research tools, **Custom study · prepare with agent** opens a conversation
-to choose physics, geometry and diagnostics. **Starter presets** execute an
+In Research tools, open a tool card to see its description and study options.
+Choose **Custom study · prepare with agent**, then **Prepare in chat**, to open a
+conversation to choose physics, geometry and diagnostics. **Starter presets** execute an
 installed starting configuration; they do not limit the general executor's
 questions. `run_command` defaults to `kind="command"` for analysis, plotting,
 compilation and inspection; the agent supplies `kind="simulation"` for solver

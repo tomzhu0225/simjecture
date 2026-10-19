@@ -445,23 +445,50 @@
         </section>
         <section id="view-tools" class="view research-tools-view" hidden>
           <div class="research-tools-heading">
-            <div><p class="eyebrow">YOUR WORKBENCH</p><h1>Research tools</h1>
-              <p class="lead">Use what’s installed. Add a solver when your investigation needs it.</p></div>
+            <div><p class="eyebrow">EXPLORE YOUR WORKBENCH</p><h1>Research tools</h1>
+              <p class="lead">Find the right tool for your next investigation. Open a card to learn more.</p></div>
             <button id="connect-research-tool" class="secondary" type="button">＋ Connect existing tool</button>
           </div>
-          <div class="inventory-heading"><h2>Installed <span id="installed-count" class="count-badge">1</span></h2>
-            <p>On this computer · includes detected local builds</p></div>
-          <div id="installed-tool-grid" class="tool-grid research-tool-grid"></div>
-          <div class="inventory-heading"><h2>Available to add <span id="available-count" class="count-badge">0</span></h2>
-            <p>Install directly or prepare with your agent</p></div>
-          <div id="available-tool-grid" class="tool-grid research-tool-grid"></div>
+          <div id="tool-collection-note" class="tool-collection-note" hidden></div>
+          <div class="tool-catalog-toolbar">
+            <div class="tool-search-field">
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+              <input id="tool-search" type="search" aria-label="Search research tools" placeholder="Search tools, physics, or capabilities…" autocomplete="off" />
+            </div>
+            <select id="tool-category" aria-label="Filter tools by category"><option value="all">All categories</option></select>
+          </div>
+          <div class="tool-catalog-filters">
+            <div id="tool-availability-filters" class="tool-filter-group" role="group" aria-label="Filter tools by availability">
+              <button type="button" data-tool-filter="all" aria-pressed="true">All tools</button>
+              <button type="button" data-tool-filter="installed" aria-pressed="false">Installed</button>
+              <button type="button" data-tool-filter="available" aria-pressed="false">Available to add</button>
+            </div>
+            <span id="tool-results-count" role="status" aria-live="polite" aria-atomic="true"></span>
+          </div>
+          <div id="installed-tool-section">
+            <div class="inventory-heading"><h2><span id="installed-tool-label">On your workbench</span> <span id="installed-count" class="count-badge">0</span></h2>
+              <p id="installed-tool-help">Installed tools and detected local builds</p></div>
+            <div id="installed-tool-grid" class="tool-grid research-tool-grid"></div>
+          </div>
+          <div id="available-tool-section">
+            <div class="inventory-heading"><h2>Discover more <span id="available-count" class="count-badge">0</span></h2>
+              <p>Open a tool to explore setup options</p></div>
+            <div id="available-tool-grid" class="tool-grid research-tool-grid"></div>
+          </div>
+          <div id="tool-search-empty" class="tool-search-empty" hidden>
+            <h2>No matching tools</h2><p>Try a different keyword or category.</p>
+            <button id="clear-tool-filters" type="button" class="secondary">Clear filters</button>
+          </div>
           <p class="research-tools-footnote">Installation and readiness checks tell you a tool can run. Each investigation still validates its scientific method.
-            For tools on SSH workers, use <button id="tools-open-machines" class="text-button" type="button">Machines</button>.</p>
+            <span id="tools-machines-help">For tools on SSH workers, use <button id="tools-open-machines" class="text-button" type="button">Machines</button>.</span></p>
           <dialog id="tool-details-dialog" class="tool-details-dialog" aria-labelledby="tool-detail-title">
             <div class="tool-dialog-heading"><div><p id="tool-detail-category" class="eyebrow">RESEARCH TOOL</p><h2 id="tool-detail-title">Tool details</h2></div>
               <button id="close-tool-details" class="quiet" type="button" aria-label="Close tool details">×</button></div>
             <div id="tool-details-body" class="tool-details-body"></div>
-            <div class="tool-dialog-footer"><span id="tool-detail-status"></span><button id="tool-detail-action" class="secondary" type="button">Check readiness</button></div>
+            <div class="tool-dialog-footer">
+              <span id="tool-detail-status"></span>
+              <div class="tool-detail-actions"><div id="tool-detail-options" class="tool-actions"></div><button id="tool-detail-action" class="secondary" type="button">Check readiness</button></div>
+            </div>
           </dialog>
           <dialog id="custom-tool-dialog" class="machine-dialog" aria-label="Connect a research tool">
             <div class="machine-dialog-heading"><div><p class="eyebrow">EXISTING INSTALLATION</p><h2>Connect a research tool</h2></div>

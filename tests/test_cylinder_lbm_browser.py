@@ -7,7 +7,8 @@ import time
 import pytest
 
 
-def test_hosted_cylinder_card_credit_custom_study_and_benchmark(tmp_path):
+@pytest.mark.parametrize("general_execution", [True, False])
+def test_hosted_cylinder_card_credit_custom_study_and_benchmark(tmp_path, general_execution):
     uvicorn = pytest.importorskip("uvicorn")
     playwright = pytest.importorskip("playwright.sync_api")
     from tests.test_public_workspace import app as factory
@@ -39,7 +40,7 @@ def test_hosted_cylinder_card_credit_custom_study_and_benchmark(tmp_path):
             {
                 "public_origin": origin,
                 "tools_registry": str(registry),
-                "executor_qualified": True,
+                "executor_qualified": general_execution,
             }
         )
     )
@@ -59,22 +60,59 @@ def test_hosted_cylinder_card_credit_custom_study_and_benchmark(tmp_path):
             page.goto(origin + "/#tools")
             card = page.locator('[data-tool="warp-lbm"]')
             playwright.expect(card).to_be_visible()
-            playwright.expect(card).to_contain_text("Zifei Meng")
-            choice = card.get_by_role("combobox")
-            assert choice.input_value() == "custom-study"
+            playwright.expect(page.locator("#tool-collection-note")).to_contain_text(
+                "Your administrator chooses and maintains"
+            )
+            playwright.expect(page.locator("#available-tool-section")).to_be_hidden()
+            playwright.expect(page.locator("#tool-availability-filters")).to_be_hidden()
+            playwright.expect(page.locator("#connect-research-tool")).to_be_hidden()
+            playwright.expect(page.locator("#tools-machines-help")).to_be_hidden()
+            search = page.get_by_role("searchbox", name="Search research tools")
+            search.fill("Re=100")
+            playwright.expect(page.locator(".research-tool-card:visible")).to_have_count(1)
+            if general_execution:
+                playwright.expect(card).to_contain_text("Zifei Meng")
+            card.click()
+            dialog = page.locator("#tool-details-dialog")
+            playwright.expect(page.locator("#tool-detail-action")).to_be_hidden()
+            assert dialog.get_by_role("button", name="Check installed").count() == 0
+            choice = dialog.get_by_role("combobox")
+            assert choice.input_value() == ("custom-study" if general_execution else "lbm-cylinder")
+            assert choice.locator("option[value='custom-study']").count() == int(general_execution)
             choice.select_option("lbm-cylinder")
-            playwright.expect(card.get_by_role("button", name="Run preset")).to_be_visible()
-            card.get_by_role("button", name="Details", exact=True).click()
+            playwright.expect(dialog.get_by_role("button", name="Run preset")).to_be_visible()
             playwright.expect(
                 page.get_by_role("link", name="Contributed by Zifei Meng")
             ).to_have_attribute("href", "https://github.com/ZifeiMengSPH")
-            page.get_by_role("button", name="Close tool details").click()
-            card.get_by_role("button", name="Prepare benchmark").click()
+            page.evaluate("refreshTools()")
+            assert choice.input_value() == "lbm-cylinder"
+            dialog.get_by_role("button", name="Prepare benchmark").click()
+            playwright.expect(dialog).not_to_be_visible()
             playwright.expect(page.locator("#chat-input")).to_have_value(
                 re.compile(r"Prepare an autonomous.*Hold downstream distance at 40D")
             )
             with app.state.store.connect() as db:
                 assert db.execute("SELECT COUNT(*) FROM jobs").fetchone()[0] == 0
+
+            if general_execution:
+                page.get_by_role("button", name="Research tools", exact=True).click()
+                card.click()
+                dialog.get_by_role("combobox").select_option("custom-study")
+                dialog.get_by_role("button", name="Prepare in chat").click()
+                playwright.expect(dialog).not_to_be_visible()
+                playwright.expect(page.locator("#chat-input")).to_have_value(
+                    re.compile("Help me prepare a custom study with Cylinder flow")
+                )
+
+            # A permitted preset still queues through the hosted endpoint.
+            page.get_by_role("button", name="Research tools", exact=True).click()
+            card.click()
+            dialog.get_by_role("combobox").select_option("lbm-cylinder")
+            dialog.get_by_role("button", name="Run preset").click()
+            playwright.expect(dialog).not_to_be_visible()
+            playwright.expect(page.locator("#project-title")).to_have_text("Cylinder wake · Re=100")
+            with app.state.store.connect() as db:
+                assert db.execute("SELECT COUNT(*) FROM jobs").fetchone()[0] == 1
             assert errors == []
             browser.close()
     finally:

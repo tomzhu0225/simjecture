@@ -192,19 +192,31 @@ belong to that project.
 
 ## Research tools
 
-The catalogue uses compact cards for installed and optional tools. **Details**
-opens a separate panel for build variants, paths, setup diagnostics and logs;
-expanding that information does not stretch neighboring cards.
+The catalogue has a search bar, category filter, and **All tools**, **Installed**,
+and **Available to add** filters. Search matches names, descriptions, categories,
+and application or preset names, including connected tools. Click anywhere on a
+card to open its description and available actions. Keyboard users can focus a
+card's **Explore tool** button and press Enter; Escape closes the details dialog.
+Build variants, paths, setup diagnostics and logs stay in that dialog, so opening
+them does not stretch neighboring cards. Filters and open logs survive background
+refreshes.
+
+![Searchable research tool catalogue with category and availability filters](../_static/guides/tool-catalog-desktop.png)
+
+Hosted workspaces show the collection provided by the server administrator, with
+installation and registration controls hidden. Open a card to choose an available
+starter preset or prepare a custom study when the host permits it. Read-only local
+workspaces still allow browsing and searching, with setup actions disabled.
 
 A **Detected** local build is present but still needs a registered capability
 to participate in recorded studies. An unavailable optional managed runtime is
 shown in its scoped setup diagnostics; it does not imply that detected local
 builds are missing. **Connect existing tool** opens the registration form.
-Install, readiness-check, demonstration and agent-assisted setup actions retain
-their existing behavior.
+Install, readiness-check, demonstration and agent-assisted setup actions are in
+the tool's details dialog and retain their existing behavior.
 
 The catalogue reuses `simjecture install` and `simjecture doctor` implementations.
-**Installed** and **Not installed** are separate sections. Installed instruments
+**On your workbench** and **Discover more** are separate sections. Installed instruments
 also show whether a readiness check has passed, failed, or has not yet been run.
 WarpX CPU, EOS and opacity tools have installer buttons. Existing capability descriptors
 in the checkout's `capabilities/`, `.private/*/capabilities*/`, runtime capability

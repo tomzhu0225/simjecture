@@ -7,7 +7,7 @@ partially saturated solid boundary. NVIDIA Warp and WarpX are separate projects.
 
 ## Install and run
 
-In **Research tools**, select **Cylinder flow → Install**. When the numerical
+In **Research tools**, open the **Cylinder flow** card and select **Install**. When the numerical
 readiness check passes, use **Run cylinder wake** for the starter simulation or
 prepare a custom study in chat. The hosted workspace provides its installed
 runtime; visitors use it without managing global installations.

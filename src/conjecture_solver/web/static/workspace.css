@@ -3274,19 +3274,42 @@ wa-split-panel.project-layout {
 }
 .machine-dialog-heading h2 { font-family: inherit; font-weight: 650; }
 
-/* Research tools: compact tiles; build lists and diagnostics stay in a separate panel. */
+/* Research tool catalog: browse first; setup and study actions live in the dialog. */
 .research-tools-view { max-width: 1160px; }
 .research-tools-heading { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 26px; }
 .research-tools-heading h1 { font-size: 34px; letter-spacing: -1.1px; margin: 2px 0 7px; }
 .research-tools-heading .eyebrow { font-size: 11px; letter-spacing: .17em; margin: 0; }
 .research-tools-heading .lead { font-size: 14px; color: var(--muted); margin: 0; }
 .research-tools-heading > button { font-size: 12px; white-space: nowrap; padding: 10px 14px; border-radius: 9px; }
+.tool-collection-note { border: 1px solid var(--line); border-radius: 10px; background: var(--soft); padding: 13px 16px; margin-bottom: 22px; color: var(--muted); font-size: 12px; line-height: 1.7; }
+.tool-catalog-toolbar { display: flex; gap: 12px; align-items: stretch; }
+.tool-search-field { position: relative; flex: 1; min-width: 0; }
+.tool-search-field svg { position: absolute; width: 19px; height: 19px; left: 15px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+.tool-search-field input { width: 100%; height: 46px; border-radius: 10px; padding-left: 44px; font-size: 13px; }
+.tool-catalog-toolbar select { width: 205px; border-radius: 10px; font-size: 12px; }
+.tool-catalog-filters { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 15px 0 8px; flex-wrap: wrap; }
+.tool-filter-group { display: flex; flex-wrap: wrap; gap: 5px; }
+.tool-filter-group button { border: 1px solid transparent; background: transparent; color: var(--muted); border-radius: 8px; padding: 8px 12px; font-size: 12px; }
+.tool-filter-group button[aria-pressed="true"] { background: var(--soft); color: var(--accent); border-color: var(--line); font-weight: 600; }
+#tool-results-count { color: var(--muted); font-size: 11px; }
+.tool-search-empty { text-align: center; padding: 56px 20px; border: 1px dashed var(--line); border-radius: 13px; margin-top: 24px; }
+.tool-search-empty h2 { font-family: inherit; font-weight: 600; font-size: 17px; }
+.tool-search-empty p { color: var(--muted); font-size: 13px; }
+.tool-search-empty button { font-size: 12px; }
 .research-tools-view .inventory-heading { margin: 27px 0 13px; align-items: center; }
 .research-tools-view .inventory-heading h2 { font-size: 15px; letter-spacing: -.1px; }
 .research-tools-view .inventory-heading p { font-size: 11px; }
 .research-tools-view .count-badge { font-size: 10px; padding: 2px 7px; background: var(--soft); color: var(--muted); }
-.research-tool-grid { align-items: start; gap: 16px; }
-.research-tool-card { border: 1px solid var(--line); border-radius: 13px; padding: 19px; background: var(--white); display: flex; flex-direction: column; min-width: 0; min-height: 215px; box-shadow: 0 2px 8px #22203e03; }
+.research-tool-grid { align-items: stretch; gap: 16px; }
+.research-tool-card { position: relative; border: 1px solid var(--line); border-radius: 13px; padding: 20px; background: var(--white); display: flex; flex-direction: column; min-width: 0; min-height: 220px; box-shadow: 0 2px 8px #22203e03; transition: border-color .15s, box-shadow .15s; }
+.research-tool-card:hover { border-color: var(--accent); box-shadow: 0 5px 18px #22203e0b; }
+.research-tool-card:focus-within { outline: 2px solid var(--accent); outline-offset: 3px; }
+.tool-card-open { align-self: flex-start; padding: 0; margin-top: auto; border: 0; background: transparent; color: var(--accent); font-size: 11px; font-weight: 600; }
+.tool-card-open::after { content: ""; position: absolute; inset: 0; border-radius: 13px; }
+.tool-card-open:focus-visible { outline: none; }
+.research-tool-card[data-category="Fluids & MHD"] .research-tool-icon { background: #e5f2f8; color: #277393; }
+.research-tool-card[data-category="Materials & radiation"] .research-tool-icon { background: #fbf0e0; color: #996922; }
+.research-tool-card[data-category="Analysis & data"] .research-tool-icon { background: #e7f3eb; color: #2f7c59; }
 .research-tool-top { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 13px; }
 .research-tool-icon { width: 34px; height: 34px; flex: 0 0 auto; border-radius: 9px; background: var(--soft); color: var(--accent); display: grid; place-items: center; font: 600 12px ui-monospace,SFMono-Regular,Consolas,monospace; }
 .research-tool-name { flex: 1; min-width: 0; }
@@ -3300,12 +3323,6 @@ wa-split-panel.project-layout {
 .research-tool-description { font-size: 12px; line-height: 1.7; color: var(--muted); margin: 0 0 12px; min-height: 40px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .research-tool-note { font-size: 10px; color: var(--muted); margin-bottom: 15px; min-height: 16px; }
 .research-tool-note.attention { color: #9b681b; }
-.research-tool-card .tool-actions { border-top: 1px solid var(--line); padding-top: 12px; margin-top: auto; gap: 5px; align-items: center; }
-.research-tool-card .tool-actions button { font-size: 11px; padding: 7px 9px; border-radius: 7px; }
-.research-tool-card .tool-actions .tool-details-button { margin-left: auto; color: var(--muted); }
-.research-tool-card .tool-actions .included-label { font-size: 11px; color: var(--muted); line-height: 30px; }
-.research-tool-card .tool-actions select { flex: 1 1 190px; min-width: 0; font-size: 11px; }
-.research-tool-card .tool-preset-help { margin: 8px 0 0; font-size: 11px; line-height: 1.6; color: var(--muted); }
 .research-tools-footnote { font-size: 11px; color: var(--muted); padding-top: 22px; margin: 0; line-height: 1.7; }
 .tool-details-dialog { width: 730px; max-width: calc(100vw - 32px); max-height: calc(100dvh - 48px); padding: 0; border: 1px solid var(--line); border-radius: 16px; background: var(--white); color: var(--ink); box-shadow: 0 24px 80px #15132d26; }
 .tool-details-dialog[open] { display: flex; flex-direction: column; }
@@ -3316,6 +3333,7 @@ wa-split-panel.project-layout {
 .tool-dialog-heading > button { font-size: 25px; line-height: 1; padding: 3px; }
 .tool-details-body { padding: 20px 26px; overflow-y: auto; min-height: 0; }
 .tool-details-body > p { font-size: 13px; line-height: 1.7; margin: 0 0 14px; color: var(--muted); }
+.tool-about-heading { font-size: 13px; margin: 0 0 10px; }
 .tool-detail-note { background: var(--soft); padding: 11px 13px; border-radius: 8px; font-size: 12px; line-height: 1.6; color: var(--muted); margin-bottom: 18px; }
 .tool-detail-note.attention { color: #9b681b; }
 .tool-details-body details { border-top: 1px solid var(--line); padding-top: 14px; margin-top: 17px; }
@@ -3325,20 +3343,31 @@ wa-split-panel.project-layout {
 .tool-details-body .installed-variants p { color: var(--muted); font-size: 12px; line-height: 1.6; margin: 5px 0 8px; }
 .tool-details-body code { font-size: 11px; background: var(--soft); padding: 4px 6px; border-radius: 5px; overflow-wrap: anywhere; display: inline-block; }
 .tool-details-body pre { font: 11px/1.7 ui-monospace,SFMono-Regular,Consolas,monospace; white-space: pre-wrap; overflow: auto; max-height: 300px; padding: 13px; background: var(--soft); border-radius: 8px; margin-bottom: 0; overflow-wrap: anywhere; }
-.tool-dialog-footer { border-top: 1px solid var(--line); padding: 15px 26px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.tool-dialog-footer { border-top: 1px solid var(--line); padding: 15px 26px; }
 .tool-dialog-footer span { font-size: 11px; color: var(--muted); }
 .tool-dialog-footer button { font-size: 12px; padding: 9px 12px; border-radius: 8px; }
+.tool-detail-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.tool-detail-actions:has(button:not([hidden])) { margin-top: 12px; }
+#tool-detail-options { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; flex: 1; margin: 0; }
+#tool-detail-options:empty { display: none; }
+#tool-detail-options select { flex: 1 1 210px; min-width: 0; font-size: 12px; }
+#tool-detail-action { margin-left: auto; }
 #custom-tool-form { display: grid; gap: 17px; }
 [data-theme="dark"] .research-tool-card .tool-status.installed { color: #85d9af; background: #1d3c30; }
 [data-theme="dark"] .research-tool-card .tool-status.working { color: #bfb1f2; background: #342c4c; }
 [data-theme="dark"] .research-tool-card .tool-status.attention { color: #e9c579; background: #403620; }
 [data-theme="dark"] .research-tool-note.attention,[data-theme="dark"] .tool-detail-note.attention { color: #e9c579; }
+[data-theme="dark"] .research-tool-card[data-category="Fluids & MHD"] .research-tool-icon { background: #203747; color: #9ccde5; }
+[data-theme="dark"] .research-tool-card[data-category="Materials & radiation"] .research-tool-icon { background: #403620; color: #e9c579; }
+[data-theme="dark"] .research-tool-card[data-category="Analysis & data"] .research-tool-icon { background: #1d3c30; color: #85d9af; }
 @media (max-width: 1150px) { .research-tool-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
 @media (max-width: 650px) {
   .research-tools-heading { align-items: flex-start; gap: 12px; flex-direction: column; }
   .research-tools-heading h1 { font-size: 27px; }
   .research-tools-heading .lead { font-size: 12px; }
   .research-tool-grid { grid-template-columns: 1fr; }
+  .tool-catalog-toolbar { flex-direction: column; }
+  .tool-catalog-toolbar select { width: 100%; }
   .research-tools-view .inventory-heading p { display: none; }
   .tool-dialog-heading { padding: 20px; }
   .tool-details-body { padding: 16px 20px; }

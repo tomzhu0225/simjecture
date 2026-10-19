@@ -159,7 +159,7 @@ def test_browser_setup_chat_files_and_autonomous_handoff(tmp_path, provider):
             playwright.expect(page.locator("#agent-switch-warning")).to_be_hidden()
             page.get_by_role("button", name="Research tools", exact=True).click()
             page.get_by_role("heading", name="Python research stack").wait_for()
-            assert "✓ Installed" in page.locator("#installed-tool-grid").inner_text()
+            assert "Included" in page.locator("#installed-tool-grid").inner_text()
             assert "Not installed" in page.locator("#available-tool-grid").inner_text()
             page.screenshot(path=str(screenshots / "tools.png"), full_page=True)
             page.set_viewport_size({"width": 390, "height": 844})
@@ -491,9 +491,7 @@ def test_refresh_preserves_inspector_and_tool_details_and_dark_math(tmp_path, mo
             page = browser.new_page(viewport={"width": 1440, "height": 1000})
             page.goto(f"http://127.0.0.1:{server.server_port}")
             page.get_by_role("button", name="Research tools", exact=True).click()
-            page.locator('[data-tool="flash"]').get_by_role(
-                "button", name="Details", exact=True
-            ).click()
+            page.locator('[data-tool="flash"]').click()
             page.locator('[data-key="variants-flash"] summary').click()
             page.locator('[data-key="installation-flash"] summary').click()
             page.locator("#tool-details-body").evaluate("e => e.scrollTop = 450")
@@ -555,9 +553,7 @@ def test_refresh_preserves_inspector_and_tool_details_and_dark_math(tmp_path, mo
             playwright.expect(page.locator('[data-tool="flash"]')).to_contain_text(
                 "Needs attention"
             )
-            page.locator('[data-tool="flash"]').get_by_role(
-                "button", name="Details", exact=True
-            ).click()
+            page.locator('[data-tool="flash"]').click()
             page.locator('[data-key="diagnostics-flash"] summary').click()
             assert page.locator(".tool-failure").inner_text() == "Package download failed"
             assert page.locator(".tool-failure").is_visible()
@@ -699,7 +695,8 @@ def test_source_tools_open_agent_assisted_installation_conversations(tmp_path, m
                 ("warpx-cuda", "WarpX · CUDA", "references/local-cuda-deployment.md"),
             ]:
                 page.get_by_role("button", name="Research tools", exact=True).click()
-                page.locator(f'[data-tool="{identifier}"]').get_by_role(
+                page.locator(f'[data-tool="{identifier}"]').click()
+                page.locator('#tool-details-dialog').get_by_role(
                     "button", name="Install with agent", exact=True
                 ).click()
                 playwright.expect(page.locator("#project-title")).to_have_text(f"Install {name}")

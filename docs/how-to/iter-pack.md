@@ -7,7 +7,7 @@ This is a Simjecture integration, not an ITER-endorsed distribution.
 
 ## Install and run
 
-In **Research tools**, select **ITER pack · diagnostics & data → Install**.
+In **Research tools**, open the **ITER pack** card and select **Install**.
 The installer creates a separate managed environment and runs its numerical
 preflight through the configured execution backend. **Run demo** creates a
 conversation and opens a monitored simulation with downloadable JSON, netCDF,
