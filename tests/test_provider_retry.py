@@ -44,6 +44,49 @@ def test_error_event_is_detected_even_with_zero_exit(tmp_path):
     assert provider_failure(tmp_path, 0) is None
 
 
+def test_codex_completion_supersedes_recovered_reconnect_errors(tmp_path):
+    events = [
+        {"type": "turn.started"},
+        {"type": "error", "message": "Reconnecting... 2/5 (tls handshake eof)"},
+        {"type": "error", "message": "Reconnecting... 3/5 (tls handshake eof)"},
+        {"type": "item.completed", "item": {"type": "agent_message", "text": "Done"}},
+        {"type": "turn.completed"},
+    ]
+    (tmp_path / "response.json").write_text("\n".join(json.dumps(e) for e in events))
+    (tmp_path / "stderr.log").write_text("failed to connect to websocket: tls handshake eof")
+    assert provider_failure(tmp_path, 0) is None
+
+
+@pytest.mark.parametrize("returncode", [1, 124])
+def test_codex_completion_does_not_hide_unsuccessful_exit(tmp_path, returncode):
+    events = [
+        {"type": "error", "message": "Reconnecting... (tls handshake eof)"},
+        {"type": "turn.completed"},
+    ]
+    (tmp_path / "response.json").write_text("\n".join(json.dumps(e) for e in events))
+    assert provider_failure(tmp_path, returncode).retryable
+
+
+@pytest.mark.parametrize(
+    "later_event,category",
+    [
+        ({"type": "error", "message": "connection lost"}, "transient"),
+        ({"type": "turn.failed", "error": {"message": "connection lost"}}, "transient"),
+        ({"type": "result", "is_error": True, "result": "402 Insufficient Balance"}, "quota"),
+        ({"type": "turn.started"}, "transient"),
+        ({"type": "turn.completed", "is_error": True}, "transient"),
+    ],
+)
+def test_codex_completion_does_not_hide_later_failure(tmp_path, later_event, category):
+    events = [
+        {"type": "error", "message": "Reconnecting... (tls handshake eof)"},
+        {"type": "turn.completed"},
+        later_event,
+    ]
+    (tmp_path / "response.json").write_text("\n".join(json.dumps(e) for e in events))
+    assert provider_failure(tmp_path, 0).category == category
+
+
 @pytest.mark.parametrize("field", ["result", "message", "error"])
 def test_actual_insufficient_balance_envelopes_pause_without_retry(tmp_path, field):
     (tmp_path / "response.json").write_text(

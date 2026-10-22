@@ -83,6 +83,31 @@ else:
     assert load_session(root.parent, config)["cursor"] == "session-m2"
 
 
+def test_codex_reconnect_then_completion_preserves_answer_and_session(tmp_path, monkeypatch):
+    binary = tmp_path / "bin"
+    binary.mkdir()
+    events = [
+        {"type": "thread.started", "thread_id": "recovered-session"},
+        {"type": "turn.started"},
+        {"type": "error", "message": "Reconnecting... 2/5 (tls handshake eof)"},
+        {"type": "item.completed", "item": {"type": "agent_message", "text": "Saved result"}},
+        {"type": "turn.completed", "usage": {"input_tokens": 1, "output_tokens": 1}},
+    ]
+    stream = "\n".join(json.dumps(event) for event in events) + "\n"
+    command = binary / "codex"
+    command.write_text(f"#!{sys.executable}\nimport sys\nsys.stdout.write({stream!r})\n")
+    command.chmod(0o755)
+    monkeypatch.setenv("PATH", str(binary) + os.pathsep + os.environ["PATH"])
+    w = Workspace(tmp_path / "runs/.workspace")
+    project = w.create({"name": "Recovered session"})
+    root = Path(project["files_directory"])
+    turn = root.parent / "turns/1"
+    turn.mkdir()
+    config = dict(backend="codex", model="fixture")
+    assert run_external("Current request", root, config, turn, w) == "Saved result"
+    assert load_session(root.parent, config)["cursor"] == "recovered-session"
+
+
 def test_api_preserves_structured_history_between_turns(tmp_path, provider):
     url, requests = provider
     w = Workspace(tmp_path / ".workspace")

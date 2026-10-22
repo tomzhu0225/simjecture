@@ -22,6 +22,7 @@ def provider_failure(directory, returncode):
         messages.append(stderr.read_text(errors="replace")[-8000:])
     path = directory / "response.json"
     stream_error = False
+    completed_turn = False
     if path.exists():
         for line in path.read_text(errors="replace").splitlines():
             try:
@@ -32,11 +33,20 @@ def provider_failure(directory, returncode):
                 continue
             if event.get("type") in {"error", "turn.failed"} or event.get("is_error"):
                 stream_error = True
+                completed_turn = False
                 # CLI adapters also put protocol errors in a result field.
                 # Successful assistant prose is never inspected as an error.
                 messages.extend(
                     json.dumps(event[key]) for key in ("error", "message", "result") if key in event
                 )
+            elif event.get("type") == "turn.started":
+                completed_turn = False
+            elif event.get("type") == "turn.completed":
+                completed_turn = True
+    # Codex can recover after emitting reconnect errors. Its completed turn
+    # supersedes those diagnostics only when the CLI also exits successfully.
+    if returncode == 0 and completed_turn:
+        return None
     if returncode in (0, 124) and not stream_error:
         return None
     text = "\n".join(messages).lower()

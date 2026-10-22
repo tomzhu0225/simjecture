@@ -4,6 +4,10 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+- Preserve successful Codex responses after recovered connection errors instead
+  of reporting a provider failure with exit code zero. Later failures, unfinished
+  successor turns and unsuccessful process exits still report errors.
+
 - Add a separate Material EOS builder tool and managed runtime, guided by the
   EOS skill. Support explicit native FEOS material inputs and a versioned tin
   paper reconstruction, with component accounting, domain checks, provenance
