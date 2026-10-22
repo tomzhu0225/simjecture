@@ -137,6 +137,7 @@ getting-started/terminal-ui
 how-to/guided-commissioning
 how-to/multi-tool-studies
 how-to/add-a-capability
+how-to/magnetic-smoke
 how-to/deploy-runtimes
 how-to/material-eos
 how-to/iter-pack

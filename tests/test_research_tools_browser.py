@@ -186,6 +186,15 @@ def test_catalog_search_filters_keyboard_and_setup_permissions(tmp_path, monkeyp
             playwright.expect(visible).to_have_attribute("data-tool", "warpx-cuda")
             search.fill("laser calibration")
             playwright.expect(visible).to_have_attribute("data-tool", "custom-spectrometer")
+            search.fill("magnetic")
+            category.select_option("Electromagnetics")
+            playwright.expect(visible).to_have_count(1)
+            playwright.expect(visible).to_have_attribute("data-tool", "magnetic-smoke")
+            visible.click()
+            playwright.expect(page.locator("#tool-details-dialog")).to_contain_text(
+                "no circuit or eddy-current solve"
+            )
+            page.keyboard.press("Escape")
             search.fill("")
             category.select_option("Materials & radiation")
             playwright.expect(visible).to_have_count(6)

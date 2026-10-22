@@ -1,0 +1,8 @@
+{
+  "schema_version": "0.1.0",
+  "name": "magnetic-smoke",
+  "version": "1.0.1",
+  "description": "Calculate prescribed-current filament magnetic fields; distinguish geometry checks from conductor and circuit simulation",
+  "entrypoint": "SKILL.md",
+  "capability_names": ["magnetic-smoke-1.0"]
+}

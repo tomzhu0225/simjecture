@@ -1128,6 +1128,7 @@ async function refreshBenchmarks() {
 }
 
 const toolLabels = {
+  "magnetic-smoke": ["Magnetic geometry screening", "Prescribed-current fields", "EM", "Electromagnetics"],
   "python": ["Python research stack", "Numerical exploration", "PY", "Analysis & data"],
   "warp-lbm": ["Cylinder flow", "Warp-LBM · 2D fluid dynamics", "LB", "Fluids & MHD"],
   "iter-pack": ["ITER pack", "Diagnostics & data", "IT", "Analysis & data"],

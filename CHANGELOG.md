@@ -4,6 +4,11 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+- Add an optional prescribed-current magnetic screening tool with a managed
+  runtime, discoverable skill and analytic checks. Evaluate finite-segment
+  Biot-Savart fields accurately near wire extensions; retain input identities
+  and the distinction between filament screening and conductor/circuit physics.
+
 - Preserve successful Codex responses after recovered connection errors instead
   of reporting a provider failure with exit code zero. Later failures, unfinished
   successor turns and unsuccessful process exits still report errors.

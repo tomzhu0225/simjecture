@@ -37,6 +37,7 @@ MATERIAL_EOS_CAPABILITY = "material-eos-0.1"
 OPTAB_CAPABILITY = "optab-1.3.1"
 ITER_PACK_CAPABILITY = "iter-pack-1.0"
 WARP_LBM_CAPABILITY = "warp-lbm-cylinder-1.0"
+MAGNETIC_SMOKE_CAPABILITY = "magnetic-smoke-1.0"
 PINNED_WARPX_REVISION = "312d507407a1bf6f01ae43fb41b5c3a3700d053c"
 PINNED_ATOMEC_REVISION = "4b05849a1bcf6a9d682673c360ec2ebfb4eceab3"
 PINNED_SINGULARITY_EOS_REVISION = "760ac3f8e106addc13dad8a47b9d4ad75e44ea48"
@@ -46,6 +47,7 @@ PRIVATE_ROOT_ENV = "SIMJECTURE_PRIVATE_ROOT"
 FLASH_BOOTSTRAP_SCRIPT = "skills/flash-mhd/scripts/bootstrap_flash.sh"
 
 _CAPABILITY_CONFIGS = {
+    MAGNETIC_SMOKE_CAPABILITY: "magnetic-smoke-1.0.json",
     WARP_LBM_CAPABILITY: "warp-lbm-cylinder-1.0.json",
     ITER_PACK_CAPABILITY: "iter-pack-1.0.json",
     WARPX_CPU_CAPABILITY: "warpx-cpu-26.07.json",
@@ -91,6 +93,7 @@ def _run_install_command(command, *, capture_output=False):
 
 
 class DeploymentProfile(StrEnum):
+    MAGNETIC_SMOKE = "magnetic-smoke"
     WARP_LBM = "warp-lbm"
     ITER_PACK = "iter-pack"
     CORE = "core"
@@ -106,6 +109,7 @@ class DeploymentProfile(StrEnum):
 
 
 _PROFILE_BY_CAPABILITY = {
+    MAGNETIC_SMOKE_CAPABILITY: DeploymentProfile.MAGNETIC_SMOKE,
     WARP_LBM_CAPABILITY: DeploymentProfile.WARP_LBM,
     ITER_PACK_CAPABILITY: DeploymentProfile.ITER_PACK,
     WARPX_CPU_CAPABILITY: DeploymentProfile.WARPX_CPU,
@@ -209,6 +213,14 @@ _BOOTSTRAP_SPECS = {
         managed_marker="share/build-record.json",
         pinned_revision="01c2e0d9e3d5c787418405bf9dd3bc5beec28566d4bdb7c53cffbabf756b5eb4",
         source_label="Frankfurt FEOS 16.7",
+        verify_revision=False,
+    ),
+    DeploymentProfile.MAGNETIC_SMOKE: _BootstrapSpec(
+        capability=MAGNETIC_SMOKE_CAPABILITY,
+        script="skills/magnetic-smoke/scripts/bootstrap.sh",
+        managed_marker="share/build-record.json",
+        pinned_revision="",
+        source_label="Prescribed-current magnetic screening",
         verify_revision=False,
     ),
     DeploymentProfile.WARP_LBM: _BootstrapSpec(

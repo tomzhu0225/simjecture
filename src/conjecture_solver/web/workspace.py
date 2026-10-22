@@ -31,6 +31,12 @@ from .workspace_machines import MachineWorkspace
 
 CATALOGUE = [
     (
+        "magnetic-smoke",
+        "Magnetic geometry screening",
+        "Prescribed-current Biot-Savart fields · no circuit or eddy-current solve",
+        "install",
+    ),
+    (
         "warp-lbm",
         "Cylinder flow · Warp-LBM",
         "2D GPU fluid dynamics · contributed by Zifei Meng",
