@@ -1,0 +1,23 @@
+{
+  "runtime_root": "../.runtime/magnetic-smoke-1.0",
+  "executable": "bin/python",
+  "identity_files": ["share/magnetic_smoke.py", "share/build-record.json", "share/requirements.txt"],
+  "environment": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONHOME": "/opt/acs-capabilities/magnetic-smoke-1.0",
+    "SIMJECTURE_MAGNETIC_DRIVER": "/opt/acs-capabilities/magnetic-smoke-1.0/share/magnetic_smoke.py"
+  },
+  "manifest": {
+    "schema_version": "0.1.0",
+    "name": "magnetic-smoke-1.0",
+    "version": "1.0",
+    "skill": "magnetic-smoke",
+    "executable_kind": "python-biot-savart",
+    "description": "Prescribed-current 3D polyline Biot-Savart screening; no circuit, eddy-current or plasma solution",
+    "preflight_resource": "examples/health_check.py",
+    "preflight_result": "magnetic_health.json",
+    "preflight_checks": ["checks.finite", "checks.circular_loop", "checks.finite_wire"]
+  }
+}
