@@ -149,6 +149,18 @@ does not qualify a production opacity table. Optab consumes an external
 abundance file; it is not an equation-of-state solver. See
 `skills/opacity/references/local-deployment.md`.
 
+## Atomic physics
+
+FAC is an optional atomic-structure and rates tool with a GPL-3.0 core.
+`uv run simjecture install fac` provisions managed dependencies and builds
+the pinned SFAC, SCRM, and SPOL command-line interfaces. `--source` can provide
+an existing checkout, which is copied into the managed build tree.
+
+The hydrogen probe checks execution and table units. The bundled LTE helper
+produces restricted E1/M1 line spectra; it is not a complete material-opacity
+or EOS generator. See `skills/atomic-physics/references/local-deployment.md`
+and `skills/atomic-physics/references/execution-output.md`.
+
 ## Inspect without installing
 
 ```bash
@@ -158,6 +170,7 @@ uv run simjecture doctor --profile warpx-cuda --json
 uv run simjecture doctor --profile flash --json
 uv run simjecture doctor --profile atomec --json
 uv run simjecture doctor --profile optab --json
+uv run simjecture doctor --profile fac --json
 uv run simjecture install warpx-cpu --dry-run
 ```
 

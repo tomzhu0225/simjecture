@@ -174,7 +174,7 @@ a remote only you configured, attach an overlay as described in
 `skills/flash-mhd/references/private-install.md`. The public tree still contains
 no FLASH download URL.
 
-Equation-of-state and opacity-table generators use the same installer path as
+Atomic-physics, equation-of-state, and opacity-table tools use the same installer path as
 WarpX CPU. The command clones a pinned upstream revision into `.runtime/` and
 runs a non-evidentiary probe:
 
@@ -183,6 +183,7 @@ uv run simjecture install atomec
 uv run simjecture install singularity-eos
 uv run simjecture install m-aneos
 uv run simjecture install optab
+uv run simjecture install fac
 ```
 
 Use `--dry-run` to inspect a new provisioning command. An unhealthy
@@ -192,6 +193,10 @@ installer-managed prefix is preserved unless `--repair` is explicit. Follow
 opacity table; Optab consumes an external abundance table rather than solving
 thermodynamic closure. FLASH remains operator-supplied because its license
 restricts redistribution.
+
+FAC provides relativistic atomic structure and rates, plus a restricted LTE
+line-spectrum diagnostic. It does not provide a complete tungsten opacity or
+EOS table. See `skills/atomic-physics/references/local-deployment.md`.
 
 ## Local web interface
 

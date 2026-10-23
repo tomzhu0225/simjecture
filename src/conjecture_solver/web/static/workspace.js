@@ -1187,6 +1187,7 @@ const toolLabels = {
   "feos": ["Frankfurt FEOS", "Electron/ion equation of state", "ES", "Materials & radiation"],
   "material-eos": ["Material EOS builder", "Model profiles and table export", "ES", "Materials & radiation"],
   "optab": ["Optab", "Opacity tables", "OP", "Materials & radiation"],
+  "fac": ["FAC", "Atomic structure & rates", "FA", "Materials & radiation"],
 };
 // Setup stages reported by the installer itself; they are not percentages.
 const toolStageText = {

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Atomic physics"
+  short_description: "Generate and assess FAC atomic data and line spectra"
+  default_prompt: "Use $atomic-physics to commission an available FAC calculation for this plasma model."

@@ -67,6 +67,7 @@ CATALOGUE = [
         "install",
     ),
     ("optab", "Optab", "Opacity tables", "install"),
+    ("fac", "FAC", "Relativistic atomic structure and rates", "install"),
 ]
 
 

@@ -38,6 +38,7 @@ ELMER_CAPABILITY = "elmer-0.1"
 FEOS_CAPABILITY = "feos-16.7"
 MATERIAL_EOS_CAPABILITY = "material-eos-0.1"
 OPTAB_CAPABILITY = "optab-1.3.1"
+FAC_CAPABILITY = "fac-1.1.5"
 ITER_PACK_CAPABILITY = "iter-pack-1.0"
 WARP_LBM_CAPABILITY = "warp-lbm-cylinder-1.0"
 PINNED_WARPX_REVISION = "312d507407a1bf6f01ae43fb41b5c3a3700d053c"
@@ -45,6 +46,7 @@ PINNED_ATOMEC_REVISION = "4b05849a1bcf6a9d682673c360ec2ebfb4eceab3"
 PINNED_SINGULARITY_EOS_REVISION = "760ac3f8e106addc13dad8a47b9d4ad75e44ea48"
 PINNED_MANEOS_REVISION = "58d75bc499a371c98de28d5bd7f772b43f97037f"
 PINNED_OPTAB_REVISION = "2d95b7c1a944e15d80605afee783c22eed441ae1"
+PINNED_FAC_REVISION = "6196889ac611f909dd99366fe447486411e27950"
 PRIVATE_ROOT_ENV = "SIMJECTURE_PRIVATE_ROOT"
 FLASH_BOOTSTRAP_SCRIPT = "skills/flash-mhd/scripts/bootstrap_flash.sh"
 
@@ -63,6 +65,7 @@ _CAPABILITY_CONFIGS = {
     FEOS_CAPABILITY: "feos-16.7.json",
     MATERIAL_EOS_CAPABILITY: "material-eos-0.1.json",
     OPTAB_CAPABILITY: "optab-1.3.1.json",
+    FAC_CAPABILITY: "fac-1.1.5.json",
 }
 _CORE_DISTRIBUTIONS = (
     "simjecture",
@@ -144,6 +147,7 @@ class DeploymentProfile(StrEnum):
     FEOS = "feos"
     MATERIAL_EOS = "material-eos"
     OPTAB = "optab"
+    FAC = "fac"
 
 
 _PROFILE_BY_CAPABILITY = {
@@ -161,6 +165,7 @@ _PROFILE_BY_CAPABILITY = {
     FEOS_CAPABILITY: DeploymentProfile.FEOS,
     MATERIAL_EOS_CAPABILITY: DeploymentProfile.MATERIAL_EOS,
     OPTAB_CAPABILITY: DeploymentProfile.OPTAB,
+    FAC_CAPABILITY: DeploymentProfile.FAC,
 }
 _MISSING_RUNTIME_REMEDY = {
     FREECAD_CAPABILITY: "Run `simjecture install freecad`.",
@@ -171,6 +176,10 @@ _MISSING_RUNTIME_REMEDY = {
     ),
     FEOS_CAPABILITY: (
         "Run `simjecture install feos` to build the checksummed Frankfurt FEOS source."
+    ),
+    FAC_CAPABILITY: (
+        "Run `simjecture install fac` to provision the pinned FAC runtime "
+        "described by `skills/atomic-physics/references/local-deployment.md`."
     ),
     ITER_PACK_CAPABILITY: "Run `simjecture install iter-pack` for diagnostics and IMAS support.",
     FLASH_MHD_CAPABILITY: (
@@ -207,6 +216,7 @@ _PREFLIGHT_REMEDY = {
         "Inspect the builder report; run `simjecture install material-eos --repair`."
     ),
     FEOS_CAPABILITY: "Inspect the FEOS build record and rerun `simjecture install feos --repair`.",
+    FAC_CAPABILITY: "Inspect the FAC runtime and rerun `simjecture install fac --repair`.",
     ITER_PACK_CAPABILITY: "Inspect the report; run `simjecture install iter-pack --repair`.",
     WARPX_CPU_CAPABILITY: (
         "Inspect the runtime and rerun the CPU profile installer with --repair."
@@ -285,6 +295,13 @@ _BOOTSTRAP_SPECS = {
         pinned_revision="01c2e0d9e3d5c787418405bf9dd3bc5beec28566d4bdb7c53cffbabf756b5eb4",
         source_label="Frankfurt FEOS 16.7",
         verify_revision=False,
+    ),
+    DeploymentProfile.FAC: _BootstrapSpec(
+        capability=FAC_CAPABILITY,
+        script="skills/atomic-physics/scripts/bootstrap_fac.sh",
+        managed_marker="share/build-record.json",
+        pinned_revision=PINNED_FAC_REVISION,
+        source_label="FAC",
     ),
     DeploymentProfile.WARP_LBM: _BootstrapSpec(
         capability=WARP_LBM_CAPABILITY,
