@@ -31,6 +31,12 @@ from .workspace_machines import MachineWorkspace
 
 CATALOGUE = [
     (
+        "elmer-em",
+        "Elmer 3D electromagnetics",
+        "Experimental conductor and circuit solver · guided setup",
+        "agent",
+    ),
+    (
         "warp-lbm",
         "Cylinder flow · Warp-LBM",
         "2D GPU fluid dynamics · contributed by Zifei Meng",

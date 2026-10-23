@@ -32,6 +32,7 @@ FLASH_MHD_CAPABILITY = "flash-island-coalescence-resistive-mhd-4.8"
 ATOMEC_CAPABILITY = "atomec-1.4.0"
 SINGULARITY_EOS_CAPABILITY = "singularity-eos-1.12.1"
 M_ANEOS_CAPABILITY = "m-aneos-1.0"
+ELMER_EM_CAPABILITY = "elmer-em-0.1"
 FEOS_CAPABILITY = "feos-16.7"
 MATERIAL_EOS_CAPABILITY = "material-eos-0.1"
 OPTAB_CAPABILITY = "optab-1.3.1"
@@ -46,6 +47,7 @@ PRIVATE_ROOT_ENV = "SIMJECTURE_PRIVATE_ROOT"
 FLASH_BOOTSTRAP_SCRIPT = "skills/flash-mhd/scripts/bootstrap_flash.sh"
 
 _CAPABILITY_CONFIGS = {
+    ELMER_EM_CAPABILITY: "elmer-em-0.1.json",
     WARP_LBM_CAPABILITY: "warp-lbm-cylinder-1.0.json",
     ITER_PACK_CAPABILITY: "iter-pack-1.0.json",
     WARPX_CPU_CAPABILITY: "warpx-cpu-26.07.json",
@@ -91,6 +93,7 @@ def _run_install_command(command, *, capture_output=False):
 
 
 class DeploymentProfile(StrEnum):
+    ELMER_EM = "elmer-em"
     WARP_LBM = "warp-lbm"
     ITER_PACK = "iter-pack"
     CORE = "core"
@@ -106,6 +109,7 @@ class DeploymentProfile(StrEnum):
 
 
 _PROFILE_BY_CAPABILITY = {
+    ELMER_EM_CAPABILITY: DeploymentProfile.ELMER_EM,
     WARP_LBM_CAPABILITY: DeploymentProfile.WARP_LBM,
     ITER_PACK_CAPABILITY: DeploymentProfile.ITER_PACK,
     WARPX_CPU_CAPABILITY: DeploymentProfile.WARPX_CPU,
@@ -119,6 +123,7 @@ _PROFILE_BY_CAPABILITY = {
     OPTAB_CAPABILITY: DeploymentProfile.OPTAB,
 }
 _MISSING_RUNTIME_REMEDY = {
+    ELMER_EM_CAPABILITY: "Run `simjecture install elmer-em --source /path/to/elmer-install`.",
     MATERIAL_EOS_CAPABILITY: (
         "Run `simjecture install material-eos` for model profiles and table export."
     ),
@@ -153,6 +158,7 @@ _MISSING_RUNTIME_REMEDY = {
     ),
 }
 _PREFLIGHT_REMEDY = {
+    ELMER_EM_CAPABILITY: "Inspect the wire control logs and the supplied Elmer build.",
     MATERIAL_EOS_CAPABILITY: (
         "Inspect the builder report; run `simjecture install material-eos --repair`."
     ),
@@ -195,6 +201,15 @@ class _BootstrapSpec:
 
 
 _BOOTSTRAP_SPECS = {
+    DeploymentProfile.ELMER_EM: _BootstrapSpec(
+        capability=ELMER_EM_CAPABILITY,
+        script="skills/elmer-em/scripts/bootstrap.sh",
+        managed_marker="share/build-record.json",
+        pinned_revision="",
+        source_label="prebuilt Elmer installation (bin, lib, share)",
+        source_required=True,
+        verify_revision=False,
+    ),
     DeploymentProfile.MATERIAL_EOS: _BootstrapSpec(
         capability=MATERIAL_EOS_CAPABILITY,
         script="skills/eos/scripts/bootstrap_material_eos.sh",

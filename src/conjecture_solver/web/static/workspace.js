@@ -1128,6 +1128,7 @@ async function refreshBenchmarks() {
 }
 
 const toolLabels = {
+  "elmer-em": ["Elmer 3D electromagnetics", "Experimental fields and circuits", "EM", "Electromagnetics"],
   "python": ["Python research stack", "Numerical exploration", "PY", "Analysis & data"],
   "warp-lbm": ["Cylinder flow", "Warp-LBM · 2D fluid dynamics", "LB", "Fluids & MHD"],
   "iter-pack": ["ITER pack", "Diagnostics & data", "IT", "Analysis & data"],
