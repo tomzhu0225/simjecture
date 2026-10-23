@@ -17,7 +17,20 @@ def adjudicate(parent_args, authority, alert, directory):
     args.state_dir = directory
     args.workflow = "frontier"
     args.turn_seconds = 120
-    runner = AgentSupervisor(args)
+    parent_control = parent_args.state_dir / "control.json"
+
+    def parent_cancelled():
+        if not parent_control.exists():
+            return False
+        return json.loads(parent_control.read_text()).get("command") in {"pause", "cancel"}
+
+    class RepairRunner(AgentSupervisor):
+        def boundary(self):
+            if parent_cancelled():
+                self.cancelled = True
+            return super().boundary()
+
+    runner = RepairRunner(args)
     from conjecture_solver.research_finalization import execution_deadline
     from conjecture_solver.research_service import ResearchService
 
@@ -97,6 +110,8 @@ def adjudicate(parent_args, authority, alert, directory):
                 + json.dumps(source),
             )
             result["proposal"] = patch
+            if parent_cancelled():
+                raise ValueError("Parent stopped; repair grant will not be used")
             result["deployment"] = authority.apply(patch)
         result.update(stage="completed", ended_at=time.time())
     except Exception as error:

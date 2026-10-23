@@ -41,6 +41,26 @@ class MonitorSupervisor(ResearchSupervisor):
         self.monitor_cadence = cadence
         self._monitor_tick = 0
 
+    def prompt(self):
+        text = super().prompt()
+        outcomes = self.state.get("monitor_authority_results", [])
+        if outcomes:
+            summaries = [
+                {
+                    "stage": r["stage"],
+                    "verdict": r.get("verdict"),
+                    "deployment": r.get("deployment"),
+                    "error": r.get("error"),
+                }
+                for r in outcomes[-3:]
+            ]
+            text += (
+                "\nIndependent harness authority outcomes. Inspect returned repairs "
+                "and rerun the affected operation before updating your report:\n"
+                + json.dumps(summaries)
+            )
+        return text
+
     def director_packet(self):
         packet = super().director_packet()
         packet["monitor_alerts"] = self.monitor_alerts[-4:]

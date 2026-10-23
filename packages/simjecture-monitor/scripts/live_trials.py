@@ -114,6 +114,7 @@ def prepare(root, case, policy, socket):
         reasoning_effort="high",
     )
     sup = MonitorSupervisor(args, policy=policy, task=task, model_socket=socket, cadence=60)
+    sup.record_review_identity = True
     # Explicit requests bypass this interval; policies control discretionary wakes.
     manifest = service.manifest
     manifest["director_policy"]["interval_seconds"] = 36000
@@ -180,6 +181,8 @@ def run(root, case, policy, socket):
     sup, task = prepare(root, case, policy, socket)
     status = dict(stage="running", case=case, policy=policy, started_at=time.time(), turns=[])
     put(root / "TRIAL.json", status)
+    report = sup.service.work / "REPORT.txt"
+    latest_feedback = 0
     try:
         for number in range(2):
             if sup.boundary():
@@ -219,10 +222,22 @@ def run(root, case, policy, socket):
                 if not active and not authority and getattr(sup, "_director_pending", None) is None:
                     break
                 time.sleep(1)
-            if (sup.service.work / "REPORT.txt").exists() and (
-                sup.service.work / "results.json"
-            ).exists():
+            report = sup.service.work / "REPORT.txt"
+            delivered = [r.get("resolved_at", 0) for r in sup.service._all("help_requests")]
+            delivered += [
+                r.get("ended_at", 0) for r in sup.state.get("monitor_authority_results", [])
+            ]
+            latest_feedback = max(delivered, default=0)
+            # A provisional report must not suppress a continuation after useful feedback.
+            if (
+                report.exists()
+                and (sup.service.work / "results.json").exists()
+                and report.stat().st_mtime >= latest_feedback
+            ):
                 break
+        status["pending_feedback_after_final_report"] = bool(
+            latest_feedback and (not report.exists() or report.stat().st_mtime < latest_feedback)
+        )
         status["verification"] = verify(sup.service.work, root / "VERIFIED.json")
         status.update(
             stage="completed",
