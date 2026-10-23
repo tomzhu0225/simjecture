@@ -9,6 +9,7 @@ import statistics
 from collections import defaultdict
 from pathlib import Path
 
+from simjecture_monitor.accounting import native_usage
 from simjecture_monitor.events import digest, put
 from simjecture_monitor.reward import ContinuationOutcome, RewardWeights, paired_reward
 
@@ -109,6 +110,10 @@ def audit(root):
                 waiting_starts=[r["starts"] for r in waiting],
                 intervention_seconds=[r["elapsed_seconds"] for r in intervention],
                 waiting_seconds=[r["elapsed_seconds"] for r in waiting],
+                intervention_feedback_misses=[r["required_feedback_misses"] for r in intervention],
+                waiting_feedback_misses=[r["required_feedback_misses"] for r in waiting],
+                intervention_duplicates=[r["duplicates"] for r in intervention],
+                waiting_duplicates=[r["duplicates"] for r in waiting],
             )
         )
     sensitivity = []
@@ -192,6 +197,13 @@ def audit(root):
         receipts_complete=complete,
         sensitivity=sensitivity,
         model_study_gate=model_gate,
+        native_usage_by_continuation={
+            b["root"]: native_usage(root / b["root"])
+            for c in design["cases"]
+            for p in c["pairs"]
+            for b in p["branches"]
+            if (root / b["root"] / "OUTCOME.json").exists()
+        },
         scope=(
             "Small matched public-context continuation study; "
             "no hidden-state or population causal estimate"
