@@ -108,13 +108,19 @@ Four eligible episodes (two harness and two recoverable-analysis trajectories)
 provided **119 sampled decisions**, with no model-service failures. All four
 reports matched raw numerical diagnostics. Three satisfied the stronger
 report-and-feedback closure criterion; one did not, and its negative return
-was retained.
+was retained. Its numerical work was correct; an extra inferred help request
+remained unfulfilled and was canceled at shutdown after the final report.
 
 The prospective utility was
 `R = Q - 0.02*N - 0.1*min(T/650, 1)`, where `Q` requires independently verified
 metrics, required controls and delivered final feedback; `N` counts capable-
 agent starts, and `T` is study elapsed time. This is an explicitly chosen
-research utility, not a monetary estimate or scientific truth score.
+research utility, not a monetary estimate or scientific truth score. Feedback
+closure is currently a timestamp-based proxy: the final report must postdate
+recorded help resolution and authority outcomes. It does not establish that the
+worker understood every message. Explicit durable acknowledgments would be a
+better training signal, and cancellation bookkeeping should be distinguished
+from delivery of new information. The original rewards remain unchanged.
 
 Returns were 0.7761, 0.7862, -0.2372 and 0.8032. LoRA updated 7,372,800 parameters
 with a clipped categorical policy-gradient objective, a within-family
