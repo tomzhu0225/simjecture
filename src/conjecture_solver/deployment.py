@@ -69,12 +69,40 @@ _CORE_DISTRIBUTIONS = (
 )
 
 
+PROGRESS_FILE_ENV = "SIMJECTURE_PROGRESS_FILE"
+
+
+def report_install_stage(stage: str, detail: str = "") -> None:
+    """Record the current setup stage for a supervising interface, if one asked.
+
+    The workspace sets ``SIMJECTURE_PROGRESS_FILE`` for browser-started setup. The
+    CLI leaves it unset, so terminal output is unchanged. Stages describe what is
+    running; they are not completion percentages.
+    """
+    target = os.environ.get(PROGRESS_FILE_ENV, "").strip()
+    if not target:
+        return
+    import time
+
+    path = Path(target)
+    temporary = path.with_name(f"{path.name}.{os.getpid()}.tmp")
+    try:
+        temporary.write_text(
+            json.dumps({"stage": stage, "detail": detail[:240], "updated_at": time.time()})
+        )
+        temporary.replace(path)
+    except OSError:
+        # Progress is advisory; never fail an installation because it is unavailable.
+        temporary.unlink(missing_ok=True)
+
+
 def _run_install_command(command, *, capture_output=False):
     """Keep live build output while retaining a bounded failure diagnostic."""
     if capture_output:
         return subprocess.run(command, check=False, text=True, capture_output=True)
     from collections import deque
 
+    report_install_stage("install", f"Running {Path(str(command[0])).name}")
     tail = deque(maxlen=40)
     with subprocess.Popen(
         command,
@@ -87,6 +115,8 @@ def _run_install_command(command, *, capture_output=False):
             print(line, end="", flush=True)
             tail.append(line[-2000:])
         code = process.wait()
+    if code == 0:
+        report_install_stage("verify", "Checking the installed runtime")
     return subprocess.CompletedProcess(command, code, "", "".join(tail))
 
 
@@ -1258,6 +1288,8 @@ class DeploymentManager:
         repository: str | None = None,
         git_ref: str | None = None,
     ) -> DeploymentReport:
+        if not dry_run:
+            report_install_stage("prepare", "Checking prerequisites and existing runtimes")
         if profile is DeploymentProfile.CORE:
             report = self.doctor(profile.value, probe=True)
             if not dry_run:

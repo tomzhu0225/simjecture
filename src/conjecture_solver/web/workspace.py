@@ -18,7 +18,7 @@ import time
 import tomllib
 import uuid
 from contextlib import contextmanager, suppress
-from datetime import date
+from datetime import date, datetime
 from functools import cached_property
 from pathlib import Path
 from urllib.parse import urlsplit
@@ -99,15 +99,59 @@ def alive(record):
         return False
 
 
+_TERMINAL_CONTROL = re.compile(r"\x1b(?:\[[0-?]*[ -/]*[@-~]|\][^\x07]*\x07|[@-Z\\-_])")
+
+
+def readable_log(value):
+    """Show installer output as a terminal would: no colour codes or redrawn bars."""
+    value = _TERMINAL_CONTROL.sub("", value)
+    # Progress bars redraw a line with carriage returns; keep its final state.
+    return "\n".join(line.rsplit("\r", 1)[-1] for line in value.split("\n"))
+
+
+def latest_activity(log):
+    """Return the newest meaningful installer line for a compact status display."""
+    for line in reversed(log.splitlines()):
+        line = line.strip()
+        if sum(character.isalnum() for character in line) >= 3:
+            return line[:200]
+    return ""
+
+
+def tool_estimate(history, action):
+    """Median duration of recent successful setups of this kind on this machine."""
+    durations = [
+        float(item["seconds"])
+        for item in history
+        if isinstance(item, dict)
+        and item.get("action") == action
+        and item.get("ready")
+        and item.get("changed", True)
+        and isinstance(item.get("seconds"), int | float)
+        and item["seconds"] > 0
+    ][-5:]
+    if not durations:
+        return None
+    durations.sort()
+    middle = len(durations) // 2
+    median = (
+        durations[middle]
+        if len(durations) % 2
+        else (durations[middle - 1] + durations[middle]) / 2
+    )
+    return round(median)
+
+
 def folder_name(value):
     name = re.sub(r"[^\w-]+", "-", value.lower(), flags=re.UNICODE).strip("-_")[:65]
     return name or "research"
 
 
-def spawn(command, directory, log):
+def spawn(command, directory, log, extra_env=None):
     env = os.environ.copy()
     env["PYTHONPATH"] = str(Path(__file__).resolve().parents[2])
     env["PATH"] = str(Path(sys.executable).parent) + os.pathsep + env.get("PATH", "")
+    env.update(extra_env or {})
     with log.open("ab") as stream:
         child = subprocess.Popen(
             command,
@@ -1699,8 +1743,11 @@ class Workspace(MachineWorkspace, ProjectCollections):
         cards = []
         for name, label, description, action in CATALOGUE:
             saved = load(manager.runtime_root / "deployment" / f"{name}.json")
-            job = load(self.root / "tools" / name / "job.json")
+            operation = self.tool_operation(name)
             result = load(self.root / "tools" / name / "result.json")
+            if result.get("cancelled"):
+                # A user-stopped attempt is neither a failure nor new readiness evidence.
+                result = {}
             descriptor = next(manager.capability_root.glob(name + "-*.json"), None)
             if name == "warpx-cuda":
                 generated = (
@@ -1744,6 +1791,14 @@ class Workspace(MachineWorkspace, ProjectCollections):
                 and latest.get("descriptor") != str(descriptor.resolve())
             ):
                 latest = {}
+            recovery_after = 0
+            if operation.get("interrupted"):
+                recovery_after = (self.root / "tools" / name / "job.json").stat().st_mtime
+                latest = dict(
+                    ready=False,
+                    error="Setup stopped before recording a result. Diagnose the saved output "
+                    "with an agent or retry the operation.",
+                )
             if descriptor and not latest.get("ready"):
                 # Agent-installed variants may be checked by their registered
                 # directory ID. Reuse that exact capability's readiness result.
@@ -1756,6 +1811,7 @@ class Workspace(MachineWorkspace, ProjectCollections):
                         and Path(report.get("descriptor", "")).resolve()
                         == descriptor.resolve().parent
                         and checked.stat().st_mtime >= descriptor.stat().st_mtime
+                        and checked.stat().st_mtime >= recovery_after
                     ):
                         latest = report
                         break
@@ -1774,7 +1830,7 @@ class Workspace(MachineWorkspace, ProjectCollections):
                     if latest and not latest.get("ready")
                     else "unchecked",
                     state="working"
-                    if alive(job.get("process"))
+                    if operation.get("running")
                     else "tested"
                     if latest.get("ready") and installed
                     else "installed"
@@ -1783,6 +1839,7 @@ class Workspace(MachineWorkspace, ProjectCollections):
                     if latest and not latest.get("ready")
                     else "available",
                     report=latest,
+                    operation=operation,
                     path=str(descriptor) if descriptor and registered else None,
                     log=self.tool_log(name),
                 )
@@ -1808,8 +1865,14 @@ class Workspace(MachineWorkspace, ProjectCollections):
                     / config.get("executable", "missing")
                 )
                 installed &= executable.is_file() and os.access(executable, os.X_OK)
-            job = load(self.root / "tools" / tool["id"] / "job.json")
+            operation = self.tool_operation(tool["id"])
             result = load(self.root / "tools" / tool["id"] / "result.json")
+            if result.get("cancelled"):
+                result = {}
+            if operation.get("interrupted"):
+                result = dict(
+                    ready=False, error="Readiness check stopped before recording a result."
+                )
             for descriptor in descriptors:
                 config = load(descriptor)
                 runtime = descriptor.resolve().parent / config.get("runtime_root", "missing")
@@ -1820,7 +1883,7 @@ class Workspace(MachineWorkspace, ProjectCollections):
                 tool
                 | {
                     "state": "working"
-                    if alive(job.get("process"))
+                    if operation.get("running")
                     else "tested"
                     if result.get("ready") and installed
                     else "registered",
@@ -1832,10 +1895,63 @@ class Workspace(MachineWorkspace, ProjectCollections):
                     if result
                     else "unchecked",
                     "report": result,
+                    "operation": operation,
                     "log": self.tool_log(tool["id"]),
                 }
             )
         return cards
+
+    def tool_operation(self, name):
+        """Describe the latest browser-started setup for one tool.
+
+        Stages come from the installer itself (see ``report_install_stage``). An
+        estimate is offered only from this machine's own earlier successful runs.
+        """
+        directory = self.root / "tools" / name
+        job = load(directory / "job.json")
+        if not job:
+            return {}
+        process = job.get("process") or {}
+        running = alive(process)
+        result = load(directory / "result.json")
+        action = job.get("action", "install")
+        operation = dict(
+            action=action,
+            running=running,
+            started_at=process.get("launched_at"),
+            interrupted=not running and not (directory / "result.json").is_file(),
+            cancelled=bool(result.get("cancelled") or job.get("cancelled")),
+            stopping=running and bool(job.get("cancelled")),
+            log_path=str(directory / "install.log"),
+            stages=["verify"] if action == "check" else ["prepare", "install", "verify"],
+        )
+        attempts = directory / "attempts"
+        if attempts.is_dir():
+            operation["attempts"] = sum(1 for item in attempts.iterdir() if item.is_dir())
+        started = job.get("started")
+        if started is None and operation["started_at"]:
+            with suppress(ValueError, TypeError):
+                started = datetime.fromisoformat(operation["started_at"]).timestamp()
+        if started is not None:
+            operation["started"] = started
+        if not running and (directory / "result.json").is_file():
+            operation["finished_at"] = (directory / "result.json").stat().st_mtime
+        if running:
+            if started is not None:
+                operation["elapsed_seconds"] = max(0, int(time.time() - started))
+            progress = load(directory / "progress.json")
+            stage = progress.get("stage")
+            operation["stage"] = stage if stage in operation["stages"] else operation["stages"][0]
+            if progress.get("detail"):
+                operation["stage_detail"] = progress["detail"]
+            log = directory / "install.log"
+            with suppress(OSError):
+                operation["log_bytes"] = log.stat().st_size
+                operation["activity"] = latest_activity(self.tool_log(name))
+            estimate = tool_estimate(load(directory / "history.json", []), action)
+            if estimate:
+                operation["estimate_seconds"] = estimate
+        return operation
 
     def tool_log(self, name):
         if name not in {c[0] for c in CATALOGUE} and not re.fullmatch(r"custom-[0-9a-f]{12}", name):
@@ -1845,7 +1961,48 @@ class Workspace(MachineWorkspace, ProjectCollections):
             return ""
         with path.open("rb") as stream:
             stream.seek(max(0, path.stat().st_size - 6000))
-            return stream.read().decode(errors="replace")
+            return readable_log(stream.read().decode(errors="replace"))
+
+    def tool_progress(self, name):
+        """Return live setup state without rescanning every installed runtime."""
+        custom = re.fullmatch(r"custom-[0-9a-f]{12}", name or "")
+        if name not in {c[0] for c in CATALOGUE} and not custom:
+            raise ValueError("Unknown research tool")
+        return dict(id=name, operation=self.tool_operation(name), log=self.tool_log(name))
+
+    def stop_install(self, payload):
+        """Stop a running browser-started setup and keep its output for review."""
+        import signal
+
+        name = text(payload, "name", 60)
+        custom = re.fullmatch(r"custom-[0-9a-f]{12}", name)
+        if name not in {c[0] for c in CATALOGUE} and not custom:
+            raise ValueError("Unknown research tool")
+        directory = self.root / "tools" / name
+        with self.lock():
+            job = load(directory / "job.json")
+            process = job.get("process") or {}
+            if not alive(process):
+                raise ValueError("This setup has already finished")
+            with suppress(ProcessLookupError, PermissionError):
+                os.killpg(process["pid"], signal.SIGTERM)
+            put(directory / "job.json", job | dict(cancelled=True, stopped_at=time.time()))
+            put(
+                directory / "result.json",
+                dict(ready=False, cancelled=True, error="Setup was stopped before it finished."),
+            )
+            with (directory / "install.log").open("a") as stream:
+                stream.write("\n[Simjecture] Setup stopped from Research tools.\n")
+
+        def escalate():
+            # Build tools occasionally ignore SIGTERM; do not leave them running.
+            time.sleep(8)
+            if alive(process):
+                with suppress(ProcessLookupError, PermissionError):
+                    os.killpg(process["pid"], signal.SIGKILL)
+
+        threading.Thread(target=escalate, daemon=True).start()
+        return {"message": f"Stopping setup for {name}"}
 
     def start_install(self, payload):
         name = text(payload, "name", 60)
@@ -1879,7 +2036,17 @@ class Workspace(MachineWorkspace, ProjectCollections):
             directory.mkdir(parents=True, exist_ok=True)
             if alive(load(directory / "job.json").get("process")):
                 raise ValueError("This tool is already being installed or checked")
+            previous = [
+                directory / filename for filename in ("job.json", "result.json", "install.log")
+            ]
+            if any(path.is_file() and path.stat().st_size for path in previous):
+                archive = directory / "attempts" / uuid.uuid4().hex
+                archive.mkdir(parents=True)
+                for path in previous:
+                    if path.is_file():
+                        shutil.copy2(path, archive / path.name)
             (directory / "result.json").unlink(missing_ok=True)
+            (directory / "progress.json").unlink(missing_ok=True)
             (directory / "install.log").write_text("")
             command = [
                 sys.executable,
@@ -1896,8 +2063,16 @@ class Workspace(MachineWorkspace, ProjectCollections):
                 command += ["--source", str(Path(source).expanduser().resolve())]
             if descriptor:
                 command += ["--descriptor", descriptor]
-            process = spawn(command, self.root, directory / "install.log")
-            put(directory / "job.json", dict(process=process, action=action))
+            from ..deployment import PROGRESS_FILE_ENV
+
+            started = time.time()
+            process = spawn(
+                command,
+                self.root,
+                directory / "install.log",
+                {PROGRESS_FILE_ENV: str(directory / "progress.json")},
+            )
+            put(directory / "job.json", dict(process=process, action=action, started=started))
         return {"message": f"{action.capitalize()} started for {name}"}
 
     def register_tool(self, payload):
@@ -2266,10 +2441,34 @@ class Workspace(MachineWorkspace, ProjectCollections):
             return classify(self.directory(identifier), simulation, kind)
 
 
+def record_setup_duration(directory, action, started, *, ready, changed):
+    """Keep a short local history so later setups can show a measured estimate."""
+    path = directory / "history.json"
+    history = load(path, [])
+    if not isinstance(history, list):
+        history = []
+    history.append(
+        dict(
+            action=action,
+            seconds=round(time.monotonic() - started, 1),
+            ready=bool(ready),
+            changed=bool(changed),
+            finished_at=time.time(),
+        )
+    )
+    with suppress(OSError):
+        put(path, history[-20:])
+
+
 def main():
     import argparse
 
-    from ..deployment import DeploymentManager, DeploymentProfile, resolve_project_root
+    from ..deployment import (
+        DeploymentManager,
+        DeploymentProfile,
+        report_install_stage,
+        resolve_project_root,
+    )
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--tool", required=True)
@@ -2278,6 +2477,9 @@ def main():
     parser.add_argument("--source")
     parser.add_argument("--descriptor", type=Path)
     args = parser.parse_args()
+    started = time.monotonic()
+    if args.action == "check":
+        report_install_stage("verify", "Running readiness checks")
     manager = DeploymentManager(resolve_project_root())
     try:
         if args.action == "check" and args.descriptor:
@@ -2301,6 +2503,7 @@ def main():
                 detail="; ".join(details),
             )
             put(args.directory / "result.json", result)
+            record_setup_duration(args.directory, args.action, started, ready=True, changed=True)
             print(json.dumps(result, indent=2), flush=True)
             return 0
         report = (
@@ -2309,6 +2512,14 @@ def main():
             else manager.install(DeploymentProfile(args.tool), source=args.source)
         )
         put(args.directory / "result.json", report.model_dump(mode="json"))
+        record_setup_duration(
+            args.directory,
+            args.action,
+            started,
+            ready=report.ready,
+            # An install that found an already-ready runtime says nothing about build time.
+            changed=report.changed or args.action == "check",
+        )
         print(report.model_dump_json(indent=2), flush=True)
         return 0 if report.ready else 1
     except Exception as error:
@@ -2320,6 +2531,7 @@ def main():
                 descriptor=str(args.descriptor.resolve()) if args.descriptor else None,
             ),
         )
+        record_setup_duration(args.directory, args.action, started, ready=False, changed=False)
         print(str(error), flush=True)
         return 1
 

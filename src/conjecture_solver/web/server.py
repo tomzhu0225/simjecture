@@ -404,6 +404,8 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
                 )
             elif endpoint == "tools":
                 self._json(workspace.catalogue())
+            elif endpoint == "tool-progress":
+                self._json(workspace.tool_progress(self._one_value(query, "name")))
             elif endpoint == "benchmarks":
                 self._json(workspace.benchmark_catalogue())
             elif endpoint == "machines":
@@ -640,6 +642,8 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
                 result = workspace.upload(payload.get("project"), payload)
             elif endpoint == "install":
                 result = workspace.start_install(payload)
+            elif endpoint == "stop-install":
+                result = workspace.stop_install(payload)
             elif endpoint == "tool-demo":
                 result = workspace.run_tool_demo(payload)
             elif endpoint == "register-tool":

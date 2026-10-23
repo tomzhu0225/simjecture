@@ -13,6 +13,15 @@ preflight through the configured execution backend. **Run demo** creates a
 conversation and opens a monitored simulation with downloadable JSON, netCDF,
 CSV and a three-panel figure. It does not consume LLM tokens.
 
+While setup runs, the card shows an activity bar and elapsed time. Open it to
+follow live setup output; the bar does not estimate a download or build percentage.
+If installation or readiness fails, the card shows **Needs attention** and opens
+the failure details. **Diagnose with agent** prepares a repair conversation with
+the saved error, recent output and the ITER pack instructions. Review the draft,
+choose your agent/model and send it to start recovery. **Retry installation**
+repeats the installer and preserves earlier logs under the tool's `attempts/`
+directory.
+
 Equivalent CLI commands, from a deployment checkout:
 
 ```bash

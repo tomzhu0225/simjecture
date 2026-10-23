@@ -4,6 +4,29 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+- Redesign research-tool setup feedback. Installs and readiness checks start
+  visibly at once, move to a *Setup activity* section, and show the installer's
+  own stages (prepare, install, verify), a live elapsed timer, the latest output
+  line and a terminal-style log with copy. An estimate appears only from this
+  machine's earlier successful runs; otherwise no percentage is shown. Setups can
+  be stopped (process group terminated, output kept, not reported as a failure),
+  are followed from every page with a sidebar badge, and announce completion.
+  Failures list each failed check with its remedy. Add `tool-progress` and
+  `stop-install` workspace endpoints. Keep detected, unregistered local builds
+  separate from managed-profile failures, whose diagnostics remain available
+  in the tool details.
+- Give each tool accurate agent-assisted setup instructions that name only its
+  own skill files. Remove the FLASH island-coalescence caveat and the reference
+  to `read_skill`, which CLI agents do not have.
+- Fix the UI rendering in a serif font on Linux hosts where the generic
+  `sans-serif` family resolves to Times New Roman, and vendor the missing Web
+  Awesome colour-variant stylesheets that caused a console error.
+
+- Show failed and interrupted research-tool setup as needing attention, with
+  visible diagnostics and an agent-assisted repair conversation containing the
+  saved error and recent output. Show live setup output, an activity bar and
+  elapsed time during installation/checks; retain earlier attempt logs on retry.
+
 - Keep the workspace tabs visible and give simulation/command history and the
   selected run independent scrolling, including on narrow screens. Preserve
   reading positions during live refreshes. Use the preprint's Figure 1 for the

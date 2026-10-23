@@ -701,6 +701,147 @@ def test_flash_inventory_finds_existing_application_variants(tmp_path, monkeypat
     assert "--source" not in commands[0]
 
 
+@pytest.mark.parametrize("action", ["install", "check"])
+def test_tool_progress_and_interrupted_setup_survive_reload(tmp_path, monkeypatch, action):
+    import conjecture_solver.web.workspace as module
+
+    monkeypatch.setattr("conjecture_solver.deployment.resolve_project_root", lambda *_: tmp_path)
+    workspace = Workspace(tmp_path / "artifacts/.workspace")
+    directory = workspace.root / "tools/iter-pack"
+    directory.mkdir(parents=True)
+    put(directory / "job.json", dict(
+        action=action,
+        process=dict(launched_at="2026-10-23T00:00:00+00:00"),
+    ))
+    (directory / "install.log").write_text("Downloading prerequisites\n")
+    monkeypatch.setattr(module, "alive", lambda _: True)
+    monkeypatch.setattr(module.time, "time", lambda: 1792713723)
+    card = next(t for t in workspace.catalogue() if t["id"] == "iter-pack")
+    assert card["state"] == "working"
+    assert card["operation"]["action"] == action
+    assert card["operation"]["elapsed_seconds"] == 123
+    assert card["operation"]["log_path"] == str(directory / "install.log")
+
+    # A killed installer has no result. A fresh Workspace must retain its error/output.
+    monkeypatch.setattr(module, "alive", lambda _: False)
+    reloaded = Workspace(workspace.root)
+    card = next(t for t in reloaded.catalogue() if t["id"] == "iter-pack")
+    assert card["state"] == "failed" and card["readiness"] == "failed"
+    assert "stopped before recording a result" in card["report"]["error"]
+    assert card["log"] == "Downloading prerequisites\n"
+    assert card["operation"]["interrupted"]
+
+    put(directory / "result.json", dict(ready=False, error="C compiler missing"))
+    card = next(t for t in reloaded.catalogue() if t["id"] == "iter-pack")
+    assert not card["operation"]["interrupted"]
+    assert card["report"]["error"] == "C compiler missing"
+
+
+def test_retry_preserves_the_failed_attempt_before_replacing_live_output(tmp_path, monkeypatch):
+    import conjecture_solver.web.workspace as module
+
+    workspace = Workspace(tmp_path / ".workspace")
+    directory = workspace.root / "tools/iter-pack"
+    directory.mkdir(parents=True)
+    job = dict(action="install", process={})
+    result = dict(ready=False, checks=[dict(status="fail", detail="C compiler missing")])
+    put(directory / "job.json", job)
+    put(directory / "result.json", result)
+    (directory / "install.log").write_text("Original compiler failure\n")
+    monkeypatch.setattr(module, "spawn", lambda *args: dict(pid=123))
+    monkeypatch.setattr(module, "alive", lambda _: False)
+    workspace.start_install(dict(name="iter-pack", action="install"))
+    archive, = (directory / "attempts").iterdir()
+    assert load(archive / "job.json") == job
+    assert load(archive / "result.json") == result
+    assert (archive / "install.log").read_text() == "Original compiler failure\n"
+    assert not (directory / "result.json").exists()
+    assert (directory / "install.log").read_text() == ""
+    assert load(directory / "job.json")["process"]["pid"] == 123
+
+
+def test_running_setup_reports_stage_activity_and_measured_estimate(tmp_path, monkeypatch):
+    import conjecture_solver.web.workspace as module
+
+    workspace = Workspace(tmp_path / ".workspace")
+    directory = workspace.root / "tools/iter-pack"
+    directory.mkdir(parents=True)
+    put(directory / "job.json", dict(action="install", process={}, started=1000.0))
+    put(directory / "progress.json", dict(stage="install", detail="Running bootstrap.sh"))
+    # Colour codes and redrawn progress bars are shown as their final text.
+    (directory / "install.log").write_text(
+        "\x1b[32mResolving\x1b[0m\nDownloading 10%\rDownloading 100%\n  ...\n"
+    )
+    put(directory / "history.json", [
+        dict(action="install", seconds=600, ready=True, changed=True),
+        dict(action="install", seconds=5, ready=True, changed=False),  # already installed
+        dict(action="install", seconds=30, ready=False, changed=False),  # failed attempt
+        dict(action="install", seconds=400, ready=True, changed=True),
+    ])
+    monkeypatch.setattr(module, "alive", lambda _: True)
+    monkeypatch.setattr(module.time, "time", lambda: 1090.0)
+    progress = workspace.tool_progress("iter-pack")
+    operation = progress["operation"]
+    assert operation["running"] and operation["elapsed_seconds"] == 90
+    assert operation["stages"] == ["prepare", "install", "verify"]
+    assert operation["stage"] == "install"
+    assert operation["stage_detail"] == "Running bootstrap.sh"
+    assert operation["activity"] == "Downloading 100%"
+    assert operation["estimate_seconds"] == 500
+    assert progress["log"].splitlines()[:2] == ["Resolving", "Downloading 100%"]
+    with pytest.raises(ValueError, match="Unknown research tool"):
+        workspace.tool_progress("../../etc")
+
+
+def test_stopping_setup_kills_its_process_group_and_is_not_a_failure(tmp_path, monkeypatch):
+    import conjecture_solver.web.workspace as module
+
+    monkeypatch.setattr("conjecture_solver.deployment.resolve_project_root", lambda *_: tmp_path)
+    workspace = Workspace(tmp_path / "artifacts/.workspace")
+    directory = workspace.root / "tools/iter-pack"
+    directory.mkdir(parents=True)
+    put(directory / "job.json", dict(action="install", process=dict(pid=4242)))
+    (directory / "install.log").write_text("Building\n")
+    signals = []
+    monkeypatch.setattr(module.os, "killpg", lambda pid, sig: signals.append((pid, sig)))
+    monkeypatch.setattr(module.threading, "Thread", lambda **kwargs: type(
+        "Idle", (), {"start": lambda self: None})())
+    running = [True]
+    monkeypatch.setattr(module, "alive", lambda _: running[0])
+    workspace.stop_install(dict(name="iter-pack"))
+    assert signals and signals[0][0] == 4242
+    assert workspace.tool_operation("iter-pack")["stopping"]
+    running[0] = False
+    card = next(t for t in workspace.catalogue() if t["id"] == "iter-pack")
+    assert card["operation"]["cancelled"] and not card["operation"]["interrupted"]
+    assert card["readiness"] == "unchecked" and card["state"] == "available"
+    assert "stopped" in card["log"]
+    with pytest.raises(ValueError, match="already finished"):
+        workspace.stop_install(dict(name="iter-pack"))
+
+
+def test_installer_records_measured_durations(tmp_path):
+    from conjecture_solver.web.workspace import record_setup_duration, tool_estimate
+
+    for _ in range(2):
+        record_setup_duration(tmp_path, "check", 0.0, ready=True, changed=True)
+    history = load(tmp_path / "history.json")
+    assert len(history) == 2 and history[0]["action"] == "check"
+    assert tool_estimate(history, "check") > 0
+    assert tool_estimate(history, "install") is None
+
+
+def test_install_stage_is_written_only_when_requested(tmp_path, monkeypatch):
+    from conjecture_solver.deployment import PROGRESS_FILE_ENV, report_install_stage
+
+    monkeypatch.delenv(PROGRESS_FILE_ENV, raising=False)
+    report_install_stage("install", "Running bootstrap")
+    assert not list(tmp_path.iterdir())
+    monkeypatch.setenv(PROGRESS_FILE_ENV, str(tmp_path / "progress.json"))
+    report_install_stage("verify", "Checking")
+    assert load(tmp_path / "progress.json")["stage"] == "verify"
+
+
 def test_inventory_context_is_compact_and_excludes_logs(tmp_path, monkeypatch):
     app = SimjectureWebApplication(runs_root=tmp_path, scan_roots=(tmp_path,))
     monkeypatch.setattr(
@@ -944,6 +1085,22 @@ def test_registered_tool_can_be_checked_from_catalogue(tmp_path, monkeypatch):
     card = next(t for t in workspace.catalogue() if t["id"] == record["id"])
     assert card["readiness"] == "passed"
     assert card["state"] == "tested"
+    # A previous custom check cannot hide a later interrupted managed attempt;
+    # a fresh successful agent check must be allowed to clear that failure.
+    managed = workspace.root / "tools/m-aneos"
+    managed.mkdir(parents=True)
+    put(managed / "job.json", dict(action="install", process={}))
+    checked = workspace.root / "tools" / record["id"] / "result.json"
+    put(checked, dict(ready=True, descriptor=str(descriptors)))
+    os.utime(descriptors / "test.json", (1700000000, 1700000000))
+    os.utime(checked, (1700000010, 1700000010))
+    os.utime(managed / "job.json", (1700000020, 1700000020))
+    card = next(t for t in workspace.catalogue() if t["id"] == "m-aneos")
+    assert card["readiness"] == "failed"
+    assert "stopped before recording a result" in card["report"]["error"]
+    os.utime(checked, (1700000030, 1700000030))
+    card = next(t for t in workspace.catalogue() if t["id"] == "m-aneos")
+    assert card["readiness"] == "passed" and card["state"] == "tested"
     template["environment"]["MANEOS_QUERY"] = str(runtime / "runner")
     (descriptors / "test.json").write_text(json.dumps(template))
     with pytest.raises(ValueError, match="host runtime path"):

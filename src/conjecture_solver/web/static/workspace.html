@@ -513,6 +513,11 @@
             </div>
             <span id="tool-results-count" role="status" aria-live="polite" aria-atomic="true"></span>
           </div>
+          <div id="active-tool-section" class="active-tool-section" hidden>
+            <div class="inventory-heading"><h2>Setup activity <span id="active-count" class="count-badge">0</span></h2>
+              <p>Live installs, readiness checks and setups that need attention</p></div>
+            <div id="active-tool-grid" class="tool-grid research-tool-grid"></div>
+          </div>
           <div id="installed-tool-section">
             <div class="inventory-heading"><h2><span id="installed-tool-label">On your workbench</span> <span id="installed-count" class="count-badge">0</span></h2>
               <p id="installed-tool-help">Installed tools and detected local builds</p></div>
@@ -530,7 +535,7 @@
           <p class="research-tools-footnote">Installation and readiness checks tell you a tool can run. Each investigation still validates its scientific method.
             <span id="tools-machines-help">For tools on SSH workers, use <button id="tools-open-machines" class="text-button" type="button">Machines</button>.</span></p>
           <dialog id="tool-details-dialog" class="tool-details-dialog" aria-labelledby="tool-detail-title">
-            <div class="tool-dialog-heading"><div><p id="tool-detail-category" class="eyebrow">RESEARCH TOOL</p><h2 id="tool-detail-title">Tool details</h2></div>
+            <div class="tool-dialog-heading"><div><p id="tool-detail-category" class="eyebrow">RESEARCH TOOL</p><div class="tool-detail-title-line"><h2 id="tool-detail-title">Tool details</h2><span id="tool-detail-state" class="tool-status"></span></div></div>
               <button id="close-tool-details" class="quiet" type="button" aria-label="Close tool details">×</button></div>
             <div id="tool-details-body" class="tool-details-body"></div>
             <div class="tool-dialog-footer">

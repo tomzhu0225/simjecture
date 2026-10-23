@@ -90,6 +90,7 @@ def test_tool_panel_isolates_expansion_preserves_logs_and_scopes_missing_runtime
             card = page.locator('[data-tool="warpx-cpu"]')
             neighbor = page.locator('[data-tool="flash"]')
             playwright.expect(card).to_contain_text("Detected")
+            playwright.expect(page.locator("#installed-tool-grid").locator(card)).to_be_visible()
             assert missing not in card.inner_text() and card.locator("details").count() == 0
             height = neighbor.bounding_box()["height"]
             grid = page.locator("#installed-tool-grid").bounding_box()["height"]
@@ -160,10 +161,18 @@ def test_catalog_search_filters_keyboard_and_setup_permissions(tmp_path, monkeyp
 
     def install(payload):
         installs.append(payload)
-        next(t for t in catalog if t["id"] == payload["name"])["state"] = "working"
+        tool = next(t for t in catalog if t["id"] == payload["name"])
+        tool.update(state="working", log="Preparing installation", operation=dict(
+            action=payload["action"], running=True, stage="prepare", elapsed_seconds=0,
+        ))
         return {"started": True}
 
+    def progress(name):
+        tool = next(t for t in catalog if t["id"] == name)
+        return dict(id=name, operation=tool.get("operation", {}), log=tool.get("log", ""))
+
     monkeypatch.setattr(app.workspace, "start_install", install)
+    monkeypatch.setattr(app.workspace, "tool_progress", progress)
     server = create_server(app, port=0)
     threading.Thread(target=server.serve_forever, daemon=True).start()
     screenshots = Path(__file__).resolve().parents[1] / "artifacts/tool-catalog-preview"
@@ -243,16 +252,26 @@ def test_catalog_search_filters_keyboard_and_setup_permissions(tmp_path, monkeyp
                 )
                 playwright.expect(install_button).to_be_disabled()
                 playwright.expect(
-                    dialog.get_by_role("button", name="Check installed")
+                    dialog.get_by_role("button", name="Check existing install", exact=True)
                 ).to_be_disabled()
                 assert installs == []
             else:
                 install_button.click()
-                playwright.expect(install_button).to_be_disabled()
+                playwright.expect(
+                    dialog.get_by_role("button", name="Installing…", exact=True)
+                ).to_be_disabled()
+                playwright.expect(dialog.locator(".tool-console-log")).to_contain_text(
+                    "Preparing installation"
+                )
+                playwright.expect(
+                    page.locator('#active-tool-grid [data-tool="atomec"]')
+                ).to_be_visible()
+                page.wait_for_function("() => !state.toolStarting.size && !state.toolPolling")
                 assert installs == [{"name": "atomec", "action": "install"}]
                 tool = next(t for t in catalog if t["id"] == "atomec")
                 tool.update(installed=True, state="installed", readiness="passed")
-                page.evaluate("refreshTools()")
+                tool["operation"]["running"] = False
+                page.evaluate("pollToolProgress()")
                 playwright.expect(dialog).to_be_visible()
                 playwright.expect(
                     dialog.get_by_role("button", name="Check readiness")
