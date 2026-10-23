@@ -202,7 +202,18 @@ def test_catalog_search_filters_keyboard_and_setup_permissions(tmp_path, monkeyp
                 "freecad", "gmsh", "elmer"
             }
             category.select_option("Materials & radiation")
-            playwright.expect(visible).to_have_count(6)
+            playwright.expect(visible).to_have_count(7)
+            assert set(visible.evaluate_all("nodes => nodes.map(n => n.dataset.tool)")) == {
+                "atomec", "singularity-eos", "m-aneos", "feos", "material-eos", "optab", "fac"
+            }
+            search.fill("fac")
+            playwright.expect(visible).to_have_count(1)
+            playwright.expect(visible).to_have_attribute("data-tool", "fac")
+            visible.click()
+            playwright.expect(page.locator("#tool-details-dialog")).to_contain_text(
+                "Relativistic atomic structure and rates"
+            )
+            page.keyboard.press("Escape")
             search.fill("feos")
             playwright.expect(visible).to_have_count(1)
             playwright.expect(visible).to_have_attribute("data-tool", "feos")

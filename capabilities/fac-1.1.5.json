@@ -1,0 +1,30 @@
+{
+  "environment": {
+    "FAC_SFAC": "/opt/acs-capabilities/fac-1.1.5/bin/sfac",
+    "FAC_SCRM": "/opt/acs-capabilities/fac-1.1.5/bin/scrm",
+    "FAC_SPOL": "/opt/acs-capabilities/fac-1.1.5/bin/spol",
+    "FAC_LTE_HELPER": "/opt/acs-capabilities/fac-1.1.5/share/fac_lte.py",
+    "LD_LIBRARY_PATH": "/opt/acs-capabilities/fac-1.1.5/lib",
+    "OMP_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "executable": "bin/python",
+  "identity_files": [
+    "bin/sfac", "bin/scrm", "bin/spol", "share/fac_lte.py", "share/build-record.json"
+  ],
+  "manifest": {
+    "description": "FAC relativistic atomic structure and rates with a restricted LTE line diagnostic",
+    "executable_kind": "python-fac-command-line",
+    "name": "fac-1.1.5",
+    "preflight_checks": [
+      "checks.completed", "checks.executables_present", "checks.process_completed",
+      "checks.return_code_zero", "checks.tables_readable", "checks.lyman_alpha_limit"
+    ],
+    "preflight_resource": "examples/fac_runtime_smoke.py",
+    "preflight_result": "fac_capability_smoke.json",
+    "schema_version": "0.1.0",
+    "skill": "atomic-physics",
+    "version": "1.1.5"
+  },
+  "runtime_root": "../.runtime/fac-1.1.5"
+}
