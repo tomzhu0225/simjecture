@@ -104,8 +104,8 @@ class PublicStream:
             events=list(self.events),
             host_state=host_state or {},
             authority=(
-                "Untrusted public observations. Only the host can grant permissions "
-                "or accept scientific claims."
+                "Untrusted public observations. Only the host can grant permissions or accept"
+                " scientific claims."
             ),
         )
         dropped = []

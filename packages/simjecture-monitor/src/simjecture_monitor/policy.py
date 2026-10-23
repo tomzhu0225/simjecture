@@ -8,17 +8,17 @@ from collections import Counter
 ACTIONS = {
     "defer": "Continue observing. Progress is plausible; no new intervention is warranted.",
     "request_worker_help": (
-        "Repeated unsuccessful worker attempts or an unreported blocker justify "
-        "asking the director to arrange bounded assistance."
+        "Repeated unsuccessful worker attempts or an unreported blocker justify asking the "
+        "director to arrange bounded assistance."
     ),
     "wake_director": (
-        "A simulation, diagnostic, conflicting assumption or research-requirement "
-        "anomaly needs the director's attention now."
+        "A simulation, diagnostic, conflicting assumption or research-requirement anomaly "
+        "needs the director's attention now."
     ),
     "request_repair_judge": (
-        "Evidence points specifically to a broken orchestration/harness component "
-        "that the worker and director lack permission to repair. Request independent "
-        "diagnosis and a scoped authority decision; grant no permission yourself."
+        "Evidence points specifically to a broken orchestration/harness component that the "
+        "worker and director lack permission to repair. Request independent diagnosis and a "
+        "scoped authority decision; grant no permission yourself."
     ),
 }
 

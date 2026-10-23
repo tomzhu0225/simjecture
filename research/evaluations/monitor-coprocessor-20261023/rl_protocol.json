@@ -1,0 +1,37 @@
+{
+  "scope": "Exploratory proof of training from real asynchronous worker continuations, not evidence of RL superiority",
+  "created_before_collection": true,
+  "train_cases": [
+    "harness",
+    "recoverable-analysis"
+  ],
+  "train_seeds": [
+    71,
+    97
+  ],
+  "minimum_clean_episodes": 4,
+  "maximum_collection_attempts": 8,
+  "eligibility": "All attempted monitor inferences must have returned usable predictions. Native worker or judge failures remain valid outcomes. Preserve every excluded episode and reason.",
+  "behavior": "Sample from the frozen unchanged 4B policy categorical probabilities; retain exact probability, greedy shadow choice and packet/prompt hashes. Host permissions and duplicate guards remain authoritative.",
+  "reward": "Q - 0.02*N - 0.1*min(T/650,1), where Q is 1 only for correctly reported independently recomputed diagnostics covering the required controls with no undelivered feedback; N counts actual capable-agent starts including failed calls; T is elapsed study time in seconds. This is a declared utility, not currency.",
+  "training": "One clipped policy-gradient continuation from the unchanged base, LoRA rank 8 alpha 16, attention and MLP projections; learning rate 1e-5, clip ratio 0.2, KL coefficient 0.02 against probabilities on the identical logged prompt, leave-one-out episode-return baseline within task family. At most 2 passes over each episode; normalize by decision count per episode.",
+  "required_checks": [
+    "Sampled action agrees with recorded behavior probability",
+    "Exact prompt hashes match during training",
+    "Initial adapted-model probabilities reproduce behavior distribution within numerical tolerance",
+    "Only LoRA parameters are trainable",
+    "Actual return variance and finite nonzero gradients before claiming a learning update",
+    "Reload saved adapter and verify its predictions"
+  ],
+  "evaluation_cases": [
+    "healthy",
+    "discrepancy"
+  ],
+  "evaluation": "Fresh native trajectories for unchanged and adapted policy on cases excluded from optimizer input; tasks were used during earlier exploratory design, so this is not a confirmatory held-out benchmark. Rules and periodic baselines remain in the earlier cohort.",
+  "limitations": [
+    "Small sample and stochastic downstream agents",
+    "No equal-step supervised control; no attribution of generic RL superiority",
+    "Policy may learn to defer if capable workers already handle incidents",
+    "Do not substitute fixtures or hand-authored reward tables for actual continuations"
+  ]
+}

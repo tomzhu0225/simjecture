@@ -34,10 +34,9 @@ def main():
             if not new:
                 continue
             packet = stream.packet(
-                "Investigate actual WarpX Langmuir charge-residual failure wh"
-                "ile preserving the original scientific thresholds. Observe w"
-                "hether current evidence warrants assistance or director atte"
-                "ntion."
+                "Investigate actual WarpX Langmuir charge-residual failure while preserving "
+                "the original scientific thresholds. Observe whether current evidence "
+                "warrants assistance or director attention."
             )
             row = dict(packet=packet, rules=RulesPolicy().predict(packet), source=str(trace))
             try:
@@ -53,8 +52,8 @@ def main():
     model = [r["model"] for r in records if "model" in r]
     summary = dict(
         scope=(
-            "Real historical traces; no worker was intervened on and no d"
-            "ownstream benefit is measured."
+            "Real historical traces; no worker was intervened on and no downstream benefit is"
+            " measured."
         ),
         records=len(records),
         successful_inferences=len(model),

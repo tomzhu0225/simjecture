@@ -3,16 +3,84 @@
   "status": "prospective_exploration",
   "question": "Can a resident 4B event monitor wake capable agents earlier and more economically than fixed cadence or simple rules, without excessive false alarms?",
   "base_revision": "f35082bb2c406c6c9cab5deb7b9409714efc5b35",
-  "decision_model": {"repository": "internlm/Intern-Decision-4B", "revision": "38c9dafbbef52dd04bae943c0c6ac918419adfd5", "initial_adapter": null, "dtype": "bfloat16", "max_tokens": 4096},
+  "decision_model": {
+    "repository": "internlm/Intern-Decision-4B",
+    "revision": "38c9dafbbef52dd04bae943c0c6ac918419adfd5",
+    "initial_adapter": null,
+    "dtype": "bfloat16",
+    "max_tokens": 4096
+  },
   "worker_model": "gpt-6-astra",
-  "actions": ["defer", "request_worker_help", "wake_director", "request_repair_judge"],
-  "initial_scope": ["unreported worker blocker", "simulation or diagnostic anomaly", "suspected harness defect", "healthy progress controls"],
-  "additional_candidates": ["cross-worker inconsistency", "research requirement drift", "new evidence makes ongoing work unnecessary"],
-  "baselines": ["fixed cadence", "public-state deterministic rules", "unchanged 4B monitor"],
-  "evaluation_order": ["host contract and recovery tests", "replay real prior tool traces with no learned intervention", "fresh live worker/director/monitor trajectories", "fresh judge and bounded repair trials", "adaptation only if collected outcomes support a defensible train/held-out split"],
-  "metrics": ["missed incidents", "unnecessary wakeups", "event-to-alert latency", "director response latency", "verified downstream task outcome", "worker and director token usage", "monitor input tokens, inference latency and peak GPU memory", "simulation runtime", "end-to-end elapsed time"],
-  "limitations": ["Small exploratory sample, not a confirmatory benefit claim", "Injected defects must be identified as injected", "Replay action accuracy is not live workflow benefit", "Model confidence is not calibrated incident probability", "No reward from self-reported scientific success"],
-  "authority": {"monitor": "alerts only", "judge": "may approve a specific repair within fixed operator policy", "repair_worker": "propose scoped file replacements", "host": "validate immutable grant, base hashes, paths, isolated test command and expiry before applying", "production_autodeploy": false},
-  "resource_caps": {"overall_wall_hours": 6, "native_concurrent_workers": 2, "initial_worker_trajectories": 12, "worker_turn_seconds": 240, "max_colab_units": 40, "max_colab_wall_hours": 1.5, "prefer_local_inference": true},
-  "recording": "Retain prompts, public packets, packet hashes, decisions, failures, usage gaps, artifacts and verification receipts. Keep raw traces outside Git."
+  "actions": [
+    "defer",
+    "request_worker_help",
+    "wake_director",
+    "request_repair_judge"
+  ],
+  "initial_scope": [
+    "unreported worker blocker",
+    "simulation or diagnostic anomaly",
+    "suspected harness defect",
+    "healthy progress controls"
+  ],
+  "additional_candidates": [
+    "cross-worker inconsistency",
+    "research requirement drift",
+    "new evidence makes ongoing work unnecessary"
+  ],
+  "baselines": [
+    "fixed cadence",
+    "public-state deterministic rules",
+    "unchanged 4B monitor"
+  ],
+  "evaluation_order": [
+    "host contract and recovery tests",
+    "replay real prior tool traces with no learned intervention",
+    "fresh live worker/director/monitor trajectories",
+    "fresh judge and bounded repair trials",
+    "adaptation only if collected outcomes support a defensible train/held-out split"
+  ],
+  "metrics": [
+    "missed incidents",
+    "unnecessary wakeups",
+    "event-to-alert latency",
+    "director response latency",
+    "verified downstream task outcome",
+    "worker and director token usage",
+    "monitor input tokens, inference latency and peak GPU memory",
+    "simulation runtime",
+    "end-to-end elapsed time"
+  ],
+  "limitations": [
+    "Small exploratory sample, not a confirmatory benefit claim",
+    "Injected defects must be identified as injected",
+    "Replay action accuracy is not live workflow benefit",
+    "Model confidence is not calibrated incident probability",
+    "No reward from self-reported scientific success"
+  ],
+  "authority": {
+    "monitor": "alerts only",
+    "judge": "may approve a specific repair within fixed operator policy",
+    "repair_worker": "propose scoped file replacements",
+    "host": "validate immutable grant, base hashes, paths, isolated test command and expiry before applying",
+    "production_autodeploy": false
+  },
+  "resource_caps": {
+    "overall_wall_hours": 6,
+    "native_concurrent_workers": 2,
+    "initial_worker_trajectories": 12,
+    "worker_turn_seconds": 240,
+    "max_colab_units": 40,
+    "max_colab_wall_hours": 1.5,
+    "prefer_local_inference": true
+  },
+  "recording": "Retain prompts, public packets, packet hashes, decisions, failures, usage gaps, artifacts and verification receipts. Keep raw traces outside Git.",
+  "resource_amendments": [
+    {
+      "recorded_at": 1792765976.6266925,
+      "reason": "Transport/setup failures require a resumable transfer and local serving validation. Live account usage measured 6.77 CU/hour. Preserve the 40-CU ceiling and all per-trial limits.",
+      "max_colab_wall_hours": 3,
+      "changes_to_scientific_outcomes_or_thresholds": false
+    }
+  ]
 }

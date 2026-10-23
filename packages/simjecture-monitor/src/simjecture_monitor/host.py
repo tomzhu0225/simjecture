@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import random
 import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -16,11 +17,15 @@ from .server import request
 
 
 class MonitorSupervisor(ResearchSupervisor):
-    def __init__(self, args, *, policy, task, model_socket=None, cadence=60):
+    def __init__(self, args, *, policy, task, model_socket=None, cadence=60, seed=0):
         super().__init__(args)
         self.repair_authority = None
         self.authority_executor = ThreadPoolExecutor(max_workers=1)
         self.authority_future = None
+        self.monitor_rng = random.Random(seed)
+        self.monitor_seed = seed
+        self.monitor_retry_after = 0
+        self.monitor_failure_streak = 0
         self.monitor_policy = policy
         self.monitor_task = task
         self.monitor_socket = model_socket
@@ -81,6 +86,20 @@ class MonitorSupervisor(ResearchSupervisor):
 
     def _record_decision(self, packet, decision, *, received_at, error=None):
         self.monitor_sequence += 1
+        if decision and self.monitor_policy == "sampled":
+            decision = dict(decision)
+            probabilities = decision["probabilities"]
+            greedy = decision["choice"]
+            choice = self.monitor_rng.choices(
+                list(probabilities), weights=list(probabilities.values()), k=1
+            )[0]
+            decision.update(
+                choice=choice,
+                greedy_choice=greedy,
+                selection_kind="sampled",
+                behavior_probability=probabilities[choice] / sum(probabilities.values()),
+                rng_seed=self.monitor_seed,
+            )
         record = dict(packet=packet, decision=decision, received_at=received_at, error=error)
         if decision:
             alert = self.monitor_gate.accept(packet, decision, now=received_at)
@@ -123,15 +142,43 @@ class MonitorSupervisor(ResearchSupervisor):
             ),
             remaining_seconds=max(0, self.state["deadline"] - now),
         )
+        outcomes = self.state.get("monitor_authority_results", [])
+        state["authority_active"] = self.authority_future is not None
+        state["last_authority_outcome"] = (
+            {
+                "stage": outcomes[-1]["stage"],
+                "decision": outcomes[-1].get("verdict", {}).get("decision"),
+                "deployment": outcomes[-1].get("deployment", {}).get("status"),
+                "ended_at": outcomes[-1].get("ended_at"),
+            }
+            if outcomes
+            else None
+        )
+        config = self.service.work / "environment.json"
+        if config.is_file():
+            settings = json.loads(config.read_text())
+            state["simulation_limit"] = settings.get("max_runs")
+            state["recorded_simulations"] = len(list(self.service.work.glob("runs/*/receipt.json")))
         packet = stream.packet(self.monitor_task, host_state=state)
         # Elapsed time is context, not a reason to infer repeatedly on unchanged events.
-        signature = digest([r["source_sha256"] for r in packet["state"]["events"]])
+        signature = digest(
+            {
+                "events": [r["source_sha256"] for r in packet["state"]["events"]],
+                "state": {k: v for k, v in state.items() if k != "remaining_seconds"},
+            }
+        )
         self.monitor_latest = packet
         explicit = self.service.work / "REPAIR_REQUEST.json"
         if explicit.is_file() and self.repair_authority is not None:
             try:
                 evidence = json.loads(explicit.read_text())
                 signature_repair = digest(evidence)
+                if (
+                    signature_repair not in self.explicit_repairs
+                    and self.authority_future is not None
+                ):
+                    # Link concurrent worker and monitor requests to the same active judge.
+                    self.explicit_repairs.add(signature_repair)
                 if signature_repair not in self.explicit_repairs and self.authority_future is None:
                     from .repair_roles import adjudicate
 
@@ -154,7 +201,7 @@ class MonitorSupervisor(ResearchSupervisor):
             self.service.wake_worker("Independent harness diagnosis returned")
             self.authority_future = None
         if self.monitor_future is not None and self.monitor_future[0].done():
-            future, submitted, sent_at = self.monitor_future
+            future, submitted, sent_at, submitted_signature = self.monitor_future
             self.monitor_future = None
             try:
                 decision = future.result()
@@ -162,15 +209,24 @@ class MonitorSupervisor(ResearchSupervisor):
                     raise ValueError("Monitor response exceeded the freshness allowance")
                 # Bind the response to its exact observed packet; later events remain queued.
                 self._record_decision(submitted, decision, received_at=now)
+                self.monitor_failure_streak = 0
             except Exception as error:
+                self.monitor_submitted.discard(submitted_signature)
+                self.monitor_failure_streak += 1
+                self.monitor_retry_after = now + min(30, 2 ** min(5, self.monitor_failure_streak))
                 self._record_decision(submitted, None, received_at=now, error=str(error))
-        if self.monitor_policy == "model":
-            if self.monitor_future is None and signature not in self.monitor_submitted:
+        if self.monitor_policy in {"model", "sampled"}:
+            if (
+                self.monitor_future is None
+                and signature not in self.monitor_submitted
+                and now >= self.monitor_retry_after
+            ):
                 self.monitor_submitted.add(signature)
                 self.monitor_future = (
                     self.monitor_executor.submit(request, self.monitor_socket, packet),
                     packet,
                     now,
+                    signature,
                 )
         elif new or self.monitor_policy == "periodic":
             self._record_decision(packet, self.monitor_baseline.predict(packet), received_at=now)
@@ -188,19 +244,17 @@ class MonitorSupervisor(ResearchSupervisor):
                 put(self.service.work / evidence_path, alert)
                 request_record = self.service.request_help(
                     (
-                        "A monitoring coprocessor observed a possible unreported bloc"
-                        "ker. Verify whether assistance would help and arrange a boun"
-                        "ded helper task if warranted."
+                        "A monitoring coprocessor observed a possible unreported blocker. "
+                        "Verify whether assistance would help and arrange a bounded helper "
+                        "task if warranted."
                     ),
                     success_criteria=(
-                        "Inspect the recent attempts, identify any actual blocker and"
-                        " return tested help or explain why no intervention is needed"
-                        "."
+                        "Inspect the recent attempts, identify any actual blocker and return "
+                        "tested help or explain why no intervention is needed."
                     ),
                     context=(
-                        "Automatically inferred assistance request; the worker did no"
-                        "t necessarily request it. The attached observations are unre"
-                        "viewed."
+                        "Automatically inferred assistance request; the worker did not "
+                        "necessarily request it. The attached observations are unreviewed."
                     ),
                     files=[evidence_path],
                     key="monitor-" + alert["packet_sha256"],
@@ -247,7 +301,7 @@ class MonitorSupervisor(ResearchSupervisor):
 
     def close_monitor(self):
         if self.monitor_future is not None:
-            future, packet, _ = self.monitor_future
+            future, packet, _, _ = self.monitor_future
             try:
                 self._record_decision(packet, future.result(timeout=35), received_at=time.time())
             except Exception as error:

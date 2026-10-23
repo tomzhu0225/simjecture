@@ -44,8 +44,8 @@ def main():
         jobs=jobs,
         maximum_parent_workers=2,
         notes=(
-            "Exploratory unpaired stochastic continuations; same task construction "
-            "across policies. Commissioning smoke is separate."
+            "Exploratory unpaired stochastic continuations; same task construction across "
+            "policies. Commissioning smoke is separate."
         ),
     )
     put(root / "BATCH.json", manifest)
