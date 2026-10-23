@@ -881,6 +881,7 @@ const toolSetupGuides = {
   feos: {skill: "eos", read: ["references/local-deployment.md", "references/feos.md"], focus: "Use the documented FEOS installer, which builds a checksummed source."},
   "material-eos": {skill: "eos", read: ["references/local-deployment.md", "references/material-models.md"], focus: "Use the documented material EOS builder installer."},
   optab: {skill: "opacity", read: ["references/local-deployment.md"], focus: "Use the documented Optab installer; it needs a Fortran compiler, HDF5 tools and data downloads."},
+  fac: {skill: "atomic-physics", read: ["references/local-deployment.md"], focus: "Use the documented FAC installer and its pinned source revision. The hydrogen readiness check verifies execution, not a complete opacity or EOS model."},
 };
 function setupGuideText(tool) {
   const guide = toolSetupGuides[tool.id];
