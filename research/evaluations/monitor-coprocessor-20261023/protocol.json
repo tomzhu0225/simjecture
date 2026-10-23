@@ -81,6 +81,12 @@
       "reason": "Transport/setup failures require a resumable transfer and local serving validation. Live account usage measured 6.77 CU/hour. Preserve the 40-CU ceiling and all per-trial limits.",
       "max_colab_wall_hours": 3,
       "changes_to_scientific_outcomes_or_thresholds": false
+    },
+    {
+      "recorded_at": 1792770608.1084394,
+      "max_colab_wall_hours": 4,
+      "maximum_compute_units": 40,
+      "reason": "Resumable model transfer and real-return training/evaluation; measured rate 6.77 CU/hour makes four hours about 27.1 CU. Per-trial scientific limits unchanged."
     }
   ]
 }

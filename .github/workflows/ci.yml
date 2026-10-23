@@ -79,6 +79,10 @@ jobs:
         run: uv run ruff check .
       - name: Test
         run: uv run pytest --cov=conjecture_solver --cov-report=term-missing --durations=20
+      - name: Test experimental monitoring contracts without model downloads
+        run: |
+          uv pip install --python .venv/bin/python -e packages/simjecture-monitor
+          .venv/bin/pytest packages/simjecture-monitor/tests -q
       - name: Build source distribution and wheel from it
         run: uv build --out-dir /tmp/simjecture-python-distributions
       - name: Validate packaged workspace install

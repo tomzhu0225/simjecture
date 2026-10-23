@@ -84,6 +84,12 @@ def main():
                 elif (record and record["stage"] == "running") or index in active:
                     running.append(index)
             if len(terminal) == len(jobs):
+                put(
+                    root / "batch-progress.json",
+                    dict(
+                        updated_at=time.time(), completed=len(terminal), running=[], total=len(jobs)
+                    ),
+                )
                 break
             for index, job in enumerate(jobs):
                 if len(running) >= 2:

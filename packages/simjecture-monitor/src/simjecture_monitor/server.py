@@ -46,7 +46,12 @@ def main():
     status = dict(stage="loading", started_at=time.time(), pid=os.getpid())
     put(args.status, status)
     model = MonitorModel(args.checkpoint, adapter=args.adapter)
-    status.update(stage="ready", load_seconds=time.monotonic() - start, calls=0)
+    status.update(
+        stage="ready",
+        load_seconds=time.monotonic() - start,
+        calls=0,
+        model_identity=model.identity,
+    )
     put(args.status, status)
     stopped = False
 

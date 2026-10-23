@@ -61,7 +61,7 @@ def adjudicate(parent_args, authority, alert, directory):
                 value = parse_judge_stream(
                     turn / "response.json", "codex", allow_readonly_tools=True
                 )
-                return schema.model_validate(value).model_dump()
+                return schema.model_validate(value).model_dump(), turn / "response.json"
             except (ValueError, RuntimeError) as error:
                 result.setdefault("transport_failures", []).append(
                     dict(role=name, attempt=attempt, error=str(error))
@@ -75,7 +75,7 @@ def adjudicate(parent_args, authority, alert, directory):
         raise AssertionError("Unreachable")
 
     try:
-        verdict = call(
+        verdict, verdict_trace = call(
             "authority-judge",
             (
                 "You are a fresh independent judge of a harness-repair request. A coprocessor"
@@ -95,18 +95,17 @@ def adjudicate(parent_args, authority, alert, directory):
             + json.dumps(source),
         )
         result["verdict"] = verdict
+        result["verdict_trace"] = str(verdict_trace)
         grant = authority.issue(
             alert,
             verdict,
-            judge_receipt=dict(
-                verdict=verdict, trace=str(directory / "authority-judge/response.json")
-            ),
+            judge_receipt=dict(verdict=verdict, trace=str(verdict_trace)),
         )
         result["grant"] = grant
         if grant.get("status") == "issued":
             result["stage"] = "proposing"
             put(directory / "result.json", result)
-            patch = call(
+            patch, proposal_trace = call(
                 "repair-proposer",
                 (
                     "You are a temporary read-only repair proposer. A separate judge granted "
@@ -124,6 +123,7 @@ def adjudicate(parent_args, authority, alert, directory):
                 + json.dumps(source),
             )
             result["proposal"] = patch
+            result["proposal_trace"] = str(proposal_trace)
             if parent_cancelled():
                 raise ValueError("Parent stopped; repair grant will not be used")
             result["deployment"] = authority.apply(patch)

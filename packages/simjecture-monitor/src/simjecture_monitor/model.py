@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import time
@@ -38,6 +39,20 @@ class MonitorModel:
         from transformers import AutoTokenizer, Qwen3_5ForConditionalGeneration
 
         self.torch = torch
+        self.identity = {
+            "checkpoint_path": str(Path(checkpoint).resolve()),
+            "checkpoint_config_sha256": hashlib.sha256(
+                (Path(checkpoint) / "config.json").read_bytes()
+            ).hexdigest(),
+            "adapter_files_sha256": {},
+        }
+        if adapter:
+            for name in ["adapter_config.json", "adapter_model.safetensors"]:
+                path = Path(adapter) / name
+                with path.open("rb") as stream:
+                    self.identity["adapter_files_sha256"][name] = hashlib.file_digest(
+                        stream, "sha256"
+                    ).hexdigest()
         self.tokenizer = AutoTokenizer.from_pretrained(checkpoint, local_files_only=True)
         self.model = (
             Qwen3_5ForConditionalGeneration.from_pretrained(
@@ -141,6 +156,7 @@ class MonitorModel:
             choice=actions[max(range(len(actions)), key=lambda i: probabilities[i])],
             probabilities=dict(zip(actions, probabilities, strict=True)),
             policy="intern-decision-4b",
+            model_identity=self.identity,
             packet_sha256=packet["packet_sha256"],
             prompt_sha256=prompt_hash,
             model_view=view_receipt,
