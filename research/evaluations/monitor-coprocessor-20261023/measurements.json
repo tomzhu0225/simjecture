@@ -1,0 +1,1298 @@
+{
+  "scope": "Exploratory engineering and real-return learning; no efficacy claim.",
+  "comparison_v2": [
+    {
+      "trial": "live-model-discrepancy",
+      "case": "discrepancy",
+      "policy": "model",
+      "stage": "completed",
+      "error": null,
+      "wall_seconds": 171.56868386268616,
+      "worker_turns": 1,
+      "parent_session_count": 1,
+      "report_present": true,
+      "pending_feedback_after_final_report": false,
+      "fresh_simulations": 2,
+      "solver_seconds": 3.940368627998396,
+      "verified_runs": 2,
+      "worker_metrics_agree": true,
+      "model_inferences": 20,
+      "monitor_errors": 0,
+      "model_choices": {
+        "defer": 20
+      },
+      "alert_choices": {},
+      "director_calls": 0,
+      "helper_tasks": 0,
+      "authority_calls": 0,
+      "authority_origins": {},
+      "authority_verdicts": {},
+      "repairs_applied": 0,
+      "latency": {
+        "median_forward": 0.49133732000018426,
+        "median_transport": 1.2380956320012046,
+        "total_forward": 8.906103320997772,
+        "input_tokens": 65898
+      },
+      "reported_usage": {
+        "input_tokens": 388769,
+        "cached_input_tokens": 359040,
+        "output_tokens": 4939
+      },
+      "usage_is_lower_bound": false,
+      "capable_agent_invocations": 1
+    },
+    {
+      "trial": "live-model-harness",
+      "case": "harness",
+      "policy": "model",
+      "stage": "completed",
+      "error": null,
+      "wall_seconds": 503.71017122268677,
+      "worker_turns": 2,
+      "parent_session_count": 1,
+      "report_present": true,
+      "pending_feedback_after_final_report": false,
+      "fresh_simulations": 4,
+      "solver_seconds": 7.078522519004764,
+      "verified_runs": 4,
+      "worker_metrics_agree": true,
+      "model_inferences": 21,
+      "monitor_errors": 13,
+      "model_choices": {
+        "request_repair_judge": 5,
+        "defer": 14,
+        "wake_director": 2
+      },
+      "alert_choices": {
+        "request_repair_judge": 2,
+        "wake_director": 2
+      },
+      "director_calls": 3,
+      "helper_tasks": 1,
+      "authority_calls": 2,
+      "authority_origins": {
+        "worker": 1,
+        "coprocessor": 1
+      },
+      "authority_verdicts": {
+        "grant": 1,
+        "deny": 1
+      },
+      "repairs_applied": 1,
+      "latency": {
+        "median_forward": 0.4733376160002081,
+        "median_transport": 1.2547823790009716,
+        "total_forward": 9.49639713499937,
+        "input_tokens": 69271
+      },
+      "reported_usage": {
+        "input_tokens": 1056107,
+        "cached_input_tokens": 936192,
+        "output_tokens": 11638
+      },
+      "usage_is_lower_bound": true,
+      "capable_agent_invocations": 9
+    },
+    {
+      "trial": "live-model-healthy",
+      "case": "healthy",
+      "policy": "model",
+      "stage": "completed",
+      "error": null,
+      "wall_seconds": 267.9107220172882,
+      "worker_turns": 2,
+      "parent_session_count": 1,
+      "report_present": true,
+      "pending_feedback_after_final_report": false,
+      "fresh_simulations": 2,
+      "solver_seconds": 2.2852892270020675,
+      "verified_runs": 2,
+      "worker_metrics_agree": true,
+      "model_inferences": 11,
+      "monitor_errors": 12,
+      "model_choices": {
+        "defer": 5,
+        "request_repair_judge": 1,
+        "wake_director": 5
+      },
+      "alert_choices": {
+        "request_repair_judge": 1,
+        "wake_director": 1
+      },
+      "director_calls": 2,
+      "helper_tasks": 0,
+      "authority_calls": 1,
+      "authority_origins": {
+        "coprocessor": 1
+      },
+      "authority_verdicts": {
+        "deny": 1
+      },
+      "repairs_applied": 0,
+      "latency": {
+        "median_forward": 0.516993063999962,
+        "median_transport": 1.2077417110049282,
+        "total_forward": 5.129215545000534,
+        "input_tokens": 36940
+      },
+      "reported_usage": {
+        "input_tokens": 590191,
+        "cached_input_tokens": 518912,
+        "output_tokens": 7409
+      },
+      "usage_is_lower_bound": false,
+      "capable_agent_invocations": 5
+    },
+    {
+      "trial": "live-model-recoverable-analysis",
+      "case": "recoverable-analysis",
+      "policy": "model",
+      "stage": "completed",
+      "error": null,
+      "wall_seconds": 302.6000921726227,
+      "worker_turns": 2,
+      "parent_session_count": 1,
+      "report_present": true,
+      "pending_feedback_after_final_report": false,
+      "fresh_simulations": 3,
+      "solver_seconds": 4.106495595005981,
+      "verified_runs": 3,
+      "worker_metrics_agree": true,
+      "model_inferences": 24,
+      "monitor_errors": 1,
+      "model_choices": {
+        "defer": 22,
+        "request_worker_help": 1,
+        "request_repair_judge": 1
+      },
+      "alert_choices": {
+        "request_worker_help": 1,
+        "request_repair_judge": 1
+      },
+      "director_calls": 2,
+      "helper_tasks": 0,
+      "authority_calls": 1,
+      "authority_origins": {
+        "coprocessor": 1
+      },
+      "authority_verdicts": {
+        "deny": 1
+      },
+      "repairs_applied": 0,
+      "latency": {
+        "median_forward": 0.460204614000304,
+        "median_transport": 1.3014434990000154,
+        "total_forward": 10.075500677000491,
+        "input_tokens": 73057
+      },
+      "reported_usage": {
+        "input_tokens": 685711,
+        "cached_input_tokens": 622336,
+        "output_tokens": 8983
+      },
+      "usage_is_lower_bound": false,
+      "capable_agent_invocations": 5
+    },
+    {
+      "trial": "live-periodic-discrepancy",
+      "case": "discrepancy",
+      "policy": "periodic",
+      "stage": "completed",
+      "error": null,
+      "wall_seconds": 286.89784121513367,
+      "worker_turns": 1,
+      "parent_session_count": 1,
+      "report_present": true,
+      "pending_feedback_after_final_report": false,
+      "fresh_simulations": 3,
+      "solver_seconds": 4.206525885994779,
+      "verified_runs": 3,
+      "worker_metrics_agree": true,
+      "model_inferences": 0,
+      "monitor_errors": 0,
+      "model_choices": {},
+      "alert_choices": {
+        "wake_director": 4
+      },
+      "director_calls": 4,
+      "helper_tasks": 0,
+      "authority_calls": 0,
+      "authority_origins": {},
+      "authority_verdicts": {},
+      "repairs_applied": 0,
+      "latency": null,
+      "reported_usage": {
+        "input_tokens": 777976,
+        "cached_input_tokens": 670208,
+        "output_tokens": 8093
+      },
+      "usage_is_lower_bound": false,
+      "capable_agent_invocations": 5
+    },
+    {
+      "trial": "live-periodic-harness",
+      "case": "harness",
+      "policy": "periodic",
+      "stage": "completed",
+      "error": null,
+      "wall_seconds": 291.9751377105713,
+      "worker_turns": 2,
+      "parent_session_count": 1,
+      "report_present": true,
+      "pending_feedback_after_final_report": false,
+      "fresh_simulations": 2,
+      "solver_seconds": 1.7327269099987461,
+      "verified_runs": 2,
+      "worker_metrics_agree": true,
+      "model_inferences": 0,
+      "monitor_errors": 0,
+      "model_choices": {},
+      "alert_choices": {
+        "wake_director": 4
+      },
+      "director_calls": 4,
+      "helper_tasks": 0,
+      "authority_calls": 1,
+      "authority_origins": {
+        "worker": 1
+      },
+      "authority_verdicts": {
+        "grant": 1
+      },
+      "repairs_applied": 1,
+      "latency": null,
+      "reported_usage": {
+        "input_tokens": 694916,
+        "cached_input_tokens": 586624,
+        "output_tokens": 11088
+      },
+      "usage_is_lower_bound": false,
+      "capable_agent_invocations": 8
+    },
+    {
+      "trial": "live-periodic-healthy",
+      "case": "healthy",
+      "policy": "periodic",
+      "stage": "completed",
+      "error": null,
+      "wall_seconds": 365.9364848136902,
+      "worker_turns": 2,
+      "parent_session_count": 1,
+      "report_present": true,
+      "pending_feedback_after_final_report": false,
+      "fresh_simulations": 2,
+      "solver_seconds": 1.984056277993659,
+      "verified_runs": 2,
+      "worker_metrics_agree": true,
+      "model_inferences": 0,
+      "monitor_errors": 0,
+      "model_choices": {},
+      "alert_choices": {
+        "wake_director": 5
+      },
+      "director_calls": 3,
+      "helper_tasks": 0,
+      "authority_calls": 0,
+      "authority_origins": {},
+      "authority_verdicts": {},
+      "repairs_applied": 0,
+      "latency": null,
+      "reported_usage": {
+        "input_tokens": 687078,
+        "cached_input_tokens": 583168,
+        "output_tokens": 6682
+      },
+      "usage_is_lower_bound": false,
+      "capable_agent_invocations": 6
+    },
+    {
+      "trial": "live-periodic-recoverable-analysis",
+      "case": "recoverable-analysis",
+      "policy": "periodic",
+      "stage": "completed",
+      "error": null,
+      "wall_seconds": 343.6253411769867,
+      "worker_turns": 2,
+      "parent_session_count": 1,
+      "report_present": true,
+      "pending_feedback_after_final_report": false,
+      "fresh_simulations": 2,
+      "solver_seconds": 1.7833850609895308,
+      "verified_runs": 2,
+      "worker_metrics_agree": true,
+      "model_inferences": 0,
+      "monitor_errors": 0,
+      "model_choices": {},
+      "alert_choices": {
+        "wake_director": 5
+      },
+      "director_calls": 4,
+      "helper_tasks": 1,
+      "authority_calls": 0,
+      "authority_origins": {},
+      "authority_verdicts": {},
+      "repairs_applied": 0,
+      "latency": null,
+      "reported_usage": {
+        "input_tokens": 568364,
+        "cached_input_tokens": 453888,
+        "output_tokens": 7903
+      },
+      "usage_is_lower_bound": true,
+      "capable_agent_invocations": 7
+    },
+    {
+      "trial": "live-rules-discrepancy",
+      "case": "discrepancy",
+      "policy": "rules",
+      "stage": "completed",
+      "error": null,
+      "wall_seconds": 293.4320271015167,
+      "worker_turns": 2,
+      "parent_session_count": 1,
+      "report_present": true,
+      "pending_feedback_after_final_report": false,
+      "fresh_simulations": 2,
+      "solver_seconds": 2.483944234001683,
+      "verified_runs": 2,
+      "worker_metrics_agree": true,
+      "model_inferences": 0,
+      "monitor_errors": 0,
+      "model_choices": {},
+      "alert_choices": {
+        "wake_director": 3
+      },
+      "director_calls": 4,
+      "helper_tasks": 0,
+      "authority_calls": 0,
+      "authority_origins": {},
+      "authority_verdicts": {},
+      "repairs_applied": 0,
+      "latency": null,
+      "reported_usage": {
+        "input_tokens": 675049,
+        "cached_input_tokens": 574080,
+        "output_tokens": 7656
+      },
+      "usage_is_lower_bound": false,
+      "capable_agent_invocations": 6
+    },
+    {
+      "trial": "live-rules-harness",
+      "case": "harness",
+      "policy": "rules",
+      "stage": "completed",
+      "error": null,
+      "wall_seconds": 269.319007396698,
+      "worker_turns": 2,
+      "parent_session_count": 1,
+      "report_present": true,
+      "pending_feedback_after_final_report": true,
+      "fresh_simulations": 2,
+      "solver_seconds": 1.8334940179993282,
+      "verified_runs": 2,
+      "worker_metrics_agree": false,
+      "model_inferences": 0,
+      "monitor_errors": 0,
+      "model_choices": {},
+      "alert_choices": {
+        "request_repair_judge": 4
+      },
+      "director_calls": 1,
+      "helper_tasks": 0,
+      "authority_calls": 2,
+      "authority_origins": {
+        "worker": 1,
+        "coprocessor": 1
+      },
+      "authority_verdicts": {
+        "grant": 1,
+        "failed": 1
+      },
+      "repairs_applied": 1,
+      "latency": null,
+      "reported_usage": {
+        "input_tokens": 623086,
+        "cached_input_tokens": 551296,
+        "output_tokens": 7152
+      },
+      "usage_is_lower_bound": false,
+      "capable_agent_invocations": 6
+    },
+    {
+      "trial": "live-rules-healthy",
+      "case": "healthy",
+      "policy": "rules",
+      "stage": "completed",
+      "error": null,
+      "wall_seconds": 265.3386776447296,
+      "worker_turns": 2,
+      "parent_session_count": 1,
+      "report_present": true,
+      "pending_feedback_after_final_report": false,
+      "fresh_simulations": 2,
+      "solver_seconds": 1.682500129994878,
+      "verified_runs": 2,
+      "worker_metrics_agree": true,
+      "model_inferences": 0,
+      "monitor_errors": 0,
+      "model_choices": {},
+      "alert_choices": {},
+      "director_calls": 1,
+      "helper_tasks": 0,
+      "authority_calls": 1,
+      "authority_origins": {
+        "worker": 1
+      },
+      "authority_verdicts": {
+        "deny": 1
+      },
+      "repairs_applied": 0,
+      "latency": null,
+      "reported_usage": {
+        "input_tokens": 436260,
+        "cached_input_tokens": 399232,
+        "output_tokens": 4058
+      },
+      "usage_is_lower_bound": false,
+      "capable_agent_invocations": 4
+    },
+    {
+      "trial": "live-rules-recoverable-analysis",
+      "case": "recoverable-analysis",
+      "policy": "rules",
+      "stage": "completed",
+      "error": null,
+      "wall_seconds": 321.5718502998352,
+      "worker_turns": 2,
+      "parent_session_count": 1,
+      "report_present": true,
+      "pending_feedback_after_final_report": false,
+      "fresh_simulations": 4,
+      "solver_seconds": 5.7209160850034095,
+      "verified_runs": 4,
+      "worker_metrics_agree": true,
+      "model_inferences": 0,
+      "monitor_errors": 0,
+      "model_choices": {},
+      "alert_choices": {
+        "wake_director": 2
+      },
+      "director_calls": 2,
+      "helper_tasks": 1,
+      "authority_calls": 0,
+      "authority_origins": {},
+      "authority_verdicts": {},
+      "repairs_applied": 0,
+      "latency": null,
+      "reported_usage": {
+        "input_tokens": 936577,
+        "cached_input_tokens": 858112,
+        "output_tokens": 11085
+      },
+      "usage_is_lower_bound": false,
+      "capable_agent_invocations": 5
+    }
+  ],
+  "comparison_limitations": [
+    "One stochastic trajectory per case/policy; downstream judge behavior varies.",
+    "Initial model arms include transport outages; errors are retained.",
+    "The fixed two-turn cap can leave late feedback undelivered; flagged explicitly.",
+    "Missing provider counters remain missing, not zero-cost calls.",
+    "Injected harness and analysis defects are engineering fixtures; actual WarpX outputs are independently checked.",
+    "The nominal healthy task advertised four runs while its wrapper allowed two; escalations after exhausting that wrapper are not clean false-alarm examples."
+  ],
+  "learning_episodes": [
+    {
+      "id": "harness-71",
+      "case": "harness",
+      "quality": 1,
+      "reward": 0.7761422949204078,
+      "capable_agent_invocations": 8,
+      "elapsed_seconds": 415.07508301734924,
+      "sampled_decisions": 37
+    },
+    {
+      "id": "harness-97",
+      "case": "harness",
+      "quality": 1,
+      "reward": 0.7862062976176922,
+      "capable_agent_invocations": 8,
+      "elapsed_seconds": 349.6590654850006,
+      "sampled_decisions": 27
+    },
+    {
+      "id": "recoverable-analysis-71",
+      "case": "recoverable-analysis",
+      "quality": 0,
+      "reward": -0.23722542902139518,
+      "capable_agent_invocations": 8,
+      "elapsed_seconds": 501.9652886390686,
+      "sampled_decisions": 31
+    },
+    {
+      "id": "recoverable-analysis-97",
+      "case": "recoverable-analysis",
+      "quality": 1,
+      "reward": 0.8032173065772423,
+      "capable_agent_invocations": 7,
+      "elapsed_seconds": 369.0875072479248,
+      "sampled_decisions": 24
+    }
+  ],
+  "learning_dataset_sha256": "5389a307bb29754dee5e2391b4ff7946683d01cb60815a305d80147a60abedfa",
+  "training": {
+    "stage": "completed",
+    "started_at": 1792772131.1502051,
+    "dataset_sha256": "5389a307bb29754dee5e2391b4ff7946683d01cb60815a305d80147a60abedfa",
+    "episode_returns": {
+      "harness-71": 0.7761422949204078,
+      "harness-97": 0.7862062976176922,
+      "recoverable-analysis-71": -0.23722542902139518,
+      "recoverable-analysis-97": 0.8032173065772423
+    },
+    "trainable_parameters": 7372800,
+    "initial_probability_max_error": 1.1920928955078125e-07,
+    "optimizer_steps": 8,
+    "last_update": {
+      "epoch": 1,
+      "episode": "recoverable-analysis-71",
+      "gradient_norm": 1.7798950672149658,
+      "advantage": -1.0404427355986374,
+      "mean_kl": 0.00045010854016929385,
+      "loss": 1.0284202247858047
+    },
+    "updated_at": 1792772934.3756316,
+    "ended_at": 1792772936.6657429,
+    "elapsed_seconds": 805.5155382156372,
+    "reload_probability_error": 0.0,
+    "peak_cuda_bytes": 12157827584,
+    "scope": "Mechanics of learning from real returns; no RL superiority claim"
+  },
+  "definitions": {
+    "director_calls": "Completed director decision records, not API request counts",
+    "authority_calls": "Authority requests; a request can include a judge, retry and repair proposer",
+    "capable_agent_invocations": "Unique native worker_started/judge_started events, including failed invocations",
+    "worker_metrics_agree": "Reported values agree with independently recomputed saved plot metrics, not scientific acceptance"
+  },
+  "adapter_evaluation": [
+    {
+      "trial": "adapter-discrepancy",
+      "case": "discrepancy",
+      "policy": "model",
+      "stage": "completed",
+      "error": null,
+      "wall_seconds": 260.32034730911255,
+      "worker_turns": 1,
+      "parent_session_count": 1,
+      "report_present": true,
+      "pending_feedback_after_final_report": false,
+      "fresh_simulations": 3,
+      "solver_seconds": 12.02918806499656,
+      "verified_runs": 3,
+      "worker_metrics_agree": true,
+      "model_inferences": 18,
+      "monitor_errors": 0,
+      "model_choices": {
+        "defer": 18
+      },
+      "alert_choices": {},
+      "director_calls": 0,
+      "helper_tasks": 0,
+      "authority_calls": 0,
+      "authority_origins": {},
+      "authority_verdicts": {},
+      "repairs_applied": 0,
+      "latency": {
+        "median_forward": 0.4929660765001245,
+        "median_transport": 1.0512272484993446,
+        "total_forward": 8.769863056002578,
+        "input_tokens": 58263
+      },
+      "reported_usage": {
+        "input_tokens": 289082,
+        "cached_input_tokens": 265472,
+        "output_tokens": 5583
+      },
+      "usage_is_lower_bound": false,
+      "capable_agent_invocations": 1,
+      "evaluation_policy": "adapter"
+    },
+    {
+      "trial": "adapter-healthy",
+      "case": "healthy",
+      "policy": "model",
+      "stage": "completed",
+      "error": null,
+      "wall_seconds": 181.7938108444214,
+      "worker_turns": 1,
+      "parent_session_count": 1,
+      "report_present": true,
+      "pending_feedback_after_final_report": false,
+      "fresh_simulations": 2,
+      "solver_seconds": 4.591918860001897,
+      "verified_runs": 2,
+      "worker_metrics_agree": true,
+      "model_inferences": 17,
+      "monitor_errors": 0,
+      "model_choices": {
+        "defer": 17
+      },
+      "alert_choices": {},
+      "director_calls": 0,
+      "helper_tasks": 0,
+      "authority_calls": 0,
+      "authority_origins": {},
+      "authority_verdicts": {},
+      "repairs_applied": 0,
+      "latency": {
+        "median_forward": 0.540173766999942,
+        "median_transport": 1.2227680680007325,
+        "total_forward": 9.970647783004097,
+        "input_tokens": 56164
+      },
+      "reported_usage": {
+        "input_tokens": 366069,
+        "cached_input_tokens": 332672,
+        "output_tokens": 3870
+      },
+      "usage_is_lower_bound": false,
+      "capable_agent_invocations": 1,
+      "evaluation_policy": "adapter"
+    },
+    {
+      "trial": "base-discrepancy",
+      "case": "discrepancy",
+      "policy": "model",
+      "stage": "completed",
+      "error": null,
+      "wall_seconds": 278.9061553478241,
+      "worker_turns": 1,
+      "parent_session_count": 1,
+      "report_present": true,
+      "pending_feedback_after_final_report": false,
+      "fresh_simulations": 3,
+      "solver_seconds": 15.339605800996651,
+      "verified_runs": 3,
+      "worker_metrics_agree": true,
+      "model_inferences": 25,
+      "monitor_errors": 0,
+      "model_choices": {
+        "defer": 25
+      },
+      "alert_choices": {},
+      "director_calls": 0,
+      "helper_tasks": 0,
+      "authority_calls": 0,
+      "authority_origins": {},
+      "authority_verdicts": {},
+      "repairs_applied": 0,
+      "latency": {
+        "median_forward": 0.4841139009986364,
+        "median_transport": 1.0323263310056063,
+        "total_forward": 11.415058584998405,
+        "input_tokens": 83829
+      },
+      "reported_usage": {
+        "input_tokens": 441461,
+        "cached_input_tokens": 412032,
+        "output_tokens": 6281
+      },
+      "usage_is_lower_bound": false,
+      "capable_agent_invocations": 1,
+      "evaluation_policy": "base"
+    },
+    {
+      "trial": "base-healthy",
+      "case": "healthy",
+      "policy": "model",
+      "stage": "completed",
+      "error": null,
+      "wall_seconds": 184.7033178806305,
+      "worker_turns": 1,
+      "parent_session_count": 1,
+      "report_present": true,
+      "pending_feedback_after_final_report": false,
+      "fresh_simulations": 2,
+      "solver_seconds": 4.842099467998196,
+      "verified_runs": 2,
+      "worker_metrics_agree": true,
+      "model_inferences": 19,
+      "monitor_errors": 0,
+      "model_choices": {
+        "defer": 19
+      },
+      "alert_choices": {},
+      "director_calls": 0,
+      "helper_tasks": 0,
+      "authority_calls": 0,
+      "authority_origins": {},
+      "authority_verdicts": {},
+      "repairs_applied": 0,
+      "latency": {
+        "median_forward": 0.49854623200008064,
+        "median_transport": 1.0608963319973554,
+        "total_forward": 10.23805150300177,
+        "input_tokens": 63495
+      },
+      "reported_usage": {
+        "input_tokens": 442313,
+        "cached_input_tokens": 419456,
+        "output_tokens": 4268
+      },
+      "usage_is_lower_bound": false,
+      "capable_agent_invocations": 1,
+      "evaluation_policy": "base"
+    }
+  ],
+  "adapter_probe": {
+    "base": {
+      "choice": "defer",
+      "probabilities": {
+        "defer": 0.9076452255249023,
+        "request_worker_help": 0.03476066142320633,
+        "wake_director": 0.028797050938010216,
+        "request_repair_judge": 0.028797050938010216
+      },
+      "policy": "intern-decision-4b",
+      "model_identity": {
+        "checkpoint_path": "/root/.cache/huggingface/hub/models--internlm--Intern-Decision-4B/snapshots/38c9dafbbef52dd04bae943c0c6ac918419adfd5",
+        "checkpoint_config_sha256": "ddc63e1c717afa86c865bb5e01313d89d72bb53b97ad4a8a03ba8510c0621670",
+        "adapter_files_sha256": {}
+      },
+      "packet_sha256": "7ac00e7c8054d44dafa3633876088e103a9809e75286ecf519fda7952b024318",
+      "prompt_sha256": "fdd6baf810e2dd5c5941f10e0ad875be947a2429b9c75ad6a80d3d2838fc3a0d",
+      "model_view": {
+        "included_event_ids": [
+          "turn-00001:1"
+        ],
+        "omitted_event_ids": [],
+        "state_sha256": "7ac00e7c8054d44dafa3633876088e103a9809e75286ecf519fda7952b024318"
+      },
+      "input_tokens": 1076,
+      "forward_seconds": 0.7323151619984856,
+      "total_seconds": 0.7731085129998974,
+      "peak_cuda_bytes": 9467131904,
+      "confidence_note": "Checkpoint temperature; probabilities are not calibrated on monitoring incidents",
+      "transport_seconds": 1.5352758700028062,
+      "client_received_at": 1792773086.7382133
+    },
+    "adapter": {
+      "choice": "defer",
+      "probabilities": {
+        "defer": 0.9108352065086365,
+        "request_worker_help": 0.03488282859325409,
+        "wake_director": 0.027140958234667778,
+        "request_repair_judge": 0.027140958234667778
+      },
+      "policy": "intern-decision-4b",
+      "model_identity": {
+        "checkpoint_path": "/root/.cache/huggingface/hub/models--internlm--Intern-Decision-4B/snapshots/38c9dafbbef52dd04bae943c0c6ac918419adfd5",
+        "checkpoint_config_sha256": "ddc63e1c717afa86c865bb5e01313d89d72bb53b97ad4a8a03ba8510c0621670",
+        "adapter_files_sha256": {
+          "adapter_config.json": "47b42baa0287132c1c028325791483d74d94f0a0bb4ab4bcbea895f6a739d911",
+          "adapter_model.safetensors": "e0f4d4c66ee3444193a952bcaa41f210f02bb4308cf7cc8303d8f4ffe7aa871c"
+        }
+      },
+      "packet_sha256": "7ac00e7c8054d44dafa3633876088e103a9809e75286ecf519fda7952b024318",
+      "prompt_sha256": "fdd6baf810e2dd5c5941f10e0ad875be947a2429b9c75ad6a80d3d2838fc3a0d",
+      "model_view": {
+        "included_event_ids": [
+          "turn-00001:1"
+        ],
+        "omitted_event_ids": [],
+        "state_sha256": "7ac00e7c8054d44dafa3633876088e103a9809e75286ecf519fda7952b024318"
+      },
+      "input_tokens": 1076,
+      "forward_seconds": 0.7150854499996058,
+      "total_seconds": 0.7591371539983811,
+      "peak_cuda_bytes": 9496623104,
+      "confidence_note": "Checkpoint temperature; probabilities are not calibrated on monitoring incidents",
+      "transport_seconds": 1.2300234240028658,
+      "client_received_at": 1792773087.9683022
+    }
+  },
+  "stream_observation": {
+    "observed_simulation_streams": 52,
+    "streams_observed_before_process_end": 51,
+    "examples": [
+      {
+        "trial": "live-model-discrepancy",
+        "source": "runs/baseline256/run.log",
+        "observed_at": 1792765716.9801388,
+        "process_ended_at": 1792765718.9470172,
+        "lead_seconds": 1.9668784141540527
+      },
+      {
+        "trial": "live-model-discrepancy",
+        "source": "runs/control128/run.log",
+        "observed_at": 1792765744.021281,
+        "process_ended_at": 1792765744.3993013,
+        "lead_seconds": 0.3780202865600586
+      },
+      {
+        "trial": "live-periodic-harness",
+        "source": "runs/control64/run.log",
+        "observed_at": 1792766511.2422104,
+        "process_ended_at": 1792766511.7662463,
+        "lead_seconds": 0.5240359306335449
+      },
+      {
+        "trial": "live-periodic-harness",
+        "source": "runs/control128/run.log",
+        "observed_at": 1792766523.2601974,
+        "process_ended_at": 1792766523.7636168,
+        "lead_seconds": 0.5034193992614746
+      },
+      {
+        "trial": "live-model-recoverable-analysis",
+        "source": "runs/control64/run.log",
+        "observed_at": 1792765891.987096,
+        "process_ended_at": 1792765892.5939534,
+        "lead_seconds": 0.6068572998046875
+      },
+      {
+        "trial": "live-model-recoverable-analysis",
+        "source": "runs/control128/run.log",
+        "observed_at": 1792765925.056905,
+        "process_ended_at": 1792765925.646203,
+        "lead_seconds": 0.5892980098724365
+      },
+      {
+        "trial": "live-model-recoverable-analysis",
+        "source": "runs/refinement256/run.log",
+        "observed_at": 1792765954.1003997,
+        "process_ended_at": 1792765955.352188,
+        "lead_seconds": 1.2517883777618408
+      },
+      {
+        "trial": "live-model-harness",
+        "source": "runs/control64/run.log",
+        "observed_at": 1792765447.900393,
+        "process_ended_at": 1792765448.6605124,
+        "lead_seconds": 0.7601194381713867
+      },
+      {
+        "trial": "live-model-harness",
+        "source": "runs/control128/run.log",
+        "observed_at": 1792765460.917304,
+        "process_ended_at": 1792765462.055376,
+        "lead_seconds": 1.1380720138549805
+      },
+      {
+        "trial": "live-model-harness",
+        "source": "runs/control128/run.log",
+        "observed_at": 1792765461.9187975,
+        "process_ended_at": 1792765462.055376,
+        "lead_seconds": 0.13657855987548828
+      },
+      {
+        "trial": "live-model-harness",
+        "source": "runs/refinement256/run.log",
+        "observed_at": 1792765738.0038247,
+        "process_ended_at": 1792765739.8842854,
+        "lead_seconds": 1.8804607391357422
+      },
+      {
+        "trial": "live-model-harness",
+        "source": "runs/repeat256/run.log",
+        "observed_at": 1792765772.0900505,
+        "process_ended_at": 1792765774.1256695,
+        "lead_seconds": 2.035619020462036
+      },
+      {
+        "trial": "live-model-harness",
+        "source": "runs/repeat256/run.log",
+        "observed_at": 1792765774.095231,
+        "process_ended_at": 1792765774.1256695,
+        "lead_seconds": 0.03043842315673828
+      },
+      {
+        "trial": "live-rules-recoverable-analysis",
+        "source": "runs/control64/run.log",
+        "observed_at": 1792766455.2062695,
+        "process_ended_at": 1792766455.600416,
+        "lead_seconds": 0.3941464424133301
+      },
+      {
+        "trial": "live-rules-recoverable-analysis",
+        "source": "runs/control128/run.log",
+        "observed_at": 1792766490.2562797,
+        "process_ended_at": 1792766490.5065365,
+        "lead_seconds": 0.2502567768096924
+      },
+      {
+        "trial": "live-rules-recoverable-analysis",
+        "source": "runs/refine256/run.log",
+        "observed_at": 1792766515.286627,
+        "process_ended_at": 1792766516.457501,
+        "lead_seconds": 1.1708738803863525
+      },
+      {
+        "trial": "live-rules-recoverable-analysis",
+        "source": "runs/repeat256/run.log",
+        "observed_at": 1792766534.3171191,
+        "process_ended_at": 1792766535.4751892,
+        "lead_seconds": 1.1580700874328613
+      },
+      {
+        "trial": "live-periodic-discrepancy",
+        "source": "runs/baseline256/run.log",
+        "observed_at": 1792766815.4133818,
+        "process_ended_at": 1792766817.6394277,
+        "lead_seconds": 2.226045846939087
+      },
+      {
+        "trial": "live-periodic-discrepancy",
+        "source": "runs/baseline256/run.log",
+        "observed_at": 1792766816.4145997,
+        "process_ended_at": 1792766817.6394277,
+        "lead_seconds": 1.2248280048370361
+      },
+      {
+        "trial": "live-periodic-discrepancy",
+        "source": "runs/early256/run.log",
+        "observed_at": 1792766847.477638,
+        "process_ended_at": 1792766847.69987,
+        "lead_seconds": 0.22223210334777832
+      },
+      {
+        "trial": "live-periodic-discrepancy",
+        "source": "runs/matched128/run.log",
+        "observed_at": 1792766882.5285573,
+        "process_ended_at": 1792766883.0603938,
+        "lead_seconds": 0.5318365097045898
+      },
+      {
+        "trial": "live-rules-discrepancy",
+        "source": "runs/baseline256_160/run.log",
+        "observed_at": 1792766222.1093903,
+        "process_ended_at": 1792766223.4680698,
+        "lead_seconds": 1.3586795330047607
+      },
+      {
+        "trial": "live-rules-discrepancy",
+        "source": "runs/control256_1/run.log",
+        "observed_at": 1792766247.1468854,
+        "process_ended_at": 1792766247.3806667,
+        "lead_seconds": 0.2337813377380371
+      },
+      {
+        "trial": "live-model-healthy",
+        "source": "runs/control64/run.log",
+        "observed_at": 1792765442.902303,
+        "process_ended_at": 1792765443.1467562,
+        "lead_seconds": 0.24445319175720215
+      },
+      {
+        "trial": "live-model-healthy",
+        "source": "runs/control128/run.log",
+        "observed_at": 1792765452.9140983,
+        "process_ended_at": 1792765453.991689,
+        "lead_seconds": 1.0775907039642334
+      },
+      {
+        "trial": "live-model-healthy",
+        "source": "runs/control128/run.log",
+        "observed_at": 1792765453.915915,
+        "process_ended_at": 1792765453.991689,
+        "lead_seconds": 0.07577395439147949
+      },
+      {
+        "trial": "live-rules-harness",
+        "source": "runs/control64/run.log",
+        "observed_at": 1792765962.9879851,
+        "process_ended_at": 1792765963.159919,
+        "lead_seconds": 0.17193388938903809
+      },
+      {
+        "trial": "live-rules-harness",
+        "source": "runs/control128/run.log",
+        "observed_at": 1792765975.0033116,
+        "process_ended_at": 1792765975.4485817,
+        "lead_seconds": 0.4452700614929199
+      },
+      {
+        "trial": "live-periodic-recoverable-analysis",
+        "source": "runs/control64/run.log",
+        "observed_at": 1792767090.523424,
+        "process_ended_at": 1792767090.7801106,
+        "lead_seconds": 0.2566866874694824
+      },
+      {
+        "trial": "live-periodic-recoverable-analysis",
+        "source": "runs/control128/run.log",
+        "observed_at": 1792767095.530518,
+        "process_ended_at": 1792767096.5635924,
+        "lead_seconds": 1.0330743789672852
+      },
+      {
+        "trial": "live-periodic-recoverable-analysis",
+        "source": "runs/control128/run.log",
+        "observed_at": 1792767096.532305,
+        "process_ended_at": 1792767096.5635924,
+        "lead_seconds": 0.031287431716918945
+      },
+      {
+        "trial": "live-periodic-healthy",
+        "source": "runs/control64/run.log",
+        "observed_at": 1792766774.3659487,
+        "process_ended_at": 1792766775.075968,
+        "lead_seconds": 0.7100193500518799
+      },
+      {
+        "trial": "live-periodic-healthy",
+        "source": "runs/control128/run.log",
+        "observed_at": 1792766788.3845057,
+        "process_ended_at": 1792766789.5239806,
+        "lead_seconds": 1.139474868774414
+      },
+      {
+        "trial": "live-periodic-healthy",
+        "source": "runs/control128/run.log",
+        "observed_at": 1792766789.38688,
+        "process_ended_at": 1792766789.5239806,
+        "lead_seconds": 0.1371006965637207
+      },
+      {
+        "trial": "live-rules-healthy",
+        "source": "runs/control64/run.log",
+        "observed_at": 1792766192.0694578,
+        "process_ended_at": 1792766192.2116303,
+        "lead_seconds": 0.14217257499694824
+      },
+      {
+        "trial": "live-rules-healthy",
+        "source": "runs/control128/run.log",
+        "observed_at": 1792766197.0751808,
+        "process_ended_at": 1792766197.8723176,
+        "lead_seconds": 0.7971367835998535
+      },
+      {
+        "trial": "recoverable-analysis-71",
+        "source": "runs/control128/run.log",
+        "observed_at": 1792770198.9762323,
+        "process_ended_at": 1792770199.8116276,
+        "lead_seconds": 0.835395336151123
+      },
+      {
+        "trial": "recoverable-analysis-71",
+        "source": "runs/challenge256/run.log",
+        "observed_at": 1792770243.0634975,
+        "process_ended_at": 1792770244.2275395,
+        "lead_seconds": 1.1640419960021973
+      },
+      {
+        "trial": "recoverable-analysis-71",
+        "source": "runs/repeat256/run.log",
+        "observed_at": 1792770271.1219192,
+        "process_ended_at": 1792770273.1902757,
+        "lead_seconds": 2.068356513977051
+      },
+      {
+        "trial": "recoverable-analysis-71",
+        "source": "runs/repeat256/run.log",
+        "observed_at": 1792770272.1239452,
+        "process_ended_at": 1792770273.1902757,
+        "lead_seconds": 1.0663304328918457
+      },
+      {
+        "trial": "recoverable-analysis-71",
+        "source": "runs/repeat256/run.log",
+        "observed_at": 1792770273.1257246,
+        "process_ended_at": 1792770273.1902757,
+        "lead_seconds": 0.06455111503601074
+      },
+      {
+        "trial": "harness-97",
+        "source": "runs/control64/run.log",
+        "observed_at": 1792770575.632723,
+        "process_ended_at": 1792770575.6731374,
+        "lead_seconds": 0.04041433334350586
+      },
+      {
+        "trial": "harness-97",
+        "source": "runs/control128/run.log",
+        "observed_at": 1792770590.664608,
+        "process_ended_at": 1792770591.0703266,
+        "lead_seconds": 0.4057185649871826
+      },
+      {
+        "trial": "harness-71",
+        "source": "runs/control64/run.log",
+        "observed_at": 1792770170.2420862,
+        "process_ended_at": 1792770170.332128,
+        "lead_seconds": 0.0900418758392334
+      },
+      {
+        "trial": "harness-71",
+        "source": "runs/control128/run.log",
+        "observed_at": 1792770183.290451,
+        "process_ended_at": 1792770184.3878772,
+        "lead_seconds": 1.097426176071167
+      },
+      {
+        "trial": "harness-71",
+        "source": "runs/control128/run.log",
+        "observed_at": 1792770184.2918916,
+        "process_ended_at": 1792770184.3878772,
+        "lead_seconds": 0.09598565101623535
+      },
+      {
+        "trial": "harness-71",
+        "source": "runs/probe256/run.log",
+        "observed_at": 1792770346.6548073,
+        "process_ended_at": 1792770348.5091093,
+        "lead_seconds": 1.854301929473877
+      },
+      {
+        "trial": "harness-71",
+        "source": "runs/probe256/run.log",
+        "observed_at": 1792770347.6572833,
+        "process_ended_at": 1792770348.5091093,
+        "lead_seconds": 0.8518259525299072
+      },
+      {
+        "trial": "harness-71",
+        "source": "runs/repeat256/run.log",
+        "observed_at": 1792770372.703055,
+        "process_ended_at": 1792770374.3027973,
+        "lead_seconds": 1.5997424125671387
+      },
+      {
+        "trial": "recoverable-analysis-97",
+        "source": "runs/control64/run.log",
+        "observed_at": 1792770666.3385978,
+        "process_ended_at": 1792770666.6654093,
+        "lead_seconds": 0.3268115520477295
+      },
+      {
+        "trial": "recoverable-analysis-97",
+        "source": "runs/control128/run.log",
+        "observed_at": 1792770702.419723,
+        "process_ended_at": 1792770703.7684739,
+        "lead_seconds": 1.3487508296966553
+      },
+      {
+        "trial": "recoverable-analysis-97",
+        "source": "runs/control128/run.log",
+        "observed_at": 1792770703.4220464,
+        "process_ended_at": 1792770703.7684739,
+        "lead_seconds": 0.34642744064331055
+      },
+      {
+        "trial": "adapter-discrepancy",
+        "source": "runs/baseline256_160/run.log",
+        "observed_at": 1792773301.3026276,
+        "process_ended_at": 1792773308.6294944,
+        "lead_seconds": 7.326866865158081
+      },
+      {
+        "trial": "adapter-discrepancy",
+        "source": "runs/startup256_1/run.log",
+        "observed_at": 1792773382.399743,
+        "process_ended_at": 1792773382.676288,
+        "lead_seconds": 0.27654480934143066
+      },
+      {
+        "trial": "adapter-discrepancy",
+        "source": "runs/coarse128_80/run.log",
+        "observed_at": 1792773385.405862,
+        "process_ended_at": 1792773388.2399065,
+        "lead_seconds": 2.8340444564819336
+      },
+      {
+        "trial": "adapter-discrepancy",
+        "source": "runs/coarse128_80/run.log",
+        "observed_at": 1792773386.4079096,
+        "process_ended_at": 1792773388.2399065,
+        "lead_seconds": 1.8319969177246094
+      },
+      {
+        "trial": "base-healthy",
+        "source": "runs/control_64_40/run.log",
+        "observed_at": 1792773116.8765137,
+        "process_ended_at": 1792773118.5570002,
+        "lead_seconds": 1.6804864406585693
+      },
+      {
+        "trial": "base-healthy",
+        "source": "runs/control_64_40/run.log",
+        "observed_at": 1792773117.8783205,
+        "process_ended_at": 1792773118.5570002,
+        "lead_seconds": 0.6786797046661377
+      },
+      {
+        "trial": "base-healthy",
+        "source": "runs/control_128_80/run.log",
+        "observed_at": 1792773137.9130483,
+        "process_ended_at": 1792773140.8974242,
+        "lead_seconds": 2.9843759536743164
+      },
+      {
+        "trial": "base-healthy",
+        "source": "runs/control_128_80/run.log",
+        "observed_at": 1792773138.915659,
+        "process_ended_at": 1792773140.8974242,
+        "lead_seconds": 1.9817652702331543
+      },
+      {
+        "trial": "adapter-healthy",
+        "source": "runs/control64/run.log",
+        "observed_at": 1792773127.0205421,
+        "process_ended_at": 1792773127.9688423,
+        "lead_seconds": 0.9483001232147217
+      },
+      {
+        "trial": "adapter-healthy",
+        "source": "runs/control128/run.log",
+        "observed_at": 1792773144.0437033,
+        "process_ended_at": 1792773146.402512,
+        "lead_seconds": 2.358808755874634
+      },
+      {
+        "trial": "base-discrepancy",
+        "source": "runs/baseline_n256_s160/run.log",
+        "observed_at": 1792773311.9377537,
+        "process_ended_at": 1792773319.8424509,
+        "lead_seconds": 7.9046971797943115
+      },
+      {
+        "trial": "base-discrepancy",
+        "source": "runs/baseline_n256_s160/run.log",
+        "observed_at": 1792773312.9396355,
+        "process_ended_at": 1792773319.8424509,
+        "lead_seconds": 6.902815341949463
+      },
+      {
+        "trial": "base-discrepancy",
+        "source": "runs/control_n128_s80/run.log",
+        "observed_at": 1792773344.9847562,
+        "process_ended_at": 1792773347.640813,
+        "lead_seconds": 2.6560568809509277
+      },
+      {
+        "trial": "base-discrepancy",
+        "source": "runs/control_n128_s80/run.log",
+        "observed_at": 1792773345.9870567,
+        "process_ended_at": 1792773347.640813,
+        "lead_seconds": 1.6537563800811768
+      },
+      {
+        "trial": "base-discrepancy",
+        "source": "runs/control_n256_s80/run.log",
+        "observed_at": 1792773408.0759265,
+        "process_ended_at": 1792773411.9728446,
+        "lead_seconds": 3.8969180583953857
+      },
+      {
+        "trial": "base-discrepancy",
+        "source": "runs/control_n256_s80/run.log",
+        "observed_at": 1792773409.0780327,
+        "process_ended_at": 1792773411.9728446,
+        "lead_seconds": 2.8948118686676025
+      }
+    ]
+  }
+}
