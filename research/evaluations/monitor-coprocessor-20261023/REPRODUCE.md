@@ -118,3 +118,23 @@ It runs paired contemporary base/adapter trajectories, with at most two parent
 workers active. Agent/director/helper activity can add concurrent child roles.
 The runtime and compute lease must be managed separately; these scripts do not
 allocate Colab or authorize unbounded compute.
+
+## Local inference check
+
+The verified local checkpoint is `artifacts/models/Decision-verified`. Saved
+A100 predictions and identical benchmark packets live under the evidence root.
+For example, using a new output directory:
+
+```bash
+PYTHONPATH=packages/simjecture-monitor/src OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 \
+  artifacts/model-env/bin/python packages/simjecture-monitor/scripts/benchmark_local.py \
+  --checkpoint artifacts/models/Decision-verified \
+  --packets artifacts/overnight-20261023/benchmark-packets.json \
+  --reference artifacts/overnight-20261023/benchmark-a100-base.json \
+  --output /path/to/new-local-base-check
+```
+
+Use `--adapter artifacts/overnight-20261023/training/run-01/adapter` and the
+`benchmark-a100-adapted.json` reference for the adapted policy. The benchmark
+compares actual prompts, adapter hashes, categorical choices and numerical
+probabilities. Record concurrent GPU work when interpreting latency.

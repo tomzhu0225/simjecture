@@ -1294,5 +1294,139 @@
         "lead_seconds": 2.8948118686676025
       }
     ]
+  },
+  "local_benchmarks": {
+    "base": {
+      "stage": "completed",
+      "started_at": 1792774786.7481475,
+      "model_identity": {
+        "checkpoint_path": "/home/tomzhu0225/src/simjecture-monitor-coprocessor/artifacts/models/Decision-verified",
+        "checkpoint_config_sha256": "ddc63e1c717afa86c865bb5e01313d89d72bb53b97ad4a8a03ba8510c0621670",
+        "adapter_files_sha256": {}
+      },
+      "device": "NVIDIA RTX 4000 Ada Generation",
+      "torch_version": "2.11.0+cu130",
+      "cuda_version": "13.0",
+      "cpu_threads": 2,
+      "device_total_bytes": 21469069312,
+      "other_device_used_bytes_before_model": 1288175616,
+      "load_seconds": 75.72342681884766,
+      "resident_allocated_bytes": 9180272640,
+      "resident_reserved_bytes": 9219080192,
+      "ended_at": 1792774945.818105,
+      "packets": 12,
+      "repetitions": 2,
+      "warm_median_forward_seconds": 4.016910001497308,
+      "warm_median_total_seconds": 4.032541806998779,
+      "warm_maximum_total_seconds": 4.707542522999574,
+      "peak_cuda_bytes": 10193415680,
+      "choice_agreements": 24,
+      "comparisons": 24,
+      "maximum_probability_difference": 0.018127501010894775,
+      "input_tokens": [
+        1076,
+        3448,
+        3970,
+        1081,
+        3052,
+        3941,
+        1088,
+        4027,
+        3540,
+        1070,
+        3665,
+        3881
+      ],
+      "limitation": "Resident inference on retained monitoring packets; no throughput or power benchmark."
+    },
+    "adapted": {
+      "stage": "completed",
+      "started_at": 1792774952.4922993,
+      "model_identity": {
+        "checkpoint_path": "/home/tomzhu0225/src/simjecture-monitor-coprocessor/artifacts/models/Decision-verified",
+        "checkpoint_config_sha256": "ddc63e1c717afa86c865bb5e01313d89d72bb53b97ad4a8a03ba8510c0621670",
+        "adapter_files_sha256": {
+          "adapter_config.json": "47b42baa0287132c1c028325791483d74d94f0a0bb4ab4bcbea895f6a739d911",
+          "adapter_model.safetensors": "e0f4d4c66ee3444193a952bcaa41f210f02bb4308cf7cc8303d8f4ffe7aa871c"
+        }
+      },
+      "device": "NVIDIA RTX 4000 Ada Generation",
+      "torch_version": "2.11.0+cu130",
+      "cuda_version": "13.0",
+      "cpu_threads": 2,
+      "device_total_bytes": 21469069312,
+      "other_device_used_bytes_before_model": 1288175616,
+      "load_seconds": 8.287920475006104,
+      "resident_allocated_bytes": 9209763840,
+      "resident_reserved_bytes": 9279897600,
+      "ended_at": 1792775053.8252215,
+      "packets": 12,
+      "repetitions": 2,
+      "warm_median_forward_seconds": 4.612227169000107,
+      "warm_median_total_seconds": 4.621517370498623,
+      "warm_maximum_total_seconds": 5.457983499996772,
+      "peak_cuda_bytes": 10220456448,
+      "choice_agreements": 24,
+      "comparisons": 24,
+      "maximum_probability_difference": 0.012470066547393799,
+      "input_tokens": [
+        1076,
+        3448,
+        3970,
+        1081,
+        3052,
+        3941,
+        1088,
+        4027,
+        3540,
+        1070,
+        3665,
+        3881
+      ],
+      "limitation": "Resident inference on retained monitoring packets; no throughput or power benchmark."
+    }
+  },
+  "local_benchmark_conditions": {
+    "gpu_load_before": "NVIDIA RTX 4000 Ada Generation, 20475 MiB, 4762 MiB, 99 %",
+    "concurrent_work": "An unrelated long-running local GPU simulation remained active; no intervention in that workload.",
+    "numerical_note": "Matched argmax decisions on these 12 packets do not establish exact cross-hardware probability equivalence.",
+    "memory_note": "The historical field other_device_used_bytes_before_model is the value from CUDA mem_get_info, not an independently verified global utilization measurement. nvidia-smi reported a different shared-device occupancy under WSL.",
+    "kernels": "Reference PyTorch causal convolution and gated delta rule; optional optimized kernels were not installed."
+  },
+  "a100_same_packet_summary": {
+    "base": {
+      "median_forward_seconds": 0.4574024815001394,
+      "median_transport_seconds": 1.0034520164990681
+    },
+    "adapted": {
+      "median_forward_seconds": 0.5038699004999216,
+      "median_transport_seconds": 1.0719987975026015
+    }
+  },
+  "compute_accounting": {
+    "observed_at": 1792774904.5834432,
+    "returncode": 0,
+    "used_since_start": 23.15000000000009,
+    "no_assignments_reported": true,
+    "active_assignments": 0,
+    "usage_rate_per_hour": 0.0
+  },
+  "runtime_release": {
+    "released_at": 1792774840.3405275,
+    "session": "simjecture-monitor-20261023",
+    "stop_returncode": 0
+  },
+  "native_process_audit": {
+    "checked_at": 1792774442.4928863,
+    "recorded_identities": 127,
+    "active": []
+  },
+  "artifact_sha256": {
+    "learning-package.tar.gz": "aba07cb5e3263a2be66fad716f54198499c02d50dbff1828a060957d22c099fb",
+    "evaluation-package.tar.gz": "7b921b3e5b245bf47f5fd8b4ffe9c1a028c226939fb8d5c825034f66ac662ccc",
+    "returns.json": "5389a307bb29754dee5e2391b4ff7946683d01cb60815a305d80147a60abedfa",
+    "model-transfer-manifest.json": "43db94a75b178770c1583feb771acd18cfd05798264d516725d112dd33aaafd7",
+    "training/remote-manifest.json": "9ac91c50f2bd634845c10197d8579044a4ec9dc44c0a03b6e8352d89c2435ef5",
+    "training/run-01/adapter/adapter_model.safetensors": "e0f4d4c66ee3444193a952bcaa41f210f02bb4308cf7cc8303d8f4ffe7aa871c"
   }
 }

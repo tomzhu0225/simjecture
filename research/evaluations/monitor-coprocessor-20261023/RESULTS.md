@@ -163,12 +163,45 @@ checks normal behavior and artifact integrity; it establishes no RL benefit.
 
 ## Local deployment and resource accounting
 
-The adapter and complete training receipts have been retrieved and verified
-against remote hashes. Transfer of the original base checkpoint to the local
-host is still in progress. Local inference latency and VRAM occupancy remain
-unmeasured until that verified transfer completes; the latency numbers currently
-recorded in `measurements.json` are A100 inference over a local SSH-forwarded
-socket. Runtime release and final compute usage will be recorded at shutdown.
+The full pinned checkpoint and trained adapter are now verified on the local
+host. Both ran on the RTX 4000 Ada. Twelve identical observation packets,
+1,070–4,027 tokens each, were evaluated twice per policy against saved A100
+predictions. Both local policies matched the A100's chosen action on all
+24 checks.
+
+| Local policy | Resident allocated VRAM | Peak allocated VRAM | Warm median decision time |
+| --- | ---: | ---: | ---: |
+| Base | 8.55 GiB | 9.49 GiB | 4.03 seconds |
+| Adapted | 8.58 GiB | 9.52 GiB | 4.62 seconds |
+
+An unrelated simulation was concurrently using the GPU; its pre-benchmark
+utilization was 99%. These are contended measurements, not isolated speed or
+power estimates. Optional optimized causal-convolution and gated-delta kernels
+were absent, so the model used reference PyTorch implementations. The first
+local model load took 75.7 seconds; the subsequent adapted load took 8.3 seconds.
+Resident serving is essential for frequent observation.
+
+The local probabilities were not identical to the A100 values: maximum absolute
+differences were 0.0181 for base and 0.0125 for adapted. Agreement of the selected
+action on this small set does not guarantee agreement near decision boundaries.
+Do not silently relax the training behavior-reproduction check when changing
+hardware or kernels.
+
+A 4B coprocessor fits this local GPU, but it consumes substantial VRAM alongside
+the simulation. Low marginal orchestration cost remains a measurement question.
+One-second stream polling is cheap; it does not imply one model inference per
+second. Inference is asynchronous and triggered by changed evidence.
+
+Colab was released at 2026-10-23 17:00:40 UTC. The subsequent account query
+reported **zero active assignments**, **0.00 CU/hour**, and a balance decrease
+of **23.15 compute units**, below the 40-CU ceiling. This is the reported balance
+change at that timestamp. All recorded native experimental workers and judges
+had exited. Model processes were also stopped after the local measurements.
+
+At the observed allocation rate of 6.77 CU/hour, a hypothetical 1,000-CU pool
+covers about 148 A100 runtime hours. Colab is suitable for bounded training and
+evaluation; an always-on monitor needs a separate resource plan. The local
+checkpoint cache avoids repeating this night's transfer overhead.
 
 ## Scope of repair authority
 
@@ -207,6 +240,18 @@ Cross-worker contradiction detection, drift from research requirements and
 recognition of obsolete work remain candidate extensions, not implemented
 validated capabilities. An independent observer and incident state machine
 have higher priority than expanding the action menu.
+
+## Validation
+
+Eighteen local contract tests passed, including actual isolated repair checks.
+Repository lint and whitespace checks passed. CI additionally exercises the
+existing deterministic core, documentation, Windows boundaries and the WarpX
+instrument. The research implementation and report are in
+[draft PR 46](https://github.com/tomzhu0225/simjecture/pull/46).
+
+The comparison driver limited concurrent parent trajectories to two; helper,
+director, judge and proposer roles could add concurrent processes. A global
+cap over all capable-agent roles is not implemented by this research package.
 
 ## Records
 

@@ -23,6 +23,9 @@ def main():
     args.output.mkdir(parents=True, exist_ok=False)
     packets = json.loads(args.packets.read_text())
     reference = json.loads(args.reference.read_text())
+    import torch
+
+    free_before, total_memory = torch.cuda.mem_get_info()
     started = time.time()
     model = MonitorModel(args.checkpoint, adapter=args.adapter)
     torch = model.torch
@@ -33,6 +36,11 @@ def main():
         started_at=started,
         model_identity=model.identity,
         device=torch.cuda.get_device_name(),
+        torch_version=torch.__version__,
+        cuda_version=torch.version.cuda,
+        cpu_threads=torch.get_num_threads(),
+        device_total_bytes=total_memory,
+        cuda_reported_used_bytes_before_model=total_memory - free_before,
         load_seconds=loaded - started,
         resident_allocated_bytes=torch.cuda.memory_allocated(),
         resident_reserved_bytes=torch.cuda.memory_reserved(),

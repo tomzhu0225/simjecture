@@ -11,6 +11,11 @@ The package depends on a Simjecture checkout containing the helper workflow from
 integration, with its own evaluation driver; it does not enable monitoring or
 self-modification in ordinary production studies.
 
+See the [overnight results and limitations](../../research/evaluations/monitor-coprocessor-20261023/RESULTS.md)
+for the real-worker comparison, sampled-return update and fresh base/adapter
+evaluation. The experiments establish a working integration, not an advantage
+over simple rules or an improvement from RL.
+
 ## Flow and authority
 
 ```mermaid
