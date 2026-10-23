@@ -43,6 +43,7 @@ class ContinuationOutcome(BaseModel):
     common_prefix_sha256: Sha256
     observation_sha256: Sha256
     worker_config_sha256: Sha256
+    downstream_policy_sha256: Sha256
     criteria_sha256: Sha256
     continuation_budget_seconds: float = Field(gt=0)
     verified_quality: float | None = Field(default=None, ge=0, le=1)
@@ -66,6 +67,7 @@ MATCHING_CONTEXT = (
     "common_prefix_sha256",
     "observation_sha256",
     "worker_config_sha256",
+    "downstream_policy_sha256",
     "criteria_sha256",
     "continuation_budget_seconds",
 )
@@ -95,7 +97,8 @@ def paired_reward(
     A matched public checkpoint does not make native agents deterministic.
     Repeated randomized continuation pairs are needed to estimate expected value.
     The returned eligibility concerns complete comparable measurements only;
-    cohort blinding, split integrity and receipt authenticity need separate checks.
+    cohort blinding, split integrity, receipt authenticity and eligibility for an
+    on-policy optimizer need separate checks.
     """
     weights = weights or RewardWeights()
     reasons = []

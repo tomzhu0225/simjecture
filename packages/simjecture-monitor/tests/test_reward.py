@@ -13,6 +13,7 @@ def outcome(action="defer", **changes):
         common_prefix_sha256="a" * 64,
         observation_sha256="b" * 64,
         worker_config_sha256="c" * 64,
+        downstream_policy_sha256="a" * 64,
         criteria_sha256="d" * 64,
         continuation_budget_seconds=650,
         verified_quality=1,
@@ -52,6 +53,7 @@ def test_no_waiting_branch_does_not_become_an_invented_zero_baseline():
         "common_prefix_sha256",
         "observation_sha256",
         "worker_config_sha256",
+        "downstream_policy_sha256",
         "criteria_sha256",
     ],
 )

@@ -108,8 +108,10 @@ Four eligible episodes (two harness and two recoverable-analysis trajectories)
 provided **119 sampled decisions**, with no model-service failures. All four
 reports matched raw numerical diagnostics. Three satisfied the stronger
 report-and-feedback closure criterion; one did not, and its negative return
-was retained. Its numerical work was correct; an extra inferred help request
-remained unfulfilled and was canceled at shutdown after the final report.
+was retained. Its numerical work was correct; a worker-initiated technical help
+request remained unfulfilled and was canceled at shutdown after the report.
+The follow-up provenance audit corrected an earlier description of this request
+as inferred: its creation is recorded in public worker event `turn-00001:25`.
 
 The prospective utility was
 `R = Q - 0.02*N - 0.1*min(T/650, 1)`, where `Q` requires independently verified

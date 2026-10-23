@@ -28,12 +28,16 @@ Three findings change the next experiment:
    without case, treatment or split metadata.
 2. **A feedback condition dominated one training comparison.** Both analysis
    episodes reported independently matching diagnostics. One received quality
-   zero because an extra inferred help request, created after its report, was
-   canceled at shutdown. Replacing only the binary feedback condition with a
+   zero because the worker requested technical assistance after drafting its
+   report and that request was canceled at shutdown without a returned result.
+   Its origin is established by public creation event `turn-00001:25`; the
+   earlier account calling it an inferred request was incorrect. Replacing only
+   the binary feedback condition with a
    metric-only quality check shrinks the within-family return gap from 1.04044
    to 0.04044, a 96.1% reduction. This is a sensitivity analysis of the reward
    definition, not a counterfactual worker experiment. Metric-only grading also
-   omits meaningful delivery quality and is not the proposed replacement.
+   omits meaningful delivery quality and is not the proposed replacement. The
+   gap's size does not establish that the worker's request was unnecessary.
 3. **Proposals and interventions differ.** There were 46 non-wait proposals,
    but the gate accepted 22 and suppressed 24. Accepted alerts do not necessarily
    equal dispatched native sessions. Training and evaluation need the executed
@@ -118,6 +122,14 @@ Receipt hashes are provenance fields supplied by trusted host collection; the
 pure scorer alone cannot authenticate files, enforce blinding or prove a causal
 effect. The v1 learner and its frozen data are unchanged.
 
+Both branches must use the same policy for subsequent agent interactions;
+otherwise the contrast mixes the immediate intervention with later policy
+changes. The scorer also checks that downstream-policy configuration hash.
+The prespecified pilot actions are experimental treatments, not automatically
+on-policy PPO examples. A later on-policy learner needs newly sampled actions
+and their actual behavior probabilities, or a separately justified offline
+estimator. A comparable paired score alone does not satisfy that requirement.
+
 The default coefficients are starting points for a prospective ablation, not
 learned economic prices. Agent starts omit differences in token counts and GPU
 residency. At the old relative weights, one additional agent start costs as
@@ -128,8 +140,8 @@ horizon rather than flattening during an overrun.
 
 Feedback must be measured from actual result availability, need and worker
 acknowledgment. A report file's modification time cannot prove understanding.
-Canceling an inferred request that produced no needed information should not
-erase otherwise verified numerical work. Duplicate penalties need a durable
+An unfulfilled request and verified numerical work should remain distinct
+quality components, with the request's origin and importance retained. Duplicate penalties need a durable
 incident identity and apply to unnecessary dispatched work, including its
 interruptions; they are an explicit extra preference beyond invocation cost.
 

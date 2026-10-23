@@ -28,7 +28,8 @@
       "report_metrics_agree": true,
       "metric_only_quality_sensitivity": 1,
       "metric_only_return_sensitivity": 0.7761422949204078,
-      "post_report_canceled_inferred_requests": 0,
+      "post_report_canceled_help_requests": 0,
+      "canceled_request_provenance": [],
       "proposals": [
         {
           "received_at": 1792770170.2420862,
@@ -245,7 +246,8 @@
       "report_metrics_agree": true,
       "metric_only_quality_sensitivity": 1,
       "metric_only_return_sensitivity": 0.7862062976176922,
-      "post_report_canceled_inferred_requests": 0,
+      "post_report_canceled_help_requests": 0,
+      "canceled_request_provenance": [],
       "proposals": [
         {
           "received_at": 1792770588.6515865,
@@ -382,7 +384,17 @@
       "report_metrics_agree": true,
       "metric_only_quality_sensitivity": 1,
       "metric_only_return_sensitivity": 0.7627745709786048,
-      "post_report_canceled_inferred_requests": 1,
+      "post_report_canceled_help_requests": 1,
+      "canceled_request_provenance": [
+        {
+          "request_id": "help_2e4483ee56dab927dccab5a6",
+          "provenance": {
+            "origin": "worker",
+            "evidence": "public request creation event",
+            "event_id": "turn-00001:25"
+          }
+        }
+      ],
       "proposals": [
         {
           "received_at": 1792770169.9057767,
@@ -509,7 +521,8 @@
       "report_metrics_agree": true,
       "metric_only_quality_sensitivity": 1,
       "metric_only_return_sensitivity": 0.8032173065772423,
-      "post_report_canceled_inferred_requests": 0,
+      "post_report_canceled_help_requests": 0,
+      "canceled_request_provenance": [],
       "proposals": [
         {
           "received_at": 1792770668.3411896,

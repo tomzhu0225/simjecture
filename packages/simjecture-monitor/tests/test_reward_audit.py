@@ -1,6 +1,7 @@
 """Audit the exact model-visible view, not discarded context or guessed failures."""
 
 import importlib.util
+import json
 from pathlib import Path
 
 import pytest
@@ -57,3 +58,27 @@ def test_code_mentioning_a_failure_is_not_a_measured_status_mismatch():
         '{"reported_status":"running","process_receipt_status":"succeeded","returncode":0}'
     )
     assert module.visible_status_mismatch(view)
+
+
+def test_missing_origin_is_not_assumed_to_mean_an_inferred_request(tmp_path):
+    module = audit_module()
+    request = dict(id="help_example")
+    assert module.request_provenance(tmp_path, request)["origin"] == "unknown"
+    directory = tmp_path / "monitor"
+    directory.mkdir()
+    (directory / "events.jsonl").write_text(
+        json.dumps(
+            dict(
+                id="worker:25",
+                body=dict(
+                    type="command_execution",
+                    command="lab.request_help('technical diagnosis')",
+                    aggregated_output='{"id": "help_example", "status": "queued"}',
+                ),
+            )
+        )
+        + "\n"
+    )
+    result = module.request_provenance(tmp_path, request)
+    assert result["origin"] == "worker"
+    assert result["event_id"] == "worker:25"

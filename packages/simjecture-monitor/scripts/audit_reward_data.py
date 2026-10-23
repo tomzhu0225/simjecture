@@ -6,6 +6,7 @@ import argparse
 import copy
 import hashlib
 import json
+import re
 from collections import Counter
 from pathlib import Path
 
@@ -46,6 +47,32 @@ def visible_status_mismatch(view):
             ):
                 return True
     return False
+
+
+def request_provenance(episode_root, request):
+    alerts_path = episode_root / "monitor/alerts.json"
+    alerts = json.loads(alerts_path.read_text()) if alerts_path.exists() else []
+    if request.get("origin") == "coprocessor" or any(
+        alert.get("help_request") == request["id"] for alert in alerts
+    ):
+        return dict(origin="coprocessor", evidence="host request/alert binding")
+    path = episode_root / "monitor/events.jsonl"
+    if path.exists():
+        for line in path.read_text().splitlines():
+            event = json.loads(line)
+            body = event["body"]
+            if (
+                body.get("type") == "command_execution"
+                and ".request_help(" in body.get("command", "")
+                and re.search(
+                    r'(?m)^\s*\{\s*"id"\s*:\s*"' + re.escape(request["id"]) + '"',
+                    body.get("aggregated_output", ""),
+                )
+            ):
+                return dict(
+                    origin="worker", evidence="public request creation event", event_id=event["id"]
+                )
+    return dict(origin="unknown", evidence="no verified creation provenance")
 
 
 def audit(root, dataset_path):
@@ -99,6 +126,7 @@ def audit(root, dataset_path):
             )
         report = episode_root / "research/REPORT.txt"
         after_report_cancellations = 0
+        canceled_requests = []
         for path in (episode_root / "help_requests").glob("*.json"):
             request = json.loads(path.read_text())
             if (
@@ -107,6 +135,12 @@ def audit(root, dataset_path):
                 and request["created_at"] > report.stat().st_mtime
             ):
                 after_report_cancellations += 1
+                canceled_requests.append(
+                    dict(
+                        request_id=request["id"],
+                        provenance=request_provenance(episode_root, request),
+                    )
+                )
         independently_reported = bool(episode["outcome"]["worker_metrics_agree"])
         verified = json.loads((episode_root / "VERIFIED.json").read_text())
         controls = {64, 128} <= {r["cells"] for r in verified.get("verified_runs", [])}
@@ -124,7 +158,8 @@ def audit(root, dataset_path):
                 report_metrics_agree=independently_reported,
                 metric_only_quality_sensitivity=metric_only_quality,
                 metric_only_return_sensitivity=metric_only_quality - costs,
-                post_report_canceled_inferred_requests=after_report_cancellations,
+                post_report_canceled_help_requests=after_report_cancellations,
+                canceled_request_provenance=canceled_requests,
                 proposals=proposals,
                 reward_v2_eligible=False,
                 missing_measurements=[
