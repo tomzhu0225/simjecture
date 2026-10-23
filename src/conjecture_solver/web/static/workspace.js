@@ -1169,6 +1169,9 @@ async function refreshBenchmarks() {
 }
 
 const toolLabels = {
+  "elmer": ["Elmer", "Finite-element simulation", "FE", "CAD & simulation"],
+  "freecad": ["FreeCAD", "Parametric CAD", "CAD", "CAD & simulation"],
+  "gmsh": ["Gmsh", "Geometry and meshing", "MS", "CAD & simulation"],
   "python": ["Python research stack", "Numerical exploration", "PY", "Analysis & data"],
   "warp-lbm": ["Cylinder flow", "Warp-LBM · 2D fluid dynamics", "LB", "Fluids & MHD"],
   "iter-pack": ["ITER pack", "Diagnostics & data", "IT", "Analysis & data"],
@@ -1219,7 +1222,7 @@ function catalogTools() {
   const python = {
     id: "python", name: "Python research stack", installed: true, included: true,
     description: general
-      ? "General Python with NumPy, SciPy, pandas and plotting. Ask your agent to write and run a numerical calculation."
+      ? "General Python with NumPy, SciPy, pandas, Matplotlib and PyVista for 3D visualization. Ask your agent to write and run a numerical calculation."
       : "Numerical libraries support the installed examples. Available through the tools provided by your administrator.",
   };
   // The hosted API is the authority for its fixed collection; never add local install offers.

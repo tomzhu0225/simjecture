@@ -1,0 +1,37 @@
+{
+  "runtime_root": "../.runtime/freecad-1.1.3",
+  "executable": "bin/python",
+  "identity_files": [
+    "share/build-record.json",
+    "lib/FreeCAD.so",
+    "lib/Part.so",
+    "lib/libFreeCADApp.so",
+    "lib/libFreeCADBase.so"
+  ],
+  "environment": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "LD_LIBRARY_PATH": "/opt/acs-capabilities/freecad-1.1.3/lib",
+    "PYTHONPATH": "/opt/acs-capabilities/freecad-1.1.3/lib",
+    "QT_QPA_PLATFORM": "offscreen",
+    "FREECAD_HOME": "/opt/acs-capabilities/freecad-1.1.3",
+    "PYTHONNOUSERSITE": "1",
+    "FREECAD_USER_HOME": "."
+  },
+  "manifest": {
+    "schema_version": "0.1.0",
+    "name": "freecad-1.1.3",
+    "version": "1.1.3",
+    "skill": "freecad",
+    "executable_kind": "python-freecad",
+    "description": "Parametric CAD, solid operations and STEP exchange using FreeCAD",
+    "preflight_resource": "examples/health_check.py",
+    "preflight_result": "freecad_health.json",
+    "preflight_checks": [
+      "checks.valid_solid",
+      "checks.volume",
+      "checks.units"
+    ]
+  }
+}

@@ -54,7 +54,7 @@ jobs:
       - name: Install sandbox runtime
         run: |
           sudo apt-get update
-          sudo apt-get install --yes bubblewrap
+          sudo apt-get install --yes bubblewrap libegl1 libegl-mesa0 libgl1-mesa-dri fontconfig fonts-dejavu-core
           if sysctl kernel.unprivileged_userns_clone > /dev/null 2>&1; then
             sudo sysctl -w kernel.unprivileged_userns_clone=1
           fi
@@ -143,7 +143,7 @@ jobs:
       - name: Verify the deployable WarpX CPU capability
         run: |
           sudo apt-get update
-          sudo apt-get install --yes bubblewrap
+          sudo apt-get install --yes bubblewrap libegl1 libegl-mesa0 libgl1-mesa-dri fontconfig fonts-dejavu-core
           if sysctl kernel.unprivileged_userns_clone > /dev/null 2>&1; then
             sudo sysctl -w kernel.unprivileged_userns_clone=1
           fi

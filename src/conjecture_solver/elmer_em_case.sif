@@ -1,0 +1,131 @@
+! Experimental linear cold-conductor A-v/circuit model; SI units.
+Check Keywords "Warn"
+INCLUDE circuit.definitions
+Header
+  Mesh DB "." "mesh"
+End
+Simulation
+  Coordinate System = Cartesian 3D
+  Simulation Type = Transient
+  Timestepping Method = BDF
+  BDF Order = 1
+  Timestep Sizes = @DT@
+  Timestep Intervals = @STEPS@
+  Output Intervals = 1
+  Steady State Max Iterations = 1
+  Max Output Level = 5
+  Output File = state.result
+  Save All = Logical True
+End
+Constants
+  Permeability of Vacuum = 1.2566370614359173e-6
+  Permittivity of Vacuum = 8.8541878128e-12
+End
+Initial Condition 1
+  A = Real 0
+  A {e} = Real 0
+End
+Equation 1
+  Active Solvers(7) = 1 2 3 4 5 6 7
+End
+Equation 2
+  Active Solvers(5) = 3 4 5 6 7
+End
+Solver 1
+  Exec Solver = Before All
+  Equation = "Wire direction"
+  Procedure = "WPotentialSolver" "Wsolve"
+  Variable = W
+  Linear System Solver = Iterative
+  Linear System Iterative Method = BiCGStab
+  Linear System Preconditioning = BoomerAMG
+  Linear System Use Hypre = Logical True
+  BoomerAMG Relax Type = Integer 3
+  BoomerAMG Coarsen Type = Integer 0
+  BoomerAMG Num Sweeps = Integer 1
+  BoomerAMG Max Levels = Integer 25
+  BoomerAMG Interpolation Type = Integer 0
+  BoomerAMG Smooth Type = Integer 6
+  BoomerAMG Cycle Type = Integer 1
+  BoomerAMG Num Functions = Integer 1
+  BoomerAMG Strong Threshold = Real 0.25
+  Linear System Max Iterations = 3000
+  Linear System Convergence Tolerance = 1e-10
+  Linear System Abort Not Converged = True
+  Linear System Residual Output = 50
+End
+Solver 2
+  Exec Solver = Always
+  Equation = Circuits
+  Variable = X
+  No Matrix = Logical True
+  Procedure = "CircuitsAndDynamics" "CircuitsAndDynamics"
+End
+Solver 3
+  Exec Solver = Always
+  Equation = MGDynamics
+  Variable = A
+  Procedure = "MagnetoDynamics" "WhitneyAVSolver"
+  Export Lagrange Multiplier = Logical True
+  Use Tree Gauge = False
+  Linear System Solver = Iterative
+  Linear System Iterative Method = BiCGStabL
+  BiCGStabL Polynomial Degree = 6
+  Linear System Preconditioning = None
+  Linear System Max Iterations = 1000
+  Linear System Residual Output = 10
+  Linear System Convergence Tolerance = @TOLERANCE@
+  Linear System Abort Not Converged = True
+  Nonlinear System Max Iterations = 1
+End
+Solver 4
+  Exec Solver = Always
+  Equation = MGDynamicsCalc
+  Procedure = "MagnetoDynamics" "MagnetoDynamicsCalcFields"
+  Potential Variable = String A
+  Calculate Current Density = True
+  Calculate Nodal Fields = True
+  Calculate Elemental Fields = True
+  Linear System Solver = Iterative
+  Linear System Iterative Method = CG
+  Linear System Preconditioning = None
+  Linear System Max Iterations = 1000
+  Linear System Convergence Tolerance = 1e-8
+  Linear System Abort Not Converged = True
+End
+Solver 5
+  Exec Solver = After Timestep
+  Equation = "Circuits Output"
+  Procedure = "CircuitsAndDynamics" "CircuitsOutput"
+End
+Solver 6
+  Exec Solver = After Timestep
+  Equation = ResultOutput
+  Procedure = "ResultOutputSolve" "ResultOutputSolver"
+  Output File Name = fields
+  Vtu Format = True
+  Binary Output = True
+  Save Geometry Ids = True
+End
+Solver 7
+  Exec Solver = After Timestep
+  Equation = "Circuit scalars"
+  Procedure = "SaveData" "SaveScalars"
+  Filename = circuits.dat
+End
+@DRIVER@
+@COMPONENT@
+Boundary Condition 1
+  Target Boundaries(@NOUTER@) = @OUTER@
+  A {e} = Real 0
+End
+Boundary Condition 2
+  Target Boundaries(@NINPUT@) = @INPUT@
+  W = Real 1
+  A {e} = Real 0
+End
+Boundary Condition 3
+  Target Boundaries(@NGROUND@) = @GROUND@
+  W = Real 0
+  A {e} = Real 0
+End

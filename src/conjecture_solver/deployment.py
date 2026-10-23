@@ -32,6 +32,9 @@ FLASH_MHD_CAPABILITY = "flash-island-coalescence-resistive-mhd-4.8"
 ATOMEC_CAPABILITY = "atomec-1.4.0"
 SINGULARITY_EOS_CAPABILITY = "singularity-eos-1.12.1"
 M_ANEOS_CAPABILITY = "m-aneos-1.0"
+FREECAD_CAPABILITY = "freecad-1.1.3"
+GMSH_CAPABILITY = "gmsh-4.15.2"
+ELMER_CAPABILITY = "elmer-0.1"
 FEOS_CAPABILITY = "feos-16.7"
 MATERIAL_EOS_CAPABILITY = "material-eos-0.1"
 OPTAB_CAPABILITY = "optab-1.3.1"
@@ -46,6 +49,9 @@ PRIVATE_ROOT_ENV = "SIMJECTURE_PRIVATE_ROOT"
 FLASH_BOOTSTRAP_SCRIPT = "skills/flash-mhd/scripts/bootstrap_flash.sh"
 
 _CAPABILITY_CONFIGS = {
+    FREECAD_CAPABILITY: "freecad-1.1.3.json",
+    GMSH_CAPABILITY: "gmsh-4.15.2.json",
+    ELMER_CAPABILITY: "elmer-0.1.json",
     WARP_LBM_CAPABILITY: "warp-lbm-cylinder-1.0.json",
     ITER_PACK_CAPABILITY: "iter-pack-1.0.json",
     WARPX_CPU_CAPABILITY: "warpx-cpu-26.07.json",
@@ -66,6 +72,8 @@ _CORE_DISTRIBUTIONS = (
     "pandas",
     "pydantic",
     "scipy",
+    "pyvista",
+    "vtk",
 )
 
 
@@ -121,6 +129,9 @@ def _run_install_command(command, *, capture_output=False):
 
 
 class DeploymentProfile(StrEnum):
+    FREECAD = "freecad"
+    GMSH = "gmsh"
+    ELMER = "elmer"
     WARP_LBM = "warp-lbm"
     ITER_PACK = "iter-pack"
     CORE = "core"
@@ -136,6 +147,9 @@ class DeploymentProfile(StrEnum):
 
 
 _PROFILE_BY_CAPABILITY = {
+    FREECAD_CAPABILITY: DeploymentProfile.FREECAD,
+    GMSH_CAPABILITY: DeploymentProfile.GMSH,
+    ELMER_CAPABILITY: DeploymentProfile.ELMER,
     WARP_LBM_CAPABILITY: DeploymentProfile.WARP_LBM,
     ITER_PACK_CAPABILITY: DeploymentProfile.ITER_PACK,
     WARPX_CPU_CAPABILITY: DeploymentProfile.WARPX_CPU,
@@ -149,6 +163,9 @@ _PROFILE_BY_CAPABILITY = {
     OPTAB_CAPABILITY: DeploymentProfile.OPTAB,
 }
 _MISSING_RUNTIME_REMEDY = {
+    FREECAD_CAPABILITY: "Run `simjecture install freecad`.",
+    GMSH_CAPABILITY: "Run `simjecture install gmsh`.",
+    ELMER_CAPABILITY: "Run `simjecture install elmer --source /path/to/elmer-install`.",
     MATERIAL_EOS_CAPABILITY: (
         "Run `simjecture install material-eos` for model profiles and table export."
     ),
@@ -183,6 +200,9 @@ _MISSING_RUNTIME_REMEDY = {
     ),
 }
 _PREFLIGHT_REMEDY = {
+    FREECAD_CAPABILITY: "Inspect STEP checks; rerun `simjecture install freecad --repair`.",
+    GMSH_CAPABILITY: "Inspect the mesh check; rerun `simjecture install gmsh --repair`.",
+    ELMER_CAPABILITY: "Inspect the Elmer runtime check and the supplied build.",
     MATERIAL_EOS_CAPABILITY: (
         "Inspect the builder report; run `simjecture install material-eos --repair`."
     ),
@@ -225,6 +245,31 @@ class _BootstrapSpec:
 
 
 _BOOTSTRAP_SPECS = {
+    DeploymentProfile.FREECAD: _BootstrapSpec(
+        capability=FREECAD_CAPABILITY,
+        script="skills/freecad/scripts/bootstrap.sh",
+        managed_marker="share/build-record.json",
+        pinned_revision="1.1.3",
+        source_label="FreeCAD",
+        verify_revision=False,
+    ),
+    DeploymentProfile.GMSH: _BootstrapSpec(
+        capability=GMSH_CAPABILITY,
+        script="skills/gmsh/scripts/bootstrap.sh",
+        managed_marker="share/build-record.json",
+        pinned_revision="4.15.2",
+        source_label="Gmsh",
+        verify_revision=False,
+    ),
+    DeploymentProfile.ELMER: _BootstrapSpec(
+        capability=ELMER_CAPABILITY,
+        script="skills/elmer/scripts/bootstrap.sh",
+        managed_marker="share/build-record.json",
+        pinned_revision="",
+        source_label="prebuilt Elmer installation (bin, lib, share)",
+        source_required=True,
+        verify_revision=False,
+    ),
     DeploymentProfile.MATERIAL_EOS: _BootstrapSpec(
         capability=MATERIAL_EOS_CAPABILITY,
         script="skills/eos/scripts/bootstrap_material_eos.sh",

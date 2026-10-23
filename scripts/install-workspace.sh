@@ -194,13 +194,20 @@ if [[ -x "$simjecture_app/.venv/bin/python" ]]; then
 fi
 
 echo '[4/4] Checking numerical execution setup…'
-if ((simjecture_system)) && { ! command -v bwrap >/dev/null 2>&1 || ! command -v proot >/dev/null 2>&1; }; then
+simjecture_need_system=0
+if ! command -v bwrap >/dev/null 2>&1 || ! command -v proot >/dev/null 2>&1; then
+  simjecture_need_system=1
+fi
+if ! "$simjecture_app/.venv/bin/python" -c 'import ctypes.util,pathlib; assert ctypes.util.find_library("EGL") and pathlib.Path("/etc/fonts/fonts.conf").is_file()' 2>/dev/null; then
+  simjecture_need_system=1
+fi
+if ((simjecture_system && simjecture_need_system)); then
   if command -v apt-get >/dev/null 2>&1; then
     if [[ "$EUID" == 0 ]]; then
-      apt-get update && apt-get install -y bubblewrap proot || echo 'Bubblewrap installation failed; check execution readiness in the GUI.' >&2
+      apt-get update && apt-get install -y bubblewrap proot libegl1 libegl-mesa0 libgl1-mesa-dri fontconfig fonts-dejavu-core || echo 'Execution/visualization dependency installation failed; check execution readiness in the GUI.' >&2
     elif command -v sudo >/dev/null 2>&1; then
-      echo 'Your system may ask for a sudo password to install Bubblewrap.'
-      sudo apt-get update && sudo apt-get install -y bubblewrap proot || echo 'Bubblewrap installation failed; check execution readiness in the GUI.' >&2
+      echo 'Your system may ask for a sudo password to install execution and headless visualization libraries.'
+      sudo apt-get update && sudo apt-get install -y bubblewrap proot libegl1 libegl-mesa0 libgl1-mesa-dri fontconfig fonts-dejavu-core || echo 'Execution/visualization dependency installation failed; check execution readiness in the GUI.' >&2
     else
       echo 'An administrator must install Bubblewrap for recorded experiments.' >&2
     fi
