@@ -389,6 +389,12 @@ and `unresolved`. It requires claim evidence; an exploratory report belongs in
 
 ## Research director: stop and replan
 
+The director also handles explicit [worker help requests](research-service.md#request-help-and-receive-helper-results).
+It may return advice or dispatch several temporary workers with separate contexts
+and workspaces. Each task has a requested deliverable, completion criteria and a
+bounded lifetime. The parent receives verified artifact receipts and decides how
+to use the returned work; helpers do not acquire review or acceptance authority.
+
 Earlier studies retain their saved progress-oversight policy when upgraded.
 
 New minimal studies enable a research director by default. The launch settings in

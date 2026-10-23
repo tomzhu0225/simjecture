@@ -14,6 +14,7 @@ from .research_audit import write_report
 from .research_development import development_guidance
 from .research_director import ResearchDirector
 from .research_finalization import ResearchFinalization
+from .research_helper_supervisor import HelperSupervision
 from .research_journal import AutomaticJournal, sync_journal
 from .research_oversight import ResearchOversight, durable_signature
 from .research_service import ResearchService, ResearchVerdict, fingerprint, put
@@ -97,7 +98,12 @@ TARGET:
 
 
 class ResearchSupervisor(
-    ResearchFinalization, AutomaticJournal, ResearchOversight, ResearchDirector, AgentSupervisor
+    HelperSupervision,
+    ResearchFinalization,
+    AutomaticJournal,
+    ResearchOversight,
+    ResearchDirector,
+    AgentSupervisor,
 ):
     def boundary(self):
         if hasattr(self, "service"):
@@ -178,6 +184,12 @@ class Client:
     def director_ack(self, decision, **kw):
         return self._call('director_ack', decision=decision, **kw)
     def request_time(self, **kw): return self._call('request_time', **kw)
+    def request_help(self, question, **kw):
+        return self._call('request_help', question=question, **kw)
+    def help_status(self, identifier=None): return self._call('help_status', identifier=identifier)
+    def import_helper_artifact(self, task, artifact, destination):
+        return self._call('import_helper_artifact', task=task,
+                          artifact=artifact, destination=destination)
     def machines(self): return self._call('machines')
     def fetch_remote(self, **kw): return self._call('fetch_remote', **kw)
     def read_instrument(self, capability, **kw):
@@ -274,6 +286,12 @@ lab = Client()
             pending = self.service.pending_director_replan()
             if pending:
                 feedback += "\nPending replan requiring a worker response:\n" + json.dumps(pending)
+            help_feedback = self.helper_feedback()
+            if help_feedback:
+                feedback += (
+                    "\nRequested help and temporary-worker results (unreviewed):\n"
+                    + json.dumps(help_feedback)
+                )
         if steering:
             feedback += (
                 "\nNew operator guidance (advisory, not evidence or changed contracts): "
@@ -499,6 +517,21 @@ Write source normally here. All recorded numerical experiments use the existing 
   lab.wait also accepts experiments=[...], methods=[...], reviews=[...] or for_operator=True.
   A wait parks worker inference; experiments, host supervision and the original clock continue.
   New operator steering wakes you. Do not repeatedly poll unchanged status while waiting.
+- With the research director enabled, request actual assistance using
+  h=lab.request_help('Specific problem and what you tried',
+    success_criteria='Required answer, patch or diagnostic and how to check it',
+    context='Relevant reasoning, observations and unresolved uncertainty', files=['calc.py'])
+  This queues prompt director attention. The director can return advice or assign
+  multiple temporary workers with separate workspaces. They inherit your frozen
+  context and attached files, and return explicit artifacts and checks. You may
+  continue independent work, or call lab.wait('Await the requested help',
+  help_requests=[h['id']]) and end the turn. lab.help_status(h['id']) returns the
+  helper results, failures and unresolved issues. A resolved request means a response
+  is available, not that the original problem or scientific claim is solved.
+  Inspect returned artifacts before use. lab.import_helper_artifact('helper_ID',
+  'patch.py', 'candidate_patch.py') verifies its recorded hash and copies it without
+  overwriting your files. Imported code/results remain unreviewed; apply the normal
+  execution, method and scientific checks. Helpers never approve claims.
 - For a repair, first use lab.commit('repaired scientific statement', source='calc.py',
   cases=[['case1'],['case2']], acceptance='predeclared quantitative decision rule',
   inputs=[], capability=None, parent='root', rationale='smallest justified change and why').
@@ -648,6 +681,7 @@ Do not edit service records or other studies. Resume from lab.status() and your 
             try:
                 while not self.boundary():
                     try:
+                        self.process_helpers()
                         if self.finalization_due() and not self.service.campaign_closeout():
                             self.finalize_report()
                             if self.service.status()["completed"] and not self.boundary():
@@ -662,6 +696,7 @@ Do not edit service records or other studies. Resume from lab.status() and your 
                         now = time.time()
                         if (
                             worker_wait.get("status") == "waiting"
+                            and not self.service.pending_help()
                             and not self.service.campaign_closeout()
                             and now - self.state.get("parked_housekeeping_at", 0) < 30
                         ):
@@ -745,7 +780,15 @@ Do not edit service records or other studies. Resume from lab.status() and your 
                         self.save()
                         directory = self.directory / f"turn-{self.state['round']:05d}"
                         directory.mkdir()
+                        worker_started_at = time.time()
+                        delivered_help = set(self.state.get("helper_feedback_pending", []))
                         rc = self.launch(directory, self.prompt())
+                        if rc in [0, 124]:
+                            self.state["helper_feedback_pending"] = [
+                                identifier
+                                for identifier in self.state.get("helper_feedback_pending", [])
+                                if identifier not in delivered_help
+                            ]
                         self.event("worker_exit_checkpoint", returncode=rc)
                         if self.boundary():
                             break
@@ -755,7 +798,13 @@ Do not edit service records or other studies. Resume from lab.status() and your 
                         after = self.service.status()
                         self.state["budget_warning"] = after["audit"].get("budget_warning")
                         self.report()
-                        if not any(r["status"] == "queued" for r in after["reviews"]):
+                        wait = self.service.waiting_status()
+                        if (
+                            not any(r["status"] == "queued" for r in after["reviews"])
+                            and not self.state.get("helper_feedback_pending")
+                            and wait.get("status") != "waiting"
+                            and wait.get("woken_at", 0) < worker_started_at
+                        ):
                             self.state["waiting_for"] = [
                                 j["id"]
                                 for j in after["experiments"]
@@ -786,6 +835,7 @@ Do not edit service records or other studies. Resume from lab.status() and your 
                 return 124 if self.state["status"] == "budget_exhausted" else 0
             finally:
                 self.stop_background_director()
+                self.stop_helpers()
                 self.save()
 
 

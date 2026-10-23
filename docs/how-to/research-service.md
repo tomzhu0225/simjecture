@@ -53,6 +53,91 @@ actually used are separate: each receipt binds the selected runtime identity.
 Resuming a study keeps its saved registry. Native tools are
 available for exploration; execution success alone does not accept a claim.
 
+## Request help and receive helper results
+
+In a study launched with the research director enabled (`--director`), the worker
+can request assistance explicitly:
+
+```python
+help_request = lab.request_help(
+    "The diagnostic disagrees with the reference. Check the reader and numerical method independently.",
+    success_criteria="Return a tested reader correction and an independent analysis of the discrepancy.",
+    context="Describe observations, attempted fixes, relevant assumptions and unresolved questions.",
+    files=["reader.py", "measurements.json"],
+    key="diagnostic-help-1",
+)
+lab.wait("Await the requested independent checks", help_requests=[help_request["id"]])
+# End this turn. After the host resumes the worker:
+response = lab.help_status(help_request["id"])
+```
+
+A new request makes the director eligible immediately instead of waiting for its
+normal periodic interval. It still observes provider backoff and the study budget.
+The director can return concrete advice through `help_replies`, or assign one or
+several `helper_tasks`. Each assignment specifies its request ID, bounded task,
+completion criteria, required output filenames and timeout. The worker can keep
+doing independent work while helpers run; calling `lab.wait` is optional.
+
+Each helper uses the study's configured worker model/backend in a new context and
+its own directory. `CONTEXT.json` contains the requesting worker's explanation,
+success criteria, original task, operator requirements, recent notes and evidence
+identities. Attached files are snapshotted with hashes under `inputs/`; the
+director also supplies recent public worker activity. This is selected context,
+not the worker's private reasoning or its entire native conversation. Attach the
+specific source, data and explanations a helper needs.
+
+Two helpers may run concurrently by default; additional assignments queue. The
+director may set `operating_limits.helper_workers` from 1 to 16; `null` restores
+the default of two. Helpers share the existing study deadline and finish before
+the protected report period. Their usage is retained separately and included in
+the supervisor's token accounting. They are local agent processes; execution
+machines for recorded production simulations retain their existing configuration.
+
+### Completion and return
+
+The helper writes `HELPER_RESULT.json` with `status` (`completed` or `blocked`),
+`summary`, `artifacts`, `checks`, and `unresolved`. A successful process exit alone
+does not complete the assignment. The host checks the result structure, required
+deliverables, unchanged context and inputs, and actual output files, then freezes
+the returned artifacts with hashes. Failed, timed-out and cancelled jobs remain
+visible. A blocked helper may return partial artifacts with an explicit obstacle.
+
+Use `lab.wait(..., helpers=[task_id])` to resume after a particular helper rather
+than waiting for the whole group. Help arriving during a worker turn remains pending
+until a subsequent turn receives it; unrelated running simulations do not suppress
+that wakeup.
+
+A help request becomes `resolved` when advice is available or all its helper jobs
+are terminal. This means a response is ready, not that the original problem is
+solved. The parent must inspect each helper's status, evidence and limitations.
+The host checks artifact integrity; it does not mechanically prove that the
+helper fulfilled every scientific or semantic completion criterion.
+
+Returned files never overwrite the parent's working files. Import a selected
+artifact explicitly to a new destination:
+
+```python
+lab.import_helper_artifact("helper_TASK_ID", "corrected_reader.py", "candidate_reader.py")
+```
+
+The import checks the recorded hash and refuses an existing destination. Imported
+work remains unreviewed and must pass the normal execution, method and claim
+checks before being used as scientific evidence. Helpers may write code and run
+bounded local checks; recorded production simulations remain with the parent
+worker. Helpers cannot approve claims or launch further helpers through this API.
+
+Requests and assignments are durable and replay-safe. Reusing a request key with
+different content is rejected. A controller restart recognizes running helper
+processes rather than duplicating them. A dead helper controller produces a
+failure receipt; its identified native session, including surviving child processes,
+is stopped. Helpers must keep subprocesses in that session rather than daemonizing
+or detaching them. Flushed usage counters are recovered after a controller crash;
+unavailable counters remain explicitly unknown. Pausing or stopping
+the research supervisor cancels its helpers; raw work and completed results remain
+available. Supervisor shutdown waits for bounded cleanup and final usage collection.
+Private workspaces prevent accidental edit collisions between
+cooperative same-account agents; they are not OS security sandboxes.
+
 ## Exploratory analysis and advisory progress
 
 `lab.run` defaults to evidence collection. New automatic-tool studies require
