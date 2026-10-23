@@ -14,6 +14,7 @@ class OperatingLimits(BaseModel):
     worker_action_limit: int | None = Field(default=None, gt=0)
     worker_checkpoint_seconds: float | None = Field(default=None, gt=0, allow_inf_nan=False)
     review_seconds: float | None = Field(default=None, gt=0, allow_inf_nan=False)
+    helper_workers: int | None = Field(default=None, ge=1, le=16)
 
 
 def operating_limits(root):

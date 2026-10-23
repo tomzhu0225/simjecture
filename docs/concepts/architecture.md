@@ -19,8 +19,9 @@ See [continuation and steering](../how-to/continuation-steering.md).
 | Role | Responsibility | Authority |
 |---|---|---|
 | Human researcher | Choose the question, assess relevance, guide interpretation | Launch, steer, stop and prepare continuations |
-| Research worker | Plan, implement, run experiments, challenge and repair claims | Submit work and request reviews |
-| Research director | Assess feasibility, time remaining and scientific coverage | Request a recorded replan and stops of named experiments |
+| Research worker | Plan, implement, run experiments, challenge and repair claims | Submit work, request help and reviews, inspect returned helper artifacts |
+| Research director | Assess feasibility, time remaining and scientific coverage | Request a recorded replan, stop named experiments, and assign temporary helpers |
+| Temporary helper | Complete a bounded coding, analysis or investigation task | Work in a private directory and return artifacts; no scientific acceptance |
 | Methods reviewer | Assess an instrument-backed implementation and commissioning | Approve or return gaps for the proposed method |
 | Claim reviewer | Assess whether evidence supports or falsifies the target | Return an explicit scientific verdict |
 | Host evidence service | Preserve state and enforce recorded rules | Validate identities, receipts, commitments and completion conditions |
@@ -30,6 +31,12 @@ model providers. Worker and reviewer models can be chosen independently. The
 [director](../how-to/minimal-oversight.md#research-director-stop-and-replan) does not
 accept scientific claims; a strategic decision to continue a calculation is not
 methods approval.
+
+With the director enabled, the worker can explicitly request help. The director
+can answer directly or assign several helpers concurrently. Helpers inherit the
+worker's selected context and files, and return an explicit result for the parent
+worker to inspect. This uses the existing agent backend and ordinary scheduling;
+it requires no decision model. See [help requests](../how-to/research-service.md#request-help-and-receive-helper-results).
 
 ## Agent runtime and evidence service
 

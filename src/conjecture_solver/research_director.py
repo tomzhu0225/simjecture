@@ -11,6 +11,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from .agent_supervisor import AgentSupervisor, parse_judge_stream
 from .research_development import development_guidance
+from .research_helpers import HelperAssignment, HelpReply
 from .research_limits import OperatingLimits, configure_limits, operating_limits
 from .research_registration import RegistrationTuning
 from .research_resources import StorageIncrease
@@ -68,6 +69,8 @@ class DirectorVerdict(BaseModel):
         description="Adjust worker action/checkpoint and reviewer allowances; "
         "null values remove local ceilings. Operator wall/resource budgets remain authoritative.",
     )
+    helper_tasks: list[HelperAssignment] = Field(default_factory=list, max_length=8)
+    help_replies: list[HelpReply] = Field(default_factory=list, max_length=8)
 
     @model_validator(mode="after")
     def coherent(self):
@@ -82,6 +85,8 @@ class DirectorVerdict(BaseModel):
                     self.registration_tuning,
                     self.time_request,
                     self.operating_limits,
+                    self.helper_tasks,
+                    self.help_replies,
                 )
             ):
                 raise ValueError(
@@ -113,6 +118,8 @@ class ResearchDirector:
                 "reviews",
                 "progress",
                 "report_requests",
+                "help_requests",
+                "helper_tasks",
             )
         }
         previous = self.state.get("director_seen_records", {})
@@ -146,6 +153,7 @@ class ResearchDirector:
             budget=snapshot["budget"],
             finalization=snapshot.get("finalization", {}),
             snapshot=self.context_brief(max_bytes=8000),
+            help_requests=self.service.help_status(),
             active_experiments=active,
             worker_waiting_for=list(self.state.get("waiting_for", [])),
             worker_wait=snapshot.get("worker_wait", {}),
@@ -208,6 +216,16 @@ a working model request. Use observed timing and errors, not assumptions about m
 budget.extensions records operator-authorized changes; update forecasts when it changes.
 Read-only source/data/documentation inspection is available. Do not modify files, send
 control commands yourself or run simulations. Return a structured decision for the host.
+Workers can explicitly request help. Address every queued help request in this packet:
+use helper_tasks to assign one or several temporary workers, or help_replies to return
+concrete advice when another worker is unnecessary. Every helper task references the
+request ID, defines a bounded job, explicit output filenames, completion criteria and
+timeout_seconds. Helpers inherit the requesting worker's frozen context and attached
+files, and work concurrently in separate directories. Their outputs return to the
+parent worker; they never overwrite its files or approve scientific claims. Do not
+duplicate running assignments. Helpers use the configured worker model/backend.
+operating_limits.helper_workers sets concurrent helper capacity (1 to 16); null uses
+the default of two. Queued tasks wait for capacity. No setting extends the study budget.
 When resource_policy.director_can_increase is true, you may set storage_increase to larger
 max_experiment_bytes and max_total_bytes with a concrete reason. These are adjustable
 allowances, not scientific constraints. Use actual build/output sizes and expected retention.
@@ -383,14 +401,17 @@ reviews or genuinely needed operator input remain park_worker, not finish.
         # The background transport has its own state, process identity and log files.
         from .research_oversight import trace_summary
 
+        getattr(self, "process_helpers", lambda: None)()
+
         if time.time() >= getattr(self, "_next_live_director_check", 0):
             self._next_live_director_check = time.time() + 10
             pending = getattr(self, "_director_pending", None)
             if pending is None:
                 policy = self.service.manifest.get("director_policy", {})
                 last = self.state.get("last_director_at", self.state.get("started_at", 0))
-                if not policy.get("enabled") or time.time() - last < policy.get(
-                    "interval_seconds", 300
+                if not policy.get("enabled") or (
+                    time.time() - last < policy.get("interval_seconds", 300)
+                    and not self.service.pending_help()
                 ):
                     return
                 self.state["last_turn_trace"] = trace_summary(directory / "response.json")
@@ -504,11 +525,13 @@ reviews or genuinely needed operator input remain park_worker, not finish.
         if not policy.get("enabled") or self.boundary():
             return False
         now = time.time()
+        force = force or bool(self.service.pending_help())
         last = self.state.get("last_director_at", self.state.get("started_at", now))
         if not force and now - last < policy.get("interval_seconds", 300):
             return False
         if (
             not background
+            and not force
             and not self.service._all("experiments")
             and self.state.get("round", 0) < 2
             and not self.service._all("registration_attempts")
@@ -595,6 +618,17 @@ reviews or genuinely needed operator input remain park_worker, not finish.
                 )
             )
             verdict = validated.model_dump()
+            self.service.validate_help_plan(validated.helper_tasks, validated.help_replies)
+            pending_help = {
+                r["id"]
+                for r in packet.get("help_requests", {}).get("requests", [])
+                if r["status"] == "queued"
+            }
+            addressed = {r.request for r in [*validated.helper_tasks, *validated.help_replies]}
+            if pending_help - addressed:
+                raise ValueError(
+                    "Address each queued help request with helper_tasks or help_replies"
+                )
             # Compare before applying this decision's own report/cancellation actions.
             # Those host actions must not be mistaken for concurrent worker progress.
             records_changed = (verdict["park_worker"] or verdict["decision"] == "finish") and any(
@@ -627,6 +661,14 @@ reviews or genuinely needed operator input remain park_worker, not finish.
                 **verdict,
             )
             put(folder / (identifier + ".json"), record)
+            if validated.helper_tasks or validated.help_replies:
+                record["helper_assignments"] = self.service.assign_helpers(
+                    validated.helper_tasks,
+                    validated.help_replies,
+                    director=identifier,
+                    worker_activity=packet.get("worker_activity"),
+                )
+                put(folder / (identifier + ".json"), record)
             if verdict["decision"] == "finish":
                 if records_changed or getattr(self, "_worker_turn_active", False):
                     raise ValueError("Finish at an idle handoff with unchanged worker records")
@@ -732,6 +774,11 @@ reviews or genuinely needed operator input remain park_worker, not finish.
                     wait = self.service.wait(
                         verdict["next_action"],
                         experiments=[r["id"] for r in packet["active_experiments"]],
+                        help_requests=[
+                            r["id"]
+                            for r in self.service._all("help_requests")
+                            if r["status"] in {"queued", "running"}
+                        ],
                         reports=[
                             r["id"]
                             for r in self.service._all("report_requests")

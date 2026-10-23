@@ -11,7 +11,16 @@ class WaitingService:
         return sorted(p.stem for p in (self.root / "operator_steering/messages").glob("*.json"))
 
     def wait(
-        self, reason, *, experiments=(), reviews=(), methods=(), reports=(), for_operator=False
+        self,
+        reason,
+        *,
+        experiments=(),
+        reviews=(),
+        methods=(),
+        reports=(),
+        help_requests=(),
+        helpers=(),
+        for_operator=False,
     ):
         from .research_service import put
 
@@ -25,6 +34,8 @@ class WaitingService:
             ("reviews", reviews),
             ("methods", methods),
             ("report_requests", reports),
+            ("help_requests", help_requests),
+            ("helper_tasks", helpers),
         ):
             if not isinstance(values, (list, tuple)) or len(values) > 64:
                 raise ValueError("Wait subjects must be lists of at most 64 receipt IDs")

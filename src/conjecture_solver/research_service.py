@@ -30,6 +30,7 @@ from .research_budget import BudgetRequests
 from .research_control import ControlService, ExperimentMonitor
 from .research_development import DevelopmentService
 from .research_guidance import GuidedResearch
+from .research_helpers import HelpService
 from .research_methods import MethodService
 from .research_notebook import NotebookService
 from .research_progress import ProgressService
@@ -100,6 +101,7 @@ class ResearchService(
     DevelopmentService,
     ReportService,
     WaitingService,
+    HelpService,
 ):
     def __init__(self, root):
         self.root = Path(root).resolve(strict=True)
@@ -934,6 +936,7 @@ class ResearchService(
 
     def status(self, *, compact=False):
         self.reconcile_workers()
+        self.reconcile_helpers()
         self.reconcile_report_assessments()
         reviews = self._all("reviews")
         for request in reviews:
@@ -960,6 +963,8 @@ class ResearchService(
             finalization=report_status(self.root, self.manifest),
             report_assessments=self._all("report_requests"),
             worker_wait=self.waiting_status(),
+            help_requests=self._all("help_requests"),
+            helper_tasks=self._all("helper_tasks"),
             workflow="minimal",
             hypothesis=self.manifest["hypothesis"],
             remaining_seconds=max(0, self.manifest["deadline"] - time.time()),
@@ -1074,6 +1079,8 @@ class ResearchService(
 
     def cancel_active(self, *, preserve_diagnostics=False):
         from .execution_pool import cancel_remote
+
+        self.cancel_helpers("Study numerical execution is stopping")
 
         def cancellable(record):
             return record["status"] in {"queued", "running"} and not (
@@ -1209,6 +1216,15 @@ class Lab:
     def request_time(self, **kwargs):
         return self._service.request_time(**kwargs)
 
+    def request_help(self, question, **kwargs):
+        return self._service.request_help(question, **kwargs)
+
+    def help_status(self, identifier=None):
+        return self._service.help_status(identifier)
+
+    def import_helper_artifact(self, task, artifact, destination):
+        return self._service.import_helper_artifact(task, artifact, destination)
+
     def commit(self, statement, **kwargs):
         return self._service.commit(statement, **kwargs)
 
@@ -1262,6 +1278,9 @@ def main():
             "director_status",
             "director_ack",
             "request_time",
+            "request_help",
+            "help_status",
+            "import_helper_artifact",
             "analyze",
             "progress",
             "reproduce_anchor",
