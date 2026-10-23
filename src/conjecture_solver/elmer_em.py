@@ -1,4 +1,4 @@
-"""Experimental single-process Elmer A-v workflow with auditable stage boundaries.
+"""Optional conductor example for the general Elmer runtime.
 
 Mesh construction accepts a user-authored Gmsh geometry or an existing MSH2 mesh.
 Only linear, nonmagnetic, fixed conductors and backward Euler are supported.
@@ -9,57 +9,18 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import math
-import os
 import re
-import resource
 import shutil
-import signal
-import subprocess
-import time
 from pathlib import Path
 
 import numpy as np
 
+if __package__:
+    from .elmer import digest, positive, read, require, run_process, runtime, save
+else:
+    from elmer import digest, positive, read, require, run_process, runtime, save
+
 MU0 = 4 * np.pi * 1e-7
-FAILURES = (
-    "iteration halted due to problem in algorithm",
-    "rnrm^2 is negative",
-    "kappal^2 is non-positive",
-    "kappa0^2 is non-positive",
-    "error::",
-    "fatal",
-    "not converged",
-    "failed to converge",
-)
-
-
-def digest(path):
-    with Path(path).open("rb") as stream:
-        return hashlib.file_digest(stream, "sha256").hexdigest()
-
-
-def save(path, value):
-    Path(path).write_text(json.dumps(value, indent=2, allow_nan=False) + "\n")
-
-
-def read(path):
-    return json.loads(Path(path).read_text())
-
-
-def require(condition, message):
-    if not condition:
-        raise ValueError(message)
-
-
-def positive(value, name, *, zero=False):
-    require(
-        isinstance(value, (int, float))
-        and not isinstance(value, bool)
-        and math.isfinite(value)
-        and (value >= 0 if zero else value > 0),
-        f"{name} must be finite and {'nonnegative' if zero else 'positive'}",
-    )
 
 
 def vector(value, name):
@@ -133,99 +94,6 @@ def validate(config):
         positive(config["limits"][name], name)
         require(config["limits"][name] < 1, "Relative limits must be < 1")
     return config
-
-
-def runtime():
-    home = Path(os.environ["SIMJECTURE_ELMER_HOME"]).resolve()
-    solver = home / "bin/ElmerSolver"
-    if not solver.is_file():
-        solver = home / "bin/ElmerSolver_mpi"
-    grid = home / "bin/ElmerGrid"
-    require(solver.is_file() and grid.is_file(), "ElmerSolver and ElmerGrid are required")
-    env = os.environ | {
-        "ELMER_HOME": str(home),
-        "OMP_NUM_THREADS": "1",
-        "OPENBLAS_NUM_THREADS": "1",
-    }
-    library_dirs = [home / "lib/elmersolver", home / "lib", home / "deps"]
-    env["LD_LIBRARY_PATH"] = ":".join(map(str, library_dirs))
-    # Every run binds the actual installed core, modules and dependency bundle.
-    identity = {
-        str(p.relative_to(home)): digest(p)
-        for p in sorted(home.rglob("*"))
-        if p.is_file() and (".so" in p.name or p in (solver, grid) or p.name == "elements.def")
-    }
-    record = home.parent / "share/build-record.json"
-    if record.is_file():
-        require(identity == read(record)["elmer_identity"], "Installed Elmer files changed")
-    return solver, grid, env, identity
-
-
-def run_process(command, directory, stem, *, timeout, memory_gib, env):
-    positive(timeout, "timeout")
-    positive(memory_gib, "memory_gib")
-    directory = Path(directory)
-    require(not (directory / f"{stem}.json").exists(), "Preserve previous trials; use a fresh case")
-
-    def limits():
-        size = int(memory_gib * 1024**3)
-        resource.setrlimit(resource.RLIMIT_AS, (size, size))
-
-    start = time.monotonic()
-    peak_rss = 0
-    timed_out = False
-    logpath = directory / f"{stem}.log"
-    with logpath.open("x") as log:
-        child = subprocess.Popen(
-            command,
-            cwd=directory,
-            env=env,
-            stdout=log,
-            stderr=subprocess.STDOUT,
-            start_new_session=True,
-            preexec_fn=limits,
-        )
-        try:
-            while child.poll() is None:
-                try:
-                    status = Path(f"/proc/{child.pid}/status").read_text()
-                    values = re.findall(r"^VmHWM:\s+(\d+)", status, re.M)
-                    if values:
-                        peak_rss = max(peak_rss, int(values[0]))
-                except (FileNotFoundError, ProcessLookupError):
-                    pass
-                if time.monotonic() - start >= timeout:
-                    timed_out = True
-                    break
-                time.sleep(0.2)
-        finally:
-            if child.poll() is None:
-                os.killpg(child.pid, signal.SIGTERM)
-                try:
-                    child.wait(timeout=5)
-                except subprocess.TimeoutExpired:
-                    os.killpg(child.pid, signal.SIGKILL)
-                    child.wait()
-        code = child.wait()
-    logtext = logpath.read_text(errors="replace")
-    failures = [marker for marker in FAILURES if marker in logtext.lower()]
-    accepted = code == 0 and not timed_out and not failures
-    if stem == "run":
-        accepted = accepted and "ELMER SOLVER FINISHED" in logtext
-    record = {
-        "command": list(map(str, command)),
-        "returncode": code,
-        "timed_out": timed_out,
-        "execution_pass": accepted,
-        "failure_markers": failures,
-        "elapsed_s": time.monotonic() - start,
-        "peak_process_RSS_KiB": peak_rss,
-        "address_space_limit_GiB": memory_gib,
-        "timeout_s": timeout,
-        "log_sha256": digest(logpath),
-    }
-    save(directory / f"{stem}.json", record)
-    return record
 
 
 def mesh_case(case, config_path, mesh_path, *, timeout, memory_gib):

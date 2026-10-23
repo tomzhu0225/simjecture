@@ -353,6 +353,8 @@ def test_core_doctor_enforces_locked_direct_dependency_versions(
         "pandas": "2.2.0",
         "pydantic": "2.10.0",
         "scipy": "1.15.0",
+        "pyvista": "0.49.1",
+        "vtk": "9.7.1",
     }
     records = ["version = 1"]
     for name, version in locked.items():

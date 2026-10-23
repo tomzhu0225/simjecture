@@ -1098,10 +1098,10 @@ def test_sandbox_exposes_scientific_python_without_exposing_home(tmp_path: Path)
         (
             "-c",
             (
-                "import json, matplotlib, numpy, pandas, scipy, sys; "
+                "import json, matplotlib, numpy, pandas, scipy, pyvista, sys; "
                 "print(json.dumps({'python': list(sys.version_info[:2]), "
                 "'versions': [matplotlib.__version__, numpy.__version__, "
-                "pandas.__version__, scipy.__version__]}))"
+                "pandas.__version__, scipy.__version__, pyvista.__version__]}))"
             ),
         )
     )

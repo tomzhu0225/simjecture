@@ -1,8 +1,8 @@
 {
   "capability_names": [],
-  "description": "Prospective evidence contracts and reproducible NumPy/SciPy experiments through ordinary sandboxed Python",
+  "description": "Ordinary NumPy/SciPy experiments, PyVista/Matplotlib visualization and prospective evidence contracts",
   "entrypoint": "SKILL.md",
   "name": "python-experiment",
   "schema_version": "0.1.0",
-  "version": "0.1.1"
+  "version": "0.1.2"
 }

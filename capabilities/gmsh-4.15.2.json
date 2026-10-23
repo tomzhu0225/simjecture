@@ -1,0 +1,32 @@
+{
+  "runtime_root": "../.runtime/gmsh-4.15.2",
+  "executable": "bin/python",
+  "identity_files": [
+    "share/build-record.json",
+    "lib/libgmsh.so.4.15",
+    "lib/python3.12/site-packages/gmsh.py"
+  ],
+  "environment": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "LD_LIBRARY_PATH": "/opt/acs-capabilities/gmsh-4.15.2/lib",
+    "GMSH_EXECUTABLE": "/opt/acs-capabilities/gmsh-4.15.2/bin/gmsh",
+    "PYTHONNOUSERSITE": "1"
+  },
+  "manifest": {
+    "schema_version": "0.1.0",
+    "name": "gmsh-4.15.2",
+    "version": "4.15.2",
+    "skill": "gmsh",
+    "executable_kind": "python-gmsh",
+    "description": "Geometry preparation and finite-element meshing using Gmsh",
+    "preflight_resource": "examples/health_check.py",
+    "preflight_result": "gmsh_health.json",
+    "preflight_checks": [
+      "checks.tetrahedra",
+      "checks.positive_jacobians",
+      "checks.physical_groups"
+    ]
+  }
+}

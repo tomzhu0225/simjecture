@@ -87,6 +87,19 @@ def verify(release, destination):
         [
             str(python),
             "-c",
+            "import pyvista as pv; "
+            "grid = pv.ImageData(dimensions=(3,3,3)); "
+            "assert grid.n_cells == 8; print('Installed PyVista:', pv.__version__)",
+        ],
+        cwd=home,
+        env=env,
+        check=True,
+        timeout=60,
+    )
+    subprocess.run(
+        [
+            str(python),
+            "-c",
             "import h5py, mcp, pypdf, smolagents; "
             "from conjecture_solver.agent_skills import research_skills; "
             "assert 'flash-mhd' in research_skills()",

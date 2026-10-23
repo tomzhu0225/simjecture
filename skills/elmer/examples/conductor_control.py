@@ -3,9 +3,13 @@
 import importlib.util
 import json
 import os
+import sys
 from pathlib import Path
 
-spec = importlib.util.spec_from_file_location("elmer_em", os.environ["SIMJECTURE_ELMER_DRIVER"])
+sys.path.insert(0, str(Path(os.environ["SIMJECTURE_ELMER_CONDUCTOR_DRIVER"]).parent))
+spec = importlib.util.spec_from_file_location(
+    "elmer_em", os.environ["SIMJECTURE_ELMER_CONDUCTOR_DRIVER"]
+)
 driver = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(driver)
 try:
@@ -18,6 +22,6 @@ try:
         "control": result,
     }
 except Exception as exc:
-    Path("elmer_health.json").write_text(json.dumps({"error": str(exc)}))
+    Path("conductor_health.json").write_text(json.dumps({"error": str(exc)}))
     raise
-Path("elmer_health.json").write_text(json.dumps(report, indent=2) + "\n")
+Path("conductor_health.json").write_text(json.dumps(report, indent=2) + "\n")

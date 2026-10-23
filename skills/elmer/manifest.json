@@ -1,0 +1,10 @@
+{
+  "schema_version": "0.1.0",
+  "name": "elmer",
+  "version": "0.1.0",
+  "description": "Run user-authored Elmer FEM models and ElmerGrid mesh conversions; reuse optional conductor and circuit examples",
+  "entrypoint": "SKILL.md",
+  "capability_names": [
+    "elmer-0.1"
+  ]
+}

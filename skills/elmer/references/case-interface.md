@@ -1,4 +1,7 @@
-# Case interface, version 0.1
+# Optional conductor example, version 0.1
+
+These commands belong to `$SIMJECTURE_ELMER_CONDUCTOR_DRIVER`. They are a
+specialized starting point; the general Elmer tool accepts native SIF models.
 
 `mesh CASE --config input.json --msh load.msh` creates a new case. It requires
 positive first-order tetrahedra, physical material and boundary tags, SI meter

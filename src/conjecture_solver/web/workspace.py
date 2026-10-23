@@ -30,10 +30,12 @@ from ..workspace_projects import ProjectCollections
 from .workspace_machines import MachineWorkspace
 
 CATALOGUE = [
+    ("freecad", "FreeCAD", "Parametric CAD and STEP geometry", "install"),
+    ("gmsh", "Gmsh", "Geometry preparation and finite-element meshing", "install"),
     (
-        "elmer-em",
-        "Elmer 3D electromagnetics",
-        "Experimental conductor and circuit solver · guided setup",
+        "elmer",
+        "Elmer",
+        "Finite-element and multiphysics simulation · guided setup",
         "agent",
     ),
     (

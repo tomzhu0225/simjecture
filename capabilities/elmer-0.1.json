@@ -1,0 +1,41 @@
+{
+  "runtime_root": "../.runtime/elmer-0.1",
+  "executable": "bin/python",
+  "identity_files": [
+    "share/elmer.py",
+    "share/elmer_em.py",
+    "share/elmer_em_case.sif",
+    "share/build-record.json",
+    "share/requirements.txt",
+    "elmer/lib/elmersolver/libelmersolver.so"
+  ],
+  "environment": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONHOME": "/opt/acs-capabilities/elmer-0.1",
+    "SIMJECTURE_ELMER_DRIVER": "/opt/acs-capabilities/elmer-0.1/share/elmer.py",
+    "SIMJECTURE_ELMER_HOME": "/opt/acs-capabilities/elmer-0.1/elmer",
+    "LD_LIBRARY_PATH": "/opt/acs-capabilities/elmer-0.1/elmer/lib/elmersolver:/opt/acs-capabilities/elmer-0.1/elmer/lib:/opt/acs-capabilities/elmer-0.1/elmer/deps",
+    "MPLCONFIGDIR": "/tmp/matplotlib",
+    "SIMJECTURE_ELMER_CONDUCTOR_DRIVER": "/opt/acs-capabilities/elmer-0.1/share/elmer_em.py",
+    "ELMER_HOME": "/opt/acs-capabilities/elmer-0.1/elmer",
+    "ELMER_SOLVER": "/opt/acs-capabilities/elmer-0.1/elmer/bin/ElmerSolver",
+    "ELMER_GRID": "/opt/acs-capabilities/elmer-0.1/elmer/bin/ElmerGrid",
+    "PYTHONNOUSERSITE": "1"
+  },
+  "manifest": {
+    "schema_version": "0.1.0",
+    "name": "elmer-0.1",
+    "version": "0.1",
+    "skill": "elmer",
+    "executable_kind": "python-elmer",
+    "description": "Elmer FEM runtime for user-authored models, with ElmerGrid and optional conductor examples",
+    "preflight_resource": "examples/health_check.py",
+    "preflight_result": "elmer_health.json",
+    "preflight_checks": [
+      "checks.heat_solution",
+      "checks.completed"
+    ]
+  }
+}

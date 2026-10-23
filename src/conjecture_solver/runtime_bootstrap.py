@@ -63,6 +63,8 @@ def ensure_micromamba(runtime_root: Path, *, dry_run=False) -> str:
 # Package files are shared through Micromamba's cache; separate environments
 # retain independent ABI constraints without downloading identical packages twice.
 RUNTIME_PACKAGES = {
+    "freecad": ["python=3.12", "freecad=1.1.3"],
+    "gmsh": ["python=3.12", "pip", "libglu=9.0.3"],
     "warp-lbm": ["python=3.12", "pip"],
     "iter-pack": ["python=3.12", "pip", "git"],
     "cuda-toolkit": [

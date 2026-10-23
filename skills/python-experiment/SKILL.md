@@ -1,9 +1,14 @@
 ---
 name: python-experiment
-description: Design and run ordinary sandboxed Python, NumPy, or SciPy calculations as prospective Simjecture evidence. Use when the decisive test does not require a named external simulation capability such as WarpX.
+description: Run ordinary Python calculations and PyVista/Matplotlib scientific visualization, with prospective evidence contracts when needed. Use when the decisive test does not require a named external simulation capability such as WarpX.
 ---
 
 # Ordinary Python experiments
+
+The standard environment includes PyVista/VTK alongside NumPy, SciPy, pandas
+and Matplotlib. For mesh and field visualization, read
+[the PyVista guide](references/pyvista.md), including lessons from local FEM
+analysis. Users can write their own visualization and analysis scripts.
 
 In classic campaigns, use `run_python` for contained calculations supported by the ordinary Python
 environment. Prefer a short workspace script over a large inline `-c` program

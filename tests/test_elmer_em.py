@@ -7,6 +7,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
+from conjecture_solver import elmer as general
 from conjecture_solver import elmer_em as em
 from conjecture_solver.deployment import DeploymentManager, DeploymentProfile
 from conjecture_solver.mvp_skills import MVPCapabilityConfig, MVPSkillCatalog
@@ -61,7 +62,7 @@ def test_finite_capacitor_discharge_energy_and_corruption():
     assert corrupt["energy_relative"] > 0.01
 
 
-@pytest.mark.parametrize("marker", em.FAILURES)
+@pytest.mark.parametrize("marker", general.FAILURES)
 def test_exit_zero_with_solver_breakdown_is_rejected(tmp_path, marker):
     result = em.run_process(
         [sys.executable, "-c", f'print({marker!r});print("ELMER SOLVER FINISHED")'],
@@ -134,15 +135,15 @@ def test_declared_model_reaches_sif_and_circuit(tmp_path):
 def test_skill_discovery_and_install_contract(tmp_path, monkeypatch):
     root = Path(__file__).resolve().parents[1]
     catalog = MVPSkillCatalog.discover(root / "skills")
-    assert "elmer-em" in catalog
-    assert catalog.read("elmer-em", "references/case-interface.md", max_chars=20000)
+    assert "elmer" in catalog
+    assert catalog.read("elmer", "references/case-interface.md", max_chars=20000)
     config = MVPCapabilityConfig.model_validate_json(
-        (root / "capabilities/elmer-em-0.1.json").read_bytes()
+        (root / "capabilities/elmer-0.1.json").read_bytes()
     )
     assert "elmer/lib/elmersolver/libelmersolver.so" in config.identity_files
     assert config.manifest.preflight_checks
     project = tmp_path / "project"
-    for relative in ("capabilities/elmer-em-0.1.json", "skills/elmer-em/scripts/bootstrap.sh"):
+    for relative in ("capabilities/elmer-0.1.json", "skills/elmer/scripts/bootstrap.sh"):
         target = project / relative
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(root / relative, target)
@@ -151,12 +152,12 @@ def test_skill_discovery_and_install_contract(tmp_path, monkeypatch):
     manager = DeploymentManager(project_root=project)
     monkeypatch.setattr(manager, "_core_checks", lambda **_: [])
     monkeypatch.setattr(manager, "_already_ready", lambda *_: None)
-    report = manager.install(DeploymentProfile.ELMER_EM, dry_run=True)
+    report = manager.install(DeploymentProfile.ELMER, dry_run=True)
     assert not report.ready
     assert any(c.name.endswith(".source") for c in report.checks)
     source = tmp_path / "elmer-install"
     source.mkdir()
-    report = manager.install(DeploymentProfile.ELMER_EM, source=source, dry_run=True)
+    report = manager.install(DeploymentProfile.ELMER, source=source, dry_run=True)
     assert report.planned and "--source" in report.command
 
 
@@ -181,7 +182,7 @@ def test_installer_rejects_unmanaged_runtime(tmp_path, monkeypatch):
     target.mkdir()
     sentinel = target / "keep"
     sentinel.write_text("original")
-    script = Path(__file__).resolve().parents[1] / "skills/elmer-em/scripts/bootstrap.py"
+    script = Path(__file__).resolve().parents[1] / "skills/elmer/scripts/bootstrap.py"
     spec = importlib.util.spec_from_file_location("bootstrap_elmer", script)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)

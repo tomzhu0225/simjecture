@@ -1,8 +1,0 @@
-{
-  "schema_version": "0.1.0",
-  "name": "elmer-em",
-  "version": "0.1.0",
-  "description": "Experimental 3D conductor and circuit simulation with Elmer: mesh preparation, bounded solves, current/energy audits and plots",
-  "entrypoint": "SKILL.md",
-  "capability_names": ["elmer-em-0.1"]
-}

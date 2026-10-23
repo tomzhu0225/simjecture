@@ -139,7 +139,7 @@ how-to/multi-tool-studies
 how-to/add-a-capability
 how-to/deploy-runtimes
 how-to/material-eos
-how-to/elmer-em
+how-to/cad-and-simulation
 how-to/iter-pack
 how-to/windows-applications
 how-to/cst-windows

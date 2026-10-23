@@ -1029,11 +1029,12 @@ class BubblewrapSandbox:
             "--ro-bind",
             "/lib64",
             "/lib64",
-            *(
-                ["--dir", "/etc", "--ro-bind", "/etc/alternatives", "/etc/alternatives"]
-                if Path("/etc/alternatives").is_dir()
-                else []
-            ),
+            "--dir",
+            "/etc",
+            # System font configuration is needed by VTK's headless text renderer.
+            *(argument for directory in ("/etc/alternatives", "/etc/fonts")
+              if Path(directory).is_dir()
+              for argument in ("--ro-bind", directory, directory)),
             "--dev",
             "/dev",
             "--proc",
@@ -1515,6 +1516,12 @@ class BubblewrapSandbox:
                     "/opt/acs-python-runtime",
                     "--setenv",
                     "PYTHONNOUSERSITE",
+                    "1",
+                    "--setenv",
+                    "VTK_DEFAULT_OPENGL_WINDOW",
+                    "vtkEGLRenderWindow",
+                    "--setenv",
+                    "LP_NUM_THREADS",
                     "1",
                     "--setenv",
                     "PATH",
@@ -2847,7 +2854,7 @@ software.
             "root_hypothesis": self.hypothesis,
             "campaign_instruction": self.campaign_instruction,
             "action_schema": MVP_AGENT_ACTION_ADAPTER.json_schema(),
-            "available_python_packages": ["numpy", "scipy", "matplotlib", "pandas"],
+            "available_python_packages": ["numpy", "scipy", "matplotlib", "pandas", "pyvista"],
             "available_skills": self.skills.descriptors(),
             "available_capabilities": self.capabilities.descriptors(),
             "guided_commissioning": (

@@ -63,7 +63,7 @@ def main():
     parser.add_argument("--repair", action="store_true")
     args = parser.parse_args()
     if sys.version_info < (3, 12) or sys.platform != "linux":
-        parser.error("This experimental bundle requires Linux and Python 3.12+")
+        parser.error("This bundle requires Linux and Python 3.12+")
     source, prefix = args.source.resolve(), args.prefix.resolve()
     if source == prefix or source.is_relative_to(prefix) or prefix.is_relative_to(source):
         parser.error("Source and runtime must be separate directories")
@@ -79,7 +79,7 @@ def main():
     marker = prefix.parent / "install-state" / f"{prefix.name}.json"
     if prefix.exists() and not marker.is_file():
         parser.error(f"Refusing unmanaged runtime: {prefix}")
-    if marker.is_file() and json.loads(marker.read_text()).get("profile") != "elmer-em":
+    if marker.is_file() and json.loads(marker.read_text()).get("profile") != "elmer":
         parser.error("Runtime belongs to another installer")
     package = args.project_root / "src/conjecture_solver"
     if not package.is_dir():
@@ -88,7 +88,7 @@ def main():
             parser.error("Cannot locate Simjecture package")
         package = Path(spec.origin).parent
     marker.parent.mkdir(parents=True, exist_ok=True)
-    marker.write_text(json.dumps({"profile": "elmer-em", "ready": False}))
+    marker.write_text(json.dumps({"profile": "elmer", "ready": False}))
     venv.EnvBuilder(with_pip=True, symlinks=False, clear=True).create(prefix)
     python = prefix / "bin/python"
     command = (
@@ -128,7 +128,7 @@ def main():
     bundle_libraries(gmsh_lib, deps)
     share = prefix / "share"
     share.mkdir(exist_ok=True)
-    for name in ("elmer_em.py", "elmer_em_case.sif"):
+    for name in ("elmer.py", "elmer_em.py", "elmer_em_case.sif"):
         shutil.copy2(package / name, share / name)
     (share / "requirements.txt").write_text("\n".join(REQUIREMENTS) + "\n")
     env = os.environ | {"SIMJECTURE_ELMER_HOME": str(home), "LD_LIBRARY_PATH": str(deps)}
@@ -141,7 +141,7 @@ def main():
                 str(python),
                 "-c",
                 "import sys,json;sys.path.insert(0,sys.argv[1]);"
-                "import elmer_em;print(json.dumps(elmer_em.runtime()[3]))",
+                "import elmer;print(json.dumps(elmer.runtime()[3]))",
                 str(share),
             ],
             env=env,
@@ -149,18 +149,18 @@ def main():
         )
     )
     record = {
-        "profile": "elmer-em",
+        "profile": "elmer",
         "version": "0.1",
         "source_installation": str(source),
         "elmer_identity": identity,
         "source_policy": "Operator-supplied build; no source modifications or automatic patches.",
-        "driver_sha256": sha(share / "elmer_em.py"),
+        "driver_sha256": sha(share / "elmer.py"),
         "packages": json.loads(
             subprocess.check_output([str(python), "-m", "pip", "list", "--format=json"])
         ),
     }
     record_path.write_text(json.dumps(record, indent=2) + "\n")
-    marker.write_text(json.dumps({"profile": "elmer-em", "ready": True}))
+    marker.write_text(json.dumps({"profile": "elmer", "ready": True}))
 
 
 if __name__ == "__main__":

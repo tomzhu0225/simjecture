@@ -187,6 +187,11 @@ def test_catalog_search_filters_keyboard_and_setup_permissions(tmp_path, monkeyp
             search.fill("laser calibration")
             playwright.expect(visible).to_have_attribute("data-tool", "custom-spectrometer")
             search.fill("")
+            category.select_option("CAD & simulation")
+            playwright.expect(visible).to_have_count(3)
+            assert set(visible.evaluate_all("nodes => nodes.map(n => n.dataset.tool)")) == {
+                "freecad", "gmsh", "elmer"
+            }
             category.select_option("Materials & radiation")
             playwright.expect(visible).to_have_count(6)
             search.fill("feos")
@@ -228,6 +233,11 @@ def test_catalog_search_filters_keyboard_and_setup_permissions(tmp_path, monkeyp
             # Background polling preserves filters; installation updates move a card
             # out of the filtered shelf without closing its progress dialog.
             page.get_by_role("button", name="Available to add", exact=True).click()
+            category.select_option("CAD & simulation")
+            playwright.expect(visible).to_have_count(3)
+            assert set(visible.evaluate_all("nodes => nodes.map(n => n.dataset.tool)")) == {
+                "freecad", "gmsh", "elmer"
+            }
             category.select_option("Materials & radiation")
             search.fill("atomec")
             page.evaluate("refreshTools()")
