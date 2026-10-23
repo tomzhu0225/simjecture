@@ -479,7 +479,7 @@ def continuation(root, checkpoint, action, replicate, wrapper):
     try:
         if action != "defer":
             alert = dict(
-                origin="prespecified_experiment",
+                origin="host_attention_request",
                 action=action,
                 subject="worker",
                 packet_sha256=packet["packet_sha256"],

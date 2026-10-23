@@ -76,3 +76,11 @@ approvals or treat these fixed actions as logged on-policy samples. A future
 SFT/RL comparison needs separate development/test task mechanisms and fresh live
 worker outcomes. New Colab use is bounded to 40 compute units and three hours;
 allocate only when an actual model experiment is justified, with a release guard.
+
+Pre-continuation amendment: the actor-facing initial alert uses the neutral
+source `host_attention_request`; its experimental route assignment is retained
+only in the host design/continuation manifests. No pilot continuations had
+started when this change was made. Prefix generation and reward criteria are
+unchanged. This avoids telling the authority judge which experimental arm it
+is in through a gratuitous experiment label. The judge naturally still sees
+the actual attention request and its public evidence.
