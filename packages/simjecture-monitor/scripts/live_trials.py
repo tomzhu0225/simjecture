@@ -225,7 +225,7 @@ def run(root, case, policy, socket, seed=0):
             until = min(sup.state["deadline"] - 30, time.time() + 260)
             while time.time() < until:
                 sup.process_helpers()
-                sup.run_director()
+                sup.run_director(background=True)
                 sup.monitor_tick(directory)
                 active = any(
                     r["status"] in {"queued", "running"} for r in sup.service._all("help_requests")

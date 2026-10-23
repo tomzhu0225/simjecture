@@ -205,7 +205,7 @@ class MonitorSupervisor(ResearchSupervisor):
             self.monitor_future = None
             try:
                 decision = future.result()
-                if now - sent_at > 30:
+                if decision.get("client_received_at", now) - sent_at > 30:
                     raise ValueError("Monitor response exceeded the freshness allowance")
                 # Bind the response to its exact observed packet; later events remain queued.
                 self._record_decision(submitted, decision, received_at=now)

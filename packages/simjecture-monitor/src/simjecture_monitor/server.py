@@ -25,6 +25,7 @@ def request(path, packet, *, timeout=30):
     if result.get("error"):
         raise RuntimeError(result["error"])
     result["transport_seconds"] = time.perf_counter() - started
+    result["client_received_at"] = time.time()
     return result
 
 

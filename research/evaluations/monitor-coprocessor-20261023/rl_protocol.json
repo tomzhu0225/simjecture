@@ -33,5 +33,11 @@
     "No equal-step supervised control; no attribution of generic RL superiority",
     "Policy may learn to defer if capable workers already handle incidents",
     "Do not substitute fixtures or hand-authored reward tables for actual continuations"
-  ]
+  ],
+  "collection_note": {
+    "recorded_at": 1792769935.3946164,
+    "commissioning": "The first two collection pilots are excluded together after identifying that synchronous idle director calls delayed retrieval of already-completed monitor responses. Both the successful and failed pilot are retained.",
+    "corrected_cohort": "Reuse prespecified seeds 71 and 97 under asynchronous idle director supervision; retain same frozen model, utility and per-trial wall limit.",
+    "terminal_timing": "Exclude decisions received after the worker phase ended. Grade final feedback delivery and measure elapsed time through the final durable trial receipt."
+  }
 }
