@@ -139,3 +139,28 @@ The learner validates prompt identity and initial behavior probabilities,
 updates only LoRA parameters with a clipped categorical policy-gradient loss,
 and checks gradients and saved-adapter reload. The tiny exploratory cohorts do
 not establish RL superiority or justify deployment from a score increase alone.
+
+## Follow-up reward design
+
+The [literature review and frozen-data audit](../../research/evaluations/monitor-reward-20261024/REVIEW.md)
+identify case identifiers in actual model inputs and sensitivity to the binary
+feedback condition. The original learning dataset and learner remain unchanged.
+New runs through `collect_sampled.py` and `evaluate_adapter.py` use opaque trial
+directories with mappings retained in host manifests. The legacy `batch.py`
+layout is retained for historical replay; use a new blinded collector for the
+prospective study.
+
+`simjecture_monitor.reward` provides a separate prospective scorer for measured
+intervention-versus-waiting continuations. It checks checkpoint, observation,
+worker, criteria and budget identities, keeps utility components inspectable,
+and withholds the scalar when paired outcomes or measurements are missing.
+It does not infer counterfactual worker behavior or authenticate receipt files.
+The live collector still needs checkpoint forks, blinding, incident identity
+and acknowledgment instrumentation before this reward can train a new model.
+
+```bash
+.venv/bin/python packages/simjecture-monitor/scripts/audit_reward_data.py \
+  --root artifacts/overnight-20261023 \
+  --data artifacts/overnight-20261023/returns.json \
+  --output /tmp/monitor-reward-audit.json
+```

@@ -7,6 +7,7 @@ import json
 import subprocess
 import sys
 import time
+import uuid
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -41,6 +42,12 @@ def main():
         revision=subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
         model_identity=identity,
         cases=["healthy", "discrepancy"],
+        jobs=[
+            dict(case=case, policy=policy, trial_id="trial-" + uuid.uuid4().hex)
+            for case in ["healthy", "discrepancy"]
+            for policy in sockets
+        ],
+        directory_layout="Opaque trial identifiers; policy/case mapping stays in host metadata",
         results=[],
         note=(
             "Exploratory fresh continuations; task families seen in earlier design, "
@@ -51,9 +58,12 @@ def main():
 
     def run(case, policy):
         name = f"{policy}-{case}"
-        root = args.root / name
+        job = next(
+            job for job in manifest["jobs"] if job["case"] == case and job["policy"] == policy
+        )
+        root = args.root / job["trial_id"]
         if (args.root / "STOP").exists():
-            return dict(name=name, status="not_started")
+            return dict(name=name, trial_id=job["trial_id"], status="not_started")
         with (args.root / (name + ".log")).open("w") as log:
             process = subprocess.Popen(
                 [
@@ -88,7 +98,13 @@ def main():
             except subprocess.TimeoutExpired:
                 process.kill()
                 rc = process.wait()
-        return dict(name=name, returncode=rc, started_at=started, ended_at=time.time())
+        return dict(
+            name=name,
+            trial_id=job["trial_id"],
+            returncode=rc,
+            started_at=started,
+            ended_at=time.time(),
+        )
 
     # Pair contemporaneous arms; retain all results, including transport or worker failures.
     with ThreadPoolExecutor(max_workers=2) as pool:

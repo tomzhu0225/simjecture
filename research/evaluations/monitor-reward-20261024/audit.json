@@ -1,0 +1,602 @@
+{
+  "scope": "Historical data audit and reward-definition sensitivity only; no new model training, new labels, paired worker outcomes or causal effect estimate.",
+  "source_dataset_sha256": "5389a307bb29754dee5e2391b4ff7946683d01cb60815a305d80147a60abedfa",
+  "counts": {
+    "decisions": 119,
+    "model_views_verified": 119,
+    "episode_identifier_visible": 64,
+    "nondefer_proposals": 46,
+    "alerts_accepted": 22,
+    "proposals_suppressed_by_gate": 24,
+    "nondefer_sample_with_greedy_defer": 24
+  },
+  "episodes": [
+    {
+      "episode": "harness-71",
+      "family": "harness",
+      "counts": {
+        "decisions": 37,
+        "model_views_verified": 37,
+        "episode_identifier_visible": 15,
+        "nondefer_proposals": 19,
+        "alerts_accepted": 7,
+        "proposals_suppressed_by_gate": 12,
+        "nondefer_sample_with_greedy_defer": 8
+      },
+      "original_quality": 1,
+      "original_return": 0.7761422949204078,
+      "report_metrics_agree": true,
+      "metric_only_quality_sensitivity": 1,
+      "metric_only_return_sensitivity": 0.7761422949204078,
+      "post_report_canceled_inferred_requests": 0,
+      "proposals": [
+        {
+          "received_at": 1792770170.2420862,
+          "action": "request_repair_judge",
+          "greedy_action": "defer",
+          "accepted_by_gate": true,
+          "episode_identifier_visible": true,
+          "visible_process_status_mismatch": false,
+          "last_visible_repair_applied": false,
+          "packet_sha256": "c48a08838ba8f4a6ba67a2eb548071dcae8929e9d04ed953455b8f1f101d5eba"
+        },
+        {
+          "received_at": 1792770172.246422,
+          "action": "request_worker_help",
+          "greedy_action": "defer",
+          "accepted_by_gate": true,
+          "episode_identifier_visible": true,
+          "visible_process_status_mismatch": false,
+          "last_visible_repair_applied": false,
+          "packet_sha256": "321495457d4efe0aaa7ad2c4006697ba08bb0a89552e0ed24d0fb5ca92a035ce"
+        },
+        {
+          "received_at": 1792770174.275115,
+          "action": "request_repair_judge",
+          "greedy_action": "defer",
+          "accepted_by_gate": false,
+          "episode_identifier_visible": false,
+          "visible_process_status_mismatch": true,
+          "last_visible_repair_applied": false,
+          "packet_sha256": "c330915c248121d41776ddd7a62af33084f4321abc6fb88f3dd5b046debec6a7"
+        },
+        {
+          "received_at": 1792770179.2850006,
+          "action": "request_worker_help",
+          "greedy_action": "request_repair_judge",
+          "accepted_by_gate": false,
+          "episode_identifier_visible": true,
+          "visible_process_status_mismatch": true,
+          "last_visible_repair_applied": false,
+          "packet_sha256": "826eb090d0f9c36e4b3c9baf0dc24b8f5af8df9628507a4cb368ec45c9b873dd"
+        },
+        {
+          "received_at": 1792770187.2972572,
+          "action": "request_worker_help",
+          "greedy_action": "request_repair_judge",
+          "accepted_by_gate": false,
+          "episode_identifier_visible": true,
+          "visible_process_status_mismatch": true,
+          "last_visible_repair_applied": false,
+          "packet_sha256": "0bbeed37e250574e6e9fee0a7046912b8aee87b3908c5a4109f31a6c195177eb"
+        },
+        {
+          "received_at": 1792770192.3047235,
+          "action": "request_worker_help",
+          "greedy_action": "request_repair_judge",
+          "accepted_by_gate": false,
+          "episode_identifier_visible": true,
+          "visible_process_status_mismatch": true,
+          "last_visible_repair_applied": false,
+          "packet_sha256": "78a6b312459f0d9330df1d99233d8811fdcfb6ff374ab4ab6c4d58f248d136d7"
+        },
+        {
+          "received_at": 1792770199.3155792,
+          "action": "request_repair_judge",
+          "greedy_action": "request_repair_judge",
+          "accepted_by_gate": false,
+          "episode_identifier_visible": true,
+          "visible_process_status_mismatch": true,
+          "last_visible_repair_applied": false,
+          "packet_sha256": "8f2ef132e5520e5704be2de19bcfb40829e0342747b781bf293e722a17b1e7ce"
+        },
+        {
+          "received_at": 1792770230.356061,
+          "action": "request_repair_judge",
+          "greedy_action": "request_repair_judge",
+          "accepted_by_gate": true,
+          "episode_identifier_visible": true,
+          "visible_process_status_mismatch": true,
+          "last_visible_repair_applied": false,
+          "packet_sha256": "9d067fedbd519b86274a82289c1ae5eaefb19ef6dc1179023285e208a20ce4ef"
+        },
+        {
+          "received_at": 1792770238.3904707,
+          "action": "request_repair_judge",
+          "greedy_action": "request_repair_judge",
+          "accepted_by_gate": false,
+          "episode_identifier_visible": true,
+          "visible_process_status_mismatch": true,
+          "last_visible_repair_applied": false,
+          "packet_sha256": "197eca5f4e03b19d7c7209fabfe3e6f618c32e55c2c0837843bfc9aa537d5dcd"
+        },
+        {
+          "received_at": 1792770241.396234,
+          "action": "request_repair_judge",
+          "greedy_action": "request_repair_judge",
+          "accepted_by_gate": false,
+          "episode_identifier_visible": true,
+          "visible_process_status_mismatch": true,
+          "last_visible_repair_applied": false,
+          "packet_sha256": "b0504a99618659b8a572e604d7be20d7d4efddfa72261958067c3260f9e99df5"
+        },
+        {
+          "received_at": 1792770251.4248474,
+          "action": "request_repair_judge",
+          "greedy_action": "request_repair_judge",
+          "accepted_by_gate": false,
+          "episode_identifier_visible": true,
+          "visible_process_status_mismatch": true,
+          "last_visible_repair_applied": true,
+          "packet_sha256": "4b486bd60f012969a12b7a4f3691a8d07edf673ae7fa1db2b0d90d3fb4358b97"
+        },
+        {
+          "received_at": 1792770265.4469154,
+          "action": "wake_director",
+          "greedy_action": "request_repair_judge",
+          "accepted_by_gate": true,
+          "episode_identifier_visible": true,
+          "visible_process_status_mismatch": true,
+          "last_visible_repair_applied": true,
+          "packet_sha256": "0ca32d34442a797a77dfb0545783a667bdb5f58d23cdaeacffd1f44a0cf843bb"
+        },
+        {
+          "received_at": 1792770273.4607134,
+          "action": "request_repair_judge",
+          "greedy_action": "request_repair_judge",
+          "accepted_by_gate": false,
+          "episode_identifier_visible": false,
+          "visible_process_status_mismatch": false,
+          "last_visible_repair_applied": true,
+          "packet_sha256": "cf42a965ee55e59766005116752b2cc7da13eb0c6c2d27c88533ee693517c003"
+        },
+        {
+          "received_at": 1792770317.566346,
+          "action": "request_worker_help",
+          "greedy_action": "request_repair_judge",
+          "accepted_by_gate": true,
+          "episode_identifier_visible": false,
+          "visible_process_status_mismatch": false,
+          "last_visible_repair_applied": true,
+          "packet_sha256": "95cc2454c1503d6a6874437ebdeece219218ea2020fbd01348830bf865807c09"
+        },
+        {
+          "received_at": 1792770330.6225848,
+          "action": "wake_director",
+          "greedy_action": "defer",
+          "accepted_by_gate": true,
+          "episode_identifier_visible": false,
+          "visible_process_status_mismatch": false,
+          "last_visible_repair_applied": true,
+          "packet_sha256": "d2796c412bcd4a378030a03c39bb2a1e9e11a0566f52e023a1e12759b323c8ba"
+        },
+        {
+          "received_at": 1792770348.6584413,
+          "action": "request_repair_judge",
+          "greedy_action": "defer",
+          "accepted_by_gate": true,
+          "episode_identifier_visible": false,
+          "visible_process_status_mismatch": false,
+          "last_visible_repair_applied": true,
+          "packet_sha256": "c796d3b0c4e9e1c3c854fc6a6bc195346b193b421d25b8fe519622b9bfe9dd80"
+        },
+        {
+          "received_at": 1792770350.6633828,
+          "action": "request_repair_judge",
+          "greedy_action": "defer",
+          "accepted_by_gate": false,
+          "episode_identifier_visible": false,
+          "visible_process_status_mismatch": false,
+          "last_visible_repair_applied": true,
+          "packet_sha256": "c0baf89433d0adf41fccea235898b5d07e23371ea3733fd78ddb3170b486a907"
+        },
+        {
+          "received_at": 1792770376.7119582,
+          "action": "wake_director",
+          "greedy_action": "defer",
+          "accepted_by_gate": false,
+          "episode_identifier_visible": false,
+          "visible_process_status_mismatch": false,
+          "last_visible_repair_applied": true,
+          "packet_sha256": "8b6391e6c1578a42beca2a42ea992ee55109b85a5e2d834c8e03a21eb216bc2f"
+        },
+        {
+          "received_at": 1792770379.7406037,
+          "action": "wake_director",
+          "greedy_action": "defer",
+          "accepted_by_gate": false,
+          "episode_identifier_visible": false,
+          "visible_process_status_mismatch": false,
+          "last_visible_repair_applied": true,
+          "packet_sha256": "e92587effcf3ad29600759428086a76d83f7622e6f64f72e5bd17d3fa41d042c"
+        }
+      ],
+      "reward_v2_eligible": false,
+      "missing_measurements": [
+        "matched waiting continuation",
+        "explicit needed-feedback acknowledgment audit",
+        "dispatched duplicate accounting by incident identity"
+      ]
+    },
+    {
+      "episode": "harness-97",
+      "family": "harness",
+      "counts": {
+        "decisions": 27,
+        "model_views_verified": 27,
+        "episode_identifier_visible": 18,
+        "nondefer_proposals": 11,
+        "alerts_accepted": 5,
+        "proposals_suppressed_by_gate": 6,
+        "nondefer_sample_with_greedy_defer": 1
+      },
+      "original_quality": 1,
+      "original_return": 0.7862062976176922,
+      "report_metrics_agree": true,
+      "metric_only_quality_sensitivity": 1,
+      "metric_only_return_sensitivity": 0.7862062976176922,
+      "post_report_canceled_inferred_requests": 0,
+      "proposals": [
+        {
+          "received_at": 1792770588.6515865,
+          "action": "wake_director",
+          "greedy_action": "request_repair_judge",
+          "accepted_by_gate": true,
+          "episode_identifier_visible": true,
+          "visible_process_status_mismatch": true,
+          "last_visible_repair_applied": false,
+          "packet_sha256": "71f9456620fc1f3ba6f06e41a5330f77202b1dced680bdbaca9558d6895ed691"
+        },
+        {
+          "received_at": 1792770594.6708982,
+          "action": "request_repair_judge",
+          "greedy_action": "request_repair_judge",
+          "accepted_by_gate": true,
+          "episode_identifier_visible": true,
+          "visible_process_status_mismatch": true,
+          "last_visible_repair_applied": false,
+          "packet_sha256": "3952065bcae1254bde2ffb3973793a6f0e322962e9ed7608adfce1cf3dfe461c"
+        },
+        {
+          "received_at": 1792770599.6798873,
+          "action": "request_repair_judge",
+          "greedy_action": "request_repair_judge",
+          "accepted_by_gate": false,
+          "episode_identifier_visible": true,
+          "visible_process_status_mismatch": true,
+          "last_visible_repair_applied": false,
+          "packet_sha256": "1d2a64588f43520c18c895b6723b3a9a88a68d3322f7c76887b0dfab41714573"
+        },
+        {
+          "received_at": 1792770601.6827443,
+          "action": "request_worker_help",
+          "greedy_action": "request_repair_judge",
+          "accepted_by_gate": true,
+          "episode_identifier_visible": true,
+          "visible_process_status_mismatch": true,
+          "last_visible_repair_applied": false,
+          "packet_sha256": "a01194acebac4238bed3dcb4d7c6cbad4d7927268f0d7fc33c47afa11abdc7b4"
+        },
+        {
+          "received_at": 1792770604.7052717,
+          "action": "request_worker_help",
+          "greedy_action": "request_repair_judge",
+          "accepted_by_gate": false,
+          "episode_identifier_visible": true,
+          "visible_process_status_mismatch": true,
+          "last_visible_repair_applied": false,
+          "packet_sha256": "de64d989b97ab6d2ef57daaf9cc8f05fc2a93301389eb80d89d0ea656a63b4df"
+        },
+        {
+          "received_at": 1792770623.7301989,
+          "action": "request_repair_judge",
+          "greedy_action": "request_repair_judge",
+          "accepted_by_gate": false,
+          "episode_identifier_visible": true,
+          "visible_process_status_mismatch": true,
+          "last_visible_repair_applied": false,
+          "packet_sha256": "668c1670e30745848389d793ee64da51d75416444506aad14066dfc4b18ef755"
+        },
+        {
+          "received_at": 1792770634.745645,
+          "action": "request_repair_judge",
+          "greedy_action": "request_repair_judge",
+          "accepted_by_gate": false,
+          "episode_identifier_visible": true,
+          "visible_process_status_mismatch": true,
+          "last_visible_repair_applied": false,
+          "packet_sha256": "8877caf20ecc0b9b4b236ae7cfc0151739831007812a303c49e953ac8b751e39"
+        },
+        {
+          "received_at": 1792770673.8360426,
+          "action": "request_repair_judge",
+          "greedy_action": "request_repair_judge",
+          "accepted_by_gate": true,
+          "episode_identifier_visible": true,
+          "visible_process_status_mismatch": true,
+          "last_visible_repair_applied": true,
+          "packet_sha256": "f839a64a784ed63206e18cbce311ffa198768db4dce74ec0bb5742bcce08970a"
+        },
+        {
+          "received_at": 1792770676.842517,
+          "action": "request_repair_judge",
+          "greedy_action": "request_repair_judge",
+          "accepted_by_gate": false,
+          "episode_identifier_visible": true,
+          "visible_process_status_mismatch": true,
+          "last_visible_repair_applied": true,
+          "packet_sha256": "5013fc3c8345b9130c08c4348a103fd321405cc795e741574f78733f7766cd88"
+        },
+        {
+          "received_at": 1792770696.892752,
+          "action": "request_repair_judge",
+          "greedy_action": "request_repair_judge",
+          "accepted_by_gate": false,
+          "episode_identifier_visible": true,
+          "visible_process_status_mismatch": true,
+          "last_visible_repair_applied": true,
+          "packet_sha256": "570efb4a6513aa9b907d252f17bb153b8638eb6c46bf82faf67c7b9b3f467e89"
+        },
+        {
+          "received_at": 1792770774.0128536,
+          "action": "wake_director",
+          "greedy_action": "defer",
+          "accepted_by_gate": true,
+          "episode_identifier_visible": false,
+          "visible_process_status_mismatch": false,
+          "last_visible_repair_applied": false,
+          "packet_sha256": "3a299c60ae2f3cbaecfca3f306cd2b7f48aa2aafb62275423664e64846b9acc9"
+        }
+      ],
+      "reward_v2_eligible": false,
+      "missing_measurements": [
+        "matched waiting continuation",
+        "explicit needed-feedback acknowledgment audit",
+        "dispatched duplicate accounting by incident identity"
+      ]
+    },
+    {
+      "episode": "recoverable-analysis-71",
+      "family": "recoverable-analysis",
+      "counts": {
+        "decisions": 31,
+        "model_views_verified": 31,
+        "episode_identifier_visible": 16,
+        "nondefer_proposals": 10,
+        "alerts_accepted": 6,
+        "proposals_suppressed_by_gate": 4,
+        "nondefer_sample_with_greedy_defer": 9
+      },
+      "original_quality": 0,
+      "original_return": -0.23722542902139518,
+      "report_metrics_agree": true,
+      "metric_only_quality_sensitivity": 1,
+      "metric_only_return_sensitivity": 0.7627745709786048,
+      "post_report_canceled_inferred_requests": 1,
+      "proposals": [
+        {
+          "received_at": 1792770169.9057767,
+          "action": "request_repair_judge",
+          "greedy_action": "defer",
+          "accepted_by_gate": true,
+          "episode_identifier_visible": true,
+          "visible_process_status_mismatch": false,
+          "last_visible_repair_applied": false,
+          "packet_sha256": "7632ec441323b23155ce46a927eaf6f57b686318132800747ab85a755408ca53"
+        },
+        {
+          "received_at": 1792770171.9100075,
+          "action": "request_worker_help",
+          "greedy_action": "defer",
+          "accepted_by_gate": true,
+          "episode_identifier_visible": false,
+          "visible_process_status_mismatch": false,
+          "last_visible_repair_applied": false,
+          "packet_sha256": "f10942603910a4b21659e8c9505c98f96c4f47fbcb0a74e796ebcae27af0a886"
+        },
+        {
+          "received_at": 1792770173.9406006,
+          "action": "request_repair_judge",
+          "greedy_action": "defer",
+          "accepted_by_gate": false,
+          "episode_identifier_visible": false,
+          "visible_process_status_mismatch": false,
+          "last_visible_repair_applied": false,
+          "packet_sha256": "fbae0746e9e2a7f78f1c996d5467732101e05a886aedb4b89326bb6a86f104db"
+        },
+        {
+          "received_at": 1792770255.0841095,
+          "action": "wake_director",
+          "greedy_action": "defer",
+          "accepted_by_gate": true,
+          "episode_identifier_visible": false,
+          "visible_process_status_mismatch": false,
+          "last_visible_repair_applied": false,
+          "packet_sha256": "8b0d71417cc3ec29b034082d691e91d29947d40028d695322c185d3efe40328c"
+        },
+        {
+          "received_at": 1792770277.134763,
+          "action": "wake_director",
+          "greedy_action": "defer",
+          "accepted_by_gate": false,
+          "episode_identifier_visible": false,
+          "visible_process_status_mismatch": false,
+          "last_visible_repair_applied": false,
+          "packet_sha256": "721e3ee21a56fc193cc28c197bea24fd040e7fb88277b9eb67d3b4745309ede3"
+        },
+        {
+          "received_at": 1792770283.1446788,
+          "action": "request_worker_help",
+          "greedy_action": "defer",
+          "accepted_by_gate": true,
+          "episode_identifier_visible": false,
+          "visible_process_status_mismatch": false,
+          "last_visible_repair_applied": false,
+          "packet_sha256": "84755c2f15be76bbfb08894e2dfc1fdb8fc689785dfe9a9632bd5d0046bdc44a"
+        },
+        {
+          "received_at": 1792770286.1648867,
+          "action": "request_repair_judge",
+          "greedy_action": "defer",
+          "accepted_by_gate": true,
+          "episode_identifier_visible": false,
+          "visible_process_status_mismatch": false,
+          "last_visible_repair_applied": false,
+          "packet_sha256": "ac2e4e02949b6f470f07d8f6eaa450d5b846d20d9bbd395193bd815b7ccbf3ee"
+        },
+        {
+          "received_at": 1792770289.1717427,
+          "action": "request_repair_judge",
+          "greedy_action": "defer",
+          "accepted_by_gate": false,
+          "episode_identifier_visible": false,
+          "visible_process_status_mismatch": false,
+          "last_visible_repair_applied": false,
+          "packet_sha256": "ac07b3a4d20ba4dee0d3509fe8f2e886cc578813614452de800ee207b4d7385e"
+        },
+        {
+          "received_at": 1792770337.273578,
+          "action": "wake_director",
+          "greedy_action": "defer",
+          "accepted_by_gate": true,
+          "episode_identifier_visible": false,
+          "visible_process_status_mismatch": false,
+          "last_visible_repair_applied": false,
+          "packet_sha256": "d3cbea7c208372fb0035f638f6fd698f45fa79a4bc3ee2671a7d66499dfe9b37"
+        },
+        {
+          "received_at": 1792770375.3608868,
+          "action": "wake_director",
+          "greedy_action": "wake_director",
+          "accepted_by_gate": false,
+          "episode_identifier_visible": true,
+          "visible_process_status_mismatch": false,
+          "last_visible_repair_applied": false,
+          "packet_sha256": "fc43d23c69381b8f0f4a2f69fdfbca8af0c872550cd952f2e7272ce7323c242e"
+        }
+      ],
+      "reward_v2_eligible": false,
+      "missing_measurements": [
+        "matched waiting continuation",
+        "explicit needed-feedback acknowledgment audit",
+        "dispatched duplicate accounting by incident identity"
+      ]
+    },
+    {
+      "episode": "recoverable-analysis-97",
+      "family": "recoverable-analysis",
+      "counts": {
+        "decisions": 24,
+        "model_views_verified": 24,
+        "episode_identifier_visible": 15,
+        "nondefer_proposals": 6,
+        "alerts_accepted": 4,
+        "proposals_suppressed_by_gate": 2,
+        "nondefer_sample_with_greedy_defer": 6
+      },
+      "original_quality": 1,
+      "original_return": 0.8032173065772423,
+      "report_metrics_agree": true,
+      "metric_only_quality_sensitivity": 1,
+      "metric_only_return_sensitivity": 0.8032173065772423,
+      "post_report_canceled_inferred_requests": 0,
+      "proposals": [
+        {
+          "received_at": 1792770668.3411896,
+          "action": "wake_director",
+          "greedy_action": "defer",
+          "accepted_by_gate": true,
+          "episode_identifier_visible": true,
+          "visible_process_status_mismatch": false,
+          "last_visible_repair_applied": false,
+          "packet_sha256": "51d7bab68849ee4adf585794e86c0b3ddd0546d742728d5d6c2ecc8ecf5f0bd4"
+        },
+        {
+          "received_at": 1792770670.354869,
+          "action": "request_worker_help",
+          "greedy_action": "defer",
+          "accepted_by_gate": true,
+          "episode_identifier_visible": false,
+          "visible_process_status_mismatch": false,
+          "last_visible_repair_applied": false,
+          "packet_sha256": "723310a1771fb585feee5e56f4ce157182d27ca893fa255e73ab91301bbb038d"
+        },
+        {
+          "received_at": 1792770686.3961437,
+          "action": "request_repair_judge",
+          "greedy_action": "defer",
+          "accepted_by_gate": true,
+          "episode_identifier_visible": true,
+          "visible_process_status_mismatch": false,
+          "last_visible_repair_applied": false,
+          "packet_sha256": "2fac6301aa6c85c95f06b09d4b7d69a14605250e50af7b2389406c77cbe6da4f"
+        },
+        {
+          "received_at": 1792770689.4020221,
+          "action": "request_worker_help",
+          "greedy_action": "defer",
+          "accepted_by_gate": false,
+          "episode_identifier_visible": true,
+          "visible_process_status_mismatch": false,
+          "last_visible_repair_applied": false,
+          "packet_sha256": "6cccc097d866b4f644ec9f5df333f38424ecf148310f36ddab9cd63bfb9ac8f2"
+        },
+        {
+          "received_at": 1792770715.4402518,
+          "action": "request_worker_help",
+          "greedy_action": "defer",
+          "accepted_by_gate": false,
+          "episode_identifier_visible": false,
+          "visible_process_status_mismatch": false,
+          "last_visible_repair_applied": false,
+          "packet_sha256": "0746b3d42905751bab16116f4cbb8cf72046b52af20155a5fceb7afe9d40dc0a"
+        },
+        {
+          "received_at": 1792770956.308873,
+          "action": "wake_director",
+          "greedy_action": "defer",
+          "accepted_by_gate": true,
+          "episode_identifier_visible": true,
+          "visible_process_status_mismatch": false,
+          "last_visible_repair_applied": false,
+          "packet_sha256": "b6473ac210653549a08fb44929ff5bd6b047a076c1bd52c3cb64261222ba117c"
+        }
+      ],
+      "reward_v2_eligible": false,
+      "missing_measurements": [
+        "matched waiting continuation",
+        "explicit needed-feedback acknowledgment audit",
+        "dispatched duplicate accounting by incident identity"
+      ]
+    }
+  ],
+  "family_return_sensitivity": {
+    "harness": {
+      "original_return_gap": 0.010064002697284469,
+      "metric_only_return_gap": 0.010064002697284469,
+      "relative_gap_reduction": 0.0
+    },
+    "recoverable-analysis": {
+      "original_return_gap": 1.0404427355986374,
+      "metric_only_return_gap": 0.040442735598637536,
+      "relative_gap_reduction": 0.961129301772319
+    }
+  },
+  "interpretations": [
+    "Visible case-labelled identifiers are a leakage risk, not proof the model used them.",
+    "Missing a parsed status mismatch does not prove an alert was unjustified.",
+    "A judge denial is not automatically an unnecessary intervention.",
+    "The metric-only sensitivity omits feedback quality and is not a recommended reward.",
+    "Suppressed proposals are not actual capable-agent dispatches."
+  ]
+}

@@ -255,6 +255,11 @@ cap over all capable-agent roles is not implemented by this research package.
 
 ## Records
 
+A [subsequent reward audit on 24 October](../monitor-reward-20261024/REVIEW.md)
+found case-labelled identifiers in 64 of the 119 actual model views and large
+sensitivity to the binary feedback condition. It adds qualifications and a new
+prospective design; the original trajectories, rewards and adapter remain frozen.
+
 The machine-local evidence root is
 `/home/tomzhu0225/src/simjecture-monitor-coprocessor/artifacts/overnight-20261023`.
 Raw native traces, full learning packets and model files are deliberately

@@ -7,6 +7,7 @@ import json
 import subprocess
 import sys
 import time
+import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
@@ -23,7 +24,7 @@ def main():
     args.root.mkdir(parents=True, exist_ok=False)
     script = Path(__file__).with_name("live_trials.py")
     jobs = [
-        dict(case=case, seed=seed)
+        dict(case=case, seed=seed, trial_id="trial-" + uuid.uuid4().hex)
         for seed in [71, 97]
         for case in ["harness", "recoverable-analysis"]
     ]
@@ -31,15 +32,16 @@ def main():
         started_at=time.time(),
         revision=subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
         jobs=jobs,
+        directory_layout="Opaque trial identifiers; case/seed mapping stays in host metadata",
         results=[],
     )
     put(args.root / "COLLECTION.json", manifest)
 
     def run(job):
         name = f"{job['case']}-{job['seed']}"
-        root = args.root / name
+        root = args.root / job["trial_id"]
         if (args.root / "STOP").exists():
-            return dict(name=name, status="not_started")
+            return dict(name=name, trial_id=job["trial_id"], status="not_started")
         with (args.root / (name + ".log")).open("w") as log:
             process = subprocess.Popen(
                 [
@@ -76,7 +78,13 @@ def main():
             except subprocess.TimeoutExpired:
                 process.kill()
                 rc = process.wait()
-        return dict(name=name, returncode=rc, started_at=started, ended_at=time.time())
+        return dict(
+            name=name,
+            trial_id=job["trial_id"],
+            returncode=rc,
+            started_at=started,
+            ended_at=time.time(),
+        )
 
     with ThreadPoolExecutor(max_workers=2) as pool:
         for future in as_completed([pool.submit(run, job) for job in jobs]):
