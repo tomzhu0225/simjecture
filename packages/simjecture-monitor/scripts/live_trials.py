@@ -52,7 +52,9 @@ if a.action=='analyze':
 """
 
 
-def prepare(root, case, policy, socket, seed=0):
+def prepare(
+    root, case, policy, socket, seed=0, *, supervisor_type=MonitorSupervisor, task_transform=None
+):
     task = (
         "Run a bounded independent WarpX Langmuir investigation. Produce REPORT.txt and "
         "results.json with a runs list of measured name, relative_field_error, "
@@ -100,6 +102,8 @@ def prepare(root, case, policy, socket, seed=0):
         "at most 4 fresh simulations", f"at most {simulation_limit} fresh simulations"
     )
     task = task.replace("two main-worker turns", "three main-worker turns")
+    if task_transform is not None:
+        task = task_transform(task)
     if policy in {"model", "sampled"}:
         from simjecture_monitor.events import digest
         from simjecture_monitor.server import request
@@ -123,7 +127,7 @@ def prepare(root, case, policy, socket, seed=0):
         director_enabled=True,
         reasoning_effort="high",
     )
-    sup = MonitorSupervisor(
+    sup = supervisor_type(
         args, policy=policy, task=task, model_socket=socket, cadence=60, seed=seed
     )
     sup.record_review_identity = True

@@ -229,7 +229,17 @@ class MonitorSupervisor(ResearchSupervisor):
                     signature,
                 )
         elif new or self.monitor_policy == "periodic":
-            self._record_decision(packet, self.monitor_baseline.predict(packet), received_at=now)
+            decision = (
+                dict(
+                    choice="defer",
+                    probabilities={"defer": 1.0},
+                    packet_sha256=packet["packet_sha256"],
+                    policy="observe",
+                )
+                if self.monitor_policy == "observe"
+                else self.monitor_baseline.predict(packet)
+            )
+            self._record_decision(packet, decision, received_at=now)
         self.route_monitor_alerts()
 
     def route_monitor_alerts(self):
