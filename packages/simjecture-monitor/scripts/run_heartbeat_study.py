@@ -25,6 +25,7 @@ def main():
     parser.add_argument("--pilot", type=Path, required=True)
     parser.add_argument("--previous", type=Path, required=True)
     parser.add_argument("--grace-commissioning", action="store_true")
+    parser.add_argument("--timer-only", action="store_true")
     parser.add_argument("--triton-cache", type=Path)
     args = parser.parse_args()
     root, pilot, previous, repo = (
@@ -51,6 +52,10 @@ def main():
     ]
     if args.grace_commissioning:
         jobs = [j for j in jobs if j["case"] == "adapter" and j["repeat"] == 0]
+    if args.timer_only:
+        if not args.grace_commissioning:
+            raise ValueError("Timer-only is a separate grace mechanism check")
+        jobs = [j for j in jobs if j["timer"]]
     random.Random(2026102408 if args.grace_commissioning else 2026102407).shuffle(jobs)
     put(
         root / "DESIGN.json",

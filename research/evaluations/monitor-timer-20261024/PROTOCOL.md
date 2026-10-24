@@ -72,3 +72,13 @@ slots, still under the unchanged240 total/four-concurrent cap. Freeze its design
 and source before launch and retain both old and corrected results. This is the
 last native collection in this stage. No adapter training or efficacy claim is
 justified by this small deliberately constrained mechanism check.
+
+Pre-collection resource amendment for the corrected check: the original broken
+commissioning used fourteen starts, leaving fifteen under the240 cap at01:15UTC.
+Use **one** corrected timed commissioning, not two. Keep the original12-per-case
+lease cap unchanged and require12 remaining slots; do not perform the proposed
+cap-tightening amendment above. This guarantees room for the one corrected case
+without increasing the total allowance. It is a live mechanism validation only,
+with no corrected event-only comparison or effect estimate. The `--timer-only`
+flag selects this explicitly in its new manifest. If remaining slots fall below
+that requirement before collection, retain the tested code without launching.
