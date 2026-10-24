@@ -1,0 +1,510 @@
+{
+  "scope": "Fresh randomized live trajectories, not matched checkpoint pairs",
+  "root": "/home/tomzhu0225/src/simjecture-monitor-coprocessor/artifacts/kernel-live-20261024",
+  "design_sha256": "cac3c48a5e1986bd3ae2131970857fc9d0742010a83b7e57fb5feb87a86ad3a5",
+  "results_sha256": "8ab4e59842eca149f725344bec3bcb9bea9f17ab1d5d464e50980a0596a8b6f0",
+  "source_revision": "c50e78ce2cfec0631472d1e6efba4347b13a7fa0",
+  "rows": [
+    {
+      "root": "trial-8ba1ceee72c943e48091b002221538ed",
+      "case": "healthy",
+      "policy": "model",
+      "profile": "reference",
+      "repeat": 0,
+      "returncode": 0,
+      "stage": "completed",
+      "quality": 1.0,
+      "elapsed_seconds": 92.57781791687012,
+      "parked_seconds": 17.06969952583313,
+      "native_starts": 2,
+      "judge_starts": 0,
+      "first_mismatch_at": null,
+      "first_judge_at": null,
+      "wake_reason": "adapter_completion",
+      "model_records": 16,
+      "model_errors": 0,
+      "model_median_total_seconds": 3.7786562334995324,
+      "parked_model_calls": 3,
+      "parked_judge_choices": 0,
+      "judge_while_parked": false,
+      "required_feedback_misses": 0,
+      "feedback_unknown": [],
+      "duplicate_wakeups": 0,
+      "authority_origins": [],
+      "file_sha256": {
+        "LIVE.json": "fa0539b9013b00195ba0803278cdacd037a829a94834014775d81a5cdd7dc678",
+        "INITIAL.json": "63be12c36e6589fb625ae7226c366f1f1a4d70de34e2c2f84e419e153134e35b",
+        "QUALITY.json": "fabb923ef7e471ace4339602b73671e129a113a7757908a9413102ada3cef0d9",
+        "incident-ledger.json": "18c920c0199d175a94698a3ff83749c985abf7d9d6cacd976671e694e0af7a2b",
+        "VERIFIED.json": "351bec0cdb676a151e07c5f4a0e0671bcfa0aa081e770cb25a5bb3140c4331f0"
+      },
+      "report_sha256": "5246b815ddd7895b6e892a54c19e936c2a08c8b1ef01a05a45dc6fbdefe20e09",
+      "results_sha256": "81f8da31855951da7410ca2f6c906d94803d2f18dda8cfacd63ac0b37a81f9c5",
+      "judge_response_seconds": null
+    },
+    {
+      "root": "trial-fc7a7dd759db4e8097813aa754b9efb7",
+      "case": "adapter",
+      "policy": "model",
+      "profile": "reference",
+      "repeat": 0,
+      "returncode": 0,
+      "stage": "completed",
+      "quality": 1.0,
+      "elapsed_seconds": 210.97196698188782,
+      "parked_seconds": 90.35703206062317,
+      "native_starts": 6,
+      "judge_starts": 1,
+      "first_mismatch_at": 1792803137.0851035,
+      "first_judge_at": 1792803227.989158,
+      "wake_reason": "deterministic_stall_fallback",
+      "model_records": 23,
+      "model_errors": 0,
+      "model_median_total_seconds": 3.5503024520003237,
+      "parked_model_calls": 2,
+      "parked_judge_choices": 0,
+      "judge_while_parked": false,
+      "required_feedback_misses": 0,
+      "feedback_unknown": [],
+      "duplicate_wakeups": 0,
+      "authority_origins": [
+        "coprocessor"
+      ],
+      "file_sha256": {
+        "LIVE.json": "a73657e949f86cacb168f9b00262580f0873f686a8198da5c1f2c6d01499d275",
+        "INITIAL.json": "3b798262167c53965173db880aa96bdc6f4468f7dc916a6554c27b2a8924f2b6",
+        "QUALITY.json": "9bee856914b92a3401deed69bd9c178c91c5c6901a77dae69ff11e322c924f1a",
+        "incident-ledger.json": "4e9bc9884d377a98d04829711bb247f3db2bd5c3712ca20c84cb032787a62e8e",
+        "VERIFIED.json": "268c4038956bfd6fbedf97a779b9218da62f912edc743ceb4215c45e1c19d7fd"
+      },
+      "report_sha256": "22eccece5ccdc86749c7735c6bf84868d3a69018e5df0410861310d92abc3f6d",
+      "results_sha256": "eb20b56310db4c69f703810c70642f644826cdd23bd86982180a94068d8b18eb",
+      "judge_response_seconds": 90.90405440330505
+    },
+    {
+      "root": "trial-53caa2bfe68248dd89245147039b2d07",
+      "case": "healthy",
+      "policy": "model",
+      "profile": "fla-prefill",
+      "repeat": 0,
+      "returncode": 0,
+      "stage": "completed",
+      "quality": 1.0,
+      "elapsed_seconds": 100.55870246887207,
+      "parked_seconds": 16.072817087173462,
+      "native_starts": 2,
+      "judge_starts": 0,
+      "first_mismatch_at": null,
+      "first_judge_at": null,
+      "wake_reason": "adapter_completion",
+      "model_records": 19,
+      "model_errors": 0,
+      "model_median_total_seconds": 2.0686767329998474,
+      "parked_model_calls": 4,
+      "parked_judge_choices": 0,
+      "judge_while_parked": false,
+      "required_feedback_misses": 0,
+      "feedback_unknown": [],
+      "duplicate_wakeups": 0,
+      "authority_origins": [],
+      "file_sha256": {
+        "LIVE.json": "3fa94940e0825059981a1c1f402654efee2575483f1c79d5bef090faf5bc86bb",
+        "INITIAL.json": "a55985baf4d82e880433de00b05f60d2e91c0182c7c27202e3aa049f2ed8fc26",
+        "QUALITY.json": "59839eac02d73addf09a0ab35621d5bcdb71a35a9993a0c574ba8bd30562e8db",
+        "incident-ledger.json": "1cf92d4134ebcf7d95b17ef95b7e0eee7892f90de5a1ae42cdd18c2b9c115332",
+        "VERIFIED.json": "c4d6d996de9eb981d4204c65b74152085983254b474103c4386c96d813b80bbc"
+      },
+      "report_sha256": "41a70a43cc004e94acd42030d969d2ced5212c74c054a98795910771a1e00152",
+      "results_sha256": "22cca7cec267a6ea0448d8d22fbf1da6fa621e6225bc5b7a8b311b2de3d734cd",
+      "judge_response_seconds": null
+    },
+    {
+      "root": "trial-dbe5fa021dcc4b4a8bac45a0eb8def07",
+      "case": "adapter",
+      "policy": "model",
+      "profile": "fla-prefill",
+      "repeat": 0,
+      "returncode": 0,
+      "stage": "completed",
+      "quality": 1.0,
+      "elapsed_seconds": 120.08992290496826,
+      "parked_seconds": 35.16312313079834,
+      "native_starts": 4,
+      "judge_starts": 1,
+      "first_mismatch_at": 1792803404.1108332,
+      "first_judge_at": 1792803411.1882489,
+      "wake_reason": "adapter_completion",
+      "model_records": 19,
+      "model_errors": 0,
+      "model_median_total_seconds": 2.006970820000788,
+      "parked_model_calls": 4,
+      "parked_judge_choices": 4,
+      "judge_while_parked": true,
+      "required_feedback_misses": 0,
+      "feedback_unknown": [],
+      "duplicate_wakeups": 0,
+      "authority_origins": [
+        "coprocessor"
+      ],
+      "file_sha256": {
+        "LIVE.json": "0640b77bd10deb3a09b75f82a2466fb6ba50ef73a1922abea68c05d017d419dc",
+        "INITIAL.json": "8e42f78cd042ff88b88e5d2f160d6ec3ac36eea229b2e6de29ef39bd48e261aa",
+        "QUALITY.json": "cf6aca872265337e607168bbbeb2d585b8556a6c2767839ed525bc9ae511d503",
+        "incident-ledger.json": "774c3deffbe52df55fdba7ef08e386dda3c36e6541b634717f91ff0c1ee1b97f",
+        "VERIFIED.json": "d0763a06eaa4e56e5259189b2a6cce05ecd0896c190d448ead073a43f9d4f163"
+      },
+      "report_sha256": "51fb84661c425f59e713d0693af1d2b697645255ee430bc503d3b600e95e54af",
+      "results_sha256": "1381750685e9273801a4f757d89c212433cb2952d2eba06c592f361066ce560c",
+      "judge_response_seconds": 7.077415704727173
+    },
+    {
+      "root": "trial-0cd618827ab94b87a7d0fb0cf6a7af0f",
+      "case": "healthy",
+      "policy": "model",
+      "profile": "fla-prefill",
+      "repeat": 1,
+      "returncode": 0,
+      "stage": "completed",
+      "quality": 1.0,
+      "elapsed_seconds": 74.68942260742188,
+      "parked_seconds": 6.028651714324951,
+      "native_starts": 2,
+      "judge_starts": 0,
+      "first_mismatch_at": null,
+      "first_judge_at": null,
+      "wake_reason": "adapter_completion",
+      "model_records": 15,
+      "model_errors": 0,
+      "model_median_total_seconds": 2.0876743340004396,
+      "parked_model_calls": 2,
+      "parked_judge_choices": 0,
+      "judge_while_parked": false,
+      "required_feedback_misses": 0,
+      "feedback_unknown": [],
+      "duplicate_wakeups": 0,
+      "authority_origins": [],
+      "file_sha256": {
+        "LIVE.json": "5954da427e9b98e012074fa706fb7257300cabe60432861326b60839ab76f6a5",
+        "INITIAL.json": "6d6664c80a2c6d35b19adaa04781d310433b96b0b222623db32aca0714b27a2c",
+        "QUALITY.json": "38bc841ee73305764db3dee56dd1ff2837614264e16768b4c7f460d3871c304d",
+        "incident-ledger.json": "be450eabc0e72539629379b5bc6864768200c9b41ef7de53871cd8265042fc76",
+        "VERIFIED.json": "0a25339698d97fedf50550c3b69daff165e84169f1627695c99bcb2bc93a73bf"
+      },
+      "report_sha256": "f9c0966028e68c34d32179a121a21b651c7457e5ad6c81b163814a84dc1db8c4",
+      "results_sha256": "9a91454783a9cde029312f24cb599081eb646991d9dfe578f8c98c5bdba5bcf9",
+      "judge_response_seconds": null
+    },
+    {
+      "root": "trial-2ff025eb38944eaf8571fdc9675fac7c",
+      "case": "adapter",
+      "policy": "model",
+      "profile": "fla-prefill",
+      "repeat": 1,
+      "returncode": 0,
+      "stage": "completed",
+      "quality": 1.0,
+      "elapsed_seconds": 142.46859574317932,
+      "parked_seconds": 42.175655364990234,
+      "native_starts": 6,
+      "judge_starts": 2,
+      "first_mismatch_at": 1792803538.9540133,
+      "first_judge_at": 1792803543.027865,
+      "wake_reason": "adapter_completion",
+      "model_records": 24,
+      "model_errors": 0,
+      "model_median_total_seconds": 2.093732696999723,
+      "parked_model_calls": 5,
+      "parked_judge_choices": 4,
+      "judge_while_parked": true,
+      "required_feedback_misses": 0,
+      "feedback_unknown": [],
+      "duplicate_wakeups": 1,
+      "authority_origins": [
+        "coprocessor",
+        "coprocessor"
+      ],
+      "file_sha256": {
+        "LIVE.json": "cc3e38f30f00869365be3b4c7ae42e469bf8c4c5e0eb10ee32f2110560f21bfa",
+        "INITIAL.json": "f1a658c7e5b8a30a946cd5f6c5af3e85c1710fdf5b9e60a0ec5f8a0ae509fd1b",
+        "QUALITY.json": "454fa15813667e51a3fbaadf6a1973e3ab2ca72fcdadc82103bf9200eb1aaf75",
+        "incident-ledger.json": "f788a994be69fcd7cea2dfaa73592661a19a551c2a1b53fb73dd196007549fe9",
+        "VERIFIED.json": "07033eb4d3ef7e09cd68d4dcff2b5749d6438ffacf07a40aa8b5a174f1f2e961"
+      },
+      "report_sha256": "9422982b2094860b12f55cc550abec1426897a0e0f8981e2796b464a3f01ab5e",
+      "results_sha256": "7ce8f117b82f9322e59a61683ce907e46125d43a43ac2be952122efe3c64dea4",
+      "judge_response_seconds": 4.073851585388184
+    },
+    {
+      "root": "trial-17bc0280cc8c432d91496150ca7e1b9a",
+      "case": "adapter",
+      "policy": "model",
+      "profile": "reference",
+      "repeat": 1,
+      "returncode": 0,
+      "stage": "completed",
+      "quality": 1.0,
+      "elapsed_seconds": 200.86704659461975,
+      "parked_seconds": 90.34330129623413,
+      "native_starts": 6,
+      "judge_starts": 1,
+      "first_mismatch_at": 1792803684.130951,
+      "first_judge_at": 1792803777.529554,
+      "wake_reason": "deterministic_stall_fallback",
+      "model_records": 21,
+      "model_errors": 0,
+      "model_median_total_seconds": 3.571594909999476,
+      "parked_model_calls": 1,
+      "parked_judge_choices": 0,
+      "judge_while_parked": false,
+      "required_feedback_misses": 0,
+      "feedback_unknown": [],
+      "duplicate_wakeups": 0,
+      "authority_origins": [
+        "coprocessor"
+      ],
+      "file_sha256": {
+        "LIVE.json": "dfc8a4cc899dc1440c554bfeeb03a671dd0f6f8a428d59460ffa7d976721b128",
+        "INITIAL.json": "69d6d37e95f758721e4c9dd01bf52f6fef3011317379eb90400b425d0c83f0de",
+        "QUALITY.json": "c584a4804841237c8bccd336235bb9eb9cc83485fba84c7bcb0c245251752de3",
+        "incident-ledger.json": "f635c60bcd8244d8cfcbc81e8eee75cdc2439f8cc43ea881ae16a8cdba17a7a4",
+        "VERIFIED.json": "8fdf951c3d47d117374397f81ba8b191c2b8e5ab5bc90f59a031b87b1d2a2380"
+      },
+      "report_sha256": "bbfebae6a621265b9fcc4385265a1ff769a5e45d1f89e01cd25a5fd9ab12e329",
+      "results_sha256": "746d69bcd233eec1a05e8f1bac785bc0d092dcb1f7bd90ff2f7374d46710d061",
+      "judge_response_seconds": 93.3986029624939
+    },
+    {
+      "root": "trial-0994f75979ca44f79ebaf3f972c1e790",
+      "case": "healthy",
+      "policy": "model",
+      "profile": "reference",
+      "repeat": 1,
+      "returncode": 0,
+      "stage": "completed",
+      "quality": 1.0,
+      "elapsed_seconds": 95.92178988456726,
+      "parked_seconds": 12.560705661773682,
+      "native_starts": 2,
+      "judge_starts": 0,
+      "first_mismatch_at": null,
+      "first_judge_at": null,
+      "wake_reason": "adapter_completion",
+      "model_records": 15,
+      "model_errors": 0,
+      "model_median_total_seconds": 3.422211383999638,
+      "parked_model_calls": 1,
+      "parked_judge_choices": 0,
+      "judge_while_parked": false,
+      "required_feedback_misses": 0,
+      "feedback_unknown": [],
+      "duplicate_wakeups": 0,
+      "authority_origins": [],
+      "file_sha256": {
+        "LIVE.json": "b5d081e90b41e9b8ea5b953c25c94ab5fbd2b80cde18adb956516c2e6f6b96a5",
+        "INITIAL.json": "516463c88c1202a91dc40b2250f9f66af0031d9cd5629071ac4a5ebf9561a927",
+        "QUALITY.json": "d1a01be0ab6221b4ebfa1b9741e93cb8c953b53ecd06d34f0707670dfa6a9221",
+        "incident-ledger.json": "655550a94f4d327acd36d1f9950f53e17f93ee6beeb37b631ef1e4fd9bfe6531",
+        "VERIFIED.json": "993b92a0acc7f316882f40397fed7322de942a32a9901f5545002174791f0a61"
+      },
+      "report_sha256": "e091cc79de1aa502e847a8777d03dbf52bbaf2332db625bdbd22f8f7b87f21cd",
+      "results_sha256": "7de106574f99c6a88f262acb609eb1e8eab52c53aaf6f4db86a3620819250262",
+      "judge_response_seconds": null
+    }
+  ],
+  "groups": [
+    {
+      "case": "adapter",
+      "policy": "model",
+      "profile": "fla-prefill",
+      "count": 2,
+      "elapsed_seconds": {
+        "values": [
+          120.08992290496826,
+          142.46859574317932
+        ],
+        "mean": 131.2792593240738
+      },
+      "parked_seconds": {
+        "values": [
+          35.16312313079834,
+          42.175655364990234
+        ],
+        "mean": 38.66938924789429
+      },
+      "native_starts": {
+        "values": [
+          4,
+          6
+        ],
+        "mean": 5
+      },
+      "judge_response_seconds": {
+        "values": [
+          7.077415704727173,
+          4.073851585388184
+        ],
+        "mean": 5.575633645057678
+      },
+      "model_records": {
+        "values": [
+          19,
+          24
+        ],
+        "mean": 21.5
+      },
+      "model_median_total_seconds": {
+        "values": [
+          2.006970820000788,
+          2.093732696999723
+        ],
+        "mean": 2.0503517585002555
+      },
+      "judges_while_parked": 2
+    },
+    {
+      "case": "adapter",
+      "policy": "model",
+      "profile": "reference",
+      "count": 2,
+      "elapsed_seconds": {
+        "values": [
+          210.97196698188782,
+          200.86704659461975
+        ],
+        "mean": 205.91950678825378
+      },
+      "parked_seconds": {
+        "values": [
+          90.35703206062317,
+          90.34330129623413
+        ],
+        "mean": 90.35016667842865
+      },
+      "native_starts": {
+        "values": [
+          6,
+          6
+        ],
+        "mean": 6
+      },
+      "judge_response_seconds": {
+        "values": [
+          90.90405440330505,
+          93.3986029624939
+        ],
+        "mean": 92.15132868289948
+      },
+      "model_records": {
+        "values": [
+          23,
+          21
+        ],
+        "mean": 22
+      },
+      "model_median_total_seconds": {
+        "values": [
+          3.5503024520003237,
+          3.571594909999476
+        ],
+        "mean": 3.5609486809999
+      },
+      "judges_while_parked": 0
+    },
+    {
+      "case": "healthy",
+      "policy": "model",
+      "profile": "fla-prefill",
+      "count": 2,
+      "elapsed_seconds": {
+        "values": [
+          100.55870246887207,
+          74.68942260742188
+        ],
+        "mean": 87.62406253814697
+      },
+      "parked_seconds": {
+        "values": [
+          16.072817087173462,
+          6.028651714324951
+        ],
+        "mean": 11.050734400749207
+      },
+      "native_starts": {
+        "values": [
+          2,
+          2
+        ],
+        "mean": 2
+      },
+      "judge_response_seconds": {
+        "values": [],
+        "mean": null
+      },
+      "model_records": {
+        "values": [
+          19,
+          15
+        ],
+        "mean": 17
+      },
+      "model_median_total_seconds": {
+        "values": [
+          2.0686767329998474,
+          2.0876743340004396
+        ],
+        "mean": 2.0781755335001435
+      },
+      "judges_while_parked": 0
+    },
+    {
+      "case": "healthy",
+      "policy": "model",
+      "profile": "reference",
+      "count": 2,
+      "elapsed_seconds": {
+        "values": [
+          92.57781791687012,
+          95.92178988456726
+        ],
+        "mean": 94.24980390071869
+      },
+      "parked_seconds": {
+        "values": [
+          17.06969952583313,
+          12.560705661773682
+        ],
+        "mean": 14.815202593803406
+      },
+      "native_starts": {
+        "values": [
+          2,
+          2
+        ],
+        "mean": 2
+      },
+      "judge_response_seconds": {
+        "values": [],
+        "mean": null
+      },
+      "model_records": {
+        "values": [
+          16,
+          15
+        ],
+        "mean": 15.5
+      },
+      "model_median_total_seconds": {
+        "values": [
+          3.7786562334995324,
+          3.422211383999638
+        ],
+        "mean": 3.6004338087495853
+      },
+      "judges_while_parked": 0
+    }
+  ],
+  "all_verified_complete": true,
+  "all_ended": true,
+  "strict_feedback_eligible": 8,
+  "native_starts": 30
+}

@@ -81,3 +81,23 @@ the existing policy-identity/ratio checks to reuse old logs. Local experiments
 use the shared Ada GPU without stopping the unrelated simulation; Colab remains
 unallocated during this stage. Spend future A100 time only after sampled data,
 held-out mechanisms and a measurable target are ready.
+
+At the measured 2.22-second warm decision time, a single sequential server's
+idealized service ceiling is about 0.45 decisions/second before queuing and
+other overhead. This is a calculation from the local benchmark, not an isolated
+throughput result. A resident 4B also occupies substantial VRAM. Use cheap process
+invariants and event filtering continuously, with the 4B invoked on changed or
+coarsely aged ambiguous evidence and deduplicated per incident. The target is
+second/minute-scale workflow supervision, not numerical feedback at plasma
+simulation timesteps. Typed diagnostic summaries should carry the evidence;
+raw simulation fields and long private agent histories are not the model input.
+
+The grace commissioning also shows a credit-assignment hazard: a raw correct
+model request can be blocked by host eligibility/cooldown bookkeeping before any
+native judge starts. Log raw choice, eligibility reason, effective route and
+execution receipt separately. A deliberately deferred reservation must not be
+counted as an executed interruption or silently labelled a learned wait choice.
+Whether a future optimizer should learn the host gate's behavior depends on its
+observed state and specified environment contract; these prescribed greedy
+commissioning runs are not sampled PPO data. The fixed gate is exercised
+separately, retaining the original failed commissioning rather than rewriting it.

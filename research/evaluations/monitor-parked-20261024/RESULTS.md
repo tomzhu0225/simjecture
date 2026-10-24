@@ -8,6 +8,12 @@ Public-state rules handled the same structured fault faster: 99–107 seconds,
 also four starts. This supports the usefulness of background attention in this
 fixture; it does not establish that the learned model is better than rules.
 
+![Individual live trajectories](measured-runs.png)
+
+Later [runtime repetitions](../monitor-kernels-20261024/RESULTS.md) included
+missed parked triggers and a stale second request. This successful demonstration
+is not a robust detection guarantee.
+
 ## Measured cohort
 
 Twelve fresh live trajectories, two per cell, followed the frozen
