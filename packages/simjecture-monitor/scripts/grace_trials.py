@@ -19,6 +19,7 @@ class GraceMixin:
                 self.monitor_pending and self.monitor_pending[0]["action"] == "request_repair_judge"
             ):
                 alert = self.monitor_pending.pop(0)
+                self.monitor_gate.defer_before_dispatch(alert)
                 alert["routing"] = "Host prescribed defer during ten-second contradiction grace"
                 if not hasattr(self, "grace_deferrals"):
                     self.grace_deferrals = []

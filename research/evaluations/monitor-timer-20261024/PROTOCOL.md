@@ -52,3 +52,23 @@ Use the same fast base and limits, after the original eight timer trajectories
 and server exit. Require at least24 unused global native start slots before
 the two-case commissioning; the shared240 cap remains binding. Do not pool these
 two commissioning cases with the eight-run comparison or use them for training.
+
+### Corrected commissioning after reservation bookkeeping failure
+
+The first two grace commissioning runs are retained separately under
+`artifacts/grace-live-20261024`. The timed arm delivered new observations and the
+model repeatedly chose a judge, but the discarded initial alert had already
+reserved the60-second alert cooldown. This was a grace-fixture integration bug,
+not a model defer choice. Do not use these runs to estimate timer effectiveness.
+
+Add `AlertGate.defer_before_dispatch` to release only a host-deferred accepted
+alert's reservation and fingerprint, without clearing a newer alert's cooldown.
+Call it when the grace fixture discards an alert; default routing is unchanged.
+Regression tests cover both the original blocked-retry failure and out-of-order
+release. After those two original runs and all owned roles finish, preserve the
+pre-amendment native lease and tighten the per-continuation cap from12 to8.
+A separate corrected two-case commissioning then needs16 remaining global start
+slots, still under the unchanged240 total/four-concurrent cap. Freeze its design
+and source before launch and retain both old and corrected results. This is the
+last native collection in this stage. No adapter training or efficacy claim is
+justified by this small deliberately constrained mechanism check.

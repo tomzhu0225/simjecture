@@ -84,6 +84,17 @@ class AlertGate:
         self.last = {}
         self.acknowledged = set()
 
+    def defer_before_dispatch(self, alert):
+        """Release an accepted alert that the host deferred without dispatch.
+
+        Do not erase a newer alert's cooldown when an older reservation is
+        released. This does not acknowledge, execute or grant the alert.
+        """
+        key = (alert["subject"], alert["action"])
+        if self.last.get(key) == alert["created_at"]:
+            self.last.pop(key)
+        self.acknowledged.discard((*key, alert["packet_sha256"]))
+
     def accept(self, packet, decision, *, now=None):
         if decision.get("packet_sha256") != packet["packet_sha256"]:
             raise ValueError("Stale monitor response")

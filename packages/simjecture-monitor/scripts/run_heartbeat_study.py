@@ -92,7 +92,17 @@ def main():
         if release["socket_present"]:
             raise RuntimeError("Previous server did not release socket")
     budget = json.loads((pilot / "native-budget.json").read_text())
-    minimum = 24 if args.grace_commissioning else 40
+    minimum = len(jobs) * budget["maximum_per_continuation"] if args.grace_commissioning else 40
+    put(
+        root / "LEASE_PREFLIGHT.json",
+        dict(
+            measured_at=time.time(),
+            minimum_slots=minimum,
+            existing_starts=len(budget["starts"]),
+            maximum_starts=budget["maximum_starts"],
+            maximum_per_continuation=budget["maximum_per_continuation"],
+        ),
+    )
     if budget["maximum_starts"] - len(budget["starts"]) < minimum:
         raise RuntimeError("Insufficient remaining native start allowance")
     socket = Path("/tmp/simjecture-timer-" + uuid.uuid4().hex + ".sock")
