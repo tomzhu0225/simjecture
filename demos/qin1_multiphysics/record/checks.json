@@ -1,0 +1,268 @@
+{
+  "scope": "Recorded numerical and execution checks; no formal harness claim review or physical-shot validation.",
+  "selected_CAD_checks": {
+    "valid_changed_solids": true,
+    "all_contacts_closed": true,
+    "no_new_part_overlap": true
+  },
+  "matched_EM_records": [
+    {
+      "case": "original",
+      "checks": {
+        "execution_success": true,
+        "full_600ns": true,
+        "FEM_audits": true,
+        "circuit_audits": true,
+        "SIF_hash_matches_execution": true,
+        "frontal_patch_500ns": true
+      },
+      "max_branch_balance_relative": 3.469211990033815e-05,
+      "max_rod_balance_relative": 6.870752487407323e-05,
+      "FEM_energy_closure_relative": 9.432581254249261e-08
+    },
+    {
+      "case": "paired_feed_n3",
+      "checks": {
+        "execution_success": true,
+        "full_600ns": true,
+        "FEM_audits": true,
+        "circuit_audits": true,
+        "SIF_hash_matches_execution": true,
+        "frontal_patch_500ns": true
+      },
+      "max_branch_balance_relative": 4.046090753397178e-05,
+      "max_rod_balance_relative": 4.5726610420630454e-05,
+      "FEM_energy_closure_relative": 4.9059387920036e-07
+    },
+    {
+      "case": "original_h06",
+      "checks": {
+        "execution_success": true,
+        "full_600ns": true,
+        "FEM_audits": true,
+        "circuit_audits": true,
+        "SIF_hash_matches_execution": true,
+        "frontal_patch_500ns": true
+      },
+      "max_branch_balance_relative": 4.497832209848783e-05,
+      "max_rod_balance_relative": 8.362476038141477e-05,
+      "FEM_energy_closure_relative": 6.447906500801376e-07
+    },
+    {
+      "case": "paired_feed_n3_h06",
+      "checks": {
+        "execution_success": true,
+        "full_600ns": true,
+        "FEM_audits": true,
+        "circuit_audits": true,
+        "SIF_hash_matches_execution": true,
+        "frontal_patch_500ns": true
+      },
+      "max_branch_balance_relative": 1.7024467690783227e-06,
+      "max_rod_balance_relative": 9.356355232258643e-07,
+      "FEM_energy_closure_relative": 1.1476413726163176e-08
+    },
+    {
+      "case": "original_dt12p5",
+      "checks": {
+        "execution_success": true,
+        "full_600ns": true,
+        "FEM_audits": true,
+        "circuit_audits": true,
+        "SIF_hash_matches_execution": true,
+        "frontal_patch_500ns": true
+      },
+      "max_branch_balance_relative": 8.684136771710928e-06,
+      "max_rod_balance_relative": 2.39711007086383e-06,
+      "FEM_energy_closure_relative": 4.411477972312139e-08
+    },
+    {
+      "case": "paired_feed_n3_dt12p5",
+      "checks": {
+        "execution_success": true,
+        "full_600ns": true,
+        "FEM_audits": true,
+        "circuit_audits": true,
+        "SIF_hash_matches_execution": true,
+        "frontal_patch_500ns": true
+      },
+      "max_branch_balance_relative": 9.801920642991992e-06,
+      "max_rod_balance_relative": 5.224789614543244e-06,
+      "FEM_energy_closure_relative": 7.662217714818154e-09
+    }
+  ],
+  "static_imports": {
+    "elmer-import-ct-h05": {
+      "scope": "Static source import qualification; near-metal cells and plasma dynamics are not qualified by this test.",
+      "time_s": 2e-11,
+      "native_discrete_operator_relative_L2_error": 1.4061518932641558e-14,
+      "front_vector_relative_L2_error_vs_FEM": 0.008070713752987173,
+      "buffered_air_vector_relative_L2_error_vs_FEM": 0.020192341246141596,
+      "buffered_air_cells": 103411,
+      "distance_buffer_m": 0.0018660254037844385,
+      "max_empty_domain_E_V_m": 0.0,
+      "interpretation": "The buffered region removes the near-conductor zone that the nominal Cartesian mesh cannot resolve. Any later plasma inference must also check density/flow penetration into that unqualified zone.",
+      "checks": {
+        "native_operator_recovered": true,
+        "front_field_preserved": true,
+        "buffered_air_field_preserved": true,
+        "static_empty_domain_E_zero": true
+      },
+      "static_import_checks_pass": true,
+      "source_VTU_hash_matches": true,
+      "source_time_ns": 500.0
+    },
+    "baseline-import-ct-h05": {
+      "scope": "Static source import qualification; near-metal cells and plasma dynamics are not qualified by this test.",
+      "time_s": 2e-11,
+      "native_discrete_operator_relative_L2_error": 1.3712264233563881e-14,
+      "front_vector_relative_L2_error_vs_FEM": 0.007563154869772691,
+      "buffered_air_vector_relative_L2_error_vs_FEM": 0.020267735083801613,
+      "buffered_air_cells": 97633,
+      "distance_buffer_m": 0.0018660254037844385,
+      "max_empty_domain_E_V_m": 0.0,
+      "interpretation": "The buffered region removes the near-conductor zone that the nominal Cartesian mesh cannot resolve. Any later plasma inference must also check density/flow penetration into that unqualified zone.",
+      "checks": {
+        "native_operator_recovered": true,
+        "front_field_preserved": true,
+        "buffered_air_field_preserved": true,
+        "static_empty_domain_E_zero": true
+      },
+      "static_import_checks_pass": true,
+      "source_VTU_hash_matches": true,
+      "source_time_ns": 500.0
+    },
+    "elmer-import-ct-h04": {
+      "scope": "Static source import qualification; near-metal cells and plasma dynamics are not qualified by this test.",
+      "time_s": 2e-11,
+      "native_discrete_operator_relative_L2_error": 7.95586140122187e-14,
+      "front_vector_relative_L2_error_vs_FEM": 0.007101150441417824,
+      "buffered_air_vector_relative_L2_error_vs_FEM": 0.019510203883052156,
+      "buffered_air_cells": 205395,
+      "distance_buffer_m": 0.0016928203230275507,
+      "max_empty_domain_E_V_m": 0.0,
+      "interpretation": "The buffered region removes the near-conductor zone that the nominal Cartesian mesh cannot resolve. Any later plasma inference must also check density/flow penetration into that unqualified zone.",
+      "checks": {
+        "native_operator_recovered": true,
+        "front_field_preserved": true,
+        "buffered_air_field_preserved": true,
+        "static_empty_domain_E_zero": true
+      },
+      "static_import_checks_pass": true,
+      "source_VTU_hash_matches": true,
+      "source_time_ns": 500.0
+    },
+    "paired3-import-ct-h05": {
+      "scope": "Static source import qualification; near-metal cells and plasma dynamics are not qualified by this test.",
+      "time_s": 2e-11,
+      "native_discrete_operator_relative_L2_error": 1.566316187965149e-14,
+      "front_vector_relative_L2_error_vs_FEM": 0.0071883678567692495,
+      "buffered_air_vector_relative_L2_error_vs_FEM": 0.015706645898204284,
+      "buffered_air_cells": 100206,
+      "distance_buffer_m": 0.0018660254037844385,
+      "max_empty_domain_E_V_m": 0.0,
+      "interpretation": "The buffered region removes the near-conductor zone that the nominal Cartesian mesh cannot resolve. Any later plasma inference must also check density/flow penetration into that unqualified zone.",
+      "checks": {
+        "native_operator_recovered": true,
+        "front_field_preserved": true,
+        "buffered_air_field_preserved": true,
+        "static_empty_domain_E_zero": true
+      },
+      "static_import_checks_pass": true,
+      "source_VTU_hash_matches": true,
+      "source_time_ns": 500.0
+    }
+  },
+  "field_off_control": {
+    "full_request_completed": true,
+    "all_saved_fields_finite": true,
+    "B_exactly_zero_in_every_saved_output": true,
+    "maximum_injected_mass_relative_error": 0.007845351853611016,
+    "mass_within_1percent": true
+  },
+  "plasma_executions": [
+    {
+      "case": "source-off-compact-220ns",
+      "full_220ns_request_completed": true,
+      "all_saved_fields_finite": true,
+      "finite_200ns_available": true,
+      "last_saved_ns": 219.99999999999494,
+      "returncode": 0,
+      "reason": "Native process completed successfully."
+    },
+    {
+      "case": "baseline-on-compact-220ns",
+      "full_220ns_request_completed": false,
+      "all_saved_fields_finite": true,
+      "finite_200ns_available": true,
+      "last_saved_ns": 199.99999999999608,
+      "returncode": 124,
+      "reason": "Original 90 minute watchdog expired; latest complete saved fields are at 200 ns."
+    },
+    {
+      "case": "thin-on-compact-220ns",
+      "full_220ns_request_completed": true,
+      "all_saved_fields_finite": true,
+      "finite_200ns_available": true,
+      "last_saved_ns": 219.99999999999494,
+      "returncode": 0,
+      "reason": "Native process completed successfully."
+    },
+    {
+      "case": "thin-on-h04-compact-220ns",
+      "full_220ns_request_completed": false,
+      "all_saved_fields_finite": true,
+      "finite_200ns_available": true,
+      "last_saved_ns": 199.99999999999608,
+      "returncode": null,
+      "reason": "On continuation the native process and its scheduler were absent; the log ends during step 1098 with no AMReX finalization. The current host boot is later than the log timestamp. No solver exit code was recoverable. Preserve the completed common 200 ns output; do not relabel the 220 ns request as complete."
+    },
+    {
+      "case": "thin-on-dt100-compact-220ns",
+      "full_220ns_request_completed": true,
+      "all_saved_fields_finite": true,
+      "finite_200ns_available": true,
+      "last_saved_ns": 220.00000000000452,
+      "returncode": 0,
+      "reason": "Native process completed; analysis recorded separately."
+    },
+    {
+      "case": "thin-on-medium-compact-220ns",
+      "full_220ns_request_completed": true,
+      "all_saved_fields_finite": true,
+      "finite_200ns_available": true,
+      "last_saved_ns": 219.99999999999494,
+      "returncode": 0,
+      "reason": "Native process completed; analysis recorded separately."
+    },
+    {
+      "case": "thin-on-ppc32-compact-220ns",
+      "full_220ns_request_completed": true,
+      "all_saved_fields_finite": true,
+      "finite_200ns_available": true,
+      "last_saved_ns": 219.99999999999494,
+      "returncode": 0,
+      "reason": "Native process completed; analysis recorded separately."
+    },
+    {
+      "case": "thin-on-floor1-compact-220ns",
+      "full_220ns_request_completed": true,
+      "all_saved_fields_finite": true,
+      "finite_200ns_available": true,
+      "last_saved_ns": 219.99999999999494,
+      "returncode": 0,
+      "reason": "Native process completed; analysis recorded separately."
+    },
+    {
+      "case": "paired3-on-compact-220ns",
+      "full_220ns_request_completed": true,
+      "all_saved_fields_finite": true,
+      "finite_200ns_available": true,
+      "last_saved_ns": 219.99999999999494,
+      "returncode": 0,
+      "reason": "Native process completed; analysis recorded separately."
+    }
+  ],
+  "physical_shot_validated": false,
+  "bow_shock_verified": false
+}

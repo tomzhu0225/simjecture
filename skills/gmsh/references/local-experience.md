@@ -36,3 +36,16 @@ orders when choosing another route. Native Gmsh choices remain available.
 OpenCASCADE is Gmsh's CAD kernel; it is not a separate Simjecture tool entry.
 On a headless Linux host, a missing `libGLU.so.1` can prevent even importing
 Gmsh. The managed installer supplies it without changing system packages.
+
+For a changed current path, validate intended contact and unintended interference
+separately. In the Qin-1 extension, blindly reflecting a feed intersected other
+hardware; the accepted version required a new clearance hole and mount. Record
+fixture changes alongside winding parameters. Rebuild tags after those Boolean
+operations, then check the resulting conductor connectivity and port surfaces.
+A geometrically valid part can still violate an electrical design criterion.
+
+Bind each generated mesh to the actual CAD hashes and geometry parameters used.
+When exporting material labels to a Cartesian downstream model, state how a cell
+is classified: a cell with one solid corner is not the same as an exact solid
+volume fraction or a particle-surface intersection. Keep that distinction in
+later overlap and boundary diagnostics.

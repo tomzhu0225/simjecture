@@ -4,6 +4,12 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+- Feature the Qin-1 CAD → circuit/EM → 3D plasma study in the README and demo
+  gallery, with retained measurements, interactive results and no-key record
+  verification. Add reusable skill guidance for external FEM field transfer,
+  geometry/current-path changes and qualified comparison visualizations.
+  Preserve the host-run exploratory scope and failed plasma flux controls.
+
 - Redesign research-tool setup feedback. Installs and readiness checks start
   visibly at once, move to a *Setup activity* section, and show the installer's
   own stages (prepare, install, verify), a live elapsed timer, the latest output

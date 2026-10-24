@@ -1,0 +1,47 @@
+{
+  "stage": "exploration",
+  "recorded_utc": "2026-10-23T16:35:45.563822+00:00",
+  "scope": "Comparison criteria fixed before the 220 ns comparison; last analyzed field-on state was 80 ns and the live trajectory had reached approximately 107 ns. Not formal Simjecture harness evidence.",
+  "primary_observables": {
+    "forward_flux": "Integral of positive ion vx times mass density over the 6 mm by 6 mm square at the cell plane nearest x=-7 mm; actual plane x=-7.25 mm.",
+    "deflection": "Particle-weighted transverse bulk speed on the same plane; no density means no valid mean speed.",
+    "pileup": "Saved density profiles and maxima upstream; this alone is not a shock identifier."
+  },
+  "consistency_gates": {
+    "finite_saved_fields_and_moments": true,
+    "all_requested_steps_completed": true,
+    "source_off_mass_vs_analytic_injection_relative_error_max": 0.01,
+    "source_off_field_should_remain_zero": true
+  },
+  "quantitative_claim_gates": {
+    "relative_forward_flux_change_on_dt_halving_max": 0.1,
+    "relative_forward_flux_change_on_ppc_doubling_max": 0.1,
+    "relative_forward_flux_change_on_floor_halving_max": 0.1,
+    "relative_forward_flux_change_under_domain_padding_test_max": 0.1,
+    "near_metal_condition": "Report mass in solid and unqualified near-metal cells. No hardware-resolved global flow claim if appreciable plasma enters those cells.",
+    "relative_forward_flux_change_on_h05_to_h04_refinement_max": 0.1
+  },
+  "interpretation": "A difference in flow between maintained external-field-on and otherwise identical field-off controls can establish a conditional magnetic response. No bow-shock claim without additional shock-frame, jump-condition and model-validity checks. The source-off control is prescribed-inflow with all imposed device fields removed; it is not a physical shot with only the coil disabled.",
+  "mesh_control_note": "A native 1 mm import preserved the front field but failed the wider buffered-field gate (14.9% vector error), so it was rejected before plasma dynamics. Prepare a 0.4 mm field transfer and use it for a prospective refinement comparison against 0.5 mm. This extension was written before any 0.4 mm import or dynamics result.",
+  "mesh_estimator_detail": "For grid comparisons use a fixed x=-7.25 mm plane and an exact 6 x 6 mm footprint, with fractional edge-cell areas and linear interpolation of integrated moments between neighboring x cell centers. This equals the original h=0.5 mm plane metric and avoids changing the physical comparison surface on the h=0.4 mm mesh. The flux estimator is positive cell-mean (bulk) mass flux, not a distribution-resolved one-way particle flux. Added before any h=0.4 mm dynamics.",
+  "secondary_density_edge": {
+    "recorded_utc": "2026-10-23T17:09:59.981450+00:00",
+    "reason": "The inspected 140 ns field-on state has very low density at the original comparison plane; its small transmitted-flux ratio may be sensitive to the hybrid vacuum treatment. Keep that primary metric and its limits, and additionally compare an above-floor density-edge location.",
+    "definition": "First downstream falling ne/ne0=0.5 crossing after the maximum of the central 6 x 6 mm density profile in x=-18 to -3 mm.",
+    "prospective_mesh_dt_ppc_floor_domain_displacement_tolerance_mm": 1.0,
+    "interpretation": "A density-edge displacement diagnostic, not a bow-shock identifier. This secondary observable was added after inspecting the 140 ns preliminary state, before the 220 ns outcomes and before any sensitivity control outcome."
+  },
+  "bounded_window_contingency": {
+    "recorded_utc": "2026-10-23T17:49:29.749617+00:00",
+    "condition": "The original-coil run is near 193 ns and its 90 minute watchdog may expire before 220 ns. No extension or solver change is made.",
+    "rule": "Use the largest common saved physical time for the original-versus-thin design figure, normally 220 ns or 200 ns. Label the time explicitly and preserve incomplete execution status. The separately planned 220 ns sensitivity target remains unchanged.",
+    "prospective_status": "Written before reading any original-coil plasma output beyond the source-import control; no original-coil 200 ns result has been analyzed."
+  },
+  "common_observation_time_ns": 200,
+  "common_window_revision": {
+    "recorded_utc": "2026-10-23T17:53:32.633460+00:00",
+    "reason": "The original-coil run has reached 203.4 ns but its 90 minute watchdog has only about five minutes left. Use the common saved 200 ns state for design and sensitivity comparisons; retain 220 ns as an extension where completed.",
+    "provenance": "This time selection is fixed before analyzing the original-coil 200 ns fields and before any queued sensitivity case has run. The refined 0.4 mm case is paused near 44 ns. Numerical thresholds and fixed-plane/edge definitions are unchanged.",
+    "reporting": "Keep requested-window execution status separate from common-window finite-output/readout status. A timeout is not silently converted to successful 220 ns completion."
+  }
+}

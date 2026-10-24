@@ -38,6 +38,9 @@ Read [installation](references/installation.md) for setup and
 convergence, memory or reduced conductor models. The installation smoke test is
 a small **heat-conduction** problem, independent of the EM example.
 
+The same reference covers feed/current-path redesign and exporting fields to
+another solver: circuit agreement alone does not qualify the spatial handoff.
+
 For a ready-made cold-conductor A-v or finite-capacitor RLC starting point, read
 [the optional conductor interface](references/case-interface.md) and use
 `$SIMJECTURE_ELMER_CONDUCTOR_DRIVER`. Its mesh, solve, audit and plot stages have

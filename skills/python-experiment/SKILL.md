@@ -10,6 +10,9 @@ and Matplotlib. For mesh and field visualization, read
 [the PyVista guide](references/pyvista.md), including lessons from local FEM
 analysis. Users can write their own visualization and analysis scripts.
 
+Its coupled-results section covers matched physical footprints, density-floor
+masking, CAD/particle overlap interpretation and portable interactive/VTK outputs.
+
 In classic campaigns, use `run_python` for contained calculations supported by the ordinary Python
 environment. Prefer a short workspace script over a large inline `-c` program
 when the calculation, diagnostics, or audit trail is nontrivial. Make the script

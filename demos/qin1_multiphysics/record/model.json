@@ -1,0 +1,40 @@
+{
+  "stage": "exploration",
+  "scope": "One-way, held-peak FEM magnetic-field coupling to a conditional collisional aluminium plume. Not a simulated Qin-1 exploding-wire shot.",
+  "arguments": {
+    "name": "thin-on-compact-220ns",
+    "steps": 1100,
+    "dt_ps": 200,
+    "source_off": false,
+    "ppc": 16,
+    "floor_fraction": 0.02,
+    "rtol": 0.0001,
+    "interval": 100,
+    "field_family": "thin"
+  },
+  "input_sha256": "2a78f1f0a4df819d74e9ed433ef4a0baefdb68dcce75530c4b43838a9d2d7b82",
+  "A_sha256": "fb564c2f03d3401d71b4554415d89f3d3522f56933127e31ec9a0c68d66fa7a6",
+  "electron_density_m3": 1.25e+22,
+  "charge_state": 3.5,
+  "u_m_s": 100000.0,
+  "Te_eV": 15,
+  "Ti_eV": 20,
+  "eta_ohm_m": 3.1e-05,
+  "CoulombLog": 5,
+  "initial_state": "empty; beam turns on after the external source is established",
+  "boundary": "fixed/unupdated perturbation field guard cells (none); absorbing particles; padding sensitivity required",
+  "limits": [
+    "No metal absorbing boundary or conductor feedback; monitor penetration into unqualified near-metal zone.",
+    "Isothermal electrons, fixed charge state, no ablation, radiation, EOS or electron energy evolution.",
+    "Static field is the 500 ns cold-conductor state held indefinitely; it is not the bank waveform.",
+    "FEM array remains a cold copper shell surrogate."
+  ],
+  "prospective_checks": {
+    "finite_fields": true,
+    "no_solver_abort": true,
+    "plasma_front_arrival_must_precede_claim": true,
+    "comparison_source_off_required": true,
+    "dt_and_floor_and_ppc_sensitivity_required_for_quantitative_claim": true,
+    "near_metal_plasma_occupancy_required": true
+  }
+}
