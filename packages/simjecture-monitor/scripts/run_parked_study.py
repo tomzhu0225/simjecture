@@ -22,7 +22,7 @@ def load(path):
     return json.loads(path.read_text())
 
 
-def execute(root, job, budget, wrapper, socket):
+def execute(root, job, budget, wrapper, socket, *, driver="parked_trials.py"):
     trial = root / job["root"]
     if trial.exists():
         raise ValueError("Retain prior trials; do not overwrite or silently rerun")
@@ -35,7 +35,7 @@ def execute(root, job, budget, wrapper, socket):
     command = [
         sys.executable,
         "-u",
-        str(Path(__file__).with_name("parked_trials.py")),
+        str(Path(__file__).with_name(driver)),
         "--root",
         str(trial),
         "--case",
