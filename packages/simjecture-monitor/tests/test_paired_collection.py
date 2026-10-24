@@ -4,6 +4,7 @@ import json
 import sys
 from pathlib import Path
 
+import pytest
 from simjecture_monitor.events import put
 
 
@@ -93,3 +94,22 @@ def test_design_keeps_assignments_out_of_runtime_roots_and_freezes_order(tmp_pat
     )
     assert json.loads((tmp_path / "DESIGN.json").read_text())["parent_continuations"] == 32
     assert sys.modules.get("live_trials")
+
+
+def test_collector_rejects_a_changed_downstream_contract_before_native_work(tmp_path, monkeypatch):
+    loaded = module(monkeypatch)
+    from simjecture_monitor.events import digest
+
+    checkpoint = tmp_path / "checkpoint"
+    put(
+        checkpoint / "checkpoint.json",
+        dict(
+            worker_config_sha256=digest(loaded.WORKER),
+            downstream_policy_sha256=digest(dict(feedback_contract="legacy contract")),
+        ),
+    )
+    with pytest.raises(ValueError, match="downstream policy"):
+        loaded.continuation(
+            tmp_path / "trial", checkpoint, "defer", "replicate", tmp_path / "wrapper"
+        )
+    assert not (tmp_path / "trial").exists()

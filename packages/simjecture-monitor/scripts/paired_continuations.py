@@ -43,8 +43,9 @@ DOWNSTREAM = dict(
     simulation_limit=4,
     wall_seconds=650,
     feedback_contract=(
-        "Acknowledge actual available feedback by id and content digest; "
-        "applied protected repairs require acknowledgment"
+        "Acknowledge actual available feedback by id and content digest; declared required "
+        "helper results, applied protected repairs and director replans require acknowledgment; "
+        "legacy undeclared helper necessity remains unknown"
     ),
 )
 CASES = [
@@ -63,7 +64,9 @@ FEEDBACK_INSTRUCTIONS = (
     "copy ids and digests exactly. disposition is used, no_change or challenged. Explain "
     "what you checked or why advice made no change. An acknowledgment is not scientific "
     "validation. Use actual returned results, never invent them. Do not launch other agents "
-    "or modify the host/monitor/lease controls. Use lab for bounded assistance."
+    "or modify the host/monitor/lease controls. Use lab for bounded assistance. When calling "
+    "lab.request_help, declare feedback_requirement='required' if you need the result before "
+    "finalizing, otherwise 'advisory'. Declare this before the result, not afterward."
 )
 
 
@@ -296,8 +299,14 @@ class PairedSupervisor(live.MonitorSupervisor):
                 self.ledger.feedback(
                     request["id"],
                     self.service.help_status(request["id"]),
-                    required=False,
-                    reason="Helper advice is advisory; scientific utility is verified separately",
+                    required=request.get("feedback_requirement") == "required",
+                    reason=(
+                        "Worker declared this result required before dispatch"
+                        if request.get("feedback_requirement") == "required"
+                        else "Declared advisory feedback"
+                        if request.get("feedback_requirement") == "advisory"
+                        else "Legacy helper necessity was not declared"
+                    ),
                 )
         decisions = self.service._all("director")
         for decision in decisions:
@@ -443,6 +452,10 @@ def quality(root, manifest):
 def continuation(root, checkpoint, action, replicate, wrapper):
     started = time.time()
     manifest = read(checkpoint / "checkpoint.json")
+    if manifest["worker_config_sha256"] != digest(WORKER):
+        raise ValueError("Checkpoint worker configuration does not match this collector")
+    if manifest["downstream_policy_sha256"] != digest(DOWNSTREAM):
+        raise ValueError("Checkpoint downstream policy does not match this collector")
     packet = read(checkpoint / "observation.json")
     sup, _ = live.prepare(
         root,

@@ -268,6 +268,7 @@ class MonitorSupervisor(ResearchSupervisor):
                     ),
                     files=[evidence_path],
                     key="monitor-" + alert["packet_sha256"],
+                    feedback_requirement="advisory",
                 )
                 with self.service.lock():
                     request_record.update(

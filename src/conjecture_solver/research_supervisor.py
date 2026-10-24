@@ -521,7 +521,12 @@ Write source normally here. All recorded numerical experiments use the existing 
   h=lab.request_help('Specific problem and what you tried',
     success_criteria='Required answer, patch or diagnostic and how to check it',
     context='Relevant reasoning, observations and unresolved uncertainty', files=['calc.py'])
-  This queues prompt director attention. The director can return advice or assign
+  This queues prompt director attention.
+  Set feedback_requirement='required' when you need the returned result before
+  finalizing, or 'advisory' for optional assistance. This declaration is frozen
+  with the request before dispatch; omitting it leaves legacy need unspecified.
+  It does not block independent work or grant scientific approval or permissions.
+  The director can return advice or assign
   multiple temporary workers with separate workspaces. They inherit your frozen
   context and attached files, and return explicit artifacts and checks. You may
   continue independent work, or call lab.wait('Await the requested help',
