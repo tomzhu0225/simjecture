@@ -74,3 +74,19 @@ def test_completion_stream_is_installed_before_jobs_exist(tmp_path, monkeypatch)
     stream = next(iter(sup.monitor_streams.values()))
     assert isinstance(stream, loaded.CompletionStream)
     assert stream.packet("Observe")["state"]["host_state"]["async_completion"] == []
+
+
+def test_completion_observation_is_a_new_event_for_rules_without_worker_eof(tmp_path, monkeypatch):
+    loaded = module(monkeypatch)
+    stream = loaded.CompletionStream(tmp_path / "response.json", work=tmp_path)
+    observation = dict(
+        id="completion:1",
+        body=dict(
+            type="command_execution",
+            aggregated_output="HARNESS_CONTRACT_ERROR: stopped process reported running",
+        ),
+    )
+    stream.inject(observation)
+    assert stream.poll() == [observation]
+    assert stream.poll() == []
+    assert list(stream.events) == [observation]

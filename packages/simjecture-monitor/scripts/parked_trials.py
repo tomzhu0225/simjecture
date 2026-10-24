@@ -123,7 +123,7 @@ class ParkedSupervisor(PairedSupervisor):
                 body=body,
                 source_sha256=digest(body),
             )
-            stream.events.append(event)
+            stream.inject(event)
             with (self.monitor_dir / "completion-events.jsonl").open("a") as out:
                 out.write(json.dumps(event) + "\n")
             if mismatch and not hasattr(self, "first_mismatch_at"):
@@ -136,6 +136,16 @@ class CompletionStream(PublicStream):
         super().__init__(*args, **kwargs)
         self.work = work
         self.parked = parked
+        self.pending_completion_events = []
+
+    def inject(self, event):
+        self.events.append(event)
+        self.pending_completion_events.append(event)
+
+    def poll(self, *, now=None):
+        pending = self.pending_completion_events
+        self.pending_completion_events = []
+        return pending + super().poll(now=now)
 
     def packet(self, task, *, host_state=None):
         return super().packet(

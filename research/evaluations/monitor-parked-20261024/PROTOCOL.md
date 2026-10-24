@@ -41,3 +41,9 @@ two new parent controllers. Serve the verified local 4B sequentially on the
 shared Ada GPU, with a 60% per-process memory ceiling, 40-minute absolute limit,
 10-minute idle limit and identity-owned cleanup. Do not stop the unrelated GPU
 simulation. No Colab allocation or new adapter training is needed for this test.
+
+Pre-commissioning instrumentation amendment: injected public completion-probe
+events enter both the retained event window and the newly polled event list.
+This ensures the rules comparator and model both evaluate them before any
+worker tool reaches EOF. No parked-worker commissioning or cohort outcome had
+occurred before this fix; assignments, fallback and outcome criteria are unchanged.
