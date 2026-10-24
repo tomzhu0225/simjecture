@@ -1,0 +1,25 @@
+{
+  "scope": "Editorial public excerpt of the completed local study. Figures and numerical values are retained; absolute host paths and unrelated runtime/session details are omitted.",
+  "source_file_sha256": {
+    "design-results.json": "2dc1c2424adb92d2ba323033eef10a242e7cb010af7eda13cf952dcf126c935f",
+    "reports/campaign-evidence-audit.json": "32bdcadfd4d90b3b9038f8748211ad8fe885763009345a70a8d57acc12ef6a74",
+    "plasma-comparison.json": "af6a9260ead8195d08d42817e2a5e0d91a2a73f672f7c9a29aeaaa56da122f46",
+    "plasma/comparison-plan.json": "1905b17533a33b8b428cb11b6e1be276498ce6060fe7731eaff8931fb8628053",
+    "plasma/plumes/thin-on-compact-220ns/plan.json": "ed0380d0023f7b25026a450403fb79c66452f672c09fdc01bf627a3b29adeeb4",
+    "reports/common-window-source-manifest.json": "fee3f5a06f86dde1498b4f30f4fe743c0cb3554b356f10bc00ba110c830a869f",
+    "plasma/native-runtime.json": "73c4d2bd0cf629b48cd58e99e8ed3fb12d3ac28002b9341c9b9f17d785d0d9ad",
+    "plasma/commissioning/static-A-n32/control.json": "52c3bbd29002a0cd9b868125fc9d866b78c74bbaed1975d1a763883965ccdef8",
+    "../optimization-20261023/solver-stable-gram/build-record.json": "4314cfd7981db0d4ac7552f1460710d75c2383c095dec9dfe3609ee78d5ab1e5",
+    "plots/paired_feed_geometry.png": "282a4a0d847a8a46614a0f038f5a5823268c456588c03f06538ba45b701ce0f9",
+    "plots/paired_feed_geometry.pdf": "fca5acc193b154be2fb975849bc7b7ab738082ba3562746d1732574961049391",
+    "plots/paired_feed_fields.png": "ca67ff82e40b45369588894a6104e7b0665c7cfb4d8a098e75402bf22dee3685",
+    "plots/paired_feed_fields.pdf": "b1dfe56ffdcf761267160c6ef0050367c264df69237abc9fb7b76263bd3fc255",
+    "plots/plasma_hardware_overlap.png": "95b97ec8e6107b593e6bd0b664d7cc65f09344b4564643cb0a1cd67018edfb20",
+    "plots/plasma_hardware_overlap.pdf": "bd9d4c49978b2b35c17a6850d5d7741cbd03ca9ea0b20d5a44de0c4099e18cd5",
+    "plots/plasma_sensitivity.png": "294f1a51ac8001fc4b1b25e7cd35fcb3e2193f7c1b5a6e987c9f536393d8a23c",
+    "plots/plasma_sensitivity.pdf": "b4c16826ef14d9aa0f64690c723cc60c779ac0cde5400cf2f491253753248a36",
+    "Qin1_Results_Viewer.html": "7c888444b40927875d0d944cfc9c86cd5e156708c8af6f4ebb3be658ba721707"
+  },
+  "viewer_edit": "Only the report link and its label change; embedded frames and readouts are unchanged.",
+  "raw_source_availability": "The identified raw diagnostics remain with the original local campaign; hashes alone do not verify unavailable files."
+}

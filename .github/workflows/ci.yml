@@ -109,8 +109,9 @@ jobs:
           --output /tmp/acs-multi-action-artifact
       - name: Verify committed schemas
         run: uv run simjecture schemas --output schemas --check
-      - name: Verify recorded autonomous demos
+      - name: Verify recorded studies
         run: |
+          uv run python demos/qin1_multiphysics/verify_record.py
           uv run python demos/kepler_energy/verify_record.py
           uv run python demos/resistive_mhd_island_coalescence/verify_minimal_record.py
           uv run python scripts/verify_research_audit.py demos/resistive_mhd_island_coalescence/sol_medium_record

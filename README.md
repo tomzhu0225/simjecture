@@ -22,6 +22,29 @@ You can inspect intermediate results, steer the investigation and continue it in
 new phase. The result is a research record you can follow from hypothesis to code,
 measurements, counterexamples and review.
 
+## From hardware design to 3D plasma
+
+The [**Qin-1 engineering study**](https://drawingsword.com/simjecture/demos/qin1-hardware-plasma.html)
+connects **CAD → mesh → circuits and electromagnetics → plasma → visualization**.
+An agent revised the coil and feed geometry, solved current sharing with Elmer,
+transferred the checked device field into native 3D WarpX, and compared the
+resulting plasma response.
+
+![Actual conductor geometry and 3D plasma density surfaces for the single-feed reference and paired-feed candidate](docs/_static/demos/qin1/plasma_hardware_overlap.png)
+
+The selected cold-conductor design gives **33–34% more upstream transverse field
+while retaining 97.8% of the array current** across matched numerical refinements.
+The plasma checks expose the limit: estimated bulk flux changes by 11–71% under
+numerical controls, so quantitative shielding remains unqualified.
+
+[**Explore the interactive results**](https://drawingsword.com/simjecture/_static/demos/qin1/viewer.html) ·
+[Read the case study](https://drawingsword.com/simjecture/demos/qin1-hardware-plasma.html) ·
+[Verify the retained record](demos/qin1_multiphysics/)
+
+This is an operator-assisted local toolchain study, with explicit model limits
+and failed checks preserved; it is not a formal harness-adjudicated claim or a
+validated prediction of the complete experiment.
+
 ## The research loop
 
 [![Human direction and director oversight connect scientific hypothesis testing with independently reviewed instrument development](https://raw.githubusercontent.com/tomzhu0225/simjecture/main/docs/_static/architecture/research-loop.png)](https://raw.githubusercontent.com/tomzhu0225/simjecture/main/docs/_static/architecture/research-loop.pdf)

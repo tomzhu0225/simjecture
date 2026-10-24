@@ -1,0 +1,42 @@
+{
+  "study_dates": [
+    "2026-10-23",
+    "2026-10-24"
+  ],
+  "workflow": "Operator-assisted host execution using Simjecture tools and skills, custom coupling/analysis scripts and a native WarpX binary.",
+  "formal_harness_adjudication": false,
+  "human_framing": "Improve a Qin-1 wire-array/magnetic-obstacle design for plasma deflection and a clear boundary; select the 2026 short-circuit condition; Al or W wires with other source parameters unknown; authorize overnight exploration.",
+  "agent_work": "CAD variants, coupled EM/circuit solves, field transfer, native 3D plasma controls, analysis, recovery and illustrated reporting.",
+  "review": "Numerical controls, artifact checks and report inspection by the working assistant; no separate formal scientific adjudication.",
+  "software": {
+    "CAD_and_mesh": "Gmsh/OpenCASCADE; FreeCAD was not used for these geometry edits.",
+    "Elmer": {
+      "version": "26.2.1",
+      "source_commit": "a19504ac53ec222e3355e182b08f2ff280c2203a",
+      "isolated_core_sha256": "4535e8369bd5d439e2b95293c71fd6dee65eab02be9bd0ab7e64988772d239ef"
+    },
+    "WarpX": {
+      "version": "26.09-150-g30962d771c58",
+      "binary_sha256": "8664710515714ab29eb1cf380ea7dd0be06ec56021ab108fef84d65a4f7dd21c",
+      "model": "Native 3D CUDA hybrid PIC; not the packaged 2D PICMI capability."
+    },
+    "visualization": "Python, PyVista/VTK and Matplotlib",
+    "FLASH": "Local source assessed; no FLASH plasma evolution in this study."
+  },
+  "selected_design": {
+    "turns": 3,
+    "mean_diameter_mm": 8,
+    "copper_diameter_mm": 1.5,
+    "pitch_mm": 2.5,
+    "feeds": "paired; fixture and clearance changes required"
+  },
+  "coupling": "One-way: full retained-device magnetic field at 500 ns, held fixed on a separate plasma clock. No plasma-to-circuit feedback.",
+  "source_anchor": {
+    "voltage_kV": "+/-40",
+    "short_circuit_peak_kA": 370,
+    "rise_10_90_ns": 275,
+    "doi": "10.7498/aps.75.20260383",
+    "status": "Published anchor selected by operator; effective capacitance and fixture mapping remain assumptions."
+  },
+  "public_excerpt": "Selected numerical histories, comparison metrics, checks, source identities, figures and viewer. Raw fields, CAD, installed solvers and private host paths are not distributed here; this is not a turnkey solver rerun."
+}
