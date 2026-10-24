@@ -155,8 +155,27 @@ intervention-versus-waiting continuations. It checks checkpoint, observation,
 worker, criteria and budget identities, keeps utility components inspectable,
 and withholds the scalar when paired outcomes or measurements are missing.
 It does not infer counterfactual worker behavior or authenticate receipt files.
-The live collector still needs checkpoint forks, blinding, incident identity
-and acknowledgment instrumentation before this reward can train a new model.
+The [paired checkpoint pilot](../../research/evaluations/monitor-paired-20261024/PROTOCOL.md)
+adds verified public-context/artifact forks, opaque runtime roots, incident and
+feedback ledgers and shared leases over every native role. It compares specified
+interventions with waiting under the same downstream policy. These fixed actions
+are not on-policy samples. `analyze_paired.py` checks receipt/context bindings
+and separates the operational contract score from strict reward eligibility.
+Unacknowledged helper results whose necessity was never declared leave strict
+feedback measurement unknown; they are not silently counted as zero misses.
+
+The separate [parked-worker protocol](../../research/evaluations/monitor-parked-20261024/PROTOCOL.md)
+tests live monitoring while actual WarpX jobs complete and the main worker has
+yielded. The private completion-adapter fixture exposes raw receipts to rules
+and the unchanged 4B model, with the same deterministic fallback in all arms.
+It does not clone hidden provider state or patch the installed supervisor.
+
+`state_policy.py` provides a public-state rules comparator that recognizes
+successful recovery of the same operation. `accounting.py` reports the latest
+native cumulative counter per thread, preserving uncovered later interruptions
+and unidentified calls. Neither agent starts nor thread counters are a billing
+estimate. See the study protocols before starting native jobs; the live runners
+require this machine's solver setup, explicit process budgets and owned cleanup.
 
 ```bash
 .venv/bin/python packages/simjecture-monitor/scripts/audit_reward_data.py \

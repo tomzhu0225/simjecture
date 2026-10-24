@@ -11,6 +11,7 @@ from pathlib import Path
 
 from simjecture_monitor.accounting import native_usage
 from simjecture_monitor.events import digest, put
+from simjecture_monitor.feedback_audit import feedback_measurement
 from simjecture_monitor.reward import ContinuationOutcome, RewardWeights, paired_reward
 
 
@@ -46,6 +47,7 @@ def audit(root):
         )
         for pair in case["pairs"]:
             outcomes = []
+            strict_outcomes = []
             receipts = []
             for branch in pair["branches"]:
                 path = root / branch["root"] / "OUTCOME.json"
@@ -53,6 +55,14 @@ def audit(root):
                     failures.append(dict(root=branch["root"], reason="missing_outcome"))
                     continue
                 outcome = ContinuationOutcome.model_validate(load(path))
+                feedback = feedback_measurement(
+                    load(root / branch["root"] / "incident-ledger.json")
+                )
+                strict_outcomes.append(
+                    outcome.model_copy(
+                        update={"required_feedback_misses": feedback["required_feedback_misses"]}
+                    )
+                )
                 quality = load(root / branch["root"] / "QUALITY.json")
                 restore = load(root / branch["root"] / "RESTORE.json")
                 native = [
@@ -83,13 +93,29 @@ def audit(root):
                     elapsed_seconds=outcome.elapsed_seconds,
                     required_feedback_misses=outcome.required_feedback_misses,
                     duplicates=outcome.duplicate_wakeups,
+                    strict_feedback_measurement=feedback,
                 )
                 receipts.append(receipt)
                 outcomes.append(outcome)
             action = next((o for o in outcomes if o.action != "defer"), None)
             waiting = next((o for o in outcomes if o.action == "defer"), None)
             score = paired_reward(action, waiting) if action else dict(eligible=False, reward=None)
-            pairs.append(dict(kind=case["kind"], pair=pair["id"], receipts=receipts, score=score))
+            strict_action = next((o for o in strict_outcomes if o.action != "defer"), None)
+            strict_wait = next((o for o in strict_outcomes if o.action == "defer"), None)
+            strict_score = (
+                paired_reward(strict_action, strict_wait)
+                if strict_action
+                else dict(eligible=False, reward=None)
+            )
+            pairs.append(
+                dict(
+                    kind=case["kind"],
+                    pair=pair["id"],
+                    receipts=receipts,
+                    score=score,
+                    strict_score=strict_score,
+                )
+            )
     families = defaultdict(list)
     for pair in pairs:
         if pair["score"]["eligible"]:
@@ -172,6 +198,7 @@ def audit(root):
     )
     model_gate = dict(
         collection_complete=complete,
+        strict_feedback_complete=all(p["strict_score"]["eligible"] for p in pairs),
         reason=(
             "Pilot actions were prespecified; no on-policy learning data. Eight task "
             "templates alone do not provide task-disjoint training and test cohorts."
@@ -195,6 +222,7 @@ def audit(root):
         checkpoints=audits,
         failures=failures,
         receipts_complete=complete,
+        strict_reward_pairs=sum(p["strict_score"]["eligible"] for p in pairs),
         sensitivity=sensitivity,
         model_study_gate=model_gate,
         native_usage_by_continuation={
