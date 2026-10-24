@@ -163,7 +163,7 @@ def main():
     if any("timer" in row for row in result["rows"]):
         keys.insert(4, "timer")
     with (args.output / "measurements.csv").open("w") as stream:
-        writer = csv.DictWriter(stream, keys, extrasaction="ignore")
+        writer = csv.DictWriter(stream, keys, extrasaction="ignore", lineterminator="\n")
         writer.writeheader()
         writer.writerows(result["rows"])
     print(
