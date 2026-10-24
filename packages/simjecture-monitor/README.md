@@ -183,3 +183,16 @@ require this machine's solver setup, explicit process budgets and owned cleanup.
   --data artifacts/overnight-20261023/returns.json \
   --output /tmp/monitor-reward-audit.json
 ```
+
+Optional CUDA inference profile: in an isolated environment with the pinned model
+extra, install `flash-linear-attention==0.6.0`, `fla-core==0.6.0` and
+`einops==0.8.2`, then pass `--kernel-profile fla-prefill` to the model server or
+local benchmark. This uses FLA's Triton gated-delta kernels and a dense prefill
+convolution adapter, retaining the reference rounding before SiLU. It avoids a
+locally compiled causal-conv1d extension. The default environment is unchanged.
+The profile supports this monitor's single-pass `use_cache=False` classification;
+packed sequences and cached generation are outside its validated scope. Runtime
+identity includes the profile, FLA version and adapter-source hash. Collect new
+behavior probabilities on the runtime used for policy training; floating-point
+probability changes are not LoRA improvements. See the prospective protocol in
+`research/evaluations/monitor-kernels-20261024/PROTOCOL.md`.

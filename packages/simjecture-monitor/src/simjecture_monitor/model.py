@@ -34,7 +34,7 @@ MONITOR_INSTRUCTIONS = (
 
 
 class MonitorModel:
-    def __init__(self, checkpoint, *, max_tokens=4096, adapter=None):
+    def __init__(self, checkpoint, *, max_tokens=4096, adapter=None, kernel_profile=None):
         import torch
         from transformers import AutoTokenizer, Qwen3_5ForConditionalGeneration
 
@@ -46,6 +46,12 @@ class MonitorModel:
             ).hexdigest(),
             "adapter_files_sha256": {},
         }
+        if kernel_profile is not None:
+            if kernel_profile != "fla-prefill":
+                raise ValueError("Unknown monitor kernel profile")
+            from .kernels import enable_fla_prefill
+
+            self.identity["runtime"] = enable_fla_prefill()
         if adapter:
             for name in ["adapter_config.json", "adapter_model.safetensors"]:
                 path = Path(adapter) / name

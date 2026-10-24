@@ -37,6 +37,7 @@ def main():
     parser.add_argument("--socket", type=Path, required=True)
     parser.add_argument("--status", type=Path, required=True)
     parser.add_argument("--adapter")
+    parser.add_argument("--kernel-profile", choices=["fla-prefill"])
     parser.add_argument("--wall-seconds", type=float, default=21600)
     parser.add_argument("--idle-seconds", type=float, default=1800)
     args = parser.parse_args()
@@ -45,7 +46,7 @@ def main():
     start = last = time.monotonic()
     status = dict(stage="loading", started_at=time.time(), pid=os.getpid())
     put(args.status, status)
-    model = MonitorModel(args.checkpoint, adapter=args.adapter)
+    model = MonitorModel(args.checkpoint, adapter=args.adapter, kernel_profile=args.kernel_profile)
     status.update(
         stage="ready",
         load_seconds=time.monotonic() - start,

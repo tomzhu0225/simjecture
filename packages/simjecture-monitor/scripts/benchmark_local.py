@@ -16,6 +16,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--checkpoint", required=True)
     parser.add_argument("--adapter")
+    parser.add_argument("--kernel-profile", choices=["fla-prefill"])
     parser.add_argument("--packets", type=Path, required=True)
     parser.add_argument("--reference", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
@@ -27,7 +28,7 @@ def main():
 
     free_before, total_memory = torch.cuda.mem_get_info()
     started = time.time()
-    model = MonitorModel(args.checkpoint, adapter=args.adapter)
+    model = MonitorModel(args.checkpoint, adapter=args.adapter, kernel_profile=args.kernel_profile)
     torch = model.torch
     torch.cuda.synchronize()
     loaded = time.time()
@@ -92,8 +93,7 @@ def main():
         maximum_probability_difference=max(row["maximum_probability_difference"] for row in rows),
         input_tokens=[r["input_tokens"] for r in warm],
         limitation=(
-            "Resident inference on retained monitoring packets; "
-            "no throughput or power benchmark."
+            "Resident inference on retained monitoring packets; no throughput or power benchmark."
         ),
     )
     put(args.output / "status.json", status)
