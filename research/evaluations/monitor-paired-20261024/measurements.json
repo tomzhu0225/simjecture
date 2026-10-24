@@ -1,0 +1,34 @@
+{
+  "intervention": {
+    "continuations": 16,
+    "native_starts": 48,
+    "mean_seconds": 114.9323359131813,
+    "duplicate_wakes": 2,
+    "required_feedback_misses_under_contract": 0
+  },
+  "wait": {
+    "continuations": 16,
+    "native_starts": 33,
+    "mean_seconds": 118.7120925039053,
+    "duplicate_wakes": 0,
+    "required_feedback_misses_under_contract": 0
+  },
+  "solver_executions": {
+    "prefix": 10,
+    "fresh_continuation": 60,
+    "total": 70,
+    "copied_inherited_receipts_excluded": 40,
+    "solver_seconds": 424.75040014499837
+  },
+  "outcome_dataset_sha256": "10a058b2d14434565cc3fc25229b8b1114f8e4f8ca713220cfd67b5c202848c2",
+  "strict_reward_pairs": 11,
+  "contract_pairs": 16,
+  "positive_contract_pairs": 3,
+  "token_totals": {
+    "input_tokens": 15776699,
+    "cached_input_tokens": 14186112,
+    "output_tokens": 239760
+  },
+  "uncovered_threads": 2,
+  "unidentified_invocations": 0
+}

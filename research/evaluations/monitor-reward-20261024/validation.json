@@ -1,0 +1,87 @@
+{
+  "monitor_contract_tests": 60,
+  "core_helper_subset_tests": 43,
+  "cuda_convolution_cases": 16,
+  "initial_runtime_choice_agreements": {
+    "agree": 16,
+    "total": 16
+  },
+  "later_same_packet_runtime_agreements": {
+    "agree": 32,
+    "total": 32,
+    "distinct_packets": 16
+  },
+  "frozen_outcomes_canonical_sha256": "10a058b2d14434565cc3fc25229b8b1114f8e4f8ca713220cfd67b5c202848c2",
+  "unchanged_v1_adapter_sha256": "e0f4d4c66ee3444193a952bcaa41f210f02bb4308cf7cc8303d8f4ffe7aa871c",
+  "local_report_links_checked": 47,
+  "broken_local_report_links": 0,
+  "resources": {
+    "observed_at": 1792805017.9256444,
+    "colab_balance": "1229.53 compute units",
+    "colab_usage_rate": "0.00/hr",
+    "colab_active_assignments": "0",
+    "colab_no_active_sessions": true,
+    "colab_allocations_this_stage": 0,
+    "owned_model_checks": [
+      {
+        "record": "artifacts/parked-20261024/MODEL_PROCESS.json",
+        "alive": false,
+        "socket_present": false
+      },
+      {
+        "record": "artifacts/kernel-live-20261024/block-0/MODEL_PROCESS.json",
+        "alive": false,
+        "socket_present": false
+      },
+      {
+        "record": "artifacts/kernel-live-20261024/block-2/MODEL_PROCESS.json",
+        "alive": false,
+        "socket_present": false
+      },
+      {
+        "record": "artifacts/kernel-live-20261024/block-1/MODEL_PROCESS.json",
+        "alive": false,
+        "socket_present": false
+      },
+      {
+        "record": "artifacts/kernel-live-20261024/block-3/MODEL_PROCESS.json",
+        "alive": false,
+        "socket_present": false
+      },
+      {
+        "record": "artifacts/timer-live-20261024/MODEL_PROCESS.json",
+        "alive": false,
+        "socket_present": false
+      },
+      {
+        "record": "artifacts/grace-live-20261024/MODEL_PROCESS.json",
+        "alive": false,
+        "socket_present": false
+      },
+      {
+        "record": "artifacts/grace-corrected-20261024/MODEL_PROCESS.json",
+        "alive": false,
+        "socket_present": false
+      },
+      {
+        "record": "artifacts/runtime-replay-20261024/reference-process.json",
+        "alive": false
+      },
+      {
+        "record": "artifacts/runtime-replay-20261024/fla-prefill-process.json",
+        "alive": false
+      }
+    ],
+    "native": {
+      "native_reservations": 229,
+      "native_processes": 229,
+      "all_ended": true,
+      "owned_native_alive": false,
+      "peak_simultaneous": 4,
+      "maximum_starts": 240,
+      "deadline_closed": true,
+      "closed_at": 1792804766.8363473
+    }
+  },
+  "scope": "Local checks and retained measured records; full required CI is linked on draft PR46"
+}

@@ -1,0 +1,13 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "simjecture-monitor"
+version = "0.1.0"
+description = "Experimental event monitoring and scoped harness-repair evaluation"
+requires-python = ">=3.11"
+dependencies = ["pydantic>=2.9,<3"]
+
+[project.optional-dependencies]
+model = ["torch==2.11.0", "transformers==5.20.1", "peft==0.21.2", "huggingface-hub==1.33.0"]

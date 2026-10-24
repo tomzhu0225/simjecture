@@ -1,0 +1,9 @@
+root,case,policy,profile,timer,repeat,quality,elapsed_seconds,parked_seconds,native_starts,judge_response_seconds,wake_reason,required_feedback_misses,duplicate_wakeups
+trial-eb6efcdd6a1946b9b9a049a593a469b0,adapter,model,fla-prefill,True,1,1.0,120.88667678833008,40.17841672897339,4,6.072809934616089,adapter_completion,0,0
+trial-0ea17b7b5cbe44b5b6b725455c702d3d,adapter,model,fla-prefill,False,1,1.0,139.3082733154297,42.17869424819946,5,4.564661264419556,adapter_completion,0,1
+trial-88cc35b2ce48434b8a8448622c5ea4c2,healthy,model,fla-prefill,False,0,1.0,80.88246870040894,4.019564151763916,2,,adapter_completion,0,0
+trial-058a8e496298403583461273569ca5c6,adapter,model,fla-prefill,True,0,1.0,111.67773580551147,36.16358733177185,4,7.0741798877716064,adapter_completion,0,0
+trial-c7556684689d409bb4ef9fc71a26eb1b,healthy,model,fla-prefill,True,0,1.0,78.37863254547119,4.020394563674927,2,,adapter_completion,0,0
+trial-956d4f0c4ec44ec198b3ff94e9432813,adapter,model,fla-prefill,False,0,1.0,115.25607919692993,40.16602277755737,4,4.061133146286011,adapter_completion,0,0
+trial-85eafc72851941f1b666ba45598b1a23,healthy,model,fla-prefill,False,1,1.0,74.1504294872284,5.5243799686431885,2,,adapter_completion,0,0
+trial-a60145f7174d4ad0ab7086520a7b512f,healthy,model,fla-prefill,True,1,1.0,77.26891446113586,4.52135968208313,2,,adapter_completion,0,0

@@ -1,0 +1,135 @@
+{
+  "source_revision": "0f068191ca5ad5665ed535fd4718ae4377ae52ce",
+  "root": "/home/tomzhu0225/src/simjecture-monitor-coprocessor/artifacts/feedback-v2-20261024",
+  "results_sha256": "bb97ee94c51a347f4f9d0ea0f579ffadb92bb45b5f16943771f2e095f30dd301",
+  "design_sha256": "1a856f069b6d6ed82661630ab07369a72ff59b2abdf80c03d1ad9f1402ddf7af",
+  "rows": [
+    {
+      "root": "trial-a4141eeb4b1841f5a5ab13d793e62e2a",
+      "mode": "required",
+      "repeat": 1,
+      "quality": 1.0,
+      "contract_passed": true,
+      "elapsed_seconds": 162.86663436889648,
+      "native_starts": 4,
+      "worker_turns": 2,
+      "help_requests": 1,
+      "helpers_completed": 1,
+      "imported_artifacts": [
+        {
+          "task": "helper_577f89f134ac8eddee573b05",
+          "artifact": "NOTES.md",
+          "destination": "helper_notes.md",
+          "bytes": 11110,
+          "sha256": "037ba373e1df1142a2aeb92917a30300df47786064d6a92e750bead3dffc5a71",
+          "imported_at": 1792802478.9537845,
+          "scientific_status": "unreviewed"
+        }
+      ],
+      "feedback": {
+        "required_feedback_misses": 0,
+        "unknown_need_for_unacknowledged_help": [],
+        "available_feedback": 2,
+        "scope": "Declared required-feedback reconciliation; no inferred necessity from case labels or cancellation"
+      },
+      "help_acknowledged": true,
+      "file_sha256": {
+        "VALIDATION.json": "ea54ed0a45df1f83c8352a63054c80a98091835e9f117a182069f21deb14ada6",
+        "QUALITY.json": "7de2e22f1defc95458e389e2893ed394d948c9014319c1b048c038fa6842f49e",
+        "incident-ledger.json": "2b4d8883da776757bb6bc525af479c19dc9fa42b8730c4ab399a320036df37ed",
+        "INITIAL.json": "c858f61729d487c43d2b5be8c970b0b0e4a28799ef25ac363bf9b1afd6e05d73"
+      }
+    },
+    {
+      "root": "trial-490844742d4f480f8dcfc656006c852c",
+      "mode": "required",
+      "repeat": 0,
+      "quality": 1.0,
+      "contract_passed": true,
+      "elapsed_seconds": 179.85452938079834,
+      "native_starts": 4,
+      "worker_turns": 2,
+      "help_requests": 1,
+      "helpers_completed": 1,
+      "imported_artifacts": [
+        {
+          "task": "helper_236ab328288729a15bf36e7d",
+          "artifact": "NOTES.md",
+          "destination": "helper_notes.md",
+          "bytes": 12160,
+          "sha256": "b01dc70795855bf25b4e7a5ac36f589843656f631f6fba891f5274c269fc032d",
+          "imported_at": 1792802481.8417265,
+          "scientific_status": "unreviewed"
+        }
+      ],
+      "feedback": {
+        "required_feedback_misses": 0,
+        "unknown_need_for_unacknowledged_help": [],
+        "available_feedback": 2,
+        "scope": "Declared required-feedback reconciliation; no inferred necessity from case labels or cancellation"
+      },
+      "help_acknowledged": true,
+      "file_sha256": {
+        "VALIDATION.json": "c8d3acb280bc0d1864f41905e93916c89585465d434e2948f3393b82ee079331",
+        "QUALITY.json": "67debfd6bf1ca0660764d2d3d654e99fe7c7abc37e8efffe62182eb5173d812c",
+        "incident-ledger.json": "e6fba8ce5c2da7a25e82cd47405cb612aa6a97cb6cee2ecf5fb571e08f6084ac",
+        "INITIAL.json": "5047a41cadf50c34133a30946d05c343136aefea31d52151e8a91575aa39800e"
+      }
+    },
+    {
+      "root": "trial-dc234c600bf849fba36496dee5de67a4",
+      "mode": "advisory",
+      "repeat": 1,
+      "quality": 1.0,
+      "contract_passed": true,
+      "elapsed_seconds": 118.53911113739014,
+      "native_starts": 3,
+      "worker_turns": 1,
+      "help_requests": 1,
+      "helpers_completed": 1,
+      "imported_artifacts": [],
+      "feedback": {
+        "required_feedback_misses": 0,
+        "unknown_need_for_unacknowledged_help": [],
+        "available_feedback": 2,
+        "scope": "Declared required-feedback reconciliation; no inferred necessity from case labels or cancellation"
+      },
+      "help_acknowledged": false,
+      "file_sha256": {
+        "VALIDATION.json": "b6cbab4d8a791aa0566be3036fcbed1fb85d7e384c4e5a20cc7e9acc97f76ce6",
+        "QUALITY.json": "3d85e8b35586a3a13ebbff40843523e6a31eecebeee262f943107847b529028d",
+        "incident-ledger.json": "895bd87bcc87314c0e83010ad9ea89456b39f303ad69cb7aa52efa868e71d946",
+        "INITIAL.json": "fc5e05e1518fe7196b0f21cbf964bc814c7d861df25bfac102105ae54bbc24c7"
+      }
+    },
+    {
+      "root": "trial-5bc12c9e15e84af5b98c2e2bbca2edde",
+      "mode": "advisory",
+      "repeat": 0,
+      "quality": 1.0,
+      "contract_passed": true,
+      "elapsed_seconds": 118.01332545280457,
+      "native_starts": 3,
+      "worker_turns": 1,
+      "help_requests": 1,
+      "helpers_completed": 1,
+      "imported_artifacts": [],
+      "feedback": {
+        "required_feedback_misses": 0,
+        "unknown_need_for_unacknowledged_help": [],
+        "available_feedback": 2,
+        "scope": "Declared required-feedback reconciliation; no inferred necessity from case labels or cancellation"
+      },
+      "help_acknowledged": false,
+      "file_sha256": {
+        "VALIDATION.json": "cc976a9c11f36f086b6140e326c2848cc53fc7294cdcc59dc0199e0bf6e244e7",
+        "QUALITY.json": "b6899fa0d6168ab3a4f25dea2171facea8a6463d80e2ec0bc72288c4f0e4a012",
+        "incident-ledger.json": "da7400921fb4757bbfda740057dbee5c29e47b42cd6a636b898f772d2006778c",
+        "INITIAL.json": "b0f3cc8a9d3d79bdb6e142436e1e4afdb7500aa05c8c048d064ad189b4ca333b"
+      }
+    }
+  ],
+  "all_contracts_passed": true,
+  "all_verified_complete": true,
+  "native_starts": 14
+}

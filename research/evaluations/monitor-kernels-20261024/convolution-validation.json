@@ -1,0 +1,125 @@
+{
+  "runtime": {
+    "profile": "fla-prefill",
+    "fla_core": "0.6.0",
+    "adapter_source_sha256": "83b6d3ba2813ad883725be94e13477cd1db7b9ca2af9654e040b35fb10a936a1",
+    "convolution": "fla.modules.causal_conv1d:causal_conv1d; BCT/BTC layout adapter",
+    "scope": "Dense single-pass CUDA prefill, use_cache=False; no packed sequences"
+  },
+  "checks": [
+    {
+      "dtype": "torch.float32",
+      "tokens": 127,
+      "activation": null,
+      "bias": false,
+      "maximum_absolute_error": 0.0
+    },
+    {
+      "dtype": "torch.float32",
+      "tokens": 127,
+      "activation": null,
+      "bias": true,
+      "maximum_absolute_error": 9.5367431640625e-07
+    },
+    {
+      "dtype": "torch.float32",
+      "tokens": 127,
+      "activation": "silu",
+      "bias": false,
+      "maximum_absolute_error": 0.0
+    },
+    {
+      "dtype": "torch.float32",
+      "tokens": 127,
+      "activation": "silu",
+      "bias": true,
+      "maximum_absolute_error": 1.430511474609375e-06
+    },
+    {
+      "dtype": "torch.float32",
+      "tokens": 512,
+      "activation": null,
+      "bias": false,
+      "maximum_absolute_error": 0.0
+    },
+    {
+      "dtype": "torch.float32",
+      "tokens": 512,
+      "activation": null,
+      "bias": true,
+      "maximum_absolute_error": 1.430511474609375e-06
+    },
+    {
+      "dtype": "torch.float32",
+      "tokens": 512,
+      "activation": "silu",
+      "bias": false,
+      "maximum_absolute_error": 0.0
+    },
+    {
+      "dtype": "torch.float32",
+      "tokens": 512,
+      "activation": "silu",
+      "bias": true,
+      "maximum_absolute_error": 1.9073486328125e-06
+    },
+    {
+      "dtype": "torch.bfloat16",
+      "tokens": 127,
+      "activation": null,
+      "bias": false,
+      "maximum_absolute_error": 0.0
+    },
+    {
+      "dtype": "torch.bfloat16",
+      "tokens": 127,
+      "activation": null,
+      "bias": true,
+      "maximum_absolute_error": 0.0
+    },
+    {
+      "dtype": "torch.bfloat16",
+      "tokens": 127,
+      "activation": "silu",
+      "bias": false,
+      "maximum_absolute_error": 0.0
+    },
+    {
+      "dtype": "torch.bfloat16",
+      "tokens": 127,
+      "activation": "silu",
+      "bias": true,
+      "maximum_absolute_error": 0.0
+    },
+    {
+      "dtype": "torch.bfloat16",
+      "tokens": 512,
+      "activation": null,
+      "bias": false,
+      "maximum_absolute_error": 0.0
+    },
+    {
+      "dtype": "torch.bfloat16",
+      "tokens": 512,
+      "activation": null,
+      "bias": true,
+      "maximum_absolute_error": 0.0
+    },
+    {
+      "dtype": "torch.bfloat16",
+      "tokens": 512,
+      "activation": "silu",
+      "bias": false,
+      "maximum_absolute_error": 0.0
+    },
+    {
+      "dtype": "torch.bfloat16",
+      "tokens": 512,
+      "activation": "silu",
+      "bias": true,
+      "maximum_absolute_error": 6.103515625e-05
+    }
+  ],
+  "packed_rejected": true,
+  "completed_at": 1792802121.1784487
+}

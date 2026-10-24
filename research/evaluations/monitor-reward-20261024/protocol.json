@@ -1,0 +1,99 @@
+{
+  "status": "prospective_design_not_a_completed_model_experiment",
+  "question": "Does training a 4B monitoring coprocessor on measured incremental intervention value improve assistance at a fixed attention and compute budget?",
+  "source_pilot": "monitor-coprocessor-20261023",
+  "base_model": "internlm/Intern-Decision-4B",
+  "base_revision": "38c9dafbbef52dd04bae943c0c6ac918419adfd5",
+  "policy_actions": [
+    "defer",
+    "request_worker_help",
+    "wake_director",
+    "request_repair_judge"
+  ],
+  "action_naming_note": "Our defer means wait; learning-to-defer papers use defer for expert handoff.",
+  "preconditions_before_collection": [
+    "Opaque runtime directories and actor-visible observations without case, split or treatment labels",
+    "Counterbalance task, injected fault and budget factors; compare healthy and faulty variants with the same task instructions and limits",
+    "Exact raw-to-visible observation receipts after normalization and token packing",
+    "Common public transcript, artifact and scientific-criteria checkpoint for each continuation pair",
+    "Durable incident identity with active, resolved and reopened states",
+    "Executed dispatch receipts separate from model proposals and gate decisions",
+    "Needed-feedback availability and worker acknowledgment events, distinct from cancellation bookkeeping",
+    "Runner-enforced global native-role and per-continuation budgets, with owned-process cleanup",
+    "Independent outcome verification that accepts correctly reported original scientific failures",
+    "Both continuation branches use the same frozen downstream interaction policy and record its configuration hash"
+  ],
+  "collection_pilot": {
+    "checkpoints": 8,
+    "replicates_per_checkpoint": 2,
+    "branches_per_pair": [
+      "prespecified intervention",
+      "wait under the same downstream policy"
+    ],
+    "maximum_parent_continuations": 32,
+    "purpose": "Validate checkpoint comparability, outcome measurements and reward sensitivity; not establish model effectiveness",
+    "intervention_selection": "Prespecify the experimental route from public evidence before observing either branch outcome; retain route selection provenance. This two-branch pilot does not measure all four action alternatives.",
+    "branch_order": "Randomized within each replicate",
+    "native_sampling": "Backend sampling is not claimed deterministic or controlled by a shared seed",
+    "scientific_work": "Actual native workers and retained simulation/diagnostic workflows; clearly identify any injected defects",
+    "optimizer_eligibility": "Prespecified experimental actions are not automatically eligible for on-policy PPO; use newly sampled policy actions with logged propensities for on-policy updates"
+  },
+  "required_situations": [
+    "Long healthy progress and expected negative scientific checks",
+    "Worker recovers without outside assistance",
+    "Unreported blocker with observable evidence",
+    "Useful preemptive assistance supported by predictive context",
+    "Diagnostic or simulation anomaly requiring attention",
+    "Harness defect requiring a fresh independent authority judge",
+    "Resolved incident and stale failure text",
+    "Indistinguishable observations with different hidden fault labels, used to detect impossible supervision"
+  ],
+  "reward": {
+    "comparison": "U(intervene now) - U(wait)",
+    "quality": "Independent reporting/progress verification, including faithfully reported falsification; never judge approval or physics-pass count alone",
+    "components": [
+      "quality",
+      "capable-agent starts",
+      "elapsed wall time",
+      "needed feedback misses",
+      "redundant dispatched wakeups"
+    ],
+    "default_ablation_coefficients": {
+      "quality": 1.0,
+      "agent_start": 0.02,
+      "wall_time": 0.1,
+      "time_scale_seconds": 650,
+      "required_feedback_miss": 0.05,
+      "duplicate_wakeup": 0.02
+    },
+    "unknown_measurements": "Preserve the trajectory and withhold the unmeasured paired scalar; never fill in zero or invented counterfactuals",
+    "negative_native_outcomes": "Retain complete measured worker and judge failures",
+    "coefficient_selection": "Sensitivity and quality-cost frontiers on development data only, before frozen test evaluation",
+    "shaping": "No action/grant bonus and no potential-based shaping in this stage"
+  },
+  "subsequent_model_study": {
+    "gated_on": "Collection pilot satisfies preconditions and provides meaningful measured intervention-value variation",
+    "data": "Reviewed observable-state supervision plus actual downstream continuation outcomes",
+    "controls": [
+      "unchanged 4B",
+      "state-aware rules",
+      "supervised adapter",
+      "continued supervised adapter",
+      "supervised checkpoint plus episode-return RL",
+      "same supervised checkpoint plus paired-value RL"
+    ],
+    "optimization": "Match optimizer updates, record all rollout/feedback costs, retain the categorical decision interface",
+    "splits": "Disjoint underlying tasks, defect mechanisms and prefixes; no coefficient or prompt tuning on frozen test tasks",
+    "evaluation": "Fresh live intervention-positive and healthy cases, repeated trajectories, and rare-incident mixtures",
+    "metrics": [
+      "useful intervention recall at fixed wake budget",
+      "unnecessary wakes per healthy hour",
+      "time to useful intervention",
+      "verified final reporting",
+      "required feedback delivered",
+      "native token-usage coverage",
+      "monitor latency and GPU residency"
+    ],
+    "claim_limit": "No improved model is claimed until fresh measured comparisons support it"
+  }
+}

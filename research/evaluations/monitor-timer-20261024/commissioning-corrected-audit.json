@@ -1,0 +1,134 @@
+{
+  "scope": "Fresh randomized live trajectories, not matched checkpoint pairs",
+  "root": "/home/tomzhu0225/src/simjecture-monitor-coprocessor/artifacts/grace-corrected-20261024",
+  "design_sha256": "99906ebc19ce8bff9638a3caa9d860511d9e70a5e491536345ed567f048bd4e5",
+  "results_sha256": "7cdcedbdc976064ea8754abeae303d7429ce25f7f107607e6813a8d6cab67f91",
+  "source_revision": "7a298a0ac9f765c1eeab114ee207534acbc3d66f",
+  "rows": [
+    {
+      "root": "trial-b89e3884b33244bab53a929349e8c9dd",
+      "case": "adapter",
+      "policy": "model",
+      "profile": "fla-prefill",
+      "timer": true,
+      "repeat": 0,
+      "returncode": 0,
+      "stage": "completed",
+      "quality": 1.0,
+      "elapsed_seconds": 117.98691463470459,
+      "parked_seconds": 48.22690463066101,
+      "native_starts": 4,
+      "judge_starts": 1,
+      "first_mismatch_at": 1792804593.1491356,
+      "first_judge_at": 1792804612.2803876,
+      "wake_reason": "adapter_completion",
+      "model_records": 19,
+      "model_errors": 0,
+      "model_median_total_seconds": 2.0899895550010115,
+      "parked_model_calls": 5,
+      "parked_judge_choices": 5,
+      "judge_while_parked": true,
+      "required_feedback_misses": 0,
+      "feedback_unknown": [],
+      "duplicate_wakeups": 0,
+      "authority_origins": [
+        "coprocessor"
+      ],
+      "file_sha256": {
+        "LIVE.json": "43f3ee7cd0d720cdf770a902eccc285ff07479f9dad71f342951bf70eca443d4",
+        "INITIAL.json": "44b19050b22f8cfc53261921f343ae37712393b12fcc980d807c3cda1d3d2493",
+        "QUALITY.json": "cbb8be873dc39d0b76a2ac89352b5e8997a87c318b068d1a141bc0959847028a",
+        "incident-ledger.json": "80cba4a4e46801f8dc70eb7c17c02a7a35564aacdd08b6ab629ec763f03269c0",
+        "VERIFIED.json": "d85c787b28b8501ccf45846ab8657d9ab0b83a2fadf0ed8815ff3a4c7ea19017"
+      },
+      "report_sha256": "f1655cfc50a71bc609375302f7ff8abd0765f40b1e01ceba1d4a9fe4269127aa",
+      "results_sha256": "c2ae2901aed4e0ebcfe622d26c0407cbe285073492fefa2c02044677192fcbbf",
+      "judge_response_seconds": 19.13125205039978,
+      "timer_events": 1,
+      "timer_event_ids": [
+        "parking-clock:1"
+      ],
+      "events_file_sha256": "435beec57898ef19e605ef77ce60842c6714d18eeaf07251fa1d38ef996a27ce",
+      "host_grace_deferrals": [
+        {
+          "packet_sha256": "d185e879e0600d76b06ae2221ca41aa6c818c7ce9b4515ed77887ed876647c6a",
+          "observed_at": 1792804597.168869,
+          "contradiction_age_seconds": 4.019725322723389,
+          "scope": "Host action eligibility override; raw model choice remains recorded"
+        },
+        {
+          "packet_sha256": "edabb592fcd5173d9a194c2be81110677dea608287ab8806e232fec6c68f1231",
+          "observed_at": 1792804601.1877189,
+          "contradiction_age_seconds": 8.038575649261475,
+          "scope": "Host action eligibility override; raw model choice remains recorded"
+        }
+      ],
+      "grace_file_sha256": "23226723639145d109d59a126932b54aff9530d7513b5b7dbcd845e196c7fcbd",
+      "clock_driven_authority": [
+        {
+          "packet_sha256": "de9aa6a70fcc4202780bfca873471c831ab03c59cd11d962842690bcdaf23fa4",
+          "raw_choice": "request_repair_judge",
+          "clock_ids": [
+            "parking-clock:1"
+          ],
+          "decision_file_sha256": "0c88de1efdc76bdd3d300a9566b2477183798dee799a3124e68301b04e3508ed",
+          "authority_started_at": 1792804612.2411604,
+          "verdict": "grant",
+          "deployment": "applied"
+        }
+      ],
+      "timer_repair_loop_exercised_before_fallback": true
+    }
+  ],
+  "groups": [
+    {
+      "case": "adapter",
+      "policy": "model",
+      "profile": "fla-prefill",
+      "count": 1,
+      "timer": true,
+      "elapsed_seconds": {
+        "values": [
+          117.98691463470459
+        ],
+        "mean": 117.98691463470459
+      },
+      "parked_seconds": {
+        "values": [
+          48.22690463066101
+        ],
+        "mean": 48.22690463066101
+      },
+      "native_starts": {
+        "values": [
+          4
+        ],
+        "mean": 4
+      },
+      "judge_response_seconds": {
+        "values": [
+          19.13125205039978
+        ],
+        "mean": 19.13125205039978
+      },
+      "model_records": {
+        "values": [
+          19
+        ],
+        "mean": 19
+      },
+      "model_median_total_seconds": {
+        "values": [
+          2.0899895550010115
+        ],
+        "mean": 2.0899895550010115
+      },
+      "judges_while_parked": 1
+    }
+  ],
+  "all_verified_complete": true,
+  "all_ended": true,
+  "strict_feedback_eligible": 1,
+  "native_starts": 4,
+  "total_timer_events": 1
+}

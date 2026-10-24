@@ -1,0 +1,236 @@
+{
+  "scope": "Fresh randomized live trajectories, not matched checkpoint pairs",
+  "root": "/home/tomzhu0225/src/simjecture-monitor-coprocessor/artifacts/grace-live-20261024",
+  "design_sha256": "fba7baa149f066912bdfe7f905db589351faedd05e587db49c3d1d414b40fdeb",
+  "results_sha256": "c48a258c0197dd5e008338440923ce3f06a5f7f9321628592a74820dbbe46bc1",
+  "source_revision": "8e6695adb891b570a0256736e39685764736f830",
+  "rows": [
+    {
+      "root": "trial-ea71553991bf4e1180b9a6a217b0ef23",
+      "case": "adapter",
+      "policy": "model",
+      "profile": "fla-prefill",
+      "timer": false,
+      "repeat": 0,
+      "returncode": 0,
+      "stage": "completed",
+      "quality": 1.0,
+      "elapsed_seconds": 202.92368507385254,
+      "parked_seconds": 90.38482308387756,
+      "native_starts": 6,
+      "judge_starts": 1,
+      "first_mismatch_at": 1792804325.425991,
+      "first_judge_at": 1792804419.868976,
+      "wake_reason": "deterministic_stall_fallback",
+      "model_records": 25,
+      "model_errors": 0,
+      "model_median_total_seconds": 1.9857341799997812,
+      "parked_model_calls": 2,
+      "parked_judge_choices": 2,
+      "judge_while_parked": false,
+      "required_feedback_misses": 0,
+      "feedback_unknown": [],
+      "duplicate_wakeups": 0,
+      "authority_origins": [
+        "coprocessor"
+      ],
+      "file_sha256": {
+        "LIVE.json": "eb154963dee1ee16f2a572389929496faadcdac64572a2e7c75ac705f09c3527",
+        "INITIAL.json": "2b47649b4181bbeaf0bfbc2aa3ac318899f20f0ef77c6137effcdbb7f076ed83",
+        "QUALITY.json": "5ab8977af929184972af7e7ecd017e77e281dfabce0290855e93a3a32baba4de",
+        "incident-ledger.json": "2dfec38bbc5183a7e2d281cca6f6f13c21d51cef63382e745a31508e1f610c03",
+        "VERIFIED.json": "3b1a09cc9f0131d51e13ae4bcc19755ad650a88f30a22953c692cb28ce29519c"
+      },
+      "report_sha256": "edccafc12e99ad446b3a222420a3792c1ff71051748eaccd14cad5e886a69849",
+      "results_sha256": "a17c88c270bc7b62c81b9cda681afbb542c4935a350726733265f26235c2a624",
+      "judge_response_seconds": 94.44298505783081,
+      "timer_events": 0,
+      "timer_event_ids": [],
+      "events_file_sha256": "b8f416540880561ac6ec2f390fb00732e928294b744aae1c60f9a63ddab5056b",
+      "host_grace_deferrals": [
+        {
+          "packet_sha256": "e0d2fa5ca9d1982ee0ad07a499793138fd384b2084ec843afc908fc303730e69",
+          "observed_at": 1792804329.4436285,
+          "contradiction_age_seconds": 4.01761269569397,
+          "scope": "Host action eligibility override; raw model choice remains recorded"
+        }
+      ],
+      "grace_file_sha256": "57115ca755e8af4e47d117a4a2ecabb557ed52ad087ac15883eff3c2fa33fc32",
+      "clock_driven_authority": [],
+      "timer_repair_loop_exercised_before_fallback": false
+    },
+    {
+      "root": "trial-9b2b6de5f708436cbee70d9efc0c50f5",
+      "case": "adapter",
+      "policy": "model",
+      "profile": "fla-prefill",
+      "timer": true,
+      "repeat": 0,
+      "returncode": 0,
+      "stage": "completed",
+      "quality": 1.0,
+      "elapsed_seconds": 224.91614961624146,
+      "parked_seconds": 90.39560532569885,
+      "native_starts": 8,
+      "judge_starts": 3,
+      "first_mismatch_at": 1792804334.6413496,
+      "first_judge_at": 1792804408.5020635,
+      "wake_reason": "deterministic_stall_fallback",
+      "model_records": 32,
+      "model_errors": 0,
+      "model_median_total_seconds": 2.0735887579999144,
+      "parked_model_calls": 9,
+      "parked_judge_choices": 8,
+      "judge_while_parked": true,
+      "required_feedback_misses": 0,
+      "feedback_unknown": [],
+      "duplicate_wakeups": 2,
+      "authority_origins": [
+        "coprocessor",
+        "worker",
+        "coprocessor"
+      ],
+      "file_sha256": {
+        "LIVE.json": "0f6e81c71b9b53decc435418f3de2faa467c7323bb3c8918361943c5cf03adfd",
+        "INITIAL.json": "ce025c7091639bbf17bf2d5fab082f66145397a30d0d320071e1506a693d17de",
+        "QUALITY.json": "dfc29b364e719595ecf5ca32b24aa7834f1b75fb27118392d5c785b8cf4be1a2",
+        "incident-ledger.json": "97788fd994757ed000c4f53cf9e7ee82c4ed19c7554b4b1317968d8b3ebe48b9",
+        "VERIFIED.json": "51ce25007087ebaefe931640ea4832861556c8e3a75127a4a07936919c40d1c9"
+      },
+      "report_sha256": "8abf1e5f5620a96196ab5f4a85e5badbc74e0ee6bbdf13ccae7695286831f7e3",
+      "results_sha256": "fdaf81a6ade6a45e3b36a591274ada376ebb0209e33c980ee077454add49971c",
+      "judge_response_seconds": 73.86071395874023,
+      "timer_events": 5,
+      "timer_event_ids": [
+        "parking-clock:1",
+        "parking-clock:2",
+        "parking-clock:3",
+        "parking-clock:4",
+        "parking-clock:5"
+      ],
+      "events_file_sha256": "35d0c5e987da46066120df412c383a5297a54de91b063baaa589b1980d178f07",
+      "host_grace_deferrals": [
+        {
+          "packet_sha256": "84f79035c03487476b4af28f0cacedcac0dbc55b14f45c05b2e04ff3e3498215",
+          "observed_at": 1792804340.1676986,
+          "contradiction_age_seconds": 5.526344299316406,
+          "scope": "Host action eligibility override; raw model choice remains recorded"
+        }
+      ],
+      "grace_file_sha256": "777f739ef9df788c7f53c4264816ed3056bdcf97a5a55106cb2359ca4a91b1ca",
+      "clock_driven_authority": [
+        {
+          "packet_sha256": "61a9dc1a884e3d183846da229fd822cec38240b0beac92c90e71e5bb61bafcea",
+          "raw_choice": "request_repair_judge",
+          "clock_ids": [
+            "parking-clock:1",
+            "parking-clock:2",
+            "parking-clock:3",
+            "parking-clock:4",
+            "parking-clock:5"
+          ],
+          "decision_file_sha256": "ae5fe8a177e523c0f8f92598ac754b42074b3656a78f62b4eed5395d69814c3c",
+          "authority_started_at": 1792804408.4583173,
+          "verdict": "grant",
+          "deployment": "applied"
+        }
+      ],
+      "timer_repair_loop_exercised_before_fallback": false
+    }
+  ],
+  "groups": [
+    {
+      "case": "adapter",
+      "policy": "model",
+      "profile": "fla-prefill",
+      "count": 1,
+      "timer": false,
+      "elapsed_seconds": {
+        "values": [
+          202.92368507385254
+        ],
+        "mean": 202.92368507385254
+      },
+      "parked_seconds": {
+        "values": [
+          90.38482308387756
+        ],
+        "mean": 90.38482308387756
+      },
+      "native_starts": {
+        "values": [
+          6
+        ],
+        "mean": 6
+      },
+      "judge_response_seconds": {
+        "values": [
+          94.44298505783081
+        ],
+        "mean": 94.44298505783081
+      },
+      "model_records": {
+        "values": [
+          25
+        ],
+        "mean": 25
+      },
+      "model_median_total_seconds": {
+        "values": [
+          1.9857341799997812
+        ],
+        "mean": 1.9857341799997812
+      },
+      "judges_while_parked": 0
+    },
+    {
+      "case": "adapter",
+      "policy": "model",
+      "profile": "fla-prefill",
+      "count": 1,
+      "timer": true,
+      "elapsed_seconds": {
+        "values": [
+          224.91614961624146
+        ],
+        "mean": 224.91614961624146
+      },
+      "parked_seconds": {
+        "values": [
+          90.39560532569885
+        ],
+        "mean": 90.39560532569885
+      },
+      "native_starts": {
+        "values": [
+          8
+        ],
+        "mean": 8
+      },
+      "judge_response_seconds": {
+        "values": [
+          73.86071395874023
+        ],
+        "mean": 73.86071395874023
+      },
+      "model_records": {
+        "values": [
+          32
+        ],
+        "mean": 32
+      },
+      "model_median_total_seconds": {
+        "values": [
+          2.0735887579999144
+        ],
+        "mean": 2.0735887579999144
+      },
+      "judges_while_parked": 1
+    }
+  ],
+  "all_verified_complete": true,
+  "all_ended": true,
+  "strict_feedback_eligible": 2,
+  "native_starts": 14,
+  "total_timer_events": 5
+}

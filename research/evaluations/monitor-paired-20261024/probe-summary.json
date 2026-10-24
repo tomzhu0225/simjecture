@@ -1,0 +1,317 @@
+{
+  "packets": 8,
+  "choice_changes": 0,
+  "maximum_probability_difference": 0.015288934111595154,
+  "base_median_seconds": 3.619216154500009,
+  "adapter_median_seconds": 4.593994095500193,
+  "rows": [
+    {
+      "case": "healthy",
+      "checkpoint": "checkpoint-9f3db7880a39414181182c0830ad7251",
+      "packet_sha256": "f3e2cb9ecacf9c68ade97be5e7124f4af187d2e607e7a009234a6d301de0f8c6",
+      "prompt_sha256": "3978cdef46946561b242c6df8aee29000c84fbe3576aa5bb1f06695cacb5e39f",
+      "base_choice": "defer",
+      "adapter_choice": "defer",
+      "base_probabilities": {
+        "defer": 0.9197235107421875,
+        "request_worker_help": 0.029180262237787247,
+        "wake_director": 0.03106960467994213,
+        "request_repair_judge": 0.020026689395308495
+      },
+      "adapter_probabilities": {
+        "defer": 0.9197235107421875,
+        "request_worker_help": 0.029180262237787247,
+        "wake_director": 0.03106960467994213,
+        "request_repair_judge": 0.020026689395308495
+      },
+      "maximum_probability_difference": 0.0,
+      "rules_choice": "defer",
+      "state_aware_rules_choice": "defer",
+      "input_tokens": 3819,
+      "view": {
+        "included_event_ids": [
+          "checkpoint:1",
+          "checkpoint:2",
+          "checkpoint:3",
+          "checkpoint:4",
+          "checkpoint:5",
+          "checkpoint:6",
+          "checkpoint:7"
+        ],
+        "omitted_event_ids": [
+          "checkpoint:0"
+        ],
+        "state_sha256": "35ab7660cf3b5727e47b3ac1415926ca2f22d149846b767ec32a53014a1d8954"
+      }
+    },
+    {
+      "case": "expected-negative",
+      "checkpoint": "checkpoint-93711dd60a674c20b3bf2849e33f43c2",
+      "packet_sha256": "395e175757d0483e0041cedb144fb23179ac61e029c414ead2bc43b9d0c1a5f9",
+      "prompt_sha256": "87d49bcbe110e4fd59c75f17d3e9fce296813cc044c3f3d477d727f0b7b09218",
+      "base_choice": "defer",
+      "adapter_choice": "defer",
+      "base_probabilities": {
+        "defer": 0.6279776096343994,
+        "request_worker_help": 0.07921429723501205,
+        "wake_director": 0.20300373435020447,
+        "request_repair_judge": 0.0898042842745781
+      },
+      "adapter_probabilities": {
+        "defer": 0.6281863451004028,
+        "request_worker_help": 0.08437123149633408,
+        "wake_director": 0.2030712068080902,
+        "request_repair_judge": 0.08437123149633408
+      },
+      "maximum_probability_difference": 0.0054330527782440186,
+      "rules_choice": "wake_director",
+      "state_aware_rules_choice": "wake_director",
+      "input_tokens": 4001,
+      "view": {
+        "included_event_ids": [
+          "checkpoint:0",
+          "checkpoint:1",
+          "checkpoint:2",
+          "checkpoint:3",
+          "checkpoint:4",
+          "checkpoint:5",
+          "checkpoint:6",
+          "checkpoint:7"
+        ],
+        "omitted_event_ids": [],
+        "state_sha256": "395e175757d0483e0041cedb144fb23179ac61e029c414ead2bc43b9d0c1a5f9"
+      }
+    },
+    {
+      "case": "self-recoverable",
+      "checkpoint": "checkpoint-d2f9aac9b8b84298bf768914610abdfc",
+      "packet_sha256": "698a995251f5cb0ec67724e20875df739b9587cf9fe12fceb01c7b7ed16d7712",
+      "prompt_sha256": "93ab98425e3e69f0ff29a5f49acb4896f9068c107721ab5d8fc869bea4caafce",
+      "base_choice": "defer",
+      "adapter_choice": "defer",
+      "base_probabilities": {
+        "defer": 0.41132813692092896,
+        "request_worker_help": 0.2651318311691284,
+        "wake_director": 0.14157769083976746,
+        "request_repair_judge": 0.1819622963666916
+      },
+      "adapter_probabilities": {
+        "defer": 0.41132813692092896,
+        "request_worker_help": 0.2651318311691284,
+        "wake_director": 0.14157769083976746,
+        "request_repair_judge": 0.1819622963666916
+      },
+      "maximum_probability_difference": 0.0,
+      "rules_choice": "defer",
+      "state_aware_rules_choice": "defer",
+      "input_tokens": 2814,
+      "view": {
+        "included_event_ids": [
+          "checkpoint:0",
+          "checkpoint:1",
+          "checkpoint:2",
+          "checkpoint:3",
+          "checkpoint:4",
+          "checkpoint:5",
+          "checkpoint:6",
+          "checkpoint:7"
+        ],
+        "omitted_event_ids": [],
+        "state_sha256": "698a995251f5cb0ec67724e20875df739b9587cf9fe12fceb01c7b7ed16d7712"
+      }
+    },
+    {
+      "case": "unreported-blocker",
+      "checkpoint": "checkpoint-2e8d3236fd2b43a1acc71481fd130c33",
+      "packet_sha256": "9fad5648f568817e642b76cad61cc2667867a32fda5bc151ba01057cab3a7709",
+      "prompt_sha256": "db75d1a9a8d30feae36096ac356c0daa1101730b90a78d4fb0b80a731b89f977",
+      "base_choice": "defer",
+      "adapter_choice": "defer",
+      "base_probabilities": {
+        "defer": 0.4087570905685425,
+        "request_worker_help": 0.33862990140914917,
+        "wake_director": 0.10281068831682205,
+        "request_repair_judge": 0.14980223774909973
+      },
+      "adapter_probabilities": {
+        "defer": 0.4161076843738556,
+        "request_worker_help": 0.34471940994262695,
+        "wake_director": 0.10465951263904572,
+        "request_repair_judge": 0.13451330363750458
+      },
+      "maximum_probability_difference": 0.015288934111595154,
+      "rules_choice": "request_worker_help",
+      "state_aware_rules_choice": "request_worker_help",
+      "input_tokens": 2995,
+      "view": {
+        "included_event_ids": [
+          "checkpoint:0",
+          "checkpoint:1",
+          "checkpoint:2",
+          "checkpoint:3",
+          "checkpoint:4",
+          "checkpoint:5",
+          "checkpoint:6",
+          "checkpoint:7"
+        ],
+        "omitted_event_ids": [],
+        "state_sha256": "9fad5648f568817e642b76cad61cc2667867a32fda5bc151ba01057cab3a7709"
+      }
+    },
+    {
+      "case": "predictive-help",
+      "checkpoint": "checkpoint-db285d515e544e1ea60e7c7560f05170",
+      "packet_sha256": "cc0ccbbfb2bd01f0483f5f5b92ec8022794368b810472e31b35596fcab166825",
+      "prompt_sha256": "36b261f2eca661fceb52f688d279f580b26064530edda0ff7f53180d7811f848",
+      "base_choice": "defer",
+      "adapter_choice": "defer",
+      "base_probabilities": {
+        "defer": 0.647608757019043,
+        "request_worker_help": 0.05606502667069435,
+        "wake_director": 0.2527042627334595,
+        "request_repair_judge": 0.04362194985151291
+      },
+      "adapter_probabilities": {
+        "defer": 0.6617903709411621,
+        "request_worker_help": 0.05380874499678612,
+        "wake_director": 0.24253445863723755,
+        "request_repair_judge": 0.041866425424814224
+      },
+      "maximum_probability_difference": 0.01418161392211914,
+      "rules_choice": "defer",
+      "state_aware_rules_choice": "defer",
+      "input_tokens": 3484,
+      "view": {
+        "included_event_ids": [
+          "checkpoint:0",
+          "checkpoint:1",
+          "checkpoint:2",
+          "checkpoint:3",
+          "checkpoint:4",
+          "checkpoint:5",
+          "checkpoint:6",
+          "checkpoint:7"
+        ],
+        "omitted_event_ids": [],
+        "state_sha256": "cc0ccbbfb2bd01f0483f5f5b92ec8022794368b810472e31b35596fcab166825"
+      }
+    },
+    {
+      "case": "diagnostic-anomaly",
+      "checkpoint": "checkpoint-2423bd4930504bb78a7c0391dcf3d6d9",
+      "packet_sha256": "3a66b8099793952772ff6d492534351beb52c6b179890e11f6be302a8db0dd9c",
+      "prompt_sha256": "9b07d01998105285b5759faa630def8061bfa55a0fdd4037eee9b81dad16ed9d",
+      "base_choice": "defer",
+      "adapter_choice": "defer",
+      "base_probabilities": {
+        "defer": 0.4783828556537628,
+        "request_worker_help": 0.0996801108121872,
+        "wake_director": 0.32831865549087524,
+        "request_repair_judge": 0.0936184749007225
+      },
+      "adapter_probabilities": {
+        "defer": 0.48112180829048157,
+        "request_worker_help": 0.10025081783533096,
+        "wake_director": 0.33019840717315674,
+        "request_repair_judge": 0.08842894434928894
+      },
+      "maximum_probability_difference": 0.005189530551433563,
+      "rules_choice": "wake_director",
+      "state_aware_rules_choice": "wake_director",
+      "input_tokens": 3881,
+      "view": {
+        "included_event_ids": [
+          "checkpoint:1",
+          "checkpoint:2",
+          "checkpoint:3",
+          "checkpoint:4",
+          "checkpoint:5",
+          "checkpoint:6",
+          "checkpoint:7"
+        ],
+        "omitted_event_ids": [
+          "checkpoint:0"
+        ],
+        "state_sha256": "faf35d23f7218d46bddeb147f22247e1d61eabc102309caf55aa7417d66e79fa"
+      }
+    },
+    {
+      "case": "protected-adapter",
+      "checkpoint": "checkpoint-4a00a004e2ea41a98326c152aa57b56e",
+      "packet_sha256": "ca18a82f5309c1a0aeb8c901687ac859973673540b4b9bbaa4c9c1fde4cf13ce",
+      "prompt_sha256": "82c6a714653c59abb3af104b9e00a3205a6b7161856b71cbf350f01b5aae481f",
+      "base_choice": "request_repair_judge",
+      "adapter_choice": "request_repair_judge",
+      "base_probabilities": {
+        "defer": 0.2070603370666504,
+        "request_worker_help": 0.13346578180789948,
+        "wake_director": 0.16110548377037048,
+        "request_repair_judge": 0.49836835265159607
+      },
+      "adapter_probabilities": {
+        "defer": 0.2137862890958786,
+        "request_worker_help": 0.14672353863716125,
+        "wake_director": 0.15622349083423615,
+        "request_repair_judge": 0.483266681432724
+      },
+      "maximum_probability_difference": 0.01510167121887207,
+      "rules_choice": "request_repair_judge",
+      "state_aware_rules_choice": "request_repair_judge",
+      "input_tokens": 2909,
+      "view": {
+        "included_event_ids": [
+          "checkpoint:0",
+          "checkpoint:1",
+          "checkpoint:2",
+          "checkpoint:3",
+          "checkpoint:4",
+          "checkpoint:5",
+          "checkpoint:6",
+          "checkpoint:7"
+        ],
+        "omitted_event_ids": [],
+        "state_sha256": "ca18a82f5309c1a0aeb8c901687ac859973673540b4b9bbaa4c9c1fde4cf13ce"
+      }
+    },
+    {
+      "case": "resolved-stale",
+      "checkpoint": "checkpoint-9f96945b70264c6ca1e09f32bf98a8d5",
+      "packet_sha256": "4c61aebc053f71d9b6161be80acffb1b2aaaf6f93055efffdcdb5d4353ee256c",
+      "prompt_sha256": "e20f6d8e66537e6dd67524211ec2fa8033c72c07e34167ced130cff2e5025183",
+      "base_choice": "defer",
+      "adapter_choice": "defer",
+      "base_probabilities": {
+        "defer": 0.6641707420349121,
+        "request_worker_help": 0.08377968519926071,
+        "wake_director": 0.12207286804914474,
+        "request_repair_judge": 0.12997674942016602
+      },
+      "adapter_probabilities": {
+        "defer": 0.6641707420349121,
+        "request_worker_help": 0.08377968519926071,
+        "wake_director": 0.12207286804914474,
+        "request_repair_judge": 0.12997674942016602
+      },
+      "maximum_probability_difference": 0.0,
+      "rules_choice": "request_repair_judge",
+      "state_aware_rules_choice": "defer",
+      "input_tokens": 3732,
+      "view": {
+        "included_event_ids": [
+          "checkpoint:1",
+          "checkpoint:2",
+          "checkpoint:3",
+          "checkpoint:4",
+          "checkpoint:5",
+          "checkpoint:6",
+          "checkpoint:7"
+        ],
+        "omitted_event_ids": [
+          "checkpoint:0"
+        ],
+        "state_sha256": "5dd33fa383ac8f33aa76d02cf5f810e1c70a5a2f92b618c53ed4753206124b85"
+      }
+    }
+  ],
+  "scope": "New fixed-policy replay; no new adapter or live efficacy claim; shared GPU reference kernels"
+}
