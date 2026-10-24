@@ -22,6 +22,10 @@
       "wake_reason": "adapter_completion",
       "model_records": 14,
       "model_errors": 0,
+      "model_median_total_seconds": 3.3389921774996765,
+      "parked_model_calls": 4,
+      "parked_judge_choices": 4,
+      "judge_while_parked": true,
       "required_feedback_misses": 0,
       "feedback_unknown": [],
       "duplicate_wakeups": 0,
@@ -56,6 +60,10 @@
       "wake_reason": "adapter_completion",
       "model_records": 14,
       "model_errors": 0,
+      "model_median_total_seconds": 3.490519212500203,
+      "parked_model_calls": 4,
+      "parked_judge_choices": 4,
+      "judge_while_parked": true,
       "required_feedback_misses": 0,
       "feedback_unknown": [],
       "duplicate_wakeups": 0,
@@ -90,6 +98,10 @@
       "wake_reason": "adapter_completion",
       "model_records": 19,
       "model_errors": 0,
+      "model_median_total_seconds": null,
+      "parked_model_calls": 1,
+      "parked_judge_choices": 0,
+      "judge_while_parked": false,
       "required_feedback_misses": 0,
       "feedback_unknown": [],
       "duplicate_wakeups": 0,
@@ -122,6 +134,10 @@
       "wake_reason": "adapter_completion",
       "model_records": 22,
       "model_errors": 0,
+      "model_median_total_seconds": null,
+      "parked_model_calls": 3,
+      "parked_judge_choices": 0,
+      "judge_while_parked": false,
       "required_feedback_misses": 0,
       "feedback_unknown": [],
       "duplicate_wakeups": 0,
@@ -156,6 +172,10 @@
       "wake_reason": "deterministic_stall_fallback",
       "model_records": 31,
       "model_errors": 0,
+      "model_median_total_seconds": null,
+      "parked_model_calls": 3,
+      "parked_judge_choices": 0,
+      "judge_while_parked": false,
       "required_feedback_misses": 0,
       "feedback_unknown": [],
       "duplicate_wakeups": 0,
@@ -190,6 +210,10 @@
       "wake_reason": "adapter_completion",
       "model_records": 19,
       "model_errors": 0,
+      "model_median_total_seconds": null,
+      "parked_model_calls": 1,
+      "parked_judge_choices": 0,
+      "judge_while_parked": false,
       "required_feedback_misses": 0,
       "feedback_unknown": [],
       "duplicate_wakeups": 0,
@@ -222,6 +246,10 @@
       "wake_reason": "adapter_completion",
       "model_records": 20,
       "model_errors": 0,
+      "model_median_total_seconds": null,
+      "parked_model_calls": 3,
+      "parked_judge_choices": 0,
+      "judge_while_parked": false,
       "required_feedback_misses": 0,
       "feedback_unknown": [],
       "duplicate_wakeups": 0,
@@ -254,6 +282,10 @@
       "wake_reason": "adapter_completion",
       "model_records": 18,
       "model_errors": 0,
+      "model_median_total_seconds": null,
+      "parked_model_calls": 3,
+      "parked_judge_choices": 0,
+      "judge_while_parked": false,
       "required_feedback_misses": 0,
       "feedback_unknown": [],
       "duplicate_wakeups": 0,
@@ -288,6 +320,10 @@
       "wake_reason": "adapter_completion",
       "model_records": 13,
       "model_errors": 0,
+      "model_median_total_seconds": 3.287233281999761,
+      "parked_model_calls": 1,
+      "parked_judge_choices": 0,
+      "judge_while_parked": false,
       "required_feedback_misses": 0,
       "feedback_unknown": [],
       "duplicate_wakeups": 0,
@@ -320,6 +356,10 @@
       "wake_reason": "adapter_completion",
       "model_records": 19,
       "model_errors": 0,
+      "model_median_total_seconds": null,
+      "parked_model_calls": 1,
+      "parked_judge_choices": 0,
+      "judge_while_parked": false,
       "required_feedback_misses": 0,
       "feedback_unknown": [],
       "duplicate_wakeups": 0,
@@ -352,6 +392,10 @@
       "wake_reason": "adapter_completion",
       "model_records": 15,
       "model_errors": 0,
+      "model_median_total_seconds": 3.458017903999462,
+      "parked_model_calls": 1,
+      "parked_judge_choices": 0,
+      "judge_while_parked": false,
       "required_feedback_misses": 0,
       "feedback_unknown": [],
       "duplicate_wakeups": 0,
@@ -384,6 +428,10 @@
       "wake_reason": "deterministic_stall_fallback",
       "model_records": 27,
       "model_errors": 0,
+      "model_median_total_seconds": null,
+      "parked_model_calls": 2,
+      "parked_judge_choices": 0,
+      "judge_while_parked": false,
       "required_feedback_misses": 0,
       "feedback_unknown": [],
       "duplicate_wakeups": 0,
@@ -435,7 +483,22 @@
           11.592672348022461
         ],
         "mean": 11.338534951210022
-      }
+      },
+      "model_records": {
+        "values": [
+          14,
+          14
+        ],
+        "mean": 14
+      },
+      "model_median_total_seconds": {
+        "values": [
+          3.3389921774996765,
+          3.490519212500203
+        ],
+        "mean": 3.41475569499994
+      },
+      "judges_while_parked": 2
     },
     {
       "case": "adapter",
@@ -469,7 +532,19 @@
           111.41517353057861
         ],
         "mean": 113.17832708358765
-      }
+      },
+      "model_records": {
+        "values": [
+          31,
+          27
+        ],
+        "mean": 29
+      },
+      "model_median_total_seconds": {
+        "values": [],
+        "mean": null
+      },
+      "judges_while_parked": 0
     },
     {
       "case": "adapter",
@@ -503,7 +578,19 @@
           0.04889702796936035
         ],
         "mean": 0.0512920618057251
-      }
+      },
+      "model_records": {
+        "values": [
+          22,
+          18
+        ],
+        "mean": 20
+      },
+      "model_median_total_seconds": {
+        "values": [],
+        "mean": null
+      },
+      "judges_while_parked": 0
     },
     {
       "case": "healthy",
@@ -534,7 +621,22 @@
       "judge_response_seconds": {
         "values": [],
         "mean": null
-      }
+      },
+      "model_records": {
+        "values": [
+          13,
+          15
+        ],
+        "mean": 14
+      },
+      "model_median_total_seconds": {
+        "values": [
+          3.287233281999761,
+          3.458017903999462
+        ],
+        "mean": 3.3726255929996114
+      },
+      "judges_while_parked": 0
     },
     {
       "case": "healthy",
@@ -565,7 +667,19 @@
       "judge_response_seconds": {
         "values": [],
         "mean": null
-      }
+      },
+      "model_records": {
+        "values": [
+          19,
+          19
+        ],
+        "mean": 19
+      },
+      "model_median_total_seconds": {
+        "values": [],
+        "mean": null
+      },
+      "judges_while_parked": 0
     },
     {
       "case": "healthy",
@@ -596,7 +710,19 @@
       "judge_response_seconds": {
         "values": [],
         "mean": null
-      }
+      },
+      "model_records": {
+        "values": [
+          19,
+          20
+        ],
+        "mean": 19.5
+      },
+      "model_median_total_seconds": {
+        "values": [],
+        "mean": null
+      },
+      "judges_while_parked": 0
     }
   ],
   "all_verified_complete": true,

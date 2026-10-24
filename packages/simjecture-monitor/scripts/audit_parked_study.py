@@ -39,6 +39,13 @@ def audit(root, budget):
         judges = [s for s in native if Path(s["cwd"]).name == "authority-judge"]
         mismatch = outcome.get("first_mismatch_at")
         decisions = [load(p) for p in sorted((trial / "monitor").glob("decision-*.json"))]
+        valid = [d for d in decisions if d.get("decision") and not d.get("error")]
+        parked_decisions = [
+            d for d in valid if d["packet"]["state"].get("host_state", {}).get("worker_parked")
+        ]
+        forward = [
+            d["decision"]["total_seconds"] for d in valid if "total_seconds" in d["decision"]
+        ]
         row = dict(
             job,
             returncode=result["returncode"],
@@ -53,6 +60,15 @@ def audit(root, budget):
             wake_reason=outcome.get("wake_reason"),
             model_records=len(decisions),
             model_errors=sum(bool(d.get("error")) for d in decisions),
+            model_median_total_seconds=statistics.median(forward) if forward else None,
+            parked_model_calls=len(parked_decisions),
+            parked_judge_choices=sum(
+                d["decision"]["choice"] == "request_repair_judge" for d in parked_decisions
+            ),
+            judge_while_parked=any(
+                outcome["parked_at"] <= s["started_at"] < outcome["worker_resumed_at"]
+                for s in judges
+            ),
             required_feedback_misses=feedback["required_feedback_misses"],
             feedback_unknown=feedback["unknown_need_for_unacknowledged_help"],
             duplicate_wakeups=outcome["ledger"]["duplicate_wakeups"],
@@ -84,18 +100,26 @@ def audit(root, budget):
         assert all(s.get("ended_at") is not None for s in native)
         rows.append(row)
     groups = []
-    for case, policy, profile in sorted(
-        {(r["case"], r["policy"], r.get("profile", "reference")) for r in rows}
-    ):
-        subset = [
-            r
-            for r in rows
-            if (r["case"], r["policy"], r.get("profile", "reference")) == (case, policy, profile)
-        ]
-        group = dict(case=case, policy=policy, profile=profile, count=len(subset))
-        for key in ["elapsed_seconds", "parked_seconds", "native_starts", "judge_response_seconds"]:
-            values = [r[key] for r in subset if r[key] is not None]
-            group[key] = dict(values=values, mean=statistics.mean(values) if values else None)
+
+    def group_key(row):
+        return row["case"], row["policy"], row.get("profile", "reference"), row.get("timer")
+
+    for key in sorted({group_key(r) for r in rows}):
+        subset = [r for r in rows if group_key(r) == key]
+        group = dict(case=key[0], policy=key[1], profile=key[2], count=len(subset))
+        if key[3] is not None:
+            group["timer"] = key[3]
+        for metric in [
+            "elapsed_seconds",
+            "parked_seconds",
+            "native_starts",
+            "judge_response_seconds",
+            "model_records",
+            "model_median_total_seconds",
+        ]:
+            values = [r[metric] for r in subset if r[metric] is not None]
+            group[metric] = dict(values=values, mean=statistics.mean(values) if values else None)
+        group["judges_while_parked"] = sum(r["judge_while_parked"] for r in subset)
         groups.append(group)
     return dict(
         scope="Fresh randomized live trajectories, not matched checkpoint pairs",
@@ -136,6 +160,8 @@ def main():
         "required_feedback_misses",
         "duplicate_wakeups",
     ]
+    if any("timer" in row for row in result["rows"]):
+        keys.insert(4, "timer")
     with (args.output / "measurements.csv").open("w") as stream:
         writer = csv.DictWriter(stream, keys, extrasaction="ignore")
         writer.writeheader()

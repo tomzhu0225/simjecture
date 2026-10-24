@@ -1,0 +1,149 @@
+{
+  "local_root": "/home/tomzhu0225/src/simjecture-monitor-coprocessor/artifacts/inference-fast-20261024",
+  "files_sha256": {
+    "PLAN.json": "7bede70f9eec757e2b2df314d17262471d5d0959189ea356953b0df587efc3b0",
+    "ENVIRONMENT.json": "c939bdf01707dfd25a16dfdcd8515236174f63b80a50fd32ff8f2ba5929d9dab",
+    "CONVOLUTION_VALIDATION.json": "5b78a0d1eaee45e971a9645a3b7e1a3d0134fdfa5b39f45ba0ff71ca0157f4e9",
+    "CONVOLUTION_VALIDATION.fused-prototype.json": "21f7006589c1d763cf0b9d04f2909271624e2ef44e81915e6e26c38c7056a0bb"
+  },
+  "runtime_weights_changed": false,
+  "benchmarks": {
+    "reference": {
+      "status": {
+        "stage": "completed",
+        "started_at": 1792801529.5851827,
+        "model_identity": {
+          "checkpoint_path": "/home/tomzhu0225/src/simjecture-monitor-coprocessor/artifacts/models/Decision-verified",
+          "checkpoint_config_sha256": "ddc63e1c717afa86c865bb5e01313d89d72bb53b97ad4a8a03ba8510c0621670",
+          "adapter_files_sha256": {}
+        },
+        "device": "NVIDIA RTX 4000 Ada Generation",
+        "torch_version": "2.11.0+cu130",
+        "cuda_version": "13.0",
+        "cpu_threads": 2,
+        "device_total_bytes": 21469069312,
+        "cuda_reported_used_bytes_before_model": 1288175616,
+        "load_seconds": 6.573840856552124,
+        "resident_allocated_bytes": 9180272640,
+        "resident_reserved_bytes": 9219080192,
+        "ended_at": 1792801593.8926911,
+        "packets": 8,
+        "repetitions": 2,
+        "warm_median_forward_seconds": 3.785106171499592,
+        "warm_median_total_seconds": 3.7940342284996404,
+        "warm_maximum_total_seconds": 4.195481630999893,
+        "peak_cuda_bytes": 10188218368,
+        "choice_agreements": 16,
+        "comparisons": 16,
+        "maximum_probability_difference": 0.0,
+        "input_tokens": [
+          3819,
+          4001,
+          2814,
+          2995,
+          3484,
+          3881,
+          2909,
+          3732
+        ],
+        "limitation": "Resident inference on retained monitoring packets; no throughput or power benchmark."
+      },
+      "status_sha256": "9cbb1b3aa8588a1f0804e44ac49bcf9fa7a2725c9b5ce3c431399cd52b4a9031",
+      "predictions_sha256": "c8d28e9e381908f9c3af3c48545ea298846068c021cdcdd92b89f299ebdc00cd"
+    },
+    "fla": {
+      "status": {
+        "stage": "completed",
+        "started_at": 1792801595.699942,
+        "model_identity": {
+          "checkpoint_path": "/home/tomzhu0225/src/simjecture-monitor-coprocessor/artifacts/models/Decision-verified",
+          "checkpoint_config_sha256": "ddc63e1c717afa86c865bb5e01313d89d72bb53b97ad4a8a03ba8510c0621670",
+          "adapter_files_sha256": {}
+        },
+        "device": "NVIDIA RTX 4000 Ada Generation",
+        "torch_version": "2.11.0+cu130",
+        "cuda_version": "13.0",
+        "cpu_threads": 2,
+        "device_total_bytes": 21469069312,
+        "cuda_reported_used_bytes_before_model": 1288175616,
+        "load_seconds": 6.524172306060791,
+        "resident_allocated_bytes": 9180272640,
+        "resident_reserved_bytes": 9219080192,
+        "ended_at": 1792801666.3060973,
+        "packets": 8,
+        "repetitions": 2,
+        "warm_median_forward_seconds": 2.3900819459995546,
+        "warm_median_total_seconds": 2.4018835194997337,
+        "warm_maximum_total_seconds": 2.631443403999583,
+        "peak_cuda_bytes": 9955107328,
+        "choice_agreements": 16,
+        "comparisons": 16,
+        "maximum_probability_difference": 0.015102088451385498,
+        "input_tokens": [
+          3819,
+          4001,
+          2814,
+          2995,
+          3484,
+          3881,
+          2909,
+          3732
+        ],
+        "limitation": "Resident inference on retained monitoring packets; no throughput or power benchmark."
+      },
+      "status_sha256": "936653790e0e6d094ccdd986d9980e240db15f879e19f938a3fabff233573e73",
+      "predictions_sha256": "4ad4a3562b6b94d0756d735687e8fa0a224570d65a081745dcd24774a7e20100"
+    },
+    "fla-prefill": {
+      "status": {
+        "stage": "completed",
+        "started_at": 1792802123.0101364,
+        "model_identity": {
+          "checkpoint_path": "/home/tomzhu0225/src/simjecture-monitor-coprocessor/artifacts/models/Decision-verified",
+          "checkpoint_config_sha256": "ddc63e1c717afa86c865bb5e01313d89d72bb53b97ad4a8a03ba8510c0621670",
+          "adapter_files_sha256": {},
+          "runtime": {
+            "profile": "fla-prefill",
+            "fla_core": "0.6.0",
+            "adapter_source_sha256": "83b6d3ba2813ad883725be94e13477cd1db7b9ca2af9654e040b35fb10a936a1",
+            "convolution": "fla.modules.causal_conv1d:causal_conv1d; BCT/BTC layout adapter",
+            "scope": "Dense single-pass CUDA prefill, use_cache=False; no packed sequences"
+          }
+        },
+        "device": "NVIDIA RTX 4000 Ada Generation",
+        "torch_version": "2.11.0+cu130",
+        "cuda_version": "13.0",
+        "cpu_threads": 2,
+        "device_total_bytes": 21469069312,
+        "cuda_reported_used_bytes_before_model": 1288175616,
+        "load_seconds": 8.487040519714355,
+        "resident_allocated_bytes": 9180272640,
+        "resident_reserved_bytes": 9219080192,
+        "ended_at": 1792802170.4993484,
+        "packets": 8,
+        "repetitions": 2,
+        "warm_median_forward_seconds": 2.205669515999489,
+        "warm_median_total_seconds": 2.220005888999367,
+        "warm_maximum_total_seconds": 2.473755328000152,
+        "peak_cuda_bytes": 9731216896,
+        "choice_agreements": 16,
+        "comparisons": 16,
+        "maximum_probability_difference": 0.015102088451385498,
+        "input_tokens": [
+          3819,
+          4001,
+          2814,
+          2995,
+          3484,
+          3881,
+          2909,
+          3732
+        ],
+        "limitation": "Resident inference on retained monitoring packets; no throughput or power benchmark."
+      },
+      "status_sha256": "de1e4b9c2e2f21dc3c8c5265450d9c9fc7ca65b35eebc06e6bba1f82b2b63f2d",
+      "predictions_sha256": "337d868055ca4ce1282752275b6f26a95827e8940cc7387d8a5138541d00e746"
+    }
+  },
+  "prefill_speed_ratio": 1.7090198937308865
+}
