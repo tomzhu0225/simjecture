@@ -24,6 +24,8 @@ def main():
     parser.add_argument("--root", type=Path, required=True)
     parser.add_argument("--pilot", type=Path, required=True)
     parser.add_argument("--previous", type=Path, required=True)
+    parser.add_argument("--grace-commissioning", action="store_true")
+    parser.add_argument("--triton-cache", type=Path)
     args = parser.parse_args()
     root, pilot, previous, repo = (
         args.root.resolve(),
@@ -47,7 +49,9 @@ def main():
         for timer in [False, True]
         for repeat in range(2)
     ]
-    random.Random(2026102407).shuffle(jobs)
+    if args.grace_commissioning:
+        jobs = [j for j in jobs if j["case"] == "adapter" and j["repeat"] == 0]
+    random.Random(2026102408 if args.grace_commissioning else 2026102407).shuffle(jobs)
     put(
         root / "DESIGN.json",
         dict(
@@ -57,6 +61,8 @@ def main():
                 ["git", "rev-parse", "HEAD"], text=True
             ).strip(),
             question="Can bounded elapsed-time observations repair a no-new-event blind spot?",
+            kind="mechanism commissioning" if args.grace_commissioning else "live comparison",
+            grace_seconds=10 if args.grace_commissioning else 0,
             interval_seconds=15,
             fixed_fallback_seconds=90,
             maximum_parent_controllers=2,
@@ -72,12 +78,22 @@ def main():
         if time.time() > until:
             raise TimeoutError("Previous runtime comparison did not finish")
         time.sleep(5)
-    for block in range(4):
-        release = json.loads((previous / f"block-{block}/MODEL_RELEASE.json").read_text())
+    releases = (
+        [previous / "MODEL_RELEASE.json"]
+        if args.grace_commissioning
+        else [previous / f"block-{block}/MODEL_RELEASE.json" for block in range(4)]
+    )
+    for path in releases:
+        while not path.exists():
+            if time.time() > until:
+                raise TimeoutError("Previous server release is missing")
+            time.sleep(1)
+        release = json.loads(path.read_text())
         if release["socket_present"]:
             raise RuntimeError("Previous server did not release socket")
     budget = json.loads((pilot / "native-budget.json").read_text())
-    if budget["maximum_starts"] - len(budget["starts"]) < 40:
+    minimum = 24 if args.grace_commissioning else 40
+    if budget["maximum_starts"] - len(budget["starts"]) < minimum:
         raise RuntimeError("Insufficient remaining native start allowance")
     socket = Path("/tmp/simjecture-timer-" + uuid.uuid4().hex + ".sock")
     launcher = root / "serve.py"
@@ -106,7 +122,9 @@ def main():
     env = dict(
         os.environ,
         PYTHONPATH=str(repo / "packages/simjecture-monitor/src"),
-        TRITON_CACHE_DIR=str(previous / "triton-cache"),
+        TRITON_CACHE_DIR=str(
+            args.triton_cache.resolve() if args.triton_cache else previous / "triton-cache"
+        ),
     )
     with (root / "model.log").open("w") as log:
         server = subprocess.Popen(command, env=env, stdout=log, stderr=log, start_new_session=True)
@@ -131,7 +149,11 @@ def main():
                     pilot / "native-budget.json",
                     pilot / "native-codex",
                     socket,
-                    driver="heartbeat_trials.py" if job["timer"] else "parked_trials.py",
+                    driver=(
+                        ("grace_timer_trials.py" if job["timer"] else "grace_trials.py")
+                        if args.grace_commissioning
+                        else ("heartbeat_trials.py" if job["timer"] else "parked_trials.py")
+                    ),
                 )
                 for job in jobs
             ]

@@ -30,3 +30,25 @@ more reliable fault detection without healthy repair wakes; report call overhead
 whether or not the new observation helps. Rules already solve this explicit fault
 faster, so success would only fix event-observation behavior, not prove a need
 for ML or an RL improvement.
+
+## Separate grace-period mechanism commissioning
+
+Prepared before its outcomes, after both timed fault trials in the eight-run
+cohort acted before the first 15-second timer. Keep that cohort unchanged.
+Run two separate defective-adapter commissioning trajectories, one per timer
+setting, randomized with seed 2026102408. During the first ten seconds after the
+public contradiction, the host explicitly discards coprocessor repair alerts
+under a declared transient-state grace period. Raw model choices/probabilities
+remain recorded, and `GRACE_DEFERRALS.json` records every host override. This is
+a prescribed eligibility rule, not an observed learned defer choice. Explicit
+worker repair requests remain available. After the grace period, ordinary alerts
+are eligible; a quiet event-only stream still needs a new observation to infer.
+
+This check exercises timer delivery after deliberately deferred early alerts;
+it cannot estimate natural false-negative rates or learned-policy improvement.
+At least one discarded early alert and a delivered timer observation are needed
+to call the timed mechanism exercised. Keep all numeric outcomes and fallbacks.
+Use the same fast base and limits, after the original eight timer trajectories
+and server exit. Require at least24 unused global native start slots before
+the two-case commissioning; the shared240 cap remains binding. Do not pool these
+two commissioning cases with the eight-run comparison or use them for training.
