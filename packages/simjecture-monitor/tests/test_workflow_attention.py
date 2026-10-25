@@ -127,3 +127,23 @@ def test_nonfinite_measurements_remain_invalid_and_current_assistance_suppresses
     assert predict(value)[0].action == "recheck"
     value["state"]["host_state"]["active_helpers"] = 1
     assert predict(value)[0].action == "observe"
+
+
+def test_sustained_divergence_is_detected_without_treating_a_single_overshoot_as_failure():
+    value = raw()
+    host = value["state"]["host_state"]
+    host["telemetry"].update(
+        no_new_output_seconds=1.0, repeated_output_count=1, repeated_output_span_seconds=0.0
+    )
+    host["public_artifacts"]["progress"]["loss"] = 0.4
+    host["progress_history"] = [
+        dict(phase="aggregation", loss=loss) for loss in [0.2, 0.25, 0.32, 0.4]
+    ]
+    choice, decision = predict(value)
+    assert choice.action == "request_worker_help"
+    assert decision.evidence_ids == ["progress_history-0"]
+    host["progress_history"][1]["loss"] = 0.5
+    assert predict(value)[0].action == "observe"
+    host["public_artifacts"]["execution_plan"]["quiet_until"] = 195.0
+    host["progress_history"][1]["loss"] = 0.25
+    assert predict(value)[0].action == "observe"

@@ -271,6 +271,31 @@ class ScientificConsistencyRules:
             and loss < 1e-3
         )
         if not goal_met:
+            history = public_record(packet, "progress_history") or []
+            recent = history[-4:]
+            # A generic convergence check for this declared calibration objective.
+            # Require sustained growth, not one overshoot or a noisy plateau.
+            losses = [r.get("loss") for r in recent]
+            measured = len(recent) == 4 and all(
+                r.get("phase") == progress.get("phase")
+                and isinstance(r.get("loss"), (int, float))
+                and not isinstance(r.get("loss"), bool)
+                and math.isfinite(r["loss"])
+                and r["loss"] >= 1e-3
+                for r in recent
+            )
+            post_quiet = packet.timing.since_quiet_end_ms
+            if (
+                measured
+                and (post_quiet is None or post_quiet >= 18000)
+                and all(b > a for a, b in zip(losses, losses[1:], strict=False))
+                and losses[-1] > 1.25 * losses[0]
+            ):
+                return choice(
+                    "request_worker_help",
+                    "measurement",
+                    [e.id for e in packet.evidence if e.source_role == "progress_history"][:1],
+                )
             silence = packet.timing.unexplained_silence_ms()
             if silence is not None and silence >= 30000:
                 return choice("request_worker_help", "silence", refs)

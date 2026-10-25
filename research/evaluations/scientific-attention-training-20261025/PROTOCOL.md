@@ -135,6 +135,32 @@ speed. Current Hugging Face write authentication is absent locally; prepare the
 complete release independently while account access is resolved. No fabricated
 metrics or unvalidated improvement claims may enter the model card.
 
+## Execution amendment, before candidate selection and workflow test collection
+
+Transport failures interrupted the initial smoke allocation and a subsequent
+scientific training run (last retrieved status: 239 updates). Their weights were
+not recovered and their metadata remain in the operational record. A fresh run
+repeats the same 512-update configuration and seeds, adds a 64-update durability
+checkpoint, and exports adapter/optimizer snapshots to the separate coordinator.
+These infrastructure retries do not select a model using test performance.
+
+Remote commissioning established the physical backend and ordinary worker
+lifecycle. A healthy workflow completed with independently verified measurements;
+a rule-triggered director wake also completed a controlled unit-reporting repair.
+Commissioning is excluded from test estimates. The deterministic comparator also
+checks sustained residual growth over four public progress records, with a quiet
+allowance and tolerance for a single overshoot. Its code is frozen before tests.
+
+The initial test cohort is 16 task configurations, two per retained mechanism,
+and four arms (64 workflows). Arm order is randomized within each configuration;
+at most two workflows and four native roles run concurrently. Trial directories
+use opaque identifiers. A new block starts only if at least 1,600 seconds remain
+in the resource lease, allowing its two waves to finish. Retain every started
+workflow, including failures. Fewer completed blocks weaken precision; they do
+not justify dropping unfavorable results. Additional replication, if warranted,
+must be reported separately from this initial cohort. These are new executions
+and parameters of development-known mechanisms, not unseen-mechanism tests.
+
 Sources: [Intern-Decision data interface](https://github.com/InternLM/Intern-Decision/blob/main/docs/DATA.md),
 [upstream evaluation protocol](https://github.com/InternLM/Intern-Decision/blob/main/docs/EVALUATION.md),
 and the retained prior Simjecture studies linked from the monitor package README.
