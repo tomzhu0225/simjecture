@@ -5,6 +5,28 @@ window.workspaceURL = (path, space = new URLSearchParams(location.search).get("w
   if (space && space !== "personal") url.searchParams.set("workspace", space);
   return url.pathname + url.search + url.hash;
 };
+// Resources keeps the reader's last choice; short screens start collapsed so
+// conversations stay visible.
+window.WorkspaceResources = (() => {
+  const key = "simjecture-resources-open";
+  const saved = () => { try { return localStorage.getItem(key); } catch { return null; } };
+  function apply(preferOpen = true) {
+    const group = document.querySelector(".workspace-resources");
+    if (!group) return;
+    const choice = saved();
+    group.open = choice === null ? preferOpen && innerHeight >= 860 : choice === "true";
+  }
+  document.addEventListener("DOMContentLoaded", () => {
+    const group = document.querySelector(".workspace-resources");
+    if (!group) return;
+    apply();
+    group.querySelector("summary").addEventListener("click", () => {
+      // The click runs before the toggle, so store the state it is about to take.
+      try { localStorage.setItem(key, String(!group.open)); } catch {}
+    });
+  });
+  return {apply};
+})();
 window.WorkspaceProjects = (() => {
   let enabled = false, spaces = [], collections = [], selected = null, editing = null;
   const activeSpace = () => new URLSearchParams(location.search).get("workspace") || "personal";
@@ -27,7 +49,7 @@ window.WorkspaceProjects = (() => {
     enabled = !!data.workspaces;
     if (!enabled) return;
     spaces = data.workspaces; collections = data.collections || [];
-    document.querySelector(".workspace-resources").open = activeSpace() === "personal" && !collections.length;
+    window.WorkspaceResources.apply(activeSpace() === "personal" && !collections.length);
     $("workspace-switcher").hidden = false;
     $("workspace-name").textContent = spaces.find(s => s.id === activeSpace())?.name || "Personal";
     $("collection-sidebar").hidden = false;
