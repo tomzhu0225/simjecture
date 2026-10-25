@@ -168,3 +168,11 @@ The six-hour native lease retains its original absolute deadline; raise its tota
 start allowance from288 to512 to account for the discarded collection and
 additional commissioning. Four simultaneous roles and ten starts per trajectory
 remain the limits. No additional Colab allocation or model training is required.
+
+Startup-only retry: v2's model socket existed between `bind()` and `listen()`;
+the first warmup connection was refused. Zero native assignments and zero model
+inferences started. Retain that manifest and startup log. The readiness helper
+now retries only missing/refused connections before acceptance, never an accepted
+inference timeout. Two tests cover this boundary. Restart under a new v3 artifact
+root with the same policies, fixtures, task and scheduling correction; v3 is the
+first comparative cohort after that correction.

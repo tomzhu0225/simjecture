@@ -18,7 +18,7 @@ from pathlib import Path
 from generalization_fixture import CASES
 from simjecture_monitor.events import put
 from simjecture_monitor.native_guard import locked, reap, stop_session
-from simjecture_monitor.server import request
+from simjecture_monitor.startup import ready_request
 
 from conjecture_solver.research_helper_runtime import process_stat
 
@@ -214,6 +214,7 @@ def main():
         "packages/simjecture-monitor/src/simjecture_monitor/repair_roles.py",
         "packages/simjecture-monitor/src/simjecture_monitor/checks_policy.py",
         "packages/simjecture-monitor/src/simjecture_monitor/parked_wake.py",
+        "packages/simjecture-monitor/src/simjecture_monitor/startup.py",
         "packages/simjecture-monitor/scripts/verify_field_quantity.py",
         "research/evaluations/monitor-generalization-20261025/PROTOCOL.md",
     ]
@@ -268,13 +269,8 @@ def main():
     put(root / "MODEL_PROCESS.json", dict(identity=process_stat(server.pid), socket=str(socket)))
     results = []
     try:
-        until = time.time() + 180
-        while not socket.exists():
-            if server.poll() is not None or time.time() > until:
-                raise RuntimeError("Model not ready")
-            time.sleep(1)
         packet = load(repo / "artifacts/inference-fast-20261024/packets.json")[0]
-        put(root / "WARMUP.json", request(socket, packet, timeout=120))
+        put(root / "WARMUP.json", ready_request(socket, packet, process=server))
         for number, block in enumerate(blocks):
             with ThreadPoolExecutor(max_workers=2) as pool:
                 futures = [

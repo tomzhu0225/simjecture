@@ -15,6 +15,7 @@ from simjecture_monitor.checks_policy import ChecksAwareRules
 from simjecture_monitor.events import digest, put
 from simjecture_monitor.generic_policy import GenericOperationalRules
 from simjecture_monitor.server import request
+from simjecture_monitor.startup import ready_request
 
 from conjecture_solver.research_helper_runtime import process_stat
 
@@ -171,13 +172,8 @@ def run(source, output):
     put(output / "MODEL_PROCESS.json", dict(identity=process_stat(server.pid), socket=str(socket)))
     results = []
     try:
-        until = time.time() + 180
-        while not socket.exists():
-            if server.poll() is not None or time.time() > until:
-                raise RuntimeError("Replay model not ready")
-            time.sleep(1)
         warmup = load(repo / "artifacts/inference-fast-20261024/packets.json")[0]
-        put(output / "WARMUP.json", request(socket, warmup, timeout=120))
+        put(output / "WARMUP.json", ready_request(socket, warmup, process=server))
         for number, entry in enumerate(selection):
             if entry.get("missing"):
                 results.append(entry)
