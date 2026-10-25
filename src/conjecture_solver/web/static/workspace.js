@@ -1603,13 +1603,13 @@ function renderToolOptions(tool) {
       await startToolOperation(tool,tool.installed || tool.action === "custom" ? "check" : "install");
     });actions.append(retry);
   }
-  if(hosted && tool.variants?.some(v=>v.tool_id)){
-    const general=tool.general_execution ?? state.hosting?.permissions.general_execution;
+  const general=tool.general_execution ?? state.hosting?.permissions.general_execution;
+  if(hosted && (general || tool.variants?.some(v=>v.tool_id))){
     const choice=el("select");choice.setAttribute("aria-label",`${tool.name} study setup`);
     if(general)choice.add(new Option("Custom study · prepare with agent","custom-study"));
     const presets=el("optgroup");presets.label="Starter presets";
-    for(const variant of tool.variants.filter(v=>v.tool_id))presets.append(new Option(variant.label,variant.tool_id));
-    choice.append(presets);
+    for(const variant of (tool.variants || []).filter(v=>v.tool_id))presets.append(new Option(variant.label,variant.tool_id));
+    if(presets.children.length)choice.append(presets);
     if(previousTool===tool.id && [...choice.options].some(o=>o.value===previousChoice))choice.value=previousChoice;
     choice.disabled=state.readonly;
     const demo=el("button",general ? "Prepare in chat" : "Run preset","secondary");
