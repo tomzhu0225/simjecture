@@ -166,8 +166,12 @@ and private host paths remain outside this public excerpt; hashes identify those
 sources but cannot validate unavailable data.
 
 The user supplied the experimental aim, selected source condition and overnight
-authorization. The assistant performed the design/search, numerical work and
-reporting. The retained checks are not a separate independent scientific review.
+authorization. Early headless coil-field screening and verification ideas were
+contributed by [`@motismoore-ctrl`](https://github.com/motismoore-ctrl)
+([PR #37](https://github.com/tomzhu0225/simjecture/pull/37)), motivating the full
+3D CAD, coupled Elmer/circuit and plasma toolchain used here. The assistant
+performed the design/search, numerical work and reporting. The retained checks
+are not a separate independent scientific review.
 Software identities are frozen in [study metadata](../../demos/qin1_multiphysics/record/study.json):
 Elmer 26.2.1 with an isolated solver-core patch and native WarpX
 26.09-150-g30962d771c58. This study does not change the supported dimensions or
