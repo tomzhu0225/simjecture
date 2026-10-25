@@ -1,6 +1,7 @@
 import hashlib
 import json
 
+import pytest
 from simjecture_monitor import attention_support as protocol
 from simjecture_monitor.workflow_attention import (
     ScientificConsistencyRules,
@@ -147,3 +148,24 @@ def test_sustained_divergence_is_detected_without_treating_a_single_overshoot_as
     host["public_artifacts"]["execution_plan"]["quiet_until"] = 195.0
     host["progress_history"][1]["loss"] = 0.25
     assert predict(value)[0].action == "observe"
+
+
+@pytest.mark.parametrize("age", [-0.34, float("nan"), float("inf"), 1e308, "unknown", True])
+def test_invalid_progress_age_is_unknown_instead_of_aborting_the_workflow(age):
+    value = raw()
+    value["state"]["host_state"]["telemetry"]["no_new_output_seconds"] = age
+    observed = packet(value)
+    assert observed.timing.progress_age_ms is None
+    assert observed.timing.unexplained_silence_ms() is None
+    assert "progress_age" in observed.missing_channels
+    assert predict(value)[0].action == "recheck"
+
+
+def test_valid_progress_age_keeps_its_measurement_and_missing_value_stays_unknown():
+    value = raw()
+    telemetry = value["state"]["host_state"]["telemetry"]
+    telemetry["no_new_output_seconds"] = 2.25
+    assert packet(value).timing.progress_age_ms == 2250
+    assert packet(value).missing_channels == []
+    telemetry["no_new_output_seconds"] = None
+    assert packet(value).timing.progress_age_ms is None
