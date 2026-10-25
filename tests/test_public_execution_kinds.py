@@ -154,7 +154,7 @@ def test_browser_custom_setup_and_isolated_command_outputs(app):
             page = browser.new_page(viewport={"width": 1440, "height": 1000})
             page.on("pageerror", lambda error: errors.append(str(error)))
             page.goto(origin)
-            page.locator(".example").nth(2).click()
+            page.locator("[data-example]").nth(2).click()
             playwright.expect(page.locator("#first-request")).to_have_value(
                 re.compile(r"10-minute autonomous research.*within 1%")
             )

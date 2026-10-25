@@ -1708,6 +1708,31 @@ function renderToolsView() {
   filterToolCatalog();
   document.scrollingElement.scrollTop=scroll;state.toolsRevision=revision;
 }
+// The second interactive example uses FLASH only when it is ready here;
+// otherwise it offers a Python-only example that every installation can run.
+const homeSolverExamples = {
+  flash: {
+    title: "Explore reconnecting magnetic islands",
+    detail: "Plot the field lines and track magnetic and kinetic energy · FLASH",
+    prompt: "Run a 2D magnetic-island coalescence simulation with the installed FLASH resistive-MHD application. Start with its 64×64 normalized setup, resistivity 0.001 and end time 0.05. Preserve the actual inputs and HDF5 fields. Plot magnetic-field lines and field magnitude, compare magnetic and kinetic energy over time, and explain what this run can tell us about reconnection. Use the island-coalescence application rather than an unrelated vortex or shock example. Inspect available binaries and read-only sources to prepare the appropriate application if needed.",
+  },
+  python: {
+    title: "Watch chaos appear",
+    detail: "Two almost identical starts in the Lorenz system · Python",
+    prompt: "Integrate the Lorenz system (σ=10, ρ=28, β=8/3) with Python and SciPy for 40 time units from two starting points that differ by 1e-8 in x. Plot both trajectories in 3D and their separation on a log scale, estimate the largest Lyapunov exponent from the initial exponential growth, and save the trajectories as CSV. Run the calculation and link the actual plots and outputs.",
+  },
+};
+function renderHomeExamples() {
+  const slot = $("home-example-solver");
+  if (!slot) return;
+  const flash = state.tools?.find(tool => tool.id === "flash");
+  const ready = !!flash?.installed && flash.registered !== false && !toolNeedsDiagnosis(flash);
+  const example = homeSolverExamples[ready ? "flash" : "python"];
+  slot.dataset.example = example.prompt;
+  slot.dataset.solver = ready ? "flash" : "python";
+  slot.querySelector("strong").textContent = example.title;
+  slot.querySelector("small").textContent = example.detail;
+}
 async function refreshTools() {
   const fetched=await api("tools");
   // Keep an optimistic start visible until the server has recorded it.
@@ -1721,6 +1746,7 @@ async function refreshTools() {
   $("study-tools").value=desired;
   if(hosted){$("study-tools").replaceChildren(new Option("All verified hosted tools","hosted-tools"));$("study-tools").disabled=true;}
   renderToolActivity();
+  renderHomeExamples();
   renderToolsView();
 }
 function announceToolResult(id) {
@@ -2303,6 +2329,7 @@ for (const b of document.querySelectorAll("[data-example]"))
     globalThis.WorkspaceComposer?.update("first-request");
     $("first-request").focus();
   };
+renderHomeExamples();
 $("chat-form").onsubmit = (e) => {
   e.preventDefault();
   action($("send-message"), send);
@@ -2532,7 +2559,8 @@ setInterval(async () => {
 boot().then(async () => {
   if(!hosted)await refreshMachines();
   // Resume following setups that were running before this page was opened.
-  if(!hosted && state.view !== "tools")refreshTools().catch(() => {});
+  // Also picks the home examples that suit the installed tools.
+  if(state.view !== "tools")refreshTools().catch(() => {});
   const query = new URLSearchParams(location.search);
   const campaign = query.get("continue-study") || query.get("steer-study");
   if (campaign) {

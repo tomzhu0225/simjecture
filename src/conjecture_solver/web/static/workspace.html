@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="/assets/account-rail.css" />
     <link rel="stylesheet" href="/assets/workspace-composer.css" />
     <link rel="stylesheet" href="/assets/workspace-projects.css" />
+    <link rel="stylesheet" href="/assets/workspace-home.css" />
     <link rel="stylesheet" href="/assets/workspace-knowledge.css" />
     <link rel="stylesheet" href="/assets/interface.css" />
     <script type="module" src="/assets/workspace-components.js"></script>
@@ -225,12 +226,7 @@
         <section id="view-home" class="view home-view">
           <div class="page-intro">
             <button id="home-collection" class="context-pill" type="button" hidden></button>
-            <p class="eyebrow">YOUR RESEARCH WORKSPACE</p>
             <h1>What are we investigating?</h1>
-            <p class="lead">
-              Start with a task, a puzzling result, or a hypothesis.<br />Work
-              with your agent, then let a focused study run on its own.
-            </p>
           </div>
           <form id="quick-start" class="start-box prompt-composer">
             <label for="first-request" class="sr-only">Your research request</label
@@ -248,48 +244,33 @@
           </form>
           <div id="home-knowledge" class="knowledge-composer-context" hidden><button id="home-knowledge-picker" class="knowledge-context-button" type="button">▤ Knowledge sources</button><div id="home-knowledge-refs" class="knowledge-reference-chips"></div></div>
           <p id="first-request-help" class="field-help composer-help" hidden></p>
-          <div class="section-line">
-            <h2>A place to start</h2>
-            <span>Choose an example and make it yours</span>
-          </div>
-          <div class="examples">
-            <button
-              class="example"
-              data-example="Simulate a double pendulum with Python and SciPy for 20 seconds. Use two 1 m links and two 1 kg masses, g=9.81 m/s², initial angles 120° and -10°, and zero initial angular velocities. Save the trajectory CSV, plot the paths of both masses, and report the numerical energy drift. Run the calculation and link the actual plots and outputs."
-            >
-              <span class="example-number">01 / PYTHON SIMULATION</span>
-              <h3>Simulate a double pendulum</h3>
-              <p>Follow two swinging masses for 20 seconds. Plot their paths and check energy drift.</p>
-              <span class="arrow">↗</span>
-            </button>
-            <button
-              class="example"
-              data-example="Run a 2D magnetic-island coalescence simulation with the installed FLASH resistive-MHD application. Start with its 64×64 normalized setup, resistivity 0.001 and end time 0.05. Preserve the actual inputs and HDF5 fields. Plot magnetic-field lines and field magnitude, compare magnetic and kinetic energy over time, and explain what this run can tell us about reconnection. Use the island-coalescence application rather than an unrelated vortex or shock example. Inspect available binaries and read-only sources to prepare the appropriate application if needed."
-            >
-              <span class="example-number">02 / FLASH · 2D MHD</span>
-              <h3>Explore reconnecting magnetic islands</h3>
-              <p>Run resistive MHD. Plot the field geometry and track magnetic and kinetic energy.</p>
-              <span class="arrow">↗</span>
-            </button>
-            <button
-              class="example"
-              data-example="Prepare a 10-minute autonomous research study with this hypothesis: a lossless 1 m single pendulum released from rest has a period within 1% of 2π√(L/g) for every initial angle from 5° to 120°, with g=9.81 m/s². Use Python to integrate the nonlinear equation, measure periods from the trajectory, and search for a counterexample. Require numerical tolerance controls, retained trajectories, a period-versus-angle plot and independent review. If the claim fails, propose the smallest supported refinement of its amplitude range. Save an editable study brief so I can review and launch the autonomous run."
-            >
-              <span class="example-number">03 / AUTONOMOUS STUDY</span>
-              <h3>Does a pendulum keep the same period?</h3>
-              <p>Test a hypothesis across release angles. Seek a counterexample and review the evidence.</p>
-              <span class="arrow">↗</span>
-            </button>
-          </div>
-          <section class="home-modes" aria-label="Research modes">
-            <div>
-              <h3>Interactive</h3>
-              <p>Work with an agent in chat. Write code, run simulations, inspect plots and steer the next experiment.</p>
-            </div>
-            <div>
-              <h3>Autonomous study</h3>
-              <p>Set a hypothesis and execution budget. The agent runs experiments, seeks counterexamples and submits evidence for independent review.</p>
-            </div>
+          <section class="home-modes mode-cards" aria-label="Two ways to work">
+            <article class="mode-card" data-mode-card="interactive">
+              <p class="mode-card-kicker"><span aria-hidden="true">◐</span> Interactive</p>
+              <h2>Explore with your agent</h2>
+              <p class="mode-card-summary">Chat, run code and simulations, look at plots and decide the next step together. You stay in the loop.</p>
+              <p class="mode-card-best"><strong>Best for</strong> getting started, debugging, and working out what to ask.</p>
+              <div class="mode-card-examples" role="group" aria-label="Interactive examples">
+                <button class="mode-example" type="button" data-example="Simulate a double pendulum with Python and SciPy for 20 seconds. Use two 1 m links and two 1 kg masses, g=9.81 m/s², initial angles 120° and -10°, and zero initial angular velocities. Save the trajectory CSV, plot the paths of both masses, and report the numerical energy drift. Run the calculation and link the actual plots and outputs.">
+                  <span class="mode-example-text"><strong>Simulate a double pendulum</strong><small>Plot both paths and check energy drift · Python</small></span><span class="mode-example-arrow" aria-hidden="true">↗</span>
+                </button>
+                <button id="home-example-solver" class="mode-example" type="button" data-example="">
+                  <span class="mode-example-text"><strong></strong><small></small></span><span class="mode-example-arrow" aria-hidden="true">↗</span>
+                </button>
+              </div>
+            </article>
+            <article class="mode-card" data-mode-card="autonomous">
+              <p class="mode-card-kicker"><span aria-hidden="true">◎</span> Autonomous study</p>
+              <h2>Let a study run on its own</h2>
+              <p class="mode-card-summary">Give it a claim and a time budget. It runs experiments and looks for counterexamples; an independent review checks the evidence before anything counts.</p>
+              <p class="mode-card-best"><strong>Best for</strong> “is this true?” questions you can state precisely.</p>
+              <div class="mode-card-examples" role="group" aria-label="Autonomous study examples">
+                <button class="mode-example" type="button" data-example="Prepare a 10-minute autonomous research study with this hypothesis: a lossless 1 m single pendulum released from rest has a period within 1% of 2π√(L/g) for every initial angle from 5° to 120°, with g=9.81 m/s². Use Python to integrate the nonlinear equation, measure periods from the trajectory, and search for a counterexample. Require numerical tolerance controls, retained trajectories, a period-versus-angle plot and independent review. If the claim fails, propose the smallest supported refinement of its amplitude range. Save an editable study brief so I can review and launch the autonomous run.">
+                  <span class="mode-example-text"><strong>Does a pendulum keep the same period?</strong><small>Your agent drafts a 10-minute study for you to review · Python</small></span><span class="mode-example-arrow" aria-hidden="true">↗</span>
+                </button>
+              </div>
+              <p class="mode-card-note">Start in Interactive; when your claim is clear, switch to Autonomous study inside the conversation.</p>
+            </article>
           </section>
         </section>
         <section id="view-machines" class="view machines-view" hidden>
