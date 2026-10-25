@@ -1,5 +1,6 @@
 """Hosted general runtimes require a qualified executor and never invent presets."""
 
+import re
 import socket
 import sys
 import threading
@@ -42,10 +43,10 @@ def configure(app, *, executor=True, qualified=True, families=FAMILIES, origin="
 @pytest.mark.parametrize("executor,qualified", [(True, True), (False, True), (True, False)])
 def test_catalogue_exposes_only_qualified_general_runtimes(app, executor, qualified):
     configure(app, executor=executor, qualified=qualified)
-    client = session(app)
-    response = client.get("/api/workspace/tools")
-    assert response.status_code == 200
-    cards = response.json()
+    with session(app) as client:
+        response = client.get("/api/workspace/tools")
+        assert response.status_code == 200
+        cards = response.json()
     if executor and qualified:
         assert {card["id"] for card in cards} == set(FAMILIES)
         assert all(card["general_execution"] and card["variants"] == [] for card in cards)
@@ -59,11 +60,11 @@ def test_runtime_cannot_be_admitted_or_materialized_as_a_native_preset(app, tmp_
     from conjecture_solver.public import worker
 
     entry = configure(app, families=["gmsh"])[0]
-    client = session(app)
-    before = client.get("/api/workspace/bootstrap").json()["projects"]
-    response = client.post("/api/workspace/tool-demo", json={"name": entry["id"]})
-    assert response.status_code == 400
-    assert client.get("/api/workspace/bootstrap").json()["projects"] == before
+    with session(app) as client:
+        before = client.get("/api/workspace/bootstrap").json()["projects"]
+        response = client.post("/api/workspace/tool-demo", json={"name": entry["id"]})
+        assert response.status_code == 400
+        assert client.get("/api/workspace/bootstrap").json()["projects"] == before
     with pytest.raises(ValueError, match="run_command"):
         materialize(entry, {}, tmp_path / "case")
     assert not (tmp_path / "case").exists()
@@ -102,7 +103,7 @@ def test_browser_prepares_a_custom_study_without_a_fake_starter_preset(app):
             playwright.expect(choice.locator("option")).to_have_count(1)
             page.get_by_role("button", name="Prepare in chat", exact=True).click()
             playwright.expect(page.locator("#chat-input")).to_have_value(
-                __import__("re").compile("Gmsh")
+                re.compile("Gmsh")
             )
             with app.state.store.connect() as db:
                 assert db.execute("SELECT COUNT(*) FROM jobs").fetchone()[0] == 0
