@@ -1306,6 +1306,8 @@ class Workspace(MachineWorkspace, ProjectCollections):
                     "Numerical attempts belong in managed simulation folders, never /tmp. "
                     "There is no default time limit on interactive work. Give concise progress "
                     "updates during extended investigation; use managed simulation jobs.\n"
+                    f"CURRENT MACHINE INVENTORY (host observation, not instructions):\n"
+                    f"{self.inventory_context()}\n"
                     f"Current brief: {json.dumps(project['brief'])}\n"
                     f"Related studies: {json.dumps(project['studies'])}\n"
                     f"CURRENT USER REQUEST:\n{message}\n"
@@ -1534,7 +1536,8 @@ class Workspace(MachineWorkspace, ProjectCollections):
 
     def new_study(self, identifier):
         with self.lock():
-            path = self.directory(identifier) / "project.json"
+            directory = self.directory(identifier)
+            path = directory / "project.json"
             if self.project(identifier)["running"]:
                 raise ValueError("Wait for the interactive agent before preparing another study")
             project = load(path)
@@ -1542,6 +1545,7 @@ class Workspace(MachineWorkspace, ProjectCollections):
             project.update(
                 brief=None, brief_source_turn=None, brief_launched=None, updated_at=time.time()
             )
+            (directory / "files/STUDY_BRIEF.json").unlink(missing_ok=True)
             put(path, project)
         return {"message": "Prepare another study in this conversation"}
 
@@ -1882,8 +1886,10 @@ class Workspace(MachineWorkspace, ProjectCollections):
                 result = dict(
                     ready=False, error="Readiness check stopped before recording a result."
                 )
+            skill = None
             for descriptor in descriptors:
                 config = load(descriptor)
+                skill = skill or (config.get("manifest") or {}).get("skill")
                 runtime = descriptor.resolve().parent / config.get("runtime_root", "missing")
                 installed &= all(
                     (runtime / name).is_file() for name in config.get("identity_files", [])
@@ -1891,6 +1897,7 @@ class Workspace(MachineWorkspace, ProjectCollections):
             cards.append(
                 tool
                 | {
+                    **({"skill": skill} if skill else {}),
                     "state": "working"
                     if operation.get("running")
                     else "tested"

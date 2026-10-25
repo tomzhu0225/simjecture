@@ -515,6 +515,8 @@ def execute_helper(root, identifier):
                     self.cancelled = True
             return super().boundary()
 
+    from .agent_skills import skill_context
+
     runner = HelperRunner(args)
     runner.state["deadline"] = record["deadline"]
     runner.record_review_identity = True
@@ -531,6 +533,7 @@ write code and run bounded local checks. Production simulations and scientific
 acceptance remain with the parent worker's recorded workflow. Do not launch
 additional agents or daemonize/detach subprocesses. Return source/analysis
 artifacts for the parent to inspect.
+{skill_context()}
 Before exiting, write HELPER_RESULT.json matching this schema:
 {json.dumps(HelperResult.model_json_schema())}
 Use completed only when the specified deliverables and criteria are met; list

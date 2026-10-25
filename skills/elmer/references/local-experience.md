@@ -54,9 +54,7 @@ them, provided its sum is checked against the FEM field before interpreting part
 Recovered nodal vector potential did not reproduce the required curl in this
 study's Cartesian transfer. A source-space plot or small circuit residual did not
 qualify the imported field. Check the receiving solver's discrete curl, averaging,
-coordinate rotation and inference region. The WarpX skill's
-`references/external-fem-fields.md` covers that receiving-side workflow when a
-plasma follow-up is wanted.
+coordinate rotation and inference region. The WarpX skill's `references/external-fem-fields.md` (`skills/warpx/references/external-fem-fields.md`, or `read_skill(name="warpx", path="references/external-fem-fields.md")` for API agents) covers that receiving-side workflow when a plasma follow-up is wanted.
 For another receiving solver, use its own discretization and checks.
 
 The extended study used a separately recorded residual-Gram stability patch and

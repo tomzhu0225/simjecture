@@ -35,15 +35,16 @@ and physics validation are separate; choose physical controls for the question.
 
 Read [installation](references/installation.md) for setup and
 [local solver experience](references/local-experience.md) when investigating
-convergence, memory or reduced conductor models. The installation smoke test is
-a small **heat-conduction** problem, independent of the EM example.
+convergence, memory or reduced conductor models. The installation smoke test
+(`examples/health_check.py`) is a small **heat-conduction** problem, independent of the EM example.
 
 The same reference covers feed/current-path redesign and exporting fields to
 another solver: circuit agreement alone does not qualify the spatial handoff.
 
 For a ready-made cold-conductor A-v or finite-capacitor RLC starting point, read
-[the optional conductor interface](references/case-interface.md) and use
-`$SIMJECTURE_ELMER_CONDUCTOR_DRIVER`. Its mesh, solve, audit and plot stages have
-specific physical assumptions documented there. Those assumptions apply to that
-example, not to Elmer as a whole. Shared output can be inspected with ordinary
-Python/PyVista; see the `python-experiment` visualization reference.
+[the optional conductor interface](references/case-interface.md), inspect
+`examples/conductor_control.py`, and use `$SIMJECTURE_ELMER_CONDUCTOR_DRIVER`.
+Its mesh, solve, audit and plot stages have specific physical assumptions
+documented there. Those assumptions apply to that example, not to Elmer as a
+whole. Shared output can be inspected with ordinary Python/PyVista; see the
+`python-experiment` visualization reference.

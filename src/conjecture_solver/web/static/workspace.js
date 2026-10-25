@@ -870,6 +870,9 @@ async function send() {
 // One accurate setup brief per tool. Each names the skill files that actually
 // document that tool, so agents never receive another tool's instructions.
 const toolSetupGuides = {
+  freecad: {skill: "freecad", read: ["references/geometry-handoff.md"], focus: "Use its managed installer (`simjecture install freecad`) and check its headless FreeCAD/Part Python environment (`simjecture doctor --profile freecad`)."},
+  gmsh: {skill: "gmsh", read: ["references/local-experience.md"], focus: "Use its managed installer (`simjecture install gmsh`) and check its OpenCASCADE and meshio runtime (`simjecture doctor --profile gmsh`)."},
+  elmer: {skill: "elmer", read: ["references/installation.md", "references/local-experience.md"], focus: "Follow the documented Elmer setup route (`simjecture install elmer --source PATH` or build/register a local Elmer installation) and verify with the heat-conduction smoke check (`simjecture doctor --profile elmer`).", ask: "where my prebuilt Elmer installation or source is if none is already on this machine"},
   "warp-lbm": {skill: "warp-lbm", read: [], focus: "Use its managed installer (`simjecture install warp-lbm`) and check the NVIDIA Warp runtime it needs."},
   "iter-pack": {skill: "iter-pack", read: ["references/diagnostics.md"], focus: "Use its isolated managed runtime and pinned package versions. It needs Git, a C compiler and a compatible Python. The pack provides CHERAB/Raysect diagnostics and IMAS data tools."},
   solps: {skill: "iter-pack", read: ["references/solps.md"], focus: "Follow the upstream installation route described there, pin the source revision and submodules, and start from a supplied example case."},
@@ -885,10 +888,14 @@ const toolSetupGuides = {
   "material-eos": {skill: "eos", read: ["references/local-deployment.md", "references/material-models.md"], focus: "Use the documented material EOS builder installer."},
   optab: {skill: "opacity", read: ["references/local-deployment.md"], focus: "Use the documented Optab installer; it needs a Fortran compiler, HDF5 tools and data downloads."},
   fac: {skill: "atomic-physics", read: ["references/local-deployment.md"], focus: "Use the documented FAC installer and its pinned source revision. The hydrogen readiness check verifies execution, not a complete opacity or EOS model."},
+  cst: {skill: "cst", read: [], focus: "Check the Windows CST installation and compatible Windows Python from WSL (`simjecture cst check`)."},
 };
 function setupGuideText(tool) {
   const guide = toolSetupGuides[tool.id];
-  if (!guide) return "Read the research skill that documents this tool before changing its installation.";
+  if (!guide) {
+    if (tool.skill) return `Start by reading the ${tool.skill} skill (SKILL.md) before changing its installation.`;
+    return "Read the research skill that documents this tool before changing its installation.";
+  }
   const files = ["SKILL.md", ...guide.read].join(", ");
   return `Start by reading the ${guide.skill} skill (${files}). ${guide.focus}`;
 }

@@ -31,7 +31,7 @@ Python: `subprocess.run([sys.executable, os.environ['GMSH_EXECUTABLE'],
 'part.geo', '-3', '-o', 'part.msh'], check=True)`.
 
 Read [local meshing experience](references/local-experience.md) for CAD cuts,
-refinement cost, connectivity and Elmer handoff. The example health check meshes
+refinement cost, connectivity and Elmer handoff. The example health check (`examples/health_check.py`) meshes
 a perforated block and checks physical groups and positive element Jacobians.
 These checks exercise the installation; choose quality and resolution criteria
 for each model.

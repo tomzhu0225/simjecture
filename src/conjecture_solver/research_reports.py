@@ -109,6 +109,13 @@ class ReportService:
     def freeze_report(self, report="RESULTS.md"):
         from .research_service import fingerprint, put, sha
 
+        if (
+            isinstance(report, str)
+            and report.startswith("research/")
+            and not (self.work / report).is_file()
+            and (self.work / report.removeprefix("research/")).is_file()
+        ):
+            report = report.removeprefix("research/")
         path = self._source(report)
         if path.stat().st_size > 512 * 1024 or not path.read_text().strip():
             raise ValueError("Supply a nonempty UTF-8 report of at most 512 KiB")

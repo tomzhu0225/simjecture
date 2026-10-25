@@ -72,6 +72,28 @@ def test_default_reserve_is_bounded_and_legacy_resume_unchanged(tmp_path):
         ResearchService.create(s.root, "old", report_reserve_seconds=100)
 
 
+@pytest.mark.parametrize("name", ["RESULTS.md", "research/RESULTS.md"])
+def test_final_report_status_tracks_the_actual_reviewed_source(tmp_path, monkeypatch, name):
+    sup = fixture(tmp_path)
+    report = sup.service.work / name
+    report.parent.mkdir(exist_ok=True)
+    report.write_text("Bounded findings retained from the earlier worker.")
+
+    def launch(directory, prompt, judge=False):
+        if judge:
+            answer(directory)
+        return 0
+
+    monkeypatch.setattr(sup, "launch", launch)
+    sup.finalize_report()
+    assert sup.service.status()["finalization"]["report_status"] == "reviewed"
+    if name.startswith("research/"):
+        (sup.service.work / "RESULTS.md").write_text("A different, unreviewed draft.")
+        assert sup.service.status()["finalization"]["report_status"] == "reviewed"
+    report.write_text("The actual reviewed source changed after assessment.")
+    assert sup.service.status()["finalization"]["report_status"] == "changed_since_review"
+
+
 def test_admissions_protect_reserve_and_allow_bounded_analysis(tmp_path, monkeypatch):
     sup = fixture(tmp_path)
     s = sup.service

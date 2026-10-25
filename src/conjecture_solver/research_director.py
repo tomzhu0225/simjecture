@@ -198,7 +198,7 @@ class ResearchDirector:
         from .review_assets import packet_view
 
         development_policy = packet["solver_development"]["policy"]
-        packet = packet_view(self.root, packet)
+        packet = packet_view(self.root, {k: v for k, v in packet.items() if k != "record_index"})
         return (
             """You are the research director responsible for useful science within the remaining
 wall budget. You can request host-executed stops of named experiments and require a replan.
