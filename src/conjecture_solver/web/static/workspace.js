@@ -137,6 +137,7 @@ function view(name) {
     (name === "knowledge" && !state.hosting?.permissions?.knowledge))) name="home";
   if (name !== "project") ++state.projectRequest;
   const changed = state.view !== name;
+  if (changed && window.WorkspaceTour?.open) window.WorkspaceTour.stop();
   if (changed && matchMedia("(max-width: 600px)").matches)
     globalThis.WorkspacePanels?.set("left", true);
   state.view = name;
@@ -2193,6 +2194,7 @@ async function boot() {
   state.readonly = !data.allow_mutations;
   globalThis.WorkspaceProjects?.init(data);
   globalThis.WorkspaceKnowledge?.init(data);
+  window.WorkspaceTour?.init(data);
   $("readonly").hidden = !state.readonly;
   renderSettings();
   renderProjects();
