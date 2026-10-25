@@ -69,7 +69,7 @@ are still available. Changing explicit task requirements requires a new study.
 ### Solver development permission
 
 New minimal studies **allow experimental solver development by default**. In
-**Autonomous research → Edit proposal**, use **Allow experimental solver development**
+**Autonomous study → Edit proposal**, use **Allow experimental solver development**
 to retain or disable this permission. The monitor's new-study dialog exposes the
 same choice. CLI launches use `--allow-solver-development` (the new-study default)
 or `--no-allow-solver-development`. The policy is frozen into the study contract;
