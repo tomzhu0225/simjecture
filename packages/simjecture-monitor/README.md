@@ -150,6 +150,12 @@ persistence and incident rules are reference mechanisms; a reduced empirical
 false-alert rate has not yet been established. It is not connected to production
 dispatch or the frozen study runners.
 
+The separate [0.2 support and training-data draft](specs/scientific-attention-0.2-draft/README.md)
+adds scoped knowledge lookup/literature review requests and retrieval history.
+Its reproducible 16,000-example synthetic curriculum teaches scripted procedural
+preferences; it contains no measured intervention utility or RL outcomes. LoRA
+can train on large datasets, but no new adapter has been trained on this contract.
+
 The [25 October broader comparison](../../research/evaluations/monitor-generalization-20261025/RESULTS.md)
 freezes generic rules and the 4B model before new diagnostic mechanisms, includes
 healthy ambiguous streams, and measures real worker outcomes. It preserves

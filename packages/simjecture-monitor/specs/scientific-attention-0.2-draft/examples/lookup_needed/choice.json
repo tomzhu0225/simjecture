@@ -1,0 +1,9 @@
+{
+  "action": "recheck",
+  "support_kind": "knowledge_lookup",
+  "question_ref": "q0",
+  "basis": "missing",
+  "evidence": [
+    "e1"
+  ]
+}

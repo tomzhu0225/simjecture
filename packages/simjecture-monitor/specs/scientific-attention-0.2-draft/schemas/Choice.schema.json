@@ -1,0 +1,67 @@
+{
+  "additionalProperties": false,
+  "description": "Trainable payload: identifiers and receipts are supplied by the host.",
+  "properties": {
+    "action": {
+      "enum": [
+        "observe",
+        "recheck",
+        "request_worker_help",
+        "wake_director",
+        "request_repair_judge"
+      ],
+      "title": "Action",
+      "type": "string"
+    },
+    "support_kind": {
+      "enum": [
+        "none",
+        "knowledge_lookup",
+        "literature_review"
+      ],
+      "title": "Support Kind",
+      "type": "string"
+    },
+    "question_ref": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Question Ref"
+    },
+    "basis": {
+      "enum": [
+        "unspecified",
+        "silence",
+        "repetition",
+        "measurement",
+        "source",
+        "missing"
+      ],
+      "title": "Basis",
+      "type": "string"
+    },
+    "evidence": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Evidence",
+      "type": "array"
+    }
+  },
+  "required": [
+    "action",
+    "support_kind",
+    "question_ref",
+    "basis",
+    "evidence"
+  ],
+  "title": "Choice",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:simjecture:scientific-attention:0.2-draft:Choice"
+}

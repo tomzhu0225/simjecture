@@ -1,0 +1,16 @@
+{
+  "schema_version": "scientific-attention/0.2-draft",
+  "packet_id": "e9a18b3c2813b45cd699768b",
+  "model_view_sha256": "7a517a4a8c5cad0299095f9a289c902086d46900e275da6497f4c76f879a9a4d",
+  "policy_id": "scripted-example-not-model-prediction",
+  "status": "ok",
+  "action": "request_worker_help",
+  "evidence_basis": "selected",
+  "evidence_ids": [
+    "d11172949856490727d3f63d",
+    "44ac69858d57a223c7fb8e81"
+  ],
+  "basis": "missing",
+  "support_kind": "literature_review",
+  "question_ref": "829a9e076585dd5c17b9c1de"
+}

@@ -1,0 +1,15 @@
+{
+  "schema_version": "scientific-attention/0.2-draft",
+  "packet_id": "2904d7d0b5657382b70f1ff0",
+  "model_view_sha256": "f9957de36dcfa47afa82f439486486f56dcdb3e61f62405fe06212ca161d382d",
+  "policy_id": "scripted-example-not-model-prediction",
+  "status": "ok",
+  "action": "recheck",
+  "evidence_basis": "selected",
+  "evidence_ids": [
+    "d11172949856490727d3f63d"
+  ],
+  "basis": "missing",
+  "support_kind": "knowledge_lookup",
+  "question_ref": "829a9e076585dd5c17b9c1de"
+}
