@@ -6,6 +6,12 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## 0.7.0 — 2026-10-25
 
+- Expose operator-qualified FreeCAD, Gmsh, Elmer, Frankfurt FEOS and Material EOS
+  runtimes in hosted workspaces. Prepare custom scripts in chat and run them
+  through the confined general executor, with runtime environment and guide
+  metadata. Keep tools hidden until their runtime and executor are qualified;
+  execution readiness does not imply scientific model validation.
+
 - Remove the optional Textual dashboard (`simjecture tui`) and the `tui`
   installation extra. Use `simjecture web` for the interactive workspace, or
   `study`, `status`, `watch`, `pause`, `resume` and `steer` in headless terminals.
