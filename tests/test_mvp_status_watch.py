@@ -107,20 +107,6 @@ def test_base_cli_does_not_import_textual() -> None:
     assert completed.stdout.strip() == "ok"
 
 
-def test_tui_missing_dependency_explains_extra(monkeypatch, capsys) -> None:
-    from conjecture_solver import cli
-
-    def boom() -> None:
-        raise ImportError("No module named 'textual'")
-
-    monkeypatch.setattr(cli, "_import_tui", boom)
-    args = build_parser().parse_args(["tui"])
-    assert args.handler(args) == 2
-    err = capsys.readouterr().err
-    assert "uv sync --extra tui" in err
-    assert "Traceback" not in err
-
-
 def test_status_does_not_modify_run_directory(tmp_path: Path, capsys) -> None:
     root = tmp_path / "readonly"
     root.mkdir()

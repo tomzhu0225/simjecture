@@ -1,4 +1,4 @@
-"""Native study launch contracts shared by CLI, browser and TUI."""
+"""Native study launch contracts shared by CLI and browser."""
 
 from __future__ import annotations
 

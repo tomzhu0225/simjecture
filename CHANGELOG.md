@@ -4,6 +4,11 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+- Retire the maintenance-mode Textual terminal dashboard (`simjecture tui` and
+  the `tui` optional extra) in favour of the local web workspace
+  (`simjecture web`) and the built-in headless CLI commands (`simjecture study`,
+  `status`, `watch`, `pause` and `resume`).
+
 - Feature the Qin-1 CAD → circuit/EM → 3D plasma study in the README and demo
   gallery, with retained measurements, interactive results and no-key record
   verification. Add reusable skill guidance for external FEM field transfer,

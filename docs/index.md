@@ -134,7 +134,6 @@ how-to/minimal-oversight
 how-to/operating-limits
 how-to/research-memory
 getting-started/web-interface
-getting-started/terminal-ui
 ```
 
 ```{toctree}

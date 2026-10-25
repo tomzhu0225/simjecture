@@ -2,7 +2,7 @@
 
 | Path | Purpose |
 |---|---|
-| `src/conjecture_solver/` | Typed models, ledgers, sandbox, orchestration, providers, CLI, local web UI, and optional TUI |
+| `src/conjecture_solver/` | Typed models, ledgers, sandbox, orchestration, providers, CLI, and local web UI |
 | `skills/` | Versioned model-readable interfaces and scientific practice |
 | `capabilities/` | Harness-owned executable runtime manifests; optional solver binaries remain local and untracked |
 | `environments/` | Release-pinned operator provisioning specifications |
