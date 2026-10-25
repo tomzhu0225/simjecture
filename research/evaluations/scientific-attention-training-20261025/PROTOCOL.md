@@ -161,6 +161,14 @@ not justify dropping unfavorable results. Additional replication, if warranted,
 must be reported separately from this initial cohort. These are new executions
 and parameters of development-known mechanisms, not unseen-mechanism tests.
 
+At 16:45 UTC, before the workflow cohort started, the cycle's resource window was
+extended by two hours to 21:43 UTC (26 October 05:43 China Standard Time). The
+operator authorized at least eight hours of autonomous work. The extension
+accommodates the interrupted setup and the planned comparison; the 70-CU total,
+640 native starts, four concurrent roles, and remote-only compute constraints
+remain unchanged. The runtime release guard, native lease and connection/service
+deadlines were updated together before collection.
+
 Sources: [Intern-Decision data interface](https://github.com/InternLM/Intern-Decision/blob/main/docs/DATA.md),
 [upstream evaluation protocol](https://github.com/InternLM/Intern-Decision/blob/main/docs/EVALUATION.md),
 and the retained prior Simjecture studies linked from the monitor package README.
