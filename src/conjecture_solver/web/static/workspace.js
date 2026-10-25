@@ -109,6 +109,7 @@ function renderAccount() {
   }
   const menu=el("div",undefined,"account-menu-links");
   if(!hosted){const connections=el("button","Connections","quiet");connections.onclick=()=>{box.hidden=true;button.setAttribute("aria-expanded","false");view("settings");};menu.append(connections);}
+  const tour=el("button","Take the tour","quiet");tour.onclick=()=>{box.hidden=true;button.setAttribute("aria-expanded","false");window.WorkspaceTour?.start();};menu.append(tour);
   const details=el("button","Workspace details","quiet");details.onclick=()=>{box.hidden=true;button.setAttribute("aria-expanded","false");$("workspace-details-dialog").showModal();};menu.append(details);
   if(theme)menu.append(theme);
   const github=el("a","GitHub ↗","quiet");github.href="https://github.com/tomzhu0225/simjecture";github.target="_blank";github.rel="noopener noreferrer";menu.append(github);
@@ -136,6 +137,7 @@ function view(name) {
     (name === "knowledge" && !state.hosting?.permissions?.knowledge))) name="home";
   if (name !== "project") ++state.projectRequest;
   const changed = state.view !== name;
+  if (changed && window.WorkspaceTour?.open) window.WorkspaceTour.stop();
   if (changed && matchMedia("(max-width: 600px)").matches)
     globalThis.WorkspacePanels?.set("left", true);
   state.view = name;
@@ -497,6 +499,7 @@ function mode(name) {
   $("autonomous-mode").setAttribute("aria-pressed", String(name === "autonomous"));
   if (!state.routing && state.view === "project" && state.project)
     location.hash = projectHash(state.project.id, { view: name });
+  if (name === "autonomous") showStudyExplainer();
   if (name === "autonomous") {
     refreshTools()
       .then(() => renderStudies())
@@ -2191,6 +2194,7 @@ async function boot() {
   state.readonly = !data.allow_mutations;
   globalThis.WorkspaceProjects?.init(data);
   globalThis.WorkspaceKnowledge?.init(data);
+  window.WorkspaceTour?.init(data);
   $("readonly").hidden = !state.readonly;
   renderSettings();
   renderProjects();
@@ -2330,6 +2334,17 @@ for (const b of document.querySelectorAll("[data-example]"))
     $("first-request").focus();
   };
 renderHomeExamples();
+// Shown the first time a reader opens Autonomous study, until dismissed.
+function showStudyExplainer() {
+  let dismissed = false;
+  try { dismissed = localStorage.getItem("simjecture-study-explainer-seen") === "true"; } catch {}
+  $("study-explainer").hidden = dismissed;
+}
+$("dismiss-study-explainer").onclick = () => {
+  try { localStorage.setItem("simjecture-study-explainer-seen", "true"); } catch {}
+  $("study-explainer").hidden = true;
+  $("autonomous-mode").focus();
+};
 $("chat-form").onsubmit = (e) => {
   e.preventDefault();
   action($("send-message"), send);
@@ -2557,6 +2572,7 @@ setInterval(async () => {
   }
 }, 2000);
 boot().then(async () => {
+  window.WorkspaceTour?.maybeStart();
   if(!hosted)await refreshMachines();
   // Resume following setups that were running before this page was opened.
   // Also picks the home examples that suit the installed tools.

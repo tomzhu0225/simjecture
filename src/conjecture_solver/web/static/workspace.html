@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="/assets/workspace-composer.css" />
     <link rel="stylesheet" href="/assets/workspace-projects.css" />
     <link rel="stylesheet" href="/assets/workspace-home.css" />
+    <link rel="stylesheet" href="/assets/workspace-tour.css" />
     <link rel="stylesheet" href="/assets/workspace-knowledge.css" />
     <link rel="stylesheet" href="/assets/interface.css" />
     <script type="module" src="/assets/workspace-components.js"></script>
@@ -35,6 +36,7 @@
     <script src="/assets/study-navigation.js" defer></script>
     <script src="/assets/study-budget.js" defer></script>
     <script src="/assets/workspace-composer.js" defer></script>
+    <script src="/assets/workspace-tour.js" defer></script>
     <script src="/assets/workspace.js" defer></script>
   </head>
   <body class="has-account-rail">
@@ -651,6 +653,21 @@
                 </form>
               </div>
               <div id="autonomous-panel" hidden>
+                <section id="study-explainer" class="study-explainer" aria-labelledby="study-explainer-title" hidden>
+                  <div class="study-explainer-head">
+                    <div>
+                      <h2 id="study-explainer-title">How an autonomous study works</h2>
+                      <p>It runs on its own after you approve a plan. Closing this page does not stop it.</p>
+                    </div>
+                    <button id="dismiss-study-explainer" class="quiet" type="button">Got it</button>
+                  </div>
+                  <ol>
+                    <li><strong>Discuss</strong>Talk the question through in Interactive, or let Grill me interview you.</li>
+                    <li><strong>Review the brief</strong>Your agent writes the claim, the evidence needed and a time budget. Edit anything.</li>
+                    <li><strong>Launch</strong>Experiments run within the budget and look for counterexamples.</li>
+                    <li><strong>Read the report</strong>An independent reviewer checks the evidence; your agent explains the result in the chat.</li>
+                  </ol>
+                </section>
                 <div class="section-line">
                   <div>
                     <p class="eyebrow">AUTONOMOUS STUDY</p>
