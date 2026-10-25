@@ -142,6 +142,14 @@ not establish RL superiority or justify deployment from a score increase alone.
 
 ## Follow-up reward design
 
+The [draft scientific attention interface](specs/scientific-attention-0.1-draft/README.md)
+specifies reusable observations, exact token-budgeted model views, five attention
+actions and separate host admission. It includes JSON schemas, synthetic examples,
+conformance tests and actual tokenizer measurements. Its quiet-window, freshness,
+persistence and incident rules are reference mechanisms; a reduced empirical
+false-alert rate has not yet been established. It is not connected to production
+dispatch or the frozen study runners.
+
 The [25 October broader comparison](../../research/evaluations/monitor-generalization-20261025/RESULTS.md)
 freezes generic rules and the 4B model before new diagnostic mechanisms, includes
 healthy ambiguous streams, and measures real worker outcomes. It preserves
