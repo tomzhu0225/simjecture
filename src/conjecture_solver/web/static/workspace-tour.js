@@ -3,6 +3,11 @@
 // and never blocks the page; replay it from the workspace menu.
 window.WorkspaceTour = (() => {
   const seenKey = "simjecture-tour-seen";
+  let permissions = {}, knowledgeCapabilities = {};
+  function init(data) {
+    permissions = data.hosting?.permissions || {};
+    knowledgeCapabilities = data.knowledge_capabilities || {};
+  }
   const visible = (node) => !!node && node.getClientRects().length > 0 && !node.closest("[hidden]") &&
     !(node.parentElement?.closest("details:not([open])") && node.tagName !== "SUMMARY");
   const pick = (...selectors) => selectors.map((s) => document.querySelector(s)).find(visible) || null;
@@ -10,12 +15,24 @@ window.WorkspaceTour = (() => {
     {
       target: () => pick("#quick-start"),
       title: "Ask your agent anything",
-      body: "Describe a question, a puzzling result or a simulation you want to run. Choose which agent and model answers from the menu on the right.",
+      get body() {
+        return "Describe a question, a puzzling result or a simulation you want to run. " +
+          (permissions.change_model === false
+            ? "The hosted agent and model are provided for this workspace."
+            : "Choose which agent and model answers from the menu on the right.");
+      },
     },
     {
       target: () => pick("#home-knowledge"),
-      title: "Bring your own references",
-      body: "Connect folders of papers and notes under Knowledge. Your agent can search them and cite what it used.",
+      get title() {
+        return knowledgeCapabilities.connect_folders === false
+          ? "Reuse earlier conversations" : "Bring your own references";
+      },
+      get body() {
+        return knowledgeCapabilities.connect_folders === false
+          ? "Search completed replies from your conversations under Knowledge. Your agent can use them as references in this workspace."
+          : "Connect folders of papers and notes under Knowledge. Your agent can search them and cite what it used.";
+      },
     },
     {
       target: () => pick(".mode-cards"),
@@ -35,14 +52,30 @@ window.WorkspaceTour = (() => {
       },
       available: () => visible(document.querySelector(".workspace-resources summary")),
       target: () => pick('.nav-item[data-view="tools"]'),
-      title: "Add research tools when you need them",
-      body: "Python is ready now. Install solvers such as WarpX from Research tools; setup shows its progress and you can keep working meanwhile.",
+      get title() {
+        return permissions.install_tools === false
+          ? "Explore the available research tools" : "Add research tools when you need them";
+      },
+      get body() {
+        return permissions.install_tools === false
+          ? "Open Research tools to see the verified solvers available here. Your administrator manages installation and setup."
+          : "Python is ready now. Install solvers such as WarpX from Research tools; setup shows its progress and you can keep working meanwhile.";
+      },
     },
   ];
   let index = 0, active = [], ring = null, card = null, returnFocus = null, reopen = null;
 
   function markSeen() { try { localStorage.setItem(seenKey, "true"); } catch {} }
   function seen() { try { return localStorage.getItem(seenKey) === "true"; } catch { return true; } }
+
+  function escape(event) {
+    // The tour is non-modal: Escape also works after focus moves into the page.
+    // Let an open modal dialog or a control handling Escape dismiss itself first.
+    if (event.key === "Escape" && !event.defaultPrevented && !document.querySelector("dialog[open]")) {
+      event.preventDefault();
+      stop();
+    }
+  }
 
   function build() {
     ring = document.createElement("div");
@@ -70,11 +103,11 @@ window.WorkspaceTour = (() => {
     card.querySelector(".tour-back").onclick = () => go(index - 1);
     card.querySelector(".tour-next").onclick = () => (index >= active.length - 1 ? stop() : go(index + 1));
     card.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") { event.preventDefault(); stop(); }
-      else if (event.key === "ArrowRight") { event.preventDefault(); card.querySelector(".tour-next").click(); }
+      if (event.key === "ArrowRight") { event.preventDefault(); card.querySelector(".tour-next").click(); }
       else if (event.key === "ArrowLeft" && index > 0) { event.preventDefault(); go(index - 1); }
     });
     document.body.append(ring, card);
+    document.addEventListener("keydown", escape);
     addEventListener("resize", place);
     addEventListener("scroll", place, true);
   }
@@ -82,7 +115,7 @@ window.WorkspaceTour = (() => {
   function place() {
     if (!card) return;
     const target = active[index]?.target();
-    if (!target) return;
+    if (!target) return stop();
     const box = target.getBoundingClientRect();
     const pad = 6;
     Object.assign(ring.style, {
@@ -133,13 +166,15 @@ window.WorkspaceTour = (() => {
   }
 
   function stop(remember = true) {
+    const restoreFocus = card?.contains(document.activeElement);
     if (remember) markSeen();
+    document.removeEventListener("keydown", escape);
     removeEventListener("resize", place);
     removeEventListener("scroll", place, true);
     if (reopen) { reopen.open = false; reopen = null; }
     ring?.remove(); card?.remove();
     ring = card = null;
-    if (remember && returnFocus?.isConnected) returnFocus.focus({preventScroll: true});
+    if (remember && restoreFocus && visible(returnFocus)) returnFocus.focus({preventScroll: true});
     returnFocus = null;
   }
 
@@ -152,5 +187,5 @@ window.WorkspaceTour = (() => {
     start();
   }
 
-  return {start, stop, maybeStart, get open() { return !!card; }};
+  return {init, start, stop, maybeStart, get open() { return !!card; }};
 })();
