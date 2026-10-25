@@ -4,10 +4,38 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
-- Retire the maintenance-mode Textual terminal dashboard (`simjecture tui` and
-  the `tui` optional extra) in favour of the local web workspace
-  (`simjecture web`) and the built-in headless CLI commands (`simjecture study`,
-  `status`, `watch`, `pause` and `resume`).
+## 0.7.0 — 2026-10-25
+
+- Expose operator-qualified FreeCAD, Gmsh, Elmer, Frankfurt FEOS and Material EOS
+  runtimes in hosted workspaces. Prepare custom scripts in chat and run them
+  through the confined general executor, with runtime environment and guide
+  metadata. Keep tools hidden until their runtime and executor are qualified;
+  execution readiness does not imply scientific model validation.
+
+- Remove the optional Textual dashboard (`simjecture tui`) and the `tui`
+  installation extra. Use `simjecture web` for the interactive workspace, or
+  `study`, `status`, `watch`, `pause`, `resume` and `steer` in headless terminals.
+  Existing study records remain readable through the retained interfaces.
+
+- Add the first-run onboarding tour, mode selection cards, conversation panels
+  and plain-language workspace copy, while preserving independent sidebar
+  scrolling. Match tour instructions to local or hosted capabilities and handle
+  delayed startup and navigation away from the tour.
+
+- Enforce helper-worker deadlines from the parent even when a live controller
+  stalls. Stop owned processes, retain usage information, release queued work,
+  and preserve an earlier operator cancellation.
+
+- Give report reviewers their frozen evidence packet, bind report identities to
+  the requested source path, and reject snapshots changed during assessment
+  without retrying integrity failures. Preserve review status and workspace
+  display for retained legacy reports. Report assessment remains separate from
+  scientific claim acceptance.
+
+- Preserve browser-edited study briefs across CLI turns, refresh tool inventory
+  in continuing conversations, expose skill resources and setup guidance, and
+  give helpers access to the skill catalogue. Keep autonomous API reads within
+  the allowed study directories, including when symlinks are present.
 
 - Feature the Qin-1 CAD → circuit/EM → 3D plasma study in the README and demo
   gallery, with retained measurements, interactive results and no-key record
