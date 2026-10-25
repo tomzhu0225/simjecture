@@ -52,24 +52,20 @@ continuum.
 
 ## Inspect the real record
 
-The current TUI can attach read-only to the preserved artifacts:
+Attach the read-only web monitor or headless status view to the preserved
+artifacts:
 
 ```bash
-uv sync --extra tui
-uv run simjecture tui demos/gray_scott_counterexample/record
-```
-
-![TUI attached to the completed run](../../docs/_static/demos/gray-scott-completed-tui.svg)
-
-The image is a current TUI projection of the immutable completed artifacts; it
-is not represented as a contemporaneous screenshot of the original terminal.
-
-For a headless summary and an integrity check:
-
-```bash
+uv run simjecture web demos/gray_scott_counterexample/record --read-only
 uv run simjecture status demos/gray_scott_counterexample/record
 uv run python demos/gray_scott_counterexample/verify_record.py
 ```
+
+![Archived dashboard projection of the completed run](../../docs/_static/demos/gray-scott-completed-tui.svg)
+
+The image is an archived dashboard projection of the immutable completed
+artifacts; it is not represented as a contemporaneous screenshot of the
+original terminal.
 
 The `record/` directory retains:
 
@@ -80,7 +76,7 @@ The `record/` directory retains:
 
 The mutable SQLite runtime ledger is intentionally omitted because the final
 JSON ledger is the portable public representation and is sufficient for the
-read-only monitor and TUI.
+read-only monitor.
 
 ## Reproduce the decisive numerical calculation
 
