@@ -114,6 +114,12 @@ def main():
         started_at=started,
         ended_at=time.time(),
         acceptable_route_accuracy=summary["acceptable_route_correct"] / len(rows),
+        valid_cited_acceptable_route_accuracy=summary["valid_acceptable_routes"] / len(rows),
+        citation_metric_scope=(
+            "Structural validity plus a nonempty visible citation and a specified basis for "
+            "expert requests. This does not test semantic entailment or intervention utility. "
+            "The legacy valid_grounded_acceptable_route_accuracy key is an identical alias."
+        ),
         valid_grounded_acceptable_route_accuracy=summary["valid_acceptable_routes"] / len(rows),
     )
     put(args.output / "metrics.json", report)
