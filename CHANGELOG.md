@@ -4,6 +4,14 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+## 0.7.0 — 2026-10-25
+
+- Add the first-run onboarding tour, mode selection cards, conversation panels
+  and plain-language workspace copy, while preserving independent sidebar
+  scrolling. Enforce helper-worker deadlines with a watchdog, clarify report
+  review handoff (`lab.submit_report` vs `lab.accept_report`), and tighten skill
+  catalogue discovery, headless plotting guidance and tool setup recipes.
+
 - Feature the Qin-1 CAD → circuit/EM → 3D plasma study in the README and demo
   gallery, with retained measurements, interactive results and no-key record
   verification. Add reusable skill guidance for external FEM field transfer,
