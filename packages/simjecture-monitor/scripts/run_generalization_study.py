@@ -52,6 +52,10 @@ def setup_budget(shared):
 
 
 def execute(root, job, budget, wrapper, socket):
+    design = load(root / "DESIGN.json")
+    for path, expected in design["source_hashes"].items():
+        if hashlib.sha256(Path(path).read_bytes()).hexdigest() != expected:
+            raise ValueError("Collection source changed after design freeze: " + path)
     trial = root / job["root"]
     if trial.exists():
         raise ValueError("Retain prior runs; never overwrite")
@@ -190,6 +194,8 @@ def main():
         "packages/simjecture-monitor/scripts/generalization_trials.py",
         "packages/simjecture-monitor/scripts/run_generalization_study.py",
         "packages/simjecture-monitor/src/simjecture_monitor/repair_roles.py",
+        "packages/simjecture-monitor/src/simjecture_monitor/checks_policy.py",
+        "packages/simjecture-monitor/scripts/verify_field_quantity.py",
         "research/evaluations/monitor-generalization-20261025/PROTOCOL.md",
     ]
     put(

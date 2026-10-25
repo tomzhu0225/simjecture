@@ -368,8 +368,13 @@ def install(work: Path, family: str, seed: int):
         "    field_error =",
         """    options=json.loads(Path('analysis_options.json').read_text())
     factor={'V/m':1.0,'V/cm':100.0}[options['input_field_unit']]
-    actual=actual*factor
     field_error =""",
+    )
+    analyze = analyze.replace(
+        '        "cells": cells,',
+        '        "stored_peak_electric_field": float(np.max(np.abs(actual))),\n'
+        '        "peak_electric_field_V_per_m": float(np.max(np.abs(actual)))*factor,\n'
+        '        "cells": cells,',
     )
     probe = (
         "import json\nfrom pathlib import Path\nimport numpy as np\nimport yt\n"

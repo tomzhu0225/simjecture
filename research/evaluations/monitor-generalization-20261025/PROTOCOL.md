@@ -117,3 +117,34 @@ same frozen rule/model/hybrid decisions to these exact packets after collection;
 this supplements the live outcomes and does not create training data or matched
 private-state trajectories. It prevents differing live histories from being
 mistaken for a same-input policy comparison.
+
+Pre-main baseline correction: during the design review, before any held-out
+outcome, the new operational comparator was found to omit the scientific-check
+route already implemented in the earlier generic RulesPolicy. The main rules
+and hybrid arms will include that pre-existing condition: a published
+`original_checks_passed=false` routes director attention, subject to the same
+busy/completed safeguards. This is a raw tool result, not an injected-fault label;
+it can also produce an unnecessary wake on a legitimate negative scientific
+result. The original operational policy remains unchanged and archived. A final
+policy freeze records the added composition and driver hashes before main
+collection. This explicit amendment supersedes the initial baseline composition;
+there has been no tuning against held-out model or worker outcomes. The original
+operational-only policy is retained for the identical-input diagnostic analysis.
+
+Final scientific contract before main collection: report the absolute saved
+peak electric field in V/m for each run, as well as the original relative checks
+and calibration. Independent host code reads the actual field arrays and checks
+reported peaks with relative tolerance1e-6. In the unit-conversion family the
+relative checks still operate on the original arrays and can pass, while the
+absolute reported quantity is converted incorrectly. Thus this case does not
+supply a ready-made failed-check alarm. The source unit convention and actual
+raw/stated quantities are public observations for both policies.
+
+The initial four commissioning runs (v1) all completed their earlier numeric
+contract; they remain excluded setup records. Before main collection, v2 corrects
+an observation-task wording mix-up (worker execution instructions belonged in
+the worker brief), explicitly documents supported reprocessing, enables the
+stronger pre-existing-check comparator, and validates the added absolute quantity.
+Run four new v2 commissioning cases before the main cohort. No held-out problem
+family has been executed or used to tune either policy. Both commissioning
+versions remain available with their own source revisions and scopes.
