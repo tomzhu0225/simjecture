@@ -22,6 +22,18 @@ def read(path, default=None):
     return json.loads(path.read_text()) if path.is_file() else default
 
 
+def verifier_report_value(path):
+    """Reproduce the verifier's explicit empty report for absent/invalid JSON.
+
+    Missing reports remain completion failures. Their empty parsed-value digest
+    must not be mislabeled as a later mutation of a nonexistent artifact.
+    """
+    try:
+        return read(path, {})
+    except ValueError:
+        return {}
+
+
 def paired_interval(records, baseline, metric, *, seed=20261026, draws=10000):
     blocks = defaultdict(dict)
     for record in records:
@@ -80,6 +92,12 @@ def main():
             if elapsed is None and receipt:
                 elapsed = receipt["ended_at"] - receipt["started_at"]
             alerts = read(root / "monitor/alerts.json", [])
+            error_path = root / "monitor/attention-errors.jsonl"
+            errors = (
+                [json.loads(line) for line in error_path.read_text().splitlines() if line]
+                if error_path.is_file()
+                else []
+            )
             admissions, proposed, input_tokens, latencies = Counter(), Counter(), [], []
             for path in sorted((root / "monitor").glob("attention-*.json")):
                 value = read(path)
@@ -98,7 +116,7 @@ def main():
             report, results = root / "research/REPORT.txt", root / "research/results.json"
             for key, value in [
                 ("report_sha256", report.read_text() if report.is_file() else None),
-                ("results_sha256", read(results)),
+                ("results_sha256", verifier_report_value(results)),
             ]:
                 if quality.get(key) and digest(value) != quality[key]:
                     violations.append([trial["id"], key + "_mismatch"])
@@ -129,6 +147,9 @@ def main():
                     required_feedback_misses=feedback.get("required_feedback_misses"),
                     finish_reason=out.get("finish_reason"),
                     error=out.get("error"),
+                    monitor_error_count=len(errors),
+                    monitor_error_messages=sorted({e["error"] for e in errors}),
+                    results_artifact_exists=results.is_file(),
                     admissions=dict(admissions),
                     proposed_actions=dict(proposed),
                     input_token_range=[min(input_tokens), max(input_tokens)]
@@ -156,6 +177,7 @@ def main():
             quiet_trials=len(quiet),
             quiet_trials_with_alert=sum(r["automatic_alerts"] > 0 for r in quiet),
             collector_failed=sum(r["stage"] != "completed" for r in subset),
+            trials_with_monitor_errors=sum(r["monitor_error_count"] > 0 for r in subset),
         )
     comparisons = {
         baseline: {
