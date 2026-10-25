@@ -35,12 +35,6 @@ hide-toc: true
 
 ## See the process in a real record
 
-The [Qin-1 hardware-to-plasma study](demos/qin1-hardware-plasma.md) follows CAD
-and feed redesign through coupled circuit/EM calculations into native 3D plasma
-dynamics. Its interactive results show both the stronger cold-conductor field
-and the numerical limits on predicted leakage. This is a local toolchain study,
-with its execution mode and qualification limits stated explicitly.
-
 The [48 hour FRC campaign on eight GPUs](research/frc-48-hour-campaign-20261014.md)
 records two days of solver development and numerical controls. It ended with the
 merger hypothesis unresolved; its public accounting includes model usage, GPU
@@ -53,15 +47,21 @@ investigation.
 
 ![Actual FLASH commissioning fields during magnetic-island coalescence](../demos/resistive_mhd_island_coalescence/figures/island_coalescence_evolution.png)
 
-For a short, fully inspectable example, the
-[orbital-accuracy investigation](demos/kepler-energy.md) found five counterexamples
-and supported a narrower claim with fresh numerical tests and independent review.
-Ordinary CPU Python is enough to reproduce its experiments.
-
 The [FLASH-to-WarpX investigation](demos/flash-warpx-patch.md) connects a measured
 MHD current sheet to local kinetic calculations. It records successful state
 transfer and completed numerical controls, with the scientific claim unresolved
 at the two-hour cutoff.
+
+The [Qin-1 hardware-to-plasma study](demos/qin1-hardware-plasma.md) follows CAD
+and feed redesign through coupled circuit/EM calculations into native 3D plasma
+dynamics. Its interactive results show both the stronger cold-conductor field
+and the numerical limits on predicted leakage. This is a local toolchain study,
+with its execution mode and qualification limits stated explicitly.
+
+For a short, fully inspectable example, the
+[orbital-accuracy investigation](demos/kepler-energy.md) found five counterexamples
+and supported a narrower claim with fresh numerical tests and independent review.
+Ordinary CPU Python is enough to reproduce its experiments.
 
 ```{raw} html
 <div class="sj-cards">
@@ -101,10 +101,10 @@ getting-started/research-workspace
 :caption: Research records
 
 demos/index
-demos/qin1-hardware-plasma
 research/campaigns
 demos/island-coalescence
 demos/flash-warpx-patch
+demos/qin1-hardware-plasma
 demos/kepler-energy
 demos/gray-scott
 demos/collisionless-gem
