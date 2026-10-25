@@ -209,19 +209,6 @@ uv run simjecture web demos/gray_scott_counterexample/record --read-only
 
 The default browser entry point is the research workspace. Use a compatible API or
 an installed native CLI. The experiment monitor remains available at `/monitor` and
-can inspect existing study records. DSH has been removed; see
+can inspect existing study records. Headless `status` and `watch` remain available
+in the core installation. DSH has been removed; see
 [migration](../how-to/minimal-migration.md) and [Web interface](web-interface.md).
-
-## Optional terminal dashboard (maintenance mode)
-
-The scientific environment does not depend on Textual. The Web interface is
-the primary interactive client; install the compatibility dashboard for SSH or
-browserless operation:
-
-```bash
-uv sync --frozen --extra tui
-uv run simjecture tui
-```
-
-Headless `status` and `watch` remain available without that extra. See
-[Terminal interface](terminal-ui.md).

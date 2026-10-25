@@ -75,7 +75,7 @@ simjecture study --campaign studies/example \
 ```
 
 The browser offers **Native process · trusted host** in the study execution selector
-and machine advanced settings; the TUI offers the same explicit choice. Automatic
+and machine advanced settings. Automatic
 selection still probes Bubblewrap then PRoot and never silently selects native
 execution. A study freezes its choice. SSH workers still drop privileges before
 execution; root is refused.
@@ -106,7 +106,7 @@ address-space ceiling plus an RSS watchdog instead of treating GPU virtual
 reservation as resident RAM. The watchdog is sampled and can overshoot; it is
 not a cgroup hard memory guarantee. GPU VRAM has no independent harness limit.
 
-CLI, browser, and TUI native studies support this selection. A browser host may
+CLI and browser native studies support this selection. A browser host may
 explicitly set `SIMJECTURE_DEFAULT_EXECUTION_BACKEND=proot-cooperative`; the UI
 shows that default, and it is stored in the launch contract. An explicit environment
 setting takes precedence over automatic workspace selection and is checked before use. Browser host

@@ -461,25 +461,6 @@ def _resume(args: argparse.Namespace) -> int:
     return int(completed.returncode)
 
 
-def _import_tui():
-    from .tui import run_tui
-
-    return run_tui
-
-
-def _tui(args: argparse.Namespace) -> int:
-    try:
-        run_tui = _import_tui()
-    except ImportError:
-        print(
-            "The terminal UI requires the optional tui extra.\n"
-            "Install it with: uv sync --extra tui",
-            file=sys.stderr,
-        )
-        return 2
-    return int(run_tui(args.run_directory))
-
-
 def _import_web():
     from .web import run_web
 
@@ -754,17 +735,6 @@ def build_parser() -> argparse.ArgumentParser:
         help="Refresh interval while waiting for new durable records",
     )
     watch.set_defaults(handler=_watch)
-
-    tui = subcommands.add_parser(
-        "tui",
-        help="Open the optional terminal dashboard (maintenance mode)",
-    )
-    tui.add_argument(
-        "run_directory",
-        nargs="?",
-        help="Optional existing run directory to attach",
-    )
-    tui.set_defaults(handler=_tui)
 
     web = subcommands.add_parser(
         "web",

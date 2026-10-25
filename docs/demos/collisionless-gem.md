@@ -106,8 +106,6 @@ final-field arrays:
 uv run simjecture status demos/collisionless_gem_reconnection/record
 uv run python demos/collisionless_gem_reconnection/verify_record.py
 uv run simjecture web demos/collisionless_gem_reconnection/record --read-only
-uv sync --extra tui
-uv run simjecture tui demos/collisionless_gem_reconnection/record
 ```
 
 The original 893,147,359-byte workspace contained 482 artifacts. Bulk raw

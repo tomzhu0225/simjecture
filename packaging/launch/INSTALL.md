@@ -15,7 +15,7 @@ bash setup.sh
 bash launch.sh
 ```
 
-Setup creates this directory's `.venv` with the workspace and TUI extras. Opening
+Setup creates this directory's `.venv` with the workspace extra. Opening
 the interface does not submit a study. Minimal is the only supported study workflow;
 DSH, classical/MVP, structured and frontier routes are removed. No DSH bundle or
 Node runtime is installed. `setup.sh --with-dsh` is no longer supported.

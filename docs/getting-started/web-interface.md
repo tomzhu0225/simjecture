@@ -137,8 +137,8 @@ enough to label a process as running: the green `running` state requires a
 supervisor record that still matches the PID, process start time, command line,
 and output directory.
 
-Pause, resume, and stop use the same verified control functions as the CLI and
-Textual dashboard. Pause is cooperative at the next action boundary. Stop sends
+Pause, resume, and stop use the same verified control functions as the CLI.
+Pause is cooperative at the next action boundary. Stop sends
 SIGINT and a bounded SIGTERM fallback only to a verified process. Closing the
 browser or pressing Ctrl-C in the server terminal does not stop a campaign.
 
@@ -167,7 +167,7 @@ The advanced form launches minimal research with a native CLI agent using its
 existing login. For the built-in API agent, configure **Connections** and prepare
 a study from a workspace conversation. Both use the same minimal evidence workflow.
 
-Browser, TUI and CLI studies preserve `study-launch.json` and the exact operator
+Browser and CLI studies preserve `study-launch.json` and the exact operator
 input files. No shell command is constructed from hypothesis text. Minimal is the
 only launch mode; legacy DSH/API, structured and frontier choices are removed.
 Historical records remain inspectable without Node.js or DSH. See
@@ -190,13 +190,12 @@ The local web interface is intentionally an operator tool rather than a hosted s
 - a restrictive content-security policy blocks external scripts and frames.
 
 It does not provide remote authentication, multi-user ownership, or a public
-deployment boundary. Use the headless commands or TUI over SSH; do not proxy the
-local server onto a network. Use SSH port forwarding for remote hosts.
+deployment boundary. Use the headless CLI commands or SSH port forwarding for
+remote hosts; do not proxy the local server onto a network.
 
-## Compatibility clients
+## Headless clients
 
-The browser, Textual dashboard, `status`, and `watch` are clients of the same
-durable projection. New interactive UX is developed for the browser. The TUI
-is maintained for SSH and machines without a browser, while `status` and
-`watch` remain the stable headless clients. See
-[Terminal interface](terminal-ui.md).
+The browser, `status`, and `watch` are clients of the same durable projection.
+New interactive UX is developed for the browser, while `status` and `watch`
+remain the stable headless clients for SSH and machines without a browser. See
+[Run a headless study](../how-to/headless-studies.md).
