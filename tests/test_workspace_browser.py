@@ -292,7 +292,7 @@ print("wave")
                 has_text="command-ready"
             ).wait_for()
             playwright.expect(page.locator("#command-detail .run-shared-files h4")).to_have_text(
-                "Project files (shared)"
+                "Conversation files (shared)"
             )
             playwright.expect(page.locator("#inspector-tabs")).to_have_attribute(
                 "active", "commands"
@@ -573,7 +573,7 @@ def test_selected_simulation_files_do_not_mix_run_outputs_and_project_results(tm
             )
             page.locator('wa-tab[panel="files"]').click()
             playwright.expect(page.locator("#project-files")).to_contain_text("comparison.svg")
-            playwright.expect(page.locator('wa-tab[panel="files"]')).to_have_text("Project files")
+            playwright.expect(page.locator('wa-tab[panel="files"]')).to_have_text("Files")
             assert errors == []
             browser.close()
     finally:

@@ -136,7 +136,7 @@ inputs** is a separate, collapsed section: the launch snapshot can contain share
 reports or results from earlier runs, which are not outputs of the selected run.
 New runs record input hashes, so a changed input file appears with the run outputs.
 Older runs have only the recorded input paths; edits to those paths cannot be
-distinguished retrospectively. The **Project files** tab contains shared inputs,
+distinguished retrospectively. The **Files** tab contains shared inputs,
 reports and comparisons for the conversation. Commands work in that shared folder,
 so their files are explicitly labelled shared rather than attributed to one command.
 

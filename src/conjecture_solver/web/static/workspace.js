@@ -541,7 +541,7 @@ function renderProject(force = false) {
     $(id).disabled = p.running || state.readonly;
   $("preparation-status").textContent = p.running
     ? "Your agent is working. Its questions and proposed brief appear in the conversation."
-    : "The agent will ask about missing facts and fill in the details for you.";
+    : "Either way, your agent asks about anything missing and fills in the brief.";
   const pendingBrief = p.brief && !p.brief_launched;
   const preparing = !pendingBrief && !p.brief_launched;
   $("study-preparation").hidden = !preparing;
@@ -553,16 +553,16 @@ function renderProject(force = false) {
   if (p.continuation_draft) $("continuation-parent-link").href = `/monitor?campaign=${encodeURIComponent(p.continuation_draft.campaign)}`;
   $("continuation-chat").disabled = p.running || state.readonly;
   $("study-stage").textContent = pendingBrief
-    ? "Proposal ready — review it below, then start research."
+    ? "Proposal ready — review the brief below, then start the study."
     : preparing
       ? p.running
         ? "Preparing with your agent. Continue the conversation to answer its questions."
-        : "Prepare a study with your agent. You review the proposal before it runs."
-      : "Your studies are below. Finished reports return to this conversation for explanation.";
+        : "Plan a study with your agent. You review the brief before anything runs."
+      : "Your studies are below. When one finishes, your agent explains its report in the conversation.";
   if (p.brief) {
     const b = p.brief;
     $("prepared-question").textContent = b.question;
-    $("prepared-heading").textContent = p.continuation_draft ? "CONTINUATION PROPOSAL" : "YOUR AGENT’S PROPOSAL";
+    $("prepared-heading").textContent = p.continuation_draft ? "CONTINUATION PROPOSAL" : "STEP 2 OF 2 · REVIEW AND START";
     $("prepared-details").replaceChildren();
     if (p.continuation_draft) {
       const parent = el("a", `Continuation phase · ${p.continuation_draft.files.length} selected files · parent study ↗`);
@@ -812,13 +812,13 @@ function renderProject(force = false) {
   }
   if (!p.files.length)
     $("project-files").append(
-      el("p", "Uploaded inputs and agent-created files will appear here."),
+      el("p", "Files you upload and files your agent creates appear here."),
     );
   $("brief-summary").replaceChildren(
     el(
       "p",
       p.brief?.question ||
-        "Ask your agent to prepare an autonomous investigation, or write a brief yourself.",
+        "No study planned yet. Open Autonomous study when your question is clear.",
     ),
   );
   inspector.scrollTop = inspectorScroll;
