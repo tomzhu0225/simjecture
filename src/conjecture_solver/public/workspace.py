@@ -382,12 +382,24 @@ class HostedWorkspace:
             "analyze fields and particles with Python.",
             "iter": "Fusion data and synthetic diagnostics with IMAS, Raysect and CHERAB. "
             "Prepare custom Python studies.",
+            "freecad": "Create parametric CAD, check solids and export STEP or STL with FreeCAD.",
+            "gmsh": "Build Gmsh geometry and meshes, including physical groups and refinement.",
+            "elmer": "Run Elmer finite-element models and convert meshes with ElmerGrid.",
+            "feos": "Query Frankfurt FEOS electron and ion QEOS thermodynamics with explicit "
+            "material inputs. Material accuracy requires separate validation.",
+            "material-eos": "Build explicit material EOS profiles and export thermodynamic "
+            "tables for FLASH. No opacity or automatic material qualification is implied.",
         }
         for family, identifier, name in (
             ("lbm", "warp-lbm", "Cylinder flow · Warp-LBM"),
             ("flash", "flash", "FLASH 4.8"),
             ("warpx", "warpx-cuda", "WarpX · CUDA"),
             ("iter", "iter-pack", "ITER pack"),
+            ("freecad", "freecad", "FreeCAD"),
+            ("gmsh", "gmsh", "Gmsh"),
+            ("elmer", "elmer", "Elmer FEM"),
+            ("feos", "feos", "Frankfurt FEOS"),
+            ("material-eos", "material-eos", "Material EOS builder"),
         ):
             rows = [entry for entry in entries if entry["family"] == family]
             if not rows:
@@ -421,6 +433,7 @@ class HostedWorkspace:
                             "tool_id": row["id"],
                         }
                         for row in rows
+                        if not row.get("runtime_only")
                     ],
                     "report": {
                         "checks": [
@@ -672,7 +685,7 @@ class HostedWorkspace:
             if set(values) != {"name"}:
                 raise ValueError("Choose an installed example")
             entry = next((r for r in registry(self.store.root) if r["id"] == values["name"]), None)
-            if not entry:
+            if not entry or entry.get("runtime_only"):
                 raise ValueError("This native example is not qualified")
             p = self.store.create_project(owner, entry["name"], workspace=space)
             job = self.enqueue(
