@@ -21,6 +21,8 @@ import time
 import uuid
 from pathlib import Path
 
+from .events import put
+
 REMOTE = r"""
 import base64,fcntl,hashlib,json,os,subprocess,sys,tarfile,time
 from pathlib import Path
@@ -116,9 +118,15 @@ def main():
         if len(list(runs.glob("*/receipt.json"))) >= settings["max_runs"]:
             raise RuntimeError("Simulation budget exhausted")
         folder.mkdir(exist_ok=False)
-        (folder / "receipt.json").write_text(
-            json.dumps(dict(status="queued", request_id=job["id"], queued_at=time.time()))
+        queued = dict(
+            status="queued",
+            request_id=job["id"],
+            queued_at=time.time(),
+            name=args.name,
+            cells=args.cells,
+            steps=args.steps,
         )
+        put(folder / "receipt.json", queued)
     payload = base64.b64encode(json.dumps(job).encode()).decode()
     program = REMOTE.replace("PAYLOAD", repr(payload))
     command = [
@@ -138,23 +146,47 @@ def main():
     ]
     archive = folder / "transfer.tar"
     started = time.time()
-    with archive.open("wb") as output, (folder / "transport.log").open("wb") as error:
-        result = subprocess.run(
-            command, input=program.encode(), stdout=output, stderr=error, timeout=180
+    result = None
+    try:
+        with archive.open("wb") as output, (folder / "transport.log").open("wb") as error:
+            result = subprocess.run(
+                command, input=program.encode(), stdout=output, stderr=error, timeout=180
+            )
+        if result.returncode:
+            raise RuntimeError(
+                "Remote solver transport failed; inspect transport.log before retrying"
+            )
+        staging = folder / "received"
+        staging.mkdir()
+        extract_records(archive, staging)
+        receipt = json.loads((staging / "receipt.json").read_text())
+        if (
+            receipt["request_id"] != job["id"]
+            or receipt["input_sha256"] != hashlib.sha256(job["inputs"].encode()).hexdigest()
+            or receipt["cells"] != args.cells
+            or receipt["steps"] != args.steps
+        ):
+            raise ValueError("Remote execution identity mismatch")
+    except Exception as failure:
+        # Loss of transport does not establish whether the remote solver ran.
+        # Preserve the request identity and budget reservation for reconciliation;
+        # never leave a stale queued/running claim or silently submit another job.
+        put(
+            folder / "receipt.json",
+            queued
+            | dict(
+                status="unknown",
+                returncode=None,
+                transport_status="timeout"
+                if isinstance(failure, subprocess.TimeoutExpired)
+                else "failed",
+                transport_returncode=result.returncode if result is not None else None,
+                transport_error_type=type(failure).__name__,
+                transport_ended_at=time.time(),
+                reconciliation_required=True,
+            ),
         )
-    if result.returncode:
-        raise RuntimeError("Remote solver transport failed; inspect transport.log before retrying")
-    staging = folder / "received"
-    staging.mkdir()
-    extract_records(archive, staging)
-    receipt = json.loads((staging / "receipt.json").read_text())
-    if (
-        receipt["request_id"] != job["id"]
-        or receipt["input_sha256"] != hashlib.sha256(job["inputs"].encode()).hexdigest()
-        or receipt["cells"] != args.cells
-        or receipt["steps"] != args.steps
-    ):
-        raise ValueError("Remote execution identity mismatch")
+        raise
     for item in staging.iterdir():
         item.replace(folder / item.name)
     staging.rmdir()
