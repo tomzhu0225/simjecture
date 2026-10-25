@@ -5,13 +5,6 @@ question, numerical results and review decisions behind each example. Exact
 software/model identities belong to the individual records; a new package release
 does not turn an older campaign into a new run.
 
-## Local toolchain studies
-
-See also the [Qin-1 hardware-to-plasma study](qin1_multiphysics/): a local,
-operator-assisted toolchain example spanning CAD, meshing, EM/circuits, native
-3D plasma and visualization. It preserves its numerical failures and execution
-limits; it is not a formal minimal-workflow campaign or an accepted claim record.
-
 ## Current minimal workflow
 
 | Study | What you can inspect |
@@ -24,6 +17,13 @@ A recorded execution is different from an accepted scientific conclusion. Each
 example states what is retained, what is omitted, and which claims remain open.
 Verification of an extract does not substitute for rerunning its simulations or
 independent scientific review.
+
+## Local toolchain studies
+
+See also the [Qin-1 hardware-to-plasma study](qin1_multiphysics/): a local,
+operator-assisted toolchain example spanning CAD, meshing, EM/circuits, native
+3D plasma and visualization. It preserves its numerical failures and execution
+limits; it is not a formal minimal-workflow campaign or an accepted claim record.
 
 ## Historical records
 
