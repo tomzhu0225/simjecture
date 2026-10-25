@@ -2055,7 +2055,7 @@ async function renderStudies() {
           "RESULTS_INDEX.md",
           "STUDY_LEDGER.md",
           "research_report.json",
-          "research/RESULTS.md",
+          data.results_path || "research/RESULTS.md",
         ].includes(artifact.path)
       )
         files.append(linkFile(artifact.path, artifact.name));
