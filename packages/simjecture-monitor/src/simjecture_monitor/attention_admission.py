@@ -128,8 +128,8 @@ class AdmissionGate:
             previous
             and previous["clock_id"] == current.clock_id
             and (
-                current.sequence <= previous["sequence"]
-                or current.captured_ms <= previous["last_ms"]
+                submitted.sequence <= previous["sequence"]
+                or submitted.captured_ms <= previous["last_ms"]
             )
         ):
             return result("pending", "no_new_observation", reset=False)
@@ -138,19 +138,22 @@ class AdmissionGate:
             or previous["action"] != decision.action
             or previous["basis"] != decision.basis
             or previous["clock_id"] != current.clock_id
-            or current.captured_ms - previous["last_ms"] > self.profile.maximum_gap_ms
+            or submitted.captured_ms - previous["last_ms"] > self.profile.maximum_gap_ms
         ):
             previous = dict(
-                action=decision.action, basis=decision.basis, first_ms=current.captured_ms, count=0
+                action=decision.action,
+                basis=decision.basis,
+                first_ms=submitted.captured_ms,
+                count=0,
             )
         previous.update(
             clock_id=current.clock_id,
             count=previous["count"] + 1,
-            sequence=current.sequence,
-            last_ms=current.captured_ms,
+            sequence=submitted.sequence,
+            last_ms=submitted.captured_ms,
         )
         self.pending[key] = previous
-        persisted = current.captured_ms - previous["first_ms"] >= self.profile.persistence_ms
+        persisted = submitted.captured_ms - previous["first_ms"] >= self.profile.persistence_ms
         if previous["count"] < self.profile.minimum_confirmations or not persisted:
             return result("pending", "awaiting_persistence", reset=False)
         return result("admitted", "fresh_grounded_persistent_request", reset=False)
