@@ -12,6 +12,7 @@ import hashlib
 import json
 import math
 import random
+import secrets
 import socket
 import time
 from pathlib import Path
@@ -154,8 +155,12 @@ def main():
     parser.add_argument("--maximum-tokens", type=int, default=4096)
     parser.add_argument("--wall-seconds", type=int, default=14400)
     parser.add_argument("--idle-seconds", type=int, default=1800)
+    parser.add_argument("--auth-token-file", type=Path)
     parser.add_argument("--kernel-profile", choices=("fla-prefill",))
     args = parser.parse_args()
+    auth_token = args.auth_token_file.read_text().strip() if args.auth_token_file else None
+    if auth_token is not None and len(auth_token) < 32:
+        raise ValueError("The optional forwarding credential must have at least 32 characters")
     if args.socket.exists():
         raise ValueError("Refuse to replace an existing server socket")
     from .decision_model import DecisionModel
@@ -202,6 +207,10 @@ def main():
                         if not raw or len(raw) > 2_000_000:
                             raise ValueError("Invalid request size")
                         value = json.loads(raw)
+                        if auth_token is not None and not secrets.compare_digest(
+                            str(value.pop("auth_token", "")), auth_token
+                        ):
+                            raise ValueError("Unauthorized attention request")
                         result = (
                             {"status": status}
                             if value.get("operation") == "health"
