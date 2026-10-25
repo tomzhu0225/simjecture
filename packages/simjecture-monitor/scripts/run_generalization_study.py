@@ -82,6 +82,8 @@ def execute(root, job, budget, wrapper, socket):
         "--wrapper",
         str(wrapper),
     ]
+    if job.get("exercise_help_wait"):
+        command.append("--exercise-help-wait")
     with (root / (job["root"] + ".log")).open("w") as log:
         child = subprocess.Popen(command, env=env, stdout=log, stderr=log, start_new_session=True)
         put(
@@ -125,8 +127,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--shared", type=Path, required=True)
     parser.add_argument("--root", type=Path, required=True)
-    parser.add_argument("--phase", choices=["commissioning", "main"], required=True)
+    parser.add_argument(
+        "--phase", choices=["commissioning", "scheduler-check", "main"], required=True
+    )
     parser.add_argument("--commission", type=Path)
+    parser.add_argument("--scheduler-check", type=Path)
     args = parser.parse_args()
     root, shared, repo = args.root.resolve(), args.shared.resolve(), Path.cwd()
     shared.mkdir(parents=True, exist_ok=True)
@@ -149,14 +154,26 @@ def main():
             for r in commission
         ):
             raise ValueError("Commissioning did not satisfy the instrumentation contract")
+        if args.scheduler_check is None:
+            raise ValueError("A real post-terminal help/wait scheduling check is required")
+        check = load(args.scheduler_check / "RESULTS.json")
+        if len(check) != 1 or not check[0]["outcome"].get("verified_complete"):
+            raise ValueError("Scheduling commissioning did not complete")
+        outcome = check[0]["outcome"]
+        if outcome["feedback"]["required_feedback_misses"] or not any(
+            p["wake_reason"] == "returned_attention" for p in outcome["parking"]
+        ):
+            raise ValueError("Required assistance was not delivered and acknowledged")
     blocks = []
-    if args.phase == "commissioning":
+    if args.phase in {"commissioning", "scheduler-check"}:
         scenarios = [
             ("progressing_work", "observe"),
             ("development_failure", "rules"),
             ("announced_quiet", "model"),
             ("development_failure", "hybrid"),
         ]
+        if args.phase == "scheduler-check":
+            scenarios = [("progressing_work", "observe")]
         for family, arm in scenarios:
             blocks.append(
                 dict(
@@ -167,6 +184,7 @@ def main():
                             arm=arm,
                             seed=2026102500,
                             repeat=0,
+                            exercise_help_wait=args.phase == "scheduler-check",
                         )
                     ],
                     commissioning=True,
@@ -195,6 +213,7 @@ def main():
         "packages/simjecture-monitor/scripts/run_generalization_study.py",
         "packages/simjecture-monitor/src/simjecture_monitor/repair_roles.py",
         "packages/simjecture-monitor/src/simjecture_monitor/checks_policy.py",
+        "packages/simjecture-monitor/src/simjecture_monitor/parked_wake.py",
         "packages/simjecture-monitor/scripts/verify_field_quantity.py",
         "research/evaluations/monitor-generalization-20261025/PROTOCOL.md",
     ]
@@ -269,7 +288,7 @@ def main():
                         root / "PROGRESS.json",
                         dict(completed=len(results), block=number, results=results),
                     )
-                    if args.phase == "commissioning" and (
+                    if args.phase in {"commissioning", "scheduler-check"} and (
                         result["returncode"]
                         or not result["outcome"]
                         or not result["outcome"].get("verified_complete")

@@ -148,3 +148,23 @@ stronger pre-existing-check comparator, and validates the added absolute quantit
 Run four new v2 commissioning cases before the main cohort. No held-out problem
 family has been executed or used to tune either policy. Both commissioning
 versions remain available with their own source revisions and scopes.
+
+Collection v2 scheduling amendment (after eight v1 assignments started): the
+first attempted main cohort exposed an experiment-driver defect. After a terminal
+pipeline, an explicit `lab.wait` for help was immediately defeated by repeated
+`process_terminal` notifications, consuming later native turns before assistance
+returned. Six trajectories ended and two active trajectories were interrupted;
+the remaining56 assignments were not started. Preserve the full v1 manifest and
+all outcomes, excluding the entire v1 batch from the comparative cohort. No
+policy, model, observation task or scientific fixture is tuned from these runs.
+
+Before restarting all64 assignments as v2, treat completion as a one-time edge,
+respect explicit help waits, and explicitly wake the service on returned feedback
+or the common90-second fallback. A separate real healthy-workflow commissioning
+forces one post-completion required helper request and verifies actual return,
+acknowledgment and final scientific accuracy. Two regression checks cover pending
+help and repeated terminal notifications. The common turn/time caps are unchanged.
+The six-hour native lease retains its original absolute deadline; raise its total
+start allowance from288 to512 to account for the discarded collection and
+additional commissioning. Four simultaneous roles and ten starts per trajectory
+remain the limits. No additional Colab allocation or model training is required.

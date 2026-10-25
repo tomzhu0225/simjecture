@@ -27,6 +27,7 @@ from simjecture_monitor.events import PublicStream, digest, put
 from simjecture_monitor.feedback_audit import feedback_measurement
 from simjecture_monitor.ledger import IncidentLedger
 from simjecture_monitor.native_guard import stop_session
+from simjecture_monitor.parked_wake import parked_wake_reason
 from simjecture_monitor.repair import RepairAuthority
 from simjecture_monitor.repair_roles import adjudicate
 from simjecture_monitor.server import request
@@ -497,7 +498,7 @@ class RawSupervisor(PairedSupervisor):
             self.collect_feedback()
 
 
-def run(root, family, arm, seed, socket, wrapper):
+def run(root, family, arm, seed, socket, wrapper, *, exercise_help_wait=False):
     started = time.time()
     sup, _ = live.prepare(
         root,
@@ -523,12 +524,14 @@ def run(root, family, arm, seed, socket, wrapper):
     status = dict(stage="running", started_at=started, turns=[], parking=[], arm=arm, family=family)
     put(root / "OUTCOME.json", status)
     delivered = set()
+    delivered_terminal = set()
     try:
         for number in range(1, 5):
             if sup.boundary():
                 break
             sup.worker_parked = False
             sup.collect_feedback()
+            delivered.update(f["id"] for f in sup.ledger.data["feedback"])
             directory = sup.directory / f"turn-{number:05d}"
             directory.mkdir()
             instruction = (
@@ -538,6 +541,16 @@ def run(root, family, arm, seed, socket, wrapper):
                 "If work is still running after a correction, yield for completion. Finish the "
                 "report only from the actual completed bundle. Do not recreate pending assistance."
             )
+            if exercise_help_wait and number == 2:
+                instruction += (
+                    "\nScheduling commissioning: before final reporting, request exactly one "
+                    "temporary helper to check the completed scalar calibration arithmetic "
+                    "against its stated target, attaching pipeline_summary.json and "
+                    "analysis_options.json, with feedback_requirement='required'. This is "
+                    "a diagnostic arithmetic check, not scientific/report review. Then call "
+                    "lab.wait with the returned help_requests ID and yield. On the following "
+                    "resume, read and acknowledge the actual returned feedback and finish."
+                )
             rc = sup.launch(directory, sup.prompt() + "\n" + instruction)
             sup.launch_requested_job()
             status["turns"].append(dict(returncode=rc, ended_at=time.time()))
@@ -560,9 +573,6 @@ def run(root, family, arm, seed, socket, wrapper):
                 sup.process_helpers()
                 sup.run_director(background=True)
                 sup.monitor_tick(directory)
-                if sup.job is not None and sup.job.poll() is not None:
-                    reason = "process_terminal"
-                    break
                 feedback = sup.ledger.data["feedback"]
                 fresh = [
                     f
@@ -574,12 +584,20 @@ def run(root, family, arm, seed, socket, wrapper):
                         or f["required"]
                     )
                 ]
-                if fresh:
+                terminal = sup.job is not None and sup.job.poll() is not None
+                wake = parked_wake_reason(
+                    terminal=terminal,
+                    terminal_delivered=len(sup.job_runs) in delivered_terminal,
+                    waiting_for_feedback=sup.service.waiting_status().get("status") == "waiting",
+                    fresh_feedback=bool(fresh),
+                    elapsed=time.time() - parked,
+                )
+                if wake:
+                    reason = wake
                     delivered.update(f["id"] for f in fresh)
-                    reason = "returned_attention"
-                    break
-                if time.time() - parked >= 90:
-                    reason = "fixed_wait_fallback"
+                    if terminal:
+                        delivered_terminal.add(len(sup.job_runs))
+                    sup.service.wake_worker("Asynchronous experiment: " + reason)
                     break
                 time.sleep(0.5)
             status["parking"].append(
@@ -702,8 +720,17 @@ def main():
     parser.add_argument("--seed", type=int, required=True)
     parser.add_argument("--socket", type=Path, required=True)
     parser.add_argument("--wrapper", type=Path, required=True)
+    parser.add_argument("--exercise-help-wait", action="store_true")
     args = parser.parse_args()
-    run(args.root, args.family, args.arm, args.seed, args.socket, args.wrapper)
+    run(
+        args.root,
+        args.family,
+        args.arm,
+        args.seed,
+        args.socket,
+        args.wrapper,
+        exercise_help_wait=args.exercise_help_wait,
+    )
 
 
 if __name__ == "__main__":
