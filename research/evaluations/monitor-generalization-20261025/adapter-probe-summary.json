@@ -1,0 +1,10 @@
+{
+  "assigned": 48,
+  "compared": 48,
+  "missing": 0,
+  "errors": [],
+  "same_choices": 48,
+  "maximum_probability_difference": 0.01124708354473114,
+  "changed_choices": [],
+  "scope": "Changed predictions alone do not establish improved workflow utility"
+}

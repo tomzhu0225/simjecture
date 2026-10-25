@@ -36,7 +36,17 @@ there; compact exports do not replace those records.
   assignments and zero model inferences.
 - `main-v3`: discarded receipt-consumption race, with 10 ended and two interrupted
   trajectories; all 64 assignments remain recorded.
-- `main-v4`: the 64-assignment comparative cohort after those corrections.
+- `main-v4`: the 64-assignment primary cohort. Four premature completion returns
+  are censored; its raw records remain unchanged.
+- `PRIMARY_COMPLETION_CENSORING.json`: last-turn/wait/feedback evidence and hashes
+  for those four returns.
+- `completion-check-v1`: excluded real-worker check that provisional reports do
+  not bypass an explicit required-helper wait and acknowledgment.
+- `COMPLETION_FOLLOWUP_PLAN.json` and `COMPLETION_POLICY_FREEZE.json`: the separate
+  16-run plan and unchanged policy/task/fixture identities, recorded before new
+  outcomes. The initial 12-run plan is also retained with its amendment.
+- `completion-followup-v1`: all four policies on the four affected configurations;
+  never a silent replacement for primary outcomes.
 - `replay-v1`: prespecified matched-input replay from the observation-only arm.
 - `native-budget.json`: all stages share one metered lease. Its original absolute
   expiry, ten starts per trajectory and four simultaneous native roles are retained.
@@ -58,6 +68,10 @@ rows. It reconciles immutable report/result hashes, observed packet hashes,
 quality receipts, actual native starts and source files at the collection commit.
 It exports correctness components separately; an incorrect or stale pipeline
 quantity is distinguishable from a correctly reported final quantity.
+It also distinguishes a premature collector stop from an ordinary actor failure.
+The raw group costs include censored observations; `balanced_cost_groups` removes
+all arms of each affected configuration/repetition for a descriptive secondary
+comparison. Recompute the follow-up audit with its own root and output directory.
 
 The additional evidence tags describe published raw source identity, absolute
 quantity, input-pattern or loss-history discrepancies. They are post-collection
@@ -129,8 +143,52 @@ Run each phase with a new root and inspect its results before proceeding:
 The main phase requires passing scientific commissioning and actual returned,
 acknowledged required help. Its design records all64 assignments, counterbalanced
 arm blocks, two simultaneous parent controllers, source hashes and native lease.
-Provider histories are fresh; equal physical seeds do not clone private agent
-state or control future model sampling. All failures remain part of the cohort.
+Provider histories are fresh. The recorded repetition seed only changes minimum
+aggregation pacing (44 or 46 seconds in this study); it does not seed the physical
+solver, clone private agent state or control future model sampling. Both
+repetitions execute the same two physical controls. All failures remain recorded.
 
 These fixed greedy observations are evaluation records, not sampled PPO data.
 No training or test-driven reward-weight search belongs in this comparison.
+
+## Secondary frozen-adapter probe
+
+A separate plan was recorded before probing the existing V1 adapter on this
+cohort. It uses every slot of the primary exact-input replay, with no selection
+by outcome or replacement of missing slots. This is an additional prediction
+comparison, separate from the four live arms. The adapter remains the original
+October23 checkpoint; no training occurs.
+
+```bash
+.venv/bin/python packages/simjecture-monitor/scripts/probe_generalization_adapter.py \
+  --base artifacts/generalization-20261025/replay-v1 \
+  --adapter artifacts/overnight-20261023/training/run-01/adapter \
+  --output /absolute/path/to/new-adapter-probe
+```
+
+The probe requires primary model release, checks the original adapter weight
+hash, uses the same FLA runtime and input packets, and requires identical prompt
+and model-view hashes. It preserves every error and missing slot. A changed
+prediction does not by itself establish better live-workflow returns.
+
+## Completion follow-up
+
+Use the archived plan and freeze files in a fresh shared root, with a newly
+declared bounded lease. The original run used source `faa552c`, with unchanged
+policy/task/scientific-fixture hashes. First exercise the real completion gate:
+
+```bash
+.venv/bin/python packages/simjecture-monitor/scripts/run_generalization_study.py \
+  --shared /absolute/new-shared-root \
+  --root /absolute/new-shared-root/completion-check --phase completion-check
+.venv/bin/python packages/simjecture-monitor/scripts/run_generalization_study.py \
+  --shared /absolute/new-shared-root \
+  --root /absolute/new-shared-root/completion-followup --phase completion-followup \
+  --completion-check /absolute/new-shared-root/completion-check
+```
+
+The follow-up checks successful completion of the real gate exercise and consumes
+the archived four-configuration plan. Normal worker return, pending explicit
+waits and declared required feedback are recorded separately from numerical
+verification. Run the audit and summary tools on each cohort separately; a
+follow-up figure must not reuse primary cohort denominators.

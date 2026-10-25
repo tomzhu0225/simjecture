@@ -142,6 +142,14 @@ not establish RL superiority or justify deployment from a score increase alone.
 
 ## Follow-up reward design
 
+The [25 October broader comparison](../../research/evaluations/monitor-generalization-20261025/RESULTS.md)
+freezes generic rules and the 4B model before new diagnostic mechanisms, includes
+healthy ambiguous streams, and measures real worker outcomes. It preserves
+collector-censored returns, a separate completion follow-up, and identical-input
+base/LoRA replay. The learned monitor's incremental workflow value remains
+unproven. Read that study's protocol and resource records before collecting more
+data; do not reopen its closed native lease.
+
 The [literature review and frozen-data audit](../../research/evaluations/monitor-reward-20261024/REVIEW.md)
 identify case identifiers in actual model inputs and sensitivity to the binary
 feedback condition. The original learning dataset and learner remain unchanged.

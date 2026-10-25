@@ -1,0 +1,11 @@
+{
+  "frozen_at": 1792888827.4427717,
+  "source_revision": "210b19fd90476f6933889c830ef52dec6b436d7e",
+  "files": {
+    "packages/simjecture-monitor/src/simjecture_monitor/generic_policy.py": "8a363baf733cbf02801484b24f72242ff30b7e8de75a1d99c37301718a234925",
+    "packages/simjecture-monitor/src/simjecture_monitor/model.py": "0932fe4ce41c293e8231f64c6ef1624891e71dbc1bb6d9356d04dd41e1fb648a",
+    "packages/simjecture-monitor/src/simjecture_monitor/policy.py": "50a69650ed7de3fd45b0a0e0278761eea2e0977d1c1a3f58c74a9a28fe3627cc",
+    "research/evaluations/monitor-generalization-20261025/PROTOCOL.md": "19ebebfeed89427fff88a8a4e6ebc8f435064d07bb29cabb6ff0507769544554"
+  },
+  "scope": "Freeze before implementation of held-out fixtures and before any new model/worker outcomes"
+}

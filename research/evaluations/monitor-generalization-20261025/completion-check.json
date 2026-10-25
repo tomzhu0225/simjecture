@@ -1,0 +1,108 @@
+{
+  "job": {
+    "root": "trial-7c9011ea80dd4d73846cd68dab8268b3",
+    "family": "progressing_work",
+    "arm": "observe",
+    "seed": 2026102500,
+    "repeat": 0,
+    "exercise_help_wait": true,
+    "exercise_draft_help_wait": true
+  },
+  "source_revision": "faa552c3ba67e58b87dd42f74a095f1f87db9f21",
+  "results_sha256": "ef1cf9e878b7824eb260040ee828655a9783cf8ac217b4a433bfa78e1271238a",
+  "turns": [
+    {
+      "returncode": 0,
+      "ended_at": 1792904861.2423873
+    },
+    {
+      "returncode": 124,
+      "ended_at": 1792904942.2869747
+    },
+    {
+      "returncode": 124,
+      "ended_at": 1792905045.9290302
+    },
+    {
+      "returncode": 0,
+      "ended_at": 1792905130.3113048
+    }
+  ],
+  "parking": [
+    {
+      "started_at": 1792904861.2440152,
+      "ended_at": 1792904907.9670205,
+      "wake_reason": "process_terminal"
+    },
+    {
+      "started_at": 1792904942.2887847,
+      "ended_at": 1792905032.6250012,
+      "wake_reason": "fixed_wait_fallback"
+    },
+    {
+      "started_at": 1792905045.9314342,
+      "ended_at": 1792905050.9956625,
+      "wake_reason": "returned_attention"
+    }
+  ],
+  "completion_checks": [
+    {
+      "report_ready": false,
+      "pipeline_complete": false,
+      "worker_returncode": 0,
+      "worker_waiting": false,
+      "pending_required_help": 0,
+      "unacknowledged_required": 0,
+      "allowed": false,
+      "checked_at": 1792904861.244013,
+      "pending_required_ids": []
+    },
+    {
+      "report_ready": true,
+      "pipeline_complete": true,
+      "worker_returncode": 124,
+      "worker_waiting": true,
+      "pending_required_help": 1,
+      "unacknowledged_required": 0,
+      "allowed": false,
+      "checked_at": 1792904942.2887824,
+      "pending_required_ids": [
+        "help_7edde3801669b2d4ba3ca612"
+      ]
+    },
+    {
+      "report_ready": true,
+      "pipeline_complete": true,
+      "worker_returncode": 124,
+      "worker_waiting": true,
+      "pending_required_help": 1,
+      "unacknowledged_required": 0,
+      "allowed": false,
+      "checked_at": 1792905045.9314322,
+      "pending_required_ids": [
+        "help_7edde3801669b2d4ba3ca612"
+      ]
+    },
+    {
+      "report_ready": true,
+      "pipeline_complete": true,
+      "worker_returncode": 0,
+      "worker_waiting": false,
+      "pending_required_help": 0,
+      "unacknowledged_required": 0,
+      "allowed": true,
+      "checked_at": 1792905130.3147957,
+      "pending_required_ids": []
+    }
+  ],
+  "finish_reason": "worker_finished_with_obligations_reconciled",
+  "verified_complete": true,
+  "feedback": {
+    "required_feedback_misses": 0,
+    "unknown_need_for_unacknowledged_help": [],
+    "available_feedback": 2,
+    "scope": "Declared required-feedback reconciliation; no inferred necessity from case labels or cancellation"
+  },
+  "native_starts": 6,
+  "elapsed_seconds": 288.2380049228668
+}

@@ -1,0 +1,78 @@
+{
+  "predictions": 286,
+  "model_server": {
+    "stage": "stopped",
+    "started_at": 1792895131.8094559,
+    "pid": 263844,
+    "load_seconds": 5.170583415001602,
+    "calls": 294,
+    "model_identity": {
+      "checkpoint_path": "/home/tomzhu0225/src/simjecture-monitor-coprocessor/artifacts/models/Decision-verified",
+      "checkpoint_config_sha256": "ddc63e1c717afa86c865bb5e01313d89d72bb53b97ad4a8a03ba8510c0621670",
+      "adapter_files_sha256": {},
+      "runtime": {
+        "profile": "fla-prefill",
+        "fla_core": "0.6.0",
+        "adapter_source_sha256": "83b6d3ba2813ad883725be94e13477cd1db7b9ca2af9654e040b35fb10a936a1",
+        "convolution": "fla.modules.causal_conv1d:causal_conv1d; BCT/BTC layout adapter",
+        "scope": "Dense single-pass CUDA prefill, use_cache=False; no packed sequences"
+      }
+    },
+    "last_call_at": 1792903253.46737,
+    "last_result": {
+      "choice": "defer",
+      "probabilities": {
+        "defer": 0.8378040194511414,
+        "request_worker_help": 0.04123835265636444,
+        "wake_director": 0.08222707360982895,
+        "request_repair_judge": 0.03873061016201973
+      },
+      "policy": "intern-decision-4b",
+      "model_identity": {
+        "checkpoint_path": "/home/tomzhu0225/src/simjecture-monitor-coprocessor/artifacts/models/Decision-verified",
+        "checkpoint_config_sha256": "ddc63e1c717afa86c865bb5e01313d89d72bb53b97ad4a8a03ba8510c0621670",
+        "adapter_files_sha256": {},
+        "runtime": {
+          "profile": "fla-prefill",
+          "fla_core": "0.6.0",
+          "adapter_source_sha256": "83b6d3ba2813ad883725be94e13477cd1db7b9ca2af9654e040b35fb10a936a1",
+          "convolution": "fla.modules.causal_conv1d:causal_conv1d; BCT/BTC layout adapter",
+          "scope": "Dense single-pass CUDA prefill, use_cache=False; no packed sequences"
+        }
+      },
+      "packet_sha256": "854fcdd6e582e7821087ade09930f85e01ac6c2bb147fe3184af1692029f5f1d",
+      "prompt_sha256": "1b520a4973ece4e5a2be5317058932c9e3c062fc70435afc67d448980c8b3eed",
+      "model_view": {
+        "included_event_ids": [
+          "worker:3",
+          "worker:4",
+          "public:15"
+        ],
+        "omitted_event_ids": [],
+        "state_sha256": "854fcdd6e582e7821087ade09930f85e01ac6c2bb147fe3184af1692029f5f1d"
+      },
+      "input_tokens": 2854,
+      "forward_seconds": 0.7177594649983803,
+      "total_seconds": 0.7227998019989172,
+      "peak_cuda_bytes": 9707824640,
+      "confidence_note": "Checkpoint temperature; probabilities are not calibrated on monitoring incidents"
+    },
+    "ended_at": 1792903465.6918936
+  },
+  "live_latency_seconds": {
+    "minimum": 0.3092116759999044,
+    "median": 0.6517917114997545,
+    "maximum": 0.9140672649991757,
+    "total": 177.6091331130283
+  },
+  "input_tokens": {
+    "minimum": 1905,
+    "maximum": 2949,
+    "median": 2686.0,
+    "configured_cap": 4096
+  },
+  "peak_cuda_bytes": 9707824640,
+  "peak_cuda_gib": 9.04111623764038,
+  "model_view_omissions": 0,
+  "scope": "Live primary predictions; residency/warmup separately accounted; not solver or learned-policy speedup"
+}

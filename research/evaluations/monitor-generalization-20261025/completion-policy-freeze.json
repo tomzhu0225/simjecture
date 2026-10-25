@@ -1,0 +1,35 @@
+{
+  "frozen_at": 1792904794.7400649,
+  "source_revision": "faa552c3ba67e58b87dd42f74a095f1f87db9f21",
+  "files": {
+    "packages/simjecture-monitor/scripts/generalization_fixture.py": "3d28a7fb69cb668a171c0f52ea9d15830bd9e59f9d00d1dbb2eff45dfdfd56df",
+    "packages/simjecture-monitor/scripts/generalization_trials.py": "498304e1f9292652a34d5ecc96baa43c8b5a140e74696d4767f949635828ecff",
+    "packages/simjecture-monitor/scripts/run_generalization_study.py": "13dd438e578232159582cc62504167e9dc2c558513b82a5d333ff38ce4451450",
+    "packages/simjecture-monitor/scripts/verify_field_quantity.py": "254c86f1e1470f27e134c2b57ef183e268dc4006898b4e0a34837f09934938f0",
+    "packages/simjecture-monitor/src/simjecture_monitor/checks_policy.py": "809533fd1ae37b78d6d795fc3db3b35d386ae72031ae13e866704584d9534c76",
+    "packages/simjecture-monitor/src/simjecture_monitor/generic_policy.py": "8a363baf733cbf02801484b24f72242ff30b7e8de75a1d99c37301718a234925",
+    "packages/simjecture-monitor/src/simjecture_monitor/model.py": "0932fe4ce41c293e8231f64c6ef1624891e71dbc1bb6d9356d04dd41e1fb648a",
+    "packages/simjecture-monitor/src/simjecture_monitor/policy.py": "50a69650ed7de3fd45b0a0e0278761eea2e0977d1c1a3f58c74a9a28fe3627cc",
+    "packages/simjecture-monitor/src/simjecture_monitor/repair_roles.py": "ea83c40086fcc17a6ec9687e670cfcab5dc8f155382d6c24b66d9b4fb5d29456",
+    "research/evaluations/monitor-generalization-20261025/PROTOCOL.md": "be8eb4723f3e5be1393b4db384cfdc6567a505ac10f1ba2d772b8bc1adf0d510",
+    "packages/simjecture-monitor/src/simjecture_monitor/parked_wake.py": "ae067511656e67e5d579a982d05658aee42294820f916304227ed40c856a9956",
+    "packages/simjecture-monitor/src/simjecture_monitor/completion_gate.py": "f11c52a394ed33996be1b1714744875df6bf5b27f684d7735df722ff3efc54e3",
+    "packages/simjecture-monitor/src/simjecture_monitor/startup.py": "346ca90c01bc8e0fc767cb4a063ed8a2cced82edfb30151da7ad07df5b60fa28",
+    "packages/simjecture-monitor/scripts/keep_model_ready.py": "5210b539c5cdce412a6d7d86e218db0661962686ad3e39feaf084a909cfb5d59"
+  },
+  "scope": "Completion follow-up: normal worker return and pending feedback/wait guard only; unchanged policies, normal task and scientific fixtures",
+  "unchanged_from_original": {
+    "packages/simjecture-monitor/scripts/generalization_fixture.py": true,
+    "packages/simjecture-monitor/scripts/generalization_trials.py": false,
+    "packages/simjecture-monitor/scripts/run_generalization_study.py": false,
+    "packages/simjecture-monitor/scripts/verify_field_quantity.py": true,
+    "packages/simjecture-monitor/src/simjecture_monitor/checks_policy.py": true,
+    "packages/simjecture-monitor/src/simjecture_monitor/generic_policy.py": true,
+    "packages/simjecture-monitor/src/simjecture_monitor/model.py": true,
+    "packages/simjecture-monitor/src/simjecture_monitor/policy.py": true,
+    "packages/simjecture-monitor/src/simjecture_monitor/repair_roles.py": true,
+    "research/evaluations/monitor-generalization-20261025/PROTOCOL.md": false
+  },
+  "observer_task_sha256": "2e28566b550379ffaf598df0d3ac88458bb64751e1caa0a5aaf09bb253f8decc",
+  "worker_task_sha256": "79fb3c8bb464aa1e34902a37e0cb42294517ec15517ed8f36380e8396180ba7b"
+}

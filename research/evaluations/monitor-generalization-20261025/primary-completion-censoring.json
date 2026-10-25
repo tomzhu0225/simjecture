@@ -1,0 +1,175 @@
+{
+  "audited_at": 1792904535.2911284,
+  "source_revision": "fafd0b5b13552ea83692482314e4fee608d9ab4b",
+  "scope": "Raw64 retained; four whole-workflow time/cost returns are censored by premature completion. Numerical verification remains a separate component.",
+  "rows": [
+    {
+      "job": {
+        "root": "trial-74f60930beb249b9b8f5a75cc9fe75a3",
+        "family": "publication_retry",
+        "arm": "rules",
+        "seed": 2026102500,
+        "repeat": 0
+      },
+      "last_turn": {
+        "returncode": 124,
+        "ended_at": 1792898828.0747795
+      },
+      "worker_wait": {
+        "status": "woken",
+        "reason": "Await required diagnostic arithmetic and units assistance",
+        "subjects": {
+          "help_requests": [
+            "help_4b0f32e49ca67d09d67c75f9"
+          ]
+        },
+        "for_operator": false,
+        "operator_ids": [],
+        "created_at": 1792898825.76798,
+        "deadline": 1792899338.502118,
+        "authority": "Worker scheduling only; no scientific approval or deadline change",
+        "wake_reason": "Help response ready: help_4b0f32e49ca67d09d67c75f9",
+        "woken_at": 1792898830.9307842
+      },
+      "feedback": {
+        "required_feedback_misses": 1,
+        "unknown_need_for_unacknowledged_help": [],
+        "available_feedback": 1,
+        "scope": "Declared required-feedback reconciliation; no inferred necessity from case labels or cancellation"
+      },
+      "reason": "Report files caused early completion while the worker was explicitly waiting for help",
+      "evidence_sha256": {
+        "OUTCOME.json": "c53dd2235539d30b7984bfbe45a8902407b84d4cef5a35903ea78f27772d13c8",
+        "worker_wait.json": "083889debe25c4e466500e119a2d57c151d6e77053a61f5f948960ef89312bd5",
+        "incident-ledger.json": "14fe06879b31070fd0cfff17f4bdd5642618ac1f9bdbfd42d0bc94e400e7c249",
+        "supervisor/turn-00002/response.json": "d346258bc4f4508c0a27401b04dd6fac3e961d61f46972226db93cd66a485a17"
+      }
+    },
+    {
+      "job": {
+        "root": "trial-c2d6a583db1b420288617383ec81274b",
+        "family": "announced_quiet",
+        "arm": "rules",
+        "seed": 2026102501,
+        "repeat": 1
+      },
+      "last_turn": {
+        "returncode": 124,
+        "ended_at": 1792899478.8092961
+      },
+      "worker_wait": {
+        "status": "woken",
+        "reason": "Await bounded diagnostic consistency assistance before finalizing",
+        "subjects": {
+          "help_requests": [
+            "help_b9f0cfbc510082331220aec0"
+          ]
+        },
+        "for_operator": false,
+        "operator_ids": [],
+        "created_at": 1792899476.2292411,
+        "deadline": 1792899993.7449658,
+        "authority": "Worker scheduling only; no scientific approval or deadline change",
+        "wake_reason": "Help response ready: help_b9f0cfbc510082331220aec0",
+        "woken_at": 1792899481.7290835
+      },
+      "feedback": {
+        "required_feedback_misses": 1,
+        "unknown_need_for_unacknowledged_help": [],
+        "available_feedback": 1,
+        "scope": "Declared required-feedback reconciliation; no inferred necessity from case labels or cancellation"
+      },
+      "reason": "Report files caused early completion while the worker was explicitly waiting for help",
+      "evidence_sha256": {
+        "OUTCOME.json": "3adc89cecf447fc9f2bbfd73e09b3b2c88dabd55fd84c833592b4428e5ff860e",
+        "worker_wait.json": "5a7cb0af9cea5afe25c72d0905aece1f3b179f272645bb616b935eec1c72f24c",
+        "incident-ledger.json": "a22687c13074ac004a7ba0580b4ca18dcce63d7a666ae4eea95f34a9994f4ab6",
+        "supervisor/turn-00002/response.json": "2ab2891ab11fc7db85b54e00e70e3d220cf6250b3ac3ac6e48085e8931edbb51"
+      }
+    },
+    {
+      "job": {
+        "root": "trial-2ddc810a3e0947b3a5282f0df6bf363f",
+        "family": "recovered_history",
+        "arm": "hybrid",
+        "seed": 2026102501,
+        "repeat": 1
+      },
+      "last_turn": {
+        "returncode": 124,
+        "ended_at": 1792900564.2067733
+      },
+      "worker_wait": {
+        "status": "woken",
+        "reason": "Await bounded diagnostic assistance before finalizing",
+        "subjects": {
+          "help_requests": [
+            "help_965360958ba1a2c59cbda7ad"
+          ]
+        },
+        "for_operator": false,
+        "operator_ids": [],
+        "created_at": 1792900561.6665707,
+        "deadline": 1792901078.605201,
+        "authority": "Worker scheduling only; no scientific approval or deadline change",
+        "wake_reason": "Help response ready: help_965360958ba1a2c59cbda7ad",
+        "woken_at": 1792900566.1403944
+      },
+      "feedback": {
+        "required_feedback_misses": 1,
+        "unknown_need_for_unacknowledged_help": [],
+        "available_feedback": 1,
+        "scope": "Declared required-feedback reconciliation; no inferred necessity from case labels or cancellation"
+      },
+      "reason": "Report files caused early completion while the worker was explicitly waiting for help",
+      "evidence_sha256": {
+        "OUTCOME.json": "12b92d022b1b87a7dc3a1d43451527c5c63b76bfe5163bcf626969e6dd5ad859",
+        "worker_wait.json": "3d18b81f937ad6cafef384bc5c411cf512d033ce90fa0ff53c6dae2f81a987fb",
+        "incident-ledger.json": "d184f8aa03fd45eb9e6f381451f811083ae2ca9f15d1b7576061a30d3b04b640",
+        "supervisor/turn-00002/response.json": "f9c308f6d8e1c5ed76592f49fc325758bb527d2985d4daad83cbce021a68e340"
+      }
+    },
+    {
+      "job": {
+        "root": "trial-cd93772a6a3f4e6990a048df285b1d91",
+        "family": "artifact_consumer",
+        "arm": "model",
+        "seed": 2026102501,
+        "repeat": 1
+      },
+      "last_turn": {
+        "returncode": 124,
+        "ended_at": 1792903218.6349392
+      },
+      "worker_wait": {
+        "status": "woken",
+        "reason": "Completed bundle and report prepared; await the already requested optional diagnostic source review before final feedback acknowledgment.",
+        "subjects": {
+          "help_requests": [
+            "help_a12ce8e88bb82814f6c5d52d"
+          ]
+        },
+        "for_operator": false,
+        "operator_ids": [],
+        "created_at": 1792903215.6649177,
+        "deadline": 1792903590.4997294,
+        "authority": "Worker scheduling only; no scientific approval or deadline change",
+        "wake_reason": "Help response ready: help_a12ce8e88bb82814f6c5d52d",
+        "woken_at": 1792903220.5996227
+      },
+      "feedback": {
+        "required_feedback_misses": 0,
+        "unknown_need_for_unacknowledged_help": [],
+        "available_feedback": 2,
+        "scope": "Declared required-feedback reconciliation; no inferred necessity from case labels or cancellation"
+      },
+      "reason": "Report files caused early completion while the worker was explicitly waiting for help",
+      "evidence_sha256": {
+        "OUTCOME.json": "e151c4aad539e171b17cba3c215b5cda8bd75d5850c100fdfb752d249e42e610",
+        "worker_wait.json": "8a6ce6959ff771f13e7505660bb65200b4a59d475b4a18e36e84eac288f6829f",
+        "incident-ledger.json": "11f9910db793862113015ad53c5cc799e78b2b465717aedc05b74fe015727371",
+        "supervisor/turn-00003/response.json": "d2a4980f1da8eec80fb6cdf09ee7d4c075dba5bdba6bddf3d9c0e5c89d9eabc0"
+      }
+    }
+  ]
+}

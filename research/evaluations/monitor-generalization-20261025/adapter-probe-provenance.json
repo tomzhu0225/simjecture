@@ -1,0 +1,10 @@
+{
+  "created_at": 1792903576.755073,
+  "base_replay": "/home/tomzhu0225/src/simjecture-monitor-coprocessor/artifacts/generalization-20261025/replay-v1",
+  "selection_sha256": "881717b55cd76e4abc747da2aee6cd32898dd25a3ff3923b444f7fff8a6e19ed",
+  "base_results_sha256": "822b208a7eb863accdd547e613b213a9a1d2ac896dc30bd5abf0a3f0715fd567",
+  "adapter_path": "/home/tomzhu0225/src/simjecture-monitor-coprocessor/artifacts/overnight-20261023/training/run-01/adapter",
+  "adapter_sha256": "e0f4d4c66ee3444193a952bcaa41f210f02bb4308cf7cc8303d8f4ffe7aa871c",
+  "scope": "Secondary frozen-adapter decision comparison; no training or worker-outcome claim",
+  "selection": "Every primary slot; no substitution or selection by policy outcome"
+}

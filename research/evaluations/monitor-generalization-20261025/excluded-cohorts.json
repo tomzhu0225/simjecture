@@ -1,0 +1,480 @@
+{
+  "created_at": 1792895228.9169214,
+  "scope": "All excluded setup and instrumentation attempts, never pooled with main-v4",
+  "stages": [
+    {
+      "root": "commissioning-v1",
+      "reason": "Earlier scientific contract setup",
+      "source_revision": "b7268caac0ff7b3a184a1b01f54f8e6d35ee30c3",
+      "assigned": 4,
+      "started": 4,
+      "ended": 4,
+      "verified": 4,
+      "native_starts": 14,
+      "all_native_ended": true,
+      "design_sha256": "5a681c67f185fc3bdf302f3511362aa126227f553461bb484078c93fe570db6f",
+      "interruption": null,
+      "rows": [
+        {
+          "root": "trial-1428a9fa2db14273878304126d20caf9",
+          "family": "progressing_work",
+          "arm": "observe",
+          "stage": "completed",
+          "verified_complete": true,
+          "ended_at": 1792890461.6566906,
+          "native_starts": 2,
+          "outcome_sha256": "44c5da383d4a117b07b64daeaca5e5b0a823d59d454c5c7c18b3df1a4a476956"
+        },
+        {
+          "root": "trial-3dcd2d731c6d413dbc6ebedb012b4361",
+          "family": "development_failure",
+          "arm": "rules",
+          "stage": "completed",
+          "verified_complete": true,
+          "ended_at": 1792890647.9798195,
+          "native_starts": 4,
+          "outcome_sha256": "2625de54133c70c9e68b621d50b21105ee1d382855d8bbb5f9f8240e41567778"
+        },
+        {
+          "root": "trial-a209a849f1f74643b9eef10e3aebb7b1",
+          "family": "announced_quiet",
+          "arm": "model",
+          "stage": "completed",
+          "verified_complete": true,
+          "ended_at": 1792890836.842395,
+          "native_starts": 4,
+          "outcome_sha256": "a680d750cde1543b912913aa2932d1972660d36c179b5d8686a7cd29e888834e"
+        },
+        {
+          "root": "trial-42e51987034647fe8bd4ae6640fa92a4",
+          "family": "development_failure",
+          "arm": "hybrid",
+          "stage": "completed",
+          "verified_complete": true,
+          "ended_at": 1792891014.644941,
+          "native_starts": 4,
+          "outcome_sha256": "0ebbaa470e2be1bff95db1e38cb09fd5937753a594b68792cf71e844210facd1"
+        }
+      ]
+    },
+    {
+      "root": "commissioning-v2",
+      "reason": "Revised scientific contract setup",
+      "source_revision": "822707504227bc9c1b54f4d49183b6bf09584b7e",
+      "assigned": 4,
+      "started": 4,
+      "ended": 4,
+      "verified": 4,
+      "native_starts": 13,
+      "all_native_ended": true,
+      "design_sha256": "6c337877c525c71f376feb6069668deaaf7970468c9eea8172599190d4a88d1b",
+      "interruption": null,
+      "rows": [
+        {
+          "root": "trial-b258f1637e12483a923b066b5db7969d",
+          "family": "progressing_work",
+          "arm": "observe",
+          "stage": "completed",
+          "verified_complete": true,
+          "ended_at": 1792891574.7792356,
+          "native_starts": 3,
+          "outcome_sha256": "26fd6a5be20dbc9fce9f6c165033875df162f556d6c328ec9c9804b577bc2332"
+        },
+        {
+          "root": "trial-b1e673f15d8441ff873cbf063f3a074b",
+          "family": "development_failure",
+          "arm": "rules",
+          "stage": "completed",
+          "verified_complete": true,
+          "ended_at": 1792891759.9680452,
+          "native_starts": 4,
+          "outcome_sha256": "d283d9d1a6d668e59a313dbeee6a3232c5042b007807f29d645ddfab6023645e"
+        },
+        {
+          "root": "trial-d580abe5bf0347fe9cc61771b0922e1a",
+          "family": "announced_quiet",
+          "arm": "model",
+          "stage": "completed",
+          "verified_complete": true,
+          "ended_at": 1792891900.9607446,
+          "native_starts": 2,
+          "outcome_sha256": "8c53a551bc5a4c7513568a0685a8789c8fb0affd42d778d149b6ef89c86d09bb"
+        },
+        {
+          "root": "trial-642bf1c86c924fac9df98dfc99a9a715",
+          "family": "development_failure",
+          "arm": "hybrid",
+          "stage": "completed",
+          "verified_complete": true,
+          "ended_at": 1792892092.8173316,
+          "native_starts": 4,
+          "outcome_sha256": "349a47114ac6455cd280a2ab7ca51d87c264e613e2ac478f79c2ccc4188ff7aa"
+        }
+      ]
+    },
+    {
+      "root": "main-v1",
+      "reason": "Pending-help scheduling defect; whole attempt excluded",
+      "source_revision": "822707504227bc9c1b54f4d49183b6bf09584b7e",
+      "assigned": 64,
+      "started": 8,
+      "ended": 6,
+      "verified": 2,
+      "native_starts": 34,
+      "all_native_ended": true,
+      "design_sha256": "dc8f750e46940ed756e0b98f825438d05fa522e4f4a92b5c84927c307c41d7c4",
+      "interruption": {
+        "at": 1792892688.5701244,
+        "controller": {
+          "pid": 182162,
+          "ppid": 182160,
+          "session": 182162,
+          "starttime": "848031"
+        },
+        "action": "SIGSTOP controller to prevent new assignments; allow already launched trial processes to finish",
+        "reason": "Post-terminal pending lab.wait causes immediate process_terminal wake and consumes remaining parent turns before requested assistance returns. Entire main-v1 excluded from comparative main outcomes; retain all records. Policy/model/fixture unchanged.",
+        "cleanup_at": 1792892844.1784697,
+        "interrupted_active_trials": [
+          "trial-9155d4d4bd524e4fb4006172b157fa06",
+          "trial-d264055f56fb4c71bbdd095fa6108580"
+        ],
+        "launched_trials": 8
+      },
+      "rows": [
+        {
+          "root": "trial-9911ef14b3964b76984994a01bc42726",
+          "family": "source_binding",
+          "arm": "model",
+          "stage": "completed",
+          "verified_complete": false,
+          "ended_at": 1792892409.90935,
+          "native_starts": 7,
+          "outcome_sha256": "1d91bd65076fa8fb3aa26625a401c8cfdccd351fbc2dcab46f5b936ebdbb041d"
+        },
+        {
+          "root": "trial-7438bb369f6b4b978243fbb6ec008e2d",
+          "family": "update_cycle",
+          "arm": "model",
+          "stage": "completed",
+          "verified_complete": false,
+          "ended_at": 1792892417.0717843,
+          "native_starts": 5,
+          "outcome_sha256": "0ac5d8395439a778392bbe42f92ca9844646f1b999ddbafd71a5d8cb6ce310b0"
+        },
+        {
+          "root": "trial-6328114d83c644459eda33acac5bb400",
+          "family": "recovered_history",
+          "arm": "model",
+          "stage": "completed",
+          "verified_complete": true,
+          "ended_at": 1792892560.4588764,
+          "native_starts": 2,
+          "outcome_sha256": "fe2e373363f74ec5c7cdc241fe3a671064123f8e2fc4b8366d3e4f266b8ef11e"
+        },
+        {
+          "root": "trial-3a7f728335c345509683d93b32bd469f",
+          "family": "progressing_work",
+          "arm": "model",
+          "stage": "completed",
+          "verified_complete": false,
+          "ended_at": 1792892536.5963461,
+          "native_starts": 5,
+          "outcome_sha256": "660fff71f3597d2e798594dbb5fb9ec7b91de4b452ddfbf700755a858414ea72"
+        },
+        {
+          "root": "trial-9a467a31030841d195ca612ba9060ccd",
+          "family": "announced_quiet",
+          "arm": "model",
+          "stage": "completed",
+          "verified_complete": false,
+          "ended_at": 1792892667.7029338,
+          "native_starts": 5,
+          "outcome_sha256": "aabaf1bee1ef3a2518dfa209bfd56a3e791c0a665343cf631ad9e7475040c75b"
+        },
+        {
+          "root": "trial-39b117c8b00344a9a84a7acc1fa8684e",
+          "family": "publication_retry",
+          "arm": "model",
+          "stage": "completed",
+          "verified_complete": true,
+          "ended_at": 1792892685.3539093,
+          "native_starts": 3,
+          "outcome_sha256": "b0bd61d6063cc3fb08e4f4d12dd35b3ac250360ad8ec6c5f1b082dea85831083"
+        },
+        {
+          "root": "trial-9155d4d4bd524e4fb4006172b157fa06",
+          "family": "artifact_consumer",
+          "arm": "model",
+          "stage": "running",
+          "verified_complete": null,
+          "ended_at": null,
+          "native_starts": null,
+          "outcome_sha256": "8679fe9baa8c78f8fba371dc28afca650f546266de59ad5f378bb321d2824503"
+        },
+        {
+          "root": "trial-d264055f56fb4c71bbdd095fa6108580",
+          "family": "unit_conversion",
+          "arm": "model",
+          "stage": "running",
+          "verified_complete": null,
+          "ended_at": null,
+          "native_starts": null,
+          "outcome_sha256": "a077a82750b072f287cdb8f19d22bd81862d5322fdd38c357196d064c5e341ce"
+        }
+      ]
+    },
+    {
+      "root": "scheduler-check-v1",
+      "reason": "Required-helper scheduling commissioning",
+      "source_revision": "9d357757ae1761f0ec1f1fbb232b9d3379a57ca8",
+      "assigned": 1,
+      "started": 1,
+      "ended": 1,
+      "verified": 1,
+      "native_starts": 5,
+      "all_native_ended": true,
+      "design_sha256": "cfa22f3f1c94ce36f258b9d1110f710db354fe222f330414ab209250e06711b8",
+      "interruption": null,
+      "rows": [
+        {
+          "root": "trial-f0ace00f41a04ea7be67e568c5b66772",
+          "family": "progressing_work",
+          "arm": "observe",
+          "stage": "completed",
+          "verified_complete": true,
+          "ended_at": 1792893156.8919864,
+          "native_starts": 5,
+          "outcome_sha256": "12c453959f6ff979098284324f30dbf2174d907c485a2656804b1693a38f4ee4"
+        }
+      ]
+    },
+    {
+      "root": "main-v2",
+      "reason": "Socket readiness failure before any native assignment",
+      "source_revision": "4ed1482c4181a4622e6cc5dbe8069e4e7b724523",
+      "assigned": 64,
+      "started": 0,
+      "ended": 0,
+      "verified": 0,
+      "native_starts": 0,
+      "all_native_ended": true,
+      "design_sha256": "defdb7e2683b4b6a9d619f488190bdaf826103c89fc5f3b0096bd99ba9203acc",
+      "interruption": null,
+      "rows": []
+    },
+    {
+      "root": "main-v3",
+      "reason": "Acknowledged feedback dispatched again; whole attempt excluded",
+      "source_revision": "22ddf4ceb24c6c16e666ccfdaf357c6ec82d821b",
+      "assigned": 64,
+      "started": 12,
+      "ended": 10,
+      "verified": 9,
+      "native_starts": 55,
+      "all_native_ended": true,
+      "design_sha256": "5d69f2a9bf3c9e1c19c8d6938c07ca54976358d2fb3dbc9d040cb77a77484cc2",
+      "interruption": {
+        "at": 1792894658.5737538,
+        "reason": "A repair feedback item arrived during an active worker turn and was read/acknowledged there, but the parked loop dispatched it again. The redundant wake consumed the fourth parent turn and omitted the otherwise corrected report. Entire main-v3 excluded; unchanged policies will be rerun after receipt-consumption fix.",
+        "ended": [
+          "trial-b4ed362e3e5a44a5859c32d17582b9e6",
+          "trial-77534ee3f3f94fec8b67549f3408f778",
+          "trial-9be00c5e94d846c2bd1f6ee2b65c80dd",
+          "trial-a58d5c430c364224b512cfe18f9d1c10",
+          "trial-9ab6975ef6814e42ba00c73ccae6fbc8",
+          "trial-88f55c96614f49a084efb3553a986fe6",
+          "trial-3002e8b37f484645823c6cd10257f950",
+          "trial-3230775d7465473190dcfbbf519874bb",
+          "trial-201a354db8c14ae8972d992c9bb9e639",
+          "trial-3a22e99110144fafb79802b1a9d26764"
+        ],
+        "interrupted_active_trials": [
+          "trial-cf88b425e61b41b4962197c5f20f92d7",
+          "trial-d569966459754d688690a573788cdccf"
+        ],
+        "launched": 12,
+        "not_started": 52,
+        "source_case": "trial-3230775d7465473190dcfbbf519874bb"
+      },
+      "rows": [
+        {
+          "root": "trial-3a22e99110144fafb79802b1a9d26764",
+          "family": "source_binding",
+          "arm": "model",
+          "stage": "completed",
+          "verified_complete": true,
+          "ended_at": 1792893508.1014347,
+          "native_starts": 7,
+          "outcome_sha256": "18bab8a572c793e3dd6552d02352a286f3d4215fc1812b8ca17f4427e9983fe6"
+        },
+        {
+          "root": "trial-b4ed362e3e5a44a5859c32d17582b9e6",
+          "family": "update_cycle",
+          "arm": "model",
+          "stage": "completed",
+          "verified_complete": true,
+          "ended_at": 1792893467.6877828,
+          "native_starts": 5,
+          "outcome_sha256": "ec5bad31dd22dfcfe45c2f35d0ad78e515baf758129e7888fe4eb7a9fbcda080"
+        },
+        {
+          "root": "trial-88f55c96614f49a084efb3553a986fe6",
+          "family": "recovered_history",
+          "arm": "model",
+          "stage": "completed",
+          "verified_complete": true,
+          "ended_at": 1792893804.5977452,
+          "native_starts": 6,
+          "outcome_sha256": "9f11a37b4d5b139cee8aa2c45129bc0162d852a650ef7b76dad464de05d0d4a1"
+        },
+        {
+          "root": "trial-201a354db8c14ae8972d992c9bb9e639",
+          "family": "progressing_work",
+          "arm": "model",
+          "stage": "completed",
+          "verified_complete": true,
+          "ended_at": 1792893643.2341683,
+          "native_starts": 2,
+          "outcome_sha256": "59aeb12a254ca225d00eb3d009fca2991faa050b1e48a5a49813704bd50791c0"
+        },
+        {
+          "root": "trial-a58d5c430c364224b512cfe18f9d1c10",
+          "family": "announced_quiet",
+          "arm": "model",
+          "stage": "completed",
+          "verified_complete": true,
+          "ended_at": 1792893803.4062471,
+          "native_starts": 2,
+          "outcome_sha256": "1eb38f75f472e427efa8f4abfff45bc001b9ef2ec50e570b28b5fc8e153d5e3e"
+        },
+        {
+          "root": "trial-3002e8b37f484645823c6cd10257f950",
+          "family": "publication_retry",
+          "arm": "model",
+          "stage": "completed",
+          "verified_complete": true,
+          "ended_at": 1792893927.9632733,
+          "native_starts": 3,
+          "outcome_sha256": "13dacc255ceb18a569298beaba95f2b8e619517429a440beb1d659cfad0929d2"
+        },
+        {
+          "root": "trial-77534ee3f3f94fec8b67549f3408f778",
+          "family": "artifact_consumer",
+          "arm": "model",
+          "stage": "completed",
+          "verified_complete": true,
+          "ended_at": 1792894064.7125766,
+          "native_starts": 5,
+          "outcome_sha256": "cdf6fad362d9cb5e6c774fd974e126ace385309035efbf3c55404049c372987c"
+        },
+        {
+          "root": "trial-9be00c5e94d846c2bd1f6ee2b65c80dd",
+          "family": "unit_conversion",
+          "arm": "model",
+          "stage": "completed",
+          "verified_complete": true,
+          "ended_at": 1792894245.3625634,
+          "native_starts": 6,
+          "outcome_sha256": "6b40c99fabcee75a942a575c83916e5e34f5da3e2f16c751e3165f906f555ed9"
+        },
+        {
+          "root": "trial-3230775d7465473190dcfbbf519874bb",
+          "family": "source_binding",
+          "arm": "observe",
+          "stage": "completed",
+          "verified_complete": false,
+          "ended_at": 1792894494.4665668,
+          "native_starts": 7,
+          "outcome_sha256": "05f0033a956b9a4c63fc2f85b9ffeb03374d1e95095522e7b30389e35955ef85"
+        },
+        {
+          "root": "trial-9ab6975ef6814e42ba00c73ccae6fbc8",
+          "family": "update_cycle",
+          "arm": "observe",
+          "stage": "completed",
+          "verified_complete": true,
+          "ended_at": 1792894558.7218978,
+          "native_starts": 6,
+          "outcome_sha256": "9744ff2c891fcff4eb15cb9dc991dd420dcf7fba168e9f4b963e2c0ab23d9f54"
+        },
+        {
+          "root": "trial-cf88b425e61b41b4962197c5f20f92d7",
+          "family": "recovered_history",
+          "arm": "observe",
+          "stage": "running",
+          "verified_complete": null,
+          "ended_at": null,
+          "native_starts": null,
+          "outcome_sha256": "5d24f8c2540340f3ffbc98a8db5ebd2c3ac8b3799a8d9398c1e188c5901d7fca"
+        },
+        {
+          "root": "trial-d569966459754d688690a573788cdccf",
+          "family": "progressing_work",
+          "arm": "observe",
+          "stage": "running",
+          "verified_complete": null,
+          "ended_at": null,
+          "native_starts": null,
+          "outcome_sha256": "6c3a5d531457e0980f8259ef66923e61b543633ceabc06617937b6a9dd50e6ab"
+        }
+      ]
+    },
+    {
+      "root": "scheduler-check-v2",
+      "reason": "Required-helper regression commissioning after acknowledgment fix",
+      "source_revision": "fafd0b5b13552ea83692482314e4fee608d9ab4b",
+      "assigned": 1,
+      "started": 1,
+      "ended": 1,
+      "verified": 1,
+      "native_starts": 5,
+      "all_native_ended": true,
+      "design_sha256": "ebd436838d23547c64d08ea0f14c8ce4b50ce7df81e11987ece888ec451e9e5d",
+      "interruption": null,
+      "rows": [
+        {
+          "root": "trial-64bd8558e2154ed984452282e7854044",
+          "family": "progressing_work",
+          "arm": "observe",
+          "stage": "completed",
+          "verified_complete": true,
+          "ended_at": 1792895126.4126673,
+          "native_starts": 5,
+          "outcome_sha256": "1dbd482da5fa988f403c70245ea5d6be1424adede1812545d524d8d2c92bda4a"
+        }
+      ]
+    },
+    {
+      "root": "completion-check-v1",
+      "reason": "Real provisional-report/help-wait completion validation; excluded setup",
+      "source_revision": "faa552c3ba67e58b87dd42f74a095f1f87db9f21",
+      "assigned": 1,
+      "started": 1,
+      "ended": 1,
+      "verified": 1,
+      "native_starts": 6,
+      "all_native_ended": true,
+      "design_sha256": "ddee2e2a8367e49a055d42f43728ed203a314b3e0903f0b47b35fbaacdc9f5b8",
+      "interruption": null,
+      "rows": [
+        {
+          "root": "trial-7c9011ea80dd4d73846cd68dab8268b3",
+          "family": "progressing_work",
+          "arm": "observe",
+          "seed": 2026102500,
+          "repeat": 0,
+          "exercise_help_wait": true,
+          "exercise_draft_help_wait": true,
+          "stage": "completed",
+          "verified_complete": true,
+          "ended_at": 1792905132.3746054,
+          "native_starts": 6,
+          "outcome_sha256": "4b15b8e4f7b706ab751e8deef57c9397672f24fdec8b781d1bdc1d25ef5be06a"
+        }
+      ]
+    }
+  ],
+  "native_starts": 132,
+  "started": 31,
+  "updated_at": 1792906251.4326084
+}

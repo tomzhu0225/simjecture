@@ -1,0 +1,24 @@
+{
+  "created_at": 1792906036.2111523,
+  "scope": "Command-text screening for explicit references to hidden evaluator/policy resources, not an adversarial filesystem isolation proof",
+  "root": "artifacts/generalization-20261025/main-v4",
+  "response_files": 291,
+  "counts": {
+    "command_execution": 1257
+  },
+  "patterns": [
+    "HOST_CASE.json",
+    "DESIGN.json",
+    "QUALITY.json",
+    "VERIFIED.json",
+    "generic_policy.py",
+    "checks_policy.py",
+    "generalization_fixture.py",
+    "generalization_trials.py",
+    "run_generalization_study.py",
+    "POLICY_FREEZE.json",
+    "expected_action",
+    "/monitor/"
+  ],
+  "matches": []
+}

@@ -1,0 +1,21 @@
+{
+  "checked_at": 1792907648.1363308,
+  "scope": "Final byte comparison, after completed follow-up and before report commit",
+  "source_revision": "faa552c3ba67e58b87dd42f74a095f1f87db9f21",
+  "checks": {
+    "packages/simjecture-monitor/scripts/generalization_fixture.py": true,
+    "packages/simjecture-monitor/scripts/generalization_trials.py": true,
+    "packages/simjecture-monitor/scripts/run_generalization_study.py": true,
+    "packages/simjecture-monitor/scripts/verify_field_quantity.py": true,
+    "packages/simjecture-monitor/src/simjecture_monitor/checks_policy.py": true,
+    "packages/simjecture-monitor/src/simjecture_monitor/generic_policy.py": true,
+    "packages/simjecture-monitor/src/simjecture_monitor/model.py": true,
+    "packages/simjecture-monitor/src/simjecture_monitor/policy.py": true,
+    "packages/simjecture-monitor/src/simjecture_monitor/repair_roles.py": true,
+    "research/evaluations/monitor-generalization-20261025/PROTOCOL.md": true,
+    "packages/simjecture-monitor/src/simjecture_monitor/parked_wake.py": true,
+    "packages/simjecture-monitor/src/simjecture_monitor/completion_gate.py": true,
+    "packages/simjecture-monitor/src/simjecture_monitor/startup.py": true,
+    "packages/simjecture-monitor/scripts/keep_model_ready.py": true
+  }
+}

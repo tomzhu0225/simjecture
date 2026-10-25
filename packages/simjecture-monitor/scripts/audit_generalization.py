@@ -63,7 +63,12 @@ def completion_measurement(out, wait, feedback):
             reasons.append("explicit_worker_wait_still_pending_at_last_return")
     # An obligation failure is not automatically a collector defect; report it
     # separately even when it accompanies a censored return.
-    obligations_reconciled = not feedback.get("required_feedback_misses", 0)
+    obligations_reconciled = feedback.get("required_feedback_misses") == 0
+    final_gate_accepted = (
+        out.get("finish_reason") == "worker_finished_with_obligations_reconciled"
+        if "completion_checks" in out
+        else True
+    )
     return dict(
         completion_censored=bool(reasons),
         completion_censor_reasons=reasons,
@@ -76,6 +81,7 @@ def completion_measurement(out, wait, feedback):
             and last.get("returncode") == 0
             and not waiting
             and obligations_reconciled
+            and final_gate_accepted
         ),
     )
 

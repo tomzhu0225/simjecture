@@ -1,0 +1,156 @@
+{
+  "checked_at": 1792907410.8603954,
+  "boot_id": "0c934cb3-ce5a-4e2f-8fb9-01d404dd2af7",
+  "identity_count": 1248,
+  "identity_files": 295,
+  "alive_recorded": [],
+  "owned_session_survivors": [],
+  "models": [
+    {
+      "root": "adapter-probe-v1",
+      "socket_present": false,
+      "released": true,
+      "release": {
+        "ended_at": 1792903615.59471,
+        "returncode": 0,
+        "socket_present": false
+      }
+    },
+    {
+      "root": "commissioning-v1",
+      "socket_present": false,
+      "released": true,
+      "release": {
+        "ended_at": 1792891016.8792071,
+        "returncode": 0,
+        "socket_present": false
+      }
+    },
+    {
+      "root": "commissioning-v2",
+      "socket_present": false,
+      "released": true,
+      "release": {
+        "ended_at": 1792892094.318002,
+        "returncode": 0,
+        "socket_present": false
+      }
+    },
+    {
+      "root": "completion-check-v1",
+      "socket_present": false,
+      "released": true,
+      "release": {
+        "ended_at": 1792905134.9030666,
+        "returncode": 0,
+        "socket_present": false
+      }
+    },
+    {
+      "root": "completion-followup-v1",
+      "socket_present": false,
+      "released": true,
+      "release": {
+        "ended_at": 1792907397.5091074,
+        "returncode": 0,
+        "socket_present": false
+      }
+    },
+    {
+      "root": "main-v1",
+      "socket_present": false,
+      "released": true,
+      "release": {
+        "ended_at": 1792892892.8706133,
+        "owned_alive": false,
+        "socket_present": false,
+        "reason": "Explicit invalid-cohort shutdown"
+      }
+    },
+    {
+      "root": "main-v2",
+      "socket_present": false,
+      "released": true,
+      "release": {
+        "ended_at": 1792893164.9813755,
+        "returncode": 0,
+        "socket_present": false
+      }
+    },
+    {
+      "root": "main-v3",
+      "socket_present": false,
+      "released": true,
+      "release": {
+        "ended_at": 1792894773.2261171,
+        "owned_alive": false,
+        "socket_present": false,
+        "reason": "Excluded driver-race cohort stopped"
+      }
+    },
+    {
+      "root": "main-v4",
+      "socket_present": false,
+      "released": true,
+      "release": {
+        "ended_at": 1792903476.3550408,
+        "returncode": 0,
+        "socket_present": false
+      }
+    },
+    {
+      "root": "replay-v1",
+      "socket_present": false,
+      "released": true,
+      "release": {
+        "ended_at": 1792903572.692411,
+        "returncode": 0,
+        "socket_present": false
+      }
+    },
+    {
+      "root": "scheduler-check-v1",
+      "socket_present": false,
+      "released": true,
+      "release": {
+        "ended_at": 1792893157.9022589,
+        "returncode": 0,
+        "socket_present": false
+      }
+    },
+    {
+      "root": "scheduler-check-v2",
+      "socket_present": false,
+      "released": true,
+      "release": {
+        "ended_at": 1792895128.6313846,
+        "returncode": 0,
+        "socket_present": false
+      }
+    }
+  ],
+  "scope": "This experiment only; no unrelated processes stopped. Identity and session ownership checked; no kill was required by this verifier.",
+  "lease": {
+    "deadline": 1792907410.8635623,
+    "maximum_starts": 512,
+    "maximum_per_continuation": 10,
+    "maximum_concurrent": 4,
+    "executable": "/home/tomzhu0225/.local/bin/codex",
+    "original_deadline": 1792911876.0048926,
+    "closed_at": 1792907410.8635623,
+    "closure_reason": "All declared collection/replay/probe work completed; every recorded owned process and session released"
+  },
+  "native_starts": 490,
+  "reservations": 490,
+  "native_starts_by_cohort": {
+    "commissioning-v1": 14,
+    "commissioning-v2": 13,
+    "main-v1": 34,
+    "scheduler-check-v1": 5,
+    "main-v3": 55,
+    "scheduler-check-v2": 5,
+    "main-v4": 291,
+    "completion-check-v1": 6,
+    "completion-followup-v1": 67
+  }
+}

@@ -1,0 +1,725 @@
+{
+  "scope": "Descriptive exploratory comparison; assignment counts follow the cohort design, no population significance claim",
+  "live_groups": [
+    {
+      "subset": "all",
+      "arm": "observe",
+      "assigned": 4,
+      "started": 4,
+      "verified": 4,
+      "whole_workflow_verified": 4,
+      "completion_censored": 0,
+      "numeric_correct": 4,
+      "quantity_correct": 4,
+      "pipeline_quantity_correct": 4,
+      "complete": 4,
+      "alerts": 0,
+      "alerted_trajectories": 0,
+      "native_starts": 20,
+      "fallback_trajectories": 3,
+      "mean_seconds": 291.4788491129875,
+      "mean_native_starts": 5,
+      "model_calls": 0,
+      "model_seconds": 0
+    },
+    {
+      "subset": "all",
+      "arm": "rules",
+      "assigned": 4,
+      "started": 4,
+      "verified": 4,
+      "whole_workflow_verified": 4,
+      "completion_censored": 0,
+      "numeric_correct": 4,
+      "quantity_correct": 4,
+      "pipeline_quantity_correct": 4,
+      "complete": 4,
+      "alerts": 2,
+      "alerted_trajectories": 2,
+      "native_starts": 19,
+      "fallback_trajectories": 2,
+      "mean_seconds": 283.76345735788345,
+      "mean_native_starts": 4.75,
+      "model_calls": 0,
+      "model_seconds": 0
+    },
+    {
+      "subset": "all",
+      "arm": "model",
+      "assigned": 4,
+      "started": 4,
+      "verified": 4,
+      "whole_workflow_verified": 4,
+      "completion_censored": 0,
+      "numeric_correct": 4,
+      "quantity_correct": 4,
+      "pipeline_quantity_correct": 4,
+      "complete": 4,
+      "alerts": 1,
+      "alerted_trajectories": 1,
+      "native_starts": 15,
+      "fallback_trajectories": 1,
+      "mean_seconds": 231.2771434187889,
+      "mean_native_starts": 3.75,
+      "model_calls": 40,
+      "model_seconds": 21.018284552006662
+    },
+    {
+      "subset": "all",
+      "arm": "hybrid",
+      "assigned": 4,
+      "started": 4,
+      "verified": 4,
+      "whole_workflow_verified": 4,
+      "completion_censored": 0,
+      "numeric_correct": 4,
+      "quantity_correct": 4,
+      "pipeline_quantity_correct": 4,
+      "complete": 4,
+      "alerts": 3,
+      "alerted_trajectories": 3,
+      "native_starts": 13,
+      "fallback_trajectories": 0,
+      "mean_seconds": 190.5774495601654,
+      "mean_native_starts": 3.25,
+      "model_calls": 22,
+      "model_seconds": 12.69006693699339
+    },
+    {
+      "subset": "healthy",
+      "arm": "observe",
+      "assigned": 3,
+      "started": 3,
+      "verified": 3,
+      "whole_workflow_verified": 3,
+      "completion_censored": 0,
+      "numeric_correct": 3,
+      "quantity_correct": 3,
+      "pipeline_quantity_correct": 3,
+      "complete": 3,
+      "alerts": 0,
+      "alerted_trajectories": 0,
+      "native_starts": 14,
+      "fallback_trajectories": 2,
+      "mean_seconds": 276.77384003003436,
+      "mean_native_starts": 4.666666666666667,
+      "model_calls": 0,
+      "model_seconds": 0
+    },
+    {
+      "subset": "healthy",
+      "arm": "rules",
+      "assigned": 3,
+      "started": 3,
+      "verified": 3,
+      "whole_workflow_verified": 3,
+      "completion_censored": 0,
+      "numeric_correct": 3,
+      "quantity_correct": 3,
+      "pipeline_quantity_correct": 3,
+      "complete": 3,
+      "alerts": 1,
+      "alerted_trajectories": 1,
+      "native_starts": 15,
+      "fallback_trajectories": 2,
+      "mean_seconds": 289.7666784127553,
+      "mean_native_starts": 5,
+      "model_calls": 0,
+      "model_seconds": 0
+    },
+    {
+      "subset": "healthy",
+      "arm": "model",
+      "assigned": 3,
+      "started": 3,
+      "verified": 3,
+      "whole_workflow_verified": 3,
+      "completion_censored": 0,
+      "numeric_correct": 3,
+      "quantity_correct": 3,
+      "pipeline_quantity_correct": 3,
+      "complete": 3,
+      "alerts": 1,
+      "alerted_trajectories": 1,
+      "native_starts": 11,
+      "fallback_trajectories": 0,
+      "mean_seconds": 218.1758619149526,
+      "mean_native_starts": 3.6666666666666665,
+      "model_calls": 22,
+      "model_seconds": 10.469703417009441
+    },
+    {
+      "subset": "healthy",
+      "arm": "hybrid",
+      "assigned": 3,
+      "started": 3,
+      "verified": 3,
+      "whole_workflow_verified": 3,
+      "completion_censored": 0,
+      "numeric_correct": 3,
+      "quantity_correct": 3,
+      "pipeline_quantity_correct": 3,
+      "complete": 3,
+      "alerts": 2,
+      "alerted_trajectories": 2,
+      "native_starts": 9,
+      "fallback_trajectories": 0,
+      "mean_seconds": 170.16294328371683,
+      "mean_native_starts": 3,
+      "model_calls": 18,
+      "model_seconds": 11.336405815993203
+    },
+    {
+      "subset": "problem",
+      "arm": "observe",
+      "assigned": 1,
+      "started": 1,
+      "verified": 1,
+      "whole_workflow_verified": 1,
+      "completion_censored": 0,
+      "numeric_correct": 1,
+      "quantity_correct": 1,
+      "pipeline_quantity_correct": 1,
+      "complete": 1,
+      "alerts": 0,
+      "alerted_trajectories": 0,
+      "native_starts": 6,
+      "fallback_trajectories": 1,
+      "mean_seconds": 335.5938763618469,
+      "mean_native_starts": 6,
+      "model_calls": 0,
+      "model_seconds": 0
+    },
+    {
+      "subset": "problem",
+      "arm": "rules",
+      "assigned": 1,
+      "started": 1,
+      "verified": 1,
+      "whole_workflow_verified": 1,
+      "completion_censored": 0,
+      "numeric_correct": 1,
+      "quantity_correct": 1,
+      "pipeline_quantity_correct": 1,
+      "complete": 1,
+      "alerts": 1,
+      "alerted_trajectories": 1,
+      "native_starts": 4,
+      "fallback_trajectories": 0,
+      "mean_seconds": 265.7537941932678,
+      "mean_native_starts": 4,
+      "model_calls": 0,
+      "model_seconds": 0
+    },
+    {
+      "subset": "problem",
+      "arm": "model",
+      "assigned": 1,
+      "started": 1,
+      "verified": 1,
+      "whole_workflow_verified": 1,
+      "completion_censored": 0,
+      "numeric_correct": 1,
+      "quantity_correct": 1,
+      "pipeline_quantity_correct": 1,
+      "complete": 1,
+      "alerts": 0,
+      "alerted_trajectories": 0,
+      "native_starts": 4,
+      "fallback_trajectories": 1,
+      "mean_seconds": 270.58098793029785,
+      "mean_native_starts": 4,
+      "model_calls": 18,
+      "model_seconds": 10.548581134997221
+    },
+    {
+      "subset": "problem",
+      "arm": "hybrid",
+      "assigned": 1,
+      "started": 1,
+      "verified": 1,
+      "whole_workflow_verified": 1,
+      "completion_censored": 0,
+      "numeric_correct": 1,
+      "quantity_correct": 1,
+      "pipeline_quantity_correct": 1,
+      "complete": 1,
+      "alerts": 1,
+      "alerted_trajectories": 1,
+      "native_starts": 4,
+      "fallback_trajectories": 0,
+      "mean_seconds": 251.8209683895111,
+      "mean_native_starts": 4,
+      "model_calls": 4,
+      "model_seconds": 1.3536611210001865
+    }
+  ],
+  "replay_assigned": 0,
+  "cost_scope": "groups contain raw recorded costs, including censored lower bounds. balanced_cost_groups are a post-collection descriptive subset that removes every arm of each configuration/seed with any collector-truncated return; ordinary actor failures remain. Separate follow-up runs are not pooled.",
+  "balanced_cost_groups": [
+    {
+      "arm": "observe",
+      "trajectories": 4,
+      "scientifically_verified": 4,
+      "whole_workflow_verified": 4,
+      "mean_seconds": 291.4788491129875,
+      "median_seconds": 326.43201410770416,
+      "native_starts": 20,
+      "mean_native_starts": 5
+    },
+    {
+      "arm": "rules",
+      "trajectories": 4,
+      "scientifically_verified": 4,
+      "whole_workflow_verified": 4,
+      "mean_seconds": 283.76345735788345,
+      "median_seconds": 285.0748142004013,
+      "native_starts": 19,
+      "mean_native_starts": 4.75
+    },
+    {
+      "arm": "model",
+      "trajectories": 4,
+      "scientifically_verified": 4,
+      "whole_workflow_verified": 4,
+      "mean_seconds": 231.2771434187889,
+      "median_seconds": 246.42799985408783,
+      "native_starts": 15,
+      "mean_native_starts": 3.75
+    },
+    {
+      "arm": "hybrid",
+      "trajectories": 4,
+      "scientifically_verified": 4,
+      "whole_workflow_verified": 4,
+      "mean_seconds": 190.5774495601654,
+      "median_seconds": 180.9331018924713,
+      "native_starts": 13,
+      "mean_native_starts": 3.25
+    }
+  ],
+  "live_family_groups": [
+    {
+      "family": "announced_quiet",
+      "arm": "observe",
+      "count": 1,
+      "verified": 1,
+      "whole_workflow_verified": 1,
+      "completion_censored": [
+        false
+      ],
+      "times": [
+        317.2701518535614
+      ],
+      "native_starts": [
+        6
+      ],
+      "alerts": [
+        []
+      ],
+      "fallback": [
+        1
+      ]
+    },
+    {
+      "family": "announced_quiet",
+      "arm": "rules",
+      "count": 1,
+      "verified": 1,
+      "whole_workflow_verified": 1,
+      "completion_censored": [
+        false
+      ],
+      "times": [
+        195.24575066566467
+      ],
+      "native_starts": [
+        4
+      ],
+      "alerts": [
+        [
+          "request_worker_help"
+        ]
+      ],
+      "fallback": [
+        0
+      ]
+    },
+    {
+      "family": "announced_quiet",
+      "arm": "model",
+      "count": 1,
+      "verified": 1,
+      "whole_workflow_verified": 1,
+      "completion_censored": [
+        false
+      ],
+      "times": [
+        241.63625144958496
+      ],
+      "native_starts": [
+        4
+      ],
+      "alerts": [
+        []
+      ],
+      "fallback": [
+        0
+      ]
+    },
+    {
+      "family": "announced_quiet",
+      "arm": "hybrid",
+      "count": 1,
+      "verified": 1,
+      "whole_workflow_verified": 1,
+      "completion_censored": [
+        false
+      ],
+      "times": [
+        207.3536491394043
+      ],
+      "native_starts": [
+        4
+      ],
+      "alerts": [
+        [
+          "request_worker_help"
+        ]
+      ],
+      "fallback": [
+        0
+      ]
+    },
+    {
+      "family": "artifact_consumer",
+      "arm": "observe",
+      "count": 1,
+      "verified": 1,
+      "whole_workflow_verified": 1,
+      "completion_censored": [
+        false
+      ],
+      "times": [
+        335.5938763618469
+      ],
+      "native_starts": [
+        6
+      ],
+      "alerts": [
+        []
+      ],
+      "fallback": [
+        1
+      ]
+    },
+    {
+      "family": "artifact_consumer",
+      "arm": "rules",
+      "count": 1,
+      "verified": 1,
+      "whole_workflow_verified": 1,
+      "completion_censored": [
+        false
+      ],
+      "times": [
+        265.7537941932678
+      ],
+      "native_starts": [
+        4
+      ],
+      "alerts": [
+        [
+          "request_worker_help"
+        ]
+      ],
+      "fallback": [
+        0
+      ]
+    },
+    {
+      "family": "artifact_consumer",
+      "arm": "model",
+      "count": 1,
+      "verified": 1,
+      "whole_workflow_verified": 1,
+      "completion_censored": [
+        false
+      ],
+      "times": [
+        270.58098793029785
+      ],
+      "native_starts": [
+        4
+      ],
+      "alerts": [
+        []
+      ],
+      "fallback": [
+        1
+      ]
+    },
+    {
+      "family": "artifact_consumer",
+      "arm": "hybrid",
+      "count": 1,
+      "verified": 1,
+      "whole_workflow_verified": 1,
+      "completion_censored": [
+        false
+      ],
+      "times": [
+        251.8209683895111
+      ],
+      "native_starts": [
+        4
+      ],
+      "alerts": [
+        [
+          "request_worker_help"
+        ]
+      ],
+      "fallback": [
+        0
+      ]
+    },
+    {
+      "family": "publication_retry",
+      "arm": "observe",
+      "count": 1,
+      "verified": 1,
+      "whole_workflow_verified": 1,
+      "completion_censored": [
+        false
+      ],
+      "times": [
+        145.50629138946533
+      ],
+      "native_starts": [
+        2
+      ],
+      "alerts": [
+        []
+      ],
+      "fallback": [
+        0
+      ]
+    },
+    {
+      "family": "publication_retry",
+      "arm": "rules",
+      "count": 1,
+      "verified": 1,
+      "whole_workflow_verified": 1,
+      "completion_censored": [
+        false
+      ],
+      "times": [
+        369.6584503650665
+      ],
+      "native_starts": [
+        6
+      ],
+      "alerts": [
+        []
+      ],
+      "fallback": [
+        1
+      ]
+    },
+    {
+      "family": "publication_retry",
+      "arm": "model",
+      "count": 1,
+      "verified": 1,
+      "whole_workflow_verified": 1,
+      "completion_censored": [
+        false
+      ],
+      "times": [
+        161.67158603668213
+      ],
+      "native_starts": [
+        3
+      ],
+      "alerts": [
+        [
+          "request_worker_help"
+        ]
+      ],
+      "fallback": [
+        0
+      ]
+    },
+    {
+      "family": "publication_retry",
+      "arm": "hybrid",
+      "count": 1,
+      "verified": 1,
+      "whole_workflow_verified": 1,
+      "completion_censored": [
+        false
+      ],
+      "times": [
+        148.62262606620789
+      ],
+      "native_starts": [
+        3
+      ],
+      "alerts": [
+        [
+          "request_worker_help"
+        ]
+      ],
+      "fallback": [
+        0
+      ]
+    },
+    {
+      "family": "recovered_history",
+      "arm": "observe",
+      "count": 1,
+      "verified": 1,
+      "whole_workflow_verified": 1,
+      "completion_censored": [
+        false
+      ],
+      "times": [
+        367.5450768470764
+      ],
+      "native_starts": [
+        6
+      ],
+      "alerts": [
+        []
+      ],
+      "fallback": [
+        1
+      ]
+    },
+    {
+      "family": "recovered_history",
+      "arm": "rules",
+      "count": 1,
+      "verified": 1,
+      "whole_workflow_verified": 1,
+      "completion_censored": [
+        false
+      ],
+      "times": [
+        304.3958342075348
+      ],
+      "native_starts": [
+        5
+      ],
+      "alerts": [
+        []
+      ],
+      "fallback": [
+        1
+      ]
+    },
+    {
+      "family": "recovered_history",
+      "arm": "model",
+      "count": 1,
+      "verified": 1,
+      "whole_workflow_verified": 1,
+      "completion_censored": [
+        false
+      ],
+      "times": [
+        251.2197482585907
+      ],
+      "native_starts": [
+        4
+      ],
+      "alerts": [
+        []
+      ],
+      "fallback": [
+        0
+      ]
+    },
+    {
+      "family": "recovered_history",
+      "arm": "hybrid",
+      "count": 1,
+      "verified": 1,
+      "whole_workflow_verified": 1,
+      "completion_censored": [
+        false
+      ],
+      "times": [
+        154.51255464553833
+      ],
+      "native_starts": [
+        2
+      ],
+      "alerts": [
+        []
+      ],
+      "fallback": [
+        0
+      ]
+    }
+  ],
+  "replay_groups": [
+    {
+      "family": "announced_quiet",
+      "healthy": true,
+      "packets": 0,
+      "with_published_discrepancy": 0,
+      "choices": {
+        "operational_rules": {},
+        "rules": {},
+        "model": {},
+        "hybrid": {}
+      },
+      "model_rules_disagreement": 0
+    },
+    {
+      "family": "artifact_consumer",
+      "healthy": false,
+      "packets": 0,
+      "with_published_discrepancy": 0,
+      "choices": {
+        "operational_rules": {},
+        "rules": {},
+        "model": {},
+        "hybrid": {}
+      },
+      "model_rules_disagreement": 0
+    },
+    {
+      "family": "publication_retry",
+      "healthy": true,
+      "packets": 0,
+      "with_published_discrepancy": 0,
+      "choices": {
+        "operational_rules": {},
+        "rules": {},
+        "model": {},
+        "hybrid": {}
+      },
+      "model_rules_disagreement": 0
+    },
+    {
+      "family": "recovered_history",
+      "healthy": true,
+      "packets": 0,
+      "with_published_discrepancy": 0,
+      "choices": {
+        "operational_rules": {},
+        "rules": {},
+        "model": {},
+        "hybrid": {}
+      },
+      "model_rules_disagreement": 0
+    }
+  ],
+  "replay_missing": [],
+  "replay_errors": [],
+  "replay_observation_omissions": [],
+  "same_input_disagreements": []
+}

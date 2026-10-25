@@ -1,0 +1,10 @@
+{
+  "source": "/home/tomzhu0225/src/simjecture-monitor-coprocessor/artifacts/generalization-20261025/main-v4",
+  "source_design_sha256": "c290f9defc300f5727e6cbb66173beeabfe0d871ae2b1557758d438e7d1808ae",
+  "selection_sha256": "881717b55cd76e4abc747da2aee6cd32898dd25a3ff3923b444f7fff8a6e19ed",
+  "created_at": 1792903476.8240473,
+  "selection_rule": "First parked observe-only packet at/after10,25,40seconds, before interval end; no replacements",
+  "model": "unchanged frozen base; deterministic greedy; no LoRA",
+  "hybrid": "Reuse the same deterministic model prediction only when checks-aware rules defer",
+  "label_access": "Evidence tags and host family labels are added after inference and never sent to policies"
+}

@@ -1,0 +1,44 @@
+{
+  "created_at": 1792904259.1905663,
+  "scope": "Prospective balanced follow-up after draft-report premature completion was found; primary records retained",
+  "configurations": [
+    {
+      "family": "publication_retry",
+      "seed": 2026102500,
+      "repeat": 0
+    },
+    {
+      "family": "announced_quiet",
+      "seed": 2026102501,
+      "repeat": 1
+    },
+    {
+      "family": "recovered_history",
+      "seed": 2026102501,
+      "repeat": 1
+    },
+    {
+      "family": "artifact_consumer",
+      "seed": 2026102501,
+      "repeat": 1
+    }
+  ],
+  "arms": [
+    "observe",
+    "rules",
+    "model",
+    "hybrid"
+  ],
+  "trajectories": 16,
+  "ordering_seed": 2026102505,
+  "within_arm_seed": 2026102506,
+  "maximum_parents": 2,
+  "native_lease": "Existing512-start/four-concurrent/ten-per-trajectory lease; original absolute expiry retained",
+  "policies": "Unchanged frozen baseline/model/hybrid, same ordinary task and scientific fixtures",
+  "change": "Completion requires normal worker return, no explicit wait, no pending required help and no unacknowledged required feedback",
+  "gate_validation": "First run a real excluded observation-only workflow with provisional report files before required helper wait",
+  "interpretation": "Separate cohort; do not overwrite or silently pool into the original64",
+  "amended_at": 1792904535.271936,
+  "initial_plan_sha256": "9b4510a5f10ae300aacda147eab261226266f15644f3bfdd7ecfb6081d0c1c31",
+  "amendment": "Final audit also found an explicit advisory wait ignored after draft publication. Include that fourth configuration before any follow-up execution."
+}

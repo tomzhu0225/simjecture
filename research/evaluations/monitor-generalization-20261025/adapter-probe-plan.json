@@ -1,0 +1,12 @@
+{
+  "created_at": 1792900958.088959,
+  "scope": "Secondary exact-input comparison, declared before any V1 probe on this cohort",
+  "base_replay": "replay-v1",
+  "adapter": "artifacts/overnight-20261023/training/run-01/adapter",
+  "adapter_sha256": "e0f4d4c66ee3444193a952bcaa41f210f02bb4308cf7cc8303d8f4ffe7aa871c",
+  "selection": "All identical primary replay slots, including missing/error records; no replacements",
+  "runtime": "Same frozen checkpoint and FLA prefill profile; only existing adapter differs",
+  "native_rollouts": false,
+  "training": false,
+  "interpretation": "Prediction changes are not evidence of improved downstream workflow returns"
+}

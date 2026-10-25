@@ -71,3 +71,29 @@ def test_missing_required_feedback_alone_does_not_relabel_an_actor_failure(measu
     result = measure(out, {}, dict(required_feedback_misses=1))
     assert not result["completion_censored"]
     assert not result["whole_workflow_verified"]
+
+
+def test_unknown_feedback_need_is_not_complete_and_remains_in_the_cohort(measure):
+    out = dict(
+        ended_at=104,
+        verified_complete=True,
+        turns=[dict(returncode=0, ended_at=100)],
+        parking=[],
+    )
+    result = measure(out, {}, dict(required_feedback_misses=None))
+    assert not result["completion_censored"]
+    assert not result["whole_workflow_verified"]
+
+
+def test_new_collector_boundary_cannot_be_overridden_by_correct_numeric_files(measure):
+    out = dict(
+        ended_at=120,
+        verified_complete=True,
+        turns=[dict(returncode=0, ended_at=100)],
+        parking=[dict(started_at=100, ended_at=120)],
+        completion_checks=[dict(allowed=False, pending_required_help=1)],
+        finish_reason="boundary_or_parent_turn_limit",
+    )
+    result = measure(out, {}, dict(required_feedback_misses=0))
+    assert not result["completion_censored"]
+    assert not result["whole_workflow_verified"]

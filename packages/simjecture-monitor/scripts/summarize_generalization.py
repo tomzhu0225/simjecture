@@ -36,10 +36,11 @@ def summarize(audit, replay):
         )
     return dict(
         scope=(
-            "Descriptive exploratory comparison; two repeats per family, "
+            "Descriptive exploratory comparison; assignment counts follow the cohort design, "
             "no population significance claim"
         ),
         live_groups=audit["groups"],
+        replay_assigned=len(replay),
         cost_scope=audit["cost_scope"],
         balanced_cost_groups=audit["balanced_cost_groups"],
         live_family_groups=[
@@ -106,7 +107,18 @@ def figure(audit, output):
                 ha="center",
                 fontsize=11,
             )
-            axis.text(i, -1.15, f"{g['native_starts']} native starts", ha="center", fontsize=8)
+            detail = f"{g['native_starts']} native starts"
+            if any(r["completion_censored"] for r in audit["rows"]):
+                detail += f"\n{g['completion_censored']} censored returns"
+            axis.text(
+                i,
+                -0.15,
+                detail,
+                ha="center",
+                va="top",
+                fontsize=8,
+                transform=axis.get_xaxis_transform(),
+            )
         maximum = max((g["assigned"] for g in groups.values()), default=0)
         axis.set_ylim(0, max(maximum + 1.2, 2))
         axis.set_yticks(range(0, maximum + 1, 2 if maximum >= 8 else 1))
@@ -172,31 +184,53 @@ def figure(audit, output):
         axis.grid(axis="y", alpha=0.15)
         axis.set_axisbelow(True)
     axes[1].set_yticks(range(0, 11, 2))
+    censored = any(r["completion_censored"] for r in audit["rows"])
     legend = [
         Line2D([], [], color="gray", marker="o", linestyle="", label="Healthy case"),
         Line2D([], [], color="gray", marker="^", linestyle="", label="Problem case"),
-        Line2D([], [], color="black", marker="x", linestyle="", label="Incomplete output"),
-        Line2D(
-            [],
-            [],
-            color="gray",
-            marker="o",
-            markerfacecolor="none",
-            linestyle="",
-            label="Configuration omitted from median",
-        ),
+    ]
+    if any(not r["verified_complete"] for r in audit["rows"]):
+        legend.append(
+            Line2D([], [], color="black", marker="x", linestyle="", label="Incomplete output")
+        )
+    if censored:
+        legend.extend(
+            [
+                Line2D(
+                    [],
+                    [],
+                    color="gray",
+                    marker="o",
+                    markerfacecolor="none",
+                    linestyle="",
+                    label="Configuration omitted from median",
+                ),
+                Line2D(
+                    [],
+                    [],
+                    color="black",
+                    marker=r"$\uparrow$",
+                    linestyle="",
+                    label="Censored cost (lower bound)",
+                ),
+            ]
+        )
+    legend.append(
         Line2D(
             [],
             [],
             color="black",
-            marker=r"$\uparrow$",
-            linestyle="",
-            label="Censored cost (lower bound)",
-        ),
-        Line2D([], [], color="black", linewidth=2, label="Balanced eligible median"),
-    ]
+            linewidth=2,
+            label="Balanced eligible median" if censored else "Median",
+        )
+    )
     fig.legend(handles=legend, loc="outside lower center", ncol=3, frameon=False, fontsize=8)
-    fig.suptitle("Recorded costs; premature collector stops are censored", fontsize=13)
+    fig.suptitle(
+        "Recorded costs; premature collector stops are censored"
+        if censored
+        else "Recorded workflow costs; all assignments retained",
+        fontsize=13,
+    )
     fig.savefig(output / "workflow-costs.png", dpi=200, bbox_inches="tight")
     fig.savefig(output / "workflow-costs.pdf", bbox_inches="tight")
     plt.close(fig)
@@ -205,11 +239,11 @@ def figure(audit, output):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--audit", type=Path, required=True)
-    parser.add_argument("--replay", type=Path, required=True)
+    parser.add_argument("--replay", type=Path, help="Optional replay belonging to this cohort")
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     audit = json.loads(args.audit.read_text())
-    replay = json.loads(args.replay.read_text())
+    replay = json.loads(args.replay.read_text()) if args.replay else []
     args.output.mkdir(parents=True, exist_ok=True)
     result = summarize(audit, replay)
     put(args.output / "comparison.json", result)

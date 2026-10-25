@@ -1,0 +1,6 @@
+{
+  "checked_at_utc": "2026-10-25T05:52:07.582340+00:00",
+  "usage": "Current balance: 1229.53 compute units\nUsage rate: 0.00/hr\nActive assignments: 0\n",
+  "sessions": "[colab] No active sessions found on server.\n",
+  "scope": "Read-only live CLI status; no Colab allocation in this comparison"
+}

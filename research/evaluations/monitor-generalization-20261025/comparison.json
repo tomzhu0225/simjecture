@@ -1,0 +1,1532 @@
+{
+  "scope": "Descriptive exploratory comparison; assignment counts follow the cohort design, no population significance claim",
+  "live_groups": [
+    {
+      "subset": "all",
+      "arm": "observe",
+      "assigned": 16,
+      "started": 16,
+      "verified": 15,
+      "whole_workflow_verified": 15,
+      "completion_censored": 0,
+      "numeric_correct": 15,
+      "quantity_correct": 15,
+      "pipeline_quantity_correct": 15,
+      "complete": 16,
+      "alerts": 0,
+      "alerted_trajectories": 0,
+      "native_starts": 76,
+      "fallback_trajectories": 8,
+      "mean_seconds": 266.7243991494179,
+      "mean_native_starts": 4.75,
+      "model_calls": 0,
+      "model_seconds": 0
+    },
+    {
+      "subset": "all",
+      "arm": "rules",
+      "assigned": 16,
+      "started": 16,
+      "verified": 16,
+      "whole_workflow_verified": 14,
+      "completion_censored": 2,
+      "numeric_correct": 16,
+      "quantity_correct": 16,
+      "pipeline_quantity_correct": 16,
+      "complete": 16,
+      "alerts": 6,
+      "alerted_trajectories": 6,
+      "native_starts": 69,
+      "fallback_trajectories": 3,
+      "mean_seconds": 227.3523789793253,
+      "mean_native_starts": 4.3125,
+      "model_calls": 0,
+      "model_seconds": 0
+    },
+    {
+      "subset": "all",
+      "arm": "model",
+      "assigned": 16,
+      "started": 16,
+      "verified": 16,
+      "whole_workflow_verified": 15,
+      "completion_censored": 1,
+      "numeric_correct": 16,
+      "quantity_correct": 16,
+      "pipeline_quantity_correct": 16,
+      "complete": 16,
+      "alerts": 2,
+      "alerted_trajectories": 2,
+      "native_starts": 79,
+      "fallback_trajectories": 7,
+      "mean_seconds": 272.35531045496464,
+      "mean_native_starts": 4.9375,
+      "model_calls": 181,
+      "model_seconds": 113.53509745801239
+    },
+    {
+      "subset": "all",
+      "arm": "hybrid",
+      "assigned": 16,
+      "started": 16,
+      "verified": 16,
+      "whole_workflow_verified": 15,
+      "completion_censored": 1,
+      "numeric_correct": 16,
+      "quantity_correct": 16,
+      "pipeline_quantity_correct": 16,
+      "complete": 16,
+      "alerts": 8,
+      "alerted_trajectories": 8,
+      "native_starts": 67,
+      "fallback_trajectories": 4,
+      "mean_seconds": 222.63484840095043,
+      "mean_native_starts": 4.1875,
+      "model_calls": 105,
+      "model_seconds": 64.0740356550159
+    },
+    {
+      "subset": "healthy",
+      "arm": "observe",
+      "assigned": 8,
+      "started": 8,
+      "verified": 8,
+      "whole_workflow_verified": 8,
+      "completion_censored": 0,
+      "numeric_correct": 8,
+      "quantity_correct": 8,
+      "pipeline_quantity_correct": 8,
+      "complete": 8,
+      "alerts": 0,
+      "alerted_trajectories": 0,
+      "native_starts": 29,
+      "fallback_trajectories": 3,
+      "mean_seconds": 221.042672842741,
+      "mean_native_starts": 3.625,
+      "model_calls": 0,
+      "model_seconds": 0
+    },
+    {
+      "subset": "healthy",
+      "arm": "rules",
+      "assigned": 8,
+      "started": 8,
+      "verified": 8,
+      "whole_workflow_verified": 6,
+      "completion_censored": 2,
+      "numeric_correct": 8,
+      "quantity_correct": 8,
+      "pipeline_quantity_correct": 8,
+      "complete": 8,
+      "alerts": 0,
+      "alerted_trajectories": 0,
+      "native_starts": 31,
+      "fallback_trajectories": 3,
+      "mean_seconds": 220.85152906179428,
+      "mean_native_starts": 3.875,
+      "model_calls": 0,
+      "model_seconds": 0
+    },
+    {
+      "subset": "healthy",
+      "arm": "model",
+      "assigned": 8,
+      "started": 8,
+      "verified": 8,
+      "whole_workflow_verified": 8,
+      "completion_censored": 0,
+      "numeric_correct": 8,
+      "quantity_correct": 8,
+      "pipeline_quantity_correct": 8,
+      "complete": 8,
+      "alerts": 2,
+      "alerted_trajectories": 2,
+      "native_starts": 34,
+      "fallback_trajectories": 3,
+      "mean_seconds": 234.91304033994675,
+      "mean_native_starts": 4.25,
+      "model_calls": 62,
+      "model_seconds": 39.18607055200118
+    },
+    {
+      "subset": "healthy",
+      "arm": "hybrid",
+      "assigned": 8,
+      "started": 8,
+      "verified": 8,
+      "whole_workflow_verified": 7,
+      "completion_censored": 1,
+      "numeric_correct": 8,
+      "quantity_correct": 8,
+      "pipeline_quantity_correct": 8,
+      "complete": 8,
+      "alerts": 2,
+      "alerted_trajectories": 2,
+      "native_starts": 29,
+      "fallback_trajectories": 3,
+      "mean_seconds": 211.03501415252686,
+      "mean_native_starts": 3.625,
+      "model_calls": 63,
+      "model_seconds": 37.43603783400249
+    },
+    {
+      "subset": "problem",
+      "arm": "observe",
+      "assigned": 8,
+      "started": 8,
+      "verified": 7,
+      "whole_workflow_verified": 7,
+      "completion_censored": 0,
+      "numeric_correct": 7,
+      "quantity_correct": 7,
+      "pipeline_quantity_correct": 7,
+      "complete": 8,
+      "alerts": 0,
+      "alerted_trajectories": 0,
+      "native_starts": 47,
+      "fallback_trajectories": 5,
+      "mean_seconds": 312.40612545609474,
+      "mean_native_starts": 5.875,
+      "model_calls": 0,
+      "model_seconds": 0
+    },
+    {
+      "subset": "problem",
+      "arm": "rules",
+      "assigned": 8,
+      "started": 8,
+      "verified": 8,
+      "whole_workflow_verified": 8,
+      "completion_censored": 0,
+      "numeric_correct": 8,
+      "quantity_correct": 8,
+      "pipeline_quantity_correct": 8,
+      "complete": 8,
+      "alerts": 6,
+      "alerted_trajectories": 6,
+      "native_starts": 38,
+      "fallback_trajectories": 0,
+      "mean_seconds": 233.8532288968563,
+      "mean_native_starts": 4.75,
+      "model_calls": 0,
+      "model_seconds": 0
+    },
+    {
+      "subset": "problem",
+      "arm": "model",
+      "assigned": 8,
+      "started": 8,
+      "verified": 8,
+      "whole_workflow_verified": 7,
+      "completion_censored": 1,
+      "numeric_correct": 8,
+      "quantity_correct": 8,
+      "pipeline_quantity_correct": 8,
+      "complete": 8,
+      "alerts": 0,
+      "alerted_trajectories": 0,
+      "native_starts": 45,
+      "fallback_trajectories": 4,
+      "mean_seconds": 309.79758056998253,
+      "mean_native_starts": 5.625,
+      "model_calls": 119,
+      "model_seconds": 74.3490269060112
+    },
+    {
+      "subset": "problem",
+      "arm": "hybrid",
+      "assigned": 8,
+      "started": 8,
+      "verified": 8,
+      "whole_workflow_verified": 8,
+      "completion_censored": 0,
+      "numeric_correct": 8,
+      "quantity_correct": 8,
+      "pipeline_quantity_correct": 8,
+      "complete": 8,
+      "alerts": 6,
+      "alerted_trajectories": 6,
+      "native_starts": 38,
+      "fallback_trajectories": 1,
+      "mean_seconds": 234.234682649374,
+      "mean_native_starts": 4.75,
+      "model_calls": 42,
+      "model_seconds": 26.637997821013414
+    }
+  ],
+  "replay_assigned": 48,
+  "cost_scope": "groups contain raw recorded costs, including censored lower bounds. balanced_cost_groups are a post-collection descriptive subset that removes every arm of each configuration/seed with any collector-truncated return; ordinary actor failures remain. Separate follow-up runs are not pooled.",
+  "balanced_cost_groups": [
+    {
+      "arm": "observe",
+      "trajectories": 12,
+      "scientifically_verified": 11,
+      "whole_workflow_verified": 11,
+      "mean_seconds": 274.0299719572067,
+      "median_seconds": 295.01467859745026,
+      "native_starts": 60,
+      "mean_native_starts": 5
+    },
+    {
+      "arm": "rules",
+      "trajectories": 12,
+      "scientifically_verified": 12,
+      "whole_workflow_verified": 12,
+      "mean_seconds": 231.17089692751566,
+      "median_seconds": 215.762504696846,
+      "native_starts": 53,
+      "mean_native_starts": 4.416666666666667
+    },
+    {
+      "arm": "model",
+      "trajectories": 12,
+      "scientifically_verified": 12,
+      "whole_workflow_verified": 12,
+      "mean_seconds": 272.1382118860881,
+      "median_seconds": 272.9151539802551,
+      "native_starts": 59,
+      "mean_native_starts": 4.916666666666667
+    },
+    {
+      "arm": "hybrid",
+      "trajectories": 12,
+      "scientifically_verified": 12,
+      "whole_workflow_verified": 12,
+      "mean_seconds": 224.133280535539,
+      "median_seconds": 223.57519626617432,
+      "native_starts": 52,
+      "mean_native_starts": 4.333333333333333
+    }
+  ],
+  "live_family_groups": [
+    {
+      "family": "announced_quiet",
+      "arm": "observe",
+      "count": 2,
+      "verified": 2,
+      "whole_workflow_verified": 2,
+      "completion_censored": [
+        false,
+        false
+      ],
+      "times": [
+        132.70364260673523,
+        152.79897236824036
+      ],
+      "native_starts": [
+        2,
+        2
+      ],
+      "alerts": [
+        [],
+        []
+      ],
+      "fallback": [
+        0,
+        0
+      ]
+    },
+    {
+      "family": "announced_quiet",
+      "arm": "rules",
+      "count": 2,
+      "verified": 2,
+      "whole_workflow_verified": 1,
+      "completion_censored": [
+        false,
+        true
+      ],
+      "times": [
+        155.86296677589417,
+        138.02839016914368
+      ],
+      "native_starts": [
+        2,
+        3
+      ],
+      "alerts": [
+        [],
+        []
+      ],
+      "fallback": [
+        0,
+        0
+      ]
+    },
+    {
+      "family": "announced_quiet",
+      "arm": "model",
+      "count": 2,
+      "verified": 2,
+      "whole_workflow_verified": 2,
+      "completion_censored": [
+        false,
+        false
+      ],
+      "times": [
+        226.24166560173035,
+        336.11778235435486
+      ],
+      "native_starts": [
+        4,
+        6
+      ],
+      "alerts": [
+        [],
+        []
+      ],
+      "fallback": [
+        0,
+        1
+      ]
+    },
+    {
+      "family": "announced_quiet",
+      "arm": "hybrid",
+      "count": 2,
+      "verified": 2,
+      "whole_workflow_verified": 2,
+      "completion_censored": [
+        false,
+        false
+      ],
+      "times": [
+        132.65802240371704,
+        359.2304255962372
+      ],
+      "native_starts": [
+        2,
+        6
+      ],
+      "alerts": [
+        [],
+        []
+      ],
+      "fallback": [
+        0,
+        1
+      ]
+    },
+    {
+      "family": "artifact_consumer",
+      "arm": "observe",
+      "count": 2,
+      "verified": 2,
+      "whole_workflow_verified": 2,
+      "completion_censored": [
+        false,
+        false
+      ],
+      "times": [
+        366.28109550476074,
+        292.7814691066742
+      ],
+      "native_starts": [
+        6,
+        5
+      ],
+      "alerts": [
+        [],
+        []
+      ],
+      "fallback": [
+        1,
+        1
+      ]
+    },
+    {
+      "family": "artifact_consumer",
+      "arm": "rules",
+      "count": 2,
+      "verified": 2,
+      "whole_workflow_verified": 2,
+      "completion_censored": [
+        false,
+        false
+      ],
+      "times": [
+        269.46308946609497,
+        255.52861857414246
+      ],
+      "native_starts": [
+        4,
+        4
+      ],
+      "alerts": [
+        [
+          "request_worker_help"
+        ],
+        [
+          "request_worker_help"
+        ]
+      ],
+      "fallback": [
+        0,
+        0
+      ]
+    },
+    {
+      "family": "artifact_consumer",
+      "arm": "model",
+      "count": 2,
+      "verified": 2,
+      "whole_workflow_verified": 1,
+      "completion_censored": [
+        false,
+        true
+      ],
+      "times": [
+        254.08370208740234,
+        280.14249563217163
+      ],
+      "native_starts": [
+        4,
+        5
+      ],
+      "alerts": [
+        [],
+        []
+      ],
+      "fallback": [
+        1,
+        1
+      ]
+    },
+    {
+      "family": "artifact_consumer",
+      "arm": "hybrid",
+      "count": 2,
+      "verified": 2,
+      "whole_workflow_verified": 2,
+      "completion_censored": [
+        false,
+        false
+      ],
+      "times": [
+        228.34357833862305,
+        231.25758600234985
+      ],
+      "native_starts": [
+        4,
+        4
+      ],
+      "alerts": [
+        [
+          "request_worker_help"
+        ],
+        [
+          "request_worker_help"
+        ]
+      ],
+      "fallback": [
+        0,
+        0
+      ]
+    },
+    {
+      "family": "progressing_work",
+      "arm": "observe",
+      "count": 2,
+      "verified": 2,
+      "whole_workflow_verified": 2,
+      "completion_censored": [
+        false,
+        false
+      ],
+      "times": [
+        148.28667068481445,
+        351.5809094905853
+      ],
+      "native_starts": [
+        2,
+        6
+      ],
+      "alerts": [
+        [],
+        []
+      ],
+      "fallback": [
+        0,
+        1
+      ]
+    },
+    {
+      "family": "progressing_work",
+      "arm": "rules",
+      "count": 2,
+      "verified": 2,
+      "whole_workflow_verified": 2,
+      "completion_censored": [
+        false,
+        false
+      ],
+      "times": [
+        283.0263891220093,
+        326.6571319103241
+      ],
+      "native_starts": [
+        5,
+        6
+      ],
+      "alerts": [
+        [],
+        []
+      ],
+      "fallback": [
+        1,
+        1
+      ]
+    },
+    {
+      "family": "progressing_work",
+      "arm": "model",
+      "count": 2,
+      "verified": 2,
+      "whole_workflow_verified": 2,
+      "completion_censored": [
+        false,
+        false
+      ],
+      "times": [
+        135.28747177124023,
+        344.3306088447571
+      ],
+      "native_starts": [
+        2,
+        6
+      ],
+      "alerts": [
+        [],
+        []
+      ],
+      "fallback": [
+        0,
+        1
+      ]
+    },
+    {
+      "family": "progressing_work",
+      "arm": "hybrid",
+      "count": 2,
+      "verified": 2,
+      "whole_workflow_verified": 2,
+      "completion_censored": [
+        false,
+        false
+      ],
+      "times": [
+        294.03147411346436,
+        147.421879529953
+      ],
+      "native_starts": [
+        5,
+        2
+      ],
+      "alerts": [
+        [],
+        []
+      ],
+      "fallback": [
+        1,
+        0
+      ]
+    },
+    {
+      "family": "publication_retry",
+      "arm": "observe",
+      "count": 2,
+      "verified": 2,
+      "whole_workflow_verified": 2,
+      "completion_censored": [
+        false,
+        false
+      ],
+      "times": [
+        303.80367732048035,
+        144.3360583782196
+      ],
+      "native_starts": [
+        5,
+        2
+      ],
+      "alerts": [
+        [],
+        []
+      ],
+      "fallback": [
+        1,
+        0
+      ]
+    },
+    {
+      "family": "publication_retry",
+      "arm": "rules",
+      "count": 2,
+      "verified": 2,
+      "whole_workflow_verified": 1,
+      "completion_censored": [
+        true,
+        false
+      ],
+      "times": [
+        142.47464418411255,
+        165.36627388000488
+      ],
+      "native_starts": [
+        3,
+        2
+      ],
+      "alerts": [
+        [],
+        []
+      ],
+      "fallback": [
+        0,
+        0
+      ]
+    },
+    {
+      "family": "publication_retry",
+      "arm": "model",
+      "count": 2,
+      "verified": 2,
+      "whole_workflow_verified": 2,
+      "completion_censored": [
+        false,
+        false
+      ],
+      "times": [
+        163.48812174797058,
+        147.98453545570374
+      ],
+      "native_starts": [
+        4,
+        3
+      ],
+      "alerts": [
+        [
+          "request_worker_help"
+        ],
+        [
+          "request_worker_help"
+        ]
+      ],
+      "fallback": [
+        0,
+        0
+      ]
+    },
+    {
+      "family": "publication_retry",
+      "arm": "hybrid",
+      "count": 2,
+      "verified": 2,
+      "whole_workflow_verified": 2,
+      "completion_censored": [
+        false,
+        false
+      ],
+      "times": [
+        144.4902708530426,
+        140.37458109855652
+      ],
+      "native_starts": [
+        3,
+        3
+      ],
+      "alerts": [
+        [
+          "request_worker_help"
+        ],
+        [
+          "request_worker_help"
+        ]
+      ],
+      "fallback": [
+        0,
+        0
+      ]
+    },
+    {
+      "family": "recovered_history",
+      "arm": "observe",
+      "count": 2,
+      "verified": 2,
+      "whole_workflow_verified": 2,
+      "completion_censored": [
+        false,
+        false
+      ],
+      "times": [
+        304.98484778404236,
+        229.84660410881042
+      ],
+      "native_starts": [
+        6,
+        4
+      ],
+      "alerts": [
+        [],
+        []
+      ],
+      "fallback": [
+        1,
+        0
+      ]
+    },
+    {
+      "family": "recovered_history",
+      "arm": "rules",
+      "count": 2,
+      "verified": 2,
+      "whole_workflow_verified": 2,
+      "completion_censored": [
+        false,
+        false
+      ],
+      "times": [
+        227.84078884124756,
+        327.55564761161804
+      ],
+      "native_starts": [
+        4,
+        6
+      ],
+      "alerts": [
+        [],
+        []
+      ],
+      "fallback": [
+        0,
+        1
+      ]
+    },
+    {
+      "family": "recovered_history",
+      "arm": "model",
+      "count": 2,
+      "verified": 2,
+      "whole_workflow_verified": 2,
+      "completion_censored": [
+        false,
+        false
+      ],
+      "times": [
+        213.57611203193665,
+        312.2780249118805
+      ],
+      "native_starts": [
+        4,
+        5
+      ],
+      "alerts": [
+        [],
+        []
+      ],
+      "fallback": [
+        0,
+        1
+      ]
+    },
+    {
+      "family": "recovered_history",
+      "arm": "hybrid",
+      "count": 2,
+      "verified": 2,
+      "whole_workflow_verified": 1,
+      "completion_censored": [
+        false,
+        true
+      ],
+      "times": [
+        332.49353408813477,
+        137.57992553710938
+      ],
+      "native_starts": [
+        6,
+        2
+      ],
+      "alerts": [
+        [],
+        []
+      ],
+      "fallback": [
+        1,
+        0
+      ]
+    },
+    {
+      "family": "source_binding",
+      "arm": "observe",
+      "count": 2,
+      "verified": 1,
+      "whole_workflow_verified": 1,
+      "completion_censored": [
+        false,
+        false
+      ],
+      "times": [
+        357.63662910461426,
+        364.58032155036926
+      ],
+      "native_starts": [
+        7,
+        8
+      ],
+      "alerts": [
+        [],
+        []
+      ],
+      "fallback": [
+        1,
+        0
+      ]
+    },
+    {
+      "family": "source_binding",
+      "arm": "rules",
+      "count": 2,
+      "verified": 2,
+      "whole_workflow_verified": 2,
+      "completion_censored": [
+        false,
+        false
+      ],
+      "times": [
+        194.10845184326172,
+        174.16900658607483
+      ],
+      "native_starts": [
+        5,
+        5
+      ],
+      "alerts": [
+        [
+          "request_repair_judge"
+        ],
+        [
+          "request_repair_judge"
+        ]
+      ],
+      "fallback": [
+        0,
+        0
+      ]
+    },
+    {
+      "family": "source_binding",
+      "arm": "model",
+      "count": 2,
+      "verified": 2,
+      "whole_workflow_verified": 2,
+      "completion_censored": [
+        false,
+        false
+      ],
+      "times": [
+        296.765070438385,
+        385.83867859840393
+      ],
+      "native_starts": [
+        7,
+        8
+      ],
+      "alerts": [
+        [],
+        []
+      ],
+      "fallback": [
+        0,
+        0
+      ]
+    },
+    {
+      "family": "source_binding",
+      "arm": "hybrid",
+      "count": 2,
+      "verified": 2,
+      "whole_workflow_verified": 2,
+      "completion_censored": [
+        false,
+        false
+      ],
+      "times": [
+        216.25428366661072,
+        191.71570682525635
+      ],
+      "native_starts": [
+        5,
+        5
+      ],
+      "alerts": [
+        [
+          "request_repair_judge"
+        ],
+        [
+          "request_repair_judge"
+        ]
+      ],
+      "fallback": [
+        0,
+        0
+      ]
+    },
+    {
+      "family": "unit_conversion",
+      "arm": "observe",
+      "count": 2,
+      "verified": 2,
+      "whole_workflow_verified": 2,
+      "completion_censored": [
+        false,
+        false
+      ],
+      "times": [
+        285.04450941085815,
+        231.71327137947083
+      ],
+      "native_starts": [
+        6,
+        5
+      ],
+      "alerts": [
+        [],
+        []
+      ],
+      "fallback": [
+        0,
+        0
+      ]
+    },
+    {
+      "family": "unit_conversion",
+      "arm": "rules",
+      "count": 2,
+      "verified": 2,
+      "whole_workflow_verified": 2,
+      "completion_censored": [
+        false,
+        false
+      ],
+      "times": [
+        308.35927391052246,
+        286.87427949905396
+      ],
+      "native_starts": [
+        6,
+        6
+      ],
+      "alerts": [
+        [],
+        []
+      ],
+      "fallback": [
+        0,
+        0
+      ]
+    },
+    {
+      "family": "unit_conversion",
+      "arm": "model",
+      "count": 2,
+      "verified": 2,
+      "whole_workflow_verified": 2,
+      "completion_censored": [
+        false,
+        false
+      ],
+      "times": [
+        308.12271094322205,
+        282.85495138168335
+      ],
+      "native_starts": [
+        6,
+        5
+      ],
+      "alerts": [
+        [],
+        []
+      ],
+      "fallback": [
+        0,
+        0
+      ]
+    },
+    {
+      "family": "unit_conversion",
+      "arm": "hybrid",
+      "count": 2,
+      "verified": 2,
+      "whole_workflow_verified": 2,
+      "completion_censored": [
+        false,
+        false
+      ],
+      "times": [
+        306.0310437679291,
+        250.70252561569214
+      ],
+      "native_starts": [
+        6,
+        5
+      ],
+      "alerts": [
+        [],
+        []
+      ],
+      "fallback": [
+        0,
+        0
+      ]
+    },
+    {
+      "family": "update_cycle",
+      "arm": "observe",
+      "count": 2,
+      "verified": 2,
+      "whole_workflow_verified": 2,
+      "completion_censored": [
+        false,
+        false
+      ],
+      "times": [
+        209.51189756393433,
+        391.6998100280762
+      ],
+      "native_starts": [
+        4,
+        6
+      ],
+      "alerts": [
+        [],
+        []
+      ],
+      "fallback": [
+        1,
+        2
+      ]
+    },
+    {
+      "family": "update_cycle",
+      "arm": "rules",
+      "count": 2,
+      "verified": 2,
+      "whole_workflow_verified": 2,
+      "completion_censored": [
+        false,
+        false
+      ],
+      "times": [
+        178.63889074325562,
+        203.68422055244446
+      ],
+      "native_starts": [
+        4,
+        4
+      ],
+      "alerts": [
+        [
+          "request_worker_help"
+        ],
+        [
+          "request_worker_help"
+        ]
+      ],
+      "fallback": [
+        0,
+        0
+      ]
+    },
+    {
+      "family": "update_cycle",
+      "arm": "model",
+      "count": 2,
+      "verified": 2,
+      "whole_workflow_verified": 2,
+      "completion_censored": [
+        false,
+        false
+      ],
+      "times": [
+        262.9753565788269,
+        407.597678899765
+      ],
+      "native_starts": [
+        4,
+        6
+      ],
+      "alerts": [
+        [],
+        []
+      ],
+      "fallback": [
+        1,
+        2
+      ]
+    },
+    {
+      "family": "update_cycle",
+      "arm": "hybrid",
+      "count": 2,
+      "verified": 2,
+      "whole_workflow_verified": 2,
+      "completion_censored": [
+        false,
+        false
+      ],
+      "times": [
+        230.7659227848053,
+        218.8068141937256
+      ],
+      "native_starts": [
+        4,
+        5
+      ],
+      "alerts": [
+        [
+          "request_worker_help"
+        ],
+        [
+          "request_worker_help"
+        ]
+      ],
+      "fallback": [
+        0,
+        1
+      ]
+    }
+  ],
+  "replay_groups": [
+    {
+      "family": "announced_quiet",
+      "healthy": true,
+      "packets": 6,
+      "with_published_discrepancy": 0,
+      "choices": {
+        "operational_rules": {
+          "defer": 6
+        },
+        "rules": {
+          "defer": 6
+        },
+        "model": {
+          "defer": 6
+        },
+        "hybrid": {
+          "defer": 6
+        }
+      },
+      "model_rules_disagreement": 0
+    },
+    {
+      "family": "artifact_consumer",
+      "healthy": false,
+      "packets": 6,
+      "with_published_discrepancy": 6,
+      "choices": {
+        "operational_rules": {
+          "defer": 2,
+          "request_worker_help": 4
+        },
+        "rules": {
+          "defer": 2,
+          "request_worker_help": 4
+        },
+        "model": {
+          "defer": 6
+        },
+        "hybrid": {
+          "defer": 2,
+          "request_worker_help": 4
+        }
+      },
+      "model_rules_disagreement": 4
+    },
+    {
+      "family": "progressing_work",
+      "healthy": true,
+      "packets": 6,
+      "with_published_discrepancy": 0,
+      "choices": {
+        "operational_rules": {
+          "defer": 6
+        },
+        "rules": {
+          "defer": 6
+        },
+        "model": {
+          "defer": 6
+        },
+        "hybrid": {
+          "defer": 6
+        }
+      },
+      "model_rules_disagreement": 0
+    },
+    {
+      "family": "publication_retry",
+      "healthy": true,
+      "packets": 6,
+      "with_published_discrepancy": 0,
+      "choices": {
+        "operational_rules": {
+          "defer": 6
+        },
+        "rules": {
+          "defer": 6
+        },
+        "model": {
+          "request_worker_help": 2,
+          "defer": 4
+        },
+        "hybrid": {
+          "request_worker_help": 2,
+          "defer": 4
+        }
+      },
+      "model_rules_disagreement": 2
+    },
+    {
+      "family": "recovered_history",
+      "healthy": true,
+      "packets": 6,
+      "with_published_discrepancy": 0,
+      "choices": {
+        "operational_rules": {
+          "defer": 6
+        },
+        "rules": {
+          "defer": 6
+        },
+        "model": {
+          "defer": 6
+        },
+        "hybrid": {
+          "defer": 6
+        }
+      },
+      "model_rules_disagreement": 0
+    },
+    {
+      "family": "source_binding",
+      "healthy": false,
+      "packets": 6,
+      "with_published_discrepancy": 6,
+      "choices": {
+        "operational_rules": {
+          "request_repair_judge": 6
+        },
+        "rules": {
+          "request_repair_judge": 6
+        },
+        "model": {
+          "defer": 6
+        },
+        "hybrid": {
+          "request_repair_judge": 6
+        }
+      },
+      "model_rules_disagreement": 6
+    },
+    {
+      "family": "unit_conversion",
+      "healthy": false,
+      "packets": 6,
+      "with_published_discrepancy": 6,
+      "choices": {
+        "operational_rules": {
+          "defer": 6
+        },
+        "rules": {
+          "defer": 6
+        },
+        "model": {
+          "defer": 6
+        },
+        "hybrid": {
+          "defer": 6
+        }
+      },
+      "model_rules_disagreement": 0
+    },
+    {
+      "family": "update_cycle",
+      "healthy": false,
+      "packets": 6,
+      "with_published_discrepancy": 4,
+      "choices": {
+        "operational_rules": {
+          "defer": 4,
+          "request_worker_help": 2
+        },
+        "rules": {
+          "defer": 4,
+          "request_worker_help": 2
+        },
+        "model": {
+          "defer": 6
+        },
+        "hybrid": {
+          "defer": 4,
+          "request_worker_help": 2
+        }
+      },
+      "model_rules_disagreement": 2
+    }
+  ],
+  "replay_missing": [],
+  "replay_errors": [],
+  "replay_observation_omissions": [],
+  "same_input_disagreements": [
+    {
+      "family": "source_binding",
+      "seed": 2026102500,
+      "offset": 10,
+      "packet_sha256": "c1e573524ca99a5afcd7bd37336468cafd00d0ad5eeccba881173235957f9bc7",
+      "rules": "request_repair_judge",
+      "model": "defer",
+      "evidence_tags": [
+        "published_source_identity_disagreement"
+      ]
+    },
+    {
+      "family": "source_binding",
+      "seed": 2026102500,
+      "offset": 25,
+      "packet_sha256": "517d431841408c308dda55551866f2e109bd00218cdd211cf9cc4842761f8230",
+      "rules": "request_repair_judge",
+      "model": "defer",
+      "evidence_tags": [
+        "published_source_identity_disagreement"
+      ]
+    },
+    {
+      "family": "source_binding",
+      "seed": 2026102500,
+      "offset": 40,
+      "packet_sha256": "52d011abbdecfc9796b1e0ee4a7f410895f18970cbcbf01548f464a08eefd62b",
+      "rules": "request_repair_judge",
+      "model": "defer",
+      "evidence_tags": [
+        "published_source_identity_disagreement"
+      ]
+    },
+    {
+      "family": "update_cycle",
+      "seed": 2026102500,
+      "offset": 40,
+      "packet_sha256": "b9c36078f5b2815085ea521e1fa147c4dd2e6386352c29aec4db3342480cf284",
+      "rules": "request_worker_help",
+      "model": "defer",
+      "evidence_tags": [
+        "three_observed_updates_without_loss_reduction"
+      ]
+    },
+    {
+      "family": "publication_retry",
+      "seed": 2026102500,
+      "offset": 10,
+      "packet_sha256": "fdf4a73d6043273eb6d6559a3261aa9dc42433bdddebfab09d9d3e8c5a7d33bb",
+      "rules": "defer",
+      "model": "request_worker_help",
+      "evidence_tags": []
+    },
+    {
+      "family": "artifact_consumer",
+      "seed": 2026102500,
+      "offset": 25,
+      "packet_sha256": "62b8874525849736c306950977f8267ab1865a9309bf289c1ce12cedca2c6949",
+      "rules": "request_worker_help",
+      "model": "defer",
+      "evidence_tags": [
+        "published_unmatched_input_pattern"
+      ]
+    },
+    {
+      "family": "artifact_consumer",
+      "seed": 2026102500,
+      "offset": 40,
+      "packet_sha256": "7546f5c0f5df31637ffb921bcbbad4ec703c42372642a835fa68f8e2a4b2f4db",
+      "rules": "request_worker_help",
+      "model": "defer",
+      "evidence_tags": [
+        "published_unmatched_input_pattern"
+      ]
+    },
+    {
+      "family": "update_cycle",
+      "seed": 2026102501,
+      "offset": 40,
+      "packet_sha256": "20c325f42871b59170377ffce24a669ccb849883e18a0a68c4377421c4664d23",
+      "rules": "request_worker_help",
+      "model": "defer",
+      "evidence_tags": [
+        "three_observed_updates_without_loss_reduction"
+      ]
+    },
+    {
+      "family": "publication_retry",
+      "seed": 2026102501,
+      "offset": 10,
+      "packet_sha256": "aab75e68c07304a680c0e30bee20aa539c2112a34af6554ca6a301fbc200676c",
+      "rules": "defer",
+      "model": "request_worker_help",
+      "evidence_tags": []
+    },
+    {
+      "family": "source_binding",
+      "seed": 2026102501,
+      "offset": 10,
+      "packet_sha256": "0ed618eeaad5a976644e6ffb1b7561f71706a4f877be93bd042282442147a80a",
+      "rules": "request_repair_judge",
+      "model": "defer",
+      "evidence_tags": [
+        "published_source_identity_disagreement"
+      ]
+    },
+    {
+      "family": "source_binding",
+      "seed": 2026102501,
+      "offset": 25,
+      "packet_sha256": "7b5f22b42eb0a57689bbf4e779441b77d2596cd6ddd099f8fc54a8da32a3cec0",
+      "rules": "request_repair_judge",
+      "model": "defer",
+      "evidence_tags": [
+        "published_source_identity_disagreement"
+      ]
+    },
+    {
+      "family": "source_binding",
+      "seed": 2026102501,
+      "offset": 40,
+      "packet_sha256": "3198b0d5a623c93ea3e58425a4397709f18331d3b4c49dd9ec349dda4607383a",
+      "rules": "request_repair_judge",
+      "model": "defer",
+      "evidence_tags": [
+        "published_source_identity_disagreement"
+      ]
+    },
+    {
+      "family": "artifact_consumer",
+      "seed": 2026102501,
+      "offset": 25,
+      "packet_sha256": "31e390e569680fb74fbe3e9506687412848d0b67a9387cf1973a6d4bae512aee",
+      "rules": "request_worker_help",
+      "model": "defer",
+      "evidence_tags": [
+        "published_unmatched_input_pattern"
+      ]
+    },
+    {
+      "family": "artifact_consumer",
+      "seed": 2026102501,
+      "offset": 40,
+      "packet_sha256": "de5c5081afb2ebddb3b9a41c00d90ff2ad78968958a96e75d12ffd9ce47fda6d",
+      "rules": "request_worker_help",
+      "model": "defer",
+      "evidence_tags": [
+        "published_unmatched_input_pattern"
+      ]
+    }
+  ]
+}

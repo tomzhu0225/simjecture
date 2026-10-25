@@ -1,0 +1,15 @@
+{
+  "source_trial": "artifacts/generalization-20261025/main-v3/trial-3230775d7465473190dcfbbf519874bb",
+  "old_fresh_ids": [
+    "authority-6910ab234a0f180ace5abb294171ceb7a9f37af6dc99d83f5aa66e6b9136b79d"
+  ],
+  "new_fresh_ids": [],
+  "scope": "Final validated ledger replay; original turn3 transcript independently records acknowledgment before parking. No new worker outcome.",
+  "verified_at": 1792894773.2264733,
+  "evidence_sha256": {
+    "supervisor/turn-00003/response.json": "e09ae3ab19ff89aa3dd8194a1915adc66e3fdace9eb97b3fc20880ac163302cc",
+    "supervisor/turn-00004/response.json": "4834a672c38d2963a6b030dc06b0cb6ae6300900e684329bf527e5d9d810a054",
+    "incident-ledger.json": "5e8399dfdbf93e879d7853470dbb08bc5044524e1879adc77ff65840994435a0",
+    "OUTCOME.json": "05f0033a956b9a4c63fc2f85b9ffeb03374d1e95095522e7b30389e35955ef85"
+  }
+}

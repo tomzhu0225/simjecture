@@ -44,8 +44,11 @@ rules miss. Such a new rule would need its own held-out evaluation. Conversely,
 a learned model must demonstrate useful downstream action and acceptable healthy
 cost, not just issue a plausible alert on a case that omits a relevant rule.
 
-Fresh native histories vary across arms. The shared physical configuration seed
-does not copy private provider state or control the worker's subsequent choices.
+Fresh native histories vary across arms. The recorded seed identifies a repetition
+and changes the minimum diagnostic aggregation delay from 44 to 46 seconds; it
+does not seed WarpX or copy private provider state. Both repetitions use the same
+64/40 and 128/80 physical controls, with fresh executions. The seed does not
+control the worker's subsequent choices.
 The exact-input replay removes this information difference only for the immediate
 monitor prediction; it supplies no counterfactual proof that a different alert
 would have improved the live workflow. Two repetitions per family support
@@ -58,7 +61,8 @@ from an inaccurate report. Preserving original thresholds and verifying a report
 also do not constitute scientific approval of every worker diagnosis.
 
 Native starts are an observable resource proxy, not a dollar price or complete
-provider-token accounting. A slow helper or an unnecessary worker-initiated
+provider-token accounting. One native launch can contain multiple provider
+requests and tool steps. A slow helper or an unnecessary worker-initiated
 check can dominate a trajectory even when the monitor stays silent. Raw model
 choices, accepted alerts, actual downstream starts, helper origins, required
 feedback and final verification therefore remain separate measurements.
@@ -68,3 +72,25 @@ on main outcomes and no reward-weight search. Greedy predictions and their
 softmax scores are not sampled behavior probabilities for an on-policy RL update.
 Any later training should use separate development mechanisms and retain new
 untouched scientific tasks for evaluation.
+
+Healthy-case attention is a descriptive count, not a complete utility label.
+A review during a self-recovering stage can still change the worker's later
+verification work. Conversely, recognizing a real discrepancy can add cost when
+the original worker would have repaired it cheaply. Assess those actions through
+actual completions, timelines and role costs rather than treating the injected
+case label as an optimal-action oracle.
+
+The observer is called from the experimental controller's event loop. Its
+separate inference server does not make it an independent watchdog capable of
+rescuing a stalled controller. That broader coprocessor design remains outside
+this test. The local host also performed bounded bookkeeping and separate CPU
+regression checks; these runs are not an isolated hardware speed benchmark.
+
+Four primary trajectories ended at provisional report files while their workers
+were explicitly waiting. The numerical outputs can still be verified, but their
+whole-workflow time and role costs are censored. A descriptive balanced subset
+removes all four arms for each affected configuration/repetition, retaining every
+ordinary actor failure. That subset is post-collection selection, not the original
+prespecified cohort. The separate 16-run completion-gate follow-up is not silently
+pooled into the primary results. These handling rules are documented with the
+original traces and the plan fixed before follow-up execution.

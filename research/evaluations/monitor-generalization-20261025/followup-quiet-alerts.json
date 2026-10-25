@@ -1,0 +1,175 @@
+{
+  "scope": "Descriptive healthy-transition alerts; not an optimal-action utility label. Frozen policy left unchanged.",
+  "rows": [
+    {
+      "job": {
+        "family": "announced_quiet",
+        "seed": 2026102501,
+        "repeat": 1,
+        "root": "trial-7da2a295753a4f15935d3f150fc50d67",
+        "arm": "rules"
+      },
+      "decision_file": "trial-7da2a295753a4f15935d3f150fc50d67/monitor/decision-00008.json",
+      "decision_sha256": "fe8e13c9bd25f8757b1064f03bbcff8cff1f4029981686e56a29af21a9c02246",
+      "reason": "No new output for thirty seconds",
+      "decision_at": 1792905491.8794334,
+      "quiet_until": 1792905491.7373257,
+      "seconds_after_quiet_expiry": 0.14210772514343262,
+      "no_new_output_seconds": 35.16,
+      "next_public_record": {
+        "phase": "aggregation",
+        "iteration": 1,
+        "calibration_value": 0.5958686653055197,
+        "target": 0.9931144421758663,
+        "loss": 0.39724577687034657,
+        "rows": [
+          {
+            "stored_peak_electric_field": 1523541806.985585,
+            "peak_electric_field_V_per_m": 1523541806.985585,
+            "cells": 64,
+            "physical_time_s": 6.671281903963042e-14,
+            "relative_field_error": 0.00693329744460038,
+            "relative_charge_residual": 2.4352965264705716e-12,
+            "original_field_tolerance": 0.05,
+            "original_charge_tolerance": 1e-11,
+            "original_checks_passed": true,
+            "name": "mesh_64",
+            "source_record": {
+              "request": {
+                "name": "mesh_64",
+                "cells": 64
+              },
+              "source": {
+                "name": "mesh_64",
+                "cells": 64
+              },
+              "owner": "protected"
+            }
+          },
+          {
+            "stored_peak_electric_field": 1521126773.9587018,
+            "peak_electric_field_V_per_m": 1521126773.9587018,
+            "cells": 128,
+            "physical_time_s": 6.67128190396305e-14,
+            "relative_field_error": 0.0017027848999745115,
+            "relative_charge_residual": 8.351908780674654e-12,
+            "original_field_tolerance": 0.05,
+            "original_charge_tolerance": 1e-11,
+            "original_checks_passed": true,
+            "name": "mesh_128",
+            "source_record": {
+              "request": {
+                "name": "mesh_128",
+                "cells": 128
+              },
+              "source": {
+                "name": "mesh_128",
+                "cells": 128
+              },
+              "owner": "protected"
+            }
+          }
+        ],
+        "options": {
+          "quiet_seconds": 36,
+          "publication_delay_seconds": 0,
+          "cli_probe": false,
+          "artifact_pattern": "plot*",
+          "input_field_unit": "V/m",
+          "gain": 0.6,
+          "iteration_seconds": 1.5,
+          "minimum_aggregation_seconds": 46
+        },
+        "exit_code": 0,
+        "sequence": 4,
+        "observed_at": 1792905493.6454713
+      },
+      "seconds_until_next_record": 1.766037940979004
+    },
+    {
+      "job": {
+        "family": "announced_quiet",
+        "seed": 2026102501,
+        "repeat": 1,
+        "root": "trial-a8a065ac33544f05aedbc019caf7fee7",
+        "arm": "hybrid"
+      },
+      "decision_file": "trial-a8a065ac33544f05aedbc019caf7fee7/monitor/decision-00008.json",
+      "decision_sha256": "e75bd4b64a9f60c3634184178465f99b12b7f26a61847c7629e7eb568ebf8a63",
+      "reason": "No new output for thirty seconds",
+      "decision_at": 1792906548.5234208,
+      "quiet_until": 1792906547.3336182,
+      "seconds_after_quiet_expiry": 1.189802646636963,
+      "no_new_output_seconds": 35.18,
+      "next_public_record": {
+        "phase": "aggregation",
+        "iteration": 1,
+        "calibration_value": 0.5958686653055197,
+        "target": 0.9931144421758663,
+        "loss": 0.39724577687034657,
+        "rows": [
+          {
+            "stored_peak_electric_field": 1523541806.985585,
+            "peak_electric_field_V_per_m": 1523541806.985585,
+            "cells": 64,
+            "physical_time_s": 6.671281903963042e-14,
+            "relative_field_error": 0.00693329744460038,
+            "relative_charge_residual": 2.4352965264705716e-12,
+            "original_field_tolerance": 0.05,
+            "original_charge_tolerance": 1e-11,
+            "original_checks_passed": true,
+            "name": "mesh_64",
+            "source_record": {
+              "request": {
+                "name": "mesh_64",
+                "cells": 64
+              },
+              "source": {
+                "name": "mesh_64",
+                "cells": 64
+              },
+              "owner": "protected"
+            }
+          },
+          {
+            "stored_peak_electric_field": 1521126773.9587018,
+            "peak_electric_field_V_per_m": 1521126773.9587018,
+            "cells": 128,
+            "physical_time_s": 6.67128190396305e-14,
+            "relative_field_error": 0.0017027848999745115,
+            "relative_charge_residual": 8.351908780674596e-12,
+            "original_field_tolerance": 0.05,
+            "original_charge_tolerance": 1e-11,
+            "original_checks_passed": true,
+            "name": "mesh_128",
+            "source_record": {
+              "request": {
+                "name": "mesh_128",
+                "cells": 128
+              },
+              "source": {
+                "name": "mesh_128",
+                "cells": 128
+              },
+              "owner": "protected"
+            }
+          }
+        ],
+        "options": {
+          "quiet_seconds": 36,
+          "publication_delay_seconds": 0,
+          "cli_probe": false,
+          "artifact_pattern": "plot*",
+          "input_field_unit": "V/m",
+          "gain": 0.6,
+          "iteration_seconds": 1.5,
+          "minimum_aggregation_seconds": 46
+        },
+        "exit_code": 0,
+        "sequence": 4,
+        "observed_at": 1792906549.1300673
+      },
+      "seconds_until_next_record": 0.6066465377807617
+    }
+  ]
+}

@@ -6,6 +6,12 @@ is still unproven, and the existing LoRA has shown no new action improvement.
 The strongest new results are a better experiment/reward contract, faster local
 inference, and an actual correction to alert-deferral bookkeeping.
 
+The subsequent [25 October comparison](../monitor-generalization-20261025/RESULTS.md)
+tests frozen generic rules and the model on additional raw diagnostic mechanisms,
+with healthy controls, real worker continuations and 48 identical-input base/LoRA
+predictions. It reports collector-censored outcomes separately from a corrected
+completion follow-up. The figures below retain the scope of the 24 October stage.
+
 ## What the real workers showed
 
 | Study | Main trajectories | Finding |

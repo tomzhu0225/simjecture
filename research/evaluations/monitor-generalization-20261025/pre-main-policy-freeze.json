@@ -1,0 +1,22 @@
+{
+  "frozen_at": 1792892252.557586,
+  "source_revision": "822707504227bc9c1b54f4d49183b6bf09584b7e",
+  "files": {
+    "packages/simjecture-monitor/scripts/generalization_fixture.py": "3d28a7fb69cb668a171c0f52ea9d15830bd9e59f9d00d1dbb2eff45dfdfd56df",
+    "packages/simjecture-monitor/scripts/generalization_trials.py": "09665bfd86a5d7d1c6d919b2daee12cde4b62ed3ed3cb7c58f05f5d887f0d101",
+    "packages/simjecture-monitor/scripts/run_generalization_study.py": "3716831af2eeaeaa091f11f08870c189c45cedf1453a0f415970b1d6b065266b",
+    "packages/simjecture-monitor/scripts/verify_field_quantity.py": "254c86f1e1470f27e134c2b57ef183e268dc4006898b4e0a34837f09934938f0",
+    "packages/simjecture-monitor/src/simjecture_monitor/checks_policy.py": "809533fd1ae37b78d6d795fc3db3b35d386ae72031ae13e866704584d9534c76",
+    "packages/simjecture-monitor/src/simjecture_monitor/generic_policy.py": "8a363baf733cbf02801484b24f72242ff30b7e8de75a1d99c37301718a234925",
+    "packages/simjecture-monitor/src/simjecture_monitor/model.py": "0932fe4ce41c293e8231f64c6ef1624891e71dbc1bb6d9356d04dd41e1fb648a",
+    "packages/simjecture-monitor/src/simjecture_monitor/policy.py": "50a69650ed7de3fd45b0a0e0278761eea2e0977d1c1a3f58c74a9a28fe3627cc",
+    "packages/simjecture-monitor/src/simjecture_monitor/repair_roles.py": "ea83c40086fcc17a6ec9687e670cfcab5dc8f155382d6c24b66d9b4fb5d29456",
+    "research/evaluations/monitor-generalization-20261025/PROTOCOL.md": "42b9e1e080b1e988dfdc0c8568aafc3d0f1a930c60af784b8fd7f72ff5f6f2cc"
+  },
+  "observer_task_sha256": "2e28566b550379ffaf598df0d3ac88458bb64751e1caa0a5aaf09bb253f8decc",
+  "worker_task_sha256": "79fb3c8bb464aa1e34902a37e0cb42294517ec15517ed8f36380e8396180ba7b",
+  "commission_source": "822707504227bc9c1b54f4d49183b6bf09584b7e",
+  "commission_verified": 4,
+  "main_outcomes_seen": 0,
+  "amendments": "Pre-main stronger scientific-check baseline and absolute quantity contract; initial operational policy and model files unchanged"
+}
