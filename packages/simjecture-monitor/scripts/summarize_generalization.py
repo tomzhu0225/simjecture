@@ -40,12 +40,16 @@ def summarize(audit, replay):
             "no population significance claim"
         ),
         live_groups=audit["groups"],
+        cost_scope=audit["cost_scope"],
+        balanced_cost_groups=audit["balanced_cost_groups"],
         live_family_groups=[
             dict(
                 family=family,
                 arm=arm,
                 count=len(subset),
                 verified=sum(r["verified_complete"] for r in subset),
+                whole_workflow_verified=sum(r["whole_workflow_verified"] for r in subset),
+                completion_censored=[r["completion_censored"] for r in subset],
                 times=[r["elapsed_seconds"] for r in subset],
                 native_starts=[r["native_starts"] for r in subset],
                 alerts=[r["accepted_actions"] for r in subset],
@@ -103,16 +107,98 @@ def figure(audit, output):
                 fontsize=11,
             )
             axis.text(i, -1.15, f"{g['native_starts']} native starts", ha="center", fontsize=8)
-        axis.set_ylim(0, 9.2)
-        axis.set_yticks(range(0, 9, 2))
+        maximum = max((g["assigned"] for g in groups.values()), default=0)
+        axis.set_ylim(0, max(maximum + 1.2, 2))
+        axis.set_yticks(range(0, maximum + 1, 2 if maximum >= 8 else 1))
         axis.set_title(title)
-        axis.set_ylabel("Independently verified complete workflows")
+        axis.set_ylabel("Verified scientific reports and pipelines")
         axis.spines[["top", "right"]].set_visible(False)
         axis.grid(axis="y", alpha=0.15)
         axis.set_axisbelow(True)
     fig.suptitle("Frozen monitoring policies on real-worker WarpX workflows", fontsize=13)
     fig.savefig(output / "verified-workflows.png", dpi=200, bbox_inches="tight")
     fig.savefig(output / "verified-workflows.pdf", bbox_inches="tight")
+    plt.close(fig)
+
+    from statistics import median
+
+    from matplotlib.lines import Line2D
+
+    families = sorted({r["family"] for r in audit["rows"]})
+    fig, axes = plt.subplots(1, 2, figsize=(10, 4.8), constrained_layout=True)
+    for axis, metric, ylabel in zip(
+        axes,
+        ["elapsed_seconds", "native_starts"],
+        ["Whole trajectory time (seconds)", "Native role starts per trajectory"],
+        strict=True,
+    ):
+        for i, arm in enumerate(arms):
+            selected = [r for r in audit["rows"] if r["arm"] == arm]
+            values = []
+            for row in selected:
+                value = row.get(metric)
+                if value is None:
+                    continue
+                if row["balanced_cost_eligible"]:
+                    values.append(value)
+                offset = (families.index(row["family"]) - (len(families) - 1) / 2) * 0.055
+                offset += (row.get("repeat", 0) - 0.5) * 0.025
+                marker = "o" if row["healthy"] else "^"
+                axis.scatter(
+                    i + offset,
+                    value,
+                    marker=marker,
+                    facecolors=colors[i] if row["balanced_cost_eligible"] else "none",
+                    edgecolors=colors[i],
+                    alpha=0.8,
+                    s=30,
+                )
+                if row["completion_censored"]:
+                    axis.annotate(
+                        "",
+                        (i + offset, value + (30 if metric == "elapsed_seconds" else 0.7)),
+                        (i + offset, value),
+                        arrowprops=dict(arrowstyle="->", color="black"),
+                    )
+                if not row["verified_complete"]:
+                    axis.scatter(i + offset, value, marker="x", color="black", s=60)
+            if values:
+                axis.plot([i - 0.25, i + 0.25], [median(values)] * 2, color="black", linewidth=2)
+        axis.set_xticks(range(4), labels)
+        axis.set_ylabel(ylabel)
+        axis.set_xlim(-0.5, 3.5)
+        axis.set_ylim(bottom=0)
+        axis.spines[["top", "right"]].set_visible(False)
+        axis.grid(axis="y", alpha=0.15)
+        axis.set_axisbelow(True)
+    axes[1].set_yticks(range(0, 11, 2))
+    legend = [
+        Line2D([], [], color="gray", marker="o", linestyle="", label="Healthy case"),
+        Line2D([], [], color="gray", marker="^", linestyle="", label="Problem case"),
+        Line2D([], [], color="black", marker="x", linestyle="", label="Incomplete output"),
+        Line2D(
+            [],
+            [],
+            color="gray",
+            marker="o",
+            markerfacecolor="none",
+            linestyle="",
+            label="Configuration omitted from median",
+        ),
+        Line2D(
+            [],
+            [],
+            color="black",
+            marker=r"$\uparrow$",
+            linestyle="",
+            label="Censored cost (lower bound)",
+        ),
+        Line2D([], [], color="black", linewidth=2, label="Balanced eligible median"),
+    ]
+    fig.legend(handles=legend, loc="outside lower center", ncol=3, frameon=False, fontsize=8)
+    fig.suptitle("Recorded costs; premature collector stops are censored", fontsize=13)
+    fig.savefig(output / "workflow-costs.png", dpi=200, bbox_inches="tight")
+    fig.savefig(output / "workflow-costs.pdf", bbox_inches="tight")
     plt.close(fig)
 
 
