@@ -41,12 +41,12 @@ def adjudicate(parent_args, authority, alert, directory):
     )
     runner.record_review_identity = True
     source = {name: (authority.component / name).read_text() for name in authority.allowed_files}
-    contract = (
+    contract = getattr(parent_args, "repair_contract", None) or (
         "An alive process is running. A stopped process with code 0 is completed. A stopped "
         "process with a nonzero code is failed. The only eligible private harness component "
         "is bridge.py."
     )
-    result = dict(stage="judge", started_at=time.time(), incident=alert)
+    result = dict(stage="judge", started_at=time.time(), incident=alert, contract=contract)
     put(directory / "result.json", result)
 
     def call(name, prompt):

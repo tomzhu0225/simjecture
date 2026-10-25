@@ -87,3 +87,33 @@ randomness. A model improvement requires better completed-work outcomes or
 recovery cost without a material healthy false-alarm burden. Two repetitions are
 exploratory, insufficient for a broad superiority claim. No retrospective reward
 weight search or test-driven LoRA training is part of this stage.
+
+Pre-collection interface details: proactive decisions are evaluated while the
+main worker is parked for asynchronous work. The observer records a new factual
+snapshot every five seconds, including quiet periods. Each trajectory permits
+one discretionary attention request; explicit worker requests and required
+feedback remain available afterward. This fixed budget prevents repeated model
+alerts from creating an uncontrolled cascade and makes a premature first request
+an observable policy cost. No model call is needed while assistance is active or
+after the discretionary budget is used. The claim is limited to this parked-work
+interface; unproductive private reasoning by an actively thinking worker is not
+measured here. All policies receive the same compact task and bounded public
+snapshot; any model-side event omission is flagged as an observation-contract
+violation rather than silently accepted as an equal-information comparison.
+
+Pre-collection execution details: failed or inaccurate terminal diagnostics can
+be reprocessed through a supported command that reuses the existing physical
+outputs. Every arm can therefore recover after ordinary completion/fallback;
+the observer is not the only path to correcting a result. Parent concurrency
+is grouped within counterbalanced policy blocks (reverse order in repeat2), so
+an observation-only task is not paired concurrently with a model task. Raw
+publication histories and objective recurrence counters are visible to both
+policies. No policy parameters are changed after the baseline freeze.
+
+A separate identical-input diagnostic comparison will select the first parked
+observation at or after10,25,40seconds from each observation-only main trajectory,
+before that parking interval ends. Missing selections remain missing. Apply the
+same frozen rule/model/hybrid decisions to these exact packets after collection;
+this supplements the live outcomes and does not create training data or matched
+private-state trajectories. It prevents differing live histories from being
+mistaken for a same-input policy comparison.
