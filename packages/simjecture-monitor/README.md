@@ -156,6 +156,13 @@ Its reproducible 16,000-example synthetic curriculum teaches scripted procedural
 preferences; it contains no measured intervention utility or RL outcomes. LoRA
 can train on large datasets, but no new adapter has been trained on this contract.
 
+The [prospective training cycle](../../research/evaluations/scientific-attention-training-20261025/PROTOCOL.md)
+adds a shared masked-decision compiler, supervised LoRA training, a measured-return
+policy-gradient path, and scientific/general-decision evaluation scripts. Its
+initial A100 smoke update verified nonzero gradients and exact adapter reload;
+scientific workflow advantage and a releasable checkpoint remain under evaluation.
+The earlier statements refer to their frozen studies and interface releases.
+
 The [25 October broader comparison](../../research/evaluations/monitor-generalization-20261025/RESULTS.md)
 freezes generic rules and the 4B model before new diagnostic mechanisms, includes
 healthy ambiguous streams, and measures real worker outcomes. It preserves
