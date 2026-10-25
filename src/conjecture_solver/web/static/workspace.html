@@ -552,7 +552,7 @@
           <nav id="study-navigation" class="study-navigation" aria-label="Research navigation"></nav>
           <div id="continuation-chat-context" class="continuation-chat-context" hidden>
             <a id="continuation-parent-link">Continuing an earlier investigation ↗</a>
-            <span>Discuss the next phase in chat, then review its brief.</span>
+            <span>Talk through the next step in chat; your agent then drafts its brief.</span>
             <button id="continuation-chat" class="secondary" type="button">Prepare with agent</button>
           </div>
           <wa-split-panel
@@ -679,11 +679,11 @@
                 </div>
                 <div id="study-runs"></div>
                 <div id="study-preparation" class="panel study-preparation">
-                  <p class="eyebrow">PREPARE IT TOGETHER</p>
-                  <h2>Let your agent shape the investigation.</h2>
+                  <p class="eyebrow">STEP 1 OF 2</p>
+                  <h2>Plan the study with your agent</h2>
                   <p>
-                    Your conversation and files are the starting point. The
-                    agent fills the brief; you review it before launching.
+                    Your agent uses this conversation and its files to write a
+                    study brief. Nothing runs until you review and start it.
                   </p>
                   <div class="preparation-options">
                     <button
@@ -717,13 +717,12 @@
                   ></p>
                 </div>
                 <div id="prepared-brief" class="panel prepared-brief" hidden>
-                  <p id="prepared-heading" class="eyebrow">YOUR AGENT’S PROPOSAL</p>
+                  <p id="prepared-heading" class="eyebrow">STEP 2 OF 2 · REVIEW AND START</p>
                   <h2 id="prepared-question"></h2>
                   <div id="prepared-details"></div>
                   <p class="field-help">
-                    When the study finishes, your interactive agent will explain
-                    its report in this conversation. Each study keeps its own
-                    results.
+                    When the study finishes, your agent explains the report here
+                    in the conversation. Each study keeps its own results.
                   </p>
                   <div class="brief-footer">
                     <button id="revise-study" class="secondary" type="button">
@@ -741,13 +740,12 @@
                   <summary>Review or edit the study details</summary>
                   <form id="brief-form" class="panel brief-form">
                     <div class="section-line">
-                      <h2>Agree on the investigation</h2>
-                      <span class="badge">EDITABLE BRIEF</span>
+                      <h2>Study brief</h2>
+                      <span class="badge">EDITABLE</span>
                     </div>
                     <p class="field-help">
-                      Your agent fills these details from the conversation. You
-                      can change them here if needed. Each launched study keeps
-                      its agreed conditions.
+                      Your agent fills these in from the conversation. Change
+                      anything you like; a study keeps the brief it started with.
                     </p>
                     <label for="brief-question">Question or claim to test</label
                     ><textarea
@@ -848,9 +846,9 @@
                       </button>
                     </div>
                     <p class="field-help">
-                      Runs survive closing this page. They stop at the original
-                      deadline or an independently accepted outcome. You can
-                      pause or stop them earlier.
+                      The study keeps running if you close this page. It stops
+                      at the time budget or once the review accepts an answer,
+                      and you can pause or stop it at any time.
                     </p>
                   </form>
                 </details>
@@ -871,7 +869,7 @@
                   >Commands
                   <span id="command-count" class="count-badge">0</span></wa-tab
                 >
-                <wa-tab panel="files">Project files</wa-tab>
+                <wa-tab panel="files">Files</wa-tab>
                 <wa-tab-panel name="simulations">
                   <div id="simulation-list" role="region" aria-label="Simulation history" tabindex="0"></div>
                   <div id="simulation-detail" role="region" aria-label="Selected simulation" tabindex="0">
@@ -895,14 +893,14 @@
                 </wa-tab-panel>
                 <wa-tab-panel name="files" active>
                   <div class="context-section">
-                    <h3>Project files <span id="file-count">0</span></h3>
+                    <h3>Conversation files <span id="file-count">0</span></h3>
                     <p class="field-help">
-                      Shared inputs, reports and comparisons for this conversation.
-                      Select a simulation to see its own outputs.
+                      Inputs, reports and results shared by this conversation.
+                      Each simulation's own outputs are in Simulations.
                     </p>
                     <div id="project-files"></div>
                     <details>
-                      <summary>Project folder location</summary>
+                      <summary>Folder on this computer</summary>
                       <code id="project-path"></code>
                       <p class="field-help">
                         Copy large datasets here directly. Browser uploads
@@ -911,23 +909,16 @@
                     </details>
                   </div>
                   <div class="context-section">
-                    <h3>Research brief</h3>
+                    <h3>Study brief</h3>
                     <div id="brief-summary">
                       <p>
-                        When you’re ready, ask your agent to prepare an
-                        autonomous investigation.
+                        No study planned yet. Open Autonomous study when your
+                        question is clear.
                       </p>
                     </div>
                     <button id="open-brief" class="text-button">
                       Open study brief ↗
                     </button>
-                  </div>
-                  <div class="context-section">
-                    <h3>Working principle</h3>
-                    <p>
-                      Explore freely. Keep the question explicit. Let recorded
-                      evidence and independent review decide the outcome.
-                    </p>
                   </div>
                 </wa-tab-panel>
               </wa-tab-group>

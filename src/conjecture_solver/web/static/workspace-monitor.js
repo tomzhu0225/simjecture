@@ -191,7 +191,7 @@ window.WorkspaceMonitor = {
         "div", undefined, shared ? "run-shared-files" : "run-outputs",
       );
       outputs.append(
-        node("h4", shared ? "Project files (shared)" : command ? "Command outputs" : "Run outputs"),
+        node("h4", shared ? "Conversation files (shared)" : command ? "Command outputs" : "Run outputs"),
         node(
           "p",
           shared
@@ -225,7 +225,7 @@ window.WorkspaceMonitor = {
         details.append(
           node(
             "p",
-            "Project files copied when this run started. They can include reports and results from other simulations.",
+            "Conversation files copied when this run started. They can include reports and results from other simulations.",
             "field-help",
           ),
         );
