@@ -6,6 +6,11 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## 0.7.0 — 2026-10-25
 
+- Remove the optional Textual dashboard (`simjecture tui`) and the `tui`
+  installation extra. Use `simjecture web` for the interactive workspace, or
+  `study`, `status`, `watch`, `pause`, `resume` and `steer` in headless terminals.
+  Existing study records remain readable through the retained interfaces.
+
 - Add the first-run onboarding tour, mode selection cards, conversation panels
   and plain-language workspace copy, while preserving independent sidebar
   scrolling. Match tour instructions to local or hosted capabilities and handle
