@@ -19,7 +19,7 @@ the environment, FAC formats, and the optional LTE helper.
 The campaign determines composition, states, configurations, processes,
 observables, and acceptance criteria. Commission those choices before decisive
 runs, preserving the input source, runtime identity, and actual validation
-receipts. A successful doctor probe checks execution, not material accuracy.
+receipts. A successful doctor probe (`examples/fac_runtime_smoke.py`) checks execution, not material accuracy.
 
 ## Model decisions
 

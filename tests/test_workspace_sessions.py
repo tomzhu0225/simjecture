@@ -124,6 +124,7 @@ def test_api_preserves_structured_history_between_turns(tmp_path, provider):
     turns = sorted((w.directory(project["id"]) / "turns").iterdir())
     assert "Previous conversation" in (turns[0] / "prompt.txt").read_text()
     assert "Previous conversation" not in (turns[1] / "prompt.txt").read_text()
+    assert "CURRENT MACHINE INVENTORY" in (turns[1] / "prompt.txt").read_text()
 
 
 def test_deepseek_thinking_tools_and_plain_answers_resume_privately(tmp_path, provider):
