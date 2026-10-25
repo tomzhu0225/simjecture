@@ -1068,7 +1068,7 @@ class Workspace(MachineWorkspace, ProjectCollections):
             )
             links = []
             if project.get("brief_source_turn") == turn.name and not project.get("brief_launched"):
-                links.append(dict(kind="brief", label="Review autonomous research proposal"))
+                links.append(dict(kind="brief", label="Review autonomous study proposal"))
             links += [
                 dict(kind="study", label=s["question"], campaign=s["campaign"])
                 for s in project.get("studies", [])

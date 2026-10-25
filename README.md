@@ -154,7 +154,7 @@ discussions and study reports, with versioned source citations. Indexing needs n
 embedding service. See [the knowledge library guide](docs/getting-started/research-workspace.md#local-knowledge-library).
 
 1. Choose a compatible API model or an authenticated native agent in the workspace.
-2. Discuss your question and prepare a study brief with **Autonomous research**.
+2. Discuss your question and prepare a study brief with **Autonomous study**.
 3. Review its hypothesis, evidence requirements, completion policy and budget.
 4. Start the investigation and follow its experiments and **Evidence & review**.
 

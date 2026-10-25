@@ -577,7 +577,7 @@ function renderProject(force = false) {
       ["Time budget", b.hours===0 ? "No hosted time limit" : `${b.hours} hours`],
       ["Execution", b.machine_ids?.length ? b.machine_ids.join(", ") : "This host"],
       ["Solver development", (b.allow_solver_development ?? !hosted)
-        ? "Private source forks allowed; changed methods require independent qualification."
+        ? "Allowed on the agent's own solver copies; results from a changed solver are checked before they count."
         : "Use supplied solver implementations; experiment and analysis scripts remain available."],
       [
         "Completion",
@@ -706,7 +706,7 @@ function renderProject(force = false) {
             "span",
             related.kind === "simulation"
               ? "SIMULATION"
-              : "AUTONOMOUS RESEARCH",
+              : "AUTONOMOUS STUDY",
             "link-category",
           ),
           el("strong", related.label),
@@ -830,7 +830,7 @@ function renderProject(force = false) {
     $("solver-development").disabled = hosted || state.readonly;
     $("solver-development-help").textContent = hosted
       ? "Hosted policy: use supplied solver implementations. Experiment and analysis scripting remains available within host permissions."
-      : "The agent may modify private solver forks. Reference installations stay protected; changed methods need independent qualification before claim evidence.";
+      : "The agent may change its own copy of a solver. Your installed solvers are never modified, and results from a changed solver are checked before they count as evidence.";
     const selectedTools = b.capability_directory ?? (hosted ? "hosted-tools" : "auto");
     if (
       [...$("study-tools").options].some(
@@ -2073,7 +2073,7 @@ async function boot() {
     $("research-director").closest("label").hidden=true;
     $("brief-policy").value="answer";
     $("brief-policy").disabled=true;
-    $("first-request-help").textContent="Enter to send · Shift + Enter for a new line. The hosted agent and compute are ready.";
+    $("first-request-help").textContent="The hosted agent and compute are ready.";$("first-request-help").hidden=false;
     $("execution-backend").replaceChildren(new Option("Managed experiments","trusted-template"));
     $("review-model").placeholder="Assigned by the host";
     $("review-agent-help").textContent="The review agent is managed by the host.";
@@ -2408,7 +2408,7 @@ async function launchStudy() {
   renderProject();
   await renderStudies();
   toast(
-    hosted && !state.hosting?.account ? "Research started. Keep a tab open, or sign in to retain the investigation." : "Autonomous research started. You can close this page and return later.",
+    hosted && !state.hosting?.account ? "Research started. Keep a tab open, or sign in to retain the investigation." : "Autonomous study started. You can close this page and return later.",
   );
 }
 $("brief-form").onsubmit = (e) => {

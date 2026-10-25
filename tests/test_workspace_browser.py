@@ -93,7 +93,7 @@ def test_browser_setup_chat_files_and_autonomous_handoff(tmp_path, provider):
             assert page.locator("#conversation-model").input_value() == "fixture-model"
             assert page.locator("#conversation-effort").input_value() == "high"
             page.get_by_role(
-                "link", name="Review autonomous research proposal", exact=False
+                "link", name="Review autonomous study proposal", exact=False
             ).click()
             assert "view=autonomous" in page.url
             assert "Euler" in page.locator("#brief-question").input_value()
@@ -136,7 +136,7 @@ def test_browser_setup_chat_files_and_autonomous_handoff(tmp_path, provider):
                 page.get_by_text("Results, reports, and simulation files", exact=True).click()
                 page.get_by_role("link", name="result.json", exact=False).first.wait_for()
                 page.screenshot(path=str(screenshots / "accepted-result.png"), full_page=True)
-            page.get_by_role("button", name="Interactive research", exact=True).click()
+            page.get_by_role("button", name="Interactive", exact=True).click()
             if probe_execution_backend("bubblewrap")["available"]:
                 page.get_by_text(
                     "The completed study found a reviewed counterexample.", exact=True

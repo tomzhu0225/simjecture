@@ -72,7 +72,7 @@ silently change an existing study's provider. Do not place keys in chat messages
    conversation immediately and creates its permanent named folder automatically.
    **Shift+Enter** inserts a new line, both here and inside existing conversations.
    **New conversation** returns to this composer without a project-creation form.
-3. Select **Autonomous research** and choose **Grill me** for focused questions, or
+3. Select **Autonomous study** and choose **Grill me** for focused questions, or
    **Draft from this conversation** to use existing context. The agent fills the brief,
    asking about consequential gaps instead of inventing missing facts. Automatic
    drafting uses a disclosed one-hour budget and accepts reviewed negative results
@@ -96,13 +96,13 @@ Automatic explanations use the conversation's selected agent and consume a norma
 agent turn. Keep the workspace server running for delivery; closing the browser is
 fine. If the server is stopped, pending handoffs resume when it starts again.
 
-**Answer the question** permits independently accepted support or falsification of the
-original claim to complete the investigation. **Seek a supported claim or tested repair**
+**When the question is answered** permits independently accepted support or falsification of the
+original claim to complete the investigation. **When the claim holds, or a fixed version does**
 keeps the existing repair loop. Uncertainty is never counted as an accepted answer.
 Existing CLI studies keep their original default and saved policy.
 
-Interactive research returns after a requested task. It can prepare an editable brief;
-it does not silently start an unbounded investigation. Autonomous research uses the
+Interactive mode returns after a requested task. It can prepare an editable brief;
+it does not silently start an unbounded investigation. An autonomous study uses the
 existing minimal research core, with its evidence, method, provenance, deadline,
 recovery and independent-review checks. Its pause/resume/stop controls reuse the
 existing verified process controls. A paused study retains its original deadline.

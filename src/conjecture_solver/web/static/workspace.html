@@ -247,7 +247,7 @@
             </div>
           </form>
           <div id="home-knowledge" class="knowledge-composer-context" hidden><button id="home-knowledge-picker" class="knowledge-context-button" type="button">▤ Knowledge sources</button><div id="home-knowledge-refs" class="knowledge-reference-chips"></div></div>
-          <p id="first-request-help" class="field-help composer-help">Enter to send · Shift + Enter for a new line. Choose your agent from the model menu.</p>
+          <p id="first-request-help" class="field-help composer-help" hidden></p>
           <div class="section-line">
             <h2>A place to start</h2>
             <span>Choose an example and make it yours</span>
@@ -275,7 +275,7 @@
               class="example"
               data-example="Prepare a 10-minute autonomous research study with this hypothesis: a lossless 1 m single pendulum released from rest has a period within 1% of 2π√(L/g) for every initial angle from 5° to 120°, with g=9.81 m/s². Use Python to integrate the nonlinear equation, measure periods from the trajectory, and search for a counterexample. Require numerical tolerance controls, retained trajectories, a period-versus-angle plot and independent review. If the claim fails, propose the smallest supported refinement of its amplitude range. Save an editable study brief so I can review and launch the autonomous run."
             >
-              <span class="example-number">03 / AUTONOMOUS RESEARCH</span>
+              <span class="example-number">03 / AUTONOMOUS STUDY</span>
               <h3>Does a pendulum keep the same period?</h3>
               <p>Test a hypothesis across release angles. Seek a counterexample and review the evidence.</p>
               <span class="arrow">↗</span>
@@ -287,7 +287,7 @@
               <p>Work with an agent in chat. Write code, run simulations, inspect plots and steer the next experiment.</p>
             </div>
             <div>
-              <h3>Autonomous research</h3>
+              <h3>Autonomous study</h3>
               <p>Set a hypothesis and execution budget. The agent runs experiments, seeks counterexamples and submits evidence for independent review.</p>
             </div>
           </section>
@@ -562,8 +562,8 @@
             </div>
             <div class="mode-switch" role="group" aria-label="Research mode">
               <button id="interactive-mode" class="selected">
-                Interactive research</button
-              ><button id="autonomous-mode">Autonomous research</button>
+                Interactive</button
+              ><button id="autonomous-mode">Autonomous study</button>
             </div>
           </div>
           <nav id="study-navigation" class="study-navigation" aria-label="Research navigation"></nav>
@@ -672,7 +672,7 @@
               <div id="autonomous-panel" hidden>
                 <div class="section-line">
                   <div>
-                    <p class="eyebrow">AUTONOMOUS RESEARCH</p>
+                    <p class="eyebrow">AUTONOMOUS STUDY</p>
                     <p id="study-stage" role="status"></p>
                   </div>
                   <button id="new-study" class="secondary" type="button" hidden>
@@ -695,8 +695,8 @@
                     >
                       <strong>Grill me <span>↗</span></strong
                       ><small
-                        >Ask focused questions, challenge assumptions, and turn
-                        my answers into a study.</small
+                        >Your agent interviews you one question at a time, pushes
+                        back on vague points, then writes the study brief.</small
                       >
                     </button>
                     <button
@@ -776,13 +776,13 @@
                     <div class="two-fields">
                       <div>
                         <label for="brief-policy"
-                          >When is the research complete?</label
+                          >When should the study stop?</label
                         ><select id="brief-policy">
                           <option value="answer">
-                            Answer the question · negative results count
+                            When the question is answered (a “no” counts)
                           </option>
                           <option value="repair">
-                            Seek a supported claim or tested repair
+                            When the claim holds, or a fixed version does
                           </option>
                         </select>
                       </div>
@@ -800,15 +800,14 @@
                       </div>
                     </div>
                     <label class="research-director-option"><input id="solver-development" type="checkbox" checked /><span>Allow experimental solver development</span></label>
-                    <p id="solver-development-help" class="field-help">The agent may modify private solver forks. Reference installations stay protected; changed methods need independent qualification before claim evidence.</p>
+                    <p id="solver-development-help" class="field-help">The agent may change its own copy of a solver. Your installed solvers are never modified, and results from a changed solver are checked before they count as evidence.</p>
                     <p class="field-help">The agent can use all available installed tools and choose which ones each experiment needs.</p>
                       <label for="study-machines">Execution machines</label>
                       <select id="study-machines" multiple size="4">
                         <option value="" selected>This host · existing local launcher</option>
                       </select>
-                      <p class="field-help">Choose prepared workers for parallel experiments.
-                        Register a managed local worker in Machines to include it in a pool.
-                        Worker profiles define their own experiment environment.</p>
+                      <p class="field-help">Select several machines to run experiments in parallel.
+                        Add machines on the Machines page.</p>
                     <details class="advanced">
                       <summary>Execution settings</summary>
                       <label for="study-tools">Tool access</label>
@@ -816,8 +815,8 @@
                         <option value="auto">All available tools (default)</option>
                         <option value="">Python only · no external solver</option>
                       </select>
-                      <label class="research-director-option"><input id="research-director" type="checkbox" checked /><span>Research director · stop and replan expensive experiments</span></label>
-                      <p class="field-help">Reviews strategy while jobs run, preserves partial data on stops, and asks the worker to acknowledge a new plan. Scientific claim review stays separate.</p>
+                      <label class="research-director-option"><input id="research-director" type="checkbox" checked /><span>Research director · may stop a costly experiment and change the plan</span></label>
+                      <p class="field-help">Watches the strategy while experiments run. Data from a stopped experiment is kept. This is separate from the independent review of the final evidence.</p>
                       <div id="review-agent-settings">
                       <label for="review-backend">Reviewer and director agent</label>
                       <select id="review-backend"><option value="">Same as conversation agent</option></select>
@@ -847,7 +846,7 @@
                       <button id="save-brief" type="button" class="secondary">
                         Save brief</button
                       ><button id="launch-study" type="submit" class="primary">
-                        Start autonomous research ↗
+                        Start autonomous study ↗
                       </button>
                     </div>
                     <p class="field-help">
@@ -883,7 +882,7 @@
                       <h3>Your experiments, in view.</h3>
                       <p>
                         Ask your agent to run a simulation. Its live console and
-                        saved outputs appear here, beside the conversation. These are exploration results; independent study review is separate.
+                        saved outputs appear here, beside the conversation.
                       </p>
                     </div>
                   </div>
