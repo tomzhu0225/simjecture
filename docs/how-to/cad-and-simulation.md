@@ -8,7 +8,10 @@ Linux sandbox supports headless EGL rendering and system fonts; the
 Debian/Ubuntu installer supplies those host dependencies when enabled.
 
 These tool integrations were added in source after v0.6.3
-([PR #43](https://github.com/tomzhu0225/simjecture/pull/43)). Use a build containing
+([PR #43](https://github.com/tomzhu0225/simjecture/pull/43)), growing out of the
+initial headless magnetic-field screening workflow proposed by
+[`@motismoore-ctrl`](https://github.com/motismoore-ctrl) in
+[PR #37](https://github.com/tomzhu0225/simjecture/pull/37). Use a build containing
 that change. The [Qin-1 worked example](../demos/qin1-hardware-plasma.md) follows
 geometry and feed redesign through Elmer/circuit calculations into a separately
 supplied native WarpX build, with the numerical limits retained.

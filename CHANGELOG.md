@@ -22,7 +22,9 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 - Add FreeCAD, Gmsh and Elmer engineering tools (`simjecture install freecad`,
   `gmsh`, `elmer`) with discoverable skills and include PyVista/VTK in the
-  standard Python environment with headless EGL rendering support.
+  standard Python environment with headless EGL rendering support. Inspired by
+  the initial headless magnetic-screening contribution in
+  [#37](https://github.com/tomzhu0225/simjecture/pull/37) by `@motismoore-ctrl`.
 
 - Redesign research-tool setup feedback. Installs and readiness checks start
   visibly at once, move to a *Setup activity* section, and show the installer's
