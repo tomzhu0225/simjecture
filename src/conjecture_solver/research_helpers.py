@@ -257,17 +257,36 @@ class HelpService:
         with self.lock():
             tasks = self._all("helper_tasks")
             for record in tasks:
+                if record["status"] not in ACTIVE:
+                    continue
                 identity = record.get("process_identity")
-                if record["status"] in ACTIVE and (
-                    (identity and not owned_alive(identity))
-                    or (record["status"] == "running" and not identity)
-                ):
+                lost = (identity and not owned_alive(identity)) or (
+                    record["status"] == "running" and not identity
+                )
+                expired = (
+                    not lost
+                    and record.get("deadline") is not None
+                    and time.time() >= record["deadline"]
+                )
+                if lost or expired:
                     directory = self.root / "helpers" / record["id"]
+                    if expired and owned_alive(identity):
+                        # A live controller may be stopped or hung and unable to
+                        # run its own watchdog. Stop it before reaping its native
+                        # session so it cannot launch more work after expiry.
+                        with suppress(ProcessLookupError):
+                            os.kill(identity["pid"], signal.SIGKILL)
                     stop_native(directory)
                     record.update(
-                        status="cancelled" if record.get("cancel_requested") else "failed",
+                        status="cancelled"
+                        if record.get("cancel_requested")
+                        else "timed_out"
+                        if expired
+                        else "failed",
                         finished_at=time.time(),
-                        error="Helper exited without a validated handoff receipt",
+                        error="Helper deadline expired before a validated handoff"
+                        if expired
+                        else "Helper exited without a validated handoff receipt",
                         usage=recover_usage(directory),
                     )
                     put(self.root / "helper_tasks" / f"{record['id']}.json", record)
