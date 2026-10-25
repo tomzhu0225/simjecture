@@ -245,3 +245,43 @@ The active lease was extended by two hours to 2026-10-25 21:43 UTC before
 this amendment, with the original 70-compute-unit and 640-native-start caps
 unchanged. All model work stays on the remote A100 and physics stays on the
 remote P40 host; the local machine performs editing and orchestration only.
+
+## Recovery amendment (2026-10-25 23:45 UTC)
+
+The local host restarted after the first cohort's final block had started. The
+remote coordinator nevertheless completed all 64 assignments. Two model-arm
+trials recorded connection-refused errors, and one earlier adapted trial recorded
+an invalid negative progress age. These failures remain in the original cohort;
+no repaired runs replace them. The corrected audit reports missing reports as
+failed reports, matching the verifier's empty parsed-value digest, and explicitly
+counts monitor errors. It finds no artifact/accounting inconsistencies.
+
+The first development preparation cohort stopped before model sampling: its
+healthy prefix encountered a failed SSH solver transfer, leaving an unconfirmed
+control and a stale queued receipt. The native worker reported that limitation
+honestly. All four preparation attempts remain preserved in `return-pilot-v1`.
+No proposal, reward, optimizer step, or held-out model score was produced by that
+pilot. PR65 makes unconfirmed transport outcomes explicit without resubmission.
+
+A new preparation cohort, `return-pilot-v2`, repeats the four declared mechanisms
+with fresh opaque prefixes under source2f11949. Preparations run serially to avoid
+unnecessary SSH handshake contention. This amendment is made before collecting
+those prefixes; sampling temperature, sampling seeds, four draws per prefix,
+utility, eligibility requirements and optimizer settings remain unchanged.
+The failed cohort is not used for training, and no continuation reward is
+selected or replaced based on its value.
+
+The selected SFT adapter was preserved off Colab and restored with exact adapter
+and configuration hash verification. Its original training is not repeated.
+The replacement runtime is an A100-SXM4-80GB; original training and streaming
+inference used an A100-SXM4-40GB. All recovery comparisons use the same replacement
+runtime and repeat the numerical-kernel checks. A direct coordinator-to-Colab
+connection and a remote shutdown watchdog remove the local machine from the
+inference/data path. The watchdog releases the allocation before an unrenewed
+short-lived Colab credential expires. No Google refresh credential is transferred.
+
+The old leases remain closed. Recovery uses the remaining original allowances:
+31.80 of the 70 compute units have been consumed, and 357 of 640 native starts
+have been used (355 remote plus two earlier audits). The new native lease permits
+283 starts and at most four concurrent roles. Its hard deadline is recorded in
+`recovery-lease.json`; renewal cannot exceed the original compute/start ceilings.
