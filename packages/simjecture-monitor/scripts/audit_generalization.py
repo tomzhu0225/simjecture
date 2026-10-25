@@ -11,6 +11,7 @@ import subprocess
 from collections import Counter
 from pathlib import Path
 
+from replay_generalization import evidence
 from simjecture_monitor.events import digest, put
 from simjecture_monitor.feedback_audit import feedback_measurement
 
@@ -57,6 +58,14 @@ def audit(root, budget):
         for packet in observations:
             if digest(packet["state"]) != packet["packet_sha256"]:
                 inconsistencies.append([job["root"], "packet digest mismatch"])
+        first_evidence = {}
+        first_parked_evidence = {}
+        for packet in observations:
+            when = max(e["observed_at"] for e in packet["state"]["events"])
+            for tag in evidence({"packet": packet}):
+                first_evidence.setdefault(tag, when)
+                if packet["state"]["host_state"]["worker_parked"]:
+                    first_parked_evidence.setdefault(tag, when)
         q = out.get("quality", {})
         if q and q != load(trial / "QUALITY.json"):
             inconsistencies.append([job["root"], "quality receipt mismatch"])
@@ -138,6 +147,8 @@ def audit(root, budget):
             fallback_count=sum(
                 p["wake_reason"] == "fixed_wait_fallback" for p in out.get("parking", [])
             ),
+            first_public_evidence=first_evidence,
+            first_parked_evidence=first_parked_evidence,
             observations=len(observations),
             decisions=len(decisions),
             model_calls=len(model),

@@ -27,7 +27,7 @@ from simjecture_monitor.events import PublicStream, digest, put
 from simjecture_monitor.feedback_audit import feedback_measurement
 from simjecture_monitor.ledger import IncidentLedger
 from simjecture_monitor.native_guard import stop_session
-from simjecture_monitor.parked_wake import parked_wake_reason
+from simjecture_monitor.parked_wake import parked_wake_reason, unconsumed_attention
 from simjecture_monitor.repair import RepairAuthority
 from simjecture_monitor.repair_roles import adjudicate
 from simjecture_monitor.server import request
@@ -574,16 +574,7 @@ def run(root, family, arm, seed, socket, wrapper, *, exercise_help_wait=False):
                 sup.run_director(background=True)
                 sup.monitor_tick(directory)
                 feedback = sup.ledger.data["feedback"]
-                fresh = [
-                    f
-                    for f in feedback
-                    if f["id"] not in delivered
-                    and (
-                        f["id"].startswith("help_")
-                        or f["id"].startswith("authority-")
-                        or f["required"]
-                    )
-                ]
+                fresh = unconsumed_attention(feedback, delivered)
                 terminal = sup.job is not None and sup.job.poll() is not None
                 wake = parked_wake_reason(
                     terminal=terminal,

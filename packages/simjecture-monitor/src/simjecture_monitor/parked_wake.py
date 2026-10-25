@@ -18,3 +18,18 @@ def parked_wake_reason(
     if elapsed >= 90:
         return "fixed_wait_fallback"
     return None
+
+
+def unconsumed_attention(feedback, delivered):
+    """Do not deliver again a result consumed during the worker's active turn."""
+    return [
+        item
+        for item in feedback
+        if item["id"] not in delivered
+        and not item.get("acknowledgment")
+        and (
+            item["id"].startswith("help_")
+            or item["id"].startswith("authority-")
+            or item["required"]
+        )
+    ]

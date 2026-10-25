@@ -215,6 +215,7 @@ def main():
         "packages/simjecture-monitor/src/simjecture_monitor/checks_policy.py",
         "packages/simjecture-monitor/src/simjecture_monitor/parked_wake.py",
         "packages/simjecture-monitor/src/simjecture_monitor/startup.py",
+        "packages/simjecture-monitor/scripts/keep_model_ready.py",
         "packages/simjecture-monitor/scripts/verify_field_quantity.py",
         "research/evaluations/monitor-generalization-20261025/PROTOCOL.md",
     ]
@@ -268,9 +269,36 @@ def main():
         server = subprocess.Popen(command, env=env, stdout=log, stderr=log, start_new_session=True)
     put(root / "MODEL_PROCESS.json", dict(identity=process_stat(server.pid), socket=str(socket)))
     results = []
+    maintenance = None
     try:
         packet = load(repo / "artifacts/inference-fast-20261024/packets.json")[0]
         put(root / "WARMUP.json", ready_request(socket, packet, process=server))
+        if args.phase == "main":
+            put(root / "CONTROLLER.json", dict(identity=process_stat(os.getpid())))
+            maintenance = subprocess.Popen(
+                [
+                    sys.executable,
+                    str(Path(__file__).with_name("keep_model_ready.py")),
+                    "--process",
+                    str(root / "MODEL_PROCESS.json"),
+                    "--status",
+                    str(root / "MODEL_STATUS.json"),
+                    "--controller",
+                    str(root / "CONTROLLER.json"),
+                    "--packet",
+                    str(repo / "artifacts/inference-fast-20261024/packets.json"),
+                    "--output",
+                    str(root / "RESIDENCY_MAINTENANCE.json"),
+                ],
+                start_new_session=True,
+            )
+            put(
+                root / "RESIDENCY_MAINTENANCE_PROCESS.json",
+                dict(
+                    identity=process_stat(maintenance.pid),
+                    started_at=time.time(),
+                ),
+            )
         for number, block in enumerate(blocks):
             with ThreadPoolExecutor(max_workers=2) as pool:
                 futures = [
@@ -301,6 +329,19 @@ def main():
             except subprocess.TimeoutExpired:
                 server.kill()
                 server.wait()
+        if maintenance is not None:
+            try:
+                maintenance.wait(timeout=7)
+            except subprocess.TimeoutExpired:
+                maintenance.terminate()
+                maintenance.wait(timeout=5)
+            put(
+                root / "RESIDENCY_MAINTENANCE_RELEASE.json",
+                dict(
+                    ended_at=time.time(),
+                    returncode=maintenance.returncode,
+                ),
+            )
         put(
             root / "MODEL_RELEASE.json",
             dict(

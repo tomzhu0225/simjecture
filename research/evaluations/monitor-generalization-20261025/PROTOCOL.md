@@ -176,3 +176,24 @@ now retries only missing/refused connections before acceptance, never an accepte
 inference timeout. Two tests cover this boundary. Restart under a new v3 artifact
 root with the same policies, fixtures, task and scheduling correction; v3 is the
 first comparative cohort after that correction.
+
+Receipt-consumption amendment: the attempted v3 cohort exposed a second driver
+race after10 completed and two active trajectories. A required repair result
+arrived during an active worker turn, was read and acknowledged there, then was
+incorrectly treated as new attention on parking. The redundant wake consumed the
+last reporting turn even though the corrected scientific pipeline completed.
+Retain all12 launched trajectories and the52 unstarted assignments; exclude the
+entire v3 attempt from the comparative cohort. A new regression replays that
+sequence and requires already acknowledged feedback to remain consumed. The
+fresh-attention selector now checks validated ledger acknowledgment as well as
+previous dispatch. The rules, model, task, scientific fixtures, turn limit and
+fallback remain unchanged. Repeat the real helper scheduling check and restart
+all64 assignments in a new v4 root. No failed outcome is silently replaced.
+
+A long sequence of rule-only blocks can exceed the model server's30-minute idle
+window. During the comparative cohort, separately recorded archived warmup calls
+keep the single model resident whenever it has had no request for ten minutes.
+They never use study packets or issue worker actions; the original six-hour
+absolute server bound remains. Account for these calls separately from monitoring
+latency/call counts. This is an operational residency correction, not a policy
+change or extra training data.
