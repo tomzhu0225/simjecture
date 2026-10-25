@@ -125,6 +125,7 @@ class ReportService:
         # the same report and scientific record.
         identity = dict(
             report_sha256=hashlib.sha256(body).hexdigest(),
+            source_report=str(path.relative_to(self.root)),
             protocol_sha256=self.manifest.get("protocol_sha256"),
             records={
                 kind: [[p.stem, sha(p)] for p in sorted((self.root / kind).glob("*.json"))]
@@ -141,7 +142,7 @@ class ReportService:
             continuation=self.manifest.get("continuation", {}),
             report=body.decode(),
             report_sha256=identity["report_sha256"],
-            source_report=str(path.relative_to(self.root)),
+            source_report=identity["source_report"],
             record_identity=identity,
             scope="Report assessment only; does not approve claims or change evidence stages.",
         )

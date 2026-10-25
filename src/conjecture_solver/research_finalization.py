@@ -36,6 +36,24 @@ def _sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def working_report(root, finalization=None):
+    """Locate the bound report, or a retained draft before any report is reviewed."""
+    root = Path(root).resolve()
+    source = (finalization or {}).get("source_report")
+    names = [source] if isinstance(source, str) else [
+        "research/RESULTS.md", "research/research/RESULTS.md"
+    ]
+    for name in names:
+        path = root / name
+        if (
+            path.is_file()
+            and not path.is_symlink()
+            and path.resolve().is_relative_to(root / "research")
+        ):
+            return path.resolve()
+    return None
+
+
 def report_status(root, manifest):
     root = Path(root)
     policy = manifest.get("finalization_policy", {})
@@ -64,11 +82,10 @@ def report_status(root, manifest):
             if not isinstance(source_name, str):
                 raise ValueError("Reviewed packet has no valid source report path")
             source = root / source_name
-            if (
-                source.is_symlink()
-                or not source.resolve().is_relative_to((root / "research").resolve())
-                or _sha(source) != result["report_sha256"]
-            ):
+            if not source.resolve().is_relative_to((root / "research").resolve()):
+                raise ValueError("Working report is outside the research directory")
+            result["source_report"] = source.relative_to(root).as_posix()
+            if source.is_symlink() or _sha(source) != result["report_sha256"]:
                 raise ValueError("Working report changed since review")
         except (OSError, KeyError, ValueError):
             result["report_status"] = "changed_since_review"
@@ -87,6 +104,10 @@ class ReportAssessment(BaseModel):
                 "Accepted report requires no blocking issues; revision requires issues"
             )
         return self
+
+
+class ReportSnapshotChanged(ValueError):
+    """An integrity failure must not be retried as a transient reviewer failure."""
 
 
 class ResearchFinalization:
@@ -263,6 +284,7 @@ class ResearchFinalization:
 
         self._finish_state(phase="independent report review")
         frozen, packet = self._report_packet()
+        packet_sha256 = _sha(frozen / "packet.json")
         prompt = self._report_review_prompt(frozen, seconds)
         directory, rc = self._finish_call("review", prompt, seconds, judge=True)
         if rc:
@@ -273,7 +295,9 @@ class ResearchFinalization:
             )
         )
         if _sha(frozen / "RESULTS.md") != packet["report_sha256"]:
-            raise ValueError("Report changed during assessment")
+            raise ReportSnapshotChanged("Report changed during assessment")
+        if _sha(frozen / "packet.json") != packet_sha256:
+            raise ReportSnapshotChanged("Report packet changed during assessment")
         put(frozen / "assessment.json", verdict.model_dump(mode="json"))
         # A worker may queue this same frozen report while drafting. The final
         # assessor fulfils that request; do not leave a false pending review.
@@ -281,7 +305,7 @@ class ResearchFinalization:
             if (
                 request["status"] in {"queued", "running", "failed", "deferred"}
                 and request["report_sha256"] == packet["report_sha256"]
-                and request["packet_sha256"] == _sha(frozen / "packet.json")
+                and request["packet_sha256"] == packet_sha256
             ):
                 if request.get("error"):
                     request.setdefault("previous_errors", []).append(request.pop("error"))
@@ -298,7 +322,7 @@ class ResearchFinalization:
             report=str((frozen / "RESULTS.md").relative_to(self.root)),
             packet=str((frozen / "packet.json").relative_to(self.root)),
             report_sha256=packet["report_sha256"],
-            packet_sha256=_sha(frozen / "packet.json"),
+            packet_sha256=packet_sha256,
         )
         return verdict
 
@@ -445,6 +469,8 @@ class ResearchFinalization:
             left = max(0, finish_deadline - time.time())
             try:
                 verdict = self._assess_report(left * 0.65)
+            except ReportSnapshotChanged:
+                raise
             except ValueError as error:
                 left = finish_deadline - time.time()
                 if left < 20 or self.boundary():
