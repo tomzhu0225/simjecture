@@ -67,6 +67,7 @@ STATIC_ASSETS = frozenset(
         "workspace.js",
         "workspace-projects.js",
         "workspace-projects.css",
+        "workspace-home.css",
         "workspace-knowledge.js",
         "workspace-knowledge.css",
         "workspace-theme.js",
