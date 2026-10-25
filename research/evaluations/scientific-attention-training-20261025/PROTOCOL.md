@@ -172,3 +172,76 @@ deadlines were updated together before collection.
 Sources: [Intern-Decision data interface](https://github.com/InternLM/Intern-Decision/blob/main/docs/DATA.md),
 [upstream evaluation protocol](https://github.com/InternLM/Intern-Decision/blob/main/docs/EVALUATION.md),
 and the retained prior Simjecture studies linked from the monitor package README.
+
+## Prospective measured-return development pilot (2026-10-25 UTC)
+
+This amendment is recorded before collecting its prefixes or sampling proposals.
+The frozen primary64 study remains unchanged and is never optimizer input. Its
+completed results will be reported with all failures; the three separately
+proposed host fixes are only used by the new development collector.
+
+Four fresh public checkpoints cover healthy progress, an unreported worker-owned
+adapter blocker, an adapter incompatible with the next mesh, and a protected
+adapter defect. Each begins with a real native worker and P40-executed control.
+Each supplies four independently sampled five-field proposals from SFT step 512 at
+fixed temperature 3, seeds 2026102601+100*prefix_index+draw_index. The actual
+categorical distributions, chosen answers, prompt identity and model identity are
+logged. Greedy primary-study decisions are not relabeled as stochastic samples.
+
+The input contains the exact frozen task, the last eight public transcript
+records, current protected/worker source and the prior control report. Evidence
+longer than 1,600 characters is explicitly excerpted, preserving its source hash.
+Outcomes, injected-case identities and preferences are not model inputs. This is
+a one-proposal development profile over a paused public checkpoint, not a clone
+of private worker state and not a full streaming-policy evaluation. The sampled
+choice is reused only while two fresh artifact-verified reads 5 seconds apart
+remain semantically identical. Rebinding those reads is not a second independent
+model vote. The normal admission contract applies; authority remains with the
+independent judge and scoped host grant.
+
+Each admitted proposal receives an actual new native continuation with a 650-second
+budget, at most 3 parent turns, 4 physical runs and 12 native starts. Explicit worker
+help remains available. Provisional reports cannot satisfy completion: a normal
+return, settled jobs, no pending explicit wait, reconciled required assistance,
+and settled director/authority work are required. Scientific quality is checked
+against saved fields and the original criteria; an accurately reported failed
+physical check is a valid result. Collector/infrastructure failures are recorded
+and are not fabricated task rewards. An optimizer group requires all four
+assigned continuations to have measured rewards. No replacement is chosen based
+on favorable returns.
+
+Utility is predeclared as verified reporting quality minus 0.02 per native start,
+minus 0.1 times actual continuation seconds/650, minus 0.05 per required feedback miss,
+and minus 0.02 per dispatched duplicate wakeup. Invalid/ineligible attention adds
+a 0.05 penalty; legitimate observe/recheck incurs no such penalty. Actual admission
+waiting is also charged at 0.1 times seconds/650. Offline model-scoring time is recorded
+separately; this pilot does not estimate deployed monitor latency. No utility is
+inferred for an unexecuted intervention. Native stochasticity means observed
+return differences are noisy, not proof of causal treatment benefit.
+
+If all 16 returns are valid and there is both executed-action and measured-return
+variation, run 8 optimizer updates with accumulation 4, learning rate 1e-5, KL weight
+0.02, clipping [0.8, 1.2], at most two passes, initialized from step 512. Reproduce the
+logged initial behavior probabilities before updating. A continued-SFT control
+uses the same initialization, 8 updates, accumulation 4 and learning rate 1e-5 on the
+original training mixture. No test-label feedback enters either optimizer, and
+no pilot checkpoint is selected by held-out scores. A small development pilot
+can validate the measured-return training path; it cannot establish RL benefit
+without fresh end-to-end validation against the SFT control and strong baselines.
+The 1,024 scientific test states and public general-decision suites remain
+optimizer-excluded. Evaluate predeclared checkpoints once, report every result,
+and do not retune on those labels. Publication claims depend on workflow and
+retention evidence, not synthetic decision accuracy alone.
+
+The primary comparison uses descriptive paired bootstrap intervals clustered by
+mechanism family (both fresh-seed configurations kept together; 8 clusters,
+10,000 resamples, seed 20261026). Report actual runtime and completion together.
+A secondary restricted-completion metric assigns 650 seconds to an incomplete
+workflow; it must never be described as actual observed speed. Quiet-family
+alerts are a proxy, not independently adjudicated false alerts. Neither the
+known mechanism families nor their fresh seeds demonstrate domain generalization.
+
+The active lease was extended by two hours to 2026-10-25 21:43 UTC before
+this amendment, with the original 70-compute-unit and 640-native-start caps
+unchanged. All model work stays on the remote A100 and physics stays on the
+remote P40 host; the local machine performs editing and orchestration only.
