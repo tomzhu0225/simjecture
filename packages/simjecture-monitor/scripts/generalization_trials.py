@@ -23,6 +23,7 @@ from paired_continuations import (
 )
 from simjecture_monitor.checkpoint import inventory
 from simjecture_monitor.checks_policy import ChecksAwareRules
+from simjecture_monitor.completion_gate import may_complete
 from simjecture_monitor.events import PublicStream, digest, put
 from simjecture_monitor.feedback_audit import feedback_measurement
 from simjecture_monitor.ledger import IncidentLedger
@@ -498,7 +499,17 @@ class RawSupervisor(PairedSupervisor):
             self.collect_feedback()
 
 
-def run(root, family, arm, seed, socket, wrapper, *, exercise_help_wait=False):
+def run(
+    root,
+    family,
+    arm,
+    seed,
+    socket,
+    wrapper,
+    *,
+    exercise_help_wait=False,
+    exercise_draft_help_wait=False,
+):
     started = time.time()
     sup, _ = live.prepare(
         root,
@@ -541,6 +552,11 @@ def run(root, family, arm, seed, socket, wrapper, *, exercise_help_wait=False):
                 "If work is still running after a correction, yield for completion. Finish the "
                 "report only from the actual completed bundle. Do not recreate pending assistance."
             )
+            if exercise_draft_help_wait and number == 2:
+                (sup.service.work / "REPORT.txt").write_text(
+                    "PROVISIONAL: required assistance must return before final reporting.\n"
+                )
+                put(sup.service.work / "results.json", {"draft": True})
             if exercise_help_wait and number == 2:
                 instruction += (
                     "\nScheduling commissioning: before final reporting, request exactly one "
@@ -563,7 +579,29 @@ def run(root, family, arm, seed, socket, wrapper, *, exercise_help_wait=False):
             ready = (sup.service.work / "REPORT.txt").exists() and (
                 sup.service.work / "results.json"
             ).exists()
-            if ready and complete and not sup.ledger.measurements()["required_feedback_misses"]:
+            pending_required = [
+                r["id"]
+                for r in sup.service._all("help_requests")
+                if r["status"] in {"queued", "running"}
+                and r.get("feedback_requirement") == "required"
+            ]
+            completion = dict(
+                report_ready=ready,
+                pipeline_complete=complete,
+                worker_returncode=rc,
+                worker_waiting=sup.service.waiting_status().get("status") == "waiting",
+                pending_required_help=len(pending_required),
+                unacknowledged_required=sup.ledger.measurements()["required_feedback_misses"],
+            )
+            allowed = may_complete(**completion)
+            status.setdefault("completion_checks", []).append(
+                completion
+                | dict(
+                    allowed=allowed, checked_at=time.time(), pending_required_ids=pending_required
+                )
+            )
+            if allowed:
+                status["finish_reason"] = "worker_finished_with_obligations_reconciled"
                 break
             parked = time.time()
             sup.worker_parked = True
@@ -596,6 +634,7 @@ def run(root, family, arm, seed, socket, wrapper, *, exercise_help_wait=False):
             )
             put(root / "OUTCOME.json", status)
         sup.worker_parked = False
+        status.setdefault("finish_reason", "boundary_or_parent_turn_limit")
         status.update(stage="completed", quality=quality(root, initial))
         check = subprocess.run(
             [
@@ -712,6 +751,7 @@ def main():
     parser.add_argument("--socket", type=Path, required=True)
     parser.add_argument("--wrapper", type=Path, required=True)
     parser.add_argument("--exercise-help-wait", action="store_true")
+    parser.add_argument("--exercise-draft-help-wait", action="store_true")
     args = parser.parse_args()
     run(
         args.root,
@@ -720,7 +760,8 @@ def main():
         args.seed,
         args.socket,
         args.wrapper,
-        exercise_help_wait=args.exercise_help_wait,
+        exercise_help_wait=args.exercise_help_wait or args.exercise_draft_help_wait,
+        exercise_draft_help_wait=args.exercise_draft_help_wait,
     )
 
 

@@ -197,3 +197,23 @@ They never use study packets or issue worker actions; the original six-hour
 absolute server bound remains. Account for these calls separately from monitoring
 latency/call counts. This is an operational residency correction, not a policy
 change or extra training data.
+
+Completion-gate follow-up, declared after the64-run v4 cohort and before any new
+follow-up outcome: its final audit found four trajectories stopped while the
+worker was explicitly waiting after writing provisional report files. Three
+requests were declared required; the fourth was an explicit wait on advisory
+help. All original outcomes remain unchanged. Their whole-workflow completion
+time/cost returns are censored, while independent numerical checks and the
+pre-completion monitoring observations remain valid. Do not credit those early
+shutdowns as efficient policy behavior.
+
+The completion gate now also requires a normal worker return, no explicit wait,
+no pending required help and reconciliation of available required feedback. An
+excluded real check pre-creates provisional report files before a required helper
+wait and must return/acknowledge the actual help before final completion. Then run
+a separate16-trajectory follow-up: all four unchanged policies on the four affected
+configuration/seed pairs (publication_retry/repeat0; announced_quiet,
+recovered_history and artifact_consumer/repeat1). The archived follow-up plan
+fixes order seeds before new outcomes. Actor tasks, scientific fixtures and
+policies remain unchanged; do not overwrite or silently pool the new cohort into
+the original64. The existing512-start lease and original absolute expiry remain.

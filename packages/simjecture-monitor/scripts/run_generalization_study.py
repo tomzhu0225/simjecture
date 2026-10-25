@@ -84,6 +84,8 @@ def execute(root, job, budget, wrapper, socket):
     ]
     if job.get("exercise_help_wait"):
         command.append("--exercise-help-wait")
+    if job.get("exercise_draft_help_wait"):
+        command.append("--exercise-draft-help-wait")
     with (root / (job["root"] + ".log")).open("w") as log:
         child = subprocess.Popen(command, env=env, stdout=log, stderr=log, start_new_session=True)
         put(
@@ -128,10 +130,19 @@ def main():
     parser.add_argument("--shared", type=Path, required=True)
     parser.add_argument("--root", type=Path, required=True)
     parser.add_argument(
-        "--phase", choices=["commissioning", "scheduler-check", "main"], required=True
+        "--phase",
+        choices=[
+            "commissioning",
+            "scheduler-check",
+            "main",
+            "completion-check",
+            "completion-followup",
+        ],
+        required=True,
     )
     parser.add_argument("--commission", type=Path)
     parser.add_argument("--scheduler-check", type=Path)
+    parser.add_argument("--completion-check", type=Path)
     args = parser.parse_args()
     root, shared, repo = args.root.resolve(), args.shared.resolve(), Path.cwd()
     shared.mkdir(parents=True, exist_ok=True)
@@ -164,15 +175,38 @@ def main():
             p["wake_reason"] == "returned_attention" for p in outcome["parking"]
         ):
             raise ValueError("Required assistance was not delivered and acknowledged")
+    if args.phase == "completion-followup":
+        if args.completion_check is None:
+            raise ValueError("A real draft-report/helper-wait validation is required")
+        checked = load(args.completion_check / "RESULTS.json")
+        if len(checked) != 1 or not checked[0]["outcome"].get("verified_complete"):
+            raise ValueError("Draft-report completion check failed")
+        outcome = checked[0]["outcome"]
+        if outcome["feedback"]["required_feedback_misses"] or not any(
+            c["report_ready"] and c["pending_required_help"] and not c["allowed"]
+            for c in outcome.get("completion_checks", [])
+        ):
+            raise ValueError("Required assistance did not block provisional completion")
+        if outcome.get("finish_reason") != "worker_finished_with_obligations_reconciled":
+            raise ValueError("Completion validation did not finish with returned feedback")
     blocks = []
-    if args.phase in {"commissioning", "scheduler-check"}:
+    if args.phase == "completion-followup":
+        plan = load(shared / "COMPLETION_FOLLOWUP_PLAN.json")
+        arms = list(plan["arms"])
+        random.Random(plan["ordering_seed"]).shuffle(arms)
+        configurations = list(plan["configurations"])
+        random.Random(plan["within_arm_seed"]).shuffle(configurations)
+        for arm in arms:
+            jobs = [dict(c, root="trial-" + uuid.uuid4().hex, arm=arm) for c in configurations]
+            blocks.append(dict(arm=arm, followup=True, jobs=jobs))
+    elif args.phase in {"commissioning", "scheduler-check", "completion-check"}:
         scenarios = [
             ("progressing_work", "observe"),
             ("development_failure", "rules"),
             ("announced_quiet", "model"),
             ("development_failure", "hybrid"),
         ]
-        if args.phase == "scheduler-check":
+        if args.phase in {"scheduler-check", "completion-check"}:
             scenarios = [("progressing_work", "observe")]
         for family, arm in scenarios:
             blocks.append(
@@ -184,7 +218,9 @@ def main():
                             arm=arm,
                             seed=2026102500,
                             repeat=0,
-                            exercise_help_wait=args.phase == "scheduler-check",
+                            exercise_help_wait=args.phase
+                            in {"scheduler-check", "completion-check"},
+                            exercise_draft_help_wait=args.phase == "completion-check",
                         )
                     ],
                     commissioning=True,
@@ -214,6 +250,7 @@ def main():
         "packages/simjecture-monitor/src/simjecture_monitor/repair_roles.py",
         "packages/simjecture-monitor/src/simjecture_monitor/checks_policy.py",
         "packages/simjecture-monitor/src/simjecture_monitor/parked_wake.py",
+        "packages/simjecture-monitor/src/simjecture_monitor/completion_gate.py",
         "packages/simjecture-monitor/src/simjecture_monitor/startup.py",
         "packages/simjecture-monitor/scripts/keep_model_ready.py",
         "packages/simjecture-monitor/scripts/verify_field_quantity.py",
@@ -273,7 +310,7 @@ def main():
     try:
         packet = load(repo / "artifacts/inference-fast-20261024/packets.json")[0]
         put(root / "WARMUP.json", ready_request(socket, packet, process=server))
-        if args.phase == "main":
+        if args.phase in {"main", "completion-followup"}:
             put(root / "CONTROLLER.json", dict(identity=process_stat(os.getpid())))
             maintenance = subprocess.Popen(
                 [
@@ -312,7 +349,7 @@ def main():
                         root / "PROGRESS.json",
                         dict(completed=len(results), block=number, results=results),
                     )
-                    if args.phase in {"commissioning", "scheduler-check"} and (
+                    if args.phase in {"commissioning", "scheduler-check", "completion-check"} and (
                         result["returncode"]
                         or not result["outcome"]
                         or not result["outcome"].get("verified_complete")
