@@ -56,7 +56,19 @@ def report_status(root, manifest):
                 path = (root / result[key]).resolve()
                 if not path.is_relative_to(root.resolve()) or _sha(path) != result[key + "_sha256"]:
                     raise ValueError("Reviewed snapshot changed")
-            if _sha(root / "research" / "RESULTS.md") != result["report_sha256"]:
+            packet = json.loads((root / result["packet"]).read_text())
+            source_name = (
+                packet.get("source_report", "research/RESULTS.md")
+                if isinstance(packet, dict) else None
+            )
+            if not isinstance(source_name, str):
+                raise ValueError("Reviewed packet has no valid source report path")
+            source = root / source_name
+            if (
+                source.is_symlink()
+                or not source.resolve().is_relative_to((root / "research").resolve())
+                or _sha(source) != result["report_sha256"]
+            ):
                 raise ValueError("Working report changed since review")
         except (OSError, KeyError, ValueError):
             result["report_status"] = "changed_since_review"

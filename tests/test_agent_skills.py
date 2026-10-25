@@ -307,3 +307,23 @@ def test_report_review_prompt_includes_packet_view_and_handles_results_md_paths(
     director_prompt = sup.director_prompt(director_packet)
     assert '"record_index"' not in director_prompt
 
+
+@pytest.mark.parametrize(
+    "allowed", ["continuation_input", "guided_commissioning_input", "experiments", "helper_results"]
+)
+@pytest.mark.parametrize("target", ["supervisor", "outside"])
+def test_study_read_allowlist_does_not_follow_root_directory_aliases(tmp_path, allowed, target):
+    from conjecture_solver.workspace_agent import readable_study_path
+
+    study = tmp_path / "study"
+    work = study / "research"
+    work.mkdir(parents=True)
+    (study / "research.json").write_text("{}")
+    private = study / "supervisor" if target == "supervisor" else tmp_path / "outside"
+    private.mkdir()
+    (private / "private.txt").write_text("Synthetic private data")
+    (study / allowed).symlink_to(private, target_is_directory=True)
+
+    with pytest.raises(ValueError):
+        readable_study_path(work, f"../{allowed}/private.txt")
+

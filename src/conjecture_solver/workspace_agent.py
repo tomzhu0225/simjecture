@@ -336,8 +336,9 @@ def readable_study_path(root, name, project=None):
         study_root / "STUDY_LEDGER.md",
         study_root / "research_report.json",
     )
+    # Resolving an allowlisted root would also authorize its symlink destination.
     if not candidate.is_symlink() and any(
-        resolved.is_relative_to(allowed.resolve()) for allowed in allowed_roots
+        resolved.is_relative_to(allowed) for allowed in allowed_roots
     ):
         return resolved
     raise ValueError("Use a path inside this project's files directory")
