@@ -1,0 +1,200 @@
+{
+  "r3-commission-plan.json": {
+    "created_at": 1793025687.5355103,
+    "purpose": "Controlled SSH loss with stateless prediction replay; no scientific workflows",
+    "source_revision": "0bad697",
+    "files_sha256": {
+      "allocate_r3.py": "61071ef63262af098006ea883f7f76df4936c3c9a6395504e38781c9271789f3",
+      "remote_r3_guard.py": "9a50d832433a3f42258cabd7fed3a1eef28505ca449a2eb06a7e931c84f365f8",
+      "remote_r3_proxy.py": "8178729d0c037ff427a47ab8a4fd6779ceb95835b0f3a6d875be367fa594d3d2",
+      "r3_colab_control.py": "7720921bcb64d675b68bcf0c35998b876b038b3fc161ff146b45dcf413f18c79",
+      "prepare_r3_a100.py": "8637f8f03c5056fdcb31c5f3dcf9ba80c3100278101f970696a5a4fa7eab937c",
+      "r3_service.py": "77bf2942c524e05750e58e19e8dacc122ce7113b9ac0a9c76487a20d745585d1",
+      "deploy_r3_a100.py": "23984b2aeccf75f03bf34ddd5ec287fbf6bccb22d56614bd95760bd30249b396",
+      "commission_r3_transport.py": "243513462e334244f33629397df0b0af3d04914d437ec09b47fd1a0ab0cecb55",
+      "supervise_attention_link.py": "b42dadbe31a77f9ad82923c502eea7bc6676cc309504d5bbd3f0248d00ef04e1",
+      "start_r3_commission.py": "101cb76aa6afa664640912dec8d4f5b1aa681114a1096a67f6b537d33e91ad39",
+      "attention_transport_r3.py": "29f111528a9bb131ea112f4c0413f49b832b21095822debdcc90fa38df493fa0",
+      "replication-probes.json": "82e9d32929a5db9916c1d3c6c2d9389bd864925c84b73a36c7cbd0a49a33a7e1"
+    },
+    "model_source_revision": "04f905c9f4538886a0713135bba29a1d4becea0b",
+    "native_calls": 0,
+    "physics_runs": 0,
+    "optimizer_updates": 0,
+    "maximum_recovery_seconds": 20,
+    "qualification_tolerance": 0.0001
+  },
+  "r3-transport-commission/STATUS.json": {
+    "stage": "failed",
+    "started_at": 1793025756.944233,
+    "native_calls": 0,
+    "physics_runs": 0,
+    "optimizer_updates": 0,
+    "identity": {
+      "continued_sft": {
+        "checkpoint_path": "/root/.cache/huggingface/hub/models--internlm--Intern-Decision-4B/snapshots/38c9dafbbef52dd04bae943c0c6ac918419adfd5",
+        "checkpoint_config_sha256": "ddc63e1c717afa86c865bb5e01313d89d72bb53b97ad4a8a03ba8510c0621670",
+        "adapter_files_sha256": {
+          "adapter_config.json": "5ab93c62a751ccfe082c88caabd6c40c064d04442e3b1e164387690af6e8ba6a",
+          "adapter_model.safetensors": "76bf1bdf4c6d6a261211057d3cab4c8609131788827569f9c33f802d3491dab5"
+        },
+        "runtime": {
+          "profile": "fla-prefill",
+          "fla_core": "0.6.0",
+          "adapter_source_sha256": "83b6d3ba2813ad883725be94e13477cd1db7b9ca2af9654e040b35fb10a936a1",
+          "convolution": "fla.modules.causal_conv1d:causal_conv1d; BCT/BTC layout adapter",
+          "scope": "Dense single-pass CUDA prefill, use_cache=False; no packed sequences"
+        }
+      }
+    },
+    "before": [
+      {
+        "index": 0,
+        "policy": "continued_sft",
+        "phase": "before",
+        "maximum_probability_error": 1.896643408993981e-08
+      },
+      {
+        "index": 1,
+        "policy": "continued_sft",
+        "phase": "before",
+        "maximum_probability_error": 2.8430518494992896e-08
+      },
+      {
+        "index": 2,
+        "policy": "base",
+        "phase": "before",
+        "maximum_probability_error": 6.189326950956087e-08
+      }
+    ],
+    "bridge_pid": 3688043,
+    "interrupted_owner": {
+      "pid": 3687485,
+      "ppid": 3687484,
+      "session": 3687485,
+      "starttime": "207312984"
+    },
+    "started_connections": 1,
+    "disconnect_at": 1793026202.008386,
+    "ended_at": 1793026221.9728203,
+    "error_type": "RuntimeError",
+    "error": "Traceback (most recent call last):\n  File \"/home/simjecture/investigations/scientific-attention-20261025/commission_r3_transport.py\", line 58, in <module>\n    result=future.result(timeout=30)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/simjecture/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py\", line 456, in result\n    return self.__get_result()\n           ^^^^^^^^^^^^^^^^^^^\n  File \"/home/simjecture/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py\", line 401, in __get_result\n    raise self._exception\n  File \"/home/simjecture/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/concurrent/futures/thread.py\", line 59, in run\n    result = self.fn(*self.args, **self.kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/simjecture/investigations/scientific-attention-20261025/commission_r3_transport.py\", line 14, in qualify\n    result=call(dict(observation=probe['observation'],policy=probe['policy']),path,timeout=min(120,max(1,lease['stop_by']-time.time()-30)))\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/simjecture/investigations/scientific-attention-20261025/commission_r3_transport.py\", line 12, in call\n    def call(payload,path=private,timeout=30):return request(path,payload|dict(auth_token=token),timeout=timeout)\n                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/simjecture/investigations/scientific-attention-20261025/replication-source-04f905c/packages/simjecture-monitor/src/simjecture_monitor/attention_server.py\", line 162, in request\n    raise RuntimeError(result[\"error\"])\nRuntimeError: Attention transport unavailable within its bound\n"
+  },
+  "r3-link-status.json": {
+    "stage": "stopped",
+    "started_at": 1793025780.1061695,
+    "connections": [
+      {
+        "pid": 3687485,
+        "identity": {
+          "pid": 3687485,
+          "ppid": 3687484,
+          "session": 3687485,
+          "starttime": "207312984"
+        },
+        "started_at": 1793025780.1066945,
+        "ready_at": 1793025792.9308436,
+        "ended_at": 1793026202.106137,
+        "returncode": -9,
+        "ready": true
+      },
+      {
+        "pid": 3688055,
+        "identity": {
+          "pid": 3688055,
+          "ppid": 3687484,
+          "session": 3688055,
+          "starttime": "207355215"
+        },
+        "started_at": 1793026202.4105039,
+        "ready_at": 1793026221.842181,
+        "ended_at": 1793026229.2590032,
+        "returncode": -9,
+        "ready": true
+      }
+    ],
+    "current_pid": 3688055,
+    "ended_at": 1793026229.5599215
+  },
+  "r3-guard-status.json": {
+    "stage": "released",
+    "at": 1793026244.7028725,
+    "reason": "operator_stop",
+    "balance": 1160.92
+  },
+  "r3-cleanup.json": {
+    "at": 1793026987.395126,
+    "account_assignments": 0,
+    "owned_endpoint_released": true
+  },
+  "r4-commission-plan.json": {
+    "created_at": 1793026987.396686,
+    "purpose": "Controlled primary SSH loss with already-connected standby to the SAME frozen runtime",
+    "source_revision": "c56f1ee",
+    "files_sha256": {
+      "allocate_r4.py": "4e7b22711e88863ac6357f97c50313acaa3e8767360590a6a408dfd04222647d",
+      "remote_r4_guard.py": "8dd691a49bb14b4f1a3d791f3ef905a272461974a25f367c8c89942ab06f7215",
+      "remote_r4_proxy.py": "cebf9f5c2a2c45aaf160304a92da3a22617e8261a380329b14f3a2b08b3677f6",
+      "r4_colab_control.py": "7720921bcb64d675b68bcf0c35998b876b038b3fc161ff146b45dcf413f18c79",
+      "prepare_r4_a100.py": "c29d95ca356626b62230c13bab24abc71bea749709fd2dbb2573f04c7f4dccc9",
+      "r4_service.py": "34381c31774e8b02c710b26f5021be7b89122ce92f47dc72e3a5e45aca7bb23a",
+      "deploy_r4_a100.py": "ff63eeeb2ff7185a1edd653decaafcf32aaebffc68d8b81c1473eda34da069de",
+      "commission_r4_transport.py": "9ca00df14d88c456dad10b20e69dfbe0f279df0653175d75138f7e44bd0cdc2a",
+      "supervise_attention_link.py": "b42dadbe31a77f9ad82923c502eea7bc6676cc309504d5bbd3f0248d00ef04e1",
+      "start_r4_commission.py": "6494138ccd1fc1a163eb155a4c62976fd94556bda8a22ba3b99f943184cc82d7",
+      "attention_transport_r4.py": "c1edc05b909960a908f7632f41a3ca8374305499bc0d3a81c0ef9ef4355d1e1d",
+      "replication-probes.json": "82e9d32929a5db9916c1d3c6c2d9389bd864925c84b73a36c7cbd0a49a33a7e1"
+    },
+    "model_source_revision": "04f905c9f4538886a0713135bba29a1d4becea0b",
+    "native_calls": 0,
+    "physics_runs": 0,
+    "optimizer_updates": 0,
+    "maximum_recovery_seconds": 20,
+    "qualification_tolerance": 0.0001,
+    "prior_failed_engineering_attempt": "r3-transport-commission",
+    "reason": "Measured single-link handshake left insufficient time inside original 20-second bound; keep bound and add standby"
+  },
+  "r4-allocation-status.json": {
+    "stage": "failed",
+    "at": 1793027053.7496693,
+    "name": "simjecture-science-20261026p",
+    "notebook": "5e2b9dff-3ac6-462b-8ccc-596eea4d3bba",
+    "error_type": "ProxyError"
+  },
+  "r4-transport-commission/STATUS.json": {
+    "stage": "failed",
+    "started_at": 1793026991.3064528,
+    "native_calls": 0,
+    "physics_runs": 0,
+    "optimizer_updates": 0,
+    "ended_at": 1793027054.3152952,
+    "error_type": "RuntimeError",
+    "error": "Traceback (most recent call last):\n  File \"/home/simjecture/investigations/scientific-attention-20261025/commission_r4_transport.py\", line 30, in <module>\n    if (R/'STOP_R4_COLAB').exists():raise RuntimeError('Allocation or preparation stopped')\n                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: Allocation or preparation stopped\n"
+  },
+  "r3_transport_receipts": [
+    {
+      "request_sha256": "c4f714a0f9042802ba639197366d4c221afceadd162c4209a9e79269dc30c030",
+      "connect_attempts": 1,
+      "send_attempts": 1,
+      "started_at": 1793026200.3911788,
+      "status": "returned",
+      "ended_at": 1793026201.9334948
+    },
+    {
+      "request_sha256": "c4f714a0f9042802ba639197366d4c221afceadd162c4209a9e79269dc30c030",
+      "connect_attempts": 100,
+      "send_attempts": 2,
+      "started_at": 1793026201.9560256,
+      "status": "unavailable",
+      "ended_at": 1793026221.9568686,
+      "error_type": "TimeoutError"
+    }
+  ],
+  "r4_reconciliation": {
+    "at": 1793027748.5351217,
+    "r4_preflight_type": "GetAssignmentResponse",
+    "r4_owned_endpoint": null,
+    "released_if_assigned": false,
+    "remaining_assignments": 0
+  }
+}

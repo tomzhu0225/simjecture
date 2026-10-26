@@ -188,3 +188,21 @@ saved qualification inputs only. Keep the existing attempted episodes intact.
 The optional transport adapter may replay an identical stateless prediction
 once within 20 seconds; it never dispatches assistance or relaxes host freshness
 checks. This engineering commissioning is not another scientific test episode.
+
+The direct-link commissioning subsequently restored the checkpoint and passed
+all three saved probability probes. An intentional interruption of its owned
+SSH process triggered a new connection, which became ready after approximately
+19.4 seconds. The pending prediction could not finish inside the unchanged
+20-second relay bound. This is a failed recovery test, not a model-performance
+result; the runtime was released and its records were retained.
+
+The transport now optionally accepts an already-connected standby link to the
+same frozen inference service. Eight transport tests and four existing service
+tests pass, including identical replay through the standby and suppression of
+retries for application errors. Its real A100 standby test remains unexecuted:
+the next allocation attempt failed with a proxy error before returning an
+endpoint. A separate read-only lookup of that notebook and the account confirmed
+no runtime had been created. See the [engineering evidence](transport-commission-evidence.json).
+No additional scientific episode, native actor or optimizer ran in these
+engineering attempts. Further assignments require successful real standby
+qualification; the incomplete scientific block remains unchanged.
