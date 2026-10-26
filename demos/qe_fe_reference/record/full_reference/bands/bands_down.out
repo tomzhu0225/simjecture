@@ -1,0 +1,60 @@
+
+     Program BANDS v.7.4 starts on 24Oct2026 at  4:19:20 
+
+     This program is part of the open-source Quantum ESPRESSO suite
+     for quantum simulation of materials; please cite
+         "P. Giannozzi et al., J. Phys.:Condens. Matter 21 395502 (2009);
+         "P. Giannozzi et al., J. Phys.:Condens. Matter 29 465901 (2017);
+         "P. Giannozzi et al., J. Chem. Phys. 152 154105 (2020);
+          URL http://www.quantum-espresso.org", 
+     in publications or presentations arising from this work. More details at
+     http://www.quantum-espresso.org/quote
+
+     Parallel version (MPI & OpenMP), running on       1 processor cores
+     Number of MPI processes:                 1
+     Threads/MPI process:                     1
+
+     MPI processes distributed on     1 nodes
+     6353 MiB available memory on the printing compute node when the environment starts
+
+
+     Reading xml data from directory:
+
+     ./out/sample.save/
+
+     IMPORTANT: XC functional enforced from input :
+     Exchange-correlation= PBE
+                           (   1   4   3   4   0   0   0)
+     Any further DFT definition will be discarded
+     Please, verify this is what you really want
+
+
+     G-vector sticks info
+     --------------------
+     sticks:   dense  smooth     PW     G-vecs:    dense   smooth      PW
+     Sum         483     387    129                 6699     4753     935
+
+     Using Slab Decomposition
+
+
+     Check: negative core charge=   -0.000060
+     Reading collected, re-writing distributed wavefunctions
+     high-symmetry point:  0.0000 0.0000 0.0000   x coordinate   0.0000
+     high-symmetry point:  0.0000 0.8660 0.0000   x coordinate   0.8660
+     high-symmetry point:  0.4330 0.4330 0.0000   x coordinate   1.4784
+     high-symmetry point:  0.0000 0.0000 0.0000   x coordinate   2.0908
+     high-symmetry point:  0.4330 0.4330 0.4330   x coordinate   2.8408
+     high-symmetry point:  0.0000 0.8660 0.0000   x coordinate   3.5908
+
+     Plottable bands (eV) written to file bands_down.dat.gnu
+     Bands written to file bands_down.dat
+
+     BANDS        :      1.14s CPU      1.23s WALL
+
+
+   This run was terminated on:   4:19:21  24Oct2026            
+
+=------------------------------------------------------------------------------=
+   JOB DONE.
+=------------------------------------------------------------------------------=
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG

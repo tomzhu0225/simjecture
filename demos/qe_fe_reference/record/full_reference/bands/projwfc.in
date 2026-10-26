@@ -1,0 +1,4 @@
+&PROJWFC
+ prefix='sample', outdir='./out',
+ filproj='projections', lsym=.false., kresolveddos=.true.,
+/

@@ -1,0 +1,26 @@
+{
+  "scope": "Historical SCF-only development input; not current complete reference qualification",
+  "qe_version": "7.4",
+  "records": [
+    {
+      "path": "pw.in",
+      "sha256": "d011d6883d6137bb3eff27f6084ce22cd33c1c811a9c8c4006a6dda23bf146c6",
+      "bytes": 707
+    },
+    {
+      "path": "pw.out",
+      "sha256": "cf9b1a5bc86a611a44cd7b3809cf1b82d65c10239864af5b60b659a201fe85e8",
+      "bytes": 15258
+    },
+    {
+      "path": "summary.json",
+      "sha256": "e5d067d15d9dc8293c4c4f05b909a796af1376b15b8728b9a4e5d2dbb7412fa5",
+      "bytes": 3943
+    },
+    {
+      "path": "execution_receipt.json",
+      "sha256": "05744500850d9893ee0a1184ecd0e83f8dafcfef16c7799ef92955a5238f1ec9",
+      "bytes": 328
+    }
+  ]
+}

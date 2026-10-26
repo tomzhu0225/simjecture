@@ -1,0 +1,22 @@
+{
+  "scope": "Reanalysis of unchanged historical Si QE output, not a fresh DFT calculation",
+  "current_workflow_sha256": "a2d559ffa9cc19ad60ad180fe0e814d6dcdba04a2d5f6898317a6403ea7156f0",
+  "original_executed_workflow_sha256": "2131b31f98e0465689de13b5d5ba16f0052539318255948a8258a12b47b47848",
+  "pw_inputs_byte_identical": {
+    "vc-relax": true,
+    "scf": true,
+    "nscf": true,
+    "bands": true
+  },
+  "eigenvalues_and_projections_array_equal": true,
+  "max_bands_xml_delta_ev": 0.0004998762545334046,
+  "spectral_observables": {
+    "path_gap_ev": 0.6139796488905915,
+    "path_vbm_ev": 5.981537835657122,
+    "path_cbm_ev": 6.595517484547713
+  },
+  "energy_reference": {
+    "value_ev": 5.981537835657122,
+    "origin": "vbm"
+  }
+}

@@ -1,0 +1,4 @@
+&DOS
+ prefix='sample', outdir='./out',
+ fildos='dos.dat', bz_sum='smearing', DeltaE=0.03, degauss=0.02, ngauss=-1,
+/

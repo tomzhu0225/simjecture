@@ -4,6 +4,9 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+- Add an optional pinned Quantum ESPRESSO runtime, material-configured scalar/collinear DFT workflow, and separate Si and magnetic-metal Fe commissioning examples with independent DOS and band branches.
+- Require a previewed and explicitly confirmed QE research plan before solver execution, with disclosed defaults, exact source/protocol binding and step-specific acceptance.
+
 - Redesign research-tool setup feedback. Installs and readiness checks start
   visibly at once, move to a *Setup activity* section, and show the installer's
   own stages (prepare, install, verify), a live elapsed timer, the latest output

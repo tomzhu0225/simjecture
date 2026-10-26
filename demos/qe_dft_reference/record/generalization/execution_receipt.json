@@ -1,0 +1,14 @@
+{
+  "isolation_backend": "bubblewrap",
+  "returncode": 0,
+  "stdout": "QE stage scf: pw.x",
+  "stderr": "",
+  "timed_out": false,
+  "cancelled": false,
+  "workspace_exceeded": false,
+  "stdout_truncated": false,
+  "stderr_truncated": false,
+  "heartbeat_count": 0,
+  "wall_seconds": 6.004737374999991,
+  "workspace_bytes": 3039156
+}

@@ -1,0 +1,14 @@
+{
+  "isolation_backend": "bubblewrap",
+  "returncode": 0,
+  "stdout": "QE stage relax: pw.x\nQE stage scf: pw.x\nQE stage dos: pw.x\nQE stage bands: pw.x\nQE stage dos: dos.x\nQE stage dos: projwfc.x\nQE stage bands: bands.x\nQE stage bands: bands.x\nQE stage bands: projwfc.x\nQE stage control_00: pw.x\nQE stage control_01: pw.x\nQE stage control_02: pw.x\nQE stage control_03: pw.x\nQE stage control_04: pw.x\nQE stage control_05: pw.x\nQE stage control_06: pw.x",
+  "stderr": "",
+  "timed_out": false,
+  "cancelled": false,
+  "workspace_exceeded": false,
+  "stdout_truncated": false,
+  "stderr_truncated": false,
+  "heartbeat_count": 15,
+  "wall_seconds": 462.783271768,
+  "workspace_bytes": 518444161
+}

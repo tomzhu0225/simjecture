@@ -1,0 +1,11 @@
+{
+  "scope": "Actual material-configured Simjecture Fe commissioning; not held-out scientific evidence",
+  "upstream_base": "75c4b34a81782a5b7715766a5a88399d2aaefd6c",
+  "original_supervisor_sha256": "c4253d6e4f981327fe4198e2e3ba42e37403b2da13715baa790d2f08a191fc2e",
+  "runtime_and_source_binding": "discovery.json and execution_receipt.json are original files",
+  "executed_source_sha256": "a2d559ffa9cc19ad60ad180fe0e814d6dcdba04a2d5f6898317a6403ea7156f0",
+  "current_source_sha256": "998b094ce5b4e13cd16a4b2acc3695896b38760e1a904b4f99fe9bb41d09ac6d",
+  "current_source_ast_equal": true,
+  "source_difference": "One long f-string wrapped across adjacent string literals; recorded source bytes are not relabeled.",
+  "excluded": "PP payload/licenses cache, installed runtimes, wavefunctions, charge-density checkpoints and bulk scratch remain local only."
+}

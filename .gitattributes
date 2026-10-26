@@ -16,3 +16,9 @@ docs/_static/demos/*.svg -whitespace
 
 demos/resistive_mhd_island_coalescence/continuation_record/** -text -whitespace
 demos/flash_warpx_kinetic_patch/continuation_record/** -text -whitespace
+
+# Preserve the exact generated QE record bytes and solver whitespace.
+demos/qe_dft_reference/record/** -text -whitespace
+tests/fixtures/qe_scf_smoke.xml -text
+
+demos/qe_fe_reference/record/** -text -whitespace

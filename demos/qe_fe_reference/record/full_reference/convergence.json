@@ -1,0 +1,147 @@
+[
+  {
+    "settings": {
+      "ecutwfc_ry": 50,
+      "ecutrho_ry": 250
+    },
+    "energy_ev": -3406.1435702053845,
+    "magnetization": {
+      "total_muB_per_cell": 2.189955271317922,
+      "absolute_muB_per_cell": 2.309096031065876,
+      "mean_total_muB_per_atom": 2.189955271317922,
+      "mean_absolute_muB_per_atom": 2.309096031065876,
+      "number_of_atoms": 1,
+      "scope": "Integrated spin density; the per-atom mean is not a site-resolved moment"
+    },
+    "smearing_term_ev": 0.010630685538159284,
+    "fermi_energy_ev": 18.200415391096882,
+    "delta_mev_per_atom": 2.872146076242643,
+    "max_force_ry_bohr": 0.0,
+    "pressure_kbar": -2.2045921147042717
+  },
+  {
+    "settings": {
+      "ecutwfc_ry": 70,
+      "ecutrho_ry": 350
+    },
+    "energy_ev": -3406.148197561189,
+    "magnetization": {
+      "total_muB_per_cell": 2.189751941966477,
+      "absolute_muB_per_cell": 2.308804121729841,
+      "mean_total_muB_per_atom": 2.189751941966477,
+      "mean_absolute_muB_per_atom": 2.308804121729841,
+      "number_of_atoms": 1,
+      "scope": "Integrated spin density; the per-atom mean is not a site-resolved moment"
+    },
+    "smearing_term_ev": 0.010611771231189764,
+    "fermi_energy_ev": 18.19996813520579,
+    "delta_mev_per_atom": -1.755209728344198,
+    "max_force_ry_bohr": 0.0,
+    "pressure_kbar": -1.4696312681130401
+  },
+  {
+    "settings": {
+      "scf_k": [
+        16,
+        16,
+        16
+      ]
+    },
+    "energy_ev": -3406.1465367770747,
+    "magnetization": {
+      "total_muB_per_cell": 2.201509726104118,
+      "absolute_muB_per_cell": 2.325410625369565,
+      "mean_total_muB_per_atom": 2.201509726104118,
+      "mean_absolute_muB_per_atom": 2.325410625369565,
+      "number_of_atoms": 1,
+      "scope": "Integrated spin density; the per-atom mean is not a site-resolved moment"
+    },
+    "smearing_term_ev": 0.008457008157001539,
+    "fermi_energy_ev": 18.22534678466343,
+    "delta_mev_per_atom": -0.09442561395189841,
+    "max_force_ry_bohr": 0.0,
+    "pressure_kbar": 3.9278890600836394
+  },
+  {
+    "settings": {
+      "degauss_ry": 0.01
+    },
+    "energy_ev": -3406.150540609404,
+    "magnetization": {
+      "total_muB_per_cell": 2.219811262387321,
+      "absolute_muB_per_cell": 2.33229853587984,
+      "mean_total_muB_per_atom": 2.219811262387321,
+      "mean_absolute_muB_per_atom": 2.33229853587984,
+      "number_of_atoms": 1,
+      "scope": "Integrated spin density; the per-atom mean is not a site-resolved moment"
+    },
+    "smearing_term_ev": 0.003774853455472491,
+    "fermi_energy_ev": 18.18841231136962,
+    "delta_mev_per_atom": -4.098257943041972,
+    "max_force_ry_bohr": 0.0,
+    "pressure_kbar": 6.050119001977402
+  },
+  {
+    "settings": {
+      "starting_magnetization": {
+        "Fe": 0.1
+      }
+    },
+    "energy_ev": -3406.146442348914,
+    "magnetization": {
+      "total_muB_per_cell": 2.189592106113713,
+      "absolute_muB_per_cell": 2.308330740062301,
+      "mean_total_muB_per_atom": 2.189592106113713,
+      "mean_absolute_muB_per_atom": 2.308330740062301,
+      "number_of_atoms": 1,
+      "scope": "Integrated spin density; the per-atom mean is not a site-resolved moment"
+    },
+    "smearing_term_ev": 0.010602596611285382,
+    "fermi_energy_ev": 18.200449817454118,
+    "delta_mev_per_atom": 2.546585164964199e-06,
+    "max_force_ry_bohr": 0.0,
+    "pressure_kbar": 0.4593436417597187
+  },
+  {
+    "settings": {
+      "starting_magnetization": {
+        "Fe": 0.6
+      }
+    },
+    "energy_ev": -3406.1464423466555,
+    "magnetization": {
+      "total_muB_per_cell": 2.189682935626851,
+      "absolute_muB_per_cell": 2.308471506263593,
+      "mean_total_muB_per_atom": 2.189682935626851,
+      "mean_absolute_muB_per_atom": 2.308471506263593,
+      "number_of_atoms": 1,
+      "scope": "Integrated spin density; the per-atom mean is not a site-resolved moment"
+    },
+    "smearing_term_ev": 0.010606559348812114,
+    "fermi_energy_ev": 18.2003616879099,
+    "delta_mev_per_atom": 4.805315256817266e-06,
+    "max_force_ry_bohr": 0.0,
+    "pressure_kbar": 0.7509186420387973
+  },
+  {
+    "settings": {
+      "starting_magnetization": {
+        "Fe": -0.3
+      }
+    },
+    "energy_ev": -3406.1464423514362,
+    "magnetization": {
+      "total_muB_per_cell": -2.189671215203001,
+      "absolute_muB_per_cell": 2.308421789926877,
+      "mean_total_muB_per_atom": -2.189671215203001,
+      "mean_absolute_muB_per_atom": 2.308421789926877,
+      "number_of_atoms": 1,
+      "scope": "Integrated spin density; the per-atom mean is not a site-resolved moment"
+    },
+    "smearing_term_ev": 0.01060675749594099,
+    "fermi_energy_ev": 18.200418687893453,
+    "delta_mev_per_atom": 2.4556356947869062e-08,
+    "max_force_ry_bohr": 0.0,
+    "pressure_kbar": 0.20180554030244746
+  }
+]

@@ -1,0 +1,58 @@
+{
+  "scope": "model-free exploratory integration qualification",
+  "scientific_evidence_eligible": false,
+  "argv": [
+    "workflow.py",
+    "run",
+    "--case",
+    "case.json",
+    "--pseudo-dir",
+    "pseudo",
+    "--output",
+    "result",
+    "--convergence"
+  ],
+  "skill": {
+    "skill": "quantum-espresso",
+    "version": "1.0.0",
+    "path": "SKILL.md",
+    "content": "---\nname: quantum-espresso\ndescription: Deploy Quantum ESPRESSO and run material-configured scalar and collinear plane-wave DFT with independent DOS and band branches, readable diagnostics and source-bound checks.\n---\n\n# Quantum ESPRESSO\n\nUse `simjecture install quantum-espresso`, then `simjecture doctor --profile\nquantum-espresso`. Users and agents use the same operator entry. The first\nqualified environment is Linux/WSL2 x86_64, QE 7.4 conda-forge build hac89879_0.\nPackages stay in the project's managed runtime; base Conda is unchanged.\nSee [deployment](references/deployment.md) for Windows invocation and disk limits.\n\nThe capability is `quantum-espresso-7.4`. It launches Python and exposes sibling\nPW/PP executables through `QE_BIN`. Project Python need not contain QE.\nThe runtime smoke checks availability/version only; calculation validity requires\na separately commissioned numerical instrument.\n\nThe reusable [driver](examples/dft_workflow.py) reads structures, species, PP\nhashes, cutoffs, meshes, paths, empty bands and acceptance rules from JSON.\nConfigure nspin=1 or collinear nspin=2, fixed/smeared/tetrahedron occupations,\nsmearing widths and species starting magnetizations. Metals need no band gap.\nSee [workflow](references/workflow.md) for stage-specific settings and concrete\nremaining gaps. Implementation coverage and real material validation are separate;\nread each example's validation record rather than inferring coverage from a tool name.\n\nFetch pseudopotentials outside the offline sandbox. Verify source, license and\nhash; never silently select a functional or PP. Execute relaxation, final-geometry\nSCF, separate uniform NSCF/DOS/PDOS and path bands/projections in a fresh output.\nKeep raw inputs/outputs, XML-derived arrays, energy units, occupied-band counts,\nsource/runtime identities and command receipts. Binary checkpoints remain local.\n\nCommission the actual configured program through the selected launcher.\nFollow source-bound methods review and prospective contracts for evidence.\nGuided readiness and copied reference outputs are exploratory context.\nChanging material, spin, functional, PP or observables needs new qualification.\n",
+    "content_sha256": "9bfac7a29f704a5399c102f8a8e51b6dae09ccee656bb948b46846e2b3abd1cd",
+    "skill_sha256": "6c5f48c0ea135b74b8d7941ce5b5699e37a199a3a4c84e3c41bf457bce114fda",
+    "truncated": false
+  },
+  "workflow_resource": {
+    "skill": "quantum-espresso",
+    "version": "1.0.0",
+    "path": "examples/dft_workflow.py",
+    "content_sha256": "a2d559ffa9cc19ad60ad180fe0e814d6dcdba04a2d5f6898317a6403ea7156f0",
+    "skill_sha256": "6c5f48c0ea135b74b8d7941ce5b5699e37a199a3a4c84e3c41bf457bce114fda"
+  },
+  "capabilities": [
+    {
+      "schema_version": "0.1.0",
+      "name": "quantum-espresso-7.4",
+      "version": "7.4",
+      "description": "Configurable scalar and collinear plane-wave DFT with QE PW and PP tools",
+      "skill": "quantum-espresso",
+      "executable_kind": "python-quantum-espresso",
+      "preflight_resource": "examples/runtime_smoke.py",
+      "preflight_result": "qe_runtime_smoke.json",
+      "preflight_checks": [
+        "checks.completed",
+        "checks.executables_present",
+        "checks.version_matches",
+        "checks.expected_no_input_diagnostic"
+      ],
+      "contract_sha256": "15bc0af421015e1e08868fe94117815b82a6bbb24ad1ef87a2c1a7357980177c",
+      "runtime_identity_sha256": "4a9a822b0974004de55659a18d5023dfea802bf22082a5fb51f3928a9b792614"
+    }
+  ],
+  "case_sha256": "5d16b6049a5052fd59fe141d10be48764cb6d911a83f4c58b767b9009dcf0f89",
+  "protocol_sha256": "58d4a3d67338b45ceea68b04959098634aeee0b111bdf3c98bb9136b67458881",
+  "resource_limits": {
+    "memory_mib": 768,
+    "workspace_mib": 2048,
+    "omp_threads": 1
+  }
+}

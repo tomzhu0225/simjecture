@@ -1,0 +1,4 @@
+&PROJWFC
+ prefix='sample', outdir='./out',
+ filpdos='pdos', DeltaE=0.03, lsym=.true.,
+/

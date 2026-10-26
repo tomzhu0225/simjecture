@@ -1,0 +1,182 @@
+{
+  "scope": "Observed-output checks plus final project execution receipt",
+  "qe_commands": 16,
+  "all_recorded_commands_returned_zero": true,
+  "raw_command_receipts_verified": [
+    {
+      "file": "relax/pw.out",
+      "returncode": 0,
+      "input_sha256_matches": true,
+      "output_sha256_matches": true,
+      "job_done": true,
+      "no_scf_nonconvergence": true,
+      "ieee_invalid_flag_present": true,
+      "reported_arrays_finite": true
+    },
+    {
+      "file": "scf/pw.out",
+      "returncode": 0,
+      "input_sha256_matches": true,
+      "output_sha256_matches": true,
+      "job_done": true,
+      "no_scf_nonconvergence": true,
+      "ieee_invalid_flag_present": true,
+      "reported_arrays_finite": true
+    },
+    {
+      "file": "dos/pw.out",
+      "returncode": 0,
+      "input_sha256_matches": true,
+      "output_sha256_matches": true,
+      "job_done": true,
+      "no_scf_nonconvergence": true,
+      "ieee_invalid_flag_present": true,
+      "reported_arrays_finite": true
+    },
+    {
+      "file": "bands/pw.out",
+      "returncode": 0,
+      "input_sha256_matches": true,
+      "output_sha256_matches": true,
+      "job_done": true,
+      "no_scf_nonconvergence": true,
+      "ieee_invalid_flag_present": true,
+      "reported_arrays_finite": true
+    },
+    {
+      "file": "dos/dos.out",
+      "returncode": 0,
+      "input_sha256_matches": true,
+      "output_sha256_matches": true,
+      "job_done": true,
+      "no_scf_nonconvergence": true,
+      "ieee_invalid_flag_present": true
+    },
+    {
+      "file": "dos/projwfc.out",
+      "returncode": 0,
+      "input_sha256_matches": true,
+      "output_sha256_matches": true,
+      "job_done": true,
+      "no_scf_nonconvergence": true,
+      "ieee_invalid_flag_present": true
+    },
+    {
+      "file": "bands/bands_up.out",
+      "returncode": 0,
+      "input_sha256_matches": true,
+      "output_sha256_matches": true,
+      "job_done": true,
+      "no_scf_nonconvergence": true,
+      "ieee_invalid_flag_present": true
+    },
+    {
+      "file": "bands/bands_down.out",
+      "returncode": 0,
+      "input_sha256_matches": true,
+      "output_sha256_matches": true,
+      "job_done": true,
+      "no_scf_nonconvergence": true,
+      "ieee_invalid_flag_present": true
+    },
+    {
+      "file": "bands/projwfc.out",
+      "returncode": 0,
+      "input_sha256_matches": true,
+      "output_sha256_matches": true,
+      "job_done": true,
+      "no_scf_nonconvergence": true,
+      "ieee_invalid_flag_present": true
+    },
+    {
+      "file": "control_00/pw.out",
+      "returncode": 0,
+      "input_sha256_matches": true,
+      "output_sha256_matches": true,
+      "job_done": true,
+      "no_scf_nonconvergence": true,
+      "ieee_invalid_flag_present": true,
+      "reported_arrays_finite": true
+    },
+    {
+      "file": "control_01/pw.out",
+      "returncode": 0,
+      "input_sha256_matches": true,
+      "output_sha256_matches": true,
+      "job_done": true,
+      "no_scf_nonconvergence": true,
+      "ieee_invalid_flag_present": true,
+      "reported_arrays_finite": true
+    },
+    {
+      "file": "control_02/pw.out",
+      "returncode": 0,
+      "input_sha256_matches": true,
+      "output_sha256_matches": true,
+      "job_done": true,
+      "no_scf_nonconvergence": true,
+      "ieee_invalid_flag_present": true,
+      "reported_arrays_finite": true
+    },
+    {
+      "file": "control_03/pw.out",
+      "returncode": 0,
+      "input_sha256_matches": true,
+      "output_sha256_matches": true,
+      "job_done": true,
+      "no_scf_nonconvergence": true,
+      "ieee_invalid_flag_present": true,
+      "reported_arrays_finite": true
+    },
+    {
+      "file": "control_04/pw.out",
+      "returncode": 0,
+      "input_sha256_matches": true,
+      "output_sha256_matches": true,
+      "job_done": true,
+      "no_scf_nonconvergence": true,
+      "ieee_invalid_flag_present": true,
+      "reported_arrays_finite": true
+    },
+    {
+      "file": "control_05/pw.out",
+      "returncode": 0,
+      "input_sha256_matches": true,
+      "output_sha256_matches": true,
+      "job_done": true,
+      "no_scf_nonconvergence": true,
+      "ieee_invalid_flag_present": true,
+      "reported_arrays_finite": true
+    },
+    {
+      "file": "control_06/pw.out",
+      "returncode": 0,
+      "input_sha256_matches": true,
+      "output_sha256_matches": true,
+      "job_done": true,
+      "no_scf_nonconvergence": true,
+      "ieee_invalid_flag_present": true,
+      "reported_arrays_finite": true
+    }
+  ],
+  "reported_eigenvalues_occupations_k_projections_dos_pdos_finite": true,
+  "max_bands_xml_delta_ev": 0.0004998664596023161,
+  "projection_shape": [
+    49,
+    13,
+    32
+  ],
+  "DOS_PDOS_columns": [
+    4,
+    5
+  ],
+  "final_scf_pressure_kbar": 0.18432090226474537,
+  "printed_pressure_kbar": 0.18,
+  "pressure_unit_check_with_text": true,
+  "final_pressure_within_relaxation_threshold": false,
+  "stress_scope": "Fresh SCF pressure exceeds the internal BFGS threshold; no final-stress error bound is claimed.",
+  "IEEE_INVALID_FLAG_assessment": "Warning retained unchanged. No nonfinite values, index disagreements or SCF nonconvergence were found in checked outputs; the internal operation raising the flag was not isolated.",
+  "wavefunction_binary_arrays_scanned": false,
+  "outer_execution_verified": true,
+  "execution_receipt_sha256": "f7c5f44351a5b5f9a0703b0a35161347a6417b91b1686ba6aad4dd978f7a1245"
+}

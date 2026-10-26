@@ -1,0 +1,46 @@
+{
+  "scope": "actual model-free Simjecture exploratory commissioning, not held-out research evidence",
+  "upstream_base": "75c4b34a81782a5b7715766a5a88399d2aaefd6c",
+  "case_sha256": "74c628e71b8eb5d0bb5ac3537594c2fa3bc8e72a54cf33dc3dcf2abd347b2964",
+  "protocol_sha256": "9175e59008c95558fedbdbabbbc0e6831d29f93557277b6f0f86515ff7fa0d39",
+  "workflow_sha256": "2131b31f98e0465689de13b5d5ba16f0052539318255948a8258a12b47b47848",
+  "capabilities": [
+    {
+      "schema_version": "0.1.0",
+      "name": "quantum-espresso-7.4",
+      "version": "7.4",
+      "description": "Nonmagnetic plane-wave pseudopotential DFT with QE PW and PP tools",
+      "skill": "quantum-espresso",
+      "executable_kind": "python-quantum-espresso",
+      "preflight_resource": "examples/runtime_smoke.py",
+      "preflight_result": "qe_runtime_smoke.json",
+      "preflight_checks": [
+        "checks.completed",
+        "checks.executables_present",
+        "checks.version_matches",
+        "checks.expected_no_input_diagnostic"
+      ],
+      "contract_sha256": "e773729be8ee2576babe96b7d0ca91dfc71ff68f261de2ebfb785b51efaf3a57",
+      "runtime_identity_sha256": "4a9a822b0974004de55659a18d5023dfea802bf22082a5fb51f3928a9b792614"
+    }
+  ],
+  "resource_limits": {
+    "memory_mib": 768,
+    "workspace_mib": 512,
+    "omp_threads": 1
+  },
+  "original_discovery_sha256": "83a1e4c6b42497056cffbb0fa1f9d5a2a8bac063b414095ab800ae395914ec40",
+  "supervision": {
+    "started_unix": 1792810537.67839,
+    "scope": "one controlled calculation, no installation",
+    "memory_limit_mib": 768,
+    "threads": 1,
+    "workspace_limit_mib": 512,
+    "all_new_files_physical_disk": "D",
+    "minimum_observed_c_free_bytes": 15027884032,
+    "linux_process_group": 456,
+    "returncode": 0,
+    "wall_seconds": 500.2320463657379
+  },
+  "excluded": "Pseudopotential payload, installed runtimes, wavefunctions, charge density and bulk scratch are local only."
+}

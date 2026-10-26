@@ -1,0 +1,627 @@
+{
+  "schema_version": "1",
+  "status": "passed",
+  "scope": "exploratory commissioning",
+  "configuration": {
+    "schema_version": "1",
+    "description": "bcc ferromagnetic Fe PBE/GBRV v1.5: collinear metallic commissioning",
+    "functional": "PBE",
+    "spin": "collinear",
+    "nspin": 2,
+    "occupations": "smearing",
+    "smearing": "mv",
+    "degauss_ry": 0.02,
+    "dos_occupations": "smearing",
+    "dos_smearing": "mv",
+    "dos_degauss_ry": 0.02,
+    "energy_reference": "fermi",
+    "starting_magnetization": {
+      "Fe": 0.3
+    },
+    "cell_angstrom": [
+      [
+        -1.42,
+        1.42,
+        1.42
+      ],
+      [
+        1.42,
+        -1.42,
+        1.42
+      ],
+      [
+        1.42,
+        1.42,
+        -1.42
+      ]
+    ],
+    "species": [
+      {
+        "label": "Fe",
+        "mass": 55.845,
+        "pseudo": "fe_pbe_v1.5.uspp.F.UPF",
+        "url": "https://www.physics.rutgers.edu/gbrv/fe_pbe_v1.5.uspp.F.UPF",
+        "sha256": "6c132e6e7ac1c42df5cb6a13d0c99bb7af5bf3d6e2349f5658f0c22abfe3911a",
+        "license": "GPL-3.0; author site links gpl-3.0.txt",
+        "source": "GBRV Fe PBE v1.5 (2015-06-15), scalar-relativistic USPP/NLCC; 16 valence electrons"
+      }
+    ],
+    "atoms": [
+      {
+        "species": "Fe",
+        "fractional": [
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "ecutwfc_ry": 50,
+    "ecutrho_ry": 250,
+    "conv_thr_ry": 1e-09,
+    "mixing_beta": 0.3,
+    "electron_maxstep": 200,
+    "forc_conv_thr_ry_bohr": 0.0001,
+    "etot_conv_thr_ry": 1e-06,
+    "press_conv_thr_kbar": 0.2,
+    "cell_dofree": "all",
+    "relax_k": [
+      10,
+      10,
+      10
+    ],
+    "scf_k": [
+      10,
+      10,
+      10
+    ],
+    "dos_k": [
+      12,
+      12,
+      12
+    ],
+    "nbnd": 16,
+    "path": [
+      {
+        "label": "\u0393",
+        "k": [
+          0,
+          0,
+          0
+        ],
+        "points": 12
+      },
+      {
+        "label": "H",
+        "k": [
+          0.5,
+          -0.5,
+          0.5
+        ],
+        "points": 8
+      },
+      {
+        "label": "N",
+        "k": [
+          0,
+          0,
+          0.5
+        ],
+        "points": 8
+      },
+      {
+        "label": "\u0393",
+        "k": [
+          0,
+          0,
+          0
+        ],
+        "points": 12
+      },
+      {
+        "label": "P",
+        "k": [
+          0.25,
+          0.25,
+          0.25
+        ],
+        "points": 8
+      },
+      {
+        "label": "H",
+        "k": [
+          0.5,
+          -0.5,
+          0.5
+        ],
+        "points": 1
+      }
+    ],
+    "projection_states": [
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "dos_delta_ev": 0.03,
+    "plot_energy_ev": [
+      -8,
+      6
+    ],
+    "command_timeout_seconds": 900,
+    "acceptance": {
+      "mean_total_magnetization_muB_per_atom": [
+        1.8,
+        2.6
+      ],
+      "max_force_ry_bohr": [
+        0,
+        0.0002
+      ]
+    },
+    "convergence": [
+      {
+        "ecutwfc_ry": 40,
+        "ecutrho_ry": 200
+      },
+      {
+        "ecutwfc_ry": 60,
+        "ecutrho_ry": 300
+      },
+      {
+        "scf_k": [
+          12,
+          12,
+          12
+        ]
+      },
+      {
+        "degauss_ry": 0.01
+      },
+      {
+        "starting_magnetization": {
+          "Fe": 0.1
+        }
+      },
+      {
+        "starting_magnetization": {
+          "Fe": 0.6
+        }
+      },
+      {
+        "starting_magnetization": {
+          "Fe": -0.3
+        }
+      }
+    ],
+    "profiles": {
+      "small": {
+        "ecutwfc_ry": 40,
+        "ecutrho_ry": 200,
+        "scf_k": [
+          4,
+          4,
+          4
+        ],
+        "relax_k": [
+          4,
+          4,
+          4
+        ],
+        "dos_k": [
+          6,
+          6,
+          6
+        ],
+        "conv_thr_ry": 1e-08
+      }
+    }
+  },
+  "source_sha256": "a2d559ffa9cc19ad60ad180fe0e814d6dcdba04a2d5f6898317a6403ea7156f0",
+  "commands": [
+    {
+      "command": [
+        "/opt/acs-capabilities/quantum-espresso-7.4/bin/pw.x",
+        "-in",
+        "pw.in"
+      ],
+      "cwd": "/work/result/relax",
+      "input_sha256": "43846213f7940f2b5350e96ae29fc7087957a67af02b1af68fae598096bda263",
+      "start_unix": 1792814410.8868432,
+      "returncode": 0,
+      "wall_seconds": 106.48510003089905,
+      "output_sha256": "845227a6af0f4d60a7d474de5d4e89a0f6295cba8f48ebf759c92e214f0ebd48"
+    },
+    {
+      "command": [
+        "/opt/acs-capabilities/quantum-espresso-7.4/bin/pw.x",
+        "-in",
+        "pw.in"
+      ],
+      "cwd": "/work/result/scf",
+      "input_sha256": "030332ed64ebc0a39217b69f4bf9ca244540823dcd540fc4b9ecfc55e22c5d42",
+      "start_unix": 1792814517.38446,
+      "returncode": 0,
+      "wall_seconds": 32.52984023094177,
+      "output_sha256": "adb0cfa7d54297b40e25130957c8641365fdee42e00d64217c2838adffcccd7a"
+    },
+    {
+      "command": [
+        "/opt/acs-capabilities/quantum-espresso-7.4/bin/pw.x",
+        "-in",
+        "pw.in"
+      ],
+      "cwd": "/work/result/dos",
+      "input_sha256": "dd02092b8e957656925c7b629f024028601b8fcba4a1c3f38b1e95c6481e6456",
+      "start_unix": 1792814549.990418,
+      "returncode": 0,
+      "wall_seconds": 17.304877758026123,
+      "output_sha256": "35319df4d95b8c2ecabc11264d8fd61d1edd7a9ffb1b69a2d056d3eb6428d58b"
+    },
+    {
+      "command": [
+        "/opt/acs-capabilities/quantum-espresso-7.4/bin/pw.x",
+        "-in",
+        "pw.in"
+      ],
+      "cwd": "/work/result/bands",
+      "input_sha256": "2781550dc4c6f9180d1d91e83edd40ea00680b8c45b79e9c0265f04b711f1823",
+      "start_unix": 1792814567.3600714,
+      "returncode": 0,
+      "wall_seconds": 13.260091543197632,
+      "output_sha256": "35bb833b2f4f41403b2b39ea9e99681e3e5cce1543831b035cd495a4196956a0"
+    },
+    {
+      "command": [
+        "/opt/acs-capabilities/quantum-espresso-7.4/bin/dos.x",
+        "-in",
+        "dos.in"
+      ],
+      "cwd": "/work/result/dos",
+      "input_sha256": "8c65b4722f476e14587fc599ebe89b53254ff9bc5e1d278c04c823501bc57d6a",
+      "start_unix": 1792814580.620845,
+      "returncode": 0,
+      "wall_seconds": 1.573636770248413,
+      "output_sha256": "7275c9a28229bd9bcf66e183966e03097f8b0ee24d27676101a589c3ad9eead0"
+    },
+    {
+      "command": [
+        "/opt/acs-capabilities/quantum-espresso-7.4/bin/projwfc.x",
+        "-in",
+        "projwfc.in"
+      ],
+      "cwd": "/work/result/dos",
+      "input_sha256": "ae2b4943ed93cf56561c129ffec7e0b65b8bd01c878d49b8ead8730d04ecf891",
+      "start_unix": 1792814582.1960166,
+      "returncode": 0,
+      "wall_seconds": 2.025357961654663,
+      "output_sha256": "696a2bf804a2f2d3c86987de7a3fe57d31bb7ad415f1894dce0627842127272a"
+    },
+    {
+      "command": [
+        "/opt/acs-capabilities/quantum-espresso-7.4/bin/bands.x",
+        "-in",
+        "bands_up.in"
+      ],
+      "cwd": "/work/result/bands",
+      "input_sha256": "8fd09e89c3dca3de94797b0b2773f7683e980305cb3fc62b906d13b2b6497b23",
+      "start_unix": 1792814584.232539,
+      "returncode": 0,
+      "wall_seconds": 1.523172378540039,
+      "output_sha256": "25302aa757426f46a38827c2c5962d64a5490583ef96617a6a78beefefef5b42"
+    },
+    {
+      "command": [
+        "/opt/acs-capabilities/quantum-espresso-7.4/bin/bands.x",
+        "-in",
+        "bands_down.in"
+      ],
+      "cwd": "/work/result/bands",
+      "input_sha256": "452a41f7c8a3e6e20c3d29ab068d7b10bc26c3656451717abdd47c9c628dd2d1",
+      "start_unix": 1792814585.756497,
+      "returncode": 0,
+      "wall_seconds": 1.4224131107330322,
+      "output_sha256": "78aeedbfca3248ab45cdde482db4ccf56bc9ec9f51dba31f717cab1604c303e1"
+    },
+    {
+      "command": [
+        "/opt/acs-capabilities/quantum-espresso-7.4/bin/projwfc.x",
+        "-in",
+        "projwfc.in"
+      ],
+      "cwd": "/work/result/bands",
+      "input_sha256": "ae587f46d4e673f3e5c0beed8d4703fe580d2d8e51d5853c3f3324fd85870f65",
+      "start_unix": 1792814587.1795638,
+      "returncode": 0,
+      "wall_seconds": 50.89158868789673,
+      "output_sha256": "3b4fc311b73cdf5a7cf32ab7917220859f601dffa84af3322cf0c00199693bb0"
+    },
+    {
+      "command": [
+        "/opt/acs-capabilities/quantum-espresso-7.4/bin/pw.x",
+        "-in",
+        "pw.in"
+      ],
+      "cwd": "/work/result/control_00",
+      "input_sha256": "deedbfa92875e3a47a02cfccbf33c3e005c3051bfe28392876ede4fc274b5136",
+      "start_unix": 1792814643.5233474,
+      "returncode": 0,
+      "wall_seconds": 19.17818784713745,
+      "output_sha256": "aa0f1f890d3ffc4a0c200f9f61af55b89b27e8e775ebe2d41d5e32229c11b56a"
+    },
+    {
+      "command": [
+        "/opt/acs-capabilities/quantum-espresso-7.4/bin/pw.x",
+        "-in",
+        "pw.in"
+      ],
+      "cwd": "/work/result/control_01",
+      "input_sha256": "fbe74ac2b6fd77b8b4a1e977c77601be4dacd497af17d2fdbebe1aa7fec486f6",
+      "start_unix": 1792814662.7207193,
+      "returncode": 0,
+      "wall_seconds": 36.301573514938354,
+      "output_sha256": "a1e984309dbfdee4dcab0a4397c90ddca76c17e84b4e5e97bc7783b0007722bd"
+    },
+    {
+      "command": [
+        "/opt/acs-capabilities/quantum-espresso-7.4/bin/pw.x",
+        "-in",
+        "pw.in"
+      ],
+      "cwd": "/work/result/control_02",
+      "input_sha256": "e70aa10c0d50b5ad6edcc90c99330bcb818f075012a0aff21146b3be9bacb54d",
+      "start_unix": 1792814699.0327928,
+      "returncode": 0,
+      "wall_seconds": 45.694458961486816,
+      "output_sha256": "963ec73bb90f85e851f048daa0b2e95d3e4256c8dfe393c63b4ae43151b05e9f"
+    },
+    {
+      "command": [
+        "/opt/acs-capabilities/quantum-espresso-7.4/bin/pw.x",
+        "-in",
+        "pw.in"
+      ],
+      "cwd": "/work/result/control_03",
+      "input_sha256": "9735fa70b6a7a3c7efc5f4c0ba8ab0aee0e2649e474842281cb2d875bc0b3b61",
+      "start_unix": 1792814744.7450683,
+      "returncode": 0,
+      "wall_seconds": 36.411165952682495,
+      "output_sha256": "7ac93ffd2a2e2aef0467e3fba2973ebe95d7c2740e73062fae78edbc14a17644"
+    },
+    {
+      "command": [
+        "/opt/acs-capabilities/quantum-espresso-7.4/bin/pw.x",
+        "-in",
+        "pw.in"
+      ],
+      "cwd": "/work/result/control_04",
+      "input_sha256": "9b336e5d2eec4c94c2008f472d81ca7fe33c3e07c27200ff8439421c7f3996b6",
+      "start_unix": 1792814781.1664433,
+      "returncode": 0,
+      "wall_seconds": 27.967000007629395,
+      "output_sha256": "90d8b420ec950f0a2d523c36d7acf7607a25bf564b20e1d98f19437041c24814"
+    },
+    {
+      "command": [
+        "/opt/acs-capabilities/quantum-espresso-7.4/bin/pw.x",
+        "-in",
+        "pw.in"
+      ],
+      "cwd": "/work/result/control_05",
+      "input_sha256": "cf78dbdb8cf6bc57f51ad706e6b748f86b6091020ab5afc3c6d614298b07f07f",
+      "start_unix": 1792814809.144158,
+      "returncode": 0,
+      "wall_seconds": 34.48398685455322,
+      "output_sha256": "37338d73cec05000526d52805c9f7c1f1b95e827c7b71b6e541e8963aa38e6e0"
+    },
+    {
+      "command": [
+        "/opt/acs-capabilities/quantum-espresso-7.4/bin/pw.x",
+        "-in",
+        "pw.in"
+      ],
+      "cwd": "/work/result/control_06",
+      "input_sha256": "c32d638ebf05c5b2d8477d3bc4b2545ca49e42c6d311a95dd296ec38ef9ee02d",
+      "start_unix": 1792814843.6376195,
+      "returncode": 0,
+      "wall_seconds": 29.16765022277832,
+      "output_sha256": "a4caa3377e3bf569f3398885f7b96ed60d1bb48c82f18074620bc414d8eed293"
+    }
+  ],
+  "total_energy_ev": -3406.1487429367394,
+  "nelec": 16.0,
+  "occupied_bands": null,
+  "magnetization": {
+    "total_muB_per_cell": 2.117977608920682,
+    "absolute_muB_per_cell": 2.254414496546152,
+    "mean_total_muB_per_atom": 2.117977608920682,
+    "mean_absolute_muB_per_atom": 2.254414496546152,
+    "number_of_atoms": 1,
+    "scope": "Integrated spin density; the per-atom mean is not a site-resolved moment"
+  },
+  "smearing_term_ev": 0.01513641515181452,
+  "scf_fermi_energy_ev": 18.375035614593973,
+  "dos_fermi_energy_ev": 18.381914517319633,
+  "lattice_volume_angstrom3": 11.261059781880249,
+  "path_gap_ev": null,
+  "path_vbm_ev": null,
+  "path_cbm_ev": null,
+  "spin_components": 2,
+  "occupied_bands_by_spin": {
+    "up": null,
+    "down": null
+  },
+  "energy_reference": {
+    "value_ev": 18.375035614593973,
+    "origin": "final_scf_fermi"
+  },
+  "max_bands_xml_difference_ev": 0.0004998294233047318,
+  "projection_sum_range": [
+    2.406388222978005e-19,
+    0.9999939245109288
+  ],
+  "max_force_ry_bohr": 0.0,
+  "pressure_kbar": -0.2355707696272436,
+  "checks": {
+    "completed": true,
+    "spin_layout_matches_configuration": true,
+    "relaxation_completed": true,
+    "checkpoint_preserved": true,
+    "branches_independent": true,
+    "bands_indices_verified": true,
+    "projection_indices_verified": true,
+    "dos_pdos_finite": true,
+    "mean_total_magnetization_muB_per_atom_in_range": true,
+    "max_force_ry_bohr_in_range": true
+  },
+  "convergence": [
+    {
+      "settings": {
+        "ecutwfc_ry": 40,
+        "ecutrho_ry": 200
+      },
+      "energy_ev": -3406.1412504428217,
+      "magnetization": {
+        "total_muB_per_cell": 2.117620090310847,
+        "absolute_muB_per_cell": 2.253500428794206,
+        "mean_total_muB_per_atom": 2.117620090310847,
+        "mean_absolute_muB_per_atom": 2.253500428794206,
+        "number_of_atoms": 1,
+        "scope": "Integrated spin density; the per-atom mean is not a site-resolved moment"
+      },
+      "smearing_term_ev": 0.015090069758205019,
+      "fermi_energy_ev": 18.3784443811229,
+      "delta_mev_per_atom": 7.4924939176526095,
+      "max_force_ry_bohr": 0.0,
+      "pressure_kbar": 2.854105721427066
+    },
+    {
+      "settings": {
+        "ecutwfc_ry": 60,
+        "ecutrho_ry": 300
+      },
+      "energy_ev": -3406.151555028454,
+      "magnetization": {
+        "total_muB_per_cell": 2.117803897880415,
+        "absolute_muB_per_cell": 2.254234562500285,
+        "mean_total_muB_per_atom": 2.117803897880415,
+        "mean_absolute_muB_per_atom": 2.254234562500285,
+        "number_of_atoms": 1,
+        "scope": "Integrated spin density; the per-atom mean is not a site-resolved moment"
+      },
+      "smearing_term_ev": 0.015111584674739187,
+      "fermi_energy_ev": 18.375158465450284,
+      "delta_mev_per_atom": -2.8120917145315616,
+      "max_force_ry_bohr": 0.0,
+      "pressure_kbar": 2.5220503919944375
+    },
+    {
+      "settings": {
+        "scf_k": [
+          12,
+          12,
+          12
+        ]
+      },
+      "energy_ev": -3406.146283037034,
+      "magnetization": {
+        "total_muB_per_cell": 2.228592462538312,
+        "absolute_muB_per_cell": 2.346713824965528,
+        "mean_total_muB_per_atom": 2.228592462538312,
+        "mean_absolute_muB_per_atom": 2.346713824965528,
+        "number_of_atoms": 1,
+        "scope": "Integrated spin density; the per-atom mean is not a site-resolved moment"
+      },
+      "smearing_term_ev": 0.012923607009527075,
+      "fermi_energy_ev": 18.39213398253669,
+      "delta_mev_per_atom": 2.4598997051725746,
+      "max_force_ry_bohr": 0.0,
+      "pressure_kbar": 22.2296287176298
+    },
+    {
+      "settings": {
+        "degauss_ry": 0.01
+      },
+      "energy_ev": -3406.151726993283,
+      "magnetization": {
+        "total_muB_per_cell": 2.123113907349343,
+        "absolute_muB_per_cell": 2.261786831895783,
+        "mean_total_muB_per_atom": 2.123113907349343,
+        "mean_absolute_muB_per_atom": 2.261786831895783,
+        "number_of_atoms": 1,
+        "scope": "Integrated spin density; the per-atom mean is not a site-resolved moment"
+      },
+      "smearing_term_ev": -0.0012014374668716128,
+      "fermi_energy_ev": 18.406829126034918,
+      "delta_mev_per_atom": -2.9840565434824384,
+      "max_force_ry_bohr": 0.0,
+      "pressure_kbar": 2.6216942041366385
+    },
+    {
+      "settings": {
+        "starting_magnetization": {
+          "Fe": 0.1
+        }
+      },
+      "energy_ev": -3406.1487429361114,
+      "magnetization": {
+        "total_muB_per_cell": 2.117972314732051,
+        "absolute_muB_per_cell": 2.254408833288085,
+        "mean_total_muB_per_atom": 2.117972314732051,
+        "mean_absolute_muB_per_atom": 2.254408833288085,
+        "number_of_atoms": 1,
+        "scope": "Integrated spin density; the per-atom mean is not a site-resolved moment"
+      },
+      "smearing_term_ev": 0.01513616526936875,
+      "fermi_energy_ev": 18.375022627486295,
+      "delta_mev_per_atom": 6.28006091574207e-07,
+      "max_force_ry_bohr": 0.0,
+      "pressure_kbar": -0.0643946564359496
+    },
+    {
+      "settings": {
+        "starting_magnetization": {
+          "Fe": 0.6
+        }
+      },
+      "energy_ev": -3406.1487429354497,
+      "magnetization": {
+        "total_muB_per_cell": 2.118015876065963,
+        "absolute_muB_per_cell": 2.254462193095825,
+        "mean_total_muB_per_atom": 2.118015876065963,
+        "mean_absolute_muB_per_atom": 2.254462193095825,
+        "number_of_atoms": 1,
+        "scope": "Integrated spin density; the per-atom mean is not a site-resolved moment"
+      },
+      "smearing_term_ev": 0.015137366664701194,
+      "fermi_energy_ev": 18.3750060696466,
+      "delta_mev_per_atom": 1.2896634871140122e-06,
+      "max_force_ry_bohr": 0.0,
+      "pressure_kbar": -0.3626754076501369
+    },
+    {
+      "settings": {
+        "starting_magnetization": {
+          "Fe": -0.3
+        }
+      },
+      "energy_ev": -3406.1487429364565,
+      "magnetization": {
+        "total_muB_per_cell": -2.117970916357253,
+        "absolute_muB_per_cell": 2.2544058529708,
+        "mean_total_muB_per_atom": -2.117970916357253,
+        "mean_absolute_muB_per_atom": 2.2544058529708,
+        "number_of_atoms": 1,
+        "scope": "Integrated spin density; the per-atom mean is not a site-resolved moment"
+      },
+      "smearing_term_ev": 0.015136223556677946,
+      "fermi_energy_ev": 18.375037329020003,
+      "delta_mev_per_atom": 2.828528522513807e-07,
+      "max_force_ry_bohr": 0.0,
+      "pressure_kbar": -0.15108527313205486
+    }
+  ],
+  "wall_seconds": 461.92730951309204,
+  "output_bytes": 517025308
+}

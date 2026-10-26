@@ -1,0 +1,26 @@
+{
+  "convergence.json": {
+    "sha256": "ae7f74a5db6be5b02fef18de39ba3b26659f0bb6713fb459d459642421bd7dc8",
+    "bytes": 4771
+  },
+  "effective_case.json": {
+    "sha256": "9b497ee5d68076d42780818fdb771cc83813dcb118b33630fac777f719995ca0",
+    "bytes": 3275
+  },
+  "executed_protocol.md": {
+    "sha256": "962918184b97f1e3cf4ca2e29020f34ef697430a065bf422ac66b692aa1cccc2",
+    "bytes": 3197
+  },
+  "execution_receipt.json": {
+    "sha256": "d925bc7cb5db9ff221eb58786be4b3f60d9ebdcabee3993d6eb52a81daf2f8eb",
+    "bytes": 708
+  },
+  "fe_reference_comparison.json": {
+    "sha256": "effb2f53aa609b3a923c2e97e502a89073e0302e541f53c27d3834d0719b670e",
+    "bytes": 8464
+  },
+  "summary.json": {
+    "sha256": "a4a073f93b0f4dcba2f32ed9cc04a81f70968317959ba668f66698420ee0bb8e",
+    "bytes": 17869
+  }
+}

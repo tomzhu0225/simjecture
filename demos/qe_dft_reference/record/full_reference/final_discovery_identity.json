@@ -1,0 +1,25 @@
+{
+  "runtime_identity_matches_after_repeated_deployment": true,
+  "workflow_matches_executed_program": true,
+  "runtime_identity_sha256": "4a9a822b0974004de55659a18d5023dfea802bf22082a5fb51f3928a9b792614",
+  "source_contract_sha256": "e773729be8ee2576babe96b7d0ca91dfc71ff68f261de2ebfb785b51efaf3a57",
+  "replay_contract_sha256": "78469ff06bd44a93fb7e33923ed128ca51e0fdf08508aab2c6f55d4fc611b0ab",
+  "workflow_resource": {
+    "skill": "quantum-espresso",
+    "version": "1.0.0",
+    "path": "examples/dft_workflow.py",
+    "content_sha256": "2131b31f98e0465689de13b5d5ba16f0052539318255948a8258a12b47b47848",
+    "skill_sha256": "687bfa3f276e98667caea728e2be8195a3905c27ccdbcdbd7a90b0a639b6b9db"
+  },
+  "current_skill": {
+    "name": "quantum-espresso",
+    "version": "1.0.0",
+    "description": "QE deployment and configurable nonmagnetic DFT workflow",
+    "entrypoint": "SKILL.md",
+    "capability_names": [
+      "quantum-espresso-7.4"
+    ],
+    "content_sha256": "687bfa3f276e98667caea728e2be8195a3905c27ccdbcdbd7a90b0a639b6b9db"
+  },
+  "scope": "Contract hashes differ because replay resolves a local runtime path; binary identity is identical."
+}

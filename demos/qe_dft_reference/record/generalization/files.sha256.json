@@ -1,0 +1,30 @@
+{
+  "archived_output_reanalysis.json": {
+    "sha256": "944f13e4d484be00ab0c6f0e5803b56578dda47947186eb4a35487bc4e79df1c",
+    "bytes": 743
+  },
+  "execution_receipt.json": {
+    "sha256": "f5ad40753fefa065eed0331d961868f7b4ee81e89f8abbdbc40a7bf7f3812148",
+    "bytes": 333
+  },
+  "reanalysis_bands_dos_pdos.png": {
+    "sha256": "b3a247add0b70cbda3cc2b3c03da0886c09d78803774b043e6720f74a7040b15",
+    "bytes": 322009
+  },
+  "scf/pw.in": {
+    "sha256": "27f94b6b6e5770ccc7ad3d1d5d5a4ecc7b3dff1ee918da0f07985f6a19d11557",
+    "bytes": 707
+  },
+  "scf/pw.out": {
+    "sha256": "bc05705e191c86089c16fd33572ef59606e454decabedba0c3d1b0578e88013a",
+    "bytes": 12114
+  },
+  "summary.json": {
+    "sha256": "8a1b8f6cdea5211cd7c3703bba0174fade66bf80e3036b4a1c2b9fe4d628f6f9",
+    "bytes": 4447
+  },
+  "workflow_style_equivalence.json": {
+    "sha256": "fedcbcbd612dcaac0e2be23be939ad5faad5501c569b3fb382211ebc6d1e6211",
+    "bytes": 304
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "runtime_root": "../.runtime/quantum-espresso-7.4",
+  "executable": "bin/python",
+  "identity_files": [
+    "bin/pw.x",
+    "bin/dos.x",
+    "bin/bands.x",
+    "bin/projwfc.x",
+    "share/build-record.json"
+  ],
+  "environment": {
+    "QE_BIN": "/opt/acs-capabilities/quantum-espresso-7.4/bin",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MPLBACKEND": "Agg",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "OMPI_MCA_btl": "self,tcp",
+    "OMPI_MCA_pml": "ob1",
+    "OPAL_PREFIX": "/opt/acs-capabilities/quantum-espresso-7.4"
+  },
+  "manifest": {
+    "schema_version": "0.1.0",
+    "name": "quantum-espresso-7.4",
+    "version": "7.4",
+    "skill": "quantum-espresso",
+    "executable_kind": "python-quantum-espresso",
+    "description": "Configurable scalar and collinear plane-wave DFT with QE PW and PP tools",
+    "preflight_resource": "examples/runtime_smoke.py",
+    "preflight_result": "qe_runtime_smoke.json",
+    "preflight_checks": [
+      "checks.completed",
+      "checks.executables_present",
+      "checks.version_matches",
+      "checks.expected_no_input_diagnostic"
+    ]
+  }
+}

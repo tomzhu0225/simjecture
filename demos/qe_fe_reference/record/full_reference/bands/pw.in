@@ -1,0 +1,38 @@
+&CONTROL
+ calculation='bands',
+ prefix='sample', outdir='./out',
+ pseudo_dir='../pseudo',
+ tstress=.true., tprnfor=.true.,
+ etot_conv_thr=1e-06,
+ forc_conv_thr=0.0001,
+/
+&SYSTEM
+ ibrav=0, nat=1, ntyp=1,
+ ecutwfc=60, ecutrho=300,
+ input_dft='PBE', nspin=2,
+ occupations='smearing',
+ smearing='mv', degauss=0.02,
+ starting_magnetization(1)=0.3,
+ nbnd=16,
+ nosym=.true., noinv=.true.,
+/
+&ELECTRONS
+ conv_thr=1e-09,
+ electron_maxstep=200, mixing_beta=0.3,
+/
+ATOMIC_SPECIES
+Fe 55.845 fe_pbe_v1.5.uspp.F.UPF
+CELL_PARAMETERS angstrom
+-1.415448081120 1.415448081120 1.415448081120
+1.415448081120 -1.415448081120 1.415448081120
+1.415448081120 1.415448081120 -1.415448081120
+ATOMIC_POSITIONS crystal
+Fe 0.000000000000 0.000000000000 0.000000000000
+K_POINTS crystal_b
+6
+0 0 0 12
+0.5 -0.5 0.5 8
+0 0 0.5 8
+0 0 0 12
+0.25 0.25 0.25 8
+0.5 -0.5 0.5 1
