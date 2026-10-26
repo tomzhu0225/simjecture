@@ -32,7 +32,7 @@ a reasonable decision need not have a unique route label. The 90-second fallback
 is present in the original declared-task evidence, so this contextual information
 was available in the model view as well as the auditor instructions.
 
-## Model scoring status
+## Earlier failed scoring attempt
 
 The separately registered four-checkpoint A100 scoring attempt restored its
 assets and passed the small convolution/gradient check. It then failed a saved
@@ -43,10 +43,60 @@ were preserved off-runtime.
 
 The first runner saved the qualification table only after every probe passed,
 so the offending probability vector was not retained. That limits diagnosis.
-The next diagnostic runner must save every probe before checking its tolerance,
-verify loaded adapter tensors, and qualify the primary base/SFT execution path
-before using it for comparisons. The failure is not a scientific performance
-result for either method.
+The subsequent diagnostic saved every probe before checking its tolerance,
+verified loaded adapter tensors, and qualified the primary base/SFT execution
+path before using it for comparisons. The earlier failure is not a scientific
+performance result for either method; its root cause remains unidentified.
+
+## Qualified base versus continued-SFT decisions
+
+The subsequent remote A100 run completed all 48 assigned predictions: the same
+24 recorded scientific observations, scored with the unadapted pretrained base
+and the exact continued-SFT checkpoint used in the 223.9-second workflow result.
+Both use temperature 1, the same input/compiler and independent field decoding.
+There were no inference errors or optimizer updates.
+
+All 496 loaded adapter tensors match the saved checkpoint exactly. Disabling
+the adapter reproduces the pre-adapter base probe with zero probability error.
+Both saved SFT probes reproduce before and after scoring, with maximum absolute
+probability discrepancy below 2.85e-8 against the unchanged 1e-4 tolerance.
+A duplicate named copy of the same adapter also reproduces those probes. Thus
+named selection by itself is not sufficient to explain the earlier failed run.
+
+| Recorded-state measure | Pretrained base | Continued SFT |
+|---|---:|---:|
+| Route acceptable to both reviewers | 16/24 | 18/24 |
+| Route acceptable to both, excluding four uncertain states | 13/20 | 16/20 |
+| Correct route on seven states where both require an expert | 0/7 | 5/7 |
+| Any expert route on those seven states | 0/7 | 7/7 |
+| Expert proposals on eleven states where both accept only observing | 0/11 | 2/11 |
+
+The base selects `observe` in all 24 cases. SFT recognizes the persistent update
+loop, artifact-consumer problem, and three unit-conversion snapshots. It routes
+the two protected source-binding defects to the director, whereas both reviewers
+require the repair judge. Its two proposals on unanimous observe-only states
+concern a publication retry and a progressing commissioning job. On a third
+disputed state near the ordinary wake boundary, SFT proposes help that only one
+reviewer accepts.
+
+SFT therefore changes useful detection behavior and introduces unnecessary-
+attention candidates. The net gain on the two-reviewer route criterion is two
+states: five improved and three worsened, with sixteen unchanged. This is a
+small, correlated development sample from eight earlier episodes, judged by two
+contexts of the same large model. It is not 24 independent workflow outcomes,
+an estimate of a deployment false-alert rate, or proof of causal time savings.
+The unanimous-observe diagnostic is supplementary, not a new training target.
+
+These scores also have a narrower meaning than the earlier authored test's
+54.0% to 97.5% improvement. That test measures the authored scientific contract
+and routing targets; this audit measures reviewer acceptance of routes on
+actual recorded states. Their percentages are not directly interchangeable.
+
+Median forward-call time was 0.268 seconds for base and 0.409 seconds for SFT on
+this A100; inputs ranged from 3,200 to 4,964 tokens. These are component timings,
+not complete-workflow timings. The runtime was released after preserving all
+outputs. The recorded compute balance decreased by 0.21 units during this
+allocation; billing can lag, so this is not a final metered cost.
 
 ## Primary research question
 
