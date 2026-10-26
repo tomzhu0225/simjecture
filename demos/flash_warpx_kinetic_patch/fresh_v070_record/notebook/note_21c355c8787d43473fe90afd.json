@@ -1,0 +1,20 @@
+{
+  "id": "note_21c355c8787d43473fe90afd",
+  "created_at": 1793003978.6268063,
+  "authority": "worker_note",
+  "statement": "Repair secondary-bin audit after independent methods review: reuse estimator endpoint brackets and same physical-time rule, thresholds count128/Neff256, no dropped bins; compute secondary mean A and absolute primary-secondary difference. Retained raw tensors suffice, no solver repair or scientific hypothesis change. Replay pilot,larger,refinedsource,mesh.",
+  "kind": "implementation",
+  "experiments": [
+    "exp_b6a2adccb584b91734873c8d",
+    "exp_dd8c15b208658c27f2d762ad"
+  ],
+  "sources": [],
+  "claim": "root",
+  "supersedes": null,
+  "alternatives": {},
+  "estimated_seconds": null,
+  "evidence_bindings": {
+    "exp_b6a2adccb584b91734873c8d": "9ca800d52164d1743c6ef3dfd6ecc538fd79bcd5442e02cfede3f7c0f2c01229",
+    "exp_dd8c15b208658c27f2d762ad": "be18eb6418c814390561b91a59c8db6a0ae2081b46e1502067984702d599cf5d"
+  }
+}

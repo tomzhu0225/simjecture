@@ -1,0 +1,18 @@
+{
+  "id": "note_2c708c25cbc1aed6914dcd74",
+  "created_at": 1792929235.2188473,
+  "authority": "worker_note",
+  "statement": "Exact anchor ran to completion, reaching both flux thresholds with finite positive fields and divB <1e-12. Its receipt failed solely because reproduce_anchor declared assets/runtime_validation.json while the command wrote outputs/commissioning__20261025T1141/validation.json. Retain the failed receipt; use correct declared outputs in campaign driver. No solver error or physical counterexample.",
+  "kind": "observation",
+  "experiments": [
+    "exp_2f42b96d98fb476429596b6c"
+  ],
+  "sources": [],
+  "claim": "root",
+  "supersedes": null,
+  "alternatives": {},
+  "estimated_seconds": null,
+  "evidence_bindings": {
+    "exp_2f42b96d98fb476429596b6c": "5f2201a0f48db10bd8e066009fdc322d9ccfb6166f450dae2f88d73ecdc5b1c6"
+  }
+}

@@ -1,0 +1,3377 @@
+{
+  "schema_version": "0.1.0",
+  "kind": "fresh_campaign_measurement",
+  "checks": {
+    "completed": true,
+    "representation": true,
+    "physics_controls": true,
+    "boundaries": true,
+    "diagnostics": true,
+    "numerical_regime": true,
+    "flux_window_reached": true
+  },
+  "metrics": {
+    "l_over_eta_nominal": 4000.0,
+    "flux_low": 0.01,
+    "flux_high": 0.05,
+    "flux_low_crossing_time": 0.5420287737330697,
+    "flux_high_crossing_time": 1.925792215361121,
+    "reconnection_time": 1.3837634416280515,
+    "normalized_flux_slope": 0.02890667493927896,
+    "flux_path_max_abs_mismatch": 0.00016875705938063437,
+    "max_abs_divb": 1.6724399642953358e-12,
+    "max_boundary_normal_fraction": 0.04877503475176044,
+    "initial_sheet_cells": 6.4,
+    "plot_file_count": 121
+  },
+  "realized": {
+    "eta": 0.00025,
+    "resistivity_solver": "explicit",
+    "use_diffuse": true,
+    "use_magnetic_resistivity": true,
+    "nx": 128,
+    "ny": 128,
+    "alpha": 20.0,
+    "tmax": 3.0,
+    "mpi_ranks": 4
+  },
+  "timeseries": [
+    {
+      "time": 0.0,
+      "flux_from_by": 0.00030806965794133543,
+      "flux_from_bx": 0.0006051419629784505,
+      "max_abs_divb": 1.4210854715202004e-14,
+      "max_abs_velocity": 0.0,
+      "reconnected_flux_from_by": 0.0,
+      "reconnected_flux_from_bx": 0.0
+    },
+    {
+      "time": 0.025528120068618588,
+      "flux_from_by": 0.0005554686713899981,
+      "flux_from_bx": 0.0008500715632635546,
+      "max_abs_divb": 2.922107000813412e-13,
+      "max_abs_velocity": 0.03680269420146942,
+      "reconnected_flux_from_by": 0.0002473990134486627,
+      "reconnected_flux_from_bx": 0.00024492960028510413
+    },
+    {
+      "time": 0.05056257235673549,
+      "flux_from_by": 0.0008023242053689631,
+      "flux_from_bx": 0.0010982219395714306,
+      "max_abs_divb": 3.4638958368304884e-13,
+      "max_abs_velocity": 0.07138928025960922,
+      "reconnected_flux_from_by": 0.0004942545474276277,
+      "reconnected_flux_from_bx": 0.0004930799765929801
+    },
+    {
+      "time": 0.07555793653141359,
+      "flux_from_by": 0.001055379705262203,
+      "flux_from_bx": 0.0013558012459498055,
+      "max_abs_divb": 4.5297099404706387e-13,
+      "max_abs_velocity": 0.10671279579401016,
+      "reconnected_flux_from_by": 0.0007473100473208675,
+      "reconnected_flux_from_bx": 0.000750659282971355
+    },
+    {
+      "time": 0.10052917769852278,
+      "flux_from_by": 0.0013168425052527655,
+      "flux_from_bx": 0.0016244354732748425,
+      "max_abs_divb": 4.742872761198669e-13,
+      "max_abs_velocity": 0.14293277263641357,
+      "reconnected_flux_from_by": 0.00100877284731143,
+      "reconnected_flux_from_bx": 0.001019293510296392
+    },
+    {
+      "time": 0.12548419515731904,
+      "flux_from_by": 0.001589573974021259,
+      "flux_from_bx": 0.0019068467959755244,
+      "max_abs_divb": 4.849454171562684e-13,
+      "max_abs_velocity": 0.179371178150177,
+      "reconnected_flux_from_by": 0.0012815043160799237,
+      "reconnected_flux_from_bx": 0.001301704832997074
+    },
+    {
+      "time": 0.15043153933624134,
+      "flux_from_by": 0.0018767677790715296,
+      "flux_from_bx": 0.0022060806770127775,
+      "max_abs_divb": 5.311306949806749e-13,
+      "max_abs_velocity": 0.21550780534744263,
+      "reconnected_flux_from_by": 0.0015686981211301943,
+      "reconnected_flux_from_bx": 0.001600938714034327
+    },
+    {
+      "time": 0.17529231944850293,
+      "flux_from_by": 0.0021810816578061694,
+      "flux_from_bx": 0.0025244585025347983,
+      "max_abs_divb": 5.95523630408934e-13,
+      "max_abs_velocity": 0.25080037117004395,
+      "reconnected_flux_from_by": 0.001873011999864834,
+      "reconnected_flux_from_bx": 0.0019193165395563479
+    },
+    {
+      "time": 0.20081766813894802,
+      "flux_from_by": 0.0025159197260913326,
+      "flux_from_bx": 0.002875514738150286,
+      "max_abs_divb": 6.861178292183467e-13,
+      "max_abs_velocity": 0.2860674560070038,
+      "reconnected_flux_from_by": 0.0022078500681499973,
+      "reconnected_flux_from_bx": 0.0022703727751718357
+    },
+    {
+      "time": 0.2251942779758604,
+      "flux_from_by": 0.002860329581174434,
+      "flux_from_bx": 0.00323666383917498,
+      "max_abs_divb": 7.65609797781508e-13,
+      "max_abs_velocity": 0.3190217614173889,
+      "reconnected_flux_from_by": 0.0025522599232330988,
+      "reconnected_flux_from_bx": 0.0026315218761965293
+    },
+    {
+      "time": 0.2502406282761539,
+      "flux_from_by": 0.0032427691953917934,
+      "flux_from_bx": 0.003636909574709078,
+      "max_abs_divb": 7.323031070427533e-13,
+      "max_abs_velocity": 0.3521347641944885,
+      "reconnected_flux_from_by": 0.002934699537450458,
+      "reconnected_flux_from_bx": 0.0030317676117306274
+    },
+    {
+      "time": 0.2750609280836824,
+      "flux_from_by": 0.0036541388674953238,
+      "flux_from_bx": 0.00406627289538619,
+      "max_abs_divb": 7.309708394132031e-13,
+      "max_abs_velocity": 0.3847186267375946,
+      "reconnected_flux_from_by": 0.0033460692095539884,
+      "reconnected_flux_from_bx": 0.0034611309324077393
+    },
+    {
+      "time": 0.3005334771928854,
+      "flux_from_by": 0.00411427289482491,
+      "flux_from_bx": 0.00454433824171474,
+      "max_abs_divb": 7.962519532611623e-13,
+      "max_abs_velocity": 0.41902124881744385,
+      "reconnected_flux_from_by": 0.0038062032368835746,
+      "reconnected_flux_from_bx": 0.003939196278736289
+    },
+    {
+      "time": 0.3257678051712501,
+      "flux_from_by": 0.004605197294053067,
+      "flux_from_bx": 0.005049094920849483,
+      "max_abs_divb": 7.913669719528116e-13,
+      "max_abs_velocity": 0.4533643424510956,
+      "reconnected_flux_from_by": 0.004297127636111731,
+      "reconnected_flux_from_bx": 0.004443952957871033
+    },
+    {
+      "time": 0.35077836105041077,
+      "flux_from_by": 0.005133343148994391,
+      "flux_from_bx": 0.005588277976499967,
+      "max_abs_divb": 7.847056338050606e-13,
+      "max_abs_velocity": 0.4859789311885834,
+      "reconnected_flux_from_by": 0.004825273491053056,
+      "reconnected_flux_from_bx": 0.004983136013521516
+    },
+    {
+      "time": 0.3755686456905011,
+      "flux_from_by": 0.005699222261940303,
+      "flux_from_bx": 0.006161718953450189,
+      "max_abs_divb": 8.055778266680136e-13,
+      "max_abs_velocity": 0.5202382802963257,
+      "reconnected_flux_from_by": 0.005391152603998968,
+      "reconnected_flux_from_bx": 0.005556576990471738
+    },
+    {
+      "time": 0.4001301287606329,
+      "flux_from_by": 0.006295893265514159,
+      "flux_from_bx": 0.006761722629931908,
+      "max_abs_divb": 8.419931418757187e-13,
+      "max_abs_velocity": 0.5556802749633789,
+      "reconnected_flux_from_by": 0.005987823607572823,
+      "reconnected_flux_from_bx": 0.006156580666953458
+    },
+    {
+      "time": 0.42529395185710095,
+      "flux_from_by": 0.006942175910349845,
+      "flux_from_bx": 0.0074078694496506605,
+      "max_abs_divb": 8.908429549592256e-13,
+      "max_abs_velocity": 0.5928493738174438,
+      "reconnected_flux_from_by": 0.00663410625240851,
+      "reconnected_flux_from_bx": 0.00680272748667221
+    },
+    {
+      "time": 0.45021415348758426,
+      "flux_from_by": 0.00761629582865986,
+      "flux_from_bx": 0.008079005792694714,
+      "max_abs_divb": 9.245937349078304e-13,
+      "max_abs_velocity": 0.6292402148246765,
+      "reconnected_flux_from_by": 0.0073082261707185245,
+      "reconnected_flux_from_bx": 0.0074738638297162634
+    },
+    {
+      "time": 0.475717236074094,
+      "flux_from_by": 0.008337246415410778,
+      "flux_from_bx": 0.008795272329336964,
+      "max_abs_divb": 9.339196083146817e-13,
+      "max_abs_velocity": 0.6662032008171082,
+      "reconnected_flux_from_by": 0.008029176757469442,
+      "reconnected_flux_from_bx": 0.008190130366358513
+    },
+    {
+      "time": 0.5001679862639691,
+      "flux_from_by": 0.00905132874587666,
+      "flux_from_bx": 0.009504407710409167,
+      "max_abs_divb": 9.454659277707833e-13,
+      "max_abs_velocity": 0.7006596922874451,
+      "reconnected_flux_from_by": 0.008743259087935324,
+      "reconnected_flux_from_bx": 0.008899265747430716
+    },
+    {
+      "time": 0.5252080202973518,
+      "flux_from_by": 0.009798652445068164,
+      "flux_from_bx": 0.010245976980428393,
+      "max_abs_divb": 9.410250356722827e-13,
+      "max_abs_velocity": 0.7354941368103027,
+      "reconnected_flux_from_by": 0.009490582787126828,
+      "reconnected_flux_from_bx": 0.009640835017449943
+    },
+    {
+      "time": 0.5500271880794338,
+      "flux_from_by": 0.010550301966933965,
+      "flux_from_bx": 0.010991019390814925,
+      "max_abs_divb": 9.250378241176804e-13,
+      "max_abs_velocity": 0.7686652541160583,
+      "reconnected_flux_from_by": 0.010242232308992629,
+      "reconnected_flux_from_bx": 0.010385877427836475
+    },
+    {
+      "time": 0.5754319259566877,
+      "flux_from_by": 0.011326947978224752,
+      "flux_from_bx": 0.01176026888285264,
+      "max_abs_divb": 9.725553695716371e-13,
+      "max_abs_velocity": 0.7995426058769226,
+      "reconnected_flux_from_by": 0.011018878320283415,
+      "reconnected_flux_from_bx": 0.01115512691987419
+    },
+    {
+      "time": 0.6006438805457003,
+      "flux_from_by": 0.012101204199172821,
+      "flux_from_bx": 0.01252684544070348,
+      "max_abs_divb": 9.476863738200336e-13,
+      "max_abs_velocity": 0.8264369964599609,
+      "reconnected_flux_from_by": 0.011793134541231485,
+      "reconnected_flux_from_bx": 0.01192170347772503
+    },
+    {
+      "time": 0.6256908886550121,
+      "flux_from_by": 0.012864097369594145,
+      "flux_from_bx": 0.013281577702684896,
+      "max_abs_divb": 9.29478716216181e-13,
+      "max_abs_velocity": 0.84799724817276,
+      "reconnected_flux_from_by": 0.012556027711652809,
+      "reconnected_flux_from_bx": 0.012676435739706445
+    },
+    {
+      "time": 0.6506114955901088,
+      "flux_from_by": 0.013620172322506889,
+      "flux_from_bx": 0.01403002972040212,
+      "max_abs_divb": 9.063860773039778e-13,
+      "max_abs_velocity": 0.8622096180915833,
+      "reconnected_flux_from_by": 0.013312102664565553,
+      "reconnected_flux_from_bx": 0.013424887757423669
+    },
+    {
+      "time": 0.6754499233788159,
+      "flux_from_by": 0.01437312939791102,
+      "flux_from_bx": 0.014776565809938804,
+      "max_abs_divb": 9.099387909827783e-13,
+      "max_abs_velocity": 0.8715806603431702,
+      "reconnected_flux_from_by": 0.014065059739969684,
+      "reconnected_flux_from_bx": 0.014171423846960353
+    },
+    {
+      "time": 0.7002348454086521,
+      "flux_from_by": 0.015112616570162711,
+      "flux_from_bx": 0.015510144047652828,
+      "max_abs_divb": 9.121592370320286e-13,
+      "max_abs_velocity": 0.8767427802085876,
+      "reconnected_flux_from_by": 0.014804546912221375,
+      "reconnected_flux_from_bx": 0.014905002084674377
+    },
+    {
+      "time": 0.7257680954545379,
+      "flux_from_by": 0.015864490134366076,
+      "flux_from_bx": 0.01625684963249796,
+      "max_abs_divb": 9.15267861500979e-13,
+      "max_abs_velocity": 0.8752055168151855,
+      "reconnected_flux_from_by": 0.01555642047642474,
+      "reconnected_flux_from_bx": 0.01565170766951951
+    },
+    {
+      "time": 0.7505405731542537,
+      "flux_from_by": 0.016586009109416988,
+      "flux_from_bx": 0.016974565561838514,
+      "max_abs_divb": 9.50350909079134e-13,
+      "max_abs_velocity": 0.8673892617225647,
+      "reconnected_flux_from_by": 0.016277939451475654,
+      "reconnected_flux_from_bx": 0.016369423598860063
+    },
+    {
+      "time": 0.7753613051852936,
+      "flux_from_by": 0.01730060342711371,
+      "flux_from_bx": 0.01768641863776565,
+      "max_abs_divb": 9.681144774731365e-13,
+      "max_abs_velocity": 0.854453444480896,
+      "reconnected_flux_from_by": 0.016992533769172376,
+      "reconnected_flux_from_bx": 0.0170812766747872
+    },
+    {
+      "time": 0.8002597318731285,
+      "flux_from_by": 0.018008909846067393,
+      "flux_from_bx": 0.01839286790925598,
+      "max_abs_divb": 9.867662242868391e-13,
+      "max_abs_velocity": 0.8362186551094055,
+      "reconnected_flux_from_by": 0.01770084018812606,
+      "reconnected_flux_from_bx": 0.01778772594627753
+    },
+    {
+      "time": 0.8252113236665991,
+      "flux_from_by": 0.018710186602619572,
+      "flux_from_bx": 0.019093119866852245,
+      "max_abs_divb": 9.885425811262394e-13,
+      "max_abs_velocity": 0.8213210701942444,
+      "reconnected_flux_from_by": 0.018402116944678238,
+      "reconnected_flux_from_bx": 0.018487977903873794
+    },
+    {
+      "time": 0.850190574918258,
+      "flux_from_by": 0.019404630488785816,
+      "flux_from_bx": 0.01978730817239693,
+      "max_abs_divb": 9.938716516444401e-13,
+      "max_abs_velocity": 0.8127763867378235,
+      "reconnected_flux_from_by": 0.019096560830844482,
+      "reconnected_flux_from_bx": 0.01918216620941848
+    },
+    {
+      "time": 0.8751933211620435,
+      "flux_from_by": 0.02009397624755936,
+      "flux_from_bx": 0.020477061859708094,
+      "max_abs_divb": 1.0254019855437946e-12,
+      "max_abs_velocity": 0.8049560189247131,
+      "reconnected_flux_from_by": 0.019785906589618027,
+      "reconnected_flux_from_bx": 0.019871919896729644
+    },
+    {
+      "time": 0.9002183145608511,
+      "flux_from_by": 0.020780167153732876,
+      "flux_from_bx": 0.021164261381386485,
+      "max_abs_divb": 1.0471623568264476e-12,
+      "max_abs_velocity": 0.7979060411453247,
+      "reconnected_flux_from_by": 0.02047209749579154,
+      "reconnected_flux_from_bx": 0.020559119418408035
+    },
+    {
+      "time": 0.925261111697714,
+      "flux_from_by": 0.021462166609891743,
+      "flux_from_bx": 0.02184749243090777,
+      "max_abs_divb": 1.1035616864774056e-12,
+      "max_abs_velocity": 0.7916777729988098,
+      "reconnected_flux_from_by": 0.021154096951950408,
+      "reconnected_flux_from_bx": 0.02124235046792932
+    },
+    {
+      "time": 0.9503255531527816,
+      "flux_from_by": 0.022141500218585176,
+      "flux_from_bx": 0.02252837170539124,
+      "max_abs_divb": 1.098676705169055e-12,
+      "max_abs_velocity": 0.785839855670929,
+      "reconnected_flux_from_by": 0.02183343056064384,
+      "reconnected_flux_from_bx": 0.02192322974241279
+    },
+    {
+      "time": 0.9754081661799997,
+      "flux_from_by": 0.0228262478362744,
+      "flux_from_bx": 0.023215525381111483,
+      "max_abs_divb": 1.0862422072932532e-12,
+      "max_abs_velocity": 0.7825409173965454,
+      "reconnected_flux_from_by": 0.022518178178333067,
+      "reconnected_flux_from_bx": 0.022610383418133033
+    },
+    {
+      "time": 1.000492664315973,
+      "flux_from_by": 0.02350549808600188,
+      "flux_from_bx": 0.02389649000323145,
+      "max_abs_divb": 1.0751399770470016e-12,
+      "max_abs_velocity": 0.7813615798950195,
+      "reconnected_flux_from_by": 0.023197428428060544,
+      "reconnected_flux_from_bx": 0.023291348040253
+    },
+    {
+      "time": 1.0255712737523737,
+      "flux_from_by": 0.024185477924439255,
+      "flux_from_bx": 0.024578268493854683,
+      "max_abs_divb": 1.0871303857129533e-12,
+      "max_abs_velocity": 0.7800484895706177,
+      "reconnected_flux_from_by": 0.02387740826649792,
+      "reconnected_flux_from_bx": 0.023973126530876233
+    },
+    {
+      "time": 1.050646384281972,
+      "flux_from_by": 0.024870662316327063,
+      "flux_from_bx": 0.02526566363493998,
+      "max_abs_divb": 1.141753358524511e-12,
+      "max_abs_velocity": 0.7789954543113708,
+      "reconnected_flux_from_by": 0.02456259265838573,
+      "reconnected_flux_from_bx": 0.02466052167196153
+    },
+    {
+      "time": 1.0757149230871337,
+      "flux_from_by": 0.025559739652614155,
+      "flux_from_bx": 0.025956915382778323,
+      "max_abs_divb": 1.1608491945480637e-12,
+      "max_abs_velocity": 0.7795169949531555,
+      "reconnected_flux_from_by": 0.02525166999467282,
+      "reconnected_flux_from_bx": 0.025351773419799873
+    },
+    {
+      "time": 1.100764344499176,
+      "flux_from_by": 0.026252255064708407,
+      "flux_from_bx": 0.026651397566070042,
+      "max_abs_divb": 1.2065903831626201e-12,
+      "max_abs_velocity": 0.7824382185935974,
+      "reconnected_flux_from_by": 0.025944185406767073,
+      "reconnected_flux_from_bx": 0.02604625560309159
+    },
+    {
+      "time": 1.125005998124243,
+      "flux_from_by": 0.02692662811983569,
+      "flux_from_bx": 0.02732745884890164,
+      "max_abs_divb": 1.2367884494324244e-12,
+      "max_abs_velocity": 0.7846720814704895,
+      "reconnected_flux_from_by": 0.026618558461894357,
+      "reconnected_flux_from_bx": 0.02672231688592319
+    },
+    {
+      "time": 1.1500068610204877,
+      "flux_from_by": 0.02762751221595837,
+      "flux_from_bx": 0.028029928500728822,
+      "max_abs_divb": 1.20525811553307e-12,
+      "max_abs_velocity": 0.7869075536727905,
+      "reconnected_flux_from_by": 0.027319442558017035,
+      "reconnected_flux_from_bx": 0.02742478653775037
+    },
+    {
+      "time": 1.1757677564491402,
+      "flux_from_by": 0.028356281495808485,
+      "flux_from_bx": 0.02876020085142272,
+      "max_abs_divb": 1.1874945471390674e-12,
+      "max_abs_velocity": 0.788472592830658,
+      "reconnected_flux_from_by": 0.02804821183786715,
+      "reconnected_flux_from_bx": 0.02815505888844427
+    },
+    {
+      "time": 1.2007313590123208,
+      "flux_from_by": 0.02906964460735262,
+      "flux_from_bx": 0.02947490726275247,
+      "max_abs_divb": 1.2074785615823203e-12,
+      "max_abs_velocity": 0.7895856499671936,
+      "reconnected_flux_from_by": 0.028761574949411287,
+      "reconnected_flux_from_bx": 0.02886976529977402
+    },
+    {
+      "time": 1.22567754417524,
+      "flux_from_by": 0.02978843111084782,
+      "flux_from_bx": 0.030194724583338918,
+      "max_abs_divb": 1.1972645097557688e-12,
+      "max_abs_velocity": 0.7910268902778625,
+      "reconnected_flux_from_by": 0.029480361452906487,
+      "reconnected_flux_from_bx": 0.029589582620360468
+    },
+    {
+      "time": 1.2506063422109746,
+      "flux_from_by": 0.030510403114134103,
+      "flux_from_bx": 0.030917292835468402,
+      "max_abs_divb": 1.248334768888526e-12,
+      "max_abs_velocity": 0.7921637296676636,
+      "reconnected_flux_from_by": 0.03020233345619277,
+      "reconnected_flux_from_bx": 0.03031215087248995
+    },
+    {
+      "time": 1.2755204196644303,
+      "flux_from_by": 0.031242019948585213,
+      "flux_from_bx": 0.03164971540590499,
+      "max_abs_divb": 1.2327916465437738e-12,
+      "max_abs_velocity": 0.793865978717804,
+      "reconnected_flux_from_by": 0.03093395029064388,
+      "reconnected_flux_from_bx": 0.03104457344292654
+    },
+    {
+      "time": 1.300409738433379,
+      "flux_from_by": 0.031972183719874085,
+      "flux_from_bx": 0.032379679193809345,
+      "max_abs_divb": 1.2354561818028742e-12,
+      "max_abs_velocity": 0.7973846197128296,
+      "reconnected_flux_from_by": 0.03166411406193275,
+      "reconnected_flux_from_bx": 0.031774537230830895
+    },
+    {
+      "time": 1.3252730081173312,
+      "flux_from_by": 0.03270480162232614,
+      "flux_from_bx": 0.03311184964678659,
+      "max_abs_divb": 1.2181367026187218e-12,
+      "max_abs_velocity": 0.7994229793548584,
+      "reconnected_flux_from_by": 0.032396731964384806,
+      "reconnected_flux_from_bx": 0.03250670768380814
+    },
+    {
+      "time": 1.350117486281051,
+      "flux_from_by": 0.03344582990447842,
+      "flux_from_bx": 0.033852818409201284,
+      "max_abs_divb": 1.2687628725416289e-12,
+      "max_abs_velocity": 0.8014182448387146,
+      "reconnected_flux_from_by": 0.033137760246537085,
+      "reconnected_flux_from_bx": 0.03324767644622283
+    },
+    {
+      "time": 1.3757133532421157,
+      "flux_from_by": 0.03421248444752799,
+      "flux_from_bx": 0.03461910687653357,
+      "max_abs_divb": 1.291411422243982e-12,
+      "max_abs_velocity": 0.8048316836357117,
+      "reconnected_flux_from_by": 0.033904414789586654,
+      "reconnected_flux_from_bx": 0.03401396491355512
+    },
+    {
+      "time": 1.4005015526393165,
+      "flux_from_by": 0.03495563188468329,
+      "flux_from_bx": 0.03536153368297869,
+      "max_abs_divb": 1.3216094885137863e-12,
+      "max_abs_velocity": 0.8096438646316528,
+      "reconnected_flux_from_by": 0.03464756222674196,
+      "reconnected_flux_from_bx": 0.03475639172000024
+    },
+    {
+      "time": 1.4252512729950986,
+      "flux_from_by": 0.035698050826221454,
+      "flux_from_bx": 0.03610302041822421,
+      "max_abs_divb": 1.27720056752878e-12,
+      "max_abs_velocity": 0.8141098618507385,
+      "reconnected_flux_from_by": 0.03538998116828012,
+      "reconnected_flux_from_bx": 0.03549787845524576
+    },
+    {
+      "time": 1.4507413023505653,
+      "flux_from_by": 0.036463153440261714,
+      "flux_from_bx": 0.03686711074718118,
+      "max_abs_divb": 1.283417816466681e-12,
+      "max_abs_velocity": 0.8175060749053955,
+      "reconnected_flux_from_by": 0.03615508378232038,
+      "reconnected_flux_from_bx": 0.03626196878420273
+    },
+    {
+      "time": 1.4754324494175541,
+      "flux_from_by": 0.03720488582472468,
+      "flux_from_bx": 0.03760788752140341,
+      "max_abs_divb": 1.304734098539484e-12,
+      "max_abs_velocity": 0.820454478263855,
+      "reconnected_flux_from_by": 0.03689681616678334,
+      "reconnected_flux_from_bx": 0.03700274555842496
+    },
+    {
+      "time": 1.5001011694713877,
+      "flux_from_by": 0.03794552569995524,
+      "flux_from_bx": 0.03834763359770931,
+      "max_abs_divb": 1.298516849601583e-12,
+      "max_abs_velocity": 0.8221817016601562,
+      "reconnected_flux_from_by": 0.037637456042013906,
+      "reconnected_flux_from_bx": 0.03774249163473086
+    },
+    {
+      "time": 1.5255247038069744,
+      "flux_from_by": 0.03870746909017163,
+      "flux_from_bx": 0.039108652286557785,
+      "max_abs_divb": 1.3558043576722412e-12,
+      "max_abs_velocity": 0.823083221912384,
+      "reconnected_flux_from_by": 0.038399399432230294,
+      "reconnected_flux_from_bx": 0.038503510323579335
+    },
+    {
+      "time": 1.5501663220425956,
+      "flux_from_by": 0.039442623199605675,
+      "flux_from_bx": 0.039842732085659804,
+      "max_abs_divb": 1.3500311979441904e-12,
+      "max_abs_velocity": 0.8231036067008972,
+      "reconnected_flux_from_by": 0.03913455354166434,
+      "reconnected_flux_from_bx": 0.039237590122681354
+    },
+    {
+      "time": 1.5755777740016412,
+      "flux_from_by": 0.04020133855401473,
+      "flux_from_bx": 0.04060063188973827,
+      "max_abs_divb": 1.3726797476465435e-12,
+      "max_abs_velocity": 0.8215596079826355,
+      "reconnected_flux_from_by": 0.0398932688960734,
+      "reconnected_flux_from_bx": 0.03999548992675982
+    },
+    {
+      "time": 1.6002240757416422,
+      "flux_from_by": 0.04093199647531253,
+      "flux_from_bx": 0.04133007822066046,
+      "max_abs_divb": 1.3171685964152857e-12,
+      "max_abs_velocity": 0.8198859095573425,
+      "reconnected_flux_from_by": 0.040623926817371196,
+      "reconnected_flux_from_bx": 0.04072493625768201
+    },
+    {
+      "time": 1.625653544542981,
+      "flux_from_by": 0.04168082320583585,
+      "flux_from_bx": 0.04207752856316913,
+      "max_abs_divb": 1.284305994886381e-12,
+      "max_abs_velocity": 0.8163254261016846,
+      "reconnected_flux_from_by": 0.04137275354789451,
+      "reconnected_flux_from_bx": 0.04147238660019068
+    },
+    {
+      "time": 1.650330641850564,
+      "flux_from_by": 0.042410609723461334,
+      "flux_from_bx": 0.042806649328781525,
+      "max_abs_divb": 1.2931877790833823e-12,
+      "max_abs_velocity": 0.8134730458259583,
+      "reconnected_flux_from_by": 0.04210254006552,
+      "reconnected_flux_from_bx": 0.042201507365803075
+    },
+    {
+      "time": 1.6750192929105456,
+      "flux_from_by": 0.043136835784358646,
+      "flux_from_bx": 0.04353193073671946,
+      "max_abs_divb": 1.262545623603728e-12,
+      "max_abs_velocity": 0.8117803335189819,
+      "reconnected_flux_from_by": 0.04282876612641731,
+      "reconnected_flux_from_bx": 0.04292678877374101
+    },
+    {
+      "time": 1.7004829614222814,
+      "flux_from_by": 0.04387953236334805,
+      "flux_from_bx": 0.044273316532553494,
+      "max_abs_divb": 1.2678746941219288e-12,
+      "max_abs_velocity": 0.8110217452049255,
+      "reconnected_flux_from_by": 0.04357146270540672,
+      "reconnected_flux_from_bx": 0.043668174569575044
+    },
+    {
+      "time": 1.7251772914043464,
+      "flux_from_by": 0.04459625547492995,
+      "flux_from_bx": 0.04498880863945943,
+      "max_abs_divb": 1.2256862191861728e-12,
+      "max_abs_velocity": 0.8092891573905945,
+      "reconnected_flux_from_by": 0.044288185816988616,
+      "reconnected_flux_from_bx": 0.04438366667648098
+    },
+    {
+      "time": 1.7506560366455641,
+      "flux_from_by": 0.0453331962785497,
+      "flux_from_bx": 0.04572461201951228,
+      "max_abs_divb": 1.2660983372825285e-12,
+      "max_abs_velocity": 0.8062273859977722,
+      "reconnected_flux_from_by": 0.04502512662060837,
+      "reconnected_flux_from_bx": 0.04511947005653383
+    },
+    {
+      "time": 1.7753784157080559,
+      "flux_from_by": 0.04604577888425786,
+      "flux_from_bx": 0.04643621358052029,
+      "max_abs_divb": 1.283417816466681e-12,
+      "max_abs_velocity": 0.8041285872459412,
+      "reconnected_flux_from_by": 0.04573770922631652,
+      "reconnected_flux_from_bx": 0.04583107161754184
+    },
+    {
+      "time": 1.8001094736332872,
+      "flux_from_by": 0.04675540873949569,
+      "flux_from_bx": 0.04714485195367102,
+      "max_abs_divb": 1.305178187749334e-12,
+      "max_abs_velocity": 0.8017148971557617,
+      "reconnected_flux_from_by": 0.04644733908155436,
+      "reconnected_flux_from_bx": 0.04653970999069257
+    },
+    {
+      "time": 1.8256277414374258,
+      "flux_from_by": 0.04748389224706216,
+      "flux_from_bx": 0.04787224384707399,
+      "max_abs_divb": 1.248334768888526e-12,
+      "max_abs_velocity": 0.7987803220748901,
+      "reconnected_flux_from_by": 0.04717582258912083,
+      "reconnected_flux_from_bx": 0.04726710188409554
+    },
+    {
+      "time": 1.8503863325743615,
+      "flux_from_by": 0.04818741654233261,
+      "flux_from_bx": 0.04857472683860918,
+      "max_abs_divb": 1.1874945471390674e-12,
+      "max_abs_velocity": 0.7959694862365723,
+      "reconnected_flux_from_by": 0.04787934688439128,
+      "reconnected_flux_from_bx": 0.04796958487563073
+    },
+    {
+      "time": 1.8751620743526805,
+      "flux_from_by": 0.04888848281822832,
+      "flux_from_bx": 0.049274833075486406,
+      "max_abs_divb": 1.191935439237568e-12,
+      "max_abs_velocity": 0.7920043468475342,
+      "reconnected_flux_from_by": 0.04858041316028699,
+      "reconnected_flux_from_bx": 0.048669691112507955
+    },
+    {
+      "time": 1.9007336383255227,
+      "flux_from_by": 0.04960882833502375,
+      "flux_from_bx": 0.04999415509968229,
+      "max_abs_divb": 1.2398970739013748e-12,
+      "max_abs_velocity": 0.7886012196540833,
+      "reconnected_flux_from_by": 0.04930075867708242,
+      "reconnected_flux_from_bx": 0.04938901313670384
+    },
+    {
+      "time": 1.9255477351192436,
+      "flux_from_by": 0.05030122960995164,
+      "flux_from_bx": 0.050685246983164206,
+      "max_abs_divb": 1.269206961751479e-12,
+      "max_abs_velocity": 0.7858843803405762,
+      "reconnected_flux_from_by": 0.049993159952010306,
+      "reconnected_flux_from_bx": 0.050080105020185756
+    },
+    {
+      "time": 1.9503788643166478,
+      "flux_from_by": 0.050995952889200315,
+      "flux_from_bx": 0.05137928904389352,
+      "max_abs_divb": 1.2523315717771766e-12,
+      "max_abs_velocity": 0.7835462689399719,
+      "reconnected_flux_from_by": 0.05068788323125898,
+      "reconnected_flux_from_bx": 0.05077414708091507
+    },
+    {
+      "time": 1.9752191337699307,
+      "flux_from_by": 0.05168717839219503,
+      "flux_from_bx": 0.052069638012966366,
+      "max_abs_divb": 1.2758682998992299e-12,
+      "max_abs_velocity": 0.7832719087600708,
+      "reconnected_flux_from_by": 0.05137910873425369,
+      "reconnected_flux_from_bx": 0.051464496049987915
+    },
+    {
+      "time": 2.000059147097875,
+      "flux_from_by": 0.05237216308713098,
+      "flux_from_bx": 0.05275343643634755,
+      "max_abs_divb": 1.248778858098376e-12,
+      "max_abs_velocity": 0.7836607098579407,
+      "reconnected_flux_from_by": 0.05206409342918965,
+      "reconnected_flux_from_bx": 0.0521482944733691
+    },
+    {
+      "time": 2.0256773795341183,
+      "flux_from_by": 0.0530771815810409,
+      "flux_from_bx": 0.05345751059593337,
+      "max_abs_divb": 1.283417816466681e-12,
+      "max_abs_velocity": 0.7825667858123779,
+      "reconnected_flux_from_by": 0.05276911192309956,
+      "reconnected_flux_from_bx": 0.05285236863295492
+    },
+    {
+      "time": 2.0505291141344344,
+      "flux_from_by": 0.05376040088455225,
+      "flux_from_bx": 0.054140028948225435,
+      "max_abs_divb": 1.2723155862204294e-12,
+      "max_abs_velocity": 0.781670331954956,
+      "reconnected_flux_from_by": 0.053452331226610916,
+      "reconnected_flux_from_bx": 0.053534886985246985
+    },
+    {
+      "time": 2.07538427085238,
+      "flux_from_by": 0.054441896521815185,
+      "flux_from_bx": 0.054820841787609695,
+      "max_abs_divb": 1.262989712813578e-12,
+      "max_abs_velocity": 0.7825926542282104,
+      "reconnected_flux_from_by": 0.05413382686387385,
+      "reconnected_flux_from_bx": 0.054215699824631244
+    },
+    {
+      "time": 2.1002319412880035,
+      "flux_from_by": 0.055120300383939544,
+      "flux_from_bx": 0.055498549405726925,
+      "max_abs_divb": 1.270095140171179e-12,
+      "max_abs_velocity": 0.7835774421691895,
+      "reconnected_flux_from_by": 0.05481223072599821,
+      "reconnected_flux_from_bx": 0.054893407442748475
+    },
+    {
+      "time": 2.125076400244842,
+      "flux_from_by": 0.05579600225231472,
+      "flux_from_bx": 0.0561735938436598,
+      "max_abs_divb": 1.3171685964152857e-12,
+      "max_abs_velocity": 0.7837414145469666,
+      "reconnected_flux_from_by": 0.05548793259437339,
+      "reconnected_flux_from_bx": 0.05556845188068135
+    },
+    {
+      "time": 2.150698503049489,
+      "flux_from_by": 0.056492049266283914,
+      "flux_from_bx": 0.05686920373858582,
+      "max_abs_divb": 1.3251622021925868e-12,
+      "max_abs_velocity": 0.7833110094070435,
+      "reconnected_flux_from_by": 0.05618397960834258,
+      "reconnected_flux_from_bx": 0.05626406177560737
+    },
+    {
+      "time": 2.1755501316142554,
+      "flux_from_by": 0.05716626645166832,
+      "flux_from_bx": 0.057543118582287875,
+      "max_abs_divb": 1.432631790976302e-12,
+      "max_abs_velocity": 0.7812296152114868,
+      "reconnected_flux_from_by": 0.05685819679372699,
+      "reconnected_flux_from_bx": 0.056937976619309424
+    },
+    {
+      "time": 2.200415995190278,
+      "flux_from_by": 0.05784025686307447,
+      "flux_from_bx": 0.0582168582746476,
+      "max_abs_divb": 1.4432899320127035e-12,
+      "max_abs_velocity": 0.7791215777397156,
+      "reconnected_flux_from_by": 0.05753218720513314,
+      "reconnected_flux_from_bx": 0.05761171631166915
+    },
+    {
+      "time": 2.225292532530272,
+      "flux_from_by": 0.05851119810753634,
+      "flux_from_bx": 0.058887391092810035,
+      "max_abs_divb": 1.4979129048242612e-12,
+      "max_abs_velocity": 0.7775416374206543,
+      "reconnected_flux_from_by": 0.05820312844959501,
+      "reconnected_flux_from_bx": 0.058282249129831584
+    },
+    {
+      "time": 2.2501824383445594,
+      "flux_from_by": 0.059184624633695546,
+      "flux_from_bx": 0.059560818984124325,
+      "max_abs_divb": 1.48991929904696e-12,
+      "max_abs_velocity": 0.7756783366203308,
+      "reconnected_flux_from_by": 0.05887655497575421,
+      "reconnected_flux_from_bx": 0.058955677021145875
+    },
+    {
+      "time": 2.2750831310162094,
+      "flux_from_by": 0.05985868646359147,
+      "flux_from_bx": 0.06023487788405643,
+      "max_abs_divb": 1.48947520983711e-12,
+      "max_abs_velocity": 0.7749914526939392,
+      "reconnected_flux_from_by": 0.05955061680565014,
+      "reconnected_flux_from_bx": 0.05962973592107798
+    },
+    {
+      "time": 2.3007684710186505,
+      "flux_from_by": 0.060550600528986184,
+      "flux_from_bx": 0.06092646696174596,
+      "max_abs_divb": 1.4992451724538114e-12,
+      "max_abs_velocity": 0.7739983201026917,
+      "reconnected_flux_from_by": 0.06024253087104485,
+      "reconnected_flux_from_bx": 0.06032132499876751
+    },
+    {
+      "time": 2.3256858754152065,
+      "flux_from_by": 0.061223897776246254,
+      "flux_from_bx": 0.061599738660333955,
+      "max_abs_divb": 1.5050183321818622e-12,
+      "max_abs_velocity": 0.7715840339660645,
+      "reconnected_flux_from_by": 0.06091582811830492,
+      "reconnected_flux_from_bx": 0.060994596697355505
+    },
+    {
+      "time": 2.3506193690574975,
+      "flux_from_by": 0.06189975565325588,
+      "flux_from_bx": 0.06227570318174002,
+      "max_abs_divb": 1.482369782479509e-12,
+      "max_abs_velocity": 0.7695985436439514,
+      "reconnected_flux_from_by": 0.061591685995314546,
+      "reconnected_flux_from_bx": 0.06167056121876157
+    },
+    {
+      "time": 2.375562431069788,
+      "flux_from_by": 0.06257499279529499,
+      "flux_from_bx": 0.06295080019359033,
+      "max_abs_divb": 1.518341008477364e-12,
+      "max_abs_velocity": 0.7692023515701294,
+      "reconnected_flux_from_by": 0.06226692313735366,
+      "reconnected_flux_from_bx": 0.062345658230611875
+    },
+    {
+      "time": 2.400507422752181,
+      "flux_from_by": 0.06324869359056916,
+      "flux_from_bx": 0.06362407512182243,
+      "max_abs_divb": 1.5338841308221163e-12,
+      "max_abs_velocity": 0.7677067518234253,
+      "reconnected_flux_from_by": 0.06294062393262782,
+      "reconnected_flux_from_bx": 0.06301893315884398
+    },
+    {
+      "time": 2.4254681637279902,
+      "flux_from_by": 0.0639225482306793,
+      "flux_from_bx": 0.06429730501689332,
+      "max_abs_divb": 1.5067946890212625e-12,
+      "max_abs_velocity": 0.7636057138442993,
+      "reconnected_flux_from_by": 0.06361447857273797,
+      "reconnected_flux_from_bx": 0.06369216305391487
+    },
+    {
+      "time": 2.4504569713261297,
+      "flux_from_by": 0.06459838806660566,
+      "flux_from_bx": 0.0649724528983455,
+      "max_abs_divb": 1.5401013797600172e-12,
+      "max_abs_velocity": 0.7585271000862122,
+      "reconnected_flux_from_by": 0.06429031840866432,
+      "reconnected_flux_from_bx": 0.06436731093536704
+    },
+    {
+      "time": 2.475477276026632,
+      "flux_from_by": 0.06527511174110455,
+      "flux_from_bx": 0.06564814244108418,
+      "max_abs_divb": 1.5063505998114124e-12,
+      "max_abs_velocity": 0.7521852254867554,
+      "reconnected_flux_from_by": 0.06496704208316322,
+      "reconnected_flux_from_bx": 0.06504300047810573
+    },
+    {
+      "time": 2.5005345083329233,
+      "flux_from_by": 0.06595081866920394,
+      "flux_from_bx": 0.06632221276825587,
+      "max_abs_divb": 1.48991929904696e-12,
+      "max_abs_velocity": 0.7458868026733398,
+      "reconnected_flux_from_by": 0.0656427490112626,
+      "reconnected_flux_from_bx": 0.06571707080527742
+    },
+    {
+      "time": 2.525628498491798,
+      "flux_from_by": 0.06662336630579532,
+      "flux_from_bx": 0.06699250035013547,
+      "max_abs_divb": 1.4814816040598089e-12,
+      "max_abs_velocity": 0.7401063442230225,
+      "reconnected_flux_from_by": 0.06631529664785399,
+      "reconnected_flux_from_bx": 0.06638735838715702
+    },
+    {
+      "time": 2.55075744020824,
+      "flux_from_by": 0.06729426541222547,
+      "flux_from_bx": 0.06766084597217055,
+      "max_abs_divb": 1.496136547984861e-12,
+      "max_abs_velocity": 0.7341200709342957,
+      "reconnected_flux_from_by": 0.06698619575428413,
+      "reconnected_flux_from_bx": 0.0670557040091921
+    },
+    {
+      "time": 2.575134838403718,
+      "flux_from_by": 0.06794184205012141,
+      "flux_from_bx": 0.0683056761781273,
+      "max_abs_divb": 1.5449863610683678e-12,
+      "max_abs_velocity": 0.7295240163803101,
+      "reconnected_flux_from_by": 0.06763377239218007,
+      "reconnected_flux_from_bx": 0.06770053421514885
+    },
+    {
+      "time": 2.6003273112323755,
+      "flux_from_by": 0.06860344604412114,
+      "flux_from_bx": 0.06896391448137248,
+      "max_abs_divb": 1.5698553568199713e-12,
+      "max_abs_velocity": 0.7249855399131775,
+      "reconnected_flux_from_by": 0.0682953763861798,
+      "reconnected_flux_from_bx": 0.06835877251839403
+    },
+    {
+      "time": 2.625550519047377,
+      "flux_from_by": 0.06926175632986004,
+      "flux_from_bx": 0.06961886213599654,
+      "max_abs_divb": 1.5756285165480222e-12,
+      "max_abs_velocity": 0.7196981310844421,
+      "reconnected_flux_from_by": 0.0689536866719187,
+      "reconnected_flux_from_bx": 0.06901372017301809
+    },
+    {
+      "time": 2.650015304026467,
+      "flux_from_by": 0.06989633405586779,
+      "flux_from_bx": 0.0702502918265395,
+      "max_abs_divb": 1.5498713423767185e-12,
+      "max_abs_velocity": 0.7161300182342529,
+      "reconnected_flux_from_by": 0.06958826439792645,
+      "reconnected_flux_from_bx": 0.06964514986356105
+    },
+    {
+      "time": 2.6752867103083275,
+      "flux_from_by": 0.07054334633179592,
+      "flux_from_bx": 0.0708938626652866,
+      "max_abs_divb": 1.5307755063531658e-12,
+      "max_abs_velocity": 0.7147047519683838,
+      "reconnected_flux_from_by": 0.07023527667385458,
+      "reconnected_flux_from_bx": 0.07028872070230816
+    },
+    {
+      "time": 2.7005714563055903,
+      "flux_from_by": 0.07118211305357922,
+      "flux_from_bx": 0.07152916746215963,
+      "max_abs_divb": 1.5223378113660146e-12,
+      "max_abs_velocity": 0.7118759751319885,
+      "reconnected_flux_from_by": 0.07087404339563788,
+      "reconnected_flux_from_bx": 0.07092402549918118
+    },
+    {
+      "time": 2.7250935330857455,
+      "flux_from_by": 0.07179603466529104,
+      "flux_from_bx": 0.0721400965599912,
+      "max_abs_divb": 1.539657290550167e-12,
+      "max_abs_velocity": 0.7072776556015015,
+      "reconnected_flux_from_by": 0.0714879650073497,
+      "reconnected_flux_from_bx": 0.07153495459701274
+    },
+    {
+      "time": 2.7504397686065567,
+      "flux_from_by": 0.07242571384254143,
+      "flux_from_bx": 0.07276713456974444,
+      "max_abs_divb": 1.5476508963274682e-12,
+      "max_abs_velocity": 0.703709065914154,
+      "reconnected_flux_from_by": 0.0721176441846001,
+      "reconnected_flux_from_bx": 0.07216199260676599
+    },
+    {
+      "time": 2.77501631257936,
+      "flux_from_by": 0.07303067422298382,
+      "flux_from_bx": 0.07336982814598514,
+      "max_abs_divb": 1.531219595563016e-12,
+      "max_abs_velocity": 0.6999272704124451,
+      "reconnected_flux_from_by": 0.07272260456504248,
+      "reconnected_flux_from_bx": 0.07276468618300669
+    },
+    {
+      "time": 2.8004140523320866,
+      "flux_from_by": 0.07364856048394451,
+      "flux_from_bx": 0.07398547470485359,
+      "max_abs_divb": 1.5485390747471683e-12,
+      "max_abs_velocity": 0.6954302191734314,
+      "reconnected_flux_from_by": 0.07334049082600318,
+      "reconnected_flux_from_bx": 0.07338033274187514
+    },
+    {
+      "time": 2.8250484597614087,
+      "flux_from_by": 0.07424134182753137,
+      "flux_from_bx": 0.0745762234552707,
+      "max_abs_divb": 1.5845103007450234e-12,
+      "max_abs_velocity": 0.6912655234336853,
+      "reconnected_flux_from_by": 0.07393327216959003,
+      "reconnected_flux_from_bx": 0.07397108149229224
+    },
+    {
+      "time": 2.8505171033065833,
+      "flux_from_by": 0.07484978108934026,
+      "flux_from_bx": 0.07518284880667633,
+      "max_abs_divb": 1.5907275496829243e-12,
+      "max_abs_velocity": 0.684247612953186,
+      "reconnected_flux_from_by": 0.07454171143139893,
+      "reconnected_flux_from_bx": 0.07457770684369788
+    },
+    {
+      "time": 2.8752405537331724,
+      "flux_from_by": 0.07543651252416292,
+      "flux_from_bx": 0.07576797541071298,
+      "max_abs_divb": 1.6222578835822787e-12,
+      "max_abs_velocity": 0.6780614852905273,
+      "reconnected_flux_from_by": 0.07512844286622158,
+      "reconnected_flux_from_bx": 0.07516283344773453
+    },
+    {
+      "time": 2.9000046341794774,
+      "flux_from_by": 0.07601855475919092,
+      "flux_from_bx": 0.07634835203705846,
+      "max_abs_divb": 1.6280310433103296e-12,
+      "max_abs_velocity": 0.6728966236114502,
+      "reconnected_flux_from_by": 0.07571048510124959,
+      "reconnected_flux_from_bx": 0.07574321007408001
+    },
+    {
+      "time": 2.925610964737692,
+      "flux_from_by": 0.07661786247135359,
+      "flux_from_bx": 0.07694615579225682,
+      "max_abs_divb": 1.6324719354088302e-12,
+      "max_abs_velocity": 0.6656568050384521,
+      "reconnected_flux_from_by": 0.07630979281341226,
+      "reconnected_flux_from_bx": 0.07634101382927837
+    },
+    {
+      "time": 2.950461420978683,
+      "flux_from_by": 0.07719741748731535,
+      "flux_from_bx": 0.07752439400817933,
+      "max_abs_divb": 1.6604495556293841e-12,
+      "max_abs_velocity": 0.6614251732826233,
+      "reconnected_flux_from_by": 0.07688934782937401,
+      "reconnected_flux_from_bx": 0.07691925204520088
+    },
+    {
+      "time": 2.9753392555400495,
+      "flux_from_by": 0.07777344839355838,
+      "flux_from_bx": 0.07809895012488252,
+      "max_abs_divb": 1.6724399642953358e-12,
+      "max_abs_velocity": 0.6583266854286194,
+      "reconnected_flux_from_by": 0.07746537873561704,
+      "reconnected_flux_from_bx": 0.07749380816190407
+    },
+    {
+      "time": 3.0,
+      "flux_from_by": 0.07833943311851939,
+      "flux_from_bx": 0.07866329175072193,
+      "max_abs_divb": 1.6417978088156815e-12,
+      "max_abs_velocity": 0.6528000831604004,
+      "reconnected_flux_from_by": 0.07803136346057805,
+      "reconnected_flux_from_bx": 0.07805814978774347
+    }
+  ],
+  "representation": {
+    "shape": [
+      128,
+      128
+    ],
+    "bounding_box": [
+      [
+        [
+          -0.5,
+          0.5
+        ],
+        [
+          -0.5,
+          0.5
+        ],
+        [
+          0.0,
+          1.0
+        ]
+      ]
+    ],
+    "coordinates": [
+      [
+        0.25,
+        0.25,
+        0.5
+      ]
+    ],
+    "block_size": [
+      [
+        1.0,
+        1.0,
+        1.0
+      ]
+    ],
+    "initial_density_range": [
+      0.9776033163070679,
+      1.1040903329849243
+    ],
+    "initial_pressure_range": [
+      5.865620136260986,
+      6.624541759490967
+    ]
+  },
+  "extended_timeseries": [
+    {
+      "time": 0.0,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9776033163070679,
+      "pressure_min": 5.865620136260986,
+      "central_current": 38.6728364310693,
+      "central_pressure": 6.488002300262451,
+      "central_current_max": 38.6728364310693,
+      "magnetic_energy_cell_center": 0.15899452696293248
+    },
+    {
+      "time": 0.025528120068618588,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9778785109519958,
+      "pressure_min": 5.8684000968933105,
+      "central_current": 38.348067979793996,
+      "central_pressure": 6.466001510620117,
+      "central_current_max": 38.348067979793996,
+      "magnetic_energy_cell_center": 0.15864563972101564
+    },
+    {
+      "time": 0.05056257235673549,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9781658053398132,
+      "pressure_min": 5.8712992668151855,
+      "central_current": 38.52282723970711,
+      "central_pressure": 6.462845325469971,
+      "central_current_max": 38.52282723970711,
+      "magnetic_energy_cell_center": 0.15823261016803813
+    },
+    {
+      "time": 0.07555793653141359,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9794082045555115,
+      "pressure_min": 5.883753776550293,
+      "central_current": 39.11431636917405,
+      "central_pressure": 6.467450141906738,
+      "central_current_max": 39.11431636917405,
+      "magnetic_energy_cell_center": 0.1577880696124968
+    },
+    {
+      "time": 0.10052917769852278,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9807144403457642,
+      "pressure_min": 5.896852493286133,
+      "central_current": 40.059649385511875,
+      "central_pressure": 6.469046592712402,
+      "central_current_max": 40.059649385511875,
+      "magnetic_energy_cell_center": 0.1573274745390339
+    },
+    {
+      "time": 0.12548419515731904,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9818326234817505,
+      "pressure_min": 5.9080729484558105,
+      "central_current": 41.360565413720906,
+      "central_pressure": 6.466657638549805,
+      "central_current_max": 41.360565413720906,
+      "magnetic_energy_cell_center": 0.15684378272091815
+    },
+    {
+      "time": 0.15043153933624134,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9827734231948853,
+      "pressure_min": 5.917510032653809,
+      "central_current": 43.022910200525075,
+      "central_pressure": 6.460208415985107,
+      "central_current_max": 43.022910200525075,
+      "magnetic_energy_cell_center": 0.15632579581750505
+    },
+    {
+      "time": 0.17529231944850293,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9836236834526062,
+      "pressure_min": 5.925548076629639,
+      "central_current": 45.043670614715666,
+      "central_pressure": 6.451188564300537,
+      "central_current_max": 45.043670614715666,
+      "magnetic_energy_cell_center": 0.15577605938819633
+    },
+    {
+      "time": 0.20081766813894802,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9846659302711487,
+      "pressure_min": 5.930440425872803,
+      "central_current": 47.482934889383614,
+      "central_pressure": 6.440464019775391,
+      "central_current_max": 47.482934889383614,
+      "magnetic_energy_cell_center": 0.1551954987901707
+    },
+    {
+      "time": 0.2251942779758604,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9852246046066284,
+      "pressure_min": 5.936296463012695,
+      "central_current": 50.13619518652558,
+      "central_pressure": 6.430154800415039,
+      "central_current_max": 50.13619518652558,
+      "magnetic_energy_cell_center": 0.15464080483331716
+    },
+    {
+      "time": 0.2502406282761539,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9860327839851379,
+      "pressure_min": 5.9455060958862305,
+      "central_current": 53.15029526595026,
+      "central_pressure": 6.420019626617432,
+      "central_current_max": 53.15029526595026,
+      "magnetic_energy_cell_center": 0.15406723220394866
+    },
+    {
+      "time": 0.2750609280836824,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.987635612487793,
+      "pressure_min": 5.957825183868408,
+      "central_current": 56.420479465276,
+      "central_pressure": 6.414722442626953,
+      "central_current_max": 56.420479465276,
+      "magnetic_energy_cell_center": 0.1534725340314354
+    },
+    {
+      "time": 0.3005334771928854,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9896738529205322,
+      "pressure_min": 5.972384929656982,
+      "central_current": 60.02095118165016,
+      "central_pressure": 6.416312217712402,
+      "central_current_max": 60.02095118165016,
+      "magnetic_energy_cell_center": 0.15281210541515652
+    },
+    {
+      "time": 0.3257678051712501,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.989831805229187,
+      "pressure_min": 5.972134113311768,
+      "central_current": 63.38410866539925,
+      "central_pressure": 6.38962459564209,
+      "central_current_max": 63.38410866539925,
+      "magnetic_energy_cell_center": 0.15212129659095364
+    },
+    {
+      "time": 0.35077836105041077,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9904828071594238,
+      "pressure_min": 5.979011535644531,
+      "central_current": 66.85830157622695,
+      "central_pressure": 6.377534866333008,
+      "central_current_max": 66.85830157622695,
+      "magnetic_energy_cell_center": 0.15140570015947227
+    },
+    {
+      "time": 0.3755686456905011,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9925086498260498,
+      "pressure_min": 5.991758823394775,
+      "central_current": 70.29011159390211,
+      "central_pressure": 6.376180171966553,
+      "central_current_max": 70.29011159390211,
+      "magnetic_energy_cell_center": 0.1506851131406607
+    },
+    {
+      "time": 0.4001301287606329,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.994089663028717,
+      "pressure_min": 5.989677429199219,
+      "central_current": 73.34675160981715,
+      "central_pressure": 6.367593288421631,
+      "central_current_max": 73.34675160981715,
+      "magnetic_energy_cell_center": 0.1499609573949785
+    },
+    {
+      "time": 0.42529395185710095,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9953030943870544,
+      "pressure_min": 5.9868879318237305,
+      "central_current": 76.05136251077056,
+      "central_pressure": 6.355292320251465,
+      "central_current_max": 76.05136251077056,
+      "magnetic_energy_cell_center": 0.14919676390164172
+    },
+    {
+      "time": 0.45021415348758426,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.995722770690918,
+      "pressure_min": 5.984750747680664,
+      "central_current": 78.31841925159097,
+      "central_pressure": 6.344211578369141,
+      "central_current_max": 78.31841925159097,
+      "magnetic_energy_cell_center": 0.14841569029006546
+    },
+    {
+      "time": 0.475717236074094,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9965431094169617,
+      "pressure_min": 5.984487533569336,
+      "central_current": 80.25143190100789,
+      "central_pressure": 6.335014820098877,
+      "central_current_max": 80.25143190100789,
+      "magnetic_energy_cell_center": 0.14760388812947922
+    },
+    {
+      "time": 0.5001679862639691,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9974400401115417,
+      "pressure_min": 5.985262393951416,
+      "central_current": 81.7218674030155,
+      "central_pressure": 6.327138423919678,
+      "central_current_max": 81.7218674030155,
+      "magnetic_energy_cell_center": 0.14683177531547345
+    },
+    {
+      "time": 0.5252080202973518,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9980857372283936,
+      "pressure_min": 5.988829135894775,
+      "central_current": 82.78397290594876,
+      "central_pressure": 6.319244384765625,
+      "central_current_max": 82.78397290594876,
+      "magnetic_energy_cell_center": 0.14605389241434297
+    },
+    {
+      "time": 0.5500271880794338,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9984380602836609,
+      "pressure_min": 5.991576194763184,
+      "central_current": 83.40827100165188,
+      "central_pressure": 6.3116278648376465,
+      "central_current_max": 83.40827100165188,
+      "magnetic_energy_cell_center": 0.14528508542639462
+    },
+    {
+      "time": 0.5754319259566877,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9987379908561707,
+      "pressure_min": 5.9870195388793945,
+      "central_current": 83.69033038429916,
+      "central_pressure": 6.306244373321533,
+      "central_current_max": 83.69033038429916,
+      "magnetic_energy_cell_center": 0.14448586938905567
+    },
+    {
+      "time": 0.6006438805457003,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9984238147735596,
+      "pressure_min": 5.98388147354126,
+      "central_current": 83.68793912511319,
+      "central_pressure": 6.305208206176758,
+      "central_current_max": 83.68793912511319,
+      "magnetic_energy_cell_center": 0.14368020630679434
+    },
+    {
+      "time": 0.6256908886550121,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9985683560371399,
+      "pressure_min": 5.985324859619141,
+      "central_current": 83.28269796445966,
+      "central_pressure": 6.291311264038086,
+      "central_current_max": 83.28269796445966,
+      "magnetic_energy_cell_center": 0.14288732725093178
+    },
+    {
+      "time": 0.6506114955901088,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9988089799880981,
+      "pressure_min": 5.987729549407959,
+      "central_current": 82.79318364150822,
+      "central_pressure": 6.288430213928223,
+      "central_current_max": 82.79318364150822,
+      "magnetic_energy_cell_center": 0.14211388623028626
+    },
+    {
+      "time": 0.6754499233788159,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.999071478843689,
+      "pressure_min": 5.990554332733154,
+      "central_current": 82.35227319784462,
+      "central_pressure": 6.304332256317139,
+      "central_current_max": 82.35227319784462,
+      "magnetic_energy_cell_center": 0.1413572385040317
+    },
+    {
+      "time": 0.7002348454086521,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9989760518074036,
+      "pressure_min": 5.989665985107422,
+      "central_current": 81.69221814163029,
+      "central_pressure": 6.305787563323975,
+      "central_current_max": 81.69221814163029,
+      "magnetic_energy_cell_center": 0.14062006823442513
+    },
+    {
+      "time": 0.7257680954545379,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9989288449287415,
+      "pressure_min": 5.989200592041016,
+      "central_current": 80.96986449696124,
+      "central_pressure": 6.305238246917725,
+      "central_current_max": 80.96986449696124,
+      "magnetic_energy_cell_center": 0.13987741873786236
+    },
+    {
+      "time": 0.7505405731542537,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9990568161010742,
+      "pressure_min": 5.99050235748291,
+      "central_current": 80.3132492583245,
+      "central_pressure": 6.3090596199035645,
+      "central_current_max": 80.3132492583245,
+      "magnetic_energy_cell_center": 0.13918543156800317
+    },
+    {
+      "time": 0.7753613051852936,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9974265098571777,
+      "pressure_min": 5.990818023681641,
+      "central_current": 79.68686892278492,
+      "central_pressure": 6.313723564147949,
+      "central_current_max": 79.68686892278492,
+      "magnetic_energy_cell_center": 0.13854040234410997
+    },
+    {
+      "time": 0.8002597318731285,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9955008029937744,
+      "pressure_min": 5.987963676452637,
+      "central_current": 79.08683511056006,
+      "central_pressure": 6.316783428192139,
+      "central_current_max": 79.08683511056006,
+      "magnetic_energy_cell_center": 0.13795384773817262
+    },
+    {
+      "time": 0.8252113236665991,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9937729239463806,
+      "pressure_min": 5.985477447509766,
+      "central_current": 78.52522462420166,
+      "central_pressure": 6.3150458335876465,
+      "central_current_max": 78.52522462420166,
+      "magnetic_energy_cell_center": 0.1374166006659142
+    },
+    {
+      "time": 0.850190574918258,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9923104047775269,
+      "pressure_min": 5.975460529327393,
+      "central_current": 78.02705916948617,
+      "central_pressure": 6.311172008514404,
+      "central_current_max": 78.02705916948617,
+      "magnetic_energy_cell_center": 0.13689708887381252
+    },
+    {
+      "time": 0.8751933211620435,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9903068542480469,
+      "pressure_min": 5.91241979598999,
+      "central_current": 77.6231825016439,
+      "central_pressure": 6.309079170227051,
+      "central_current_max": 77.6231825016439,
+      "magnetic_energy_cell_center": 0.13636443821882127
+    },
+    {
+      "time": 0.9002183145608511,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.980571448802948,
+      "pressure_min": 5.87519645690918,
+      "central_current": 77.33574858680367,
+      "central_pressure": 6.310543537139893,
+      "central_current_max": 77.33574858680367,
+      "magnetic_energy_cell_center": 0.13580395842156492
+    },
+    {
+      "time": 0.925261111697714,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9759182333946228,
+      "pressure_min": 5.867696762084961,
+      "central_current": 77.0888712964952,
+      "central_pressure": 6.309030532836914,
+      "central_current_max": 77.0888712964952,
+      "magnetic_energy_cell_center": 0.13520939637867466
+    },
+    {
+      "time": 0.9503255531527816,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9753651022911072,
+      "pressure_min": 5.885753631591797,
+      "central_current": 76.92323526740074,
+      "central_pressure": 6.308330059051514,
+      "central_current_max": 76.92323526740074,
+      "magnetic_energy_cell_center": 0.13457252598192324
+    },
+    {
+      "time": 0.9754081661799997,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.975710391998291,
+      "pressure_min": 5.901212692260742,
+      "central_current": 77.02439486980438,
+      "central_pressure": 6.328739166259766,
+      "central_current_max": 77.02439486980438,
+      "magnetic_energy_cell_center": 0.13388393182345398
+    },
+    {
+      "time": 1.000492664315973,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9785892963409424,
+      "pressure_min": 5.936254501342773,
+      "central_current": 76.98109449073672,
+      "central_pressure": 6.323736190795898,
+      "central_current_max": 76.98109449073672,
+      "magnetic_energy_cell_center": 0.13315753815144088
+    },
+    {
+      "time": 1.0255712737523737,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9827395677566528,
+      "pressure_min": 5.972163200378418,
+      "central_current": 77.02931939996779,
+      "central_pressure": 6.318926811218262,
+      "central_current_max": 77.02931939996779,
+      "magnetic_energy_cell_center": 0.1324052581888882
+    },
+    {
+      "time": 1.050646384281972,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9806951880455017,
+      "pressure_min": 5.9766364097595215,
+      "central_current": 77.25366435199976,
+      "central_pressure": 6.323643684387207,
+      "central_current_max": 77.25366435199976,
+      "magnetic_energy_cell_center": 0.1316480508535136
+    },
+    {
+      "time": 1.0757149230871337,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9775391221046448,
+      "pressure_min": 5.97927713394165,
+      "central_current": 77.54176994413137,
+      "central_pressure": 6.327722072601318,
+      "central_current_max": 77.54176994413137,
+      "magnetic_energy_cell_center": 0.13089177387416379
+    },
+    {
+      "time": 1.100764344499176,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9764165282249451,
+      "pressure_min": 5.974889755249023,
+      "central_current": 77.85422393679619,
+      "central_pressure": 6.326706886291504,
+      "central_current_max": 77.85422393679619,
+      "magnetic_energy_cell_center": 0.13013012931181503
+    },
+    {
+      "time": 1.125005998124243,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9767923951148987,
+      "pressure_min": 5.98490571975708,
+      "central_current": 78.17386342212558,
+      "central_pressure": 6.321900367736816,
+      "central_current_max": 78.17386342212558,
+      "magnetic_energy_cell_center": 0.12938020904442182
+    },
+    {
+      "time": 1.1500068610204877,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9774624109268188,
+      "pressure_min": 5.972053050994873,
+      "central_current": 78.53634935989976,
+      "central_pressure": 6.316655158996582,
+      "central_current_max": 78.53634935989976,
+      "magnetic_energy_cell_center": 0.1285877264855893
+    },
+    {
+      "time": 1.1757677564491402,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9767833352088928,
+      "pressure_min": 5.955179691314697,
+      "central_current": 78.94730545580387,
+      "central_pressure": 6.312399387359619,
+      "central_current_max": 78.94730545580387,
+      "magnetic_energy_cell_center": 0.1277650296858354
+    },
+    {
+      "time": 1.2007313590123208,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9762044548988342,
+      "pressure_min": 5.95123815536499,
+      "central_current": 79.3815261181444,
+      "central_pressure": 6.312131404876709,
+      "central_current_max": 79.3815261181444,
+      "magnetic_energy_cell_center": 0.12697399299767487
+    },
+    {
+      "time": 1.22567754417524,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.975764274597168,
+      "pressure_min": 5.9540181159973145,
+      "central_current": 79.79369507916272,
+      "central_pressure": 6.311606407165527,
+      "central_current_max": 79.79369507916272,
+      "magnetic_energy_cell_center": 0.12617682973084576
+    },
+    {
+      "time": 1.2506063422109746,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9749035835266113,
+      "pressure_min": 5.953699588775635,
+      "central_current": 80.1272747721523,
+      "central_pressure": 6.30538272857666,
+      "central_current_max": 80.1272747721523,
+      "magnetic_energy_cell_center": 0.1253573181042404
+    },
+    {
+      "time": 1.2755204196644303,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9739442467689514,
+      "pressure_min": 5.950066566467285,
+      "central_current": 80.58339942805469,
+      "central_pressure": 6.316977024078369,
+      "central_current_max": 80.58339942805469,
+      "magnetic_energy_cell_center": 0.12449933270886199
+    },
+    {
+      "time": 1.300409738433379,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9730220437049866,
+      "pressure_min": 5.952280521392822,
+      "central_current": 80.7934034857899,
+      "central_pressure": 6.307464599609375,
+      "central_current_max": 80.7934034857899,
+      "magnetic_energy_cell_center": 0.12361471604340468
+    },
+    {
+      "time": 1.3252730081173312,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9723072052001953,
+      "pressure_min": 5.957345962524414,
+      "central_current": 80.97423260100186,
+      "central_pressure": 6.298892498016357,
+      "central_current_max": 80.97423260100186,
+      "magnetic_energy_cell_center": 0.12272737419458943
+    },
+    {
+      "time": 1.350117486281051,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9714002013206482,
+      "pressure_min": 5.967361927032471,
+      "central_current": 81.28764895163476,
+      "central_pressure": 6.309658050537109,
+      "central_current_max": 81.28764895163476,
+      "magnetic_energy_cell_center": 0.12185926986097798
+    },
+    {
+      "time": 1.3757133532421157,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9701892733573914,
+      "pressure_min": 5.9786906242370605,
+      "central_current": 81.52677357755601,
+      "central_pressure": 6.317081451416016,
+      "central_current_max": 81.52677357755601,
+      "magnetic_energy_cell_center": 0.12098465985484683
+    },
+    {
+      "time": 1.4005015526393165,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9691547751426697,
+      "pressure_min": 5.982536315917969,
+      "central_current": 81.64466260373592,
+      "central_pressure": 6.3169379234313965,
+      "central_current_max": 81.64466260373592,
+      "magnetic_energy_cell_center": 0.12014511659989878
+    },
+    {
+      "time": 1.4252512729950986,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9686053991317749,
+      "pressure_min": 5.995304107666016,
+      "central_current": 81.69027236290276,
+      "central_pressure": 6.312926769256592,
+      "central_current_max": 81.69027236290276,
+      "magnetic_energy_cell_center": 0.11931407114290496
+    },
+    {
+      "time": 1.4507413023505653,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9678901433944702,
+      "pressure_min": 5.995514869689941,
+      "central_current": 81.69642382860184,
+      "central_pressure": 6.307323455810547,
+      "central_current_max": 81.69642382860184,
+      "magnetic_energy_cell_center": 0.11848233948026587
+    },
+    {
+      "time": 1.4754324494175541,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9673607349395752,
+      "pressure_min": 5.990833759307861,
+      "central_current": 81.68310509249568,
+      "central_pressure": 6.30577278137207,
+      "central_current_max": 81.68310509249568,
+      "magnetic_energy_cell_center": 0.11772018173010117
+    },
+    {
+      "time": 1.5001011694713877,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9671849608421326,
+      "pressure_min": 6.005577564239502,
+      "central_current": 81.64176753163338,
+      "central_pressure": 6.304662704467773,
+      "central_current_max": 81.64176753163338,
+      "magnetic_energy_cell_center": 0.11700443179648032
+    },
+    {
+      "time": 1.5255247038069744,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9671807289123535,
+      "pressure_min": 6.017730712890625,
+      "central_current": 81.56004305556417,
+      "central_pressure": 6.302456855773926,
+      "central_current_max": 81.56004305556417,
+      "magnetic_energy_cell_center": 0.11629687036504141
+    },
+    {
+      "time": 1.5501663220425956,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9671339392662048,
+      "pressure_min": 6.015824317932129,
+      "central_current": 81.3984794896096,
+      "central_pressure": 6.298777103424072,
+      "central_current_max": 81.3984794896096,
+      "magnetic_energy_cell_center": 0.11562249419222444
+    },
+    {
+      "time": 1.5755777740016412,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9668984413146973,
+      "pressure_min": 6.014280796051025,
+      "central_current": 81.297467187047,
+      "central_pressure": 6.306725025177002,
+      "central_current_max": 81.297467187047,
+      "magnetic_energy_cell_center": 0.11493167702526308
+    },
+    {
+      "time": 1.6002240757416422,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9666988253593445,
+      "pressure_min": 6.012636661529541,
+      "central_current": 81.06174920126796,
+      "central_pressure": 6.304563522338867,
+      "central_current_max": 81.06174920126796,
+      "magnetic_energy_cell_center": 0.11427487238071532
+    },
+    {
+      "time": 1.625653544542981,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9662899971008301,
+      "pressure_min": 6.005887508392334,
+      "central_current": 80.76148237101734,
+      "central_pressure": 6.299291133880615,
+      "central_current_max": 80.76148237101734,
+      "magnetic_energy_cell_center": 0.11363301233321771
+    },
+    {
+      "time": 1.650330641850564,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9643498063087463,
+      "pressure_min": 5.996866226196289,
+      "central_current": 80.65446657687426,
+      "central_pressure": 6.316397666931152,
+      "central_current_max": 80.65446657687426,
+      "magnetic_energy_cell_center": 0.1130532297939541
+    },
+    {
+      "time": 1.6750192929105456,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9611182808876038,
+      "pressure_min": 5.987529754638672,
+      "central_current": 80.45950318872929,
+      "central_pressure": 6.32369327545166,
+      "central_current_max": 80.45950318872929,
+      "magnetic_energy_cell_center": 0.11250457555526888
+    },
+    {
+      "time": 1.7004829614222814,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9598953127861023,
+      "pressure_min": 5.983097076416016,
+      "central_current": 80.14426628686488,
+      "central_pressure": 6.320217609405518,
+      "central_current_max": 80.14426628686488,
+      "magnetic_energy_cell_center": 0.11195709329360554
+    },
+    {
+      "time": 1.7251772914043464,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9598904848098755,
+      "pressure_min": 5.9767165184021,
+      "central_current": 79.8423259537667,
+      "central_pressure": 6.31631326675415,
+      "central_current_max": 79.8423259537667,
+      "magnetic_energy_cell_center": 0.1114474779831896
+    },
+    {
+      "time": 1.7506560366455641,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9593342542648315,
+      "pressure_min": 5.975757122039795,
+      "central_current": 79.5655124578625,
+      "central_pressure": 6.313647747039795,
+      "central_current_max": 79.5655124578625,
+      "magnetic_energy_cell_center": 0.11095986363078857
+    },
+    {
+      "time": 1.7753784157080559,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9564328789710999,
+      "pressure_min": 5.981893062591553,
+      "central_current": 79.3211052827537,
+      "central_pressure": 6.314969539642334,
+      "central_current_max": 79.3211052827537,
+      "magnetic_energy_cell_center": 0.11052879392042225
+    },
+    {
+      "time": 1.8001094736332872,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9538974165916443,
+      "pressure_min": 5.9933295249938965,
+      "central_current": 79.06764816865325,
+      "central_pressure": 6.314393520355225,
+      "central_current_max": 79.06764816865325,
+      "magnetic_energy_cell_center": 0.1101144053970399
+    },
+    {
+      "time": 1.8256277414374258,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9532960057258606,
+      "pressure_min": 6.008078098297119,
+      "central_current": 78.78829086385667,
+      "central_pressure": 6.311081409454346,
+      "central_current_max": 78.78829086385667,
+      "magnetic_energy_cell_center": 0.10969294425453535
+    },
+    {
+      "time": 1.8503863325743615,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9542338252067566,
+      "pressure_min": 6.013583183288574,
+      "central_current": 78.51841012015939,
+      "central_pressure": 6.3129730224609375,
+      "central_current_max": 78.51841012015939,
+      "magnetic_energy_cell_center": 0.10928247689525988
+    },
+    {
+      "time": 1.8751620743526805,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.953624427318573,
+      "pressure_min": 6.010460376739502,
+      "central_current": 78.26275786571205,
+      "central_pressure": 6.316623687744141,
+      "central_current_max": 78.26275786571205,
+      "magnetic_energy_cell_center": 0.10886383246600737
+    },
+    {
+      "time": 1.9007336383255227,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9508712887763977,
+      "pressure_min": 6.0093302726745605,
+      "central_current": 77.99071877077222,
+      "central_pressure": 6.320621967315674,
+      "central_current_max": 77.99071877077222,
+      "magnetic_energy_cell_center": 0.1084212612449382
+    },
+    {
+      "time": 1.9255477351192436,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9498205184936523,
+      "pressure_min": 6.01403284072876,
+      "central_current": 77.63275602832437,
+      "central_pressure": 6.312615871429443,
+      "central_current_max": 77.63275602832437,
+      "magnetic_energy_cell_center": 0.10799177635552136
+    },
+    {
+      "time": 1.9503788643166478,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9483321905136108,
+      "pressure_min": 6.001662731170654,
+      "central_current": 77.4563725348562,
+      "central_pressure": 6.32509183883667,
+      "central_current_max": 77.4563725348562,
+      "magnetic_energy_cell_center": 0.10756128886055466
+    },
+    {
+      "time": 1.9752191337699307,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9483369588851929,
+      "pressure_min": 6.002110481262207,
+      "central_current": 77.22537547536194,
+      "central_pressure": 6.33209753036499,
+      "central_current_max": 77.22537547536194,
+      "magnetic_energy_cell_center": 0.10711755400230007
+    },
+    {
+      "time": 2.000059147097875,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.949619472026825,
+      "pressure_min": 5.999141216278076,
+      "central_current": 76.89923373796046,
+      "central_pressure": 6.326878547668457,
+      "central_current_max": 76.89923373796046,
+      "magnetic_energy_cell_center": 0.10665495778427533
+    },
+    {
+      "time": 2.0256773795341183,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9498720765113831,
+      "pressure_min": 5.9927473068237305,
+      "central_current": 76.644146643579,
+      "central_pressure": 6.327081203460693,
+      "central_current_max": 76.644146643579,
+      "magnetic_energy_cell_center": 0.10617349011782184
+    },
+    {
+      "time": 2.0505291141344344,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9483062624931335,
+      "pressure_min": 5.993870258331299,
+      "central_current": 76.46479940228164,
+      "central_pressure": 6.331607341766357,
+      "central_current_max": 76.46479940228164,
+      "magnetic_energy_cell_center": 0.10571652825145104
+    },
+    {
+      "time": 2.07538427085238,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9472998976707458,
+      "pressure_min": 5.997524261474609,
+      "central_current": 76.29216351918876,
+      "central_pressure": 6.333420276641846,
+      "central_current_max": 76.29216351918876,
+      "magnetic_energy_cell_center": 0.10526857576385348
+    },
+    {
+      "time": 2.1002319412880035,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9476550817489624,
+      "pressure_min": 5.998839378356934,
+      "central_current": 76.0998966395855,
+      "central_pressure": 6.33290958404541,
+      "central_current_max": 76.0998966395855,
+      "magnetic_energy_cell_center": 0.10480746243371222
+    },
+    {
+      "time": 2.125076400244842,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9488250017166138,
+      "pressure_min": 6.000161170959473,
+      "central_current": 75.9078498519957,
+      "central_pressure": 6.326389789581299,
+      "central_current_max": 75.9078498519957,
+      "magnetic_energy_cell_center": 0.10433865266532322
+    },
+    {
+      "time": 2.150698503049489,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9503116607666016,
+      "pressure_min": 6.001858711242676,
+      "central_current": 75.76518758758903,
+      "central_pressure": 6.325756072998047,
+      "central_current_max": 75.76518758758903,
+      "magnetic_energy_cell_center": 0.10386216187990113
+    },
+    {
+      "time": 2.1755501316142554,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9513600468635559,
+      "pressure_min": 6.0018415451049805,
+      "central_current": 75.65648559108377,
+      "central_pressure": 6.3276214599609375,
+      "central_current_max": 75.65648559108377,
+      "magnetic_energy_cell_center": 0.10339983878042203
+    },
+    {
+      "time": 2.200415995190278,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9516220092773438,
+      "pressure_min": 5.982909202575684,
+      "central_current": 75.56922314502299,
+      "central_pressure": 6.32952356338501,
+      "central_current_max": 75.56922314502299,
+      "magnetic_energy_cell_center": 0.10293272879209314
+    },
+    {
+      "time": 2.225292532530272,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9526567459106445,
+      "pressure_min": 5.968539714813232,
+      "central_current": 75.42238819785416,
+      "central_pressure": 6.322785377502441,
+      "central_current_max": 75.42238819785416,
+      "magnetic_energy_cell_center": 0.10246447626701181
+    },
+    {
+      "time": 2.2501824383445594,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9522624611854553,
+      "pressure_min": 5.939401626586914,
+      "central_current": 75.39776727370918,
+      "central_pressure": 6.331364154815674,
+      "central_current_max": 75.39776727370918,
+      "magnetic_energy_cell_center": 0.10199770481161241
+    },
+    {
+      "time": 2.2750831310162094,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9523104429244995,
+      "pressure_min": 5.915876865386963,
+      "central_current": 75.38413742370903,
+      "central_pressure": 6.340005397796631,
+      "central_current_max": 75.38413742370903,
+      "magnetic_energy_cell_center": 0.10153008476149386
+    },
+    {
+      "time": 2.3007684710186505,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9533440470695496,
+      "pressure_min": 5.907365322113037,
+      "central_current": 75.27694829367101,
+      "central_pressure": 6.33695650100708,
+      "central_current_max": 75.27694829367101,
+      "magnetic_energy_cell_center": 0.10105167088213987
+    },
+    {
+      "time": 2.3256858754152065,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9534060955047607,
+      "pressure_min": 5.891968250274658,
+      "central_current": 75.26667108759284,
+      "central_pressure": 6.339565753936768,
+      "central_current_max": 75.26667108759284,
+      "magnetic_energy_cell_center": 0.10060753521734589
+    },
+    {
+      "time": 2.3506193690574975,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9530139565467834,
+      "pressure_min": 5.871938705444336,
+      "central_current": 75.30859339237213,
+      "central_pressure": 6.344781398773193,
+      "central_current_max": 75.30859339237213,
+      "magnetic_energy_cell_center": 0.10018670366828315
+    },
+    {
+      "time": 2.375562431069788,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9531011581420898,
+      "pressure_min": 5.859869956970215,
+      "central_current": 75.29361188597977,
+      "central_pressure": 6.342193126678467,
+      "central_current_max": 75.29361188597977,
+      "magnetic_energy_cell_center": 0.09977511077482443
+    },
+    {
+      "time": 2.400507422752181,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9541168808937073,
+      "pressure_min": 5.860448360443115,
+      "central_current": 75.21646741591394,
+      "central_pressure": 6.335278511047363,
+      "central_current_max": 75.21646741591394,
+      "magnetic_energy_cell_center": 0.09935150159136584
+    },
+    {
+      "time": 2.4254681637279902,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.955530047416687,
+      "pressure_min": 5.872066497802734,
+      "central_current": 75.11886486411095,
+      "central_pressure": 6.326028823852539,
+      "central_current_max": 75.11886486411095,
+      "magnetic_energy_cell_center": 0.09892286286934444
+    },
+    {
+      "time": 2.4504569713261297,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9564558267593384,
+      "pressure_min": 5.879176139831543,
+      "central_current": 75.04193801805377,
+      "central_pressure": 6.325206756591797,
+      "central_current_max": 75.04193801805377,
+      "magnetic_energy_cell_center": 0.09849955332478763
+    },
+    {
+      "time": 2.475477276026632,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9567468762397766,
+      "pressure_min": 5.884087562561035,
+      "central_current": 74.93078599311411,
+      "central_pressure": 6.329233646392822,
+      "central_current_max": 74.93078599311411,
+      "magnetic_energy_cell_center": 0.09805979393039091
+    },
+    {
+      "time": 2.5005345083329233,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.956478476524353,
+      "pressure_min": 5.887197017669678,
+      "central_current": 74.72581910155714,
+      "central_pressure": 6.32912540435791,
+      "central_current_max": 74.72581910155714,
+      "magnetic_energy_cell_center": 0.09758834881326559
+    },
+    {
+      "time": 2.525628498491798,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9567489624023438,
+      "pressure_min": 5.90075159072876,
+      "central_current": 74.40004369616508,
+      "central_pressure": 6.325967788696289,
+      "central_current_max": 74.40004369616508,
+      "magnetic_energy_cell_center": 0.09708426358792024
+    },
+    {
+      "time": 2.55075744020824,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9567627310752869,
+      "pressure_min": 5.907120704650879,
+      "central_current": 74.04577947966754,
+      "central_pressure": 6.330657005310059,
+      "central_current_max": 74.04577947966754,
+      "magnetic_energy_cell_center": 0.09654908532670269
+    },
+    {
+      "time": 2.575134838403718,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9564473032951355,
+      "pressure_min": 5.915030002593994,
+      "central_current": 73.65711906924844,
+      "central_pressure": 6.337661266326904,
+      "central_current_max": 73.65711906924844,
+      "magnetic_energy_cell_center": 0.09600350503886358
+    },
+    {
+      "time": 2.6003273112323755,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9572594165802002,
+      "pressure_min": 5.934190273284912,
+      "central_current": 73.1131761148572,
+      "central_pressure": 6.334651470184326,
+      "central_current_max": 73.1131761148572,
+      "magnetic_energy_cell_center": 0.09541687419562526
+    },
+    {
+      "time": 2.625550519047377,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9562740325927734,
+      "pressure_min": 5.94459342956543,
+      "central_current": 72.58708640560508,
+      "central_pressure": 6.335507392883301,
+      "central_current_max": 72.58708640560508,
+      "magnetic_energy_cell_center": 0.09481939737757505
+    },
+    {
+      "time": 2.650015304026467,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9548112154006958,
+      "pressure_min": 5.949936389923096,
+      "central_current": 72.09383924119174,
+      "central_pressure": 6.341474533081055,
+      "central_current_max": 72.09383924119174,
+      "magnetic_energy_cell_center": 0.09423120565371337
+    },
+    {
+      "time": 2.6752867103083275,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9541971683502197,
+      "pressure_min": 5.964839458465576,
+      "central_current": 71.48120840266347,
+      "central_pressure": 6.341540813446045,
+      "central_current_max": 71.48120840266347,
+      "magnetic_energy_cell_center": 0.09360302906658288
+    },
+    {
+      "time": 2.7005714563055903,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.954839825630188,
+      "pressure_min": 5.985687255859375,
+      "central_current": 70.81469276174903,
+      "central_pressure": 6.335154056549072,
+      "central_current_max": 70.81469276174903,
+      "magnetic_energy_cell_center": 0.09295130219867742
+    },
+    {
+      "time": 2.7250935330857455,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9550489187240601,
+      "pressure_min": 6.006906032562256,
+      "central_current": 70.21926578506827,
+      "central_pressure": 6.332225799560547,
+      "central_current_max": 70.21926578506827,
+      "magnetic_energy_cell_center": 0.09232073723574288
+    },
+    {
+      "time": 2.7504397686065567,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9542649984359741,
+      "pressure_min": 6.021473407745361,
+      "central_current": 69.6699625775218,
+      "central_pressure": 6.334560394287109,
+      "central_current_max": 69.6699625775218,
+      "magnetic_energy_cell_center": 0.0916879978422308
+    },
+    {
+      "time": 2.77501631257936,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9537645578384399,
+      "pressure_min": 6.030817985534668,
+      "central_current": 69.16190081276,
+      "central_pressure": 6.339170455932617,
+      "central_current_max": 69.16190081276,
+      "magnetic_energy_cell_center": 0.09107661105412496
+    },
+    {
+      "time": 2.8004140523320866,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9543743133544922,
+      "pressure_min": 6.032149791717529,
+      "central_current": 68.61281954683363,
+      "central_pressure": 6.336446762084961,
+      "central_current_max": 68.61281954683363,
+      "magnetic_energy_cell_center": 0.09043906217747832
+    },
+    {
+      "time": 2.8250484597614087,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9547380805015564,
+      "pressure_min": 6.029910564422607,
+      "central_current": 68.08069878816605,
+      "central_pressure": 6.332777500152588,
+      "central_current_max": 68.08069878816605,
+      "magnetic_energy_cell_center": 0.08982672619958727
+    },
+    {
+      "time": 2.8505171033065833,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9545192718505859,
+      "pressure_min": 6.03108024597168,
+      "central_current": 67.59595711901784,
+      "central_pressure": 6.335949420928955,
+      "central_current_max": 67.59595711901784,
+      "magnetic_energy_cell_center": 0.08920972813114175
+    },
+    {
+      "time": 2.8752405537331724,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9537213444709778,
+      "pressure_min": 6.030904769897461,
+      "central_current": 67.16843933053315,
+      "central_pressure": 6.34075927734375,
+      "central_current_max": 67.16843933053315,
+      "magnetic_energy_cell_center": 0.08862502408614002
+    },
+    {
+      "time": 2.9000046341794774,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9540601372718811,
+      "pressure_min": 6.033029079437256,
+      "central_current": 66.72077225521207,
+      "central_pressure": 6.339578628540039,
+      "central_current_max": 66.72077225521207,
+      "magnetic_energy_cell_center": 0.08805473013422337
+    },
+    {
+      "time": 2.925610964737692,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9533836245536804,
+      "pressure_min": 6.034252643585205,
+      "central_current": 66.337879601866,
+      "central_pressure": 6.343267440795898,
+      "central_current_max": 66.337879601866,
+      "magnetic_energy_cell_center": 0.08749435239566511
+    },
+    {
+      "time": 2.950461420978683,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9521117210388184,
+      "pressure_min": 6.037619113922119,
+      "central_current": 66.02237715013325,
+      "central_pressure": 6.350532054901123,
+      "central_current_max": 66.02237715013325,
+      "magnetic_energy_cell_center": 0.08697815666928527
+    },
+    {
+      "time": 2.9753392555400495,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9521063566207886,
+      "pressure_min": 6.037376403808594,
+      "central_current": 65.67704701051116,
+      "central_pressure": 6.354482173919678,
+      "central_current_max": 65.67704701051116,
+      "magnetic_energy_cell_center": 0.08647732448263301
+    },
+    {
+      "time": 3.0,
+      "central_sheet_By_sign_changes": 1,
+      "density_min": 0.9528685808181763,
+      "pressure_min": 6.036255359649658,
+      "central_current": 65.29718850180507,
+      "central_pressure": 6.346827983856201,
+      "central_current_max": 65.29718850180507,
+      "magnetic_energy_cell_center": 0.08599756753485502
+    }
+  ],
+  "crossing_brackets": [
+    [
+      0.5252080202973518,
+      0.5500271880794338
+    ],
+    [
+      1.9255477351192436,
+      1.9503788643166478
+    ]
+  ],
+  "cadence_rate_interval": [
+    0.028066810493534367,
+    0.029079900032087515
+  ],
+  "rate_stride_2": 0.028906130492515635,
+  "rate_stride_4": 0.02889553674757454,
+  "rate_other_path": 0.02887046811715773,
+  "topology_max_sign_changes_through_window": 1,
+  "conservation": {
+    "mass_max_relative_drift": 4.773959005888173e-15,
+    "energy_max_relative_drift": 5.5524474354418096e-05,
+    "max_absolute_net_momentum": 1.4013313079375145e-16,
+    "floor_corrections": "not separately exported; positivity margins retained; energyFix active as commissioned"
+  },
+  "realized_runtime": {
+    "real runtime parameters": {
+      "limitedslopebeta": 1.0,
+      "poskappa1": 0.4,
+      "poskappa2": 0.4,
+      "cfl": 0.4,
+      "checkpointfileintervaltime": 1000.0,
+      "checkpointfileintervalz": 1.7976931348623157e+308,
+      "cond_constantcross": 0.0,
+      "cond_constantisochoric": 0.0,
+      "cond_constantparallel": 0.0,
+      "cond_constantperpendicular": 0.0,
+      "crossfieldflcoef": 1.0,
+      "currflcoef": 1.0,
+      "cvisc": 0.1,
+      "diff_eleflcoef": 1.0,
+      "diff_ionflcoef": 1.0,
+      "diff_magflcoef": 1.0,
+      "diff_scalefactthermflux": 1.0,
+      "diff_scalefactthermsatempdiff": 1.0,
+      "diff_scalefactthermsatime": 1.0,
+      "diffusion_cutoff_density": 1e-30,
+      "dr_dtmincontinue": 0.0,
+      "dr_posdefdtfactor": 1.0,
+      "dr_tstepslowstartfactor": 0.1,
+      "dt_diff_factor": 0.8,
+      "dtinit": 1e-06,
+      "dtmax": 0.01,
+      "dtmin": 1e-14,
+      "eintswitch": 0.0,
+      "eos_mfaspeciesa": 1.0,
+      "eos_mfaspeciesz": 1.0,
+      "eos_mfbspeciesa": 1.0,
+      "eos_mfbspeciesz": 1.0,
+      "eos_singlespeciesa": 1.0,
+      "eos_singlespeciesz": 1.0,
+      "gamma": 1.6666666666666667,
+      "gammaa": 1.6667,
+      "gammab": 1.6667,
+      "gp_elldel": 12.0,
+      "gp_sigdel": 2.0,
+      "hy_bier1ta": -1.0,
+      "hy_bier1tz": -1.0,
+      "hy_biermanncoef": 1.0,
+      "hy_cflfallbackfactor": 0.9,
+      "hy_fpresinmomflux": 1.0,
+      "hybridorderkappa": 0.0,
+      "nernstflcoef": 1.0,
+      "nusts": 0.1,
+      "plotfileintervaltime": 0.025,
+      "plotfileintervalz": 1.7976931348623157e+308,
+      "res_constantcross": 0.0,
+      "res_constantparallel": 0.0,
+      "res_constantperpendicular": 0.0,
+      "res_maxres": -1.0,
+      "res_vacdens": 0.0,
+      "res_vacfrac": 0.5,
+      "res_vacres": 0.0,
+      "resistivity": 0.00025,
+      "rss_limit": -1.0,
+      "sim_alpha": 20.0,
+      "sim_pressureoffset": 6.0,
+      "sim_temperature": 3.0,
+      "small": 1e-10,
+      "smalle": 1e-10,
+      "smallp": 1e-12,
+      "smallt": 1e-12,
+      "smallu": 1e-10,
+      "smallx": 1e-10,
+      "smlrho": 1e-12,
+      "tinitial": 0.0,
+      "tiny": 1e-16,
+      "tmax": 3.0,
+      "tstep_change_factor": 1.2,
+      "wall_clock_checkpoint": 43200.0,
+      "wall_clock_time_limit": 604800.0,
+      "xmax": 0.5,
+      "xmin": -0.5,
+      "ymax": 0.5,
+      "ymin": -0.5,
+      "zfinal": 0.0,
+      "zinitial": -1.0,
+      "zmax": 1.0,
+      "zmin": 0.0
+    },
+    "logical runtime parameters": {
+      "eosforriemann": 0,
+      "e_modification": 1,
+      "e_upwind": 0,
+      "forcehydrolimit": 0,
+      "vresistmax": 0,
+      "addthermalflux": 1,
+      "allowdtstsdominate": 0,
+      "alwayscomputeuservars": 1,
+      "alwaysrestrictcheckpoint": 1,
+      "appendparrestart": 0,
+      "charlimiting": 1,
+      "chkguardcellsinput": 0,
+      "chkguardcellsoutput": 0,
+      "compute_grid_size": 1,
+      "conserveangfield": 0,
+      "conserveangmom": 0,
+      "converttoconsvdformeshcalls": 0,
+      "corners": 0,
+      "diff_anisocondforele": 0,
+      "diff_doanisomagdiff": 0,
+      "diff_domagdiff": 0,
+      "diff_usecrosscond": 0,
+      "diff_useelecond": 0,
+      "diff_useioncond": 0,
+      "dr_printtsteploc": 1,
+      "dr_shortenlaststepbeforetmax": 1,
+      "dr_useposdefcomputedt": 0,
+      "drift_tuples": 0,
+      "eachprocwritesownabortlog": 0,
+      "eachprocwritessummary": 0,
+      "energyfix": 1,
+      "entropy": 0,
+      "flux_correct": 0,
+      "geometric_mean_diff": 0,
+      "geometryoverride": 0,
+      "gr_bcenableapplymixedgds": 1,
+      "hallvelocity": 0,
+      "hy_biermannsource": 0,
+      "hy_fallbacklowercfl": 0,
+      "hy_fullspecmsfluxhandling": 1,
+      "hy_usefluxeqn": 0,
+      "ignoreforcedplot": 0,
+      "initializeparticleatrestart": 0,
+      "io_writemscalarintegrals": 0,
+      "killdivb": 1,
+      "killdivb8w": 0,
+      "packmeshchkreadhdf5": 0,
+      "packmeshchkwritehdf5": 0,
+      "packmeshplotwritehdf5": 1,
+      "plotfilegridquantitydp": 0,
+      "plotfilemetadatadp": 0,
+      "reducegcellfills": 0,
+      "res_addanomres": 0,
+      "res_usevac": 0,
+      "restart": 0,
+      "shockdetect": 0,
+      "shocklowercfl": 0,
+      "summaryoutputonly": 0,
+      "threadblocklistbuild": 0,
+      "threaddriverblocklist": 0,
+      "threaddriverwithinblock": 0,
+      "threadeoswithinblock": 0,
+      "threadhydroblocklist": 0,
+      "threadhydrowithinblock": 0,
+      "threadraytracebuild": 0,
+      "threadwithinblockbuild": 0,
+      "typematchedxfer": 1,
+      "unbiased_geometry": 0,
+      "updatehydrofluxes": 1,
+      "useburn": 0,
+      "usecircuit": 0,
+      "usecollectivehdf5": 1,
+      "useconductivity": 1,
+      "usecool": 0,
+      "usecosmology": 0,
+      "usecrossfield_limmode": 0,
+      "usecrossmagres": 0,
+      "usedeleptonize": 0,
+      "usediffuse": 1,
+      "usediffusecomputedtspecies": 0,
+      "usediffusecomputedttherm": 0,
+      "usediffusecomputedtvisc": 0,
+      "usediffusecomputedtmagnetic": 1,
+      "usediffusespecies": 0,
+      "usediffusetherm": 0,
+      "useenergydeposition": 0,
+      "useexplicitviscosity": 1,
+      "useflame": 0,
+      "usegravity": 0,
+      "usehall_limmode": 0,
+      "useheat": 0,
+      "useheatexchange": 0,
+      "usehydro": 1,
+      "useincompns": 0,
+      "useionize": 0,
+      "uselegacylabels": 1,
+      "usemagneticresistivity": 1,
+      "usemassdiffusivity": 0,
+      "usenernst_limmode": 0,
+      "useopacity": 0,
+      "useparticles": 0,
+      "useplasmastate": 0,
+      "usepolytrope": 0,
+      "useprimordialchemistry": 0,
+      "useprotonemission": 0,
+      "useprotonimaging": 0,
+      "useradtrans": 0,
+      "useraytrace": 0,
+      "useresistive_limmode": 0,
+      "usests": 0,
+      "usestsfordiffusion": 0,
+      "usestir": 0,
+      "usethomsonscattering": 0,
+      "usetreeray": 0,
+      "useturb": 1,
+      "useviscosity": 0,
+      "usexrayimaging": 0,
+      "use_3dfullctu": 1,
+      "use_biermann": 0,
+      "use_biermann1t": 0,
+      "use_biermann3t": 0,
+      "use_crossfield": 0,
+      "use_hall": 0,
+      "use_nernst": 0,
+      "use_pospreserv": 0,
+      "use_seebeck": 0,
+      "use_auxeinteqn": 1,
+      "use_avisc": 0,
+      "use_cma_advection": 0,
+      "use_cma_flattening": 0,
+      "use_flattening": 0,
+      "use_gravhalfupdate": 1,
+      "use_hybridorder": 0,
+      "use_steepening": 0,
+      "use_upwindtvd": 0,
+      "writestatsummary": 1
+    },
+    "string runtime parameters": {
+      "riemannsolver": "HLLD",
+      "unitsystem": "none",
+      "basenm": "flash_run_",
+      "crossfieldflmode": "fl_none",
+      "currflmode": "fl_none",
+      "diff_eleflmode": "fl_none",
+      "diff_elexlboundarytype": "neumann",
+      "diff_elexrboundarytype": "neumann",
+      "diff_eleylboundarytype": "neumann",
+      "diff_eleyrboundarytype": "neumann",
+      "diff_elezlboundarytype": "neumann",
+      "diff_elezrboundarytype": "neumann",
+      "diff_ionflmode": "fl_none",
+      "diff_ionxlboundarytype": "neumann",
+      "diff_ionxrboundarytype": "neumann",
+      "diff_ionylboundarytype": "neumann",
+      "diff_ionyrboundarytype": "neumann",
+      "diff_ionzlboundarytype": "neumann",
+      "diff_ionzrboundarytype": "neumann",
+      "diff_magflmode": "fl_none",
+      "diff_magxxlboundarytype": "neumann",
+      "diff_magxxrboundarytype": "neumann",
+      "diff_magxylboundarytype": "neumann",
+      "diff_magxyrboundarytype": "neumann",
+      "diff_magxzlboundarytype": "neumann",
+      "diff_magxzrboundarytype": "neumann",
+      "diff_magyxlboundarytype": "neumann",
+      "diff_magyxrboundarytype": "neumann",
+      "diff_magyylboundarytype": "neumann",
+      "diff_magyyrboundarytype": "neumann",
+      "diff_magyzlboundarytype": "neumann",
+      "diff_magyzrboundarytype": "neumann",
+      "diff_magzxlboundarytype": "neumann",
+      "diff_magzxrboundarytype": "neumann",
+      "diff_magzylboundarytype": "neumann",
+      "diff_magzyrboundarytype": "neumann",
+      "diff_magzzlboundarytype": "neumann",
+      "diff_magzzrboundarytype": "neumann",
+      "dr_posdefvar_1": "none",
+      "dr_posdefvar_2": "none",
+      "dr_posdefvar_3": "none",
+      "dr_posdefvar_4": "none",
+      "entropyfixmethod": "HARTENHYMAN",
+      "eosmode": "dens_ie",
+      "eosmodeinit": "dens_pres",
+      "geometry": "cartesian",
+      "grav_boundary_type": "isolated",
+      "hy_eosmodegc": "see eosMode",
+      "log_file": "flash_run.log",
+      "nernstflmode": "fl_none",
+      "output_directory": "",
+      "pc_unitsbase": "CGS",
+      "plot_grid_var_1": "none",
+      "plot_grid_var_10": "none",
+      "plot_grid_var_11": "none",
+      "plot_grid_var_12": "none",
+      "plot_grid_var_2": "none",
+      "plot_grid_var_3": "none",
+      "plot_grid_var_4": "none",
+      "plot_grid_var_5": "none",
+      "plot_grid_var_6": "none",
+      "plot_grid_var_7": "none",
+      "plot_grid_var_8": "none",
+      "plot_grid_var_9": "none",
+      "plot_var_1": "dens",
+      "plot_var_10": "none",
+      "plot_var_11": "none",
+      "plot_var_12": "none",
+      "plot_var_13": "none",
+      "plot_var_14": "none",
+      "plot_var_15": "none",
+      "plot_var_16": "none",
+      "plot_var_17": "none",
+      "plot_var_18": "none",
+      "plot_var_2": "pres",
+      "plot_var_3": "velx",
+      "plot_var_4": "vely",
+      "plot_var_5": "magx",
+      "plot_var_6": "magy",
+      "plot_var_7": "magp",
+      "plot_var_8": "divb",
+      "plot_var_9": "none",
+      "prof_file": "profile.dat",
+      "prolmethod": "INJECTION_PROL",
+      "res_vacspec": "vacu",
+      "resistivityform": "parallel",
+      "resistivitysolver": "explicit",
+      "run_comment": "Guided FLASH island-coalescence anchor",
+      "run_number": "1",
+      "slopelimiter": "mc",
+      "stats_file": "flash_run.dat",
+      "wenomethod": "WENO5",
+      "xl_boundary_type": "reflecting",
+      "xr_boundary_type": "reflecting",
+      "yl_boundary_type": "reflecting",
+      "yr_boundary_type": "reflecting",
+      "zl_boundary_type": "periodic",
+      "zr_boundary_type": "periodic"
+    }
+  },
+  "config": {
+    "S_eta": 4000.0,
+    "eta": 0.00025,
+    "n": 128,
+    "tmax": 3.0,
+    "cadence": 0.025,
+    "cfl": 0.4,
+    "ranks": 4,
+    "threads": 1
+  },
+  "timing": {
+    "solver_wall_seconds": 62.30490737299988,
+    "actual_end_time": 3.0,
+    "steps": 3800
+  },
+  "provenance": {
+    "command": [
+      "/usr/bin/python3",
+      "/opt/acs-tools/mpi_launch.py",
+      "--ranks",
+      "4",
+      "--launcher",
+      "/usr/bin/orterun",
+      "--",
+      "/opt/acs-capabilities/flash-island-coalescence-resistive-mhd-4.8/bin/flash4",
+      "-par_file",
+      "flash.par"
+    ],
+    "flash_executable_sha256": "40cf57b987e85f9befc01abae4e89f27c230d1eb42391ba3abea8655a0f7024b",
+    "parameter_sha256": "ad6883bdf3d9d21975fc1fad8c34545a0a5eb30a197b194eac89e6f65bdc1797",
+    "driver_sha256": "3627bce52320c86e035fe970c4d3c95629f148da95d089767a6c6277c7a266c5"
+  },
+  "fields": [
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0000",
+      "sha256": "3fecfc33d792f13011c179e2ef514840c7df196c3fb48d48b40df9ed9a069979",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0001",
+      "sha256": "457adb3320f2ed976a442b5d8e25f7bb3338ab44009cdf2ad77be26afa4840e4",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0002",
+      "sha256": "db573dbc1b44f4fc4bc76309f6c0256490152973fde20b791155c79830ec3358",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0003",
+      "sha256": "542f4245bdb161d5842d0397690dda850125090b74b86892e4c27c798fe7adbf",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0004",
+      "sha256": "df898ee81eeee6b22ecde1c522aadb0882b04a3f1b60a953505617a4466afd03",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0005",
+      "sha256": "104f36d5e938f611ae8a88bf935feb637c329e24ded05dfc3cb95b769025639a",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0006",
+      "sha256": "6f017c544992ed30f2e2f31d965f288ef4689cb614d863ec373ae07751a2aaed",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0007",
+      "sha256": "4463b396ccaca8c6f54fa5e284e8767fa5f632a4f9f5e4d898148a868806dc21",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0008",
+      "sha256": "aaa04286eba7332375cc476a668e0c6387c0e5e7f6e560d754cf230e24eeb516",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0009",
+      "sha256": "39aa2abc4743ff93f7c2a7946824b579f1e2e3cd38d050bd671e557a3f8da4e6",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0010",
+      "sha256": "7926ff995f3cf63db29f111eb65da6fb7cd5b1c51a14f0c200e0bde7af11d489",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0011",
+      "sha256": "6e177c7dd5ff7ab3b99c68c580879b1bb45e5d874f7ad9a94c09f5986b973637",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0012",
+      "sha256": "c7c59bcc7203c17afb3dcf4ef101f5d5ee5137590f72fccb6c86d579ab581951",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0013",
+      "sha256": "9f1280486f6d16101aa709acff8be1ac8f21c53b789d0a1211e1dc0418db79e3",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0014",
+      "sha256": "fa26b507d3dc7ae0be8513e538e645207736eb85f935986a5b3f7113a77049e3",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0015",
+      "sha256": "9cb6c34302ae5f72910d2f8ee30635a28536c5143107114ffb3a11ba30f8f936",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0016",
+      "sha256": "d3198243e8a84422a1d1c04ccafef48ae2e1d5bf59816618d380b5bb7d386f2b",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0017",
+      "sha256": "81e3b8dacda4fb4060437b4811df16260a636f72234eb492f8345715421ebb12",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0018",
+      "sha256": "4dc83732d1350867d724a37e2efa9dc031cba82196238e4ab0980928e99e1966",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0019",
+      "sha256": "e85a0f3fecddd6146517fa5a4144cd6d5bcfc02092fc57ee2360337708853736",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0020",
+      "sha256": "378b0a281cb213baa047e1a71acba74f990a876f709fe9c3a5b5d042167e3823",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0021",
+      "sha256": "6710e66b836bf89eccde236e7fa495541301b58785dd9c2e144dbffc64ab2f21",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0022",
+      "sha256": "260afba16dad69ddc3444dac890912dea192f06c5c6e7174be35544bc577dd15",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0023",
+      "sha256": "4cd93c2b0fe0f7b8967d9cc7c1788b2db6d43f607067e50b03c67d7f6e9ce603",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0024",
+      "sha256": "3d0b2953e865756d5af1c0a670afaf409fc566fc67e1b8dc86ba34392deeb3db",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0025",
+      "sha256": "6f1cb238097f76a7a174bd43debc6d0fb0f2a53df558242ab1f2eb49113752a7",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0026",
+      "sha256": "9720825a78a23990610e2ed97078d0aa3a34f30043992976ced7323dcf451322",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0027",
+      "sha256": "4733e9d560a3868bc2a90634be6e2694bdd4fedd93a2cbe1aca67df1cf433e69",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0028",
+      "sha256": "d9b4a8c320c91f3732bbca86edd487f5b18bdebde8c933f8fc25de8900b6cfd8",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0029",
+      "sha256": "9d3f91d6d45bebde828c43963398da2859d4521671696bcc724e545127ad2aac",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0030",
+      "sha256": "3efdaca7bd25ea65f0020345bb504bc52c685b48c43ea162535793cf12a4b111",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0031",
+      "sha256": "a88428eab1c548b7094dee4e4714eeef07bca31370f805a610a778584ce95557",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0032",
+      "sha256": "f6f5cbe38c16344decf489cbb0f2b12476ef4e4d5aec88bb85f634b72032ac7a",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0033",
+      "sha256": "3af58b487792f05fd018cf378e3a19676d6de98aa8cd9bb99579669ff679c8bf",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0034",
+      "sha256": "36cc716113aa77806110676e58a9c6528bf39be6d0a9aab059f28edc0738756d",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0035",
+      "sha256": "3a8fc0fd5f8c7a6d77ed6fd92e207610aba7ebbebeec53e54f642733796a7ad9",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0036",
+      "sha256": "adde84a259f4fdb0d93b6fe3ab0f6ea73404582fed43c3fb62eec3418eb3ae3f",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0037",
+      "sha256": "344138c78e36483766564dca83131c394b6711bdfe6b1c7cb6556ac85268861f",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0038",
+      "sha256": "58f8124849f06015cc8a1ccd82a7938098ffb1b0afe3f8e2332527e16a17d455",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0039",
+      "sha256": "15f024e39c4ef36102d497fc297ea0c37d566163639109631a8370717586e9bc",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0040",
+      "sha256": "bce2f4a348010c8485c967524cecca04f57bbc8fa20e660f85ac445720189448",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0041",
+      "sha256": "0462a41ac5a909a6a0818edf06b505f170d05c54e0f8e0c555e8112589b30e4d",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0042",
+      "sha256": "73efe69fa7c7cfbbb4a0730c83cbcec056ee7fb9e750f17976ceb0c87783e11f",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0043",
+      "sha256": "0595d2a164ac9880726d7c87e07750dc31bb3828a99edc9946a5d326b82ef70a",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0044",
+      "sha256": "10965883bbc2206100c8a8c3307ab70a0eb0ad0abb3400dc74afa5cab9d2ec00",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0045",
+      "sha256": "3b4dcf453557b1466bc7b3c7498f66aba687dfd6f3549a154c68eeb1df4fc0dd",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0046",
+      "sha256": "09150457a23af5e5c2e0fee97e240c7d66667b336a61f302a503ed3fdead1e6a",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0047",
+      "sha256": "d020087164b27a4dd95a6194b2ee4d7f85dcd88f1cd4a630822383ebe3629d3d",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0048",
+      "sha256": "3f7938791265c30514c4ade5f693c737bcf931ad1fbc2284b4d08b117dd12081",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0049",
+      "sha256": "5da427d6c2e21bdd4845952727ba5ebc4d5f91aed7ecd4613c560c2b8a3fdd8d",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0050",
+      "sha256": "e5ee7f19a25176488e5651c4482c2792401c123f37eea67d48ea86195d6dccbe",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0051",
+      "sha256": "cb9c3cdb3dc81c8eab768f3f3dd907c9349501b0ba5de3b06cdd2979ee8966c8",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0052",
+      "sha256": "1ab9ec5a57e6349d934f6b9538812429cb8b3a258c97dae582e502b4b3c7a110",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0053",
+      "sha256": "809719189bc10cb3f95fcb9c7bb4aae8ccd0329bb1dc960c66cd458cfad549ac",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0054",
+      "sha256": "1a66aaf7ea37105b903bf7a5c802949cc5b4e5f34e9ecfe650e01a0c95f28165",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0055",
+      "sha256": "5819f57a9b12d67379c8b005e5db003a2c980c377aec192d6ab9eedab6c12af9",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0056",
+      "sha256": "06b6e4f06987b21609b152eaac8ee5fe519bfa189d2c3b605f93a9e9eb9df884",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0057",
+      "sha256": "b2a81328f528972062ea32757ff89bff869a313053a1107057f74bd66c996a25",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0058",
+      "sha256": "9b0473d75ccc1a92890f7e3908bf8f98c5341bf3b698aed078645246ba67e69b",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0059",
+      "sha256": "b448031fa9fa34cfa5bc6ad045a930ae4802ae069d93be989a9e96314ada4074",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0060",
+      "sha256": "fc1f0c4a02460215d655cf83868611ee795a03744fe27221db71009f0e633913",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0061",
+      "sha256": "b11a6efd3770cf12282d3146264103808eec0b30285c4e325ffbd194357c6441",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0062",
+      "sha256": "ee63487a7abb4df2c27d18e729da757d77094c56ac247eb8e0b78117d599d40b",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0063",
+      "sha256": "4968ba128d89ab3992117e5ba09ec94c3507cbb5e5c9d9b4bddd63d3325ec581",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0064",
+      "sha256": "868de46e449e58e0e7adbfc5567471e031732d70c551d09a031c9f13fa1f2983",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0065",
+      "sha256": "9479a313b22aca21693b54453b98861b9e74f967563bf9a2d0a503e544b8f6ad",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0066",
+      "sha256": "a6273216c280daaa2bb81f43da11600b4a712fb9bef48088d24ddfef126d914a",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0067",
+      "sha256": "ba7fd467331f143356789e3de895cc444f144922a4dac59c6580bfecc58369e7",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0068",
+      "sha256": "2fad88e2af0123c7424611c7f41cc9b2db3e63827e00b49d21fc42266e5a1ea5",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0069",
+      "sha256": "6fcae7a95177ad26b10308f4512d2cb3da8a6a6dba0a54b4446de8cc60ada1f3",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0070",
+      "sha256": "6f2506535deae847d08fb4aea4212d0384afcd560029390ca645833e2258c8d7",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0071",
+      "sha256": "a8b6429ebe0179f8edf6f1620a4f5c4be8f6d575b684bb087e2609bdc1bcb727",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0072",
+      "sha256": "0a1a54a339e232c5292eeafa4367e20dae4033748df8b388033541c6853bf4ef",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0073",
+      "sha256": "15798806d304df3bdf98f07efa441c2673ac46d2fed94ba1bc39468a8f378028",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0074",
+      "sha256": "d27f5c6eba13ed308565691ae0ade3c71e99ea23faaa4029d62fe3e291ea3c04",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0075",
+      "sha256": "7570db48e3379408c2dee43e3e82ca7d24b8ec906f9fcc06ce3fb338cbafdd35",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0076",
+      "sha256": "60cf8f9839565b0819127346331bdbb06fc6eaedea61dbc43d7efeaf39c3c48b",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0077",
+      "sha256": "0d255da94fbfca84e9eea1102ca20d2f45854ca7c632a53c470cc0cc78fc9a6d",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0078",
+      "sha256": "eb422b0003308c32528649db5621d97ce37ecf67ebef05e8416fdd19e152b0db",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0079",
+      "sha256": "087b433ca21eca19e61dc675f6a1327bf203d6d2cacebca5824e3b11dfc4827d",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0080",
+      "sha256": "bc53a3d53e73cdf01346856ce2785594ade60d602c46926ffa3809bef7cef0ec",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0081",
+      "sha256": "8a0b4408439dd0ba7d75b2a385985a763207558b6761ca7340192dae79ff278d",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0082",
+      "sha256": "6aafa51f803505d52e25bcbb925d8a2a3671ebade0cd5735edf84e03e3482d97",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0083",
+      "sha256": "b1727f8d8cfbd2cbfdc437f26477b8d7634b3b630030fce53681602aacea310f",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0084",
+      "sha256": "16a4faf7c8b0cb1f491b9beec311c1a0348fdfaf52355a555fd31e52b27abe3e",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0085",
+      "sha256": "de95596b8ac3264863d068592e99a5287bf86198ef99059863a578561c5080a3",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0086",
+      "sha256": "c50e19b5465ed054864773fb8e8b076405b86074d2b5fb676dec12761a17547e",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0087",
+      "sha256": "27b3a272c01de779a49a0b07415c86a8231dbe082298886cbb3b6f8d77627f9f",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0088",
+      "sha256": "b92c5016b9ab8320a03febbb5ace6672c218e0ea098b5f31f7f16ef1e95df571",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0089",
+      "sha256": "e90c15d726a745793618f2d93695289e5d73bc2fbe621fbd00881dc6a09e389b",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0090",
+      "sha256": "c284de89f2ea0ee0109640ab436e0d892408baf4061b4ce2a5ff6b245857005c",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0091",
+      "sha256": "6853f9221eb45815f7a4da685ea4e538abd3f010cc15d2b56083b9adc9f6fa8a",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0092",
+      "sha256": "3e35f1f1d37f3b8a2773213952ace6ba36b6508af35980879975dcfac497df6d",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0093",
+      "sha256": "de67f7322bf3c6fa64ceb8c0bc1fec8a5d85865694de6b5cc56ce4e9cb85c826",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0094",
+      "sha256": "5acc122e7b2ee60a263fe3fe494032f2e0f156f35a0ea8f05250322991ec3091",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0095",
+      "sha256": "562c060c4b6753f86dd3ba882d4316d9c20eb657fc993a3d1825c34a33fc6b10",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0096",
+      "sha256": "9262b67bd9bc12d7733f572f797476ae3f870b39308d3b7de6d8c4bd3149182e",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0097",
+      "sha256": "325d0d803eb70976c573468959bd6ddc6d8f26658971f90bdd94676f2561fda9",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0098",
+      "sha256": "9c66ab7d762b3fca6a52ea9f2feea3cc13879cca3b40f313a6cb81935924de14",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0099",
+      "sha256": "1dbd4d3ee59b6658e051edd2776643542b730667653104508025fbd31c6f092e",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0100",
+      "sha256": "d7633acdeea3e4cefca4b00550448e0356aea004fc1201b7e231c56f0f9d1919",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0101",
+      "sha256": "a5d3b7233d70dda6f3116d491b1abf0ca017ccb8744e9ca10ce796c4cb5ba56d",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0102",
+      "sha256": "4a66bf32c2c804784be616c3352559bb83a738969ebf893fd72f2ad6e50ae833",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0103",
+      "sha256": "b9e3d5962665fd0b0e834a01e6d7451e41a913032194fd1fadcb818b87c912f4",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0104",
+      "sha256": "29e905cfbca02c05173d2b75156081948315e455a9042d47da3598691bf4b166",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0105",
+      "sha256": "a97a5318e4eb0b5142f821aa54a8b64224e128b090524cdb7eb67426eb22e6eb",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0106",
+      "sha256": "23a54b6562126407262489fe11d88c61ff408d679b3538cba672d3f46ad433bf",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0107",
+      "sha256": "4255ec92a38d42312368c0636afd623485d3de80a0ddd33dd824c5ba22162926",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0108",
+      "sha256": "fe87779001602679343516a503c7f6286cc3a6251c2586008ec84466b4471996",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0109",
+      "sha256": "0d2b88d0c76c4eb81f580e4a1d824b1ec770941096e71cd1df07c8a892dc577a",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0110",
+      "sha256": "268921b554f1830f50d263eda2638550012d2dfb132d4990407848023bbd0bfc",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0111",
+      "sha256": "a70d1979f0ba7d988bd83e39119967315f2e25eb239518b8c3f49f2bad33495c",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0112",
+      "sha256": "a9bf96ac7f934ddfea0cfaad6fd4d410f7c842e010c59ab48c3b2165d1bad65e",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0113",
+      "sha256": "4ca7b5a5402037df87abf20a7090876b4ea3419c2bb9b90798bedee626052d5f",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0114",
+      "sha256": "0351cc758c226425581266e2660895888e4e830525bc459cc55ac892499714a8",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0115",
+      "sha256": "f91dfc74b7665f24488bc09e254b6bd82dbe48cc9d93006595618565a8e8fbec",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0116",
+      "sha256": "19a2be1dc92e2bab7aeacb1659ca8cb3915b467a8e3ec1df59804588302036af",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0117",
+      "sha256": "af407698aaca472e36dddcaf1ca0d6f890174bf8b50815d20c868851f5fb71a4",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0118",
+      "sha256": "c2c79beee93ec065ed5623109c474178b61f39c439f5c3d2486ce275d7e1a88a",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0119",
+      "sha256": "5cfd56749b8edd31312efba03b64021c9290a34a455d65e03e21110962e0ed0c",
+      "bytes": 580876
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0120",
+      "sha256": "a4db8c2000ec3707e7a8918cc535ebee13b65b9fec7e014270cd8fe9783a56e2",
+      "bytes": 580876
+    }
+  ],
+  "reader_polynomial_test": {
+    "path_delta_disagreement": 0.0,
+    "expected_delta": -0.0625,
+    "measured_delta": -0.06249237041920436
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "id": "director_56acc2fa7acfdae67b34a919",
+  "created_at": 1793002609.6729355,
+  "packet_sha256": "c2ce7a83eda4826e592cb50447656f1997f809d410bfc4b60d9725be3f18f127",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "New controls justify continuing qualification, without establishing the hypothesis. The larger-patch comparison reports absolute window-mean A differences below 0.0014, maximum scalar-pressure differences below 2.3%, and density differences below 0.64%. The FLASH refinement comparison reports measurement-region field, density, pressure, flow and current RMS differences below 0.8%. The refined-source kinetic run completed in 131 seconds, but its qualification analysis remains pending. The method reviewer requested instrument scope for the bounded source-only submission; no production approval exists. Budget feasibility is at risk rather than scientifically blocked: approximately 4547 seconds remain before the compute cutoff, and a fresh 512-cell FLASH trajectory alone previously cost 871 seconds. Mesh, timestep and particle controls, production review, fresh linked evidence and independent claim review must all remain in the forecast.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "at_risk",
+  "stop_experiments": [],
+  "wake_worker": true,
+  "park_worker": false,
+  "report_assessment": null,
+  "closeout_report": null,
+  "next_action": "Analyze completed exp_0cc759f4429f9587ef9f4c55 against the pilot using the frozen protocol, including source sensitivity, initial matching, pressure/density evolution, relaxation, boundary energy accounting and estimator eligibility. Correct the bounded source-method submission to scope=instrument as requested; its approval cannot authorize evidence. Prepare source-bound production review covering the implemented hypothesis measurement and both solver stages. Continue independent mesh, timestep and particle-count controls sequentially on the GPU, keeping the selected source, mapping, ROI and full [0.4,0.9]/Omegaci window fixed. Establish whether the coarse-source boundary comparison transfers to the refined source; repeat it if that applicability is unsupported. Check scalar heating and energy behavior alongside anisotropy, and retain the Poynting spatial-quadrature limitation. Update the critical-path forecast using the measured 871-second FLASH and 131-second baseline PIC costs, including mesh scaling, review latency and fresh seeds. Preserve at least 20 minutes for fresh evidence and independent review, plus the protected report reserve. Obtain production approval before evidence runs; link fresh FLASH output through exact transferred inputs to fresh kinetic seeds. If the remaining qualification or approval path cannot fit, record the specific blocker and return a concrete replan or justified time request without shortening the scientific window.",
+  "storage_increase": null,
+  "registration_tuning": null,
+  "time_request": null,
+  "operating_limits": null,
+  "helper_tasks": [],
+  "help_replies": []
+}

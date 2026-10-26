@@ -1,0 +1,12 @@
+{
+  "scope": "Frozen plotting extracts; original scientific records are in ../fresh_v070_record/. No new simulation or scientific verdict.",
+  "record_manifest_sha256": "b01e26f4fcfa9e83ee712f72a251b63f4541eb041e3a96f472ab7c3a8769799d",
+  "accepted_review": "review_d8ed7a3364483fc612a029c3",
+  "accepted_review_sha256": "2bed196b0569e217c96c710b455b03246c1ac82dea951f9b37d86eeab871ed46",
+  "files": {
+    "benchmark_island.json": "3c44ff55b441cef71f16555111d572db23eb5b479908b96bb2b4bb88e89d481b",
+    "island_fields.json": "8473d8ccf04b44dc40d722e9531808388661e5e4aea20ecccfdcb3ad659e56c8",
+    "island_fields.npz": "aae305a436d336ffe65521613de7ef31c43b1c1c9cd690d12f872d8c749e236b",
+    "island_study_provenance.json": "2b80e666b456b31c52746ab5d944ed1d5535fab1412cf00d3951bd655ab32058"
+  }
+}

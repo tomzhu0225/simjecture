@@ -1,0 +1,128 @@
+{
+  "schema_version": 3,
+  "study_id": "e5a00722260a426484acb75a85ea3102",
+  "methods_required": true,
+  "method_review_scope": "used_instruments",
+  "workflow": "minimal",
+  "registration_policy": {
+    "director_can_tune": true
+  },
+  "completion_policy": "repair",
+  "execution_backend": "bubblewrap",
+  "solver_development_policy": {
+    "allowed": false,
+    "source": "operator_launch_setting",
+    "preserve_reference": true,
+    "qualification": "source_bound_methods_review"
+  },
+  "hypothesis": "In the supplied two-dimensional, compressible, single-fluid resistive-MHD island-coalescence model, with uniform magnetic diffusivity eta, fixed initial state and boundaries, the normalized inverse-resistivity control is S_eta=1/eta. For mesh-qualified, pre-plasmoid cases with S_eta in [250,4000], the flux-window-averaged reconnection rate R has a log-slope in the band [-0.55,-0.45]. For a declared contrast Sa<Sb, p_eff=[ln R(Sb)-ln R(Sa)]/[ln Sb-ln Sa] must lie in that band after accounting for numerical uncertainty. Define R=(0.05-0.01)/(t(psi_rec=0.05)-t(psi_rec=0.01)) using the same initial-state-subtracted reconnected flux and normalization for both cases. The exponent may vary between contrasts: this hypothesis does not require an exact global power law or posit a probability distribution for exponents. A qualified contrast with its numerical-uncertainty interval wholly outside the band is a counterexample. Test this claim and, if it fails, investigate a minimal explanatory repair with a prediction challenged by fresh simulations.\n",
+  "created_at": 1792929161.5981443,
+  "deadline": 1792942375.5981443,
+  "finalization_policy": {
+    "reserve_seconds": 600,
+    "compute_deadline": 1792941775.5981443
+  },
+  "capabilities": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/assets/capabilities",
+  "capability_hashes": {
+    "flash-island-coalescence-resistive-mhd-4.8": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+  },
+  "max_experiment_bytes": 4294967296,
+  "max_total_bytes": 8589934592,
+  "operator_protocol": "Run a fresh autonomous investigation from the supplied commissioned FLASH instrument. This is a new study, not a continuation; do not import earlier study outputs, fitted slopes, verdicts, or manuscript conclusions. The guide and validation examples are instrument context only. All claim-bearing outputs must be newly generated after the relevant protocol or repair commitment is fixed.\n\nThe root is a band for contrast-dependent log-slopes, not an exact single-power-law goodness-of-fit claim or a random-exponent distribution. Fix the rate reducer, contrast-selection plan, numerical uncertainty envelope, topology/admissibility criteria and decision rule before evidence collection. Both members of a contrast must reach the flux window, realize uniform resistivity, preserve acceptable divergence and boundaries, and remain in the declared single-sheet/pre-plasmoid regime. Keep numerical uncertainty separate from statistical confidence. Propagate rate uncertainty into slope intervals; do not treat deterministic mesh points as random Gaussian samples.\n\nMap at least five distinct logarithmically separated resistivity settings unless a justified early counterexample makes broader mapping unnecessary. Start economically and target spatial and time/output-cadence controls at the actual contrast supporting a verdict. Several resolutions should establish whether a mismatch persists. One sufficiently qualified counterexample is enough for falsification; unrelated cases need not all finish. Do not require one fitted exponent to explain the whole curve. The worker and independent reviewer must assess actual evidence and may conclude support on the tested domain, falsification or unresolved. No verdict is prescribed.\n\nIf falsified, explain the physical or measurement mechanism and commit to a narrowly scoped, falsifiable repaired prediction before collecting its validation data. Use new resistivity settings or otherwise prospectively specified independent validation cases. Distinguish original and revised claims, numerical qualification and human scientific interpretation. Investigation completion does not require every branch to close automatically.\n\nResources: 90 minutes study wall time on the local 24-logical-CPU machine. Use at most 16 MPI ranks in aggregate and OMP_NUM_THREADS=1; leave capacity for the user. Existing FLASH and Python/HDF5 runtimes are supplied. Reuse the compiled solver; develop case drivers and diagnostics as needed. Do not compile or modify FLASH or other solvers for this study. Retain generated records inside managed experiment workspaces. Avoid loading every full-resolution snapshot into memory together.\n\nDeliver a self-contained scientific report, a machine-readable table of every fresh run (S_eta, eta, mesh, timing, rate, numerical checks, slope intervals, field paths and hashes), representative evolution fields, a scaling/slope plot and a short decision timeline. Preserve input/build/program identities and informative failed controls. Prepare the report before the deadline; prioritize defensible evidence over exhaustive sweeps. Neither a harness completion flag nor an approval refusal alone is a physical verdict. Use independent methods and claim reviews, and accurately state unfinished validation.\n",
+  "protocol_sha256": "10ddf666fc5b8836dcc8a137b0f1bd9502f75ae36722534469fc5e7532bd8be5",
+  "requirements": {
+    "require_method_review": true,
+    "required_capability_prefixes": [
+      "flash-"
+    ]
+  },
+  "guided_commissioning": {
+    "available": true,
+    "schema_version": "0.1.0",
+    "name": "fresh-island-band-instrument-20261025",
+    "description": "A license-safe guided starting point for a two-dimensional compressible resistive-MHD island-coalescence scaling campaign using an operator-supplied FLASH 4.8 executable.",
+    "capability": "flash-island-coalescence-resistive-mhd-4.8",
+    "program_path": "island_coalescence.py",
+    "validated_argv": [
+      "island_coalescence.py",
+      "--eta",
+      "0.001",
+      "--nx",
+      "128",
+      "--ny",
+      "128",
+      "--alpha",
+      "20",
+      "--tmax",
+      "1.2",
+      "--plot-interval",
+      "0.05",
+      "--ranks",
+      "4",
+      "--iprocs",
+      "2",
+      "--jprocs",
+      "2",
+      "--output",
+      "outputs/commissioning__20261025T1141/native",
+      "--summary",
+      "outputs/commissioning__20261025T1141/validation.json"
+    ],
+    "validation_summary_path": "assets/runtime_validation.json",
+    "operator_validation": "Fresh local runtime smoke completed on four MPI ranks with the exact supplied executable, reached the flux window and passed representation, physics-control, boundary and divergence checks. This is commissioning context only. The separate historical manufactured-solution record is also non-evidentiary. The worker must independently register and qualify the scientific reducers and capabilities.",
+    "limitations": [
+      "The supplied anchor, output, metrics, manufactured-solution result, and literature notes are permanently non-evidentiary context; the campaign must collect fresh prospective observations.",
+      "This is a normalized two-dimensional compressible single-fluid resistive-MHD analogue of island coalescence, not an exact reproduction of an isothermal reduced-MHD benchmark.",
+      "S_eta = 1/eta is a nominal inverse-resistivity control; a scientific analysis must record its normalization and must not silently relabel it as a dimensional Lundquist number.",
+      "The compiled application exposes explicit uniform resistivity and does not contain kinetic electron physics.",
+      "The known-runnable anchor uses one grid, one resistivity, and one finite flux window; it cannot establish a scaling or convergence.",
+      "No FLASH source, binary, component, or modification is redistributed. The operator must obtain and build FLASH under its upstream license."
+    ],
+    "files": [
+      {
+        "path": "assets/literature_basis.md",
+        "bytes": 2329,
+        "sha256": "b3837a433a90125145174939e149ac059e3af5982ccc567ad7ba7e491bc886a9"
+      },
+      {
+        "path": "assets/operator_validation.json",
+        "bytes": 1665,
+        "sha256": "08ac3d4b43a6cafdabbf6f078c3fb3dfce542082a10f08852de267e5d70f537d"
+      },
+      {
+        "path": "assets/runtime_validation.json",
+        "bytes": 9582,
+        "sha256": "b923cbdf35cb0a8eb2af290eb7c009717802caa6acc6f1e622caa71a4e8e3b1a"
+      },
+      {
+        "path": "island_coalescence.py",
+        "bytes": 14667,
+        "sha256": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b"
+      }
+    ],
+    "package_sha256": "a3135ea106cd0f84cdf4db4d77aaf075475b14e47f8c9f8aa7fdfb2d694ba466",
+    "scientific_evidence_eligible": false,
+    "policy": "operator_validated_starting_point_not_campaign_evidence"
+  },
+  "director_policy": {
+    "enabled": true,
+    "interval_seconds": 300,
+    "review_seconds": null,
+    "unchanged_review_seconds": 900
+  },
+  "original_deadline": 1792934165.5981443,
+  "budget_extensions": [
+    {
+      "id": "extension_a92941530efa45498a55eb9ba2f53122",
+      "request_key": "user-outage-restoration-plus-two-hours-20261025",
+      "created_at": 1792932853.412023,
+      "actor": "operator:tomzhu0225",
+      "reason": "User authorized additional hours to complete scientific qualification, with natural completion earlier. Restore 1010 seconds lost between the last observed pre-interruption heartbeat and resumption, plus 7200 seconds additional research allowance. Hypothesis, numerical gates, scientific instructions and reviewer independence remain unchanged.",
+      "additional_seconds": 8210.0,
+      "previous_deadline": 1792934165.5981443,
+      "new_deadline": 1792942375.5981443,
+      "request_id": null,
+      "scope": "Operator budget authorization only; existing experiment limits are unchanged."
+    }
+  ]
+}

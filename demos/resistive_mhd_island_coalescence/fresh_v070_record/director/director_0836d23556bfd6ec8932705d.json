@@ -1,0 +1,23 @@
+{
+  "id": "director_0836d23556bfd6ec8932705d",
+  "created_at": 1792930681.8814306,
+  "packet_sha256": "50e1f75f92a69bf07e6d418ee0cc6ca1141d62f5be6e3bcd313417432804b3fe",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "Both completed 256-mesh runs reached the flux window. Successive rate changes decreased to approximately 0.29% and 0.056%, respectively, supporting continued qualification without establishing convergence or a scientific verdict. The S_eta=2000 sheet reaches approximately 2.84 cells in halfwidth, so finest-field admissibility needs independent assessment. No methods review is recorded. Approximately 2962 seconds remain before the compute cutoff; observed 256-mesh costs of 286\u2013372 seconds leave a feasible path through remaining controls, review and fresh evidence.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "feasible",
+  "stop_experiments": [],
+  "wake_worker": true,
+  "park_worker": false,
+  "report_assessment": null,
+  "closeout_report": null,
+  "next_action": "Keep the active CFL control running. While it runs, submit the existing methods dossier for independent review with explicit outstanding controls and finest-mesh sheet-resolution limitations. Launch the S_eta=2000 complete-window CFL=0.2 control if retained storage permits, respecting aggregate rank limits. Inspect representative finest-mesh fields and begin RESULTS.md and the decision timeline now. After both controls finish, evaluate the committed deterministic uncertainty and admissibility gates without retrospective relaxation. If review requires 384-mesh qualification, forecast it using measured costs before launching. Collect claim-bearing evidence only after methods approval; any repaired prediction must be committed before its fresh validation data. Keep numerical work before the compute cutoff and preserve the 600-second reporting reserve.",
+  "storage_increase": null,
+  "registration_tuning": null,
+  "time_request": null,
+  "operating_limits": null,
+  "helper_tasks": [],
+  "help_replies": []
+}

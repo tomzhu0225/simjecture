@@ -1,0 +1,8 @@
+{
+  "id": "director_608a5b918b9fc26fbaadc5c2",
+  "response": "plan",
+  "reason": "Two complete-window controls cost approximately300-700s at observed mesh timings; method review can run concurrently.",
+  "plan": "note_8f408af162200662e61b6aaf",
+  "created_at": 1792931873.4567735,
+  "authority": "Worker response; not scientific approval"
+}

@@ -12,21 +12,18 @@ Start with the pictures: these plasma walkthroughs include actual field maps,
 evidence maps, short explanations of each measurement and downloadable figures.
 Their linked receipts distinguish completed work from outstanding tests.
 
-![A real FLASH current sheet, the kinetic measurement region and the evolved WarpX field](../_static/demos/coupled-field-handoff.png)
+![Fresh FLASH source, local kinetic fields and pressure controls](../_static/demos/fresh-v070-coupled-fields.png)
 
+[**Magnetic-island coalescence with FLASH**](island-coalescence.md) presents a
+fresh v0.7.0 investigation that independently falsifies a bounded reconnection-rate
+scaling hypothesis. The explanatory repair remains unvalidated. Inspect the real
+fields, failed controls, refinement decisions and accepted counterexample.
 
-[**Magnetic-island coalescence with FLASH**](island-coalescence.md) investigates
-reconnection-rate scaling in a 2D resistive-MHD model. The classic campaign,
-original field figures and later statistical correction remain available. A
-separate one-hour minimal run used the same commissioned instrument and remained
-unresolved after its eligibility checks. A post-run coordinate correction explains
-false diagnostic rejections; the original decisions and partial results remain
-preserved alongside the classic record.
-
-[**A FLASH current sheet followed with WarpX**](flash-warpx-patch.md) connects a
-fresh MHD source to local kinetic calculations. Its two-hour record includes
-actual state transfer, GPU performance recovery and completed numerical controls,
-with the final scientific question left unresolved.
+[**A FLASH current sheet followed with WarpX**](flash-warpx-patch.md) presents a
+fresh v0.7.0 investigation with an independently supported local pressure prediction.
+It links a new MHD source to two prospective kinetic particle realizations, with
+numerical allowances and accepted claim/report reviews. Both examples retain the
+older studies in separate historical walkthroughs and immutable audit records.
 
 [**Qin-1: from hardware design to circuits, fields and 3D plasma**](qin1-hardware-plasma.md)
 connects actual CAD changes, Gmsh, Elmer/RLC, native WarpX and PyVista. Explore the

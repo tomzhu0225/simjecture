@@ -1,0 +1,5 @@
+{
+  "decision": "accepted",
+  "summary": "The findings-first report agrees with hash-verified production receipts, archived figure sources and existing independent reviews. Recomputed rates are 0.04968858 and 0.03824213, yielding p_eff=-0.37775156 and deterministic numerical interval [-0.43140540,-0.32467595], consistent with the recorded falsification within the qualified scope. The report clearly separates exploratory controls, production evidence and provisional interpretation. Repair replay errors of 33.39% and 44.54% substantiate its unfinished status; no independent repair validation is claimed. Numerical limits, execution failures and provenance are adequately explained. Report acceptance does not confer additional claim approval, stage promotion or investigation completion.",
+  "issues": []
+}

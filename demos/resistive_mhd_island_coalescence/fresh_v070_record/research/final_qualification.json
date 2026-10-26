@@ -1,0 +1,184 @@
+{
+  "S2000_fine": {
+    "mesh": 512,
+    "meshes": [
+      256,
+      384,
+      512
+    ],
+    "rates": [
+      0.03813394125469638,
+      0.03824244686429199,
+      0.03831751182182047
+    ],
+    "relative_changes": [
+      0.0028373082397331255,
+      0.001959024841632148
+    ],
+    "mesh_gate": true,
+    "terms": {
+      "mesh": 0.005674616479466251,
+      "cadence": 0.013391767369244967,
+      "path": 4.274948241711485e-05,
+      "CFL": 0.000717134092996119
+    },
+    "u": 0.019826267424124452,
+    "rate_interval": [
+      0.03755781858541401,
+      0.039077205058226934
+    ],
+    "min_sheet_halfwidth_cells": 5.4374259810323124,
+    "topology": {
+      "frame_count": 146,
+      "counts": [
+        [
+          1,
+          2
+        ]
+      ],
+      "last_index": 145,
+      "last_time": 1.4500581807886184,
+      "last_flux": 0.050153193272377695,
+      "preceding_flux": 0.0497628233964859
+    }
+  },
+  "S1000_fine": {
+    "S_eta": 1000,
+    "meshes": [
+      192,
+      256,
+      384
+    ],
+    "rates": [
+      0.04948175804502866,
+      0.04962642455060869,
+      0.04968858390778796
+    ],
+    "relative_changes": [
+      0.002915110385042971,
+      0.001250978641182847
+    ],
+    "terms": {
+      "mesh": 0.005830220770085942,
+      "cadence": 0.006240581301142467,
+      "path": 0.00010566467261963197,
+      "CFL": 0.0008991525870500894
+    },
+    "u": 0.01307561933089813,
+    "rate_interval": [
+      0.04903887489951833,
+      0.050338292916057584
+    ],
+    "mesh_gate": true,
+    "CFL_control_mesh": 256
+  },
+  "matched_384_to512": [
+    {
+      "flux": 0.01,
+      "J384": 70.62173122056093,
+      "J512": 71.13100477828301,
+      "relative_J_change": 0.007159656457960907,
+      "width384": 0.013371215328938835,
+      "width512": 0.013276244602944635,
+      "width512_cells": 6.797437236707653,
+      "relative_profile_L2": 0.008625237292171926
+    },
+    {
+      "flux": 0.03,
+      "J384": 70.63121053871812,
+      "J512": 71.33140181543612,
+      "relative_J_change": 0.009816031353620197,
+      "width384": 0.01201053267776625,
+      "width512": 0.01189071365609301,
+      "width512_cells": 6.088045391919621,
+      "relative_profile_L2": 0.009199103605786544
+    },
+    {
+      "flux": 0.05,
+      "J384": 76.72666672788249,
+      "J512": 77.70870491863184,
+      "relative_J_change": 0.012637428352172825,
+      "width384": 0.01097521225089037,
+      "width512": 0.010831940587084681,
+      "width512_cells": 5.545953580587357,
+      "relative_profile_L2": 0.012006600659822765
+    }
+  ],
+  "proposed_production384": {
+    "S2000_relative_transported_allowance": 0.021828053965719935,
+    "absolute_fine_allowance": 0.0007596932364064629,
+    "absolute_grid_shift": 7.50649575284798e-05,
+    "formula": "epsilon384=R512*u512+abs(R512-R384); use max with fresh production direct error sum; add any excess production cadence term. All finest-control gates unchanged.",
+    "calibration_only_slope_interval": [
+      -0.4283214642748955,
+      -0.32759859533395735
+    ],
+    "status": "Not evidence; numerical qualification only"
+  },
+  "retention": {
+    "pilot_frame_count": 261,
+    "fine_frame_count": 180,
+    "all_readback_equal": true
+  },
+  "cadence_changes": [
+    {
+      "experiment": "exp_c90e9b96ba8406a99246fb8e",
+      "S_eta": 1000.0,
+      "n": 192,
+      "fine_rate": 0.04948175804502866,
+      "stride2_rate": 0.0494815980054953,
+      "relative_difference": 3.2343138094415025e-06
+    },
+    {
+      "experiment": "exp_f2da6ae1b2ce992ddf16cf82",
+      "S_eta": 1000.0,
+      "n": 256,
+      "fine_rate": 0.04962642455060869,
+      "stride2_rate": 0.04962628001869832,
+      "relative_difference": 2.912398216814438e-06
+    },
+    {
+      "experiment": "exp_56eca6327dc2e3f0fd4942d4",
+      "S_eta": 1000.0,
+      "n": 384,
+      "fine_rate": 0.04968858390778796,
+      "stride2_rate": 0.04968839473282279,
+      "relative_difference": 3.8072118440091174e-06
+    },
+    {
+      "experiment": "exp_82b78fe2f19144b3b6ca29af",
+      "S_eta": 2000.0,
+      "n": 192,
+      "fine_rate": 0.03815517809856998,
+      "stride2_rate": 0.03815499421338232,
+      "relative_difference": 4.819403206179906e-06
+    },
+    {
+      "experiment": "exp_d72d5627834d2ca1456a280c",
+      "S_eta": 2000.0,
+      "n": 256,
+      "fine_rate": 0.03813394125469638,
+      "stride2_rate": 0.038133637239766024,
+      "relative_difference": 7.972292408120474e-06
+    },
+    {
+      "experiment": "exp_9ed2782a9af6b2446c71285a",
+      "S_eta": 2000.0,
+      "n": 384,
+      "fine_rate": 0.03824244686429199,
+      "stride2_rate": 0.03824212964185681,
+      "relative_difference": 8.295034998884177e-06
+    }
+  ],
+  "source_experiments": [
+    "exp_58adb12d461c94104daeff23",
+    "exp_cd08ebc4f1287d48388eddc6",
+    "exp_c99f4a2aba5c70b7330e4ada"
+  ],
+  "limitations": [
+    "Transferred measured256CFL contribution; no independent512CFL control.",
+    "Empirical error envelope, not rigorous continuum bound.",
+    "Separate floor/energyFix accounting unavailable.",
+    "No promotion of exploratory values to hypothesis evidence."
+  ]
+}

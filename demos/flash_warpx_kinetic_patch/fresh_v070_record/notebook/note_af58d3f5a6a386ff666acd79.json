@@ -1,0 +1,18 @@
+{
+  "id": "note_af58d3f5a6a386ff666acd79",
+  "created_at": 1793005675.3587377,
+  "authority": "worker_note",
+  "statement": "Concrete API diagnosis: evidence submission rejected Method source/runtime changed although all boundsourcehashes match. Inspected only the ~20-line check_method validator for this concrete error: it compares entire binding including exact input-map equality, so new transferred-data paths require separate method review. No reviewer internals inspected. Add fresh evidence_patch.npz/json to identical approvedsourcebinding; fresh numericalarrays equal qualifiedpatch exactly, sourceHDF5hash and receipt distinct. Preserve source/analysis/physics/window unchanged.",
+  "kind": "implementation",
+  "experiments": [
+    "exp_7772fa68048aff22c2b815c3"
+  ],
+  "sources": [],
+  "claim": "root",
+  "supersedes": null,
+  "alternatives": {},
+  "estimated_seconds": null,
+  "evidence_bindings": {
+    "exp_7772fa68048aff22c2b815c3": "d1a0f802105b28cba5190aa69aa2dec1b97ec80c6c55e74c1008db98e7b2ba37"
+  }
+}

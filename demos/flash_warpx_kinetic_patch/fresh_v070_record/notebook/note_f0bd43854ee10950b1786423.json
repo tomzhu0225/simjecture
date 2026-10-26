@@ -1,0 +1,20 @@
+{
+  "id": "note_f0bd43854ee10950b1786423",
+  "created_at": 1793001750.9230237,
+  "authority": "worker_note",
+  "statement": "Cost forecast from completed 147 s pilot: same-mesh larger .4 patch ~250 s; ppc64 at same mesh ~260 s; dt/2 ~280 s; 2x mesh at fixed ppc32 ~1100 s; refined-source baseline ~150 s. Allow ~2100 s qualification plus ~500 s fresh evidence and >=1200 s review reserve; remaining ~5900 s including 600 s report protection. Prioritize independent mesh and boundary controls. Existing diagnostic audit is exploratory and reports A_i=.05065,A_e=.04733; no verdict inferred.",
+  "kind": "next_test",
+  "experiments": [
+    "exp_6c9d4f3c7099c6a625d2951f",
+    "exp_2514c47e5069f2252e5d3d87"
+  ],
+  "sources": [],
+  "claim": "root",
+  "supersedes": null,
+  "alternatives": {},
+  "estimated_seconds": 2100.0,
+  "evidence_bindings": {
+    "exp_6c9d4f3c7099c6a625d2951f": "68d432ffd0f558347273869f006e10683210b7667a97442509457a459425f579",
+    "exp_2514c47e5069f2252e5d3d87": "d46dca9884b8b888b4a74f1317aa466d7a937721cfa3a9b9d7cac87fd43fe103"
+  }
+}

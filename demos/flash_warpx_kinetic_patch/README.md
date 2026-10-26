@@ -1,5 +1,33 @@
 # From a FLASH current sheet to a kinetic WarpX patch
 
+## Fresh v0.7.0 investigation
+
+The fresh 26 October investigation independently supports the finite local
+pressure prediction. Both fresh seeds pass the declared threshold with numerical
+allowances, and independent claim and report reviews are accepted.
+
+Read the [current investigation](../../docs/demos/flash-warpx-patch.md),
+[original input](fresh_v070_record/operator_input/hypothesis.txt),
+[scientific report](fresh_v070_record/research/RESULTS.md), and
+[compact audit](fresh_v070_record/manifest.json). The new `fresh_v070_record/`
+and `fresh_v070_visual_data/` preserve the fresh run separately from earlier work.
+
+```bash
+uv run python scripts/verify_research_audit.py demos/flash_warpx_kinetic_patch/fresh_v070_record
+uv run --extra flash-demo python scripts/render_fresh_plasma_examples.py
+```
+
+The audit includes the exact operator instructions, commissioning inputs,
+agent-owned sources, execution receipts and independent review decisions. Bulk
+solver states are omitted with hashes; verification checks retained bytes rather
+than rerunning the physics. A new agent investigation needs qualified local
+capabilities and a configured backend.
+
+## Historical setup and records
+
+Everything below describes the earlier setup and investigations, whose inputs,
+figures and outcomes are retained. See the [historical walkthrough](../../docs/demos/flash-warpx-patch-historical.md).
+
 **The two-hour autonomous study ran actual FLASH-to-WarpX transfers and completed
 spatial, timestep, particle-count and boundary controls. It ended unresolved at
 the cutoff, with no accepted scientific verdict.** Guided commissioning passed

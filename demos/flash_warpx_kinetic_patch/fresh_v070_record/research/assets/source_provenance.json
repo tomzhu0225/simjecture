@@ -1,0 +1,38 @@
+{
+  "simjecture_version": "0.7.0",
+  "source_commit": "cfca558cb30868d7bc12af7a9b636303f7bc500b",
+  "sources": {
+    "flash_islands.py": {
+      "source": "demos/flash_warpx_kinetic_patch/guided/flash_islands.py",
+      "sha256": "26f348973b4edeb761f6a25f7023f6c3ea22660f61297a4a58c3d6cc49991588"
+    },
+    "extract_flash.py": {
+      "source": "demos/flash_warpx_kinetic_patch/guided/extract_flash.py",
+      "sha256": "28608ddeab7d71584abd32ce910b66621d8ba9cc49d2bb44eb1ead3922e509a0"
+    },
+    "prepare_patch.py": {
+      "source": "demos/flash_warpx_kinetic_patch/guided/prepare_patch.py",
+      "sha256": "0be359a997ac75af4d376f96f18901ed815e2d1b07e2c48336233f4a35b4e20d"
+    },
+    "kinetic_patch.py": {
+      "source": "demos/flash_warpx_kinetic_patch/guided/kinetic_patch.py",
+      "sha256": "4b01a091e35c9b65ad08240bf6596e1c486ee924c0230cd3e1d098385c2e1124"
+    },
+    "kinetic_reference.py": {
+      "source": "demos/flash_warpx_kinetic_patch/continuation_record/continuation_input/files/kinetic_batched.py",
+      "sha256": "8ba8f3a8565a41fc72623d95cb1eb3a793cfbc9543d4dc10cd17825de800641b",
+      "status": "historical implementation only; needs fresh qualification"
+    },
+    "kinetic_analysis.py": {
+      "source": "demos/flash_warpx_kinetic_patch/continuation_record/continuation_input/files/kinetic_analysis.py",
+      "sha256": "ee457cc1118222f245fadf31519af9036d56e093f6a27f9ca7c50268d035e765",
+      "status": "historical implementation only; needs fresh qualification"
+    },
+    "estimator.py": {
+      "source": "demos/flash_warpx_kinetic_patch/continuation_record/continuation_input/files/estimator.py",
+      "sha256": "44e914ad2780edabf2754f4fae734fd9b5811d6d8b5db094e57f6e379d0be0d4",
+      "status": "historical implementation only; needs fresh qualification"
+    }
+  },
+  "historical_measurements_supplied": false
+}

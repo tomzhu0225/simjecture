@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "source_state_sha256": "f6715c84ec0d93ca2eac43d67b3c562151df03bbcaa347b9215161924640715f",
+  "source_flash_sha256": "d742397eb2a5961d7ddcec6afb1a7a2c02d9f2daf68a34d74a1fffdde0dd1d76",
+  "source_time_code": 0.8000733493373345,
+  "patch_sha256": "3d023eb3377472b9124717f24eb32427374dccc932073009cf9538ab80ac61b8",
+  "shape_zx": [
+    384,
+    384
+  ],
+  "bounds_xz_m": [
+    [
+      -0.0005023046035356916,
+      0.0005023046035356916
+    ],
+    [
+      -0.0005023046035356916,
+      0.0005023046035356916
+    ]
+  ],
+  "cell_size_m": [
+    2.6161698100817645e-06,
+    2.6161698100817645e-06
+  ],
+  "scales": {
+    "length_m": 0.0016743486784523054,
+    "velocity_m_s": 2997924.58,
+    "magnetic_T": 16.355235690756075,
+    "density_m3": 1e+24,
+    "mass_density_kg_m3": 2.368439765614e-05,
+    "ion_mass_kg": 2.277345928475e-29,
+    "electron_mass_kg": 9.1093837139e-31,
+    "ion_skin_depth_m": 2.6570466334981303e-05,
+    "ion_skin_depth_code": 0.01586913566864811,
+    "omega_ci_reference_s1": 115063663098.55894,
+    "omega_pe_reference_s1": 56414602254294.99
+  },
+  "temperature_ratio_i_e": 1.0,
+  "electric_policy": "ideal",
+  "physics": "Collisionless, fully kinetic electron-ion continuation; no scalar MHD resistivity is evolved in PIC.",
+  "mapping": "Right-handed FLASH (x,y,z) to WarpX (X,Y,Z)=(x,-z,y); n=rho_code*n0; p=p_code*rho0*v0^2; total mass rho=n*(mi+me).",
+  "initial_discrete_divb_scaled": 3.159902846597373e-16,
+  "maximum_drift_over_c": 0.009091070453411329,
+  "maximum_electron_thermal_speed_over_c": 0.09209695032780468,
+  "source_potential_residual": 1.372883453943664e-08,
+  "scope": "Prepared local initial-value problem only. Patch boundaries, relaxation, collisionless closure and physical scale need scientific review.",
+  "source_experiment": "fresh-evidence-source-see-parent-receipt",
+  "source_rotation": "Right-handed (X,Y,Z)=(x,-z,y); FLASH Bz=uz=0 in this application. Thus B_W=(Bx,0,By), J_W,y=-J_FLASH,z.",
+  "sheet": {
+    "definition": "delta = max |Bx(0,z)| for 0<=z<=0.1 divided by |d Bx(0,z)/dz at z=0|, cubic spline of original cell-centered FLASH fields; reference di uses n0.",
+    "delta_code": 0.015361175075498034,
+    "upstream_B_code": 0.7771283754134048,
+    "central_slope": -50.590424989880475,
+    "half_width_source_cells": 1.9662304096637484,
+    "delta_over_reference_di": 0.9679906578558259,
+    "source_reference_di_code": 0.01586913566864811
+  },
+  "measurement_proposal": {
+    "roi_half_code": [
+      0.04,
+      0.015
+    ],
+    "window_omegaci": [
+      0.4,
+      0.9
+    ],
+    "bins": 8,
+    "minimum_count": 256,
+    "minimum_effective_count": 512
+  },
+  "transfer_checks": {
+    "B_relative_RMS": 0.004258248069791293,
+    "density_relative_RMS": 8.71974262009315e-17,
+    "pressure_relative_RMS": 1.374022998613166e-16,
+    "current_discrete_relative_RMS": 0.0060077587661062515
+  },
+  "resolution": {
+    "dx_over_de": 0.4923078460684468,
+    "dx_over_min_debye": 5.835732183324269,
+    "local_width_over_di_at_center": 0.9593005326548679
+  }
+}

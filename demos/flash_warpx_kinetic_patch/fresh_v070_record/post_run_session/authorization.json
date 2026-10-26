@@ -1,0 +1,15 @@
+{
+  "created_at": 1793010949.0868762,
+  "wall_seconds": 1800.0,
+  "user_instruction": "so do it",
+  "context": "Approved 30-minute review-only continuation using existing results",
+  "scientific_steering": false,
+  "numerical_executions_allowed": false,
+  "runtime_version": "0.7.0",
+  "runtime_commit": "cfca558cb30868d7bc12af7a9b636303f7bc500b",
+  "controller": "Case-owned post-run reviewer; unchanged released review transport and validators",
+  "controller_sha256": "c0c7831876048c1be46e947ecc15b8d203acb50e086ac71230c5c46269989479",
+  "original_study": "/home/tomzhu0225/src/simulations/other_demos/flash_warpx_pressure_closure/outputs/fresh_v070__20261026T074100Z",
+  "original_deadline": 1793007661.4697688,
+  "review": "review_01645441bd0eaebf3e6391fd"
+}

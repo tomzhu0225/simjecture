@@ -1,0 +1,14 @@
+{
+  "id": "note_5a9a0b9262456c0492708f3d",
+  "created_at": 1792936685.6790528,
+  "authority": "worker_note",
+  "statement": "Prospective conservative production option before any evidence: keep all finest-control gates and last-three-mesh uncertainty rule unchanged. If512 qualifiesS2000, independently review fresh384 production measurements using absolute error allowance epsilon_production >= R_fine*u_fine + abs(R_fine-R384), plus any extra production-cadence uncertainty. This is triangle-inequality transport of the qualified finer envelope, never a relaxation; also compare against the direct384 error sum and use the larger. S1000 production384 remains its qualified finest mesh. All physical inputs and flux reducer unchanged. Request reviewer approval explicitly; do not execute evidence on this basis without it. Reduces duplicate solver cost while retaining finer-control information.",
+  "kind": "next_test",
+  "experiments": [],
+  "sources": [],
+  "claim": "root",
+  "supersedes": null,
+  "alternatives": {},
+  "estimated_seconds": 1500.0,
+  "evidence_bindings": {}
+}

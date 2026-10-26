@@ -1,0 +1,189 @@
+{
+  "id": "exp_e5666cef28e28a096181c145",
+  "status": "succeeded",
+  "operator_guidance_ids": [],
+  "created_at": 1793006353.7004187,
+  "timeout": 600,
+  "execution_deadline": 1793007301.4697688,
+  "workspace_limit_bytes": 2290933818,
+  "binding": {
+    "source": "calculation.py",
+    "args": [
+      "analysis",
+      "--case",
+      "seed6101",
+      "seed6101_record",
+      "evidence_patch.npz"
+    ],
+    "inputs": {
+      "calculation.py": "cd6c4db946c144a2f5bc86c877e929c7f7ecd334ced012da9153ea43c5546823",
+      "analysis_study.py": "8b7bbfa49dec2c6f06ceb6cceb41bbc1bb748d2ae29eb0602923f799efe79230",
+      "estimator.py": "44e914ad2780edabf2754f4fae734fd9b5811d6d8b5db094e57f6e379d0be0d4",
+      "evidence_patch.npz": "c04a015181c150cb0bd1162976252b0e85f3caf7458ced7d024eb0dca4e35ef7",
+      "evidence_patch.json": "f7d0bbb93a805d225ed82441ebf92110b703094e91a0261d4a2ca32b6532dcd9",
+      "seed6101_record/result.json": "0c1ecd20adc839e22552e5e445432fe1b10b284cb64a6fbabffe9f5490293b3b",
+      "seed6101_record/moments.npz": "7142d57ce58ffc977cbc8bf66ab0036c979b55d6955f92852879f133c2639f6d",
+      "seed6101_record/history.json": "ba100b239c9fc82f9f452c5893a84486c1a5098eb922d6b92269daf50902b9d5",
+      "seed6101_record/initial_fields.npz": "d7aa8682484ba5cc2c0015e992b5df3d40d7cbb3b4cddaf8f1cd0807a170a746",
+      "seed6101_record/final_fields.npz": "18c466f12576309b635dd6980684fc50f8c0a63be265c2ee56c6962f8870d9e3",
+      "seed6101_record/reduced/field_energy.txt": "16f4fb2b225adc6b271f4e36c74ecf0f41e4770c7b5f1ddd59a14a0c5e3bb3d4",
+      "seed6101_record/reduced/particle_energy.txt": "7a8d27d0f18d63c6c80eabb647bb2d957fc19410c7a88c946142c8ea1a0cdb0c"
+    },
+    "capability": null,
+    "runtime_sha256": null
+  },
+  "outputs": [
+    "analysis.json",
+    "pressure_controls.png",
+    "seed6101_kinetic_fields.png",
+    "seed6101_pressure_tensor.png"
+  ],
+  "commitment": null,
+  "key": "fresh-seed6101-audit",
+  "stage": "exploration",
+  "method": null,
+  "review_documents": null,
+  "parent_experiment": "exp_8e19bd425cb2bd2ef03a61ea",
+  "purpose": "diagnostic",
+  "plan": null,
+  "pid": 341755,
+  "worker_identity": {
+    "pid": 341755,
+    "starttime": "3567273",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture-prx-island-v0.7.0/.venv/bin/python",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simulations/other_demos/flash_warpx_pressure_closure/outputs/fresh_v070__20261026T074100Z",
+      "--execute",
+      "exp_e5666cef28e28a096181c145"
+    ],
+    "launched_at": "2026-10-26T09:19:13.841922+00:00",
+    "run_directory": null
+  },
+  "started_at": 1793006353.8420897,
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "analysis_study.py:104: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.\n  for ax,title in zip(axs.flat,['Area mean tensor departure','Mean scalar pressure / initial','Mean density / initial','Finite control comparison']):ax.set(xlabel='t Omega_ci reference',title=title);ax.legend(fontsize=7)",
+    "timed_out": false,
+    "cancelled": false,
+    "workspace_exceeded": false,
+    "stdout_truncated": false,
+    "stderr_truncated": false,
+    "heartbeat_count": 0,
+    "wall_seconds": 1.4124286769947503,
+    "workspace_bytes": 23047924,
+    "executor_sha256": "b92087579abbb99f55ce2c75d98765355c8ccd4a6ccf3ba55b15ddd5491a22ec",
+    "resource_limits": {
+      "max_file_bytes": 2290933818,
+      "max_workspace_bytes": 2290933818,
+      "max_memory_bytes": 4294967296
+    }
+  },
+  "artifacts": {
+    ".cache/fontconfig/2300eef321c393bfd76478a5c0e95b23-le64.cache-9": {
+      "sha256": "be4a2bf520a0eb916fab92b15585e493fa0dae62d7c2dd7e275b01664c14e346",
+      "bytes": 382064
+    },
+    ".cache/fontconfig/3830d5c3ddfd5cd38a049b759396e72e-le64.cache-9": {
+      "sha256": "6cb953b213d173a1439944baba4f785aeb8e08fba3cb8794d99004c34310d453",
+      "bytes": 184
+    },
+    ".cache/fontconfig/4c599c202bc5c08e2d34565a40eac3b2-le64.cache-9": {
+      "sha256": "e2077b9c186aa45489f582008a00a7965a8135d07927d2697f6d07e09f9ae69d",
+      "bytes": 104
+    },
+    ".cache/fontconfig/573ec803664ed168555e0e8b6d0f0c7f-le64.cache-9": {
+      "sha256": "e67dc2bd665d1b1bd952ec5dd357d64bae7b2fbd6f1c9896db3e880f9788c58f",
+      "bytes": 152
+    },
+    ".cache/fontconfig/7ef2298fde41cc6eeb7af42e48b7d293-le64.cache-9": {
+      "sha256": "69cf18e42e3d2705da9c867a36e7e16f3d0e8973c41a5a51118e43c1207756fc",
+      "bytes": 208
+    },
+    ".cache/fontconfig/9b89f8e3dae116d678bbf48e5f21f69b-le64.cache-9": {
+      "sha256": "4fa102166b8aaa98765061eae7abe768aa636c327ad2889f68d33d77de9735b0",
+      "bytes": 68800
+    },
+    ".cache/fontconfig/CACHEDIR.TAG": {
+      "sha256": "05e7633fb31bf1f6f8d89020c16b9f24587fdf7638e951c9745b192f5fc3b682",
+      "bytes": 200
+    },
+    ".cache/fontconfig/d589a48862398ed80a3d6066f4f56f4c-le64.cache-9": {
+      "sha256": "233df56e901146f1c5f71911def868b835fb7e43a0e02644a07a1c829e49cc31",
+      "bytes": 51736
+    },
+    "analysis.json": {
+      "sha256": "84c264570380a2cea1479ae22d54b5908c53f0cf3896d0560e33edd8770791f1",
+      "bytes": 17107
+    },
+    "analysis_study.py": {
+      "sha256": "8b7bbfa49dec2c6f06ceb6cceb41bbc1bb748d2ae29eb0602923f799efe79230",
+      "bytes": 15391
+    },
+    "calculation.py": {
+      "sha256": "cd6c4db946c144a2f5bc86c877e929c7f7ecd334ced012da9153ea43c5546823",
+      "bytes": 429
+    },
+    "estimator.py": {
+      "sha256": "44e914ad2780edabf2754f4fae734fd9b5811d6d8b5db094e57f6e379d0be0d4",
+      "bytes": 1878
+    },
+    "evidence_patch.json": {
+      "sha256": "f7d0bbb93a805d225ed82441ebf92110b703094e91a0261d4a2ca32b6532dcd9",
+      "bytes": 3050
+    },
+    "evidence_patch.npz": {
+      "sha256": "c04a015181c150cb0bd1162976252b0e85f3caf7458ced7d024eb0dca4e35ef7",
+      "bytes": 11207291
+    },
+    "pressure_controls.png": {
+      "sha256": "281078bed1c62b9524ec6f1517b0e6de1d9bfdbd4f3db10376921cb5882931d1",
+      "bytes": 181572
+    },
+    "seed6101_kinetic_fields.png": {
+      "sha256": "6440848ce5acb06ce9263982c6588f85d6899f51d22a42e2857e1ad3ab5b7872",
+      "bytes": 431749
+    },
+    "seed6101_pressure_tensor.png": {
+      "sha256": "9b2568b6c949faff311195d91c26b8babed922a1d70be15170c6b27ed4d352af",
+      "bytes": 151826
+    },
+    "seed6101_record/final_fields.npz": {
+      "sha256": "18c466f12576309b635dd6980684fc50f8c0a63be265c2ee56c6962f8870d9e3",
+      "bytes": 6800992
+    },
+    "seed6101_record/history.json": {
+      "sha256": "ba100b239c9fc82f9f452c5893a84486c1a5098eb922d6b92269daf50902b9d5",
+      "bytes": 35613
+    },
+    "seed6101_record/initial_fields.npz": {
+      "sha256": "d7aa8682484ba5cc2c0015e992b5df3d40d7cbb3b4cddaf8f1cd0807a170a746",
+      "bytes": 2554549
+    },
+    "seed6101_record/moments.npz": {
+      "sha256": "7142d57ce58ffc977cbc8bf66ab0036c979b55d6955f92852879f133c2639f6d",
+      "bytes": 1121681
+    },
+    "seed6101_record/reduced/field_energy.txt": {
+      "sha256": "16f4fb2b225adc6b271f4e36c74ecf0f41e4770c7b5f1ddd59a14a0c5e3bb3d4",
+      "bytes": 3335
+    },
+    "seed6101_record/reduced/particle_energy.txt": {
+      "sha256": "7a8d27d0f18d63c6c80eabb647bb2d957fc19410c7a88c946142c8ea1a0cdb0c",
+      "bytes": 5716
+    },
+    "seed6101_record/result.json": {
+      "sha256": "0c1ecd20adc839e22552e5e445432fe1b10b284cb64a6fbabffe9f5490293b3b",
+      "bytes": 12297
+    }
+  },
+  "missing_outputs": [],
+  "input_mutations": [],
+  "output_findings": [],
+  "scientific_status": "unreviewed",
+  "finished_at": 1793006355.3246286
+}

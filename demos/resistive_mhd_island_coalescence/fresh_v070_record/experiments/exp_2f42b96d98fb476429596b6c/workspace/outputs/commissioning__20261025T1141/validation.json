@@ -1,0 +1,270 @@
+{
+  "checks": {
+    "boundaries": true,
+    "completed": true,
+    "diagnostics": true,
+    "flux_window_reached": true,
+    "numerical_regime": true,
+    "physics_controls": true,
+    "representation": true,
+    "scientific_evidence_eligible": false
+  },
+  "kind": "guided_flash_island_coalescence_anchor",
+  "metrics": {
+    "flux_high": 0.05,
+    "flux_high_crossing_time": 1.0763841963235288,
+    "flux_low": 0.01,
+    "flux_low_crossing_time": 0.26033823854649724,
+    "flux_path_max_abs_mismatch": 4.657228519738127e-05,
+    "initial_sheet_cells": 6.4,
+    "l_over_eta_nominal": 1000.0,
+    "max_abs_divb": 9.36140054363932e-13,
+    "max_boundary_normal_fraction": 0.031049113904913106,
+    "normalized_flux_slope": 0.0490168471748367,
+    "plot_file_count": 24,
+    "reconnection_time": 0.8160459577770316
+  },
+  "provenance": {
+    "command": [
+      "/usr/bin/orterun",
+      "-np",
+      "4",
+      "/opt/acs-capabilities/flash-island-coalescence-resistive-mhd-4.8/bin/flash4",
+      "-par_file",
+      "flash.par"
+    ],
+    "flash_executable_sha256": "40cf57b987e85f9befc01abae4e89f27c230d1eb42391ba3abea8655a0f7024b",
+    "parameter_file_sha256": "d85dd7177a73bf7184934b2ff33e5b2b5e615a69b0bcc550ed0d7f24d9eceac1"
+  },
+  "realized": {
+    "alpha": 20.0,
+    "eta": 0.001,
+    "mpi_ranks": 4,
+    "nx": 128,
+    "ny": 128,
+    "resistivity_solver": "explicit",
+    "tmax": 1.2,
+    "use_diffuse": true,
+    "use_magnetic_resistivity": true
+  },
+  "schema_version": "0.1.0",
+  "scientific_status": "permanently_non_evidentiary",
+  "timeseries": [
+    {
+      "flux_from_bx": 0.0006051419629784505,
+      "flux_from_by": 0.00030806965794133543,
+      "max_abs_divb": 1.4210854715202004e-14,
+      "max_abs_velocity": 0.0,
+      "reconnected_flux_from_bx": 0.0,
+      "reconnected_flux_from_by": 0.0,
+      "time": 0.0
+    },
+    {
+      "flux_from_bx": 0.0024884954665367323,
+      "flux_from_by": 0.0022087430866819502,
+      "max_abs_divb": 2.913225216616411e-13,
+      "max_abs_velocity": 0.07327443361282349,
+      "reconnected_flux_from_bx": 0.0018833535035582818,
+      "reconnected_flux_from_by": 0.001900673428740615,
+      "time": 0.05059618602897784
+    },
+    {
+      "flux_from_bx": 0.004314364532945092,
+      "flux_from_by": 0.004037624930743444,
+      "max_abs_divb": 3.526068326209497e-13,
+      "max_abs_velocity": 0.14900925755500793,
+      "reconnected_flux_from_bx": 0.0037092225699666415,
+      "reconnected_flux_from_by": 0.003729555272802109,
+      "time": 0.10064557100365691
+    },
+    {
+      "flux_from_bx": 0.0061695521889078,
+      "flux_from_by": 0.0058871835637908055,
+      "max_abs_divb": 4.689582056016661e-13,
+      "max_abs_velocity": 0.22635632753372192,
+      "reconnected_flux_from_bx": 0.0055644102259293496,
+      "reconnected_flux_from_by": 0.00557911390584947,
+      "time": 0.15062503031947408
+    },
+    {
+      "flux_from_bx": 0.008117328069829453,
+      "flux_from_by": 0.007823132943971073,
+      "max_abs_divb": 4.2810199829546036e-13,
+      "max_abs_velocity": 0.30132564902305603,
+      "reconnected_flux_from_bx": 0.0075121861068510026,
+      "reconnected_flux_from_by": 0.007515063286029738,
+      "time": 0.20070667576028195
+    },
+    {
+      "flux_from_bx": 0.010187776154680249,
+      "flux_from_by": 0.009878454170499481,
+      "max_abs_divb": 4.938272013532696e-13,
+      "max_abs_velocity": 0.3738915026187897,
+      "reconnected_flux_from_bx": 0.009582634191701798,
+      "reconnected_flux_from_by": 0.009570384512558145,
+      "time": 0.2506204350054392
+    },
+    {
+      "flux_from_bx": 0.012403681718240023,
+      "flux_from_by": 0.012078669238903661,
+      "max_abs_divb": 5.293543381412746e-13,
+      "max_abs_velocity": 0.44740989804267883,
+      "reconnected_flux_from_bx": 0.011798539755261572,
+      "reconnected_flux_from_by": 0.011770599580962325,
+      "time": 0.3003887939399414
+    },
+    {
+      "flux_from_bx": 0.014792359752391338,
+      "flux_from_by": 0.014456217266366696,
+      "max_abs_divb": 5.240252676230739e-13,
+      "max_abs_velocity": 0.5239413380622864,
+      "reconnected_flux_from_bx": 0.014187217789412888,
+      "reconnected_flux_from_by": 0.01414814760842536,
+      "time": 0.3508266647526502
+    },
+    {
+      "flux_from_bx": 0.017259425112683854,
+      "flux_from_by": 0.01691628377317666,
+      "max_abs_divb": 5.577760475716786e-13,
+      "max_abs_velocity": 0.6038717031478882,
+      "reconnected_flux_from_bx": 0.016654283149705403,
+      "reconnected_flux_from_by": 0.016608214115235324,
+      "time": 0.4001913595078651
+    },
+    {
+      "flux_from_bx": 0.019838013774688072,
+      "flux_from_by": 0.019494369184453575,
+      "max_abs_divb": 5.39124300757976e-13,
+      "max_abs_velocity": 0.6852586269378662,
+      "reconnected_flux_from_bx": 0.01923287181170962,
+      "reconnected_flux_from_by": 0.01918629952651224,
+      "time": 0.45010292500618393
+    },
+    {
+      "flux_from_bx": 0.022483103165711775,
+      "flux_from_by": 0.02214354711145993,
+      "max_abs_divb": 5.258016244624741e-13,
+      "max_abs_velocity": 0.7620230913162231,
+      "reconnected_flux_from_bx": 0.021877961202733325,
+      "reconnected_flux_from_by": 0.021835477453518597,
+      "time": 0.500559432996509
+    },
+    {
+      "flux_from_bx": 0.025074533904074766,
+      "flux_from_by": 0.02474192428598342,
+      "max_abs_divb": 5.364597654988756e-13,
+      "max_abs_velocity": 0.8293874263763428,
+      "reconnected_flux_from_bx": 0.024469391941096316,
+      "reconnected_flux_from_by": 0.024433854628042085,
+      "time": 0.550051191977792
+    },
+    {
+      "flux_from_bx": 0.027668757931337492,
+      "flux_from_by": 0.027344164194958335,
+      "max_abs_divb": 5.870859354217828e-13,
+      "max_abs_velocity": 0.8781866431236267,
+      "reconnected_flux_from_bx": 0.02706361596835904,
+      "reconnected_flux_from_by": 0.027036094537017,
+      "time": 0.600312921399317
+    },
+    {
+      "flux_from_bx": 0.030176191610063782,
+      "flux_from_by": 0.029859655959623588,
+      "max_abs_divb": 5.906386491005833e-13,
+      "max_abs_velocity": 0.9010661840438843,
+      "reconnected_flux_from_bx": 0.029571049647085332,
+      "reconnected_flux_from_by": 0.029551586301682253,
+      "time": 0.6500577934073174
+    },
+    {
+      "flux_from_bx": 0.032662180440709655,
+      "flux_from_by": 0.032351351304309425,
+      "max_abs_divb": 6.501466032204917e-13,
+      "max_abs_velocity": 0.9056482315063477,
+      "reconnected_flux_from_bx": 0.032057038477731205,
+      "reconnected_flux_from_by": 0.03204328164636809,
+      "time": 0.7003440951606068
+    },
+    {
+      "flux_from_bx": 0.03509573737525783,
+      "flux_from_by": 0.034789257543653904,
+      "max_abs_divb": 6.767919558114954e-13,
+      "max_abs_velocity": 0.8964095115661621,
+      "reconnected_flux_from_bx": 0.034490595412279376,
+      "reconnected_flux_from_by": 0.03448118788571257,
+      "time": 0.7505701713592947
+    },
+    {
+      "flux_from_bx": 0.037462381957254806,
+      "flux_from_by": 0.0371581836348156,
+      "max_abs_divb": 7.362999099314038e-13,
+      "max_abs_velocity": 0.8839335441589355,
+      "reconnected_flux_from_bx": 0.036857239994276356,
+      "reconnected_flux_from_by": 0.036850113976874266,
+      "time": 0.8000733493373345
+    },
+    {
+      "flux_from_bx": 0.03984753485231351,
+      "flux_from_by": 0.03954425900990707,
+      "max_abs_divb": 6.998845947236987e-13,
+      "max_abs_velocity": 0.8722845911979675,
+      "reconnected_flux_from_bx": 0.03924239288933506,
+      "reconnected_flux_from_by": 0.03923618935196574,
+      "time": 0.8503828872444023
+    },
+    {
+      "flux_from_bx": 0.042230235338536204,
+      "flux_from_by": 0.04192631508548403,
+      "max_abs_divb": 7.833733661755105e-13,
+      "max_abs_velocity": 0.859474241733551,
+      "reconnected_flux_from_bx": 0.04162509337555775,
+      "reconnected_flux_from_by": 0.041618245427542694,
+      "time": 0.9007626050691786
+    },
+    {
+      "flux_from_bx": 0.04458372607814452,
+      "flux_from_by": 0.044278819887424874,
+      "max_abs_divb": 8.402167850363185e-13,
+      "max_abs_velocity": 0.8478095531463623,
+      "reconnected_flux_from_bx": 0.04397858411516607,
+      "reconnected_flux_from_by": 0.04397075022948354,
+      "time": 0.9504599329416012
+    },
+    {
+      "flux_from_bx": 0.04695686392807374,
+      "flux_from_by": 0.04664995601447862,
+      "max_abs_divb": 8.206768598029157e-13,
+      "max_abs_velocity": 0.8432596325874329,
+      "reconnected_flux_from_bx": 0.04635172196509529,
+      "reconnected_flux_from_by": 0.046341886356537285,
+      "time": 1.0002219825117067
+    },
+    {
+      "flux_from_bx": 0.04937815231126307,
+      "flux_from_by": 0.04906952499640837,
+      "max_abs_divb": 8.775202786637237e-13,
+      "max_abs_velocity": 0.8411940932273865,
+      "reconnected_flux_from_bx": 0.04877301034828462,
+      "reconnected_flux_from_by": 0.048761455338467034,
+      "time": 1.0507381059391807
+    },
+    {
+      "flux_from_bx": 0.05178147499162832,
+      "flux_from_by": 0.0514712531340988,
+      "max_abs_divb": 9.36140054363932e-13,
+      "max_abs_velocity": 0.8413515686988831,
+      "reconnected_flux_from_bx": 0.05117633302864987,
+      "reconnected_flux_from_by": 0.05116318347615747,
+      "time": 1.1004698102619006
+    },
+    {
+      "flux_from_bx": 0.054196583680031545,
+      "flux_from_by": 0.05388555529040673,
+      "max_abs_divb": 9.130474154517287e-13,
+      "max_abs_velocity": 0.8421372771263123,
+      "reconnected_flux_from_bx": 0.053591441717053094,
+      "reconnected_flux_from_by": 0.053577485632465394,
+      "time": 1.150155103649827
+    }
+  ]
+}

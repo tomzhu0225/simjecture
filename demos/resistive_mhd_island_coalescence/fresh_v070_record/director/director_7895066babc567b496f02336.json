@@ -1,0 +1,23 @@
+{
+  "id": "director_7895066babc567b496f02336",
+  "created_at": 1792938996.609999,
+  "packet_sha256": "9e42f767cbcf58501b5665561a98c3eefe6a814000d10d66f270f2adbd9fc7ad",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "No new evidence changes the previous strategy. Independent methods approval covers fresh collection of the selected S1000/S2000 contrast; no claim is accepted. The worker has prepared the endpoint evaluator and updated report, so waiting for the active trajectory is reasonable. Budget feasibility is adequate for this bounded comparison: using prior measured costs, approximately 344 seconds remain for S2000 and 682 seconds for S1000, versus 2857 seconds before the compute cutoff. These are estimates without current progress telemetry. The failed repair calibration does not justify validation runs.",
+  "scientific_feasibility": "adequate",
+  "budget_feasibility": "feasible",
+  "stop_experiments": [],
+  "wake_worker": false,
+  "park_worker": false,
+  "report_assessment": null,
+  "closeout_report": null,
+  "next_action": "Keep the active S2000 evidence run running. On completion, check admissibility and compact retention, verify storage reservation, then launch the planned fresh S1000 member if its forecast fits before the compute cutoff. Apply the approved uncertainty transport and frozen endpoint reducer, and promptly submit the completed contrast for independent claim review. Update the report to distinguish the historical failed 384\u00b2 gate from the subsequently approved qualification and uncertainty transport. Preserve the failed repair calibration and leave its mechanism unresolved unless a defensible prediction and validation budget become available. Retain the protected 600-second report reserve.",
+  "storage_increase": null,
+  "registration_tuning": null,
+  "time_request": null,
+  "operating_limits": null,
+  "helper_tasks": [],
+  "help_replies": []
+}

@@ -1,0 +1,68 @@
+{
+  "id": "exp_aaef37fed668e2be86673215",
+  "status": "failed",
+  "operator_guidance_ids": [],
+  "created_at": 1792930416.978758,
+  "timeout": 800,
+  "execution_deadline": 1792933565.5981443,
+  "workspace_limit_bytes": 3954875040,
+  "binding": {
+    "source": "calculation.py",
+    "args": [
+      "--S",
+      "1000",
+      "--n",
+      "256",
+      "--tmax",
+      "1.3",
+      "--cadence",
+      "0.005",
+      "--cfl",
+      "0.2"
+    ],
+    "inputs": {
+      "calculation.py": "a48d3b920e2ecb365307441d5201fe7a8dee59b09275ee6720821071c12c38cc",
+      "island_coalescence.py": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b"
+    },
+    "capability": "flash-island-coalescence-resistive-mhd-4.8",
+    "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+  },
+  "outputs": [
+    "result.json",
+    "fields.tar.gz"
+  ],
+  "commitment": null,
+  "key": "cfl256-1000",
+  "stage": "exploration",
+  "method": null,
+  "review_documents": null,
+  "parent_experiment": null,
+  "purpose": "validation",
+  "plan": null,
+  "pid": 761596,
+  "worker_identity": {
+    "pid": 761596,
+    "starttime": "4664473",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture-prx-island-v0.7.0/.venv/bin/python",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153",
+      "--execute",
+      "exp_aaef37fed668e2be86673215"
+    ],
+    "launched_at": "2026-10-25T12:13:37.130948+00:00",
+    "run_directory": null
+  },
+  "started_at": 1792930417.131078,
+  "execution_heartbeat": {
+    "elapsed_wall_seconds": 270.24969666999823,
+    "stdout_bytes": 0,
+    "stderr_bytes": 0,
+    "workspace_bytes": 476939781,
+    "observed_at": 1792930687.4024985
+  },
+  "finished_at": 1792931711.6074717,
+  "error": "Experiment worker disappeared before writing a terminal receipt"
+}

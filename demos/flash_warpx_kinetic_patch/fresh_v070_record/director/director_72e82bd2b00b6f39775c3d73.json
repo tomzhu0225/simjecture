@@ -1,0 +1,23 @@
+{
+  "id": "director_72e82bd2b00b6f39775c3d73",
+  "created_at": 1793001583.1970143,
+  "packet_sha256": "99574da3e78cf943c7d4ab9ec8acd37e84fc22311b279ed6ecccada47672bfbb",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "The new pilot establishes an affordable exploratory trajectory through t\u03a9ci=0.9: 1811 steps took 147 seconds and retained approximately 74 MB. Its initial moments, relaxation diagnostics and approximate boundary-inclusive energy accounting justify further qualification, but do not establish the hypothesis. The larger-patch transfer preserves the cell scale and measurement region; its evolution is the next useful boundary test. Numerical qualification remains incomplete, particularly at dx/minimum Debye length approximately 5.84. No method has been independently approved. The running FLASH refinement has reached approximately 720 seconds without telemetry; its progress is unknown, but its existing 1200-second timeout bounds the remaining commitment. Approximately 5560 seconds remain before the compute cutoff, making targeted controls and fresh evidence plausibly affordable at the measured kinetic cost.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "feasible",
+  "stop_experiments": [],
+  "wake_worker": false,
+  "park_worker": false,
+  "report_assessment": null,
+  "closeout_report": null,
+  "next_action": "Run the prepared larger-patch kinetic comparison now, keeping the physical ROI, cell scale, mapping, particle count, timestep and diagnostic conventions matched to the pilot. Compare pressure departures, scalar pressure, density and field evolution throughout the proposed window; distinguish field-boundary sensitivity from particle-origin transport. Keep the FLASH refinement running within its recorded timeout, then compare source time, sheet width and local fields before freezing the final source. Record a cost forecast for independent mesh, timestep, particle-count and seed controls, including any baseline repeated after source refinement. Use those controls to investigate grid heating and pressure-estimator accuracy; favorable pilot energy accounting alone does not qualify the unresolved Debye scale. Freeze the final source, window, estimator, eligibility policy, uncertainty rule and acceptance tolerances, and obtain recorded methods review before decisive fresh-seed evidence. Preserve at least 20 minutes for fresh evidence and independent review, while respecting the compute cutoff and protected report reserve. Return a concrete replan if measured control costs or refinement failure obstruct that path.",
+  "storage_increase": null,
+  "registration_tuning": null,
+  "time_request": null,
+  "operating_limits": null,
+  "helper_tasks": [],
+  "help_replies": []
+}

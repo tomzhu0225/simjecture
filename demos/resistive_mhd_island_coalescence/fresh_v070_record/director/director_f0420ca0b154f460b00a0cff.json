@@ -1,0 +1,23 @@
+{
+  "id": "director_f0420ca0b154f460b00a0cff",
+  "created_at": 1792934758.1251597,
+  "packet_sha256": "f0405a5a00c46b79c75e6e1d0e78ec90c639ad3efcfef57df86eb0f15f2c6c80",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "No new completed evidence or review changes the previous decision. The S_eta=2000 refinement remains connected, with 499 seconds elapsed against its 1800-second allowance; no observed failure justifies stopping it. The worker is preparing matched-flux diagnostics and a storage reduction, but their qualification is not yet recorded. Approximately 7098 seconds remain before the compute cutoff under the authorized extension. Completing qualification and collecting fresh evidence remain plausible, with spatial/topology acceptance and retention validation unresolved.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "at_risk",
+  "stop_experiments": [],
+  "wake_worker": false,
+  "park_worker": false,
+  "report_assessment": null,
+  "closeout_report": null,
+  "next_action": "Keep exp_9ed2782a9af6b2446c71285a running. Continue matched-flux analysis and begin RESULTS.md, the run table and decision timeline now. Before pruning raw outputs, validate the proposed magnetic-series retention against source values and identities, retain complete crossing-bracket and representative states, and preserve fields needed for numerical checks. Incorporate the completed refinement into the corrected spatial/topology qualification dossier and submit independent source-bound methods review, including the retention change. Before fresh claim-bearing runs, update execution and storage forecasts using measured costs and the authoritative compute cutoff. Preserve the 600-second report reserve and report unresolved qualification honestly.",
+  "storage_increase": null,
+  "registration_tuning": null,
+  "time_request": null,
+  "operating_limits": null,
+  "helper_tasks": [],
+  "help_replies": []
+}

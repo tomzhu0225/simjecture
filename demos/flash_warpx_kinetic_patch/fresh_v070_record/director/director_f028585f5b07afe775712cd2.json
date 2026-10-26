@@ -1,0 +1,23 @@
+{
+  "id": "director_f028585f5b07afe775712cd2",
+  "created_at": 1793005851.3823552,
+  "packet_sha256": "4a2654cffa5cd768c76638d3e60dee97628910ca3ddbd6a38cc8585cd87ee248",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "replan",
+  "rationale": "The fresh FLASH evidence run completed in 877 seconds, and the corrected control audits provide a defensible path to prospective kinetic evidence. Scientific qualification and the hypothesis remain independently reviewable. The immediate blocker is concrete: check_method compares the entire input binding, while launch_kinetic.py adds the transferred NPZ and JSON absent from method_9cd6ea1753b9d22b49e0a090. The existing bound source hashes match; unchanged source alone cannot resolve this rejection. Submit a narrowly revised production method rather than retrying the mismatched binding. Approximately 1404 seconds remain before the compute cutoff and 2004 seconds overall. Two baseline-cost seeds require about 262 seconds, but additional method-review latency makes completion at risk. The pending extension grants no time.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "at_risk",
+  "stop_experiments": [],
+  "wake_worker": false,
+  "park_worker": false,
+  "report_assessment": null,
+  "closeout_report": null,
+  "next_action": "Acknowledge this replan and immediately submit a narrowly revised WarpX production method whose declared inputs exactly match the intended evidence submission, including evidence_patch.npz and evidence_patch.json. Preserve the approved implementation, protocol, physical mapping, window and tolerances; identify the amendment as binding the fresh FLASH-derived payload and link its source receipt and hashes. Request independent review of this bounded amendment using the existing qualification receipts. Do not omit transferred inputs, bypass the binding check or relabel exploratory runs. While review is pending, finish the uncertainty ledger, provenance index, control figures and current RESULTS.md. After approval, run prospective seeds6101 and6102 sequentially with the identical approved input binding and unchanged [0.4,0.9] window. Complete the recorded audit and submit the disposition for independent claim review, then report assessment. Reforecast from actual review latency and execution cost; numerical work must finish before the compute cutoff. If approval or required evidence cannot fit, preserve the completed two-solver record and submit an explicit unresolved assessment identifying the binding or evidence limitation. Continue against the authoritative deadline while the existing extension request remains pending.",
+  "storage_increase": null,
+  "registration_tuning": null,
+  "time_request": null,
+  "operating_limits": null,
+  "helper_tasks": [],
+  "help_replies": []
+}
