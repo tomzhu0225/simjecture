@@ -151,29 +151,33 @@ def supervisor_type(legacy, *, model_policy=None, sampling_seed=None, sampling_s
                             json.dumps(dict(packet_id=packet.packet_id, error=str(error))) + "\n"
                         )
             now = time.monotonic()
-            if now < self.attention_next_poll or self.monitor_latest is None:
+            if now < self.attention_next_poll:
                 return
             self.attention_next_poll = now + 5
-            self.attention_seen = self.public_sequence
-            raw = self.monitor_latest
-            host = raw["state"]["host_state"]
             if (
                 self.attention_future is not None
                 or not self.worker_parked
                 or self.discretionary_used
-                or host["telemetry"]["workflow_complete"]
-                or any(
-                    host[k]
-                    for k in [
-                        "authority_active",
-                        "director_active",
-                        "pending_explicit_help",
-                        "active_helpers",
-                    ]
-                )
             ):
                 return
-            packet = self.canonical(raw, time.time())
+            # The legacy observation clock can lag a park transition. Capture
+            # current host state in this poll slot before eligibility checks or
+            # model input assembly, rather than reuse a pre-transition packet.
+            captured_at = time.time()
+            raw = self.snapshot(directory, captured_at)
+            self.attention_seen = self.public_sequence
+            host = raw["state"]["host_state"]
+            if host["telemetry"]["workflow_complete"] or any(
+                host[k]
+                for k in [
+                    "authority_active",
+                    "director_active",
+                    "pending_explicit_help",
+                    "active_helpers",
+                ]
+            ):
+                return
+            packet = self.canonical(raw, captured_at)
             if self.attention_arm in {"base", "adapted"}:
                 payload = dict(observation=packet.model_dump(), policy=self.attention_model_policy)
                 if self.sampling_trace is not None:
