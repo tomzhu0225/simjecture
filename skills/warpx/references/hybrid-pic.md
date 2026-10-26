@@ -115,3 +115,8 @@ record from C m^-3 to number density with the registered charge state. Report
 the full-mesh occupancy and, when the scientific contract defines a smaller
 inference region, report that region separately. Do not interpret `rho` as an
 electron density without first confirming the hybrid diagnostic semantics.
+
+For fields supplied by an external device/FEM model, also read
+[external FEM fields](external-fem-fields.md). It distinguishes field-import
+qualification from plasma convergence and explains why floor-dominated leakage,
+unmodeled conductor boundaries and a selected density contour limit interpretation.

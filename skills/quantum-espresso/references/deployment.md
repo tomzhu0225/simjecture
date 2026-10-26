@@ -34,10 +34,29 @@ through the chosen experiment backend. Missing isolation prerequisites are a
 reported blocker, not a reason to silently weaken host security settings.
 
 
-For a Windows checkout, the one-click wrapper selects a new Linux-native runtime
+For a Windows checkout, the conditional setup wrapper selects a new Linux-native runtime
 prefix when needed, preserves existing prefixes, and calls the same public
 installer and doctor. Optional arguments are -RuntimeBase (absolute Linux path),
 -Uv (Linux uv executable), and -ApplicationEnvironment (existing Linux application
 environment), and -BubblewrapDirectory (existing Linux directory containing
 bwrap when it is outside the default PATH). Missing Bubblewrap is a prerequisite
 failure. It never migrates an existing runtime.
+
+
+## Conditional setup and known prerequisite gaps
+
+This is automated QE setup on supported Linux/x86_64 or already configured WSL2,
+not a verified clean-machine one-click installation. The application environment,
+working user namespaces/Bubblewrap, an available uv command (or configured path),
+and python3 on PATH must already be usable. Docker is not required.
+
+The QE bootstrap currently calls PATH python3 independently of the interpreter
+running Simjecture; if absent, it can fail with exit 127. Missing uv in the QE
+wrapper currently surfaces as command-not-found rather than a complete guided
+installation step. Simjecture's base installation can prepare uv/Python and may
+prepare Bubblewrap on supported Linux systems, but that prerequisite flow is not
+fully connected to these QE wrappers. Application-package diagnostics can suggest
+uv sync --frozen, and missing QE has its install command; diagnostics are therefore
+partial, not entirely absent. A clean second-machine end-to-end deployment has
+not been validated. These known gaps are disclosed here rather than silently
+installing prerequisites or changing host settings.

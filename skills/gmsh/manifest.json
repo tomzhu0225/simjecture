@@ -1,7 +1,7 @@
 {
   "schema_version": "0.1.0",
   "name": "gmsh",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Geometry preparation and finite-element meshing using Gmsh",
   "entrypoint": "SKILL.md",
   "capability_names": [

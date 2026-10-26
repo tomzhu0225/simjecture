@@ -8,7 +8,7 @@ operations.
 
 ## Plasma research
 
-Start with the pictures: both plasma walkthroughs include actual field maps,
+Start with the pictures: these plasma walkthroughs include actual field maps,
 evidence maps, short explanations of each measurement and downloadable figures.
 Their linked receipts distinguish completed work from outstanding tests.
 
@@ -27,6 +27,12 @@ preserved alongside the classic record.
 fresh MHD source to local kinetic calculations. Its two-hour record includes
 actual state transfer, GPU performance recovery and completed numerical controls,
 with the final scientific question left unresolved.
+
+[**Qin-1: from hardware design to circuits, fields and 3D plasma**](qin1-hardware-plasma.md)
+connects actual CAD changes, Gmsh, Elmer/RLC, native WarpX and PyVista. Explore the
+interactive fields, the stronger cold-conductor design and the five failed
+plasma flux-sensitivity checks. This operator-assisted host study demonstrates
+the broader toolchain; it has no formal harness-adjudicated scientific verdict.
 
 ## A complete minimal-workflow example
 

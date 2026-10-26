@@ -85,7 +85,7 @@ def test_monitor_to_continuation_draft_and_steering(tmp_path, provider, monkeypa
             page.screenshot(path=str(shots / "continuation-proposal.png"), full_page=True)
             page.locator("#start-prepared-study").click()
             page.get_by_text(
-                "Autonomous research started. You can close this page and return later."
+                "Autonomous study started. You can close this page and return later."
             ).wait_for()
             saved = app.workspace.project(project["id"])
             assert len(saved["studies"]) == 1
@@ -139,7 +139,7 @@ def test_prepare_with_agent_opens_chat_and_generates_linked_brief(tmp_path, prov
                 "The calculation and editable study brief are ready.", exact=True
             ).wait_for(timeout=40000)
             page.locator("#continuation-parent-link").wait_for(state="visible")
-            page.get_by_role("button", name="Autonomous research", exact=True).click()
+            page.get_by_role("button", name="Autonomous study", exact=True).click()
             page.locator("#prepared-brief").wait_for(state="visible")
             assert page.locator("#prepared-heading").inner_text() == "CONTINUATION PROPOSAL"
             project = app.workspace.projects()[0]

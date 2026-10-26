@@ -38,3 +38,67 @@
 .conversation-collection { display:flex; gap:7px; align-items:center; color:var(--muted); font-size:12px; }
 .conversation-collection select { max-width:240px; background:transparent; color:var(--ink); border:0; font-size:12px; padding:2px; }
 @media(max-width:600px) { .collection-heading { flex-direction:column; }.collection-view { padding:25px 20px; }.collection-conversation { align-items:flex-start; flex-direction:column; gap:5px; } }
+
+/* Compact navigation: every row has the same full-width highlight, and the
+   conversation list keeps usable space on laptop-height screens and in the
+   mobile drawer. */
+@media all {
+  .sidebar nav { gap: 2px; flex: none; }
+  .sidebar nav .nav-item {
+    width: 100%;
+    min-height: 34px;
+    padding: 6px 10px;
+    font-size: 14px;
+    line-height: 1.25;
+    border-radius: 8px;
+    white-space: nowrap;
+  }
+  .sidebar nav .nav-item > span[aria-hidden] {
+    flex: none;
+    width: 18px;
+    font-size: 15px;
+    text-align: center;
+  }
+  .workspace-resources { margin: 2px 0 6px; padding: 0 0 2px; }
+  .workspace-resources summary {
+    align-items: center;
+    min-height: 30px;
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: #8790a8;
+  }
+  .workspace-resources summary:hover { background: #ffffff0a; color: #d5dbe8; }
+  .workspace-resources summary > span { transition: transform 0.15s ease; }
+  .workspace-resources:not([open]) summary > span { transform: rotate(-90deg); }
+  .workspace-resources[open] { background: none; }
+  /* A collapsed group still shows when it holds the current page or running setup. */
+  .workspace-resources:not([open]):has(.nav-item.active) summary { color: #eeeaff; background: #2b2c43; }
+  .workspace-resources:not([open]):has(.nav-activity) summary::after {
+    content: "";
+    width: 8px; height: 8px; margin-left: auto; margin-right: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+  .sidebar .sidebar-label { margin: 14px 10px 6px; font-size: 11px; }
+  .collection-sidebar { margin-top: 2px; padding-top: 4px; flex: none; }
+  .collection-sidebar .sidebar-label { margin-bottom: 4px; }
+  .sidebar .project-list {
+    flex: 1 1 auto;
+    /* Never squeeze conversations to nothing; the sidebar scrolls instead. */
+    min-height: min(180px, 30vh);
+  }
+  .sidebar .project-link { padding: 7px 10px; }
+  .sidebar .sidebar-runs { flex: none; }
+  .sidebar .sidebar-bottom { padding-top: 12px; flex: none; }
+}
+@media (max-height: 820px) {
+  .sidebar { padding-top: 18px; }
+  .sidebar .brand { margin-bottom: 8px; }
+  .sidebar .brand .brand-logo { height: 30px; width: auto; }
+  .sidebar .workspace-switcher { padding: 6px 10px; margin-bottom: 8px; }
+  .sidebar .new-project { padding: 8px 12px; margin-bottom: 10px; }
+}

@@ -31,7 +31,6 @@ Principal command families:
 - `steer`: advisory guidance for an existing minimal study;
 - `llm-benchmark`: prepare, grade, run and publish recorded-diagnostic coding tasks
   (distinct from the simulation `benchmark` command);
-- `tui`: optional interactive dashboard (`uv sync --extra tui`);
 - `benchmark`: deterministic planted scientific benchmarks;
 - `campaign`: durable bounded campaign execution;
 - `orchestrate`: fixed-DAG multi-action research campaigns;
@@ -49,15 +48,14 @@ see [operating settings](../how-to/operating-limits.md).
 
 For live campaigns, prefer hypothesis and instruction files over long shell
 arguments so the exact operator input can be reviewed before launch.
-`--instructions-file` is accepted by `study` for the same reason. The primary Web client
-and maintenance-mode TUI both launch through structured input files and never
+`--instructions-file` is accepted by `study` for the same reason. The Web client
+and CLI both launch through structured input files and never
 build a shell command from hypothesis text.
 
-`web`, `status`, `watch`, `pause`, and `resume` do not require the TUI extra. `watch`
+`web`, `status`, `watch`, `pause`, and `resume` are included in the core package. `watch`
 Ctrl-C stops the viewer only. `pause` never uses SIGSTOP. `resume` preserves the saved minimal launch contract and absolute deadline.
 Classical, DSH, structured and frontier runs cannot be resumed in this release. See
-[Web interface](../getting-started/web-interface.md) and
-[Terminal interface](../getting-started/terminal-ui.md).
+[Web interface](../getting-started/web-interface.md).
 
 
 ## Native-agent studies
@@ -82,7 +80,7 @@ session allowance/watchdog. Resume with the same campaign and instructions;
 mode and deadline are preserved. `--continue-from` instead creates a new minimal
 phase with a fresh explicit budget and selected context; see
 [continuation and steering](../how-to/continuation-steering.md). `simjecture-supervise` and `simjecture-research`
-are equivalent launchers. The browser and TUI also launch minimal studies.
+are equivalent launchers. The browser also launches minimal studies.
 Removed workflows are described in the [migration guide](../how-to/minimal-migration.md).
 
 For an active minimal study, `simjecture study budget --campaign DIR` reads the

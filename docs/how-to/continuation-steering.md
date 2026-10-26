@@ -8,7 +8,7 @@ is for a finished study, a revised question or a new phase with its own scope.
 
 ## Continue after a deadline or change direction
 
-Open the study in **Autonomous research**, or open its **experiment monitor**.
+Open the study in **Autonomous study**, or open its **experiment monitor**.
 Choose **Continue investigation**, describe the follow-up, choose a new wall-time
 budget and select working files to inherit. Choose **Prepare directly** to review the normal study brief and agent/model
 selection, then **Start research**.

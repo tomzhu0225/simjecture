@@ -10,6 +10,7 @@ from conjecture_solver.research_finalization import (
     ReportAssessment,
     default_report_reserve,
     report_status,
+    working_report,
 )
 from conjecture_solver.research_service import ResearchService, put
 from conjecture_solver.research_supervisor import ResearchSupervisor
@@ -70,6 +71,107 @@ def test_default_reserve_is_bounded_and_legacy_resume_unchanged(tmp_path):
     assert (s.root / "research.json").read_bytes() == before
     with pytest.raises(ValueError, match="immutable"):
         ResearchService.create(s.root, "old", report_reserve_seconds=100)
+
+
+@pytest.mark.parametrize("name", ["RESULTS.md", "research/RESULTS.md"])
+def test_final_report_status_tracks_the_actual_reviewed_source(tmp_path, monkeypatch, name):
+    sup = fixture(tmp_path)
+    report = sup.service.work / name
+    report.parent.mkdir(exist_ok=True)
+    report.write_text("Bounded findings retained from the earlier worker.")
+
+    def launch(directory, prompt, judge=False):
+        if judge:
+            answer(directory)
+        return 0
+
+    monkeypatch.setattr(sup, "launch", launch)
+    sup.finalize_report()
+    assert sup.service.status()["finalization"]["report_status"] == "reviewed"
+    if name.startswith("research/"):
+        (sup.service.work / "RESULTS.md").write_text("A different, unreviewed draft.")
+        assert sup.service.status()["finalization"]["report_status"] == "reviewed"
+    report.write_text("The actual reviewed source changed after assessment.")
+    assert sup.service.status()["finalization"]["report_status"] == "changed_since_review"
+
+
+def test_report_requests_bind_identical_contents_to_the_requested_source(tmp_path):
+    sup = fixture(tmp_path)
+    original = sup.service.work / "original.md"
+    original.write_text("A bounded report with unchanged scientific records.")
+    first = sup.service.assess_report("original.md")
+    assert sup.service.assess_report("original.md")["id"] == first["id"]
+    original.rename(sup.service.work / "renamed.md")
+
+    second = sup.service.assess_report("renamed.md")
+    assert second["id"] != first["id"]
+    assert second["source_report"] == "research/renamed.md"
+    assert second["current_report_unchanged"]
+    assert sup.service.assess_report("renamed.md")["id"] == second["id"]
+    assert not sup.service.report_assessment_status(first["id"])["current_report_unchanged"]
+    assert (sup.root / first["report"]).read_bytes() == (sup.root / second["report"]).read_bytes()
+
+
+def test_working_report_never_substitutes_a_different_file_for_a_bound_source(tmp_path):
+    sup = fixture(tmp_path)
+    (sup.service.work / "RESULTS.md").write_text("A different working draft.")
+    assert working_report(sup.root) == sup.service.work / "RESULTS.md"
+    assert working_report(sup.root, {"source_report": "research/missing.md"}) is None
+    secret = sup.root / "supervisor/private.txt"
+    secret.write_text("Synthetic private metadata")
+    assert working_report(sup.root, {"source_report": "supervisor/private.txt"}) is None
+    alias = sup.service.work / "alias.md"
+    alias.symlink_to(secret)
+    assert working_report(sup.root, {"source_report": "research/alias.md"}) is None
+
+
+@pytest.mark.parametrize("changed", ["report", "packet"])
+def test_final_assessment_rejects_a_snapshot_changed_during_review(tmp_path, monkeypatch, changed):
+    sup = fixture(tmp_path)
+    (sup.service.work / "RESULTS.md").write_text("A report ready for review.")
+    request = sup.service.assess_report()
+    frozen = (sup.root / request["packet"]).parent
+
+    def launch(directory, prompt, judge=False):
+        assert judge
+        if changed == "report":
+            (frozen / "RESULTS.md").write_text("Changed while the reviewer was working.")
+        else:
+            packet = json.loads((frozen / "packet.json").read_text())
+            packet["original_hypothesis"] = "A different question inserted during review."
+            put(frozen / "packet.json", packet)
+        answer(directory)
+        return 0
+
+    monkeypatch.setattr(sup, "launch", launch)
+    with pytest.raises(ValueError, match="changed during assessment"):
+        sup._assess_report(60)
+    assert not (frozen / "assessment.json").exists()
+    assert sup.service._read("report_requests", request["id"])["status"] == "queued"
+
+
+def test_finalization_does_not_retry_changed_packet_as_provider_failure(tmp_path, monkeypatch):
+    sup = fixture(tmp_path)
+    reviews = []
+
+    def launch(directory, prompt, judge=False):
+        if judge:
+            reviews.append(directory)
+            if len(reviews) == 1:
+                frozen, packet = sup.service.freeze_report()
+                packet["original_hypothesis"] = "Changed after the reviewer received its packet."
+                put(frozen / "packet.json", packet)
+            answer(directory)
+        else:
+            (sup.service.work / "RESULTS.md").write_text("Bounded findings.")
+        return 0
+
+    monkeypatch.setattr(sup, "launch", launch)
+    sup.finalize_report()
+    assert len(reviews) == 1
+    finalization = sup.service.status()["finalization"]
+    assert finalization["report_status"] == "unreviewed"
+    assert "packet changed during assessment" in finalization["error"]
 
 
 def test_admissions_protect_reserve_and_allow_bounded_analysis(tmp_path, monkeypatch):

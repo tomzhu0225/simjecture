@@ -36,6 +36,24 @@ def _sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def working_report(root, finalization=None):
+    """Locate the bound report, or a retained draft before any report is reviewed."""
+    root = Path(root).resolve()
+    source = (finalization or {}).get("source_report")
+    names = [source] if isinstance(source, str) else [
+        "research/RESULTS.md", "research/research/RESULTS.md"
+    ]
+    for name in names:
+        path = root / name
+        if (
+            path.is_file()
+            and not path.is_symlink()
+            and path.resolve().is_relative_to(root / "research")
+        ):
+            return path.resolve()
+    return None
+
+
 def report_status(root, manifest):
     root = Path(root)
     policy = manifest.get("finalization_policy", {})
@@ -56,7 +74,18 @@ def report_status(root, manifest):
                 path = (root / result[key]).resolve()
                 if not path.is_relative_to(root.resolve()) or _sha(path) != result[key + "_sha256"]:
                     raise ValueError("Reviewed snapshot changed")
-            if _sha(root / "research" / "RESULTS.md") != result["report_sha256"]:
+            packet = json.loads((root / result["packet"]).read_text())
+            source_name = (
+                packet.get("source_report", "research/RESULTS.md")
+                if isinstance(packet, dict) else None
+            )
+            if not isinstance(source_name, str):
+                raise ValueError("Reviewed packet has no valid source report path")
+            source = root / source_name
+            if not source.resolve().is_relative_to((root / "research").resolve()):
+                raise ValueError("Working report is outside the research directory")
+            result["source_report"] = source.relative_to(root).as_posix()
+            if source.is_symlink() or _sha(source) != result["report_sha256"]:
                 raise ValueError("Working report changed since review")
         except (OSError, KeyError, ValueError):
             result["report_status"] = "changed_since_review"
@@ -75,6 +104,10 @@ class ReportAssessment(BaseModel):
                 "Accepted report requires no blocking issues; revision requires issues"
             )
         return self
+
+
+class ReportSnapshotChanged(ValueError):
+    """An integrity failure must not be retried as a transient reviewer failure."""
 
 
 class ResearchFinalization:
@@ -147,7 +180,13 @@ class ResearchFinalization:
             self.launch_deadline = previous
 
     def _report_packet(self):
-        return self.service.freeze_report("RESULTS.md")
+        report = "RESULTS.md"
+        if (
+            not (self.service.work / report).is_file()
+            and (self.service.work / "research/RESULTS.md").is_file()
+        ):
+            report = "research/RESULTS.md"
+        return self.service.freeze_report(report)
 
     def _draft_report(self, prompt, seconds):
         """Harvest asynchronous analysis and wake its author within one draft allowance."""
@@ -189,13 +228,16 @@ class ResearchFinalization:
                 "settled or reached "
                 "the drafting boundary. Inspect these receipts and incorporate their "
                 "actual results "
-                "into research/RESULTS.md before returning: "
+                "into RESULTS.md before returning: "
                 + json.dumps(sorted(identifiers))
                 + ". Replace stale pending/running statements, link the finished figures, and keep "
                 "their original evidence stages. Do not launch new simulations or change the claim."
             )
 
     def _report_review_prompt(self, frozen, seconds):
+        from .review_assets import packet_view
+
+        packet = json.loads((frozen / "packet.json").read_text())
         return (
             "Independently assess this scientific REPORT, not a claim-approval request. "
             "Use read-only tools to inspect referenced original sources, receipts, "
@@ -232,6 +274,8 @@ class ResearchFinalization:
             + f"\nReturn a structured verdict within {max(0, seconds):.0f} seconds. "
             + "\nStudy root: "
             + str(self.root)
+            + "\nPACKET:\n"
+            + json.dumps(packet_view(self.root, packet))
         )
 
     def _assess_report(self, seconds):
@@ -240,6 +284,7 @@ class ResearchFinalization:
 
         self._finish_state(phase="independent report review")
         frozen, packet = self._report_packet()
+        packet_sha256 = _sha(frozen / "packet.json")
         prompt = self._report_review_prompt(frozen, seconds)
         directory, rc = self._finish_call("review", prompt, seconds, judge=True)
         if rc:
@@ -250,7 +295,9 @@ class ResearchFinalization:
             )
         )
         if _sha(frozen / "RESULTS.md") != packet["report_sha256"]:
-            raise ValueError("Report changed during assessment")
+            raise ReportSnapshotChanged("Report changed during assessment")
+        if _sha(frozen / "packet.json") != packet_sha256:
+            raise ReportSnapshotChanged("Report packet changed during assessment")
         put(frozen / "assessment.json", verdict.model_dump(mode="json"))
         # A worker may queue this same frozen report while drafting. The final
         # assessor fulfils that request; do not leave a false pending review.
@@ -258,7 +305,7 @@ class ResearchFinalization:
             if (
                 request["status"] in {"queued", "running", "failed", "deferred"}
                 and request["report_sha256"] == packet["report_sha256"]
-                and request["packet_sha256"] == _sha(frozen / "packet.json")
+                and request["packet_sha256"] == packet_sha256
             ):
                 if request.get("error"):
                     request.setdefault("previous_errors", []).append(request.pop("error"))
@@ -275,7 +322,7 @@ class ResearchFinalization:
             report=str((frozen / "RESULTS.md").relative_to(self.root)),
             packet=str((frozen / "packet.json").relative_to(self.root)),
             report_sha256=packet["report_sha256"],
-            packet_sha256=_sha(frozen / "packet.json"),
+            packet_sha256=packet_sha256,
         )
         return verdict
 
@@ -379,7 +426,7 @@ class ResearchFinalization:
                 + "\nPROTECTED FINALIZATION PHASE\n"
                 + f"You have at most {budget * 0.4:.0f} seconds for this draft. "
                 + "Stop launching numerical simulations. Use the work already completed to write "
-                "a current research/RESULTS.md now; update it incrementally so a useful report "
+                "a current RESULTS.md now; update it incrementally so a useful report "
                 "survives the cutoff. Include the question, actual findings, "
                 "quantitative analysis, "
                 "figures with paths, experiment IDs/provenance, uncertainty, failed tests and what "
@@ -422,6 +469,8 @@ class ResearchFinalization:
             left = max(0, finish_deadline - time.time())
             try:
                 verdict = self._assess_report(left * 0.65)
+            except ReportSnapshotChanged:
+                raise
             except ValueError as error:
                 left = finish_deadline - time.time()
                 if left < 20 or self.boundary():
@@ -433,7 +482,7 @@ class ResearchFinalization:
                 self._finish_state(phase="revising report")
                 self._finish_call(
                     "revision",
-                    "Revise research/RESULTS.md in place using this independent REPORT assessment. "
+                    "Revise RESULTS.md in place using this independent REPORT assessment. "
                     "No new simulations; preserve honest uncertainty and original claims. "
                     "Update prose/figures using existing artifacts. Review comments:\n"
                     + verdict.model_dump_json(),

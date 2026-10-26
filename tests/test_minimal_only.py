@@ -20,7 +20,7 @@ from conjecture_solver.web.application import SimjectureWebApplication, WebAppli
 from .legacy_records import write_legacy_launch
 
 
-@pytest.mark.parametrize("command", ["mvp", "dsh-run", "dsh-profile"])
+@pytest.mark.parametrize("command", ["mvp", "dsh-run", "dsh-profile", "tui"])
 def test_removed_commands_are_not_advertised_or_accepted(command):
     parser = build_parser()
     assert command not in parser.format_help()

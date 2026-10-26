@@ -22,14 +22,15 @@ exact input, and the realized output inventory.
 
 The capability smokes are interface checks, not physical commissioning:
 
-- `atomec-1.4.0` uses the runtime interpreter and imports `atoMEC`.
-- `singularity-eos-1.12.1` uses `SINGULARITY_EOS_QUERY` when set, otherwise the
+- `atomec-1.4.0` (`examples/atomec_runtime_smoke.py`) uses the runtime interpreter and imports `atoMEC`.
+- `singularity-eos-1.12.1` (`examples/singularity_runtime_smoke.py`) uses `SINGULARITY_EOS_QUERY` when set, otherwise the
   `singularity_eos` Python module.
-- `m-aneos-1.0` uses `MANEOS_QUERY` and copies `MANEOS_PREFLIGHT_INPUT` to
+- `m-aneos-1.0` (`examples/maneos_runtime_smoke.py`) uses `MANEOS_QUERY` and copies `MANEOS_PREFLIGHT_INPUT` to
   `ANEOS.INPUT` in the workspace.
-- `feos-16.7` uses `FEOS_QUERY` and `FEOS_DATA`. Read
+- `feos-16.7` (`examples/feos_runtime_smoke.py`) uses `FEOS_QUERY` and `FEOS_DATA`. Read
   [the FEOS interface](feos.md) for workspace databases, component outputs,
   eV-based entropy units and homogeneous-state limitations.
+- `material-eos-0.1` (`examples/material_eos_runtime_smoke.py`) exercises the material EOS profile builder and table export. Read [material models](material-models.md) for profile parameters and table limits.
 
 ## Query JSON contract
 

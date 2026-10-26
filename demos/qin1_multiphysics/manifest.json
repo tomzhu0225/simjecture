@@ -1,0 +1,19 @@
+{
+  "demos/qin1_multiphysics/record/checks.json": "db8a89d9d1aceab9975d390609161ee203c0d96048a4654e752be3c8c70de53b",
+  "demos/qin1_multiphysics/record/comparison-plan.json": "1905b17533a33b8b428cb11b6e1be276498ce6060fe7731eaff8931fb8628053",
+  "demos/qin1_multiphysics/record/em.json": "115885d12cd801c9e3dc615986929396475480e88277d9515287a31d8823d274",
+  "demos/qin1_multiphysics/record/model.json": "ed0380d0023f7b25026a450403fb79c66452f672c09fdc01bf627a3b29adeeb4",
+  "demos/qin1_multiphysics/record/plasma.json": "af6a9260ead8195d08d42817e2a5e0d91a2a73f672f7c9a29aeaaa56da122f46",
+  "demos/qin1_multiphysics/record/provenance.json": "2707d7303179fd62d5deadf0ccf572b3a936770683bdf5e1da34110f1e57fea6",
+  "demos/qin1_multiphysics/record/raw-source-identities.json": "fee3f5a06f86dde1498b4f30f4fe743c0cb3554b356f10bc00ba110c830a869f",
+  "demos/qin1_multiphysics/record/study.json": "1457947c6863c4be5084062a83867c83a0e613c2d9878a149734d2490b3be798",
+  "docs/_static/demos/qin1/paired_feed_fields.pdf": "b1dfe56ffdcf761267160c6ef0050367c264df69237abc9fb7b76263bd3fc255",
+  "docs/_static/demos/qin1/paired_feed_fields.png": "ca67ff82e40b45369588894a6104e7b0665c7cfb4d8a098e75402bf22dee3685",
+  "docs/_static/demos/qin1/paired_feed_geometry.pdf": "fca5acc193b154be2fb975849bc7b7ab738082ba3562746d1732574961049391",
+  "docs/_static/demos/qin1/paired_feed_geometry.png": "282a4a0d847a8a46614a0f038f5a5823268c456588c03f06538ba45b701ce0f9",
+  "docs/_static/demos/qin1/plasma_hardware_overlap.pdf": "bd9d4c49978b2b35c17a6850d5d7741cbd03ca9ea0b20d5a44de0c4099e18cd5",
+  "docs/_static/demos/qin1/plasma_hardware_overlap.png": "95b97ec8e6107b593e6bd0b664d7cc65f09344b4564643cb0a1cd67018edfb20",
+  "docs/_static/demos/qin1/plasma_sensitivity.pdf": "b4c16826ef14d9aa0f64690c723cc60c779ac0cde5400cf2f491253753248a36",
+  "docs/_static/demos/qin1/plasma_sensitivity.png": "294f1a51ac8001fc4b1b25e7cd35fcb3e2193f7c1b5a6e987c9f536393d8a23c",
+  "docs/_static/demos/qin1/viewer.html": "2493f3b2de29782e1e29d51d5c5d18e0c5afc5df71c62ca367786d298efc0f23"
+}

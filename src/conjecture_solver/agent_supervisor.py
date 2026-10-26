@@ -845,7 +845,14 @@ needs context. Do not repeat work merely because control returned to the supervi
 Host feedback: {self.state.get("next_test") or "No previous review."}
 """
         if not continuing:
-            prompt += "\nOperator task:\n" + self.args.instructions_file.read_text()
+            from .agent_skills import skill_context
+
+            prompt += (
+                "\n"
+                + skill_context()
+                + "\nOperator task:\n"
+                + self.args.instructions_file.read_text()
+            )
         return prompt
 
     def judge_case(self, directory, packet, schema, purpose):

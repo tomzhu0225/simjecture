@@ -33,7 +33,11 @@ def registry(root):
     if not path:
         return []
     value = json.loads(Path(path).read_text())
-    return [entry for entry in value["tools"] if entry.get("qualified") is True]
+    return [
+        entry for entry in value["tools"]
+        if entry.get("qualified") is True
+        and (not entry.get("runtime_only") or config.get("executor_qualified") is True)
+    ]
 
 
 def validate(entry, parameters):
@@ -58,6 +62,8 @@ def validate(entry, parameters):
 
 
 def materialize(entry, parameters, destination):
+    if entry.get("runtime_only"):
+        raise ValueError("This tool uses custom scripts through run_command, not a starter preset")
     values = validate(entry, parameters)
     binary, template = Path(entry["binary"]), Path(entry["template"])
     if digest(binary) != entry["binary_sha256"] or digest(template) != entry["template_sha256"]:

@@ -8,7 +8,7 @@
 [Research loop](https://drawingsword.com/simjecture/concepts/research-loop.html) · [Recorded studies](https://drawingsword.com/simjecture/demos/index.html) ·
 [Contributing](https://github.com/tomzhu0225/simjecture/blob/main/CONTRIBUTING.md)
 
-[中文安装、使用与开发指南](docs/zh-cn/research-group-guide.md)
+[中文安装、使用与开发指南](https://drawingsword.com/simjecture/zh-cn/research-group-guide.html)
 
 **Hypothesize. Simulate. Falsify.**
 
@@ -37,7 +37,7 @@ the minimal workflow: flexible agent strategy, recorded experiments and explicit
 scientific acceptance. A deadline can leave the question unresolved.
 
 Version 0.6.3 removes classical/MVP, DSH, structured and frontier launch routes.
-Existing records remain readable. See the [migration guide](docs/how-to/minimal-migration.md)
+Existing records remain readable. See the [migration guide](https://drawingsword.com/simjecture/how-to/minimal-migration.html)
 for new launches and handling older runs.
 
 New minimal studies allow experimental solver development by default. The agent can
@@ -57,7 +57,7 @@ Read [how the loop works](https://drawingsword.com/simjecture/concepts/research-
 
 ## Follow a real investigation
 
-The [**48 hour FRC campaign on eight GPUs**](docs/research/frc-48-hour-campaign-20261014.md)
+The [**48 hour FRC campaign on eight GPUs**](https://drawingsword.com/simjecture/research/frc-48-hour-campaign-20261014.html)
 ended with its merger hypothesis unresolved. Its report shows the retained plasma
 fields, numerical controls, model usage, API cost estimates and the controller
 failures exposed by two days of research. Public tables reproduce the accounting.
@@ -77,9 +77,23 @@ field maps and numerical controls to the unresolved scientific claim.
 
 ![Actual FLASH source, pressure-measurement region and evolved WarpX field](https://raw.githubusercontent.com/tomzhu0225/simjecture/main/docs/_static/demos/coupled-field-handoff.png)
 
-Both plasma investigations include preserved continuation records, downloadable
-figures and explicit distinctions between a completed simulation, an approved
-method and an accepted scientific conclusion.
+[**From hardware design to 3D plasma (Qin-1)**](https://drawingsword.com/simjecture/demos/qin1-hardware-plasma.html)
+connects **CAD → mesh → circuits and electromagnetics → 3D plasma → visualization**.
+An agent revised the coil and feed geometry, solved current sharing with Elmer,
+and transferred the checked device field into native 3D WarpX. The selected
+paired-feed design gives **33–34% more upstream transverse field while retaining
+97.8% of the array current** across matched refinements, while five plasma
+controls expose 11–71% bulk-flux variation that leaves quantitative shielding
+unqualified. Explore the
+[interactive results](https://drawingsword.com/simjecture/_static/demos/qin1/viewer.html)
+or [verify the retained record](https://github.com/tomzhu0225/simjecture/tree/main/demos/qin1_multiphysics)
+(an operator-assisted local toolchain study, not a formal harness-adjudicated claim).
+
+[![Actual conductor geometry and 3D plasma density surfaces for the single-feed reference and paired-feed candidate](https://raw.githubusercontent.com/tomzhu0225/simjecture/main/docs/_static/demos/qin1/plasma_hardware_overlap.png)](https://raw.githubusercontent.com/tomzhu0225/simjecture/main/docs/_static/demos/qin1/plasma_hardware_overlap.pdf)
+
+These plasma and multiphysics investigations include preserved records,
+downloadable figures and explicit distinctions between a completed simulation,
+an approved method and an accepted scientific conclusion.
 
 The [orbital-accuracy walkthrough](https://drawingsword.com/simjecture/demos/kepler-energy.html) uses the current
 minimal workflow to investigate a concrete question: **does small energy error
@@ -128,10 +142,10 @@ workspace. Reopen it with `~/simjecture/start-workspace`. Research files live un
 In the local workspace, open **Knowledge → Connect folder** to make research files
 searchable across new conversations. The library also indexes completed workspace
 discussions and study reports, with versioned source citations. Indexing needs no
-embedding service. See [the knowledge library guide](docs/getting-started/research-workspace.md#local-knowledge-library).
+embedding service. See [the knowledge library guide](https://drawingsword.com/simjecture/getting-started/research-workspace.html#local-knowledge-library).
 
 1. Choose a compatible API model or an authenticated native agent in the workspace.
-2. Discuss your question and prepare a study brief with **Autonomous research**.
+2. Discuss your question and prepare a study brief with **Autonomous study**.
 3. Review its hypothesis, evidence requirements, completion policy and budget.
 4. Start the investigation and follow its experiments and **Evidence & review**.
 
@@ -139,7 +153,7 @@ The [first-study tutorial](https://drawingsword.com/simjecture/getting-started/f
 counterexample-and-repair workflow. [Headless studies](https://drawingsword.com/simjecture/how-to/headless-studies.html)
 cover terminal launches and automation.
 
-For longer-running work, optional [projects and workspaces](docs/how-to/projects-and-workspaces.md)
+For longer-running work, optional [projects and workspaces](https://drawingsword.com/simjecture/how-to/projects-and-workspaces.html)
 group conversations and shared context, or keep separate local lab environments.
 The default remains a single personal workspace. CLI and HTTP interfaces expose
 the same project operations for external agents and scripts.
@@ -147,13 +161,14 @@ the same project operations for external agents and scripts.
 ## Bring your instruments and compute
 
 Ordinary Python studies work without an external solver. Optional capabilities
-include WarpX, operator-supplied FLASH, EOS/opacity tools, ITER diagnostics and
+include WarpX, operator-supplied FLASH, [CAD, meshing and FEM tools](https://drawingsword.com/simjecture/how-to/cad-and-simulation.html)
+(FreeCAD, Gmsh, Elmer), EOS/opacity and FAC atomic-physics tools, ITER diagnostics and
 [GPU cylinder flow](https://drawingsword.com/simjecture/how-to/cylinder-flow.html). The cylinder solver and its
 validation records were contributed by [Zifei Meng](https://github.com/ZifeiMengSPH).
 
-An experimental [Windows application interface](docs/how-to/windows-applications.md)
+An experimental [Windows application interface](https://drawingsword.com/simjecture/how-to/windows-applications.html)
 shares job execution, input snapshots and artifact collection across product adapters.
-It supports [CST magnetostatic jobs](docs/how-to/cst-windows.md), native CST Python
+It supports [CST magnetostatic jobs](https://drawingsword.com/simjecture/how-to/cst-windows.html), native CST Python
 scripts, and an initial SOLIDWORKS part rebuild/export adapter. These use trusted
 Windows processes and record exploratory jobs; SOLIDWORKS still needs native
 model commissioning.

@@ -109,6 +109,13 @@ class ReportService:
     def freeze_report(self, report="RESULTS.md"):
         from .research_service import fingerprint, put, sha
 
+        if (
+            isinstance(report, str)
+            and report.startswith("research/")
+            and not (self.work / report).is_file()
+            and (self.work / report.removeprefix("research/")).is_file()
+        ):
+            report = report.removeprefix("research/")
         path = self._source(report)
         if path.stat().st_size > 512 * 1024 or not path.read_text().strip():
             raise ValueError("Supply a nonempty UTF-8 report of at most 512 KiB")
@@ -118,6 +125,7 @@ class ReportService:
         # the same report and scientific record.
         identity = dict(
             report_sha256=hashlib.sha256(body).hexdigest(),
+            source_report=str(path.relative_to(self.root)),
             protocol_sha256=self.manifest.get("protocol_sha256"),
             records={
                 kind: [[p.stem, sha(p)] for p in sorted((self.root / kind).glob("*.json"))]
@@ -134,7 +142,7 @@ class ReportService:
             continuation=self.manifest.get("continuation", {}),
             report=body.decode(),
             report_sha256=identity["report_sha256"],
-            source_report=str(path.relative_to(self.root)),
+            source_report=identity["source_report"],
             record_identity=identity,
             scope="Report assessment only; does not approve claims or change evidence stages.",
         )

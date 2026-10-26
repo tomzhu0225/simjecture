@@ -42,6 +42,7 @@ The simplified advanced launch form (synthetic test inputs):
 | `study --mode structured` or `--mode frontier` | Minimal only; omit `--mode` or use `--mode minimal` |
 | Browser/TUI legacy mode, DSH or legacy API backend | Minimal study with a native agent, or the workspace built-in API agent |
 | `web --engine dsh`, `dsh-run`, `dsh-profile` | Removed; use `simjecture web` |
+| `simjecture tui` / `simjecture[tui]` | Removed; use `simjecture web` for the interactive workspace or `simjecture status` / `watch` for headless terminals |
 | `pip install 'simjecture[dsh]'` | DSH extra removed; use `workspace` for the workspace, `knowledge` for the knowledge CLI/MCP, or `mcp` for the independent low-level MCP bridge |
 | Launch archive `setup.sh --with-dsh` | `setup.sh` installs the Python workspace; no DSH bundle is shipped |
 

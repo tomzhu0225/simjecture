@@ -36,17 +36,17 @@ its evidence for independent review.
 
 ## Review the brief and launch
 
-Open **Autonomous research** and choose **Draft from this conversation**, or
+Open **Autonomous study** and choose **Draft from this conversation**, or
 **Grill me** if you want the agent to ask focused preparation questions.
 
 Before pressing **Start research**, check:
 
 - The original claim, finite case family, units and error definitions.
 - The reference calculation and numerical controls the investigation needs.
-- **Minimal** mode and **Seek a supported claim or tested repair** completion.
+- **Minimal** mode and **When the claim holds, or a fixed version does** completion.
 - A wall budget permitted by your local resources and model allowance.
 
-New browser briefs normally use **Answer the question**, which can finish after a
+New browser briefs normally use **When the question is answered**, which can finish after a
 reviewed root falsification. Choose the repair policy explicitly for this tutorial.
 With a shorter budget, review or repair may remain unfinished; you can still
 inspect the partial record.

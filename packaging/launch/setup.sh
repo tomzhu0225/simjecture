@@ -10,5 +10,5 @@ for command_name in python3 bwrap; do
   command -v "$command_name" >/dev/null || { echo "Missing prerequisite: $command_name (see INSTALL.md)" >&2; exit 1; }
 done
 python3 -m venv "$package_root/.venv"
-"$package_root/.venv/bin/python" -m pip install "$package_root/packages/simjecture-${release_version}-py3-none-any.whl[tui,workspace]"
+"$package_root/.venv/bin/python" -m pip install "$package_root/packages/simjecture-${release_version}-py3-none-any.whl[workspace]"
 printf 'Setup complete. Log in with your chosen native agent CLI, then run ./launch.sh\n'
