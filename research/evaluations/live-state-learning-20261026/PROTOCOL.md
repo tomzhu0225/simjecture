@@ -42,3 +42,21 @@ training design. Their previously reported workflow results stay unchanged,
 but they cannot be reused as untouched validation of a model trained from these
 judgments. Labels are not automatically eligible for optimization: first audit
 the actual outputs, uncertainties, conflicts and evidence binding.
+
+## Operational amendments
+
+The initial pair stopped after one provider 429 failure and one success. A
+separate recovery controller, frozen at 09:09:50 UTC, retained the successful
+response and retried/scheduled the outstanding assignments serially, with at
+least 60 seconds between starts. Two calls succeeded, then a further 429 stopped
+that controller. A second recovery controller was frozen at 09:17:14 UTC with a
+120-second gap after each completed call. It also stops on any failure.
+
+Both amendments keep the original prompts, schema, assignments, overall native
+start ceiling and deadline. Failed attempts remain in their original folders;
+successful responses are not overwritten or rerun. A failed provider request is
+not a scientific judgment. Separate recovery plans record their runner hashes
+and the original plan/status hashes. The postprocessor verifies these records,
+candidate/citation binding, full assignment coverage and absence of tool use
+before summarizing agreement. These scheduling changes do not create additional
+independent reviewers or relax optimizer eligibility.
