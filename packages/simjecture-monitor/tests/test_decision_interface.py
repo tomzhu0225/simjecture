@@ -173,3 +173,19 @@ def test_rl_initial_adapter_identity_is_checked_before_loading_a_model(tmp_path)
         module.require_behavior_weights(rows, base, adapter)
     rows[0]["behavior"]["adapter_active"] = False
     module.require_behavior_weights(rows, base, None)
+
+
+def test_episode_objective_counts_zero_opportunity_episodes_instead_of_averaging_polls():
+    path = Path(__file__).parents[1] / "scripts/train_decisions.py"
+    spec = importlib.util.spec_from_file_location("trainer_episode_scale_test", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    # Three episodes contribute three, one and zero score-function terms.
+    audit = {"configuration": dict(sampled_episodes=[dict(decisions=n) for n in [3, 1, 0]])}
+    terms = [2.0, 3.0, -1.0, 4.0]
+    normalization = module.episode_normalization(terms, audit)
+    row_mean = sum(terms) / len(terms)
+    explicit_episode_mean = ((2 + 3 - 1) + 4 + 0) / 3
+    assert row_mean * normalization["row_to_episode_scale"] == pytest.approx(explicit_episode_mean)
+    with pytest.raises(ValueError, match="complete sampled decision count"):
+        module.episode_normalization(terms[:-1], audit)

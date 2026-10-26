@@ -85,6 +85,18 @@ def require_behavior_weights(rows, base, adapter):
             )
 
 
+def episode_normalization(rows, audit):
+    episodes = [episode for group in audit.values() for episode in group["sampled_episodes"]]
+    if not episodes or sum(episode["decisions"] for episode in episodes) != len(rows):
+        raise ValueError("Episode normalization requires the complete sampled decision count")
+    return dict(
+        unit="sampled_episode",
+        sampled_episodes=len(episodes),
+        decision_rows=len(rows),
+        row_to_episode_scale=len(rows) / len(episodes),
+    )
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--base", required=True)
@@ -125,6 +137,7 @@ def main():
         raise ValueError("Training limits and rates must be positive")
     rows = read_data(args.data)
     advantage_audit = None
+    normalization = dict(unit="training_row", row_to_episode_scale=1.0)
     if args.advantage_baseline in {"measured-wait", "workflow-wait"}:
         if args.mode != "policy-gradient":
             raise ValueError("A measured wait baseline applies only to policy-gradient updates")
@@ -132,6 +145,7 @@ def main():
             from simjecture_monitor.workflow_returns import workflow_advantages
 
             advantages, advantage_audit = workflow_advantages(rows, args.data.parent)
+            normalization = episode_normalization(rows, advantage_audit)
         else:
             from simjecture_monitor.measured_wait import wait_controlled_advantages
 
@@ -162,6 +176,7 @@ def main():
         stage="loading",
         started_at=started,
         rows=len(rows),
+        loss_normalization=normalization,
         arguments={
             key: str(value) if isinstance(value, Path) else value
             for key, value in vars(args).items()
@@ -305,6 +320,7 @@ def main():
                     -torch.minimum(ratio * advantage, ratio.clamp(0.8, 1.2) * advantage)
                     + args.kl_coefficient * kl
                 )
+            loss = loss * normalization["row_to_episode_scale"]
             if not torch.isfinite(loss):
                 raise ValueError("Nonfinite training loss")
             (loss / args.accumulation).backward()

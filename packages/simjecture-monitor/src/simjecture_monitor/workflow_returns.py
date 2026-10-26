@@ -123,8 +123,9 @@ def workflow_advantages(rows, root):
     """Validate the complete frozen cohort, then assign episode-level advantages.
 
     A common return for all decisions is the episodic likelihood-ratio signal.
-    The optimizer's row average scales the sum of episode decision gradients by
-    one dataset-wide constant; it must not divide each episode by its poll count.
+    The optimizer rescales its row average by decision rows / sampled episodes,
+    including zero-opportunity episodes. It must not divide each episode by its
+    own poll count or treat polls as independent scientific outcomes.
     This is an episodic clipped-policy update, not a collection of independent
     contextual-bandit outcomes or a paired private-state counterfactual.
     """

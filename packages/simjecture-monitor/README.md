@@ -297,10 +297,18 @@ python packages/simjecture-monitor/scripts/train_decisions.py \
 ```
 
 The initial adapter must reproduce the logged behavior probabilities. The update
-is an episodic clipped policy-gradient surrogate; its rows are not independent
+rescales its row-averaged loss by decisions / sampled episodes, retaining
+zero-opportunity episodes in that denominator. This is an episodic clipped
+policy-gradient surrogate; its rows are not independent
 contextual-bandit outcomes. Controls reduce sampling noise but do not eliminate
 native-worker variation. New held-out workflow evaluation and general-decision
 retention checks are still needed before claiming a benefit from training.
+
+The [parked workflow commissioning](../../research/evaluations/parked-return-training-20261026/RESULTS.md)
+records nine real parked-state decisions and two verified workflows, with no
+automatic dispatches or optimizer updates. It validates collection after an
+offline timing-schema export repair, and documents why the observed return
+difference cannot establish intervention value.
 
 ## Follow-up reward design
 
