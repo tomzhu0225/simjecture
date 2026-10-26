@@ -102,3 +102,36 @@ def test_link_can_appear_after_client_request(tmp_path):
     assert json.loads(response) == {"status": "ready"}
     assert receipt["connect_attempts"] > 1
     assert receipt["send_attempts"] == 1
+
+
+def test_lost_reply_uses_connected_standby_without_a_new_primary_handshake(tmp_path):
+    paths = [tmp_path / "primary.sock", tmp_path / "standby.sock"]
+    requests = []
+    servers = []
+    for path in paths:
+        server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        server.bind(str(path))
+        server.listen(1)
+        server.settimeout(2)
+        servers.append(server)
+
+    def run(index):
+        with servers[index]:
+            client, _ = servers[index].accept()
+            with client:
+                requests.append((index, client.makefile("rb").readline()))
+                if index == 1:
+                    client.sendall(b'{"prediction":"same-frozen-model"}\n')
+
+    workers = [threading.Thread(target=run, args=(i,)) for i in range(2)]
+    for worker in workers:
+        worker.start()
+    payload = b'{"policy":"continued_sft","seed":17}\n'
+    response, receipt = relay(payload, paths, deadline=time.monotonic() + 2)
+    for worker in workers:
+        worker.join(timeout=2)
+        assert not worker.is_alive()
+    assert requests == [(0, payload), (1, payload)]
+    assert json.loads(response) == {"prediction": "same-frozen-model"}
+    assert receipt["returned_link_index"] == 1
+    assert receipt["send_attempts"] == 2

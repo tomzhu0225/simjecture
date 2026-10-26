@@ -17,13 +17,18 @@ from pathlib import Path
 LIMIT = 2_000_000
 
 
-def relay(payload: bytes, upstream: Path, *, deadline: float, retry_delay: float = 0.2):
+def relay(
+    payload: bytes, upstream: Path | list[Path], *, deadline: float, retry_delay: float = 0.2
+):
     """Return one complete response; never replay a returned application error."""
     if not payload.endswith(b"\n") or len(payload) > LIMIT:
         raise ValueError("Invalid attention request framing")
     value = json.loads(payload)
     if not isinstance(value, dict) or value.get("operation") not in (None, "health"):
         raise ValueError("Only stateless inference and health requests may be relayed")
+    links = [upstream] if isinstance(upstream, Path) else list(upstream)
+    if not links or len(set(links)) != len(links):
+        raise ValueError("Require distinct links to the same frozen inference service")
     # No auth token, observation content, or raw model response enters the log.
     public = {key: item for key, item in value.items() if key != "auth_token"}
     receipt = {
@@ -36,11 +41,12 @@ def relay(payload: bytes, upstream: Path, *, deadline: float, retry_delay: float
     }
     last_error = "NoAvailableLink"
     while time.monotonic() < deadline:
+        index = receipt["connect_attempts"] % len(links)
         receipt["connect_attempts"] += 1
         try:
             with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as client:
                 client.settimeout(min(1.0, max(0.001, deadline - time.monotonic())))
-                client.connect(str(upstream))
+                client.connect(str(links[index]))
                 remaining = deadline - time.monotonic()
                 if remaining <= 0:
                     raise TimeoutError("Attention transport deadline elapsed")
@@ -53,7 +59,7 @@ def relay(payload: bytes, upstream: Path, *, deadline: float, retry_delay: float
             parsed = json.loads(response)
             if not isinstance(parsed, dict):
                 raise ValueError("Attention response must be an object")
-            receipt.update(status="returned", ended_at=time.time())
+            receipt.update(status="returned", ended_at=time.time(), returned_link_index=index)
             return response, receipt
         except (OSError, TimeoutError) as error:
             last_error = type(error).__name__
@@ -62,14 +68,21 @@ def relay(payload: bytes, upstream: Path, *, deadline: float, retry_delay: float
             if receipt["send_attempts"] >= 2:
                 break
             remaining = deadline - time.monotonic()
-            if remaining > 0:
+            if remaining > 0 and receipt["connect_attempts"] % len(links) == 0:
                 time.sleep(min(retry_delay, remaining))
     receipt.update(status="unavailable", ended_at=time.time(), error_type=last_error)
     response = json.dumps({"error": "Attention transport unavailable within its bound"}) + "\n"
     return response.encode(), receipt
 
 
-def serve(public: Path, upstream: Path, log: Path, *, stop_by: float, request_seconds: float):
+def serve(
+    public: Path,
+    upstream: list[Path],
+    log: Path,
+    *,
+    stop_by: float,
+    request_seconds: float,
+):
     if public.exists():
         raise ValueError("Refuse to replace an existing attention listener")
     public.parent.mkdir(parents=True, exist_ok=True)
@@ -117,7 +130,9 @@ def serve(public: Path, upstream: Path, log: Path, *, stop_by: float, request_se
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--socket", type=Path, required=True)
-    parser.add_argument("--upstream", type=Path, required=True)
+    parser.add_argument(
+        "--upstream", type=Path, action="append", required=True, help="Links to the same runtime"
+    )
     parser.add_argument("--log", type=Path, required=True)
     parser.add_argument("--stop-by", type=float, required=True)
     parser.add_argument("--request-seconds", type=float, default=20.0)

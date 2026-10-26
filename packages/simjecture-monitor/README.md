@@ -102,6 +102,10 @@ and the lease's Unix timestamp in `--stop-by`. It waits at most 20 seconds insid
 the caller's 25-second timeout and permits one identical replay if a reply is
 lost. Application errors are returned without replay. Logs contain timing,
 attempt counts and a request digest with authentication removed.
+Repeat `--upstream` to supply an already-connected standby link to the **same
+frozen model runtime**. A failed connection is followed by the next link before
+waiting for another handshake. Qualify both links against the same checkpoint
+and input probes before using them in an experiment.
 
 This adapter is only for the stateless prediction/health service. It must not
 front commands that execute tools or dispatch assistance. Sampling requests keep
