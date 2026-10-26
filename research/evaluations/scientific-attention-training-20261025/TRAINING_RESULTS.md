@@ -5,7 +5,8 @@ scientific attention interface. The measured-return RL pilot completes real
 training, but its scientific snapshot score matches an equal-update supervised
 control. Neither result establishes that a scientific workflow benefits from
 the coprocessor. This report covers completed training and static evaluations
-on 25–26 October 2026; the prospective workflow comparison is a separate test.
+on 25–26 October 2026; the [28-workflow comparison](WORKFLOW_RESULTS.md) reports
+the separate downstream test.
 
 The [protocol](PROTOCOL.md) specifies the training, exclusions, test boundaries
 and retention gates. [Training evidence](training-evidence.json) contains the
@@ -120,7 +121,7 @@ counts and dataset hashes are retained in the evidence JSON.
 
 ## What remains to establish workflow value
 
-The prospective comparison uses real native workers and saved-field scientific
+The completed comparison uses real native workers and saved-field scientific
 verification, with no automatic intervention, fixed rules, continued SFT and RL
 under the same corrected host. Its outcome measures are whole-workflow
 completion, actual elapsed time, agent starts, and quiet-episode attention.
