@@ -1,5 +1,6 @@
 import io
 import json
+import socket
 import subprocess
 import sys
 import tarfile
@@ -38,7 +39,7 @@ def test_saved_fields_and_receipts_are_extracted_byte_for_byte(tmp_path):
         assert (tmp_path / "received" / name).read_bytes() == value
 
 
-@pytest.mark.parametrize("failure", ["ssh_exit", "timeout", "invalid_archive"])
+@pytest.mark.parametrize("failure", ["ssh_exit", "timeout", "invalid_archive", "master_exit"])
 def test_unconfirmed_transport_is_not_left_queued_or_retried(tmp_path, monkeypatch, failure):
     monkeypatch.chdir(tmp_path)
     (tmp_path / "inputs").write_text("actual requested control")
@@ -64,6 +65,13 @@ def test_unconfirmed_transport_is_not_left_queued_or_retried(tmp_path, monkeypat
             dict(machine_profile=str(profile), binary="solver", remote_root="controls", gpu=0)
         )
     )
+    control = None
+    if failure == "master_exit":
+        control = socket.socket(socket.AF_UNIX)
+        control.bind(str(tmp_path / "master.sock"))
+        config = json.loads(backend.read_text())
+        config["control_path"] = str(tmp_path / "master.sock")
+        backend.write_text(json.dumps(config))
     monkeypatch.setenv("SIMJECTURE_PLASMA_BACKEND", str(backend))
     monkeypatch.setattr(
         sys, "argv", ["remote-plasma", "--name", "control", "--cells", "64", "--steps", "40"]
@@ -74,7 +82,7 @@ def test_unconfirmed_transport_is_not_left_queued_or_retried(tmp_path, monkeypat
         attempts.append(command)
         if failure == "timeout":
             raise subprocess.TimeoutExpired(command, 180)
-        return SimpleNamespace(returncode=255 if failure == "ssh_exit" else 0)
+        return SimpleNamespace(returncode=255 if failure in {"ssh_exit", "master_exit"} else 0)
 
     monkeypatch.setattr(remote_plasma.subprocess, "run", run)
     with pytest.raises((RuntimeError, subprocess.TimeoutExpired, tarfile.ReadError)):
@@ -89,3 +97,11 @@ def test_unconfirmed_transport_is_not_left_queued_or_retried(tmp_path, monkeypat
     with pytest.raises(FileExistsError):
         remote_plasma.main()
     assert len(attempts) == 1  # The original reservation still owns this run name.
+    if control is not None:
+        assert "ControlPath=" + str(tmp_path / "master.sock") in attempts[0]
+        assert "ControlMaster=no" in attempts[0] and "ProxyCommand=false" in attempts[0]
+        control.close()
+        (tmp_path / "master.sock").unlink()
+        with pytest.raises(ValueError, match="no run submitted"):
+            remote_plasma.main()
+        assert len(attempts) == 1
