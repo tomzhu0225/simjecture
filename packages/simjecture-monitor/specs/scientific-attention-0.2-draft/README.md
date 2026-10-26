@@ -3,7 +3,10 @@
 This proposed interface adds scoped knowledge support to the
 [0.1 draft](../scientific-attention-0.1-draft/README.md). Both versions remain
 available. It is a research contract, not an adopted community standard or an
-enabled production feature. No new model has been trained against this version.
+enabled production feature. Subsequent supervised and RL experiments use this
+interface; see the [training protocol](../../../../research/evaluations/scientific-attention-training-20261025/PROTOCOL.md)
+and [recorded-state evaluation](../../../../research/evaluations/live-state-learning-20261026/OBSERVATION_RESULTS.md).
+Scientific workflow advantage and deployment false-alert rates remain under evaluation.
 
 ## Decision and observation changes
 
