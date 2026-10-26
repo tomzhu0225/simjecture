@@ -224,6 +224,12 @@ failures, scientific quality, time, agent usage and episode-level false alerts.
 Two wait repeats are a minimum instrumentation check, not a power calculation.
 This collector is public-context replay into fresh native sessions, not a copy
 of private provider state or an uninterrupted streaming evaluation.
+The current continuation runner starts the main worker immediately in both
+branches. Its wait control means no automatic assistance to that awake worker;
+it does not preserve the parked worker's wait for job completion or the normal
+fallback timer. Training early wakeups requires trajectories from the deployed
+parked-worker lifecycle, with that lifecycle shared by the control. Changing the
+return baseline alone does not remove this operating-mode difference.
 
 ## Follow-up reward design
 
