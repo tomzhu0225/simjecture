@@ -1,3 +1,4 @@
+import copy
 import importlib.util
 import sys
 from pathlib import Path
@@ -31,6 +32,13 @@ class Lifecycle:
 
     def monitor_tick(self, directory):
         self.public_sequence += 1
+
+    def snapshot(self, directory, now):
+        self.public_sequence += 1
+        value = copy.deepcopy(self.monitor_latest)
+        value["state"]["host_state"]["worker_parked"] = self.worker_parked
+        value["state"]["host_state"].update(getattr(self, "current_host_updates", {}))
+        return value
 
 
 def test_revision_tracks_scientific_changes_not_elapsed_time(monkeypatch):
@@ -115,6 +123,8 @@ def test_sampling_occurs_only_when_parked_and_never_logs_forwarding_credentials(
     assert sent == [] and sup.sampling_trace.data["requests"] == []
     clock[0] = 105.0
     sup.worker_parked = True
+    # The legacy five-second snapshot still predates the live park transition.
+    sup.monitor_latest["state"]["host_state"]["worker_parked"] = False
     sup.monitor_tick(None)
     assert len(sent) == 1 and sent[0]["sample"] is True
     assert sent[0]["seed"] == sup.sampling_trace.data["requests"][0]["seed"]
@@ -123,3 +133,16 @@ def test_sampling_occurs_only_when_parked_and_never_logs_forwarding_credentials(
     for path in sup.monitor_dir.glob("*.json"):
         assert token.read_text() not in path.read_text()
         json.loads(path.read_text())
+
+
+def test_new_help_is_seen_before_sending_a_cached_eligible_observation(monkeypatch):
+    mod = module(monkeypatch)
+    monkeypatch.delenv("SIMJECTURE_ATTENTION_TOKEN_FILE", raising=False)
+    sup = mod.supervisor_type(SimpleNamespace(RawSupervisor=Lifecycle))()
+    sup.initialize("adapted")
+    sup.current_host_updates = dict(active_helpers=1)
+    sent = []
+    sup.monitor_socket = "/private/service.sock"
+    sup.monitor_executor = SimpleNamespace(submit=lambda *args, **kw: sent.append(args))
+    sup.monitor_tick(None)
+    assert sent == []
