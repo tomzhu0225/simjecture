@@ -1,0 +1,2984 @@
+{
+  "schema": "live-label-study-evidence/v1",
+  "audit": {
+    "schema": "live-observation-label-audit/v1",
+    "eligible_for_optimizer": false,
+    "reason": "Model judgments require evidence review; consensus is not measured intervention value",
+    "complete": true,
+    "planned_calls": 12,
+    "completed_calls": 12,
+    "native_attempts": [
+      {
+        "batch": "a-00",
+        "path": "a-00/execution.json",
+        "stage": "failed",
+        "returncode": 1,
+        "started_at": 1793005364.7440283,
+        "ended_at": 1793005380.528126
+      },
+      {
+        "batch": "a-01",
+        "path": "a-01/execution.json",
+        "stage": "completed",
+        "returncode": 0,
+        "started_at": 1793005364.7443645,
+        "ended_at": 1793005413.596566
+      },
+      {
+        "batch": "a-00",
+        "path": "recovery-01/a-00/execution.json",
+        "stage": "completed",
+        "returncode": 0,
+        "started_at": 1793005790.156956,
+        "ended_at": 1793005829.5120468
+      },
+      {
+        "batch": "a-02",
+        "path": "recovery-01/a-02/execution.json",
+        "stage": "completed",
+        "returncode": 0,
+        "started_at": 1793005850.1580698,
+        "ended_at": 1793005909.0432599
+      },
+      {
+        "batch": "a-03",
+        "path": "recovery-01/a-03/execution.json",
+        "stage": "failed",
+        "returncode": 1,
+        "started_at": 1793005910.161613,
+        "ended_at": 1793005914.6382287
+      },
+      {
+        "batch": "a-03",
+        "path": "recovery-02/a-03/execution.json",
+        "stage": "completed",
+        "returncode": 0,
+        "started_at": 1793006234.3322382,
+        "ended_at": 1793006268.118951
+      },
+      {
+        "batch": "a-04",
+        "path": "recovery-02/a-04/execution.json",
+        "stage": "completed",
+        "returncode": 0,
+        "started_at": 1793006388.1269662,
+        "ended_at": 1793006432.4061913
+      },
+      {
+        "batch": "a-05",
+        "path": "recovery-02/a-05/execution.json",
+        "stage": "failed",
+        "returncode": 1,
+        "started_at": 1793006552.4134505,
+        "ended_at": 1793006557.9220603
+      },
+      {
+        "batch": "a-05",
+        "path": "recovery-03/a-05/execution.json",
+        "stage": "completed",
+        "returncode": 0,
+        "started_at": 1793009871.2967122,
+        "ended_at": 1793009912.6085045
+      },
+      {
+        "batch": "b-00",
+        "path": "recovery-03/b-00/execution.json",
+        "stage": "completed",
+        "returncode": 0,
+        "started_at": 1793010092.6414914,
+        "ended_at": 1793010133.6339505
+      },
+      {
+        "batch": "b-01",
+        "path": "recovery-03/b-01/execution.json",
+        "stage": "completed",
+        "returncode": 0,
+        "started_at": 1793010313.647652,
+        "ended_at": 1793010360.6747632
+      },
+      {
+        "batch": "b-02",
+        "path": "recovery-03/b-02/execution.json",
+        "stage": "completed",
+        "returncode": 0,
+        "started_at": 1793010540.292371,
+        "ended_at": 1793010568.8475187
+      },
+      {
+        "batch": "b-03",
+        "path": "recovery-03/b-03/execution.json",
+        "stage": "completed",
+        "returncode": 0,
+        "started_at": 1793010748.85218,
+        "ended_at": 1793010776.4035966
+      },
+      {
+        "batch": "b-04",
+        "path": "recovery-03/b-04/execution.json",
+        "stage": "completed",
+        "returncode": 0,
+        "started_at": 1793010956.41061,
+        "ended_at": 1793011017.7012641
+      },
+      {
+        "batch": "b-05",
+        "path": "recovery-03/b-05/execution.json",
+        "stage": "completed",
+        "returncode": 0,
+        "started_at": 1793011197.2636218,
+        "ended_at": 1793011229.4886527
+      }
+    ],
+    "completed_batches": {
+      "a-01": {
+        "path": "a-01",
+        "answer_sha256": "c28a978696feb78c34e69006041df958610702947574aaedaa4d246dbbd94e11",
+        "event_types": {
+          "agent_message": 1
+        },
+        "assessments": [
+          {
+            "id": "observation-301d793b59b499f3",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "Calibration error is steadily decreasing with recent progress, and the minimum aggregation time has not elapsed. Source identities and field units agree; the unfinished calibration does not establish a fault."
+          },
+          {
+            "id": "observation-413ef79f506f8210",
+            "answers": {
+              "route": "repair_judge",
+              "question_ref": "none",
+              "basis": "source",
+              "evidence_primary": "e8",
+              "evidence_secondary": "e0"
+            },
+            "acceptable_routes": [
+              "repair_judge"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "warranted",
+            "reason": "The requested mesh_128 diagnostic explicitly uses the mesh_64 source under protected ownership. This concrete provenance mismatch warrants independent diagnosis despite ongoing calibration progress; it grants no repair authority."
+          },
+          {
+            "id": "observation-3d1da96df51ea4cf",
+            "answers": {
+              "route": "worker_help",
+              "question_ref": "none",
+              "basis": "source",
+              "evidence_primary": "e4",
+              "evidence_secondary": "e5"
+            },
+            "acceptable_routes": [
+              "worker_help",
+              "recheck"
+            ],
+            "certainty": "medium",
+            "intervention_before_fallback": "warranted",
+            "reason": "The worker-owned artifact selector state_* conflicts with the solver's declared plot prefix. Bounded assistance can assess this visible configuration mismatch, although no artifact-read failure has yet been observed."
+          },
+          {
+            "id": "observation-e80918bc5a16df63",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "The first solver control recently succeeded, the process remains alive, and options allow 36 seconds of quiet. Unknown phase timing and unavailable later diagnostics do not establish a stall or justify early expert attention."
+          }
+        ]
+      },
+      "a-00": {
+        "path": "recovery-01/a-00",
+        "answer_sha256": "8807c72dc0954dfa165ab6baee82913e284be133d095bd0f534a3bcb1b823281",
+        "event_types": {
+          "agent_message": 1
+        },
+        "assessments": [
+          {
+            "id": "observation-649f8666cb754f54",
+            "answers": {
+              "route": "repair_judge",
+              "question_ref": "none",
+              "basis": "source",
+              "evidence_primary": "e8",
+              "evidence_secondary": "e0"
+            },
+            "acceptable_routes": [
+              "repair_judge"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "warranted",
+            "reason": "The mesh_128 diagnostic explicitly uses the mesh_64 source under protected ownership. This warrants independent harness diagnosis despite improving aggregation; no repair authority is granted."
+          },
+          {
+            "id": "observation-ba08ea8f7aaf4ce9",
+            "answers": {
+              "route": "worker_help",
+              "question_ref": "none",
+              "basis": "repetition",
+              "evidence_primary": "e5",
+              "evidence_secondary": "e1"
+            },
+            "acceptable_routes": [
+              "worker_help",
+              "director"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "warranted",
+            "reason": "The job repeatedly waits for state_* while both directories contain plot outputs. Nine repetitions over 36.53 seconds, without a declared quiet allowance, support bounded assistance with the worker-owned input configuration."
+          },
+          {
+            "id": "observation-36b9950a20136f8f",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "Fresh aggregation progress shows steadily decreasing error. Sources and field units agree, and the running job has not claimed completion. Error above tolerance during convergence does not warrant intervention."
+          },
+          {
+            "id": "observation-2cc68efa17b882a4",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "Aggregation is progressing after the declared 36-second quiet period, with error decreasing substantially. Source identities and field reporting agree; the minimum duration is not a completion deadline."
+          }
+        ]
+      },
+      "a-02": {
+        "path": "recovery-01/a-02",
+        "answer_sha256": "f5a4ced62923180f76ae56a2829179aff25a40488e0833730fc05847ed8c86f5",
+        "event_types": {
+          "agent_message": 1
+        },
+        "assessments": [
+          {
+            "id": "observation-b4c2bc675a8e1a32",
+            "answers": {
+              "route": "worker_help",
+              "question_ref": "none",
+              "basis": "repetition",
+              "evidence_primary": "e5",
+              "evidence_secondary": "e4"
+            },
+            "acceptable_routes": [
+              "worker_help",
+              "observe"
+            ],
+            "certainty": "medium",
+            "intervention_before_fallback": "uncertain",
+            "reason": "Repeated input waiting exposes a concrete mismatch: the worker's configured state_* pattern does not match the available plot artifacts. Bounded worker assistance is relevant, but the imminent 90-second fallback makes its additional benefit uncertain."
+          },
+          {
+            "id": "observation-699390e2fd97612d",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "Aggregation error is steadily decreasing, with fresh progress before the declared minimum aggregation duration. Reported and saved fields agree, and source identities match. The current unmet calibration tolerance does not establish a fault."
+          },
+          {
+            "id": "observation-5f445ddceca8ac5c",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "The recently submitted bundle has fresh successful mesh_64 solver receipts and a live process. Missing execution-plan details and zero listed retries do not establish a problem requiring attention."
+          },
+          {
+            "id": "observation-0bfcc883f868eeca",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "Fresh mesh_64 receipts consistently report successful execution shortly after submission, while the workflow remains alive. No stalled progress or contradictory evidence warrants intervention; the absent plan alone is insufficient."
+          }
+        ]
+      },
+      "a-03": {
+        "path": "recovery-02/a-03",
+        "answer_sha256": "30faeda2457c5c6b4ce1138372b8e97c22708a176311f4c7502dfc3933cdae67",
+        "event_types": {
+          "agent_message": 1
+        },
+        "assessments": [
+          {
+            "id": "observation-e60c7dfbc27d4d8a",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "The first missing-index read occurred during the declared publication delay. About 12.6 seconds of quiet allowance and three retries remain; the process is alive."
+          },
+          {
+            "id": "observation-6287cca1c1ff3fe6",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "Calibration loss is steadily decreasing, and only 24.6 seconds of the minimum 44-second aggregation period have elapsed. Reported units, source identities, and original checks are consistent."
+          },
+          {
+            "id": "observation-48cf580d8ba85bbe",
+            "answers": {
+              "route": "worker_help",
+              "question_ref": "none",
+              "basis": "measurement",
+              "evidence_primary": "e7",
+              "evidence_secondary": "e4"
+            },
+            "acceptable_routes": [
+              "worker_help",
+              "director"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "warranted",
+            "reason": "The reported peak is 100 times the saved peak despite both denoting V/m. The worker-owned options specify V/cm, supporting bounded assistance with the reporting discrepancy. Matching source identities do not establish a protected-harness fault."
+          },
+          {
+            "id": "observation-0805fd68a233aa36",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "Loss continues decreasing toward the unchanged 1e-3 criterion. The 44-second minimum is not a completion deadline; the running process shows no unexplained silence or reporting discrepancy."
+          }
+        ]
+      },
+      "a-04": {
+        "path": "recovery-02/a-04",
+        "answer_sha256": "2e259472b0b40b26d9278b64f09bca65771370b3de709ec0f58c30c199275865",
+        "event_types": {
+          "agent_message": 1
+        },
+        "assessments": [
+          {
+            "id": "observation-22708cccd3fdc990",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "Setup remains within the declared quiet period. The process is alive, with no tool failures or unexplained silence; early attention has no demonstrated benefit."
+          },
+          {
+            "id": "observation-d24dff7d93a11d17",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "The solver has just reported successful execution and the process remains alive. An absent execution plan and zero retry allowance do not establish a problem during fresh progress."
+          },
+          {
+            "id": "observation-bf8e3a05f1d81f29",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe",
+              "worker_help"
+            ],
+            "certainty": "medium",
+            "intervention_before_fallback": "uncertain",
+            "reason": "Calibration repeatedly oscillates with error about 0.993, clearly above 1e-3. However, the worker yielded about 89.3 seconds ago, so ordinary fallback is imminent; additional expensive assistance has uncertain incremental value."
+          },
+          {
+            "id": "observation-ac61ba13f1d03405",
+            "answers": {
+              "route": "worker_help",
+              "question_ref": "none",
+              "basis": "repetition",
+              "evidence_primary": "e6",
+              "evidence_secondary": "e0"
+            },
+            "acceptable_routes": [
+              "worker_help",
+              "director"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "warranted",
+            "reason": "Successive calibration iterations alternate between 0 and 1.986 with unchanged error about 0.993 against the 1e-3 requirement. Bounded assistance for worker-owned analysis is useful before fallback; the minimum aggregation duration does not explain this lack of convergence."
+          }
+        ]
+      },
+      "a-05": {
+        "path": "recovery-03/a-05",
+        "answer_sha256": "54c32b4322a8d5684289fbcd4d3d8a9a32ea18aeb089a009b0eb66340c9beeab",
+        "event_types": {
+          "agent_message": 1
+        },
+        "assessments": [
+          {
+            "id": "observation-6cd51c24015002ab",
+            "answers": {
+              "route": "worker_help",
+              "question_ref": "none",
+              "basis": "measurement",
+              "evidence_primary": "e7",
+              "evidence_secondary": "e4"
+            },
+            "acceptable_routes": [
+              "worker_help",
+              "director"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "warranted",
+            "reason": "Reported and saved peaks differ by 100 despite both denoting V/m. The worker-owned options specify V/cm, supporting bounded assistance with unit handling. Improving calibration does not resolve this discrepancy; no protected-harness fault is established."
+          },
+          {
+            "id": "observation-82f71d00751675dd",
+            "answers": {
+              "route": "recheck",
+              "question_ref": "none",
+              "basis": "measurement",
+              "evidence_primary": "e5",
+              "evidence_secondary": "e4"
+            },
+            "acceptable_routes": [
+              "recheck",
+              "observe"
+            ],
+            "certainty": "medium",
+            "intervention_before_fallback": "uncertain",
+            "reason": "The first calibration point overshoots the target with gain 2.0, but one iteration does not establish persistent nonconvergence. A bounded trend recheck is reasonable; expensive expert attention is premature within the declared aggregation period."
+          },
+          {
+            "id": "observation-c1c566c5b19e92a6",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "Failed reads occurred during the declared publication delay and were followed by successful aggregation progress. Units and source identities agree, and the minimum aggregation period has not elapsed. Historical repetition does not establish a current problem."
+          },
+          {
+            "id": "observation-2ffd9a2405e6fce3",
+            "answers": {
+              "route": "worker_help",
+              "question_ref": "none",
+              "basis": "measurement",
+              "evidence_primary": "e7",
+              "evidence_secondary": "e4"
+            },
+            "acceptable_routes": [
+              "worker_help",
+              "director"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "warranted",
+            "reason": "The explicit 100-fold saved/reported field discrepancy warrants bounded assistance with the worker-owned unit configuration. Calibration is still improving, so its remaining error is not the trigger. Matching source identities do not justify protected-harness diagnosis."
+          }
+        ]
+      },
+      "b-00": {
+        "path": "recovery-03/b-00",
+        "answer_sha256": "64fc182ccc0237981501f65a3fd492a97b715012d240b6d53604981407849e2c",
+        "event_types": {
+          "agent_message": 1
+        },
+        "assessments": [
+          {
+            "id": "observation-413ef79f506f8210",
+            "answers": {
+              "route": "repair_judge",
+              "question_ref": "none",
+              "basis": "source",
+              "evidence_primary": "e8",
+              "evidence_secondary": "e0"
+            },
+            "acceptable_routes": [
+              "repair_judge"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "warranted",
+            "reason": "The requested mesh_128 diagnostic explicitly uses mesh_64 source data under protected ownership. This warrants independent diagnosis despite healthy aggregation progress; it grants no repair authority."
+          },
+          {
+            "id": "observation-d24dff7d93a11d17",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "The first solver has just succeeded, the process remains alive, and progress is fresh. An empty execution plan and zero retry allowance do not establish a fault or justify early assistance."
+          },
+          {
+            "id": "observation-3d1da96df51ea4cf",
+            "answers": {
+              "route": "recheck",
+              "question_ref": "none",
+              "basis": "source",
+              "evidence_primary": "e4",
+              "evidence_secondary": "e5"
+            },
+            "acceptable_routes": [
+              "recheck",
+              "observe"
+            ],
+            "certainty": "medium",
+            "intervention_before_fallback": "uncertain",
+            "reason": "The configured state_* artifact pattern differs from the solver's plot prefix. A bounded check could clarify compatibility, but no artifact inventory or input-wait failure is visible, and solver progress is recent."
+          },
+          {
+            "id": "observation-ba08ea8f7aaf4ce9",
+            "answers": {
+              "route": "worker_help",
+              "question_ref": "none",
+              "basis": "repetition",
+              "evidence_primary": "e5",
+              "evidence_secondary": "e1"
+            },
+            "acceptable_routes": [
+              "worker_help",
+              "director"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "warranted",
+            "reason": "Nine repeated observations over 36.53 seconds show waiting for state_* while both directories contain plot outputs. With no remaining quiet period, bounded assistance for the worker-owned artifact configuration is useful before fallback."
+          }
+        ]
+      },
+      "b-01": {
+        "path": "recovery-03/b-01",
+        "answer_sha256": "1f7843afafdbfe275101bc7fa2b3fbf2d90ef536ea3d5241a925f49f580028ab",
+        "event_types": {
+          "agent_message": 1
+        },
+        "assessments": [
+          {
+            "id": "observation-b4c2bc675a8e1a32",
+            "answers": {
+              "route": "recheck",
+              "question_ref": "none",
+              "basis": "repetition",
+              "evidence_primary": "e5",
+              "evidence_secondary": "e1"
+            },
+            "acceptable_routes": [
+              "recheck",
+              "observe"
+            ],
+            "certainty": "medium",
+            "intervention_before_fallback": "uncertain",
+            "reason": "Repeated input waits seek state_* while the listed artifacts are plot directories. A bounded check could clarify this mismatch, but the imminent 90-second fallback limits the benefit of additional attention."
+          },
+          {
+            "id": "observation-82f71d00751675dd",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe",
+              "recheck"
+            ],
+            "certainty": "medium",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "Only one aggregation iteration is visible, with recent progress and a declared 48-second minimum. Gain 2 and the initial overshoot merit monitoring but do not establish persistent nonconvergence. Units and source identities agree."
+          },
+          {
+            "id": "observation-6287cca1c1ff3fe6",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "Loss steadily decreases from 0.3004 to 0.04998 with fresh progress, before the 44-second minimum aggregation duration. The unfinished calibration provides no current reason for expert attention."
+          },
+          {
+            "id": "observation-0805fd68a233aa36",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "Loss continues decreasing to 0.002516. It remains above 1e-3, but completion has not been claimed; the 44-second minimum is not a deadline. Fresh progress supports continued observation."
+          }
+        ]
+      },
+      "b-02": {
+        "path": "recovery-03/b-02",
+        "answer_sha256": "15d439e8283f421af6c7c855feacd80dce974a4bb19a226fd42ff88d1178c678",
+        "event_types": {
+          "agent_message": 1
+        },
+        "assessments": [
+          {
+            "id": "observation-e80918bc5a16df63",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "The solver recently completed a control successfully, the process remains alive, and output is only 1.01 seconds old. No current evidence warrants early assistance."
+          },
+          {
+            "id": "observation-22708cccd3fdc990",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "Setup remains within its declared quiet period, with a live process, no tool failures, and retries available. The absence of output is expected."
+          },
+          {
+            "id": "observation-301d793b59b499f3",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "Calibration error continues decreasing with fresh progress; the 46-second minimum aggregation duration has not elapsed. Reported fields and source identities agree. The repetition counter does not establish stalled work."
+          },
+          {
+            "id": "observation-2ffd9a2405e6fce3",
+            "answers": {
+              "route": "worker_help",
+              "question_ref": "none",
+              "basis": "measurement",
+              "evidence_primary": "e7",
+              "evidence_secondary": "e4"
+            },
+            "acceptable_routes": [
+              "worker_help",
+              "director"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "warranted",
+            "reason": "The reported peak is 100 times the saved peak despite both denoting V/m; worker-owned options specify V/cm input. Bounded assistance with this reporting discrepancy is useful now. Improving calibration and passing relative checks do not resolve it."
+          }
+        ]
+      },
+      "b-03": {
+        "path": "recovery-03/b-03",
+        "answer_sha256": "ba4fd28ff0cb7feeb1856d8b5ec805b12e8ae39ce4ee534668634ecd9aa26f2e",
+        "event_types": {
+          "agent_message": 1
+        },
+        "assessments": [
+          {
+            "id": "observation-48cf580d8ba85bbe",
+            "answers": {
+              "route": "worker_help",
+              "question_ref": "none",
+              "basis": "measurement",
+              "evidence_primary": "e7",
+              "evidence_secondary": "e4"
+            },
+            "acceptable_routes": [
+              "worker_help",
+              "director"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "warranted",
+            "reason": "The reported peak is 100 times the saved peak despite both quantities being in V/m. The worker-owned options specify V/cm, supporting bounded assistance with the unit discrepancy; early calibration loss alone is not a fault."
+          },
+          {
+            "id": "observation-0bfcc883f868eeca",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe",
+              "recheck"
+            ],
+            "certainty": "medium",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "The process is alive and fresh solver receipts consistently report success. The absent execution plan limits timing judgments, but no failed attempt, unexplained delay, or reporting discrepancy currently warrants expert attention."
+          },
+          {
+            "id": "observation-e60c7dfbc27d4d8a",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "The first missing-index read occurred within the declared 14-second publication delay. About 12.6 seconds of quiet allowance and three retries remain, so the current failure does not justify intervention."
+          },
+          {
+            "id": "observation-c1c566c5b19e92a6",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "The earlier read failures were followed by successful aggregation progress. Saved and reported peaks agree, source identities match, and iteration-one calibration loss before the declared minimum aggregation duration does not establish stalled convergence."
+          }
+        ]
+      },
+      "b-04": {
+        "path": "recovery-03/b-04",
+        "answer_sha256": "44cdbb629b26cd342c78bf43df8f801b8bc9c3dbcf5e97725b1a7c4332bad713",
+        "event_types": {
+          "agent_message": 1
+        },
+        "assessments": [
+          {
+            "id": "observation-2cc68efa17b882a4",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "Calibration error is decreasing steadily with fresh progress. Sources and field units agree; the unfinished calibration does not establish a problem."
+          },
+          {
+            "id": "observation-6cd51c24015002ab",
+            "answers": {
+              "route": "worker_help",
+              "question_ref": "none",
+              "basis": "measurement",
+              "evidence_primary": "e7",
+              "evidence_secondary": "e4"
+            },
+            "acceptable_routes": [
+              "worker_help",
+              "director"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "warranted",
+            "reason": "The reported peak is 100 times the saved peak despite both denoting V/m. The worker-owned options specify V/cm, supporting bounded assistance with the reporting discrepancy while aggregation continues."
+          },
+          {
+            "id": "observation-bf8e3a05f1d81f29",
+            "answers": {
+              "route": "worker_help",
+              "question_ref": "none",
+              "basis": "repetition",
+              "evidence_primary": "e6",
+              "evidence_secondary": "e4"
+            },
+            "acceptable_routes": [
+              "worker_help",
+              "observe"
+            ],
+            "certainty": "medium",
+            "intervention_before_fallback": "uncertain",
+            "reason": "Successive iterations alternate between two values with unchanged error near 0.993, supporting assistance with aggregation and its gain setting. However, the worker yielded about 89 seconds ago, making the benefit of additional attention before the 90-second fallback uncertain."
+          },
+          {
+            "id": "observation-5f445ddceca8ac5c",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe",
+              "recheck"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "The bundle was submitted only about five seconds ago, and the first solver control has a fresh successful receipt. Missing plan details and unavailable diagnostics at this early stage do not establish a fault."
+          }
+        ]
+      },
+      "b-05": {
+        "path": "recovery-03/b-05",
+        "answer_sha256": "199f3714e8c08f9371c7e51166a41797e72d3bd30cadebfbec8e06462b62da52",
+        "event_types": {
+          "agent_message": 1
+        },
+        "assessments": [
+          {
+            "id": "observation-36b9950a20136f8f",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "Calibration loss is steadily decreasing with fresh progress. The 44-second minimum is not a completion deadline; the remaining error alone does not warrant intervention. Units and source identities agree."
+          },
+          {
+            "id": "observation-699390e2fd97612d",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "Aggregation is still before its declared minimum duration, and loss is decreasing substantially. Fresh progress, consistent units and matching sources provide no current attention trigger."
+          },
+          {
+            "id": "observation-649f8666cb754f54",
+            "answers": {
+              "route": "repair_judge",
+              "question_ref": "none",
+              "basis": "source",
+              "evidence_primary": "e8",
+              "evidence_secondary": "e1"
+            },
+            "acceptable_routes": [
+              "repair_judge"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "warranted",
+            "reason": "The requested mesh_128 diagnostic explicitly uses the mesh_64 source with 64 cells, corroborated by host telemetry. This protected-source mismatch warrants independent diagnosis despite improving calibration; it grants no repair authority."
+          },
+          {
+            "id": "observation-ac61ba13f1d03405",
+            "answers": {
+              "route": "worker_help",
+              "question_ref": "none",
+              "basis": "repetition",
+              "evidence_primary": "e6",
+              "evidence_secondary": "e4"
+            },
+            "acceptable_routes": [
+              "worker_help",
+              "director"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "warranted",
+            "reason": "Successive iterations alternate between 0 and 1.98623 while loss stays at 0.99311, far above the required tolerance. The visible worker-owned gain setting supports bounded assistance with aggregation. This is lack of convergence, not a failed physical check or merely silence."
+          }
+        ]
+      }
+    },
+    "judgments": 48,
+    "dual_reviewed": 24,
+    "exact_route_agreements": 20,
+    "overlapping_route_sets": 24,
+    "requires_review": 4,
+    "observations": [
+      {
+        "id": "observation-e80918bc5a16df63",
+        "case": {
+          "family": "announced_quiet",
+          "arm": "observe",
+          "seed": 202610290000
+        },
+        "judgments": {
+          "a": {
+            "id": "observation-e80918bc5a16df63",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "The first solver control recently succeeded, the process remains alive, and options allow 36 seconds of quiet. Unknown phase timing and unavailable later diagnostics do not establish a stall or justify early expert attention.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "a-01"
+          },
+          "b": {
+            "id": "observation-e80918bc5a16df63",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "The solver recently completed a control successfully, the process remains alive, and output is only 1.01 seconds old. No current evidence warrants early assistance.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-03/b-02"
+          }
+        },
+        "both_reviewed": true,
+        "exact_route_agreement": true,
+        "acceptable_route_intersection": [
+          "observe"
+        ],
+        "requires_review": false
+      },
+      {
+        "id": "observation-22708cccd3fdc990",
+        "case": {
+          "family": "announced_quiet",
+          "arm": "observe",
+          "seed": 202610290000
+        },
+        "judgments": {
+          "a": {
+            "id": "observation-22708cccd3fdc990",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "Setup remains within the declared quiet period. The process is alive, with no tool failures or unexplained silence; early attention has no demonstrated benefit.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-02/a-04"
+          },
+          "b": {
+            "id": "observation-22708cccd3fdc990",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "Setup remains within its declared quiet period, with a live process, no tool failures, and retries available. The absence of output is expected.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-03/b-02"
+          }
+        },
+        "both_reviewed": true,
+        "exact_route_agreement": true,
+        "acceptable_route_intersection": [
+          "observe"
+        ],
+        "requires_review": false
+      },
+      {
+        "id": "observation-2cc68efa17b882a4",
+        "case": {
+          "family": "announced_quiet",
+          "arm": "observe",
+          "seed": 202610290000
+        },
+        "judgments": {
+          "a": {
+            "id": "observation-2cc68efa17b882a4",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "Aggregation is progressing after the declared 36-second quiet period, with error decreasing substantially. Source identities and field reporting agree; the minimum duration is not a completion deadline.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-01/a-00"
+          },
+          "b": {
+            "id": "observation-2cc68efa17b882a4",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "Calibration error is decreasing steadily with fresh progress. Sources and field units agree; the unfinished calibration does not establish a problem.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-03/b-04"
+          }
+        },
+        "both_reviewed": true,
+        "exact_route_agreement": true,
+        "acceptable_route_intersection": [
+          "observe"
+        ],
+        "requires_review": false
+      },
+      {
+        "id": "observation-0bfcc883f868eeca",
+        "case": {
+          "family": "source_binding",
+          "arm": "observe",
+          "seed": 202610290005
+        },
+        "judgments": {
+          "a": {
+            "id": "observation-0bfcc883f868eeca",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "Fresh mesh_64 receipts consistently report successful execution shortly after submission, while the workflow remains alive. No stalled progress or contradictory evidence warrants intervention; the absent plan alone is insufficient.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-01/a-02"
+          },
+          "b": {
+            "id": "observation-0bfcc883f868eeca",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe",
+              "recheck"
+            ],
+            "certainty": "medium",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "The process is alive and fresh solver receipts consistently report success. The absent execution plan limits timing judgments, but no failed attempt, unexplained delay, or reporting discrepancy currently warrants expert attention.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-03/b-03"
+          }
+        },
+        "both_reviewed": true,
+        "exact_route_agreement": true,
+        "acceptable_route_intersection": [
+          "observe"
+        ],
+        "requires_review": false
+      },
+      {
+        "id": "observation-413ef79f506f8210",
+        "case": {
+          "family": "source_binding",
+          "arm": "observe",
+          "seed": 202610290005
+        },
+        "judgments": {
+          "a": {
+            "id": "observation-413ef79f506f8210",
+            "answers": {
+              "route": "repair_judge",
+              "question_ref": "none",
+              "basis": "source",
+              "evidence_primary": "e8",
+              "evidence_secondary": "e0"
+            },
+            "acceptable_routes": [
+              "repair_judge"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "warranted",
+            "reason": "The requested mesh_128 diagnostic explicitly uses the mesh_64 source under protected ownership. This concrete provenance mismatch warrants independent diagnosis despite ongoing calibration progress; it grants no repair authority.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "a-01"
+          },
+          "b": {
+            "id": "observation-413ef79f506f8210",
+            "answers": {
+              "route": "repair_judge",
+              "question_ref": "none",
+              "basis": "source",
+              "evidence_primary": "e8",
+              "evidence_secondary": "e0"
+            },
+            "acceptable_routes": [
+              "repair_judge"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "warranted",
+            "reason": "The requested mesh_128 diagnostic explicitly uses mesh_64 source data under protected ownership. This warrants independent diagnosis despite healthy aggregation progress; it grants no repair authority.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-03/b-00"
+          }
+        },
+        "both_reviewed": true,
+        "exact_route_agreement": true,
+        "acceptable_route_intersection": [
+          "repair_judge"
+        ],
+        "requires_review": false
+      },
+      {
+        "id": "observation-649f8666cb754f54",
+        "case": {
+          "family": "source_binding",
+          "arm": "observe",
+          "seed": 202610290005
+        },
+        "judgments": {
+          "a": {
+            "id": "observation-649f8666cb754f54",
+            "answers": {
+              "route": "repair_judge",
+              "question_ref": "none",
+              "basis": "source",
+              "evidence_primary": "e8",
+              "evidence_secondary": "e0"
+            },
+            "acceptable_routes": [
+              "repair_judge"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "warranted",
+            "reason": "The mesh_128 diagnostic explicitly uses the mesh_64 source under protected ownership. This warrants independent harness diagnosis despite improving aggregation; no repair authority is granted.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-01/a-00"
+          },
+          "b": {
+            "id": "observation-649f8666cb754f54",
+            "answers": {
+              "route": "repair_judge",
+              "question_ref": "none",
+              "basis": "source",
+              "evidence_primary": "e8",
+              "evidence_secondary": "e1"
+            },
+            "acceptable_routes": [
+              "repair_judge"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "warranted",
+            "reason": "The requested mesh_128 diagnostic explicitly uses the mesh_64 source with 64 cells, corroborated by host telemetry. This protected-source mismatch warrants independent diagnosis despite improving calibration; it grants no repair authority.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-03/b-05"
+          }
+        },
+        "both_reviewed": true,
+        "exact_route_agreement": true,
+        "acceptable_route_intersection": [
+          "repair_judge"
+        ],
+        "requires_review": false
+      },
+      {
+        "id": "observation-82f71d00751675dd",
+        "case": {
+          "family": "update_cycle",
+          "arm": "observe",
+          "seed": 202610290007
+        },
+        "judgments": {
+          "a": {
+            "id": "observation-82f71d00751675dd",
+            "answers": {
+              "route": "recheck",
+              "question_ref": "none",
+              "basis": "measurement",
+              "evidence_primary": "e5",
+              "evidence_secondary": "e4"
+            },
+            "acceptable_routes": [
+              "recheck",
+              "observe"
+            ],
+            "certainty": "medium",
+            "intervention_before_fallback": "uncertain",
+            "reason": "The first calibration point overshoots the target with gain 2.0, but one iteration does not establish persistent nonconvergence. A bounded trend recheck is reasonable; expensive expert attention is premature within the declared aggregation period.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-03/a-05"
+          },
+          "b": {
+            "id": "observation-82f71d00751675dd",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe",
+              "recheck"
+            ],
+            "certainty": "medium",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "Only one aggregation iteration is visible, with recent progress and a declared 48-second minimum. Gain 2 and the initial overshoot merit monitoring but do not establish persistent nonconvergence. Units and source identities agree.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-03/b-01"
+          }
+        },
+        "both_reviewed": true,
+        "exact_route_agreement": false,
+        "acceptable_route_intersection": [
+          "observe",
+          "recheck"
+        ],
+        "requires_review": true
+      },
+      {
+        "id": "observation-ac61ba13f1d03405",
+        "case": {
+          "family": "update_cycle",
+          "arm": "observe",
+          "seed": 202610290007
+        },
+        "judgments": {
+          "a": {
+            "id": "observation-ac61ba13f1d03405",
+            "answers": {
+              "route": "worker_help",
+              "question_ref": "none",
+              "basis": "repetition",
+              "evidence_primary": "e6",
+              "evidence_secondary": "e0"
+            },
+            "acceptable_routes": [
+              "worker_help",
+              "director"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "warranted",
+            "reason": "Successive calibration iterations alternate between 0 and 1.986 with unchanged error about 0.993 against the 1e-3 requirement. Bounded assistance for worker-owned analysis is useful before fallback; the minimum aggregation duration does not explain this lack of convergence.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-02/a-04"
+          },
+          "b": {
+            "id": "observation-ac61ba13f1d03405",
+            "answers": {
+              "route": "worker_help",
+              "question_ref": "none",
+              "basis": "repetition",
+              "evidence_primary": "e6",
+              "evidence_secondary": "e4"
+            },
+            "acceptable_routes": [
+              "worker_help",
+              "director"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "warranted",
+            "reason": "Successive iterations alternate between 0 and 1.98623 while loss stays at 0.99311, far above the required tolerance. The visible worker-owned gain setting supports bounded assistance with aggregation. This is lack of convergence, not a failed physical check or merely silence.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-03/b-05"
+          }
+        },
+        "both_reviewed": true,
+        "exact_route_agreement": true,
+        "acceptable_route_intersection": [
+          "director",
+          "worker_help"
+        ],
+        "requires_review": false
+      },
+      {
+        "id": "observation-bf8e3a05f1d81f29",
+        "case": {
+          "family": "update_cycle",
+          "arm": "observe",
+          "seed": 202610290007
+        },
+        "judgments": {
+          "a": {
+            "id": "observation-bf8e3a05f1d81f29",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe",
+              "worker_help"
+            ],
+            "certainty": "medium",
+            "intervention_before_fallback": "uncertain",
+            "reason": "Calibration repeatedly oscillates with error about 0.993, clearly above 1e-3. However, the worker yielded about 89.3 seconds ago, so ordinary fallback is imminent; additional expensive assistance has uncertain incremental value.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-02/a-04"
+          },
+          "b": {
+            "id": "observation-bf8e3a05f1d81f29",
+            "answers": {
+              "route": "worker_help",
+              "question_ref": "none",
+              "basis": "repetition",
+              "evidence_primary": "e6",
+              "evidence_secondary": "e4"
+            },
+            "acceptable_routes": [
+              "worker_help",
+              "observe"
+            ],
+            "certainty": "medium",
+            "intervention_before_fallback": "uncertain",
+            "reason": "Successive iterations alternate between two values with unchanged error near 0.993, supporting assistance with aggregation and its gain setting. However, the worker yielded about 89 seconds ago, making the benefit of additional attention before the 90-second fallback uncertain.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-03/b-04"
+          }
+        },
+        "both_reviewed": true,
+        "exact_route_agreement": false,
+        "acceptable_route_intersection": [
+          "observe",
+          "worker_help"
+        ],
+        "requires_review": true
+      },
+      {
+        "id": "observation-e60c7dfbc27d4d8a",
+        "case": {
+          "family": "publication_retry",
+          "arm": "observe",
+          "seed": 202610290003
+        },
+        "judgments": {
+          "a": {
+            "id": "observation-e60c7dfbc27d4d8a",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "The first missing-index read occurred during the declared publication delay. About 12.6 seconds of quiet allowance and three retries remain; the process is alive.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-02/a-03"
+          },
+          "b": {
+            "id": "observation-e60c7dfbc27d4d8a",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "The first missing-index read occurred within the declared 14-second publication delay. About 12.6 seconds of quiet allowance and three retries remain, so the current failure does not justify intervention.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-03/b-03"
+          }
+        },
+        "both_reviewed": true,
+        "exact_route_agreement": true,
+        "acceptable_route_intersection": [
+          "observe"
+        ],
+        "requires_review": false
+      },
+      {
+        "id": "observation-c1c566c5b19e92a6",
+        "case": {
+          "family": "publication_retry",
+          "arm": "observe",
+          "seed": 202610290003
+        },
+        "judgments": {
+          "a": {
+            "id": "observation-c1c566c5b19e92a6",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "Failed reads occurred during the declared publication delay and were followed by successful aggregation progress. Units and source identities agree, and the minimum aggregation period has not elapsed. Historical repetition does not establish a current problem.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-03/a-05"
+          },
+          "b": {
+            "id": "observation-c1c566c5b19e92a6",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "The earlier read failures were followed by successful aggregation progress. Saved and reported peaks agree, source identities match, and iteration-one calibration loss before the declared minimum aggregation duration does not establish stalled convergence.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-03/b-03"
+          }
+        },
+        "both_reviewed": true,
+        "exact_route_agreement": true,
+        "acceptable_route_intersection": [
+          "observe"
+        ],
+        "requires_review": false
+      },
+      {
+        "id": "observation-301d793b59b499f3",
+        "case": {
+          "family": "publication_retry",
+          "arm": "observe",
+          "seed": 202610290003
+        },
+        "judgments": {
+          "a": {
+            "id": "observation-301d793b59b499f3",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "Calibration error is steadily decreasing with recent progress, and the minimum aggregation time has not elapsed. Source identities and field units agree; the unfinished calibration does not establish a fault.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "a-01"
+          },
+          "b": {
+            "id": "observation-301d793b59b499f3",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "Calibration error continues decreasing with fresh progress; the 46-second minimum aggregation duration has not elapsed. Reported fields and source identities agree. The repetition counter does not establish stalled work.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-03/b-02"
+          }
+        },
+        "both_reviewed": true,
+        "exact_route_agreement": true,
+        "acceptable_route_intersection": [
+          "observe"
+        ],
+        "requires_review": false
+      },
+      {
+        "id": "observation-5f445ddceca8ac5c",
+        "case": {
+          "family": "progressing_work",
+          "arm": "observe",
+          "seed": 202610290002
+        },
+        "judgments": {
+          "a": {
+            "id": "observation-5f445ddceca8ac5c",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "The recently submitted bundle has fresh successful mesh_64 solver receipts and a live process. Missing execution-plan details and zero listed retries do not establish a problem requiring attention.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-01/a-02"
+          },
+          "b": {
+            "id": "observation-5f445ddceca8ac5c",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe",
+              "recheck"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "The bundle was submitted only about five seconds ago, and the first solver control has a fresh successful receipt. Missing plan details and unavailable diagnostics at this early stage do not establish a fault.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-03/b-04"
+          }
+        },
+        "both_reviewed": true,
+        "exact_route_agreement": true,
+        "acceptable_route_intersection": [
+          "observe"
+        ],
+        "requires_review": false
+      },
+      {
+        "id": "observation-699390e2fd97612d",
+        "case": {
+          "family": "progressing_work",
+          "arm": "observe",
+          "seed": 202610290002
+        },
+        "judgments": {
+          "a": {
+            "id": "observation-699390e2fd97612d",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "Aggregation error is steadily decreasing, with fresh progress before the declared minimum aggregation duration. Reported and saved fields agree, and source identities match. The current unmet calibration tolerance does not establish a fault.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-01/a-02"
+          },
+          "b": {
+            "id": "observation-699390e2fd97612d",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "Aggregation is still before its declared minimum duration, and loss is decreasing substantially. Fresh progress, consistent units and matching sources provide no current attention trigger.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-03/b-05"
+          }
+        },
+        "both_reviewed": true,
+        "exact_route_agreement": true,
+        "acceptable_route_intersection": [
+          "observe"
+        ],
+        "requires_review": false
+      },
+      {
+        "id": "observation-0805fd68a233aa36",
+        "case": {
+          "family": "progressing_work",
+          "arm": "observe",
+          "seed": 202610290002
+        },
+        "judgments": {
+          "a": {
+            "id": "observation-0805fd68a233aa36",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "Loss continues decreasing toward the unchanged 1e-3 criterion. The 44-second minimum is not a completion deadline; the running process shows no unexplained silence or reporting discrepancy.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-02/a-03"
+          },
+          "b": {
+            "id": "observation-0805fd68a233aa36",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "Loss continues decreasing to 0.002516. It remains above 1e-3, but completion has not been claimed; the 44-second minimum is not a deadline. Fresh progress supports continued observation.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-03/b-01"
+          }
+        },
+        "both_reviewed": true,
+        "exact_route_agreement": true,
+        "acceptable_route_intersection": [
+          "observe"
+        ],
+        "requires_review": false
+      },
+      {
+        "id": "observation-3d1da96df51ea4cf",
+        "case": {
+          "family": "artifact_consumer",
+          "arm": "observe",
+          "seed": 202610290001
+        },
+        "judgments": {
+          "a": {
+            "id": "observation-3d1da96df51ea4cf",
+            "answers": {
+              "route": "worker_help",
+              "question_ref": "none",
+              "basis": "source",
+              "evidence_primary": "e4",
+              "evidence_secondary": "e5"
+            },
+            "acceptable_routes": [
+              "worker_help",
+              "recheck"
+            ],
+            "certainty": "medium",
+            "intervention_before_fallback": "warranted",
+            "reason": "The worker-owned artifact selector state_* conflicts with the solver's declared plot prefix. Bounded assistance can assess this visible configuration mismatch, although no artifact-read failure has yet been observed.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "a-01"
+          },
+          "b": {
+            "id": "observation-3d1da96df51ea4cf",
+            "answers": {
+              "route": "recheck",
+              "question_ref": "none",
+              "basis": "source",
+              "evidence_primary": "e4",
+              "evidence_secondary": "e5"
+            },
+            "acceptable_routes": [
+              "recheck",
+              "observe"
+            ],
+            "certainty": "medium",
+            "intervention_before_fallback": "uncertain",
+            "reason": "The configured state_* artifact pattern differs from the solver's plot prefix. A bounded check could clarify compatibility, but no artifact inventory or input-wait failure is visible, and solver progress is recent.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-03/b-00"
+          }
+        },
+        "both_reviewed": true,
+        "exact_route_agreement": false,
+        "acceptable_route_intersection": [
+          "recheck"
+        ],
+        "requires_review": true
+      },
+      {
+        "id": "observation-ba08ea8f7aaf4ce9",
+        "case": {
+          "family": "artifact_consumer",
+          "arm": "observe",
+          "seed": 202610290001
+        },
+        "judgments": {
+          "a": {
+            "id": "observation-ba08ea8f7aaf4ce9",
+            "answers": {
+              "route": "worker_help",
+              "question_ref": "none",
+              "basis": "repetition",
+              "evidence_primary": "e5",
+              "evidence_secondary": "e1"
+            },
+            "acceptable_routes": [
+              "worker_help",
+              "director"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "warranted",
+            "reason": "The job repeatedly waits for state_* while both directories contain plot outputs. Nine repetitions over 36.53 seconds, without a declared quiet allowance, support bounded assistance with the worker-owned input configuration.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-01/a-00"
+          },
+          "b": {
+            "id": "observation-ba08ea8f7aaf4ce9",
+            "answers": {
+              "route": "worker_help",
+              "question_ref": "none",
+              "basis": "repetition",
+              "evidence_primary": "e5",
+              "evidence_secondary": "e1"
+            },
+            "acceptable_routes": [
+              "worker_help",
+              "director"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "warranted",
+            "reason": "Nine repeated observations over 36.53 seconds show waiting for state_* while both directories contain plot outputs. With no remaining quiet period, bounded assistance for the worker-owned artifact configuration is useful before fallback.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-03/b-00"
+          }
+        },
+        "both_reviewed": true,
+        "exact_route_agreement": true,
+        "acceptable_route_intersection": [
+          "director",
+          "worker_help"
+        ],
+        "requires_review": false
+      },
+      {
+        "id": "observation-b4c2bc675a8e1a32",
+        "case": {
+          "family": "artifact_consumer",
+          "arm": "observe",
+          "seed": 202610290001
+        },
+        "judgments": {
+          "a": {
+            "id": "observation-b4c2bc675a8e1a32",
+            "answers": {
+              "route": "worker_help",
+              "question_ref": "none",
+              "basis": "repetition",
+              "evidence_primary": "e5",
+              "evidence_secondary": "e4"
+            },
+            "acceptable_routes": [
+              "worker_help",
+              "observe"
+            ],
+            "certainty": "medium",
+            "intervention_before_fallback": "uncertain",
+            "reason": "Repeated input waiting exposes a concrete mismatch: the worker's configured state_* pattern does not match the available plot artifacts. Bounded worker assistance is relevant, but the imminent 90-second fallback makes its additional benefit uncertain.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-01/a-02"
+          },
+          "b": {
+            "id": "observation-b4c2bc675a8e1a32",
+            "answers": {
+              "route": "recheck",
+              "question_ref": "none",
+              "basis": "repetition",
+              "evidence_primary": "e5",
+              "evidence_secondary": "e1"
+            },
+            "acceptable_routes": [
+              "recheck",
+              "observe"
+            ],
+            "certainty": "medium",
+            "intervention_before_fallback": "uncertain",
+            "reason": "Repeated input waits seek state_* while the listed artifacts are plot directories. A bounded check could clarify this mismatch, but the imminent 90-second fallback limits the benefit of additional attention.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-03/b-01"
+          }
+        },
+        "both_reviewed": true,
+        "exact_route_agreement": false,
+        "acceptable_route_intersection": [
+          "observe"
+        ],
+        "requires_review": true
+      },
+      {
+        "id": "observation-48cf580d8ba85bbe",
+        "case": {
+          "family": "unit_conversion",
+          "arm": "observe",
+          "seed": 202610290006
+        },
+        "judgments": {
+          "a": {
+            "id": "observation-48cf580d8ba85bbe",
+            "answers": {
+              "route": "worker_help",
+              "question_ref": "none",
+              "basis": "measurement",
+              "evidence_primary": "e7",
+              "evidence_secondary": "e4"
+            },
+            "acceptable_routes": [
+              "worker_help",
+              "director"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "warranted",
+            "reason": "The reported peak is 100 times the saved peak despite both denoting V/m. The worker-owned options specify V/cm, supporting bounded assistance with the reporting discrepancy. Matching source identities do not establish a protected-harness fault.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-02/a-03"
+          },
+          "b": {
+            "id": "observation-48cf580d8ba85bbe",
+            "answers": {
+              "route": "worker_help",
+              "question_ref": "none",
+              "basis": "measurement",
+              "evidence_primary": "e7",
+              "evidence_secondary": "e4"
+            },
+            "acceptable_routes": [
+              "worker_help",
+              "director"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "warranted",
+            "reason": "The reported peak is 100 times the saved peak despite both quantities being in V/m. The worker-owned options specify V/cm, supporting bounded assistance with the unit discrepancy; early calibration loss alone is not a fault.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-03/b-03"
+          }
+        },
+        "both_reviewed": true,
+        "exact_route_agreement": true,
+        "acceptable_route_intersection": [
+          "director",
+          "worker_help"
+        ],
+        "requires_review": false
+      },
+      {
+        "id": "observation-6cd51c24015002ab",
+        "case": {
+          "family": "unit_conversion",
+          "arm": "observe",
+          "seed": 202610290006
+        },
+        "judgments": {
+          "a": {
+            "id": "observation-6cd51c24015002ab",
+            "answers": {
+              "route": "worker_help",
+              "question_ref": "none",
+              "basis": "measurement",
+              "evidence_primary": "e7",
+              "evidence_secondary": "e4"
+            },
+            "acceptable_routes": [
+              "worker_help",
+              "director"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "warranted",
+            "reason": "Reported and saved peaks differ by 100 despite both denoting V/m. The worker-owned options specify V/cm, supporting bounded assistance with unit handling. Improving calibration does not resolve this discrepancy; no protected-harness fault is established.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-03/a-05"
+          },
+          "b": {
+            "id": "observation-6cd51c24015002ab",
+            "answers": {
+              "route": "worker_help",
+              "question_ref": "none",
+              "basis": "measurement",
+              "evidence_primary": "e7",
+              "evidence_secondary": "e4"
+            },
+            "acceptable_routes": [
+              "worker_help",
+              "director"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "warranted",
+            "reason": "The reported peak is 100 times the saved peak despite both denoting V/m. The worker-owned options specify V/cm, supporting bounded assistance with the reporting discrepancy while aggregation continues.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-03/b-04"
+          }
+        },
+        "both_reviewed": true,
+        "exact_route_agreement": true,
+        "acceptable_route_intersection": [
+          "director",
+          "worker_help"
+        ],
+        "requires_review": false
+      },
+      {
+        "id": "observation-2ffd9a2405e6fce3",
+        "case": {
+          "family": "unit_conversion",
+          "arm": "observe",
+          "seed": 202610290006
+        },
+        "judgments": {
+          "a": {
+            "id": "observation-2ffd9a2405e6fce3",
+            "answers": {
+              "route": "worker_help",
+              "question_ref": "none",
+              "basis": "measurement",
+              "evidence_primary": "e7",
+              "evidence_secondary": "e4"
+            },
+            "acceptable_routes": [
+              "worker_help",
+              "director"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "warranted",
+            "reason": "The explicit 100-fold saved/reported field discrepancy warrants bounded assistance with the worker-owned unit configuration. Calibration is still improving, so its remaining error is not the trigger. Matching source identities do not justify protected-harness diagnosis.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-03/a-05"
+          },
+          "b": {
+            "id": "observation-2ffd9a2405e6fce3",
+            "answers": {
+              "route": "worker_help",
+              "question_ref": "none",
+              "basis": "measurement",
+              "evidence_primary": "e7",
+              "evidence_secondary": "e4"
+            },
+            "acceptable_routes": [
+              "worker_help",
+              "director"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "warranted",
+            "reason": "The reported peak is 100 times the saved peak despite both denoting V/m; worker-owned options specify V/cm input. Bounded assistance with this reporting discrepancy is useful now. Improving calibration and passing relative checks do not resolve it.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-03/b-02"
+          }
+        },
+        "both_reviewed": true,
+        "exact_route_agreement": true,
+        "acceptable_route_intersection": [
+          "director",
+          "worker_help"
+        ],
+        "requires_review": false
+      },
+      {
+        "id": "observation-d24dff7d93a11d17",
+        "case": {
+          "family": "progressing_work",
+          "arm": "adapted",
+          "seed": 202610310000
+        },
+        "judgments": {
+          "a": {
+            "id": "observation-d24dff7d93a11d17",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "The solver has just reported successful execution and the process remains alive. An absent execution plan and zero retry allowance do not establish a problem during fresh progress.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-02/a-04"
+          },
+          "b": {
+            "id": "observation-d24dff7d93a11d17",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "The first solver has just succeeded, the process remains alive, and progress is fresh. An empty execution plan and zero retry allowance do not establish a fault or justify early assistance.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-03/b-00"
+          }
+        },
+        "both_reviewed": true,
+        "exact_route_agreement": true,
+        "acceptable_route_intersection": [
+          "observe"
+        ],
+        "requires_review": false
+      },
+      {
+        "id": "observation-6287cca1c1ff3fe6",
+        "case": {
+          "family": "progressing_work",
+          "arm": "adapted",
+          "seed": 202610310000
+        },
+        "judgments": {
+          "a": {
+            "id": "observation-6287cca1c1ff3fe6",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "Calibration loss is steadily decreasing, and only 24.6 seconds of the minimum 44-second aggregation period have elapsed. Reported units, source identities, and original checks are consistent.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-02/a-03"
+          },
+          "b": {
+            "id": "observation-6287cca1c1ff3fe6",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "Loss steadily decreases from 0.3004 to 0.04998 with fresh progress, before the 44-second minimum aggregation duration. The unfinished calibration provides no current reason for expert attention.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-03/b-01"
+          }
+        },
+        "both_reviewed": true,
+        "exact_route_agreement": true,
+        "acceptable_route_intersection": [
+          "observe"
+        ],
+        "requires_review": false
+      },
+      {
+        "id": "observation-36b9950a20136f8f",
+        "case": {
+          "family": "progressing_work",
+          "arm": "adapted",
+          "seed": 202610310000
+        },
+        "judgments": {
+          "a": {
+            "id": "observation-36b9950a20136f8f",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "Fresh aggregation progress shows steadily decreasing error. Sources and field units agree, and the running job has not claimed completion. Error above tolerance during convergence does not warrant intervention.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-01/a-00"
+          },
+          "b": {
+            "id": "observation-36b9950a20136f8f",
+            "answers": {
+              "route": "observe",
+              "question_ref": "none",
+              "basis": "unspecified",
+              "evidence_primary": "none",
+              "evidence_secondary": "none"
+            },
+            "acceptable_routes": [
+              "observe"
+            ],
+            "certainty": "high",
+            "intervention_before_fallback": "not_warranted",
+            "reason": "Calibration loss is steadily decreasing with fresh progress. The 44-second minimum is not a completion deadline; the remaining error alone does not warrant intervention. Units and source identities agree.",
+            "structurally_valid": true,
+            "admissible_grounding": true,
+            "batch_path": "recovery-03/b-05"
+          }
+        },
+        "both_reviewed": true,
+        "exact_route_agreement": true,
+        "acceptable_route_intersection": [
+          "observe"
+        ],
+        "requires_review": false
+      }
+    ]
+  },
+  "audit_sha256": "977e5e8e5a117788aff6e9b076f81d4da56145370bbd7b53d56907ce79725cb0",
+  "plan": {
+    "schema": "live-observation-audit/v1",
+    "created_at": 1793005224.6930563,
+    "source": "4ea4be1",
+    "selection": "first/middle/last eligible parked observation per completed worker-only episode plus commissioning",
+    "exclusions_sha256": "b8a58f792774f1de272d53ea9eb2610a9ab65e4694d74f68e7aa546fdab8421f",
+    "purpose": "development labels only; no effectiveness or independent truth claim",
+    "model": "gpt-6-astra",
+    "reasoning_effort": "high",
+    "batches": [
+      {
+        "id": "a-00",
+        "reviewer": "a",
+        "observation_ids": [
+          "observation-649f8666cb754f54",
+          "observation-ba08ea8f7aaf4ce9",
+          "observation-36b9950a20136f8f",
+          "observation-2cc68efa17b882a4"
+        ],
+        "prompt_sha256": "acf6727c0f4ad65517df0620e9186c1d3ea4c95f352d9208c282699bfe12ee41",
+        "schema_sha256": "db4505c995629a7c3fdf73056026232ce6e712e1e44f877b22836edd40bd190e"
+      },
+      {
+        "id": "a-01",
+        "reviewer": "a",
+        "observation_ids": [
+          "observation-301d793b59b499f3",
+          "observation-413ef79f506f8210",
+          "observation-3d1da96df51ea4cf",
+          "observation-e80918bc5a16df63"
+        ],
+        "prompt_sha256": "e19511af29c370c382f62644b9efc653d720ae3ad8a3378a3ee25bf2234e0f1a",
+        "schema_sha256": "db4505c995629a7c3fdf73056026232ce6e712e1e44f877b22836edd40bd190e"
+      },
+      {
+        "id": "a-02",
+        "reviewer": "a",
+        "observation_ids": [
+          "observation-b4c2bc675a8e1a32",
+          "observation-699390e2fd97612d",
+          "observation-5f445ddceca8ac5c",
+          "observation-0bfcc883f868eeca"
+        ],
+        "prompt_sha256": "8cc5faba4b9b04b7b2c9d7ca781b5f20dc710a5cc010f64260c388ed7d82c8f1",
+        "schema_sha256": "db4505c995629a7c3fdf73056026232ce6e712e1e44f877b22836edd40bd190e"
+      },
+      {
+        "id": "a-03",
+        "reviewer": "a",
+        "observation_ids": [
+          "observation-e60c7dfbc27d4d8a",
+          "observation-6287cca1c1ff3fe6",
+          "observation-48cf580d8ba85bbe",
+          "observation-0805fd68a233aa36"
+        ],
+        "prompt_sha256": "2cdc410f0e9d95d7a98d88c42507a739c4a2ca776ae807607d1d7b79a7276024",
+        "schema_sha256": "db4505c995629a7c3fdf73056026232ce6e712e1e44f877b22836edd40bd190e"
+      },
+      {
+        "id": "a-04",
+        "reviewer": "a",
+        "observation_ids": [
+          "observation-22708cccd3fdc990",
+          "observation-d24dff7d93a11d17",
+          "observation-bf8e3a05f1d81f29",
+          "observation-ac61ba13f1d03405"
+        ],
+        "prompt_sha256": "46260666f7efc46cb8793bdb218fea020772144ec22aec6e8ade1076d143efd0",
+        "schema_sha256": "db4505c995629a7c3fdf73056026232ce6e712e1e44f877b22836edd40bd190e"
+      },
+      {
+        "id": "a-05",
+        "reviewer": "a",
+        "observation_ids": [
+          "observation-6cd51c24015002ab",
+          "observation-82f71d00751675dd",
+          "observation-c1c566c5b19e92a6",
+          "observation-2ffd9a2405e6fce3"
+        ],
+        "prompt_sha256": "471671c71e131454a27a80a71dccc207c5401b9f02daf216603a6875bf5647f4",
+        "schema_sha256": "db4505c995629a7c3fdf73056026232ce6e712e1e44f877b22836edd40bd190e"
+      },
+      {
+        "id": "b-00",
+        "reviewer": "b",
+        "observation_ids": [
+          "observation-413ef79f506f8210",
+          "observation-d24dff7d93a11d17",
+          "observation-3d1da96df51ea4cf",
+          "observation-ba08ea8f7aaf4ce9"
+        ],
+        "prompt_sha256": "010df627a62146489eb349bd801578c5b02ec1cd053fcd81004c9af8da331357",
+        "schema_sha256": "db4505c995629a7c3fdf73056026232ce6e712e1e44f877b22836edd40bd190e"
+      },
+      {
+        "id": "b-01",
+        "reviewer": "b",
+        "observation_ids": [
+          "observation-b4c2bc675a8e1a32",
+          "observation-82f71d00751675dd",
+          "observation-6287cca1c1ff3fe6",
+          "observation-0805fd68a233aa36"
+        ],
+        "prompt_sha256": "c86015b93e4aae541eb4aab14cd10f918110f70878d2ac600e131c49aa6b7a1c",
+        "schema_sha256": "db4505c995629a7c3fdf73056026232ce6e712e1e44f877b22836edd40bd190e"
+      },
+      {
+        "id": "b-02",
+        "reviewer": "b",
+        "observation_ids": [
+          "observation-e80918bc5a16df63",
+          "observation-22708cccd3fdc990",
+          "observation-301d793b59b499f3",
+          "observation-2ffd9a2405e6fce3"
+        ],
+        "prompt_sha256": "66865ddef8c8869d349e1e537220aff080f9d4b2e543d2c566b272f25719ccc0",
+        "schema_sha256": "db4505c995629a7c3fdf73056026232ce6e712e1e44f877b22836edd40bd190e"
+      },
+      {
+        "id": "b-03",
+        "reviewer": "b",
+        "observation_ids": [
+          "observation-48cf580d8ba85bbe",
+          "observation-0bfcc883f868eeca",
+          "observation-e60c7dfbc27d4d8a",
+          "observation-c1c566c5b19e92a6"
+        ],
+        "prompt_sha256": "185053624e3a8943eedefbe3057732abb8ea2b772911abfcc27f063456cb6c84",
+        "schema_sha256": "db4505c995629a7c3fdf73056026232ce6e712e1e44f877b22836edd40bd190e"
+      },
+      {
+        "id": "b-04",
+        "reviewer": "b",
+        "observation_ids": [
+          "observation-2cc68efa17b882a4",
+          "observation-6cd51c24015002ab",
+          "observation-bf8e3a05f1d81f29",
+          "observation-5f445ddceca8ac5c"
+        ],
+        "prompt_sha256": "e71a708e42de2b99a8fdc09c97722dfacf77663ce3b453cac1cd8c7eefd26f2c",
+        "schema_sha256": "db4505c995629a7c3fdf73056026232ce6e712e1e44f877b22836edd40bd190e"
+      },
+      {
+        "id": "b-05",
+        "reviewer": "b",
+        "observation_ids": [
+          "observation-36b9950a20136f8f",
+          "observation-699390e2fd97612d",
+          "observation-649f8666cb754f54",
+          "observation-ac61ba13f1d03405"
+        ],
+        "prompt_sha256": "0d6f271b1527b014b18fd551138cd79bef6271c3a951c6fc80943912bfad15aa",
+        "schema_sha256": "db4505c995629a7c3fdf73056026232ce6e712e1e44f877b22836edd40bd190e"
+      }
+    ],
+    "rows_sha256": "0ee4be34e1c6007c371fde71004d37db416512357b909ed43b7121e8d838bc5a",
+    "provenance_sha256": "789f80e0ff71d6d3f0aa82d5ac995204edd4a51dfb4ee1ee54acb9dba773f9ce",
+    "runner_sha256": "3cc091001e8ce7fc955be6c3b1ff454aaf06dbfb90f69214f0a29b690049f5f3",
+    "deadline": 1793008824.6929953
+  },
+  "exclusions": [
+    {
+      "episode": "qwf-35d0b214615cda85",
+      "eligible": 10,
+      "excluded": [
+        {
+          "path": "qualified32-clean/qwf-35d0b214615cda85/monitor/attention-00001.json",
+          "sha256": "1cb666ea23831729c6171aab7ab52383e10db7e9d09b773bda5ddd8e6d6b4442",
+          "submitted_parked": false,
+          "received_within_parking": true
+        }
+      ]
+    },
+    {
+      "episode": "qwf-395e600f981f782c",
+      "eligible": 10,
+      "excluded": []
+    },
+    {
+      "episode": "qwf-7aa2c2c5ccfdfe36",
+      "eligible": 17,
+      "excluded": [
+        {
+          "path": "qualified32-clean/qwf-7aa2c2c5ccfdfe36/monitor/attention-00001.json",
+          "sha256": "bef283819c4ff3114c7f230d6f629836a52f4a5da9438876207571198ad689c4",
+          "submitted_parked": false,
+          "received_within_parking": true
+        }
+      ]
+    },
+    {
+      "episode": "qwf-a15bc184e8f828a0",
+      "eligible": 10,
+      "excluded": []
+    },
+    {
+      "episode": "qwf-b43494bb562eeca1",
+      "eligible": 11,
+      "excluded": []
+    },
+    {
+      "episode": "qwf-dd0b046e3fb3cbbe",
+      "eligible": 18,
+      "excluded": [
+        {
+          "path": "qualified32-clean/qwf-dd0b046e3fb3cbbe/monitor/attention-00001.json",
+          "sha256": "e8deb3a38bc3bb8781594de812421e991c5581303575a8b11046feebe2b287f6",
+          "submitted_parked": false,
+          "received_within_parking": true
+        }
+      ]
+    },
+    {
+      "episode": "qwf-ff2ab838ebafcf20",
+      "eligible": 10,
+      "excluded": []
+    },
+    {
+      "episode": "episode-a4db6c7df2ac17ca",
+      "eligible": 8,
+      "excluded": [
+        {
+          "path": "parked-commission-v1/episode-a4db6c7df2ac17ca/monitor/attention-00009.json",
+          "sha256": "4671a896ee7147e025ca7ad0caf3eb8ef3d862e6cb325ae8375460e0534b11fa",
+          "submitted_parked": true,
+          "received_within_parking": false
+        }
+      ]
+    }
+  ],
+  "recovery_plans": {
+    "recovery-01": {
+      "created_at": 1793005790.1560683,
+      "original_plan_sha256": "82fa206db48c8592324e66f526a1427f73877f7169985a43183eae78d49b0ead",
+      "original_status_sha256": "1234ad1523581d93705e0a491c087df0555f09fae83654f9d2abd38c94a8adb8",
+      "runner_sha256": "362b00be1d3f39d39bd7acc8cb6b5e1271de2298bf64a614ab9ea055df9f2b22",
+      "reason": "One original call failed with provider 429 while another succeeded; serialize recovery",
+      "maximum_concurrent": 1,
+      "minimum_start_interval_seconds": 60,
+      "unchanged_inputs": true,
+      "completed_original_assignments": [
+        "a-01"
+      ],
+      "assignments": [
+        {
+          "id": "a-00",
+          "reviewer": "a",
+          "observation_ids": [
+            "observation-649f8666cb754f54",
+            "observation-ba08ea8f7aaf4ce9",
+            "observation-36b9950a20136f8f",
+            "observation-2cc68efa17b882a4"
+          ],
+          "prompt_sha256": "acf6727c0f4ad65517df0620e9186c1d3ea4c95f352d9208c282699bfe12ee41",
+          "schema_sha256": "db4505c995629a7c3fdf73056026232ce6e712e1e44f877b22836edd40bd190e"
+        },
+        {
+          "id": "a-02",
+          "reviewer": "a",
+          "observation_ids": [
+            "observation-b4c2bc675a8e1a32",
+            "observation-699390e2fd97612d",
+            "observation-5f445ddceca8ac5c",
+            "observation-0bfcc883f868eeca"
+          ],
+          "prompt_sha256": "8cc5faba4b9b04b7b2c9d7ca781b5f20dc710a5cc010f64260c388ed7d82c8f1",
+          "schema_sha256": "db4505c995629a7c3fdf73056026232ce6e712e1e44f877b22836edd40bd190e"
+        },
+        {
+          "id": "a-03",
+          "reviewer": "a",
+          "observation_ids": [
+            "observation-e60c7dfbc27d4d8a",
+            "observation-6287cca1c1ff3fe6",
+            "observation-48cf580d8ba85bbe",
+            "observation-0805fd68a233aa36"
+          ],
+          "prompt_sha256": "2cdc410f0e9d95d7a98d88c42507a739c4a2ca776ae807607d1d7b79a7276024",
+          "schema_sha256": "db4505c995629a7c3fdf73056026232ce6e712e1e44f877b22836edd40bd190e"
+        },
+        {
+          "id": "a-04",
+          "reviewer": "a",
+          "observation_ids": [
+            "observation-22708cccd3fdc990",
+            "observation-d24dff7d93a11d17",
+            "observation-bf8e3a05f1d81f29",
+            "observation-ac61ba13f1d03405"
+          ],
+          "prompt_sha256": "46260666f7efc46cb8793bdb218fea020772144ec22aec6e8ade1076d143efd0",
+          "schema_sha256": "db4505c995629a7c3fdf73056026232ce6e712e1e44f877b22836edd40bd190e"
+        },
+        {
+          "id": "a-05",
+          "reviewer": "a",
+          "observation_ids": [
+            "observation-6cd51c24015002ab",
+            "observation-82f71d00751675dd",
+            "observation-c1c566c5b19e92a6",
+            "observation-2ffd9a2405e6fce3"
+          ],
+          "prompt_sha256": "471671c71e131454a27a80a71dccc207c5401b9f02daf216603a6875bf5647f4",
+          "schema_sha256": "db4505c995629a7c3fdf73056026232ce6e712e1e44f877b22836edd40bd190e"
+        },
+        {
+          "id": "b-00",
+          "reviewer": "b",
+          "observation_ids": [
+            "observation-413ef79f506f8210",
+            "observation-d24dff7d93a11d17",
+            "observation-3d1da96df51ea4cf",
+            "observation-ba08ea8f7aaf4ce9"
+          ],
+          "prompt_sha256": "010df627a62146489eb349bd801578c5b02ec1cd053fcd81004c9af8da331357",
+          "schema_sha256": "db4505c995629a7c3fdf73056026232ce6e712e1e44f877b22836edd40bd190e"
+        },
+        {
+          "id": "b-01",
+          "reviewer": "b",
+          "observation_ids": [
+            "observation-b4c2bc675a8e1a32",
+            "observation-82f71d00751675dd",
+            "observation-6287cca1c1ff3fe6",
+            "observation-0805fd68a233aa36"
+          ],
+          "prompt_sha256": "c86015b93e4aae541eb4aab14cd10f918110f70878d2ac600e131c49aa6b7a1c",
+          "schema_sha256": "db4505c995629a7c3fdf73056026232ce6e712e1e44f877b22836edd40bd190e"
+        },
+        {
+          "id": "b-02",
+          "reviewer": "b",
+          "observation_ids": [
+            "observation-e80918bc5a16df63",
+            "observation-22708cccd3fdc990",
+            "observation-301d793b59b499f3",
+            "observation-2ffd9a2405e6fce3"
+          ],
+          "prompt_sha256": "66865ddef8c8869d349e1e537220aff080f9d4b2e543d2c566b272f25719ccc0",
+          "schema_sha256": "db4505c995629a7c3fdf73056026232ce6e712e1e44f877b22836edd40bd190e"
+        },
+        {
+          "id": "b-03",
+          "reviewer": "b",
+          "observation_ids": [
+            "observation-48cf580d8ba85bbe",
+            "observation-0bfcc883f868eeca",
+            "observation-e60c7dfbc27d4d8a",
+            "observation-c1c566c5b19e92a6"
+          ],
+          "prompt_sha256": "185053624e3a8943eedefbe3057732abb8ea2b772911abfcc27f063456cb6c84",
+          "schema_sha256": "db4505c995629a7c3fdf73056026232ce6e712e1e44f877b22836edd40bd190e"
+        },
+        {
+          "id": "b-04",
+          "reviewer": "b",
+          "observation_ids": [
+            "observation-2cc68efa17b882a4",
+            "observation-6cd51c24015002ab",
+            "observation-bf8e3a05f1d81f29",
+            "observation-5f445ddceca8ac5c"
+          ],
+          "prompt_sha256": "e71a708e42de2b99a8fdc09c97722dfacf77663ce3b453cac1cd8c7eefd26f2c",
+          "schema_sha256": "db4505c995629a7c3fdf73056026232ce6e712e1e44f877b22836edd40bd190e"
+        },
+        {
+          "id": "b-05",
+          "reviewer": "b",
+          "observation_ids": [
+            "observation-36b9950a20136f8f",
+            "observation-699390e2fd97612d",
+            "observation-649f8666cb754f54",
+            "observation-ac61ba13f1d03405"
+          ],
+          "prompt_sha256": "0d6f271b1527b014b18fd551138cd79bef6271c3a951c6fc80943912bfad15aa",
+          "schema_sha256": "db4505c995629a7c3fdf73056026232ce6e712e1e44f877b22836edd40bd190e"
+        }
+      ],
+      "deadline": 1793008824.6929953,
+      "stop_on_any_failure": true
+    },
+    "recovery-02": {
+      "created_at": 1793006234.3314679,
+      "original_plan_sha256": "82fa206db48c8592324e66f526a1427f73877f7169985a43183eae78d49b0ead",
+      "original_status_sha256": "1234ad1523581d93705e0a491c087df0555f09fae83654f9d2abd38c94a8adb8",
+      "previous_recovery_status_sha256": "8d3f8ecec995b5e5192907da5563ce7c784bf65ad12e39a377f61323fd565702",
+      "runner_sha256": "bc85808f989d4485023768c0f23a39a465a0e51e979b00e703e9035e6d28d5de",
+      "reason": "Two serialized calls succeeded, then provider 429 recurred; wait 120 seconds after each completed call",
+      "maximum_concurrent": 1,
+      "minimum_gap_after_completion_seconds": 120,
+      "unchanged_inputs": true,
+      "completed_original_assignments": [
+        "a-00",
+        "a-01",
+        "a-02"
+      ],
+      "assignments": [
+        {
+          "id": "a-03",
+          "reviewer": "a",
+          "observation_ids": [
+            "observation-e60c7dfbc27d4d8a",
+            "observation-6287cca1c1ff3fe6",
+            "observation-48cf580d8ba85bbe",
+            "observation-0805fd68a233aa36"
+          ],
+          "prompt_sha256": "2cdc410f0e9d95d7a98d88c42507a739c4a2ca776ae807607d1d7b79a7276024",
+          "schema_sha256": "db4505c995629a7c3fdf73056026232ce6e712e1e44f877b22836edd40bd190e"
+        },
+        {
+          "id": "a-04",
+          "reviewer": "a",
+          "observation_ids": [
+            "observation-22708cccd3fdc990",
+            "observation-d24dff7d93a11d17",
+            "observation-bf8e3a05f1d81f29",
+            "observation-ac61ba13f1d03405"
+          ],
+          "prompt_sha256": "46260666f7efc46cb8793bdb218fea020772144ec22aec6e8ade1076d143efd0",
+          "schema_sha256": "db4505c995629a7c3fdf73056026232ce6e712e1e44f877b22836edd40bd190e"
+        },
+        {
+          "id": "a-05",
+          "reviewer": "a",
+          "observation_ids": [
+            "observation-6cd51c24015002ab",
+            "observation-82f71d00751675dd",
+            "observation-c1c566c5b19e92a6",
+            "observation-2ffd9a2405e6fce3"
+          ],
+          "prompt_sha256": "471671c71e131454a27a80a71dccc207c5401b9f02daf216603a6875bf5647f4",
+          "schema_sha256": "db4505c995629a7c3fdf73056026232ce6e712e1e44f877b22836edd40bd190e"
+        },
+        {
+          "id": "b-00",
+          "reviewer": "b",
+          "observation_ids": [
+            "observation-413ef79f506f8210",
+            "observation-d24dff7d93a11d17",
+            "observation-3d1da96df51ea4cf",
+            "observation-ba08ea8f7aaf4ce9"
+          ],
+          "prompt_sha256": "010df627a62146489eb349bd801578c5b02ec1cd053fcd81004c9af8da331357",
+          "schema_sha256": "db4505c995629a7c3fdf73056026232ce6e712e1e44f877b22836edd40bd190e"
+        },
+        {
+          "id": "b-01",
+          "reviewer": "b",
+          "observation_ids": [
+            "observation-b4c2bc675a8e1a32",
+            "observation-82f71d00751675dd",
+            "observation-6287cca1c1ff3fe6",
+            "observation-0805fd68a233aa36"
+          ],
+          "prompt_sha256": "c86015b93e4aae541eb4aab14cd10f918110f70878d2ac600e131c49aa6b7a1c",
+          "schema_sha256": "db4505c995629a7c3fdf73056026232ce6e712e1e44f877b22836edd40bd190e"
+        },
+        {
+          "id": "b-02",
+          "reviewer": "b",
+          "observation_ids": [
+            "observation-e80918bc5a16df63",
+            "observation-22708cccd3fdc990",
+            "observation-301d793b59b499f3",
+            "observation-2ffd9a2405e6fce3"
+          ],
+          "prompt_sha256": "66865ddef8c8869d349e1e537220aff080f9d4b2e543d2c566b272f25719ccc0",
+          "schema_sha256": "db4505c995629a7c3fdf73056026232ce6e712e1e44f877b22836edd40bd190e"
+        },
+        {
+          "id": "b-03",
+          "reviewer": "b",
+          "observation_ids": [
+            "observation-48cf580d8ba85bbe",
+            "observation-0bfcc883f868eeca",
+            "observation-e60c7dfbc27d4d8a",
+            "observation-c1c566c5b19e92a6"
+          ],
+          "prompt_sha256": "185053624e3a8943eedefbe3057732abb8ea2b772911abfcc27f063456cb6c84",
+          "schema_sha256": "db4505c995629a7c3fdf73056026232ce6e712e1e44f877b22836edd40bd190e"
+        },
+        {
+          "id": "b-04",
+          "reviewer": "b",
+          "observation_ids": [
+            "observation-2cc68efa17b882a4",
+            "observation-6cd51c24015002ab",
+            "observation-bf8e3a05f1d81f29",
+            "observation-5f445ddceca8ac5c"
+          ],
+          "prompt_sha256": "e71a708e42de2b99a8fdc09c97722dfacf77663ce3b453cac1cd8c7eefd26f2c",
+          "schema_sha256": "db4505c995629a7c3fdf73056026232ce6e712e1e44f877b22836edd40bd190e"
+        },
+        {
+          "id": "b-05",
+          "reviewer": "b",
+          "observation_ids": [
+            "observation-36b9950a20136f8f",
+            "observation-699390e2fd97612d",
+            "observation-649f8666cb754f54",
+            "observation-ac61ba13f1d03405"
+          ],
+          "prompt_sha256": "0d6f271b1527b014b18fd551138cd79bef6271c3a951c6fc80943912bfad15aa",
+          "schema_sha256": "db4505c995629a7c3fdf73056026232ce6e712e1e44f877b22836edd40bd190e"
+        }
+      ],
+      "deadline": 1793008824.6929953,
+      "stop_on_any_failure": true
+    },
+    "recovery-03": {
+      "created_at": 1793009851.28395,
+      "original_plan_sha256": "82fa206db48c8592324e66f526a1427f73877f7169985a43183eae78d49b0ead",
+      "original_status_sha256": "1234ad1523581d93705e0a491c087df0555f09fae83654f9d2abd38c94a8adb8",
+      "previous_recovery_status_sha256": "ee05f2c3e1696840777abf0caa40eaa90672a35a850c56a6becbd518161d15e8",
+      "runner_sha256": "659ec777a792ad44de1428407ddf143dc51c6b7e539c753cad513fcbcc8465a6",
+      "reason": "Long cooldown after three intermittent provider 429 errors; reported account window was not exhausted",
+      "not_before": 1793009871.2835991,
+      "phase_budget_sha256": "d9efcb1ef4408bfc064111076df748b7cc783ae0601d54c6d72f559ee3745c7a",
+      "maximum_concurrent": 1,
+      "minimum_gap_after_completion_seconds": 180,
+      "unchanged_inputs": true,
+      "completed_original_assignments": [
+        "a-00",
+        "a-01",
+        "a-02",
+        "a-03",
+        "a-04"
+      ],
+      "assignments": [
+        {
+          "id": "a-05",
+          "reviewer": "a",
+          "observation_ids": [
+            "observation-6cd51c24015002ab",
+            "observation-82f71d00751675dd",
+            "observation-c1c566c5b19e92a6",
+            "observation-2ffd9a2405e6fce3"
+          ],
+          "prompt_sha256": "471671c71e131454a27a80a71dccc207c5401b9f02daf216603a6875bf5647f4",
+          "schema_sha256": "db4505c995629a7c3fdf73056026232ce6e712e1e44f877b22836edd40bd190e"
+        },
+        {
+          "id": "b-00",
+          "reviewer": "b",
+          "observation_ids": [
+            "observation-413ef79f506f8210",
+            "observation-d24dff7d93a11d17",
+            "observation-3d1da96df51ea4cf",
+            "observation-ba08ea8f7aaf4ce9"
+          ],
+          "prompt_sha256": "010df627a62146489eb349bd801578c5b02ec1cd053fcd81004c9af8da331357",
+          "schema_sha256": "db4505c995629a7c3fdf73056026232ce6e712e1e44f877b22836edd40bd190e"
+        },
+        {
+          "id": "b-01",
+          "reviewer": "b",
+          "observation_ids": [
+            "observation-b4c2bc675a8e1a32",
+            "observation-82f71d00751675dd",
+            "observation-6287cca1c1ff3fe6",
+            "observation-0805fd68a233aa36"
+          ],
+          "prompt_sha256": "c86015b93e4aae541eb4aab14cd10f918110f70878d2ac600e131c49aa6b7a1c",
+          "schema_sha256": "db4505c995629a7c3fdf73056026232ce6e712e1e44f877b22836edd40bd190e"
+        },
+        {
+          "id": "b-02",
+          "reviewer": "b",
+          "observation_ids": [
+            "observation-e80918bc5a16df63",
+            "observation-22708cccd3fdc990",
+            "observation-301d793b59b499f3",
+            "observation-2ffd9a2405e6fce3"
+          ],
+          "prompt_sha256": "66865ddef8c8869d349e1e537220aff080f9d4b2e543d2c566b272f25719ccc0",
+          "schema_sha256": "db4505c995629a7c3fdf73056026232ce6e712e1e44f877b22836edd40bd190e"
+        },
+        {
+          "id": "b-03",
+          "reviewer": "b",
+          "observation_ids": [
+            "observation-48cf580d8ba85bbe",
+            "observation-0bfcc883f868eeca",
+            "observation-e60c7dfbc27d4d8a",
+            "observation-c1c566c5b19e92a6"
+          ],
+          "prompt_sha256": "185053624e3a8943eedefbe3057732abb8ea2b772911abfcc27f063456cb6c84",
+          "schema_sha256": "db4505c995629a7c3fdf73056026232ce6e712e1e44f877b22836edd40bd190e"
+        },
+        {
+          "id": "b-04",
+          "reviewer": "b",
+          "observation_ids": [
+            "observation-2cc68efa17b882a4",
+            "observation-6cd51c24015002ab",
+            "observation-bf8e3a05f1d81f29",
+            "observation-5f445ddceca8ac5c"
+          ],
+          "prompt_sha256": "e71a708e42de2b99a8fdc09c97722dfacf77663ce3b453cac1cd8c7eefd26f2c",
+          "schema_sha256": "db4505c995629a7c3fdf73056026232ce6e712e1e44f877b22836edd40bd190e"
+        },
+        {
+          "id": "b-05",
+          "reviewer": "b",
+          "observation_ids": [
+            "observation-36b9950a20136f8f",
+            "observation-699390e2fd97612d",
+            "observation-649f8666cb754f54",
+            "observation-ac61ba13f1d03405"
+          ],
+          "prompt_sha256": "0d6f271b1527b014b18fd551138cd79bef6271c3a951c6fc80943912bfad15aa",
+          "schema_sha256": "db4505c995629a7c3fdf73056026232ce6e712e1e44f877b22836edd40bd190e"
+        }
+      ],
+      "deadline": 1793013471.2835991,
+      "stop_on_any_failure": true
+    }
+  },
+  "input_hashes": {
+    "rows.json": "0ee4be34e1c6007c371fde71004d37db416512357b909ed43b7121e8d838bc5a",
+    "provenance.json": "789f80e0ff71d6d3f0aa82d5ac995204edd4a51dfb4ee1ee54acb9dba773f9ce"
+  },
+  "scope": "Native model judgments only; no optimizer or new intervention outcomes"
+}
