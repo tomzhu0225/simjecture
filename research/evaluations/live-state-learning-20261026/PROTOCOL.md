@@ -60,3 +60,66 @@ and the original plan/status hashes. The postprocessor verifies input hashes,
 recovery-to-original assignment binding, candidate/citation binding, coverage
 and absence of tool use before summarizing agreement. These scheduling changes do not create additional
 independent reviewers or relax optimizer eligibility.
+
+## Direct pretrained-base versus SFT workflow replication
+
+The next effectiveness study compares the unadapted pretrained Intern-Decision-4B
+with the exact continued-SFT checkpoint behind the earlier 223.9-second mean.
+Worker-only and the frozen generic operational/check rules remain deployment
+comparators. RL superiority is not a success or release requirement. No new
+optimizer update precedes this comparison.
+
+Use the existing eight workflow mechanisms, one newly assigned fixture seed per
+mechanism, and two independent executions of every arm/configuration: 64 assigned
+workflows in 16 four-arm blocks. These are fresh trajectories within previously
+explored mechanisms, not a claim of unseen-mechanism generalization. In this
+fixture generator a new seed changes only the minimum aggregation duration;
+do not describe that as a substantially new scientific problem. Both repetitions
+retain the same fixture seed but start separate worker contexts and physical jobs.
+Freeze the assignment manifest before any new worker starts. Balance arm positions
+across blocks and randomize block order with seed 202610261337.
+
+Run one complete workflow at a time to remove inter-episode contention for the
+shared physics backend and worker provider. Helpers within that workflow may run
+concurrently. All arms use the same source, worker model/settings, task text,
+permissions, 90-second fallback, one discretionary attention allowance, scientific
+verifier, and two real WarpX controls. Use the fresh-snapshot fix for every model
+arm, temperature 1 and the original independent decoder. Do not change the
+decoding contract while measuring this checkpoint ablation. Pin all source,
+model, backend and environment identities in the execution manifest; qualify
+SFT against its saved probes before and after collection. Verify that disabled
+adapter predictions match the unadapted base before collection.
+
+The primary comparison is SFT minus base restricted completion time. A verified
+completion contributes its elapsed time capped at 650 seconds; an unverified or
+unfinished workflow contributes 650 seconds. Report verified completion counts
+alongside time, actual elapsed time, native role starts, model input tokens and
+latency, assistance use, and returned-feedback misses. An early failure must not
+look like a speed improvement. Report all assigned trials, including failures,
+and retain infrastructure failures separately without silently replacing them.
+
+Compute paired differences inside each four-arm block. Use 10,000 hierarchical
+bootstrap replicates (seed 202610261338), resampling the eight mechanism families
+and then the two repetitions within each selected family. Report a descriptive
+95% interval for the primary SFT/base contrast. For the two secondary deployment
+contrasts, SFT/worker-only and SFT/rules, report 97.5% intervals for each as a
+Bonferroni adjustment across those two contrasts. Eight mechanism clusters still
+limit precision. Equal observed completion counts do not establish population
+equivalence. A faster but less successful model is not an unqualified win.
+
+For the four healthy/recovering mechanisms, report episode-level automatic
+attention incidence, uncertainty, and the actual public evidence behind each
+dispatch. This incidence is a potentially unnecessary-attention proxy, not an
+adjudicated false-alert rate. Keep model proposals, host rejections and admitted
+dispatches distinct. Do not train on these evaluation outcomes or use them to
+select another checkpoint before reporting the frozen comparison.
+
+This study receives a separate prospective resource lease; it does not extend
+an expired earlier lease. Planned bounds are eight hours, at most 100 Colab
+compute units, 640 native starts, at most 12 starts per workflow, and at most
+six simultaneous native roles within the single active workflow. Before each
+new block require room for all four 750-second controller bounds and 48 native
+starts. Stop new assignments on infrastructure failure, preserve the incomplete
+block, and release the owned A100 after results are copied off-runtime. All
+inference stays on the remote A100, all physics on the remote P40 host. The
+local machine only orchestrates and stores small evidence/code artifacts.
