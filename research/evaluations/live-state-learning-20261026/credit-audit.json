@@ -1,0 +1,112 @@
+{
+  "rows": [
+    {
+      "index": 0,
+      "elapsed_at_request": 20.205076217651367,
+      "past_native": {
+        "sampled": 1,
+        "wait": 1
+      },
+      "whole_return_contrast": 0.12146138088519753,
+      "future_return_contrast": 0.12146138088519753
+    },
+    {
+      "index": 1,
+      "elapsed_at_request": 35.242748975753784,
+      "past_native": {
+        "sampled": 1,
+        "wait": 1
+      },
+      "whole_return_contrast": 0.12146138088519753,
+      "future_return_contrast": 0.12146138088519753
+    },
+    {
+      "index": 2,
+      "elapsed_at_request": 40.265125036239624,
+      "past_native": {
+        "sampled": 1,
+        "wait": 1
+      },
+      "whole_return_contrast": 0.12146138088519753,
+      "future_return_contrast": 0.12146138088519753
+    },
+    {
+      "index": 3,
+      "elapsed_at_request": 45.34381055831909,
+      "past_native": {
+        "sampled": 1,
+        "wait": 1
+      },
+      "whole_return_contrast": 0.12146138088519753,
+      "future_return_contrast": 0.12146138088519742
+    },
+    {
+      "index": 4,
+      "elapsed_at_request": 50.36491942405701,
+      "past_native": {
+        "sampled": 1,
+        "wait": 1
+      },
+      "whole_return_contrast": 0.12146138088519753,
+      "future_return_contrast": 0.12146138088519753
+    },
+    {
+      "index": 5,
+      "elapsed_at_request": 55.38929104804993,
+      "past_native": {
+        "sampled": 1,
+        "wait": 1
+      },
+      "whole_return_contrast": 0.12146138088519753,
+      "future_return_contrast": 0.12146138088519753
+    },
+    {
+      "index": 6,
+      "elapsed_at_request": 60.41137766838074,
+      "past_native": {
+        "sampled": 1,
+        "wait": 1
+      },
+      "whole_return_contrast": 0.12146138088519753,
+      "future_return_contrast": 0.12146138088519753
+    },
+    {
+      "index": 7,
+      "elapsed_at_request": 65.43152737617493,
+      "past_native": {
+        "sampled": 1,
+        "wait": 1
+      },
+      "whole_return_contrast": 0.12146138088519753,
+      "future_return_contrast": 0.12146138088519753
+    },
+    {
+      "index": 8,
+      "elapsed_at_request": 70.4827184677124,
+      "past_native": {
+        "sampled": 1,
+        "wait": 1
+      },
+      "whole_return_contrast": 0.12146138088519753,
+      "future_return_contrast": 0.12146138088519753
+    }
+  ],
+  "temperatures": {
+    "0.5": {
+      "mean_constrained_expert_proposal_probability": 0.4951331001425144
+    },
+    "1": {
+      "mean_constrained_expert_proposal_probability": 0.47307428659627665
+    },
+    "1.5": {
+      "mean_constrained_expert_proposal_probability": 0.47048133176913454
+    },
+    "2": {
+      "mean_constrained_expert_proposal_probability": 0.4764083423780745
+    },
+    "3": {
+      "mean_constrained_expert_proposal_probability": 0.4956668427044986
+    }
+  },
+  "scope": "Descriptive commissioning audit, no new actions, outcomes or optimizer examples"
+}
