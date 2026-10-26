@@ -138,6 +138,8 @@ arrives early enough to change its work.
 
 These static results support a reproducible experimental training path. They do
 not support publishing the adapter as a proven scientific-workflow improvement.
+The [next research design](RESEARCH_NEXT.md) relates this evidence to nearby work,
+episode-level false-alert calibration and a stronger continuation comparison.
 
 ## Retained artifacts
 
