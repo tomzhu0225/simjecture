@@ -154,9 +154,10 @@ def test_live_lifecycle_commands_export_only_complete_training_cohorts(
                 value = response(trace, packet)
                 value["model_identity"] = server_identity
                 value["behavior"]["model_identity"] = server_identity
-                value["prediction"].update(
-                    input_tokens=1000, forward_seconds=0.01, total_seconds=0.02
-                )
+                # Match DecisionModel.predict: only total scoring time is
+                # measured. The older MonitorModel forward_seconds field is
+                # absent from real decision-service responses.
+                value["prediction"].update(input_tokens=1000, total_seconds=0.02)
                 save(trace, packet, value)
                 trace.close()
                 completed = json.loads((folder / "OUTCOME.json").read_text())
@@ -188,6 +189,13 @@ def test_live_lifecycle_commands_export_only_complete_training_cohorts(
     if not fail:
         assert outcome["export"]["sampling_exercised"]
         assert outcome["export"]["collection_verified"]
+        for identity, sampled in invoked:
+            episode = json.loads((root / "receipts" / (identity + "-episode.json")).read_text())
+            assert episode["monitor_usage"] == dict(
+                inferences=int(sampled),
+                input_tokens=1000 if sampled else 0,
+                total_scoring_seconds=0.02 if sampled else 0.0,
+            )
         if purpose == "commissioning":
             assert (root / "receipts/commissioning.jsonl").exists()
     with pytest.raises(ValueError, match="already attempted"):

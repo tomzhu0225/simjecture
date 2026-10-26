@@ -106,7 +106,10 @@ def export_episode(root, block, trial, *, plan_reference, starts, output, split)
     alerts = read(root / "monitor/alerts.json") if (root / "monitor/alerts.json").is_file() else []
     rows, invalid, requested = [], 0, 0
     model_identity = temperature = None
-    usage = dict(inferences=0, input_tokens=0, forward_seconds=0.0, total_scoring_seconds=0.0)
+    # DecisionModel reports end-to-end scoring time, not a separate forward
+    # measurement. Do not require the legacy MonitorModel timing schema or
+    # invent zero seconds for an unmeasured component.
+    usage = dict(inferences=0, input_tokens=0, total_scoring_seconds=0.0)
     sampling_path = root / "monitor/SAMPLING.json"
     if trial["role"] == "sampled":
         sampling = read(sampling_path)
@@ -148,7 +151,6 @@ def export_episode(root, block, trial, *, plan_reference, starts, output, split)
             prediction = record["result"]["prediction"]
             usage["inferences"] += 1
             usage["input_tokens"] += prediction["input_tokens"]
-            usage["forward_seconds"] += prediction["forward_seconds"]
             usage["total_scoring_seconds"] += prediction["total_seconds"]
         model_identity, temperature = sampling["model_identity"], sampling["temperature"]
     elif sampling_path.exists() or alerts:
