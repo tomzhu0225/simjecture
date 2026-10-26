@@ -18,6 +18,7 @@ from collect_controlled_returns import source_identity
 from export_workflow_returns import export, require_native_evidence
 from generalization_fixture import CASES
 from paired_continuations import CRITERIA, WORKER
+from simjecture_monitor.action_distribution import DISTRIBUTIONS, INDEPENDENT
 from simjecture_monitor.attention_server import request
 from simjecture_monitor.events import digest, put
 from simjecture_monitor.native_guard import process_stat, stop_session
@@ -51,6 +52,9 @@ def sources():
 
 
 def plan(args):
+    distribution = getattr(args, "decision_distribution", INDEPENDENT)
+    if distribution not in DISTRIBUTIONS:
+        raise ValueError("Unknown action distribution")
     if args.replicates < 1 or args.purpose == "train" and args.replicates < 2:
         raise ValueError(
             "Training requires at least two policy and two control episodes per configuration"
@@ -113,6 +117,7 @@ def plan(args):
         model_policy=args.model_policy,
         adapter_sha256=args.adapter_sha256,
         temperature=args.temperature,
+        decision_distribution=distribution,
         order_seed=args.order_seed,
         scope="Fresh native episodes sharing task configuration; no matched private worker prefix",
         maximum_parallel_workflows=2,
@@ -153,6 +158,8 @@ def run(args):
             value["stage"] != "ready"
             or frozen["model_policy"] not in value["policies"]
             or value.get("temperature") != frozen["temperature"]
+            or value.get("decision_distribution", INDEPENDENT)
+            != frozen.get("decision_distribution", INDEPENDENT)
         ):
             raise ValueError("Serving policy or temperature differs from the planned behavior")
         if (
@@ -215,6 +222,8 @@ def run(args):
                 str(trial["sampling_seed"]),
                 "--sampling-split",
                 frozen["split"],
+                "--decision-distribution",
+                frozen.get("decision_distribution", INDEPENDENT),
             ]
         try:
             with (root / (trial["id"] + ".log")).open("w") as log:
@@ -339,6 +348,7 @@ def main():
     planning.add_argument("--model-policy", default="adapted")
     planning.add_argument("--adapter-sha256", required=True)
     planning.add_argument("--temperature", type=float, default=3.0)
+    planning.add_argument("--decision-distribution", choices=DISTRIBUTIONS, default=INDEPENDENT)
     planning.add_argument("--backend", type=Path, required=True)
     for name in [
         "budget",

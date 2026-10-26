@@ -310,6 +310,14 @@ automatic dispatches or optimizer updates. It validates collection after an
 offline timing-schema export repair, and documents why the observed return
 difference cannot establish intervention value.
 
+The optional [constrained decoding profile](specs/scientific-attention-0.2-draft/DECODING.md)
+jointly samples a route and a compatible visible question. Set
+`--decision-distribution scientific-route-question/v1` in both serving and the
+workflow plan. Its behavior receipts, replay and differentiable RL loss use the
+same normalized distribution. The default independent profile and general-task
+inputs remain unchanged. This removes impossible output combinations; it does
+not guarantee fewer false alerts or more useful interventions.
+
 ## Follow-up reward design
 
 The [draft scientific attention interface](specs/scientific-attention-0.1-draft/README.md)

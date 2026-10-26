@@ -11,41 +11,42 @@ import contextlib
 import hashlib
 import json
 import math
-import random
 import secrets
 import socket
 import time
 from pathlib import Path
 
 from . import attention_support as protocol
+from .action_distribution import (
+    CONTRACT,
+    DISTRIBUTIONS,
+    INDEPENDENT,
+    choose,
+    decoding_receipt,
+    validate_support,
+)
 from .decision_interface import choice_from_answers, encode_request, scientific_request
 from .events import put
 
 
 def sampled_answers(probabilities, seed):
-    rng = random.Random(seed)
-    chosen = {}
-    log_probability = 0.0
-    for field, values in probabilities.items():
-        if (
-            not values
-            or any(not math.isfinite(v) or v < 0 for v in values.values())
-            or not math.isclose(sum(values.values()), 1.0, rel_tol=1e-5, abs_tol=1e-6)
-        ):
-            raise ValueError("Invalid behavior distribution")
-        label = rng.choices(list(values), weights=list(values.values()), k=1)[0]
-        chosen[field] = label
-        log_probability += math.log(values[label])
-    return chosen, log_probability
+    return choose(probabilities, seed=seed)
 
 
 class AttentionService:
-    def __init__(self, model, *, adapter_loaded, maximum_tokens=4096):
+    def __init__(
+        self, model, *, adapter_loaded, maximum_tokens=4096, decision_distribution=INDEPENDENT
+    ):
         self.model = model
         self.adapter_loaded = adapter_loaded
         self.maximum_tokens = maximum_tokens
+        if decision_distribution not in DISTRIBUTIONS:
+            raise ValueError("Unknown action distribution")
+        self.decision_distribution = decision_distribution
 
     def predict(self, request):
+        if request.get("distribution", self.decision_distribution) != self.decision_distribution:
+            raise ValueError("Requested action distribution is not the served distribution")
         packet = protocol.Observation.model_validate(request["observation"])
         policy = request.get("policy", "adapted" if self.adapter_loaded else "base")
         if policy not in {"base", "adapted"} or policy == "adapted" and not self.adapter_loaded:
@@ -101,10 +102,20 @@ class AttentionService:
             greedy_answers=dict(prediction["answers"]),
         )
         answers = prediction["answers"]
+        if self.decision_distribution == CONTRACT:
+            validate_support(prediction["probabilities"], row)
+            answers, _ = choose(prediction["probabilities"], distribution=CONTRACT)
+        result["decoding"] = decoding_receipt(
+            prediction["probabilities"], self.decision_distribution
+        )
         if request.get("sample"):
             if type(request.get("seed")) is not int:
                 raise ValueError("Sampled decisions require an explicit integer seed")
-            answers, logp = sampled_answers(prediction["probabilities"], request["seed"])
+            answers, logp = choose(
+                prediction["probabilities"],
+                seed=request["seed"],
+                distribution=self.decision_distribution,
+            )
             result["behavior"] = dict(
                 prompt_sha256=prediction["prompt_sha256"],
                 probabilities=prediction["probabilities"],
@@ -114,7 +125,10 @@ class AttentionService:
                 temperature=getattr(self.model, "temperature", 1.0),
                 model_identity=self.model.identity,
                 adapter_active=policy == "adapted",
+                distribution=self.decision_distribution,
+                decoding=result["decoding"],
             )
+        result["decision_answers"] = answers
         try:
             choice = choice_from_answers(answers)
             decision = protocol.bind_choice(packet, view, choice, policy_id=policy_id)
@@ -161,6 +175,7 @@ def main():
     parser.add_argument("--auth-token-file", type=Path)
     parser.add_argument("--kernel-profile", choices=("fla-prefill",))
     parser.add_argument("--temperature", type=float, default=1.0)
+    parser.add_argument("--decision-distribution", choices=DISTRIBUTIONS, default=INDEPENDENT)
     args = parser.parse_args()
     if not math.isfinite(args.temperature) or args.temperature <= 0:
         parser.error("--temperature must be finite and positive")
@@ -179,7 +194,10 @@ def main():
     )
     model.temperature = args.temperature
     service = AttentionService(
-        model, adapter_loaded=bool(args.adapter), maximum_tokens=args.maximum_tokens
+        model,
+        adapter_loaded=bool(args.adapter),
+        maximum_tokens=args.maximum_tokens,
+        decision_distribution=args.decision_distribution,
     )
     started = time.time()
     status = dict(
@@ -189,6 +207,7 @@ def main():
         source_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         policies=["base", "adapted"] if args.adapter else ["base"],
         temperature=args.temperature,
+        decision_distribution=args.decision_distribution,
         requests=0,
     )
     serve(

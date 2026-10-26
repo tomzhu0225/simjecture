@@ -8,7 +8,7 @@ import time
 from pathlib import Path
 
 from . import attention_support as protocol
-from .attention_server import sampled_answers
+from .action_distribution import DISTRIBUTIONS, INDEPENDENT, kind, replay
 from .decision_interface import scientific_request
 from .events import digest, put
 
@@ -18,11 +18,13 @@ def file_reference(path):
 
 
 class SamplingTrace:
-    def __init__(self, directory, *, seed, split="train"):
+    def __init__(self, directory, *, seed, split="train", decision_distribution=INDEPENDENT):
         if type(seed) is not int:
             raise ValueError("Sampling requires an explicit integer seed")
         if split not in {"train", "commissioning"}:
             raise ValueError("Unknown sampling-data purpose")
+        if decision_distribution not in DISTRIBUTIONS:
+            raise ValueError("Unknown action distribution")
         self.directory = Path(directory)
         self.path = self.directory / "SAMPLING.json"
         if self.path.exists():
@@ -32,6 +34,7 @@ class SamplingTrace:
             episode_id=self.directory.parent.name,
             seed=seed,
             split=split,
+            decision_distribution=decision_distribution,
             created_at=time.time(),
             closed=False,
             requests=[],
@@ -62,7 +65,7 @@ class SamplingTrace:
             )
         )
         self.save()
-        return dict(sample=True, seed=seed)
+        return dict(sample=True, seed=seed, distribution=self.data["decision_distribution"])
 
     def record(self, packet, result, *, decision_path):
         if self.data["closed"]:
@@ -70,6 +73,8 @@ class SamplingTrace:
         behavior = result.get("behavior")
         if not behavior:
             raise ValueError("Missing sampled behavior; episode is not training eligible")
+        if kind(behavior) != self.data["decision_distribution"]:
+            raise ValueError("Behavior distribution differs from the assigned episode")
         requested = [r for r in self.data["requests"] if r["seed"] == behavior.get("seed")]
         if len(requested) != 1:
             raise ValueError("Response has no unique assigned sampling request")
@@ -104,13 +109,13 @@ class SamplingTrace:
             or behavior["probabilities"] != prediction["probabilities"]
         ):
             raise ValueError("Behavior does not match the scored model input")
-        answers, logp = sampled_answers(behavior["probabilities"], request["seed"])
+        view = protocol.PackedView.model_validate(result["view"])
+        row = scientific_request(packet, view)
+        answers, logp = replay(behavior, row)
         if answers != behavior["sampled_answers"] or not math.isclose(
             logp, behavior["sampled_joint_log_probability"], abs_tol=1e-10, rel_tol=1e-10
         ):
             raise ValueError("Logged action is not the assigned categorical draw")
-        view = protocol.PackedView.model_validate(result["view"])
-        row = scientific_request(packet, view)
         row.update(
             id="decision-"
             + digest([self.data["episode_id"], request["index"], request["packet_sha256"]])[:20],

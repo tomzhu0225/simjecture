@@ -16,6 +16,13 @@ import time
 from collections import defaultdict
 from pathlib import Path
 
+from simjecture_monitor.action_distribution import (
+    CONTRACT,
+    gradient_terms,
+    kind,
+    log_probability,
+    replay,
+)
 from simjecture_monitor.decision_interface import encode_request, training_symbols
 from simjecture_monitor.events import put
 
@@ -136,6 +143,24 @@ def main():
     ):
         raise ValueError("Training limits and rates must be positive")
     rows = read_data(args.data)
+    distribution = None
+    if args.mode == "policy-gradient":
+        distributions = {kind(row["behavior"]) for row in rows}
+        if len(distributions) != 1:
+            raise ValueError("A training cohort must use one declared action distribution")
+        distribution = distributions.pop()
+        if distribution == CONTRACT:
+            for row in rows:
+                answers, logp = replay(row["behavior"], row)
+                if answers != {
+                    k: t["label"] for k, t in row["targets"].items()
+                } or not math.isclose(
+                    logp,
+                    row["behavior"]["sampled_joint_log_probability"],
+                    abs_tol=1e-10,
+                    rel_tol=1e-10,
+                ):
+                    raise ValueError("Training choice differs from constrained behavior")
     advantage_audit = None
     normalization = dict(unit="training_row", row_to_episode_scale=1.0)
     if args.advantage_baseline in {"measured-wait", "workflow-wait"}:
@@ -177,6 +202,7 @@ def main():
         started_at=started,
         rows=len(rows),
         loss_normalization=normalization,
+        decision_distribution=distribution,
         arguments={
             key: str(value) if isinstance(value, Path) else value
             for key, value in vars(args).items()
@@ -240,6 +266,7 @@ def main():
     put(args.output / "trainable-modules.json", trainable)
     if args.mode == "policy-gradient":
         maximum_error = 0
+        maximum_joint_logp_error = 0
         policy.model.eval()
         for row in rows:
             prediction = policy.predict(row)
@@ -250,9 +277,23 @@ def main():
                 if set(old) != set(values) or abs(sum(old.values()) - 1) > 1e-5:
                     raise ValueError("Behavior probability support mismatch")
                 maximum_error = max(maximum_error, max(abs(old[k] - v) for k, v in values.items()))
+            if distribution == CONTRACT:
+                actual = log_probability(
+                    prediction["probabilities"], row["behavior"]["sampled_answers"], distribution
+                )
+                maximum_joint_logp_error = max(
+                    maximum_joint_logp_error,
+                    abs(actual - row["behavior"]["sampled_joint_log_probability"]),
+                )
         if maximum_error > 0.002:
             raise ValueError(f"Initial checkpoint does not reproduce behavior: {maximum_error}")
         status["behavior_probability_max_error"] = maximum_error
+        if distribution == CONTRACT:
+            if maximum_joint_logp_error > 0.002:
+                raise ValueError(
+                    "Initial checkpoint does not reproduce constrained action probabilities"
+                )
+            status["behavior_joint_log_probability_max_error"] = maximum_joint_logp_error
     policy.model.gradient_checkpointing_enable(
         gradient_checkpointing_kwargs={"use_reentrant": False}
     )
@@ -304,16 +345,21 @@ def main():
                 kl = values.new_zeros(())
             else:
                 current_logp, old_logp, kl = values.new_zeros(()), 0.0, values.new_zeros(())
-                for position, (field, labels) in enumerate(item["labels"].items()):
-                    logp = (
-                        values[position, item["symbol_ids"][: len(labels)]] / policy.temperature
-                    ).log_softmax(-1)
-                    selected = labels.index(str(row["targets"][field]["label"]))
-                    old = row["behavior"]["probabilities"][field]
-                    current_logp = current_logp + logp[selected]
-                    old_logp += math.log(old[labels[selected]])
-                    reference = torch.tensor([old[k] for k in labels], device="cuda")
-                    kl = kl + (logp.exp() * (logp - reference.clamp_min(1e-12).log())).sum()
+                if distribution == CONTRACT:
+                    current_logp, old_logp, kl = gradient_terms(
+                        torch, values, item, row["behavior"], temperature=policy.temperature
+                    )
+                else:
+                    for position, (field, labels) in enumerate(item["labels"].items()):
+                        logp = (
+                            values[position, item["symbol_ids"][: len(labels)]] / policy.temperature
+                        ).log_softmax(-1)
+                        selected = labels.index(str(row["targets"][field]["label"]))
+                        old = row["behavior"]["probabilities"][field]
+                        current_logp = current_logp + logp[selected]
+                        old_logp += math.log(old[labels[selected]])
+                        reference = torch.tensor([old[k] for k in labels], device="cuda")
+                        kl = kl + (logp.exp() * (logp - reference.clamp_min(1e-12).log())).sum()
                 ratio = (current_logp - old_logp).exp()
                 advantage = advantages[row["id"]]
                 loss = (
