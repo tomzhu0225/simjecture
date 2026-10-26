@@ -37,6 +37,24 @@ def validate(root):
     for folder in folders:
         if not folder.is_dir():
             continue
+        if folder != root:
+            recovery = read(folder / "PLAN.json")
+            if recovery["original_plan_sha256"] != fingerprint(root / "PLAN.json") or recovery[
+                "original_status_sha256"
+            ] != fingerprint(root / "STATUS.json"):
+                raise ValueError("Recovery no longer binds the original plan and failed attempt")
+            if any(planned.get(batch["id"]) != batch for batch in recovery["assignments"]):
+                raise ValueError("Recovery changed an original assignment")
+            previous = recovery.get("previous_recovery_status_sha256")
+            if previous and not any(
+                other.is_dir()
+                and other.name < folder.name
+                and (other / "STATUS.json").is_file()
+                and fingerprint(other / "STATUS.json") == previous
+                for other in folders
+                if other != root
+            ):
+                raise ValueError("Recovery no longer binds its previous terminal attempt")
         for path in sorted(folder.glob("*/execution.json")):
             result = read(path)
             identity = result["id"]
@@ -154,8 +172,7 @@ def validate(root):
         schema="live-observation-label-audit/v1",
         eligible_for_optimizer=False,
         reason=(
-            "Model judgments require evidence review; "
-            "consensus is not measured intervention value"
+            "Model judgments require evidence review; consensus is not measured intervention value"
         ),
         complete=len(by_batch) == len(planned),
         planned_calls=len(planned),

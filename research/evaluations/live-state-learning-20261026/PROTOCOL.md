@@ -56,7 +56,7 @@ Both amendments keep the original prompts, schema, assignments, overall native
 start ceiling and deadline. Failed attempts remain in their original folders;
 successful responses are not overwritten or rerun. A failed provider request is
 not a scientific judgment. Separate recovery plans record their runner hashes
-and the original plan/status hashes. The postprocessor verifies these records,
-candidate/citation binding, full assignment coverage and absence of tool use
-before summarizing agreement. These scheduling changes do not create additional
+and the original plan/status hashes. The postprocessor verifies input hashes,
+recovery-to-original assignment binding, candidate/citation binding, coverage
+and absence of tool use before summarizing agreement. These scheduling changes do not create additional
 independent reviewers or relax optimizer eligibility.
