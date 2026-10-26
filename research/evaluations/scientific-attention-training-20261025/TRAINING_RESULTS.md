@@ -60,6 +60,10 @@ Consequently, a positive training advantage does not establish that assistance
 was better than continuing unaided. The newer measured-wait collector in
 [PR 68](https://github.com/tomzhu0225/simjecture/pull/68) adds that comparison;
 these evaluated weights were not trained with it.
+The pilot also resumes the main worker immediately from each public checkpoint.
+It therefore measures assistance to an awake worker, rather than the value of
+interrupting the deployed parked-worker wait. This is a training/deployment
+difference that an explicit wait baseline alone does not resolve.
 
 ## Authored scientific snapshot test
 

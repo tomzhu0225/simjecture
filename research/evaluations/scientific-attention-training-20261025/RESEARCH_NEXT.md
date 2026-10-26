@@ -79,6 +79,14 @@ in randomized order. Both paths retain explicit worker help. New branches start
 fresh native sessions with the same public context and artifacts; no private
 provider state is claimed to be cloned.
 
+The existing public-checkpoint runner immediately starts the main worker in
+both branches. Its control withholds automatic assistance but does not leave
+the worker parked. For early-wakeup training, first collect actual parked-worker
+trajectories with the normal terminal-event/fallback policy in the control.
+An alternative is to log sampled decisions and full episode returns directly
+from the streaming supervisor. Public-checkpoint assistance values must not be
+presented as measurements of that different operating mode.
+
 Train on the resulting difference in verified quality and declared costs, while
 retaining the individual components. Repeated controls reduce noise but do not
 make a small sample a reliable value estimate. Failed transfers and missing
