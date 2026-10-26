@@ -145,6 +145,7 @@ def main():
         verification_sha256=digest(status["quality"]),
         outcome_sha256=hashlib.sha256(raw).hexdigest(),
         outcome=outcome.model_dump(),
+        solver_outcomes_confirmed=True,
         utility=measured["total"] - admitted["invalid_penalty"] - overhead_penalty,
         utility_components=measured["components"]
         | dict(invalid_proposal=-admitted["invalid_penalty"], admission_overhead=-overhead_penalty),
