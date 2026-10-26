@@ -76,3 +76,39 @@ def test_changed_model_input_is_not_executed(tmp_path, monkeypatch):
     row["state"] += " substituted evidence"
     with pytest.raises(ValueError, match="changed after"):
         loaded.admission(path, row)
+
+
+@pytest.mark.parametrize(
+    "status,transport,eligible",
+    [
+        ("succeeded", None, True),
+        ("failed", None, True),
+        ("timeout", None, True),
+        ("unknown", "failed", False),
+        ("queued", None, False),
+        ("running", None, False),
+        ("succeeded", "failed", False),
+    ],
+)
+def test_actual_solver_failures_remain_rewards_but_unconfirmed_transfers_do_not(
+    tmp_path, monkeypatch, status, transport, eligible
+):
+    import json
+
+    loaded = module(monkeypatch)
+    folder = tmp_path / "research/runs/control"
+    folder.mkdir(parents=True)
+    (folder / "receipt.json").write_text(
+        json.dumps(dict(status=status, transport_status=transport))
+    )
+    if eligible:
+        loaded.require_confirmed_solver_outcomes(tmp_path)
+    else:
+        with pytest.raises(ValueError, match="ineligible for training"):
+            loaded.require_confirmed_solver_outcomes(tmp_path)
+
+
+def test_missing_physics_cannot_be_treated_as_a_measured_failure(tmp_path, monkeypatch):
+    loaded = module(monkeypatch)
+    with pytest.raises(ValueError, match="No physical execution"):
+        loaded.require_confirmed_solver_outcomes(tmp_path)

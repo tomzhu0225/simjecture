@@ -78,6 +78,21 @@ def admission(checkpoint, row):
     )
 
 
+def require_confirmed_solver_outcomes(root):
+    """An unavailable transfer is not evidence that the sampled policy failed."""
+    paths = list((Path(root) / "research/runs").glob("*/receipt.json"))
+    if not paths:
+        raise ValueError("No physical execution receipts; continuation is ineligible for training")
+    for path in paths:
+        receipt = json.loads(path.read_text())
+        if receipt.get("status") not in {"succeeded", "failed", "timeout"} or receipt.get(
+            "transport_status"
+        ) in {"failed", "timeout"}:
+            raise ValueError(
+                "Unconfirmed solver transport; continuation is ineligible for training"
+            )
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--sample", type=Path, required=True)
@@ -119,6 +134,7 @@ def main():
     status = json.loads((args.root / "CONTINUATION.json").read_text())
     if status["stage"] != "completed":
         raise ValueError("Collector failed; this is not a measured task outcome")
+    require_confirmed_solver_outcomes(args.root)
     measured = utility(outcome, RewardWeights())
     overhead_penalty = 0.1 * admitted["overhead_seconds"] / 650
     receipt = dict(
