@@ -139,3 +139,37 @@ def test_rl_rejects_scripted_outcomes_and_constant_measured_returns(tmp_path):
     (tmp_path / "receipt.json").write_text("{}")
     with pytest.raises(ValueError, match="receipt changed"):
         module.measured_advantages([request], tmp_path)
+
+
+def test_rl_initial_adapter_identity_is_checked_before_loading_a_model(tmp_path):
+    path = Path(__file__).parents[1] / "scripts/train_decisions.py"
+    spec = importlib.util.spec_from_file_location("trainer_identity_test", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    base, adapter = tmp_path / "base", tmp_path / "adapter"
+    base.mkdir()
+    adapter.mkdir()
+    (base / "config.json").write_text("{}")
+    files = {}
+    for name in ["adapter_config.json", "adapter_model.safetensors"]:
+        (adapter / name).write_text("identity-only test fixture")
+        files[name] = hashlib.sha256((adapter / name).read_bytes()).hexdigest()
+    rows = [
+        dict(
+            behavior=dict(
+                adapter_active=True,
+                model_identity=dict(
+                    checkpoint_config_sha256=hashlib.sha256(
+                        (base / "config.json").read_bytes()
+                    ).hexdigest(),
+                    adapter_files_sha256=files,
+                ),
+            )
+        )
+    ]
+    module.require_behavior_weights(rows, base, adapter)
+    (adapter / "adapter_model.safetensors").write_text("a nearby but different update")
+    with pytest.raises(ValueError, match="differs from logged behavior"):
+        module.require_behavior_weights(rows, base, adapter)
+    rows[0]["behavior"]["adapter_active"] = False
+    module.require_behavior_weights(rows, base, None)

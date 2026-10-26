@@ -231,6 +231,77 @@ fallback timer. Training early wakeups requires trajectories from the deployed
 parked-worker lifecycle, with that lifecycle shared by the control. Changing the
 return baseline alone does not remove this operating-mode difference.
 
+## Returns from the deployed parked-worker loop
+
+`collect_workflow_returns.py` uses the same asynchronous scientific workflow as
+the live comparison. A worker submits its real computation and yields; the
+monitor samples categorical proposals only while that worker is parked and no
+assistance is already active. Host admission and ordinary completion/fallback
+wakeups remain responsible for resumption. The control runs that same lifecycle
+with no automatic attention and retains explicit worker-requested help.
+
+This addresses a different question from the public-checkpoint collector above:
+whether attention improves a full deployed workflow. Fresh native episodes
+share task configuration, criteria and budgets; they do not share an identical
+private worker prefix. At least two sampled and two wait episodes per training
+configuration are required. A one-pair commissioning mode checks integration,
+marks its rows `commissioning`, and refuses optimizer eligibility.
+
+On the remote A100, serve the frozen behavior adapter at the declared sampling
+temperature with `python -m simjecture_monitor.attention_server` (or the named
+adapter server), adding `--temperature 3`. On the coordinator, for example:
+
+```bash
+python packages/simjecture-monitor/scripts/collect_workflow_returns.py plan \
+  --root /study/parked-returns --purpose train --replicates 2 \
+  --family progressing_work --family update_cycle --family source_binding \
+  --configuration-seed 202611010000 --order-seed 2026110101 \
+  --model-policy adapted --adapter-sha256 ADAPTER_WEIGHTS_SHA256 --temperature 3 \
+  --backend /study/plasma-backend.json
+python packages/simjecture-monitor/scripts/collect_workflow_returns.py run \
+  --root /study/parked-returns --budget /study/native-budget.json \
+  --backend /study/plasma-backend.json --wrapper /study/native-codex \
+  --python /remote/science-env/bin/python --plasma-assets /study/plasma \
+  --socket /private/attention.sock --auth-token-file /private/attention.token
+```
+
+The plan freezes assignments, code fingerprints, actor configuration, controls,
+sampling seeds, temperature and adapter weight identity before collection.
+Each sampled request and response is bound to its actual observation, input
+prompt, distribution and admission receipt. Missing responses, recorded provider
+errors, unknown solver transport or inconsistent artifacts prevent reward
+export. Failed scientific work with confirmed execution remains an outcome.
+The exporter keeps episodes with no decision opportunity in the cohort while
+creating no fictitious policy sample for them.
+
+All decisions from an episode receive its measured return minus the mean of
+that configuration's separate wait episodes. Polls are correlated decisions,
+not additional scientific trials. Return is verified whole-workflow quality
+minus the declared costs of actual native starts, whole-workflow elapsed time,
+required feedback misses and duplicate dispatches. Invalid proposals and model
+inference work are reported separately; host-suppressed invalid proposals receive
+no invented fixed utility penalty. The coefficients are research proxies, not
+provider billing prices.
+
+Only a complete eligible training cohort produces `receipts/train.jsonl`.
+The portable manifest retains every assigned episode and every sampled decision;
+the trainer rejects selected subsets. On the remote A100:
+
+```bash
+python packages/simjecture-monitor/scripts/train_decisions.py \
+  --base /models/pinned-base --initial-adapter /models/behavior-adapter \
+  --data /study/receipts/train.jsonl --output /study/parked-update \
+  --mode policy-gradient --advantage-baseline workflow-wait --temperature 3 \
+  --maximum-tokens 8192 --kernel-profile fla-prefill \
+  --steps 8 --accumulation 4 --learning-rate 1e-5
+```
+
+The initial adapter must reproduce the logged behavior probabilities. The update
+is an episodic clipped policy-gradient surrogate; its rows are not independent
+contextual-bandit outcomes. Controls reduce sampling noise but do not eliminate
+native-worker variation. New held-out workflow evaluation and general-decision
+retention checks are still needed before claiming a benefit from training.
+
 ## Follow-up reward design
 
 The [draft scientific attention interface](specs/scientific-attention-0.1-draft/README.md)

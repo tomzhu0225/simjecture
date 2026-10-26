@@ -111,6 +111,9 @@ class AttentionService:
                 sampled_answers=answers,
                 sampled_joint_log_probability=logp,
                 seed=request["seed"],
+                temperature=getattr(self.model, "temperature", 1.0),
+                model_identity=self.model.identity,
+                adapter_active=policy == "adapted",
             )
         try:
             choice = choice_from_answers(answers)
@@ -157,7 +160,10 @@ def main():
     parser.add_argument("--idle-seconds", type=int, default=1800)
     parser.add_argument("--auth-token-file", type=Path)
     parser.add_argument("--kernel-profile", choices=("fla-prefill",))
+    parser.add_argument("--temperature", type=float, default=1.0)
     args = parser.parse_args()
+    if not math.isfinite(args.temperature) or args.temperature <= 0:
+        parser.error("--temperature must be finite and positive")
     auth_token = args.auth_token_file.read_text().strip() if args.auth_token_file else None
     if auth_token is not None and len(auth_token) < 32:
         raise ValueError("The optional forwarding credential must have at least 32 characters")
@@ -171,7 +177,7 @@ def main():
         max_tokens=args.maximum_tokens,
         kernel_profile=args.kernel_profile,
     )
-    model.temperature = 1.0
+    model.temperature = args.temperature
     service = AttentionService(
         model, adapter_loaded=bool(args.adapter), maximum_tokens=args.maximum_tokens
     )
@@ -182,6 +188,7 @@ def main():
         model_identity=model.identity,
         source_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         policies=["base", "adapted"] if args.adapter else ["base"],
+        temperature=args.temperature,
         requests=0,
     )
     serve(
