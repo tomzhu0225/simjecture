@@ -157,3 +157,34 @@ repetitions even when family means agree, rejects duplicate block/arm records,
 caps verified completion times at the shared horizon, and cannot turn an early
 failure or an unstarted comparator into an apparent timing advantage. These are
 checks of the analysis implementation, not scientific results.
+
+### Interruption after two starts
+
+Recovery passed all three base/SFT probability probes and began the registered
+first block. The rules episode completed and independently verified both real
+WarpX controls and its final report in 351.5 seconds, with four native starts
+and one automatic help request. The base episode's first native invocation
+returned HTTP 429; no simulation or model attention decision ran in that episode.
+It remains a recorded failure, with the prescribed 650-second restricted-time
+penalty, rather than a replacement trial.
+
+The long-lived proxy tunnel through the local host also disconnected. The
+coordinator's A100 SSH link was lost, so final probability requalification could
+not run. Collection stopped before SFT or worker-only started: two attempted,
+62 unstarted, and zero complete four-arm blocks. There is no SFT/base workflow
+contrast from this attempt. The [interruption evidence](replication-interruption.json)
+retains the outcomes, verification, coverage and failed native events.
+
+A read-only account check reported ordinary usage allowed, 34% of the weekly
+Codex window used, and no reached-limit or spend-control flag. This does not
+identify the reason for the 429. The allocated A100 was explicitly released
+through the already approved local US route when the broken forwarding tunnel
+prevented the remote guard from doing so; absence of that owned endpoint was
+verified. Native actors and the owned P40 connection were closed.
+
+Before further scientific assignments, test a direct coordinator-to-Colab link
+and bounded recovery from an intentionally dropped owned SSH connection using
+saved qualification inputs only. Keep the existing attempted episodes intact.
+The optional transport adapter may replay an identical stateless prediction
+once within 20 seconds; it never dispatches assistance or relaxes host freshness
+checks. This engineering commissioning is not another scientific test episode.

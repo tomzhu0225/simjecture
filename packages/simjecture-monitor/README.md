@@ -95,6 +95,19 @@ remain errors; the comparison does not silently attribute rule decisions to the
 learned policy. Colab development can forward this socket through its authorized
 CLI SSH connection. Runtime allocation and release are managed separately.
 
+For an inference link whose SSH process is supervised and reconnected separately,
+`python -m simjecture_monitor.attention_transport` can keep a private local listener
+available across a short interruption. Supply `--socket`, `--upstream`, `--log`
+and the lease's Unix timestamp in `--stop-by`. It waits at most 20 seconds inside
+the caller's 25-second timeout and permits one identical replay if a reply is
+lost. Application errors are returned without replay. Logs contain timing,
+attempt counts and a request digest with authentication removed.
+
+This adapter is only for the stateless prediction/health service. It must not
+front commands that execute tools or dispatch assistance. Sampling requests keep
+their original seed. The caller retains all freshness, identity, admission and
+actual-dispatch checks; a delayed prediction can still be rejected as stale.
+
 ## Real worker trials
 
 `scripts/live_trials.py` launches real native Codex sessions and uses the merged
