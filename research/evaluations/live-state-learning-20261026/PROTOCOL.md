@@ -123,3 +123,37 @@ starts. Stop new assignments on infrastructure failure, preserve the incomplete
 block, and release the owned A100 after results are copied off-runtime. All
 inference stays on the remote A100, all physics on the remote P40 host. The
 local machine only orchestrates and stores small evidence/code artifacts.
+
+### Execution record
+
+The native `gpt-6-astra` preflight completed successfully. Its one start is
+deducted from the registered ceiling, leaving at most 639 workflow role starts.
+The remote P40 preflight found the pinned solver binary unchanged and both GPUs
+idle apart from small resident allocations. GPU 0 remains the frozen backend.
+
+The first allocation attempt obtained an A100 but its SSH master failed because
+the control pathname plus SSH's temporary suffix exceeded the Unix socket limit.
+No timed workflow started. The guard released that runtime; all 64 assignments
+remain recorded as unstarted in that attempt. This is an orchestration setup
+failure, not a scientific outcome or a checkpoint performance result.
+
+Recovery uses shorter `rep2` resource names and the separate output directory
+`base-sft-replication-v2`. It preserves the assignment-manifest hash, source
+revision, checkpoints, original eight-hour deadline and 100-unit spending
+ceiling. It does not replace or rerun a scientific trial. Both model inference
+and physical jobs remain off the local host. The first attempt's records are
+retained separately.
+
+The [registration](replication-registration.json) binds source, controller,
+analysis, preflight and backend hashes. The [launch record](replication-launch.json)
+records the owned processes and lease. Exact deployment, serving, serial
+collection and finalization scripts are retained in `replication-operations/`.
+The finalizer audits every started trial, separately lists unstarted assignments,
+then runs the registered hierarchical comparison. Early failures receive the
+650-second penalty; unstarted trials do not receive fabricated outcomes.
+
+Local analysis checks verified that resampling retains variation between
+repetitions even when family means agree, rejects duplicate block/arm records,
+caps verified completion times at the shared horizon, and cannot turn an early
+failure or an unstarted comparator into an apparent timing advantage. These are
+checks of the analysis implementation, not scientific results.

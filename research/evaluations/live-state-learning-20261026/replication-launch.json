@@ -1,0 +1,23 @@
+{
+  "stage": "running",
+  "started_at": 1793022267.8502076,
+  "pids": {
+    "p40_master": 3681070,
+    "deploy_rep2_a100.py": 3681073,
+    "run_base_sft_rep2.py": 3681074,
+    "finish_rep2.py": 3681075,
+    "allocate_rep2.py": 3681076
+  },
+  "launched_at": 1793022268.861801,
+  "lease": {
+    "created_at": 1793022267.8498142,
+    "stop_by": 1793050736.8444118,
+    "recovery_of": "replication-lease.json",
+    "session": "simjecture-science-20261026n",
+    "starting_balance": 1163.28,
+    "observed_balance": 1163.28,
+    "compute_cap": 100,
+    "scope": "Registered repeated base/SFT scientific workflows; separate phase from the closed original cycle",
+    "phase_plan_sha256": "49a4dfc5d6d777dcc562faab9940de5c44af4d027b04fec968f50a6d10117bc4"
+  }
+}
