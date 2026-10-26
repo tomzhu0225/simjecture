@@ -1,0 +1,257 @@
+{
+  "id": "exp_635537f1043786f7af0bd65e",
+  "status": "succeeded",
+  "operator_guidance_ids": [],
+  "created_at": 1793002967.6298857,
+  "timeout": 150,
+  "execution_deadline": 1793007061.4697688,
+  "workspace_limit_bytes": 3481969371,
+  "binding": {
+    "source": "calculation.py",
+    "args": [
+      "flash",
+      "--handoff",
+      "--eta",
+      ".001",
+      "--nx",
+      "128",
+      "--ny",
+      "128",
+      "--alpha",
+      "20",
+      "--tmax",
+      ".81",
+      "--plot-interval",
+      ".1",
+      "--ranks",
+      "4",
+      "--iprocs",
+      "2",
+      "--jprocs",
+      "2",
+      "--output",
+      "flash",
+      "--summary",
+      "macro.json"
+    ],
+    "inputs": {
+      "calculation.py": "cd6c4db946c144a2f5bc86c877e929c7f7ecd334ced012da9153ea43c5546823",
+      "macro_study.py": "fbea5276fe560d3f55dc8eb92c6695631e7bc2ab1a47233e9875952f15afa632",
+      "flash_islands.py": "26f348973b4edeb761f6a25f7023f6c3ea22660f61297a4a58c3d6cc49991588",
+      "transfer_study.py": "9b28f15a710e6dcc0e9866e8b7c697c6ead1f1ad7ab51b7ce663efb76a648786",
+      "extract_flash.py": "28608ddeab7d71584abd32ce910b66621d8ba9cc49d2bb44eb1ead3922e509a0",
+      "prepare_patch.py": "0be359a997ac75af4d376f96f18901ed815e2d1b07e2c48336233f4a35b4e20d",
+      "PROTOCOL.json": "ab81b31d2d1ba859b471688781114ff4b4981d8f4e4c6d00e11c5b2b5cee3290",
+      "macro_comparison.json": "e3c17cd9a624ed1a1ff3e2871c4267e0fd38deb0ee1fed96adac7442e52f8e26"
+    },
+    "capability": "flash-island-coalescence-resistive-mhd-4.8",
+    "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+  },
+  "outputs": [
+    "macro.json",
+    "result.json",
+    "patch.npz",
+    "patch.json",
+    "state.npz",
+    "state.json",
+    "flash/flash_run_hdf5_plt_cnt_0008",
+    "source_profiles.npz"
+  ],
+  "commitment": null,
+  "key": "integrated-handoff-current-validation",
+  "stage": "exploration",
+  "method": null,
+  "review_documents": null,
+  "parent_experiment": null,
+  "purpose": "validation",
+  "plan": null,
+  "pid": 286753,
+  "worker_identity": {
+    "pid": 286753,
+    "starttime": "3228666",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture-prx-island-v0.7.0/.venv/bin/python",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simulations/other_demos/flash_warpx_pressure_closure/outputs/fresh_v070__20261026T074100Z",
+      "--execute",
+      "exp_635537f1043786f7af0bd65e"
+    ],
+    "launched_at": "2026-10-26T08:22:47.783552+00:00",
+    "run_directory": null
+  },
+  "started_at": 1793002967.7836688,
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": 0,
+    "stdout": "{\"sheet\": {\"definition\": \"delta = max |Bx(0,z)| for 0<=z<=0.1 divided by |d Bx(0,z)/dz at z=0|, cubic spline of original cell-centered FLASH fields; reference di uses n0.\", \"delta_code\": 0.015361175075498034, \"upstream_B_code\": 0.7771283754134048, \"central_slope\": -50.590424989880475, \"half_width_source_cells\": 1.9662304096637484, \"delta_over_reference_di\": 0.9679906578558259, \"source_reference_di_code\": 0.01586913566864811}, \"resolution\": {\"dx_over_de\": 0.4923078460684468, \"dx_over_min_debye\": 5.835732183324269, \"local_width_over_di_at_center\": 0.9593005326548679}, \"transfer\": {\"B_relative_RMS\": 0.004258248069791293, \"density_relative_RMS\": 8.71974262009315e-17, \"pressure_relative_RMS\": 1.374022998613166e-16, \"current_discrete_relative_RMS\": 0.0060077587661062515}}\n{\"checks\": {\"completed\": true, \"representation\": true, \"physics_controls\": true, \"boundaries\": true, \"diagnostics\": true, \"numerical_regime\": true, \"flux_window_reached\": false, \"scientific_evidence_eligible\": false}, \"metrics\": {\"l_over_eta_nominal\": 1000.0, \"flux_low\": 0.01, \"flux_high\": 0.05, \"flux_low_crossing_time\": 0.2589140879461254, \"flux_high_crossing_time\": null, \"reconnection_time\": null, \"normalized_flux_slope\": null, \"flux_path_max_abs_mismatch\": 4.6069034470078846e-05, \"max_abs_divb\": 7.362999099314038e-13, \"max_boundary_normal_fraction\": 0.026698871271290257, \"initial_sheet_cells\": 6.4, \"plot_file_count\": 9}}",
+    "stderr": "",
+    "timed_out": false,
+    "cancelled": false,
+    "workspace_exceeded": false,
+    "stdout_truncated": false,
+    "stderr_truncated": false,
+    "heartbeat_count": 0,
+    "wall_seconds": 15.116286995998962,
+    "workspace_bytes": 23796894,
+    "executor_sha256": "b92087579abbb99f55ce2c75d98765355c8ccd4a6ccf3ba55b15ddd5491a22ec",
+    "resource_limits": {
+      "max_file_bytes": 3481969371,
+      "max_workspace_bytes": 3481969371,
+      "max_memory_bytes": 4294967296
+    }
+  },
+  "artifacts": {
+    "PROTOCOL.json": {
+      "sha256": "ab81b31d2d1ba859b471688781114ff4b4981d8f4e4c6d00e11c5b2b5cee3290",
+      "bytes": 3881
+    },
+    "calculation.py": {
+      "sha256": "cd6c4db946c144a2f5bc86c877e929c7f7ecd334ced012da9153ea43c5546823",
+      "bytes": 429
+    },
+    "extract_flash.py": {
+      "sha256": "28608ddeab7d71584abd32ce910b66621d8ba9cc49d2bb44eb1ead3922e509a0",
+      "bytes": 5159
+    },
+    "flash/.simjecture-flash-guided-output": {
+      "sha256": "67d1f5ea486320558047f5cff49a53b2b0f1eaca0f699ba9abc1c1f60bcedc67",
+      "bytes": 49
+    },
+    "flash/flash.par": {
+      "sha256": "dc03f069c94f8b75d10185875aa4d139dca08fbb11f2289f034c55e3c76a9075",
+      "bytes": 1794
+    },
+    "flash/flash_run.dat": {
+      "sha256": "48ea30c99827abc5ea2f6a61914b7ebf02ae685fa15fd07f5258599c413815f6",
+      "bytes": 237586
+    },
+    "flash/flash_run.log": {
+      "sha256": "961cabee64d218e3f84e0a7b2fc53fbc7abffaaa7c98a6905baa4672ff06010f",
+      "bytes": 109538
+    },
+    "flash/flash_run_forced_hdf5_plt_cnt_0000": {
+      "sha256": "c963994782dbb8a532f3b892663747475c38b03aaadd5da68c2dc8f6383a617c",
+      "bytes": 580876
+    },
+    "flash/flash_run_hdf5_chk_0000": {
+      "sha256": "333d45bfb9b947bbf222ede1f701ecde64e580e6980b9c042658e2b66683f8df",
+      "bytes": 2950412
+    },
+    "flash/flash_run_hdf5_chk_0001": {
+      "sha256": "19257534a3478786240e79259a77f73b3b15340ca209e90294452bec42d3b379",
+      "bytes": 2950412
+    },
+    "flash/flash_run_hdf5_plt_cnt_0000": {
+      "sha256": "dbe7e285491cbc609cfdc4a77f7e6cc6e868fa2587db1b6ace739b8e279ebe62",
+      "bytes": 580876
+    },
+    "flash/flash_run_hdf5_plt_cnt_0001": {
+      "sha256": "596a7ce3db3a05e7d4823f21c7c77186644ebb0fc91148db532245e8bb86b5ff",
+      "bytes": 580876
+    },
+    "flash/flash_run_hdf5_plt_cnt_0002": {
+      "sha256": "21d8b76dafa3867738d47c8159940fcd173ced41205205be74c68639d828fbd8",
+      "bytes": 580876
+    },
+    "flash/flash_run_hdf5_plt_cnt_0003": {
+      "sha256": "1e641a862cffa6592f4e2def26157621565eb06c40dd0c1fc2a6153edcce789d",
+      "bytes": 580876
+    },
+    "flash/flash_run_hdf5_plt_cnt_0004": {
+      "sha256": "76f65e1c725536a56dd8effc2c8431fc35c67dc6d555e4de5daed7d2bbc8edda",
+      "bytes": 580876
+    },
+    "flash/flash_run_hdf5_plt_cnt_0005": {
+      "sha256": "888fb6ee6c67be851e674041cd63c050693a3a011bb5789f14299f2fa37916ec",
+      "bytes": 580876
+    },
+    "flash/flash_run_hdf5_plt_cnt_0006": {
+      "sha256": "1be69e5bcf69325ae75cea417f6d3aa74ba3eb53d620e3f14345a1cbec41d108",
+      "bytes": 580876
+    },
+    "flash/flash_run_hdf5_plt_cnt_0007": {
+      "sha256": "d8b61c666afa3e6cb5b1ee30e9fae7b83fedd1537342ef788cffbff4b81acb00",
+      "bytes": 580876
+    },
+    "flash/flash_run_hdf5_plt_cnt_0008": {
+      "sha256": "eac0fc5d9a06ea22d18d160e6d237470b61602cd64dd6f79a4aadb4fd6129884",
+      "bytes": 580876
+    },
+    "flash/launcher_stderr.txt": {
+      "sha256": "b02b461e24dcd2e6b070047f42137aa8a806941ce4796a6bb96cf4a506dd057d",
+      "bytes": 504
+    },
+    "flash/launcher_stdout.txt": {
+      "sha256": "f6d56dda5fc9405edd2c83dd7ad0a81e3db21147b9b1cda02d9b45073b66e18e",
+      "bytes": 94512
+    },
+    "flash_islands.py": {
+      "sha256": "26f348973b4edeb761f6a25f7023f6c3ea22660f61297a4a58c3d6cc49991588",
+      "bytes": 14588
+    },
+    "macro.json": {
+      "sha256": "581ca74ecece18a0102d90de690905b58d084835121c509732682061aac53bb6",
+      "bytes": 8017
+    },
+    "macro_comparison.json": {
+      "sha256": "e3c17cd9a624ed1a1ff3e2871c4267e0fd38deb0ee1fed96adac7442e52f8e26",
+      "bytes": 1683
+    },
+    "macro_study.py": {
+      "sha256": "fbea5276fe560d3f55dc8eb92c6695631e7bc2ab1a47233e9875952f15afa632",
+      "bytes": 2017
+    },
+    "patch.json": {
+      "sha256": "223775bd4f70cb74c37810cd4f7795c77ffc283d8dd569d24a93c7cfefaa452c",
+      "bytes": 3046
+    },
+    "patch.npz": {
+      "sha256": "3d023eb3377472b9124717f24eb32427374dccc932073009cf9538ab80ac61b8",
+      "bytes": 11095897
+    },
+    "prepare_patch.py": {
+      "sha256": "0be359a997ac75af4d376f96f18901ed815e2d1b07e2c48336233f4a35b4e20d",
+      "bytes": 6968
+    },
+    "result.json": {
+      "sha256": "223775bd4f70cb74c37810cd4f7795c77ffc283d8dd569d24a93c7cfefaa452c",
+      "bytes": 3046
+    },
+    "source_profiles.npz": {
+      "sha256": "1bd095428b641116a4d266597e010ef293750eca8361877f01b5891ed3f826ba",
+      "bytes": 146135
+    },
+    "state.json": {
+      "sha256": "2e7ef5177504932a5171583091affc4a84b1eb6c539acc9adf59d219c7e97d33",
+      "bytes": 1056
+    },
+    "state.npz": {
+      "sha256": "f6715c84ec0d93ca2eac43d67b3c562151df03bbcaa347b9215161924640715f",
+      "bytes": 346968
+    },
+    "transfer_study.py": {
+      "sha256": "9b28f15a710e6dcc0e9866e8b7c697c6ead1f1ad7ab51b7ce663efb76a648786",
+      "bytes": 4437
+    }
+  },
+  "missing_outputs": [],
+  "input_mutations": [],
+  "output_findings": [
+    {
+      "path": "macro.json",
+      "kind": "eligibility_annotation",
+      "detail": "Output declares non-evidence. Resolve this annotation against the host-recorded stage and actual limitations during independent review; do not rerun a solver merely to remove metadata."
+    },
+    {
+      "path": "macro.json",
+      "kind": "failed_checks",
+      "detail": [
+        "flux_window_reached"
+      ]
+    }
+  ],
+  "scientific_status": "unreviewed",
+  "finished_at": 1793002982.9702652
+}

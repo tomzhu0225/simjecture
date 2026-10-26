@@ -1,0 +1,23 @@
+{
+  "id": "director_5ac92dfa8d6fe30d7d7d0f8f",
+  "created_at": 1793001192.1532402,
+  "packet_sha256": "6db7f98520698fe9661161250890fdb04f0a73642c50e81bd3f8efad964a09a5",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "The completed transfer records a genuine fresh FLASH source, physical mapping and small reported interpolation residuals. These remain exploratory. The measured sheet half-width spans only about four source cells, so the running FLASH refinement is useful and should continue. Kinetic preparation can proceed concurrently. Boundary qualification needs early attention: the recorded geometry and scales give a shortest boundary-to-region light travel time of approximately 0.17 inverse reference ion cyclotron frequencies, before the proposed 0.4\u20130.9 window. This does not establish contamination, but geometric separation alone cannot qualify that window. Approximately 5933 seconds remain before the compute cutoff; full-study affordability remains unknown without kinetic timing.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "unknown",
+  "stop_experiments": [],
+  "wake_worker": true,
+  "park_worker": false,
+  "report_assessment": null,
+  "closeout_report": null,
+  "next_action": "While the FLASH refinement continues, prepare and launch one bounded exploratory WarpX timing/diagnostic pilot using the recorded transfer and supplied implementation. Measure initialization, evolution, diagnostic and storage costs, then forecast an end-to-end trajectory through the proposed full window and the required controls. Use the pilot to assess initial moment matching, pressure-estimator noise, energy/heating behavior and timestep resolution; dx/de alone does not qualify the recorded dx/minimum-Debye-length ratio of about 5.84. Plan the larger-patch comparison at identical physical measurement region and cell scale, explicitly distinguishing field-boundary effects from particle transit. When refinement finishes, compare the prospectively selected source time, sheet width and relevant local fields before freezing the final source and mapping. Obtain recorded methods review before decisive evidence. Preserve at least 20 minutes for fresh evidence and independent review, within the authoritative compute cutoff and report reserve. Return a concrete replan if measured costs cannot fit; do not shorten the hypothesis window to meet the clock.",
+  "storage_increase": null,
+  "registration_tuning": null,
+  "time_request": null,
+  "operating_limits": null,
+  "helper_tasks": [],
+  "help_replies": []
+}

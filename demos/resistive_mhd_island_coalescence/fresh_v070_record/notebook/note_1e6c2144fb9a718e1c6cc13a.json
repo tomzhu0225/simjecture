@@ -1,0 +1,18 @@
+{
+  "id": "note_1e6c2144fb9a718e1c6cc13a",
+  "created_at": 1792933700.1799567,
+  "authority": "worker_note",
+  "statement": "Storage replan: exp_bcf499766e6d03faf83066d7 failed immediately under9677488byte residual reservation, no physical conclusion. Retain activeS1000 exp_56eca6327dc2e3f0fd4942d4. RetryS2000 sequentially only after release. ForecastS2000 raw1.75GB, two checkpoints~0.05GB, archive coexistence~0.35GB, logs/summary<0.03GB =>peak~2.2GB; require >=2.3GB receipt allowance. Existing4.29GB+finalS1000archive~0.2GB leaves~4GB, so sequential should fit. Correct upper-bracket topology with small recorded diagnostic now, full corrected analysis when capacity allows.",
+  "kind": "next_test",
+  "experiments": [
+    "exp_bcf499766e6d03faf83066d7"
+  ],
+  "sources": [],
+  "claim": "root",
+  "supersedes": null,
+  "alternatives": {},
+  "estimated_seconds": 1300.0,
+  "evidence_bindings": {
+    "exp_bcf499766e6d03faf83066d7": "f6d9839ea0e90de26516c94278ebe0ed4224bc7a743158a439ce7e47d03e2b66"
+  }
+}

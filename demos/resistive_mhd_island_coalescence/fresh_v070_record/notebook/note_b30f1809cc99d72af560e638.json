@@ -1,0 +1,20 @@
+{
+  "id": "note_b30f1809cc99d72af560e638",
+  "created_at": 1792929734.0598843,
+  "authority": "worker_note",
+  "statement": "Five fresh n=128 exploratory settings completed. Recorded selection rule chooses S=1000 versus2000: p=-0.36958, largest adjacent departure. Refine both at n=192 and256 with cadence .005. Shorten tmax to1.3 and1.8 respectively, >20% beyond observed upper crossing. Mesh timeout600 based on measured70s n128 tmax3. Extended diagnostics add sheet width, symmetry and central/boundary current. No solver/physical inputs change.",
+  "kind": "next_test",
+  "experiments": [
+    "exp_ff929c68f5acb2eafb2f340b",
+    "exp_42cf28ee0c7c41a2f8d923be"
+  ],
+  "sources": [],
+  "claim": "root",
+  "supersedes": null,
+  "alternatives": {},
+  "estimated_seconds": 400.0,
+  "evidence_bindings": {
+    "exp_ff929c68f5acb2eafb2f340b": "86eedf06bbf27281c0869f8eb31c7abf54883b64e816af99a33f2ce270c22576",
+    "exp_42cf28ee0c7c41a2f8d923be": "ec7b15f06ce10f03e4696559133f33cf55f5c477af0abacba8ef752b02862439"
+  }
+}

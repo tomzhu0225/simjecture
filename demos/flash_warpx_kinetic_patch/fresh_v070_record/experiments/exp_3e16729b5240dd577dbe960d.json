@@ -1,0 +1,366 @@
+{
+  "id": "exp_3e16729b5240dd577dbe960d",
+  "status": "succeeded",
+  "operator_guidance_ids": [],
+  "created_at": 1793003979.1480305,
+  "timeout": 600,
+  "execution_deadline": 1793007301.4697688,
+  "workspace_limit_bytes": 3185286337,
+  "binding": {
+    "source": "calculation.py",
+    "args": [
+      "analysis",
+      "--case",
+      "refined",
+      "refined_record",
+      "refined_patch.npz",
+      "--case",
+      "pilot",
+      "pilot_record",
+      "pilot_patch.npz",
+      "--case",
+      "large",
+      "large_record",
+      "large_patch.npz",
+      "--case",
+      "mesh",
+      "mesh_record",
+      "mesh_patch.npz"
+    ],
+    "inputs": {
+      "calculation.py": "cd6c4db946c144a2f5bc86c877e929c7f7ecd334ced012da9153ea43c5546823",
+      "analysis_study.py": "8b7bbfa49dec2c6f06ceb6cceb41bbc1bb748d2ae29eb0602923f799efe79230",
+      "estimator.py": "44e914ad2780edabf2754f4fae734fd9b5811d6d8b5db094e57f6e379d0be0d4",
+      "pilot_record/result.json": "4ca04217912250669d710fa763c369c0b339d1cf2528364a5d9bda41c4dc01c2",
+      "pilot_record/moments.npz": "1774a6079b637c03dd2c989d95b459ff983cf75fbac6f337bd6bf4b6978d8586",
+      "pilot_record/history.json": "82aef19e2c44b8cda7364dac470c879c602fb5335e35f2828e8182939a831878",
+      "pilot_record/initial_fields.npz": "05fb55feeaf5468603ba5beeb7189552874689da6fea6e937fcdaad31a318b8e",
+      "pilot_record/final_fields.npz": "09185067d246e9d127432e25aa54b3d5198abd7847c00a3341de7f9eeca7db25",
+      "pilot_record/reduced/field_energy.txt": "96a630d7564d6ff3e957302e43c2259d5840ba2bdd5131bb9c0d13bf332c5c5a",
+      "pilot_record/reduced/particle_energy.txt": "315210ab14bdab85dd77974bbe865d08bce75d8a075ca67fd15b46e9d4e27451",
+      "large_record/result.json": "3f79d1409aac6bbe4fc09e3c98d02eaab3c0312e93b1075a68871ffc73626ba9",
+      "large_record/moments.npz": "22b780d66d7b04245a7987cecc8cc3361b73566e98c39d367bc9d44cbbaf1c28",
+      "large_record/history.json": "3b088a9831c44024c8a9cfc737627c8ba561ff7f62a6bd2155f19c7e9a1631c4",
+      "large_record/initial_fields.npz": "7dd5ce3bf22beb2441bc53d03f75a98e60dd29ba7a9c589f3aeea7467536f831",
+      "large_record/final_fields.npz": "060507eda2fdcad6f3177c89b8085921b239c15ff7807fc1c37d87ae34878be4",
+      "large_record/reduced/field_energy.txt": "e1af90dcb2cfb56ade072d54b7d5657339b7c50b87bdaa8b94645cae1e5ea75c",
+      "large_record/reduced/particle_energy.txt": "c83d766182c0ab8567dcbcccfbfa09c27a97ad238ee0eff661b987e13711509d",
+      "refined_record/result.json": "863f40704290d879693949934e99af27ae79e90d51dd757ffd2081047998ac07",
+      "refined_record/moments.npz": "82710b9400857fb36317504b4f3cd1dbe67f6fb802d28f61df42c25b393cda81",
+      "refined_record/history.json": "8933349beefb47c7fef08bc156c2fb54711c6991919b4b8b5521749b5e71ef9b",
+      "refined_record/initial_fields.npz": "d7aa8682484ba5cc2c0015e992b5df3d40d7cbb3b4cddaf8f1cd0807a170a746",
+      "refined_record/final_fields.npz": "cbc1ac351611f24e30cf5d22aeff3b913a10b32621cfd9dda72710d4bd1d4d39",
+      "refined_record/reduced/field_energy.txt": "4a9ec4400cc7ca7065d8a23dedd8997b37d2c25b26f00c81ed2891116b22905c",
+      "refined_record/reduced/particle_energy.txt": "73f6812c9a957656a0eeff343fdd23779c412fa2ead0d82febd3cf9175fea796",
+      "mesh_record/result.json": "0fbb5ddba9906f8369d6c3b2d8ae5e3babb0488c3c0dbe502ed99dfa28489d38",
+      "mesh_record/moments.npz": "af8b9b53ae4b15647e818269ee469d1002193f77c7c44449eb2a24192a3e4b71",
+      "mesh_record/history.json": "94bd0d6b740ebf4d8c21fda81b2e0a646bc9de86bda6107fb1a0dac56032354f",
+      "mesh_record/initial_fields.npz": "2e212f8931b352ff3b2d85eff692ba2b7258d022b7842a682507e78dffe3a612",
+      "mesh_record/final_fields.npz": "0f62a5741aca6058a52e5bc589584f833a881cdd26bff7eb2ca39d902080053d",
+      "mesh_record/reduced/field_energy.txt": "8ae36880db113043eef9a4dae55443eb45715b3bb148ee283b0c764b71c35e0f",
+      "mesh_record/reduced/particle_energy.txt": "7cd19fa6453a9062664bbafe7246326297f0c612cd8138951359490494826f2d",
+      "pilot_patch.npz": "26974850642446d0a4e1e4a30b52129e6a20af3b396ed6fce4a68f3a072065a4",
+      "pilot_patch.json": "44fae45c0adc4ce4b35ac025a95e0b033d8e6da542edd60f3cc9ca24279bc880",
+      "large_patch.npz": "13a04731ed102acf505bba6c019f1d42ff47c2235476bd331c19aa67ff20d324",
+      "large_patch.json": "97f90c94c3de2158892c25c168ed364ab9bb8c803eac1846f16008e48dd8068f",
+      "refined_patch.npz": "c04a015181c150cb0bd1162976252b0e85f3caf7458ced7d024eb0dca4e35ef7",
+      "refined_patch.json": "1e8e47a33ad0f5aece5149bd9299f7825ff36819309048035086550ab62f8b24",
+      "mesh_patch.npz": "cd72c63305a3b7e6c2834d094edf2e7049eb222075bab910bf7598400b08a06f",
+      "mesh_patch.json": "eb2fba23f73967e377efe030957dbfc0737ba752b84f8f6a86aa92a64db0defc"
+    },
+    "capability": null,
+    "runtime_sha256": null
+  },
+  "outputs": [
+    "analysis.json",
+    "pressure_controls.png",
+    "pilot_kinetic_fields.png",
+    "pilot_pressure_tensor.png",
+    "large_kinetic_fields.png",
+    "large_pressure_tensor.png",
+    "refined_kinetic_fields.png",
+    "refined_pressure_tensor.png",
+    "mesh_kinetic_fields.png",
+    "mesh_pressure_tensor.png"
+  ],
+  "commitment": null,
+  "key": "corrected-bin-audit-all",
+  "stage": "exploration",
+  "method": null,
+  "review_documents": null,
+  "parent_experiment": "exp_af3f8c4f97f31b360a115b36",
+  "purpose": "diagnostic",
+  "plan": null,
+  "pid": 303409,
+  "worker_identity": {
+    "pid": 303409,
+    "starttime": "3329817",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture-prx-island-v0.7.0/.venv/bin/python",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simulations/other_demos/flash_warpx_pressure_closure/outputs/fresh_v070__20261026T074100Z",
+      "--execute",
+      "exp_3e16729b5240dd577dbe960d"
+    ],
+    "launched_at": "2026-10-26T08:39:39.309575+00:00",
+    "run_directory": null
+  },
+  "started_at": 1793003979.3097765,
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "analysis_study.py:104: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.\n  for ax,title in zip(axs.flat,['Area mean tensor departure','Mean scalar pressure / initial','Mean density / initial','Finite control comparison']):ax.set(xlabel='t Omega_ci reference',title=title);ax.legend(fontsize=7)",
+    "timed_out": false,
+    "cancelled": false,
+    "workspace_exceeded": false,
+    "stdout_truncated": false,
+    "stderr_truncated": false,
+    "heartbeat_count": 0,
+    "wall_seconds": 4.243795840004168,
+    "workspace_bytes": 168402482,
+    "executor_sha256": "b92087579abbb99f55ce2c75d98765355c8ccd4a6ccf3ba55b15ddd5491a22ec",
+    "resource_limits": {
+      "max_file_bytes": 3185286337,
+      "max_workspace_bytes": 3185286337,
+      "max_memory_bytes": 4294967296
+    }
+  },
+  "artifacts": {
+    ".cache/fontconfig/2300eef321c393bfd76478a5c0e95b23-le64.cache-9": {
+      "sha256": "be4a2bf520a0eb916fab92b15585e493fa0dae62d7c2dd7e275b01664c14e346",
+      "bytes": 382064
+    },
+    ".cache/fontconfig/3830d5c3ddfd5cd38a049b759396e72e-le64.cache-9": {
+      "sha256": "6cb953b213d173a1439944baba4f785aeb8e08fba3cb8794d99004c34310d453",
+      "bytes": 184
+    },
+    ".cache/fontconfig/4c599c202bc5c08e2d34565a40eac3b2-le64.cache-9": {
+      "sha256": "e2077b9c186aa45489f582008a00a7965a8135d07927d2697f6d07e09f9ae69d",
+      "bytes": 104
+    },
+    ".cache/fontconfig/573ec803664ed168555e0e8b6d0f0c7f-le64.cache-9": {
+      "sha256": "e67dc2bd665d1b1bd952ec5dd357d64bae7b2fbd6f1c9896db3e880f9788c58f",
+      "bytes": 152
+    },
+    ".cache/fontconfig/7ef2298fde41cc6eeb7af42e48b7d293-le64.cache-9": {
+      "sha256": "69cf18e42e3d2705da9c867a36e7e16f3d0e8973c41a5a51118e43c1207756fc",
+      "bytes": 208
+    },
+    ".cache/fontconfig/9b89f8e3dae116d678bbf48e5f21f69b-le64.cache-9": {
+      "sha256": "4fa102166b8aaa98765061eae7abe768aa636c327ad2889f68d33d77de9735b0",
+      "bytes": 68800
+    },
+    ".cache/fontconfig/CACHEDIR.TAG": {
+      "sha256": "05e7633fb31bf1f6f8d89020c16b9f24587fdf7638e951c9745b192f5fc3b682",
+      "bytes": 200
+    },
+    ".cache/fontconfig/d589a48862398ed80a3d6066f4f56f4c-le64.cache-9": {
+      "sha256": "233df56e901146f1c5f71911def868b835fb7e43a0e02644a07a1c829e49cc31",
+      "bytes": 51736
+    },
+    "analysis.json": {
+      "sha256": "bbe8f85936918a32a024fd03340534d1945238c0b9c3e2c44d1340abd1671144",
+      "bytes": 70142
+    },
+    "analysis_study.py": {
+      "sha256": "8b7bbfa49dec2c6f06ceb6cceb41bbc1bb748d2ae29eb0602923f799efe79230",
+      "bytes": 15391
+    },
+    "calculation.py": {
+      "sha256": "cd6c4db946c144a2f5bc86c877e929c7f7ecd334ced012da9153ea43c5546823",
+      "bytes": 429
+    },
+    "estimator.py": {
+      "sha256": "44e914ad2780edabf2754f4fae734fd9b5811d6d8b5db094e57f6e379d0be0d4",
+      "bytes": 1878
+    },
+    "large_kinetic_fields.png": {
+      "sha256": "8ada74b1be472941324291fe61fdabcfcc00e7e18d9b31c91669ed412df1402a",
+      "bytes": 477417
+    },
+    "large_patch.json": {
+      "sha256": "97f90c94c3de2158892c25c168ed364ab9bb8c803eac1846f16008e48dd8068f",
+      "bytes": 3019
+    },
+    "large_patch.npz": {
+      "sha256": "13a04731ed102acf505bba6c019f1d42ff47c2235476bd331c19aa67ff20d324",
+      "bytes": 19911351
+    },
+    "large_pressure_tensor.png": {
+      "sha256": "68c52d71b328a5289f6931d24f56837f2f9faf2a52b0287173084b6205bfde28",
+      "bytes": 150861
+    },
+    "large_record/final_fields.npz": {
+      "sha256": "060507eda2fdcad6f3177c89b8085921b239c15ff7807fc1c37d87ae34878be4",
+      "bytes": 12074478
+    },
+    "large_record/history.json": {
+      "sha256": "3b088a9831c44024c8a9cfc737627c8ba561ff7f62a6bd2155f19c7e9a1631c4",
+      "bytes": 35594
+    },
+    "large_record/initial_fields.npz": {
+      "sha256": "7dd5ce3bf22beb2441bc53d03f75a98e60dd29ba7a9c589f3aeea7467536f831",
+      "bytes": 4496186
+    },
+    "large_record/moments.npz": {
+      "sha256": "22b780d66d7b04245a7987cecc8cc3361b73566e98c39d367bc9d44cbbaf1c28",
+      "bytes": 1121879
+    },
+    "large_record/reduced/field_energy.txt": {
+      "sha256": "e1af90dcb2cfb56ade072d54b7d5657339b7c50b87bdaa8b94645cae1e5ea75c",
+      "bytes": 3335
+    },
+    "large_record/reduced/particle_energy.txt": {
+      "sha256": "c83d766182c0ab8567dcbcccfbfa09c27a97ad238ee0eff661b987e13711509d",
+      "bytes": 5716
+    },
+    "large_record/result.json": {
+      "sha256": "3f79d1409aac6bbe4fc09e3c98d02eaab3c0312e93b1075a68871ffc73626ba9",
+      "bytes": 12266
+    },
+    "mesh_kinetic_fields.png": {
+      "sha256": "b68dc3630d0096ede1ca19cd857fcf288e017872101fea31794e887764491ee3",
+      "bytes": 439000
+    },
+    "mesh_patch.json": {
+      "sha256": "eb2fba23f73967e377efe030957dbfc0737ba752b84f8f6a86aa92a64db0defc",
+      "bytes": 3036
+    },
+    "mesh_patch.npz": {
+      "sha256": "cd72c63305a3b7e6c2834d094edf2e7049eb222075bab910bf7598400b08a06f",
+      "bytes": 45240181
+    },
+    "mesh_pressure_tensor.png": {
+      "sha256": "945bfb9cf8ffe1e559364e35cbf37557418b63d832d9b1ad8dbb3a76114c4bbf",
+      "bytes": 145022
+    },
+    "mesh_record/final_fields.npz": {
+      "sha256": "0f62a5741aca6058a52e5bc589584f833a881cdd26bff7eb2ca39d902080053d",
+      "bytes": 27135986
+    },
+    "mesh_record/history.json": {
+      "sha256": "94bd0d6b740ebf4d8c21fda81b2e0a646bc9de86bda6107fb1a0dac56032354f",
+      "bytes": 35655
+    },
+    "mesh_record/initial_fields.npz": {
+      "sha256": "2e212f8931b352ff3b2d85eff692ba2b7258d022b7842a682507e78dffe3a612",
+      "bytes": 10355693
+    },
+    "mesh_record/moments.npz": {
+      "sha256": "af8b9b53ae4b15647e818269ee469d1002193f77c7c44449eb2a24192a3e4b71",
+      "bytes": 1127037
+    },
+    "mesh_record/reduced/field_energy.txt": {
+      "sha256": "8ae36880db113043eef9a4dae55443eb45715b3bb148ee283b0c764b71c35e0f",
+      "bytes": 3346
+    },
+    "mesh_record/reduced/particle_energy.txt": {
+      "sha256": "7cd19fa6453a9062664bbafe7246326297f0c612cd8138951359490494826f2d",
+      "bytes": 5727
+    },
+    "mesh_record/result.json": {
+      "sha256": "0fbb5ddba9906f8369d6c3b2d8ae5e3babb0488c3c0dbe502ed99dfa28489d38",
+      "bytes": 12358
+    },
+    "pilot_kinetic_fields.png": {
+      "sha256": "528a6c30f1410ca68bea95b4baff312027dec45f54b2766cedc9a59657ced70e",
+      "bytes": 431340
+    },
+    "pilot_patch.json": {
+      "sha256": "44fae45c0adc4ce4b35ac025a95e0b033d8e6da542edd60f3cc9ca24279bc880",
+      "bytes": 3017
+    },
+    "pilot_patch.npz": {
+      "sha256": "26974850642446d0a4e1e4a30b52129e6a20af3b396ed6fce4a68f3a072065a4",
+      "bytes": 11155918
+    },
+    "pilot_pressure_tensor.png": {
+      "sha256": "fa2cce2b7305fa245599c1fc12fa22126050f2b0d16b20eea84536904b1aa9dd",
+      "bytes": 151745
+    },
+    "pilot_record/final_fields.npz": {
+      "sha256": "09185067d246e9d127432e25aa54b3d5198abd7847c00a3341de7f9eeca7db25",
+      "bytes": 6801315
+    },
+    "pilot_record/history.json": {
+      "sha256": "82aef19e2c44b8cda7364dac470c879c602fb5335e35f2828e8182939a831878",
+      "bytes": 35596
+    },
+    "pilot_record/initial_fields.npz": {
+      "sha256": "05fb55feeaf5468603ba5beeb7189552874689da6fea6e937fcdaad31a318b8e",
+      "bytes": 2536935
+    },
+    "pilot_record/moments.npz": {
+      "sha256": "1774a6079b637c03dd2c989d95b459ff983cf75fbac6f337bd6bf4b6978d8586",
+      "bytes": 1121584
+    },
+    "pilot_record/reduced/field_energy.txt": {
+      "sha256": "96a630d7564d6ff3e957302e43c2259d5840ba2bdd5131bb9c0d13bf332c5c5a",
+      "bytes": 3335
+    },
+    "pilot_record/reduced/particle_energy.txt": {
+      "sha256": "315210ab14bdab85dd77974bbe865d08bce75d8a075ca67fd15b46e9d4e27451",
+      "bytes": 5716
+    },
+    "pilot_record/result.json": {
+      "sha256": "4ca04217912250669d710fa763c369c0b339d1cf2528364a5d9bda41c4dc01c2",
+      "bytes": 12311
+    },
+    "pressure_controls.png": {
+      "sha256": "c9dd4c66249cba5b375fd70813912a2f07660bedb4f6b21273df18d47de2d492",
+      "bytes": 430902
+    },
+    "refined_kinetic_fields.png": {
+      "sha256": "d0acd3bc41dd86a3bc644fadab4ef05a9d2d55c2d9ca48e1d543aa59e305e973",
+      "bytes": 430769
+    },
+    "refined_patch.json": {
+      "sha256": "1e8e47a33ad0f5aece5149bd9299f7825ff36819309048035086550ab62f8b24",
+      "bytes": 3038
+    },
+    "refined_patch.npz": {
+      "sha256": "c04a015181c150cb0bd1162976252b0e85f3caf7458ced7d024eb0dca4e35ef7",
+      "bytes": 11207291
+    },
+    "refined_pressure_tensor.png": {
+      "sha256": "7e756ffc93462d3b10683aeab6468b2d3fcafe3ed453d12d0ef875742d05e2d4",
+      "bytes": 151250
+    },
+    "refined_record/final_fields.npz": {
+      "sha256": "cbc1ac351611f24e30cf5d22aeff3b913a10b32621cfd9dda72710d4bd1d4d39",
+      "bytes": 6800703
+    },
+    "refined_record/history.json": {
+      "sha256": "8933349beefb47c7fef08bc156c2fb54711c6991919b4b8b5521749b5e71ef9b",
+      "bytes": 35613
+    },
+    "refined_record/initial_fields.npz": {
+      "sha256": "d7aa8682484ba5cc2c0015e992b5df3d40d7cbb3b4cddaf8f1cd0807a170a746",
+      "bytes": 2554549
+    },
+    "refined_record/moments.npz": {
+      "sha256": "82710b9400857fb36317504b4f3cd1dbe67f6fb802d28f61df42c25b393cda81",
+      "bytes": 1121775
+    },
+    "refined_record/reduced/field_energy.txt": {
+      "sha256": "4a9ec4400cc7ca7065d8a23dedd8997b37d2c25b26f00c81ed2891116b22905c",
+      "bytes": 3335
+    },
+    "refined_record/reduced/particle_energy.txt": {
+      "sha256": "73f6812c9a957656a0eeff343fdd23779c412fa2ead0d82febd3cf9175fea796",
+      "bytes": 5716
+    },
+    "refined_record/result.json": {
+      "sha256": "863f40704290d879693949934e99af27ae79e90d51dd757ffd2081047998ac07",
+      "bytes": 12298
+    }
+  },
+  "missing_outputs": [],
+  "input_mutations": [],
+  "output_findings": [],
+  "scientific_status": "unreviewed",
+  "finished_at": 1793003983.863972
+}

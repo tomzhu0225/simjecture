@@ -1,0 +1,204 @@
+{
+  "id": "exp_f195949ab1410375cc7b8f44",
+  "status": "succeeded",
+  "operator_guidance_ids": [],
+  "created_at": 1793000781.5654175,
+  "timeout": 1200,
+  "execution_deadline": 1793007061.4697688,
+  "workspace_limit_bytes": 4210926664,
+  "binding": {
+    "source": "calculation.py",
+    "args": [
+      "flash",
+      "--eta",
+      "0.001",
+      "--nx",
+      "512",
+      "--ny",
+      "512",
+      "--alpha",
+      "20",
+      "--tmax",
+      "0.81",
+      "--plot-interval",
+      "0.1",
+      "--ranks",
+      "4",
+      "--iprocs",
+      "2",
+      "--jprocs",
+      "2",
+      "--output",
+      "flash",
+      "--summary",
+      "result.json"
+    ],
+    "inputs": {
+      "calculation.py": "cd6c4db946c144a2f5bc86c877e929c7f7ecd334ced012da9153ea43c5546823",
+      "macro_study.py": "cf48da0ee2c970460086e1ad97a12d7bebbd8bb79a6fdf9b15e3e5eb7d905f9a",
+      "flash_islands.py": "26f348973b4edeb761f6a25f7023f6c3ea22660f61297a4a58c3d6cc49991588"
+    },
+    "capability": "flash-island-coalescence-resistive-mhd-4.8",
+    "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+  },
+  "outputs": [
+    "result.json",
+    "flash/flash.par",
+    "flash/flash_run_hdf5_plt_cnt_0008",
+    "flash/flash_run.dat",
+    "flash/flash_run.log"
+  ],
+  "commitment": null,
+  "key": "fresh-macro512",
+  "stage": "exploration",
+  "method": null,
+  "review_documents": null,
+  "parent_experiment": "exp_e10f88b8220dd98c85fd82ce",
+  "purpose": "validation",
+  "plan": null,
+  "pid": 252211,
+  "worker_identity": {
+    "pid": 252211,
+    "starttime": "3010059",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture-prx-island-v0.7.0/.venv/bin/python",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simulations/other_demos/flash_warpx_pressure_closure/outputs/fresh_v070__20261026T074100Z",
+      "--execute",
+      "exp_f195949ab1410375cc7b8f44"
+    ],
+    "launched_at": "2026-10-26T07:46:21.733276+00:00",
+    "run_directory": null
+  },
+  "started_at": 1793000781.733828,
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": 0,
+    "stdout": "{\"checks\": {\"completed\": true, \"representation\": true, \"physics_controls\": true, \"boundaries\": true, \"diagnostics\": true, \"numerical_regime\": true, \"flux_window_reached\": false, \"scientific_evidence_eligible\": false}, \"metrics\": {\"l_over_eta_nominal\": 1000.0, \"flux_low\": 0.01, \"flux_high\": 0.05, \"flux_low_crossing_time\": 0.2568471801985516, \"flux_high_crossing_time\": null, \"reconnection_time\": null, \"normalized_flux_slope\": null, \"flux_path_max_abs_mismatch\": 6.744131837210787e-06, \"max_abs_divb\": 6.746603276042151e-12, \"max_boundary_normal_fraction\": 0.0076819382953009, \"initial_sheet_cells\": 25.6, \"plot_file_count\": 9}}",
+    "stderr": "",
+    "timed_out": false,
+    "cancelled": false,
+    "workspace_exceeded": false,
+    "stdout_truncated": false,
+    "stderr_truncated": false,
+    "heartbeat_count": 29,
+    "wall_seconds": 871.2175943759976,
+    "workspace_bytes": 178544770,
+    "executor_sha256": "b92087579abbb99f55ce2c75d98765355c8ccd4a6ccf3ba55b15ddd5491a22ec",
+    "resource_limits": {
+      "max_file_bytes": 4210926664,
+      "max_workspace_bytes": 4210926664,
+      "max_memory_bytes": 4294967296
+    }
+  },
+  "artifacts": {
+    "calculation.py": {
+      "sha256": "cd6c4db946c144a2f5bc86c877e929c7f7ecd334ced012da9153ea43c5546823",
+      "bytes": 429
+    },
+    "flash/.simjecture-flash-guided-output": {
+      "sha256": "67d1f5ea486320558047f5cff49a53b2b0f1eaca0f699ba9abc1c1f60bcedc67",
+      "bytes": 49
+    },
+    "flash/flash.par": {
+      "sha256": "b4e779e6373ef902996d821b0114c07601cef84411f86431b39b0ab5d383c66c",
+      "bytes": 1794
+    },
+    "flash/flash_run.dat": {
+      "sha256": "e78523c5d615ebef4996017d143977d2ec201ec823a93f710f648d6ee7eef74d",
+      "bytes": 935771
+    },
+    "flash/flash_run.log": {
+      "sha256": "41d4e63e47c3e5ec897389d7e87d7bef32ed27a4ec0141e39b7864e5f7d55dc1",
+      "bytes": 329392
+    },
+    "flash/flash_run_forced_hdf5_plt_cnt_0000": {
+      "sha256": "e19bdc18ad3623ef4bdd762ed0b8bdc7064e0f9eab20ecee22a348af8a4c2c53",
+      "bytes": 8445196
+    },
+    "flash/flash_run_hdf5_chk_0000": {
+      "sha256": "01343b45cc7a6137dcf5d4a1f87edca34652bd20632a89560f449c8c580b93fd",
+      "bytes": 46216460
+    },
+    "flash/flash_run_hdf5_chk_0001": {
+      "sha256": "a872a55a68d9a066d6a9cd39d652db1beee36ba9e8a2c0aebfc1bfb88547a67e",
+      "bytes": 46216460
+    },
+    "flash/flash_run_hdf5_plt_cnt_0000": {
+      "sha256": "60e521a0e040e2e5a4eafefda54d587d2fae6fbcac1f63608278f6a6cff768d1",
+      "bytes": 8445196
+    },
+    "flash/flash_run_hdf5_plt_cnt_0001": {
+      "sha256": "1a31e6cafa863800576295522d2dca8dbc213105141634f03174b50e208a0eb6",
+      "bytes": 8445196
+    },
+    "flash/flash_run_hdf5_plt_cnt_0002": {
+      "sha256": "bd17e604410c3fa02278cb08f7d8179b30cec2507e2f12b026d4fd97222686cd",
+      "bytes": 8445196
+    },
+    "flash/flash_run_hdf5_plt_cnt_0003": {
+      "sha256": "132ebc65b9d953627f326e09cdeac18098995c9e56570565bfd9734f5fc91340",
+      "bytes": 8445196
+    },
+    "flash/flash_run_hdf5_plt_cnt_0004": {
+      "sha256": "ee5d7c02e3eb7675006b72335317679f1082f31b36ab7f5bb7f9b28b8a2af0c9",
+      "bytes": 8445196
+    },
+    "flash/flash_run_hdf5_plt_cnt_0005": {
+      "sha256": "1a3e6e149b81c3c1366bbdbc0f578294b3fae76054c506dda2f4ff796a17578f",
+      "bytes": 8445196
+    },
+    "flash/flash_run_hdf5_plt_cnt_0006": {
+      "sha256": "2bb723941ee83428088081d16d16f672b264f439196532f3f83f791d3581318a",
+      "bytes": 8445196
+    },
+    "flash/flash_run_hdf5_plt_cnt_0007": {
+      "sha256": "8a7c55807677a5599e5cac50c365276a300edda17d08d7ed6b828f5fc8cd6acc",
+      "bytes": 8445196
+    },
+    "flash/flash_run_hdf5_plt_cnt_0008": {
+      "sha256": "2cb14d09a0cbfcb26bec13ba223adca01dd7425841fe89952ac8a5831cd612cd",
+      "bytes": 8445196
+    },
+    "flash/launcher_stderr.txt": {
+      "sha256": "b02b461e24dcd2e6b070047f42137aa8a806941ce4796a6bb96cf4a506dd057d",
+      "bytes": 504
+    },
+    "flash/launcher_stdout.txt": {
+      "sha256": "9e00951a6b58b7019278add2ec24d17185a978da8352e6d83aefa13e065d3830",
+      "bytes": 367844
+    },
+    "flash_islands.py": {
+      "sha256": "26f348973b4edeb761f6a25f7023f6c3ea22660f61297a4a58c3d6cc49991588",
+      "bytes": 14588
+    },
+    "macro_study.py": {
+      "sha256": "cf48da0ee2c970460086e1ad97a12d7bebbd8bb79a6fdf9b15e3e5eb7d905f9a",
+      "bytes": 1494
+    },
+    "result.json": {
+      "sha256": "adb638c9e9bd10d6dae1e4f15b25550f0a76cf3a88afea4667eb73f7fc0457d9",
+      "bytes": 8025
+    }
+  },
+  "missing_outputs": [],
+  "input_mutations": [],
+  "output_findings": [
+    {
+      "path": "result.json",
+      "kind": "eligibility_annotation",
+      "detail": "Output declares non-evidence. Resolve this annotation against the host-recorded stage and actual limitations during independent review; do not rerun a solver merely to remove metadata."
+    },
+    {
+      "path": "result.json",
+      "kind": "failed_checks",
+      "detail": [
+        "flux_window_reached"
+      ]
+    }
+  ],
+  "scientific_status": "unreviewed",
+  "finished_at": 1793001653.2517903
+}

@@ -1,0 +1,30 @@
+{
+  "id": "review_d8ed7a3364483fc612a029c3",
+  "status": "resolved",
+  "created_at": 1792939782.5843916,
+  "experiments": [
+    "exp_40aac93038caa57671014925",
+    "exp_755dffd11e2a3f05a6b86b49"
+  ],
+  "conclusion": "Proposed root counterexample from fresh production evidence under approved method_661a2c5064ad92c6494cf179 only. For S1000 eta.001: t.01=.25874853232850514,t.05=1.063762417896908,R=.04968858390778796. ForS2000 eta.0005: t.01=.40228722410294376,t.05=1.4482540772726262,R=.03824212964185681. Same initial-subtracted supplied By-path flux and first linear crossings. p=ln(R2000/R1000)/ln2=-.3777515597161056. Approved finest-control envelope and conservative transport giveu1000=.01307561933089813;u2000=.023908687378598463. Rate intervals [.04903887489951833,.050338292916057584] and[.03732781051955782,.0391564487641558]. Endpoint propagation p_low=ln(.03732781051955782/.050338292916057584)/ln2=-.4314054031570674; p_high=ln(.0391564487641558/.04903887489951833)/ln2=-.3246759518147541. Entire interval above-.45, so misses whole band, not merely exact-.5. S2000 transport includes512 fine absolute allowance.0007596932364064629,512->384shift.0000750649575284798, fresh-anchor shift.00000031722243518106374, plus excess production cadence .015463924612342916-.013391767369244967; use max withdirectsum.021916130979877366. S1000directsum.005830220770085942+.006240581301142467+.00010566467261963197+.0008991525870500894. All finest-control gates remain unchanged and approved: S1000 finest384, S2000finest512 shrinking changes. Both fresh384 runs reachboththresholds, runtimeuniformexpliciteta andfixedinitial/boundaryparams checked. Fresh maxdivB5.59e-12/6.54e-12,boundarynormalfraction.01182/.01726,massdrift1.34e-14/1.62e-14,energydrift3.56e-6/7.96e-6,minrho.944/.928,minpressure5.863/5.759. All saved central/full-domain topology inventories1X2O with214/146frames through actualupperbracket(index213/145,flux.0500673/.0500714). Magnetic retention bitwise readback passed everyframe, completecrossingbrackets andfull magneticseries retained with registeredhashes. Qualification/control receipts are numerical-method support, not promoted hypothesis observations. Their independent methods review explicitly approvedlimited384production anduncertaintytransport. Empiricaldeterministicuncertainty, noGaussianCI; saved-cellcenter topology cannotcertifysubcell/between-outputstructures; separatefloor/energyFixcorrectionsunexported. This is onecontrast counterexample in the original fixedphysical model, not a globalpower-lawfit. No repaired claim accepted orvalidated; conditional measured-strain closurefailed exploratorycalibration. Frozen arithmetic sourceevaluate_contrast.py andhuman-readable contrast.json areprepared; please independently recompute from submitted fresh summaries and approved formula.",
+  "claim": "root",
+  "disposition": "falsified",
+  "challenge": {
+    "strategy": "Seek a contrast outside the entire band, then challenge it with finer meshes, complete-windowCFL/cadence/path controls and saved full-domain topology before newproduction.",
+    "experiments": [
+      "exp_40aac93038caa57671014925",
+      "exp_755dffd11e2a3f05a6b86b49"
+    ],
+    "outcome": "Fresh qualified contrast interval[-.4314054,-.3246760] wholly outside[-.55,-.45]. Otherfive-setting map andmesh studies remain exploratory qualification."
+  },
+  "verdict": {
+    "claim_id": "root",
+    "decision": "approved",
+    "disposition": "falsified",
+    "rationale": "The fresh, qualified S_eta=1000 versus 2000 contrast is a counterexample to the entire claimed band. Inspection of the hash-verified production summaries, retained magnetic series and archived crossing-bracket fields independently reproduces R1000=0.04968858391 and R2000=0.03824212964, giving p_eff=-0.37775156. Recomputing the prospectively approved deterministic uncertainty envelope, including conservative transport from the S2000 512\u00b2 control, gives relative rate allowances of 1.3076% and 2.3909%. Endpoint propagation yields [-0.43140540,-0.32467595], wholly above -0.45. The five-setting exploratory map and declared selection rule targeted this contrast before refinement; production followed method approval. Recorded solver provenance shows diagnostic and retention changes without solver development. Actual complete-window evolution, multiple meshes, shrinking final rate changes, improving matched-flux profiles and completed CFL controls provide relevant commissioning. Production initial fields are identical; runtime resistivity and boundaries agree with the declared model. Recomputed conservation drifts are small, retained states are positive, and all saved magnetic frames through the actual upper brackets contain one X and two O points. Both production output_findings lists are empty. Qualification remains limited to an empirical numerical envelope, CFL sensitivity transferred from 256\u00b2, saved-field topology, and unavailable separate floor/energyFix accounting; these do not block this bounded counterexample. This verdict establishes neither a global scaling law nor a repaired prediction. Accepting the original falsification does not depend on completing a later repair.",
+    "evidence_gaps": [],
+    "next_test": null
+  },
+  "packet_sha256": "baba524c35c51421242e544e0bb50994ab2386884c73046b84e2645b51f39b8b",
+  "resolved_at": 1792939980.0393744
+}

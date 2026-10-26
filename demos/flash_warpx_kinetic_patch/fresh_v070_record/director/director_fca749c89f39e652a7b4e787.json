@@ -1,0 +1,23 @@
+{
+  "id": "director_fca749c89f39e652a7b4e787",
+  "created_at": 1793001952.1038125,
+  "packet_sha256": "516e3ae05bb783c5ed8f1308c82a4868d912a225890dde6074bea36be7f73eaa",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "The FLASH refinement completed, removing the previous runtime uncertainty. Its transfer reports a sheet half-width spanning 8.22 source cells and delta/di=1.011, compared with 4.06 cells and delta/di=1.000 previously, while retaining the physical mapping. This supports continuing qualification, but width agreement alone does not establish source convergence. The larger-patch boundary control remains useful and should continue. Scientific qualification is still limited by boundary sensitivity, initialization relaxation, estimator accuracy and unresolved grid-heating concerns at dx/minimum Debye length approximately 5.84. No method approval or decisive evidence exists yet. The recorded forecast of approximately 2100 seconds for qualification, 500 seconds for fresh evidence and 1200 seconds for review is plausibly affordable within approximately 5177 seconds before the compute cutoff, although control runtimes remain estimates.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "feasible",
+  "stop_experiments": [],
+  "wake_worker": true,
+  "park_worker": false,
+  "report_assessment": null,
+  "closeout_report": null,
+  "next_action": "While the larger-patch control runs, compare the 256- and 512-cell FLASH sources at their recorded selection times: quantify relevant local magnetic fields, density, pressure, flow and current differences, alongside sheet width. Prepare the prospective protocol and evidence index using the selected final source; freeze the physical mapping, ROI, full 0.5/Omegaci window, pressure convention, binning, eligibility/noise policy, uncertainty rule and acceptance tolerances before decisive evidence. After the active job finishes, analyze its boundary comparison and run the affordable independent mesh, timestep and particle-count controls sequentially on the GPU. Assess scalar heating, energy behavior and pressure departures together; a small anisotropy alone cannot qualify an underresolved calculation. Establish whether controls using the coarse source remain applicable to the refined source, and repeat affected comparisons where necessary. Obtain recorded methods approval before fresh decisive seeds. Update forecasts from measured costs, preserving at least 20 minutes for fresh evidence and independent review plus the protected report reserve. If qualification cannot fit or fails, retain the original hypothesis and report the unresolved limitation.",
+  "storage_increase": null,
+  "registration_tuning": null,
+  "time_request": null,
+  "operating_limits": null,
+  "helper_tasks": [],
+  "help_replies": []
+}

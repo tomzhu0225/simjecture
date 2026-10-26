@@ -1,0 +1,23 @@
+{
+  "id": "director_3d95f8d4d4fd1bcb6d509a56",
+  "created_at": 1793003038.7414277,
+  "packet_sha256": "f455d51bb2500c7b4a094623d55777e7a6e1f4a580c7950721baf207d406524c",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "The refined-source analysis supports continuing qualification: reported source-induced mean A changes are 0.00080 for ions and 0.00148 for electrons, with pressure differences below 0.96% and density differences below 0.49%. Its recorded initialization and relaxation gates pass, but these remain exploratory results. The handoff failures concern plotting portability and a current array defined only in the plotting branch; inspection shows the latter calculation moved outside that branch, and the worker has submitted revalidation. The active mesh control addresses a necessary uncertainty and should continue. Scientific feasibility remains limited by unfinished numerical controls, boundary applicability and independent methods approval. Budget feasibility is at risk: the packet allows approximately 4145 seconds before the compute cutoff, while the active mesh runtime is unresolved, a fresh 512-cell FLASH trajectory previously took 871 seconds, and baseline PIC took 131 seconds. No stop or additional allowance is justified yet.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "at_risk",
+  "stop_experiments": [],
+  "wake_worker": false,
+  "park_worker": false,
+  "report_assessment": null,
+  "closeout_report": null,
+  "next_action": "Complete the submitted handoff revalidation and retain both failed controls. Keep exp_af3f8c4f97f31b360a115b36 running. While it runs, correct the bounded source-method submission to instrument scope and prepare the source-bound production submission covering the implemented pressure measurement, qualification and both solver stages. Treat the 128-cell wrapper run solely as plumbing validation. When the mesh control completes, analyze anisotropy, scalar pressure, density, initial matching and energy behavior together; use its measured cost to update the critical path before launching remaining independent timestep and particle-count controls. Resolve applicability of the coarse-source boundary control to the refined source, with a matched repeat if needed. Retain the Poynting spatial-quadrature limitation for independent review. Preserve the frozen source selection, mapping, ROI and full [0.4,0.9]/Omegaci window. Obtain recorded production approval before fresh evidence, then link the fresh 512-cell FLASH source through exact transferred inputs to the prospective kinetic seeds. Do not rerun merely to remove inherited flux-window or eligibility annotations; explain their relevance to the local hypothesis. Protect the required fresh-evidence/review allowance and final report reserve. If measured remaining costs cannot fit before the compute deadline, record a concrete forecast and request additional time or replan to an independently assessed unresolved report without narrowing the scientific contract.",
+  "storage_increase": null,
+  "registration_tuning": null,
+  "time_request": null,
+  "operating_limits": null,
+  "helper_tasks": [],
+  "help_replies": []
+}

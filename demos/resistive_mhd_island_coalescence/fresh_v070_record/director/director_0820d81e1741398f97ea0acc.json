@@ -1,0 +1,23 @@
+{
+  "id": "director_0820d81e1741398f97ea0acc",
+  "created_at": 1792935830.56386,
+  "packet_sha256": "209ce8c98be8891b7b341b4ed35b676da8b39c80ef93f626565a059e1375e0c8",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "The new spatial analysis identifies a concrete remaining blocker: the S_eta=2000 rate change from 256\u00b2 to 384\u00b2 is 0.284%, exceeding the preceding 0.0557%, so the recorded shrinking-change gate fails. The exploratory slope interval does not establish a physical verdict. The worker acknowledges this failure and records a targeted 512\u00b2 refinement rather than relaxing the gate. Compact-retention commissioning reports bitwise magnetic-field readback for all 261 frames; this supports the storage strategy but does not establish scientific qualification. The proposed refinement is useful and budget-plausible: its approximately 2316-second forecast fits within the packet's approximately 6086 compute seconds. Qualification, subsequent fresh evidence and independent reviews together remain at risk. The authorized budget extension is already included; no additional time is assumed.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "at_risk",
+  "stop_experiments": [],
+  "wake_worker": false,
+  "park_worker": false,
+  "report_assessment": null,
+  "closeout_report": null,
+  "next_action": "Proceed with the recorded targeted S_eta=2000, 512\u00b2 qualification run after confirming its reservation and aggregate retained-storage footprint fit existing allowances. Preserve the failed 384\u00b2 convergence control. Because the proposed output cadence changes to .01, quantify cadence effects using existing finer-cadence trajectories and comparable reductions; do not attribute output-sampling changes to spatial convergence. Apply the unchanged numerical gates, assess matched-flux sheet structure and topology through the actual upper crossing bracket, then submit the corrected source-bound methods dossier including retention validation. Forecast the complete remaining path using measured costs: qualification, review, both fresh claim-bearing contrast members and analysis. Start fresh evidence only if that path fits the authoritative compute cutoff. Update RESULTS.md, run_table.json, figures and timeline now with the new qualification results and unresolved gate. Preserve the protected 600-second report reserve; if qualification or time remains insufficient, prepare an honest unresolved report for independent assessment.",
+  "storage_increase": null,
+  "registration_tuning": null,
+  "time_request": null,
+  "operating_limits": null,
+  "helper_tasks": [],
+  "help_replies": []
+}

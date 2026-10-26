@@ -1,0 +1,20 @@
+{
+  "id": "note_dee02d81282c9157e96705ff",
+  "created_at": 1793005485.8454566,
+  "authority": "worker_note",
+  "statement": "Completed corrected controls audit exp_6cdf470bcffa5a00adfd8755: all operational gates pass; mean A changes dt<=.00208,ppc<=.01047,matchedrefinedboundary<=.00154; boundary p<=2.56%,n<=1.32%. Meshchanges .01630ion,.00837electron. Material primarysecondarychanges .032-.035 retained. RESULTS.md draft and plots prepared while fresh FLASH runs; no physical verdict before fresh seeds and independent review.",
+  "kind": "observation",
+  "experiments": [
+    "exp_6cdf470bcffa5a00adfd8755",
+    "exp_3e16729b5240dd577dbe960d"
+  ],
+  "sources": [],
+  "claim": "root",
+  "supersedes": null,
+  "alternatives": {},
+  "estimated_seconds": null,
+  "evidence_bindings": {
+    "exp_6cdf470bcffa5a00adfd8755": "8d7651497be0feeda15c5c5d8a716563b387b97c8438b46175d6c4cf0c13985a",
+    "exp_3e16729b5240dd577dbe960d": "e6c87705dbc241f705c2ee0f5f68ee13aeb15910fd0e03bd757515822f374a64"
+  }
+}

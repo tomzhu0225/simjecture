@@ -1,0 +1,23 @@
+{
+  "id": "director_dc459cdb035bdfccb919378a",
+  "created_at": 1793005354.8842459,
+  "packet_sha256": "2f1b94ff08c2b2a12348e96b25138582dc36288eabaa5366255ee2f56bd64b89",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "The new corrected audit provides useful qualification progress: timestep and particle-count controls have maximum mean-anisotropy differences of 0.00208 and 0.01047, respectively. The matched refined-source boundary comparison has maximum mean-anisotropy difference 0.00154, pressure difference 0.02559 and density difference 0.01314. These comparisons fall within the frozen tolerances; all four analyzed cases report passing operational gates. This supports proceeding to prospective evidence, without accepting qualification or the hypothesis. Primary-secondary differences near 0.033 remain material uncertainty contributions. Keep the fresh FLASH run active. At the packet snapshot, approximately 1757 seconds remain before the compute cutoff. The previous 871-second FLASH cost suggests roughly 245 seconds remaining, followed by approximately 262 seconds for two baseline-cost kinetic seeds. This leaves a plausible but uncertain analysis and review path. The pending extension grants no additional time.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "at_risk",
+  "stop_experiments": [],
+  "wake_worker": true,
+  "park_worker": false,
+  "report_assessment": null,
+  "closeout_report": null,
+  "next_action": "Resume now while exp_7772fa68048aff22c2b815c3 continues. Record the completed timestep, ppc64 and matched refined-source boundary comparisons against every frozen tolerance, linking exp_6cdf470bcffa5a00adfd8755 and exact artifact identities. Assemble the complete declared uncertainty contributions from existing controls, and prepare the evidence index, figures and RESULTS.md draft now. After the fresh FLASH handoff passes its frozen checks, collect prospective seeds6101 and6102 sequentially on the GPU under the approved bindings, preserving the unchanged [0.4,0.9] window and exact source-transfer identities. Complete the fresh-seed audit and submit the disposition for independent claim review, followed by report assessment. Update the forecast from actual completion times; numerical execution must end before the compute cutoff and preserve the report reserve. If qualification fails or required evidence cannot fit, document the specific limitation and submit an unresolved disposition without changing the hypothesis, window or tolerances. Plan against the existing deadline while the extension request remains pending.",
+  "storage_increase": null,
+  "registration_tuning": null,
+  "time_request": null,
+  "operating_limits": null,
+  "helper_tasks": [],
+  "help_replies": []
+}

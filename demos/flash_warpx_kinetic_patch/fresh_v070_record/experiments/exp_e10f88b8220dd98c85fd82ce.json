@@ -1,0 +1,235 @@
+{
+  "id": "exp_e10f88b8220dd98c85fd82ce",
+  "status": "failed",
+  "operator_guidance_ids": [],
+  "created_at": 1793000567.6569784,
+  "timeout": 500,
+  "execution_deadline": 1793007061.4697688,
+  "workspace_limit_bytes": 4294967296,
+  "binding": {
+    "source": "calculation.py",
+    "args": [
+      "flash",
+      "--eta",
+      "0.001",
+      "--nx",
+      "256",
+      "--ny",
+      "256",
+      "--alpha",
+      "20",
+      "--tmax",
+      "0.81",
+      "--plot-interval",
+      "0.05",
+      "--ranks",
+      "4",
+      "--iprocs",
+      "2",
+      "--jprocs",
+      "2",
+      "--output",
+      "flash",
+      "--summary",
+      "result.json"
+    ],
+    "inputs": {
+      "calculation.py": "cd6c4db946c144a2f5bc86c877e929c7f7ecd334ced012da9153ea43c5546823",
+      "macro_study.py": "cf48da0ee2c970460086e1ad97a12d7bebbd8bb79a6fdf9b15e3e5eb7d905f9a",
+      "flash_islands.py": "26f348973b4edeb761f6a25f7023f6c3ea22660f61297a4a58c3d6cc49991588"
+    },
+    "capability": "flash-island-coalescence-resistive-mhd-4.8",
+    "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+  },
+  "outputs": [
+    "result.json",
+    "flash"
+  ],
+  "commitment": null,
+  "key": "fresh-macro256",
+  "stage": "exploration",
+  "method": null,
+  "review_documents": null,
+  "parent_experiment": null,
+  "purpose": "baseline",
+  "plan": "note_137d85ffefc5eed0636bc01b",
+  "pid": 248353,
+  "worker_identity": {
+    "pid": 248353,
+    "starttime": "2988668",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture-prx-island-v0.7.0/.venv/bin/python",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simulations/other_demos/flash_warpx_pressure_closure/outputs/fresh_v070__20261026T074100Z",
+      "--execute",
+      "exp_e10f88b8220dd98c85fd82ce"
+    ],
+    "launched_at": "2026-10-26T07:42:47.792045+00:00",
+    "run_directory": null
+  },
+  "started_at": 1793000567.7921576,
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": 0,
+    "stdout": "{\"checks\": {\"completed\": true, \"representation\": true, \"physics_controls\": true, \"boundaries\": true, \"diagnostics\": true, \"numerical_regime\": true, \"flux_window_reached\": false, \"scientific_evidence_eligible\": false}, \"metrics\": {\"l_over_eta_nominal\": 1000.0, \"flux_low\": 0.01, \"flux_high\": 0.05, \"flux_low_crossing_time\": 0.2588430248389068, \"flux_high_crossing_time\": null, \"reconnection_time\": null, \"normalized_flux_slope\": null, \"flux_path_max_abs_mismatch\": 2.5131346740269594e-05, \"max_abs_divb\": 2.3661073100811336e-12, \"max_boundary_normal_fraction\": 0.01494499616159572, \"initial_sheet_cells\": 12.8, \"plot_file_count\": 17}}",
+    "stderr": "",
+    "timed_out": false,
+    "cancelled": false,
+    "workspace_exceeded": false,
+    "stdout_truncated": false,
+    "stderr_truncated": false,
+    "heartbeat_count": 3,
+    "wall_seconds": 101.00054509500114,
+    "workspace_bytes": 62852295,
+    "executor_sha256": "b92087579abbb99f55ce2c75d98765355c8ccd4a6ccf3ba55b15ddd5491a22ec",
+    "resource_limits": {
+      "max_file_bytes": 4294967296,
+      "max_workspace_bytes": 4294967296,
+      "max_memory_bytes": 4294967296
+    }
+  },
+  "artifacts": {
+    "calculation.py": {
+      "sha256": "cd6c4db946c144a2f5bc86c877e929c7f7ecd334ced012da9153ea43c5546823",
+      "bytes": 429
+    },
+    "flash/.simjecture-flash-guided-output": {
+      "sha256": "67d1f5ea486320558047f5cff49a53b2b0f1eaca0f699ba9abc1c1f60bcedc67",
+      "bytes": 49
+    },
+    "flash/flash.par": {
+      "sha256": "446545a5bb650c175fbae04df339e730d301bb6eef5662120c136d13d05d3a49",
+      "bytes": 1795
+    },
+    "flash/flash_run.dat": {
+      "sha256": "3e2e129572829e9b59b09cd0142b923595cf7cee0e088e47123d7eb476815031",
+      "bytes": 470706
+    },
+    "flash/flash_run.log": {
+      "sha256": "16e0a10ca1ed100b84ad9560202012c369d543108e54249e0812a11f0a267f0b",
+      "bytes": 185194
+    },
+    "flash/flash_run_forced_hdf5_plt_cnt_0000": {
+      "sha256": "201c1c30cf69a34259c156ab3f84360218e259581019cce948aaaed9e849c1bb",
+      "bytes": 2153740
+    },
+    "flash/flash_run_hdf5_chk_0000": {
+      "sha256": "e51c263f070fbbfc99a70fa40b165eb75ed2de180c28bd4ca12a4723809794de",
+      "bytes": 11605260
+    },
+    "flash/flash_run_hdf5_chk_0001": {
+      "sha256": "a91be08ee4aad7828759a247e2e7d291a69ff83144e44e7d8c4baacf4f038a7a",
+      "bytes": 11605260
+    },
+    "flash/flash_run_hdf5_plt_cnt_0000": {
+      "sha256": "ef66c8f8ca475bab57c83920c5187c97c2a4c0ade0a990db8bf756c7a40340b6",
+      "bytes": 2153740
+    },
+    "flash/flash_run_hdf5_plt_cnt_0001": {
+      "sha256": "e90a3d65fb5cba3a4429df2de678a81529c150edf4d95ce7e3e0659827d187cf",
+      "bytes": 2153740
+    },
+    "flash/flash_run_hdf5_plt_cnt_0002": {
+      "sha256": "1dd382c5859ec4463961306c53fc719568479181649b370e5018b8d4df796f6f",
+      "bytes": 2153740
+    },
+    "flash/flash_run_hdf5_plt_cnt_0003": {
+      "sha256": "f243022c5181fdfb4b74db688993d98a9a40132581fc2f389a4a0021fd72c3ac",
+      "bytes": 2153740
+    },
+    "flash/flash_run_hdf5_plt_cnt_0004": {
+      "sha256": "30ae236ce07b988400e97e0ab37f79288adaa47c24cdcf7d253c5c5cde204589",
+      "bytes": 2153740
+    },
+    "flash/flash_run_hdf5_plt_cnt_0005": {
+      "sha256": "c3a486db1a069de37a61b91c2e507be4a27ff96481fe85242f39b344301ee17b",
+      "bytes": 2153740
+    },
+    "flash/flash_run_hdf5_plt_cnt_0006": {
+      "sha256": "51f4f2ffc244781a1f0b485b7dfed7b6931426463777fdf0bdcc3ee3ddf33dd0",
+      "bytes": 2153740
+    },
+    "flash/flash_run_hdf5_plt_cnt_0007": {
+      "sha256": "ec1744be1847a356f147c9fd28f3b2d2818f34a92835dfedf5d5132d7a197921",
+      "bytes": 2153740
+    },
+    "flash/flash_run_hdf5_plt_cnt_0008": {
+      "sha256": "584ba7b78ff998045ed55c1923086a9b6b11b2646e526c4c560602df590e05cd",
+      "bytes": 2153740
+    },
+    "flash/flash_run_hdf5_plt_cnt_0009": {
+      "sha256": "3a8f4924e1209f9253dccf77d356d23bbe8e94fd112360c626f7f8319f839596",
+      "bytes": 2153740
+    },
+    "flash/flash_run_hdf5_plt_cnt_0010": {
+      "sha256": "a7094b3c7942fbe196b560c18469f696e725f5797f7f458e3d9f4ba984c2bcd5",
+      "bytes": 2153740
+    },
+    "flash/flash_run_hdf5_plt_cnt_0011": {
+      "sha256": "b18719758a6a523718c58e18992195a4e0cc54b0bbbafad2e4617af247d8e613",
+      "bytes": 2153740
+    },
+    "flash/flash_run_hdf5_plt_cnt_0012": {
+      "sha256": "ec51da4f58d09bdf043c60c745487b631fbe56410c529b99c72a31a60afa0591",
+      "bytes": 2153740
+    },
+    "flash/flash_run_hdf5_plt_cnt_0013": {
+      "sha256": "b55a092e42823181081bbdc4fbf3e50e73d24ba7473337af1f62bdd6b736716f",
+      "bytes": 2153740
+    },
+    "flash/flash_run_hdf5_plt_cnt_0014": {
+      "sha256": "305f25c14d8d5dc9cfa5d3e3bcdea52ff07d085487dd466660bdbf7d55385436",
+      "bytes": 2153740
+    },
+    "flash/flash_run_hdf5_plt_cnt_0015": {
+      "sha256": "9812e0b95cfe6f4eff8559f88b9acb2ebed2d12f1f06d695057ace2b8ba6e39a",
+      "bytes": 2153740
+    },
+    "flash/flash_run_hdf5_plt_cnt_0016": {
+      "sha256": "559a1331d46ca697f987861ff483374e23038bc833ee837367ead0cf0199d563",
+      "bytes": 2153740
+    },
+    "flash/launcher_stderr.txt": {
+      "sha256": "b02b461e24dcd2e6b070047f42137aa8a806941ce4796a6bb96cf4a506dd057d",
+      "bytes": 504
+    },
+    "flash/launcher_stdout.txt": {
+      "sha256": "65c727cf8f8e58e3ad3a2e199afb73baeea4d9e581b684714ef37f340ce5fab7",
+      "bytes": 186224
+    },
+    "flash_islands.py": {
+      "sha256": "26f348973b4edeb761f6a25f7023f6c3ea22660f61297a4a58c3d6cc49991588",
+      "bytes": 14588
+    },
+    "macro_study.py": {
+      "sha256": "cf48da0ee2c970460086e1ad97a12d7bebbd8bb79a6fdf9b15e3e5eb7d905f9a",
+      "bytes": 1494
+    },
+    "result.json": {
+      "sha256": "f35aebc6c04c3ab5beb8ad1c5bece95184ef43ee489d73a0d408d87bc46c01c6",
+      "bytes": 13472
+    }
+  },
+  "missing_outputs": [
+    "flash"
+  ],
+  "input_mutations": [],
+  "output_findings": [
+    {
+      "path": "result.json",
+      "kind": "eligibility_annotation",
+      "detail": "Output declares non-evidence. Resolve this annotation against the host-recorded stage and actual limitations during independent review; do not rerun a solver merely to remove metadata."
+    },
+    {
+      "path": "result.json",
+      "kind": "failed_checks",
+      "detail": [
+        "flux_window_reached"
+      ]
+    }
+  ],
+  "scientific_status": "unreviewed",
+  "finished_at": 1793000668.8989787
+}

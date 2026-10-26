@@ -1,0 +1,27 @@
+{
+  "completed": true,
+  "backend": "CUDA",
+  "gpu": true,
+  "steps": 64,
+  "dt_s": 8.225509116623556e-15,
+  "dt_omega_pe": 0.4640388251533953,
+  "duration_omegaci": 0.06057326142779507,
+  "elapsed_s": 1.4677809070017247,
+  "initial_field_relative_errors": {
+    "bx": 0.0,
+    "bz": 0.0,
+    "ey": 0.0
+  },
+  "initial_maximum_particle_speed_over_c": {
+    "ions": 0.0631836849533404,
+    "electrons": 0.32606555082234434
+  },
+  "patch_sha256": "a81c01ca9d03b3eeb7a19a5843bc3b308a059af2503ec1dc4975d18005036ecb",
+  "ppc_per_species": 16,
+  "seed": 20261008,
+  "moment_convention": "Nonrelativistic m*n*<v_prime v_prime>, velocity v=u/sqrt(1+u^2/c^2); local bin mean subtracted.",
+  "isotropy_metric": "Frobenius(P-tr(P)I/3)/(sqrt(3)*tr(P)/3)",
+  "moment_bins_per_axis": 8,
+  "roi_linear_fraction": 0.5,
+  "scope": "Collisionless one-way local continuation. Absorbing boundaries, transfer relaxation and numerical/particle controls remain scientific qualification requirements."
+}

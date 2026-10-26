@@ -1,0 +1,37 @@
+{
+  "id": "director_e0734cfd3902f2ccd1ea3426",
+  "created_at": 1792936772.3501246,
+  "packet_sha256": "22fabd1c5c48e06d608f39ed1db270005c845778740de2474b6941f792e2ae1c",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "The new repair-help request and conservative production proposal do not resolve the pending spatial qualification. Keep the targeted 512\u00b2 control running. The proposed uncertainty transport needs independent methods review and must preserve the existing gates. The prior runtime forecast remains compatible with the compute cutoff, but subsequent qualification, reviews, fresh claim-bearing cases and repair validation remain at risk. Address the repair question concurrently as conditional planning; the original hypothesis remains unresolved.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "at_risk",
+  "stop_experiments": [],
+  "wake_worker": false,
+  "park_worker": false,
+  "report_assessment": null,
+  "closeout_report": null,
+  "next_action": "Complete the running 512\u00b2 control, apply the unchanged spatial gates, and submit the corrected source-bound qualification dossier, including topology through the actual upper crossing bracket, cadence controls and the proposed production uncertainty transport, for independent methods review. Forecast subsequent simulations using measured runtimes and actual retained sizes before launching them. Preserve the compute cutoff and 600-second report reserve. Treat helper output as conditional planning only; commit any repaired prediction after independently accepted falsification and before its fresh validation data. If the qualified evidence path cannot fit, submit the completed unresolved report for independent assessment.",
+  "storage_increase": null,
+  "registration_tuning": null,
+  "time_request": null,
+  "operating_limits": null,
+  "helper_tasks": [
+    {
+      "request": "help_4b4209d29f037d00c1b5699e",
+      "task": "Using the attached fresh-study records only, assess one minimal explanatory repair conditional on the selected root contrast eventually receiving independent acceptance as a counterexample. Distinguish observed evidence from proposed mechanism. Investigate whether transient sheet evolution or upstream geometry can support a quantitative prediction without assuming a stationary Sweet\u2013Parker sheet. Specify a frozen formula predicting rates or crossing durations at new resistivity settings, calibration inputs and parameter values or an explicit procedure for fixing them before validation, numerical allowances, and a quantitative falsifier. Select affordable independent settings prospectively, explain what field diagnostics would challenge the mechanism, and estimate costs from recorded completed trajectories. Do not present a fitted exponent band or an identity using validation-measured current as an explanatory prediction. If the available evidence cannot identify a defensible predictive repair, explain the missing information and propose the smallest discriminating diagnostic. No solver changes, simulations, imports from earlier studies, or scientific approvals.",
+      "completion_criteria": "Deliver one bounded conditional proposal with explicit mechanism/evidence separation, a prospectively freezable prediction, independent validation cases, quantitative failure criteria, diagnostic requirements and a budget estimate. Clearly identify unsupported assumptions and whether additional calibration is required before commitment.",
+      "outputs": [
+        "conditional_repair_proposal.md",
+        "conditional_repair_prediction.json"
+      ],
+      "timeout_seconds": 600.0
+    }
+  ],
+  "help_replies": [],
+  "helper_assignments": [
+    "helper_455dc9453f2c7e52a0be658b"
+  ]
+}

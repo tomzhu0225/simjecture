@@ -1,0 +1,23 @@
+{
+  "id": "director_1c4e1481764dd089d8581fe3",
+  "created_at": 1793006810.2062647,
+  "packet_sha256": "f0eb421449280083f34e979ae665cf1770e08a3baa8908b996e6dbc26e4a7893",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "Both prospective kinetic seeds completed under the approved data binding. The inspected seed6101 audit reports full-window coverage, eligible primary and secondary bins, and passing operational gates; these remain unreviewed findings. The current strategy now has an affordable path to independent assessment without further trajectories. Seed6102 analysis and the complete frozen uncertainty envelope remain necessary. RESULTS.md still contains stale execution status and incomplete control entries. At the packet snapshot, approximately 545 seconds remained before the compute cutoff and 1145 seconds overall. Analysis appears affordable; independent review and any requested corrections remain time-sensitive. The pending extension grants no additional time.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "at_risk",
+  "stop_experiments": [],
+  "wake_worker": false,
+  "park_worker": false,
+  "report_assessment": null,
+  "closeout_report": null,
+  "next_action": "Immediately finish the source-bound seed6102 audit and combine both fresh seeds using the exact frozen uncertainty rule: maximum seed mean plus all declared control, seed-range, sampling, shear, spatial-bin and relativistic contributions. Record every qualification gate and source/input identity, retain audit arrays and fresh-evidence figures, and submit the resulting disposition for independent claim review promptly. Update RESULTS.md with the completed fresh FLASH and kinetic receipts, method_e1bc80492ec63eead697af43, exact control values, both seed results, complete envelope and current limitations. Do not infer support from the small raw means. After incorporating the independent claim verdict, submit the current report for independent report assessment. Prioritize these tasks over additional trajectories; any necessary numerical correction must fit before the authoritative compute cutoff and preserve the report reserve. If qualification or the envelope is incomplete, submit an explicit unresolved disposition without changing the window or tolerances. Continue against the existing deadline while the extension remains pending.",
+  "storage_increase": null,
+  "registration_tuning": null,
+  "time_request": null,
+  "operating_limits": null,
+  "helper_tasks": [],
+  "help_replies": []
+}

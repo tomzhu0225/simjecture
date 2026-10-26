@@ -1,0 +1,306 @@
+{
+  "cases": [
+    {
+      "key": "pilot-250",
+      "S": 250.0,
+      "n": 128,
+      "rate": 0.08916468909411925,
+      "experiment": "exp_a2d9039a3b1d3ba9ec78f86c"
+    },
+    {
+      "key": "pilot-500",
+      "S": 500.0,
+      "n": 128,
+      "rate": 0.06512724591490937,
+      "experiment": "exp_349433d01686c1d23c0186c8"
+    },
+    {
+      "key": "pilot-1000",
+      "S": 1000.0,
+      "n": 128,
+      "rate": 0.04902521363911679,
+      "experiment": "exp_ff929c68f5acb2eafb2f340b"
+    },
+    {
+      "key": "pilot-2000",
+      "S": 2000.0,
+      "n": 128,
+      "rate": 0.03794595275081445,
+      "experiment": "exp_42cf28ee0c7c41a2f8d923be"
+    },
+    {
+      "key": "pilot-4000",
+      "S": 4000.0,
+      "n": 128,
+      "rate": 0.02890667493927896,
+      "experiment": "exp_b2df128c1c1ecc1d990f7dc5"
+    },
+    {
+      "key": "refine192-1000",
+      "S": 1000.0,
+      "n": 192,
+      "rate": 0.04948175804502866,
+      "experiment": "exp_c90e9b96ba8406a99246fb8e"
+    },
+    {
+      "key": "refine192-2000",
+      "S": 2000.0,
+      "n": 192,
+      "rate": 0.03815517809856998,
+      "experiment": "exp_82b78fe2f19144b3b6ca29af"
+    },
+    {
+      "key": "refine256-1000",
+      "S": 1000.0,
+      "n": 256,
+      "rate": 0.04962642455060869,
+      "experiment": "exp_f2da6ae1b2ce992ddf16cf82"
+    },
+    {
+      "key": "refine256-2000",
+      "S": 2000.0,
+      "n": 256,
+      "rate": 0.03813394125469638,
+      "experiment": "exp_d72d5627834d2ca1456a280c"
+    },
+    {
+      "key": "cfl256-recovery-1000",
+      "S": 1000.0,
+      "n": 256,
+      "rate": 0.04967104627862942,
+      "experiment": "exp_0b86a9ee47886cb02451c2c2"
+    },
+    {
+      "key": "cfl256-recovery-2000",
+      "S": 2000.0,
+      "n": 256,
+      "rate": 0.03816128840407043,
+      "experiment": "exp_9a9dff759f89368261125a4b"
+    },
+    {
+      "key": "refine384-1000",
+      "S": 1000.0,
+      "n": 384,
+      "rate": 0.04968858390778796,
+      "experiment": "exp_56eca6327dc2e3f0fd4942d4"
+    },
+    {
+      "key": "refine384-2000-sequential",
+      "S": 2000.0,
+      "n": 384,
+      "rate": 0.03824244686429199,
+      "experiment": "exp_9ed2782a9af6b2446c71285a"
+    },
+    {
+      "key": "compact-retention-commissioning",
+      "S": 1000.0,
+      "n": 128,
+      "rate": 0.049031490900122904,
+      "experiment": "exp_c99f4a2aba5c70b7330e4ada"
+    },
+    {
+      "key": "refine512-2000",
+      "S": 2000.0,
+      "n": 512,
+      "rate": 0.03831751182182047,
+      "experiment": "exp_58adb12d461c94104daeff23"
+    },
+    {
+      "key": "production-root-S2000",
+      "S": 2000.0,
+      "n": 384,
+      "rate": 0.03824212964185681,
+      "experiment": "exp_755dffd11e2a3f05a6b86b49"
+    },
+    {
+      "key": "production-root-S1000",
+      "S": 1000.0,
+      "n": 384,
+      "rate": 0.04968858390778796,
+      "experiment": "exp_40aac93038caa57671014925"
+    }
+  ],
+  "accepted_contrast": {
+    "cases": [
+      {
+        "S_eta": 1000,
+        "rate": 0.04968858390778796,
+        "t_low": 0.25874853232850514,
+        "t_high": 1.063762417896908,
+        "relative_uncertainty": 0.01307561933089813,
+        "rate_interval": [
+          0.04903887489951833,
+          0.050338292916057584
+        ],
+        "terms": {
+          "direct_mesh": 0.005830220770085942,
+          "direct_cadence": 0.006240581301142467,
+          "direct_path": 0.00010566467261963197,
+          "direct_CFL": 0.0008991525870500894,
+          "direct_sum": 0.01307561933089813,
+          "fine_absolute_allowance": 0.0006497090082696259,
+          "absolute_grid_shift": 0.0,
+          "absolute_fresh_anchor_shift": 0.0,
+          "transport_relative": 0.013075619330898128
+        },
+        "admissibility": {
+          "complete_window": true,
+          "runtime_representation": true,
+          "runtime_physics_controls": true,
+          "divergence": true,
+          "boundary": true,
+          "mass": true,
+          "energy": true,
+          "positive_margin": true,
+          "single_sheet_saved_fields": true,
+          "actual_bracket_covered": true,
+          "qualified_fine_mesh_gate": true,
+          "rate_uncertainty": true
+        },
+        "admissibility_values": {
+          "min_density": 0.9441865682601929,
+          "min_pressure": 5.862737655639648,
+          "max_divb": 5.588862705963038e-12,
+          "max_boundary_normal_fraction": 0.011821776256769778,
+          "mass_relative_drift": 1.3433698597964394e-14,
+          "energy_relative_drift": 3.5616989633169283e-06,
+          "topology_counts": [
+            [
+              1,
+              2
+            ]
+          ],
+          "topology_frames": 214,
+          "upper_bracket_index": 213,
+          "upper_bracket_time": 1.0651467396048893,
+          "upper_bracket_flux": 0.05006730296965319
+        },
+        "config": {
+          "S_eta": 1000.0,
+          "eta": 0.001,
+          "n": 384,
+          "tmax": 1.15,
+          "cadence": 0.005,
+          "cfl": 0.4,
+          "ranks": 4,
+          "threads": 1
+        },
+        "provenance": {
+          "command": [
+            "/usr/bin/python3",
+            "/opt/acs-tools/mpi_launch.py",
+            "--ranks",
+            "4",
+            "--launcher",
+            "/usr/bin/orterun",
+            "--",
+            "/opt/acs-capabilities/flash-island-coalescence-resistive-mhd-4.8/bin/flash4",
+            "-par_file",
+            "flash.par"
+          ],
+          "flash_executable_sha256": "40cf57b987e85f9befc01abae4e89f27c230d1eb42391ba3abea8655a0f7024b",
+          "parameter_sha256": "5563687c942645e9e77b1d182b211a27f41564cbc1ce9d9575b3421d3d97471c",
+          "driver_sha256": "2b78c89dc7551f90848e8989d2c50c379e9d3428281858c9343d2b231ec71183"
+        }
+      },
+      {
+        "S_eta": 2000,
+        "rate": 0.03824212964185681,
+        "t_low": 0.40228722410294376,
+        "t_high": 1.4482540772726262,
+        "relative_uncertainty": 0.023908687378598463,
+        "rate_interval": [
+          0.03732781051955782,
+          0.0391564487641558
+        ],
+        "terms": {
+          "direct_mesh": 0.005674616479466251,
+          "direct_cadence": 0.015463924612342916,
+          "direct_path": 6.0455795072078544e-05,
+          "direct_CFL": 0.000717134092996119,
+          "direct_sum": 0.021916130979877366,
+          "fine_absolute_allowance": 0.0007596932364064629,
+          "absolute_grid_shift": 7.50649575284798e-05,
+          "absolute_fresh_anchor_shift": 3.1722243518106374e-07,
+          "transport_relative": 0.023908687378598463
+        },
+        "admissibility": {
+          "complete_window": true,
+          "runtime_representation": true,
+          "runtime_physics_controls": true,
+          "divergence": true,
+          "boundary": true,
+          "mass": true,
+          "energy": true,
+          "positive_margin": true,
+          "single_sheet_saved_fields": true,
+          "actual_bracket_covered": true,
+          "qualified_fine_mesh_gate": true,
+          "rate_uncertainty": true
+        },
+        "admissibility_values": {
+          "min_density": 0.9275550842285156,
+          "min_pressure": 5.758875846862793,
+          "max_divb": 6.538769525832322e-12,
+          "max_boundary_normal_fraction": 0.01726003522250696,
+          "mass_relative_drift": 1.6209256159527285e-14,
+          "energy_relative_drift": 7.963776291530777e-06,
+          "topology_counts": [
+            [
+              1,
+              2
+            ]
+          ],
+          "topology_frames": 146,
+          "upper_bracket_index": 145,
+          "upper_bracket_time": 1.4500728798260654,
+          "upper_bracket_flux": 0.05007137528629566
+        },
+        "config": {
+          "S_eta": 2000.0,
+          "eta": 0.0005,
+          "n": 384,
+          "tmax": 1.6,
+          "cadence": 0.01,
+          "cfl": 0.4,
+          "ranks": 4,
+          "threads": 1
+        },
+        "provenance": {
+          "command": [
+            "/usr/bin/python3",
+            "/opt/acs-tools/mpi_launch.py",
+            "--ranks",
+            "4",
+            "--launcher",
+            "/usr/bin/orterun",
+            "--",
+            "/opt/acs-capabilities/flash-island-coalescence-resistive-mhd-4.8/bin/flash4",
+            "-par_file",
+            "flash.par"
+          ],
+          "flash_executable_sha256": "40cf57b987e85f9befc01abae4e89f27c230d1eb42391ba3abea8655a0f7024b",
+          "parameter_sha256": "24393df15bca4e5eca731f0876b444896f088f5da58cecb60e20a5d1b7b617b8",
+          "driver_sha256": "2b78c89dc7551f90848e8989d2c50c379e9d3428281858c9343d2b231ec71183"
+        }
+      }
+    ],
+    "contrast": [
+      1000,
+      2000
+    ],
+    "p_eff": -0.3777515597161056,
+    "numerical_interval": [
+      -0.4314054031570674,
+      -0.3246759518147541
+    ],
+    "root_band": [
+      -0.55,
+      -0.45
+    ],
+    "all_admissibility_checks": true,
+    "interval_disjoint_from_band": true,
+    "status": "Arithmetic check; scientific disposition requires independent review of fresh evidence receipts."
+  },
+  "scope": "Plotting extract from the reviewed fresh v0.7.0 investigation. Complete receipts and verdicts are in ../fresh_v070_record/."
+}

@@ -1,0 +1,18 @@
+{
+  "source_experiment": "exp_f2da6ae1b2ce992ddf16cf82",
+  "index": 214,
+  "field": {
+    "path": "native/flash_run_hdf5_plt_cnt_0214",
+    "sha256": "16066e91f7af31100dae0a8db84585f6b8b42bc60b6290d526d97a1fefe2ca54",
+    "bytes": 2153740
+  },
+  "timeseries": {
+    "time": 1.0703308255608432,
+    "flux_from_by": 0.05032930056471138,
+    "flux_from_bx": 0.050420349524799235,
+    "max_abs_divb": 2.5917046286849654e-12,
+    "max_abs_velocity": 0.9155717492103577,
+    "reconnected_flux_from_by": 0.05025298261441491,
+    "reconnected_flux_from_bx": 0.05026808952338513
+  }
+}

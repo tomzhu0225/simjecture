@@ -1,0 +1,23 @@
+{
+  "id": "director_5a8316e2250629bb344df360",
+  "created_at": 1793005004.571923,
+  "packet_sha256": "c3901096db3785fa9ed5bf4e3dc0e46bfdb49dc6943598b9d30c4ccb66611f3b",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "The matched refined-source larger-patch control completed the full kinetic duration in 240 seconds, providing the data needed for the remaining boundary comparison. Its successful execution does not establish boundary qualification or the hypothesis. Corrected comparisons of this control, the timestep control and ppc64 remain outstanding. The fresh 512-cell FLASH evidence run is active under the recorded production method; stopping it is unjustified. At the packet snapshot, approximately 2129 seconds remain before the compute cutoff. Using the previous 871-second FLASH cost gives roughly 617 seconds of remaining FLASH work, followed by approximately 262 seconds for two baseline-cost kinetic seeds. This leaves a plausible but uncertain path through analysis and independent review. The pending extension grants no additional time. The worker is active, with no recorded stagnation or queued help requests.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "at_risk",
+  "stop_experiments": [],
+  "wake_worker": false,
+  "park_worker": false,
+  "report_assessment": null,
+  "closeout_report": null,
+  "next_action": "Keep exp_7772fa68048aff22c2b815c3 running. While FLASH evolves, apply the corrected source-bound audit to the completed timestep, ppc64 and matched refined-source larger-patch controls. Record all frozen comparisons, eligibility checks and uncertainty contributions, including primary-secondary bin differences. Update the critical-path forecast from actual elapsed costs. After the fresh FLASH handoff passes its frozen checks, collect prospective seeds6101 and6102 sequentially on the GPU under the approved binding, preserving exact transfer identities and the unchanged [0.4,0.9] window. Prepare the evidence index, figures and RESULTS.md concurrently where possible, then submit the disposition for independent claim review and the report for assessment. Respect the compute cutoff and protected report reserve. If a required qualification fails or the remaining path cannot fit, document the specific limitation and submit an unresolved report without changing the window, tolerances or hypothesis. Continue against the current deadline while the existing extension request remains pending.",
+  "storage_increase": null,
+  "registration_tuning": null,
+  "time_request": null,
+  "operating_limits": null,
+  "helper_tasks": [],
+  "help_replies": []
+}

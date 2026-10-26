@@ -1,0 +1,9 @@
+{
+  "id": "time_73676a299e5742bc85eff4146dabb75a",
+  "created_at": 1793003979.5344934,
+  "hours": 0.5,
+  "reason": "Concrete remaining path: corrected bin-audit replay and production re-review (~500s latency), independent dt and ppc controls (~500s), matched refined-source boundary repeat (~220s), fresh reviewed 512^2 FLASH source (~871s) overlapped with GPU controls, fresh prospective seeds6101/6102 (~300s), independent claim and report review (~800s). Current compute remainder about3100s leaves inadequate repair/review margin; request1800s to complete unchanged [.4,.9] window, controls and independent acceptance. Completed mesh control cost803s; no window narrowing. Continue against existing deadline unless granted.",
+  "requested_by": "worker",
+  "request_key": null,
+  "authority": "Request only; the operator must authorize any additional budget."
+}

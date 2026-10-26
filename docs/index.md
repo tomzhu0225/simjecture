@@ -40,17 +40,16 @@ records two days of solver development and numerical controls. It ended with the
 merger hypothesis unresolved; its public accounting includes model usage, GPU
 allocations and API pricing scenarios.
 
-The [FLASH island-coalescence study](demos/island-coalescence.md) asks whether
-one reconnection-rate scaling survives changes in resistivity and resolution.
-Follow real plasma fields, the original campaign's audit and a fresh minimal-mode
-investigation.
+The fresh v0.7.0 [FLASH island-coalescence study](demos/island-coalescence.md)
+falsifies a specified reconnection-rate slope band after numerical qualification
+and independent review. Its proposed repair remains unvalidated.
 
-![Actual FLASH commissioning fields during magnetic-island coalescence](../demos/resistive_mhd_island_coalescence/figures/island_coalescence_evolution.png)
+![Fresh FLASH fields and the accepted scaling contrast](_static/demos/fresh-v070-island-fields.png)
 
-The [FLASH-to-WarpX investigation](demos/flash-warpx-patch.md) connects a measured
-MHD current sheet to local kinetic calculations. It records successful state
-transfer and completed numerical controls, with the scientific claim unresolved
-at the two-hour cutoff.
+The fresh [FLASH-to-WarpX investigation](demos/flash-warpx-patch.md) connects an MHD
+current sheet to local kinetic calculations. Two prospective particle seeds and
+numerical controls support the finite pressure prediction. Its independent claim
+and report reviews are accepted; historical records retain their original outcomes.
 
 The [Qin-1 hardware-to-plasma study](demos/qin1-hardware-plasma.md) follows CAD
 and feed redesign through coupled circuit/EM calculations into native 3D plasma

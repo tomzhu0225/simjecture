@@ -1,0 +1,23 @@
+{
+  "id": "director_0c4b25850a370eeaa3cb4308",
+  "created_at": 1792929931.6350853,
+  "packet_sha256": "e43489a484993af3ceba021bc29ebec003636a51f655c9fea7483df2c6c00596",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "The five-setting exploratory map and recorded contrast selection advance the previous plan. The selected coarse slope, -0.3696, warrants qualification but establishes no verdict. Both contrast members reached the flux window with small recorded conservation errors and divergence; spatial, timestep and topology qualification remain incomplete. The active refinements are useful and have no demonstrated reason to stop. Approximately 3726 seconds remain before the compute cutoff, making targeted qualification and subsequent fresh evidence plausible at observed costs. Independent methods review remains outstanding.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "feasible",
+  "stop_experiments": [],
+  "wake_worker": true,
+  "park_worker": false,
+  "report_assessment": null,
+  "closeout_report": null,
+  "next_action": "While the refinements run, prepare the methods dossier and preliminary scaling plot from existing fresh outputs. Document the selected contrast, deterministic uncertainty calculation, field-based admissibility checks and unfinished controls. When refinements finish, use their measured costs to schedule the committed 256 meshes and CFL control; evaluate the prescribed convergence and uncertainty gates before requesting production-method approval. Preserve an unresolved outcome if those gates fail. Collect fresh claim-bearing evidence only after approval. Forecast retained raw fields plus archives before further submissions: one active 192 workspace already occupies about 0.52 GB, so account for duplicate storage within the unchanged allowances. Keep numerical work before the compute cutoff and preserve the reporting reserve.",
+  "storage_increase": null,
+  "registration_tuning": null,
+  "time_request": null,
+  "operating_limits": null,
+  "helper_tasks": [],
+  "help_replies": []
+}
