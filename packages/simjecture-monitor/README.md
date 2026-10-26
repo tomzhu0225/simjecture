@@ -160,12 +160,27 @@ normal worker-requested help and repair requests. They are never inserted into
 the optimizer as if the model sampled their forced initial action.
 
 First create fresh training-only public checkpoints with
-`scientific_counterfactual_trials.py prefix`, then use
-`sample_checkpoint_decisions.py` on the pinned behavior model. Each input row
-needs `return_group` and `host_checkpoint_id` host metadata identifying its
-public checkpoint; these fields are excluded from the rendered model input.
-Keep evaluation checkpoints out of this development dataset. On the remote
-coordinator, plan before executing any proposal:
+`scientific_counterfactual_trials.py prefix`. Record their opaque directory
+names in a design such as `{"split":"train","assignments":[{"id":"cp-opaque"}]}`.
+Prepare model inputs on the remote coordinator; sample on the remote A100:
+
+```bash
+python packages/simjecture-monitor/scripts/prepare_checkpoint_requests.py \
+  --prefixes /study/prefixes --design /study/prefix-design.json \
+  --output /study/inputs.jsonl
+python packages/simjecture-monitor/scripts/sample_checkpoint_decisions.py \
+  --base /models/pinned-base --adapter /models/behavior-adapter \
+  --data /study/inputs.jsonl --output /study/samples \
+  --temperature 3 --draws 4 --seed 2026103000
+```
+
+The preparer checks frozen artifact/transcript identities and attaches
+`return_group` and `host_checkpoint_id` host metadata. These fields and the
+design's case labels are excluded from the rendered model input. Transfer the
+small input/proposal records between the coordinator and A100 as needed; model
+weights need not pass through the local host. Keep evaluation checkpoints out
+of this development dataset. Back on the coordinator, plan before executing
+any proposal:
 
 ```bash
 python packages/simjecture-monitor/scripts/collect_controlled_returns.py plan \

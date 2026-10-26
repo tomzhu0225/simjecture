@@ -1,4 +1,6 @@
+import importlib.util
 import json
+from pathlib import Path
 
 import pytest
 from simjecture_monitor.checkpoint import freeze
@@ -69,3 +71,26 @@ def test_changed_checkpoint_cannot_be_used_for_sampling(tmp_path, change):
         put(path / "observation.json", value)
     with pytest.raises(ValueError):
         packet(path)
+
+
+def test_preparation_keeps_host_case_labels_out_of_model_inputs(tmp_path):
+    source = Path(__file__).parents[1] / "scripts/prepare_checkpoint_requests.py"
+    spec = importlib.util.spec_from_file_location("prepare_checkpoint_test", source)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    path = checkpoint(tmp_path)
+    design = dict(split="train", assignments=[dict(id=path.name, kind="hidden-mechanism-label")])
+    rows = module.prepare(tmp_path, design)
+    assert len(rows) == 1
+    assert rows[0]["host_checkpoint_id"] == path.name
+    assert (
+        rows[0]["return_group"]
+        == json.loads((path / "checkpoint.json").read_text())["common_prefix_sha256"]
+    )
+    assert "hidden-mechanism-label" not in json.dumps(rows)
+    assert compile_messages(rows[0])[0] == compile_messages(request_row(packet(path)))[0]
+    with pytest.raises(ValueError, match="training-only"):
+        module.prepare(tmp_path, design | dict(split="test"))
+    (path / "artifacts/analysis_probe.py").write_text("changed after freezing")
+    with pytest.raises(ValueError, match="artifact hash mismatch"):
+        module.prepare(tmp_path, design)
