@@ -22,11 +22,12 @@ from simjecture_monitor.events import digest, put
 from simjecture_monitor.workflow_attention import ScientificConsistencyRules, observation
 
 
-def supervisor_type(legacy):
+def supervisor_type(legacy, *, model_policy=None):
     class ScientificSupervisor(legacy.RawSupervisor):
         def initialize(self, arm):
             super().initialize("observe")
             self.attention_arm = arm
+            self.attention_model_policy = model_policy or arm
             self.attention_gate = protocol.AdmissionGate()
             self.attention_rules = ScientificConsistencyRules()
             self.attention_clock = uuid.uuid4().hex
@@ -65,6 +66,11 @@ def supervisor_type(legacy):
             )
 
         def receive(self, raw, submitted, result, directory):
+            if (
+                self.attention_arm in {"base", "adapted"}
+                and result.get("policy") != self.attention_model_policy
+            ):
+                raise ValueError("Response model policy differs from the requested policy")
             now = time.time()
             current_raw = self.snapshot(directory, now)
             current = self.canonical(current_raw, now)
@@ -161,7 +167,7 @@ def supervisor_type(legacy):
                 return
             packet = self.canonical(raw, time.time())
             if self.attention_arm in {"base", "adapted"}:
-                payload = dict(observation=packet.model_dump(), policy=self.attention_arm)
+                payload = dict(observation=packet.model_dump(), policy=self.attention_model_policy)
                 if os.environ.get("SIMJECTURE_ATTENTION_TOKEN_FILE"):
                     payload["auth_token"] = (
                         Path(os.environ["SIMJECTURE_ATTENTION_TOKEN_FILE"]).read_text().strip()
@@ -220,13 +226,16 @@ def main():
     parser.add_argument("--wrapper", type=Path, required=True)
     parser.add_argument("--python", type=Path, required=True)
     parser.add_argument("--plasma-assets", type=Path, required=True)
+    parser.add_argument("--model-policy", help="Explicit named adapter for a model arm")
     args = parser.parse_args()
+    if args.model_policy and args.arm not in {"base", "adapted"}:
+        parser.error("--model-policy requires a model arm")
     live.PYTHON = args.python
     live.SCRIPTS = live.SOLVER = args.plasma_assets
     # Task text captures paths at import time, after configuring this new backend.
     import generalization_trials as legacy
 
-    legacy.RawSupervisor = supervisor_type(legacy)
+    legacy.RawSupervisor = supervisor_type(legacy, model_policy=args.model_policy)
     legacy.run(args.root, args.family, args.arm, args.seed, args.socket, args.wrapper)
 
 

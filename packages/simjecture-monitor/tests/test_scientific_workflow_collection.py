@@ -63,3 +63,29 @@ def test_receipt_refresh_does_not_accelerate_the_fixed_poll_cadence(monkeypatch)
         clock[0] = now
         sup.monitor_tick(None)
     assert calls == [100.0, 105.0]
+
+
+def test_model_arm_sends_the_declared_adapter_policy(monkeypatch):
+    mod = module(monkeypatch)
+    monkeypatch.delenv("SIMJECTURE_ATTENTION_TOKEN_FILE", raising=False)
+    sup = mod.supervisor_type(
+        SimpleNamespace(RawSupervisor=Lifecycle), model_policy="continued_sft"
+    )()
+    sup.initialize("adapted")
+    sent = []
+    sup.monitor_socket = "/private/service.sock"
+    sup.monitor_executor = SimpleNamespace(
+        submit=lambda fn, path, payload, **kw: sent.append(payload)
+    )
+    sup.monitor_tick(None)
+    assert len(sent) == 1 and sent[0]["policy"] == "continued_sft"
+
+
+def test_response_from_another_adapter_cannot_be_admitted(monkeypatch):
+    import pytest
+
+    mod = module(monkeypatch)
+    sup = mod.supervisor_type(SimpleNamespace(RawSupervisor=Lifecycle), model_policy="rl")()
+    sup.initialize("adapted")
+    with pytest.raises(ValueError, match="differs from the requested"):
+        sup.receive(None, None, {"policy": "continued_sft"}, None)

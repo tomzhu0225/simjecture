@@ -175,8 +175,7 @@ def main():
     service = AttentionService(
         model, adapter_loaded=bool(args.adapter), maximum_tokens=args.maximum_tokens
     )
-    started = last = time.time()
-    count = 0
+    started = time.time()
     status = dict(
         stage="ready",
         started_at=started,
@@ -185,17 +184,30 @@ def main():
         policies=["base", "adapted"] if args.adapter else ["base"],
         requests=0,
     )
-    args.socket.parent.mkdir(parents=True, exist_ok=True)
+    serve(
+        service,
+        socket_path=args.socket,
+        status_path=args.status,
+        auth_token=auth_token,
+        wall_seconds=args.wall_seconds,
+        idle_seconds=args.idle_seconds,
+        status=status,
+    )
+
+
+def serve(service, *, socket_path, status_path, auth_token, wall_seconds, idle_seconds, status):
+    """Serve one model call at a time, including adapter selection and receipt binding."""
+    started = last = time.time()
+    count = 0
+    socket_path.parent.mkdir(parents=True, exist_ok=True)
     with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as server:
-        server.bind(str(args.socket))
-        args.socket.chmod(0o600)
+        server.bind(str(socket_path))
+        socket_path.chmod(0o600)
         server.listen(4)
         server.settimeout(1.0)
-        put(args.status, status)
+        put(status_path, status)
         try:
-            while (
-                time.time() - started < args.wall_seconds and time.time() - last < args.idle_seconds
-            ):
+            while time.time() - started < wall_seconds and time.time() - last < idle_seconds:
                 try:
                     client, _ = server.accept()
                 except TimeoutError:
@@ -223,11 +235,11 @@ def main():
                 count += 1
                 last = time.time()
                 status.update(requests=count, updated_at=last)
-                put(args.status, status)
+                put(status_path, status)
         finally:
-            args.socket.unlink(missing_ok=True)
+            socket_path.unlink(missing_ok=True)
             status.update(stage="stopped", ended_at=time.time())
-            put(args.status, status)
+            put(status_path, status)
 
 
 if __name__ == "__main__":

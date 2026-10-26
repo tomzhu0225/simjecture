@@ -34,15 +34,15 @@ def verifier_report_value(path):
         return {}
 
 
-def paired_interval(records, baseline, metric, *, seed=20261026, draws=10000):
+def paired_interval(records, baseline, metric, *, seed=20261026, draws=10000, learned="adapted"):
     blocks = defaultdict(dict)
     for record in records:
         blocks[record["block"]][record["arm"]] = record
     families = defaultdict(list)
     for block in blocks.values():
-        if "adapted" in block and baseline in block:
-            families[block["adapted"]["family"]].append(
-                block["adapted"][metric] - block[baseline][metric]
+        if learned in block and baseline in block:
+            families[block[learned]["family"]].append(
+                block[learned][metric] - block[baseline][metric]
             )
     values = [statistics.mean(x) for x in families.values()]
     if not values:
@@ -64,7 +64,12 @@ def main():
     parser.add_argument("--manifest", type=Path, required=True)
     parser.add_argument("--budget", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--arm", action="append")
+    parser.add_argument("--learned-arm", default="adapted")
     args = parser.parse_args()
+    arms = args.arm or ARMS
+    if len(set(arms)) != len(arms) or args.learned_arm not in arms:
+        parser.error("Require distinct arms including the learned arm")
     campaign = read(args.root / "CAMPAIGN.json")
     if campaign["stage"] not in {"completed", "failed"}:
         raise ValueError("Do not summarize an actively collecting cohort")
@@ -160,7 +165,7 @@ def main():
                 )
             )
     summary = {}
-    for arm in ARMS:
+    for arm in arms:
         subset = [r for r in records if r["arm"] == arm]
         quiet = [r for r in subset if r["quiet_family"]]
         summary[arm] = dict(
@@ -181,14 +186,15 @@ def main():
         )
     comparisons = {
         baseline: {
-            metric: paired_interval(records, baseline, metric)
+            metric: paired_interval(records, baseline, metric, learned=args.learned_arm)
             for metric in [
                 "whole_workflow_verified",
                 "native_starts",
                 "restricted_completion_seconds",
             ]
         }
-        for baseline in ARMS[:-1]
+        for baseline in arms
+        if baseline != args.learned_arm
     }
     args.output.mkdir(parents=True, exist_ok=False)
     put(args.output / "records.json", records)
@@ -198,7 +204,7 @@ def main():
         dict(
             manifest_sha256=hashlib.sha256(args.manifest.read_bytes()).hexdigest(),
             arms=summary,
-            adapted_minus_baseline=comparisons,
+            **{args.learned_arm + "_minus_baseline": comparisons},
             violations=violations,
             limitations=[
                 "All assigned failures retained; no patched-host results mixed into this cohort.",

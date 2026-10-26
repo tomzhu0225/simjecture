@@ -285,3 +285,38 @@ The old leases remain closed. Recovery uses the remaining original allowances:
 have been used (355 remote plus two earlier audits). The new native lease permits
 283 starts and at most four concurrent roles. Its hard deadline is recorded in
 `recovery-lease.json`; renewal cannot exceed the original compute/start ceilings.
+
+## Prospective workflow check of the reward update (2026-10-26 UTC)
+
+If the fixed reward pilot is eligible and both its RL update and continued-SFT
+control complete, a new streaming-workflow cohort will compare four arms:
+no automatic alert, the frozen scientific consistency rules, continued SFT, and
+RL. This tests RL against an equal-update supervised control. The original
+step 512 streaming results remain the separate primary64 study; they are not
+reused as outcomes for the updated policy.
+
+Use all eight original mechanism families with one fresh configuration each,
+seeds 202610290000 plus the sorted-family index. Randomize block order and arm
+order with seed 2026102604. This yields at most 32 new real workflows. The cases
+are known mechanisms with fresh configurations, not unseen-domain evaluation.
+All arms use the repaired common host, the same P40 backend, native worker,
+5-second polling cadence and existing completion/assistance contract. Only two
+workflows and four native roles may be active concurrently. A new four-arm block
+requires at least 48 remaining native starts and 1,600 seconds before the lease
+ends; retain incomplete/resource-limited assignments rather than fabricate data.
+
+All model optimization and general/static evaluations finish before this timed
+cohort starts. Named adapters share one resident base model on the same A100.
+Before collecting outcomes, verify each named adapter against its saved reload
+probes, including prompt identity, actual probabilities and weight hashes. Any
+temperature conversion of a saved RL probe is explicit. Warm inputs come from
+commissioning/development only. Freeze the service identities for the cohort and
+reject a response labeled with another requested adapter policy. Proposals do
+not themselves count as dispatched attention.
+
+Report verified whole-workflow completion, actual starts and elapsed time,
+restricted completion time, quiet-family alert proxies and all infrastructure
+errors. Use paired intervals with the same family clustering and bootstrap seed
+as primary64. A small, negative or inconclusive study is not a workflow win.
+Do not change optimizer settings, select a checkpoint, or amend the task criteria
+in response to these outcomes.
