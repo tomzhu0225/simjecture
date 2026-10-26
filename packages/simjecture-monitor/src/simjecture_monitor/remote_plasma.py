@@ -99,6 +99,9 @@ def main():
     settings = json.loads((work / "environment.json").read_text())
     backend = json.loads(Path(os.environ["SIMJECTURE_PLASMA_BACKEND"]).read_text())
     machine = json.loads(Path(backend["machine_profile"]).read_text())["machine"]
+    control_path = backend.get("control_path")
+    if control_path is not None and not Path(control_path).is_socket():
+        raise ValueError("Configured SSH control socket is unavailable; no run submitted")
     runs = work / "runs"
     runs.mkdir(exist_ok=True)
     folder = runs / args.name
@@ -144,6 +147,15 @@ def main():
         machine["user"] + "@" + machine["host"],
         shlex.join(["runuser", "-u", machine["run_as"], "--", "python3", "-"]),
     ]
+    if control_path is not None:
+        command[1:1] = [
+            "-o",
+            "ControlPath=" + str(control_path),
+            "-o",
+            "ControlMaster=no",
+            "-o",
+            "ProxyCommand=false",
+        ]
     archive = folder / "transfer.tar"
     started = time.time()
     result = None
