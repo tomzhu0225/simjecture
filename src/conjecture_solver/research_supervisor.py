@@ -525,6 +525,7 @@ Write source normally here. All recorded numerical experiments use the existing 
   Set feedback_requirement='required' when you need the returned result before
   finalizing, or 'advisory' for optional assistance. This declaration is frozen
   with the request before dispatch; omitting it leaves legacy need unspecified.
+  Use lab.wait to wait for required feedback; the declaration alone does not park you.
   It does not block independent work or grant scientific approval or permissions.
   The director can return advice or assign
   multiple temporary workers with separate workspaces. They inherit your frozen
