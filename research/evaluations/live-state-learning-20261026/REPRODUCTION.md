@@ -25,6 +25,11 @@ split-overlap audit and pinned upstream distribution listing. The original
 adapters and training archives remain unchanged on the coordinator. No model
 weights were downloaded to the user's local host.
 
+A 13-file candidate bundle has been assembled offhost with documentation,
+provenance, reproduction scripts and notices. Its
+[package receipt](candidate-package-receipt.json) records every file hash and
+keeps runtime reload and workflow release validation explicitly pending.
+
 ## Data
 
 Use a separate checkout at the initial training revision above. These CPU-only

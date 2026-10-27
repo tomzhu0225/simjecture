@@ -1,0 +1,61 @@
+{
+  "prepared_at": 1793074642.149485,
+  "status": "unpublished_candidate",
+  "documentation_source_revision": "bb0e9d48c65290cea12be51d3c2d82d7c2ff48ad",
+  "runtime_reload_verified": false,
+  "workflow_release_gate": "pending",
+  "files": {
+    "LICENSE-QWEN": {
+      "bytes": 11343,
+      "sha256": "50cbab8a892c5f2993b8c7351a99182507472def3b1374558308605d99b86b32"
+    },
+    "README.md": {
+      "bytes": 9954,
+      "sha256": "b2d62a5fe8221c27797a5d6d2b21d95652a65f2aa4e302299d0025feac61d02b"
+    },
+    "adapter_config.json": {
+      "bytes": 1293,
+      "sha256": "f4f837242ce1749736b833544fdcc6c584a80f75ffc886eaaaea8a39eac7c132"
+    },
+    "adapter_model.safetensors": {
+      "bytes": 129934448,
+      "sha256": "76bf1bdf4c6d6a261211057d3cab4c8609131788827569f9c33f802d3491dab5"
+    },
+    "NOTICE": {
+      "bytes": 210,
+      "sha256": "34c8e8b6319fb6d9c7df26fb424da5c9215548207683eaa9df89c47fe972cb3d"
+    },
+    "REPRODUCTION.md": {
+      "bytes": 6969,
+      "sha256": "6f574efe94c7aeca9bbf35641372baac2f85bab0b46339ddf6580b74af016cb5"
+    },
+    "THIRD_PARTY_NOTICES.md": {
+      "bytes": 4031,
+      "sha256": "a81007f987f9e693760afdae621fb9c5e6447671205ab6a88fedb9cdaf21cccb"
+    },
+    "LICENSE": {
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    "adapter_export.json": {
+      "bytes": 1305,
+      "sha256": "a5be30fab38dc57d099a7d7e7a87c48c580011fc9a8b747d62b06a4909104e38"
+    },
+    "BASE_LICENSE": {
+      "bytes": 11357,
+      "sha256": "50e5eb0fca37f4041540313f960d2268c365cb471eee246e0d99c6ad1286b15f"
+    },
+    "provenance.json": {
+      "bytes": 22887,
+      "sha256": "d721378e233a8640385815fff08583b67672e37ffb11c157568de62836324814"
+    },
+    "release-operations/audit_data.py": {
+      "bytes": 3433,
+      "sha256": "340a51c9eb2f1ab3d21e4f41b70fb69af72297893a36fb820d226b4b9e5c2be6"
+    },
+    "release-operations/reproduce_data.py": {
+      "bytes": 5116,
+      "sha256": "5ad1cfed1dc235e380a6cedfe171a2e606c6b261e2e4f6cbd68fe44f31861b64"
+    }
+  }
+}
