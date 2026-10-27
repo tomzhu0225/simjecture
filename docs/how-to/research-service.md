@@ -65,6 +65,7 @@ help_request = lab.request_help(
     context="Describe observations, attempted fixes, relevant assumptions and unresolved questions.",
     files=["reader.py", "measurements.json"],
     key="diagnostic-help-1",
+    feedback_requirement="required",
 )
 lab.wait("Await the requested independent checks", help_requests=[help_request["id"]])
 # End this turn. After the host resumes the worker:
@@ -77,6 +78,17 @@ The director can return concrete advice through `help_replies`, or assign one or
 several `helper_tasks`. Each assignment specifies its request ID, bounded task,
 completion criteria, required output filenames and timeout. The worker can keep
 doing independent work while helpers run; calling `lab.wait` is optional.
+
+Use `feedback_requirement="required"` when the worker needs the returned feedback
+before finalizing, or `"advisory"` for optional assistance. The declaration is
+stored with the frozen request and helper context. Omitting it preserves the
+existing request format and identity; changing it under the same request key is
+rejected. A study may require an explicit declaration by setting
+`helper_policy.require_feedback_requirement` in its manifest.
+
+This field records the worker's stated dependency. Waiting still requires
+`lab.wait(..., help_requests=[...])`; the field does not introduce a new automatic
+finalization gate or change scientific review requirements.
 
 Each helper uses the study's configured worker model/backend in a new context and
 its own directory. `CONTEXT.json` contains the requesting worker's explanation,
