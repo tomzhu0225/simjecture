@@ -15,7 +15,8 @@ successful authentication preflight brings the retained count to 280 of the
 original 640 native starts, leaving at most 360. No checkpoint, scientific
 criterion, original assignment or analysis changes. Both original P40 controls
 passed again, and all 945 frozen scientific-source file hashes were checked.
-The registered model qualification remains a prerequisite to timed collection.
+The three registered model probes passed before timed collection, with maximum
+probability discrepancy `6.19e-8` against the unchanged `1e-4` tolerance.
 
 An initial allocation POST failed with curl return code 56 and no HTTP response
 or endpoint receipt. Read-only account reconciliation found no assigned runtime.

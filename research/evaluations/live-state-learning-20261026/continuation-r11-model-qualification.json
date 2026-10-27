@@ -1,0 +1,57 @@
+{
+  "observed_at": 1793100025.865227,
+  "stage": "collecting",
+  "qualification": [
+    {
+      "policy": "continued_sft",
+      "prompt_sha256": "361d970450af495a4946e0541ccdc8e3c835602cddddfd8fafcd2c74e848bc0e",
+      "saved_temperature": 1.0,
+      "serving_temperature": 1.0,
+      "maximum_probability_error": 1.896643408993981e-08
+    },
+    {
+      "policy": "continued_sft",
+      "prompt_sha256": "3d3d77ed6ca99d4a3edbfd12f90e97f943270bdd0d872774670b78fa138dcd0f",
+      "saved_temperature": 1.0,
+      "serving_temperature": 1.0,
+      "maximum_probability_error": 2.8430518494992896e-08
+    },
+    {
+      "policy": "base",
+      "prompt_sha256": "361d970450af495a4946e0541ccdc8e3c835602cddddfd8fafcd2c74e848bc0e",
+      "saved_temperature": 1.0,
+      "serving_temperature": 1.0,
+      "maximum_probability_error": 6.189326950956087e-08
+    }
+  ],
+  "scope": "Fresh pre-collection saved prediction checks on the R11 owned A100; frozen base/SFT weights, temperature 1, independent decoder; no optimizer updates",
+  "runtime": {
+    "r11-prepare-status.json": {
+      "stage": "ready",
+      "started_at": 1793099787.6906786,
+      "ended_at": 1793099884.4305725
+    },
+    "r11-service-controller.json": {
+      "stage": "serving",
+      "started_at": 1793099787.6821039,
+      "pid": 1432
+    },
+    "r11-service-status.json": {
+      "stage": "ready",
+      "started_at": 1793099902.8232577
+    },
+    "gpu": "NVIDIA A100-SXM4-80GB, 81920 MiB, 10618 MiB"
+  },
+  "first_assignment": [
+    {
+      "id": "bswf-499e7b269550daa6",
+      "stage": "running",
+      "family": "source_binding",
+      "arm": "rules"
+    }
+  ],
+  "native": {
+    "starts": 2,
+    "active": 1
+  }
+}

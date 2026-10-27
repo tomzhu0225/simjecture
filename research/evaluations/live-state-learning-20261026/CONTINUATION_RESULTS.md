@@ -7,8 +7,10 @@ The original cohort now has **55 attempted assignments: 49 verified, four
 earlier infrastructure failures and two workflow failures; nine remain
 unstarted**. All 56 R10 native starts are closed. The user subsequently approved
 continuation, and R11 has launched for exactly those nine unstarted IDs under
-the unchanged R9 parent deadline and cumulative spending ceiling. Its model
-must pass saved prediction probes before any timed assignment starts.
+the unchanged R9 parent deadline and cumulative spending ceiling. All three
+[saved prediction probes passed](continuation-r11-model-qualification.json)
+before timed collection; the first remaining rules/source-binding assignment
+was running at the 11:20:25 UTC snapshot.
 
 The [R11 manifest](continuation-r11-manifest.json),
 [registration](continuation-r11-registration.json),

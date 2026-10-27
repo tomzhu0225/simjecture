@@ -9,10 +9,10 @@ LoRA adapter for Intern-Decision-4B, with the pretrained base required separatel
 workflow advantage over the pretrained base and strong deployment comparators.
 The repeated-workflow study has audited 55 of 64 original assignments:
 49 verified completions, four infrastructure failures and two SFT workflow
-completion failures. Nine original assignments remain unstarted after a
-user-requested pause; a replacement R11 phase has launched under the
-unchanged parent resource bounds and requires fresh model qualification before
-timed collection. No weight upload or
+completion failures. Nine original assignments were left unstarted at the
+user-requested pause; a replacement R11 phase is now collecting them under the
+unchanged parent resource bounds. All three fresh saved-prediction checks passed
+before timed collection. No weight upload or
 public release is implied by this document. The pinned base declares Apache-2.0 and its distribution
 listing has been checked. The portable adapter passed a fresh A100 reload.
 Workflow validation, final release documentation and repository creation remain
