@@ -1,8 +1,8 @@
 # Reproducing the continued-SFT candidate
 
-This is an unpublished candidate. File preparation does not establish a workflow
-win or authorize a public performance claim. The registered workflow comparison
-is still collecting. The portable copy has passed a separate fresh A100 reload
+This is the unpublished Conjecture 1 experimental candidate. File preparation
+does not establish a workflow win. The registered 64-assignment comparison is
+complete and found no reliable overall workflow advantage. The portable copy has passed a separate fresh A100 reload
 and probability check. No new optimizer updates were performed during this
 preparation.
 
@@ -22,15 +22,18 @@ preparation.
 The [preparation evidence](release-preparation-evidence.json) records the copied
 source archive and file hashes, actual data reproduction, adapter export,
 split-overlap audit and pinned upstream distribution listing. The original
-adapters and training archives remain unchanged on the coordinator. No model
-weights were downloaded to the user's local host.
+adapters and training archives remain unchanged on the coordinator. Initial
+export and reload ran offhost. The 129.9 MB portable adapter was subsequently
+copied to the local host for release packaging, with its weight and configuration
+hashes verified; this copy did not load a model or run inference/training.
 
 A 13-file candidate bundle has been assembled offhost with documentation,
 provenance, reproduction scripts and notices. Its
 [package receipt](candidate-package-receipt.json) records every file hash and
 records the initial preparation stage. The subsequent
 [portable reload receipt](portable-reload-evidence.json) establishes mechanical
-reload equivalence; workflow release validation remains pending. The original
+reload equivalence. The completed workflow comparison supplies negative/mixed
+efficacy evidence, retained in the release documentation. The original
 bundle's documentation snapshot must be refreshed before publication.
 
 ## Data
@@ -126,7 +129,7 @@ texts and their original copyright notices are retained in
 checkout also supplies Simjecture's license and notices. Preserve these with
 the model card and provenance when assembling a distribution.
 
-Before uploading, finish the registered workflow analysis and infrastructure
-sensitivity, reconcile supported claims with the general-decision regressions,
+Before uploading, include the completed registered workflow analysis and
+infrastructure sensitivity, reconcile supported claims with the general-decision regressions,
 include the portable reload proof, and verify the destination repository and
 write access. Prepared files alone do not satisfy those release conditions.

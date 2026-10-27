@@ -5,18 +5,16 @@ initial tag `v0.1`. The name was proposed by the user; the repository has not
 been created and no weights have been uploaded. This is a continued-SFT PEFT
 LoRA adapter for Intern-Decision-4B, with the pretrained base required separately.
 
-**Unpublished release draft.** This candidate has not established a reliable
+**Unpublished experimental release draft.** This candidate has not established a reliable
 workflow advantage over the pretrained base and strong deployment comparators.
-The repeated-workflow study has audited 55 of 64 original assignments:
-49 verified completions, four infrastructure failures and two SFT workflow
-completion failures. Nine original assignments were left unstarted at the
-user-requested pause; a replacement R11 phase is now collecting them under the
-unchanged parent resource bounds. All three fresh saved-prediction checks passed
-before timed collection. No weight upload or
+The repeated-workflow study has audited all 64 original assignments:
+58 verified completions, four infrastructure failures and two SFT workflow
+completion failures. The final nine assignments completed, final saved-prediction
+checks passed, and the A100 was released. No weight upload or
 public release is implied by this document. The pinned base declares Apache-2.0 and its distribution
 listing has been checked. The portable adapter passed a fresh A100 reload.
-Workflow validation, final release documentation and repository creation remain
-pending. Hugging Face browser authentication succeeded as `tomzhu0225`;
+The registered workflow evaluation is complete. Final release packaging and
+repository creation remain pending. Hugging Face browser authentication succeeded as `tomzhu0225`;
 repository-specific write access has not yet been exercised.
 
 ## Identity and intended use
@@ -140,17 +138,19 @@ It omitted the pretrained-base arm. These promising observed differences do not
 answer the missing base/SFT workflow comparison. The subsequently registered
 64-workflow replication retained its initial verified rules episode and
 provider-failed base episode, then resumed only previously unstarted assignments.
-Through R10, 55 original assignments have audit records: 49 verified completions,
-four infrastructure failures and two SFT workflow completion failures. The partial
-registered SFT-minus-base restricted-completion estimate is +36.3 seconds
-(95% interval −113.2 to +200.9); excluding the predefined whole
-infrastructure-affected blocks gives +6.1 seconds (−114.9 to +127.3).
-Neither establishes an overall advantage. The first two fully repeated
-families show large gains on publication-retry workflows and a slower SFT mean
-on quiet workflows. The R10 phase stopped at a workflow boundary for the user's
-review, preserved all outcomes and released its A100. Nine assignments remain.
-These are partial observations, not a completed effect estimate or a release gate. See
-[the continuation record](CONTINUATION_RESULTS.md) for all arms and caveats.
+All 64 original assignments now have audit records: 58 verified completions,
+four infrastructure failures and two SFT workflow completion failures. The
+registered SFT-minus-base restricted-completion estimate is +12.6 seconds
+(95% interval −116.1 to +148.3); excluding the predefined whole
+infrastructure-affected blocks gives +11.9 seconds (−91.1 to +110.3).
+Neither establishes an overall advantage. SFT verifies 13/16 workflows;
+base, rules and worker-only execution each verify 15/16. Mean restricted
+completion times are 364.4, 351.8, 338.5 and 356.0 seconds, respectively.
+An unsuccessful workflow contributes 650 seconds, so these are not raw runtime
+means. Publication-retry and unstable-update workflows show favorable repeated
+SFT differences, while protected source selection fails in both SFT repeats.
+See [the completed record](CONTINUATION_RESULTS.md) for all arms, intervals,
+infrastructure sensitivity and individual paired effects.
 
 Both R10 SFT source-binding workflows failed completion verification despite
 successful physical controls and authorized repairs. Their four main-worker turns
@@ -199,9 +199,11 @@ tolerance. [The reload evidence](portable-reload-evidence.json) records this che
 The ongoing scientific comparison continues to use the original adapter and
 configuration; no optimizer ran during export or reload.
 
-Before publishing, complete the registered workflow evidence and its
-infrastructure sensitivity analysis, include the checked notices and portable
-reload receipt without changing the weight tensors, and include exact
+The registered workflow evidence and infrastructure sensitivity analysis are
+complete and support an experimental artifact release with the limitations
+above. They do not support an efficacy or production-readiness claim. Before
+publishing, include the checked notices and portable reload receipt without
+changing the weight tensors, and include exact
 input/compiler, training and evaluation manifests. Disclose the general regressions and observed attention
 errors. Publish only claims supported by that completed evidence.
 

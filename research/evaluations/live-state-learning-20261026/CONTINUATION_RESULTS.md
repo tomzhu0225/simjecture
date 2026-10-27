@@ -1,6 +1,88 @@
-# Base versus continued SFT: partial replication
+# Base versus continued SFT: completed replication
 
-**Latest terminal audit:** R10 stopped at a workflow boundary for the user's
+**Complete registered comparison:** All 64 original assignments now have audited
+outcomes. There are 58 verified completions, four retained infrastructure failures
+and two SFT workflow completion failures. No assignment was replaced or retried.
+R11 completed the final nine assignments, all verified, and all 43 of its native
+starts closed. Final base/SFT probability probes passed, and the owned A100 was
+released at **2026-10-27 12:19:12 UTC**.
+
+[The complete audit](replication-through-r11.json) reports zero consistency
+violations. It does **not establish an overall SFT workflow advantage**.
+
+| Arm | Verified complete | Mean restricted completion time | Automatic expert requests |
+|---|---:|---:|---:|
+| Worker only | 15/16 | 356.0 s | 0 |
+| Fixed rules | 15/16 | 338.5 s | 7 |
+| Pretrained base | 15/16 | 351.8 s | 0 |
+| Continued SFT | 13/16 | 364.4 s | 10 |
+
+Verified times are capped at 650 seconds and unsuccessful workflows receive
+650 seconds. These are failure-penalized completion scores, not raw mean runtime.
+The original comparison has two executions of each arm in each of eight known
+mechanism families; it does not establish unseen-task generalization.
+
+| Registered SFT minus comparator | All attempts | Interval | Whole-infrastructure-block sensitivity | Interval |
+|---|---:|---:|---:|---:|
+| Pretrained base | +12.6 s | −116.1 to +148.3 s (95%) | +11.9 s | −91.1 to +110.3 s (95%) |
+| Rules | +25.9 s | −129.6 to +190.7 s (97.5%) | +33.0 s | −84.8 to +164.1 s (97.5%) |
+| Worker only | +8.4 s | −152.9 to +161.7 s (97.5%) | +31.9 s | −100.8 to +169.0 s (97.5%) |
+
+Negative differences favor SFT. The primary comparison includes 16 pairs in
+eight families. The registered sensitivity excludes entire blocks 01, 08 and 10,
+leaving 13 pairs in eight families. It retains both non-infrastructure SFT
+completion failures. Every interval includes zero; this neither proves equal
+performance nor supports a reliable overall gain.
+
+![Registered effects and individual paired differences](complete-replication-plots/replication-effects.png)
+
+The [PDF figure](complete-replication-plots/replication-effects.pdf) and
+[plotting script](plot_replication.py) preserve the comparison. Publication-retry
+and unstable-update workflows show favorable repeated SFT differences; protected
+source selection fails completion under SFT in both repeats. Healthy/quiet
+workflows and worker-requested assistance remain variable. The earlier timing
+signal and individual speedups remain observations, but did not establish an
+aggregate improvement in this completed replication.
+
+The final analysis does not select a new checkpoint or alter a threshold. The
+separate task-instruction/routine-help commissioning phase starts from this
+completed record and tests integration before any new model-effect comparison.
+
+## Recorded inputs, inference and attention
+
+An offline [receipt analysis](completed-input-analysis/summary.json) covers all
+64 episodes and 664 public observations. It performs no new model calls. The
+base arm has 193 scored observations and SFT has 120; the other arms record
+observations without a model prediction. The differing states and polling
+opportunities prevent interpreting these as a matched inference-speed ablation.
+
+SFT inputs span 2,385–4,966 tokens, with a median of 3,858.5. Its recorded model
+scoring time has median 0.367 seconds, mean 0.725 and maximum 10.868. Base inputs
+span 3,115–5,203 tokens, with median 4,887; scoring has median 0.289 seconds and
+mean 0.274. These timings cover model scoring as recorded by the model, not a
+separately measured GPU-forward kernel or complete transport/admission latency.
+
+Within SFT's evidence content, worker-event text accounts for 36.7% of characters
+and the declared task for 22.7%. These are character shares, not token shares.
+They motivate measuring alternative input representations, but establish no
+compressed-input accuracy or latency gain. Training inputs were only 339–1,459
+tokens, so the live input distribution differs substantially from training.
+
+Both SFT automatic dispatches in the eight quiet-family episodes occur in
+publication-retry workflows, the family with the large observed timing gain.
+Their selected worker-help probabilities were 0.984 and 0.965. A quiet-family
+dispatch therefore cannot automatically be called a false alert, nor does high
+option probability establish calibrated justification. Independently judged
+support at dispatch and measured downstream utility remain separate targets.
+Repeated polls are correlated observations, not independent evaluation units.
+
+The [analysis script](analyze_completed_attention_inputs.py), per-observation
+receipts, per-episode coverage and input hashes are retained. No alert threshold
+was selected from these evaluation outcomes.
+
+## Historical continuation records
+
+**R10 terminal audit:** R10 stopped at a workflow boundary for the user's
 review and released its A100 at **2026-10-27 10:58:46 UTC**. It added eight
 attempts: six verified completions and two SFT workflow completion failures.
 The original cohort now has **55 attempted assignments: 49 verified, four

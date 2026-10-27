@@ -1,6 +1,19 @@
 # Preserved transport interruptions and bounded continuations
 
-**Latest terminal state:** R10 stopped at a workflow boundary for the user's
+**Completed comparison:** R11 completed all nine remaining original assignments,
+all verified. The full cohort contains 64 audited attempts, 58 verified
+completions, four retained infrastructure failures and two SFT completion
+failures. All 43 R11 native starts closed and final saved model probes passed
+with maximum discrepancy `6.19e-8`. The owned A100 was released at
+**12:19:12 UTC on 27 October 2026**; its temporary Windows renewal task was
+removed after the matching release receipt was verified. The
+[complete record](replication-through-r11.json) preserves every original attempt.
+
+The separate control-commissioning sequence subsequently passed the full-cohort,
+release and closed-worker prerequisites, completed fresh P40 checks, and started
+its native pilot. It allocates no GPU and makes no decision-model calls.
+
+**Historical R10 terminal state:** R10 stopped at a workflow boundary for the user's
 review and released its owned A100 at **10:58:46 UTC on 27 October 2026**.
 All 56 native starts are closed, and the temporary Windows control task was
 removed. Eight workflows ran: six verified and two SFT completion failures,

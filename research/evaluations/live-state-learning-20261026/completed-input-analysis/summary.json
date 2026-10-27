@@ -1,0 +1,177 @@
+{
+  "scope": "Descriptive analysis of completed frozen evaluation receipts; no new model calls or optimizer updates",
+  "episodes": 64,
+  "observations": 664,
+  "by_arm": {
+    "rules": {
+      "observations": 138,
+      "input_tokens": {
+        "count": 0
+      },
+      "scoring_seconds": {
+        "count": 0
+      },
+      "evidence_character_shares": {
+        "worker_events": 0.36179548610726237,
+        "declared_task": 0.22464003344328023,
+        "diagnostics": 0.08501433848970019,
+        "telemetry": 0.08295897022566297,
+        "progress": 0.08268977715564269,
+        "progress_history": 0.08154808184102724,
+        "analysis_options": 0.044388353757697736,
+        "execution_plan": 0.026095892905495813,
+        "process": 0.010869066074230781
+      },
+      "actual_dispatches": 7,
+      "quiet_dispatch_receipts": []
+    },
+    "continued_sft": {
+      "observations": 120,
+      "input_tokens": {
+        "count": 120,
+        "minimum": 2385,
+        "median": 3858.5,
+        "mean": 4035.7166666666667,
+        "maximum": 4966
+      },
+      "scoring_seconds": {
+        "count": 120,
+        "minimum": 0.24288446699938504,
+        "median": 0.3667989349999061,
+        "mean": 0.7245340945250026,
+        "maximum": 10.867648844999962
+      },
+      "evidence_character_shares": {
+        "worker_events": 0.3674661814439053,
+        "declared_task": 0.2267313630348478,
+        "progress": 0.085514997794442,
+        "telemetry": 0.08119394206734304,
+        "progress_history": 0.08092743714159682,
+        "diagnostics": 0.07698500220555801,
+        "analysis_options": 0.04476731363034848,
+        "execution_plan": 0.025444787531245405,
+        "process": 0.01096897515071313
+      },
+      "actual_dispatches": 10,
+      "quiet_dispatch_receipts": [
+        {
+          "episode_id": "bswf-d7107218573c3f83",
+          "family": "publication_retry",
+          "arm": "continued_sft",
+          "quiet_family_proxy": true,
+          "receipt": "base-sft-replication-v3/bswf-d7107218573c3f83/monitor/attention-00004.json",
+          "packet_id": "packet-15-603f3b36e5a16c9a",
+          "input_tokens": 3557,
+          "scoring_seconds": 0.3424563200001103,
+          "model_view_chars": 8857,
+          "evidence_chars": 4628,
+          "evidence_chars_by_role": {
+            "declared_task": 1028,
+            "telemetry": 268,
+            "process": 50,
+            "execution_plan": 146,
+            "analysis_options": 204,
+            "progress": 1048,
+            "progress_history": 305,
+            "worker_events": 1579
+          },
+          "exact_duplicate_evidence_chars": 0,
+          "proposal": "request_worker_help",
+          "selected_route": "worker_help",
+          "selected_route_probability": 0.9835561513900757,
+          "expert_route_probability": 0.9845262750011443,
+          "admission": "admitted",
+          "actual_dispatch": true
+        },
+        {
+          "episode_id": "bswf-9e5fda3473a34492",
+          "family": "publication_retry",
+          "arm": "continued_sft",
+          "quiet_family_proxy": true,
+          "receipt": "base-sft-replication-v3/bswf-9e5fda3473a34492/monitor/attention-00002.json",
+          "packet_id": "packet-9-ff0baf2120326a8e",
+          "input_tokens": 3492,
+          "scoring_seconds": 0.33714137600009053,
+          "model_view_chars": 8723,
+          "evidence_chars": 4507,
+          "evidence_chars_by_role": {
+            "declared_task": 1028,
+            "telemetry": 282,
+            "process": 50,
+            "execution_plan": 146,
+            "analysis_options": 204,
+            "progress": 1048,
+            "progress_history": 227,
+            "worker_events": 1522
+          },
+          "exact_duplicate_evidence_chars": 0,
+          "proposal": "request_worker_help",
+          "selected_route": "worker_help",
+          "selected_route_probability": 0.9645727872848511,
+          "expert_route_probability": 0.9661833617715274,
+          "admission": "admitted",
+          "actual_dispatch": true
+        }
+      ]
+    },
+    "observe": {
+      "observations": 213,
+      "input_tokens": {
+        "count": 0
+      },
+      "scoring_seconds": {
+        "count": 0
+      },
+      "evidence_character_shares": {
+        "worker_events": 0.35044477409197167,
+        "declared_task": 0.21902510800513345,
+        "progress_history": 0.09667197148004293,
+        "diagnostics": 0.0964369058967452,
+        "telemetry": 0.08469863091802612,
+        "progress": 0.07132890076331297,
+        "analysis_options": 0.04329908044344372,
+        "execution_plan": 0.02747766626888902,
+        "process": 0.010616962132434949
+      },
+      "actual_dispatches": 0,
+      "quiet_dispatch_receipts": []
+    },
+    "base": {
+      "observations": 193,
+      "input_tokens": {
+        "count": 193,
+        "minimum": 3115,
+        "median": 4887,
+        "mean": 4453.689119170985,
+        "maximum": 5203
+      },
+      "scoring_seconds": {
+        "count": 193,
+        "minimum": 0.19310028100062482,
+        "median": 0.28854676699938864,
+        "mean": 0.27362816965805997,
+        "maximum": 0.6445753200000581
+      },
+      "evidence_character_shares": {
+        "worker_events": 0.3371444476674743,
+        "declared_task": 0.21158669760775348,
+        "diagnostics": 0.11369143091151077,
+        "progress_history": 0.10849145138722997,
+        "telemetry": 0.08770859638944818,
+        "progress": 0.060827816264546294,
+        "analysis_options": 0.0418077927174692,
+        "execution_plan": 0.02845058526430741,
+        "process": 0.010291181790260383
+      },
+      "actual_dispatches": 0,
+      "quiet_dispatch_receipts": []
+    }
+  },
+  "evidence_size_unit": "Unicode characters, not token allocations; full input token counts come from stored model receipts",
+  "limitations": [
+    "Repeated polls are correlated, not independent episodes.",
+    "Quiet-family labels are only an interruption proxy, not independent false-alert adjudication.",
+    "Model option probabilities are not calibrated incident probabilities.",
+    "This analysis selects no threshold and measures no compressed-input model performance."
+  ]
+}

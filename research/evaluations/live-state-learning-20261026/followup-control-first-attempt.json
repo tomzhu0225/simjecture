@@ -1,0 +1,502 @@
+{
+  "observed_at": 1793104710.7868352,
+  "scope": "First task-focused/routine-help commissioning attempt; no decision-model calls or GPU allocation; stopped after a real routine-help completion failure",
+  "budget": {
+    "deadline": 1793110773.4025888,
+    "maximum_starts": 73,
+    "maximum_per_continuation": 12,
+    "maximum_concurrent": 6
+  },
+  "native_starts": 14,
+  "native_active": 0,
+  "records": [
+    {
+      "id": "ctl-5da0a16804148c6d",
+      "family": "source_binding",
+      "seed": 202610271033,
+      "repeat": 0,
+      "arm": "observe",
+      "worker_prompt": "task_protocol",
+      "block": "control-03",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 371.23814511299133,
+      "restricted_completion_seconds": 371.23814511299133,
+      "native_starts": 6,
+      "automatic_alerts": 0,
+      "alert_actions": [],
+      "quiet_family": false,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "policy_choice": 20
+      },
+      "proposed_actions": {
+        "observe": 20
+      },
+      "input_token_range": null,
+      "prediction_latency_mean": null,
+      "completion_censored": false
+    },
+    {
+      "id": "ctl-f56b4c24a0609d03",
+      "family": "source_binding",
+      "seed": 202610271033,
+      "repeat": 0,
+      "arm": "routine_help",
+      "worker_prompt": "task_protocol",
+      "block": "control-03",
+      "stage": "completed",
+      "whole_workflow_verified": 0,
+      "raw_quality": 0.0,
+      "elapsed_seconds": 277.4125349521637,
+      "restricted_completion_seconds": 650.0,
+      "native_starts": 7,
+      "automatic_alerts": 1,
+      "alert_actions": [
+        "request_worker_help"
+      ],
+      "quiet_family": false,
+      "required_feedback_misses": 0,
+      "finish_reason": "boundary_or_parent_turn_limit",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": false,
+      "admissions": {
+        "awaiting_persistence": 1,
+        "fresh_grounded_persistent_request": 1
+      },
+      "proposed_actions": {
+        "request_worker_help": 2
+      },
+      "input_token_range": null,
+      "prediction_latency_mean": null,
+      "completion_censored": false
+    }
+  ],
+  "audit": {
+    "manifest_sha256": "0146785c6aff81691a700f81b226d3ce90da99ac9e362e52ec52ab39a0accb0f",
+    "arms": {
+      "observe": {
+        "assigned": 1,
+        "verified": 1,
+        "mean_native_starts": 6,
+        "mean_elapsed_seconds": 371.23814511299133,
+        "mean_restricted_completion_seconds": 371.23814511299133,
+        "automatic_alerts": 0,
+        "quiet_trials": 0,
+        "quiet_trials_with_alert": 0,
+        "collector_failed": 0,
+        "trials_with_monitor_errors": 0
+      },
+      "routine_help": {
+        "assigned": 1,
+        "verified": 0,
+        "mean_native_starts": 7,
+        "mean_elapsed_seconds": 277.4125349521637,
+        "mean_restricted_completion_seconds": 650.0,
+        "automatic_alerts": 1,
+        "quiet_trials": 0,
+        "quiet_trials_with_alert": 0,
+        "collector_failed": 0,
+        "trials_with_monitor_errors": 0
+      }
+    },
+    "routine_help_minus_baseline": {
+      "observe": {
+        "whole_workflow_verified": {
+          "difference": -1,
+          "interval95": [
+            -1,
+            -1
+          ],
+          "clusters": 1,
+          "cluster_unit": "mechanism family; both fresh-seed pairs kept together",
+          "scope": "Descriptive paired percentile bootstrap; eight known families are not new domains"
+        },
+        "native_starts": {
+          "difference": 1,
+          "interval95": [
+            1,
+            1
+          ],
+          "clusters": 1,
+          "cluster_unit": "mechanism family; both fresh-seed pairs kept together",
+          "scope": "Descriptive paired percentile bootstrap; eight known families are not new domains"
+        },
+        "restricted_completion_seconds": {
+          "difference": 278.76185488700867,
+          "interval95": [
+            278.76185488700867,
+            278.76185488700867
+          ],
+          "clusters": 1,
+          "cluster_unit": "mechanism family; both fresh-seed pairs kept together",
+          "scope": "Descriptive paired percentile bootstrap; eight known families are not new domains"
+        }
+      }
+    },
+    "violations": [],
+    "limitations": [
+      "All assigned failures retained; no patched-host results mixed into this cohort.",
+      "Quiet-family alerts are a proxy for unnecessary attention, not independently adjudicated false alerts.",
+      "Restricted completion assigns 650 seconds to failures; it is not actual measured runtime.",
+      "Native sessions are stochastic; only one execution per arm/configuration."
+    ]
+  },
+  "commission": {
+    "schema": "scientific-attention-control-commission/v1",
+    "commissioned": false,
+    "attempted": 2,
+    "unstarted": [
+      "ctl-701d5069a8c087fd",
+      "ctl-304b6b660f033aff",
+      "ctl-d97462e48a098bb1",
+      "ctl-ea8aba8c024ea283"
+    ],
+    "violations": [
+      [
+        "ctl-f56b4c24a0609d03",
+        "workflow_not_verified"
+      ]
+    ],
+    "exercised": {
+      "routine_expert_dispatch": true,
+      "help_return_acknowledged": true,
+      "judge_authorized_protected_repair": true
+    },
+    "interpretation": "Integration evidence only; unsupported-alert rate and model benefit unmeasured",
+    "eligible_for_optimizer": false,
+    "inputs_sha256": {
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-01/PLAN.json": "7456d0f0620d17039f3d62db8960cf5810248bfbbc53d36a4f6c0317f87b2f06",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-01/STARTED.json": "0146785c6aff81691a700f81b226d3ce90da99ac9e362e52ec52ab39a0accb0f",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-01/CAMPAIGN.json": "419137e4e61dc6a689c10122292c480558597418b2ad9dc34b664c88b01d1398",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-01/workflow-audit/records.json": "5e2c9103511cfce5cb06963c5ea38c177300d95099997466a7ff49a4f8c18319",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-01/workflow-audit/summary.json": "4b43aa4714f0f99f543a3b4992bf875beccca34906a06faefea149c5177a7a07",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-01/workflow-audit/hashes.json": "ae341dcb5871b22d0049833032c463bfa9791ea09c138222307c5d3afe3c461e",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-01/ctl-5da0a16804148c6d/OUTCOME.json": "6ac3890b0adfdc6c25f6f81221ecf19872cb650f4198a46787177c0fff3c4af2",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-01/ctl-5da0a16804148c6d/QUALITY.json": "b986338a048110c273bbb797a0c3bf07f78806deebad911f39e2f14b5788f4a1",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-01/ctl-5da0a16804148c6d/incident-ledger.json": "59b2f786bc0365db8d3ab740cf639e78e0fbcec51025602c540eba2110f0adbb",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-01/ctl-f56b4c24a0609d03/OUTCOME.json": "d862e0d1b17c81490914bb22f28903797df28f0217009a2f6c481bfc239da5b1",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-01/ctl-f56b4c24a0609d03/QUALITY.json": "14b756ac5f687d9426af510fd50bbd8d17c3c98152c424d177b43a52dd9a76d2",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-01/ctl-f56b4c24a0609d03/incident-ledger.json": "2d60080ee78827cd709f847339c67e241f317cf439dadd8e149140923dd6e05b",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-01/ctl-5da0a16804148c6d/research.json": "f559557ad873c1703c93c3bfb18514379220da86237c04e088de310840473c95",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-01/ctl-5da0a16804148c6d/WORKER_PROMPT_MODE.json": "96d8878ee88320f27ca7ae952dd17e9a4259a80fea81d00ba3656ec53e114bb3",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-01/ctl-f56b4c24a0609d03/research.json": "d2a8b64c969b96091acdb039bf198f25bb82982ac789613b1d13b5f6bde9777d",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-01/ctl-f56b4c24a0609d03/WORKER_PROMPT_MODE.json": "96d8878ee88320f27ca7ae952dd17e9a4259a80fea81d00ba3656ec53e114bb3"
+    }
+  },
+  "finalization": {
+    "stage": "incomplete",
+    "attempted": 2,
+    "unstarted": [
+      "ctl-701d5069a8c087fd",
+      "ctl-304b6b660f033aff",
+      "ctl-d97462e48a098bb1",
+      "ctl-ea8aba8c024ea283"
+    ],
+    "audit_returncodes": [
+      0,
+      1
+    ]
+  },
+  "trials": {
+    "ctl-5da0a16804148c6d": {
+      "prompt_mode": {
+        "mode": "task_protocol",
+        "version": "external-workflow-task-v1",
+        "task_sha256": "99f61c936071dd246970905596759e244d71e7f4f59f88ff254ced9fdd5a99e2",
+        "renderer_sha256": "a0585d8dc29c12785b170e5d8447c3cee0c04103dd74e23dedc110db177e745d",
+        "scope": "Prospective instruction control; not used by the frozen base/SFT replication"
+      },
+      "report_exists": true,
+      "results_exists": true,
+      "outcome": {
+        "stage": "completed",
+        "verified_complete": true,
+        "elapsed_seconds": 371.23814511299133,
+        "finish_reason": "worker_finished_with_obligations_reconciled",
+        "native_starts": 6,
+        "turns": [
+          {
+            "returncode": 0,
+            "ended_at": 1793103701.7955651
+          },
+          {
+            "returncode": 0,
+            "ended_at": 1793103830.0424128
+          },
+          {
+            "returncode": 0,
+            "ended_at": 1793103922.2055538
+          },
+          {
+            "returncode": 0,
+            "ended_at": 1793104040.0708826
+          }
+        ],
+        "parking": [
+          {
+            "started_at": 1793103701.7959123,
+            "ended_at": 1793103753.5552433,
+            "wake_reason": "process_terminal"
+          },
+          {
+            "started_at": 1793103830.0430498,
+            "ended_at": 1793103882.929072,
+            "wake_reason": "returned_attention"
+          },
+          {
+            "started_at": 1793103922.2082427,
+            "ended_at": 1793103968.791344,
+            "wake_reason": "process_terminal"
+          }
+        ],
+        "completion_checks": [
+          {
+            "report_ready": false,
+            "pipeline_complete": false,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793103701.7959092,
+            "pending_required_ids": []
+          },
+          {
+            "report_ready": false,
+            "pipeline_complete": true,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793103830.0430453,
+            "pending_required_ids": []
+          },
+          {
+            "report_ready": false,
+            "pipeline_complete": false,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793103922.2082412,
+            "pending_required_ids": []
+          },
+          {
+            "report_ready": true,
+            "pipeline_complete": true,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": true,
+            "checked_at": 1793104040.074032,
+            "pending_required_ids": []
+          }
+        ],
+        "feedback": {
+          "required_feedback_misses": 0,
+          "unknown_need_for_unacknowledged_help": [],
+          "available_feedback": 1,
+          "scope": "Declared required-feedback reconciliation; no inferred necessity from case labels or cancellation"
+        },
+        "quantity_pipeline_ok": true,
+        "quantity_report_ok": true,
+        "calibration_report_ok": true,
+        "job_runs": [
+          {
+            "identity": {
+              "pid": 3862614,
+              "ppid": 3862314,
+              "session": 3862614,
+              "starttime": "215074737"
+            },
+            "started_at": 1793103693.7804534,
+            "resume": false,
+            "stdout": "/home/simjecture/investigations/scientific-attention-20261025/control-commission-01/ctl-5da0a16804148c6d/execution/pipeline-1.stdout",
+            "returncode": 0,
+            "ended_at": 1793103912.1417503
+          },
+          {
+            "identity": {
+              "pid": 3863709,
+              "ppid": 3862314,
+              "session": 3863709,
+              "starttime": "215096327"
+            },
+            "started_at": 1793103912.1544263,
+            "resume": true,
+            "stdout": "/home/simjecture/investigations/scientific-attention-20261025/control-commission-01/ctl-5da0a16804148c6d/execution/pipeline-2.stdout",
+            "returncode": 0,
+            "ended_at": 1793104047.8656836
+          }
+        ]
+      },
+      "authority_results": [
+        {
+          "stage": "completed",
+          "verdict": "grant",
+          "deployment": "applied"
+        }
+      ]
+    },
+    "ctl-f56b4c24a0609d03": {
+      "prompt_mode": {
+        "mode": "task_protocol",
+        "version": "external-workflow-task-v1",
+        "task_sha256": "99f61c936071dd246970905596759e244d71e7f4f59f88ff254ced9fdd5a99e2",
+        "renderer_sha256": "a0585d8dc29c12785b170e5d8447c3cee0c04103dd74e23dedc110db177e745d",
+        "scope": "Prospective instruction control; not used by the frozen base/SFT replication"
+      },
+      "report_exists": false,
+      "results_exists": false,
+      "outcome": {
+        "stage": "completed",
+        "verified_complete": false,
+        "elapsed_seconds": 277.4125349521637,
+        "finish_reason": "boundary_or_parent_turn_limit",
+        "native_starts": 7,
+        "turns": [
+          {
+            "returncode": 0,
+            "ended_at": 1793104156.5789914
+          },
+          {
+            "returncode": 124,
+            "ended_at": 1793104247.618841
+          },
+          {
+            "returncode": 0,
+            "ended_at": 1793104288.5604582
+          },
+          {
+            "returncode": 0,
+            "ended_at": 1793104361.8388677
+          }
+        ],
+        "parking": [
+          {
+            "started_at": 1793104156.5794525,
+            "ended_at": 1793104203.8695168,
+            "wake_reason": "process_terminal"
+          },
+          {
+            "started_at": 1793104247.6200535,
+            "ended_at": 1793104247.6209111,
+            "wake_reason": "returned_attention"
+          },
+          {
+            "started_at": 1793104288.5624857,
+            "ended_at": 1793104323.4823744,
+            "wake_reason": "returned_attention"
+          },
+          {
+            "started_at": 1793104361.8416748,
+            "ended_at": 1793104407.9294035,
+            "wake_reason": "process_terminal"
+          }
+        ],
+        "completion_checks": [
+          {
+            "report_ready": false,
+            "pipeline_complete": false,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793104156.5794494,
+            "pending_required_ids": []
+          },
+          {
+            "report_ready": false,
+            "pipeline_complete": true,
+            "worker_returncode": 124,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 1,
+            "allowed": false,
+            "checked_at": 1793104247.6200516,
+            "pending_required_ids": []
+          },
+          {
+            "report_ready": false,
+            "pipeline_complete": true,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793104288.562484,
+            "pending_required_ids": []
+          },
+          {
+            "report_ready": false,
+            "pipeline_complete": false,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793104361.8416734,
+            "pending_required_ids": []
+          }
+        ],
+        "feedback": {
+          "required_feedback_misses": 0,
+          "unknown_need_for_unacknowledged_help": [],
+          "available_feedback": 3,
+          "scope": "Declared required-feedback reconciliation; no inferred necessity from case labels or cancellation"
+        },
+        "quantity_pipeline_ok": true,
+        "quantity_report_ok": false,
+        "calibration_report_ok": false,
+        "job_runs": [
+          {
+            "identity": {
+              "pid": 3864491,
+              "ppid": 3864275,
+              "session": 3864491,
+              "starttime": "215119848"
+            },
+            "started_at": 1793104149.5673008,
+            "resume": false,
+            "stdout": "/home/simjecture/investigations/scientific-attention-20261025/control-commission-01/ctl-f56b4c24a0609d03/execution/pipeline-1.stdout",
+            "returncode": 0,
+            "ended_at": 1793104352.7605686
+          },
+          {
+            "identity": {
+              "pid": 3866045,
+              "ppid": 3864275,
+              "session": 3866045,
+              "starttime": "215139928"
+            },
+            "started_at": 1793104352.7707028,
+            "resume": true,
+            "stdout": "/home/simjecture/investigations/scientific-attention-20261025/control-commission-01/ctl-f56b4c24a0609d03/execution/pipeline-2.stdout",
+            "returncode": 0,
+            "ended_at": 1793104416.1698217
+          }
+        ]
+      },
+      "authority_results": [
+        {
+          "stage": "completed",
+          "verdict": "grant",
+          "deployment": "applied"
+        }
+      ]
+    }
+  }
+}
