@@ -320,3 +320,36 @@ errors. Use paired intervals with the same family clustering and bootstrap seed
 as primary64. A small, negative or inconclusive study is not a workflow win.
 Do not change optimizer settings, select a checkpoint, or amend the task criteria
 in response to these outcomes.
+
+## Confirmed-outcome pilot retry (2026-10-26 UTC)
+
+All results of return-pilot-v2 are retained, but its entire reward dataset is
+excluded from the optimizer. One continuation contains an unconfirmed SSH
+transfer for its refined control; a zero scientific score there does not identify
+the value of the sampled attention action. This was detected before any RL
+update. The base and step 512 scientific/general evaluations completed normally
+and are not repeated or used to change the fixed update settings.
+
+PR67 enforces this exclusion before writing a training reward. Confirmed solver
+failures and timeouts remain legitimate outcomes; missing, queued, running or
+transport-unconfirmed physical receipts are ineligible. PR66 adds an optional,
+host-configured persistent SSH connection, with no silent reconnection or job
+resubmission. The new preparation and continuation cohort uses that connection
+through a separately recorded backend profile. Earlier cohorts keep their
+original backend and files.
+
+Return-pilot-v3 prepares four fresh prefixes of the same four mechanisms, with
+opaque-prefix seed 2026102703 and sampling seed 2026102701 (plus 100*prefix_index
+plus draw_index). It collects four fresh categorical proposals per prefix. No
+v2 proposal or continuation is relabeled as a new on-policy sample. Temperature 3,
+utility weights, eligibility gates, 8 updates, accumulation 4, learning rate 1e-5,
+KL 0.02 and the continued-SFT control remain as declared. The SFT control may be
+trained and evaluated before RL while real rewards are being collected; this
+changes scheduling only, not its data, initialization, seed or update count.
+
+The waiting qualified32 design was stopped before any workflow began. Its fixed
+family/seed/arm assignments are retained for a later cohort under the repaired
+common host. No model, optimizer setting or case is selected using either the
+completed held-out scores or the eventual new workflow outcomes. Original total
+compute and native-start ceilings still apply, so collection may end at the last
+complete block that fits the remaining resources.
