@@ -1,0 +1,123 @@
+{
+  "r9-transport-qualification/STATUS.json": {
+    "stage": "failed",
+    "started_at": 1793085379.0195172,
+    "scope": "Two engineering controls; no native actors or model updates",
+    "cases": [],
+    "ended_at": 1793085379.3166893,
+    "error": "Traceback (most recent call last):\n  File \"/home/simjecture/investigations/scientific-attention-20261025/qualify_r9_physics.py\", line 35, in <module>\n    assert check.returncode == 0 and check.stdout.split()[0] == '40259ed2687707b4c693e5b0e7fbadef54dca4fab64898d9d42e654fbdf644eb', check.stderr[-500:]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: No ED25519 host key is known for 117.50.245.224 and you have requested strict checking.\nHost key verification failed.\n\n"
+  },
+  "r9b-transport-qualification/SSH_CONFIG_PLAN.json": {
+    "created_at": 1793085608.8264952,
+    "config": "/home/simjecture/.ssh/config",
+    "original_exists": true,
+    "previous_sha256": "c1367b54de582471105112292f9d27ebfcb8fa2c381e76810f1de43dce2536df",
+    "text": "Host simjecture-attention-r9-p40\n    HostName 117.50.245.224\n    HostKeyAlias [117.50.245.224]:23\n    ConnectionAttempts 3\n    ControlMaster no\n    ControlPath none\n    StrictHostKeyChecking yes\n",
+    "semantics": "OpenSSH retries TCP establishment only. No replay after SSH command submission. The original 180-second wrapper limit remains."
+  },
+  "r9-auth-01/STATUS.json": {
+    "stage": "completed",
+    "started_at": 1793085687.2702892,
+    "wrapper_pid": 3803148,
+    "returncode": 0,
+    "ended_at": 1793085711.567697
+  },
+  "r9-launch-status.json": {
+    "stage": "running",
+    "started_at": 1793085900.5271118,
+    "pids": {
+      "deploy_r9_a100.py": 3803707,
+      "run_base_sft_r9.py": 3803708,
+      "finish_r9.py": 3803709,
+      "attach_r9.py": 3803710
+    },
+    "launched_at": 1793085900.5300121,
+    "lease": {
+      "created_at": 1793085896.08324,
+      "stop_by": 1793114477.8560505,
+      "session": "simjecture-science-20261027c",
+      "endpoint": "gpu-a100-hm-euw4a0-kxym5w7s6iei",
+      "starting_balance": 1129.7,
+      "observed_balance": 1129.7,
+      "compute_cap": 55,
+      "parent_lease": "r9-resource-plan.json",
+      "scope": "Continuation of 26 unstarted original scientific workflows; 38 earlier attempts preserved"
+    }
+  },
+  "r9-resource-plan.json": {
+    "created_at": 1793085677.8560505,
+    "stop_by": 1793114477.8560505,
+    "starting_balance": 1129.7,
+    "compute_cap": 55,
+    "remaining_workflows": 26,
+    "prior_native_starts": 170,
+    "required_native_preflight_starts": 1,
+    "maximum_additional_native_starts": 470,
+    "maximum_per_workflow": 12,
+    "maximum_concurrent_native": 6,
+    "maximum_parallel_workflows": 1,
+    "minimum_gap_between_workflows_seconds": 90,
+    "owned_assignment_count_before_allocation": 0,
+    "scope": "New bounded continuation after the prior owned runtime was released; preserve all 38 attempted outcomes and execute only the 26 unstarted original IDs. No training or checkpoint change."
+  },
+  "r9-lease.json": {
+    "created_at": 1793085896.08324,
+    "stop_by": 1793114477.8560505,
+    "session": "simjecture-science-20261027c",
+    "endpoint": "gpu-a100-hm-euw4a0-kxym5w7s6iei",
+    "starting_balance": 1129.7,
+    "observed_balance": 1129.7,
+    "compute_cap": 55,
+    "parent_lease": "r9-resource-plan.json",
+    "scope": "Continuation of 26 unstarted original scientific workflows; 38 earlier attempts preserved"
+  },
+  "local_allocation": {
+    "stage": "running",
+    "started_at": 1793085886.8634772,
+    "notebook": "adb09926-0c9a-453f-922f-27980f4e8b02",
+    "balance": 1129.7,
+    "assignment_http": {
+      "method": "POST",
+      "host": "colab.research.google.com",
+      "path": "/tun/m/assign",
+      "started_at": 1793085891.3608422,
+      "ended_at": 1793085896.0824795,
+      "curl_returncode": 0,
+      "http_status": "200",
+      "http_version": "2",
+      "error_markers": []
+    },
+    "endpoint": "gpu-a100-hm-euw4a0-kxym5w7s6iei",
+    "local_guard_pid": 127404,
+    "remote_guard_pid": 3803647,
+    "scheduled_control_installed": true,
+    "pids": {
+      "deploy_r9_a100.py": 3803707,
+      "run_base_sft_r9.py": 3803708,
+      "finish_r9.py": 3803709,
+      "attach_r9.py": 3803710
+    },
+    "stop_by": 1793114477.8560505
+  },
+  "local_control": {
+    "at": 1793085899.335185,
+    "task": "Simjecture-R9-20261027",
+    "endpoint": "gpu-a100-hm-euw4a0-kxym5w7s6iei",
+    "stop_by": 1793114477.8560505,
+    "task_expires_at": 1793115137.8560505,
+    "returncode": 0,
+    "result": "{\"TaskName\":\"Simjecture-R9-20261027\",\"State\":4}",
+    "error": ""
+  },
+  "source_hashes": {
+    "r9-phase-plan.json": "9e421a1b76868b1cdc586ca19742a83f514ae3a483f02831d066221955690b92",
+    "r9-workflow-manifest.json": "833a9f666e935474a9b708a114d944846240a3e9df2a054cdc6cfdc25aedc221",
+    "r9b-transport-qualification/STATUS.json": "a2dc3265c9bca5faa21217234c98a40fb242151e43fc5095a5bea6ad14c3c724",
+    "r9-transport-qualification/STATUS.json": "c89530c08ed58d8a6515f8c115a225a7c4c2bbcfb4d5880b1675e45f794f71f9",
+    "r9b-transport-qualification/SSH_CONFIG_PLAN.json": "f4ad2e7a161d3d7d0ce0b87cddb1d9b8edc4e26aaab81d1e485d4bf6ec419f27",
+    "r9-auth-01/STATUS.json": "bed61e344dc73adc9dac076efee29971ed4e5a964b97c17dc9a767175f833fba",
+    "r9-launch-status.json": "844230ec7f97f8c95dac7bba275e1a9db6d8cfa9ed399b36607e2efa077e96ba",
+    "r9-resource-plan.json": "6f282b851e4296fd8e94c9de564943d1a1561969912be7b3ee3a6a574eacf030",
+    "r9-lease.json": "412975219111242ec1908c33f61168a19783c92de97769921e027540a0c5885a"
+  }
+}

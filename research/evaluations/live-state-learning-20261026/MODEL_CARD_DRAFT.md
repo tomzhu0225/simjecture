@@ -2,8 +2,9 @@
 
 **Unpublished release draft.** This candidate has not established a reliable
 workflow advantage over the pretrained base and strong deployment comparators.
-The repeated-workflow study stopped after 38 of 64 original assignments;
-26 remain unstarted following infrastructure interruptions. No weight upload or
+The repeated-workflow study has audited 38 of 64 original assignments;
+the remaining 26 are being collected in a separate continuation after
+infrastructure interruptions. No weight upload or
 public release is implied by this document. The pinned base declares Apache-2.0 and its distribution
 listing has been checked. The portable adapter passed a fresh A100 reload.
 Workflow validation, final release documentation, a destination repository and
@@ -115,8 +116,9 @@ restricted-completion estimate is +7.6 seconds (95% interval −171.1 to +207.8)
 excluding whole infrastructure-affected blocks gives −12.4 seconds
 (−166.5 to +145.4). Neither establishes an overall advantage. The first two fully repeated
 families show large gains on publication-retry workflows and a slower SFT mean
-on quiet workflows. Twenty-six original assignments remain unstarted. These are
-partial observations, not a completed effect estimate or a release gate. See
+on quiet workflows. A separately bounded R9 phase has resumed the remaining 26
+original assignments; its results are not included in these terminal R8 figures.
+These are partial observations, not a completed effect estimate or a release gate. See
 [the continuation record](CONTINUATION_RESULTS.md) for all arms and caveats.
 
 Inspection of recorded worker prompts found general research execution/review

@@ -1,0 +1,270 @@
+{
+  "at": 1793086676.5844548,
+  "outcome": {
+    "stage": "completed",
+    "started_at": 1793086194.4915438,
+    "turns": [
+      {
+        "returncode": 0,
+        "ended_at": 1793086215.729378
+      },
+      {
+        "returncode": 124,
+        "ended_at": 1793086348.1478584
+      },
+      {
+        "returncode": 124,
+        "ended_at": 1793086465.5449452
+      },
+      {
+        "returncode": 0,
+        "ended_at": 1793086591.927929
+      }
+    ],
+    "parking": [
+      {
+        "started_at": 1793086215.7298174,
+        "ended_at": 1793086262.4224823,
+        "wake_reason": "process_terminal"
+      },
+      {
+        "started_at": 1793086348.1486108,
+        "ended_at": 1793086438.6362965,
+        "wake_reason": "fixed_wait_fallback"
+      },
+      {
+        "started_at": 1793086465.5479522,
+        "ended_at": 1793086496.0381489,
+        "wake_reason": "returned_attention"
+      }
+    ],
+    "arm": "observe",
+    "family": "recovered_history",
+    "completion_checks": [
+      {
+        "report_ready": false,
+        "pipeline_complete": false,
+        "worker_returncode": 0,
+        "worker_waiting": false,
+        "pending_required_help": 0,
+        "unacknowledged_required": 0,
+        "allowed": false,
+        "checked_at": 1793086215.7298143,
+        "pending_required_ids": []
+      },
+      {
+        "report_ready": false,
+        "pipeline_complete": true,
+        "worker_returncode": 124,
+        "worker_waiting": true,
+        "pending_required_help": 1,
+        "unacknowledged_required": 0,
+        "allowed": false,
+        "checked_at": 1793086348.148608,
+        "pending_required_ids": [
+          "help_a9b3343adb0f993141c63fcc"
+        ]
+      },
+      {
+        "report_ready": false,
+        "pipeline_complete": true,
+        "worker_returncode": 124,
+        "worker_waiting": true,
+        "pending_required_help": 1,
+        "unacknowledged_required": 0,
+        "allowed": false,
+        "checked_at": 1793086465.5479493,
+        "pending_required_ids": [
+          "help_a9b3343adb0f993141c63fcc"
+        ]
+      },
+      {
+        "report_ready": true,
+        "pipeline_complete": true,
+        "worker_returncode": 0,
+        "worker_waiting": false,
+        "pending_required_help": 0,
+        "unacknowledged_required": 0,
+        "allowed": true,
+        "checked_at": 1793086591.9344094,
+        "pending_required_ids": []
+      }
+    ],
+    "finish_reason": "worker_finished_with_obligations_reconciled",
+    "quality": {
+      "verified_quality": 1.0,
+      "report_ok": true,
+      "metrics_ok": true,
+      "requested_configurations": [
+        [
+          64,
+          40
+        ],
+        [
+          128,
+          80
+        ]
+      ],
+      "actual_configurations": [
+        [
+          64,
+          40
+        ],
+        [
+          128,
+          80
+        ]
+      ],
+      "configurations_complete": true,
+      "verification": {
+        "returncode": 0,
+        "stderr": "yt : [INFO     ] 2026-10-27 15:36:37,951 Parameters: current_time              = 6.67128190396305e-14\nyt : [INFO     ] 2026-10-27 15:36:37,951 Parameters: domain_dimensions         = [128   1   1]\nyt : [INFO     ] 2026-10-27 15:36:37,951 Parameters: domain_left_edge          = [-2.e-05  0.e+00  0.e+00]\nyt : [INFO     ] 2026-10-27 15:36:37,951 Parameters: domain_right_edge         = [2.e-05 1.e+00 1.e+00]\nyt : [INFO     ] 2026-10-27 15:36:38,176 Parameters: current_time              = 6.671281903963042e-14\nyt : [INFO     ] 2026-10-27 15:36:38,176 Parameters: domain_dimensions         = [64  1  1]\nyt : [INFO     ] 2026-10-27 15:36:38,176 Parameters: domain_left_edge          = [-2.e-05  0.e+00  0.e+00]\nyt : [INFO     ] 2026-10-27 15:36:38,176 Parameters: domain_right_edge         = [2.e-05 1.e+00 1.e+00]\n"
+      },
+      "protected_artifacts_qualified": {
+        "experiment.py": true,
+        "run_warpx.py": true,
+        "original_analysis.py": true,
+        "environment.json": true,
+        "inputs": true,
+        "harness/bridge.py": true
+      },
+      "report_sha256": "b023d3dc1ffd73ce8d448613587bab9becf9049e3c65ad8824cdbbf8e729aa5d",
+      "results_sha256": "3dffbbbfc65010deef3ac6016bb342a7109882ae4b79053d8ebaca8fd1974d26",
+      "scope": "1: complete accurate two-configuration report; .5: accurate partial report; 0: absent or inaccurate report"
+    },
+    "quantity_verifier": {
+      "returncode": 0,
+      "stderr": ""
+    },
+    "protected_extra": {
+      "pipeline.py": true,
+      "submit_bundle.py": true,
+      "data_units.json": true
+    },
+    "ended_at": 1793086599.41924,
+    "elapsed_seconds": 404.9276964664459,
+    "native_starts": 6,
+    "ledger": {
+      "required_feedback_misses": 0,
+      "duplicate_wakeups": 0,
+      "available_feedback": 2,
+      "acknowledged_feedback": 2
+    },
+    "feedback": {
+      "required_feedback_misses": 0,
+      "unknown_need_for_unacknowledged_help": [],
+      "available_feedback": 2,
+      "scope": "Declared required-feedback reconciliation; no inferred necessity from case labels or cancellation"
+    },
+    "calibration_report_ok": true,
+    "quantity_report_ok": true,
+    "quantity_pipeline_ok": true,
+    "workflow_complete": true,
+    "verified_complete": true,
+    "observation_violations": [],
+    "job_runs": [
+      {
+        "identity": {
+          "pid": 3804419,
+          "ppid": 3804203,
+          "session": 3804419,
+          "starttime": "213342592"
+        },
+        "started_at": 1793086206.703561,
+        "resume": false,
+        "stdout": "/home/simjecture/investigations/scientific-attention-20261025/base-sft-replication-v5/bswf-a6b2a7645d6c0ef2/execution/pipeline-1.stdout",
+        "returncode": 0,
+        "ended_at": 1793086599.4049845
+      }
+    ],
+    "authority_results": [],
+    "usage": {
+      "usage_legacy_unmeasured_calls": 0,
+      "usage_unreported_threads": {
+        "helper_9ba44d2875f7ba19db446f13:01a17c46-ce38-7c02-812d-6e1aa3bdfced": "helper"
+      },
+      "usage_coverage_since": 1793086194.5185137,
+      "usage_by_thread": {
+        "01a17c44-0461-7f32-8503-e500029d6938": {
+          "input_tokens": 493152,
+          "cached_input_tokens": 444544,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 5790,
+          "reasoning_output_tokens": 985
+        },
+        "01a17c45-ff97-7110-b27d-b454c582b483": {
+          "input_tokens": 21328,
+          "cached_input_tokens": 12160,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 539,
+          "reasoning_output_tokens": 81
+        }
+      },
+      "usage_roles_by_thread": {
+        "01a17c44-0461-7f32-8503-e500029d6938": "worker",
+        "01a17c45-ff97-7110-b27d-b454c582b483": "director"
+      },
+      "usage_updated_at": 1793086591.9270728,
+      "usage_incomplete_turns": 3,
+      "usage_unidentified_calls": 0
+    }
+  },
+  "receipts": [
+    {
+      "name": "mesh_64",
+      "request_id": "a4e04d185ba341edad5c51b131a312ad",
+      "cells": 64,
+      "steps": 40,
+      "command": [
+        "/opt/simote/radiation-production-20260930/warpx/build/foundation-cuda/bin/warpx.1d.MPI.CUDA.DP.PDP",
+        "inputs",
+        "amr.n_cell=64",
+        "max_step=40",
+        "amr.max_level=0",
+        "diagnostics.diags_names=diag1",
+        "diag1.file_prefix=plot",
+        "diag1.intervals=40",
+        "amrex.the_arena_init_size=67108864",
+        "warpx.verbose=0"
+      ],
+      "binary_sha256": "40259ed2687707b4c693e5b0e7fbadef54dca4fab64898d9d42e654fbdf644eb",
+      "input_sha256": "fd941c6e27e60b471ee0796997d465e9aec43192fd075c9ebd8665fb87b337b3",
+      "remote_host": "ca10411836e6",
+      "status": "succeeded",
+      "queued_at": 1793086210.1057038,
+      "started_at": 1793086210.1059217,
+      "returncode": 0,
+      "wall_seconds": 1.017620362341404,
+      "ended_at": 1793086211.1238823,
+      "coordinator_roundtrip_seconds": 4.194456577301025
+    },
+    {
+      "name": "mesh_128",
+      "request_id": "6f62d9bceea54cabbc236ae535ca2204",
+      "cells": 128,
+      "steps": 80,
+      "command": [
+        "/opt/simote/radiation-production-20260930/warpx/build/foundation-cuda/bin/warpx.1d.MPI.CUDA.DP.PDP",
+        "inputs",
+        "amr.n_cell=128",
+        "max_step=80",
+        "amr.max_level=0",
+        "diagnostics.diags_names=diag1",
+        "diag1.file_prefix=plot",
+        "diag1.intervals=80",
+        "amrex.the_arena_init_size=67108864",
+        "warpx.verbose=0"
+      ],
+      "binary_sha256": "40259ed2687707b4c693e5b0e7fbadef54dca4fab64898d9d42e654fbdf644eb",
+      "input_sha256": "fd941c6e27e60b471ee0796997d465e9aec43192fd075c9ebd8665fb87b337b3",
+      "remote_host": "ca10411836e6",
+      "status": "succeeded",
+      "queued_at": 1793086214.2981503,
+      "started_at": 1793086214.298325,
+      "returncode": 0,
+      "wall_seconds": 1.0179137531667948,
+      "ended_at": 1793086215.3165562,
+      "coordinator_roundtrip_seconds": 4.033339023590088
+    }
+  ]
+}

@@ -1,6 +1,6 @@
-# Preserved interruption and continuation on the original resource lease
+# Preserved transport interruptions and bounded continuations
 
-**Current status:** R8 has also stopped, after eight attempts and seven verified
+**Audited R8 status:** R8 also stopped, after eight attempts and seven verified
 completions. The A100 was released at **2026-10-27 06:17:44 UTC**. Across all
 phases there are 38 attempted original IDs, 34 verified completions, four
 infrastructure failures and 26 unstarted IDs. The sections below retain the R7
@@ -20,9 +20,44 @@ violations, and the final three model probes remained within the original
 tolerance. The release guard exited after releasing its owned runtime; the local
 temporary Windows task then unregistered itself. See
 [the complete partial record](replication-through-r8.json). The next
-[assignment list](continuation-unstarted-after-r8.json) is prepared but not
-launched; it contains only the original 26 unstarted IDs and requires a new
-bounded inference lease and transport qualification.
+[assignment list](continuation-unstarted-after-r8.json) contains only the original
+26 unstarted IDs. A new bounded inference lease and transport qualification have
+now been established for R9, whose separate manifest governs their resumed
+execution. Its new model runtime is active; the R8 release receipt applies only
+to the earlier allocation.
+
+## R9: retry connection establishment, preserve submitted jobs
+
+Both controls passed through a study-only SSH alias with `ConnectionAttempts 3`,
+15-second connection timeout, no persistent control socket, and strict host-key
+verification. This permits bounded TCP connection retries before an SSH command
+is submitted. It does not retry a failed remote command or an ambiguous physical
+submission. The existing 180-second transfer bound remains. The pre-assignment
+connection check allows 55 seconds and stops the phase before starting a worker
+if connectivity is unavailable.
+
+The coordinator previously had no user SSH configuration. Its new configuration
+contains only the study alias. `ssh -G` for the original P40 hostname was
+byte-identical before and after installation. The alias resolves to the same
+P40 host and port; it uses the existing known-hosts file and credentials. Neither
+GGDD settings nor the original machine profile were changed. A separately hashed
+study profile selects the alias. The controller checks configuration and profile
+hashes before each assignment.
+
+The first setup check failed because the host-key alias omitted the nonstandard
+SSH port. It stopped before any solver or native actor started. Correcting the
+alias to the existing known-host identity allowed both controls to execute and
+pass their unchanged numerical checks. Their round trips were 4.19 and 4.46
+seconds. This qualifies the tested path, not its future uptime or resilience to
+an established-session disconnect. The failed setup receipt is retained in the
+[launch evidence](continuation-r9-launch.json); the successful controls are in
+[the qualification](continuation-r9-qualification.json).
+
+R9 uses a new A100 with unchanged weights and fresh prediction qualification.
+The 26 assignments, 55-compute-unit ceiling, 15:21:17 UTC hard stop and remaining
+469 native starts are recorded in its [registration](continuation-r9-registration.json)
+and launch evidence. The local CPU qualification remains a numerical fallback;
+it has not been substituted into the original cohort.
 
 ## Earlier R7 interruption
 

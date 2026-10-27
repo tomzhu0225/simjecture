@@ -1,17 +1,21 @@
 # Base versus continued SFT: partial replication
 
-Latest collection stopped on **2026-10-27 at 06:17 UTC**. Across all phases,
+Latest fully audited collection stopped on **2026-10-27 at 06:17 UTC**. Through R8,
 **38 of 64 original assignments were attempted: 34 verified and four affected by
-infrastructure failures**. Twenty-six original assignments remain unstarted.
+infrastructure failures**. Twenty-six original assignments were then unstarted.
 R8 contributed eight attempts, seven verified, before a P40 SSH connection
-timeout. Its audit reports zero consistency violations. The model runtime was
-released automatically; no collection is currently running.
+timeout. Its audit reports zero consistency violations. That model runtime was
+released automatically. R9 has since resumed the unstarted assignments on a
+fresh, separately bounded runtime; its pending outcomes are not included in the
+terminal R8 analysis below.
 
 [The terminal evidence](replication-through-r8.json) retains all 38 audit records,
 the unchanged registered analysis, transport reconciliation and resource-release
 receipt. The [remaining assignment list](continuation-unstarted-after-r8.json)
-contains only the 26 unstarted IDs. It is prepared, not launched. Failed attempts
-will not be replayed or replaced.
+contains only the 26 unstarted IDs. The separately frozen
+[R9 manifest](continuation-r9-manifest.json) and
+[launch record](continuation-r9-launch.json) govern their resumed execution.
+Failed attempts will not be replayed or replaced.
 
 | Partial registered comparison: SFT minus baseline | All-attempt estimate | Interval | Whole-infrastructure-block sensitivity | Interval |
 |---|---:|---:|---:|---:|
@@ -37,6 +41,46 @@ All four arms verified in these seven blocks; this does not establish population
 equivalence in scientific quality. SFT admitted attention in two of five
 quiet-family episodes, which is an interruption proxy, not an adjudicated
 false-alert rate.
+
+## R9 continuation
+
+The fresh runtime restored the same continued-SFT adapter and pretrained-base
+comparator on an A100-SXM4-80GB. All three saved prediction probes passed before
+the first scientific assignment, with maximum probability discrepancy below
+`6.2e-8`; [the fresh checks are retained](continuation-r9-model-qualification.json).
+Collection began at **2026-10-27 07:29:52 UTC**. The scientific source,
+worker instructions, decoder, thresholds and original assignment order are
+unchanged. This is inference and evaluation, with no optimizer updates.
+
+The new lease ends at **2026-10-27 15:21:17 UTC**, has a 55-compute-unit ceiling,
+and permits only the remaining 469 native starts after 170 retained starts and
+one successful R9 authentication preflight. The original overall ceiling remains
+640. The first two assignments complete the already infrastructure-affected
+block 10; the remaining six blocks each contain all four arms.
+
+The P40 connection uses a study-specific SSH alias permitting three TCP
+connection-establishment attempts. An established remote command is never
+replayed. Both original plasma controls passed before launch using the same
+executable and diagnostic reader. The frozen wrapper's 180-second transport
+limit remains. A first read-only setup check found an incorrectly formatted
+host-key alias; it submitted no solver or native job and is retained separately.
+Strict key verification remains enabled after correcting the alias.
+
+[Registration](continuation-r9-registration.json),
+[physics qualification](continuation-r9-qualification.json) and the exact
+`continuation-r9-operations/` scripts preserve this phase. A remote release guard
+and a temporary Windows credential/deadline task protect its resource bounds.
+The first scheduled check exited early; a manual renewal, a subsequent invocation
+through Task Scheduler, and its normal ten-minute trigger all completed
+successfully. Its initial termination cause remains undetermined.
+
+The first resumed worker-only `recovered_history` assignment subsequently
+completed and passed all workflow verifiers in **404.9 seconds**. Both original
+plasma controls ran successfully, and the worker reconciled its required help
+before finishing. [Its complete outcome and physics receipts are retained](continuation-r9-first-workflow.json).
+This is one new execution, not evidence of a model effect. It belongs to block 10,
+which remains excluded from the registered infrastructure sensitivity because of
+the earlier SFT transport failure.
 
 ## Earlier trace inspection
 
@@ -123,9 +167,9 @@ During collection, inference used the remote A100 and physics the remote P40s. L
 control processes were lost in Windows/WSL restarts while remote collection
 continued. Credential renewal was restored before the remote guard's expiry
 cutoff. The temporary Windows control task was unregistered after observing the
-remote release receipt. The model runtime is released and the recorded study
-actors have exited. A continuation requires a new bounded lease; the old lease
-is not extended.
+remote release receipt. That model runtime is released and its recorded study
+actors exited. R9 uses the new bounded lease described above; the old lease
+was not extended.
 
 Two separate local CPU plasma controls have passed the original numerical checks
 and closely reproduced the P40 references. This qualifies a numerical fallback

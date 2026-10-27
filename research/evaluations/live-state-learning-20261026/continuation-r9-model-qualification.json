@@ -1,0 +1,90 @@
+{
+  "observed_at": 1793086577.2857091,
+  "scope": "Fresh restored model qualification before R9 scientific assignments; not a workflow result",
+  "model_identities": {
+    "continued_sft": {
+      "checkpoint_path": "/root/.cache/huggingface/hub/models--internlm--Intern-Decision-4B/snapshots/38c9dafbbef52dd04bae943c0c6ac918419adfd5",
+      "checkpoint_config_sha256": "ddc63e1c717afa86c865bb5e01313d89d72bb53b97ad4a8a03ba8510c0621670",
+      "adapter_files_sha256": {
+        "adapter_config.json": "5ab93c62a751ccfe082c88caabd6c40c064d04442e3b1e164387690af6e8ba6a",
+        "adapter_model.safetensors": "76bf1bdf4c6d6a261211057d3cab4c8609131788827569f9c33f802d3491dab5"
+      },
+      "runtime": {
+        "profile": "fla-prefill",
+        "fla_core": "0.6.0",
+        "adapter_source_sha256": "83b6d3ba2813ad883725be94e13477cd1db7b9ca2af9654e040b35fb10a936a1",
+        "convolution": "fla.modules.causal_conv1d:causal_conv1d; BCT/BTC layout adapter",
+        "scope": "Dense single-pass CUDA prefill, use_cache=False; no packed sequences"
+      }
+    }
+  },
+  "probes": [
+    {
+      "policy": "continued_sft",
+      "prompt_sha256": "361d970450af495a4946e0541ccdc8e3c835602cddddfd8fafcd2c74e848bc0e",
+      "saved_temperature": 1.0,
+      "serving_temperature": 1.0,
+      "maximum_probability_error": 1.896643408993981e-08
+    },
+    {
+      "policy": "continued_sft",
+      "prompt_sha256": "3d3d77ed6ca99d4a3edbfd12f90e97f943270bdd0d872774670b78fa138dcd0f",
+      "saved_temperature": 1.0,
+      "serving_temperature": 1.0,
+      "maximum_probability_error": 2.8430518494992896e-08
+    },
+    {
+      "policy": "base",
+      "prompt_sha256": "361d970450af495a4946e0541ccdc8e3c835602cddddfd8fafcd2c74e848bc0e",
+      "saved_temperature": 1.0,
+      "serving_temperature": 1.0,
+      "maximum_probability_error": 6.189326950956087e-08
+    }
+  ],
+  "runtime": {
+    "r9-prepare-status.json": {
+      "stage": "ready",
+      "started_at": 1793085998.0595863,
+      "ended_at": 1793086097.1840239
+    },
+    "r9-service-controller.json": {
+      "stage": "serving",
+      "started_at": 1793085998.0503566,
+      "pid": 1896
+    },
+    "r9-service-status.json": {
+      "stage": "ready",
+      "started_at": 1793086116.196777
+    },
+    "gpu": "NVIDIA A100-SXM4-80GB, 81920 MiB, 10618 MiB"
+  },
+  "source_revision": "04f905c9f4538886a0713135bba29a1d4becea0b",
+  "weights_changed": false,
+  "optimizer_updates": 0,
+  "resource_control": {
+    "observed_at": 1793086675.558063,
+    "task": {
+      "State": 3,
+      "LastTaskResult": 0,
+      "LastRunTime": "2026-10-27T15:35:09.0000000+08:00",
+      "NextRunTime": "2026-10-27T15:45:08.0000000+08:00"
+    },
+    "control": {
+      "started_at": 1793086510.3771348,
+      "pid": 131672,
+      "endpoint": "gpu-a100-hm-euw4a0-kxym5w7s6iei",
+      "stage": "renewed",
+      "renewal_returncode": 0,
+      "remote_guard_stage": "watching",
+      "ended_at": 1793086516.632189
+    }
+  },
+  "initial_control_failure": {
+    "last_task_result": 3221225786,
+    "control_started_at": 1793085909.345426,
+    "control_pid": 127470,
+    "completed_status_written": false,
+    "cause": "undetermined",
+    "provenance": "Operator observation of Task Scheduler and the one-shot status file before manual recovery; recorded terminal output remains in the conversation"
+  }
+}
