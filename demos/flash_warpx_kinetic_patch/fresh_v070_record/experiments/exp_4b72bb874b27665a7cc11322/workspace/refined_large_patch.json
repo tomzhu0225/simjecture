@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "source_state_sha256": "e8d1ef82fb0baafddeaf1b0f8c9e153db6fae069a2a4829cd18e80487bfbd023",
+  "source_flash_sha256": "2cb14d09a0cbfcb26bec13ba223adca01dd7425841fe89952ac8a5831cd612cd",
+  "source_time_code": 0.8001113920335353,
+  "patch_sha256": "5e486536b4d926b8f253e7a8371689a29e87512a7c1b7e6faaa1cfec905080ce",
+  "shape_zx": [
+    512,
+    512
+  ],
+  "bounds_xz_m": [
+    [
+      -0.0006697394713809222,
+      0.0006697394713809222
+    ],
+    [
+      -0.0006697394713809222,
+      0.0006697394713809222
+    ]
+  ],
+  "cell_size_m": [
+    2.6161698100817645e-06,
+    2.6161698100817645e-06
+  ],
+  "scales": {
+    "length_m": 0.0016743486784523054,
+    "velocity_m_s": 2997924.58,
+    "magnetic_T": 16.355235690756075,
+    "density_m3": 1e+24,
+    "mass_density_kg_m3": 2.368439765614e-05,
+    "ion_mass_kg": 2.277345928475e-29,
+    "electron_mass_kg": 9.1093837139e-31,
+    "ion_skin_depth_m": 2.6570466334981303e-05,
+    "ion_skin_depth_code": 0.01586913566864811,
+    "omega_ci_reference_s1": 115063663098.55894,
+    "omega_pe_reference_s1": 56414602254294.99
+  },
+  "temperature_ratio_i_e": 1.0,
+  "electric_policy": "ideal",
+  "physics": "Collisionless, fully kinetic electron-ion continuation; no scalar MHD resistivity is evolved in PIC.",
+  "mapping": "Right-handed FLASH (x,y,z) to WarpX (X,Y,Z)=(x,-z,y); n=rho_code*n0; p=p_code*rho0*v0^2; total mass rho=n*(mi+me).",
+  "initial_discrete_divb_scaled": 3.144929740929926e-16,
+  "maximum_drift_over_c": 0.010068962628897669,
+  "maximum_electron_thermal_speed_over_c": 0.09293856223339958,
+  "source_potential_residual": 1.3760034177670742e-08,
+  "scope": "Prepared local initial-value problem only. Patch boundaries, relaxation, collisionless closure and physical scale need scientific review."
+}

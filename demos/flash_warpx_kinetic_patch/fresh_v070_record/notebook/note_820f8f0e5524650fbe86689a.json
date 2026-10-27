@@ -1,0 +1,18 @@
+{
+  "id": "note_820f8f0e5524650fbe86689a",
+  "created_at": 1793000781.1408715,
+  "authority": "worker_note",
+  "statement": "The 256^2 solver succeeded (returncode 0, mass residual 2.8e-10 and cell-centered energy proxy 3.86e-6), but API receipt failed because outputs must name files, not directory flash. Preserve failed control; all raw files and hashes are recorded. Correct output declarations on subsequent runs; use this state only for exploratory transfer. Old reconnection flux-window check is irrelevant to the selected t=0.8 pressure handoff.",
+  "kind": "implementation",
+  "experiments": [
+    "exp_e10f88b8220dd98c85fd82ce"
+  ],
+  "sources": [],
+  "claim": "root",
+  "supersedes": null,
+  "alternatives": {},
+  "estimated_seconds": null,
+  "evidence_bindings": {
+    "exp_e10f88b8220dd98c85fd82ce": "07c22da1f2e4110b119517f965cc1bfe7f79b5c082dc17bece5e2c40d7a13d85"
+  }
+}

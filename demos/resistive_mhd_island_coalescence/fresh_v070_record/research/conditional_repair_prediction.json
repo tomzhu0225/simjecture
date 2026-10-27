@@ -1,0 +1,256 @@
+{
+  "schema_version": 1,
+  "status": "conditional_candidate_not_identified_not_committed",
+  "root_status": "unresolved_in_supplied_records",
+  "activation_condition": "Independent acceptance by parent workflow of the selected root contrast as a counterexample; no approval is issued here.",
+  "conclusion": "Reduced profiles motivate transient evolution but do not identify a defensible predictive closure. Additional retained-field calibration is required before commitment or validation.",
+  "mechanism": "Local transient transverse compression opposed by resistive broadening, with a shared flux-stage upstream-supply closure.",
+  "observable": {
+    "S_eta": "1/eta; nominal inverse normalized diffusivity",
+    "eta_uniform": true,
+    "flux": "supplied initial-state-subtracted boundary-to-center By path; same sign and normalization",
+    "crossing": "first linear crossing in actual saved time",
+    "flux_low": 0.01,
+    "flux_high": 0.05,
+    "rate_formula": "0.04/(t_high-t_low)",
+    "duration_formula": "t_high-t_low"
+  },
+  "model": {
+    "variables": {
+      "w": "sigma squared",
+      "psi": "initial-subtracted reconnected flux",
+      "a": "inward transverse velocity strain",
+      "B_u": "absolute local upstream Bx peak"
+    },
+    "equations": [
+      "dw/dt=-2*a(psi)*w+2*eta",
+      "dpsi/dt=eta*sqrt(2/pi)*B_u(psi)/sqrt(w)"
+    ],
+    "initial_conditions": {
+      "t": 0.0,
+      "psi": 0.0,
+      "w": "w0 from common initial field; not validation measured"
+    },
+    "template": "Bx=-B_u*erf(y/sqrt(2*w)) locally",
+    "width_definition": "h is first outward half-amplitude crossing; sigma=h/0.6744897501960817",
+    "profile_peak_region": {
+      "x": "mean of two central columns",
+      "y_min_exclusive": 0.0,
+      "y_max_exclusive": 0.1
+    },
+    "fixed_coefficients": {
+      "strain_multiplier": -2.0,
+      "diffusion_multiplier": 2.0,
+      "current_shape_factor": 0.7978845608028654,
+      "half_amplitude_erf_conversion": 0.6744897501960817
+    },
+    "prediction": "Integrate from t=0 with eta=1/S_eta; predict both first crossings; duration=T(0.05)-T(0.01); rate=0.04/duration.",
+    "validation_measured_inputs_allowed": false,
+    "measured_validation_current_allowed_in_prediction": false,
+    "stationary_sheet_assumed": false,
+    "fitted_rate_exponent": null,
+    "model_status": "Kinematic candidate closure; not derived full compressible MHD dynamics; omitted EMF must be tested."
+  },
+  "calibration": {
+    "S_eta": [
+      1000,
+      2000
+    ],
+    "source_policy": "Fresh retained full-state anchor snapshots only; use finest independently qualified mesh and preceding mesh. Pending 512 not presumed successful.",
+    "flux_knots": [
+      0.0,
+      0.01,
+      0.03,
+      0.05
+    ],
+    "required_fields": [
+      "Bx",
+      "By",
+      "vx",
+      "vy",
+      "rho",
+      "pressure",
+      "flux-path endpoint fields"
+    ],
+    "additional_calibration_required": true,
+    "parameters": {
+      "w0": null,
+      "a_at_knots": null,
+      "B_u_at_knots": null
+    },
+    "fixing_procedure": [
+      "Hash initial state and both actual crossing-bracket full states for each nonzero knot; interpolate diagnostics by actual flux bracket weights.",
+      "Use independently defined half-amplitude h. Regress vy-vy(0)=-a*y, unweighted over |y|<=h, after averaging two central x columns.",
+      "At each knot arithmetic-mean a and B_u between anchors. Set w0 to mean of their initial sigma squared. Piecewise-linear interpolation versus flux, no extrapolation.",
+      "All calibration gates must pass; no rate rescaling, eta-dependent coefficient or knot insertion.",
+      "Replay both calibration anchors and publish coefficient table and numeric predictions, with hashes, before viewing either new setting."
+    ],
+    "gates": {
+      "minimum_cells_across_2h": 4,
+      "initial_profile_relative_disagreement_max": 0.01,
+      "anchor_B_u_relative_distance_from_knot_mean_max": 0.1,
+      "anchor_strain_dimensionless_distance_from_mean_max": 0.1,
+      "dimensionless_strain_definition": "(a_anchor-a_mean)*sqrt(w_mean)/v_A_u; v_A_u=B_u/sqrt(rho_u) using peak-position density and side/anchor means",
+      "preceding_to_finest_B_u_relative_change_max": 0.05,
+      "preceding_to_finest_h_relative_change_max": 0.05,
+      "preceding_to_finest_strain_dimensionless_absolute_change_max": 0.05,
+      "velocity_fit_relative_L2_residual_max": 0.2,
+      "zero_velocity_fit_rule": "exactly zero measured and fitted profiles pass; nonzero measured with zero fit fails",
+      "erf_Bx_relative_L2_residual_inside_h_max": 0.1,
+      "absolute_omitted_flux_integral_window_max": 0.0008,
+      "discrete_induction_flux_closure_residual_max": 0.0008,
+      "omitted_terms": "longitudinal current and boundary/ideal EMF; integrate absolute magnitudes in supplied path sign convention; inspect more retained frames if needed",
+      "anchor_duration_relative_error_max": 0.05,
+      "anchor_h_relative_error_at_knots_max": 0.1
+    },
+    "on_failure": "End this candidate before validation; a replacement needs its own prospective proposal."
+  },
+  "validation_cases": [
+    {
+      "S_eta": 750,
+      "eta": 0.0013333333333333333,
+      "n": 384,
+      "tmax_cap": 1.3,
+      "planning_wall_seconds": 681.5,
+      "wall_seconds_with_50_percent_reserve": 1022.25,
+      "ranks": 4,
+      "rank_seconds_with_reserve": 4089.0,
+      "role": "mild_extrapolation",
+      "cfl": 0.4,
+      "cadence": 0.005,
+      "threads": 1,
+      "predicted_t_low": null,
+      "predicted_t_high": null,
+      "predicted_duration": null,
+      "predicted_rate": null
+    },
+    {
+      "S_eta": 1500,
+      "eta": 0.0006666666666666666,
+      "n": 384,
+      "tmax_cap": 1.8,
+      "planning_wall_seconds": 960.3076923076923,
+      "wall_seconds_with_50_percent_reserve": 1440.4615384615383,
+      "ranks": 4,
+      "rank_seconds_with_reserve": 5761.846153846153,
+      "role": "interpolation",
+      "cfl": 0.4,
+      "cadence": 0.005,
+      "threads": 1,
+      "predicted_t_low": null,
+      "predicted_t_high": null,
+      "predicted_duration": null,
+      "predicted_rate": null
+    }
+  ],
+  "freeze_requirements": {
+    "numeric_predictions_available_now": false,
+    "numeric_predictions_required_before_validation": true,
+    "same_initial_state_boundaries_and_build": true,
+    "upper_crossing_must_not_exceed_tmax_divided_by": 1.2,
+    "no_post_observation_setting_substitution": true,
+    "reduced_model_step_halving_relative_duration_change_max": 0.002,
+    "coefficient_and_source_hashes_required": true,
+    "execution_identity_required": [
+      "compiled executable SHA256",
+      "driver and reducer SHA256",
+      "parameter-file SHA256",
+      "MPI launcher and exact argv",
+      "retained calibration state SHA256",
+      "coefficient table SHA256",
+      "per-case prediction artifact SHA256"
+    ]
+  },
+  "numerical_allowances": {
+    "new_case_rate_relative_uncertainty_max": 0.03,
+    "rate_uncertainty_floor": 0.01,
+    "rate_uncertainty_rule": "max(0.01,2*max(last two relative mesh changes)+full crossing-bracket relative deviation+orthogonal-path relative rate difference+measured CFL relative rate difference)",
+    "last_mesh_relative_change_max": 0.05,
+    "last_mesh_change_must_shrink": true,
+    "minimum_meshes_for_direct_envelope": 3,
+    "divB_absolute_max_exclusive": 1e-09,
+    "boundary_normal_fraction_max_exclusive": 0.05,
+    "mass_relative_drift_max_exclusive": 1e-06,
+    "energy_relative_drift_max_exclusive": 0.01,
+    "rho_and_pressure_floor_margin_min_exclusive": 100,
+    "finite_positive_fields_required": true,
+    "uniform_eta_and_runtime_identity_required": true,
+    "topology": "single-sheet pre-plasmoid; full-domain resolved 1X2O through actual upper crossing bracket, with sampled-resolution limitations",
+    "uncertainty_type": "deterministic empirical numerical allowance, not a statistical confidence interval",
+    "new_eta_controls_required": "Do not assume anchor envelopes apply to new eta."
+  },
+  "failure_and_survival": {
+    "model_relative_duration_allowance": 0.1,
+    "integration_relative_duration_allowance": 0.002,
+    "prediction_interval_multipliers": [
+      0.898,
+      1.102
+    ],
+    "observed_duration_interval": "[0.04/(R*(1+u)),0.04/(R*(1-u))]",
+    "rate_falsifier": "At least one admissible numerically qualified new case has observed duration interval disjoint from its frozen prediction interval.",
+    "two_case_survival": "Both qualified observed duration intervals wholly contained in their respective prediction intervals; limited to these two settings.",
+    "partial_overlap": "inconclusive",
+    "field_B_u_and_h_relative_model_allowance": 0.1,
+    "field_diagnostic_relative_error_max": 0.05,
+    "field_falsifier": "Definitely greater than 0.15 relative discrepancy in predicted h or B_u at any declared knot, with diagnostic error bounded <=0.05, refutes field closure even if rate matches.",
+    "omitted_flux_integral_failure_threshold": 0.0008,
+    "strain_dimensionless_failure_threshold": 0.1,
+    "closure_gate_failure": "A definitely exceeded omitted-flux or strain gate in an otherwise admissible trajectory refutes that assumption.",
+    "out_of_scope_or_unqualified": "Inconclusive for rate law; report regime/numerical failure separately.",
+    "no_later_tolerance_widening": true
+  },
+  "minimal_discriminating_diagnostic": {
+    "new_trajectories_required": 0,
+    "first_extraction_unique_full_states_per_anchor_max": 7,
+    "initial_streamed_extraction_wall_cap_seconds": 120,
+    "deliverable": "Hashed transverse and longitudinal cuts at initial and knot brackets; strain, half-amplitude width, B supply, rho,p, longitudinal current and endpoint EMF.",
+    "scope_limit": "Three nonzero stages cannot bound an integrated omitted EMF or rapid temporal variation; use more already retained frames if initial gates survive.",
+    "performed_here": false,
+    "reason_not_performed": "Full-state fields are absent from the supplied packet."
+  },
+  "budget": {
+    "completed_384_reference_seconds": [
+      681.5,
+      977.0
+    ],
+    "completed_reference_tmax": [
+      1.3,
+      1.8
+    ],
+    "two_main_trajectories_base_seconds": 1641.8076923076924,
+    "reserve_fraction": 0.5,
+    "two_main_trajectories_with_reserve_seconds": 2462.711538461538,
+    "aggregate_rank_hours_with_reserve": 2.7363461538461533,
+    "additional_lower_mesh_pairs_analogue_seconds": 960.2,
+    "additional_CFL_controls_analogue_seconds": 1027.9,
+    "complete_control_analogue_base_seconds": 3629.9076923076923,
+    "minimum_peak_storage_allowance_per_active_trajectory_GB_decimal": 3.1,
+    "execution_order": "sequential",
+    "scope": "Two-run budget is screening only unless numerical controls already justify new settings; additional controls and possible 512 are not included in headline.",
+    "limitations": [
+      "Lower S may be diffusion-step limited.",
+      "Archive size and runtime at new eta are estimates.",
+      "No future runtime or storage allocation is authorized by this proposal."
+    ]
+  },
+  "unsupported_assumptions": [
+    "Common a(psi) across resistivities.",
+    "Common upstream B_u(psi) despite finite-box and compressible evolution.",
+    "Gaussian local shape and width evolution closure.",
+    "Negligible longitudinal and boundary/ideal EMF contributions.",
+    "Initial state reducible to a single width.",
+    "Sparse flux-stage knots resolve relevant history."
+  ],
+  "artifacts": [
+    "conditional_repair_proposal.md",
+    "fresh_record_analysis.json",
+    "analyze_fresh.py"
+  ],
+  "input_sha256": {
+    "CONTEXT.json": "9085a496508a207a8d8ba44544ccff3aa1c3761b55adf4a56a5a09f0c5ca2ca0",
+    "inputs/RESULTS.md": "50372cf34c025ef0e68585103001b521f1908b302aa7fdf264d713f2e3d3c42b",
+    "inputs/calculation.py": "2b78c89dc7551f90848e8989d2c50c379e9d3428281858c9343d2b231ec71183",
+    "inputs/spatial_qualification.json": "4cd292ddc578bb871c0a7c3c9b4428cc4c2d85be2a8e40d56f99668eba972534"
+  },
+  "actions_performed": "Read supplied files, verify hashes, reduce profiles and crossing times, estimate costs; no simulations, solver edits, external study imports, scientific approvals or agents."
+}

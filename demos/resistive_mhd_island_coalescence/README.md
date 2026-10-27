@@ -1,5 +1,33 @@
 # Demonstration: 2D resistive-MHD island coalescence with FLASH
 
+## Fresh v0.7.0 investigation
+
+The fresh 25 October investigation independently falsified the slope band
+[-0.55, -0.45], with p = -0.3778 and a numerical interval [-0.4314, -0.3247].
+The explanatory repair remains unvalidated.
+
+Read the [current investigation](../../docs/demos/island-coalescence.md),
+[original input](fresh_v070_record/operator_input/hypothesis.txt),
+[scientific report](fresh_v070_record/research/RESULTS.md), and
+[compact audit](fresh_v070_record/manifest.json). The new `fresh_v070_record/`
+and `fresh_v070_visual_data/` preserve the fresh run separately from earlier work.
+
+```bash
+uv run python scripts/verify_research_audit.py demos/resistive_mhd_island_coalescence/fresh_v070_record
+uv run --extra flash-demo python scripts/render_fresh_plasma_examples.py
+```
+
+The audit includes the exact operator instructions, commissioning inputs,
+agent-owned sources, execution receipts and independent review decisions. Bulk
+solver states are omitted with hashes; verification checks retained bytes rather
+than rerunning the physics. A new agent investigation needs qualified local
+capabilities and a configured backend.
+
+## Historical setup and records
+
+Everything below describes the earlier setup and investigations, whose inputs,
+figures and outcomes are retained. See the [historical walkthrough](../../docs/demos/island-coalescence-historical.md).
+
 This demo has two deliberately separate layers:
 
 1. a known-runnable, operator-validated FLASH 4.8 anchor used to commission an

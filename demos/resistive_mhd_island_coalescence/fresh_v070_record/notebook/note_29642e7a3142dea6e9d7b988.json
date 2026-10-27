@@ -1,0 +1,14 @@
+{
+  "id": "note_29642e7a3142dea6e9d7b988",
+  "created_at": 1792929331.6918578,
+  "authority": "worker_note",
+  "statement": "Prospective protocol: fixed alpha=20, gamma=5/3, supplied temperature/pressure and reflecting square boundaries. R uses supplied By path with initial subtraction and first linear crossings 0.01,0.05. Map S=250,500,1000,2000,4000 at n=128 exploratory; select adjacent contrast with largest distance from [-.55,-.45], tie lower S, and refine both at n=192,256 (384 if changes do not shrink). For qualified evidence use three meshes; uncertainty in each finest rate is sum of twice the maximum relative rate difference between successive two refinements, full crossing-bracket relative bound, relative change of independent Bx-path rate, measured CFL .4 vs .2 difference, with minimum 1%. Require last mesh change <=5% and smaller than preceding change, uncertainty <=15%, completed crossings, divB <1e-9, boundary normal fraction <.05, mass drift <1e-6, energy drift <1%, positive rho,p >100 floor, and single central-sheet By zero through the window (no added zero pairs); retain fields for independent topology assessment. Propagate deterministic bounds p_low=ln(Rb_low/Ra_high)/ln(Sb/Sa), p_high=ln(Rb_high/Ra_low)/ln(Sb/Sa). Falsify only if full qualified interval misses band; overlap is unresolved for that contrast. Five mapped settings are not an exact global power-law fit. Final evidence must be fresh after production method approval; exploratory controls only qualify method.",
+  "kind": "next_test",
+  "experiments": [],
+  "sources": [],
+  "claim": "root",
+  "supersedes": null,
+  "alternatives": {},
+  "estimated_seconds": 900.0,
+  "evidence_bindings": {}
+}

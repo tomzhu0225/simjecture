@@ -1,0 +1,18 @@
+{
+  "id": "note_175ffe113f2559c11b8a96ef",
+  "created_at": 1792934178.1532178,
+  "authority": "worker_note",
+  "statement": "S1000 384 completed in681.5s, solver596s, final archive783902893bytes (larger than earlier0.3GB forecast). Actual managed total5.074GB leaves3.516GB. ForS2000 forecast raw1.75GB+archive1.09GB+checkpoint/log~0.08GB =>2.92GB peak; require>=3.1GB allowance and run alone. Revise time prediction~950s from actualS1000 with1.8/1.3time scaling. Driver now integrates already tested full-domain null finder and exact crossing-index inventory, plus matched-flux Bx/Jz profiles interpolated between actual bracketing frames. Diagnostics only; same solver inputs/reducer. Source-bound review will cover new driver and null_diagnostic.py.",
+  "kind": "next_test",
+  "experiments": [
+    "exp_56eca6327dc2e3f0fd4942d4"
+  ],
+  "sources": [],
+  "claim": "root",
+  "supersedes": null,
+  "alternatives": {},
+  "estimated_seconds": 1100.0,
+  "evidence_bindings": {
+    "exp_56eca6327dc2e3f0fd4942d4": "0a037659e63a974d86ccd6976ef555d2a0e75f39286f3c5e72702ed5b89bc7e0"
+  }
+}

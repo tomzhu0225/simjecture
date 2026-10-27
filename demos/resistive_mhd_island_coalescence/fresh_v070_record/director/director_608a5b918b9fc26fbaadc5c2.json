@@ -1,0 +1,23 @@
+{
+  "id": "director_608a5b918b9fc26fbaadc5c2",
+  "created_at": 1792931833.7051551,
+  "packet_sha256": "4b427c6d8a33625468cd0ec8c015c35e20a468073e64862f2d9d764d7b8214a5",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "replan",
+  "rationale": "The latest CFL control failed because its experiment worker disappeared before writing a terminal receipt; no result or fields were returned. This leaves timestep qualification incomplete and establishes no physical failure. Methods review and RESULTS.md remain unstarted despite previous directions. Completed mesh controls remain useful exploratory records. Approximately 1854 seconds remain before the compute cutoff. Observed 256-mesh costs of 286\u2013372 seconds support a bounded recovery attempt, but qualification, independent review and fresh evidence now make the schedule at risk. Retained experiment files total approximately 2.65 GB against the 8 GiB allowance; concurrent workspace reservations still require checking.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "at_risk",
+  "stop_experiments": [],
+  "wake_worker": false,
+  "park_worker": false,
+  "report_assessment": null,
+  "closeout_report": null,
+  "next_action": "Acknowledge this replan and record a bounded recovery plan. Check the failed receipt's transport/process status before launching siblings; preserve its failure identity and do not infer solver instability. If no execution remains, launch complete-window CFL=0.2 controls for S_eta=1000 and 2000 at n=256 concurrently, retaining the established physical setup and cadence. Check storage reservations, respect aggregate rank limits, and bound both jobs by the compute cutoff. Use measured timings to reassess feasibility after launch. Submit the current source-bound production-method dossier for independent review now, explicitly marking both CFL results outstanding and finest-mesh topology/sheet resolution as limitations requiring assessment; end the turn after submission so review can proceed while controls run. Begin RESULTS.md and the decision timeline before submission, using existing plots and records and stating that the hypothesis remains unresolved. After controls and review, apply the committed uncertainty and admissibility gates without relaxation. Launch fresh evidence only after approval and only if measured costs leave time for completion before the cutoff. If qualification or review cannot finish, prioritize a complete inconclusive report, independent unresolved-claim review and report assessment. Do not start a repair-validation branch without an accepted falsification and prospective prediction.",
+  "storage_increase": null,
+  "registration_tuning": null,
+  "time_request": null,
+  "operating_limits": null,
+  "helper_tasks": [],
+  "help_replies": []
+}

@@ -1,0 +1,23 @@
+{
+  "id": "director_08cc2463e485bc57470328a0",
+  "created_at": 1792929539.3689084,
+  "packet_sha256": "0c614a111427c18dbf011afd14bd2c935e5471c3982685a6a888270887dd0827",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "The first two exploratory runs reached the required flux window in approximately 61\u201362 seconds each. Their recorded checks support continuing qualification, but neither startup success nor the coarse rates establish a scientific verdict. The prospective protocol is recorded, while mesh, timestep, cadence and independent methods qualification remain unfinished. Approximately 4103 seconds remain before the compute cutoff, making targeted qualification and fresh production evidence affordable at the observed pilot cost. Keep both active pilots running; no stop is justified.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "feasible",
+  "stop_experiments": [],
+  "wake_worker": true,
+  "park_worker": false,
+  "report_assessment": null,
+  "closeout_report": null,
+  "next_action": "While the current pilots finish, assemble the methods dossier and machine-readable run table from existing fresh outputs, preserving the failed commissioning receipt and its output-declaration explanation. Complete the planned S=4000 exploratory map, then select the contrast using the recorded rule. Qualify both members across the committed meshes, CFL control, finer output cadence and field-based admissibility checks. The current crossing brackets may dominate a narrow slope comparison; budget cadence refinement explicitly. Use measured refinement costs to set subsequent run timeouts rather than carrying the 300-second pilot limit forward automatically. Shorten unnecessary post-window evolution with a documented margin beyond the upper crossing, preserving the initial state and boundaries. Obtain independent methods review, then collect the required fresh production evidence after approval. Track retained bytes and aggregate MPI ranks. Keep numerical work before the compute deadline and preserve the 600-second reporting reserve; unresolved qualification must remain explicit.",
+  "storage_increase": null,
+  "registration_tuning": null,
+  "time_request": null,
+  "operating_limits": null,
+  "helper_tasks": [],
+  "help_replies": []
+}

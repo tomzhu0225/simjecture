@@ -1,0 +1,91 @@
+{
+  "id": "exp_2f9bf7deff8148a543a2c4f3",
+  "status": "succeeded",
+  "operator_guidance_ids": [],
+  "created_at": 1793002030.4273863,
+  "timeout": 600,
+  "execution_deadline": 1793007301.4697688,
+  "workspace_limit_bytes": 4294967296,
+  "binding": {
+    "source": "macro_compare.py",
+    "args": [],
+    "inputs": {
+      "macro_compare.py": "5af63a4909494b1b82cf8c75a5b048f6871aaea6beff3044a3a5ee3415437988",
+      "source256.h5": "559a1331d46ca697f987861ff483374e23038bc833ee837367ead0cf0199d563",
+      "source512.h5": "2cb14d09a0cbfcb26bec13ba223adca01dd7425841fe89952ac8a5831cd612cd"
+    },
+    "capability": null,
+    "runtime_sha256": null
+  },
+  "outputs": [
+    "macro_comparison.json"
+  ],
+  "commitment": null,
+  "key": "macro-source-refinement",
+  "stage": "exploration",
+  "method": null,
+  "review_documents": null,
+  "parent_experiment": "exp_f195949ab1410375cc7b8f44",
+  "purpose": "diagnostic",
+  "plan": null,
+  "pid": 270547,
+  "worker_identity": {
+    "pid": 270547,
+    "starttime": "3134945",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture-prx-island-v0.7.0/.venv/bin/python",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simulations/other_demos/flash_warpx_pressure_closure/outputs/fresh_v070__20261026T074100Z",
+      "--execute",
+      "exp_2f9bf7deff8148a543a2c4f3"
+    ],
+    "launched_at": "2026-10-26T08:07:10.571604+00:00",
+    "run_directory": null
+  },
+  "started_at": 1793002030.5717235,
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": 0,
+    "stdout": "{\"measurement\": {\"dens\": {\"relative_RMS\": 0.0025980848423813293, \"max_absolute\": 0.00650916126904999}, \"pres\": {\"relative_RMS\": 0.0004700395841465407, \"max_absolute\": 0.003815043810762475}, \"magx\": {\"relative_RMS\": 0.004707700003166511, \"max_absolute\": 0.0021744161429220754}, \"magy\": {\"relative_RMS\": 0.004488872857682788, \"max_absolute\": 4.009146654742387e-05}, \"velx\": {\"relative_RMS\": 0.00725052880762371, \"max_absolute\": 0.0023288322327477406}, \"vely\": {\"relative_RMS\": 0.00201844310715449, \"max_absolute\": 7.739926546609238e-05}, \"current_y\": {\"relative_RMS\": 0.006458843916907897, \"max_absolute\": 0.5152880903651393}}, \"patch\": {\"dens\": {\"relative_RMS\": 0.0005285880159384224, \"max_absolute\": 0.00650916126904999}, \"pres\": {\"relative_RMS\": 7.665491504849045e-05, \"max_absolute\": 0.003815036072107425}, \"magx\": {\"relative_RMS\": 0.0010528884180452, \"max_absolute\": 0.0028123054241864483}, \"magy\": {\"relative_RMS\": 0.000446939367359635, \"max_absolute\": 0.0003086797513154882}, \"velx\": {\"relative_RMS\": 0.007990381320424704, \"max_absolute\": 0.018245717808845097}, \"vely\": {\"relative_RMS\": 0.0019495221200465879, \"max_absolute\": 0.000368437397389427}, \"current_y\": {\"relative_RMS\": 0.006228026286941981, \"max_absolute\": 1.1012009776075313}}, \"source_times\": [0.8002032631186956, 0.8001113920335353], \"time_difference\": -9.187108516028886e-05}",
+    "stderr": "",
+    "timed_out": false,
+    "cancelled": false,
+    "workspace_exceeded": false,
+    "stdout_truncated": false,
+    "stderr_truncated": false,
+    "heartbeat_count": 0,
+    "wall_seconds": 0.5554847549974511,
+    "workspace_bytes": 10602126,
+    "executor_sha256": "b92087579abbb99f55ce2c75d98765355c8ccd4a6ccf3ba55b15ddd5491a22ec",
+    "resource_limits": {
+      "max_file_bytes": 4294967296,
+      "max_workspace_bytes": 4294967296,
+      "max_memory_bytes": 4294967296
+    }
+  },
+  "artifacts": {
+    "macro_compare.py": {
+      "sha256": "5af63a4909494b1b82cf8c75a5b048f6871aaea6beff3044a3a5ee3415437988",
+      "bytes": 1507
+    },
+    "macro_comparison.json": {
+      "sha256": "e3c17cd9a624ed1a1ff3e2871c4267e0fd38deb0ee1fed96adac7442e52f8e26",
+      "bytes": 1683
+    },
+    "source256.h5": {
+      "sha256": "559a1331d46ca697f987861ff483374e23038bc833ee837367ead0cf0199d563",
+      "bytes": 2153740
+    },
+    "source512.h5": {
+      "sha256": "2cb14d09a0cbfcb26bec13ba223adca01dd7425841fe89952ac8a5831cd612cd",
+      "bytes": 8445196
+    }
+  },
+  "missing_outputs": [],
+  "input_mutations": [],
+  "output_findings": [],
+  "scientific_status": "unreviewed",
+  "finished_at": 1793002031.1610608
+}

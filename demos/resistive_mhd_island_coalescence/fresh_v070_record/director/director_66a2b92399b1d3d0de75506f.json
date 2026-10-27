@@ -1,0 +1,23 @@
+{
+  "id": "director_66a2b92399b1d3d0de75506f",
+  "created_at": 1792937728.1384265,
+  "packet_sha256": "73394af7124443aa9daa229b625b49377353253d1890f5bfe4ddc4ed74590fc6",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "The completed helper proposal does not resolve spatial qualification. Keep the targeted 512\u00b2 control running: its elapsed 1872 seconds remains within its 3000-second limit, with approximately 4118 seconds before the compute cutoff. Scientific feasibility remains limited by qualification and independent review; the remaining evidence path is budget-sensitive. The worker's exploratory measured-strain closure substantially underpredicts both calibration rates. The alternative effective-strain closure derives coefficients from observed width evolution and needs separate physical justification. Neither currently establishes an explanatory repair. Prioritize qualification over further closure tuning.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "at_risk",
+  "stop_experiments": [],
+  "wake_worker": false,
+  "park_worker": false,
+  "report_assessment": null,
+  "closeout_report": null,
+  "next_action": "When the 512\u00b2 control completes, apply the unchanged spatial gates and promptly submit the corrected source-bound qualification dossier for independent methods review, including actual crossing-bracket topology coverage, cadence controls and uncertainty transport. Use its measured runtime to forecast fresh claim-bearing runs and reviews against the compute cutoff and protected 600-second report reserve. Preserve the measured-strain closure mismatch as an informative exploratory failure; distinguish inferred effective strain from velocity-measured strain and assess the helper's calibration gates before further repair work. Any repair validation must follow independently accepted falsification and a frozen quantitative prediction. If a valid evidence path cannot fit, complete the self-contained unresolved report and submit it through report_assessment.",
+  "storage_increase": null,
+  "registration_tuning": null,
+  "time_request": null,
+  "operating_limits": null,
+  "helper_tasks": [],
+  "help_replies": []
+}

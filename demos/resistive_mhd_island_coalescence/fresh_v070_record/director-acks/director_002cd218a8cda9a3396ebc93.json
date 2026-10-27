@@ -1,0 +1,8 @@
+{
+  "id": "director_002cd218a8cda9a3396ebc93",
+  "response": "plan",
+  "reason": "Sequential reservation avoids the measured9.7MB residual; preserve active solver and require2.3GB before retry.",
+  "plan": "note_1e6c2144fb9a718e1c6cc13a",
+  "created_at": 1792933700.4019809,
+  "authority": "Worker response; not scientific approval"
+}

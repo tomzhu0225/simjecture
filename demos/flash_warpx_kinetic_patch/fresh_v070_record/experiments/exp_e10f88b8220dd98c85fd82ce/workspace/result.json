@@ -1,0 +1,368 @@
+{
+  "checks": {
+    "boundaries": true,
+    "completed": true,
+    "diagnostics": true,
+    "flux_window_reached": false,
+    "numerical_regime": true,
+    "physics_controls": true,
+    "representation": true,
+    "scientific_evidence_eligible": false
+  },
+  "kind": "autonomous_fresh_macro_trajectory",
+  "metrics": {
+    "flux_high": 0.05,
+    "flux_high_crossing_time": null,
+    "flux_low": 0.01,
+    "flux_low_crossing_time": 0.2588430248389068,
+    "flux_path_max_abs_mismatch": 2.5131346740269594e-05,
+    "initial_sheet_cells": 12.8,
+    "l_over_eta_nominal": 1000.0,
+    "max_abs_divb": 2.3661073100811336e-12,
+    "max_boundary_normal_fraction": 0.01494499616159572,
+    "normalized_flux_slope": null,
+    "plot_file_count": 17,
+    "reconnection_time": null
+  },
+  "provenance": {
+    "command": [
+      "/usr/bin/orterun",
+      "-np",
+      "4",
+      "/opt/acs-capabilities/flash-island-coalescence-resistive-mhd-4.8/bin/flash4",
+      "-par_file",
+      "flash.par"
+    ],
+    "flash_executable_sha256": "40cf57b987e85f9befc01abae4e89f27c230d1eb42391ba3abea8655a0f7024b",
+    "parameter_file_sha256": "446545a5bb650c175fbae04df339e730d301bb6eef5662120c136d13d05d3a49"
+  },
+  "realized": {
+    "alpha": 20.0,
+    "eta": 0.001,
+    "mpi_ranks": 4,
+    "nx": 256,
+    "ny": 256,
+    "resistivity_solver": "explicit",
+    "tmax": 0.81,
+    "use_diffuse": true,
+    "use_magnetic_resistivity": true
+  },
+  "schema_version": "0.1.0",
+  "scientific_status": "exploration_pending_independent_method_review",
+  "timeseries": [
+    {
+      "flux_from_bx": 0.00015226000141410617,
+      "flux_from_by": 7.631795029647162e-05,
+      "max_abs_divb": 2.6201263381153694e-14,
+      "max_abs_velocity": 0.0,
+      "reconnected_flux_from_bx": 0.0,
+      "reconnected_flux_from_by": 0.0,
+      "time": 0.0
+    },
+    {
+      "flux_from_bx": 0.002069758623775897,
+      "flux_from_by": 0.0019986423235671407,
+      "max_abs_divb": 1.092903545441004e-12,
+      "max_abs_velocity": 0.07459914684295654,
+      "reconnected_flux_from_bx": 0.0019174986223617907,
+      "reconnected_flux_from_by": 0.0019223243732706691,
+      "time": 0.05025218073420108
+    },
+    {
+      "flux_from_bx": 0.003914519309944351,
+      "flux_from_by": 0.0038441753814820725,
+      "max_abs_divb": 1.2585488207150775e-12,
+      "max_abs_velocity": 0.15277574956417084,
+      "reconnected_flux_from_bx": 0.003762259308530245,
+      "reconnected_flux_from_by": 0.003767857431185601,
+      "time": 0.10027519002840754
+    },
+    {
+      "flux_from_bx": 0.005774562210376643,
+      "flux_from_by": 0.005702436991403546,
+      "max_abs_divb": 1.7976731214730535e-12,
+      "max_abs_velocity": 0.23299406468868256,
+      "reconnected_flux_from_bx": 0.0056223022089625365,
+      "reconnected_flux_from_by": 0.005626119041107074,
+      "time": 0.15020705418870262
+    },
+    {
+      "flux_from_bx": 0.007711747641749864,
+      "flux_from_by": 0.007635857014011259,
+      "max_abs_divb": 1.5942802633617248e-12,
+      "max_abs_velocity": 0.3113616108894348,
+      "reconnected_flux_from_bx": 0.007559487640335758,
+      "reconnected_flux_from_by": 0.0075595390637147875,
+      "time": 0.20015702619928694
+    },
+    {
+      "flux_from_bx": 0.009781138765362126,
+      "flux_from_by": 0.009699948448721905,
+      "max_abs_divb": 1.744382416291046e-12,
+      "max_abs_velocity": 0.38821348547935486,
+      "reconnected_flux_from_bx": 0.00962887876394802,
+      "reconnected_flux_from_by": 0.009623630498425434,
+      "time": 0.2503313899073324
+    },
+    {
+      "flux_from_bx": 0.011996239116655262,
+      "flux_from_by": 0.01190897563605331,
+      "max_abs_divb": 1.6981971384666394e-12,
+      "max_abs_velocity": 0.46642717719078064,
+      "reconnected_flux_from_bx": 0.011843979115241156,
+      "reconnected_flux_from_by": 0.011832657685756838,
+      "time": 0.3002887666177893
+    },
+    {
+      "flux_from_bx": 0.01437473306729942,
+      "flux_from_by": 0.014281943539695911,
+      "max_abs_divb": 1.822542117224657e-12,
+      "max_abs_velocity": 0.5479152202606201,
+      "reconnected_flux_from_bx": 0.014222473065885314,
+      "reconnected_flux_from_by": 0.01420562558939944,
+      "time": 0.3504105244670088
+    },
+    {
+      "flux_from_bx": 0.016881826842592314,
+      "flux_from_by": 0.016784322702602543,
+      "max_abs_divb": 1.7905676941154525e-12,
+      "max_abs_velocity": 0.6350485682487488,
+      "reconnected_flux_from_bx": 0.016729566841178208,
+      "reconnected_flux_from_by": 0.01670800475230607,
+      "time": 0.4002196675860557
+    },
+    {
+      "flux_from_bx": 0.019494074503597855,
+      "flux_from_by": 0.01939382605511164,
+      "max_abs_divb": 1.9380053117856733e-12,
+      "max_abs_velocity": 0.7246702909469604,
+      "reconnected_flux_from_bx": 0.01934181450218375,
+      "reconnected_flux_from_by": 0.019317508104815168,
+      "time": 0.45006976955757155
+    },
+    {
+      "flux_from_bx": 0.02218316816388465,
+      "flux_from_by": 0.022082094766026746,
+      "max_abs_divb": 2.277289468111121e-12,
+      "max_abs_velocity": 0.8106635212898254,
+      "reconnected_flux_from_bx": 0.022030908162470542,
+      "reconnected_flux_from_by": 0.022005776815730273,
+      "time": 0.5003526274752498
+    },
+    {
+      "flux_from_bx": 0.024861450167735548,
+      "flux_from_by": 0.02476131932274072,
+      "max_abs_divb": 2.1724844145865063e-12,
+      "max_abs_velocity": 0.8841662406921387,
+      "reconnected_flux_from_bx": 0.02470919016632144,
+      "reconnected_flux_from_by": 0.024685001372444247,
+      "time": 0.5503595528531208
+    },
+    {
+      "flux_from_bx": 0.027498175437909105,
+      "flux_from_by": 0.027400095950433464,
+      "max_abs_divb": 2.1671553440683056e-12,
+      "max_abs_velocity": 0.9406748414039612,
+      "reconnected_flux_from_bx": 0.027345915436495,
+      "reconnected_flux_from_by": 0.02732377800013699,
+      "time": 0.6002609223836084
+    },
+    {
+      "flux_from_bx": 0.030078464284301273,
+      "flux_from_by": 0.02998314977171534,
+      "max_abs_divb": 2.147615418834903e-12,
+      "max_abs_velocity": 0.9710422158241272,
+      "reconnected_flux_from_bx": 0.029926204282887166,
+      "reconnected_flux_from_by": 0.02990683182141887,
+      "time": 0.650297961112948
+    },
+    {
+      "flux_from_bx": 0.032582547965361634,
+      "flux_from_by": 0.03248945613612464,
+      "max_abs_divb": 2.2293278334473143e-12,
+      "max_abs_velocity": 0.9809679985046387,
+      "reconnected_flux_from_bx": 0.03243028796394753,
+      "reconnected_flux_from_by": 0.032413138185828166,
+      "time": 0.7000122489870156
+    },
+    {
+      "flux_from_bx": 0.03505789910443013,
+      "flux_from_by": 0.03496676698141709,
+      "max_abs_divb": 2.1600499167107046e-12,
+      "max_abs_velocity": 0.976698100566864,
+      "reconnected_flux_from_bx": 0.03490563910301602,
+      "reconnected_flux_from_by": 0.03489044903112062,
+      "time": 0.7503169755295096
+    },
+    {
+      "flux_from_bx": 0.03747124609795802,
+      "flux_from_by": 0.03738137336213709,
+      "max_abs_divb": 2.3661073100811336e-12,
+      "max_abs_velocity": 0.9674530029296875,
+      "reconnected_flux_from_bx": 0.03731898609654392,
+      "reconnected_flux_from_by": 0.037305055411840614,
+      "time": 0.8002032631186956
+    }
+  ],
+  "study_conservation": {
+    "rows": [
+      {
+        "time": 0.0,
+        "mass": 1.025488066541584,
+        "energy": 9.388503915464533,
+        "min_density": 0.9771822094917297,
+        "min_pressure": 5.86309289932251,
+        "file": "flash_run_hdf5_plt_cnt_0000",
+        "sha256": "ef66c8f8ca475bab57c83920c5187c97c2a4c0ade0a990db8bf756c7a40340b6"
+      },
+      {
+        "time": 0.05025218073420108,
+        "mass": 1.0254880668144324,
+        "energy": 9.388505230225336,
+        "min_density": 0.979077160358429,
+        "min_pressure": 5.882085800170898,
+        "file": "flash_run_hdf5_plt_cnt_0001",
+        "sha256": "e90a3d65fb5cba3a4429df2de678a81529c150edf4d95ce7e3e0659827d187cf"
+      },
+      {
+        "time": 0.10027519002840754,
+        "mass": 1.0254880669272097,
+        "energy": 9.388505700650654,
+        "min_density": 0.9827651977539062,
+        "min_pressure": 5.918959140777588,
+        "file": "flash_run_hdf5_plt_cnt_0002",
+        "sha256": "1dd382c5859ec4463961306c53fc719568479181649b370e5018b8d4df796f6f"
+      },
+      {
+        "time": 0.15020705418870262,
+        "mass": 1.0254880670036073,
+        "energy": 9.388506072040414,
+        "min_density": 0.9852707386016846,
+        "min_pressure": 5.943602085113525,
+        "file": "flash_run_hdf5_plt_cnt_0003",
+        "sha256": "f243022c5181fdfb4b74db688993d98a9a40132581fc2f389a4a0021fd72c3ac"
+      },
+      {
+        "time": 0.20015702619928694,
+        "mass": 1.0254880665706878,
+        "energy": 9.388507059000329,
+        "min_density": 0.9871471524238586,
+        "min_pressure": 5.962456703186035,
+        "file": "flash_run_hdf5_plt_cnt_0004",
+        "sha256": "30ae236ce07b988400e97e0ab37f79288adaa47c24cdcf7d253c5c5cde204589"
+      },
+      {
+        "time": 0.2503313899073324,
+        "mass": 1.0254880665706878,
+        "energy": 9.388508476233127,
+        "min_density": 0.9896523356437683,
+        "min_pressure": 5.987468719482422,
+        "file": "flash_run_hdf5_plt_cnt_0005",
+        "sha256": "c3a486db1a069de37a61b91c2e507be4a27ff96481fe85242f39b344301ee17b"
+      },
+      {
+        "time": 0.3002887666177893,
+        "mass": 1.0254880664797383,
+        "energy": 9.388510234373467,
+        "min_density": 0.9931756258010864,
+        "min_pressure": 5.987393379211426,
+        "file": "flash_run_hdf5_plt_cnt_0006",
+        "sha256": "51f4f2ffc244781a1f0b485b7dfed7b6931426463777fdf0bdcc3ee3ddf33dd0"
+      },
+      {
+        "time": 0.3504105244670088,
+        "mass": 1.025488066712569,
+        "energy": 9.388512414486467,
+        "min_density": 0.9945827722549438,
+        "min_pressure": 5.992453575134277,
+        "file": "flash_run_hdf5_plt_cnt_0007",
+        "sha256": "ec1744be1847a356f147c9fd28f3b2d2818f34a92835dfedf5d5132d7a197921"
+      },
+      {
+        "time": 0.4002196675860557,
+        "mass": 1.0254880667598627,
+        "energy": 9.388515063842444,
+        "min_density": 0.9980671405792236,
+        "min_pressure": 5.999166488647461,
+        "file": "flash_run_hdf5_plt_cnt_0008",
+        "sha256": "584ba7b78ff998045ed55c1923086a9b6b11b2646e526c4c560602df590e05cd"
+      },
+      {
+        "time": 0.45006976955757155,
+        "mass": 1.0254880669890554,
+        "energy": 9.388518182446889,
+        "min_density": 0.999602198600769,
+        "min_pressure": 5.996020793914795,
+        "file": "flash_run_hdf5_plt_cnt_0009",
+        "sha256": "3a8f4924e1209f9253dccf77d356d23bbe8e94fd112360c626f7f8319f839596"
+      },
+      {
+        "time": 0.5003526274752498,
+        "mass": 1.025488067585684,
+        "energy": 9.388521685481305,
+        "min_density": 0.9993053078651428,
+        "min_pressure": 5.99296760559082,
+        "file": "flash_run_hdf5_plt_cnt_0010",
+        "sha256": "a7094b3c7942fbe196b560c18469f696e725f5797f7f458e3d9f4ba984c2bcd5"
+      },
+      {
+        "time": 0.5503595528531208,
+        "mass": 1.0254880671818682,
+        "energy": 9.388525284988386,
+        "min_density": 0.9995332360267639,
+        "min_pressure": 5.995246887207031,
+        "file": "flash_run_hdf5_plt_cnt_0011",
+        "sha256": "b18719758a6a523718c58e18992195a4e0cc54b0bbbafad2e4617af247d8e613"
+      },
+      {
+        "time": 0.6002609223836084,
+        "mass": 1.025488067411061,
+        "energy": 9.388528737134884,
+        "min_density": 0.9955959320068359,
+        "min_pressure": 5.989426612854004,
+        "file": "flash_run_hdf5_plt_cnt_0012",
+        "sha256": "ec51da4f58d09bdf043c60c745487b631fbe56410c529b99c72a31a60afa0591"
+      },
+      {
+        "time": 0.650297961112948,
+        "mass": 1.0254880665634118,
+        "energy": 9.38853185583254,
+        "min_density": 0.988271176815033,
+        "min_pressure": 5.998077869415283,
+        "file": "flash_run_hdf5_plt_cnt_0013",
+        "sha256": "b55a092e42823181081bbdc4fbf3e50e73d24ba7473337af1f62bdd6b736716f"
+      },
+      {
+        "time": 0.7000122489870156,
+        "mass": 1.0254880665015662,
+        "energy": 9.388534666567264,
+        "min_density": 0.9817739725112915,
+        "min_pressure": 6.003898620605469,
+        "file": "flash_run_hdf5_plt_cnt_0014",
+        "sha256": "305f25c14d8d5dc9cfa5d3e3bcdea52ff07d085487dd466660bdbf7d55385436"
+      },
+      {
+        "time": 0.7503169755295096,
+        "mass": 1.0254880665706878,
+        "energy": 9.388537348620225,
+        "min_density": 0.9758771061897278,
+        "min_pressure": 6.0093183517456055,
+        "file": "flash_run_hdf5_plt_cnt_0015",
+        "sha256": "9812e0b95cfe6f4eff8559f88b9acb2ebed2d12f1f06d695057ace2b8ba6e39a"
+      },
+      {
+        "time": 0.8002032631186956,
+        "mass": 1.0254880668289843,
+        "energy": 9.388540185221025,
+        "min_density": 0.9709693789482117,
+        "min_pressure": 5.999701499938965,
+        "file": "flash_run_hdf5_plt_cnt_0016",
+        "sha256": "559a1331d46ca697f987861ff483374e23038bc833ee837367ead0cf0199d563"
+      }
+    ],
+    "mass_relative_change": 2.8025715081980707e-10,
+    "energy_relative_change": 3.863209390830846e-06,
+    "energy_scope": "Volume integral proxy from cell-centered pressure, velocity and magnetic fields; reflecting domain, resistive conversion retained."
+  },
+  "selection_policy": "First stored time >=0.8, origin-centered coalescence sheet; no kinetic evidence used to choose source."
+}

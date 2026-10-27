@@ -1,0 +1,18 @@
+{
+  "before": {
+    "worker_action_limit": null,
+    "worker_checkpoint_seconds": null,
+    "review_seconds": null,
+    "helper_workers": null
+  },
+  "limits": {
+    "worker_action_limit": null,
+    "worker_checkpoint_seconds": null,
+    "review_seconds": 300.0,
+    "helper_workers": null
+  },
+  "actor": "operator",
+  "reason": "Apply previously intended review setting via the operating-limits API; post-run session has a separate 30-minute grant, no new simulations",
+  "created_at": 1793010949.092389,
+  "authority": "Operating settings only; budgets unchanged"
+}

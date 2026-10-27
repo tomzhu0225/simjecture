@@ -154,6 +154,8 @@ extend-exclude = [
   "demos/resistive_mhd_island_coalescence/minimal_record",
   "demos/resistive_mhd_island_coalescence/sol_medium_record",
   "demos/resistive_mhd_island_coalescence/continuation_record",
+  "demos/resistive_mhd_island_coalescence/fresh_v070_record",
+  "demos/flash_warpx_kinetic_patch/fresh_v070_record",
   "demos/flash_warpx_kinetic_patch/continuation_record",
   "demos/flash_warpx_kinetic_patch/record",
   "demos/collisionless_gem_reconnection/guided",

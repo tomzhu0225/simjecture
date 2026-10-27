@@ -1,0 +1,46 @@
+{
+  "id": "director_c4fd6d90a75979fb278f6c74",
+  "created_at": 1792940919.1726646,
+  "packet_sha256": "30a82b845eeda0e2d5ad37213cb1cf479b7be7011a94ab3c003ee7519c97bcaa",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "The amplitude-budget extension fails its fixed calibration criterion: duration errors are 8.91% and 1.48%, so both-anchor acceptance is unavailable. No repair validation is justified. RESULTS.md now records the independently accepted root verdict, failed exploratory calibrations and unfinished explanation. Its linked artifacts exist, the run table includes all 26 receipts, and representative fields and scaling figures are present. The report is ready for independent assessment; this execution decision grants no scientific approval. Approximately 1021 seconds remain before the compute cutoff, followed by the protected 600-second report reserve. All help requests are resolved, and no experiments are active.",
+  "scientific_feasibility": "adequate",
+  "budget_feasibility": "feasible",
+  "stop_experiments": [],
+  "wake_worker": false,
+  "park_worker": false,
+  "report_assessment": "RESULTS.md",
+  "closeout_report": null,
+  "next_action": "Queue independent assessment of the completed RESULTS.md now. Let the worker complete its current reporting handoff, preserving report and artifact identities for review. Launch no additional repair trajectories or closure searches. Address concrete assessment findings within the authoritative deadline, keeping the accepted root verdict distinct from unfinished mechanism and repair work. After an unchanged report is accepted and the worker is idle with no pending work, consider investigation closeout using that accepted report request ID.",
+  "storage_increase": null,
+  "registration_tuning": null,
+  "time_request": null,
+  "operating_limits": null,
+  "helper_tasks": [],
+  "help_replies": [],
+  "report_assessment_action": {
+    "status": "queued",
+    "request": {
+      "id": "report_985916ab5f394c66bcc74859",
+      "status": "resolved",
+      "created_at": 1792940793.5904052,
+      "reason": "Assess current self-contained synthesis: independently accepted root falsification from fresh approved production contrast; complete26receipt run table, exactuncertainty/provenance, updatedproductionfield/scalingfigures, informativefailedcontrols, recorded simple-strain and amplitude closure failures. Physicalmechanism and supportedrepair remainunfinished; report explicitly doesnotmarkfullrepairpolicycomplete. Please identify any currentstatus inaccuracies or overclaimed mechanism/validation.",
+      "report": "report_reviews/985916ab5f394c66bcc748594432713179d386556f881a295f853584b2ce0293/RESULTS.md",
+      "source_report": "research/RESULTS.md",
+      "packet": "report_reviews/985916ab5f394c66bcc748594432713179d386556f881a295f853584b2ce0293/packet.json",
+      "report_sha256": "6a54730d84e89a2deea44e13ebdae10c10816e2aa87ca8bfbf504cfc3ba5749b",
+      "packet_sha256": "7554413d8697377409967881019d2c373f8ec549d4f6ca6a9a5078950229853c",
+      "authority": "Report review only; never scientific claim acceptance",
+      "current_report_unchanged": true,
+      "attempts": 1,
+      "assessment": {
+        "decision": "accepted",
+        "summary": "The findings-first report agrees with hash-verified production receipts, archived figure sources and existing independent reviews. Recomputed rates are 0.04968858 and 0.03824213, yielding p_eff=-0.37775156 and deterministic numerical interval [-0.43140540,-0.32467595], consistent with the recorded falsification within the qualified scope. The report clearly separates exploratory controls, production evidence and provisional interpretation. Repair replay errors of 33.39% and 44.54% substantiate its unfinished status; no independent repair validation is claimed. Numerical limits, execution failures and provenance are adequately explained. Report acceptance does not confer additional claim approval, stage promotion or investigation completion.",
+        "issues": []
+      },
+      "resolved_at": 1792940919.1353
+    }
+  }
+}

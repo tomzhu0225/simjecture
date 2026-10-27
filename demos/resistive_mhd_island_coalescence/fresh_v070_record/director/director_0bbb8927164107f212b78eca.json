@@ -1,0 +1,23 @@
+{
+  "id": "director_0bbb8927164107f212b78eca",
+  "created_at": 1792936205.2706137,
+  "packet_sha256": "a404f4ae2752d2c031dbadfe3a379467fddb51f9904a98a8249cede3e265169b",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "The only new operational change is the running S_eta=2000, 512\u00b2 qualification control; no new result resolves the recorded spatial-convergence failure. Keep this useful experiment running. Its prior approximately 2316-second forecast remains compatible with approximately 5644 compute seconds available, although qualification, independent review and fresh claim-bearing runs together remain at risk. RESULTS.md still describes completed 384\u00b2 runs as active and omits the failed shrinking-change gate and compact-retention commissioning, so useful reporting work can proceed immediately. Scientific qualification and the original hypothesis remain unresolved.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "at_risk",
+  "stop_experiments": [],
+  "wake_worker": true,
+  "park_worker": false,
+  "report_assessment": null,
+  "closeout_report": null,
+  "next_action": "While the 512\u00b2 control continues, update RESULTS.md, run_table.json and the timeline with completed 384\u00b2 results, the failed spatial gate, retention commissioning and current execution status. Quantify the .005-to-.01 output-cadence effect using existing trajectories and prepare the corrected source-bound methods dossier. When 512\u00b2 finishes, apply the unchanged numerical gates, assess matched-flux structure and topology through the actual upper crossing bracket, and submit for independent methods review. Reforecast remaining execution and storage using measured costs before launching fresh claim-bearing runs; require the complete path to fit the compute cutoff. Preserve the 600-second report reserve and prepare an unresolved report for independent assessment if qualification or time proves insufficient.",
+  "storage_increase": null,
+  "registration_tuning": null,
+  "time_request": null,
+  "operating_limits": null,
+  "helper_tasks": [],
+  "help_replies": []
+}

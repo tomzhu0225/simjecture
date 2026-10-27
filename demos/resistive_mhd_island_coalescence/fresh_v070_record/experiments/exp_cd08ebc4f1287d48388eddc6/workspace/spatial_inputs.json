@@ -1,0 +1,208 @@
+[
+  {
+    "experiment": "exp_c90e9b96ba8406a99246fb8e",
+    "summary": "spatial_S1000_n192.json",
+    "raw_samples": [
+      {
+        "index": 0,
+        "input": "raw_S1000_n192_i0.h5"
+      },
+      {
+        "index": 51,
+        "input": "raw_S1000_n192_i51.h5"
+      },
+      {
+        "index": 52,
+        "input": "raw_S1000_n192_i52.h5"
+      },
+      {
+        "index": 130,
+        "input": "raw_S1000_n192_i130.h5"
+      },
+      {
+        "index": 131,
+        "input": "raw_S1000_n192_i131.h5"
+      },
+      {
+        "index": 213,
+        "input": "raw_S1000_n192_i213.h5"
+      },
+      {
+        "index": 214,
+        "input": "raw_S1000_n192_i214.h5"
+      }
+    ]
+  },
+  {
+    "experiment": "exp_f2da6ae1b2ce992ddf16cf82",
+    "summary": "spatial_S1000_n256.json",
+    "raw_samples": [
+      {
+        "index": 0,
+        "input": "raw_S1000_n256_i0.h5"
+      },
+      {
+        "index": 51,
+        "input": "raw_S1000_n256_i51.h5"
+      },
+      {
+        "index": 52,
+        "input": "raw_S1000_n256_i52.h5"
+      },
+      {
+        "index": 130,
+        "input": "raw_S1000_n256_i130.h5"
+      },
+      {
+        "index": 131,
+        "input": "raw_S1000_n256_i131.h5"
+      },
+      {
+        "index": 213,
+        "input": "raw_S1000_n256_i213.h5"
+      },
+      {
+        "index": 214,
+        "input": "raw_S1000_n256_i214.h5"
+      }
+    ]
+  },
+  {
+    "experiment": "exp_56eca6327dc2e3f0fd4942d4",
+    "summary": "spatial_S1000_n384.json",
+    "raw_samples": [
+      {
+        "index": 0,
+        "input": "raw_S1000_n384_i0.h5"
+      },
+      {
+        "index": 51,
+        "input": "raw_S1000_n384_i51.h5"
+      },
+      {
+        "index": 52,
+        "input": "raw_S1000_n384_i52.h5"
+      },
+      {
+        "index": 130,
+        "input": "raw_S1000_n384_i130.h5"
+      },
+      {
+        "index": 131,
+        "input": "raw_S1000_n384_i131.h5"
+      },
+      {
+        "index": 212,
+        "input": "raw_S1000_n384_i212.h5"
+      },
+      {
+        "index": 213,
+        "input": "raw_S1000_n384_i213.h5"
+      }
+    ],
+    "series": "S1000_n384_magnetic.h5"
+  },
+  {
+    "experiment": "exp_82b78fe2f19144b3b6ca29af",
+    "summary": "spatial_S2000_n192.json",
+    "raw_samples": [
+      {
+        "index": 0,
+        "input": "raw_S2000_n192_i0.h5"
+      },
+      {
+        "index": 80,
+        "input": "raw_S2000_n192_i80.h5"
+      },
+      {
+        "index": 81,
+        "input": "raw_S2000_n192_i81.h5"
+      },
+      {
+        "index": 184,
+        "input": "raw_S2000_n192_i184.h5"
+      },
+      {
+        "index": 185,
+        "input": "raw_S2000_n192_i185.h5"
+      },
+      {
+        "index": 290,
+        "input": "raw_S2000_n192_i290.h5"
+      },
+      {
+        "index": 291,
+        "input": "raw_S2000_n192_i291.h5"
+      }
+    ]
+  },
+  {
+    "experiment": "exp_d72d5627834d2ca1456a280c",
+    "summary": "spatial_S2000_n256.json",
+    "raw_samples": [
+      {
+        "index": 0,
+        "input": "raw_S2000_n256_i0.h5"
+      },
+      {
+        "index": 80,
+        "input": "raw_S2000_n256_i80.h5"
+      },
+      {
+        "index": 81,
+        "input": "raw_S2000_n256_i81.h5"
+      },
+      {
+        "index": 184,
+        "input": "raw_S2000_n256_i184.h5"
+      },
+      {
+        "index": 185,
+        "input": "raw_S2000_n256_i185.h5"
+      },
+      {
+        "index": 290,
+        "input": "raw_S2000_n256_i290.h5"
+      },
+      {
+        "index": 291,
+        "input": "raw_S2000_n256_i291.h5"
+      }
+    ]
+  },
+  {
+    "experiment": "exp_9ed2782a9af6b2446c71285a",
+    "summary": "spatial_S2000_n384.json",
+    "raw_samples": [
+      {
+        "index": 0,
+        "input": "raw_S2000_n384_i0.h5"
+      },
+      {
+        "index": 80,
+        "input": "raw_S2000_n384_i80.h5"
+      },
+      {
+        "index": 81,
+        "input": "raw_S2000_n384_i81.h5"
+      },
+      {
+        "index": 184,
+        "input": "raw_S2000_n384_i184.h5"
+      },
+      {
+        "index": 185,
+        "input": "raw_S2000_n384_i185.h5"
+      },
+      {
+        "index": 289,
+        "input": "raw_S2000_n384_i289.h5"
+      },
+      {
+        "index": 290,
+        "input": "raw_S2000_n384_i290.h5"
+      }
+    ],
+    "series": "S2000_n384_magnetic.h5"
+  }
+]

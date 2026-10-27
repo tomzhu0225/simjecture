@@ -1,0 +1,130 @@
+{
+  "completed": true,
+  "backend": "CUDA",
+  "gpu": true,
+  "steps": 64,
+  "dt_s": 8.225509116623556e-15,
+  "dt_omega_pe": 0.4640388251533953,
+  "duration_omegaci": 0.06057326142779507,
+  "elapsed_s": 1.2416168939998897,
+  "initialization_seconds": 0.7442665540002054,
+  "phase_times": [
+    {
+      "step": 0,
+      "moment_seconds": 0.007075384997733636,
+      "evolve_steps": 16,
+      "evolve_seconds": 0.10728807399937068
+    },
+    {
+      "step": 16,
+      "moment_seconds": 0.009671585001342464,
+      "evolve_steps": 16,
+      "evolve_seconds": 0.10365575600008015
+    },
+    {
+      "step": 32,
+      "moment_seconds": 0.009186864001094364,
+      "evolve_steps": 16,
+      "evolve_seconds": 0.10773986999993213
+    },
+    {
+      "step": 48,
+      "moment_seconds": 0.009094148001167923,
+      "evolve_steps": 16,
+      "evolve_seconds": 0.1081456120009534
+    },
+    {
+      "step": 64,
+      "moment_seconds": 0.009354652996989898
+    }
+  ],
+  "storage_bytes": 2203202,
+  "initial_field_relative_errors": {
+    "bx": 0.0,
+    "bz": 0.0,
+    "ey": 0.0
+  },
+  "initial_maximum_particle_speed_over_c": {
+    "ions": 0.0631836849533404,
+    "ions_initial_energy_J_per_m": 101.58731310952332,
+    "ions_initial_number_per_m": 1.0460826955386616e+17,
+    "electrons": 0.32606555082234434,
+    "electrons_initial_energy_J_per_m": 104.1545065838902,
+    "electrons_initial_number_per_m": 1.0460826955386616e+17
+  },
+  "patch_sha256": "a81c01ca9d03b3eeb7a19a5843bc3b308a059af2503ec1dc4975d18005036ecb",
+  "ppc_per_species": 16,
+  "seed": 20261008,
+  "moment_convention": "Nonrelativistic m*n*<v_prime v_prime>, velocity v=u/sqrt(1+u^2/c^2); local bin mean subtracted.",
+  "isotropy_metric": "Frobenius(P-tr(P)I/3)/(sqrt(3)*tr(P)/3)",
+  "moment_bins_per_axis": 8,
+  "window_candidate": [
+    0.3,
+    0.8
+  ],
+  "boundary_accounting_enabled": false,
+  "poynting_estimator": "E cross B at nearest interior cell centers, normal flux quadrature on each face and trapezoidal sampling; spatial/time quadrature residual retained, not exact boundary flux.",
+  "secondary_bins": 0,
+  "minimum_bin_particles": 64,
+  "window_area_time_mean": {
+    "ions": {
+      "area_time_mean": null,
+      "eligible": false,
+      "reason": "Incomplete window, nonfinite/zero tensor, or at least one bin below frozen count/effective-count policy; bins are never dropped.",
+      "minimum_count": 32.0,
+      "minimum_effective_count": 31.99664925905756,
+      "max_pressure_relativistic_trace_correction": 0.0009162443191906326,
+      "window": [
+        0.3,
+        0.8
+      ],
+      "coverage_fraction": null,
+      "times": [
+        0.0,
+        0.015143315356948768,
+        0.030286630713897537,
+        0.04542994607084631,
+        0.06057326142779507
+      ],
+      "area_means": [
+        0.08149074867033819,
+        0.1571744906757268,
+        0.1875587389648281,
+        0.22662790056867793,
+        0.23437109052074295
+      ]
+    },
+    "electrons": {
+      "area_time_mean": null,
+      "eligible": false,
+      "reason": "Incomplete window, nonfinite/zero tensor, or at least one bin below frozen count/effective-count policy; bins are never dropped.",
+      "minimum_count": 34.0,
+      "minimum_effective_count": 33.98804138084199,
+      "max_pressure_relativistic_trace_correction": 0.022704443732602917,
+      "window": [
+        0.3,
+        0.8
+      ],
+      "coverage_fraction": null,
+      "times": [
+        0.0,
+        0.015143315356948768,
+        0.030286630713897537,
+        0.04542994607084631,
+        0.06057326142779507
+      ],
+      "area_means": [
+        0.07423166401295477,
+        0.21139987745161842,
+        0.24280536789639734,
+        0.2563669136409055,
+        0.2584046202768481
+      ]
+    }
+  },
+  "roi_half_code": [
+    0.04,
+    0.015
+  ],
+  "scope": "Collisionless one-way local continuation. Absorbing boundaries, transfer relaxation and numerical/particle controls remain scientific qualification requirements."
+}

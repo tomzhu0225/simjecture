@@ -1,0 +1,95 @@
+{
+  "id": "exp_bcf499766e6d03faf83066d7",
+  "status": "failed",
+  "operator_guidance_ids": [],
+  "created_at": 1792933314.6027474,
+  "timeout": 2100,
+  "execution_deadline": 1792941775.5981443,
+  "workspace_limit_bytes": 9677488,
+  "binding": {
+    "source": "calculation.py",
+    "args": [
+      "--S",
+      "2000",
+      "--n",
+      "384",
+      "--tmax",
+      "1.8",
+      "--cadence",
+      "0.005"
+    ],
+    "inputs": {
+      "calculation.py": "c3f362653d863059093b187b43df0091e592f043831a37e58c850d766d48de53",
+      "island_coalescence.py": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b"
+    },
+    "capability": "flash-island-coalescence-resistive-mhd-4.8",
+    "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+  },
+  "outputs": [
+    "result.json",
+    "fields.tar.gz"
+  ],
+  "commitment": null,
+  "key": "refine384-2000",
+  "stage": "exploration",
+  "method": null,
+  "review_documents": null,
+  "parent_experiment": null,
+  "purpose": "validation",
+  "plan": "note_2c50b2f1b41745480ad78aef",
+  "pid": 48783,
+  "worker_identity": {
+    "pid": 48783,
+    "starttime": "4954236",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture-prx-island-v0.7.0/.venv/bin/python",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153",
+      "--execute",
+      "exp_bcf499766e6d03faf83066d7"
+    ],
+    "launched_at": "2026-10-25T13:01:54.748693+00:00",
+    "run_directory": null
+  },
+  "started_at": 1792933314.7488277,
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": null,
+    "stdout": "",
+    "stderr": "",
+    "timed_out": false,
+    "cancelled": false,
+    "workspace_exceeded": true,
+    "stdout_truncated": false,
+    "stderr_truncated": false,
+    "heartbeat_count": 0,
+    "wall_seconds": 0.5072246680065291,
+    "workspace_bytes": 21673,
+    "executor_sha256": "b92087579abbb99f55ce2c75d98765355c8ccd4a6ccf3ba55b15ddd5491a22ec",
+    "resource_limits": {
+      "max_file_bytes": 9677488,
+      "max_workspace_bytes": 9677488,
+      "max_memory_bytes": 4294967296
+    }
+  },
+  "artifacts": {
+    "calculation.py": {
+      "sha256": "c3f362653d863059093b187b43df0091e592f043831a37e58c850d766d48de53",
+      "bytes": 7006
+    },
+    "island_coalescence.py": {
+      "sha256": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b",
+      "bytes": 14667
+    }
+  },
+  "missing_outputs": [
+    "result.json",
+    "fields.tar.gz"
+  ],
+  "input_mutations": [],
+  "output_findings": [],
+  "scientific_status": "unreviewed",
+  "finished_at": 1792933315.282523
+}

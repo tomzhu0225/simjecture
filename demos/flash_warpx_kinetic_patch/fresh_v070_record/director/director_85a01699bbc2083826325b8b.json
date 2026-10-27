@@ -1,0 +1,23 @@
+{
+  "id": "director_85a01699bbc2083826325b8b",
+  "created_at": 1793006211.6090884,
+  "packet_sha256": "9b8bd712fb2cb8e3487b3aec4924a8875f89e5c8c206bfe02207b44127dd6ad4",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "The revised method_e1bc80492ec63eead697af43 resolves the input-binding blocker and independently authorizes prospective evidence collection. The worker recorded acknowledgement of the previous replan and launched seed6101 as exp_8e19bd425cb2bd2ef03a61ea with the approved binding. The existing controls support this execution path but do not establish the hypothesis. At the packet snapshot, 906 seconds remained before the compute cutoff; two comparable seeds cost approximately 263 seconds. Numerical completion is plausible, while analysis and independent review remain time-sensitive. The extension request is still pending and grants no additional time.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "at_risk",
+  "stop_experiments": [],
+  "wake_worker": false,
+  "park_worker": false,
+  "report_assessment": null,
+  "closeout_report": null,
+  "next_action": "Continue seed6101 and then run seed6102 sequentially under the exact approved binding, preserving the frozen [0.4,0.9] window and all eligibility rules. While the GPU runs, complete the uncertainty ledger and update RESULTS.md: replace stale FLASH-running text, add the new production-method approval and completed control values, and distinguish qualification outputs from fresh evidence. After both seeds complete, apply the frozen audits and full uncertainty envelope, retain source-linked arrays and figures, and promptly submit the resulting disposition for independent claim review. Then submit the updated report through report assessment. Reforecast from actual seed duration; finish numerical work before the authoritative compute cutoff and protect the 600-second report reserve. If required evidence or qualification is incomplete, submit an explicit unresolved disposition without narrowing the window or changing tolerances. Plan against the current deadline until an extension is authorized.",
+  "storage_increase": null,
+  "registration_tuning": null,
+  "time_request": null,
+  "operating_limits": null,
+  "helper_tasks": [],
+  "help_replies": []
+}

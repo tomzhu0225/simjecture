@@ -1,0 +1,11 @@
+{
+  "status": "closed",
+  "finished_at": 1792941274.2971067,
+  "reason": "The independent report assessment accepted the unchanged report with no issues. It covers the independently accepted root falsification, all 26 experiment receipts, numerical limitations, failed repair calibrations and unfinished physical explanation. The worker is idle; no experiments, reviews, replans, help requests or operator steering remain pending. No useful feasible next simulation remains within approximately 544 seconds before the compute cutoff: the proposed independent repair trajectories require substantially longer, and the candidates failed calibration. Closeout preserves these limitations and does not establish a supported repair or full scientific completion.",
+  "director_decision": "director_75d678736cc0e5f8debe6a0f",
+  "report_id": "report_985916ab5f394c66bcc74859",
+  "report": "report_reviews/985916ab5f394c66bcc748594432713179d386556f881a295f853584b2ce0293/RESULTS.md",
+  "report_sha256": "6a54730d84e89a2deea44e13ebdae10c10816e2aa87ca8bfbf504cfc3ba5749b",
+  "packet_sha256": "7554413d8697377409967881019d2c373f8ec549d4f6ca6a9a5078950229853c",
+  "authority": "Investigation finished; scientific dispositions remain unchanged"
+}

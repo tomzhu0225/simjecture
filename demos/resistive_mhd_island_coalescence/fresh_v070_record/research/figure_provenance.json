@@ -1,0 +1,80 @@
+[
+  {
+    "figure": "fields_S1000.png",
+    "experiment": "exp_40aac93038caa57671014925",
+    "index": 52,
+    "field": {
+      "path": "native/flash_run_hdf5_plt_cnt_0052",
+      "sha256": "f37cb36ea148bc3e8499af158c91c5b0242c8ffccebf9b5d92cc1e3d134f8608",
+      "bytes": 4775180,
+      "retained_full_state": true,
+      "magnetic_series_index": 52
+    },
+    "time": 0.26003414747594167
+  },
+  {
+    "figure": "fields_S1000.png",
+    "experiment": "exp_40aac93038caa57671014925",
+    "index": 130,
+    "field": {
+      "path": "native/flash_run_hdf5_plt_cnt_0130",
+      "sha256": "4d8b44739ee3d88a428cd2380b4f5656afb13d6587313a549fc9f846ddd4079c",
+      "bytes": 4775180,
+      "retained_full_state": true,
+      "magnetic_series_index": 130
+    },
+    "time": 0.6501653791306535
+  },
+  {
+    "figure": "fields_S1000.png",
+    "experiment": "exp_40aac93038caa57671014925",
+    "index": 213,
+    "field": {
+      "path": "native/flash_run_hdf5_plt_cnt_0213",
+      "sha256": "387e1f423aac58cb5025f8057ca8cbb6ac706c9a03f73d31adb3452a3e879f6f",
+      "bytes": 4775180,
+      "retained_full_state": true,
+      "magnetic_series_index": 213
+    },
+    "time": 1.0651467396048893
+  },
+  {
+    "figure": "fields_S2000.png",
+    "experiment": "exp_755dffd11e2a3f05a6b86b49",
+    "index": 40,
+    "field": {
+      "path": "native/flash_run_hdf5_plt_cnt_0040",
+      "sha256": "b0f69abc1650cc0019864355bb6aa4584daa112f74c62c217a2c1e7850e00958",
+      "bytes": 4775180,
+      "retained_full_state": true,
+      "magnetic_series_index": 40
+    },
+    "time": 0.40023854603094866
+  },
+  {
+    "figure": "fields_S2000.png",
+    "experiment": "exp_755dffd11e2a3f05a6b86b49",
+    "index": 92,
+    "field": {
+      "path": "native/flash_run_hdf5_plt_cnt_0092",
+      "sha256": "797e31349ac8caecc9e1821ebd27a6969e774837ff34a9e5d1de6f839b34b54c",
+      "bytes": 4775180,
+      "retained_full_state": true,
+      "magnetic_series_index": 92
+    },
+    "time": 0.9201676594521869
+  },
+  {
+    "figure": "fields_S2000.png",
+    "experiment": "exp_755dffd11e2a3f05a6b86b49",
+    "index": 145,
+    "field": {
+      "path": "native/flash_run_hdf5_plt_cnt_0145",
+      "sha256": "33d3e991dd4bd6ed7aa552cf94f95510ed93a67999ef0f2f65c4b30d4b5e13c0",
+      "bytes": 4775180,
+      "retained_full_state": true,
+      "magnetic_series_index": 145
+    },
+    "time": 1.4500728798260654
+  }
+]
