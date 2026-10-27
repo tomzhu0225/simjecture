@@ -1,0 +1,23 @@
+{
+  "id": "director_eaec8de6726e11b945e09b8f",
+  "created_at": 1792939695.8699594,
+  "packet_sha256": "3c881eebd635943d2072255045ec2138195b091acb059c0677381079c1b025cb",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "No evidence changes overturn the previous decision. The active S1000 run completes the contrast authorized by independent methods review; scientific claims remain unaccepted. At the packet timestamp, approximately 474 seconds remain under its experiment timeout, versus 2120 seconds before the compute cutoff. This leaves a feasible path to reduction, independent claim review and reporting, although current progress telemetry is unavailable. The endpoint evaluator and report are already prepared, so no parallel worker task warrants a wake-up. All help requests are resolved.",
+  "scientific_feasibility": "adequate",
+  "budget_feasibility": "feasible",
+  "stop_experiments": [],
+  "wake_worker": false,
+  "park_worker": false,
+  "report_assessment": null,
+  "closeout_report": null,
+  "next_action": "Keep exp_40aac93038caa57671014925 running. On completion, verify both production members against the approved admissibility criteria, apply the frozen reducer and approved numerical uncertainty transport, and promptly submit the contrast for independent claim review. Update the report, run table, figures and decision timeline, then request independent report assessment. If the run fails or misses the window, assess any retry against its measured cost and the compute cutoff. Preserve the 600-second report reserve. Leave the proposed repair unresolved unless accepted falsification, defensible frozen predictions and sufficient validation budget are established.",
+  "storage_increase": null,
+  "registration_tuning": null,
+  "time_request": null,
+  "operating_limits": null,
+  "helper_tasks": [],
+  "help_replies": []
+}

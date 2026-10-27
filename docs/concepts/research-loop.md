@@ -45,7 +45,7 @@ The worker explains which tests challenged the claim and what happened.
 
 ## 4. Repair a falsified hypothesis
 
-With the **Seek a supported claim or tested repair** completion policy, an accepted
+With the **When the claim holds, or a fixed version does** completion policy, an accepted
 counterexample starts another scientific step. The agent proposes a replacement,
 explains the smallest justified change and preserves the parent claim and its
 counterexample.
@@ -56,7 +56,7 @@ system checks source and command identity and that the committed cases were run;
 the reviewer judges whether the repair explains the failure and is scientifically
 meaningful. Further counterexamples can produce further branches.
 
-The **Answer the question** policy also permits a reviewed falsification of the
+The **When the question is answered** policy also permits a reviewed falsification of the
 original claim to finish the study. New browser studies default to this policy;
 the headless CLI defaults to the repair policy. The hosted public trial currently
 uses answer policy; use a local workspace or CLI study for the full repair loop.

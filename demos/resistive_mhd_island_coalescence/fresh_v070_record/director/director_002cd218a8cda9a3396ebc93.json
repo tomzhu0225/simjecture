@@ -1,0 +1,23 @@
+{
+  "id": "director_002cd218a8cda9a3396ebc93",
+  "created_at": 1792933613.9168794,
+  "packet_sha256": "29c16891d958bddc7f8ccb504a0ba46091fd3df30e6fd715d4f751e143ca2bbb",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "replan",
+  "rationale": "The S_eta=1000 refinement remains useful and should continue. The S_eta=2000 attempt failed immediately with workspace_exceeded: its recorded reservation was only 9,677,488 bytes while the active refinement reserved 4 GiB. This is a storage-allocation failure, not scientific evidence. The worker's statement that both refinements are running requires correction. Measured n=256 field sizes project approximately 1.26 and 1.75 GB of raw fields at n=384, before checkpoints and simultaneous archive storage; serial execution appears practical but needs a complete peak-storage forecast. Approximately 8279 seconds remain before the packet's compute cutoff under the authorized extension. Qualification and subsequent fresh evidence remain scientifically consequential because the exploratory slope interval narrowly misses the band. Storage-increase authority is absent.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "at_risk",
+  "stop_experiments": [],
+  "wake_worker": false,
+  "park_worker": false,
+  "report_assessment": null,
+  "closeout_report": null,
+  "next_action": "Acknowledge this replan and retain exp_56eca6327dc2e3f0fd4942d4. Correct the run table and timeline to record the failed S2000 launch and its reservation. While S1000 runs, apply the corrected topology selector to retained crossing-bracket fields and prepare the source-bound qualification dossier. Execute S2000 refinement sequentially after S1000 completes and releases its reservation. Before retrying, check current managed storage and forecast raw fields, checkpoints, archive coexistence and retained inputs using measured sizes; use a new receipt key and verify that the resulting allowance covers the peak. Do not repeat the launch under a tiny residual reservation. If serial execution cannot fit, record the quantified blocker for the operator; no storage increase is authorized here. Compare completed refinements using the unchanged uncertainty rule and matched-flux sheet diagnostics, then submit independent methods review. Collect claim-bearing trajectories only after approval and when complete execution fits before the compute cutoff. Keep RESULTS.md and required artifacts current, preserving the report reserve and an honest unresolved outcome if qualification remains incomplete.",
+  "storage_increase": null,
+  "registration_tuning": null,
+  "time_request": null,
+  "operating_limits": null,
+  "helper_tasks": [],
+  "help_replies": []
+}

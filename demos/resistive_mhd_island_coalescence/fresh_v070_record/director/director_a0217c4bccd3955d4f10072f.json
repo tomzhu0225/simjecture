@@ -1,0 +1,23 @@
+{
+  "id": "director_a0217c4bccd3955d4f10072f",
+  "created_at": 1792933196.4150352,
+  "packet_sha256": "9ee7cb552c174e23825ba29416b8a1d01035aceb28d1f9a9ae4ff6d5083992a3",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "Both complete-window CFL controls and the qualification analysis are now recorded. Independent methods review still requires evolving-sheet spatial qualification and correction of topology coverage to include the actual crossing brackets. The exploratory slope interval misses the proposed band by only 0.001023, so these unresolved numerical questions remain consequential; no physical verdict follows. The operator-authorized extension replaces the previous near-deadline forecast: approximately 8683 seconds remain before the compute cutoff. Targeted refinement is affordable, although finer-grid runtime, storage and subsequent review remain uncertain. Experiment files currently occupy approximately 4.29 GB against the 8 GiB total allowance. There are no active experiments or queued help requests.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "at_risk",
+  "stop_experiments": [],
+  "wake_worker": false,
+  "park_worker": false,
+  "report_assessment": null,
+  "closeout_report": null,
+  "next_action": "Correct the topology diagnostic using actual first-crossing bracket indices, inspect the omitted S1000 upper-bracket field, and update the report's coverage statement. Proceed with the prospectively allowed n=384 full-window spatial controls for both selected settings, S_eta=1000 and 2000, preserving the physical setup. Before launch, record forecasts for runtime, retained outputs, transient archive storage and reservations; use concurrent execution only when these fit existing allowances and the aggregate rank limit. Cubic scaling from the measured n=256 baseline costs suggests roughly 965 and 1256 seconds respectively, but treat this as provisional and update it from execution. Compare rates and matched-flux current profiles and sheet widths across meshes, and apply the unchanged last-three-mesh uncertainty rule. Submit one corrected source-bound methods dossier, including the completed CFL controls and explicit remaining limitations; let the independent reviewer determine adequacy and any further controls. After approval, collect fresh claim-bearing trajectories only when complete runs fit before the compute cutoff. Maintain RESULTS.md, run_table.json and the decision timeline throughout. Preserve the reporting reserve for independent claim review and report assessment. Begin repair validation only after accepted falsification and a prospectively committed prediction; otherwise report unresolved qualification honestly.",
+  "storage_increase": null,
+  "registration_tuning": null,
+  "time_request": null,
+  "operating_limits": null,
+  "helper_tasks": [],
+  "help_replies": []
+}

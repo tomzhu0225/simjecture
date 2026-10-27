@@ -1,0 +1,8 @@
+{
+  "capability_names": ["fac-1.1.5"],
+  "description": "Generate atomic structure and rates; qualify population and line-spectrum models",
+  "entrypoint": "SKILL.md",
+  "name": "atomic-physics",
+  "schema_version": "0.1.0",
+  "version": "0.1.0"
+}

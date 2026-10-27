@@ -68,6 +68,16 @@ class _InstalledSkill:
     root: Path
     content_hash: str
 
+    def resources(self) -> list[str]:
+        return [
+            p.relative_to(self.root).as_posix()
+            for p in sorted(self.root.rglob("*"))
+            if p.is_file()
+            and not p.is_symlink()
+            and not _is_generated_skill_path(p.relative_to(self.root))
+            and p.name != "manifest.json"
+        ]
+
 
 class MVPSkillCatalog:
     """Discover and read immutable, host-controlled skill documentation."""
@@ -147,7 +157,9 @@ class MVPSkillCatalog:
             raise ValueError("generated artifacts are not skill resources")
         path = (installed.root / requested).resolve()
         if not path.is_relative_to(installed.root) or not path.is_file():
-            raise ValueError("requested skill resource is not a file")
+            raise ValueError(
+                f"requested skill resource is not a file; available: {installed.resources()}"
+            )
         content = path.read_text(errors="replace")
         total_chars = len(content)
         if offset is not None:
@@ -168,6 +180,11 @@ class MVPSkillCatalog:
             "content_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
             "skill_sha256": installed.content_hash,
             "truncated": truncated,
+            **(
+                {"resources": installed.resources()}
+                if requested.as_posix() == installed.manifest.entrypoint and not offset
+                else {}
+            ),
             **(
                 {
                     "offset": offset,

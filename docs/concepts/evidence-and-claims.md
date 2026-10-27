@@ -90,8 +90,8 @@ are correct or replace expert review.
 
 | Completion policy | Reviewed outcomes that can complete the study |
 |---|---|
-| **Answer the question** (`answer`) | Support or falsification of the original claim; a qualifying supported repair can also complete it |
-| **Seek a supported claim or tested repair** (`repair`) | Support for the original claim, or accepted falsification followed by an independently supported repair |
+| **When the question is answered** (`answer`) | Support or falsification of the original claim; a qualifying supported repair can also complete it |
+| **When the claim holds, or a fixed version does** (`repair`) | Support for the original claim, or accepted falsification followed by an independently supported repair |
 
 The local browser defaults to `answer`; the CLI defaults to `repair`. The hosted
 public trial currently uses `answer`. Both completion policies can use

@@ -1,0 +1,23 @@
+{
+  "id": "director_8d7f753a383018fe45dde5ed",
+  "created_at": 1793003926.555972,
+  "packet_sha256": "063db1f08751d10237338f90c4102523d8c8aab7c6c5879c92e75956e15be745",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "FLASH instrument readiness is recorded, while both production reviews require the same bounded analysis repair: secondary-bin eligibility must cover the complete endpoint-bracketed window, and secondary mean A and its difference from primary mean A must enter the frozen uncertainty calculation. Retained tensors permit replay without rerunning commissioning trajectories. The mesh control completed the full window in 803 seconds; its reported mean A values alone do not establish qualification. Scientific feasibility remains limited by incomplete controls, boundary applicability and production approval. Budget feasibility remains at risk: approximately 3223 seconds remain before the compute cutoff, against measured costs of 871 seconds for fresh FLASH, 131 seconds for baseline PIC and 803 seconds for refined PIC. Continuing targeted qualification is defensible; no stop is needed because no experiments are active.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "at_risk",
+  "stop_experiments": [],
+  "wake_worker": true,
+  "park_worker": false,
+  "report_assessment": null,
+  "closeout_report": null,
+  "next_action": "Repair analysis_study.py as requested by method_1e3c2a33bf19188e9cb5f8d0 and method_8b44b842b918a6fc6c34250f. Check secondary eligibility at every sample needed to bracket and integrate [0.4,0.9], compute secondary equal-area physical-time mean A, and expose its absolute difference from primary mean A in the frozen uncertainty envelope. Replay retained pilot, larger-patch and refined-source tensors, then resubmit both source-bound production methods with corrected analysis identities and replay receipts. Analyze completed mesh exp_af3f8c4f97f31b360a115b36 for all frozen anisotropy, scalar-pressure, density, initialization, relaxation and energy gates. Continue independent timestep and particle-count controls sequentially on the GPU; establish refined-source applicability of the boundary comparison or perform its matched repeat. Keep the frozen source selection, mapping, ROI, window and thresholds unchanged. Update the critical-path forecast using measured runtimes, repair/review latency and required fresh seeds. Obtain recorded production approval before decisive runs, then overlap fresh FLASH CPU work with eligible GPU qualification where useful and preserve exact transfer provenance. Protect the fresh-evidence/review allowance and final report reserve. If a required gate fails or the remaining path cannot fit, record the specific blocker and forecast, then request concrete additional time or prepare an independently assessed unresolved report without narrowing the contract.",
+  "storage_increase": null,
+  "registration_tuning": null,
+  "time_request": null,
+  "operating_limits": null,
+  "helper_tasks": [],
+  "help_replies": []
+}

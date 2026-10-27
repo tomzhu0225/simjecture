@@ -26,6 +26,48 @@ def _write_json(path: Path, payload: object) -> None:
     path.write_text(json.dumps(payload) + "\n")
 
 
+@pytest.mark.parametrize("other_draft", [False, True])
+def test_workspace_serves_the_actual_reviewed_legacy_report(tmp_path, monkeypatch, other_draft):
+    from tests.test_research_finalization import answer, fixture
+
+    sup = fixture(tmp_path)
+    report = sup.service.work / "research/RESULTS.md"
+    report.parent.mkdir()
+    report.write_text("# Legacy findings\nThe retained report must remain visible.")
+
+    def launch(directory, prompt, judge=False):
+        if judge:
+            answer(directory)
+        return 0
+
+    monkeypatch.setattr(sup, "launch", launch)
+    sup.finalize_report()
+    if other_draft:
+        (sup.service.work / "RESULTS.md").write_text("A different draft that was never reviewed.")
+    app = SimjectureWebApplication(
+        initial_run=sup.root, runs_root=tmp_path, scan_roots=(tmp_path,)
+    )
+    server = create_server(app, port=0)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    try:
+        with httpx.Client(
+            base_url=f"http://127.0.0.1:{server.server_port}", trust_env=False
+        ) as client:
+            response = client.get("/api/workspace/study", params={"id": app.initial_campaign})
+            assert response.status_code == 200
+            data = response.json()
+            assert data["results"] == report.read_text()
+            assert data["results_path"] == "research/research/RESULTS.md"
+            artifact = client.get(
+                "/api/artifact",
+                params={"campaign": app.initial_campaign, "path": data["results_path"]},
+            )
+            assert artifact.status_code == 200 and artifact.text == report.read_text()
+    finally:
+        server.shutdown()
+        server.server_close()
+
+
 def _campaign(root: Path) -> Path:
     root.mkdir(parents=True)
     _write_json(

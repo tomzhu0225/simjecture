@@ -1,0 +1,67 @@
+{
+  "scope": "Arithmetic interpretation; underlying decisive observables are in fresh evidence-stage PIC receipts. Controls and frozen postprocessing remain qualification, not promoted trajectories.",
+  "species": {
+    "ions": {
+      "fresh_means": [
+        0.04938626634273539,
+        0.047792252438392746
+      ],
+      "maximum_fresh_mean": 0.04938626634273539,
+      "contributions": {
+        "source": 0.0007972537937462956,
+        "boundary": 0.0015405763986977294,
+        "mesh": 0.016304069227418026,
+        "timestep": 0.0005557813894991465,
+        "particle_count": 0.010468424040812774,
+        "full_fresh_seed_range": 0.0015940139043426407,
+        "sampling_two_sigma_no_time_independence": 0.02184214322171185,
+        "subbin_flow_pressure_upper": 0.009985596208424562,
+        "primary_secondary_mean_A_difference": 0.03418259620689241,
+        "relativistic_trace_correction": 0.0008140254750462078
+      },
+      "conservative_envelope": 0.09808447986659165,
+      "upper": 0.14747074620932704,
+      "lower": -0.0502922274281989
+    },
+    "electrons": {
+      "fresh_means": [
+        0.047326670573906125,
+        0.05204807789352122
+      ],
+      "maximum_fresh_mean": 0.05204807789352122,
+      "contributions": {
+        "source": 0.0014837545962894244,
+        "boundary": 0.0003056003999942769,
+        "mesh": 0.008366428063445341,
+        "timestep": 0.002078406562017396,
+        "particle_count": 0.0020919630147513066,
+        "full_fresh_seed_range": 0.004721407319615095,
+        "sampling_two_sigma_no_time_independence": 0.02183158561987652,
+        "subbin_flow_pressure_upper": 0.005661206262966995,
+        "primary_secondary_mean_A_difference": 0.034550447912926045,
+        "relativistic_trace_correction": 0.021343499651906662
+      },
+      "conservative_envelope": 0.10243429940378906,
+      "upper": 0.1544823772973103,
+      "lower": -0.05510762882988294
+    }
+  },
+  "qualification_gates": {
+    "refined": true,
+    "pilot": true,
+    "large": true,
+    "mesh": true,
+    "time": true,
+    "ppc": true,
+    "boundary": true,
+    "seed6101": true,
+    "seed6102": true,
+    "comparison_mesh": true,
+    "comparison_source": true,
+    "comparison_time": true,
+    "comparison_particles": true,
+    "comparison_boundary": true
+  },
+  "decision": "supported_candidate_pending_independent_review",
+  "all_declared_gates_pass": true
+}

@@ -1,0 +1,60 @@
+{
+  "frozen_file": "island_fields.npz",
+  "frozen_sha256": "aae305a436d336ffe65521613de7ef31c43b1c1c9cd690d12f872d8c749e236b",
+  "array_shape": [
+    3,
+    384,
+    384
+  ],
+  "times": [
+    0.0,
+    0.6501653791306535,
+    1.0651467396048893
+  ],
+  "figure_bundle_indices": [
+    0,
+    1,
+    2
+  ],
+  "figure_times": [
+    0.0,
+    0.6501653791306535,
+    1.0651467396048893
+  ],
+  "source_experiment": "exp_40aac93038caa57671014925",
+  "S_eta": 1000.0,
+  "stage": "evidence",
+  "source_study": "fresh_band_v070__20261025T1153",
+  "native_archive_sha256": "1940583a65f83fa78de078598222d9c049e4d6bd6f0dc5b97ae690a823e8b2f2",
+  "native_fields": [
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0000",
+      "sha256": "86464e311c9052465b18aa5b1b46d377b4501241820990f5bfa7dfc3a0c624ff",
+      "bytes": 4775180,
+      "retained_full_state": true,
+      "magnetic_series_index": 0,
+      "time": 0.0,
+      "reconnected_flux": 0.0
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0130",
+      "sha256": "4d8b44739ee3d88a428cd2380b4f5656afb13d6587313a549fc9f846ddd4079c",
+      "bytes": 4775180,
+      "retained_full_state": true,
+      "magnetic_series_index": 130,
+      "time": 0.6501653791306535,
+      "reconnected_flux": 0.029956554901673777
+    },
+    {
+      "path": "native/flash_run_hdf5_plt_cnt_0213",
+      "sha256": "387e1f423aac58cb5025f8057ca8cbb6ac706c9a03f73d31adb3452a3e879f6f",
+      "bytes": 4775180,
+      "retained_full_state": true,
+      "magnetic_series_index": 213,
+      "time": 1.0651467396048893,
+      "reconnected_flux": 0.05006730296965319
+    }
+  ],
+  "selection": "Actual saved initial, nearest psi_rec=0.03 and nearest psi_rec=0.05 snapshots; no field interpolation.",
+  "frozen_data_sha256": "aae305a436d336ffe65521613de7ef31c43b1c1c9cd690d12f872d8c749e236b"
+}

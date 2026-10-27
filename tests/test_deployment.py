@@ -70,6 +70,7 @@ def _project(tmp_path: Path) -> Path:
         ("feos-16.7", "../.runtime/feos-16.7"),
         ("material-eos-0.1", "../.runtime/material-eos-0.1"),
         ("optab-1.3.1", "../.runtime/optab-1.3.1"),
+        ("fac-1.1.5", "../.runtime/fac-1.1.5"),
     ):
         (root / "capabilities" / f"{name}.json").write_text(
             json.dumps(_capability_payload(name, runtime))
@@ -84,6 +85,7 @@ def _project(tmp_path: Path) -> Path:
         "skills/eos/scripts/bootstrap_feos.sh",
         "skills/eos/scripts/bootstrap_material_eos.sh",
         "skills/opacity/scripts/bootstrap_optab.sh",
+        "skills/atomic-physics/scripts/bootstrap_fac.sh",
         "skills/flash-mhd/scripts/bootstrap_flash.sh",
     ):
         script = root / relative
@@ -295,6 +297,7 @@ def test_flash_private_overlay_env_overrides_checkout_dot_private(
         ("feos", "skills/eos/scripts/bootstrap_feos.sh", "feos-16.7"),
         ("material-eos", "skills/eos/scripts/bootstrap_material_eos.sh", "material-eos-0.1"),
         ("optab", "skills/opacity/scripts/bootstrap_optab.sh", "optab-1.3.1"),
+        ("fac", "skills/atomic-physics/scripts/bootstrap_fac.sh", "fac-1.1.5"),
     ),
 )
 def test_eos_opacity_install_dry_run_is_non_mutating_and_exact(
@@ -522,6 +525,7 @@ def test_committed_eos_and_opacity_capability_configs_parse() -> None:
         "feos-16.7": "eos",
         "material-eos-0.1": "eos",
         "optab-1.3.1": "opacity",
+        "fac-1.1.5": "atomic-physics",
     }
     for name, skill in expected.items():
         config = MVPCapabilityConfig.model_validate_json((root / f"{name}.json").read_bytes())

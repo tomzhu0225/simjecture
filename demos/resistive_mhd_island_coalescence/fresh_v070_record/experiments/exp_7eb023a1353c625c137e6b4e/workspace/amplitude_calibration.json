@@ -1,0 +1,26 @@
+{
+  "equations": "psi_dot=eta*sqrt(2/pi)*B(psi)/sqrt(w); w_dot=-4*a(psi)*w+2*eta+2*w*B_prime(psi)/B(psi)*psi_dot",
+  "motivation": "Local central magnetic-slope budget of an erf template includes time-dependent amplitude, unlike the simple Gaussian-width law. Neglects longitudinal diffusion and higher profile departures.",
+  "predictions": [
+    {
+      "S_eta": 1000,
+      "t_low": 0.25701708075450164,
+      "t_high": 0.9902725779679526,
+      "model_rate": 0.05455124462347669,
+      "anchor_rate": 0.04968858390778796,
+      "duration_relative_error": 0.08913931752156645,
+      "required_5pct_replay_gate": false
+    },
+    {
+      "S_eta": 2000,
+      "t_low": 0.4497530939696468,
+      "t_high": 1.480258510668934,
+      "model_rate": 0.03881590465397081,
+      "anchor_rate": 0.03824244686429199,
+      "duration_relative_error": 0.014773783962810705,
+      "required_5pct_replay_gate": true
+    }
+  ],
+  "all_calibration_gates": false,
+  "status": "exploratory failed calibration; no validation, no rate fitting, no scientific repair claim"
+}

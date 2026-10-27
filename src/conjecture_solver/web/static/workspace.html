@@ -17,6 +17,8 @@
     <link rel="stylesheet" href="/assets/account-rail.css" />
     <link rel="stylesheet" href="/assets/workspace-composer.css" />
     <link rel="stylesheet" href="/assets/workspace-projects.css" />
+    <link rel="stylesheet" href="/assets/workspace-home.css" />
+    <link rel="stylesheet" href="/assets/workspace-tour.css" />
     <link rel="stylesheet" href="/assets/workspace-knowledge.css" />
     <link rel="stylesheet" href="/assets/interface.css" />
     <script type="module" src="/assets/workspace-components.js"></script>
@@ -34,6 +36,7 @@
     <script src="/assets/study-navigation.js" defer></script>
     <script src="/assets/study-budget.js" defer></script>
     <script src="/assets/workspace-composer.js" defer></script>
+    <script src="/assets/workspace-tour.js" defer></script>
     <script src="/assets/workspace.js" defer></script>
   </head>
   <body class="has-account-rail">
@@ -225,12 +228,7 @@
         <section id="view-home" class="view home-view">
           <div class="page-intro">
             <button id="home-collection" class="context-pill" type="button" hidden></button>
-            <p class="eyebrow">YOUR RESEARCH WORKSPACE</p>
             <h1>What are we investigating?</h1>
-            <p class="lead">
-              Start with a task, a puzzling result, or a hypothesis.<br />Work
-              with your agent, then let a focused study run on its own.
-            </p>
           </div>
           <form id="quick-start" class="start-box prompt-composer">
             <label for="first-request" class="sr-only">Your research request</label
@@ -247,49 +245,34 @@
             </div>
           </form>
           <div id="home-knowledge" class="knowledge-composer-context" hidden><button id="home-knowledge-picker" class="knowledge-context-button" type="button">▤ Knowledge sources</button><div id="home-knowledge-refs" class="knowledge-reference-chips"></div></div>
-          <p id="first-request-help" class="field-help composer-help">Enter to send · Shift + Enter for a new line. Choose your agent from the model menu.</p>
-          <div class="section-line">
-            <h2>A place to start</h2>
-            <span>Choose an example and make it yours</span>
-          </div>
-          <div class="examples">
-            <button
-              class="example"
-              data-example="Simulate a double pendulum with Python and SciPy for 20 seconds. Use two 1 m links and two 1 kg masses, g=9.81 m/s², initial angles 120° and -10°, and zero initial angular velocities. Save the trajectory CSV, plot the paths of both masses, and report the numerical energy drift. Run the calculation and link the actual plots and outputs."
-            >
-              <span class="example-number">01 / PYTHON SIMULATION</span>
-              <h3>Simulate a double pendulum</h3>
-              <p>Follow two swinging masses for 20 seconds. Plot their paths and check energy drift.</p>
-              <span class="arrow">↗</span>
-            </button>
-            <button
-              class="example"
-              data-example="Run a 2D magnetic-island coalescence simulation with the installed FLASH resistive-MHD application. Start with its 64×64 normalized setup, resistivity 0.001 and end time 0.05. Preserve the actual inputs and HDF5 fields. Plot magnetic-field lines and field magnitude, compare magnetic and kinetic energy over time, and explain what this run can tell us about reconnection. Use the island-coalescence application rather than an unrelated vortex or shock example. Inspect available binaries and read-only sources to prepare the appropriate application if needed."
-            >
-              <span class="example-number">02 / FLASH · 2D MHD</span>
-              <h3>Explore reconnecting magnetic islands</h3>
-              <p>Run resistive MHD. Plot the field geometry and track magnetic and kinetic energy.</p>
-              <span class="arrow">↗</span>
-            </button>
-            <button
-              class="example"
-              data-example="Prepare a 10-minute autonomous research study with this hypothesis: a lossless 1 m single pendulum released from rest has a period within 1% of 2π√(L/g) for every initial angle from 5° to 120°, with g=9.81 m/s². Use Python to integrate the nonlinear equation, measure periods from the trajectory, and search for a counterexample. Require numerical tolerance controls, retained trajectories, a period-versus-angle plot and independent review. If the claim fails, propose the smallest supported refinement of its amplitude range. Save an editable study brief so I can review and launch the autonomous run."
-            >
-              <span class="example-number">03 / AUTONOMOUS RESEARCH</span>
-              <h3>Does a pendulum keep the same period?</h3>
-              <p>Test a hypothesis across release angles. Seek a counterexample and review the evidence.</p>
-              <span class="arrow">↗</span>
-            </button>
-          </div>
-          <section class="home-modes" aria-label="Research modes">
-            <div>
-              <h3>Interactive</h3>
-              <p>Work with an agent in chat. Write code, run simulations, inspect plots and steer the next experiment.</p>
-            </div>
-            <div>
-              <h3>Autonomous research</h3>
-              <p>Set a hypothesis and execution budget. The agent runs experiments, seeks counterexamples and submits evidence for independent review.</p>
-            </div>
+          <p id="first-request-help" class="field-help composer-help" hidden></p>
+          <section class="home-modes mode-cards" aria-label="Two ways to work">
+            <article class="mode-card" data-mode-card="interactive">
+              <p class="mode-card-kicker"><span aria-hidden="true">◐</span> Interactive</p>
+              <h2>Explore with your agent</h2>
+              <p class="mode-card-summary">Chat, run code and simulations, look at plots and decide the next step together. You stay in the loop.</p>
+              <p class="mode-card-best"><strong>Best for</strong> getting started, debugging, and working out what to ask.</p>
+              <div class="mode-card-examples" role="group" aria-label="Interactive examples">
+                <button class="mode-example" type="button" data-example="Simulate a double pendulum with Python and SciPy for 20 seconds. Use two 1 m links and two 1 kg masses, g=9.81 m/s², initial angles 120° and -10°, and zero initial angular velocities. Save the trajectory CSV, plot the paths of both masses, and report the numerical energy drift. Run the calculation and link the actual plots and outputs.">
+                  <span class="mode-example-text"><strong>Simulate a double pendulum</strong><small>Plot both paths and check energy drift · Python</small></span><span class="mode-example-arrow" aria-hidden="true">↗</span>
+                </button>
+                <button id="home-example-solver" class="mode-example" type="button" data-example="">
+                  <span class="mode-example-text"><strong></strong><small></small></span><span class="mode-example-arrow" aria-hidden="true">↗</span>
+                </button>
+              </div>
+            </article>
+            <article class="mode-card" data-mode-card="autonomous">
+              <p class="mode-card-kicker"><span aria-hidden="true">◎</span> Autonomous study</p>
+              <h2>Let a study run on its own</h2>
+              <p class="mode-card-summary">Give it a claim and a time budget. It runs experiments and looks for counterexamples; an independent review checks the evidence before anything counts.</p>
+              <p class="mode-card-best"><strong>Best for</strong> “is this true?” questions you can state precisely.</p>
+              <div class="mode-card-examples" role="group" aria-label="Autonomous study examples">
+                <button class="mode-example" type="button" data-example="Prepare a 10-minute autonomous research study with this hypothesis: a lossless 1 m single pendulum released from rest has a period within 1% of 2π√(L/g) for every initial angle from 5° to 120°, with g=9.81 m/s². Use Python to integrate the nonlinear equation, measure periods from the trajectory, and search for a counterexample. Require numerical tolerance controls, retained trajectories, a period-versus-angle plot and independent review. If the claim fails, propose the smallest supported refinement of its amplitude range. Save an editable study brief so I can review and launch the autonomous run.">
+                  <span class="mode-example-text"><strong>Does a pendulum keep the same period?</strong><small>Your agent drafts a 10-minute study for you to review · Python</small></span><span class="mode-example-arrow" aria-hidden="true">↗</span>
+                </button>
+              </div>
+              <p class="mode-card-note">Start in Interactive; when your claim is clear, switch to Autonomous study inside the conversation.</p>
+            </article>
           </section>
         </section>
         <section id="view-machines" class="view machines-view" hidden>
@@ -562,14 +545,14 @@
             </div>
             <div class="mode-switch" role="group" aria-label="Research mode">
               <button id="interactive-mode" class="selected">
-                Interactive research</button
-              ><button id="autonomous-mode">Autonomous research</button>
+                Interactive</button
+              ><button id="autonomous-mode">Autonomous study</button>
             </div>
           </div>
           <nav id="study-navigation" class="study-navigation" aria-label="Research navigation"></nav>
           <div id="continuation-chat-context" class="continuation-chat-context" hidden>
             <a id="continuation-parent-link">Continuing an earlier investigation ↗</a>
-            <span>Discuss the next phase in chat, then review its brief.</span>
+            <span>Talk through the next step in chat; your agent then drafts its brief.</span>
             <button id="continuation-chat" class="secondary" type="button">Prepare with agent</button>
           </div>
           <wa-split-panel
@@ -670,9 +653,24 @@
                 </form>
               </div>
               <div id="autonomous-panel" hidden>
+                <section id="study-explainer" class="study-explainer" aria-labelledby="study-explainer-title" hidden>
+                  <div class="study-explainer-head">
+                    <div>
+                      <h2 id="study-explainer-title">How an autonomous study works</h2>
+                      <p>It runs on its own after you approve a plan. Closing this page does not stop it.</p>
+                    </div>
+                    <button id="dismiss-study-explainer" class="quiet" type="button">Got it</button>
+                  </div>
+                  <ol>
+                    <li><strong>Discuss</strong>Talk the question through in Interactive, or let Grill me interview you.</li>
+                    <li><strong>Review the brief</strong>Your agent writes the claim, the evidence needed and a time budget. Edit anything.</li>
+                    <li><strong>Launch</strong>Experiments run within the budget and look for counterexamples.</li>
+                    <li><strong>Read the report</strong>An independent reviewer checks the evidence; your agent explains the result in the chat.</li>
+                  </ol>
+                </section>
                 <div class="section-line">
                   <div>
-                    <p class="eyebrow">AUTONOMOUS RESEARCH</p>
+                    <p class="eyebrow">AUTONOMOUS STUDY</p>
                     <p id="study-stage" role="status"></p>
                   </div>
                   <button id="new-study" class="secondary" type="button" hidden>
@@ -681,11 +679,11 @@
                 </div>
                 <div id="study-runs"></div>
                 <div id="study-preparation" class="panel study-preparation">
-                  <p class="eyebrow">PREPARE IT TOGETHER</p>
-                  <h2>Let your agent shape the investigation.</h2>
+                  <p class="eyebrow">STEP 1 OF 2</p>
+                  <h2>Plan the study with your agent</h2>
                   <p>
-                    Your conversation and files are the starting point. The
-                    agent fills the brief; you review it before launching.
+                    Your agent uses this conversation and its files to write a
+                    study brief. Nothing runs until you review and start it.
                   </p>
                   <div class="preparation-options">
                     <button
@@ -695,8 +693,8 @@
                     >
                       <strong>Grill me <span>↗</span></strong
                       ><small
-                        >Ask focused questions, challenge assumptions, and turn
-                        my answers into a study.</small
+                        >Your agent interviews you one question at a time, pushes
+                        back on vague points, then writes the study brief.</small
                       >
                     </button>
                     <button
@@ -719,13 +717,12 @@
                   ></p>
                 </div>
                 <div id="prepared-brief" class="panel prepared-brief" hidden>
-                  <p id="prepared-heading" class="eyebrow">YOUR AGENT’S PROPOSAL</p>
+                  <p id="prepared-heading" class="eyebrow">STEP 2 OF 2 · REVIEW AND START</p>
                   <h2 id="prepared-question"></h2>
                   <div id="prepared-details"></div>
                   <p class="field-help">
-                    When the study finishes, your interactive agent will explain
-                    its report in this conversation. Each study keeps its own
-                    results.
+                    When the study finishes, your agent explains the report here
+                    in the conversation. Each study keeps its own results.
                   </p>
                   <div class="brief-footer">
                     <button id="revise-study" class="secondary" type="button">
@@ -743,13 +740,12 @@
                   <summary>Review or edit the study details</summary>
                   <form id="brief-form" class="panel brief-form">
                     <div class="section-line">
-                      <h2>Agree on the investigation</h2>
-                      <span class="badge">EDITABLE BRIEF</span>
+                      <h2>Study brief</h2>
+                      <span class="badge">EDITABLE</span>
                     </div>
                     <p class="field-help">
-                      Your agent fills these details from the conversation. You
-                      can change them here if needed. Each launched study keeps
-                      its agreed conditions.
+                      Your agent fills these in from the conversation. Change
+                      anything you like; a study keeps the brief it started with.
                     </p>
                     <label for="brief-question">Question or claim to test</label
                     ><textarea
@@ -776,13 +772,13 @@
                     <div class="two-fields">
                       <div>
                         <label for="brief-policy"
-                          >When is the research complete?</label
+                          >When should the study stop?</label
                         ><select id="brief-policy">
                           <option value="answer">
-                            Answer the question · negative results count
+                            When the question is answered (a “no” counts)
                           </option>
                           <option value="repair">
-                            Seek a supported claim or tested repair
+                            When the claim holds, or a fixed version does
                           </option>
                         </select>
                       </div>
@@ -800,15 +796,14 @@
                       </div>
                     </div>
                     <label class="research-director-option"><input id="solver-development" type="checkbox" checked /><span>Allow experimental solver development</span></label>
-                    <p id="solver-development-help" class="field-help">The agent may modify private solver forks. Reference installations stay protected; changed methods need independent qualification before claim evidence.</p>
+                    <p id="solver-development-help" class="field-help">The agent may change its own copy of a solver. Your installed solvers are never modified, and results from a changed solver are checked before they count as evidence.</p>
                     <p class="field-help">The agent can use all available installed tools and choose which ones each experiment needs.</p>
                       <label for="study-machines">Execution machines</label>
                       <select id="study-machines" multiple size="4">
                         <option value="" selected>This host · existing local launcher</option>
                       </select>
-                      <p class="field-help">Choose prepared workers for parallel experiments.
-                        Register a managed local worker in Machines to include it in a pool.
-                        Worker profiles define their own experiment environment.</p>
+                      <p class="field-help">Select several machines to run experiments in parallel.
+                        Add machines on the Machines page.</p>
                     <details class="advanced">
                       <summary>Execution settings</summary>
                       <label for="study-tools">Tool access</label>
@@ -816,8 +811,8 @@
                         <option value="auto">All available tools (default)</option>
                         <option value="">Python only · no external solver</option>
                       </select>
-                      <label class="research-director-option"><input id="research-director" type="checkbox" checked /><span>Research director · stop and replan expensive experiments</span></label>
-                      <p class="field-help">Reviews strategy while jobs run, preserves partial data on stops, and asks the worker to acknowledge a new plan. Scientific claim review stays separate.</p>
+                      <label class="research-director-option"><input id="research-director" type="checkbox" checked /><span>Research director · may stop a costly experiment and change the plan</span></label>
+                      <p class="field-help">Watches the strategy while experiments run. Data from a stopped experiment is kept. This is separate from the independent review of the final evidence.</p>
                       <div id="review-agent-settings">
                       <label for="review-backend">Reviewer and director agent</label>
                       <select id="review-backend"><option value="">Same as conversation agent</option></select>
@@ -847,13 +842,13 @@
                       <button id="save-brief" type="button" class="secondary">
                         Save brief</button
                       ><button id="launch-study" type="submit" class="primary">
-                        Start autonomous research ↗
+                        Start autonomous study ↗
                       </button>
                     </div>
                     <p class="field-help">
-                      Runs survive closing this page. They stop at the original
-                      deadline or an independently accepted outcome. You can
-                      pause or stop them earlier.
+                      The study keeps running if you close this page. It stops
+                      at the time budget or once the review accepts an answer,
+                      and you can pause or stop it at any time.
                     </p>
                   </form>
                 </details>
@@ -874,7 +869,7 @@
                   >Commands
                   <span id="command-count" class="count-badge">0</span></wa-tab
                 >
-                <wa-tab panel="files">Project files</wa-tab>
+                <wa-tab panel="files">Files</wa-tab>
                 <wa-tab-panel name="simulations">
                   <div id="simulation-list" role="region" aria-label="Simulation history" tabindex="0"></div>
                   <div id="simulation-detail" role="region" aria-label="Selected simulation" tabindex="0">
@@ -883,7 +878,7 @@
                       <h3>Your experiments, in view.</h3>
                       <p>
                         Ask your agent to run a simulation. Its live console and
-                        saved outputs appear here, beside the conversation. These are exploration results; independent study review is separate.
+                        saved outputs appear here, beside the conversation.
                       </p>
                     </div>
                   </div>
@@ -898,14 +893,14 @@
                 </wa-tab-panel>
                 <wa-tab-panel name="files" active>
                   <div class="context-section">
-                    <h3>Project files <span id="file-count">0</span></h3>
+                    <h3>Conversation files <span id="file-count">0</span></h3>
                     <p class="field-help">
-                      Shared inputs, reports and comparisons for this conversation.
-                      Select a simulation to see its own outputs.
+                      Inputs, reports and results shared by this conversation.
+                      Each simulation's own outputs are in Simulations.
                     </p>
                     <div id="project-files"></div>
                     <details>
-                      <summary>Project folder location</summary>
+                      <summary>Folder on this computer</summary>
                       <code id="project-path"></code>
                       <p class="field-help">
                         Copy large datasets here directly. Browser uploads
@@ -914,23 +909,16 @@
                     </details>
                   </div>
                   <div class="context-section">
-                    <h3>Research brief</h3>
+                    <h3>Study brief</h3>
                     <div id="brief-summary">
                       <p>
-                        When you’re ready, ask your agent to prepare an
-                        autonomous investigation.
+                        No study planned yet. Open Autonomous study when your
+                        question is clear.
                       </p>
                     </div>
                     <button id="open-brief" class="text-button">
                       Open study brief ↗
                     </button>
-                  </div>
-                  <div class="context-section">
-                    <h3>Working principle</h3>
-                    <p>
-                      Explore freely. Keep the question explicit. Let recorded
-                      evidence and independent review decide the outcome.
-                    </p>
                   </div>
                 </wa-tab-panel>
               </wa-tab-group>

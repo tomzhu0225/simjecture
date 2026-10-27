@@ -9,7 +9,7 @@ code and uses its tools; the service records evidence and independently reviews
 claims. `--workflow minimal` remains an alias for `--mode minimal`.
 `simjecture-supervise` and `simjecture-research` use the same launcher.
 
-The browser and TUI launch the same workflow. Native CLI backends and the built-in
+The browser launches the same workflow. Native CLI backends and the built-in
 API agent (`--backend builtin` with a private `--provider-config`) remain available.
 Existing minimal studies preserve their saved contracts and deadlines. Older
 classical, DSH, structured and frontier runs remain readable but cannot be resumed;
@@ -265,8 +265,8 @@ Latest iteration: [scientific-rule and default-mode tests](https://github.com/to
 
 A terminal launch prints live activity, backend/model, elapsed/remaining time and
 experiment/review counts. Redirected output gets plain periodic status lines;
-use `--quiet` to suppress them. Open `simjecture web /path/to/study` or
-`simjecture tui /path/to/study` to inspect the same evidence and hypothesis tree.
+use `--quiet` to suppress them. Open `simjecture web /path/to/study` or run
+`simjecture status /path/to/study` to inspect the same evidence and hypothesis tree.
 
 Pause stops the agent at the supervisor boundary; already recorded numerical jobs
 may finish within their existing bounds. Resume retains the original wall deadline

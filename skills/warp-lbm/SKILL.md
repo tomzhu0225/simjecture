@@ -9,7 +9,7 @@ Zifei Meng contributed this solver and its Re=100 validation records under
 Apache-2.0. NVIDIA Warp compiles its Python kernels for CUDA or CPU execution.
 This capability models isothermal, weakly compressible 2D hydrodynamics.
 
-Use `simjecture install warp-lbm`, then `simjecture doctor --profile warp-lbm`.
+Use `simjecture install warp-lbm`, then `simjecture doctor --profile warp-lbm` (which runs `examples/health_check.py`).
 The managed capability is `warp-lbm-cylinder-1.0`. Its source and validation records
 are read-only under `share/source`; the build record identifies the actual source
 and pinned Warp/NumPy versions. A working installation establishes execution

@@ -109,6 +109,7 @@ function renderAccount() {
   }
   const menu=el("div",undefined,"account-menu-links");
   if(!hosted){const connections=el("button","Connections","quiet");connections.onclick=()=>{box.hidden=true;button.setAttribute("aria-expanded","false");view("settings");};menu.append(connections);}
+  const tour=el("button","Take the tour","quiet");tour.onclick=()=>{box.hidden=true;button.setAttribute("aria-expanded","false");window.WorkspaceTour?.start();};menu.append(tour);
   const details=el("button","Workspace details","quiet");details.onclick=()=>{box.hidden=true;button.setAttribute("aria-expanded","false");$("workspace-details-dialog").showModal();};menu.append(details);
   if(theme)menu.append(theme);
   const github=el("a","GitHub ↗","quiet");github.href="https://github.com/tomzhu0225/simjecture";github.target="_blank";github.rel="noopener noreferrer";menu.append(github);
@@ -136,6 +137,7 @@ function view(name) {
     (name === "knowledge" && !state.hosting?.permissions?.knowledge))) name="home";
   if (name !== "project") ++state.projectRequest;
   const changed = state.view !== name;
+  if (changed && window.WorkspaceTour?.open) window.WorkspaceTour.stop();
   if (changed && matchMedia("(max-width: 600px)").matches)
     globalThis.WorkspacePanels?.set("left", true);
   state.view = name;
@@ -497,6 +499,7 @@ function mode(name) {
   $("autonomous-mode").setAttribute("aria-pressed", String(name === "autonomous"));
   if (!state.routing && state.view === "project" && state.project)
     location.hash = projectHash(state.project.id, { view: name });
+  if (name === "autonomous") showStudyExplainer();
   if (name === "autonomous") {
     refreshTools()
       .then(() => renderStudies())
@@ -538,7 +541,7 @@ function renderProject(force = false) {
     $(id).disabled = p.running || state.readonly;
   $("preparation-status").textContent = p.running
     ? "Your agent is working. Its questions and proposed brief appear in the conversation."
-    : "The agent will ask about missing facts and fill in the details for you.";
+    : "Either way, your agent asks about anything missing and fills in the brief.";
   const pendingBrief = p.brief && !p.brief_launched;
   const preparing = !pendingBrief && !p.brief_launched;
   $("study-preparation").hidden = !preparing;
@@ -550,16 +553,16 @@ function renderProject(force = false) {
   if (p.continuation_draft) $("continuation-parent-link").href = `/monitor?campaign=${encodeURIComponent(p.continuation_draft.campaign)}`;
   $("continuation-chat").disabled = p.running || state.readonly;
   $("study-stage").textContent = pendingBrief
-    ? "Proposal ready — review it below, then start research."
+    ? "Proposal ready — review the brief below, then start the study."
     : preparing
       ? p.running
         ? "Preparing with your agent. Continue the conversation to answer its questions."
-        : "Prepare a study with your agent. You review the proposal before it runs."
-      : "Your studies are below. Finished reports return to this conversation for explanation.";
+        : "Plan a study with your agent. You review the brief before anything runs."
+      : "Your studies are below. When one finishes, your agent explains its report in the conversation.";
   if (p.brief) {
     const b = p.brief;
     $("prepared-question").textContent = b.question;
-    $("prepared-heading").textContent = p.continuation_draft ? "CONTINUATION PROPOSAL" : "YOUR AGENT’S PROPOSAL";
+    $("prepared-heading").textContent = p.continuation_draft ? "CONTINUATION PROPOSAL" : "STEP 2 OF 2 · REVIEW AND START";
     $("prepared-details").replaceChildren();
     if (p.continuation_draft) {
       const parent = el("a", `Continuation phase · ${p.continuation_draft.files.length} selected files · parent study ↗`);
@@ -577,7 +580,7 @@ function renderProject(force = false) {
       ["Time budget", b.hours===0 ? "No hosted time limit" : `${b.hours} hours`],
       ["Execution", b.machine_ids?.length ? b.machine_ids.join(", ") : "This host"],
       ["Solver development", (b.allow_solver_development ?? !hosted)
-        ? "Private source forks allowed; changed methods require independent qualification."
+        ? "Allowed on the agent's own solver copies; results from a changed solver are checked before they count."
         : "Use supplied solver implementations; experiment and analysis scripts remain available."],
       [
         "Completion",
@@ -706,7 +709,7 @@ function renderProject(force = false) {
             "span",
             related.kind === "simulation"
               ? "SIMULATION"
-              : "AUTONOMOUS RESEARCH",
+              : "AUTONOMOUS STUDY",
             "link-category",
           ),
           el("strong", related.label),
@@ -809,13 +812,13 @@ function renderProject(force = false) {
   }
   if (!p.files.length)
     $("project-files").append(
-      el("p", "Uploaded inputs and agent-created files will appear here."),
+      el("p", "Files you upload and files your agent creates appear here."),
     );
   $("brief-summary").replaceChildren(
     el(
       "p",
       p.brief?.question ||
-        "Ask your agent to prepare an autonomous investigation, or write a brief yourself.",
+        "No study planned yet. Open Autonomous study when your question is clear.",
     ),
   );
   inspector.scrollTop = inspectorScroll;
@@ -830,7 +833,7 @@ function renderProject(force = false) {
     $("solver-development").disabled = hosted || state.readonly;
     $("solver-development-help").textContent = hosted
       ? "Hosted policy: use supplied solver implementations. Experiment and analysis scripting remains available within host permissions."
-      : "The agent may modify private solver forks. Reference installations stay protected; changed methods need independent qualification before claim evidence.";
+      : "The agent may change its own copy of a solver. Your installed solvers are never modified, and results from a changed solver are checked before they count as evidence.";
     const selectedTools = b.capability_directory ?? (hosted ? "hosted-tools" : "auto");
     if (
       [...$("study-tools").options].some(
@@ -867,6 +870,9 @@ async function send() {
 // One accurate setup brief per tool. Each names the skill files that actually
 // document that tool, so agents never receive another tool's instructions.
 const toolSetupGuides = {
+  freecad: {skill: "freecad", read: ["references/geometry-handoff.md"], focus: "Use its managed installer (`simjecture install freecad`) and check its headless FreeCAD/Part Python environment (`simjecture doctor --profile freecad`)."},
+  gmsh: {skill: "gmsh", read: ["references/local-experience.md"], focus: "Use its managed installer (`simjecture install gmsh`) and check its OpenCASCADE and meshio runtime (`simjecture doctor --profile gmsh`)."},
+  elmer: {skill: "elmer", read: ["references/installation.md", "references/local-experience.md"], focus: "Follow the documented Elmer setup route (`simjecture install elmer --source PATH` or build/register a local Elmer installation) and verify with the heat-conduction smoke check (`simjecture doctor --profile elmer`).", ask: "where my prebuilt Elmer installation or source is if none is already on this machine"},
   "warp-lbm": {skill: "warp-lbm", read: [], focus: "Use its managed installer (`simjecture install warp-lbm`) and check the NVIDIA Warp runtime it needs."},
   "iter-pack": {skill: "iter-pack", read: ["references/diagnostics.md"], focus: "Use its isolated managed runtime and pinned package versions. It needs Git, a C compiler and a compatible Python. The pack provides CHERAB/Raysect diagnostics and IMAS data tools."},
   solps: {skill: "iter-pack", read: ["references/solps.md"], focus: "Follow the upstream installation route described there, pin the source revision and submodules, and start from a supplied example case."},
@@ -881,10 +887,15 @@ const toolSetupGuides = {
   feos: {skill: "eos", read: ["references/local-deployment.md", "references/feos.md"], focus: "Use the documented FEOS installer, which builds a checksummed source."},
   "material-eos": {skill: "eos", read: ["references/local-deployment.md", "references/material-models.md"], focus: "Use the documented material EOS builder installer."},
   optab: {skill: "opacity", read: ["references/local-deployment.md"], focus: "Use the documented Optab installer; it needs a Fortran compiler, HDF5 tools and data downloads."},
+  fac: {skill: "atomic-physics", read: ["references/local-deployment.md"], focus: "Use the documented FAC installer and its pinned source revision. The hydrogen readiness check verifies execution, not a complete opacity or EOS model."},
+  cst: {skill: "cst", read: [], focus: "Check the Windows CST installation and compatible Windows Python from WSL (`simjecture cst check`)."},
 };
 function setupGuideText(tool) {
   const guide = toolSetupGuides[tool.id];
-  if (!guide) return "Read the research skill that documents this tool before changing its installation.";
+  if (!guide) {
+    if (tool.skill) return `Start by reading the ${tool.skill} skill (SKILL.md) before changing its installation.`;
+    return "Read the research skill that documents this tool before changing its installation.";
+  }
   const files = ["SKILL.md", ...guide.read].join(", ");
   return `Start by reading the ${guide.skill} skill (${files}). ${guide.focus}`;
 }
@@ -1187,6 +1198,7 @@ const toolLabels = {
   "feos": ["Frankfurt FEOS", "Electron/ion equation of state", "ES", "Materials & radiation"],
   "material-eos": ["Material EOS builder", "Model profiles and table export", "ES", "Materials & radiation"],
   "optab": ["Optab", "Opacity tables", "OP", "Materials & radiation"],
+  "fac": ["FAC", "Atomic structure & rates", "FA", "Materials & radiation"],
 };
 // Setup stages reported by the installer itself; they are not percentages.
 const toolStageText = {
@@ -1591,13 +1603,13 @@ function renderToolOptions(tool) {
       await startToolOperation(tool,tool.installed || tool.action === "custom" ? "check" : "install");
     });actions.append(retry);
   }
-  if(hosted && tool.variants?.some(v=>v.tool_id)){
-    const general=tool.general_execution ?? state.hosting?.permissions.general_execution;
+  const general=tool.general_execution ?? state.hosting?.permissions.general_execution;
+  if(hosted && (general || tool.variants?.some(v=>v.tool_id))){
     const choice=el("select");choice.setAttribute("aria-label",`${tool.name} study setup`);
     if(general)choice.add(new Option("Custom study · prepare with agent","custom-study"));
     const presets=el("optgroup");presets.label="Starter presets";
-    for(const variant of tool.variants.filter(v=>v.tool_id))presets.append(new Option(variant.label,variant.tool_id));
-    choice.append(presets);
+    for(const variant of (tool.variants || []).filter(v=>v.tool_id))presets.append(new Option(variant.label,variant.tool_id));
+    if(presets.children.length)choice.append(presets);
     if(previousTool===tool.id && [...choice.options].some(o=>o.value===previousChoice))choice.value=previousChoice;
     choice.disabled=state.readonly;
     const demo=el("button",general ? "Prepare in chat" : "Run preset","secondary");
@@ -1706,6 +1718,31 @@ function renderToolsView() {
   filterToolCatalog();
   document.scrollingElement.scrollTop=scroll;state.toolsRevision=revision;
 }
+// The second interactive example uses FLASH only when it is ready here;
+// otherwise it offers a Python-only example that every installation can run.
+const homeSolverExamples = {
+  flash: {
+    title: "Explore reconnecting magnetic islands",
+    detail: "Plot the field lines and track magnetic and kinetic energy · FLASH",
+    prompt: "Run a 2D magnetic-island coalescence simulation with the installed FLASH resistive-MHD application. Start with its 64×64 normalized setup, resistivity 0.001 and end time 0.05. Preserve the actual inputs and HDF5 fields. Plot magnetic-field lines and field magnitude, compare magnetic and kinetic energy over time, and explain what this run can tell us about reconnection. Use the island-coalescence application rather than an unrelated vortex or shock example. Inspect available binaries and read-only sources to prepare the appropriate application if needed.",
+  },
+  python: {
+    title: "Watch chaos appear",
+    detail: "Two almost identical starts in the Lorenz system · Python",
+    prompt: "Integrate the Lorenz system (σ=10, ρ=28, β=8/3) with Python and SciPy for 40 time units from two starting points that differ by 1e-8 in x. Plot both trajectories in 3D and their separation on a log scale, estimate the largest Lyapunov exponent from the initial exponential growth, and save the trajectories as CSV. Run the calculation and link the actual plots and outputs.",
+  },
+};
+function renderHomeExamples() {
+  const slot = $("home-example-solver");
+  if (!slot) return;
+  const flash = state.tools?.find(tool => tool.id === "flash");
+  const ready = !!flash?.installed && flash.registered !== false && !toolNeedsDiagnosis(flash);
+  const example = homeSolverExamples[ready ? "flash" : "python"];
+  slot.dataset.example = example.prompt;
+  slot.dataset.solver = ready ? "flash" : "python";
+  slot.querySelector("strong").textContent = example.title;
+  slot.querySelector("small").textContent = example.detail;
+}
 async function refreshTools() {
   const fetched=await api("tools");
   // Keep an optimistic start visible until the server has recorded it.
@@ -1719,6 +1756,7 @@ async function refreshTools() {
   $("study-tools").value=desired;
   if(hosted){$("study-tools").replaceChildren(new Option("All verified hosted tools","hosted-tools"));$("study-tools").disabled=true;}
   renderToolActivity();
+  renderHomeExamples();
   renderToolsView();
 }
 function announceToolResult(id) {
@@ -2017,7 +2055,7 @@ async function renderStudies() {
           "RESULTS_INDEX.md",
           "STUDY_LEDGER.md",
           "research_report.json",
-          "research/RESULTS.md",
+          data.results_path || "research/RESULTS.md",
         ].includes(artifact.path)
       )
         files.append(linkFile(artifact.path, artifact.name));
@@ -2071,7 +2109,7 @@ async function boot() {
     $("research-director").closest("label").hidden=true;
     $("brief-policy").value="answer";
     $("brief-policy").disabled=true;
-    $("first-request-help").textContent="Enter to send · Shift + Enter for a new line. The hosted agent and compute are ready.";
+    $("first-request-help").textContent="The hosted agent and compute are ready.";$("first-request-help").hidden=false;
     $("execution-backend").replaceChildren(new Option("Managed experiments","trusted-template"));
     $("review-model").placeholder="Assigned by the host";
     $("review-agent-help").textContent="The review agent is managed by the host.";
@@ -2163,6 +2201,7 @@ async function boot() {
   state.readonly = !data.allow_mutations;
   globalThis.WorkspaceProjects?.init(data);
   globalThis.WorkspaceKnowledge?.init(data);
+  window.WorkspaceTour?.init(data);
   $("readonly").hidden = !state.readonly;
   renderSettings();
   renderProjects();
@@ -2301,6 +2340,18 @@ for (const b of document.querySelectorAll("[data-example]"))
     globalThis.WorkspaceComposer?.update("first-request");
     $("first-request").focus();
   };
+renderHomeExamples();
+// Shown the first time a reader opens Autonomous study, until dismissed.
+function showStudyExplainer() {
+  let dismissed = false;
+  try { dismissed = localStorage.getItem("simjecture-study-explainer-seen") === "true"; } catch {}
+  $("study-explainer").hidden = dismissed;
+}
+$("dismiss-study-explainer").onclick = () => {
+  try { localStorage.setItem("simjecture-study-explainer-seen", "true"); } catch {}
+  $("study-explainer").hidden = true;
+  $("autonomous-mode").focus();
+};
 $("chat-form").onsubmit = (e) => {
   e.preventDefault();
   action($("send-message"), send);
@@ -2406,7 +2457,7 @@ async function launchStudy() {
   renderProject();
   await renderStudies();
   toast(
-    hosted && !state.hosting?.account ? "Research started. Keep a tab open, or sign in to retain the investigation." : "Autonomous research started. You can close this page and return later.",
+    hosted && !state.hosting?.account ? "Research started. Keep a tab open, or sign in to retain the investigation." : "Autonomous study started. You can close this page and return later.",
   );
 }
 $("brief-form").onsubmit = (e) => {
@@ -2528,9 +2579,11 @@ setInterval(async () => {
   }
 }, 2000);
 boot().then(async () => {
+  window.WorkspaceTour?.maybeStart();
   if(!hosted)await refreshMachines();
   // Resume following setups that were running before this page was opened.
-  if(!hosted && state.view !== "tools")refreshTools().catch(() => {});
+  // Also picks the home examples that suit the installed tools.
+  if(state.view !== "tools")refreshTools().catch(() => {});
   const query = new URLSearchParams(location.search);
   const campaign = query.get("continue-study") || query.get("steer-study");
   if (campaign) {

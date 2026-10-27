@@ -109,13 +109,12 @@ rates and flux histories by [`plot_results.py`](plot_results.py).
 
 ## Inspect the real record
 
-Attach the status view or optional TUI directly to the preserved terminal
-artifacts:
+Attach the status view or read-only web monitor directly to the preserved
+terminal artifacts:
 
 ```bash
 uv run simjecture status demos/collisionless_gem_reconnection/record
-uv sync --extra tui
-uv run simjecture tui demos/collisionless_gem_reconnection/record
+uv run simjecture web demos/collisionless_gem_reconnection/record --read-only
 ```
 
 Verify the curated files against the terminal report and full provenance map,

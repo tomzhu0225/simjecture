@@ -1,0 +1,23 @@
+{
+  "id": "director_1a16f7c05269a7e3b7af3f8d",
+  "created_at": 1792938599.1250129,
+  "packet_sha256": "b4f4e6dc008eb771a631b6f65e00befbb765cfadcc8f111438815be952c1c817",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "Independent method review now approves fresh evidence collection for the selected S1000/S2000 contrast, including conservative uncertainty transport to 384\u00b2. The worker has recorded a sequential plan and launched S2000; no scientific claim is accepted. Scientific feasibility is adequate for this bounded comparison. Budget feasibility remains at risk but defensible: prior 384\u00b2 trajectories totaled 1659 seconds, versus approximately 3255 seconds remaining before the compute cutoff, with the current run already 236 seconds underway. Storage margin is narrow and requires the recorded sequential retention strategy. The failed repair calibration provides no basis for launching validation.",
+  "scientific_feasibility": "adequate",
+  "budget_feasibility": "at_risk",
+  "stop_experiments": [],
+  "wake_worker": true,
+  "park_worker": false,
+  "report_assessment": null,
+  "closeout_report": null,
+  "next_action": "While S2000 continues, prepare the independent claim-review dossier and refresh RESULTS.md and run_table.json with the completed 512\u00b2 control, method approval, failed repair calibration and current execution status; the report still lists the 512\u00b2 control as running. Preserve the approved driver and prospectively fixed rules. Prepare endpoint uncertainty propagation and production admissibility checks so completed evidence can be submitted promptly. Launch the planned fresh S1000 case after S2000 completes and its compact retention leaves the required storage reservation. Submit the completed contrast for independent claim review. Keep numerical work before the compute cutoff and preserve the 600-second report reserve. Any repair validation requires accepted falsification, a frozen defensible prediction and a feasible qualification budget.",
+  "storage_increase": null,
+  "registration_tuning": null,
+  "time_request": null,
+  "operating_limits": null,
+  "helper_tasks": [],
+  "help_replies": []
+}

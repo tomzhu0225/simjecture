@@ -1,0 +1,14 @@
+{
+  "id": "note_2c50b2f1b41745480ad78aef",
+  "created_at": 1792933314.2169826,
+  "authority": "worker_note",
+  "statement": "Extension permits prospectively allowed384 refinement. Forecast from256 CFL.4 costs: S1000 about966s, S2000 about1256s by cubic scaling, provisional and may rise due explicit-diffusion restriction. Each384 run at cadence.005 stores approximately1.4-2.0GB raw plots plus small checkpoints and compressed archive~0.3GB transient; final archives~0.3GB. Existing managed experiment storage~4.29GB, below8GiB; run sequentially if two4GiB reservations do not fit. Use4MPI ranks/job and1thread. Fix topology window by actual first index reaching.05 including both crossing brackets (no nominal-cadence assumption), retaining failed earlier coverage analysis. Compare matched-flux J and width at192,256,384 and unchanged last-three-mesh rate envelope; qualify exact source afterward.",
+  "kind": "next_test",
+  "experiments": [],
+  "sources": [],
+  "claim": "root",
+  "supersedes": null,
+  "alternatives": {},
+  "estimated_seconds": 2300.0,
+  "evidence_bindings": {}
+}

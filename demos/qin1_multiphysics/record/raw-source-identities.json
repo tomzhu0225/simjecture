@@ -1,0 +1,109 @@
+{
+  "created_utc": "2026-10-24T03:05:44.563492+00:00",
+  "scope": "Checksums of local raw diagnostics used in the final common-window comparison; raw HDF5 files remain local. File identity does not establish physical or numerical validity.",
+  "native_executable_sha256": "8664710515714ab29eb1cf380ea7dd0be06ec56021ab108fef84d65a4f7dd21c",
+  "comparison_sha256": "af6a9260ead8195d08d42817e2a5e0d91a2a73f672f7c9a29aeaaa56da122f46",
+  "requested_comparison_time_ns": 200.00000000000003,
+  "records": [
+    {
+      "case": "source-off-compact-220ns",
+      "source_file": "plasma/plumes/source-off-compact-220ns/diags/fields/openpmd_001000.h5",
+      "source_bytes": 213986872,
+      "source_sha256": "bcc98c0bff16d0b8b3b80b234a21487b7346e6c6f68e814c84b4366ca85f2869",
+      "time_s": 1.9999999999999607e-07,
+      "finite_common_output": true,
+      "input_sha256": "155a467f5aaf7d9da7d8c7c8e784dd2bb3c479bb4fcf227074d87f694a81d289",
+      "external_A_sha256": "fb564c2f03d3401d71b4554415d89f3d3522f56933127e31ec9a0c68d66fa7a6",
+      "analysis_sha256": "7ec53a19a3fcd00ad6b9056fc1043d7c1e0c3225b8ad1da6370db4328374569f"
+    },
+    {
+      "case": "baseline-on-compact-220ns",
+      "source_file": "plasma/plumes/baseline-on-compact-220ns/diags/fields/openpmd_001000.h5",
+      "source_bytes": 213986872,
+      "source_sha256": "4cb2ddb383178b30b63a9fa51b9bc2bd52d6fc767ac2c60933ff16ebde0e4414",
+      "time_s": 1.9999999999999607e-07,
+      "finite_common_output": true,
+      "input_sha256": "bac4cf43552c690ff554afa7836d5e2ea59ac54e7adf873bc0e40b38d3866c46",
+      "external_A_sha256": "64f62b2b06af6801de237780983a8c34ad1fbb2def1f2c4b4be9caaec3e4636d",
+      "analysis_sha256": "ee3f07e1f0c4239a451a3a9a57bb2e19a9185e3a1bace6039933f51a24837c0d"
+    },
+    {
+      "case": "thin-on-compact-220ns",
+      "source_file": "plasma/plumes/thin-on-compact-220ns/diags/fields/openpmd_001000.h5",
+      "source_bytes": 213986872,
+      "source_sha256": "42267e659748f4b02296a256dce38a95ff07ee2180b701e1b1a3f42317d87f9d",
+      "time_s": 1.9999999999999607e-07,
+      "finite_common_output": true,
+      "input_sha256": "2a78f1f0a4df819d74e9ed433ef4a0baefdb68dcce75530c4b43838a9d2d7b82",
+      "external_A_sha256": "fb564c2f03d3401d71b4554415d89f3d3522f56933127e31ec9a0c68d66fa7a6",
+      "analysis_sha256": "2d52c501136ee76457ec8f89b76eac545dc763374ad106ebdb90f6c51e0777f3"
+    },
+    {
+      "case": "thin-on-h04-compact-220ns",
+      "source_file": "plasma/plumes/thin-on-h04-compact-220ns/diags/fields/openpmd_001000.h5",
+      "source_bytes": 356593208,
+      "source_sha256": "ea6c79a5ce9e99aca4b150f9133bb986c41b81c9d974c01eaabf7ede9d5bacba",
+      "time_s": 1.9999999999999607e-07,
+      "finite_common_output": true,
+      "input_sha256": "cd64e6aa21ea47c58d5d9b818b7c6e3f74230882134e2bb2857c7354363cb911",
+      "external_A_sha256": "721610e20238369e2abd8da5e190f02da94d65e59dc34b685c5ed45acd4acdf4",
+      "analysis_sha256": "2322689aa2b56a1588a56de220e968d4a382e4b5ed2ab761feef94203f812a44"
+    },
+    {
+      "case": "thin-on-dt100-compact-220ns",
+      "source_file": "plasma/plumes/thin-on-dt100-compact-220ns/diags/fields/openpmd_002000.h5",
+      "source_bytes": 213986872,
+      "source_sha256": "cb4cfe3c0bf4332930abd8cd016a629204fee8c592b8add3c030572bb15dcfef",
+      "time_s": 2.00000000000003e-07,
+      "finite_common_output": true,
+      "input_sha256": "343776190d2d8cf6a3ab0273bed7b3f0014fc5c2b4e5222412b298ee084629d1",
+      "external_A_sha256": "fb564c2f03d3401d71b4554415d89f3d3522f56933127e31ec9a0c68d66fa7a6",
+      "analysis_sha256": "f66bf60acbd89fb9fce6bfbee23e6b105ba44577b286f405c9539d0dce252140"
+    },
+    {
+      "case": "thin-on-medium-compact-220ns",
+      "source_file": "plasma/plumes/thin-on-medium-compact-220ns/diags/fields/openpmd_001000.h5",
+      "source_bytes": 53554744,
+      "source_sha256": "da6ec5ec152a18ca91119ccf80365cded5a886fb35d7064a67b69bc5204fa875",
+      "time_s": 1.9999999999999607e-07,
+      "finite_common_output": true,
+      "input_sha256": "fa0779402a563d59bd3118bfe39740883ca3c34d60f8e51e68cadd3291f0b5df",
+      "external_A_sha256": "fb564c2f03d3401d71b4554415d89f3d3522f56933127e31ec9a0c68d66fa7a6",
+      "analysis_sha256": "def77abd1a760c841fae745271d7eba7d506b02f23a9af5101f9c0354207de99"
+    },
+    {
+      "case": "thin-on-ppc32-compact-220ns",
+      "source_file": "plasma/plumes/thin-on-ppc32-compact-220ns/diags/fields/openpmd_001000.h5",
+      "source_bytes": 213986872,
+      "source_sha256": "33c18e65478b8fc8e615fa6a366eef92fbbaeea3d44fd47c10e45ed1aa810d31",
+      "time_s": 1.9999999999999607e-07,
+      "finite_common_output": true,
+      "input_sha256": "3fe1be08ad7d00545cce848c357b0368d7763c618dd1e5e93fc22039e4615ee7",
+      "external_A_sha256": "fb564c2f03d3401d71b4554415d89f3d3522f56933127e31ec9a0c68d66fa7a6",
+      "analysis_sha256": "4101293738431bcd7eced6c9a4320fa65444910686d47246eb09c726786d972f"
+    },
+    {
+      "case": "thin-on-floor1-compact-220ns",
+      "source_file": "plasma/plumes/thin-on-floor1-compact-220ns/diags/fields/openpmd_001000.h5",
+      "source_bytes": 213986872,
+      "source_sha256": "b61f4db41106967df953e5254737affec2361fb2935ad93ba75a7ba153e501f7",
+      "time_s": 1.9999999999999607e-07,
+      "finite_common_output": true,
+      "input_sha256": "b49249a91825bb8f73818e2a6415828688fa5a6fec500b3d2fd2a1d4c7a80726",
+      "external_A_sha256": "fb564c2f03d3401d71b4554415d89f3d3522f56933127e31ec9a0c68d66fa7a6",
+      "analysis_sha256": "53ac3102815a3223ffe5cba0184d6abd20b5edc8295161acd51756c2a247bda7"
+    },
+    {
+      "case": "paired3-on-compact-220ns",
+      "source_file": "plasma/plumes/paired3-on-compact-220ns/diags/fields/openpmd_001000.h5",
+      "source_bytes": 213986872,
+      "source_sha256": "1cffacfa03b2ebb1a7fc597d5cd1fe1e499a35f0e197088dc08497aae5a8b65a",
+      "time_s": 1.9999999999999607e-07,
+      "finite_common_output": true,
+      "input_sha256": "d3e1342893e10a5eb7f333aea24bac8e1e68ed359fca593ed92beefcfe30818e",
+      "external_A_sha256": "4fd578d16879094352c7cdbad6ea46e55c61415217e8c13388fce4d46800be4c",
+      "analysis_sha256": "9f3f01cf2831899848d29689b199e27253af472edd1dc3f800c2f94d3511ff36"
+    }
+  ],
+  "cases_without_common_output": []
+}

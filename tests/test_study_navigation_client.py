@@ -154,16 +154,20 @@ const location = {hash:''};
 const refreshTools = async () => {};
 const renderStudies = async () => {};
 const toast = error => {throw error;};
+let explainerCalls = 0;
+const showStudyExplainer = () => explainerCalls++;
 """
         + client_function("projectHash")
         + client_function("renderStudyNavigation")
         + client_function("mode")
         + """
 mode('interactive');
+assert.equal(explainerCalls, 0, 'Interactive must not show the study explainer');
 let params = new URLSearchParams(location.hash);
 assert.equal(params.get('view'), 'interactive');
 assert.equal(params.get('study'), 'older');
 mode('autonomous');
+assert.equal(explainerCalls, 1, 'Autonomous study must invoke the study explainer');
 params = new URLSearchParams(location.hash);
 assert.equal(params.get('view'), 'autonomous');
 assert.equal(params.get('study'), 'older');

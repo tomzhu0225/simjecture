@@ -4,28 +4,80 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+## 0.7.0 — 2026-10-25
+
+- Expose operator-qualified FreeCAD, Gmsh, Elmer, Frankfurt FEOS and Material EOS
+  runtimes in hosted workspaces. Prepare custom scripts in chat and run them
+  through the confined general executor, with runtime environment and guide
+  metadata. Keep tools hidden until their runtime and executor are qualified;
+  execution readiness does not imply scientific model validation.
+
+- Remove the optional Textual dashboard (`simjecture tui`) and the `tui`
+  installation extra. Use `simjecture web` for the interactive workspace, or
+  `study`, `status`, `watch`, `pause`, `resume` and `steer` in headless terminals.
+  Existing study records remain readable through the retained interfaces.
+
+- Add the first-run onboarding tour, mode selection cards, conversation panels
+  and plain-language workspace copy, while preserving independent sidebar
+  scrolling. Match tour instructions to local or hosted capabilities and handle
+  delayed startup and navigation away from the tour.
+
+- Enforce helper-worker deadlines from the parent even when a live controller
+  stalls. Stop owned processes, retain usage information, release queued work,
+  and preserve an earlier operator cancellation.
+
+- Give report reviewers their frozen evidence packet, bind report identities to
+  the requested source path, and reject snapshots changed during assessment
+  without retrying integrity failures. Preserve review status and workspace
+  display for retained legacy reports. Report assessment remains separate from
+  scientific claim acceptance.
+
+- Preserve browser-edited study briefs across CLI turns, refresh tool inventory
+  in continuing conversations, expose skill resources and setup guidance, and
+  give helpers access to the skill catalogue. Keep autonomous API reads within
+  the allowed study directories, including when symlinks are present.
+
+- Feature the Qin-1 CAD → circuit/EM → 3D plasma study in the README and demo
+  gallery, with retained measurements, interactive results and no-key record
+  verification. Add reusable skill guidance for external FEM field transfer,
+  geometry/current-path changes and qualified comparison visualizations.
+  Preserve the host-run exploratory scope and failed plasma flux controls.
+
+- Add the pinned FAC 1.1.5 atomic-physics runtime (`simjecture install fac` /
+  `doctor --profile fac`), tool catalogue entry, and `atomic-physics` skill with
+  restricted LTE line-spectrum diagnostics (detailed/UTA parsing, adjacent-ion
+  Saha populations and bin-integrated E1/M1 net absorption with provenance).
+
+- Let research workers call `lab.request_help` so the director can assign
+  bounded tasks to concurrent temporary helper workers in isolated directories,
+  returning validated `HELPER_RESULT.json` handoffs and hashed artifacts without
+  implying scientific acceptance.
+
+- Add FreeCAD, Gmsh and Elmer engineering tools (`simjecture install freecad`,
+  `gmsh`, `elmer`) with discoverable skills and include PyVista/VTK in the
+  standard Python environment with headless EGL rendering support. Inspired by
+  the initial headless magnetic-screening contribution in
+  [#37](https://github.com/tomzhu0225/simjecture/pull/37) by `@motismoore-ctrl`.
+
 - Redesign research-tool setup feedback. Installs and readiness checks start
   visibly at once, move to a *Setup activity* section, and show the installer's
   own stages (prepare, install, verify), a live elapsed timer, the latest output
-  line and a terminal-style log with copy. An estimate appears only from this
-  machine's earlier successful runs; otherwise no percentage is shown. Setups can
-  be stopped (process group terminated, output kept, not reported as a failure),
-  are followed from every page with a sidebar badge, and announce completion.
-  Failures list each failed check with its remedy. Add `tool-progress` and
-  `stop-install` workspace endpoints. Keep detected, unregistered local builds
-  separate from managed-profile failures, whose diagnostics remain available
-  in the tool details.
+  line and a terminal-style log with copy; earlier attempt logs are retained on
+  retry. An estimate appears only from this machine's earlier successful runs;
+  otherwise no percentage is shown. Setups can be stopped (process group
+  terminated, output kept, not reported as a failure), are followed from every
+  page with a sidebar badge, and announce completion. Failed and interrupted
+  setups appear as needing attention, listing each failed check with its remedy
+  and offering an agent-assisted repair conversation with the saved error and
+  recent output. Add `tool-progress` and `stop-install` workspace endpoints.
+  Keep detected, unregistered local builds separate from managed-profile
+  failures, whose diagnostics remain available in the tool details.
 - Give each tool accurate agent-assisted setup instructions that name only its
   own skill files. Remove the FLASH island-coalescence caveat and the reference
   to `read_skill`, which CLI agents do not have.
 - Fix the UI rendering in a serif font on Linux hosts where the generic
   `sans-serif` family resolves to Times New Roman, and vendor the missing Web
   Awesome colour-variant stylesheets that caused a console error.
-
-- Show failed and interrupted research-tool setup as needing attention, with
-  visible diagnostics and an agent-assisted repair conversation containing the
-  saved error and recent output. Show live setup output, an activity bar and
-  elapsed time during installation/checks; retain earlier attempt logs on retry.
 
 - Keep the workspace tabs visible and give simulation/command history and the
   selected run independent scrolling, including on narrow screens. Preserve
@@ -35,6 +87,10 @@ This project follows semantic versioning. Dates use ISO 8601.
 - Preserve successful Codex responses after recovered connection errors instead
   of reporting a provider failure with exit code zero. Later failures, unfinished
   successor turns and unsuccessful process exits still report errors.
+
+- Allow the research director to finish an investigation early with an explicit
+  closeout decision bound to an accepted, unchanged report and scientific
+  record, even when the hypothesis remains unresolved.
 
 - Add a separate Material EOS builder tool and managed runtime, guided by the
   EOS skill. Support explicit native FEOS material inputs and a versioned tin

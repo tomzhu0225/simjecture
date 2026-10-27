@@ -18,6 +18,13 @@ example states what is retained, what is omitted, and which claims remain open.
 Verification of an extract does not substitute for rerunning its simulations or
 independent scientific review.
 
+## Local toolchain studies
+
+See also the [Qin-1 hardware-to-plasma study](qin1_multiphysics/): a local,
+operator-assisted toolchain example spanning CAD, meshing, EM/circuits, native
+3D plasma and visualization. It preserves its numerical failures and execution
+limits; it is not a formal minimal-workflow campaign or an accepted claim record.
+
 ## Historical records
 
 - [Gray–Scott counterexample](gray_scott_counterexample/): the version 0.1 classic

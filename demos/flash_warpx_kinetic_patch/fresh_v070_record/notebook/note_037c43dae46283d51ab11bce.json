@@ -1,0 +1,17 @@
+{
+  "id": "note_037c43dae46283d51ab11bce",
+  "created_at": 1793001272.4682527,
+  "authority": "worker_note",
+  "statement": "Launch one full-window kinetic pilot at 384^2, ppc=32/species, mass ratio 25, Ti/Te=1, vA/c=.01, di=measured delta from fresh 256^2 state; absorbing patch half-size .3, fixed origin ROI half extents (.04,.015), primary 4^2 and secondary 8^2 bins, tOmega .4-.9 after .4 initialization allowance, explicit Yee CFL .7. Quantify noise/heating and full cost before final selection. Enlarge patch to .4 at same dx and ROI to test field-boundary influence; particle-origin tag separately diagnoses transit. Geometric light-travel clearance alone cannot qualify the window.",
+  "kind": "next_test",
+  "experiments": [],
+  "sources": [],
+  "claim": "root",
+  "supersedes": null,
+  "alternatives": {
+    "affordable and stable": "Complete .9 with stable energy and resolvable pressure bins",
+    "numerically limited": "Grid heating, transient or boundary differences exceed observable tolerance"
+  },
+  "estimated_seconds": 300.0,
+  "evidence_bindings": {}
+}

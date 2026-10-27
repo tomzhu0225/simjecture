@@ -15,6 +15,11 @@ For photon emission, absorption or radiation budgets, read
 `references/radiation.md`. Hosted standalone binaries can have different geometry
 and build features from the pinned PICMI capability; inspect their actual metadata.
 
+When importing CAD/FEM device fields, read
+`references/external-fem-fields.md` for the transfer contract, receiving-grid curl
+checks, plasma/solid boundary limits and interrupted-run accounting. Its native
+3D example does not change the packaged capability's dimensional support.
+
 ## Execution contract
 
 Use the API advertised by the active study. In minimal mode, call

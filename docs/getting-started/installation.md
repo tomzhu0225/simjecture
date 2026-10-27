@@ -174,7 +174,7 @@ a remote only you configured, attach an overlay as described in
 `skills/flash-mhd/references/private-install.md`. The public tree still contains
 no FLASH download URL.
 
-Equation-of-state and opacity-table generators use the same installer path as
+Atomic-physics, equation-of-state, and opacity-table tools use the same installer path as
 WarpX CPU. The command clones a pinned upstream revision into `.runtime/` and
 runs a non-evidentiary probe:
 
@@ -183,6 +183,7 @@ uv run simjecture install atomec
 uv run simjecture install singularity-eos
 uv run simjecture install m-aneos
 uv run simjecture install optab
+uv run simjecture install fac
 ```
 
 Use `--dry-run` to inspect a new provisioning command. An unhealthy
@@ -192,6 +193,10 @@ installer-managed prefix is preserved unless `--repair` is explicit. Follow
 opacity table; Optab consumes an external abundance table rather than solving
 thermodynamic closure. FLASH remains operator-supplied because its license
 restricts redistribution.
+
+FAC provides relativistic atomic structure and rates, plus a restricted LTE
+line-spectrum diagnostic. It does not provide a complete tungsten opacity or
+EOS table. See `skills/atomic-physics/references/local-deployment.md`.
 
 ## Local web interface
 
@@ -204,19 +209,6 @@ uv run simjecture web demos/gray_scott_counterexample/record --read-only
 
 The default browser entry point is the research workspace. Use a compatible API or
 an installed native CLI. The experiment monitor remains available at `/monitor` and
-can inspect existing study records. DSH has been removed; see
+can inspect existing study records. Headless `status` and `watch` remain available
+in the core installation. DSH has been removed; see
 [migration](../how-to/minimal-migration.md) and [Web interface](web-interface.md).
-
-## Optional terminal dashboard (maintenance mode)
-
-The scientific environment does not depend on Textual. The Web interface is
-the primary interactive client; install the compatibility dashboard for SSH or
-browserless operation:
-
-```bash
-uv sync --frozen --extra tui
-uv run simjecture tui
-```
-
-Headless `status` and `watch` remain available without that extra. See
-[Terminal interface](terminal-ui.md).

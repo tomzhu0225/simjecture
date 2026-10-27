@@ -1,0 +1,23 @@
+{
+  "id": "director_f1a98fe9d425642625d6d43a",
+  "created_at": 1792934371.717656,
+  "packet_sha256": "5e8fa52116d4af2cfa5b628c9294d2136242576a1b8470f3442e267e3ee9ac36",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "The completed S_eta=1000 refinement provides useful new qualification data: its recorded rate is 0.0496886, solver time is 596 seconds, and minimum reported sheet halfwidth is 5.80 cells. These diagnostics do not establish spatial or topology qualification. The sequential S_eta=2000 refinement is connected and has run for only 117 seconds against an 1800-second allowance; no observed failure justifies stopping it. Approximately 7480 seconds remain before the authorized compute cutoff. Qualification and subsequent fresh evidence remain plausible, but methods approval and the S_eta=2000 refinement outcome remain unresolved. Useful analysis of the completed refinement can proceed concurrently.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "at_risk",
+  "stop_experiments": [],
+  "wake_worker": true,
+  "park_worker": false,
+  "report_assessment": null,
+  "closeout_report": null,
+  "next_action": "Keep exp_9ed2782a9af6b2446c71285a running. While it runs, analyze the completed S_eta=1000 refinement at matched flux, verify topology coverage through the actual upper crossing bracket using retained fields, and prepare the corrected source-bound qualification dossier under the unchanged uncertainty rule. Start RESULTS.md and update the machine-readable run table and timeline, including failed storage launches and current qualification limits. After S_eta=2000 completes, incorporate its measured runtime, spatial diagnostics and complete-window topology checks, then submit independent methods review. Before launching fresh claim-bearing trajectories, forecast their complete execution against the compute cutoff using measured refinement costs and available storage. Preserve the 600-second report reserve; if qualification remains incomplete, report the original hypothesis as unresolved.",
+  "storage_increase": null,
+  "registration_tuning": null,
+  "time_request": null,
+  "operating_limits": null,
+  "helper_tasks": [],
+  "help_replies": []
+}

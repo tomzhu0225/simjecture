@@ -132,8 +132,6 @@ simjecture resume ./runs/my-study
 ```
 
 `status` is a snapshot; `watch` follows progress, and Ctrl-C stops only the viewer.
-The optional TUI requires the `tui` extra; see the
-[terminal dashboard guide](../getting-started/terminal-ui.md).
 
 For a foreground restart, repeat the original `study` command with the same
 campaign path and launch options. The recorded mode, completion policy and original

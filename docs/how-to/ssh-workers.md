@@ -53,7 +53,7 @@ instrument hashes and worker identity before appending it. See
    must be registered on the worker; worker preparation does not download FLASH or
    copy licensed tables between machines. The worker account needs read/traverse
    access to every registered runtime and mount.
-6. In **Autonomous research**, select the prepared workers under **Experiment
+6. In **Autonomous study**, select the prepared workers under **Experiment
    machines**. Use minimal mode. **Add this computer** provides a managed local
    worker with one click. An empty study selection retains the existing local
    execution path. Machine **Jobs** shows readable receipts and cancellation controls.

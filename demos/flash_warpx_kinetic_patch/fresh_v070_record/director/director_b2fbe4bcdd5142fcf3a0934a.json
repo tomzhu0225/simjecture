@@ -1,0 +1,23 @@
+{
+  "id": "director_b2fbe4bcdd5142fcf3a0934a",
+  "created_at": 1793000827.1734393,
+  "packet_sha256": "49329aba54fd438dceee939ca9e5799e1e8c016443c12bb7cc2a5ca0a407141c",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "The fresh 256\u00b2 FLASH trajectory completed in 101 seconds with zero solver exit status and retained hashed snapshots. Its receipt lists the declared directory 'flash' as missing despite recording its constituent files; the legacy flux-window check also failed at the intentionally earlier endpoint. These do not establish a solver failure, but the failed receipt and limitations must remain explicit. The source-first strategy remains reasonable. Scientific usefulness still depends on measured sheet resolution, transfer fidelity and an uncontaminated kinetic window. Budget feasibility beyond FLASH is unknown until kinetic timing is measured.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "unknown",
+  "stop_experiments": [],
+  "wake_worker": false,
+  "park_worker": false,
+  "report_assessment": null,
+  "closeout_report": null,
+  "next_action": "Complete the prospective source selection using the first stored time >=0.8; retain its exact time, hash and failed receipt linkage. Quantify sheet width and macro refinement sensitivity. Correct future output declarations to actual files; do not rerun merely to clear metadata or reach the unrelated flux threshold. Use the measured width to document the physical mapping and transfer, then prioritize an affordable exploratory kinetic trajectory through the proposed post-transient window lasting at least 0.5 inverse reference ion cyclotron frequency. A short timing pilot is appropriate if needed: measure initialization, evolution, diagnostic cost and storage, and forecast the full window plus independent mesh/time, particle/seed and larger-patch controls before committing expensive runs. Preserve the same physical measurement region and cell scale for the larger-patch comparison. Do not inherit the reference implementation's window automatically. Freeze the decision rule before decisive evidence and obtain recorded methods review. Respect the compute cutoff and the operator's fresh-evidence/review reserve; return a concrete revised plan if measured costs do not fit.",
+  "storage_increase": null,
+  "registration_tuning": null,
+  "time_request": null,
+  "operating_limits": null,
+  "helper_tasks": [],
+  "help_replies": []
+}

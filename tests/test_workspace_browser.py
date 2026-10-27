@@ -93,7 +93,7 @@ def test_browser_setup_chat_files_and_autonomous_handoff(tmp_path, provider):
             assert page.locator("#conversation-model").input_value() == "fixture-model"
             assert page.locator("#conversation-effort").input_value() == "high"
             page.get_by_role(
-                "link", name="Review autonomous research proposal", exact=False
+                "link", name="Review autonomous study proposal", exact=False
             ).click()
             assert "view=autonomous" in page.url
             assert "Euler" in page.locator("#brief-question").input_value()
@@ -136,7 +136,7 @@ def test_browser_setup_chat_files_and_autonomous_handoff(tmp_path, provider):
                 page.get_by_text("Results, reports, and simulation files", exact=True).click()
                 page.get_by_role("link", name="result.json", exact=False).first.wait_for()
                 page.screenshot(path=str(screenshots / "accepted-result.png"), full_page=True)
-            page.get_by_role("button", name="Interactive research", exact=True).click()
+            page.get_by_role("button", name="Interactive", exact=True).click()
             if probe_execution_backend("bubblewrap")["available"]:
                 page.get_by_text(
                     "The completed study found a reviewed counterexample.", exact=True
@@ -292,7 +292,7 @@ print("wave")
                 has_text="command-ready"
             ).wait_for()
             playwright.expect(page.locator("#command-detail .run-shared-files h4")).to_have_text(
-                "Project files (shared)"
+                "Conversation files (shared)"
             )
             playwright.expect(page.locator("#inspector-tabs")).to_have_attribute(
                 "active", "commands"
@@ -573,7 +573,7 @@ def test_selected_simulation_files_do_not_mix_run_outputs_and_project_results(tm
             )
             page.locator('wa-tab[panel="files"]').click()
             playwright.expect(page.locator("#project-files")).to_contain_text("comparison.svg")
-            playwright.expect(page.locator('wa-tab[panel="files"]')).to_have_text("Project files")
+            playwright.expect(page.locator('wa-tab[panel="files"]')).to_have_text("Files")
             assert errors == []
             browser.close()
     finally:

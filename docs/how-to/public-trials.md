@@ -200,6 +200,17 @@ console is recorded. Declared numerical output files must actually be created.
 Native examples return project-relative paths to their raw output archive so
 follow-up HDF5/Python analysis does not need access to host experiment directories.
 
+An operator can also register FreeCAD, Gmsh, Elmer, Frankfurt FEOS and the Material
+EOS builder as general runtimes. Set `runtime_only: true` on their registry entries,
+record the executable/source identities and guide paths, and set `qualified: true`
+only after checking the actual runtime through the hosted executor. These entries
+are exposed only when `executor_qualified` is true. Their workspace action prepares
+a custom study; it does not advertise a nonexistent starter preset. Agents use
+the listed binaries and installed guides through `run_command` to prepare their
+own inputs. Keep runtime/source paths read-only in the broker configuration and
+requalify updated installations. An installation check establishes execution,
+not physical validity of a CAD model, FEM solve or material EOS.
+
 The Linux lab broker is a separate operator-owned service. It authenticates the
 gateway over a group-restricted Unix socket, reserves a dedicated non-login UID
 per command, then drops privileges and enforces Landlock, seccomp and resource

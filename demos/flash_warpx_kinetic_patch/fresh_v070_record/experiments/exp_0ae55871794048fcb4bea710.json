@@ -1,0 +1,171 @@
+{
+  "id": "exp_0ae55871794048fcb4bea710",
+  "status": "succeeded",
+  "operator_guidance_ids": [],
+  "created_at": 1793005515.0433936,
+  "timeout": 600,
+  "execution_deadline": 1793007301.4697688,
+  "workspace_limit_bytes": 2656880995,
+  "binding": {
+    "source": "field_audit.py",
+    "args": [],
+    "inputs": {
+      "field_audit.py": "fc81dd8acb20348971e291ba7320ab595f781c6104ed9151a5826728e0dd61c8",
+      "refined_patch.json": "1e8e47a33ad0f5aece5149bd9299f7825ff36819309048035086550ab62f8b24",
+      "refined_large_patch.json": "9842076a8611e84209fa082da7f5f25ff30bfdc1221fe57638cc70d447657316",
+      "mesh_patch.json": "eb2fba23f73967e377efe030957dbfc0737ba752b84f8f6a86aa92a64db0defc",
+      "refined_record/initial_fields.npz": "d7aa8682484ba5cc2c0015e992b5df3d40d7cbb3b4cddaf8f1cd0807a170a746",
+      "refined_record/final_fields.npz": "cbc1ac351611f24e30cf5d22aeff3b913a10b32621cfd9dda72710d4bd1d4d39",
+      "refined_record/history.json": "8933349beefb47c7fef08bc156c2fb54711c6991919b4b8b5521749b5e71ef9b",
+      "time_record/initial_fields.npz": "d7aa8682484ba5cc2c0015e992b5df3d40d7cbb3b4cddaf8f1cd0807a170a746",
+      "time_record/final_fields.npz": "159d9afc1711328617b6bf596fab93cc1fba0beae0bcc7d4c49102b635a073c0",
+      "time_record/history.json": "29ef1f8d257f87fcfa32f83ef100da869e3359755ba22684a3da6c05e55f8d00",
+      "ppc_record/initial_fields.npz": "d7aa8682484ba5cc2c0015e992b5df3d40d7cbb3b4cddaf8f1cd0807a170a746",
+      "ppc_record/final_fields.npz": "eab157134030925c7e27f1db4ff91cadca27672428a439cc5d0ec332748a1340",
+      "ppc_record/history.json": "9fe37419ebd83af5641cd0943770a7afb5036067b0310422d79f6a35a3b156cd",
+      "boundary_record/initial_fields.npz": "68cede594ae74bb4b3b12bbf81328c6dbf8d7d317b020d0de75ef08eee8aa493",
+      "boundary_record/final_fields.npz": "710b6b12e7a630eb99ad71e23b10fb3691569e13b1518e2e84aede6d1238a7db",
+      "boundary_record/history.json": "0b13e0fb42d987a5be02abfd7a89f298079cec6c88d11a8939410573088537b0",
+      "mesh_record/initial_fields.npz": "2e212f8931b352ff3b2d85eff692ba2b7258d022b7842a682507e78dffe3a612",
+      "mesh_record/final_fields.npz": "0f62a5741aca6058a52e5bc589584f833a881cdd26bff7eb2ca39d902080053d",
+      "mesh_record/history.json": "94bd0d6b740ebf4d8c21fda81b2e0a646bc9de86bda6107fb1a0dac56032354f"
+    },
+    "capability": null,
+    "runtime_sha256": null
+  },
+  "outputs": [
+    "field_audit.json"
+  ],
+  "commitment": null,
+  "key": "staggered-field-control-audit",
+  "stage": "exploration",
+  "method": null,
+  "review_documents": null,
+  "parent_experiment": "exp_4b72bb874b27665a7cc11322",
+  "purpose": "diagnostic",
+  "plan": null,
+  "pid": 328098,
+  "worker_identity": {
+    "pid": 328098,
+    "starttime": "3483407",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture-prx-island-v0.7.0/.venv/bin/python",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simulations/other_demos/flash_warpx_pressure_closure/outputs/fresh_v070__20261026T074100Z",
+      "--execute",
+      "exp_0ae55871794048fcb4bea710"
+    ],
+    "launched_at": "2026-10-26T09:05:15.216755+00:00",
+    "run_directory": null
+  },
+  "started_at": 1793005515.2169,
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "",
+    "timed_out": false,
+    "cancelled": false,
+    "workspace_exceeded": false,
+    "stdout_truncated": false,
+    "stderr_truncated": false,
+    "heartbeat_count": 0,
+    "wall_seconds": 0.25548507700295886,
+    "workspace_bytes": 82347523,
+    "executor_sha256": "b92087579abbb99f55ce2c75d98765355c8ccd4a6ccf3ba55b15ddd5491a22ec",
+    "resource_limits": {
+      "max_file_bytes": 2656880995,
+      "max_workspace_bytes": 2656880995,
+      "max_memory_bytes": 4294967296
+    }
+  },
+  "artifacts": {
+    "boundary_record/final_fields.npz": {
+      "sha256": "710b6b12e7a630eb99ad71e23b10fb3691569e13b1518e2e84aede6d1238a7db",
+      "bytes": 12075093
+    },
+    "boundary_record/history.json": {
+      "sha256": "0b13e0fb42d987a5be02abfd7a89f298079cec6c88d11a8939410573088537b0",
+      "bytes": 35571
+    },
+    "boundary_record/initial_fields.npz": {
+      "sha256": "68cede594ae74bb4b3b12bbf81328c6dbf8d7d317b020d0de75ef08eee8aa493",
+      "bytes": 4529430
+    },
+    "field_audit.json": {
+      "sha256": "edfeeb03284e2437c37c71f53e0606e1d87ab2d24c09ea30be6a8b5d73371d53",
+      "bytes": 1592
+    },
+    "field_audit.py": {
+      "sha256": "fc81dd8acb20348971e291ba7320ab595f781c6104ed9151a5826728e0dd61c8",
+      "bytes": 1330
+    },
+    "mesh_patch.json": {
+      "sha256": "eb2fba23f73967e377efe030957dbfc0737ba752b84f8f6a86aa92a64db0defc",
+      "bytes": 3036
+    },
+    "mesh_record/final_fields.npz": {
+      "sha256": "0f62a5741aca6058a52e5bc589584f833a881cdd26bff7eb2ca39d902080053d",
+      "bytes": 27135986
+    },
+    "mesh_record/history.json": {
+      "sha256": "94bd0d6b740ebf4d8c21fda81b2e0a646bc9de86bda6107fb1a0dac56032354f",
+      "bytes": 35655
+    },
+    "mesh_record/initial_fields.npz": {
+      "sha256": "2e212f8931b352ff3b2d85eff692ba2b7258d022b7842a682507e78dffe3a612",
+      "bytes": 10355693
+    },
+    "ppc_record/final_fields.npz": {
+      "sha256": "eab157134030925c7e27f1db4ff91cadca27672428a439cc5d0ec332748a1340",
+      "bytes": 6797298
+    },
+    "ppc_record/history.json": {
+      "sha256": "9fe37419ebd83af5641cd0943770a7afb5036067b0310422d79f6a35a3b156cd",
+      "bytes": 35662
+    },
+    "ppc_record/initial_fields.npz": {
+      "sha256": "d7aa8682484ba5cc2c0015e992b5df3d40d7cbb3b4cddaf8f1cd0807a170a746",
+      "bytes": 2554549
+    },
+    "refined_large_patch.json": {
+      "sha256": "9842076a8611e84209fa082da7f5f25ff30bfdc1221fe57638cc70d447657316",
+      "bytes": 1780
+    },
+    "refined_patch.json": {
+      "sha256": "1e8e47a33ad0f5aece5149bd9299f7825ff36819309048035086550ab62f8b24",
+      "bytes": 3038
+    },
+    "refined_record/final_fields.npz": {
+      "sha256": "cbc1ac351611f24e30cf5d22aeff3b913a10b32621cfd9dda72710d4bd1d4d39",
+      "bytes": 6800703
+    },
+    "refined_record/history.json": {
+      "sha256": "8933349beefb47c7fef08bc156c2fb54711c6991919b4b8b5521749b5e71ef9b",
+      "bytes": 35613
+    },
+    "refined_record/initial_fields.npz": {
+      "sha256": "d7aa8682484ba5cc2c0015e992b5df3d40d7cbb3b4cddaf8f1cd0807a170a746",
+      "bytes": 2554549
+    },
+    "time_record/final_fields.npz": {
+      "sha256": "159d9afc1711328617b6bf596fab93cc1fba0beae0bcc7d4c49102b635a073c0",
+      "bytes": 6800761
+    },
+    "time_record/history.json": {
+      "sha256": "29ef1f8d257f87fcfa32f83ef100da869e3359755ba22684a3da6c05e55f8d00",
+      "bytes": 35635
+    },
+    "time_record/initial_fields.npz": {
+      "sha256": "d7aa8682484ba5cc2c0015e992b5df3d40d7cbb3b4cddaf8f1cd0807a170a746",
+      "bytes": 2554549
+    }
+  },
+  "missing_outputs": [],
+  "input_mutations": [],
+  "output_findings": [],
+  "scientific_status": "unreviewed",
+  "finished_at": 1793005515.6477892
+}

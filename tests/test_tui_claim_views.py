@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from conjecture_solver.mvp_monitor import ClaimSummary
-from conjecture_solver.tui.claim_views import (
+from conjecture_solver.presentation import (
     audit_row_label,
     build_hypothesis_tree,
     build_validation_tree,

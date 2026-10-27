@@ -1,0 +1,17 @@
+{
+  "id": "note_137d85ffefc5eed0636bc01b",
+  "created_at": 1793000567.469759,
+  "authority": "worker_note",
+  "statement": "Fresh macro pilot: retain eta=0.001, alpha=20, reflecting domain and adaptive CFL=0.4; evolve 256^2 through t=0.81 with output every 0.05. Prospectively select first output at or after t=0.8 and the origin-centered coalescence sheet, prior to any kinetic evidence. Measure actual reversal width and test macro refinement before qualification. Source/patch scale will be set from that measurement, not anisotropy.",
+  "kind": "next_test",
+  "experiments": [],
+  "sources": [],
+  "claim": "root",
+  "supersedes": null,
+  "alternatives": {
+    "resolved macro sheet": "Width and transferred topology stable under refinement",
+    "grid-limited macro sheet": "Width or local fields change materially on refinement"
+  },
+  "estimated_seconds": 180.0,
+  "evidence_bindings": {}
+}

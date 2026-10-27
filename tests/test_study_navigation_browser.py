@@ -120,7 +120,7 @@ def test_owned_conversation_study_evidence_round_trip_and_reload(
         nav.get_by_role("link", name="Conversation", exact=True).click()
         expect(page.locator("#interactive-panel")).to_be_visible()
         assert_workspace_route(page, project, original, "interactive")
-        page.get_by_role("button", name="Autonomous research", exact=True).click()
+        page.get_by_role("button", name="Autonomous study", exact=True).click()
         expect(page.locator(f"#study-{original}")).to_have_class("study-card selected-study")
         page.reload()
         expect(page.locator(f"#study-{original}")).to_have_class("study-card selected-study")

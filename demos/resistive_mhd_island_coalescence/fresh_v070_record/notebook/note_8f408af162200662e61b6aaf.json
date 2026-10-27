@@ -1,0 +1,14 @@
+{
+  "id": "note_8f408af162200662e61b6aaf",
+  "created_at": 1792931873.2933278,
+  "authority": "worker_note",
+  "statement": "Bounded recovery after CFL worker disappearance: preserve failed exp_aaef37fed668e2be86673215 as infrastructure failure. Check no remaining FLASH process, then retry complete-window CFL=.2 for S1000 and2000 at256 concurrently, timeout800 each, unchanged cadence. Submit source-bound production method now with outstanding timestep and finest-sheet limitations; only approved fresh evidence may follow. Existing empirical mesh discrepancy is not a qualified falsification. Reserve final600s for report assessment.",
+  "kind": "next_test",
+  "experiments": [],
+  "sources": [],
+  "claim": "root",
+  "supersedes": null,
+  "alternatives": {},
+  "estimated_seconds": 800.0,
+  "evidence_bindings": {}
+}

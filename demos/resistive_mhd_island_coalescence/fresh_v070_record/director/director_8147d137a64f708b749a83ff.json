@@ -1,0 +1,23 @@
+{
+  "id": "director_8147d137a64f708b749a83ff",
+  "created_at": 1792939355.6331115,
+  "packet_sha256": "3d9180123739e8a6afb11ceaccb13d1677102d924f5500dbbd015798e1b2349c",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "The completed S2000 evidence run and active S1000 member follow the independently approved collection strategy. Reported diagnostics remain subject to independent claim review. The bounded comparison is affordable: the previous S1000 forecast implies roughly 515 seconds remaining, versus 2478 seconds before the compute cutoff, although current progress telemetry is unavailable. The endpoint evaluator and report are prepared, so no additional worker wake-up is needed. Failed repair calibration does not justify new validation runs.",
+  "scientific_feasibility": "adequate",
+  "budget_feasibility": "feasible",
+  "stop_experiments": [],
+  "wake_worker": false,
+  "park_worker": false,
+  "report_assessment": null,
+  "closeout_report": null,
+  "next_action": "Keep exp_40aac93038caa57671014925 running. On completion, check both production members against the approved admissibility criteria, apply the frozen reducer and transported numerical uncertainty, and promptly submit the contrast for independent claim review. Update the report and machine-readable run table with production provenance, uncertainty intervals and unfinished repair validation. Request independent report assessment when the report is ready. Preserve the compute cutoff and protected 600-second report reserve; launch no repair validation without accepted falsification, a defensible frozen prediction and sufficient qualification budget.",
+  "storage_increase": null,
+  "registration_tuning": null,
+  "time_request": null,
+  "operating_limits": null,
+  "helper_tasks": [],
+  "help_replies": []
+}

@@ -443,6 +443,8 @@ def run_native_case(store, job, service, identifier, parameters):
     entry = next((row for row in native.registry(store.root) if row["id"] == identifier), None)
     if not entry:
         raise ValueError("Choose a qualified installed native tool")
+    if entry.get("runtime_only"):
+        raise ValueError("This tool uses custom scripts through run_command, not a starter preset")
     settings = json.loads((store.root / "settings.json").read_text())
     if not store.job(job).get("privileged") and len(service._all("experiments")) >= settings.get(
         "experiments_per_job", 6
@@ -520,7 +522,7 @@ def native_agent_tools(store, job, service):
 
     @tool
     def list_native_tools() -> str:
-        """Read installed solver binaries, templates, sources and example numerical parameters."""
+        """Read installed runtimes and presets. Use run_command for runtime_only entries."""
         return json.dumps(
             [
                 {
@@ -536,6 +538,8 @@ def native_agent_tools(store, job, service):
                         "features",
                         "author",
                         "guide",
+                        "runtime_only",
+                        "environment",
                     )
                 }
                 for row in registry(store.root)
@@ -581,6 +585,10 @@ def native_instructions(store):
             "and templates. Read the installed guides under "
             + settings.get("guides_root", "/opt/simjecture-public/tool-sources/skills")
             + ". Model settings and global installation remain managed by the host. "
+            + "Entries marked runtime_only expose general software through run_command; "
+            "they have no simulate_native starter preset. Use their binary paths, environment "
+            "settings and guides "
+            "to author CAD, meshing, finite-element or EOS calculations. "
             + "For run_command, label actual solver/integration runs kind='simulation'; "
             "label analysis, plots, compilation and inspection kind='command'. "
             "Give each execution a descriptive name. Create output folders before saving files. "

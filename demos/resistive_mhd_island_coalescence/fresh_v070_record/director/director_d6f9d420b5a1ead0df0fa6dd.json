@@ -1,0 +1,23 @@
+{
+  "id": "director_d6f9d420b5a1ead0df0fa6dd",
+  "created_at": 1792937356.4819586,
+  "packet_sha256": "b658b5e06e8761fef09f6c0a57cb453e2a45579c4d716599b9ef2ca87047418f",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "No new results or methods verdicts change the previous decision. The running 512\u00b2 control addresses the outstanding spatial qualification and should continue. Its elapsed 1502 seconds remains within its 3000-second limit, with 4488 seconds available before the compute cutoff. Completion appears feasible, but qualification, independent reviews and subsequent fresh evidence remain at risk. The repair-help request already has a running assignment; do not duplicate it. The original hypothesis remains unresolved.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "at_risk",
+  "stop_experiments": [],
+  "wake_worker": false,
+  "park_worker": false,
+  "report_assessment": null,
+  "closeout_report": null,
+  "next_action": "At the control's completion, apply the unchanged spatial gates and submit the corrected source-bound qualification dossier for independent methods review, including actual crossing-bracket topology coverage, cadence controls and the proposed conservative production uncertainty transport. Use the completed 512\u00b2 runtime and retained sizes to forecast the remaining evidence path against the compute cutoff and protected 600-second report reserve before launching further simulations. Receive the existing helper's proposal as conditional planning only; any repaired prediction requires independently accepted falsification and prospective commitment before validation data collection. If qualification fails or a valid evidence path cannot fit, complete the unresolved report and submit it through report_assessment.",
+  "storage_increase": null,
+  "registration_tuning": null,
+  "time_request": null,
+  "operating_limits": null,
+  "helper_tasks": [],
+  "help_replies": []
+}

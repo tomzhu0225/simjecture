@@ -1,0 +1,255 @@
+{
+  "id": "exp_0acc6f24de20923ef83122b7",
+  "status": "failed",
+  "operator_guidance_ids": [],
+  "created_at": 1793002756.810524,
+  "timeout": 150,
+  "execution_deadline": 1793007061.4697688,
+  "workspace_limit_bytes": 3529291345,
+  "binding": {
+    "source": "calculation.py",
+    "args": [
+      "flash",
+      "--handoff",
+      "--eta",
+      ".001",
+      "--nx",
+      "128",
+      "--ny",
+      "128",
+      "--alpha",
+      "20",
+      "--tmax",
+      ".81",
+      "--plot-interval",
+      ".1",
+      "--ranks",
+      "4",
+      "--iprocs",
+      "2",
+      "--jprocs",
+      "2",
+      "--output",
+      "flash",
+      "--summary",
+      "macro.json"
+    ],
+    "inputs": {
+      "calculation.py": "cd6c4db946c144a2f5bc86c877e929c7f7ecd334ced012da9153ea43c5546823",
+      "macro_study.py": "eb13015b2d18e9c412d23acc085444e9199b71e65896f76e2e1aebabafd52d1f",
+      "flash_islands.py": "26f348973b4edeb761f6a25f7023f6c3ea22660f61297a4a58c3d6cc49991588",
+      "transfer_study.py": "e9e9405bf0dfcfc55a9030aa2ad1051bb13e9a7ab9ef72ab28bac1bff3cc3828",
+      "extract_flash.py": "28608ddeab7d71584abd32ce910b66621d8ba9cc49d2bb44eb1ead3922e509a0",
+      "prepare_patch.py": "0be359a997ac75af4d376f96f18901ed815e2d1b07e2c48336233f4a35b4e20d",
+      "PROTOCOL.json": "ab81b31d2d1ba859b471688781114ff4b4981d8f4e4c6d00e11c5b2b5cee3290",
+      "macro_comparison.json": "e3c17cd9a624ed1a1ff3e2871c4267e0fd38deb0ee1fed96adac7442e52f8e26"
+    },
+    "capability": "flash-island-coalescence-resistive-mhd-4.8",
+    "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+  },
+  "outputs": [
+    "macro.json",
+    "result.json",
+    "patch.npz",
+    "patch.json",
+    "state.npz",
+    "state.json",
+    "flash/flash_run_hdf5_plt_cnt_0008",
+    "macro_patch.png"
+  ],
+  "commitment": null,
+  "key": "integrated-handoff-validation",
+  "stage": "exploration",
+  "method": null,
+  "review_documents": null,
+  "parent_experiment": null,
+  "purpose": "validation",
+  "plan": null,
+  "pid": 282948,
+  "worker_identity": {
+    "pid": 282948,
+    "starttime": "3207583",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture-prx-island-v0.7.0/.venv/bin/python",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simulations/other_demos/flash_warpx_pressure_closure/outputs/fresh_v070__20261026T074100Z",
+      "--execute",
+      "exp_0acc6f24de20923ef83122b7"
+    ],
+    "launched_at": "2026-10-26T08:19:16.951399+00:00",
+    "run_directory": null
+  },
+  "started_at": 1793002756.9515193,
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": 1,
+    "stdout": "{\"checks\": {\"completed\": true, \"representation\": true, \"physics_controls\": true, \"boundaries\": true, \"diagnostics\": true, \"numerical_regime\": true, \"flux_window_reached\": false, \"scientific_evidence_eligible\": false}, \"metrics\": {\"l_over_eta_nominal\": 1000.0, \"flux_low\": 0.01, \"flux_high\": 0.05, \"flux_low_crossing_time\": 0.2589140879461254, \"flux_high_crossing_time\": null, \"reconnection_time\": null, \"normalized_flux_slope\": null, \"flux_path_max_abs_mismatch\": 4.6069034470078846e-05, \"max_abs_divb\": 7.362999099314038e-13, \"max_boundary_normal_fraction\": 0.026698871271290257, \"initial_sheet_cells\": 6.4, \"plot_file_count\": 9}}",
+    "stderr": "Traceback (most recent call last):\n  File \"/work/transfer_study.py\", line 24, in <module>\n    import matplotlib;matplotlib.use('Agg');import matplotlib.pyplot as plt\n    ^^^^^^^^^^^^^^^^^\nModuleNotFoundError: No module named 'matplotlib'\nTraceback (most recent call last):\n  File \"/work/calculation.py\", line 5, in <module>\n    runpy.run_path(sys.argv[0],run_name='__main__')\n  File \"<frozen runpy>\", line 286, in run_path\n  File \"<frozen runpy>\", line 98, in _run_module_code\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"macro_study.py\", line 24, in <module>\n    subprocess.run([sys.executable,'transfer_study.py','--source',str(out/selected['file']),'--experiment','fresh-evidence-source-see-parent-receipt','--skin','0.01586913566864811'],check=True)\n  File \"/usr/lib/python3.12/subprocess.py\", line 571, in run\n    raise CalledProcessError(retcode, process.args,\nsubprocess.CalledProcessError: Command '['/usr/bin/python3', 'transfer_study.py', '--source', 'flash/flash_run_hdf5_plt_cnt_0008', '--experiment', 'fresh-evidence-source-see-parent-receipt', '--skin', '0.01586913566864811']' returned non-zero exit status 1.",
+    "timed_out": false,
+    "cancelled": false,
+    "workspace_exceeded": false,
+    "stdout_truncated": false,
+    "stderr_truncated": false,
+    "heartbeat_count": 0,
+    "wall_seconds": 15.267125573998783,
+    "workspace_bytes": 23650613,
+    "executor_sha256": "b92087579abbb99f55ce2c75d98765355c8ccd4a6ccf3ba55b15ddd5491a22ec",
+    "resource_limits": {
+      "max_file_bytes": 3529291345,
+      "max_workspace_bytes": 3529291345,
+      "max_memory_bytes": 4294967296
+    }
+  },
+  "artifacts": {
+    "PROTOCOL.json": {
+      "sha256": "ab81b31d2d1ba859b471688781114ff4b4981d8f4e4c6d00e11c5b2b5cee3290",
+      "bytes": 3881
+    },
+    "calculation.py": {
+      "sha256": "cd6c4db946c144a2f5bc86c877e929c7f7ecd334ced012da9153ea43c5546823",
+      "bytes": 429
+    },
+    "extract_flash.py": {
+      "sha256": "28608ddeab7d71584abd32ce910b66621d8ba9cc49d2bb44eb1ead3922e509a0",
+      "bytes": 5159
+    },
+    "flash/.simjecture-flash-guided-output": {
+      "sha256": "67d1f5ea486320558047f5cff49a53b2b0f1eaca0f699ba9abc1c1f60bcedc67",
+      "bytes": 49
+    },
+    "flash/flash.par": {
+      "sha256": "dc03f069c94f8b75d10185875aa4d139dca08fbb11f2289f034c55e3c76a9075",
+      "bytes": 1794
+    },
+    "flash/flash_run.dat": {
+      "sha256": "48ea30c99827abc5ea2f6a61914b7ebf02ae685fa15fd07f5258599c413815f6",
+      "bytes": 237586
+    },
+    "flash/flash_run.log": {
+      "sha256": "10cb8d1a029834363c3b7543db251d8c2d5fe1812b37c7781ec36aa1ac807486",
+      "bytes": 109538
+    },
+    "flash/flash_run_forced_hdf5_plt_cnt_0000": {
+      "sha256": "a156ccbecd8c4a4560d937a232c84d96dd67e92fc5b938dd6ddff92e6f9ebca8",
+      "bytes": 580876
+    },
+    "flash/flash_run_hdf5_chk_0000": {
+      "sha256": "9deb982ba3465480d96b8916e2e9a4c0906e2e38fd874d7d4160d4519c00abba",
+      "bytes": 2950412
+    },
+    "flash/flash_run_hdf5_chk_0001": {
+      "sha256": "97c16973e863685407f2047b9f9b41c1855a5602f9b2753b3feafa272c9023fe",
+      "bytes": 2950412
+    },
+    "flash/flash_run_hdf5_plt_cnt_0000": {
+      "sha256": "ebcab4c84596b9b2752a7782994ba6a11184ec973f56e92fd9f9bd34098e00e0",
+      "bytes": 580876
+    },
+    "flash/flash_run_hdf5_plt_cnt_0001": {
+      "sha256": "2ef049f15be951681ff021a366be575d5862d1d7274e32d81c7853456a3a0325",
+      "bytes": 580876
+    },
+    "flash/flash_run_hdf5_plt_cnt_0002": {
+      "sha256": "182bc5bd67efa8673fc19669799f81e3a28279f689d286be150d3a051b2d1207",
+      "bytes": 580876
+    },
+    "flash/flash_run_hdf5_plt_cnt_0003": {
+      "sha256": "38f7fa68a4ddfe9cf7218585126fd097bdb3d8ef55577972f2ef19512c024d41",
+      "bytes": 580876
+    },
+    "flash/flash_run_hdf5_plt_cnt_0004": {
+      "sha256": "1661f2138e06bbeb14eef1a7041beb9e459cbcd8f46b2e8a91d5d0ab7dabf018",
+      "bytes": 580876
+    },
+    "flash/flash_run_hdf5_plt_cnt_0005": {
+      "sha256": "0a730747c94e86cf8347cfd0006847a829ce0211448255095d81bbc33355f4c2",
+      "bytes": 580876
+    },
+    "flash/flash_run_hdf5_plt_cnt_0006": {
+      "sha256": "4fd87e03980a1e2dade46021fca5f2746352263826aaf03aa83e42d39267f513",
+      "bytes": 580876
+    },
+    "flash/flash_run_hdf5_plt_cnt_0007": {
+      "sha256": "13e12d2f953c812853a309966b9bfc2995571a726641133b39b2a4ee1aef1187",
+      "bytes": 580876
+    },
+    "flash/flash_run_hdf5_plt_cnt_0008": {
+      "sha256": "d742397eb2a5961d7ddcec6afb1a7a2c02d9f2daf68a34d74a1fffdde0dd1d76",
+      "bytes": 580876
+    },
+    "flash/launcher_stderr.txt": {
+      "sha256": "b02b461e24dcd2e6b070047f42137aa8a806941ce4796a6bb96cf4a506dd057d",
+      "bytes": 504
+    },
+    "flash/launcher_stdout.txt": {
+      "sha256": "afa0fc682106826197123f90f8e2da20c6dd22488ccd5237416145e79069b032",
+      "bytes": 94512
+    },
+    "flash_islands.py": {
+      "sha256": "26f348973b4edeb761f6a25f7023f6c3ea22660f61297a4a58c3d6cc49991588",
+      "bytes": 14588
+    },
+    "macro.json": {
+      "sha256": "9e877e0f71b27518558ec9e3f2a151497aa3a972dfa8502a4fa8b50050ddb847",
+      "bytes": 8017
+    },
+    "macro_comparison.json": {
+      "sha256": "e3c17cd9a624ed1a1ff3e2871c4267e0fd38deb0ee1fed96adac7442e52f8e26",
+      "bytes": 1683
+    },
+    "macro_study.py": {
+      "sha256": "eb13015b2d18e9c412d23acc085444e9199b71e65896f76e2e1aebabafd52d1f",
+      "bytes": 2005
+    },
+    "patch.json": {
+      "sha256": "b2f6fadbe2b1d05cdd8963f9ed56fff6a8a907e6c561f1274a7bcd42f4d8d7c5",
+      "bytes": 3046
+    },
+    "patch.npz": {
+      "sha256": "3d023eb3377472b9124717f24eb32427374dccc932073009cf9538ab80ac61b8",
+      "bytes": 11095897
+    },
+    "prepare_patch.py": {
+      "sha256": "0be359a997ac75af4d376f96f18901ed815e2d1b07e2c48336233f4a35b4e20d",
+      "bytes": 6968
+    },
+    "result.json": {
+      "sha256": "b2f6fadbe2b1d05cdd8963f9ed56fff6a8a907e6c561f1274a7bcd42f4d8d7c5",
+      "bytes": 3046
+    },
+    "state.json": {
+      "sha256": "d90c4f547adb1e57a0270108cd40990a8992866a86e527d3f82ee764fd4c45e6",
+      "bytes": 1056
+    },
+    "state.npz": {
+      "sha256": "f6715c84ec0d93ca2eac43d67b3c562151df03bbcaa347b9215161924640715f",
+      "bytes": 346968
+    },
+    "transfer_study.py": {
+      "sha256": "e9e9405bf0dfcfc55a9030aa2ad1051bb13e9a7ab9ef72ab28bac1bff3cc3828",
+      "bytes": 4303
+    }
+  },
+  "missing_outputs": [
+    "macro_patch.png"
+  ],
+  "input_mutations": [],
+  "output_findings": [
+    {
+      "path": "macro.json",
+      "kind": "eligibility_annotation",
+      "detail": "Output declares non-evidence. Resolve this annotation against the host-recorded stage and actual limitations during independent review; do not rerun a solver merely to remove metadata."
+    },
+    {
+      "path": "macro.json",
+      "kind": "failed_checks",
+      "detail": [
+        "flux_window_reached"
+      ]
+    }
+  ],
+  "scientific_status": "unreviewed",
+  "finished_at": 1793002772.2806723
+}

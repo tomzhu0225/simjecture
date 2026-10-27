@@ -319,6 +319,31 @@ def contained(root, name):
     return path
 
 
+def readable_study_path(root, name, project=None):
+    try:
+        return contained(root, name)
+    except ValueError:
+        if project is not None or not (root.resolve().parent / "research.json").is_file():
+            raise
+    study_root = root.resolve().parent
+    candidate = Path(name) if Path(name).is_absolute() else (root.resolve() / name)
+    resolved = candidate.resolve()
+    allowed_roots = (
+        study_root / "continuation_input",
+        study_root / "guided_commissioning_input",
+        study_root / "experiments",
+        study_root / "helper_results",
+        study_root / "STUDY_LEDGER.md",
+        study_root / "research_report.json",
+    )
+    # Resolving an allowlisted root would also authorize its symlink destination.
+    if not candidate.is_symlink() and any(
+        resolved.is_relative_to(allowed) for allowed in allowed_roots
+    ):
+        return resolved
+    raise ValueError("Use a path inside this project's files directory")
+
+
 def agent_tools(root, deadline, project=None, workspace=None):
     from smolagents import tool
 
@@ -348,7 +373,7 @@ def agent_tools(root, deadline, project=None, workspace=None):
             offset: Byte offset for a file or entry offset for a directory.
             max_bytes: File page size, 1..256000; follow next_offset for more.
         """
-        p = contained(root, path)
+        p = readable_study_path(root, path, project=project)
         if type(offset) is not int or offset < 0 or not 1 <= max_bytes <= 256000:
             raise ValueError("Choose a nonnegative offset and a bounded page size")
         if p.is_dir():
@@ -1211,6 +1236,10 @@ def main(argv=None):
         if args.wall_seconds is not None:
             signal.alarm(max(1, int(args.wall_seconds)))
         if config.get("backend", "builtin") != "builtin":
+            brief = args.cwd / "STUDY_BRIEF.json"
+            before_brief = (
+                brief.read_bytes() if brief.is_file() and not brief.is_symlink() else None
+            )
             answer = run_external(
                 args.prompt_file.read_text(),
                 args.cwd.resolve(),
@@ -1219,9 +1248,11 @@ def main(argv=None):
                 workspace,
                 wall_seconds=args.wall_seconds,
             )
-            brief = args.cwd / "STUDY_BRIEF.json"
-            if workspace and brief.exists():
-                workspace.save_brief(args.project, json.loads(brief.read_text()))
+            after_brief = (
+                brief.read_bytes() if brief.is_file() and not brief.is_symlink() else None
+            )
+            if workspace and after_brief is not None and after_brief != before_brief:
+                workspace.save_brief(args.project, json.loads(after_brief.decode()))
         else:
             answer = run_agent(
                 args.prompt_file.read_text(),

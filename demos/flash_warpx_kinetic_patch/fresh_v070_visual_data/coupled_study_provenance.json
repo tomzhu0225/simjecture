@@ -1,0 +1,164 @@
+{
+  "study": "fresh_v070__20261026T074100Z",
+  "study_location": "/home/tomzhu0225/src/simulations/other_demos/flash_warpx_pressure_closure/outputs/fresh_v070__20261026T074100Z",
+  "software_version": "0.7.0",
+  "source_commit": "cfca558cb30868d7bc12af7a9b636303f7bc500b",
+  "selection": {
+    "source_experiment": "exp_7772fa68048aff22c2b815c3",
+    "reference_case": "seed6101",
+    "boundary_case": "boundary",
+    "threshold": 0.2,
+    "accepted_review": "review_01645441bd0eaebf3e6391fd",
+    "protocol": "research/PROTOCOL.json",
+    "decision_artifact": {
+      "experiment": "exp_cef42c711fc9dc4c8638c440",
+      "path": "decision.json"
+    },
+    "cases": [
+      {
+        "case": "pilot",
+        "label": "Source $256^2$ (pilot)",
+        "experiment": "exp_6c9d4f3c7099c6a625d2951f"
+      },
+      {
+        "case": "refined",
+        "label": "Baseline, $384^2$",
+        "experiment": "exp_0cc759f4429f9587ef9f4c55"
+      },
+      {
+        "case": "boundary",
+        "label": "Larger patch",
+        "experiment": "exp_4b72bb874b27665a7cc11322"
+      },
+      {
+        "case": "mesh",
+        "label": "Mesh $768^2$",
+        "experiment": "exp_af3f8c4f97f31b360a115b36"
+      },
+      {
+        "case": "time",
+        "label": "Half timestep",
+        "experiment": "exp_a3feea9cfd7050363e077857"
+      },
+      {
+        "case": "ppc",
+        "label": "64 particles/cell",
+        "experiment": "exp_598cf8a2dc75dceade0c52c4"
+      },
+      {
+        "case": "seed6101",
+        "label": "Fresh seed 6101",
+        "experiment": "exp_8e19bd425cb2bd2ef03a61ea"
+      },
+      {
+        "case": "seed6102",
+        "label": "Fresh seed 6102",
+        "experiment": "exp_882ac26f8158ec6e67fd8372"
+      }
+    ]
+  },
+  "native_files": {
+    "experiments/exp_6c9d4f3c7099c6a625d2951f/workspace/pic/result.json": "4ca04217912250669d710fa763c369c0b339d1cf2528364a5d9bda41c4dc01c2",
+    "experiments/exp_6c9d4f3c7099c6a625d2951f/workspace/pic/moments.npz": "1774a6079b637c03dd2c989d95b459ff983cf75fbac6f337bd6bf4b6978d8586",
+    "experiments/exp_6c9d4f3c7099c6a625d2951f/workspace/pic/history.json": "82aef19e2c44b8cda7364dac470c879c602fb5335e35f2828e8182939a831878",
+    "experiments/exp_6c9d4f3c7099c6a625d2951f/workspace/pilot_patch.npz": "26974850642446d0a4e1e4a30b52129e6a20af3b396ed6fce4a68f3a072065a4",
+    "experiments/exp_6c9d4f3c7099c6a625d2951f/workspace/pilot_patch.json": "44fae45c0adc4ce4b35ac025a95e0b033d8e6da542edd60f3cc9ca24279bc880",
+    "experiments/exp_0cc759f4429f9587ef9f4c55/workspace/pic/result.json": "863f40704290d879693949934e99af27ae79e90d51dd757ffd2081047998ac07",
+    "experiments/exp_0cc759f4429f9587ef9f4c55/workspace/pic/moments.npz": "82710b9400857fb36317504b4f3cd1dbe67f6fb802d28f61df42c25b393cda81",
+    "experiments/exp_0cc759f4429f9587ef9f4c55/workspace/pic/history.json": "8933349beefb47c7fef08bc156c2fb54711c6991919b4b8b5521749b5e71ef9b",
+    "experiments/exp_0cc759f4429f9587ef9f4c55/workspace/refined_patch.npz": "c04a015181c150cb0bd1162976252b0e85f3caf7458ced7d024eb0dca4e35ef7",
+    "experiments/exp_0cc759f4429f9587ef9f4c55/workspace/refined_patch.json": "1e8e47a33ad0f5aece5149bd9299f7825ff36819309048035086550ab62f8b24",
+    "experiments/exp_4b72bb874b27665a7cc11322/workspace/pic/result.json": "eeb20980c516221ce121de2956640b0883b7c37070ce60750e20c7fbd8aa5435",
+    "experiments/exp_4b72bb874b27665a7cc11322/workspace/pic/moments.npz": "c6cc78850f11ef7b7fcba4b857707784b5504231784eb1c77d74520bb0680d9e",
+    "experiments/exp_4b72bb874b27665a7cc11322/workspace/pic/history.json": "0b13e0fb42d987a5be02abfd7a89f298079cec6c88d11a8939410573088537b0",
+    "experiments/exp_4b72bb874b27665a7cc11322/workspace/refined_large_patch.npz": "5e486536b4d926b8f253e7a8371689a29e87512a7c1b7e6faaa1cfec905080ce",
+    "experiments/exp_4b72bb874b27665a7cc11322/workspace/refined_large_patch.json": "9842076a8611e84209fa082da7f5f25ff30bfdc1221fe57638cc70d447657316",
+    "experiments/exp_af3f8c4f97f31b360a115b36/workspace/pic/result.json": "0fbb5ddba9906f8369d6c3b2d8ae5e3babb0488c3c0dbe502ed99dfa28489d38",
+    "experiments/exp_af3f8c4f97f31b360a115b36/workspace/pic/moments.npz": "af8b9b53ae4b15647e818269ee469d1002193f77c7c44449eb2a24192a3e4b71",
+    "experiments/exp_af3f8c4f97f31b360a115b36/workspace/pic/history.json": "94bd0d6b740ebf4d8c21fda81b2e0a646bc9de86bda6107fb1a0dac56032354f",
+    "experiments/exp_af3f8c4f97f31b360a115b36/workspace/mesh_patch.npz": "cd72c63305a3b7e6c2834d094edf2e7049eb222075bab910bf7598400b08a06f",
+    "experiments/exp_af3f8c4f97f31b360a115b36/workspace/mesh_patch.json": "eb2fba23f73967e377efe030957dbfc0737ba752b84f8f6a86aa92a64db0defc",
+    "experiments/exp_a3feea9cfd7050363e077857/workspace/pic/result.json": "eafbc02cb53b26b7c3586d9cd1d8537e3d681ee41430a29e392f5c7c9d0fcf59",
+    "experiments/exp_a3feea9cfd7050363e077857/workspace/pic/moments.npz": "b9fe92958d21ce09b66da879308138b1b4506b8036911560c6b9351fdc3c4a9b",
+    "experiments/exp_a3feea9cfd7050363e077857/workspace/pic/history.json": "29ef1f8d257f87fcfa32f83ef100da869e3359755ba22684a3da6c05e55f8d00",
+    "experiments/exp_a3feea9cfd7050363e077857/workspace/refined_patch.npz": "c04a015181c150cb0bd1162976252b0e85f3caf7458ced7d024eb0dca4e35ef7",
+    "experiments/exp_a3feea9cfd7050363e077857/workspace/refined_patch.json": "1e8e47a33ad0f5aece5149bd9299f7825ff36819309048035086550ab62f8b24",
+    "experiments/exp_598cf8a2dc75dceade0c52c4/workspace/pic/result.json": "68d22ac36f0d5e483c5d8c9cf39c36f85f43925f4bf5e32f11956e0921067303",
+    "experiments/exp_598cf8a2dc75dceade0c52c4/workspace/pic/moments.npz": "8fc52b2b667bbead993ea47810003866fe628dc972a7c49a20af5368a81ca0ca",
+    "experiments/exp_598cf8a2dc75dceade0c52c4/workspace/pic/history.json": "9fe37419ebd83af5641cd0943770a7afb5036067b0310422d79f6a35a3b156cd",
+    "experiments/exp_598cf8a2dc75dceade0c52c4/workspace/refined_patch.npz": "c04a015181c150cb0bd1162976252b0e85f3caf7458ced7d024eb0dca4e35ef7",
+    "experiments/exp_598cf8a2dc75dceade0c52c4/workspace/refined_patch.json": "1e8e47a33ad0f5aece5149bd9299f7825ff36819309048035086550ab62f8b24",
+    "experiments/exp_8e19bd425cb2bd2ef03a61ea/workspace/pic/result.json": "0c1ecd20adc839e22552e5e445432fe1b10b284cb64a6fbabffe9f5490293b3b",
+    "experiments/exp_8e19bd425cb2bd2ef03a61ea/workspace/pic/moments.npz": "7142d57ce58ffc977cbc8bf66ab0036c979b55d6955f92852879f133c2639f6d",
+    "experiments/exp_8e19bd425cb2bd2ef03a61ea/workspace/pic/history.json": "ba100b239c9fc82f9f452c5893a84486c1a5098eb922d6b92269daf50902b9d5",
+    "experiments/exp_8e19bd425cb2bd2ef03a61ea/workspace/evidence_patch.npz": "c04a015181c150cb0bd1162976252b0e85f3caf7458ced7d024eb0dca4e35ef7",
+    "experiments/exp_8e19bd425cb2bd2ef03a61ea/workspace/evidence_patch.json": "f7d0bbb93a805d225ed82441ebf92110b703094e91a0261d4a2ca32b6532dcd9",
+    "experiments/exp_882ac26f8158ec6e67fd8372/workspace/pic/result.json": "5f6b0584a6b94eae0308a63a316741ab7719b0f6ce7a950df0f6b72a044a8a38",
+    "experiments/exp_882ac26f8158ec6e67fd8372/workspace/pic/moments.npz": "d2819e5af5e8188d76093200c2aa4163ed916dbdbe072ed79c687fbb4a4d100e",
+    "experiments/exp_882ac26f8158ec6e67fd8372/workspace/pic/history.json": "88239cebff9c02eab568c07e7962cde970f1c41ab1a8d449b5049647fb648ac7",
+    "experiments/exp_882ac26f8158ec6e67fd8372/workspace/evidence_patch.npz": "c04a015181c150cb0bd1162976252b0e85f3caf7458ced7d024eb0dca4e35ef7",
+    "experiments/exp_882ac26f8158ec6e67fd8372/workspace/evidence_patch.json": "f7d0bbb93a805d225ed82441ebf92110b703094e91a0261d4a2ca32b6532dcd9",
+    "experiments/exp_cef42c711fc9dc4c8638c440/workspace/decision.json": "af1613e9fe8d4743c78c3eaa46e28efa3613c34ea6d2b5afcfa18d14dbdf5a55",
+    "experiments/exp_8e19bd425cb2bd2ef03a61ea/workspace/pic/initial_fields.npz": "d7aa8682484ba5cc2c0015e992b5df3d40d7cbb3b4cddaf8f1cd0807a170a746",
+    "experiments/exp_8e19bd425cb2bd2ef03a61ea/workspace/pic/final_fields.npz": "18c466f12576309b635dd6980684fc50f8c0a63be265c2ee56c6962f8870d9e3",
+    "experiments/exp_7772fa68048aff22c2b815c3/workspace/state.npz": "e8d1ef82fb0baafddeaf1b0f8c9e153db6fae069a2a4829cd18e80487bfbd023",
+    "experiments/exp_7772fa68048aff22c2b815c3/workspace/state.json": "64033065607028f7faae237f86f6717cec6f576267e4d3b86e8c8a8b9f1d9923"
+  },
+  "accepted_review_sha256": "72742b5485eebfbc2219678bca75083140f0c5c8e9681cdd1107f10ee0e56d38",
+  "protocol_sha256": "ab81b31d2d1ba859b471688781114ff4b4981d8f4e4c6d00e11c5b2b5cee3290",
+  "post_run_review": {
+    "session": "/home/tomzhu0225/src/simulations/other_demos/flash_warpx_pressure_closure/outputs/review_completion__20261026T103548Z",
+    "authority": "Independent post-run review only",
+    "numerical_status": "budget_exhausted",
+    "claim_review": "review_01645441bd0eaebf3e6391fd",
+    "report_status": "reviewed",
+    "started_at": 1793010949.1000643,
+    "deadline": 1793012749.1000648,
+    "authorization_sha256": "fd976d5fbcbfc53b72471dd9392748e57a3c9dc468580deb784e111e88bc2707",
+    "claim_verdict": {
+      "claim_id": "root",
+      "decision": "approved",
+      "disposition": "supported",
+      "rationale": "The recorded evidence supports this particular finite, conditioned local prediction. Fresh FLASH experiment exp_7772fa68048aff22c2b815c3 supplies the inspected source snapshot at t=0.8001113920 and the hash-linked kinetic inputs. The declared half-width definition gives delta/di=1.0114 and 8.218 source cells. The implementation preserves mass ratio 25, equal initial species temperatures, the coordinate transformation and the declared collisionless continuation; no solver-source development is recorded. Source selection, mapping, measurement region, window and decision rule were bound before decisive runs.\n\nIndependent calculation from the retained pressure tensors reproduces ion means 0.04938627 and 0.04779225 and electron means 0.04732667 and 0.05204808. Both fresh trajectories cover the complete [0.4,0.9]/Omega_ci window. Tensors are finite and positive, required bins remain populated, and the estimator subtracts local species flow before averaging local departures. Finer-bin means remain below 0.084. Recorded initialization, relaxation and energy audits pass the frozen gates.\n\nThe challenge includes actual source, mesh, timestep, particle-count and matched larger-patch evolutions, followed by prospectively specified fresh seeds. I checked the control tensor outputs and their identities. Boundary sensitivity is empirically tested rather than inferred from light travel. Including every frozen error contribution gives upper values 0.14747075 for ions and 0.15448238 for electrons, below 0.20.\n\nSupport is limited to the stated finite realization and observable. Debye underresolution, appreciable electric-field noise sensitivity, approximate boundary-flux quadrature and finite-grid convergence prevent general solver or continuum validation. The inspected pressure controls and retained allowances are sufficient for this threshold decision. The copied non-evidence annotation and failed FLASH reconnection-flux check do not invalidate the fresh local-pressure evidence.",
+      "evidence_gaps": [],
+      "next_test": null
+    },
+    "claim_response": "judge-claim-1",
+    "report_writer_response": "report-draft-1",
+    "assessment": {
+      "decision": "accepted",
+      "summary": "Independent recomputation from retained tensors reproduces all four fresh means (0.04733\u20130.05205) over the complete declared window. Receipt and artifact hashes match; the uncertainty ledger yields upper values 0.14747075 for ions and 0.15448238 for electrons, below 0.20. The findings-first report accurately records the existing supported verdict, distinguishes fresh evidence from exploratory qualification, and explains failures and numerical limitations. Figures are traceable to retained data and analysis. Support is appropriately bounded to this finite, conditioned realization; the diagnostic envelope does not establish continuum convergence. Report acceptance neither independently approves the scientific claim nor changes experiment stages.",
+      "issues": []
+    },
+    "report": "report_reviews/0d19a51f73489c822dc8d2ad15c72ce192f9e9995ecd732a01fde4b07809a40b/RESULTS.md",
+    "packet": "report_reviews/0d19a51f73489c822dc8d2ad15c72ce192f9e9995ecd732a01fde4b07809a40b/packet.json",
+    "report_sha256": "e46b734bac825a5704749eee58997265533e00dee77188081e1885b844ffa451",
+    "packet_sha256": "e7247bccba63744a701ca05bdc16b68c42a00adce3c42d3c467d21727694cf3d",
+    "assessment_sha256": "cad2a7d4aaaa82d29d1ebd05dc5a946accb2d43cc2080fefaeaa679ac2ba4703",
+    "report_response": "judge-report-1",
+    "finished_at": 1793011418.230737,
+    "session_status": "completed",
+    "protected_records_unchanged": true
+  },
+  "post_run_review_sha256": "93203278ac80c1ed553b8b05f656bd8e0f53a8468dddaf39da4956901b38eea9",
+  "original_disposition": "supported",
+  "hypothesis_sha256": "d5207fcd11ba7edbce9da8f938250984da462ac8e7c104972bbf3e62c49867f8",
+  "retained_report_files": {
+    "coupled_report/RESULTS.md": "e46b734bac825a5704749eee58997265533e00dee77188081e1885b844ffa451",
+    "coupled_report/assessment.json": "cad2a7d4aaaa82d29d1ebd05dc5a946accb2d43cc2080fefaeaa679ac2ba4703",
+    "coupled_report/claim_review.json": "72742b5485eebfbc2219678bca75083140f0c5c8e9681cdd1107f10ee0e56d38",
+    "coupled_report/post_run_review.json": "93203278ac80c1ed553b8b05f656bd8e0f53a8468dddaf39da4956901b38eea9",
+    "coupled_report/PROTOCOL.json": "ab81b31d2d1ba859b471688781114ff4b4981d8f4e4c6d00e11c5b2b5cee3290",
+    "coupled_report/decision_audit.json": "af1613e9fe8d4743c78c3eaa46e28efa3613c34ea6d2b5afcfa18d14dbdf5a55",
+    "coupled_report/plots/fresh_pressure_controls.png": "34840374b9d3ffd84037ce0b0a4ed5568e4726db54eaa565f5b48d8bd8645cd0",
+    "coupled_report/plots/fresh_seed6101_kinetic_fields.png": "6440848ce5acb06ce9263982c6588f85d6899f51d22a42e2857e1ad3ab5b7872",
+    "coupled_report/plots/fresh_seed6101_pressure_tensor.png": "9b2568b6c949faff311195d91c26b8babed922a1d70be15170c6b27ed4d352af",
+    "coupled_report/plots/fresh_seed6102_kinetic_fields.png": "f9447d923a44f2a0cd23bad4a8e292d340127c75797b482bf37ddde30c02f8e9",
+    "coupled_report/plots/fresh_seed6102_pressure_tensor.png": "041a95f0df24b4aa82c27dc909e1521c0a4951ed28e20e051d63b9b13af43c60",
+    "coupled_report/plots/macro_patch.png": "7b47d787bceba9cb6d6991041db1dd900dc5613f2b97abfe9426179fdd1b902f",
+    "coupled_report/plots/mesh_refined_kinetic_fields.png": "d0acd3bc41dd86a3bc644fadab4ef05a9d2d55c2d9ca48e1d543aa59e305e973",
+    "coupled_report/plots/mesh_refined_pressure_tensor.png": "7e756ffc93462d3b10683aeab6468b2d3fcafe3ed453d12d0ef875742d05e2d4",
+    "coupled_report/plots/mesh_pressure_controls.png": "c9dd4c66249cba5b375fd70813912a2f07660bedb4f6b21273df18d47de2d492",
+    "coupled_report/plots/controls_pressure_controls.png": "327cf2d3c3d7c8e089cecbf49a696a4e539fae3d2f8a8989f406afe195325a07"
+  }
+}

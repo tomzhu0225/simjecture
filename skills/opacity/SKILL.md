@@ -19,6 +19,10 @@ Atomic-structure codes that emit bound levels, oscillator strengths, or rates
 are not opacity-table generators. Do not register or interpret them as this
 capability.
 
+The `atomic-physics` skill operates FAC when advertised. Its optional LTE
+helper produces partial E1/M1 line spectra, omitting continua and physical
+line wings; those results must not be relabelled as total opacity tables.
+
 ## Execution contract
 
 - Use an opacity package only when the campaign advertises an installed

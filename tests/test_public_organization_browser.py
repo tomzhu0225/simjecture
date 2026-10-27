@@ -60,8 +60,29 @@ def test_member_workspaces_projects_and_knowledge_in_browser(tmp_path, width):
             context.add_cookies([{"name": COOKIE, "value": token, "url": origin}])
             page = context.new_page()
             page.on("pageerror", lambda error: errors.append(str(error)))
-            page.goto(origin + "/workspace")
+            page.goto(origin + "/workspace?tour")
             playwright.expect(page.locator("#account-button")).to_be_enabled()
+            tour = page.get_by_role("dialog", name="Ask your agent anything")
+            playwright.expect(tour).to_be_visible()
+            playwright.expect(tour).to_contain_text("provided for this workspace")
+            page.keyboard.press("ArrowRight")
+            playwright.expect(page.locator("#tour-title")).to_have_text(
+                "Reuse earlier conversations"
+            )
+            playwright.expect(page.locator("#tour-body")).to_contain_text(
+                "Search completed replies"
+            )
+            while page.locator(".tour-next").inner_text() != "Done":
+                page.keyboard.press("ArrowRight")
+            if width > 400:
+                playwright.expect(page.locator("#tour-title")).to_have_text(
+                    "Explore the available research tools"
+                )
+                playwright.expect(page.locator("#tour-body")).to_contain_text(
+                    "Your administrator manages installation"
+                )
+            page.locator(".tour-next").click()
+            playwright.expect(page.locator(".tour-card")).to_have_count(0)
             if not page.locator("#workspace-switcher").is_visible():
                 page.locator("#left-sidebar-toggle").click()
             page.locator("#knowledge-nav").click()

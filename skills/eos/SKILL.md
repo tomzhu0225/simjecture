@@ -15,6 +15,11 @@ thermodynamic state and, when the model includes it, ionization. It does not
 return frequency-dependent absorption, emission, or scattering. Do not use this
 skill as a substitute for an opacity-table capability.
 
+When atomic levels or charge-state populations are needed, the separate
+`atomic-physics` skill describes FAC if that capability is advertised. Its
+restricted LTE partition functions and line spectra are not a complete EOS;
+reconcile binding-energy conventions before combining them with an EOS.
+
 ## Execution contract
 
 - Use an EOS package only when the campaign advertises an installed capability
@@ -116,7 +121,10 @@ profile input, never a replacement for the default model of another material.
   grid. Distinct pressure estimators (thermodynamic finite difference, virial,
   ideal continuum) can disagree; record which estimator was used.
 - A completed SCF is not a converged result. Basis, grid, mixing, and
-  estimator step size remain part of the numerical regime.
+  estimator step size remain part of the numerical regime. Test radial and
+  angular orbital cutoffs separately, and vary the finite-difference radius
+  step at fixed basis. Record anomalous pressure estimates rather than
+  selecting the estimator that best matches another model.
 
 ### Singularity-EOS
 

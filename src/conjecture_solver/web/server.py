@@ -67,6 +67,9 @@ STATIC_ASSETS = frozenset(
         "workspace.js",
         "workspace-projects.js",
         "workspace-projects.css",
+        "workspace-home.css",
+        "workspace-tour.css",
+        "workspace-tour.js",
         "workspace-knowledge.js",
         "workspace-knowledge.css",
         "workspace-theme.js",
@@ -423,6 +426,7 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
                 self._json(preview(root))
             elif endpoint == "study":
                 from ..research_continuation import steering
+                from ..research_finalization import working_report
                 from ..study_status import study_status
                 from .workspace import load
 
@@ -430,8 +434,8 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
                 token = self._one_value(query, "id")
                 root = app.registry.resolve(token)
                 snapshot = app.campaign_snapshot(token)
-                result = root / "research" / "RESULTS.md"
                 status = study_status(root)
+                result = working_report(root, status.get("finalization"))
                 self._json(
                     dict(
                         snapshot=snapshot,
@@ -457,11 +461,8 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
                         steering=steering(root),
                         continuation=status["manifest"].get("continuation"),
                         report=load(root / "research_report.json") | {"status": status["status"]},
-                        results=result.read_text()[:100000]
-                        if result.is_file()
-                        and not result.is_symlink()
-                        and result.resolve().is_relative_to(root)
-                        else "",
+                        results=result.read_text()[:100000] if result else "",
+                        results_path=result.relative_to(root).as_posix() if result else None,
                     )
                 )
             elif endpoint in {"file", "preview", "simulation-file", "collection-download"}:

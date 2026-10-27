@@ -1,0 +1,23 @@
+{
+  "id": "director_865c7f751a4c947164013b18",
+  "created_at": 1792940070.627439,
+  "packet_sha256": "84f526fcd74c3103575ae49f3287691bee91994bda16b62b8bc74316e339113b",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "The completed production contrast now has an independent accepted falsification verdict: review_d8ed7a3364483fc612a029c3 reports p_eff=-0.37775156 with empirical numerical interval [-0.43140540,-0.32467595]. This acceptance is limited to the reviewed contrast and establishes no repaired prediction. The current RESULTS.md predates these developments and contains obsolete execution and qualification statements. The conditional repair reportedly fails its calibration gate, but its diagnostic reproduction remains unrecorded. Approximately 1775 seconds remain before the compute cutoff, sufficient for bounded retained-data analysis and reporting; a new repair campaign lacks both defensible frozen predictions and a reliable qualification budget. All help requests are resolved.",
+  "scientific_feasibility": "adequate",
+  "budget_feasibility": "feasible",
+  "stop_experiments": [],
+  "wake_worker": true,
+  "park_worker": false,
+  "report_assessment": null,
+  "closeout_report": null,
+  "next_action": "Update RESULTS.md, the complete run table, scaling/slope figure and decision timeline with both production receipts, the approved uncertainty transport and independent root verdict. Remove obsolete running/unresolved statements while retaining historical failed controls and qualification limitations. Record a reproducible retained-field analysis of the proposed repair's reported 25\u201331% calibration underprediction, preserving its fixed gates, inputs, hashes and assumptions. If reproduction remains incomplete, state that explicitly. Do not launch validation of a candidate that failed calibration or substitute a fitted exponent as an explanation. Prepare the corrected self-contained report promptly for independent report assessment, clearly separating accepted root falsification from unfinished mechanism and repair work. Preserve the compute cutoff and protected report reserve.",
+  "storage_increase": null,
+  "registration_tuning": null,
+  "time_request": null,
+  "operating_limits": null,
+  "helper_tasks": [],
+  "help_replies": []
+}
