@@ -67,7 +67,16 @@ def output_path(name):
 
 
 class HelpService:
-    def request_help(self, question, *, success_criteria, context="", files=(), key=None):
+    def request_help(
+        self,
+        question,
+        *,
+        success_criteria,
+        context="",
+        files=(),
+        key=None,
+        feedback_requirement=None,
+    ):
         """Queue a director decision with frozen, worker-selected context."""
         from .research_finalization import execution_deadline
         from .research_service import fingerprint, put
@@ -84,6 +93,15 @@ class HelpService:
             )
         if not isinstance(files, (list, tuple)) or len(files) > 32:
             raise ValueError("Attach at most 32 research-relative context files")
+        if feedback_requirement is not None and (
+            not isinstance(feedback_requirement, str)
+            or feedback_requirement not in {"required", "advisory"}
+        ):
+            raise ValueError("feedback_requirement must be required, advisory, or omitted")
+        if feedback_requirement is None and self.manifest.get("helper_policy", {}).get(
+            "require_feedback_requirement", False
+        ):
+            raise ValueError("Declare feedback_requirement='required' or 'advisory' before help")
         sources = {name: self._source(name) for name in files}
         if (
             sum(path.stat().st_size for path in sources.values())
@@ -96,6 +114,10 @@ class HelpService:
             context=context,
             files={name: sha(path) for name, path in sources.items()},
         )
+        # Omission retains legacy request hashes and preserves unknown need.
+        # An explicit declaration is frozen before dispatch with the question.
+        if feedback_requirement is not None:
+            body["feedback_requirement"] = feedback_requirement
         identifier = "help_" + fingerprint(key if key is not None else body)[:24]
         path = self.root / "help_requests" / f"{identifier}.json"
         with self.lock():

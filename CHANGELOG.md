@@ -4,6 +4,10 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+- Record optional required/advisory feedback declarations with frozen helper
+  requests and context. Preserve legacy request identities when omitted, and
+  allow studies to require an explicit declaration before dispatch.
+
 ## 0.7.0 — 2026-10-25
 
 - Expose operator-qualified FreeCAD, Gmsh, Elmer, Frankfurt FEOS and Material EOS
