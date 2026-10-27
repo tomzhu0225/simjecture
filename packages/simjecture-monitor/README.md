@@ -337,6 +337,20 @@ same normalized distribution. The default independent profile and general-task
 inputs remain unchanged. This removes impossible output combinations; it does
 not guarantee fewer false alerts or more useful interventions.
 
+## Prospective workflow controls
+
+`scientific_workflow_trials.py` supports two optional research controls:
+`--worker-prompt task_protocol` provides instructions scoped to the supplied
+external-solver task, and `--arm routine_help` requests one routine expert check
+through the shared admission and dispatch path without anomaly classification.
+The instruction default remains `inherited`; historical sources and cohorts
+retain their original behavior. These new controls have implementation tests
+but no new native-worker commissioning or workflow result yet.
+
+Use a separately frozen plan before collecting outcomes with either option.
+All compared policy arms must share the chosen instruction mode and resource
+limits. See [the control rationale and qualification requirements](../../research/evaluations/live-state-learning-20261026/FOLLOWUP_CONTROLS.md).
+
 ## Portable adapter export
 
 `python -m simjecture_monitor.adapter_export` prepares a separate adapter directory

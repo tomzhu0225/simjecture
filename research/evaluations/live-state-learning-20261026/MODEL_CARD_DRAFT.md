@@ -114,6 +114,14 @@ publication-retry workflows and a slower SFT mean on quiet workflows. These are
 interim observations, not a completed effect estimate or a release gate. See
 [the continuation record](CONTINUATION_RESULTS.md) for all arms and caveats.
 
+Inspection of recorded worker prompts found general research execution/review
+guidance alongside the experiment's different wrapper/report protocol. This
+common instruction context may influence discretionary help requests; its causal
+effect is unmeasured. Separate task-focused instructions and routine expert
+attention are implemented as prospective controls, but have no new workflow
+results yet. See [the control record](FOLLOWUP_CONTROLS.md). Current measurements
+remain conditional on the original experimental harness.
+
 ## Reproduction and release requirements
 
 The tested runtime is a remote NVIDIA A100-SXM4-80GB, PyTorch 2.11.0 with CUDA

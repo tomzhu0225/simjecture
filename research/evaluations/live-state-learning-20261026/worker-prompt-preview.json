@@ -1,0 +1,16 @@
+{
+  "scope": "Static rendering only; no native actor, model call or simulation",
+  "mode": {
+    "mode": "task_protocol",
+    "version": "external-workflow-task-v1",
+    "task_sha256": "0125015e747371fdd1a2a188b8ebda3fe269c4053a6e1b694ab5c79a45d8c737",
+    "renderer_sha256": "a0585d8dc29c12785b170e5d8447c3cee0c04103dd74e23dedc110db177e745d",
+    "scope": "Prospective instruction control; not used by the frozen base/SFT replication"
+  },
+  "task_sha256": "0125015e747371fdd1a2a188b8ebda3fe269c4053a6e1b694ab5c79a45d8c737",
+  "original_task_preserved": true,
+  "original_initial_prompt_characters": 33963,
+  "new_instruction_characters": 5893,
+  "new_instructions_sha256": "e74f3bdab60b61d2c83f31ef5428d9847be59a8fb1925f86d6cebd1964c7c513",
+  "note": "The original prompt also contains dynamic initial context. This length comparison is descriptive, not a latency benchmark."
+}

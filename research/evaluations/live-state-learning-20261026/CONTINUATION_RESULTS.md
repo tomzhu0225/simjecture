@@ -71,6 +71,12 @@ Such an arm would be a separate study, not an addition to the current assignment
 manifest. Quiet-family attention remains a proxy for unnecessary interruptions,
 not an adjudicated false-alert rate.
 
+The subsequent [worker-instruction audit and prospective controls](FOLLOWUP_CONTROLS.md)
+identify another limitation: the inherited general research guidance describes
+an execution/review path that the benchmark-specific task overrides. Whether
+that framing contributes to discretionary help requests remains unmeasured.
+The current comparison keeps those common instructions unchanged.
+
 ## Resource continuity
 
 Inference remains on the remote A100 and physics on the remote P40s. Local

@@ -20,6 +20,7 @@ from simjecture_monitor import attention_support as protocol
 from simjecture_monitor.action_distribution import DISTRIBUTIONS, INDEPENDENT
 from simjecture_monitor.attention_server import request
 from simjecture_monitor.events import digest, put
+from simjecture_monitor.routine_help import RoutineHelpPolicy
 from simjecture_monitor.sampling_trace import SamplingTrace
 from simjecture_monitor.workflow_attention import ScientificConsistencyRules, observation
 
@@ -31,14 +32,33 @@ def supervisor_type(
     sampling_seed=None,
     sampling_split="train",
     decision_distribution=INDEPENDENT,
+    worker_prompt="inherited",
 ):
+    if worker_prompt not in {"inherited", "task_protocol"}:
+        raise ValueError("Unknown worker prompt control")
+
     class ScientificSupervisor(legacy.RawSupervisor):
+        def _full_prompt(self):
+            if worker_prompt == "inherited":
+                return super()._full_prompt()
+            from simjecture_monitor.workflow_prompt import full_prompt
+
+            return full_prompt(self)
+
+        def prompt(self):
+            if worker_prompt == "inherited":
+                return super().prompt()
+            from simjecture_monitor.workflow_prompt import prompt
+
+            return prompt(self)
+
         def initialize(self, arm):
             super().initialize("observe")
             self.attention_arm = arm
             self.attention_model_policy = model_policy or arm
             self.attention_gate = protocol.AdmissionGate()
             self.attention_rules = ScientificConsistencyRules()
+            self.attention_routine = RoutineHelpPolicy()
             self.attention_clock = uuid.uuid4().hex
             self.attention_seen = 0
             self.attention_next_poll = 0
@@ -222,6 +242,8 @@ def supervisor_type(
                 choice = (
                     self.attention_rules.predict(packet, view)
                     if self.attention_arm == "rules"
+                    else self.attention_routine.predict(packet, view)
+                    if self.attention_arm == "routine_help"
                     else protocol.Choice(
                         action="observe",
                         support_kind="none",
@@ -255,7 +277,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, required=True)
     parser.add_argument("--family", required=True)
-    parser.add_argument("--arm", choices=["observe", "rules", "base", "adapted"], required=True)
+    parser.add_argument(
+        "--arm", choices=["observe", "rules", "base", "adapted", "routine_help"], required=True
+    )
     parser.add_argument("--seed", type=int, required=True)
     parser.add_argument("--socket", type=Path, required=True)
     parser.add_argument("--wrapper", type=Path, required=True)
@@ -267,6 +291,12 @@ def main():
     )
     parser.add_argument("--sampling-split", choices=["train", "commissioning"], default="train")
     parser.add_argument("--decision-distribution", choices=DISTRIBUTIONS, default=INDEPENDENT)
+    parser.add_argument(
+        "--worker-prompt",
+        choices=["inherited", "task_protocol"],
+        default="inherited",
+        help="Prospective instruction control; historical studies use inherited",
+    )
     args = parser.parse_args()
     if args.model_policy and args.arm not in {"base", "adapted"}:
         parser.error("--model-policy requires a model arm")
@@ -283,6 +313,7 @@ def main():
         sampling_seed=args.sampling_seed,
         decision_distribution=args.decision_distribution,
         sampling_split=args.sampling_split,
+        worker_prompt=args.worker_prompt,
     )
     legacy.run(args.root, args.family, args.arm, args.seed, args.socket, args.wrapper)
 

@@ -146,3 +146,18 @@ def test_new_help_is_seen_before_sending_a_cached_eligible_observation(monkeypat
     sup.monitor_executor = SimpleNamespace(submit=lambda *args, **kw: sent.append(args))
     sup.monitor_tick(None)
     assert sent == []
+
+
+def test_routine_control_routes_through_the_shared_receipt_path_without_a_model(monkeypatch):
+    mod = module(monkeypatch)
+    sup = mod.supervisor_type(SimpleNamespace(RawSupervisor=Lifecycle))()
+    sup.initialize("routine_help")
+    received = []
+    sup.receive = lambda raw, packet, result, directory: received.append(result)
+    # There is deliberately no model executor or model socket on this instance.
+    sup.monitor_tick(None)
+    assert len(received) == 1
+    decision = received[0]["decision"]
+    assert decision["policy_id"] == "routine_help"
+    assert decision["action"] == "request_worker_help"
+    assert decision["evidence_ids"]
