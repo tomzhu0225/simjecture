@@ -137,7 +137,7 @@ def main():
     parser.add_argument("--stop-by", type=float, required=True)
     parser.add_argument("--request-seconds", type=float, default=20.0)
     args = parser.parse_args()
-    if not 0 < args.request_seconds <= 20:
+    if not 0 < args.request_seconds <= 24:
         parser.error("Keep transport recovery inside the host's 25-second request timeout")
     serve(
         args.socket,

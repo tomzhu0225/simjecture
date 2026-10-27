@@ -98,14 +98,16 @@ CLI SSH connection. Runtime allocation and release are managed separately.
 For an inference link whose SSH process is supervised and reconnected separately,
 `python -m simjecture_monitor.attention_transport` can keep a private local listener
 available across a short interruption. Supply `--socket`, `--upstream`, `--log`
-and the lease's Unix timestamp in `--stop-by`. It waits at most 20 seconds inside
-the caller's 25-second timeout and permits one identical replay if a reply is
+and the lease's Unix timestamp in `--stop-by`. It defaults to 20 seconds and
+allows at most 24 seconds inside the caller's 25-second timeout. It permits one identical replay if a reply is
 lost. Application errors are returned without replay. Logs contain timing,
 attempt counts and a request digest with authentication removed.
 Repeat `--upstream` to supply an already-connected standby link to the **same
 frozen model runtime**. A failed connection is followed by the next link before
 waiting for another handshake. Qualify both links against the same checkpoint
 and input probes before using them in an experiment.
+Colab's CLI documents one active SSH session per runtime, so use a single link
+there. The standby option requires a backend that permits independent connections.
 
 This adapter is only for the stateless prediction/health service. It must not
 front commands that execute tools or dispatch assistance. Sampling requests keep
