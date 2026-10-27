@@ -2,9 +2,10 @@
 
 **Unpublished release draft.** This candidate has not established a reliable
 workflow advantage over the pretrained base and strong deployment comparators.
-The current repeated-workflow study was interrupted by infrastructure failures.
-No weight upload or public release is implied by this document. Base-license
-verification, a destination repository and write authentication remain pending.
+The repeated-workflow study is collecting the remaining original assignments
+after an infrastructure interruption. No weight upload or public release is
+implied by this document. The pinned base declares Apache-2.0; distribution
+notice checks, a destination repository and write authentication remain pending.
 
 ## Identity and intended use
 
@@ -96,9 +97,13 @@ An earlier exploratory seven-episode-per-arm cohort measured means of 223.9
 seconds for this adapter, 265.1 for rules and 277.2 for worker-only execution.
 It omitted the pretrained-base arm. These promising observed differences do not
 answer the missing base/SFT workflow comparison. The subsequently registered
-64-workflow replication currently has one verified rules episode and one
-provider-failed base episode, with SFT and the remaining assignments unstarted.
-There is no SFT/base workflow effect estimate from that interrupted attempt.
+64-workflow replication retained its initial verified rules episode and
+provider-failed base episode, then resumed only previously unstarted assignments.
+At the 2026-10-27 03:43 UTC snapshot, another 18 episodes had completed and passed
+their verifiers. The first two fully repeated families show large gains on
+publication-retry workflows and a slower SFT mean on quiet workflows. These are
+interim observations, not a completed effect estimate or a release gate. See
+[the continuation record](CONTINUATION_RESULTS.md) for all arms and caveats.
 
 ## Reproduction and release requirements
 
@@ -113,9 +118,16 @@ after the recorded-state evaluation with maximum discrepancy below `2.85e-8`
 against the unchanged `1e-4` tolerance. The original weights remain preserved
 off the disposable A100 runtime.
 
+The pinned base README declares Apache-2.0. Its `LICENSE` and `LICENSE-QWEN`
+files contain Apache License 2.0 with Shanghai AI Laboratory and Alibaba Cloud
+copyright notices, respectively. Their exact text and hashes are retained in
+[the license evidence](pinned-base-license-evidence.json). Checking the complete
+upstream distribution for additional notices and training-data provenance
+remains part of packaging; this metadata check alone does not complete release.
+
 Before publishing, complete the registered workflow evidence and its
-infrastructure sensitivity analysis, verify the base's actual license and
-attribution requirements, package a portable adapter configuration without
+infrastructure sensitivity analysis, finish attribution and data checks,
+package a portable adapter configuration without
 changing the weight tensors, and include exact input/compiler, training and
 evaluation manifests. Disclose the general regressions and observed attention
 errors. Publish only claims supported by that completed evidence.

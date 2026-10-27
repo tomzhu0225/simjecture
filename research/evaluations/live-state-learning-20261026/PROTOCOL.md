@@ -203,6 +203,41 @@ retries for application errors. Its real A100 standby test remains unexecuted:
 the next allocation attempt failed with a proxy error before returning an
 endpoint. A separate read-only lookup of that notebook and the account confirmed
 no runtime had been created. See the [engineering evidence](transport-commission-evidence.json).
-No additional scientific episode, native actor or optimizer ran in these
-engineering attempts. Further assignments require successful real standby
-qualification; the incomplete scientific block remains unchanged.
+No additional scientific episode, native actor or optimizer ran in those
+engineering attempts. At that point, further assignments awaited successful
+transport qualification; the incomplete scientific block remained unchanged.
+
+### Qualified single-link continuation, 2026-10-27
+
+The installed Colab CLI documents one active SSH session per runtime. Its
+standby-link configuration was therefore abandoned for this backend. A fresh
+single-link commissioning used a 24-second relay budget inside the unchanged
+25-second caller timeout. After deliberately terminating its owned SSH process,
+the pending prediction returned in 21.835 seconds. The relay made two actual
+prediction sends; its other attempts were local socket connection checks.
+All three before/after base/SFT probability probes reproduced within the original
+`1e-4` tolerance. The commissioning runtime was released. See
+[the retained qualification](transport-qualified-recovery.json); it contains
+no scientific workflow outcome or optimizer update.
+
+The [continuation plan](continuation-plan.json) preserves both attempted original
+assignments and selects only the 62 unstarted IDs. The original 64-assignment
+manifest, frozen scientific source `04f905c`, base and adapter remain unchanged.
+The [new resource lease](continuation-lease.json) ends at 2026-10-27 09:23:48 UTC
+with a 70-compute-unit ceiling. It is a separate bounded phase following the
+expired original lease. No localhost model or physics workload is introduced.
+
+The collector waits 90 seconds between workflows, outside measured episode time.
+If the first native invocation returns HTTP 429 before any tool, physics or
+attention action, that assignment remains a failure and the collector advances
+to the next original ID after 180 seconds. It does not rerun the failed ID.
+Three consecutive such rejections, or any other infrastructure failure, stop
+new assignments. The exact predicate and collector are preserved in
+`continuation-operations/`, with hashes bound by
+[the launch registration](continuation-registration.json).
+
+The final analysis combines disjoint original attempts once, reports all
+attempted outcomes, and separately excludes whole infrastructure-affected blocks
+for sensitivity analysis. Unstarted assignments remain explicit. Collection is
+not stopped or training resumed based on interim effects. The running-study
+snapshot and trace interpretation are in [CONTINUATION_RESULTS.md](CONTINUATION_RESULTS.md).

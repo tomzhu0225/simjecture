@@ -1,0 +1,15 @@
+{
+  "created_at": 1793064228.4663672,
+  "stop_by": 1793093028.4663672,
+  "starting_balance": 1160.92,
+  "compute_cap": 70,
+  "remaining_workflows": 62,
+  "prior_native_starts": 6,
+  "maximum_additional_native_starts": 634,
+  "maximum_per_workflow": 12,
+  "maximum_concurrent_native": 6,
+  "maximum_parallel_workflows": 1,
+  "minimum_gap_between_workflows_seconds": 90,
+  "expired_parent_lease_sha256": "2cdd51de2cc8666a45096bb64bf9663844e763c7c10894bb4816d71bd23f6ab9",
+  "scope": "New bounded continuation after expired phase; preserve 2 attempted outcomes and execute only 62 unstarted assignments"
+}

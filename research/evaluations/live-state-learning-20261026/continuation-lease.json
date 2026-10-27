@@ -1,0 +1,11 @@
+{
+  "created_at": 1793065390.7671876,
+  "stop_by": 1793093028.4663672,
+  "session": "simjecture-science-20261027b",
+  "endpoint": "gpu-a100-hm-ass1c0-1hzxh3w5vi3no",
+  "starting_balance": 1160.92,
+  "observed_balance": 1160.68,
+  "compute_cap": 70,
+  "parent_lease": "continuation-resource-plan.json",
+  "scope": "Continuation of 62 unstarted original scientific workflows; two earlier attempts preserved"
+}

@@ -1,0 +1,4471 @@
+{
+  "snapshot_at": 1793072633.8324935,
+  "snapshot_utc": "2026-10-27T03:43:53.832494+00:00",
+  "scope": "Interim completed-assignment snapshot, not final registered analysis. No confidence intervals, stopping decision or checkpoint selection based on these results.",
+  "continuation_completed": 18,
+  "original_prior_attempts": 2,
+  "original_planned": 64,
+  "continued_collection": true,
+  "source_snapshot_sha256": "5c7ee106db68ba29ea7806ed3fd29130c383971cd951a3614e0181a12eed08ca",
+  "source_attention_sha256": "155a0c7c5fdb6e02720ed2f06187c0705c44bc112e6bcca16596599d097e9acf",
+  "records": [
+    {
+      "id": "bswf-569b06dd00e7f949",
+      "family": "artifact_consumer",
+      "seed": 202611010004,
+      "repeat": 0,
+      "arm": "continued_sft",
+      "block": "bsblock-01",
+      "elapsed_seconds": 372.0867154598236,
+      "verified_complete": true,
+      "native_starts": 5,
+      "automatic_alerts": 1,
+      "help_requests": 1,
+      "proposal_counts": {
+        "observe": 1,
+        "request_worker_help": 5
+      },
+      "admission_counts": {
+        "policy_choice": 1,
+        "silence_allowance_not_exceeded": 3,
+        "fresh_grounded_persistent_request": 1,
+        "awaiting_persistence": 1
+      },
+      "parking": [
+        {
+          "started_at": 1793065676.2234364,
+          "ended_at": 1793065766.274994,
+          "wake_reason": "fixed_wait_fallback"
+        },
+        {
+          "started_at": 1793065778.6154969,
+          "ended_at": 1793065778.617836,
+          "wake_reason": "returned_attention"
+        },
+        {
+          "started_at": 1793065822.8664076,
+          "ended_at": 1793065868.4663324,
+          "wake_reason": "process_terminal"
+        }
+      ],
+      "ledger": {
+        "required_feedback_misses": 0,
+        "duplicate_wakeups": 0,
+        "available_feedback": 2,
+        "acknowledged_feedback": 2
+      },
+      "outcome": {
+        "stage": "completed",
+        "started_at": 1793065652.9842603,
+        "turns": [
+          {
+            "returncode": 0,
+            "ended_at": 1793065676.2230098
+          },
+          {
+            "returncode": 124,
+            "ended_at": 1793065778.6141171
+          },
+          {
+            "returncode": 0,
+            "ended_at": 1793065822.8642924
+          },
+          {
+            "returncode": 0,
+            "ended_at": 1793066017.0733125
+          }
+        ],
+        "parking": [
+          {
+            "started_at": 1793065676.2234364,
+            "ended_at": 1793065766.274994,
+            "wake_reason": "fixed_wait_fallback"
+          },
+          {
+            "started_at": 1793065778.6154969,
+            "ended_at": 1793065778.617836,
+            "wake_reason": "returned_attention"
+          },
+          {
+            "started_at": 1793065822.8664076,
+            "ended_at": 1793065868.4663324,
+            "wake_reason": "process_terminal"
+          }
+        ],
+        "arm": "adapted",
+        "family": "artifact_consumer",
+        "completion_checks": [
+          {
+            "report_ready": false,
+            "pipeline_complete": false,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793065676.223433,
+            "pending_required_ids": []
+          },
+          {
+            "report_ready": false,
+            "pipeline_complete": false,
+            "worker_returncode": 124,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 1,
+            "allowed": false,
+            "checked_at": 1793065778.6154935,
+            "pending_required_ids": []
+          },
+          {
+            "report_ready": false,
+            "pipeline_complete": false,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793065822.8664055,
+            "pending_required_ids": []
+          },
+          {
+            "report_ready": true,
+            "pipeline_complete": true,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": true,
+            "checked_at": 1793066017.0759795,
+            "pending_required_ids": []
+          }
+        ],
+        "finish_reason": "worker_finished_with_obligations_reconciled",
+        "quality": {
+          "verified_quality": 1.0,
+          "report_ok": true,
+          "metrics_ok": true,
+          "requested_configurations": [
+            [
+              64,
+              40
+            ],
+            [
+              128,
+              80
+            ]
+          ],
+          "actual_configurations": [
+            [
+              64,
+              40
+            ],
+            [
+              128,
+              80
+            ]
+          ],
+          "configurations_complete": true,
+          "verification": {
+            "returncode": 0,
+            "stderr": "yt : [INFO     ] 2026-10-27 09:53:43,575 Parameters: current_time              = 6.67128190396305e-14\nyt : [INFO     ] 2026-10-27 09:53:43,575 Parameters: domain_dimensions         = [128   1   1]\nyt : [INFO     ] 2026-10-27 09:53:43,575 Parameters: domain_left_edge          = [-2.e-05  0.e+00  0.e+00]\nyt : [INFO     ] 2026-10-27 09:53:43,575 Parameters: domain_right_edge         = [2.e-05 1.e+00 1.e+00]\nyt : [INFO     ] 2026-10-27 09:53:43,790 Parameters: current_time              = 6.671281903963042e-14\nyt : [INFO     ] 2026-10-27 09:53:43,790 Parameters: domain_dimensions         = [64  1  1]\nyt : [INFO     ] 2026-10-27 09:53:43,791 Parameters: domain_left_edge          = [-2.e-05  0.e+00  0.e+00]\nyt : [INFO     ] 2026-10-27 09:53:43,791 Parameters: domain_right_edge         = [2.e-05 1.e+00 1.e+00]\n"
+          },
+          "protected_artifacts_qualified": {
+            "experiment.py": true,
+            "run_warpx.py": true,
+            "original_analysis.py": true,
+            "environment.json": true,
+            "inputs": true,
+            "harness/bridge.py": true
+          },
+          "report_sha256": "fb4e100a1a99f6f8b1e9ed7205c4c6c5286914f3f8c7201ac83cfa612f2c8109",
+          "results_sha256": "95908e65173544eef9b889beee390e54c1aeae512ecb20104892afec0633f2ed",
+          "scope": "1: complete accurate two-configuration report; .5: accurate partial report; 0: absent or inaccurate report"
+        },
+        "quantity_verifier": {
+          "returncode": 0,
+          "stderr": ""
+        },
+        "protected_extra": {
+          "pipeline.py": true,
+          "submit_bundle.py": true,
+          "data_units.json": true
+        },
+        "ended_at": 1793066025.0709755,
+        "elapsed_seconds": 372.0867154598236,
+        "native_starts": 5,
+        "ledger": {
+          "required_feedback_misses": 0,
+          "duplicate_wakeups": 0,
+          "available_feedback": 2,
+          "acknowledged_feedback": 2
+        },
+        "feedback": {
+          "required_feedback_misses": 0,
+          "unknown_need_for_unacknowledged_help": [],
+          "available_feedback": 2,
+          "scope": "Declared required-feedback reconciliation; no inferred necessity from case labels or cancellation"
+        },
+        "calibration_report_ok": true,
+        "quantity_report_ok": true,
+        "quantity_pipeline_ok": true,
+        "workflow_complete": true,
+        "verified_complete": true,
+        "observation_violations": [],
+        "job_runs": [
+          {
+            "identity": {
+              "pid": 3739360,
+              "ppid": 3739096,
+              "session": 3739360,
+              "starttime": "211301411"
+            },
+            "started_at": 1793065668.1930516,
+            "resume": false,
+            "stdout": "/home/simjecture/investigations/scientific-attention-20261025/base-sft-replication-v3/bswf-569b06dd00e7f949/execution/pipeline-1.stdout",
+            "returncode": 0,
+            "ended_at": 1793066025.0533025
+          }
+        ],
+        "authority_results": [],
+        "usage": {
+          "usage_legacy_unmeasured_calls": 0,
+          "usage_unreported_threads": {},
+          "usage_coverage_since": 1793065653.0100982,
+          "usage_by_thread": {
+            "01a17b0a-940e-7213-b298-96301501dcad": {
+              "input_tokens": 671867,
+              "cached_input_tokens": 612864,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 3863,
+              "reasoning_output_tokens": 368
+            },
+            "01a17b0b-8432-7532-a186-083b8bf39f1e": {
+              "input_tokens": 175300,
+              "cached_input_tokens": 154112,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 995,
+              "reasoning_output_tokens": 57
+            }
+          },
+          "usage_roles_by_thread": {
+            "01a17b0a-940e-7213-b298-96301501dcad": "worker",
+            "01a17b0b-8432-7532-a186-083b8bf39f1e": "director"
+          },
+          "usage_updated_at": 1793066017.071615,
+          "usage_incomplete_turns": 1,
+          "usage_unidentified_calls": 0
+        }
+      }
+    },
+    {
+      "id": "bswf-8a37cba973c5addf",
+      "family": "artifact_consumer",
+      "seed": 202611010004,
+      "repeat": 0,
+      "arm": "observe",
+      "block": "bsblock-01",
+      "elapsed_seconds": 435.9254925251007,
+      "verified_complete": true,
+      "native_starts": 6,
+      "automatic_alerts": 0,
+      "help_requests": 1,
+      "proposal_counts": {
+        "observe": 18
+      },
+      "admission_counts": {
+        "policy_choice": 18
+      },
+      "parking": [
+        {
+          "started_at": 1793066140.7091913,
+          "ended_at": 1793066231.1840534,
+          "wake_reason": "fixed_wait_fallback"
+        },
+        {
+          "started_at": 1793066286.3415856,
+          "ended_at": 1793066323.0034735,
+          "wake_reason": "process_terminal"
+        },
+        {
+          "started_at": 1793066407.0373259,
+          "ended_at": 1793066456.1385734,
+          "wake_reason": "returned_attention"
+        }
+      ],
+      "ledger": {
+        "required_feedback_misses": 0,
+        "duplicate_wakeups": 0,
+        "available_feedback": 2,
+        "acknowledged_feedback": 2
+      },
+      "outcome": {
+        "stage": "completed",
+        "started_at": 1793066116.9108615,
+        "turns": [
+          {
+            "returncode": 0,
+            "ended_at": 1793066140.70893
+          },
+          {
+            "returncode": 0,
+            "ended_at": 1793066286.3411515
+          },
+          {
+            "returncode": 124,
+            "ended_at": 1793066407.0354836
+          },
+          {
+            "returncode": 0,
+            "ended_at": 1793066550.7674885
+          }
+        ],
+        "parking": [
+          {
+            "started_at": 1793066140.7091913,
+            "ended_at": 1793066231.1840534,
+            "wake_reason": "fixed_wait_fallback"
+          },
+          {
+            "started_at": 1793066286.3415856,
+            "ended_at": 1793066323.0034735,
+            "wake_reason": "process_terminal"
+          },
+          {
+            "started_at": 1793066407.0373259,
+            "ended_at": 1793066456.1385734,
+            "wake_reason": "returned_attention"
+          }
+        ],
+        "arm": "observe",
+        "family": "artifact_consumer",
+        "completion_checks": [
+          {
+            "report_ready": false,
+            "pipeline_complete": false,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793066140.7091887,
+            "pending_required_ids": []
+          },
+          {
+            "report_ready": false,
+            "pipeline_complete": false,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 1,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793066286.341583,
+            "pending_required_ids": [
+              "help_1375a57dfd778d3fdc40b5e5"
+            ]
+          },
+          {
+            "report_ready": false,
+            "pipeline_complete": true,
+            "worker_returncode": 124,
+            "worker_waiting": true,
+            "pending_required_help": 1,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793066407.037325,
+            "pending_required_ids": [
+              "help_1375a57dfd778d3fdc40b5e5"
+            ]
+          },
+          {
+            "report_ready": true,
+            "pipeline_complete": true,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": true,
+            "checked_at": 1793066550.7695613,
+            "pending_required_ids": []
+          }
+        ],
+        "finish_reason": "worker_finished_with_obligations_reconciled",
+        "quality": {
+          "verified_quality": 1.0,
+          "report_ok": true,
+          "metrics_ok": true,
+          "requested_configurations": [
+            [
+              64,
+              40
+            ],
+            [
+              128,
+              80
+            ]
+          ],
+          "actual_configurations": [
+            [
+              64,
+              40
+            ],
+            [
+              128,
+              80
+            ]
+          ],
+          "configurations_complete": true,
+          "verification": {
+            "returncode": 0,
+            "stderr": "yt : [INFO     ] 2026-10-27 10:02:31,440 Parameters: current_time              = 6.67128190396305e-14\nyt : [INFO     ] 2026-10-27 10:02:31,441 Parameters: domain_dimensions         = [128   1   1]\nyt : [INFO     ] 2026-10-27 10:02:31,441 Parameters: domain_left_edge          = [-2.e-05  0.e+00  0.e+00]\nyt : [INFO     ] 2026-10-27 10:02:31,441 Parameters: domain_right_edge         = [2.e-05 1.e+00 1.e+00]\nyt : [INFO     ] 2026-10-27 10:02:31,560 Parameters: current_time              = 6.671281903963042e-14\nyt : [INFO     ] 2026-10-27 10:02:31,560 Parameters: domain_dimensions         = [64  1  1]\nyt : [INFO     ] 2026-10-27 10:02:31,560 Parameters: domain_left_edge          = [-2.e-05  0.e+00  0.e+00]\nyt : [INFO     ] 2026-10-27 10:02:31,560 Parameters: domain_right_edge         = [2.e-05 1.e+00 1.e+00]\n"
+          },
+          "protected_artifacts_qualified": {
+            "experiment.py": true,
+            "run_warpx.py": true,
+            "original_analysis.py": true,
+            "environment.json": true,
+            "inputs": true,
+            "harness/bridge.py": true
+          },
+          "report_sha256": "bb04ecc853e7022cd7f4379e71b60eddbb8cc730016993ab2093e31c17396f3c",
+          "results_sha256": "cd066676470ba406a4a00b0d51f817af59467acc03c3fd4e1d5cb8b6afed457e",
+          "scope": "1: complete accurate two-configuration report; .5: accurate partial report; 0: absent or inaccurate report"
+        },
+        "quantity_verifier": {
+          "returncode": 0,
+          "stderr": ""
+        },
+        "protected_extra": {
+          "pipeline.py": true,
+          "submit_bundle.py": true,
+          "data_units.json": true
+        },
+        "ended_at": 1793066552.836354,
+        "elapsed_seconds": 435.9254925251007,
+        "native_starts": 6,
+        "ledger": {
+          "required_feedback_misses": 0,
+          "duplicate_wakeups": 0,
+          "available_feedback": 2,
+          "acknowledged_feedback": 2
+        },
+        "feedback": {
+          "required_feedback_misses": 0,
+          "unknown_need_for_unacknowledged_help": [],
+          "available_feedback": 2,
+          "scope": "Declared required-feedback reconciliation; no inferred necessity from case labels or cancellation"
+        },
+        "calibration_report_ok": true,
+        "quantity_report_ok": true,
+        "quantity_pipeline_ok": true,
+        "workflow_complete": true,
+        "verified_complete": true,
+        "observation_violations": [],
+        "job_runs": [
+          {
+            "identity": {
+              "pid": 3741016,
+              "ppid": 3740793,
+              "session": 3741016,
+              "starttime": "211347915"
+            },
+            "started_at": 1793066134.692266,
+            "resume": false,
+            "stdout": "/home/simjecture/investigations/scientific-attention-20261025/base-sft-replication-v3/bswf-8a37cba973c5addf/execution/pipeline-1.stdout",
+            "returncode": 0,
+            "ended_at": 1793066552.82781
+          }
+        ],
+        "authority_results": [],
+        "usage": {
+          "usage_legacy_unmeasured_calls": 0,
+          "usage_unreported_threads": {
+            "helper_2309ec89cd79a2781401f49e:01a17b15-01ba-7b32-9c11-88d4898ed555": "helper"
+          },
+          "usage_coverage_since": 1793066116.9508667,
+          "usage_by_thread": {
+            "01a17b11-aa6b-7670-9f85-a912e51c745b": {
+              "input_tokens": 548646,
+              "cached_input_tokens": 483968,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 6038,
+              "reasoning_output_tokens": 674
+            },
+            "01a17b14-29d5-74f3-8f28-867b2b7938ae": {
+              "input_tokens": 21282,
+              "cached_input_tokens": 12160,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 657,
+              "reasoning_output_tokens": 124
+            }
+          },
+          "usage_roles_by_thread": {
+            "01a17b11-aa6b-7670-9f85-a912e51c745b": "worker",
+            "01a17b14-29d5-74f3-8f28-867b2b7938ae": "director"
+          },
+          "usage_updated_at": 1793066550.7668915,
+          "usage_incomplete_turns": 2,
+          "usage_unidentified_calls": 0
+        }
+      }
+    },
+    {
+      "id": "bswf-548616ebf33b6b76",
+      "family": "publication_retry",
+      "seed": 202611010002,
+      "repeat": 1,
+      "arm": "base",
+      "block": "bsblock-02",
+      "elapsed_seconds": 433.869535446167,
+      "verified_complete": true,
+      "native_starts": 6,
+      "automatic_alerts": 0,
+      "help_requests": 1,
+      "proposal_counts": {
+        "observe": 9,
+        "recheck": 1
+      },
+      "admission_counts": {
+        "policy_choice": 10
+      },
+      "parking": [
+        {
+          "started_at": 1793066686.8719783,
+          "ended_at": 1793066737.0791426,
+          "wake_reason": "process_terminal"
+        },
+        {
+          "started_at": 1793066813.4781685,
+          "ended_at": 1793066903.6326785,
+          "wake_reason": "fixed_wait_fallback"
+        },
+        {
+          "started_at": 1793066941.666041,
+          "ended_at": 1793066974.765358,
+          "wake_reason": "returned_attention"
+        }
+      ],
+      "ledger": {
+        "required_feedback_misses": 0,
+        "duplicate_wakeups": 0,
+        "available_feedback": 2,
+        "acknowledged_feedback": 2
+      },
+      "outcome": {
+        "stage": "completed",
+        "started_at": 1793066643.595995,
+        "turns": [
+          {
+            "returncode": 0,
+            "ended_at": 1793066686.8717182
+          },
+          {
+            "returncode": 124,
+            "ended_at": 1793066813.4770672
+          },
+          {
+            "returncode": 124,
+            "ended_at": 1793066941.6647682
+          },
+          {
+            "returncode": 0,
+            "ended_at": 1793067075.4585624
+          }
+        ],
+        "parking": [
+          {
+            "started_at": 1793066686.8719783,
+            "ended_at": 1793066737.0791426,
+            "wake_reason": "process_terminal"
+          },
+          {
+            "started_at": 1793066813.4781685,
+            "ended_at": 1793066903.6326785,
+            "wake_reason": "fixed_wait_fallback"
+          },
+          {
+            "started_at": 1793066941.666041,
+            "ended_at": 1793066974.765358,
+            "wake_reason": "returned_attention"
+          }
+        ],
+        "arm": "base",
+        "family": "publication_retry",
+        "completion_checks": [
+          {
+            "report_ready": false,
+            "pipeline_complete": false,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793066686.8719757,
+            "pending_required_ids": []
+          },
+          {
+            "report_ready": false,
+            "pipeline_complete": true,
+            "worker_returncode": 124,
+            "worker_waiting": true,
+            "pending_required_help": 1,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793066813.478165,
+            "pending_required_ids": [
+              "help_75111d4926995778ba909a95"
+            ]
+          },
+          {
+            "report_ready": false,
+            "pipeline_complete": true,
+            "worker_returncode": 124,
+            "worker_waiting": true,
+            "pending_required_help": 1,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793066941.6660395,
+            "pending_required_ids": [
+              "help_75111d4926995778ba909a95"
+            ]
+          },
+          {
+            "report_ready": true,
+            "pipeline_complete": true,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": true,
+            "checked_at": 1793067075.4605515,
+            "pending_required_ids": []
+          }
+        ],
+        "finish_reason": "worker_finished_with_obligations_reconciled",
+        "quality": {
+          "verified_quality": 1.0,
+          "report_ok": true,
+          "metrics_ok": true,
+          "requested_configurations": [
+            [
+              64,
+              40
+            ],
+            [
+              128,
+              80
+            ]
+          ],
+          "actual_configurations": [
+            [
+              64,
+              40
+            ],
+            [
+              128,
+              80
+            ]
+          ],
+          "configurations_complete": true,
+          "verification": {
+            "returncode": 0,
+            "stderr": "yt : [INFO     ] 2026-10-27 10:11:16,142 Parameters: current_time              = 6.67128190396305e-14\nyt : [INFO     ] 2026-10-27 10:11:16,142 Parameters: domain_dimensions         = [128   1   1]\nyt : [INFO     ] 2026-10-27 10:11:16,142 Parameters: domain_left_edge          = [-2.e-05  0.e+00  0.e+00]\nyt : [INFO     ] 2026-10-27 10:11:16,142 Parameters: domain_right_edge         = [2.e-05 1.e+00 1.e+00]\nyt : [INFO     ] 2026-10-27 10:11:16,265 Parameters: current_time              = 6.671281903963042e-14\nyt : [INFO     ] 2026-10-27 10:11:16,265 Parameters: domain_dimensions         = [64  1  1]\nyt : [INFO     ] 2026-10-27 10:11:16,265 Parameters: domain_left_edge          = [-2.e-05  0.e+00  0.e+00]\nyt : [INFO     ] 2026-10-27 10:11:16,265 Parameters: domain_right_edge         = [2.e-05 1.e+00 1.e+00]\n"
+          },
+          "protected_artifacts_qualified": {
+            "experiment.py": true,
+            "run_warpx.py": true,
+            "original_analysis.py": true,
+            "environment.json": true,
+            "inputs": true,
+            "harness/bridge.py": true
+          },
+          "report_sha256": "7a78b4a678e80d6b54d259fb0efb2b13eaa96ce08f12ebfb577038d018ba72de",
+          "results_sha256": "779e4da9555d240638626ae13e613d5c397c96f23fb6ac9d823177dd1d683060",
+          "scope": "1: complete accurate two-configuration report; .5: accurate partial report; 0: absent or inaccurate report"
+        },
+        "quantity_verifier": {
+          "returncode": 0,
+          "stderr": ""
+        },
+        "protected_extra": {
+          "pipeline.py": true,
+          "submit_bundle.py": true,
+          "data_units.json": true
+        },
+        "ended_at": 1793067077.4655304,
+        "elapsed_seconds": 433.869535446167,
+        "native_starts": 6,
+        "ledger": {
+          "required_feedback_misses": 0,
+          "duplicate_wakeups": 0,
+          "available_feedback": 2,
+          "acknowledged_feedback": 2
+        },
+        "feedback": {
+          "required_feedback_misses": 0,
+          "unknown_need_for_unacknowledged_help": [],
+          "available_feedback": 2,
+          "scope": "Declared required-feedback reconciliation; no inferred necessity from case labels or cancellation"
+        },
+        "calibration_report_ok": true,
+        "quantity_report_ok": true,
+        "quantity_pipeline_ok": true,
+        "workflow_complete": true,
+        "verified_complete": true,
+        "observation_violations": [],
+        "job_runs": [
+          {
+            "identity": {
+              "pid": 3742892,
+              "ppid": 3742660,
+              "session": 3742892,
+              "starttime": "211401831"
+            },
+            "started_at": 1793066673.8503556,
+            "resume": false,
+            "stdout": "/home/simjecture/investigations/scientific-attention-20261025/base-sft-replication-v3/bswf-548616ebf33b6b76/execution/pipeline-1.stdout",
+            "returncode": 0,
+            "ended_at": 1793067077.4650364
+          }
+        ],
+        "authority_results": [],
+        "usage": {
+          "usage_legacy_unmeasured_calls": 0,
+          "usage_unreported_threads": {
+            "helper_4c3dccc9acf0224622843ab9:01a17b1c-e785-7fd1-8d50-2d4c44f127d9": "helper"
+          },
+          "usage_coverage_since": 1793066643.6229308,
+          "usage_by_thread": {
+            "01a17b19-b1b7-7633-b317-9c6044dd5dd0": {
+              "input_tokens": 507862,
+              "cached_input_tokens": 461952,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 5361,
+              "reasoning_output_tokens": 519
+            },
+            "01a17b1c-48a3-7a93-8b4f-e7f70dad7147": {
+              "input_tokens": 20991,
+              "cached_input_tokens": 12160,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 702,
+              "reasoning_output_tokens": 241
+            }
+          },
+          "usage_roles_by_thread": {
+            "01a17b19-b1b7-7633-b317-9c6044dd5dd0": "worker",
+            "01a17b1c-48a3-7a93-8b4f-e7f70dad7147": "director"
+          },
+          "usage_updated_at": 1793067075.4581194,
+          "usage_incomplete_turns": 3,
+          "usage_unidentified_calls": 0
+        }
+      }
+    },
+    {
+      "id": "bswf-d7107218573c3f83",
+      "family": "publication_retry",
+      "seed": 202611010002,
+      "repeat": 1,
+      "arm": "continued_sft",
+      "block": "bsblock-02",
+      "elapsed_seconds": 180.96103930473328,
+      "verified_complete": true,
+      "native_starts": 3,
+      "automatic_alerts": 1,
+      "help_requests": 1,
+      "proposal_counts": {
+        "observe": 1,
+        "request_worker_help": 2,
+        "recheck": 1
+      },
+      "admission_counts": {
+        "state_changed": 1,
+        "awaiting_persistence": 1,
+        "policy_choice": 1,
+        "fresh_grounded_persistent_request": 1
+      },
+      "parking": [
+        {
+          "started_at": 1793067188.7421453,
+          "ended_at": 1793067239.39346,
+          "wake_reason": "process_terminal"
+        }
+      ],
+      "ledger": {
+        "required_feedback_misses": 0,
+        "duplicate_wakeups": 0,
+        "available_feedback": 2,
+        "acknowledged_feedback": 2
+      },
+      "outcome": {
+        "stage": "completed",
+        "started_at": 1793067168.1681943,
+        "turns": [
+          {
+            "returncode": 0,
+            "ended_at": 1793067188.741713
+          },
+          {
+            "returncode": 0,
+            "ended_at": 1793067340.8754678
+          }
+        ],
+        "parking": [
+          {
+            "started_at": 1793067188.7421453,
+            "ended_at": 1793067239.39346,
+            "wake_reason": "process_terminal"
+          }
+        ],
+        "arm": "adapted",
+        "family": "publication_retry",
+        "completion_checks": [
+          {
+            "report_ready": false,
+            "pipeline_complete": false,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793067188.7421422,
+            "pending_required_ids": []
+          },
+          {
+            "report_ready": true,
+            "pipeline_complete": true,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": true,
+            "checked_at": 1793067340.876385,
+            "pending_required_ids": []
+          }
+        ],
+        "finish_reason": "worker_finished_with_obligations_reconciled",
+        "quality": {
+          "verified_quality": 1.0,
+          "report_ok": true,
+          "metrics_ok": true,
+          "requested_configurations": [
+            [
+              64,
+              40
+            ],
+            [
+              128,
+              80
+            ]
+          ],
+          "actual_configurations": [
+            [
+              64,
+              40
+            ],
+            [
+              128,
+              80
+            ]
+          ],
+          "configurations_complete": true,
+          "verification": {
+            "returncode": 0,
+            "stderr": "yt : [INFO     ] 2026-10-27 10:15:47,643 Parameters: current_time              = 6.67128190396305e-14\nyt : [INFO     ] 2026-10-27 10:15:47,643 Parameters: domain_dimensions         = [128   1   1]\nyt : [INFO     ] 2026-10-27 10:15:47,643 Parameters: domain_left_edge          = [-2.e-05  0.e+00  0.e+00]\nyt : [INFO     ] 2026-10-27 10:15:47,643 Parameters: domain_right_edge         = [2.e-05 1.e+00 1.e+00]\nyt : [INFO     ] 2026-10-27 10:15:47,842 Parameters: current_time              = 6.671281903963042e-14\nyt : [INFO     ] 2026-10-27 10:15:47,842 Parameters: domain_dimensions         = [64  1  1]\nyt : [INFO     ] 2026-10-27 10:15:47,842 Parameters: domain_left_edge          = [-2.e-05  0.e+00  0.e+00]\nyt : [INFO     ] 2026-10-27 10:15:47,843 Parameters: domain_right_edge         = [2.e-05 1.e+00 1.e+00]\n"
+          },
+          "protected_artifacts_qualified": {
+            "experiment.py": true,
+            "run_warpx.py": true,
+            "original_analysis.py": true,
+            "environment.json": true,
+            "inputs": true,
+            "harness/bridge.py": true
+          },
+          "report_sha256": "6e315af0c5cdc73b9ed8f017573adf22c4cea849b9454530d720127a94b3e312",
+          "results_sha256": "b48ebd7d3d5f883916990786758e6f7072e94729cbd782c8b42d09671f437159",
+          "scope": "1: complete accurate two-configuration report; .5: accurate partial report; 0: absent or inaccurate report"
+        },
+        "quantity_verifier": {
+          "returncode": 0,
+          "stderr": ""
+        },
+        "protected_extra": {
+          "pipeline.py": true,
+          "submit_bundle.py": true,
+          "data_units.json": true
+        },
+        "ended_at": 1793067349.1292334,
+        "elapsed_seconds": 180.96103930473328,
+        "native_starts": 3,
+        "ledger": {
+          "required_feedback_misses": 0,
+          "duplicate_wakeups": 0,
+          "available_feedback": 2,
+          "acknowledged_feedback": 2
+        },
+        "feedback": {
+          "required_feedback_misses": 0,
+          "unknown_need_for_unacknowledged_help": [],
+          "available_feedback": 2,
+          "scope": "Declared required-feedback reconciliation; no inferred necessity from case labels or cancellation"
+        },
+        "calibration_report_ok": true,
+        "quantity_report_ok": true,
+        "quantity_pipeline_ok": true,
+        "workflow_complete": true,
+        "verified_complete": true,
+        "observation_violations": [],
+        "job_runs": [
+          {
+            "identity": {
+              "pid": 3744767,
+              "ppid": 3744542,
+              "session": 3744767,
+              "starttime": "211452387"
+            },
+            "started_at": 1793067180.7304041,
+            "resume": false,
+            "stdout": "/home/simjecture/investigations/scientific-attention-20261025/base-sft-replication-v3/bswf-d7107218573c3f83/execution/pipeline-1.stdout",
+            "returncode": 0,
+            "ended_at": 1793067349.1277056
+          }
+        ],
+        "authority_results": [],
+        "usage": {
+          "usage_legacy_unmeasured_calls": 0,
+          "usage_unreported_threads": {},
+          "usage_coverage_since": 1793067168.190628,
+          "usage_by_thread": {
+            "01a17b21-b274-7671-a727-97ae4b9bb285": {
+              "input_tokens": 333810,
+              "cached_input_tokens": 281344,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 3543,
+              "reasoning_output_tokens": 251
+            },
+            "01a17b22-4173-7392-bdda-05ee47bb091e": {
+              "input_tokens": 81676,
+              "cached_input_tokens": 64384,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 805,
+              "reasoning_output_tokens": 84
+            }
+          },
+          "usage_roles_by_thread": {
+            "01a17b21-b274-7671-a727-97ae4b9bb285": "worker",
+            "01a17b22-4173-7392-bdda-05ee47bb091e": "director"
+          },
+          "usage_updated_at": 1793067340.8748167,
+          "usage_incomplete_turns": 0,
+          "usage_unidentified_calls": 0
+        }
+      }
+    },
+    {
+      "id": "bswf-122366d88f28d7d1",
+      "family": "publication_retry",
+      "seed": 202611010002,
+      "repeat": 1,
+      "arm": "observe",
+      "block": "bsblock-02",
+      "elapsed_seconds": 450.1399004459381,
+      "verified_complete": true,
+      "native_starts": 6,
+      "automatic_alerts": 0,
+      "help_requests": 1,
+      "proposal_counts": {
+        "observe": 11
+      },
+      "admission_counts": {
+        "policy_choice": 11
+      },
+      "parking": [
+        {
+          "started_at": 1793067467.5200586,
+          "ended_at": 1793067523.8157647,
+          "wake_reason": "process_terminal"
+        },
+        {
+          "started_at": 1793067619.2436824,
+          "ended_at": 1793067709.503964,
+          "wake_reason": "fixed_wait_fallback"
+        },
+        {
+          "started_at": 1793067739.3749528,
+          "ended_at": 1793067777.3936508,
+          "wake_reason": "returned_attention"
+        }
+      ],
+      "ledger": {
+        "required_feedback_misses": 0,
+        "duplicate_wakeups": 0,
+        "available_feedback": 2,
+        "acknowledged_feedback": 2
+      },
+      "outcome": {
+        "stage": "completed",
+        "started_at": 1793067441.3026383,
+        "turns": [
+          {
+            "returncode": 0,
+            "ended_at": 1793067467.519852
+          },
+          {
+            "returncode": 124,
+            "ended_at": 1793067619.2428122
+          },
+          {
+            "returncode": 124,
+            "ended_at": 1793067739.3725686
+          },
+          {
+            "returncode": 0,
+            "ended_at": 1793067889.4696674
+          }
+        ],
+        "parking": [
+          {
+            "started_at": 1793067467.5200586,
+            "ended_at": 1793067523.8157647,
+            "wake_reason": "process_terminal"
+          },
+          {
+            "started_at": 1793067619.2436824,
+            "ended_at": 1793067709.503964,
+            "wake_reason": "fixed_wait_fallback"
+          },
+          {
+            "started_at": 1793067739.3749528,
+            "ended_at": 1793067777.3936508,
+            "wake_reason": "returned_attention"
+          }
+        ],
+        "arm": "observe",
+        "family": "publication_retry",
+        "completion_checks": [
+          {
+            "report_ready": false,
+            "pipeline_complete": false,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793067467.5200572,
+            "pending_required_ids": []
+          },
+          {
+            "report_ready": false,
+            "pipeline_complete": true,
+            "worker_returncode": 124,
+            "worker_waiting": true,
+            "pending_required_help": 1,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793067619.2436788,
+            "pending_required_ids": [
+              "help_495f34508bdf553fb9982d7a"
+            ]
+          },
+          {
+            "report_ready": false,
+            "pipeline_complete": true,
+            "worker_returncode": 124,
+            "worker_waiting": true,
+            "pending_required_help": 1,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793067739.3749495,
+            "pending_required_ids": [
+              "help_495f34508bdf553fb9982d7a"
+            ]
+          },
+          {
+            "report_ready": true,
+            "pipeline_complete": true,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": true,
+            "checked_at": 1793067889.4721625,
+            "pending_required_ids": []
+          }
+        ],
+        "finish_reason": "worker_finished_with_obligations_reconciled",
+        "quality": {
+          "verified_quality": 1.0,
+          "report_ok": true,
+          "metrics_ok": true,
+          "requested_configurations": [
+            [
+              64,
+              40
+            ],
+            [
+              128,
+              80
+            ]
+          ],
+          "actual_configurations": [
+            [
+              64,
+              40
+            ],
+            [
+              128,
+              80
+            ]
+          ],
+          "configurations_complete": true,
+          "verification": {
+            "returncode": 0,
+            "stderr": "yt : [INFO     ] 2026-10-27 10:24:50,139 Parameters: current_time              = 6.67128190396305e-14\nyt : [INFO     ] 2026-10-27 10:24:50,139 Parameters: domain_dimensions         = [128   1   1]\nyt : [INFO     ] 2026-10-27 10:24:50,139 Parameters: domain_left_edge          = [-2.e-05  0.e+00  0.e+00]\nyt : [INFO     ] 2026-10-27 10:24:50,139 Parameters: domain_right_edge         = [2.e-05 1.e+00 1.e+00]\nyt : [INFO     ] 2026-10-27 10:24:50,259 Parameters: current_time              = 6.671281903963042e-14\nyt : [INFO     ] 2026-10-27 10:24:50,259 Parameters: domain_dimensions         = [64  1  1]\nyt : [INFO     ] 2026-10-27 10:24:50,259 Parameters: domain_left_edge          = [-2.e-05  0.e+00  0.e+00]\nyt : [INFO     ] 2026-10-27 10:24:50,259 Parameters: domain_right_edge         = [2.e-05 1.e+00 1.e+00]\n"
+          },
+          "protected_artifacts_qualified": {
+            "experiment.py": true,
+            "run_warpx.py": true,
+            "original_analysis.py": true,
+            "environment.json": true,
+            "inputs": true,
+            "harness/bridge.py": true
+          },
+          "report_sha256": "52d28511f94e97a299b49d1baec8a5bea805917acaf5372a80ed1ea6a87136bd",
+          "results_sha256": "e01f685120d9784297bcc52fe87590a89fb395e997c15b2b478a3ee8130d816e",
+          "scope": "1: complete accurate two-configuration report; .5: accurate partial report; 0: absent or inaccurate report"
+        },
+        "quantity_verifier": {
+          "returncode": 0,
+          "stderr": ""
+        },
+        "protected_extra": {
+          "pipeline.py": true,
+          "submit_bundle.py": true,
+          "data_units.json": true
+        },
+        "ended_at": 1793067891.4425385,
+        "elapsed_seconds": 450.1399004459381,
+        "native_starts": 6,
+        "ledger": {
+          "required_feedback_misses": 0,
+          "duplicate_wakeups": 0,
+          "available_feedback": 2,
+          "acknowledged_feedback": 2
+        },
+        "feedback": {
+          "required_feedback_misses": 0,
+          "unknown_need_for_unacknowledged_help": [],
+          "available_feedback": 2,
+          "scope": "Declared required-feedback reconciliation; no inferred necessity from case labels or cancellation"
+        },
+        "calibration_report_ok": true,
+        "quantity_report_ok": true,
+        "quantity_pipeline_ok": true,
+        "workflow_complete": true,
+        "verified_complete": true,
+        "observation_violations": [],
+        "job_runs": [
+          {
+            "identity": {
+              "pid": 3745778,
+              "ppid": 3745549,
+              "session": 3745778,
+              "starttime": "211480132"
+            },
+            "started_at": 1793067460.4967816,
+            "resume": false,
+            "stdout": "/home/simjecture/investigations/scientific-attention-20261025/base-sft-replication-v3/bswf-122366d88f28d7d1/execution/pipeline-1.stdout",
+            "returncode": 0,
+            "ended_at": 1793067891.442032
+          }
+        ],
+        "authority_results": [],
+        "usage": {
+          "usage_legacy_unmeasured_calls": 0,
+          "usage_unreported_threads": {},
+          "usage_coverage_since": 1793067441.3311594,
+          "usage_by_thread": {
+            "01a17b25-eadb-7de0-b8ae-0206badf53bf": {
+              "input_tokens": 566259,
+              "cached_input_tokens": 504320,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 6218,
+              "reasoning_output_tokens": 806
+            },
+            "01a17b28-943b-78b0-8717-33e0a99c8de2": {
+              "input_tokens": 68398,
+              "cached_input_tokens": 45440,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 746,
+              "reasoning_output_tokens": 122
+            },
+            "helper_40b1e8ad21ba042cca4ec7a4:01a17b29-526c-7350-a9b6-e68c1b1f6726": {
+              "input_tokens": 101299,
+              "cached_input_tokens": 88576,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 3751,
+              "reasoning_output_tokens": 151
+            }
+          },
+          "usage_roles_by_thread": {
+            "01a17b25-eadb-7de0-b8ae-0206badf53bf": "worker",
+            "01a17b28-943b-78b0-8717-33e0a99c8de2": "director",
+            "helper_40b1e8ad21ba042cca4ec7a4:01a17b29-526c-7350-a9b6-e68c1b1f6726": "helper"
+          },
+          "usage_updated_at": 1793067889.4689152,
+          "usage_incomplete_turns": 2,
+          "usage_unidentified_calls": 0
+        }
+      }
+    },
+    {
+      "id": "bswf-d767f4ac1a3f6b62",
+      "family": "publication_retry",
+      "seed": 202611010002,
+      "repeat": 1,
+      "arm": "rules",
+      "block": "bsblock-02",
+      "elapsed_seconds": 409.3446879386902,
+      "verified_complete": true,
+      "native_starts": 6,
+      "automatic_alerts": 0,
+      "help_requests": 1,
+      "proposal_counts": {
+        "observe": 10
+      },
+      "admission_counts": {
+        "policy_choice": 10
+      },
+      "parking": [
+        {
+          "started_at": 1793068001.307972,
+          "ended_at": 1793068051.6839032,
+          "wake_reason": "process_terminal"
+        },
+        {
+          "started_at": 1793068137.3731413,
+          "ended_at": 1793068227.615095,
+          "wake_reason": "fixed_wait_fallback"
+        },
+        {
+          "started_at": 1793068256.4960747,
+          "ended_at": 1793068284.1342359,
+          "wake_reason": "returned_attention"
+        }
+      ],
+      "ledger": {
+        "required_feedback_misses": 0,
+        "duplicate_wakeups": 0,
+        "available_feedback": 2,
+        "acknowledged_feedback": 2
+      },
+      "outcome": {
+        "stage": "completed",
+        "started_at": 1793067982.174208,
+        "turns": [
+          {
+            "returncode": 0,
+            "ended_at": 1793068001.3077643
+          },
+          {
+            "returncode": 124,
+            "ended_at": 1793068137.372203
+          },
+          {
+            "returncode": 124,
+            "ended_at": 1793068256.4944737
+          },
+          {
+            "returncode": 0,
+            "ended_at": 1793068384.01541
+          }
+        ],
+        "parking": [
+          {
+            "started_at": 1793068001.307972,
+            "ended_at": 1793068051.6839032,
+            "wake_reason": "process_terminal"
+          },
+          {
+            "started_at": 1793068137.3731413,
+            "ended_at": 1793068227.615095,
+            "wake_reason": "fixed_wait_fallback"
+          },
+          {
+            "started_at": 1793068256.4960747,
+            "ended_at": 1793068284.1342359,
+            "wake_reason": "returned_attention"
+          }
+        ],
+        "arm": "rules",
+        "family": "publication_retry",
+        "completion_checks": [
+          {
+            "report_ready": false,
+            "pipeline_complete": false,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793068001.3079705,
+            "pending_required_ids": []
+          },
+          {
+            "report_ready": false,
+            "pipeline_complete": true,
+            "worker_returncode": 124,
+            "worker_waiting": true,
+            "pending_required_help": 1,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793068137.3731382,
+            "pending_required_ids": [
+              "help_6d96b2b150f823d68b42d537"
+            ]
+          },
+          {
+            "report_ready": false,
+            "pipeline_complete": true,
+            "worker_returncode": 124,
+            "worker_waiting": true,
+            "pending_required_help": 1,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793068256.4960732,
+            "pending_required_ids": [
+              "help_6d96b2b150f823d68b42d537"
+            ]
+          },
+          {
+            "report_ready": true,
+            "pipeline_complete": true,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": true,
+            "checked_at": 1793068384.0168242,
+            "pending_required_ids": []
+          }
+        ],
+        "finish_reason": "worker_finished_with_obligations_reconciled",
+        "quality": {
+          "verified_quality": 1.0,
+          "report_ok": true,
+          "metrics_ok": true,
+          "requested_configurations": [
+            [
+              64,
+              40
+            ],
+            [
+              128,
+              80
+            ]
+          ],
+          "actual_configurations": [
+            [
+              64,
+              40
+            ],
+            [
+              128,
+              80
+            ]
+          ],
+          "configurations_complete": true,
+          "verification": {
+            "returncode": 0,
+            "stderr": "yt : [INFO     ] 2026-10-27 10:33:09,896 Parameters: current_time              = 6.67128190396305e-14\nyt : [INFO     ] 2026-10-27 10:33:09,896 Parameters: domain_dimensions         = [128   1   1]\nyt : [INFO     ] 2026-10-27 10:33:09,896 Parameters: domain_left_edge          = [-2.e-05  0.e+00  0.e+00]\nyt : [INFO     ] 2026-10-27 10:33:09,896 Parameters: domain_right_edge         = [2.e-05 1.e+00 1.e+00]\nyt : [INFO     ] 2026-10-27 10:33:10,114 Parameters: current_time              = 6.671281903963042e-14\nyt : [INFO     ] 2026-10-27 10:33:10,114 Parameters: domain_dimensions         = [64  1  1]\nyt : [INFO     ] 2026-10-27 10:33:10,114 Parameters: domain_left_edge          = [-2.e-05  0.e+00  0.e+00]\nyt : [INFO     ] 2026-10-27 10:33:10,114 Parameters: domain_right_edge         = [2.e-05 1.e+00 1.e+00]\n"
+          },
+          "protected_artifacts_qualified": {
+            "experiment.py": true,
+            "run_warpx.py": true,
+            "original_analysis.py": true,
+            "environment.json": true,
+            "inputs": true,
+            "harness/bridge.py": true
+          },
+          "report_sha256": "1c38ff1015926ccc0c7128bf0ad6d05cc95708ca5fc97f7d1e78fc05c30a03e4",
+          "results_sha256": "7b25e3bb177f962657672a34804d26c07ebc053924b6d9649d34d46335f5c203",
+          "scope": "1: complete accurate two-configuration report; .5: accurate partial report; 0: absent or inaccurate report"
+        },
+        "quantity_verifier": {
+          "returncode": 0,
+          "stderr": ""
+        },
+        "protected_extra": {
+          "pipeline.py": true,
+          "submit_bundle.py": true,
+          "data_units.json": true
+        },
+        "ended_at": 1793068391.5188956,
+        "elapsed_seconds": 409.3446879386902,
+        "native_starts": 6,
+        "ledger": {
+          "required_feedback_misses": 0,
+          "duplicate_wakeups": 0,
+          "available_feedback": 2,
+          "acknowledged_feedback": 2
+        },
+        "feedback": {
+          "required_feedback_misses": 0,
+          "unknown_need_for_unacknowledged_help": [],
+          "available_feedback": 2,
+          "scope": "Declared required-feedback reconciliation; no inferred necessity from case labels or cancellation"
+        },
+        "calibration_report_ok": true,
+        "quantity_report_ok": true,
+        "quantity_pipeline_ok": true,
+        "workflow_complete": true,
+        "verified_complete": true,
+        "observation_violations": [],
+        "job_runs": [
+          {
+            "identity": {
+              "pid": 3747693,
+              "ppid": 3747482,
+              "session": 3747693,
+              "starttime": "211533318"
+            },
+            "started_at": 1793067994.2965283,
+            "resume": false,
+            "stdout": "/home/simjecture/investigations/scientific-attention-20261025/base-sft-replication-v3/bswf-d767f4ac1a3f6b62/execution/pipeline-1.stdout",
+            "returncode": 0,
+            "ended_at": 1793068391.5007322
+          }
+        ],
+        "authority_results": [],
+        "usage": {
+          "usage_legacy_unmeasured_calls": 0,
+          "usage_unreported_threads": {},
+          "usage_coverage_since": 1793067982.1950219,
+          "usage_by_thread": {
+            "01a17b2e-1e29-70c2-9356-d05d4964ba2f": {
+              "input_tokens": 547992,
+              "cached_input_tokens": 500096,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 5255,
+              "reasoning_output_tokens": 482
+            },
+            "01a17b30-7f53-7493-b586-ba4b3f61bfc7": {
+              "input_tokens": 20874,
+              "cached_input_tokens": 12160,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 640,
+              "reasoning_output_tokens": 127
+            },
+            "helper_4606783e237bbcc7fae22fe4:01a17b31-3b68-78e1-bd30-189e932dbe60": {
+              "input_tokens": 119809,
+              "cached_input_tokens": 98304,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 4699,
+              "reasoning_output_tokens": 198
+            }
+          },
+          "usage_roles_by_thread": {
+            "01a17b2e-1e29-70c2-9356-d05d4964ba2f": "worker",
+            "01a17b30-7f53-7493-b586-ba4b3f61bfc7": "director",
+            "helper_4606783e237bbcc7fae22fe4:01a17b31-3b68-78e1-bd30-189e932dbe60": "helper"
+          },
+          "usage_updated_at": 1793068384.0150063,
+          "usage_incomplete_turns": 2,
+          "usage_unidentified_calls": 0
+        }
+      }
+    },
+    {
+      "id": "bswf-9e5fda3473a34492",
+      "family": "publication_retry",
+      "seed": 202611010002,
+      "repeat": 0,
+      "arm": "continued_sft",
+      "block": "bsblock-03",
+      "elapsed_seconds": 170.2622582912445,
+      "verified_complete": true,
+      "native_starts": 3,
+      "automatic_alerts": 1,
+      "help_requests": 1,
+      "proposal_counts": {
+        "request_worker_help": 2
+      },
+      "admission_counts": {
+        "awaiting_persistence": 1,
+        "fresh_grounded_persistent_request": 1
+      },
+      "parking": [
+        {
+          "started_at": 1793068501.5875983,
+          "ended_at": 1793068551.8581922,
+          "wake_reason": "process_terminal"
+        }
+      ],
+      "ledger": {
+        "required_feedback_misses": 0,
+        "duplicate_wakeups": 0,
+        "available_feedback": 2,
+        "acknowledged_feedback": 2
+      },
+      "outcome": {
+        "stage": "completed",
+        "started_at": 1793068482.2763617,
+        "turns": [
+          {
+            "returncode": 0,
+            "ended_at": 1793068501.5870748
+          },
+          {
+            "returncode": 0,
+            "ended_at": 1793068644.5638938
+          }
+        ],
+        "parking": [
+          {
+            "started_at": 1793068501.5875983,
+            "ended_at": 1793068551.8581922,
+            "wake_reason": "process_terminal"
+          }
+        ],
+        "arm": "adapted",
+        "family": "publication_retry",
+        "completion_checks": [
+          {
+            "report_ready": false,
+            "pipeline_complete": false,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793068501.5875952,
+            "pending_required_ids": []
+          },
+          {
+            "report_ready": true,
+            "pipeline_complete": true,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": true,
+            "checked_at": 1793068644.565162,
+            "pending_required_ids": []
+          }
+        ],
+        "finish_reason": "worker_finished_with_obligations_reconciled",
+        "quality": {
+          "verified_quality": 1.0,
+          "report_ok": true,
+          "metrics_ok": true,
+          "requested_configurations": [
+            [
+              64,
+              40
+            ],
+            [
+              128,
+              80
+            ]
+          ],
+          "actual_configurations": [
+            [
+              64,
+              40
+            ],
+            [
+              128,
+              80
+            ]
+          ],
+          "configurations_complete": true,
+          "verification": {
+            "returncode": 0,
+            "stderr": "yt : [INFO     ] 2026-10-27 10:37:31,010 Parameters: current_time              = 6.67128190396305e-14\nyt : [INFO     ] 2026-10-27 10:37:31,010 Parameters: domain_dimensions         = [128   1   1]\nyt : [INFO     ] 2026-10-27 10:37:31,010 Parameters: domain_left_edge          = [-2.e-05  0.e+00  0.e+00]\nyt : [INFO     ] 2026-10-27 10:37:31,011 Parameters: domain_right_edge         = [2.e-05 1.e+00 1.e+00]\nyt : [INFO     ] 2026-10-27 10:37:31,251 Parameters: current_time              = 6.671281903963042e-14\nyt : [INFO     ] 2026-10-27 10:37:31,251 Parameters: domain_dimensions         = [64  1  1]\nyt : [INFO     ] 2026-10-27 10:37:31,251 Parameters: domain_left_edge          = [-2.e-05  0.e+00  0.e+00]\nyt : [INFO     ] 2026-10-27 10:37:31,252 Parameters: domain_right_edge         = [2.e-05 1.e+00 1.e+00]\n"
+          },
+          "protected_artifacts_qualified": {
+            "experiment.py": true,
+            "run_warpx.py": true,
+            "original_analysis.py": true,
+            "environment.json": true,
+            "inputs": true,
+            "harness/bridge.py": true
+          },
+          "report_sha256": "20a8ca494d2c79fb9a7942b3f9310c84c2347124e9a3f0ddd6d81029edceee97",
+          "results_sha256": "73aa32355966436d6c0a54ed3cdc567b0ab49054b0fceab999c762facd009602",
+          "scope": "1: complete accurate two-configuration report; .5: accurate partial report; 0: absent or inaccurate report"
+        },
+        "quantity_verifier": {
+          "returncode": 0,
+          "stderr": ""
+        },
+        "protected_extra": {
+          "pipeline.py": true,
+          "submit_bundle.py": true,
+          "data_units.json": true
+        },
+        "ended_at": 1793068652.5386198,
+        "elapsed_seconds": 170.2622582912445,
+        "native_starts": 3,
+        "ledger": {
+          "required_feedback_misses": 0,
+          "duplicate_wakeups": 0,
+          "available_feedback": 2,
+          "acknowledged_feedback": 2
+        },
+        "feedback": {
+          "required_feedback_misses": 0,
+          "unknown_need_for_unacknowledged_help": [],
+          "available_feedback": 2,
+          "scope": "Declared required-feedback reconciliation; no inferred necessity from case labels or cancellation"
+        },
+        "calibration_report_ok": true,
+        "quantity_report_ok": true,
+        "quantity_pipeline_ok": true,
+        "workflow_complete": true,
+        "verified_complete": true,
+        "observation_violations": [],
+        "job_runs": [
+          {
+            "identity": {
+              "pid": 3749623,
+              "ppid": 3749384,
+              "session": 3749623,
+              "starttime": "211583204"
+            },
+            "started_at": 1793068493.5681534,
+            "resume": false,
+            "stdout": "/home/simjecture/investigations/scientific-attention-20261025/base-sft-replication-v3/bswf-9e5fda3473a34492/execution/pipeline-1.stdout",
+            "returncode": 0,
+            "ended_at": 1793068652.5229814
+          }
+        ],
+        "authority_results": [],
+        "usage": {
+          "usage_legacy_unmeasured_calls": 0,
+          "usage_unreported_threads": {},
+          "usage_coverage_since": 1793068482.3027594,
+          "usage_by_thread": {
+            "01a17b35-c01f-72f2-8f51-7edd0778cd9a": {
+              "input_tokens": 332771,
+              "cached_input_tokens": 294528,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 3499,
+              "reasoning_output_tokens": 241
+            },
+            "01a17b36-268c-7052-8321-414b128f656e": {
+              "input_tokens": 137989,
+              "cached_input_tokens": 118272,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 886,
+              "reasoning_output_tokens": 82
+            }
+          },
+          "usage_roles_by_thread": {
+            "01a17b35-c01f-72f2-8f51-7edd0778cd9a": "worker",
+            "01a17b36-268c-7052-8321-414b128f656e": "director"
+          },
+          "usage_updated_at": 1793068644.5627832,
+          "usage_incomplete_turns": 0,
+          "usage_unidentified_calls": 0
+        }
+      }
+    },
+    {
+      "id": "bswf-5e2e5d69dcc78d66",
+      "family": "publication_retry",
+      "seed": 202611010002,
+      "repeat": 0,
+      "arm": "observe",
+      "block": "bsblock-03",
+      "elapsed_seconds": 385.97846817970276,
+      "verified_complete": true,
+      "native_starts": 6,
+      "automatic_alerts": 0,
+      "help_requests": 1,
+      "proposal_counts": {
+        "observe": 10
+      },
+      "admission_counts": {
+        "policy_choice": 10
+      },
+      "parking": [
+        {
+          "started_at": 1793068770.3305418,
+          "ended_at": 1793068820.6648664,
+          "wake_reason": "process_terminal"
+        },
+        {
+          "started_at": 1793068910.4288,
+          "ended_at": 1793069000.5601075,
+          "wake_reason": "fixed_wait_fallback"
+        },
+        {
+          "started_at": 1793069067.0501397,
+          "ended_at": 1793069067.0799353,
+          "wake_reason": "returned_attention"
+        }
+      ],
+      "ledger": {
+        "required_feedback_misses": 0,
+        "duplicate_wakeups": 0,
+        "available_feedback": 2,
+        "acknowledged_feedback": 2
+      },
+      "outcome": {
+        "stage": "completed",
+        "started_at": 1793068743.9848177,
+        "turns": [
+          {
+            "returncode": 0,
+            "ended_at": 1793068770.3298833
+          },
+          {
+            "returncode": 124,
+            "ended_at": 1793068910.4283857
+          },
+          {
+            "returncode": 0,
+            "ended_at": 1793069067.0398169
+          },
+          {
+            "returncode": 0,
+            "ended_at": 1793069121.931662
+          }
+        ],
+        "parking": [
+          {
+            "started_at": 1793068770.3305418,
+            "ended_at": 1793068820.6648664,
+            "wake_reason": "process_terminal"
+          },
+          {
+            "started_at": 1793068910.4288,
+            "ended_at": 1793069000.5601075,
+            "wake_reason": "fixed_wait_fallback"
+          },
+          {
+            "started_at": 1793069067.0501397,
+            "ended_at": 1793069067.0799353,
+            "wake_reason": "returned_attention"
+          }
+        ],
+        "arm": "observe",
+        "family": "publication_retry",
+        "completion_checks": [
+          {
+            "report_ready": false,
+            "pipeline_complete": false,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793068770.330538,
+            "pending_required_ids": []
+          },
+          {
+            "report_ready": false,
+            "pipeline_complete": true,
+            "worker_returncode": 124,
+            "worker_waiting": true,
+            "pending_required_help": 1,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793068910.4287982,
+            "pending_required_ids": [
+              "help_cdb4a9518a062e9f9861fe22"
+            ]
+          },
+          {
+            "report_ready": true,
+            "pipeline_complete": true,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 1,
+            "allowed": false,
+            "checked_at": 1793069067.0501375,
+            "pending_required_ids": []
+          },
+          {
+            "report_ready": true,
+            "pipeline_complete": true,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": true,
+            "checked_at": 1793069121.9686956,
+            "pending_required_ids": []
+          }
+        ],
+        "finish_reason": "worker_finished_with_obligations_reconciled",
+        "quality": {
+          "verified_quality": 1.0,
+          "report_ok": true,
+          "metrics_ok": true,
+          "requested_configurations": [
+            [
+              64,
+              40
+            ],
+            [
+              128,
+              80
+            ]
+          ],
+          "actual_configurations": [
+            [
+              64,
+              40
+            ],
+            [
+              128,
+              80
+            ]
+          ],
+          "configurations_complete": true,
+          "verification": {
+            "returncode": 0,
+            "stderr": "yt : [INFO     ] 2026-10-27 10:45:28,338 Parameters: current_time              = 6.67128190396305e-14\nyt : [INFO     ] 2026-10-27 10:45:28,338 Parameters: domain_dimensions         = [128   1   1]\nyt : [INFO     ] 2026-10-27 10:45:28,339 Parameters: domain_left_edge          = [-2.e-05  0.e+00  0.e+00]\nyt : [INFO     ] 2026-10-27 10:45:28,339 Parameters: domain_right_edge         = [2.e-05 1.e+00 1.e+00]\nyt : [INFO     ] 2026-10-27 10:45:28,567 Parameters: current_time              = 6.671281903963042e-14\nyt : [INFO     ] 2026-10-27 10:45:28,567 Parameters: domain_dimensions         = [64  1  1]\nyt : [INFO     ] 2026-10-27 10:45:28,567 Parameters: domain_left_edge          = [-2.e-05  0.e+00  0.e+00]\nyt : [INFO     ] 2026-10-27 10:45:28,567 Parameters: domain_right_edge         = [2.e-05 1.e+00 1.e+00]\n"
+          },
+          "protected_artifacts_qualified": {
+            "experiment.py": true,
+            "run_warpx.py": true,
+            "original_analysis.py": true,
+            "environment.json": true,
+            "inputs": true,
+            "harness/bridge.py": true
+          },
+          "report_sha256": "00f8238f0cc2d9be565a84225fc8ba99d8d422cc546848bf859f922565a800d5",
+          "results_sha256": "a9fad88c47d8025d5ab6c748c6a095ee7f30e4d467874e5393a6d422c880a63d",
+          "scope": "1: complete accurate two-configuration report; .5: accurate partial report; 0: absent or inaccurate report"
+        },
+        "quantity_verifier": {
+          "returncode": 0,
+          "stderr": ""
+        },
+        "protected_extra": {
+          "pipeline.py": true,
+          "submit_bundle.py": true,
+          "data_units.json": true
+        },
+        "ended_at": 1793069129.9632857,
+        "elapsed_seconds": 385.97846817970276,
+        "native_starts": 6,
+        "ledger": {
+          "required_feedback_misses": 0,
+          "duplicate_wakeups": 0,
+          "available_feedback": 2,
+          "acknowledged_feedback": 2
+        },
+        "feedback": {
+          "required_feedback_misses": 0,
+          "unknown_need_for_unacknowledged_help": [],
+          "available_feedback": 2,
+          "scope": "Declared required-feedback reconciliation; no inferred necessity from case labels or cancellation"
+        },
+        "calibration_report_ok": true,
+        "quantity_report_ok": true,
+        "quantity_pipeline_ok": true,
+        "workflow_complete": true,
+        "verified_complete": true,
+        "observation_violations": [],
+        "job_runs": [
+          {
+            "identity": {
+              "pid": 3750636,
+              "ppid": 3750407,
+              "session": 3750636,
+              "starttime": "211609821"
+            },
+            "started_at": 1793068760.2427464,
+            "resume": false,
+            "stdout": "/home/simjecture/investigations/scientific-attention-20261025/base-sft-replication-v3/bswf-5e2e5d69dcc78d66/execution/pipeline-1.stdout",
+            "returncode": 0,
+            "ended_at": 1793069129.949827
+          }
+        ],
+        "authority_results": [],
+        "usage": {
+          "usage_legacy_unmeasured_calls": 0,
+          "usage_unreported_threads": {
+            "helper_fab5c9d39f4cc15a61c468f3:01a17b3c-c3b2-7c43-b727-2ae1d3d1e8fa": "helper"
+          },
+          "usage_coverage_since": 1793068744.0054612,
+          "usage_by_thread": {
+            "01a17b39-c04b-7d50-a0e3-b13dfdae27b2": {
+              "input_tokens": 630409,
+              "cached_input_tokens": 574208,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 5783,
+              "reasoning_output_tokens": 617
+            },
+            "01a17b3c-4819-71c1-95e3-c13535ede741": {
+              "input_tokens": 20924,
+              "cached_input_tokens": 12160,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 593,
+              "reasoning_output_tokens": 110
+            }
+          },
+          "usage_roles_by_thread": {
+            "01a17b39-c04b-7d50-a0e3-b13dfdae27b2": "worker",
+            "01a17b3c-4819-71c1-95e3-c13535ede741": "director"
+          },
+          "usage_updated_at": 1793069121.9310474,
+          "usage_incomplete_turns": 2,
+          "usage_unidentified_calls": 0
+        }
+      }
+    },
+    {
+      "id": "bswf-bea4e043518caba7",
+      "family": "publication_retry",
+      "seed": 202611010002,
+      "repeat": 0,
+      "arm": "rules",
+      "block": "bsblock-03",
+      "elapsed_seconds": 415.3642609119415,
+      "verified_complete": true,
+      "native_starts": 6,
+      "automatic_alerts": 0,
+      "help_requests": 1,
+      "proposal_counts": {
+        "observe": 12
+      },
+      "admission_counts": {
+        "policy_choice": 12
+      },
+      "parking": [
+        {
+          "started_at": 1793069252.728273,
+          "ended_at": 1793069308.6037593,
+          "wake_reason": "process_terminal"
+        },
+        {
+          "started_at": 1793069389.4455144,
+          "ended_at": 1793069479.9171646,
+          "wake_reason": "fixed_wait_fallback"
+        },
+        {
+          "started_at": 1793069513.8013444,
+          "ended_at": 1793069531.330871,
+          "wake_reason": "returned_attention"
+        }
+      ],
+      "ledger": {
+        "required_feedback_misses": 0,
+        "duplicate_wakeups": 0,
+        "available_feedback": 2,
+        "acknowledged_feedback": 2
+      },
+      "outcome": {
+        "stage": "completed",
+        "started_at": 1793069222.259523,
+        "turns": [
+          {
+            "returncode": 0,
+            "ended_at": 1793069252.7273846
+          },
+          {
+            "returncode": 124,
+            "ended_at": 1793069389.4451318
+          },
+          {
+            "returncode": 124,
+            "ended_at": 1793069513.8002272
+          },
+          {
+            "returncode": 0,
+            "ended_at": 1793069630.1761036
+          }
+        ],
+        "parking": [
+          {
+            "started_at": 1793069252.728273,
+            "ended_at": 1793069308.6037593,
+            "wake_reason": "process_terminal"
+          },
+          {
+            "started_at": 1793069389.4455144,
+            "ended_at": 1793069479.9171646,
+            "wake_reason": "fixed_wait_fallback"
+          },
+          {
+            "started_at": 1793069513.8013444,
+            "ended_at": 1793069531.330871,
+            "wake_reason": "returned_attention"
+          }
+        ],
+        "arm": "rules",
+        "family": "publication_retry",
+        "completion_checks": [
+          {
+            "report_ready": false,
+            "pipeline_complete": false,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793069252.7282686,
+            "pending_required_ids": []
+          },
+          {
+            "report_ready": false,
+            "pipeline_complete": true,
+            "worker_returncode": 124,
+            "worker_waiting": true,
+            "pending_required_help": 1,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793069389.4455132,
+            "pending_required_ids": [
+              "help_ef0de45dbb27ae13c954814b"
+            ]
+          },
+          {
+            "report_ready": false,
+            "pipeline_complete": true,
+            "worker_returncode": 124,
+            "worker_waiting": true,
+            "pending_required_help": 1,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793069513.801343,
+            "pending_required_ids": [
+              "help_ef0de45dbb27ae13c954814b"
+            ]
+          },
+          {
+            "report_ready": true,
+            "pipeline_complete": true,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": true,
+            "checked_at": 1793069630.1796656,
+            "pending_required_ids": []
+          }
+        ],
+        "finish_reason": "worker_finished_with_obligations_reconciled",
+        "quality": {
+          "verified_quality": 1.0,
+          "report_ok": true,
+          "metrics_ok": true,
+          "requested_configurations": [
+            [
+              64,
+              40
+            ],
+            [
+              128,
+              80
+            ]
+          ],
+          "actual_configurations": [
+            [
+              64,
+              40
+            ],
+            [
+              128,
+              80
+            ]
+          ],
+          "configurations_complete": true,
+          "verification": {
+            "returncode": 0,
+            "stderr": "yt : [INFO     ] 2026-10-27 10:53:56,145 Parameters: current_time              = 6.67128190396305e-14\nyt : [INFO     ] 2026-10-27 10:53:56,145 Parameters: domain_dimensions         = [128   1   1]\nyt : [INFO     ] 2026-10-27 10:53:56,145 Parameters: domain_left_edge          = [-2.e-05  0.e+00  0.e+00]\nyt : [INFO     ] 2026-10-27 10:53:56,145 Parameters: domain_right_edge         = [2.e-05 1.e+00 1.e+00]\nyt : [INFO     ] 2026-10-27 10:53:56,373 Parameters: current_time              = 6.671281903963042e-14\nyt : [INFO     ] 2026-10-27 10:53:56,373 Parameters: domain_dimensions         = [64  1  1]\nyt : [INFO     ] 2026-10-27 10:53:56,373 Parameters: domain_left_edge          = [-2.e-05  0.e+00  0.e+00]\nyt : [INFO     ] 2026-10-27 10:53:56,373 Parameters: domain_right_edge         = [2.e-05 1.e+00 1.e+00]\n"
+          },
+          "protected_artifacts_qualified": {
+            "experiment.py": true,
+            "run_warpx.py": true,
+            "original_analysis.py": true,
+            "environment.json": true,
+            "inputs": true,
+            "harness/bridge.py": true
+          },
+          "report_sha256": "7b3b3179490855771c89c49c063556c49db9e43859c2fdb937db5f037cb09fa8",
+          "results_sha256": "772f2ad6122af68e46313ccc763606008d5a0aaf5ae2f1679a373013e7cafd44",
+          "scope": "1: complete accurate two-configuration report; .5: accurate partial report; 0: absent or inaccurate report"
+        },
+        "quantity_verifier": {
+          "returncode": 0,
+          "stderr": ""
+        },
+        "protected_extra": {
+          "pipeline.py": true,
+          "submit_bundle.py": true,
+          "data_units.json": true
+        },
+        "ended_at": 1793069637.6237838,
+        "elapsed_seconds": 415.3642609119415,
+        "native_starts": 6,
+        "ledger": {
+          "required_feedback_misses": 0,
+          "duplicate_wakeups": 0,
+          "available_feedback": 2,
+          "acknowledged_feedback": 2
+        },
+        "feedback": {
+          "required_feedback_misses": 0,
+          "unknown_need_for_unacknowledged_help": [],
+          "available_feedback": 2,
+          "scope": "Declared required-feedback reconciliation; no inferred necessity from case labels or cancellation"
+        },
+        "calibration_report_ok": true,
+        "quantity_report_ok": true,
+        "quantity_pipeline_ok": true,
+        "workflow_complete": true,
+        "verified_complete": true,
+        "observation_violations": [],
+        "job_runs": [
+          {
+            "identity": {
+              "pid": 3752990,
+              "ppid": 3752726,
+              "session": 3752990,
+              "starttime": "211658155"
+            },
+            "started_at": 1793069245.7073312,
+            "resume": false,
+            "stdout": "/home/simjecture/investigations/scientific-attention-20261025/base-sft-replication-v3/bswf-bea4e043518caba7/execution/pipeline-1.stdout",
+            "returncode": 0,
+            "ended_at": 1793069637.61678
+          }
+        ],
+        "authority_results": [],
+        "usage": {
+          "usage_legacy_unmeasured_calls": 0,
+          "usage_unreported_threads": {},
+          "usage_coverage_since": 1793069222.281858,
+          "usage_by_thread": {
+            "01a17b41-1b46-7572-a379-9bdbfc103e43": {
+              "input_tokens": 495799,
+              "cached_input_tokens": 448640,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 6305,
+              "reasoning_output_tokens": 914
+            },
+            "01a17b43-9a31-7b20-9e8b-ee551ffb90f7": {
+              "input_tokens": 21536,
+              "cached_input_tokens": 12160,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 648,
+              "reasoning_output_tokens": 190
+            },
+            "helper_63b4550e6f7b81787ea0478a:01a17b44-4473-78c3-878c-050cabf931a7": {
+              "input_tokens": 118038,
+              "cached_input_tokens": 109056,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 4084,
+              "reasoning_output_tokens": 93
+            }
+          },
+          "usage_roles_by_thread": {
+            "01a17b41-1b46-7572-a379-9bdbfc103e43": "worker",
+            "01a17b43-9a31-7b20-9e8b-ee551ffb90f7": "director",
+            "helper_63b4550e6f7b81787ea0478a:01a17b44-4473-78c3-878c-050cabf931a7": "helper"
+          },
+          "usage_updated_at": 1793069630.1750755,
+          "usage_incomplete_turns": 2,
+          "usage_unidentified_calls": 0
+        }
+      }
+    },
+    {
+      "id": "bswf-52d1ce22f4ae03c2",
+      "family": "publication_retry",
+      "seed": 202611010002,
+      "repeat": 0,
+      "arm": "base",
+      "block": "bsblock-03",
+      "elapsed_seconds": 412.29373478889465,
+      "verified_complete": true,
+      "native_starts": 6,
+      "automatic_alerts": 0,
+      "help_requests": 1,
+      "proposal_counts": {
+        "observe": 9,
+        "request_worker_help": 1
+      },
+      "admission_counts": {
+        "state_changed": 1,
+        "policy_choice": 8,
+        "awaiting_persistence": 1
+      },
+      "parking": [
+        {
+          "started_at": 1793069747.61918,
+          "ended_at": 1793069798.9073012,
+          "wake_reason": "process_terminal"
+        },
+        {
+          "started_at": 1793069873.50758,
+          "ended_at": 1793069963.8049808,
+          "wake_reason": "fixed_wait_fallback"
+        },
+        {
+          "started_at": 1793069986.606425,
+          "ended_at": 1793070036.6319983,
+          "wake_reason": "returned_attention"
+        }
+      ],
+      "ledger": {
+        "required_feedback_misses": 0,
+        "duplicate_wakeups": 0,
+        "available_feedback": 2,
+        "acknowledged_feedback": 2
+      },
+      "outcome": {
+        "stage": "completed",
+        "started_at": 1793069728.3773406,
+        "turns": [
+          {
+            "returncode": 0,
+            "ended_at": 1793069747.6184363
+          },
+          {
+            "returncode": 124,
+            "ended_at": 1793069873.50713
+          },
+          {
+            "returncode": 124,
+            "ended_at": 1793069986.6045303
+          },
+          {
+            "returncode": 0,
+            "ended_at": 1793070133.3144677
+          }
+        ],
+        "parking": [
+          {
+            "started_at": 1793069747.61918,
+            "ended_at": 1793069798.9073012,
+            "wake_reason": "process_terminal"
+          },
+          {
+            "started_at": 1793069873.50758,
+            "ended_at": 1793069963.8049808,
+            "wake_reason": "fixed_wait_fallback"
+          },
+          {
+            "started_at": 1793069986.606425,
+            "ended_at": 1793070036.6319983,
+            "wake_reason": "returned_attention"
+          }
+        ],
+        "arm": "base",
+        "family": "publication_retry",
+        "completion_checks": [
+          {
+            "report_ready": false,
+            "pipeline_complete": false,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793069747.6191766,
+            "pending_required_ids": []
+          },
+          {
+            "report_ready": false,
+            "pipeline_complete": true,
+            "worker_returncode": 124,
+            "worker_waiting": true,
+            "pending_required_help": 1,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793069873.5075788,
+            "pending_required_ids": [
+              "help_9bbd396a1e69eb66e6e0b11c"
+            ]
+          },
+          {
+            "report_ready": false,
+            "pipeline_complete": true,
+            "worker_returncode": 124,
+            "worker_waiting": true,
+            "pending_required_help": 1,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793069986.6064234,
+            "pending_required_ids": [
+              "help_9bbd396a1e69eb66e6e0b11c"
+            ]
+          },
+          {
+            "report_ready": true,
+            "pipeline_complete": true,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": true,
+            "checked_at": 1793070133.3157578,
+            "pending_required_ids": []
+          }
+        ],
+        "finish_reason": "worker_finished_with_obligations_reconciled",
+        "quality": {
+          "verified_quality": 1.0,
+          "report_ok": true,
+          "metrics_ok": true,
+          "requested_configurations": [
+            [
+              64,
+              40
+            ],
+            [
+              128,
+              80
+            ]
+          ],
+          "actual_configurations": [
+            [
+              64,
+              40
+            ],
+            [
+              128,
+              80
+            ]
+          ],
+          "configurations_complete": true,
+          "verification": {
+            "returncode": 0,
+            "stderr": "yt : [INFO     ] 2026-10-27 11:02:19,226 Parameters: current_time              = 6.67128190396305e-14\nyt : [INFO     ] 2026-10-27 11:02:19,226 Parameters: domain_dimensions         = [128   1   1]\nyt : [INFO     ] 2026-10-27 11:02:19,226 Parameters: domain_left_edge          = [-2.e-05  0.e+00  0.e+00]\nyt : [INFO     ] 2026-10-27 11:02:19,227 Parameters: domain_right_edge         = [2.e-05 1.e+00 1.e+00]\nyt : [INFO     ] 2026-10-27 11:02:19,437 Parameters: current_time              = 6.671281903963042e-14\nyt : [INFO     ] 2026-10-27 11:02:19,437 Parameters: domain_dimensions         = [64  1  1]\nyt : [INFO     ] 2026-10-27 11:02:19,437 Parameters: domain_left_edge          = [-2.e-05  0.e+00  0.e+00]\nyt : [INFO     ] 2026-10-27 11:02:19,438 Parameters: domain_right_edge         = [2.e-05 1.e+00 1.e+00]\n"
+          },
+          "protected_artifacts_qualified": {
+            "experiment.py": true,
+            "run_warpx.py": true,
+            "original_analysis.py": true,
+            "environment.json": true,
+            "inputs": true,
+            "harness/bridge.py": true
+          },
+          "report_sha256": "ffaef4b39215441e812c7d3ecca48345da2a72e03bf4b12d1946d9ea10fbe05d",
+          "results_sha256": "b72a76c12b53edfd976bd33f330c6018fcb58cbfc152c4b8392d24f826bbe9ca",
+          "scope": "1: complete accurate two-configuration report; .5: accurate partial report; 0: absent or inaccurate report"
+        },
+        "quantity_verifier": {
+          "returncode": 0,
+          "stderr": ""
+        },
+        "protected_extra": {
+          "pipeline.py": true,
+          "submit_bundle.py": true,
+          "data_units.json": true
+        },
+        "ended_at": 1793070140.6710753,
+        "elapsed_seconds": 412.29373478889465,
+        "native_starts": 6,
+        "ledger": {
+          "required_feedback_misses": 0,
+          "duplicate_wakeups": 0,
+          "available_feedback": 2,
+          "acknowledged_feedback": 2
+        },
+        "feedback": {
+          "required_feedback_misses": 0,
+          "unknown_need_for_unacknowledged_help": [],
+          "available_feedback": 2,
+          "scope": "Declared required-feedback reconciliation; no inferred necessity from case labels or cancellation"
+        },
+        "calibration_report_ok": true,
+        "quantity_report_ok": true,
+        "quantity_pipeline_ok": true,
+        "workflow_complete": true,
+        "verified_complete": true,
+        "observation_violations": [],
+        "job_runs": [
+          {
+            "identity": {
+              "pid": 3755512,
+              "ppid": 3755223,
+              "session": 3755512,
+              "starttime": "211707745"
+            },
+            "started_at": 1793069741.6058311,
+            "resume": false,
+            "stdout": "/home/simjecture/investigations/scientific-attention-20261025/base-sft-replication-v3/bswf-52d1ce22f4ae03c2/execution/pipeline-1.stdout",
+            "returncode": 0,
+            "ended_at": 1793070140.6689258
+          }
+        ],
+        "authority_results": [],
+        "usage": {
+          "usage_legacy_unmeasured_calls": 0,
+          "usage_unreported_threads": {
+            "helper_de67be539ede9a9a365aa645:01a17b4b-a0ba-7d13-87f8-f8e8e1a31cfb": "helper"
+          },
+          "usage_coverage_since": 1793069728.4053984,
+          "usage_by_thread": {
+            "01a17b48-c3ae-7301-b14c-17a7d5f0cc4f": {
+              "input_tokens": 549277,
+              "cached_input_tokens": 504448,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 5470,
+              "reasoning_output_tokens": 504
+            },
+            "01a17b4a-fd2e-7062-be87-900042f6a9c8": {
+              "input_tokens": 21080,
+              "cached_input_tokens": 12160,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 666,
+              "reasoning_output_tokens": 192
+            }
+          },
+          "usage_roles_by_thread": {
+            "01a17b48-c3ae-7301-b14c-17a7d5f0cc4f": "worker",
+            "01a17b4a-fd2e-7062-be87-900042f6a9c8": "director"
+          },
+          "usage_updated_at": 1793070133.3141057,
+          "usage_incomplete_turns": 3,
+          "usage_unidentified_calls": 0
+        }
+      }
+    },
+    {
+      "id": "bswf-49ab84677dcc52b5",
+      "family": "announced_quiet",
+      "seed": 202611010001,
+      "repeat": 0,
+      "arm": "observe",
+      "block": "bsblock-04",
+      "elapsed_seconds": 184.8722357749939,
+      "verified_complete": true,
+      "native_starts": 2,
+      "automatic_alerts": 0,
+      "help_requests": 0,
+      "proposal_counts": {
+        "observe": 10
+      },
+      "admission_counts": {
+        "policy_choice": 10
+      },
+      "parking": [
+        {
+          "started_at": 1793070259.279022,
+          "ended_at": 1793070313.0894647,
+          "wake_reason": "process_terminal"
+        }
+      ],
+      "ledger": {
+        "required_feedback_misses": 0,
+        "duplicate_wakeups": 0,
+        "available_feedback": 0,
+        "acknowledged_feedback": 0
+      },
+      "outcome": {
+        "stage": "completed",
+        "started_at": 1793070232.9517136,
+        "turns": [
+          {
+            "returncode": 0,
+            "ended_at": 1793070259.2787356
+          },
+          {
+            "returncode": 0,
+            "ended_at": 1793070415.8269362
+          }
+        ],
+        "parking": [
+          {
+            "started_at": 1793070259.279022,
+            "ended_at": 1793070313.0894647,
+            "wake_reason": "process_terminal"
+          }
+        ],
+        "arm": "observe",
+        "family": "announced_quiet",
+        "completion_checks": [
+          {
+            "report_ready": false,
+            "pipeline_complete": false,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793070259.2790205,
+            "pending_required_ids": []
+          },
+          {
+            "report_ready": true,
+            "pipeline_complete": true,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": true,
+            "checked_at": 1793070415.827267,
+            "pending_required_ids": []
+          }
+        ],
+        "finish_reason": "worker_finished_with_obligations_reconciled",
+        "quality": {
+          "verified_quality": 1.0,
+          "report_ok": true,
+          "metrics_ok": true,
+          "requested_configurations": [
+            [
+              64,
+              40
+            ],
+            [
+              128,
+              80
+            ]
+          ],
+          "actual_configurations": [
+            [
+              64,
+              40
+            ],
+            [
+              128,
+              80
+            ]
+          ],
+          "configurations_complete": true,
+          "verification": {
+            "returncode": 0,
+            "stderr": "yt : [INFO     ] 2026-10-27 11:06:56,516 Parameters: current_time              = 6.67128190396305e-14\nyt : [INFO     ] 2026-10-27 11:06:56,516 Parameters: domain_dimensions         = [128   1   1]\nyt : [INFO     ] 2026-10-27 11:06:56,516 Parameters: domain_left_edge          = [-2.e-05  0.e+00  0.e+00]\nyt : [INFO     ] 2026-10-27 11:06:56,516 Parameters: domain_right_edge         = [2.e-05 1.e+00 1.e+00]\nyt : [INFO     ] 2026-10-27 11:06:56,636 Parameters: current_time              = 6.671281903963042e-14\nyt : [INFO     ] 2026-10-27 11:06:56,636 Parameters: domain_dimensions         = [64  1  1]\nyt : [INFO     ] 2026-10-27 11:06:56,636 Parameters: domain_left_edge          = [-2.e-05  0.e+00  0.e+00]\nyt : [INFO     ] 2026-10-27 11:06:56,637 Parameters: domain_right_edge         = [2.e-05 1.e+00 1.e+00]\n"
+          },
+          "protected_artifacts_qualified": {
+            "experiment.py": true,
+            "run_warpx.py": true,
+            "original_analysis.py": true,
+            "environment.json": true,
+            "inputs": true,
+            "harness/bridge.py": true
+          },
+          "report_sha256": "e083b3a3cbca6464db950cd324613602fd81ad83fc86bcb754d88d7533d2e7f8",
+          "results_sha256": "0eab0b187a1d7a24f9ed344af96b50dabbd93486dfa4a01a664aa357082d220d",
+          "scope": "1: complete accurate two-configuration report; .5: accurate partial report; 0: absent or inaccurate report"
+        },
+        "quantity_verifier": {
+          "returncode": 0,
+          "stderr": ""
+        },
+        "protected_extra": {
+          "pipeline.py": true,
+          "submit_bundle.py": true,
+          "data_units.json": true
+        },
+        "ended_at": 1793070417.8239493,
+        "elapsed_seconds": 184.8722357749939,
+        "native_starts": 2,
+        "ledger": {
+          "required_feedback_misses": 0,
+          "duplicate_wakeups": 0,
+          "available_feedback": 0,
+          "acknowledged_feedback": 0
+        },
+        "feedback": {
+          "required_feedback_misses": 0,
+          "unknown_need_for_unacknowledged_help": [],
+          "available_feedback": 0,
+          "scope": "Declared required-feedback reconciliation; no inferred necessity from case labels or cancellation"
+        },
+        "calibration_report_ok": true,
+        "quantity_report_ok": true,
+        "quantity_pipeline_ok": true,
+        "workflow_complete": true,
+        "verified_complete": true,
+        "observation_violations": [],
+        "job_runs": [
+          {
+            "identity": {
+              "pid": 3757729,
+              "ppid": 3757518,
+              "session": 3757729,
+              "starttime": "211758610"
+            },
+            "started_at": 1793070250.2519479,
+            "resume": false,
+            "stdout": "/home/simjecture/investigations/scientific-attention-20261025/base-sft-replication-v3/bswf-49ab84677dcc52b5/execution/pipeline-1.stdout",
+            "returncode": 0,
+            "ended_at": 1793070417.823437
+          }
+        ],
+        "authority_results": [],
+        "usage": {
+          "usage_legacy_unmeasured_calls": 0,
+          "usage_unreported_threads": {},
+          "usage_coverage_since": 1793070232.9770901,
+          "usage_by_thread": {
+            "01a17b50-83b7-7232-a7d3-d1a8d05993bb": {
+              "input_tokens": 297908,
+              "cached_input_tokens": 267136,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 3118,
+              "reasoning_output_tokens": 590
+            }
+          },
+          "usage_roles_by_thread": {
+            "01a17b50-83b7-7232-a7d3-d1a8d05993bb": "worker"
+          },
+          "usage_updated_at": 1793070415.826574
+        }
+      }
+    },
+    {
+      "id": "bswf-8fced947ac9585d9",
+      "family": "announced_quiet",
+      "seed": 202611010001,
+      "repeat": 0,
+      "arm": "rules",
+      "block": "bsblock-04",
+      "elapsed_seconds": 174.38706493377686,
+      "verified_complete": true,
+      "native_starts": 2,
+      "automatic_alerts": 0,
+      "help_requests": 0,
+      "proposal_counts": {
+        "observe": 10
+      },
+      "admission_counts": {
+        "policy_choice": 10
+      },
+      "parking": [
+        {
+          "started_at": 1793070526.6873791,
+          "ended_at": 1793070576.74305,
+          "wake_reason": "process_terminal"
+        }
+      ],
+      "ledger": {
+        "required_feedback_misses": 0,
+        "duplicate_wakeups": 0,
+        "available_feedback": 0,
+        "acknowledged_feedback": 0
+      },
+      "outcome": {
+        "stage": "completed",
+        "started_at": 1793070508.537281,
+        "turns": [
+          {
+            "returncode": 0,
+            "ended_at": 1793070526.6866515
+          },
+          {
+            "returncode": 0,
+            "ended_at": 1793070680.9698055
+          }
+        ],
+        "parking": [
+          {
+            "started_at": 1793070526.6873791,
+            "ended_at": 1793070576.74305,
+            "wake_reason": "process_terminal"
+          }
+        ],
+        "arm": "rules",
+        "family": "announced_quiet",
+        "completion_checks": [
+          {
+            "report_ready": false,
+            "pipeline_complete": false,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793070526.6873755,
+            "pending_required_ids": []
+          },
+          {
+            "report_ready": true,
+            "pipeline_complete": true,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": true,
+            "checked_at": 1793070680.9708433,
+            "pending_required_ids": []
+          }
+        ],
+        "finish_reason": "worker_finished_with_obligations_reconciled",
+        "quality": {
+          "verified_quality": 1.0,
+          "report_ok": true,
+          "metrics_ok": true,
+          "requested_configurations": [
+            [
+              64,
+              40
+            ],
+            [
+              128,
+              80
+            ]
+          ],
+          "actual_configurations": [
+            [
+              64,
+              40
+            ],
+            [
+              128,
+              80
+            ]
+          ],
+          "configurations_complete": true,
+          "verification": {
+            "returncode": 0,
+            "stderr": "yt : [INFO     ] 2026-10-27 11:11:21,634 Parameters: current_time              = 6.67128190396305e-14\nyt : [INFO     ] 2026-10-27 11:11:21,634 Parameters: domain_dimensions         = [128   1   1]\nyt : [INFO     ] 2026-10-27 11:11:21,635 Parameters: domain_left_edge          = [-2.e-05  0.e+00  0.e+00]\nyt : [INFO     ] 2026-10-27 11:11:21,635 Parameters: domain_right_edge         = [2.e-05 1.e+00 1.e+00]\nyt : [INFO     ] 2026-10-27 11:11:21,752 Parameters: current_time              = 6.671281903963042e-14\nyt : [INFO     ] 2026-10-27 11:11:21,752 Parameters: domain_dimensions         = [64  1  1]\nyt : [INFO     ] 2026-10-27 11:11:21,753 Parameters: domain_left_edge          = [-2.e-05  0.e+00  0.e+00]\nyt : [INFO     ] 2026-10-27 11:11:21,753 Parameters: domain_right_edge         = [2.e-05 1.e+00 1.e+00]\n"
+          },
+          "protected_artifacts_qualified": {
+            "experiment.py": true,
+            "run_warpx.py": true,
+            "original_analysis.py": true,
+            "environment.json": true,
+            "inputs": true,
+            "harness/bridge.py": true
+          },
+          "report_sha256": "69073482eb236a6d5f88c99cc8e570f231e855b173610f7f960ced05ac7d7eac",
+          "results_sha256": "f8d698bfdd084601b97b8309e3545964d1d2142ef626d1843b219e70cbfca3a4",
+          "scope": "1: complete accurate two-configuration report; .5: accurate partial report; 0: absent or inaccurate report"
+        },
+        "quantity_verifier": {
+          "returncode": 0,
+          "stderr": ""
+        },
+        "protected_extra": {
+          "pipeline.py": true,
+          "submit_bundle.py": true,
+          "data_units.json": true
+        },
+        "ended_at": 1793070682.924346,
+        "elapsed_seconds": 174.38706493377686,
+        "native_starts": 2,
+        "ledger": {
+          "required_feedback_misses": 0,
+          "duplicate_wakeups": 0,
+          "available_feedback": 0,
+          "acknowledged_feedback": 0
+        },
+        "feedback": {
+          "required_feedback_misses": 0,
+          "unknown_need_for_unacknowledged_help": [],
+          "available_feedback": 0,
+          "scope": "Declared required-feedback reconciliation; no inferred necessity from case labels or cancellation"
+        },
+        "calibration_report_ok": true,
+        "quantity_report_ok": true,
+        "quantity_pipeline_ok": true,
+        "workflow_complete": true,
+        "verified_complete": true,
+        "observation_violations": [],
+        "job_runs": [
+          {
+            "identity": {
+              "pid": 3758489,
+              "ppid": 3758297,
+              "session": 3758489,
+              "starttime": "211785504"
+            },
+            "started_at": 1793070519.6754367,
+            "resume": false,
+            "stdout": "/home/simjecture/investigations/scientific-attention-20261025/base-sft-replication-v3/bswf-8fced947ac9585d9/execution/pipeline-1.stdout",
+            "returncode": 0,
+            "ended_at": 1793070682.9238238
+          }
+        ],
+        "authority_results": [],
+        "usage": {
+          "usage_legacy_unmeasured_calls": 0,
+          "usage_unreported_threads": {},
+          "usage_coverage_since": 1793070508.558662,
+          "usage_by_thread": {
+            "01a17b54-aadb-7c53-8c86-4dec4c7d05b5": {
+              "input_tokens": 297387,
+              "cached_input_tokens": 255616,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 3489,
+              "reasoning_output_tokens": 316
+            }
+          },
+          "usage_roles_by_thread": {
+            "01a17b54-aadb-7c53-8c86-4dec4c7d05b5": "worker"
+          },
+          "usage_updated_at": 1793070680.9690473
+        }
+      }
+    },
+    {
+      "id": "bswf-df645e993709be23",
+      "family": "announced_quiet",
+      "seed": 202611010001,
+      "repeat": 0,
+      "arm": "base",
+      "block": "bsblock-04",
+      "elapsed_seconds": 176.47007608413696,
+      "verified_complete": true,
+      "native_starts": 2,
+      "automatic_alerts": 0,
+      "help_requests": 0,
+      "proposal_counts": {
+        "observe": 10
+      },
+      "admission_counts": {
+        "policy_choice": 10
+      },
+      "parking": [
+        {
+          "started_at": 1793070798.6490042,
+          "ended_at": 1793070847.0756721,
+          "wake_reason": "process_terminal"
+        }
+      ],
+      "ledger": {
+        "required_feedback_misses": 0,
+        "duplicate_wakeups": 0,
+        "available_feedback": 0,
+        "acknowledged_feedback": 0
+      },
+      "outcome": {
+        "stage": "completed",
+        "started_at": 1793070774.4313066,
+        "turns": [
+          {
+            "returncode": 0,
+            "ended_at": 1793070798.6486635
+          },
+          {
+            "returncode": 0,
+            "ended_at": 1793070948.88571
+          }
+        ],
+        "parking": [
+          {
+            "started_at": 1793070798.6490042,
+            "ended_at": 1793070847.0756721,
+            "wake_reason": "process_terminal"
+          }
+        ],
+        "arm": "base",
+        "family": "announced_quiet",
+        "completion_checks": [
+          {
+            "report_ready": false,
+            "pipeline_complete": false,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793070798.6490028,
+            "pending_required_ids": []
+          },
+          {
+            "report_ready": true,
+            "pipeline_complete": true,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": true,
+            "checked_at": 1793070948.8863783,
+            "pending_required_ids": []
+          }
+        ],
+        "finish_reason": "worker_finished_with_obligations_reconciled",
+        "quality": {
+          "verified_quality": 1.0,
+          "report_ok": true,
+          "metrics_ok": true,
+          "requested_configurations": [
+            [
+              64,
+              40
+            ],
+            [
+              128,
+              80
+            ]
+          ],
+          "actual_configurations": [
+            [
+              64,
+              40
+            ],
+            [
+              128,
+              80
+            ]
+          ],
+          "configurations_complete": true,
+          "verification": {
+            "returncode": 0,
+            "stderr": "yt : [INFO     ] 2026-10-27 11:15:49,566 Parameters: current_time              = 6.67128190396305e-14\nyt : [INFO     ] 2026-10-27 11:15:49,566 Parameters: domain_dimensions         = [128   1   1]\nyt : [INFO     ] 2026-10-27 11:15:49,566 Parameters: domain_left_edge          = [-2.e-05  0.e+00  0.e+00]\nyt : [INFO     ] 2026-10-27 11:15:49,566 Parameters: domain_right_edge         = [2.e-05 1.e+00 1.e+00]\nyt : [INFO     ] 2026-10-27 11:15:49,684 Parameters: current_time              = 6.671281903963042e-14\nyt : [INFO     ] 2026-10-27 11:15:49,684 Parameters: domain_dimensions         = [64  1  1]\nyt : [INFO     ] 2026-10-27 11:15:49,684 Parameters: domain_left_edge          = [-2.e-05  0.e+00  0.e+00]\nyt : [INFO     ] 2026-10-27 11:15:49,684 Parameters: domain_right_edge         = [2.e-05 1.e+00 1.e+00]\n"
+          },
+          "protected_artifacts_qualified": {
+            "experiment.py": true,
+            "run_warpx.py": true,
+            "original_analysis.py": true,
+            "environment.json": true,
+            "inputs": true,
+            "harness/bridge.py": true
+          },
+          "report_sha256": "5be09e49665d71ad31bb305ac1db92e2c04d080b50cd32f5118e7493fc3c83b4",
+          "results_sha256": "7abc91aa3844230c51eac06145e9a7bfcda4708e8728443f33b3810ad47ff9fb",
+          "scope": "1: complete accurate two-configuration report; .5: accurate partial report; 0: absent or inaccurate report"
+        },
+        "quantity_verifier": {
+          "returncode": 0,
+          "stderr": ""
+        },
+        "protected_extra": {
+          "pipeline.py": true,
+          "submit_bundle.py": true,
+          "data_units.json": true
+        },
+        "ended_at": 1793070950.9013827,
+        "elapsed_seconds": 176.47007608413696,
+        "native_starts": 2,
+        "ledger": {
+          "required_feedback_misses": 0,
+          "duplicate_wakeups": 0,
+          "available_feedback": 0,
+          "acknowledged_feedback": 0
+        },
+        "feedback": {
+          "required_feedback_misses": 0,
+          "unknown_need_for_unacknowledged_help": [],
+          "available_feedback": 0,
+          "scope": "Declared required-feedback reconciliation; no inferred necessity from case labels or cancellation"
+        },
+        "calibration_report_ok": true,
+        "quantity_report_ok": true,
+        "quantity_pipeline_ok": true,
+        "workflow_complete": true,
+        "verified_complete": true,
+        "observation_violations": [],
+        "job_runs": [
+          {
+            "identity": {
+              "pid": 3759259,
+              "ppid": 3759068,
+              "session": 3759259,
+              "starttime": "211812031"
+            },
+            "started_at": 1793070787.6288183,
+            "resume": false,
+            "stdout": "/home/simjecture/investigations/scientific-attention-20261025/base-sft-replication-v3/bswf-df645e993709be23/execution/pipeline-1.stdout",
+            "returncode": 0,
+            "ended_at": 1793070950.898094
+          }
+        ],
+        "authority_results": [],
+        "usage": {
+          "usage_legacy_unmeasured_calls": 0,
+          "usage_unreported_threads": {},
+          "usage_coverage_since": 1793070774.4518585,
+          "usage_by_thread": {
+            "01a17b58-b968-7893-a76a-71dd8cf501ff": {
+              "input_tokens": 250607,
+              "cached_input_tokens": 221952,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 3178,
+              "reasoning_output_tokens": 296
+            }
+          },
+          "usage_roles_by_thread": {
+            "01a17b58-b968-7893-a76a-71dd8cf501ff": "worker"
+          },
+          "usage_updated_at": 1793070948.8783953
+        }
+      }
+    },
+    {
+      "id": "bswf-1102012cac4676bc",
+      "family": "announced_quiet",
+      "seed": 202611010001,
+      "repeat": 0,
+      "arm": "continued_sft",
+      "block": "bsblock-04",
+      "elapsed_seconds": 186.44953513145447,
+      "verified_complete": true,
+      "native_starts": 2,
+      "automatic_alerts": 0,
+      "help_requests": 0,
+      "proposal_counts": {
+        "observe": 9
+      },
+      "admission_counts": {
+        "policy_choice": 9
+      },
+      "parking": [
+        {
+          "started_at": 1793071063.5633025,
+          "ended_at": 1793071113.1695251,
+          "wake_reason": "process_terminal"
+        }
+      ],
+      "ledger": {
+        "required_feedback_misses": 0,
+        "duplicate_wakeups": 0,
+        "available_feedback": 0,
+        "acknowledged_feedback": 0
+      },
+      "outcome": {
+        "stage": "completed",
+        "started_at": 1793071042.2550838,
+        "turns": [
+          {
+            "returncode": 0,
+            "ended_at": 1793071063.5629492
+          },
+          {
+            "returncode": 0,
+            "ended_at": 1793071226.7500708
+          }
+        ],
+        "parking": [
+          {
+            "started_at": 1793071063.5633025,
+            "ended_at": 1793071113.1695251,
+            "wake_reason": "process_terminal"
+          }
+        ],
+        "arm": "adapted",
+        "family": "announced_quiet",
+        "completion_checks": [
+          {
+            "report_ready": false,
+            "pipeline_complete": false,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793071063.5633008,
+            "pending_required_ids": []
+          },
+          {
+            "report_ready": true,
+            "pipeline_complete": true,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": true,
+            "checked_at": 1793071226.7504077,
+            "pending_required_ids": []
+          }
+        ],
+        "finish_reason": "worker_finished_with_obligations_reconciled",
+        "quality": {
+          "verified_quality": 1.0,
+          "report_ok": true,
+          "metrics_ok": true,
+          "requested_configurations": [
+            [
+              64,
+              40
+            ],
+            [
+              128,
+              80
+            ]
+          ],
+          "actual_configurations": [
+            [
+              64,
+              40
+            ],
+            [
+              128,
+              80
+            ]
+          ],
+          "configurations_complete": true,
+          "verification": {
+            "returncode": 0,
+            "stderr": "yt : [INFO     ] 2026-10-27 11:20:27,424 Parameters: current_time              = 6.67128190396305e-14\nyt : [INFO     ] 2026-10-27 11:20:27,424 Parameters: domain_dimensions         = [128   1   1]\nyt : [INFO     ] 2026-10-27 11:20:27,424 Parameters: domain_left_edge          = [-2.e-05  0.e+00  0.e+00]\nyt : [INFO     ] 2026-10-27 11:20:27,424 Parameters: domain_right_edge         = [2.e-05 1.e+00 1.e+00]\nyt : [INFO     ] 2026-10-27 11:20:27,544 Parameters: current_time              = 6.671281903963042e-14\nyt : [INFO     ] 2026-10-27 11:20:27,544 Parameters: domain_dimensions         = [64  1  1]\nyt : [INFO     ] 2026-10-27 11:20:27,544 Parameters: domain_left_edge          = [-2.e-05  0.e+00  0.e+00]\nyt : [INFO     ] 2026-10-27 11:20:27,545 Parameters: domain_right_edge         = [2.e-05 1.e+00 1.e+00]\n"
+          },
+          "protected_artifacts_qualified": {
+            "experiment.py": true,
+            "run_warpx.py": true,
+            "original_analysis.py": true,
+            "environment.json": true,
+            "inputs": true,
+            "harness/bridge.py": true
+          },
+          "report_sha256": "b519f8bd763912d91ff4819598b98598932b08ce6deaf4c0a9d5e63b2eef74c5",
+          "results_sha256": "f3aaaabc40949be59ef6350f3b2d1ddfed168bd215bc49a8c46a48ac65868e6d",
+          "scope": "1: complete accurate two-configuration report; .5: accurate partial report; 0: absent or inaccurate report"
+        },
+        "quantity_verifier": {
+          "returncode": 0,
+          "stderr": ""
+        },
+        "protected_extra": {
+          "pipeline.py": true,
+          "submit_bundle.py": true,
+          "data_units.json": true
+        },
+        "ended_at": 1793071228.704619,
+        "elapsed_seconds": 186.44953513145447,
+        "native_starts": 2,
+        "ledger": {
+          "required_feedback_misses": 0,
+          "duplicate_wakeups": 0,
+          "available_feedback": 0,
+          "acknowledged_feedback": 0
+        },
+        "feedback": {
+          "required_feedback_misses": 0,
+          "unknown_need_for_unacknowledged_help": [],
+          "available_feedback": 0,
+          "scope": "Declared required-feedback reconciliation; no inferred necessity from case labels or cancellation"
+        },
+        "calibration_report_ok": true,
+        "quantity_report_ok": true,
+        "quantity_pipeline_ok": true,
+        "workflow_complete": true,
+        "verified_complete": true,
+        "observation_violations": [],
+        "job_runs": [
+          {
+            "identity": {
+              "pid": 3760029,
+              "ppid": 3759836,
+              "session": 3760029,
+              "starttime": "211838636"
+            },
+            "started_at": 1793071056.537228,
+            "resume": false,
+            "stdout": "/home/simjecture/investigations/scientific-attention-20261025/base-sft-replication-v3/bswf-1102012cac4676bc/execution/pipeline-1.stdout",
+            "returncode": 0,
+            "ended_at": 1793071228.7039986
+          }
+        ],
+        "authority_results": [],
+        "usage": {
+          "usage_legacy_unmeasured_calls": 0,
+          "usage_unreported_threads": {},
+          "usage_coverage_since": 1793071042.2780216,
+          "usage_by_thread": {
+            "01a17b5c-d234-7c20-af8d-d31f0c4138ef": {
+              "input_tokens": 295673,
+              "cached_input_tokens": 248064,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 3339,
+              "reasoning_output_tokens": 335
+            }
+          },
+          "usage_roles_by_thread": {
+            "01a17b5c-d234-7c20-af8d-d31f0c4138ef": "worker"
+          },
+          "usage_updated_at": 1793071226.7497523
+        }
+      }
+    },
+    {
+      "id": "bswf-ad564078760b6ea6",
+      "family": "announced_quiet",
+      "seed": 202611010001,
+      "repeat": 1,
+      "arm": "rules",
+      "block": "bsblock-05",
+      "elapsed_seconds": 171.0183289051056,
+      "verified_complete": true,
+      "native_starts": 2,
+      "automatic_alerts": 0,
+      "help_requests": 0,
+      "proposal_counts": {
+        "observe": 10
+      },
+      "admission_counts": {
+        "policy_choice": 10
+      },
+      "parking": [
+        {
+          "started_at": 1793071339.0385628,
+          "ended_at": 1793071388.2104764,
+          "wake_reason": "process_terminal"
+        }
+      ],
+      "ledger": {
+        "required_feedback_misses": 0,
+        "duplicate_wakeups": 0,
+        "available_feedback": 0,
+        "acknowledged_feedback": 0
+      },
+      "outcome": {
+        "stage": "completed",
+        "started_at": 1793071319.4081688,
+        "turns": [
+          {
+            "returncode": 0,
+            "ended_at": 1793071339.0379963
+          },
+          {
+            "returncode": 0,
+            "ended_at": 1793071488.414959
+          }
+        ],
+        "parking": [
+          {
+            "started_at": 1793071339.0385628,
+            "ended_at": 1793071388.2104764,
+            "wake_reason": "process_terminal"
+          }
+        ],
+        "arm": "rules",
+        "family": "announced_quiet",
+        "completion_checks": [
+          {
+            "report_ready": false,
+            "pipeline_complete": false,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793071339.0385609,
+            "pending_required_ids": []
+          },
+          {
+            "report_ready": true,
+            "pipeline_complete": true,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": true,
+            "checked_at": 1793071488.4152968,
+            "pending_required_ids": []
+          }
+        ],
+        "finish_reason": "worker_finished_with_obligations_reconciled",
+        "quality": {
+          "verified_quality": 1.0,
+          "report_ok": true,
+          "metrics_ok": true,
+          "requested_configurations": [
+            [
+              64,
+              40
+            ],
+            [
+              128,
+              80
+            ]
+          ],
+          "actual_configurations": [
+            [
+              64,
+              40
+            ],
+            [
+              128,
+              80
+            ]
+          ],
+          "configurations_complete": true,
+          "verification": {
+            "returncode": 0,
+            "stderr": "yt : [INFO     ] 2026-10-27 11:24:49,088 Parameters: current_time              = 6.67128190396305e-14\nyt : [INFO     ] 2026-10-27 11:24:49,088 Parameters: domain_dimensions         = [128   1   1]\nyt : [INFO     ] 2026-10-27 11:24:49,088 Parameters: domain_left_edge          = [-2.e-05  0.e+00  0.e+00]\nyt : [INFO     ] 2026-10-27 11:24:49,088 Parameters: domain_right_edge         = [2.e-05 1.e+00 1.e+00]\nyt : [INFO     ] 2026-10-27 11:24:49,207 Parameters: current_time              = 6.671281903963042e-14\nyt : [INFO     ] 2026-10-27 11:24:49,207 Parameters: domain_dimensions         = [64  1  1]\nyt : [INFO     ] 2026-10-27 11:24:49,207 Parameters: domain_left_edge          = [-2.e-05  0.e+00  0.e+00]\nyt : [INFO     ] 2026-10-27 11:24:49,207 Parameters: domain_right_edge         = [2.e-05 1.e+00 1.e+00]\n"
+          },
+          "protected_artifacts_qualified": {
+            "experiment.py": true,
+            "run_warpx.py": true,
+            "original_analysis.py": true,
+            "environment.json": true,
+            "inputs": true,
+            "harness/bridge.py": true
+          },
+          "report_sha256": "9d063ce56e1930872c3a9eb54399e8a3d606595bebf745c20de4faab280f59d2",
+          "results_sha256": "ed9423f572f16f512553ac486c439d9ea6545fb8b7db603e98bfc2e158cb5523",
+          "scope": "1: complete accurate two-configuration report; .5: accurate partial report; 0: absent or inaccurate report"
+        },
+        "quantity_verifier": {
+          "returncode": 0,
+          "stderr": ""
+        },
+        "protected_extra": {
+          "pipeline.py": true,
+          "submit_bundle.py": true,
+          "data_units.json": true
+        },
+        "ended_at": 1793071490.4264977,
+        "elapsed_seconds": 171.0183289051056,
+        "native_starts": 2,
+        "ledger": {
+          "required_feedback_misses": 0,
+          "duplicate_wakeups": 0,
+          "available_feedback": 0,
+          "acknowledged_feedback": 0
+        },
+        "feedback": {
+          "required_feedback_misses": 0,
+          "unknown_need_for_unacknowledged_help": [],
+          "available_feedback": 0,
+          "scope": "Declared required-feedback reconciliation; no inferred necessity from case labels or cancellation"
+        },
+        "calibration_report_ok": true,
+        "quantity_report_ok": true,
+        "quantity_pipeline_ok": true,
+        "workflow_complete": true,
+        "verified_complete": true,
+        "observation_violations": [],
+        "job_runs": [
+          {
+            "identity": {
+              "pid": 3760800,
+              "ppid": 3760605,
+              "session": 3760800,
+              "starttime": "211865465"
+            },
+            "started_at": 1793071328.5288086,
+            "resume": false,
+            "stdout": "/home/simjecture/investigations/scientific-attention-20261025/base-sft-replication-v3/bswf-ad564078760b6ea6/execution/pipeline-1.stdout",
+            "returncode": 0,
+            "ended_at": 1793071490.4259596
+          }
+        ],
+        "authority_results": [],
+        "usage": {
+          "usage_legacy_unmeasured_calls": 0,
+          "usage_unreported_threads": {},
+          "usage_coverage_since": 1793071319.4295702,
+          "usage_by_thread": {
+            "01a17b61-0a3b-70c3-8cad-88e8298f8159": {
+              "input_tokens": 228926,
+              "cached_input_tokens": 200064,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 3483,
+              "reasoning_output_tokens": 298
+            }
+          },
+          "usage_roles_by_thread": {
+            "01a17b61-0a3b-70c3-8cad-88e8298f8159": "worker"
+          },
+          "usage_updated_at": 1793071488.414645
+        }
+      }
+    },
+    {
+      "id": "bswf-855a07113b13af51",
+      "family": "announced_quiet",
+      "seed": 202611010001,
+      "repeat": 1,
+      "arm": "base",
+      "block": "bsblock-05",
+      "elapsed_seconds": 172.38689756393433,
+      "verified_complete": true,
+      "native_starts": 2,
+      "automatic_alerts": 0,
+      "help_requests": 0,
+      "proposal_counts": {
+        "observe": 10
+      },
+      "admission_counts": {
+        "state_changed": 1,
+        "policy_choice": 9
+      },
+      "parking": [
+        {
+          "started_at": 1793071599.241758,
+          "ended_at": 1793071651.0361118,
+          "wake_reason": "process_terminal"
+        }
+      ],
+      "ledger": {
+        "required_feedback_misses": 0,
+        "duplicate_wakeups": 0,
+        "available_feedback": 0,
+        "acknowledged_feedback": 0
+      },
+      "outcome": {
+        "stage": "completed",
+        "started_at": 1793071581.1066177,
+        "turns": [
+          {
+            "returncode": 0,
+            "ended_at": 1793071599.2414408
+          },
+          {
+            "returncode": 0,
+            "ended_at": 1793071751.536091
+          }
+        ],
+        "parking": [
+          {
+            "started_at": 1793071599.241758,
+            "ended_at": 1793071651.0361118,
+            "wake_reason": "process_terminal"
+          }
+        ],
+        "arm": "base",
+        "family": "announced_quiet",
+        "completion_checks": [
+          {
+            "report_ready": false,
+            "pipeline_complete": false,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793071599.2417567,
+            "pending_required_ids": []
+          },
+          {
+            "report_ready": true,
+            "pipeline_complete": true,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": true,
+            "checked_at": 1793071751.5366983,
+            "pending_required_ids": []
+          }
+        ],
+        "finish_reason": "worker_finished_with_obligations_reconciled",
+        "quality": {
+          "verified_quality": 1.0,
+          "report_ok": true,
+          "metrics_ok": true,
+          "requested_configurations": [
+            [
+              64,
+              40
+            ],
+            [
+              128,
+              80
+            ]
+          ],
+          "actual_configurations": [
+            [
+              64,
+              40
+            ],
+            [
+              128,
+              80
+            ]
+          ],
+          "configurations_complete": true,
+          "verification": {
+            "returncode": 0,
+            "stderr": "yt : [INFO     ] 2026-10-27 11:29:12,206 Parameters: current_time              = 6.67128190396305e-14\nyt : [INFO     ] 2026-10-27 11:29:12,207 Parameters: domain_dimensions         = [128   1   1]\nyt : [INFO     ] 2026-10-27 11:29:12,207 Parameters: domain_left_edge          = [-2.e-05  0.e+00  0.e+00]\nyt : [INFO     ] 2026-10-27 11:29:12,207 Parameters: domain_right_edge         = [2.e-05 1.e+00 1.e+00]\nyt : [INFO     ] 2026-10-27 11:29:12,325 Parameters: current_time              = 6.671281903963042e-14\nyt : [INFO     ] 2026-10-27 11:29:12,325 Parameters: domain_dimensions         = [64  1  1]\nyt : [INFO     ] 2026-10-27 11:29:12,325 Parameters: domain_left_edge          = [-2.e-05  0.e+00  0.e+00]\nyt : [INFO     ] 2026-10-27 11:29:12,326 Parameters: domain_right_edge         = [2.e-05 1.e+00 1.e+00]\n"
+          },
+          "protected_artifacts_qualified": {
+            "experiment.py": true,
+            "run_warpx.py": true,
+            "original_analysis.py": true,
+            "environment.json": true,
+            "inputs": true,
+            "harness/bridge.py": true
+          },
+          "report_sha256": "7818796369ca9efd936dd90f9442565fe4ce67e10519beec4abc6e11167a1ba7",
+          "results_sha256": "4ff2ab037735b7ed06e9a09d0e6f932b4a47a71641646380c1730e820c720899",
+          "scope": "1: complete accurate two-configuration report; .5: accurate partial report; 0: absent or inaccurate report"
+        },
+        "quantity_verifier": {
+          "returncode": 0,
+          "stderr": ""
+        },
+        "protected_extra": {
+          "pipeline.py": true,
+          "submit_bundle.py": true,
+          "data_units.json": true
+        },
+        "ended_at": 1793071753.4935153,
+        "elapsed_seconds": 172.38689756393433,
+        "native_starts": 2,
+        "ledger": {
+          "required_feedback_misses": 0,
+          "duplicate_wakeups": 0,
+          "available_feedback": 0,
+          "acknowledged_feedback": 0
+        },
+        "feedback": {
+          "required_feedback_misses": 0,
+          "unknown_need_for_unacknowledged_help": [],
+          "available_feedback": 0,
+          "scope": "Declared required-feedback reconciliation; no inferred necessity from case labels or cancellation"
+        },
+        "calibration_report_ok": true,
+        "quantity_report_ok": true,
+        "quantity_pipeline_ok": true,
+        "workflow_complete": true,
+        "verified_complete": true,
+        "observation_violations": [],
+        "job_runs": [
+          {
+            "identity": {
+              "pid": 3761560,
+              "ppid": 3761345,
+              "session": 3761560,
+              "starttime": "211891672"
+            },
+            "started_at": 1793071594.2337024,
+            "resume": false,
+            "stdout": "/home/simjecture/investigations/scientific-attention-20261025/base-sft-replication-v3/bswf-855a07113b13af51/execution/pipeline-1.stdout",
+            "returncode": 0,
+            "ended_at": 1793071753.493043
+          }
+        ],
+        "authority_results": [],
+        "usage": {
+          "usage_legacy_unmeasured_calls": 0,
+          "usage_unreported_threads": {},
+          "usage_coverage_since": 1793071581.1284,
+          "usage_by_thread": {
+            "01a17b65-087b-7542-9d14-749fe38e6b99": {
+              "input_tokens": 291568,
+              "cached_input_tokens": 259456,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 3385,
+              "reasoning_output_tokens": 248
+            }
+          },
+          "usage_roles_by_thread": {
+            "01a17b65-087b-7542-9d14-749fe38e6b99": "worker"
+          },
+          "usage_updated_at": 1793071751.5357351
+        }
+      }
+    },
+    {
+      "id": "bswf-d84e25c5e9c0ae13",
+      "family": "announced_quiet",
+      "seed": 202611010001,
+      "repeat": 1,
+      "arm": "continued_sft",
+      "block": "bsblock-05",
+      "elapsed_seconds": 416.1420612335205,
+      "verified_complete": true,
+      "native_starts": 6,
+      "automatic_alerts": 0,
+      "help_requests": 1,
+      "proposal_counts": {
+        "observe": 9,
+        "wake_director": 1
+      },
+      "admission_counts": {
+        "state_changed": 1,
+        "policy_choice": 8,
+        "ungrounded_attention": 1
+      },
+      "parking": [
+        {
+          "started_at": 1793071869.419718,
+          "ended_at": 1793071918.1984916,
+          "wake_reason": "process_terminal"
+        },
+        {
+          "started_at": 1793071988.6391954,
+          "ended_at": 1793072079.0032415,
+          "wake_reason": "fixed_wait_fallback"
+        },
+        {
+          "started_at": 1793072101.7885716,
+          "ended_at": 1793072151.6605659,
+          "wake_reason": "returned_attention"
+        }
+      ],
+      "ledger": {
+        "required_feedback_misses": 0,
+        "duplicate_wakeups": 0,
+        "available_feedback": 2,
+        "acknowledged_feedback": 2
+      },
+      "outcome": {
+        "stage": "completed",
+        "started_at": 1793071844.2676456,
+        "turns": [
+          {
+            "returncode": 0,
+            "ended_at": 1793071869.418896
+          },
+          {
+            "returncode": 124,
+            "ended_at": 1793071988.6383917
+          },
+          {
+            "returncode": 124,
+            "ended_at": 1793072101.7868764
+          },
+          {
+            "returncode": 0,
+            "ended_at": 1793072258.358277
+          }
+        ],
+        "parking": [
+          {
+            "started_at": 1793071869.419718,
+            "ended_at": 1793071918.1984916,
+            "wake_reason": "process_terminal"
+          },
+          {
+            "started_at": 1793071988.6391954,
+            "ended_at": 1793072079.0032415,
+            "wake_reason": "fixed_wait_fallback"
+          },
+          {
+            "started_at": 1793072101.7885716,
+            "ended_at": 1793072151.6605659,
+            "wake_reason": "returned_attention"
+          }
+        ],
+        "arm": "adapted",
+        "family": "announced_quiet",
+        "completion_checks": [
+          {
+            "report_ready": false,
+            "pipeline_complete": false,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793071869.419715,
+            "pending_required_ids": []
+          },
+          {
+            "report_ready": false,
+            "pipeline_complete": true,
+            "worker_returncode": 124,
+            "worker_waiting": true,
+            "pending_required_help": 1,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793071988.6391935,
+            "pending_required_ids": [
+              "help_5f1ab4f6eb61f2f23f97656b"
+            ]
+          },
+          {
+            "report_ready": false,
+            "pipeline_complete": true,
+            "worker_returncode": 124,
+            "worker_waiting": true,
+            "pending_required_help": 1,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793072101.7885702,
+            "pending_required_ids": [
+              "help_5f1ab4f6eb61f2f23f97656b"
+            ]
+          },
+          {
+            "report_ready": true,
+            "pipeline_complete": true,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": true,
+            "checked_at": 1793072258.3621175,
+            "pending_required_ids": []
+          }
+        ],
+        "finish_reason": "worker_finished_with_obligations_reconciled",
+        "quality": {
+          "verified_quality": 1.0,
+          "report_ok": true,
+          "metrics_ok": true,
+          "requested_configurations": [
+            [
+              64,
+              40
+            ],
+            [
+              128,
+              80
+            ]
+          ],
+          "actual_configurations": [
+            [
+              64,
+              40
+            ],
+            [
+              128,
+              80
+            ]
+          ],
+          "configurations_complete": true,
+          "verification": {
+            "returncode": 0,
+            "stderr": "yt : [INFO     ] 2026-10-27 11:37:39,054 Parameters: current_time              = 6.67128190396305e-14\nyt : [INFO     ] 2026-10-27 11:37:39,054 Parameters: domain_dimensions         = [128   1   1]\nyt : [INFO     ] 2026-10-27 11:37:39,054 Parameters: domain_left_edge          = [-2.e-05  0.e+00  0.e+00]\nyt : [INFO     ] 2026-10-27 11:37:39,054 Parameters: domain_right_edge         = [2.e-05 1.e+00 1.e+00]\nyt : [INFO     ] 2026-10-27 11:37:39,175 Parameters: current_time              = 6.671281903963042e-14\nyt : [INFO     ] 2026-10-27 11:37:39,175 Parameters: domain_dimensions         = [64  1  1]\nyt : [INFO     ] 2026-10-27 11:37:39,175 Parameters: domain_left_edge          = [-2.e-05  0.e+00  0.e+00]\nyt : [INFO     ] 2026-10-27 11:37:39,176 Parameters: domain_right_edge         = [2.e-05 1.e+00 1.e+00]\n"
+          },
+          "protected_artifacts_qualified": {
+            "experiment.py": true,
+            "run_warpx.py": true,
+            "original_analysis.py": true,
+            "environment.json": true,
+            "inputs": true,
+            "harness/bridge.py": true
+          },
+          "report_sha256": "d738cdbeb8635d28667769e0f7c8d97042fd45c6ff000cc71382b0f0b8540402",
+          "results_sha256": "c7b8ab385ba44b1bee0e4768bee6e9840ed75c752b875ae2046ea29dc862f430",
+          "scope": "1: complete accurate two-configuration report; .5: accurate partial report; 0: absent or inaccurate report"
+        },
+        "quantity_verifier": {
+          "returncode": 0,
+          "stderr": ""
+        },
+        "protected_extra": {
+          "pipeline.py": true,
+          "submit_bundle.py": true,
+          "data_units.json": true
+        },
+        "ended_at": 1793072260.4097066,
+        "elapsed_seconds": 416.1420612335205,
+        "native_starts": 6,
+        "ledger": {
+          "required_feedback_misses": 0,
+          "duplicate_wakeups": 0,
+          "available_feedback": 2,
+          "acknowledged_feedback": 2
+        },
+        "feedback": {
+          "required_feedback_misses": 0,
+          "unknown_need_for_unacknowledged_help": [],
+          "available_feedback": 2,
+          "scope": "Declared required-feedback reconciliation; no inferred necessity from case labels or cancellation"
+        },
+        "calibration_report_ok": true,
+        "quantity_report_ok": true,
+        "quantity_pipeline_ok": true,
+        "workflow_complete": true,
+        "verified_complete": true,
+        "observation_violations": [],
+        "job_runs": [
+          {
+            "identity": {
+              "pid": 3762307,
+              "ppid": 3762107,
+              "session": 3762307,
+              "starttime": "211917706"
+            },
+            "started_at": 1793071857.3939636,
+            "resume": false,
+            "stdout": "/home/simjecture/investigations/scientific-attention-20261025/base-sft-replication-v3/bswf-d84e25c5e9c0ae13/execution/pipeline-1.stdout",
+            "returncode": 0,
+            "ended_at": 1793072260.409118
+          }
+        ],
+        "authority_results": [],
+        "usage": {
+          "usage_legacy_unmeasured_calls": 0,
+          "usage_unreported_threads": {
+            "helper_b36e9bcccb23d819d122b424:01a17b6b-e65e-7952-84a1-5aca2f545a83": "helper"
+          },
+          "usage_coverage_since": 1793071844.2867358,
+          "usage_by_thread": {
+            "01a17b69-0c77-7500-9983-96f5258a32e6": {
+              "input_tokens": 532304,
+              "cached_input_tokens": 478976,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 6083,
+              "reasoning_output_tokens": 703
+            },
+            "01a17b6b-3f63-75d1-9bb6-194a4b45162b": {
+              "input_tokens": 21685,
+              "cached_input_tokens": 12160,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 581,
+              "reasoning_output_tokens": 148
+            }
+          },
+          "usage_roles_by_thread": {
+            "01a17b69-0c77-7500-9983-96f5258a32e6": "worker",
+            "01a17b6b-3f63-75d1-9bb6-194a4b45162b": "director"
+          },
+          "usage_updated_at": 1793072258.3570547,
+          "usage_incomplete_turns": 3,
+          "usage_unidentified_calls": 0
+        }
+      }
+    },
+    {
+      "id": "bswf-273cf119d7ddeb6a",
+      "family": "announced_quiet",
+      "seed": 202611010001,
+      "repeat": 1,
+      "arm": "observe",
+      "block": "bsblock-05",
+      "elapsed_seconds": 198.91875910758972,
+      "verified_complete": true,
+      "native_starts": 2,
+      "automatic_alerts": 0,
+      "help_requests": 0,
+      "proposal_counts": {
+        "observe": 10
+      },
+      "admission_counts": {
+        "policy_choice": 10
+      },
+      "parking": [
+        {
+          "started_at": 1793072371.6478019,
+          "ended_at": 1793072420.5419285,
+          "wake_reason": "process_terminal"
+        }
+      ],
+      "ledger": {
+        "required_feedback_misses": 0,
+        "duplicate_wakeups": 0,
+        "available_feedback": 0,
+        "acknowledged_feedback": 0
+      },
+      "outcome": {
+        "stage": "completed",
+        "started_at": 1793072351.1031532,
+        "turns": [
+          {
+            "returncode": 0,
+            "ended_at": 1793072371.6469898
+          },
+          {
+            "returncode": 0,
+            "ended_at": 1793072542.0465121
+          }
+        ],
+        "parking": [
+          {
+            "started_at": 1793072371.6478019,
+            "ended_at": 1793072420.5419285,
+            "wake_reason": "process_terminal"
+          }
+        ],
+        "arm": "observe",
+        "family": "announced_quiet",
+        "completion_checks": [
+          {
+            "report_ready": false,
+            "pipeline_complete": false,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": false,
+            "checked_at": 1793072371.6477187,
+            "pending_required_ids": []
+          },
+          {
+            "report_ready": true,
+            "pipeline_complete": true,
+            "worker_returncode": 0,
+            "worker_waiting": false,
+            "pending_required_help": 0,
+            "unacknowledged_required": 0,
+            "allowed": true,
+            "checked_at": 1793072542.047189,
+            "pending_required_ids": []
+          }
+        ],
+        "finish_reason": "worker_finished_with_obligations_reconciled",
+        "quality": {
+          "verified_quality": 1.0,
+          "report_ok": true,
+          "metrics_ok": true,
+          "requested_configurations": [
+            [
+              64,
+              40
+            ],
+            [
+              128,
+              80
+            ]
+          ],
+          "actual_configurations": [
+            [
+              64,
+              40
+            ],
+            [
+              128,
+              80
+            ]
+          ],
+          "configurations_complete": true,
+          "verification": {
+            "returncode": 0,
+            "stderr": "yt : [INFO     ] 2026-10-27 11:42:28,521 Parameters: current_time              = 6.67128190396305e-14\nyt : [INFO     ] 2026-10-27 11:42:28,521 Parameters: domain_dimensions         = [128   1   1]\nyt : [INFO     ] 2026-10-27 11:42:28,521 Parameters: domain_left_edge          = [-2.e-05  0.e+00  0.e+00]\nyt : [INFO     ] 2026-10-27 11:42:28,521 Parameters: domain_right_edge         = [2.e-05 1.e+00 1.e+00]\nyt : [INFO     ] 2026-10-27 11:42:28,737 Parameters: current_time              = 6.671281903963042e-14\nyt : [INFO     ] 2026-10-27 11:42:28,738 Parameters: domain_dimensions         = [64  1  1]\nyt : [INFO     ] 2026-10-27 11:42:28,738 Parameters: domain_left_edge          = [-2.e-05  0.e+00  0.e+00]\nyt : [INFO     ] 2026-10-27 11:42:28,738 Parameters: domain_right_edge         = [2.e-05 1.e+00 1.e+00]\n"
+          },
+          "protected_artifacts_qualified": {
+            "experiment.py": true,
+            "run_warpx.py": true,
+            "original_analysis.py": true,
+            "environment.json": true,
+            "inputs": true,
+            "harness/bridge.py": true
+          },
+          "report_sha256": "4b53441bf2fd1a8bdd898ad1a98f1d83cbce6ad7e046004c9adb7ce028240ead",
+          "results_sha256": "90bfe572fc65b0f58dca9a31d4e391e0d9489df54ad262bb58b0dfce4b1500da",
+          "scope": "1: complete accurate two-configuration report; .5: accurate partial report; 0: absent or inaccurate report"
+        },
+        "quantity_verifier": {
+          "returncode": 0,
+          "stderr": ""
+        },
+        "protected_extra": {
+          "pipeline.py": true,
+          "submit_bundle.py": true,
+          "data_units.json": true
+        },
+        "ended_at": 1793072550.021912,
+        "elapsed_seconds": 198.91875910758972,
+        "native_starts": 2,
+        "ledger": {
+          "required_feedback_misses": 0,
+          "duplicate_wakeups": 0,
+          "available_feedback": 0,
+          "acknowledged_feedback": 0
+        },
+        "feedback": {
+          "required_feedback_misses": 0,
+          "unknown_need_for_unacknowledged_help": [],
+          "available_feedback": 0,
+          "scope": "Declared required-feedback reconciliation; no inferred necessity from case labels or cancellation"
+        },
+        "calibration_report_ok": true,
+        "quantity_report_ok": true,
+        "quantity_pipeline_ok": true,
+        "workflow_complete": true,
+        "verified_complete": true,
+        "observation_violations": [],
+        "job_runs": [
+          {
+            "identity": {
+              "pid": 3764171,
+              "ppid": 3763981,
+              "session": 3764171,
+              "starttime": "211968147"
+            },
+            "started_at": 1793072362.6298585,
+            "resume": false,
+            "stdout": "/home/simjecture/investigations/scientific-attention-20261025/base-sft-replication-v3/bswf-273cf119d7ddeb6a/execution/pipeline-1.stdout",
+            "returncode": 0,
+            "ended_at": 1793072550.0182772
+          }
+        ],
+        "authority_results": [],
+        "usage": {
+          "usage_legacy_unmeasured_calls": 0,
+          "usage_unreported_threads": {},
+          "usage_coverage_since": 1793072351.1251824,
+          "usage_by_thread": {
+            "01a17b70-c84f-7ec3-bd49-94020694d2d8": {
+              "input_tokens": 251968,
+              "cached_input_tokens": 222336,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 3238,
+              "reasoning_output_tokens": 441
+            }
+          },
+          "usage_roles_by_thread": {
+            "01a17b70-c84f-7ec3-bd49-94020694d2d8": "worker"
+          },
+          "usage_updated_at": 1793072542.0259962
+        }
+      }
+    }
+  ],
+  "public_help_traces": {
+    "bswf-d84e25c5e9c0ae13": {
+      "help_requests/help_5f1ab4f6eb61f2f23f97656b.json": {
+        "id": "help_5f1ab4f6eb61f2f23f97656b",
+        "status": "resolved",
+        "created_at": 1793071986.0153606,
+        "request_sha256": "5f1ab4f6eb61f2f23f97656bf5175cc13614af4a37387d4e7157a9df55bd089d",
+        "question": "Check the completed WarpX bundle diagnostic interpretation: assess the supplied analysis_probe.py and options, V/m peak reporting, unchanged original thresholds, and calibration arithmetic. Identify a concrete defect if present; otherwise explain why no repair is needed. This is bounded technical assistance, not a request for report review or scientific acceptance.",
+        "success_criteria": "Return a source-based assessment of units and threshold handling and verify |0.9924635946950418 - 1/(1+abs(0.006933297444600537))| < 1e-3. Do not change files or rerun physical jobs. Flag limitations of the two-control comparison.",
+        "context": "The bundle completed. Direct experiment.py analyze calls reproduced both pipeline rows. mesh_64: field error 0.006933297444600537, charge residual 2.4284628197425935e-12, peak 1523541806.9855852 V/m. mesh_128: field error 0.0017027848999745115, charge residual 8.358785852319213e-12, peak 1521126773.9587018 V/m. Both original checks pass (<0.05 and <1e-11). data_units.json declares V/m; options agree. Calibration gain 0.6 gives contraction 0.4, with 8 iterations and error 0.0006508474808243347. No defect found and no diagnostics edited. All saved-field reads must use experiment.py. Stay in attached files/public study scope; do not inspect host implementation.",
+        "files": {
+          "analysis_probe.py": "d30384f911454972a0508967292794421bf51850e71a379ce603c764de6ab281",
+          "analysis_options.json": "b0035947b92cabdff4d316bf4bdb77cf3c65d4353baca0112637ae7d253de413",
+          "calculation.py": "6c6aa26b828a2c25f4278db78e053725c867a85ccce8bb9ab7c4090f082e963d",
+          "verification.json": "6ea408a47a06bf02a135998a2f6de705f7b43ab4d7eedc4aacc273656ec95ab7",
+          "pipeline_summary.json": "054c3bc4f021cadf28ad1a43f16c350398b47ada7f06dc5fe3f8dcbecac6c8ab",
+          "data_units.json": "0c2bf50836d1ff0bc020202e20f78f8e1b197e1c69f8e9a5b2a5d47b42fbd1d3"
+        },
+        "feedback_requirement": "required",
+        "tasks": [
+          "helper_b36e9bcccb23d819d122b424"
+        ],
+        "context_file": "help_context/help_5f1ab4f6eb61f2f23f97656b/CONTEXT.json",
+        "context_sha256": "e3d2eef0d613e4cd99c92300633f810fff3a9fa6d210de87e1773fed6bc84543",
+        "resolved_at": 1793072151.4942782
+      },
+      "helper_tasks/helper_b36e9bcccb23d819d122b424.json": {
+        "id": "helper_b36e9bcccb23d819d122b424",
+        "status": "timed_out",
+        "created_at": 1793072028.8522553,
+        "director": "director_0155f73cc78c69a69596ce53",
+        "request": "help_5f1ab4f6eb61f2f23f97656b",
+        "task": "Inspect the attached analysis_probe.py, analysis_options.json, calculation.py, verification.json, pipeline_summary.json and data_units.json. Check unit handling against the recorded V/m convention, preservation of the original field-error 0.05 and charge-residual 1e-11 thresholds, and calibration target arithmetic and iteration interpretation. Distinguish source-supported findings from worker assertions. Identify any concrete defect, or explain why none is evident within the inspected scope. Explain limitations of the two-control comparison. Do not modify supplied files, access saved fields directly, run physical jobs, inspect host implementation, or approve scientific claims. Write the bounded technical assessment to diagnostic_assistance.md.",
+        "completion_criteria": "Provide source-specific findings on units and thresholds; independently calculate the target and absolute calibration error for the supplied values; identify discrepancies or explicitly state inspected-scope limitations. Return the assessment for required worker feedback handling.",
+        "outputs": [
+          "diagnostic_assistance.md"
+        ],
+        "timeout_seconds": 120.0,
+        "input_hashes": {
+          "analysis_probe.py": "d30384f911454972a0508967292794421bf51850e71a379ce603c764de6ab281",
+          "analysis_options.json": "b0035947b92cabdff4d316bf4bdb77cf3c65d4353baca0112637ae7d253de413",
+          "calculation.py": "6c6aa26b828a2c25f4278db78e053725c867a85ccce8bb9ab7c4090f082e963d",
+          "verification.json": "6ea408a47a06bf02a135998a2f6de705f7b43ab4d7eedc4aacc273656ec95ab7",
+          "pipeline_summary.json": "054c3bc4f021cadf28ad1a43f16c350398b47ada7f06dc5fe3f8dcbecac6c8ab",
+          "data_units.json": "0c2bf50836d1ff0bc020202e20f78f8e1b197e1c69f8e9a5b2a5d47b42fbd1d3"
+        },
+        "context_sha256": "c113b11e6f1cdb8fbcbbe554447f111c683caff6312c5c62ca5d796168b184a3",
+        "workspace": "helpers/helper_b36e9bcccb23d819d122b424/research",
+        "scientific_status": "unreviewed",
+        "deadline": 1793072150.9971635,
+        "process_identity": {
+          "pid": 3762954,
+          "starttime": "211935070",
+          "argv": [
+            "/home/simjecture/investigations/scientific-attention-20261025/replication-env/bin/python",
+            "-m",
+            "conjecture_solver.research_helpers",
+            "--root",
+            "/home/simjecture/investigations/scientific-attention-20261025/base-sft-replication-v3/bswf-d84e25c5e9c0ae13",
+            "--execute",
+            "helper_b36e9bcccb23d819d122b424"
+          ],
+          "launched_at": "2026-10-27T03:33:51.030859+00:00",
+          "run_directory": null
+        },
+        "started_at": 1793072031.2025168,
+        "returncode": 0,
+        "finished_at": 1793072151.4644518,
+        "usage": {
+          "usage_legacy_unmeasured_calls": 0,
+          "usage_unreported_threads": {
+            "01a17b6b-e65e-7952-84a1-5aca2f545a83": "worker"
+          },
+          "usage_coverage_since": 1793072031.2220764,
+          "usage_incomplete_turns": 1
+        }
+      },
+      "director/director_0155f73cc78c69a69596ce53.json": {
+        "id": "director_0155f73cc78c69a69596ce53",
+        "created_at": 1793072028.8193462,
+        "packet_sha256": "a9645bfe3e1a03bd2d554695a9854050544d7d7068bdf95469f5fbeaa5eebef4",
+        "control_actions": [],
+        "authority": "Execution strategy; not scientific approval",
+        "decision": "continue",
+        "rationale": "The worker reports completed controls, reproduced diagnostics and a calibration error below the required tolerance. These reports support proceeding to the requested bounded technical check, without accepting scientific claims. No concrete defect or reason to repeat physical execution is recorded. The remaining budget accommodates assistance and final reporting.",
+        "scientific_feasibility": "limited",
+        "budget_feasibility": "feasible",
+        "stop_experiments": [],
+        "wake_worker": false,
+        "park_worker": true,
+        "report_assessment": null,
+        "closeout_report": null,
+        "next_action": "Keep the worker parked awaiting the required assistance. On its return, resume the worker to inspect actual feedback and completion artifacts, record exact feedback IDs and digests in FEEDBACK_ACK.json, and complete REPORT.txt and results.json covering every successful physical execution. Preserve thresholds and report any unresolved limitations. Do not submit another physical bundle or request report review.",
+        "storage_increase": null,
+        "registration_tuning": null,
+        "time_request": null,
+        "operating_limits": null,
+        "helper_tasks": [
+          {
+            "request": "help_5f1ab4f6eb61f2f23f97656b",
+            "task": "Inspect the attached analysis_probe.py, analysis_options.json, calculation.py, verification.json, pipeline_summary.json and data_units.json. Check unit handling against the recorded V/m convention, preservation of the original field-error 0.05 and charge-residual 1e-11 thresholds, and calibration target arithmetic and iteration interpretation. Distinguish source-supported findings from worker assertions. Identify any concrete defect, or explain why none is evident within the inspected scope. Explain limitations of the two-control comparison. Do not modify supplied files, access saved fields directly, run physical jobs, inspect host implementation, or approve scientific claims. Write the bounded technical assessment to diagnostic_assistance.md.",
+            "completion_criteria": "Provide source-specific findings on units and thresholds; independently calculate the target and absolute calibration error for the supplied values; identify discrepancies or explicitly state inspected-scope limitations. Return the assessment for required worker feedback handling.",
+            "outputs": [
+              "diagnostic_assistance.md"
+            ],
+            "timeout_seconds": 120.0
+          }
+        ],
+        "help_replies": [],
+        "helper_assignments": [
+          "helper_b36e9bcccb23d819d122b424"
+        ],
+        "worker_wait_action": {
+          "status": "parked",
+          "wait": {
+            "status": "waiting",
+            "reason": "Keep the worker parked awaiting the required assistance. On its return, resume the worker to inspect actual feedback and completion artifacts, record exact feedback IDs and digests in FEEDBACK_ACK.json, and complete REPORT.txt and results.json covering every successful physical execution. Preserve thresholds and report any unresolved limitations. Do not submit another physical bundle or request report review.",
+            "subjects": {
+              "help_requests": [
+                "help_5f1ab4f6eb61f2f23f97656b"
+              ]
+            },
+            "for_operator": true,
+            "operator_ids": [],
+            "created_at": 1793072028.917945,
+            "deadline": 1793072494.3557298,
+            "authority": "Worker scheduling only; no scientific approval or deadline change"
+          }
+        }
+      }
+    },
+    "bswf-548616ebf33b6b76": {
+      "help_requests/help_75111d4926995778ba909a95.json": {
+        "id": "help_75111d4926995778ba909a95",
+        "status": "resolved",
+        "created_at": 1793066810.5380096,
+        "request_sha256": "75111d4926995778ba909a95aaa48464b4f70c3f3e01f5fe9e3ece63967925a6",
+        "question": "Check the diagnostic source and scalar arithmetic for a completed WarpX bundle. Both original checks pass; determine whether any concrete unit or calibration defect requires repair. This is technical assistance, not a request for report review or scientific acceptance.",
+        "success_criteria": "Independently check V/m peak reporting, unchanged 0.05 and 1e-11 thresholds, target=1/(1+abs(mesh_64 relative_field_error)), and absolute calibration error below 1e-3. Identify any concrete issue or explain why no repair is needed.",
+        "context": "Bundle completed. Native experiment.py analyze --name mesh_64 and mesh_128 reproduced pipeline_summary.json. Fields are already V/m per data_units.json; options specify V/m. mesh_64 field error=0.006933297444600537, charge residual=2.435296526470588e-12, peak=1523541806.9855852 V/m. mesh_128 field error=0.0017027848999745115, charge residual=8.358785852319213e-12, peak=1521126773.9587018 V/m. Calibration=0.9923535001478738, target=0.9931144421758661, iterations=12, gain=0.45. Three early FileNotFoundError events occurred before a configured 14-second diagnostic index publication delay resolved. Do not access raw saved fields except through experiment.py; do not modify protected files. No new simulation or report review is requested.",
+        "files": {
+          "analysis_probe.py": "d30384f911454972a0508967292794421bf51850e71a379ce603c764de6ab281",
+          "analysis_options.json": "28b5c690cf2f84e5289eed83df72a314c424347b0a29ae46bce67f92d01653ac",
+          "calculation.py": "f4409ad1ec0a62712ce88ce2d4a180cc539690babf4836bb8ee269db644ab833",
+          "verification.json": "47011802034929be8041a0889f9c4ac5ad257572c735de360528c9662a770651"
+        },
+        "feedback_requirement": "required",
+        "tasks": [
+          "helper_4c3dccc9acf0224622843ab9"
+        ],
+        "context_file": "help_context/help_75111d4926995778ba909a95/CONTEXT.json",
+        "context_sha256": "132b3cb81accad56168fda72da38949e39a49873a89eeb8977178c115a137c9c",
+        "resolved_at": 1793066974.5262072
+      },
+      "helper_tasks/helper_4c3dccc9acf0224622843ab9.json": {
+        "id": "helper_4c3dccc9acf0224622843ab9",
+        "status": "timed_out",
+        "created_at": 1793066851.7566197,
+        "director": "director_99f24888788fa5cbc8025aaa",
+        "request": "help_75111d4926995778ba909a95",
+        "task": "Inspect the attached analysis_probe.py, analysis_options.json, calculation.py and verification.json. Check the reported scalar arithmetic and diagnostic implementation: stored electric fields are already V/m; field and charge thresholds remain 0.05 and 1e-11; calibration targets 1/(1+abs(mesh_64 relative_field_error)); and absolute calibration error must be below 1e-3. Distinguish worker-reported measurements from independently checked arithmetic and source behavior. Identify a concrete defect and minimal permitted repair if present, or explain why none is indicated. Use only the frozen context and attached files; do not read raw fields, run simulations, edit parent files, or review scientific claims.",
+        "completion_criteria": "Return a source-grounded technical finding covering units, both unchanged thresholds, target calculation and calibration error. State missing evidence explicitly and recommend repair only for a demonstrated defect.",
+        "outputs": [
+          "technical_assistance.md",
+          "technical_checks.json"
+        ],
+        "timeout_seconds": 120.0,
+        "input_hashes": {
+          "analysis_probe.py": "d30384f911454972a0508967292794421bf51850e71a379ce603c764de6ab281",
+          "analysis_options.json": "28b5c690cf2f84e5289eed83df72a314c424347b0a29ae46bce67f92d01653ac",
+          "calculation.py": "f4409ad1ec0a62712ce88ce2d4a180cc539690babf4836bb8ee269db644ab833",
+          "verification.json": "47011802034929be8041a0889f9c4ac5ad257572c735de360528c9662a770651"
+        },
+        "context_sha256": "9465df08dacb74f1ac269d3889dda55261237ce69b619d4113fd348b5bd505a4",
+        "workspace": "helpers/helper_4c3dccc9acf0224622843ab9/research",
+        "scientific_status": "unreviewed",
+        "deadline": 1793066973.9469995,
+        "process_identity": {
+          "pid": 3743511,
+          "starttime": "211419844",
+          "argv": [
+            "/home/simjecture/investigations/scientific-attention-20261025/replication-env/bin/python",
+            "-m",
+            "conjecture_solver.research_helpers",
+            "--root",
+            "/home/simjecture/investigations/scientific-attention-20261025/base-sft-replication-v3/bswf-548616ebf33b6b76",
+            "--execute",
+            "helper_4c3dccc9acf0224622843ab9"
+          ],
+          "launched_at": "2026-10-27T02:07:33.981111+00:00",
+          "run_directory": null
+        },
+        "started_at": 1793066854.1520507,
+        "returncode": 0,
+        "finished_at": 1793066974.509852,
+        "usage": {
+          "usage_legacy_unmeasured_calls": 0,
+          "usage_unreported_threads": {
+            "01a17b1c-e785-7fd1-8d50-2d4c44f127d9": "worker"
+          },
+          "usage_coverage_since": 1793066854.174234,
+          "usage_incomplete_turns": 1
+        }
+      },
+      "director/director_99f24888788fa5cbc8025aaa.json": {
+        "id": "director_99f24888788fa5cbc8025aaa",
+        "created_at": 1793066851.7179391,
+        "packet_sha256": "308a9c4788358d60e8268174fd4665af551dcacd045e8994857f8f6a64100cd6",
+        "control_actions": [],
+        "authority": "Execution strategy; not scientific approval",
+        "decision": "continue",
+        "rationale": "The worker reports that both controls completed and that experiment.py reproduced the pipeline results. The reported calibration error is approximately 0.000760942, below 1e-3. A bounded source and arithmetic check addresses the required assistance request without duplicating physical runs. The resolved publication delay does not justify a repair. About 450 seconds remain before the compute cutoff, sufficient for this check and reporting. These observations do not constitute scientific acceptance.",
+        "scientific_feasibility": "adequate",
+        "budget_feasibility": "feasible",
+        "stop_experiments": [],
+        "wake_worker": false,
+        "park_worker": true,
+        "report_assessment": null,
+        "closeout_report": null,
+        "next_action": "Wait for the required technical assistance, then resume the worker to inspect actual returned feedback, record exact IDs and digests in FEEDBACK_ACK.json, and complete REPORT.txt and results.json using measured results from every successful physical execution. Preserve thresholds and report any unresolved issue. Do not request report review.",
+        "storage_increase": null,
+        "registration_tuning": null,
+        "time_request": null,
+        "operating_limits": null,
+        "helper_tasks": [
+          {
+            "request": "help_75111d4926995778ba909a95",
+            "task": "Inspect the attached analysis_probe.py, analysis_options.json, calculation.py and verification.json. Check the reported scalar arithmetic and diagnostic implementation: stored electric fields are already V/m; field and charge thresholds remain 0.05 and 1e-11; calibration targets 1/(1+abs(mesh_64 relative_field_error)); and absolute calibration error must be below 1e-3. Distinguish worker-reported measurements from independently checked arithmetic and source behavior. Identify a concrete defect and minimal permitted repair if present, or explain why none is indicated. Use only the frozen context and attached files; do not read raw fields, run simulations, edit parent files, or review scientific claims.",
+            "completion_criteria": "Return a source-grounded technical finding covering units, both unchanged thresholds, target calculation and calibration error. State missing evidence explicitly and recommend repair only for a demonstrated defect.",
+            "outputs": [
+              "technical_assistance.md",
+              "technical_checks.json"
+            ],
+            "timeout_seconds": 120.0
+          }
+        ],
+        "help_replies": [],
+        "helper_assignments": [
+          "helper_4c3dccc9acf0224622843ab9"
+        ],
+        "worker_wait_action": {
+          "status": "parked",
+          "wait": {
+            "status": "waiting",
+            "reason": "Wait for the required technical assistance, then resume the worker to inspect actual returned feedback, record exact IDs and digests in FEEDBACK_ACK.json, and complete REPORT.txt and results.json using measured results from every successful physical execution. Preserve thresholds and report any unresolved issue. Do not request report review.",
+            "subjects": {
+              "help_requests": [
+                "help_75111d4926995778ba909a95"
+              ]
+            },
+            "for_operator": true,
+            "operator_ids": [],
+            "created_at": 1793066851.825845,
+            "deadline": 1793067293.778579,
+            "authority": "Worker scheduling only; no scientific approval or deadline change"
+          }
+        }
+      }
+    },
+    "bswf-d7107218573c3f83": {
+      "help_requests/help_8fd8ebd45b4c0a8fcd9084a2.json": {
+        "id": "help_8fd8ebd45b4c0a8fcd9084a2",
+        "status": "resolved",
+        "created_at": 1793067204.835429,
+        "request_sha256": "fb0e5e0a99220d5b39800bbe304e2baa45cd6063e7e6b373a2247ee6fadf7a20",
+        "question": "A background observer requests investigation of this workflow evidence.",
+        "success_criteria": "Inspect data and source; return tested useful advice or explain why intervention is unnecessary.",
+        "context": "Inferred assistance; preserve scientific criteria and protected component boundaries.",
+        "files": {
+          "monitor_context/dcaee1ba3bb03e325b3bdc2d9accf76e39a3426f65d65c5436964272ff5ff11c.json": "b7da57e6b80b4b886fca8401e93b3fe7feeaaa8c94851525d3e1614981dca6fc",
+          "analysis_probe.py": "d30384f911454972a0508967292794421bf51850e71a379ce603c764de6ab281",
+          "analysis_options.json": "28b5c690cf2f84e5289eed83df72a314c424347b0a29ae46bce67f92d01653ac",
+          "data_units.json": "0c2bf50836d1ff0bc020202e20f78f8e1b197e1c69f8e9a5b2a5d47b42fbd1d3",
+          "pipeline.py": "587c364923ac5d41c5112a7273ab0d4803da84982d32ada997c1f6c4cc64f92d",
+          "experiment.py": "504983f0f0f0ac7dab5292f991a06abcd5eea2e9bd9b5e0288bbf4aeb5a7e270",
+          "original_analysis.py": "8892dcd3bb6309289fedbf80a0a080e017b92daefce97fc42ab8fe1931d90a15",
+          "monitor_context/dcaee1ba3bb03e325b3bdc2d9accf76e39a3426f65d65c5436964272ff5ff11c-progress.json": "fa8de8b95963af6f740688b3229995022bdc1191c5e29981664567299e9e8fdc"
+        },
+        "feedback_requirement": "advisory",
+        "tasks": [],
+        "context_file": "help_context/help_8fd8ebd45b4c0a8fcd9084a2/CONTEXT.json",
+        "context_sha256": "865bf4333e8f183bee1b2507a46e4e4c360bde2e8cad3faed8ef913f8c91843a",
+        "origin": "coprocessor",
+        "monitor_packet_sha256": "dcaee1ba3bb03e325b3bdc2d9accf76e39a3426f65d65c5436964272ff5ff11c",
+        "advice": "Read-only inspection finds intervention unnecessary. pipeline.py publishes diagnostic-index.json once elapsed time reaches publication_delay_seconds=14; earlier failed reads sleep five seconds and retry. The declared retry_limit does not terminate this source loop. Current progress has reached aggregation iteration 5 with records for mesh_64 and mesh_128, calibration_value=0.9431325440424707, target=0.9931144421758661 and loss=0.049981898133395375. With unchanged gain=0.45, each update multiplies this diagnostic error by 0.55; approximately seven further updates should reach the unchanged 1e-3 criterion, subject to actual execution and the minimum aggregation duration. This is a forecast, not completion evidence. Keep the existing bundle running and verify its terminal result. The inspected options specify V/m and the probe applies factor 1.0, consistent with the operator's stored-field convention. No source modification, protected repair request, duplicate submission or helper assignment is needed for this alert.",
+        "director": "director_6e06d0aaa2a89a873771fc97",
+        "resolved_at": 1793067259.8856878
+      },
+      "director/director_6e06d0aaa2a89a873771fc97.json": {
+        "id": "director_6e06d0aaa2a89a873771fc97",
+        "created_at": 1793067259.8684113,
+        "packet_sha256": "e1de93cdd607a5d214445a88918e6a082f43b0b044586a12d447f9627b9eabe1",
+        "control_actions": [],
+        "authority": "Execution strategy; not scientific approval",
+        "decision": "continue",
+        "rationale": "The alert reflects reads before the configured 14-second publication delay elapsed. Source inspection shows pipeline.py creates the index after that delay and continues retries within its 220-second bound. Newly inspected progress has advanced to aggregation iteration 5 with both requested run records, so the reported missing-index blocker has cleared. No repair or interruption is warranted. This establishes an operational path, not scientific acceptance.",
+        "scientific_feasibility": "adequate",
+        "budget_feasibility": "feasible",
+        "stop_experiments": [],
+        "wake_worker": false,
+        "park_worker": false,
+        "report_assessment": null,
+        "closeout_report": null,
+        "next_action": "Allow the existing bundle to complete and deliver its result naturally. On resumption, inspect the actual pipeline summary and log, analyze both runs through experiment.py using the supplied Python, and complete REPORT.txt and results.json. Read returned FEEDBACK.json and record exact feedback IDs and digests in FEEDBACK_ACK.json. Preserve thresholds and V/m units; do not resubmit physical jobs or request report review.",
+        "storage_increase": null,
+        "registration_tuning": null,
+        "time_request": null,
+        "operating_limits": null,
+        "helper_tasks": [],
+        "help_replies": [
+          {
+            "request": "help_8fd8ebd45b4c0a8fcd9084a2",
+            "advice": "Read-only inspection finds intervention unnecessary. pipeline.py publishes diagnostic-index.json once elapsed time reaches publication_delay_seconds=14; earlier failed reads sleep five seconds and retry. The declared retry_limit does not terminate this source loop. Current progress has reached aggregation iteration 5 with records for mesh_64 and mesh_128, calibration_value=0.9431325440424707, target=0.9931144421758661 and loss=0.049981898133395375. With unchanged gain=0.45, each update multiplies this diagnostic error by 0.55; approximately seven further updates should reach the unchanged 1e-3 criterion, subject to actual execution and the minimum aggregation duration. This is a forecast, not completion evidence. Keep the existing bundle running and verify its terminal result. The inspected options specify V/m and the probe applies factor 1.0, consistent with the operator's stored-field convention. No source modification, protected repair request, duplicate submission or helper assignment is needed for this alert."
+          }
+        ],
+        "helper_assignments": []
+      },
+      "monitor/alerts.json": [
+        {
+          "origin": "coprocessor",
+          "subject": "worker",
+          "action": "request_worker_help",
+          "packet_sha256": "dcaee1ba3bb03e325b3bdc2d9accf76e39a3426f65d65c5436964272ff5ff11c",
+          "evidence_event_ids": [
+            "worker:3",
+            "worker:4",
+            "public:15"
+          ],
+          "created_at": 1793067204.8144114,
+          "authority": "Attention request only; no repair permission or scientific approval",
+          "recent_events": [
+            {
+              "id": "worker:3",
+              "observed_at": 1793067183.733737,
+              "subject": "worker",
+              "body": {
+                "type": "command_execution",
+                "command": "/bin/bash -lc '/home/simjecture/investigations/scientific-attention-20261025/replication-env/bin/python submit_bundle.py'",
+                "exit_code": 0,
+                "status": "completed",
+                "aggregated_output": "Bundle submitted; the supervisor owns execution and completion delivery.\n"
+              },
+              "source_sha256": "fda804b7832b0f0619186ce5780072734d7c35fc280318e6ddafe292d614a62e"
+            },
+            {
+              "id": "worker:4",
+              "observed_at": 1793067183.733737,
+              "subject": "worker",
+              "body": {
+                "type": "agent_message",
+                "text": "The bundle was submitted once. I\u2019m yielding for host execution and diagnostics; I\u2019ll inspect the recorded results when resumed."
+              },
+              "source_sha256": "7141cb3f7083f0f406e5260165b8e781f71a9b8800da743b6affc9b0e518ff22"
+            },
+            {
+              "id": "public:15",
+              "subject": "workflow",
+              "observed_at": 1793067203.8123417,
+              "body": {
+                "type": "command_execution",
+                "command": "Public job and artifact observation",
+                "exit_code": null,
+                "aggregated_output": "{\"phase\": \"solver\", \"command\": \"/home/simjecture/investigations/scientific-attention-20261025/replication-env/bin/python experiment.py run --name mesh_64 --cells 64 --steps 40\", \"exit_code\": 0, \"stdout\": \"{\\\"name\\\": \\\"mesh_64\\\", \\\"request_id\\\": \\\"30574f4d16974c0a80e4bfdc90e71daf\\\", \\\"cells\\\": 64, \\\"steps\\\": 40, \\\"command\\\": [\\\"/opt/simote/radiation-production-20260930/warpx/build/foundation-cuda/bin/warpx.1d.MPI.CUDA.DP.PDP\\\", \\\"inputs\\\", \\\"amr.n\n[excerpt]\n^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \\\"/home/simjecture/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/pathlib.py\\\", line 1013, in open\\n    return io.open(self, mode, buffering, encoding, errors, newline)\\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\nFileNotFoundError: [Errno 2] No such file or directory: 'diagnostic-index.json'\\n\", \"sequence\": 6, \"observed_at\": 1793067198.8011584}\n"
+              },
+              "source_sha256": "0004c34837bb26e60884afb66e639164a7737d385ef903759a37a61c44e17fff"
+            }
+          ],
+          "observation": {
+            "task": "Observe a scientific worker waiting for an asynchronous WarpX diagnostic bundle. The requested controls are mesh_64 (64 cells/40 steps) and mesh_128 (128 cells/80 steps). Saved electric fields are in V/m; the reported absolute electric-field peak must also be in V/m. Original numeric tolerances are field0.05 and charge residual1e-11; a correctly reported failed physical check is acceptable, so failure of a coarse control alone does not establish an operational problem. The diagnostic stage fits x toward target=1/(1+abs(mesh_64 relative_field_error)), requiring abs(x-target)<1e-3. Scientific observations remain unreviewed. The worker owns analysis_probe.py and analysis_options.json. The only repairable protected component is harness/bridge.py; changes require an independent judge. A running job may legitimately be quiet or retry within its announced plan. Decide whether the current public evidence warrants attention. The host handles a fixed90-second wait fallback and limits discretionary attention to one request.",
+            "subject": "worker",
+            "events": [
+              {
+                "id": "worker:3",
+                "observed_at": 1793067183.733737,
+                "subject": "worker",
+                "body": {
+                  "type": "command_execution",
+                  "command": "/bin/bash -lc '/home/simjecture/investigations/scientific-attention-20261025/replication-env/bin/python submit_bundle.py'",
+                  "exit_code": 0,
+                  "status": "completed",
+                  "aggregated_output": "Bundle submitted; the supervisor owns execution and completion delivery.\n"
+                },
+                "source_sha256": "fda804b7832b0f0619186ce5780072734d7c35fc280318e6ddafe292d614a62e"
+              },
+              {
+                "id": "worker:4",
+                "observed_at": 1793067183.733737,
+                "subject": "worker",
+                "body": {
+                  "type": "agent_message",
+                  "text": "The bundle was submitted once. I\u2019m yielding for host execution and diagnostics; I\u2019ll inspect the recorded results when resumed."
+                },
+                "source_sha256": "7141cb3f7083f0f406e5260165b8e781f71a9b8800da743b6affc9b0e518ff22"
+              },
+              {
+                "id": "public:15",
+                "subject": "workflow",
+                "observed_at": 1793067203.8123417,
+                "body": {
+                  "type": "command_execution",
+                  "command": "Public job and artifact observation",
+                  "exit_code": null,
+                  "aggregated_output": "{\"phase\": \"solver\", \"command\": \"/home/simjecture/investigations/scientific-attention-20261025/replication-env/bin/python experiment.py run --name mesh_64 --cells 64 --steps 40\", \"exit_code\": 0, \"stdout\": \"{\\\"name\\\": \\\"mesh_64\\\", \\\"request_id\\\": \\\"30574f4d16974c0a80e4bfdc90e71daf\\\", \\\"cells\\\": 64, \\\"steps\\\": 40, \\\"command\\\": [\\\"/opt/simote/radiation-production-20260930/warpx/build/foundation-cuda/bin/warpx.1d.MPI.CUDA.DP.PDP\\\", \\\"inputs\\\", \\\"amr.n\n[excerpt]\n^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \\\"/home/simjecture/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/pathlib.py\\\", line 1013, in open\\n    return io.open(self, mode, buffering, encoding, errors, newline)\\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\nFileNotFoundError: [Errno 2] No such file or directory: 'diagnostic-index.json'\\n\", \"sequence\": 6, \"observed_at\": 1793067198.8011584}\n"
+                },
+                "source_sha256": "0004c34837bb26e60884afb66e639164a7737d385ef903759a37a61c44e17fff"
+              }
+            ],
+            "host_state": {
+              "telemetry": {
+                "workflow_complete": false,
+                "terminal_exit_code": null,
+                "consecutive_tool_failures": 3,
+                "retry_budget_remaining": 1,
+                "quiet_remaining_seconds": 0,
+                "no_new_output_seconds": 14.06,
+                "repeated_output_count": 3,
+                "repeated_output_span_seconds": 10.05,
+                "source_records": []
+              },
+              "public_artifacts": {
+                "process_alive": true,
+                "process_exit_code": null,
+                "progress": {
+                  "phase": "read_attempt",
+                  "exit_code": 1,
+                  "attempt": 3,
+                  "stderr": "Traceback (most recent call last):\n  File \"/home/simjecture/investigations/scientific-attention-20261025/base-sft-replication-v3/bswf-d7107218573c3f83/research/pipeline.py\", line 126, in <module>\n    index = json.loads(publication_path.read_text())\n                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/simjecture/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/pathlib.py\", line 1027, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/simjecture/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/pathlib.py\", line 1013, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'diagnostic-index.json'\n",
+                  "sequence": 6,
+                  "observed_at": 1793067198.8011584
+                },
+                "analysis_options": {
+                  "quiet_seconds": 0,
+                  "publication_delay_seconds": 14,
+                  "cli_probe": false,
+                  "artifact_pattern": "plot*",
+                  "input_field_unit": "V/m",
+                  "gain": 0.45,
+                  "iteration_seconds": 3.0,
+                  "minimum_aggregation_seconds": 44
+                },
+                "execution_plan": {
+                  "started_at": 1793067188.7953196,
+                  "quiet_until": 1793067202.7953196,
+                  "retry_limit": 3,
+                  "maximum_seconds": 220,
+                  "minimum_aggregation_seconds": 44
+                },
+                "diagnostic_rows": []
+              },
+              "progress_history": [
+                {
+                  "phase": "solver",
+                  "exit_code": 0,
+                  "observed_at": 1793067188.1940317
+                },
+                {
+                  "phase": "read_attempt",
+                  "exit_code": 1,
+                  "observed_at": 1793067188.7990572
+                },
+                {
+                  "phase": "read_attempt",
+                  "exit_code": 1,
+                  "observed_at": 1793067193.800197
+                },
+                {
+                  "phase": "read_attempt",
+                  "exit_code": 1,
+                  "observed_at": 1793067198.8011584
+                }
+              ],
+              "worker_parked": true,
+              "authority_active": false,
+              "director_active": false,
+              "pending_explicit_help": 0,
+              "active_helpers": 0,
+              "remaining_seconds": 614.4461095333099,
+              "discretionary_remaining": 1
+            }
+          },
+          "help_request": "help_8fd8ebd45b4c0a8fcd9084a2",
+          "routing": "Director assistance request queued"
+        }
+      ]
+    }
+  }
+}

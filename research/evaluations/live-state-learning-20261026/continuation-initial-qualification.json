@@ -1,0 +1,23 @@
+[
+  {
+    "policy": "continued_sft",
+    "prompt_sha256": "361d970450af495a4946e0541ccdc8e3c835602cddddfd8fafcd2c74e848bc0e",
+    "saved_temperature": 1.0,
+    "serving_temperature": 1.0,
+    "maximum_probability_error": 1.896643408993981e-08
+  },
+  {
+    "policy": "continued_sft",
+    "prompt_sha256": "3d3d77ed6ca99d4a3edbfd12f90e97f943270bdd0d872774670b78fa138dcd0f",
+    "saved_temperature": 1.0,
+    "serving_temperature": 1.0,
+    "maximum_probability_error": 2.8430518494992896e-08
+  },
+  {
+    "policy": "base",
+    "prompt_sha256": "361d970450af495a4946e0541ccdc8e3c835602cddddfd8fafcd2c74e848bc0e",
+    "saved_temperature": 1.0,
+    "serving_temperature": 1.0,
+    "maximum_probability_error": 6.189326950956087e-08
+  }
+]

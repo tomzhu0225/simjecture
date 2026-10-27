@@ -1,0 +1,591 @@
+{
+  "created_at": 1793029599.311653,
+  "status": "registered_pending_real_transport_qualification",
+  "original_manifest_sha256": "97388f629e1451a20045567de869c775b3020907b33ab0648858dd3b6fdcf2db",
+  "original_evidence_sha256": "04f483f2165dbf5e8bade266e7f628aec272be27256c029c0ed8cc1a8761ea0e",
+  "preserved_started": [
+    "bswf-72768c255b07c852",
+    "bswf-730e00587920c699"
+  ],
+  "blocks": [
+    {
+      "id": "bsblock-01",
+      "family": "artifact_consumer",
+      "seed": 202611010004,
+      "repeat": 0,
+      "trials": [
+        {
+          "id": "bswf-569b06dd00e7f949",
+          "family": "artifact_consumer",
+          "seed": 202611010004,
+          "repeat": 0,
+          "arm": "continued_sft"
+        },
+        {
+          "id": "bswf-8a37cba973c5addf",
+          "family": "artifact_consumer",
+          "seed": 202611010004,
+          "repeat": 0,
+          "arm": "observe"
+        }
+      ]
+    },
+    {
+      "id": "bsblock-02",
+      "family": "publication_retry",
+      "seed": 202611010002,
+      "repeat": 1,
+      "trials": [
+        {
+          "id": "bswf-548616ebf33b6b76",
+          "family": "publication_retry",
+          "seed": 202611010002,
+          "repeat": 1,
+          "arm": "base"
+        },
+        {
+          "id": "bswf-d7107218573c3f83",
+          "family": "publication_retry",
+          "seed": 202611010002,
+          "repeat": 1,
+          "arm": "continued_sft"
+        },
+        {
+          "id": "bswf-122366d88f28d7d1",
+          "family": "publication_retry",
+          "seed": 202611010002,
+          "repeat": 1,
+          "arm": "observe"
+        },
+        {
+          "id": "bswf-d767f4ac1a3f6b62",
+          "family": "publication_retry",
+          "seed": 202611010002,
+          "repeat": 1,
+          "arm": "rules"
+        }
+      ]
+    },
+    {
+      "id": "bsblock-03",
+      "family": "publication_retry",
+      "seed": 202611010002,
+      "repeat": 0,
+      "trials": [
+        {
+          "id": "bswf-9e5fda3473a34492",
+          "family": "publication_retry",
+          "seed": 202611010002,
+          "repeat": 0,
+          "arm": "continued_sft"
+        },
+        {
+          "id": "bswf-5e2e5d69dcc78d66",
+          "family": "publication_retry",
+          "seed": 202611010002,
+          "repeat": 0,
+          "arm": "observe"
+        },
+        {
+          "id": "bswf-bea4e043518caba7",
+          "family": "publication_retry",
+          "seed": 202611010002,
+          "repeat": 0,
+          "arm": "rules"
+        },
+        {
+          "id": "bswf-52d1ce22f4ae03c2",
+          "family": "publication_retry",
+          "seed": 202611010002,
+          "repeat": 0,
+          "arm": "base"
+        }
+      ]
+    },
+    {
+      "id": "bsblock-04",
+      "family": "announced_quiet",
+      "seed": 202611010001,
+      "repeat": 0,
+      "trials": [
+        {
+          "id": "bswf-49ab84677dcc52b5",
+          "family": "announced_quiet",
+          "seed": 202611010001,
+          "repeat": 0,
+          "arm": "observe"
+        },
+        {
+          "id": "bswf-8fced947ac9585d9",
+          "family": "announced_quiet",
+          "seed": 202611010001,
+          "repeat": 0,
+          "arm": "rules"
+        },
+        {
+          "id": "bswf-df645e993709be23",
+          "family": "announced_quiet",
+          "seed": 202611010001,
+          "repeat": 0,
+          "arm": "base"
+        },
+        {
+          "id": "bswf-1102012cac4676bc",
+          "family": "announced_quiet",
+          "seed": 202611010001,
+          "repeat": 0,
+          "arm": "continued_sft"
+        }
+      ]
+    },
+    {
+      "id": "bsblock-05",
+      "family": "announced_quiet",
+      "seed": 202611010001,
+      "repeat": 1,
+      "trials": [
+        {
+          "id": "bswf-ad564078760b6ea6",
+          "family": "announced_quiet",
+          "seed": 202611010001,
+          "repeat": 1,
+          "arm": "rules"
+        },
+        {
+          "id": "bswf-855a07113b13af51",
+          "family": "announced_quiet",
+          "seed": 202611010001,
+          "repeat": 1,
+          "arm": "base"
+        },
+        {
+          "id": "bswf-d84e25c5e9c0ae13",
+          "family": "announced_quiet",
+          "seed": 202611010001,
+          "repeat": 1,
+          "arm": "continued_sft"
+        },
+        {
+          "id": "bswf-273cf119d7ddeb6a",
+          "family": "announced_quiet",
+          "seed": 202611010001,
+          "repeat": 1,
+          "arm": "observe"
+        }
+      ]
+    },
+    {
+      "id": "bsblock-06",
+      "family": "progressing_work",
+      "seed": 202611010000,
+      "repeat": 0,
+      "trials": [
+        {
+          "id": "bswf-740b8f480066f634",
+          "family": "progressing_work",
+          "seed": 202611010000,
+          "repeat": 0,
+          "arm": "base"
+        },
+        {
+          "id": "bswf-eaea8a0edf39092c",
+          "family": "progressing_work",
+          "seed": 202611010000,
+          "repeat": 0,
+          "arm": "continued_sft"
+        },
+        {
+          "id": "bswf-acb3ea38789f5127",
+          "family": "progressing_work",
+          "seed": 202611010000,
+          "repeat": 0,
+          "arm": "observe"
+        },
+        {
+          "id": "bswf-d57e158cfb483a18",
+          "family": "progressing_work",
+          "seed": 202611010000,
+          "repeat": 0,
+          "arm": "rules"
+        }
+      ]
+    },
+    {
+      "id": "bsblock-07",
+      "family": "update_cycle",
+      "seed": 202611010007,
+      "repeat": 1,
+      "trials": [
+        {
+          "id": "bswf-d49346fb1923a532",
+          "family": "update_cycle",
+          "seed": 202611010007,
+          "repeat": 1,
+          "arm": "continued_sft"
+        },
+        {
+          "id": "bswf-45e84aa32d435873",
+          "family": "update_cycle",
+          "seed": 202611010007,
+          "repeat": 1,
+          "arm": "observe"
+        },
+        {
+          "id": "bswf-be9b44cf639d4cc9",
+          "family": "update_cycle",
+          "seed": 202611010007,
+          "repeat": 1,
+          "arm": "rules"
+        },
+        {
+          "id": "bswf-86afd7debe7922f7",
+          "family": "update_cycle",
+          "seed": 202611010007,
+          "repeat": 1,
+          "arm": "base"
+        }
+      ]
+    },
+    {
+      "id": "bsblock-08",
+      "family": "unit_conversion",
+      "seed": 202611010005,
+      "repeat": 1,
+      "trials": [
+        {
+          "id": "bswf-72a677d05f0aa023",
+          "family": "unit_conversion",
+          "seed": 202611010005,
+          "repeat": 1,
+          "arm": "observe"
+        },
+        {
+          "id": "bswf-0bfdfb7031bf1e83",
+          "family": "unit_conversion",
+          "seed": 202611010005,
+          "repeat": 1,
+          "arm": "rules"
+        },
+        {
+          "id": "bswf-4b9f8d11a274bcdc",
+          "family": "unit_conversion",
+          "seed": 202611010005,
+          "repeat": 1,
+          "arm": "base"
+        },
+        {
+          "id": "bswf-4c8f33d75072871d",
+          "family": "unit_conversion",
+          "seed": 202611010005,
+          "repeat": 1,
+          "arm": "continued_sft"
+        }
+      ]
+    },
+    {
+      "id": "bsblock-09",
+      "family": "unit_conversion",
+      "seed": 202611010005,
+      "repeat": 0,
+      "trials": [
+        {
+          "id": "bswf-c8137d45f1ea4f03",
+          "family": "unit_conversion",
+          "seed": 202611010005,
+          "repeat": 0,
+          "arm": "rules"
+        },
+        {
+          "id": "bswf-ced7690a441dbc15",
+          "family": "unit_conversion",
+          "seed": 202611010005,
+          "repeat": 0,
+          "arm": "base"
+        },
+        {
+          "id": "bswf-6bb1a591b43f0ce8",
+          "family": "unit_conversion",
+          "seed": 202611010005,
+          "repeat": 0,
+          "arm": "continued_sft"
+        },
+        {
+          "id": "bswf-b49b4f897ffa0bf8",
+          "family": "unit_conversion",
+          "seed": 202611010005,
+          "repeat": 0,
+          "arm": "observe"
+        }
+      ]
+    },
+    {
+      "id": "bsblock-10",
+      "family": "recovered_history",
+      "seed": 202611010003,
+      "repeat": 0,
+      "trials": [
+        {
+          "id": "bswf-3212560ae1a849ea",
+          "family": "recovered_history",
+          "seed": 202611010003,
+          "repeat": 0,
+          "arm": "base"
+        },
+        {
+          "id": "bswf-e587cb0721bd8468",
+          "family": "recovered_history",
+          "seed": 202611010003,
+          "repeat": 0,
+          "arm": "continued_sft"
+        },
+        {
+          "id": "bswf-a6b2a7645d6c0ef2",
+          "family": "recovered_history",
+          "seed": 202611010003,
+          "repeat": 0,
+          "arm": "observe"
+        },
+        {
+          "id": "bswf-643cd6901e76d3be",
+          "family": "recovered_history",
+          "seed": 202611010003,
+          "repeat": 0,
+          "arm": "rules"
+        }
+      ]
+    },
+    {
+      "id": "bsblock-11",
+      "family": "artifact_consumer",
+      "seed": 202611010004,
+      "repeat": 1,
+      "trials": [
+        {
+          "id": "bswf-7d047a91de1070bc",
+          "family": "artifact_consumer",
+          "seed": 202611010004,
+          "repeat": 1,
+          "arm": "continued_sft"
+        },
+        {
+          "id": "bswf-6a8fc9a67ad14eaa",
+          "family": "artifact_consumer",
+          "seed": 202611010004,
+          "repeat": 1,
+          "arm": "observe"
+        },
+        {
+          "id": "bswf-3809a61a2c5840ce",
+          "family": "artifact_consumer",
+          "seed": 202611010004,
+          "repeat": 1,
+          "arm": "rules"
+        },
+        {
+          "id": "bswf-d37e1f8de859a7b3",
+          "family": "artifact_consumer",
+          "seed": 202611010004,
+          "repeat": 1,
+          "arm": "base"
+        }
+      ]
+    },
+    {
+      "id": "bsblock-12",
+      "family": "source_binding",
+      "seed": 202611010006,
+      "repeat": 1,
+      "trials": [
+        {
+          "id": "bswf-bb23cddfc9ff0321",
+          "family": "source_binding",
+          "seed": 202611010006,
+          "repeat": 1,
+          "arm": "observe"
+        },
+        {
+          "id": "bswf-785040159704c49e",
+          "family": "source_binding",
+          "seed": 202611010006,
+          "repeat": 1,
+          "arm": "rules"
+        },
+        {
+          "id": "bswf-5e05435ef43d2830",
+          "family": "source_binding",
+          "seed": 202611010006,
+          "repeat": 1,
+          "arm": "base"
+        },
+        {
+          "id": "bswf-8ebb728b89fdc00b",
+          "family": "source_binding",
+          "seed": 202611010006,
+          "repeat": 1,
+          "arm": "continued_sft"
+        }
+      ]
+    },
+    {
+      "id": "bsblock-13",
+      "family": "progressing_work",
+      "seed": 202611010000,
+      "repeat": 1,
+      "trials": [
+        {
+          "id": "bswf-eab12a6f92587e5c",
+          "family": "progressing_work",
+          "seed": 202611010000,
+          "repeat": 1,
+          "arm": "rules"
+        },
+        {
+          "id": "bswf-999327eaca4883ce",
+          "family": "progressing_work",
+          "seed": 202611010000,
+          "repeat": 1,
+          "arm": "base"
+        },
+        {
+          "id": "bswf-6b5e2f8e2db5a0b3",
+          "family": "progressing_work",
+          "seed": 202611010000,
+          "repeat": 1,
+          "arm": "continued_sft"
+        },
+        {
+          "id": "bswf-b44a136d616a842d",
+          "family": "progressing_work",
+          "seed": 202611010000,
+          "repeat": 1,
+          "arm": "observe"
+        }
+      ]
+    },
+    {
+      "id": "bsblock-14",
+      "family": "source_binding",
+      "seed": 202611010006,
+      "repeat": 0,
+      "trials": [
+        {
+          "id": "bswf-c964906bd8930701",
+          "family": "source_binding",
+          "seed": 202611010006,
+          "repeat": 0,
+          "arm": "base"
+        },
+        {
+          "id": "bswf-94c620c42e9c1018",
+          "family": "source_binding",
+          "seed": 202611010006,
+          "repeat": 0,
+          "arm": "continued_sft"
+        },
+        {
+          "id": "bswf-ad81204014679614",
+          "family": "source_binding",
+          "seed": 202611010006,
+          "repeat": 0,
+          "arm": "observe"
+        },
+        {
+          "id": "bswf-499e7b269550daa6",
+          "family": "source_binding",
+          "seed": 202611010006,
+          "repeat": 0,
+          "arm": "rules"
+        }
+      ]
+    },
+    {
+      "id": "bsblock-15",
+      "family": "update_cycle",
+      "seed": 202611010007,
+      "repeat": 0,
+      "trials": [
+        {
+          "id": "bswf-b2d58fbc56d34c9f",
+          "family": "update_cycle",
+          "seed": 202611010007,
+          "repeat": 0,
+          "arm": "continued_sft"
+        },
+        {
+          "id": "bswf-a09a605e238e961d",
+          "family": "update_cycle",
+          "seed": 202611010007,
+          "repeat": 0,
+          "arm": "observe"
+        },
+        {
+          "id": "bswf-6131a20fd16d1c75",
+          "family": "update_cycle",
+          "seed": 202611010007,
+          "repeat": 0,
+          "arm": "rules"
+        },
+        {
+          "id": "bswf-461d02ed8ca7e045",
+          "family": "update_cycle",
+          "seed": 202611010007,
+          "repeat": 0,
+          "arm": "base"
+        }
+      ]
+    },
+    {
+      "id": "bsblock-16",
+      "family": "recovered_history",
+      "seed": 202611010003,
+      "repeat": 1,
+      "trials": [
+        {
+          "id": "bswf-a7a3b0beb3ccea5a",
+          "family": "recovered_history",
+          "seed": 202611010003,
+          "repeat": 1,
+          "arm": "observe"
+        },
+        {
+          "id": "bswf-ac91ac8be4f7d5fc",
+          "family": "recovered_history",
+          "seed": 202611010003,
+          "repeat": 1,
+          "arm": "rules"
+        },
+        {
+          "id": "bswf-97b85b444d4c0d22",
+          "family": "recovered_history",
+          "seed": 202611010003,
+          "repeat": 1,
+          "arm": "base"
+        },
+        {
+          "id": "bswf-6795ab0a628c12a7",
+          "family": "recovered_history",
+          "seed": 202611010003,
+          "repeat": 1,
+          "arm": "continued_sft"
+        }
+      ]
+    }
+  ],
+  "remaining_workflows": 62,
+  "minimum_gap_between_workflows_seconds": 90,
+  "pacing_inside_episode": false,
+  "reason": "Fixed provider cooldown after a recorded HTTP429; applied equally to every remaining arm",
+  "source_revision": "04f905c9f4538886a0713135bba29a1d4becea0b",
+  "model_and_decoding_changes": false,
+  "original_deadline": 1793050736.8444118,
+  "phase_native_starts_used": 6,
+  "phase_maximum_native_starts": 640,
+  "original_compute_cap": 100,
+  "original_compute_baseline": 1163.28,
+  "required_transport_commission": "A real saved-probe standby test must pass before scientific assignments",
+  "primary_analysis": "Preserve all originally assigned outcomes; combine disjoint attempt records without replacements",
+  "required_sensitivity": "Repeat paired comparisons after excluding every whole block containing a provider/transport failure; the original failed base call cannot alone establish an SFT benefit",
+  "interrupted_blocks": [
+    "bsblock-01"
+  ]
+}
