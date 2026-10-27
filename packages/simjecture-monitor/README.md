@@ -140,6 +140,97 @@ updates only LoRA parameters with a clipped categorical policy-gradient loss,
 and checks gradients and saved-adapter reload. The tiny exploratory cohorts do
 not establish RL superiority or justify deployment from a score increase alone.
 
+## Measured wait controls for the five-field policy
+
+The newer `train_decisions.py` supports supervised training and a masked
+five-field policy-gradient update. Its default return baseline is the mean of
+the other sampled actions for the same public state. The optional
+`--advantage-baseline measured-wait` instead compares every sampled action with
+the same mean of at least two independently executed no-intervention controls:
+
+```text
+advantage(sample) = measured utility(sample) − mean(measured utility(wait controls))
+```
+
+All sampled interventions can therefore have negative measured advantage, even
+when one is better than the other interventions. This changes the finite-sample
+baseline, not the definition of scientific success, and does not by itself
+establish a better optimizer or a useful intervention. Wait branches retain
+normal worker-requested help and repair requests. They are never inserted into
+the optimizer as if the model sampled their forced initial action.
+
+First create fresh training-only public checkpoints with
+`scientific_counterfactual_trials.py prefix`. Record their opaque directory
+names in a design such as `{"split":"train","assignments":[{"id":"cp-opaque"}]}`.
+Prepare model inputs on the remote coordinator; sample on the remote A100:
+
+```bash
+python packages/simjecture-monitor/scripts/prepare_checkpoint_requests.py \
+  --prefixes /study/prefixes --design /study/prefix-design.json \
+  --output /study/inputs.jsonl
+python packages/simjecture-monitor/scripts/sample_checkpoint_decisions.py \
+  --base /models/pinned-base --adapter /models/behavior-adapter \
+  --data /study/inputs.jsonl --output /study/samples \
+  --temperature 3 --draws 4 --seed 2026103000
+```
+
+The preparer checks frozen artifact/transcript identities and attaches
+`return_group` and `host_checkpoint_id` host metadata. These fields and the
+design's case labels are excluded from the rendered model input. Transfer the
+small input/proposal records between the coordinator and A100 as needed; model
+weights need not pass through the local host. Keep evaluation checkpoints out
+of this development dataset. Back on the coordinator, plan before executing
+any proposal:
+
+```bash
+python packages/simjecture-monitor/scripts/collect_controlled_returns.py plan \
+  --samples /study/samples --prefixes /study/prefixes \
+  --root /study/controlled-returns --repetitions 2 --seed 2026103001
+python packages/simjecture-monitor/scripts/collect_controlled_returns.py run \
+  --root /study/controlled-returns --budget /study/native-budget.json \
+  --backend /study/plasma-backend.json --wrapper /study/native-codex \
+  --python /remote/science-env/bin/python --plasma-assets /study/plasma
+```
+
+`PLAN.json` freezes every sampled/control assignment, checkpoint identity,
+proposal, collector source and randomized order. Each state forms a complete
+block; collection starts a block only when its worst-case starts/time fit the
+existing lease. The controller never reallocates compute or raises that lease.
+It retains failed and unstarted assignments separately. A failed or incomplete
+cohort is not silently reduced to a favorable training subset. Previously
+attempted campaigns refuse automatic restart.
+
+The portable `receipts` directory contains sampled outcomes, explicit wait
+outcomes, `train.jsonl`, and the per-state advantage audit. The trainer verifies
+receipt hashes, the common public state, criteria, worker/downstream settings,
+time budget, actual sampled-answer binding, and recomputed utility. Unconfirmed
+solver transport cannot supply a reward. On the remote A100 only:
+
+```bash
+python packages/simjecture-monitor/scripts/train_decisions.py \
+  --base /models/pinned-base --initial-adapter /models/behavior-adapter \
+  --data /study/receipts/train.jsonl --output /study/new-update \
+  --mode policy-gradient --advantage-baseline measured-wait \
+  --temperature 3 --maximum-tokens 8192 --kernel-profile fla-prefill \
+  --steps 8 --accumulation 4 --learning-rate 1e-5
+```
+
+Use the actual sampling temperature and behavior checkpoint; the trainer
+reproduces their logged probabilities before optimizing and allows at most two
+passes over the sampled rows. The example update requires at least 16 samples.
+Do not infer a workflow win from the training advantages. Use a separate,
+prospectively frozen workflow comparison and report uncertainty, infrastructure
+failures, scientific quality, time, agent usage and episode-level false alerts.
+Two wait repeats are a minimum instrumentation check, not a power calculation.
+This collector is public-context replay into fresh native sessions, not a copy
+of private provider state or an uninterrupted streaming evaluation.
+The current continuation runner starts the main worker immediately in both
+branches. Its wait control means no automatic assistance to that awake worker;
+it does not preserve the parked worker's wait for job completion or the normal
+fallback timer. Training early wakeups requires trajectories from the deployed
+parked-worker lifecycle, with that lifecycle shared by the control. Changing the
+return baseline alone does not remove this operating-mode difference.
+
 ## Follow-up reward design
 
 The [draft scientific attention interface](specs/scientific-attention-0.1-draft/README.md)

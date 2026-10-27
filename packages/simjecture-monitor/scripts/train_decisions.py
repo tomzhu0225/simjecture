@@ -83,6 +83,9 @@ def main():
     parser.add_argument("--kernel-profile", choices=("fla-prefill",))
     parser.add_argument("--kl-coefficient", type=float, default=0.02)
     parser.add_argument("--temperature", type=float, default=1.0)
+    parser.add_argument(
+        "--advantage-baseline", choices=("leave-one-out", "measured-wait"), default="leave-one-out"
+    )
     args = parser.parse_args()
     if (
         min(
@@ -99,12 +102,22 @@ def main():
     ):
         raise ValueError("Training limits and rates must be positive")
     rows = read_data(args.data)
-    advantages = (
-        measured_advantages(rows, args.data.parent) if args.mode == "policy-gradient" else {}
-    )
+    advantage_audit = None
+    if args.advantage_baseline == "measured-wait":
+        if args.mode != "policy-gradient":
+            raise ValueError("A measured wait baseline applies only to policy-gradient updates")
+        from simjecture_monitor.measured_wait import wait_controlled_advantages
+
+        advantages, advantage_audit = wait_controlled_advantages(rows, args.data.parent)
+    else:
+        advantages = (
+            measured_advantages(rows, args.data.parent) if args.mode == "policy-gradient" else {}
+        )
     if args.mode == "policy-gradient" and args.steps * args.accumulation > 2 * len(rows):
         raise ValueError("Measured-return updates allow at most two passes over logged behavior")
     args.output.mkdir(parents=True, exist_ok=False)
+    if advantage_audit is not None:
+        put(args.output / "measured-wait-advantages.json", advantage_audit)
     import torch
     from peft import LoraConfig, PeftModel, get_peft_model
     from simjecture_monitor.decision_model import DecisionModel
