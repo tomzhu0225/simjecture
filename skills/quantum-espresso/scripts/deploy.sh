@@ -22,7 +22,13 @@ done
 project_root="$(cd "$project_root" && pwd)"
 source "$project_root/skills/quantum-espresso/scripts/prerequisites.sh"
 qe_platform
+if [[ "$uv" == */* && "$uv" != /* && ! -x "$uv" && -x "$project_root/$uv" ]]; then
+    uv="$project_root/$uv"
+fi
 command -v "$uv" >/dev/null || qe_fail "Missing uv: $uv. Prepare uv/Python with the Simjecture base installer (docs/getting-started/installation.md), add uv to PATH or pass --uv /absolute/path/to/uv (PowerShell: -Uv), then retry."
+uv="$(command -v "$uv")"
+[[ "$uv" = /* ]] || uv="$PWD/$uv"
+uv="$(cd "${uv%/*}" && pwd -P)/${uv##*/}"
 "$uv" --version >/dev/null || qe_fail "uv cannot run. Repair uv or pass --uv /absolute/path/to/uv, then retry."
 bootstrap_override="${SIMJECTURE_BOOTSTRAP_PYTHON:-}"
 qe_python
@@ -40,7 +46,11 @@ if [[ -z "${UV_PROJECT_ENVIRONMENT:-}" ]]; then
 fi
 application_python="$UV_PROJECT_ENVIRONMENT/bin/python"
 if [[ -n "$bubblewrap_dir" ]]; then
+    if [[ "$bubblewrap_dir" != /* && ! -x "$bubblewrap_dir/bwrap" && -x "$project_root/$bubblewrap_dir/bwrap" ]]; then
+        bubblewrap_dir="$project_root/$bubblewrap_dir"
+    fi
     [[ -x "$bubblewrap_dir/bwrap" ]] || qe_fail "Configured Bubblewrap is not executable. Install the distribution bubblewrap package or correct --bubblewrap-dir, then retry."
+    bubblewrap_dir="$(cd "$bubblewrap_dir" && pwd -P)"
     export PATH="$bubblewrap_dir:$PATH"
 fi
 command -v bwrap >/dev/null || qe_fail "Missing Bubblewrap. Install your distribution's bubblewrap package (Debian/Ubuntu: sudo apt install bubblewrap), or pass --bubblewrap-dir /existing/bin. Ask the administrator if installation is restricted; retry after setup."
