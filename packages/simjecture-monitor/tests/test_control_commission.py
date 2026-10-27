@@ -16,8 +16,10 @@ def prepared():
     return plan("a" * 40, {name: "b" * 64 for name in SOURCE_FILES})
 
 
-def completed():
-    assignment = prepared()
+def completed(parent_turn_limit=4):
+    assignment = plan(
+        "a" * 40, {name: "b" * 64 for name in SOURCE_FILES}, parent_turn_limit=parent_turn_limit
+    )
     records, evidence = [], {}
     for block in assignment["blocks"]:
         for trial in block["trials"]:
@@ -56,6 +58,8 @@ def completed():
                 ]
                 if trial["family"] == "source_binding"
                 else [],
+                parent_turn_limit=parent_turn_limit,
+                parent_turn_count=4,
             )
     return assignment, records, evidence
 
@@ -104,6 +108,32 @@ def test_successful_integration_is_not_an_effectiveness_or_training_claim():
     assert result["commissioned"]
     assert not result["eligible_for_optimizer"]
     assert "model benefit unmeasured" in result["interpretation"]
+
+
+def test_extended_resumptions_do_not_increase_shared_resources_or_reuse_trial_ids():
+    original = prepared()
+    extended = plan("a" * 40, {name: "b" * 64 for name in SOURCE_FILES}, parent_turn_limit=12)
+    assert original["resource_bounds"] == extended["resource_bounds"]
+    old_ids = {t["id"] for b in original["blocks"] for t in b["trials"]}
+    new_ids = {t["id"] for b in extended["blocks"] for t in b["trials"]}
+    assert not old_ids & new_ids
+    for invalid in [0, 13, True]:
+        with pytest.raises(ValueError, match="Parent-turn limit"):
+            plan("a" * 40, {name: "b" * 64 for name in SOURCE_FILES}, parent_turn_limit=invalid)
+
+
+def test_extended_commission_requires_an_actual_fifth_resumption_and_matching_limit():
+    value, records, evidence = completed(parent_turn_limit=12)
+    result = audit(value, records, evidence, audit_violations=[])
+    assert not result["commissioned"]
+    assert not result["exercised"]["resumption_after_four_turns"]
+    identity = records[0]["id"]
+    evidence[identity]["parent_turn_count"] = 5
+    assert audit(value, records, evidence, audit_violations=[])["commissioned"]
+    evidence[identity]["parent_turn_limit"] = 4
+    result = audit(value, records, evidence, audit_violations=[])
+    assert not result["commissioned"]
+    assert [identity, "parent_turn_limit_not_verified"] in result["violations"]
 
 
 def test_interrupted_commission_uses_only_original_attempted_subset():

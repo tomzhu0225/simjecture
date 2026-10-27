@@ -258,6 +258,8 @@ def main():
                     "--plasma-assets",
                     str(args.plasma_assets.resolve()),
                 ]
+                if plan.get("parent_turn_limit", 4) != 4:
+                    command += ["--parent-turn-limit", str(plan["parent_turn_limit"])]
                 try:
                     receipt["controller_exit"] = execute(
                         command, logs, trial["id"], bounds["controller_seconds_per_workflow"]

@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 from types import SimpleNamespace
 
+import pytest
 from simjecture_monitor.events import put
 
 
@@ -94,3 +95,21 @@ def test_completed_job_blocks_late_action_without_relabelling_model_choice(tmp_p
     assert recorded["decision"]["choice"] == "request_repair_judge"
     assert recorded["effective_action"] == "defer"
     assert not sup.discretionary_used
+
+
+def test_parent_turn_control_keeps_historical_task_and_rejects_unbounded_start(
+    tmp_path, monkeypatch
+):
+    _, loaded = modules(monkeypatch)
+    assert loaded.task_for_parent_turn_limit(4) == loaded.TASK
+    task = loaded.task_for_parent_turn_limit(12)
+    assert "Up to 12 main-worker turns" in task
+    assert "do not extend the wall or shared role-start budgets" in task
+    monkeypatch.setattr(
+        loaded.live, "prepare", lambda *a, **k: pytest.fail("No worker setup allowed")
+    )
+    for invalid in [0, 13, True]:
+        with pytest.raises(ValueError, match="Parent-turn limit"):
+            loaded.run(
+                tmp_path, "source_binding", "observe", 1, None, None, parent_turn_limit=invalid
+            )

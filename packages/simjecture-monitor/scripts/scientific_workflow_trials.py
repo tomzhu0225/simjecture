@@ -297,6 +297,13 @@ def main():
         default="inherited",
         help="Prospective instruction control; historical studies use inherited",
     )
+    parser.add_argument(
+        "--parent-turn-limit",
+        type=int,
+        choices=range(1, 13),
+        default=4,
+        help="Prospective resumption limit; shared role-start and wall budgets still apply",
+    )
     args = parser.parse_args()
     if args.model_policy and args.arm not in {"base", "adapted"}:
         parser.error("--model-policy requires a model arm")
@@ -315,7 +322,15 @@ def main():
         sampling_split=args.sampling_split,
         worker_prompt=args.worker_prompt,
     )
-    legacy.run(args.root, args.family, args.arm, args.seed, args.socket, args.wrapper)
+    legacy.run(
+        args.root,
+        args.family,
+        args.arm,
+        args.seed,
+        args.socket,
+        args.wrapper,
+        parent_turn_limit=args.parent_turn_limit,
+    )
 
 
 if __name__ == "__main__":

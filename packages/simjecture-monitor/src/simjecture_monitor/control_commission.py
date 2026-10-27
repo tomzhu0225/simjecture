@@ -38,7 +38,9 @@ def check_tool_hashes(package, hashes):
             raise ValueError("Commissioning tool differs from registration: " + name)
 
 
-def plan(source_revision, source_hashes, *, seed=202610271031):
+def plan(source_revision, source_hashes, *, seed=202610271031, parent_turn_limit=4):
+    if type(parent_turn_limit) is not int or not 1 <= parent_turn_limit <= 12:
+        raise ValueError("Parent-turn limit must be an integer from 1 to 12")
     if not re.fullmatch(r"[0-9a-f]{40}", source_revision):
         raise ValueError("Pin a complete source commit")
     if not set(SOURCE_FILES) <= set(source_hashes) or any(
@@ -51,6 +53,8 @@ def plan(source_revision, source_hashes, *, seed=202610271031):
         trials = []
         for arm in arms:
             key = f"{SCHEMA}:{source_revision}:{seed}:{family}:{arm}"
+            if parent_turn_limit != 4:
+                key += f":parent-turn-limit={parent_turn_limit}"
             trials.append(
                 dict(
                     id="ctl-" + hashlib.sha256(key.encode()).hexdigest()[:16],
@@ -72,6 +76,7 @@ def plan(source_revision, source_hashes, *, seed=202610271031):
         arms=list(ARMS),
         blocks=blocks,
         workflows=6,
+        parent_turn_limit=parent_turn_limit,
         decision_model_calls=0,
         optimizer_updates=0,
         execution_started=False,
@@ -146,6 +151,8 @@ def audit(plan_value, records, evidence, *, audit_violations):
     returned_help = False
     authorized_repair = False
     routine_dispatch = False
+    extended_parent_return = False
+    parent_turn_limit = plan_value.get("parent_turn_limit", 4)
     for row in records:
         identity = row["id"]
         trial, files = planned[identity], evidence[identity]
@@ -153,6 +160,16 @@ def audit(plan_value, records, evidence, *, audit_violations):
             problems.append([identity, "assignment_mismatch"])
         if row.get("whole_workflow_verified") != 1:
             problems.append([identity, "workflow_not_verified"])
+        if parent_turn_limit != 4:
+            count = files.get("parent_turn_count")
+            if (
+                files.get("parent_turn_limit") != parent_turn_limit
+                or type(count) is not int
+                or not 0 < count <= parent_turn_limit
+            ):
+                problems.append([identity, "parent_turn_limit_not_verified"])
+            elif count > 4:
+                extended_parent_return = True
         receipt = files.get("prompt_receipt") or {}
         task = files.get("task_protocol")
         if (
@@ -193,6 +210,8 @@ def audit(plan_value, records, evidence, *, audit_violations):
         help_return_acknowledged=returned_help,
         judge_authorized_protected_repair=authorized_repair,
     )
+    if parent_turn_limit != 4:
+        exercised["resumption_after_four_turns"] = extended_parent_return
     missing = [identity for identity in planned if identity not in {r["id"] for r in records}]
     return dict(
         schema=SCHEMA,

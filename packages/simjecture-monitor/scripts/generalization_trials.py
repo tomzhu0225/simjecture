@@ -93,6 +93,19 @@ TASK = (
 )
 
 
+def task_for_parent_turn_limit(limit):
+    if type(limit) is not int or not 1 <= limit <= 12:
+        raise ValueError("Parent-turn limit must be an integer from 1 to 12")
+    if limit == 4:
+        return TASK
+    return TASK.replace(
+        "Up to four main-worker turns and650seconds are available.",
+        f"Up to {limit} main-worker turns and650seconds are available. "
+        "The existing shared native-role start limit also applies to helpers and judges; "
+        "additional resumptions do not extend the wall or shared role-start budgets.",
+    )
+
+
 def load(path, default=None):
     try:
         return json.loads(Path(path).read_text())
@@ -509,7 +522,9 @@ def run(
     *,
     exercise_help_wait=False,
     exercise_draft_help_wait=False,
+    parent_turn_limit=4,
 ):
+    task = task_for_parent_turn_limit(parent_turn_limit)
     started = time.time()
     sup, _ = live.prepare(
         root,
@@ -517,7 +532,7 @@ def run(
         "observe",
         socket,
         supervisor_type=RawSupervisor,
-        task_transform=lambda _: TASK,
+        task_transform=lambda _: task,
     )
     configure(sup, wrapper)
     manifest = sup.service.manifest
@@ -526,18 +541,19 @@ def run(
     fixture.install(sup.service.work, family, seed)
     sup.initialize(arm)
     sup.ledger = IncidentLedger(root / "incident-ledger.json")
-    sup.incident = sup.ledger.observe("workflow", "public task evidence", dict(task=TASK))
+    sup.incident = sup.ledger.observe("workflow", "public task evidence", dict(task=task))
     sup.executed, sup.execution_records, sup.resolved_repairs = set(), [], set()
     sup.record_review_identity = True
     initial = dict(criteria=CRITERIA, artifacts=inventory(sup.service.work))
     put(root / "INITIAL.json", initial)
     put(root / "HOST_CASE.json", dict(family=family, arm=arm, seed=seed))
     status = dict(stage="running", started_at=started, turns=[], parking=[], arm=arm, family=family)
+    status["parent_turn_limit"] = parent_turn_limit
     put(root / "OUTCOME.json", status)
     delivered = set()
     delivered_terminal = set()
     try:
-        for number in range(1, 5):
+        for number in range(1, parent_turn_limit + 1):
             if sup.boundary():
                 break
             sup.worker_parked = False
@@ -752,6 +768,7 @@ def main():
     parser.add_argument("--wrapper", type=Path, required=True)
     parser.add_argument("--exercise-help-wait", action="store_true")
     parser.add_argument("--exercise-draft-help-wait", action="store_true")
+    parser.add_argument("--parent-turn-limit", type=int, choices=range(1, 13), default=4)
     args = parser.parse_args()
     run(
         args.root,
@@ -762,6 +779,7 @@ def main():
         args.wrapper,
         exercise_help_wait=args.exercise_help_wait or args.exercise_draft_help_wait,
         exercise_draft_help_wait=args.exercise_draft_help_wait,
+        parent_turn_limit=args.parent_turn_limit,
     )
 
 

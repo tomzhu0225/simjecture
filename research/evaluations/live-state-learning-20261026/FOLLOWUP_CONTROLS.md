@@ -1,9 +1,46 @@
 # Controls needed to interpret the workflow timing differences
 
-Status: **staged and queued for commissioning; not yet evaluated with new native
-workers**. The ongoing 64-assignment base/SFT comparison remains frozen
+Status: **first native commissioning attempt incomplete; a prospective resumption
+control is prepared**. The original 64-assignment base/SFT comparison completed
 at source `04f905c`, with its original instructions and four arms. None of the
-changes below has been deployed into that cohort or used for model training.
+changes below was deployed into that cohort or used for model training.
+
+## First native commissioning outcome
+
+The [first pilot record](followup-control-first-attempt.json) contains two actual
+protected-source workflows with task-focused instructions and no decision model.
+Worker-only execution verified in 371.2 seconds with six native starts. Routine
+help did not verify: it stopped in 277.4 seconds after seven native starts.
+The ordinary audit has no consistency violations. The additional commission
+audit correctly rejects the failed workflow and retains four unstarted IDs.
+Routine dispatch, acknowledged help return and an applied judge-authorized repair
+were all exercised; numerical/report completion is still required.
+
+The failed routine-help trace isolates an experimental scheduling limit. After
+its fourth main-worker turn, corrected postprocessing completed and emitted a
+terminal wake, but the loop ended without a fifth report-writing turn. Both
+physical controls and protected repair succeeded, required feedback was
+acknowledged, and no final report existed. The workflow used only 277 of the
+650 seconds and seven of the 12 permitted native starts. This reproduces the
+completion failure without a learned attention policy. It does not prove that
+all earlier model-arm differences arose from the same cause, and it does not
+erase any historical outcome.
+
+The limit is in this experiment's `range(1, 5)` worker loop, not an independently
+established production Simjecture bug. The prospective `--parent-turn-limit`
+option permits 1–12 main-worker resumptions while the existing wall deadline and
+shared native-start guard still apply to every role. Its default remains four,
+and the default task text is byte-for-byte unchanged. A new commission will
+register 12 for both arms, use new assignment IDs, and retain the two original
+pilot outcomes. It receives only the original pilot's unused native starts and
+unexpired wall budget, not a renewed two-hour allowance.
+
+Nondefault commissioning verifies the limit recorded in each actual outcome
+and requires at least one successful workflow to exercise a resumption beyond
+four turns. Missing coverage remains incomplete. Thirty-six targeted checks
+pass, covering the new audit requirement, unchanged resource ceilings, invalid
+limit rejection, original completion/feedback checks, and existing controls.
+These checks do not replace the forthcoming native qualification.
 
 ## Recorded instruction mismatch
 

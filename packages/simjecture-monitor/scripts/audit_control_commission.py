@@ -87,6 +87,8 @@ def main():
             prompt_receipt=files["WORKER_PROMPT_MODE.json"],
             feedback=files["incident-ledger.json"].get("feedback", []),
             authority_results=files["OUTCOME.json"].get("authority_results", []),
+            parent_turn_limit=files["OUTCOME.json"].get("parent_turn_limit"),
+            parent_turn_count=len(files["OUTCOME.json"].get("turns", [])),
         )
     result = audit(value, records, evidence, audit_violations=summary["violations"])
     result["inputs_sha256"] = inputs

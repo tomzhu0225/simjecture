@@ -20,6 +20,7 @@ def main():
     parser.add_argument("--source", type=Path, required=True)
     parser.add_argument("--revision", required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--parent-turn-limit", type=int, choices=range(1, 13), default=4)
     args = parser.parse_args()
     revision = subprocess.run(
         ["git", "rev-parse", args.revision + "^{commit}"],
@@ -48,7 +49,7 @@ def main():
             for member in archive.getmembers()
             if member.isfile()
         }
-    value = plan(revision, hashes)
+    value = plan(revision, hashes, parent_turn_limit=args.parent_turn_limit)
     value["source_archive_sha256"] = hashlib.sha256(source).hexdigest()
     value["source_scope"] = (
         "All tracked regular files under src, scripts and packages/simjecture-monitor"
