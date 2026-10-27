@@ -120,6 +120,70 @@ view. The host remains responsible for freshness, admission, duplicate
 suppression and permission boundaries. See the model card for the context limit,
 general-decision regressions and unvalidated deployment settings.
 
+### Inference recipe for the experimental release
+
+The following recipe targets the tested A100/CUDA environment and the pinned
+scientific scorer. It is not a validated CPU or quantized deployment recipe.
+Run model loading on the intended GPU host. The example repository/tag below
+is the planned Conjecture 1 release identity; publication status is recorded
+separately from this draft.
+
+```bash
+git clone https://github.com/tomzhu0225/simjecture.git
+cd simjecture
+git checkout 04f905c9f4538886a0713135bba29a1d4becea0b
+python3.12 -m venv .inference-env
+. .inference-env/bin/activate
+python -m pip install -e './packages/simjecture-monitor[model]' \
+  'flash-linear-attention==0.6.0' 'fla-core==0.6.0' 'pydantic==2.13.4'
+python - <<'PY'
+from huggingface_hub import snapshot_download
+snapshot_download(
+    'internlm/Intern-Decision-4B',
+    revision='38c9dafbbef52dd04bae943c0c6ac918419adfd5',
+    local_dir='models/intern-decision-4b', token=False)
+snapshot_download(
+    'tomzhu0225/Conjecture-1-4B', revision='v0.1',
+    local_dir='models/conjecture-1', token=False)
+PY
+umask 077
+mkdir -p conjecture-runtime
+python - <<'PY'
+from pathlib import Path
+import secrets
+Path('conjecture-runtime/token').write_text(secrets.token_hex(32))
+PY
+python -m simjecture_monitor.multiadapter_server \
+  --checkpoint models/intern-decision-4b \
+  --adapter conjecture1=models/conjecture-1 \
+  --socket conjecture-runtime/model.sock \
+  --status conjecture-runtime/status.json \
+  --auth-token-file conjecture-runtime/token \
+  --maximum-tokens 8192 --temperature 1 \
+  --decision-distribution independent/v1 \
+  --wall-seconds 3600 --idle-seconds 900 &
+```
+
+Once the status file reports `ready`, the included client checks the served
+weight identity, compiled-input identity and all saved option probabilities:
+
+```bash
+python models/conjecture-1/release-operations/verify_model.py \
+  --socket conjecture-runtime/model.sock \
+  --auth-token-file conjecture-runtime/token \
+  --policy conjecture1 \
+  --probe models/conjecture-1/examples/reload-probe.json
+```
+
+The check uses a static commissioning observation and the original `1e-4`
+probability tolerance. The client was checked against a retained real A100
+response and rejects changed probabilities and a disabled adapter. This client
+check itself has not started another inference run. The previously completed
+portable-adapter reload is the actual GPU equivalence evidence. The static
+observation is not a live dispatch request or a scientific performance test.
+Live integration must construct fresh observations, apply host admission and
+account for actual assistance separately.
+
 ## Notices and release gate
 
 The exact upstream revision lists 21 files, including `LICENSE` and

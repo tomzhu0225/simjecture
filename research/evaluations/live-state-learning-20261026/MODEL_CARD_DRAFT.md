@@ -164,10 +164,14 @@ helps a capable worker.
 Inspection of recorded worker prompts found general research execution/review
 guidance alongside the experiment's different wrapper/report protocol. This
 common instruction context may influence discretionary help requests; its causal
-effect is unmeasured. Separate task-focused instructions and routine expert
-attention are implemented as prospective controls, but have no new workflow
-results yet. See [the control record](FOLLOWUP_CONTROLS.md). Current measurements
-remain conditional on the original experimental harness.
+effect is unmeasured. A separate task-focused pilot without a decision model
+also reproduced a completion failure after routine help: corrected processing
+finished after the fourth worker turn, but the loop offered no fifth reporting
+turn despite unused wall time and native-start allowance. A prospective control
+permits additional resumptions within the same resource limits and is being
+commissioned. See [the control record](FOLLOWUP_CONTROLS.md). These observations
+do not replace the original results or establish model benefit under a revised
+harness. Reported model measurements remain conditional on the original harness.
 
 ## Reproduction and release requirements
 
@@ -196,8 +200,8 @@ collection stopped for transport recovery, a separate fresh A100 load matched
 all 496 adapter tensors exactly and reproduced all three saved base/SFT probes,
 with maximum probability discrepancy `6.19e-8` against the unchanged `1e-4`
 tolerance. [The reload evidence](portable-reload-evidence.json) records this check.
-The ongoing scientific comparison continues to use the original adapter and
-configuration; no optimizer ran during export or reload.
+The completed scientific comparison used the original adapter and configuration;
+no optimizer ran during export or reload.
 
 The registered workflow evidence and infrastructure sensitivity analysis are
 complete and support an experimental artifact release with the limitations

@@ -1,0 +1,107 @@
+{
+  "registration": {
+    "prepared_at": 1793105751.3001068,
+    "source_revision": "8626a773f8995a42ee99f24703b13ecb386d7679",
+    "parent_turn_limit": 12,
+    "manifest_prepared_sha256": "71d4de4a73974a92a2fdeb1225d2e6c731b4bc54429fd38fec10270424938f07",
+    "scripts_sha256": {
+      "qualify_control_commission_v2_physics.py": "63009c67c29a34e303a15651a06d63fdadb47209e7c797ba128775192302d582",
+      "start_control_commission_v2.py": "8c1cadd4508b2e325eb279b5544d556ebe20f10072a3b92b49ded4c711445935"
+    },
+    "scope": "New six-workflow integration round; first round retained; no new GPU/model calls/optimizer updates; original pilot deadline and remaining 59 native starts only"
+  },
+  "launch": {
+    "controller_pid": 3867913,
+    "staged_source_files": 543,
+    "parent_turn_limit": 12
+  },
+  "snapshot": {
+    "at": 1793106968.4548059,
+    "control-commission-v2-status.json": {
+      "stage": "commissioning",
+      "started_at": 1793105752.7541654,
+      "pid": 3867913,
+      "decision_model_calls": 0,
+      "optimizer_updates": 0,
+      "gpu_allocations": 0,
+      "parent_deadline": 1793110773.4025888,
+      "parent_native_starts": 14,
+      "remaining_native_starts": 59,
+      "parent_budget_sha256": "c87191d97e17da94c5f4137580349794389b991cc1ad2344341d807c14e60021",
+      "plan_sha256": "8626f011a09c8dd62748bfebddbc51d332788345fd50d47ecd0a8af1399d0d55",
+      "wall_seconds": 4974,
+      "runner_pid": 3867929,
+      "launched_at": 1793105768.9764612
+    },
+    "control-commission-02/CAMPAIGN.json": {
+      "stage": "collecting",
+      "started_at": 1793105769.0327036,
+      "blocks": [
+        {
+          "id": "control-03",
+          "started_at": 1793105784.3941522,
+          "trials": [
+            {
+              "id": "ctl-14cb1bb90815528c",
+              "arm": "observe",
+              "started_at": 1793105874.3946323,
+              "ended_at": 1793106197.9789598
+            },
+            {
+              "id": "ctl-f98f0c450363c508",
+              "arm": "routine_help",
+              "started_at": 1793106287.9795868,
+              "ended_at": 1793106690.6970408
+            }
+          ],
+          "ended_at": 1793106690.70565
+        },
+        {
+          "id": "control-01",
+          "started_at": 1793106690.7061152,
+          "trials": [
+            {
+              "id": "ctl-bac174df0597ad53",
+              "arm": "observe",
+              "started_at": 1793106780.6977634,
+              "ended_at": 1793106935.1971064
+            }
+          ]
+        }
+      ]
+    },
+    "outcomes": [
+      {
+        "id": "ctl-14cb1bb90815528c",
+        "stage": "completed",
+        "verified_complete": true,
+        "elapsed_seconds": 322.67930579185486,
+        "finish_reason": "worker_finished_with_obligations_reconciled",
+        "native_starts": 6,
+        "parent_turn_limit": 12,
+        "parent_turn_count": 4
+      },
+      {
+        "id": "ctl-bac174df0597ad53",
+        "stage": "completed",
+        "verified_complete": true,
+        "elapsed_seconds": 153.6898899078369,
+        "finish_reason": "worker_finished_with_obligations_reconciled",
+        "native_starts": 2,
+        "parent_turn_limit": 12,
+        "parent_turn_count": 2
+      },
+      {
+        "id": "ctl-f98f0c450363c508",
+        "stage": "completed",
+        "verified_complete": true,
+        "elapsed_seconds": 402.4857566356659,
+        "finish_reason": "worker_finished_with_obligations_reconciled",
+        "native_starts": 8,
+        "parent_turn_limit": 12,
+        "parent_turn_count": 5
+      }
+    ],
+    "tokenizer_assets": null
+  }
+}

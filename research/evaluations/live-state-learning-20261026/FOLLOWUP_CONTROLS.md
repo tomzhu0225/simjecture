@@ -1,7 +1,7 @@
 # Controls needed to interpret the workflow timing differences
 
-Status: **first native commissioning attempt incomplete; a prospective resumption
-control is prepared**. The original 64-assignment base/SFT comparison completed
+Status: **first native commissioning attempt incomplete; the revised resumption
+control is collecting a separate native qualification round**. The original 64-assignment base/SFT comparison completed
 at source `04f905c`, with its original instructions and four arms. None of the
 changes below was deployed into that cohort or used for model training.
 
@@ -41,6 +41,25 @@ four turns. Missing coverage remains incomplete. Thirty-six targeted checks
 pass, covering the new audit requirement, unchanged resource ceilings, invalid
 limit rejection, original completion/feedback checks, and existing controls.
 These checks do not replace the forthcoming native qualification.
+
+The [second-round manifest](followup-control-v2-manifest.json) pins source
+`8626a773f8995a42ee99f24703b13ecb386d7679` and all 543 source files. It uses
+disjoint IDs and retains the first round's failed outcome and four unstarted
+assignments. Its allowance is the remaining **59 of the original 73 native
+starts**, with no extension of the original **14:19:33 UTC** deadline.
+The actual child runner ends its native allowance approximately 30 seconds
+earlier. Fresh physics checks passed before the new authentication and workers.
+
+At the [saved launch snapshot](followup-control-v2-launch.json), the first three
+new workflows had verified. The new routine-help protected-repair trial required
+five main-worker turns and eight native starts, completing in 402.5 seconds.
+This exercises the previously unavailable fifth resumption and completes the
+report within the original per-workflow wall and shared-start limits. The paired
+worker-only trial verified in 322.7 seconds with four main-worker turns; the
+healthy worker-only trial also verified. These are integration observations,
+not an estimate of learned-policy benefit. Full six-trial qualification remains
+pending at this snapshot. [Physics receipts](followup-control-v2-qualification.json)
+and exact second-round operator scripts are retained alongside the first round.
 
 ## Recorded instruction mismatch
 
