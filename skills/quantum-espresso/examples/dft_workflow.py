@@ -696,9 +696,12 @@ def pw_input(cfg, calculation, cell, atoms, kmesh=None):
 
 def read_pw_xml(path, calculation=None):
     root = ET.parse(path).getroot()
-    calculation = calculation or root.findtext("input/control_variables/calculation")
     if root.findtext("exit_status", "missing").strip() != "0":
         raise ValueError("PW XML exit_status is missing or nonzero")
+    recorded_calculation = root.findtext("input/control_variables/calculation")
+    if calculation is not None and recorded_calculation != calculation:
+        raise ValueError("PW XML calculation does not match the requested stage")
+    calculation = recorded_calculation
     conv = root.find("output/convergence_info")
     if conv is None:
         raise ValueError("Missing PW convergence_info")
@@ -718,20 +721,42 @@ def read_pw_xml(path, calculation=None):
     output = root.find("output")
     if output is None:
         raise ValueError("Missing QE output XML")
+
+    def finite_number(text, scale=1):
+        value = float(text) * scale
+        if not math.isfinite(value):
+            raise ValueError("Nonfinite PW observable")
+        return value
+
     structure = output.find("atomic_structure")
+    if structure is None or structure.find("cell") is None:
+        raise ValueError("Missing PW atomic structure")
     cell_bohr = np.array(
         [[float(v) for v in structure.find(f"cell/a{i}").text.split()] for i in (1, 2, 3)]
     )
+    if (
+        cell_bohr.shape != (3, 3)
+        or not np.isfinite(cell_bohr).all()
+        or not math.isfinite(float(np.linalg.det(cell_bohr)))
+        or np.linalg.det(cell_bohr) <= 0
+    ):
+        raise ValueError("Invalid PW cell")
     atoms = []
     for atom in structure.findall("atomic_positions/atom"):
         cart = np.fromstring(atom.text, sep=" ")
+        if cart.shape != (3,) or not np.isfinite(cart).all():
+            raise ValueError("Invalid PW atom coordinates")
         atoms.append(
             {
                 "species": atom.attrib["name"],
                 "fractional": (cart @ np.linalg.inv(cell_bohr)).tolist(),
             }
         )
+    if not atoms:
+        raise ValueError("Missing PW atoms")
     bs = output.find("band_structure")
+    if bs is None:
+        raise ValueError("Missing PW band structure")
 
     def truth(name):
         return bs.findtext(name, "false").strip().lower() in {"true", "t", ".true."}
@@ -739,7 +764,7 @@ def read_pw_xml(path, calculation=None):
     if truth("noncolin") or truth("spinorbit"):
         raise ValueError("Noncollinear/SOC XML spinors are not implemented")
     nspin = 2 if truth("lsda") else 1
-    electrons = float(bs.findtext("nelec"))
+    electrons = finite_number(bs.findtext("nelec"))
     nodes = bs.findall("ks_energies")
     energies = (
         np.array([np.fromstring(x.findtext("eigenvalues"), sep=" ") for x in nodes]) * HARTREE_EV
@@ -751,6 +776,8 @@ def read_pw_xml(path, calculation=None):
         or not energies.size
         or not np.isfinite(energies).all()
         or k.shape != (len(energies), 3)
+        or not np.isfinite(k).all()
+        or not np.isfinite(weights).all()
     ):
         raise ValueError("Invalid PW eigenvalue dimensions")
     if nspin == 2:
@@ -793,16 +820,23 @@ def read_pw_xml(path, calculation=None):
         )
         offset += count
     fermi = bs.findtext("fermi_energy")
-    fermi = None if fermi is None else float(fermi) * HARTREE_EV
+    fermi = None if fermi is None else finite_number(fermi, HARTREE_EV)
     two = bs.findtext("two_fermi_energies")
-    total = float(output.findtext("total_energy/etot")) * HARTREE_EV
+    two = None if two is None else [finite_number(value, HARTREE_EV) for value in two.split()]
+    total = finite_number(output.findtext("total_energy/etot"), HARTREE_EV)
     forces_text, stress_text = output.findtext("forces"), output.findtext("stress")
     forces = np.fromstring(forces_text, sep=" ").reshape(-1, 3) if forces_text else None
     stress = np.fromstring(stress_text, sep=" ").reshape(3, 3) if stress_text else None
+    if forces is not None and (
+        forces.shape != (len(atoms), 3) or not np.isfinite(forces).all()
+    ):
+        raise ValueError("Invalid PW forces")
+    if stress is not None and not np.isfinite(stress).all():
+        raise ValueError("Nonfinite PW stress")
 
     def moment(name):
         text = output.findtext("magnetization/" + name)
-        return None if text is None else float(text)
+        return None if text is None else finite_number(text)
 
     total_moment, absolute_moment = moment("total"), moment("absolute")
     magnetization = {
@@ -818,7 +852,9 @@ def read_pw_xml(path, calculation=None):
     smearing_term = output.findtext("total_energy/demet")
     return dict(
         magnetization=magnetization,
-        smearing_term_ev=None if smearing_term is None else float(smearing_term) * HARTREE_EV,
+        smearing_term_ev=None
+        if smearing_term is None
+        else finite_number(smearing_term, HARTREE_EV),
         pressure_kbar=None if stress is None else float(np.trace(stress) / 3 * HARTREE_BOHR3_KBAR),
         cell_angstrom=cell_bohr * BOHR_ANGSTROM,
         atoms=atoms,
@@ -831,9 +867,7 @@ def read_pw_xml(path, calculation=None):
         nocc=channels[0]["nocc"] if nspin == 1 else None,
         nelec=electrons,
         fermi_energy_ev=fermi,
-        fermi_energies_ev=None
-        if two is None
-        else (np.fromstring(two, sep=" ") * HARTREE_EV).tolist(),
+        fermi_energies_ev=two,
         occupations_kind=bs.findtext("occupations_kind"),
         total_energy_ev=total,
         max_force_ry_bohr=None

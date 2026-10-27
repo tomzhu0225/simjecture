@@ -157,3 +157,116 @@ def test_missing_m_resolved_pdos_columns_must_fail(tmp_path, material, nspin):
     np.savetxt(p, table[:, :-nspin])
     with pytest.raises(ValueError):
         q.validate_tables(tmp_path, nspin)
+
+
+@pytest.mark.parametrize("stage", ["nscf", "bands"])
+def test_branch_cannot_reuse_scf_xml_as_completion_evidence(tmp_path, monkeypatch, stage):
+    # Both branches start with an SCF checkpoint. A startup-only solver response
+    # must not turn that old checkpoint into evidence of a completed new stage.
+    directory = tmp_path / stage
+    xml = q.xml_at(directory)
+    xml.parent.mkdir(parents=True)
+    shutil.copyfile(R / "tests/fixtures/qe_scf_smoke.xml", xml)
+
+    def startup_only(command, *, stdout, **kwargs):
+        stdout.write("JOB DONE.\n")
+        return types.SimpleNamespace(returncode=0)
+
+    monkeypatch.setattr(q.subprocess, "run", startup_only)
+    with pytest.raises(ValueError, match="calculation"):
+        q.run_command("pw.x", f"&CONTROL calculation='{stage}' /\n", directory, 2, [])
+
+
+@pytest.mark.parametrize(
+    "field",
+    [
+        "atomic_structure/cell/a1",
+        "atomic_structure/atomic_positions/atom",
+        "band_structure/nelec",
+        "band_structure/fermi_energy",
+        "band_structure/ks_energies/k_point",
+        "total_energy/etot",
+        "total_energy/demet",
+        "forces",
+        "stress",
+        "magnetization/total",
+    ],
+)
+@pytest.mark.parametrize("bad", ["NaN", "Infinity"])
+def test_pw_rejects_nonfinite_observables(tmp_path, field, bad):
+    tree = ET.parse(R / "tests/fixtures/qe_scf_smoke.xml")
+    output = tree.getroot().find("output")
+    parent, name = field.rsplit("/", 1) if "/" in field else (".", field)
+    container = output.find(parent)
+    if container is None:
+        container = ET.SubElement(output, parent)
+    node = container.find(name)
+    if node is None:
+        node = ET.SubElement(container, name)
+    values = (node.text or "0").split()
+    node.text = " ".join([bad, *values[1:]])
+    xml = tmp_path / "pw.xml"
+    tree.write(xml)
+    with pytest.raises(ValueError, match="finite|Invalid"):
+        q.read_pw_xml(xml)
+
+
+@pytest.mark.parametrize("field", ["total_energy/etot", "forces", "stress"])
+def test_nonfinite_solver_result_retains_failed_summary(tmp_path, monkeypatch, field):
+    cfg = q.load_case(R / "demos/qe_dft_reference/case.json")
+    cfg["acceptance"] = {}
+    cfg["convergence_acceptance"] = {}
+    pseudo = tmp_path / "pseudo"
+    pseudo.mkdir()
+    for species in cfg["species"]:
+        (pseudo / species["pseudo"]).write_bytes(b"synthetic")
+        species["sha256"] = hashlib.sha256(b"synthetic").hexdigest()
+    protocol = tmp_path / "PROTOCOL.md"
+    protocol.write_text("Synthetic failure reporting test; no physical calculation")
+    plan = q.build_plan(cfg, protocol.read_text(), "scf-only", backend="standalone")
+    plan_path, receipt = tmp_path / "plan.json", tmp_path / "confirmation.json"
+    q.write_new(plan_path, plan)
+    q.confirm_plan(plan_path, receipt, plan["plan_sha256"], "synthetic-review-test")
+
+    def corrupt_output(command, *, cwd, stdout, **kwargs):
+        tree = ET.parse(R / "tests/fixtures/qe_scf_smoke.xml")
+        node = tree.getroot().find("output/" + field)
+        node.text = " ".join(["NaN", *node.text.split()[1:]])
+        xml = q.xml_at(cwd)
+        xml.parent.mkdir(parents=True)
+        tree.write(xml)
+        stdout.write("JOB DONE.\n")
+        return types.SimpleNamespace(returncode=0)
+
+    monkeypatch.setattr(q.subprocess, "run", corrupt_output)
+    with pytest.raises(ValueError, match="finite|Invalid"):
+        q.run(
+            cfg, pseudo, tmp_path / "result",
+            protocol=protocol, plan=plan_path, confirmation=receipt,
+        )
+    summary = json.loads((tmp_path / "result/summary.json").read_text())
+    assert summary["status"] == "failed"
+    assert len(summary["commands"]) == 1
+    assert summary["physical_acceptance"] == "failed_or_unassessed"
+
+
+def test_missing_uv_is_reported_before_runtime_directory_changes(tmp_path):
+    import subprocess
+
+    project = tmp_path / "project"
+    scripts = project / "skills/quantum-espresso/scripts"
+    scripts.mkdir(parents=True)
+    shutil.copyfile(R / "skills/quantum-espresso/scripts/prerequisites.sh",
+                    scripts / "prerequisites.sh")
+    runtime = tmp_path / "runtime"
+    result = subprocess.run(
+        [
+            "/bin/bash", str(R / "skills/quantum-espresso/scripts/deploy.sh"),
+            "--project-root", str(project), "--runtime-base", str(runtime),
+            "--uv", str(tmp_path / "missing-uv"),
+        ],
+        capture_output=True, text=True, check=False,
+    )
+    assert result.returncode == 2
+    assert "Missing uv" in result.stderr and "--uv" in result.stderr
+    assert not runtime.exists() and not (project / ".runtime").exists()

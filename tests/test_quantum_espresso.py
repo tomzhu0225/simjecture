@@ -176,6 +176,14 @@ def test_capability_and_cli_registration():
         (
             1,
             (
+                "Program PWSCF v.7.40\nError in routine  read_namelists (2):\n"
+                "could not find namelist &control"
+            ),
+            1,
+        ),
+        (
+            1,
+            (
                 "Program PWSCF v.9.9\nError in routine  read_namelists (2):\n"
                 "could not find namelist &control"
             ),
@@ -421,6 +429,9 @@ def test_si_reference_analysis_checks_controls(case, tmp_path, monkeypatch, k_de
 
     for stage in ("relax", "scf"):
         tree = ET.parse(ROOT / "tests/fixtures/qe_scf_smoke.xml")
+        tree.getroot().find("input/control_variables/calculation").text = (
+            "vc-relax" if stage == "relax" else stage
+        )
         out = tree.getroot().find("output/atomic_structure")
         for i in range(3):
             out.find(f"cell/a{i + 1}").text = " ".join(
@@ -707,14 +718,17 @@ def test_synthetic_metal_workflow_runs_both_spin_branches(
             saved = directory / "out/sample.save/data-file-schema.xml"
             saved.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(template, saved)
-            if directory.name == "relax":
-                import xml.etree.ElementTree as ET
+            import xml.etree.ElementTree as ET
 
-                tree = ET.parse(saved)
+            tree = ET.parse(saved)
+            tree.getroot().find("input/control_variables/calculation").text = re.search(
+                r"calculation='([^']+)'", text
+            ).group(1)
+            if directory.name == "relax":
                 conv = tree.getroot().find("output/convergence_info")
                 opt = ET.SubElement(conv, "opt_conv")
                 ET.SubElement(opt, "convergence_achieved").text = "true"
-                tree.write(saved)
+            tree.write(saved)
         elif binary == "bands.x":
             spin = int(re.search(r"spin_component=(\d)", text).group(1))
             channel = bands["channels"][spin - 1]
@@ -815,6 +829,7 @@ def test_pw_requires_stage_convergence(tmp_path, calculation, flag, value):
     import xml.etree.ElementTree as ET
 
     tree = ET.parse(ROOT / "tests/fixtures/qe_scf_smoke.xml")
+    tree.getroot().find("input/control_variables/calculation").text = calculation
     conv = tree.getroot().find("output/convergence_info")
     if flag == "opt_conv":
         conv.append(ET.Element(flag))
@@ -835,6 +850,7 @@ def test_non_scf_does_not_require_scf_flag(tmp_path, calculation):
     import xml.etree.ElementTree as ET
 
     tree = ET.parse(ROOT / "tests/fixtures/qe_scf_smoke.xml")
+    tree.getroot().find("input/control_variables/calculation").text = calculation
     tree.getroot().find("output/convergence_info/scf_conv/convergence_achieved").text = "false"
     path = tmp_path / "pw.xml"
     tree.write(path)
@@ -983,6 +999,7 @@ def test_reference_analyzer_reassesses_completion(tmp_path, monkeypatch, materia
         np.savez(root / "verified_projections.npz", energies_ev=bands["energies_ev"])
     if state != "missing":
         tree = ET.parse(qe.xml_at(root / "scf"))
+        tree.getroot().find("input/control_variables/calculation").text = "vc-relax"
         node = ET.SubElement(tree.getroot().find("output/convergence_info"), "opt_conv")
         ET.SubElement(node, "convergence_achieved").text = (
             "true" if state == "qualified" else "false"
