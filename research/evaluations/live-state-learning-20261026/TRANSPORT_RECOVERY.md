@@ -1,6 +1,29 @@
 # Preserved transport interruptions and bounded continuations
 
-**Latest state:** R9 stopped after nine verified workflows when a read-only
+**Current state:** R10 has resumed the 17 unstarted original assignments on a new
+guarded runtime. The R9 parent hard stop of **15:21:17 UTC** and aggregate
+55-compute-unit ceiling from its original balance remain unchanged. It has at
+most 417 native starts remaining after retaining 223 prior/preflight starts.
+No checkpoint, scientific criterion, original assignment or analysis changed.
+
+Readiness permits at most six `ssh ... test -x BINARY` checks over 180 seconds
+before assigning a worker. It records stderr and stops immediately on known
+host-key, permission and configuration failures. These checks are outside the
+episode timer. Solver commands and attempted workflows are never replayed.
+Seven local helper checks passed, and both actual P40 controls passed again.
+The terminal model probes are now attempted even when a read-only preflight
+exception stops the controller, provided the warmed model connection remains
+available. An unsuccessful check is recorded as such.
+
+Registration initially failed during its SSH transfer. The allocator obtained
+one guarded runtime, but startup returned nonzero. Remote inspection confirmed
+no scientific campaign, native budget or registration existed. The missing
+registration was completed and startup resumed on that existing allocation.
+[The R10 launch record](continuation-r10-launch.json) preserves both the initial
+failure and recovery. This is an orchestration failure outside scientific trials,
+not evidence of a production Simjecture defect.
+
+**Latest terminal phase:** R9 stopped after nine verified workflows when a read-only
 connection check failed before starting the next assignment. The A100 was
 released at **2026-10-27 08:39:51 UTC**. All native roles are closed; the temporary
 Windows task and local failsafe are absent. The original cohort has 47 recorded

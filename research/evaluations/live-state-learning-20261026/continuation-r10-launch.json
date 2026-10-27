@@ -1,0 +1,141 @@
+{
+  "r10-resource-plan.json": {
+    "created_at": 1793094394.946883,
+    "stop_by": 1793114477.8560505,
+    "starting_balance": 1129.7,
+    "compute_cap": 55,
+    "observed_balance": 1121.49,
+    "remaining_parent_compute_units": 46.789999999999964,
+    "parent_resource_plan": "r9-resource-plan.json",
+    "parent_semantic_sha256": "024fa1cffc61d8c40ee2445cae75cfcf220b0adddb8bbbe4ca86d33974eee171",
+    "remaining_workflows": 17,
+    "prior_native_starts": 222,
+    "required_native_preflight_starts": 1,
+    "maximum_additional_native_starts": 418,
+    "maximum_per_workflow": 12,
+    "maximum_concurrent_native": 6,
+    "maximum_parallel_workflows": 1,
+    "minimum_gap_between_workflows_seconds": 90,
+    "owned_assignment_count_before_allocation": 0,
+    "scope": "Replacement runtime for the 17 original unstarted IDs; unchanged R9 parent hard deadline and aggregate 55-CU ceiling. Preserve all 47 earlier attempts. No training or checkpoint change."
+  },
+  "r10-auth-01/STATUS.json": {
+    "stage": "completed",
+    "started_at": 1793093655.2618601,
+    "wrapper_pid": 3825537,
+    "returncode": 0,
+    "ended_at": 1793093670.8779528
+  },
+  "r10-launch-recovery.json": {
+    "created_at": 1793094744.4609509,
+    "initial_allocation": {
+      "initial_local_allocation_sha256": "cd92d01ffbd67b8869a3a627484d97283694b6df86ba85153824074252776c04",
+      "endpoint": "gpu-a100-hm-ass1c0-3r5tflwdl0hjn"
+    },
+    "phase_plan_sha256": "7a23bb86b0801c59e17c74023d79cdfa4a7761241ed97b8ece1647f5e7bd50c7",
+    "scope": "Finish registration and startup on the already-owned guarded runtime; no new allocation or scientific retry",
+    "start_returncode": 0,
+    "launch": {
+      "stage": "running",
+      "started_at": 1793094744.5199327,
+      "pids": {
+        "deploy_r10_a100.py": 3827331,
+        "run_base_sft_r10.py": 3827332,
+        "finish_r10.py": 3827333,
+        "attach_r10.py": 3827334
+      },
+      "launched_at": 1793094744.5220127,
+      "lease": {
+        "created_at": 1793094556.189404,
+        "stop_by": 1793114477.8560505,
+        "session": "simjecture-science-20261027d",
+        "endpoint": "gpu-a100-hm-ass1c0-3r5tflwdl0hjn",
+        "starting_balance": 1129.7,
+        "observed_balance": 1121.49,
+        "compute_cap": 55,
+        "parent_lease": "r10-resource-plan.json",
+        "scope": "Continuation of 17 unstarted original scientific workflows; 47 earlier attempts preserved; unchanged R9 parent deadline and aggregate spending ceiling"
+      }
+    },
+    "stderr": "",
+    "ended_at": 1793094744.5270345
+  },
+  "r10-launch-status.json": {
+    "stage": "running",
+    "started_at": 1793094744.5199327,
+    "pids": {
+      "deploy_r10_a100.py": 3827331,
+      "run_base_sft_r10.py": 3827332,
+      "finish_r10.py": 3827333,
+      "attach_r10.py": 3827334
+    },
+    "launched_at": 1793094744.5220127,
+    "lease": {
+      "created_at": 1793094556.189404,
+      "stop_by": 1793114477.8560505,
+      "session": "simjecture-science-20261027d",
+      "endpoint": "gpu-a100-hm-ass1c0-3r5tflwdl0hjn",
+      "starting_balance": 1129.7,
+      "observed_balance": 1121.49,
+      "compute_cap": 55,
+      "parent_lease": "r10-resource-plan.json",
+      "scope": "Continuation of 17 unstarted original scientific workflows; 47 earlier attempts preserved; unchanged R9 parent deadline and aggregate spending ceiling"
+    }
+  },
+  "r10-lease.json": {
+    "created_at": 1793094556.189404,
+    "stop_by": 1793114477.8560505,
+    "session": "simjecture-science-20261027d",
+    "endpoint": "gpu-a100-hm-ass1c0-3r5tflwdl0hjn",
+    "starting_balance": 1129.7,
+    "observed_balance": 1121.49,
+    "compute_cap": 55,
+    "parent_lease": "r10-resource-plan.json",
+    "scope": "Continuation of 17 unstarted original scientific workflows; 47 earlier attempts preserved; unchanged R9 parent deadline and aggregate spending ceiling"
+  },
+  "source_hashes": {
+    "r10-phase-plan.json": "7a23bb86b0801c59e17c74023d79cdfa4a7761241ed97b8ece1647f5e7bd50c7",
+    "r10-workflow-manifest.json": "938105db0983be55d65f5496ab4fc43d6953a55e81a89bbb4fd0639c6d4b4b8f",
+    "r10-resource-plan.json": "9095fb0d14b26c2262bb9bdac5706e2fe501d69cf495fbc988a6e085bbade8d7",
+    "r10-transport-qualification/STATUS.json": "b5642090c669e4af28c9b4ee9bd8a27176849be1a1f4e5c82c7252483ef15b89",
+    "r10-auth-01/STATUS.json": "8b5700807c015aeb6c881763e39f1f587e0b8bbeedc8457092bcdfecbe71147c",
+    "r10-launch-recovery.json": "8d84ada3ca4fdc40f4e84ce34754dd5c84fa5901c53b4941ff1883926240ecbd",
+    "r10-launch-status.json": "2ad5beab2e61b2ac4951b3daab68a2df6fdfbed7447f7533f022b86ca89a43a0",
+    "r10-lease.json": "e24fc7e1307359f1f9b71d5ab81d51dfa7851185feaa84d13a7a383ac29f59ee"
+  },
+  "initial_local_allocation": {
+    "stage": "failed",
+    "started_at": 1793094547.6966624,
+    "notebook": "f56b1fa1-09ce-4697-a53d-6e8047497e1d",
+    "balance": 1121.49,
+    "assignment_http": {
+      "method": "POST",
+      "host": "colab.research.google.com",
+      "path": "/tun/m/assign",
+      "started_at": 1793094552.2259607,
+      "ended_at": 1793094556.188998,
+      "curl_returncode": 0,
+      "http_status": "200",
+      "http_version": "2",
+      "error_markers": []
+    },
+    "endpoint": "gpu-a100-hm-ass1c0-3r5tflwdl0hjn",
+    "local_guard_pid": 181899,
+    "remote_guard_pid": 3826944,
+    "scheduled_control_installed": true,
+    "error_type": "AssertionError",
+    "handoff_confirmed": true,
+    "ended_at": 1793094561.169942
+  },
+  "local_scheduled_control": {
+    "at": 1793094559.674904,
+    "task": "Simjecture-R10-20261027",
+    "endpoint": "gpu-a100-hm-ass1c0-3r5tflwdl0hjn",
+    "stop_by": 1793114477.8560505,
+    "task_expires_at": 1793115137.8560505,
+    "returncode": 0,
+    "result": "{\"TaskName\":\"Simjecture-R10-20261027\",\"State\":4}",
+    "error": ""
+  },
+  "startup_interruption_scope": "Registration transfer failed before host launch; allocation had a guarded handoff but launch returned nonzero. Remote inspection confirmed no registration, campaign or native budget. Registration and launch then completed on the same endpoint. The initial failure record is preserved."
+}

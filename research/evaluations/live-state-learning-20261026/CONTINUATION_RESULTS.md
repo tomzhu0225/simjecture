@@ -1,11 +1,27 @@
 # Base versus continued SFT: partial replication
 
-**Current status:** R9 completed nine additional workflows, all verified, then
+**Current status:** R10 is collecting the 17 original assignments left after R9.
+It uses the same scientific source, model weights and analysis, with bounded
+retries of read-only readiness checks before assignment. Its replacement runtime
+retains the original R9 parent deadline and cumulative spending ceiling.
+
+The first resumed SFT source-binding workflow was **not verified**. Both physical
+controls succeeded and a judge-authorized repair was applied, but the worker
+exhausted its four permitted turns without a final report and left one required
+help return unacknowledged. The original scoring assigns an unsuccessful workflow
+650 seconds of restricted completion time; its observed 327-second duration is
+not a timing win. [The complete outcome and feedback trace](continuation-r10-source-binding-outcome.json)
+are retained. This is a failure under the registered workflow budget, not a P40
+transport failure or a failed numerical control. It does not alone isolate a
+causal model effect.
+
+**Latest terminal audit:** R9 completed nine additional workflows, all verified, then
 stopped when a read-only P40 readiness check failed before the next assignment.
 No additional scientific attempt failed. There are now **47 recorded original
 outcomes: 43 verified and four earlier infrastructure failures; 17 IDs remain
 unstarted**. The runtime was released at **2026-10-27 08:39:51 UTC**, and its
-temporary local control task and failsafe have exited. No collection is running.
+temporary local control task and failsafe have exited. R10 is a separate owned
+allocation; its in-progress outcomes are not included in the terminal R9 figures.
 
 [The terminal R9 audit](replication-through-r9.json) reports zero consistency
 violations. Its partial registered SFT-minus-base restricted-time estimate is
@@ -17,6 +33,16 @@ prepared without replaying any attempted ID. The preflight retained exit code
 identical read-only check succeeded. The exception also skipped the final
 probability-probe section. Initial model qualification passed, but terminal R9
 probability qualification must not be claimed.
+
+The [R10 manifest](continuation-r10-manifest.json),
+[registration](continuation-r10-registration.json),
+[qualification](continuation-r10-qualification.json) and
+[launch/recovery record](continuation-r10-launch.json) preserve the resumption.
+The first registration transfer failed before host startup. Allocation still
+obtained a guarded runtime, but initial startup returned nonzero; inspection
+confirmed that no campaign, native budget or registration had been created.
+Registration and startup were then completed on that same owned runtime. The
+initial failure record remains unchanged; no scientific assignment was retried.
 
 Historical R8 collection stopped on **2026-10-27 at 06:17 UTC**. Through R8,
 **38 of 64 original assignments were attempted: 34 verified and four affected by

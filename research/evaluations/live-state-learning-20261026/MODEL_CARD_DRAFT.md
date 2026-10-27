@@ -3,8 +3,8 @@
 **Unpublished release draft.** This candidate has not established a reliable
 workflow advantage over the pretrained base and strong deployment comparators.
 The repeated-workflow study has audited 47 of 64 original assignments;
-17 remain unstarted after infrastructure interruptions. The latest runtime
-has been released. No weight upload or
+a separately bounded R10 phase is collecting the remaining 17 after
+infrastructure interruptions. No weight upload or
 public release is implied by this document. The pinned base declares Apache-2.0 and its distribution
 listing has been checked. The portable adapter passed a fresh A100 reload.
 Workflow validation, final release documentation, a destination repository and
@@ -70,6 +70,11 @@ This candidate then received eight continued-SFT updates with learning rate
 `1e-5` and accumulation 4. It is the continued-SFT control from the earlier
 SFT/RL experiment, not the RL checkpoint. The later live-state reviewer
 judgments and repeated-workflow outcomes have not been used to update it.
+The two training stages total 2,080 example presentations; this is not a claim
+that all 5,520 mixture rows were processed or that every presentation was unique.
+The 1,024 generic rehearsal rows were constructed independently of the public
+retention benchmarks. Actual training inputs ranged from 339 to 1,459 tokens;
+the recorded live-state evaluation used 3,200–4,964-token inputs.
 
 The full training mixture and all scientific evaluation splits were rebuilt from
 the pinned source and match the original byte hashes. An audit found no identical
@@ -97,6 +102,22 @@ decisions. This does not show universal retention: it loses 8.11 points on the
 111-example hard suite and 2.25 points on typed decisions. It should not be
 presented as a general-decision replacement with no regressions.
 
+| Decision-formatted public suite | Input records | Scored decisions | Base accuracy | Continued SFT |
+|---|---:|---:|---:|---:|
+| JevBench easy | 48 | 48 | 100.00% | 100.00% |
+| JevBench original | 72 | 72 | 98.61% | 98.61% |
+| JevBench hard | 111 | 111 | 73.87% | 65.77% |
+| ToolACE | 310 | 310 | 96.45% | 96.45% |
+| Typed decisions | 400 | 2,000 | 80.45% | 78.20% |
+| AG News | 7,600 | 7,600 | 90.84% | 90.91% |
+| WildJailbreak | 2,210 | 2,210 | 89.86% | 88.46% |
+
+These are option-scoring evaluations using the pinned JevBench scorer, not
+free-form agent executions. All reported static evaluations completed without
+inference errors. The [exact retained metrics](candidate-static-evaluation-summary.json)
+include dataset hashes and counts; this table is a documentation update, with
+no new model execution or optimizer update.
+
 The live-state sample consists of 24 correlated observations from eight earlier
 episodes, judged by separate contexts of the same large model. These judgments
 are not human ground truth or causal intervention outcomes. The base observed
@@ -110,16 +131,24 @@ It omitted the pretrained-base arm. These promising observed differences do not
 answer the missing base/SFT workflow comparison. The subsequently registered
 64-workflow replication retained its initial verified rules episode and
 provider-failed base episode, then resumed only previously unstarted assignments.
-Through R8, 38 original assignments have audit records: 34 verified completions
+Through R9, 47 original assignments have audit records: 43 verified completions
 and four infrastructure failures. The partial registered SFT-minus-base
-restricted-completion estimate is +7.6 seconds (95% interval −171.1 to +207.8);
-excluding whole infrastructure-affected blocks gives −12.4 seconds
-(−166.5 to +145.4). Neither establishes an overall advantage. The first two fully repeated
+restricted-completion estimate is +28.5 seconds (95% interval −137.8 to +212.0);
+excluding whole infrastructure-affected blocks gives −8.0 seconds
+(−137.1 to +121.5). Neither establishes an overall advantage. The first two fully repeated
 families show large gains on publication-retry workflows and a slower SFT mean
-on quiet workflows. A separately bounded R9 phase has resumed the remaining 26
-original assignments; its results are not included in these terminal R8 figures.
+on quiet workflows. A separately bounded R10 phase has resumed the remaining 17
+original assignments; its results are not included in these terminal R9 figures.
 These are partial observations, not a completed effect estimate or a release gate. See
 [the continuation record](CONTINUATION_RESULTS.md) for all arms and caveats.
+
+The first R10 SFT source-binding workflow failed completion verification despite
+successful physical controls and an authorized repair. Its four main-worker turns
+were exhausted during replanning/help/reprocessing, leaving no final report and
+one required return unacknowledged. This is retained as an unsuccessful workflow
+under the registered limits. Model attention can consume coordination capacity
+as well as save it; these data do not establish that every early intervention
+helps a capable worker.
 
 Inspection of recorded worker prompts found general research execution/review
 guidance alongside the experiment's different wrapper/report protocol. This

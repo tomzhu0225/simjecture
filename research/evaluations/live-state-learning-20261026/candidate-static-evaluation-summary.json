@@ -1,0 +1,322 @@
+{
+  "scope": "Existing continued-SFT checkpoint; historical completed static evaluations, not new inference or training",
+  "source_evidence_sha256": "a84d3d1f8c7d9cd5866f47463ada0e591910ea1d65d1078ab2296be4f0b086c9",
+  "weights_sha256": "76bf1bdf4c6d6a261211057d3cab4c8609131788827569f9c33f802d3491dab5",
+  "training": {
+    "mixture_rows": 5520,
+    "scientific_rows": 4096,
+    "procedural_rows": 400,
+    "general_rehearsal_rows": 1024,
+    "initial_updates": 512,
+    "continued_updates": 8,
+    "accumulation": 4,
+    "example_presentations": 2080,
+    "trainable_parameters": 32464896,
+    "limitations": "Fewer than one full mixture pass; presentations are not a count of distinct visible inputs"
+  },
+  "general": {
+    "base": {
+      "jevbench-easy": {
+        "rows": 48,
+        "correct": 48,
+        "total": 48,
+        "failures": 0,
+        "accuracy": 1.0,
+        "data_sha256": "3b8afa6e55e4decf1c8e116910443215690951dd51e15b7a6e4b813bc83c1eae"
+      },
+      "jevbench-original": {
+        "rows": 72,
+        "correct": 71,
+        "total": 72,
+        "failures": 0,
+        "accuracy": 0.9861111111111112,
+        "data_sha256": "157c355d5d07fba47d516acdb048607a5ee4ef14347bbf87cf67dac73d1a193e"
+      },
+      "jevbench-hard": {
+        "rows": 111,
+        "correct": 82,
+        "total": 111,
+        "failures": 0,
+        "accuracy": 0.7387387387387387,
+        "data_sha256": "5ed49f0a43a468993747a22b007fe65fc1187ed433d3c3a95ff9b69a293a8e34"
+      },
+      "toolace": {
+        "rows": 310,
+        "correct": 299,
+        "total": 310,
+        "failures": 0,
+        "accuracy": 0.964516129032258,
+        "data_sha256": "259a600d06c616c6b8bcc2138ec1e96be9eda0eb1817e871e57509c1be94ab2b"
+      },
+      "typed_decisions": {
+        "rows": 400,
+        "correct": 1609,
+        "total": 2000,
+        "failures": 0,
+        "accuracy": 0.8045,
+        "data_sha256": "fa43c0389d9dbdf18cf1afe75c73f320d7620f3bb2a8be19e7cca7df5e78588f"
+      },
+      "agnews": {
+        "rows": 7600,
+        "correct": 6904,
+        "total": 7600,
+        "failures": 0,
+        "accuracy": 0.9084210526315789,
+        "data_sha256": "4ff1cad1531f29cbfce572e3ddb73666626fd19663691ea3cb4093f46e1edd08"
+      },
+      "wildjailbreak": {
+        "rows": 2210,
+        "correct": 1986,
+        "total": 2210,
+        "failures": 0,
+        "accuracy": 0.8986425339366516,
+        "data_sha256": "2b14e5449850463b530e92493244c4f4a888d91ff4b458130e17f661d2ce8938"
+      }
+    },
+    "continued_sft": {
+      "jevbench-easy": {
+        "rows": 48,
+        "correct": 48,
+        "total": 48,
+        "failures": 0,
+        "accuracy": 1.0,
+        "data_sha256": "3b8afa6e55e4decf1c8e116910443215690951dd51e15b7a6e4b813bc83c1eae"
+      },
+      "jevbench-original": {
+        "rows": 72,
+        "correct": 71,
+        "total": 72,
+        "failures": 0,
+        "accuracy": 0.9861111111111112,
+        "data_sha256": "157c355d5d07fba47d516acdb048607a5ee4ef14347bbf87cf67dac73d1a193e"
+      },
+      "jevbench-hard": {
+        "rows": 111,
+        "correct": 73,
+        "total": 111,
+        "failures": 0,
+        "accuracy": 0.6576576576576577,
+        "data_sha256": "5ed49f0a43a468993747a22b007fe65fc1187ed433d3c3a95ff9b69a293a8e34"
+      },
+      "toolace": {
+        "rows": 310,
+        "correct": 299,
+        "total": 310,
+        "failures": 0,
+        "accuracy": 0.964516129032258,
+        "data_sha256": "259a600d06c616c6b8bcc2138ec1e96be9eda0eb1817e871e57509c1be94ab2b"
+      },
+      "typed_decisions": {
+        "rows": 400,
+        "correct": 1564,
+        "total": 2000,
+        "failures": 0,
+        "accuracy": 0.782,
+        "data_sha256": "fa43c0389d9dbdf18cf1afe75c73f320d7620f3bb2a8be19e7cca7df5e78588f"
+      },
+      "agnews": {
+        "rows": 7600,
+        "correct": 6909,
+        "total": 7600,
+        "failures": 0,
+        "accuracy": 0.9090789473684211,
+        "data_sha256": "4ff1cad1531f29cbfce572e3ddb73666626fd19663691ea3cb4093f46e1edd08"
+      },
+      "wildjailbreak": {
+        "rows": 2210,
+        "correct": 1955,
+        "total": 2210,
+        "failures": 0,
+        "accuracy": 0.8846153846153846,
+        "data_sha256": "2b14e5449850463b530e92493244c4f4a888d91ff4b458130e17f661d2ce8938"
+      }
+    },
+    "retention": {
+      "macro_accuracy": 0.8834256042549761,
+      "macro_change_pp": -1.6707190809358008,
+      "per_suite_change_pp": {
+        "jevbench-easy": 0.0,
+        "jevbench-original": 0.0,
+        "jevbench-hard": -8.108108108108103,
+        "toolace": 0.0,
+        "typed_decisions": -2.2499999999999964,
+        "agnews": 0.06578947368421906,
+        "wildjailbreak": -1.402714932126703
+      },
+      "large_suite_changes_pp": {
+        "toolace": 0.0,
+        "typed_decisions": -2.2499999999999964,
+        "agnews": 0.06578947368421906,
+        "wildjailbreak": -1.402714932126703
+      },
+      "inference_failures": 0,
+      "retention_gate_pass": true
+    },
+    "rules": {
+      "max_macro_loss_pp": 2,
+      "max_large_suite_loss_pp": 3,
+      "large_suite_min_decisions": 300
+    },
+    "rows": 10751,
+    "scored_decisions": 12351
+  },
+  "science": {
+    "base": {
+      "scope": "Constructed scientific states and authored attention preferences, not real intervention outcomes",
+      "counts": {
+        "rows": 1024,
+        "quiet_preference_rows": 512,
+        "strict_route_correct": 617,
+        "acceptable_route_correct": 617,
+        "unnecessary_expert_proposals": 93,
+        "missed_expert_preferences": 292,
+        "all_fields_exact": 69,
+        "valid_choices": 917,
+        "grounded_choices": 917,
+        "valid_acceptable_routes": 553,
+        "expert_preference_rows": 512,
+        "invalid_choices": 107
+      },
+      "field_correct": {
+        "route": 617,
+        "question_ref": 960,
+        "basis": 548,
+        "evidence_primary": 475,
+        "evidence_secondary": 573
+      },
+      "families": {
+        "dimensional_reporting": {
+          "rows": 128,
+          "acceptable_route_correct": 84
+        },
+        "negative_control": {
+          "rows": 128,
+          "acceptable_route_correct": 51
+        },
+        "progress_trend": {
+          "rows": 128,
+          "acceptable_route_correct": 102
+        },
+        "source_identity": {
+          "rows": 128,
+          "acceptable_route_correct": 64
+        },
+        "acceptance_threshold": {
+          "rows": 128,
+          "acceptable_route_correct": 104
+        },
+        "protected_receipt": {
+          "rows": 128,
+          "acceptable_route_correct": 64
+        },
+        "retrieval_applicability": {
+          "rows": 128,
+          "acceptable_route_correct": 85
+        },
+        "quiet_progress": {
+          "rows": 128,
+          "acceptable_route_correct": 63
+        }
+      },
+      "dataset_sha256": "006dc11cafed9b33122a6f477ac2adc4aeea1fccb252b6a28ebdcc6feb9e7a4e",
+      "model_identity": {
+        "checkpoint_path": "/root/.cache/huggingface/hub/models--internlm--Intern-Decision-4B/snapshots/38c9dafbbef52dd04bae943c0c6ac918419adfd5",
+        "checkpoint_config_sha256": "ddc63e1c717afa86c865bb5e01313d89d72bb53b97ad4a8a03ba8510c0621670",
+        "adapter_files_sha256": {},
+        "runtime": {
+          "profile": "fla-prefill",
+          "fla_core": "0.6.0",
+          "adapter_source_sha256": "83b6d3ba2813ad883725be94e13477cd1db7b9ca2af9654e040b35fb10a936a1",
+          "convolution": "fla.modules.causal_conv1d:causal_conv1d; BCT/BTC layout adapter",
+          "scope": "Dense single-pass CUDA prefill, use_cache=False; no packed sequences"
+        }
+      },
+      "started_at": 1792972555.7570589,
+      "ended_at": 1792972646.195909,
+      "acceptable_route_accuracy": 0.6025390625,
+      "valid_cited_acceptable_route_accuracy": 0.5400390625,
+      "citation_metric_scope": "Structural validity plus a nonempty visible citation and a specified basis for expert requests. This does not test semantic entailment or intervention utility. The legacy valid_grounded_acceptable_route_accuracy key is an identical alias.",
+      "valid_grounded_acceptable_route_accuracy": 0.5400390625
+    },
+    "continued_sft": {
+      "scope": "Constructed scientific states and authored attention preferences, not real intervention outcomes",
+      "counts": {
+        "rows": 1024,
+        "quiet_preference_rows": 512,
+        "strict_route_correct": 1001,
+        "acceptable_route_correct": 1001,
+        "unnecessary_expert_proposals": 5,
+        "missed_expert_preferences": 18,
+        "all_fields_exact": 998,
+        "valid_choices": 1024,
+        "grounded_choices": 1020,
+        "valid_acceptable_routes": 998,
+        "expert_preference_rows": 512
+      },
+      "field_correct": {
+        "route": 1001,
+        "question_ref": 1024,
+        "basis": 1002,
+        "evidence_primary": 1000,
+        "evidence_secondary": 1024
+      },
+      "families": {
+        "dimensional_reporting": {
+          "rows": 128,
+          "acceptable_route_correct": 105
+        },
+        "negative_control": {
+          "rows": 128,
+          "acceptable_route_correct": 128
+        },
+        "progress_trend": {
+          "rows": 128,
+          "acceptable_route_correct": 128
+        },
+        "source_identity": {
+          "rows": 128,
+          "acceptable_route_correct": 128
+        },
+        "acceptance_threshold": {
+          "rows": 128,
+          "acceptable_route_correct": 128
+        },
+        "protected_receipt": {
+          "rows": 128,
+          "acceptable_route_correct": 128
+        },
+        "retrieval_applicability": {
+          "rows": 128,
+          "acceptable_route_correct": 128
+        },
+        "quiet_progress": {
+          "rows": 128,
+          "acceptable_route_correct": 128
+        }
+      },
+      "dataset_sha256": "006dc11cafed9b33122a6f477ac2adc4aeea1fccb252b6a28ebdcc6feb9e7a4e",
+      "model_identity": {
+        "checkpoint_path": "/root/.cache/huggingface/hub/models--internlm--Intern-Decision-4B/snapshots/38c9dafbbef52dd04bae943c0c6ac918419adfd5",
+        "checkpoint_config_sha256": "ddc63e1c717afa86c865bb5e01313d89d72bb53b97ad4a8a03ba8510c0621670",
+        "adapter_files_sha256": {
+          "adapter_config.json": "5ab93c62a751ccfe082c88caabd6c40c064d04442e3b1e164387690af6e8ba6a",
+          "adapter_model.safetensors": "76bf1bdf4c6d6a261211057d3cab4c8609131788827569f9c33f802d3491dab5"
+        },
+        "runtime": {
+          "profile": "fla-prefill",
+          "fla_core": "0.6.0",
+          "adapter_source_sha256": "83b6d3ba2813ad883725be94e13477cd1db7b9ca2af9654e040b35fb10a936a1",
+          "convolution": "fla.modules.causal_conv1d:causal_conv1d; BCT/BTC layout adapter",
+          "scope": "Dense single-pass CUDA prefill, use_cache=False; no packed sequences"
+        }
+      },
+      "started_at": 1792976479.681672,
+      "ended_at": 1792976617.5768657,
+      "acceptable_route_accuracy": 0.9775390625,
+      "valid_cited_acceptable_route_accuracy": 0.974609375,
+      "citation_metric_scope": "Structural validity plus a nonempty visible citation and a specified basis for expert requests. This does not test semantic entailment or intervention utility. The legacy valid_grounded_acceptable_route_accuracy key is an identical alias.",
+      "valid_grounded_acceptable_route_accuracy": 0.974609375
+    },
+    "scope": "Authored contract and route preferences; shared mechanism templates across splits"
+  }
+}

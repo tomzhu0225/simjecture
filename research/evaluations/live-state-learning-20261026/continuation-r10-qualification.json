@@ -1,0 +1,113 @@
+{
+  "stage": "completed",
+  "started_at": 1793092948.3993216,
+  "cases": [
+    {
+      "name": "mesh_64",
+      "cells": 64,
+      "steps": 40,
+      "started_at": 1793092953.9835322,
+      "returncode": 0,
+      "receipt": {
+        "name": "mesh_64",
+        "request_id": "7f7b0318072d4563992892dff354b8b6",
+        "cells": 64,
+        "steps": 40,
+        "command": [
+          "/opt/simote/radiation-production-20260930/warpx/build/foundation-cuda/bin/warpx.1d.MPI.CUDA.DP.PDP",
+          "inputs",
+          "amr.n_cell=64",
+          "max_step=40",
+          "amr.max_level=0",
+          "diagnostics.diags_names=diag1",
+          "diag1.file_prefix=plot",
+          "diag1.intervals=40",
+          "amrex.the_arena_init_size=67108864",
+          "warpx.verbose=0"
+        ],
+        "binary_sha256": "40259ed2687707b4c693e5b0e7fbadef54dca4fab64898d9d42e654fbdf644eb",
+        "input_sha256": "fd941c6e27e60b471ee0796997d465e9aec43192fd075c9ebd8665fb87b337b3",
+        "remote_host": "ca10411836e6",
+        "status": "succeeded",
+        "queued_at": 1793092957.297315,
+        "started_at": 1793092957.2975013,
+        "returncode": 0,
+        "wall_seconds": 1.0178160835057497,
+        "ended_at": 1793092958.3156424,
+        "coordinator_roundtrip_seconds": 4.308243274688721
+      },
+      "measured": {
+        "cells": 64,
+        "physical_time_s": 6.671281903963042e-14,
+        "relative_field_error": 0.006933297444600537,
+        "relative_charge_residual": 2.435296526470588e-12,
+        "original_field_tolerance": 0.05,
+        "original_charge_tolerance": 1e-11,
+        "original_checks_passed": true
+      },
+      "ended_at": 1793092959.7555437
+    },
+    {
+      "name": "mesh_128",
+      "cells": 128,
+      "steps": 80,
+      "started_at": 1793092959.7557964,
+      "returncode": 0,
+      "receipt": {
+        "name": "mesh_128",
+        "request_id": "78ae00556221468fa277738a3351e165",
+        "cells": 128,
+        "steps": 80,
+        "command": [
+          "/opt/simote/radiation-production-20260930/warpx/build/foundation-cuda/bin/warpx.1d.MPI.CUDA.DP.PDP",
+          "inputs",
+          "amr.n_cell=128",
+          "max_step=80",
+          "amr.max_level=0",
+          "diagnostics.diags_names=diag1",
+          "diag1.file_prefix=plot",
+          "diag1.intervals=80",
+          "amrex.the_arena_init_size=67108864",
+          "warpx.verbose=0"
+        ],
+        "binary_sha256": "40259ed2687707b4c693e5b0e7fbadef54dca4fab64898d9d42e654fbdf644eb",
+        "input_sha256": "fd941c6e27e60b471ee0796997d465e9aec43192fd075c9ebd8665fb87b337b3",
+        "remote_host": "ca10411836e6",
+        "status": "succeeded",
+        "queued_at": 1793092963.2329593,
+        "started_at": 1793092963.233183,
+        "returncode": 0,
+        "wall_seconds": 1.0182669702917337,
+        "ended_at": 1793092964.2517316,
+        "coordinator_roundtrip_seconds": 4.293155193328857
+      },
+      "measured": {
+        "cells": 128,
+        "physical_time_s": 6.67128190396305e-14,
+        "relative_field_error": 0.0017027848999745115,
+        "relative_charge_residual": 8.357999901274121e-12,
+        "original_field_tolerance": 0.05,
+        "original_charge_tolerance": 1e-11,
+        "original_checks_passed": true
+      },
+      "ended_at": 1793092964.19926
+    }
+  ],
+  "readiness_attempts": [
+    {
+      "attempt": 1,
+      "started_at": 1793092948.4280205,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "",
+      "ended_at": 1793092948.993829
+    }
+  ],
+  "scope": "Two engineering controls; no native worker or decision-model call",
+  "backend_sha256": "a2fb8cce5eeacf7762b50c27fcc8dfb44bda7f40ed104e687738bdd4d4255cba",
+  "machine_profile_sha256": "cdb93bb01de66d54cc280a54d2621e7a72c2aef044d8dfcdba0514ff849d3c3b",
+  "ssh_config_sha256": "2f293a70046ee9553c34d1ef55d034b730c9abe3d92854e67a279e9e311a9b00",
+  "ended_at": 1793092964.1995,
+  "input_sha256": "fd941c6e27e60b471ee0796997d465e9aec43192fd075c9ebd8665fb87b337b3",
+  "original_analysis_sha256": "8892dcd3bb6309289fedbf80a0a080e017b92daefce97fc42ab8fe1931d90a15"
+}
