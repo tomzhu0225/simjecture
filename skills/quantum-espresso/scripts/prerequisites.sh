@@ -29,8 +29,14 @@ qe_python() {
             bootstrap_python=python3
         fi
     fi
+    if [[ "$bootstrap_python" == */* && "$bootstrap_python" != /* && ! -x "$bootstrap_python" && -x "$project_root/$bootstrap_python" ]]; then
+        bootstrap_python="$project_root/$bootstrap_python"
+    fi
     command -v "$bootstrap_python" >/dev/null ||
         qe_fail "Missing application Python: $bootstrap_python. Prepare Python >=3.11 with the Simjecture base installer, or set SIMJECTURE_BOOTSTRAP_PYTHON to an existing application Python executable; retry after setup. See docs/getting-started/installation.md."
+    bootstrap_python="$(command -v "$bootstrap_python")"
+    [[ "$bootstrap_python" = /* ]] || bootstrap_python="$PWD/$bootstrap_python"
+    bootstrap_python="$(cd "${bootstrap_python%/*}" && pwd -P)/${bootstrap_python##*/}"
     "$bootstrap_python" -c 'import sys; sys.exit(0 if sys.version_info >= (3, 11) else 1)' ||
         qe_fail "Application Python must run and be >=3.11. Repair the application environment with uv sync --frozen, or configure SIMJECTURE_BOOTSTRAP_PYTHON, then retry."
     export SIMJECTURE_BOOTSTRAP_PYTHON="$bootstrap_python"

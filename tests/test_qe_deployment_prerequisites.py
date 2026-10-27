@@ -348,3 +348,40 @@ def test_path_only_python_does_not_validate_uncreated_uv_environment(isolated):
     assert "No existing application environment" in result.stderr
     assert "UV_PROJECT_ENVIRONMENT" in result.stderr
     no_install(f)
+
+
+def test_relative_bootstrap_uv_and_bubblewrap_from_external_cwd(isolated, tmp_path):
+    f = isolated
+    external = tmp_path / "caller dir"
+    external.mkdir()
+    rel_app = external / "rel app/bin"
+    rel_app.mkdir(parents=True)
+    (rel_app / "python").symlink_to(f.python)
+    rel_tools = external / "rel tools"
+    rel_tools.mkdir()
+    (rel_tools / "uv").symlink_to(f.uv)
+    (f.tools / "bwrap").rename(rel_tools / "bwrap")
+    f.env["SIMJECTURE_BOOTSTRAP_PYTHON"] = "./rel app/bin/python"
+    result = subprocess.run(
+        [
+            "/bin/bash",
+            str(f.scripts / "deploy.sh"),
+            "--project-root",
+            str(f.project),
+            "--runtime-base",
+            str(f.runtime),
+            "--uv",
+            "./rel tools/uv",
+            "--bubblewrap-dir",
+            "./rel tools",
+        ],
+        cwd=external,
+        env=f.env,
+        text=True,
+        capture_output=True,
+        timeout=20,
+    )
+    assert result.returncode == 0, result.stderr
+    assert Path(str(f.log) + ".uv-environments").read_text().splitlines() == [
+        str(external / "rel app")
+    ] * 2

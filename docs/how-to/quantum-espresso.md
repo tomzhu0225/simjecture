@@ -116,25 +116,33 @@ Changing material or physical assumptions requires new numerical qualification.
 
 For a Windows checkout, the conditional setup wrapper selects a new Linux-native runtime
 prefix when needed, preserves existing prefixes, and calls the same public
-installer and doctor. Optional arguments are -RuntimeBase (absolute Linux path),
--Uv (Linux uv executable), and -ApplicationEnvironment (existing Linux application
-environment). It never migrates an existing runtime.
+installer and doctor. Optional arguments are -Distribution (existing WSL2
+distribution), -RuntimeBase (absolute Linux path), -Uv (Linux uv executable),
+-ApplicationEnvironment (existing Linux application environment), and
+-BubblewrapDirectory (existing Linux directory containing bwrap). It never
+migrates an existing runtime.
 
 
-## Conditional setup and known prerequisite gaps
+## Conditional setup and prerequisites
 
-This is automated QE setup on supported Linux/x86_64 or already configured WSL2,
-not a verified clean-machine one-click installation. The application environment,
-working user namespaces/Bubblewrap, an available uv command (or configured path),
-and python3 on PATH must already be usable. Docker is not required.
+This is conditional automated QE setup on supported Linux/x86_64 or an already
+configured WSL2 x86_64 distribution, not a verified clean-machine one-click
+installation. The application environment, working user namespaces/Bubblewrap,
+and an available Linux uv command (or configured path) must already be usable.
+Docker is not required.
 
-The QE bootstrap currently calls PATH python3 independently of the interpreter
-running Simjecture; if absent, it can fail with exit 127. Missing uv in the QE
-wrapper currently surfaces as command-not-found rather than a complete guided
-installation step. Simjecture's base installation can prepare uv/Python and may
-prepare Bubblewrap on supported Linux systems, but that prerequisite flow is not
-fully connected to these QE wrappers. Application-package diagnostics can suggest
-uv sync --frozen, and missing QE has its install command; diagnostics are therefore
-partial, not entirely absent. A clean second-machine end-to-end deployment has
-not been validated. These known gaps are disclosed here rather than silently
-installing prerequisites or changing host settings.
+The public installer passes its running Python interpreter to the QE bootstrap;
+a separate `python3` on PATH is not required. An explicit
+`SIMJECTURE_BOOTSTRAP_PYTHON` overrides that choice, and `bootstrap.sh` otherwise
+checks `UV_PROJECT_ENVIRONMENT/bin/python` (or `.venv/bin/python`) before
+falling back to `python3`. The checked wrapper validates Linux x86_64, required
+coreutils/util-linux tools, `uv`, the existing application environment and
+locked packages, Bubblewrap/namespace readiness, and Linux-native disk reserves
+before creating runtime directories or symlinks or invoking the installer; use
+`--uv /absolute/path/to/uv` (PowerShell: `-Uv`) for an existing executable and
+`uv sync --frozen` to prepare the application environment.
+
+Simjecture's base installation can prepare uv/Python and may prepare Bubblewrap
+on supported Linux systems, but the QE wrappers diagnose prerequisites rather
+than installing host packages or changing security policy. A clean
+second-machine end-to-end deployment has not been validated.

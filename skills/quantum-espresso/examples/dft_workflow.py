@@ -318,6 +318,24 @@ def validate_case(cfg, mode=None):
             raise ValueError(f"Invalid {name}")
     if mode == "scf-only":
         return cfg
+    states = cfg.get("projection_states", [1])
+    if (
+        not isinstance(states, list)
+        or not states
+        or any(isinstance(x, bool) or not isinstance(x, int) or x < 1 for x in states)
+    ):
+        raise ValueError("projection_states must be positive one-based integer indices")
+    window = cfg.get("plot_energy_ev", [-8, 8])
+    if (
+        not isinstance(window, list)
+        or len(window) != 2
+        or any(
+            isinstance(x, bool) or not isinstance(x, (int, float)) or not math.isfinite(x)
+            for x in window
+        )
+        or window[0] >= window[1]
+    ):
+        raise ValueError("plot_energy_ev must be finite ordered [lower, upper] bounds")
     if len(cfg["path"]) < 2:
         raise ValueError("A band path requires at least two vertices")
     for point in cfg["path"]:
@@ -1085,7 +1103,14 @@ def reference_qualification(root, relax_xml=None):
             "reason": "Recorded workflow checks did not pass",
             "evidence": evidence,
         }
-    geometry = json.loads((root / "final_structure.json").read_text())
+    structure_path = root / "final_structure.json"
+    if not structure_path.is_file():
+        return {
+            "status": "unqualified",
+            "reason": "Missing final_structure.json evidence",
+            "evidence": evidence,
+        }
+    geometry = json.loads(structure_path.read_text())
     for stage, path in (
         ("vc-relax", Path(relax_xml) if relax_xml else xml_at(root / "relax")),
         ("scf", xml_at(root / "scf")),

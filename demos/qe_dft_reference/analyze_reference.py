@@ -32,8 +32,12 @@ if qualification["status"] != "qualified":
 summary = json.loads((root / "summary.json").read_text())
 structure = json.loads((root / "final_structure.json").read_text())
 cfg = summary["configuration"]
-data = np.load(root / "verified_projections.npz")
-energy = data["energies_ev"]
+projections = root / "verified_projections.npz"
+energy = (
+    np.load(projections)["energies_ev"]
+    if projections.is_file()
+    else workflow["read_pw_xml"](workflow["xml_at"](root / "bands"), "bands")["energies_ev"]
+)
 nocc = summary["occupied_bands"]
 cell = np.asarray(structure["cell_angstrom"])
 a = float((4 * np.linalg.det(cell)) ** (1 / 3))

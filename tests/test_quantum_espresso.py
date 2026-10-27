@@ -994,9 +994,6 @@ def test_reference_analyzer_reassesses_completion(tmp_path, monkeypatch, materia
     record = ROOT / "demos" / material / "record/full_reference"
     shutil.copytree(record, tmp_path / "result")
     root = tmp_path / "result"
-    if material == "qe_dft_reference":
-        bands = qe.read_pw_xml(qe.xml_at(root / "bands"))
-        np.savez(root / "verified_projections.npz", energies_ev=bands["energies_ev"])
     if state != "missing":
         tree = ET.parse(qe.xml_at(root / "scf"))
         tree.getroot().find("input/control_variables/calculation").text = "vc-relax"
@@ -1025,3 +1022,31 @@ def test_reference_analyzer_reassesses_completion(tmp_path, monkeypatch, materia
     with pytest.raises(SystemExit) as repeat:
         runpy.run_path(str(ROOT / "demos" / material / "analyze_reference.py"))
     assert repeat.value.code == 2
+
+
+def test_reference_qualification_handles_scf_smoke_without_final_structure():
+    smoke = ROOT / "demos/qe_dft_reference/record/scf_smoke"
+    qualification = qe.reference_qualification(smoke)
+    assert qualification["status"] == "unqualified"
+    assert "final_structure.json" in qualification["reason"]
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("projection_states", []),
+        ("projection_states", [0]),
+        ("projection_states", [True]),
+        ("plot_energy_ev", [-8]),
+        ("plot_energy_ev", [5, -5]),
+        ("plot_energy_ev", [False, 8]),
+    ],
+)
+def test_validate_case_rejects_invalid_plot_and_projection_settings_early(
+    case, tmp_path, field, value
+):
+    case[field] = value
+    path = tmp_path / "bad_plot.json"
+    path.write_text(json.dumps(case))
+    with pytest.raises(ValueError, match=field):
+        qe.load_case(path)
