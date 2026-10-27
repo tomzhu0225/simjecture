@@ -1,0 +1,38 @@
+&CONTROL
+ calculation='vc-relax',
+ prefix='sample', outdir='./out',
+ pseudo_dir='../pseudo',
+ tstress=.true., tprnfor=.true.,
+ etot_conv_thr=1e-06,
+ forc_conv_thr=0.0001,
+/
+&SYSTEM
+ ibrav=0, nat=1, ntyp=1,
+ ecutwfc=60, ecutrho=300,
+ input_dft='PBE', nspin=2,
+ occupations='smearing',
+ smearing='mv', degauss=0.02,
+ starting_magnetization(1)=0.3,
+ nbnd=16,
+/
+&ELECTRONS
+ conv_thr=1e-09,
+ electron_maxstep=200, mixing_beta=0.3,
+/
+&IONS
+ ion_dynamics='bfgs',
+/
+&CELL
+ cell_dynamics='bfgs', cell_dofree='all',
+ press_conv_thr=0.1,
+/
+ATOMIC_SPECIES
+Fe 55.845 fe_pbe_v1.5.uspp.F.UPF
+CELL_PARAMETERS angstrom
+-1.412016454189 1.412016454189 1.412016454189
+1.412016454189 -1.412016454189 1.412016454189
+1.412016454189 1.412016454189 -1.412016454189
+ATOMIC_POSITIONS crystal
+Fe 0.000000000000 0.000000000000 0.000000000000
+K_POINTS automatic
+14 14 14 0 0 0

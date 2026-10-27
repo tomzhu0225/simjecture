@@ -1,0 +1,62 @@
+{
+  "scope": "fresh model-free anchor reproduction, not autonomous LLM or held-out science",
+  "checks": {
+    "source_sha256_matches": true,
+    "configuration_matches": true,
+    "all_fresh_checks_passed": true,
+    "energy_difference_below_1e_7_ev": true,
+    "gap_difference_below_1e_7_ev": true,
+    "no_missing_or_mutated_outputs": true
+  },
+  "absolute_observable_differences": {
+    "total_energy_ev": 1.602984411874786e-11,
+    "path_gap_ev": 2.2177815139912127e-12,
+    "path_vbm_ev": 1.1620038264936738e-11,
+    "path_cbm_ev": 9.402256750945526e-12,
+    "lattice_volume_angstrom3": 2.6787461138155777e-11,
+    "pressure_kbar": 6.443462485442161e-10,
+    "max_force_ry_bohr": 2.437847228623083e-34
+  },
+  "experiment": {
+    "id": "exp_1f73965c7f406ef9bbf54ca7",
+    "status": "succeeded",
+    "binding": {
+      "source": "workflow.py",
+      "args": [
+        "run",
+        "--case",
+        "case.json",
+        "--pseudo-dir",
+        "pseudo",
+        "--output",
+        "result",
+        "--convergence"
+      ],
+      "inputs": {
+        "workflow.py": "2131b31f98e0465689de13b5d5ba16f0052539318255948a8258a12b47b47848",
+        "PROTOCOL.md": "9175e59008c95558fedbdbabbbc0e6831d29f93557277b6f0f86515ff7fa0d39",
+        "case.json": "74c628e71b8eb5d0bb5ac3537594c2fa3bc8e72a54cf33dc3dcf2abd347b2964",
+        "pseudo/si_pbe_v1.uspp.F.UPF": "2c4b1bce6f4e3fa41dd4381f20760fe142399a42784b697712339d0b6b31c316"
+      },
+      "capability": "quantum-espresso-7.4",
+      "runtime_sha256": "78469ff06bd44a93fb7e33923ed128ca51e0fdf08508aab2c6f55d4fc611b0ab"
+    },
+    "stage": "exploration",
+    "purpose": "validation",
+    "scientific_status": "unreviewed"
+  },
+  "original_experiment_sha256": "c0c61ae7a1ce9a3cbaebdbf8b4ab2acde13153f59bd20b0ec287d355827da092",
+  "fresh_summary_sha256": "4dfc27aa90b0abdcadfe6eb0e5031fe84834d5e03793736941ecfe7ca5fa5ce9",
+  "operator_supervisor": {
+    "started_unix": 1792811065.413376,
+    "scope": "one controlled calculation, no installation",
+    "memory_limit_mib": 4096,
+    "threads": 1,
+    "workspace_limit_mib": 4096,
+    "all_new_files_physical_disk": "D",
+    "minimum_observed_c_free_bytes": 15035629568,
+    "linux_process_group": 729,
+    "returncode": 0,
+    "wall_seconds": 425.0982768535614
+  }
+}

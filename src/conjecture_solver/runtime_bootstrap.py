@@ -63,6 +63,12 @@ def ensure_micromamba(runtime_root: Path, *, dry_run=False) -> str:
 # Package files are shared through Micromamba's cache; separate environments
 # retain independent ABI constraints without downloading identical packages twice.
 RUNTIME_PACKAGES = {
+    "quantum-espresso": [
+        "python=3.11",
+        "qe=7.4=hac89879_0",
+        "numpy=2.2",
+        "matplotlib-base=3.10",
+    ],
     "freecad": ["python=3.12", "freecad=1.1.3"],
     "gmsh": ["python=3.12", "pip", "libglu=9.0.3"],
     "warp-lbm": ["python=3.12", "pip"],
@@ -148,6 +154,15 @@ def prepare_runtime_environment(profile: str, prefix: Path) -> None:
     import subprocess
 
     packages = RUNTIME_PACKAGES[profile]
+    # First qualified QE dependency set, including exact upstream artifact hashes.
+    resource = "quantum-espresso/references/linux64.lock"
+    runtime_lock = Path(__file__).resolve().parents[2] / "skills" / resource
+    if not runtime_lock.is_file():
+        runtime_lock = Path(__file__).resolve().parent / "builtin_skills" / resource
+    if profile == "quantum-espresso":
+        if platform.system() != "Linux" or platform.machine() != "x86_64":
+            raise ValueError("The qualified QE dependency lock supports Linux x86_64 only")
+        packages = runtime_lock.read_text().splitlines()
     marker = prefix.parent / "install-state" / f"{prefix.name}.json"
     if prefix.exists() and not marker.is_file():
         raise ValueError(f"Refusing to replace unmanaged directory {prefix}")
@@ -181,7 +196,7 @@ def prepare_runtime_environment(profile: str, prefix: Path) -> None:
             "--channel",
             "conda-forge",
             "--strict-channel-priority",
-            *packages,
+            *(["--file", str(runtime_lock)] if profile == "quantum-espresso" else packages),
         ],
         env=environment,
         cwd=prefix.parent,

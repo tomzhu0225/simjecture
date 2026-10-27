@@ -1,0 +1,4 @@
+&BANDS
+ prefix='sample', outdir='./out',
+ filband='bands.dat', lsym=.false., no_overlap=.true.,
+/

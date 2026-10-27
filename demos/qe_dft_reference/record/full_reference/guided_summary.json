@@ -1,0 +1,462 @@
+{
+  "schema_version": "1",
+  "status": "passed",
+  "scope": "exploratory commissioning",
+  "configuration": {
+    "schema_version": "1",
+    "description": "Diamond Si PBE with GBRV v1 USPP: exploratory reference instrument",
+    "functional": "PBE",
+    "spin": "nonmagnetic",
+    "occupations": "fixed",
+    "cell_angstrom": [
+      [
+        0,
+        2.735,
+        2.735
+      ],
+      [
+        2.735,
+        0,
+        2.735
+      ],
+      [
+        2.735,
+        2.735,
+        0
+      ]
+    ],
+    "species": [
+      {
+        "label": "Si",
+        "mass": 28.0855,
+        "pseudo": "si_pbe_v1.uspp.F.UPF",
+        "url": "https://www.physics.rutgers.edu/gbrv/si_pbe_v1.uspp.F.UPF",
+        "sha256": "2c4b1bce6f4e3fa41dd4381f20760fe142399a42784b697712339d0b6b31c316",
+        "license": "GPL-3.0; author site links gpl-3.0.txt",
+        "source": "GBRV Si PBE v1 (2013-05-13), scalar relativistic USPP/NLCC, four valence electrons"
+      }
+    ],
+    "atoms": [
+      {
+        "species": "Si",
+        "fractional": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "species": "Si",
+        "fractional": [
+          0.25,
+          0.25,
+          0.25
+        ]
+      }
+    ],
+    "ecutwfc_ry": 50,
+    "ecutrho_ry": 250,
+    "conv_thr_ry": 1e-09,
+    "forc_conv_thr_ry_bohr": 0.0001,
+    "etot_conv_thr_ry": 1e-06,
+    "press_conv_thr_kbar": 0.2,
+    "relax_k": [
+      10,
+      10,
+      10
+    ],
+    "scf_k": [
+      10,
+      10,
+      10
+    ],
+    "dos_k": [
+      12,
+      12,
+      12
+    ],
+    "nbnd": 12,
+    "path": [
+      {
+        "label": "\u0393",
+        "k": [
+          0,
+          0,
+          0
+        ],
+        "points": 24
+      },
+      {
+        "label": "X",
+        "k": [
+          0.5,
+          0,
+          0.5
+        ],
+        "points": 16
+      },
+      {
+        "label": "W",
+        "k": [
+          0.5,
+          0.25,
+          0.75
+        ],
+        "points": 16
+      },
+      {
+        "label": "K",
+        "k": [
+          0.375,
+          0.375,
+          0.75
+        ],
+        "points": 24
+      },
+      {
+        "label": "\u0393",
+        "k": [
+          0,
+          0,
+          0
+        ],
+        "points": 24
+      },
+      {
+        "label": "L",
+        "k": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "points": 1
+      }
+    ],
+    "dos_delta_ev": 0.03,
+    "plot_energy_ev": [
+      -12,
+      8
+    ],
+    "command_timeout_seconds": 900,
+    "acceptance": {
+      "path_gap_ev": [
+        0.3,
+        0.9
+      ],
+      "max_force_ry_bohr": [
+        0,
+        0.0002
+      ]
+    },
+    "convergence": [
+      {
+        "ecutwfc_ry": 40,
+        "ecutrho_ry": 200
+      },
+      {
+        "ecutwfc_ry": 60,
+        "ecutrho_ry": 300
+      },
+      {
+        "scf_k": [
+          8,
+          8,
+          8
+        ]
+      },
+      {
+        "scf_k": [
+          12,
+          12,
+          12
+        ]
+      }
+    ],
+    "profiles": {
+      "small": {
+        "ecutwfc_ry": 40,
+        "ecutrho_ry": 200,
+        "relax_k": [
+          4,
+          4,
+          4
+        ],
+        "scf_k": [
+          4,
+          4,
+          4
+        ],
+        "dos_k": [
+          6,
+          6,
+          6
+        ],
+        "path": [
+          {
+            "label": "\u0393",
+            "k": [
+              0,
+              0,
+              0
+            ],
+            "points": 12
+          },
+          {
+            "label": "X",
+            "k": [
+              0.5,
+              0,
+              0.5
+            ],
+            "points": 1
+          }
+        ],
+        "acceptance": {
+          "path_gap_ev": [
+            0.2,
+            1.2
+          ],
+          "max_force_ry_bohr": [
+            0,
+            0.0004
+          ]
+        }
+      }
+    },
+    "cell_dofree": "all"
+  },
+  "source_sha256": "2131b31f98e0465689de13b5d5ba16f0052539318255948a8258a12b47b47848",
+  "commands": [
+    {
+      "command": [
+        "/opt/acs-capabilities/quantum-espresso-7.4/bin/pw.x",
+        "-in",
+        "pw.in"
+      ],
+      "cwd": "/work/result/relax",
+      "input_sha256": "86807bf77251ed6540f6a4cbb3bcc256533975541b6d9bb906547d9f919b78b7",
+      "start_unix": 1792811075.7376819,
+      "returncode": 0,
+      "wall_seconds": 58.066197872161865,
+      "output_sha256": "57c386ddd642644dab678404ec912d5ffd9179229c2a03ccaa61c2ec1c1790e8"
+    },
+    {
+      "command": [
+        "/opt/acs-capabilities/quantum-espresso-7.4/bin/pw.x",
+        "-in",
+        "pw.in"
+      ],
+      "cwd": "/work/result/scf",
+      "input_sha256": "76f6522563de720164c32bda5f3f8771fa0674a47b5742369380ef082075e270",
+      "start_unix": 1792811133.811019,
+      "returncode": 0,
+      "wall_seconds": 15.736263990402222,
+      "output_sha256": "98223fc824b809633aff4961451e955945b40c0b75ff237e7ed1554f480e52c0"
+    },
+    {
+      "command": [
+        "/opt/acs-capabilities/quantum-espresso-7.4/bin/pw.x",
+        "-in",
+        "pw.in"
+      ],
+      "cwd": "/work/result/dos",
+      "input_sha256": "ac4b0fbe216b2569fbd1cc8bd3909abcd6c6c726e871c6309e518312cda15882",
+      "start_unix": 1792811149.5779364,
+      "returncode": 0,
+      "wall_seconds": 40.868257999420166,
+      "output_sha256": "05d2bec5918031cd46a89fd5b7ddadf34ebec4f6ebebd3bbc804876b3b971815"
+    },
+    {
+      "command": [
+        "/opt/acs-capabilities/quantum-espresso-7.4/bin/pw.x",
+        "-in",
+        "pw.in"
+      ],
+      "cwd": "/work/result/bands",
+      "input_sha256": "9faa5be383ec64d66826dabe478e7a55ece2b35c1de6613025e56cbc9257a834",
+      "start_unix": 1792811190.4721706,
+      "returncode": 0,
+      "wall_seconds": 55.54950308799744,
+      "output_sha256": "f68c78e2d12f690570e7b3230f10605bfb556acab7faea1f56acdb82aa640874"
+    },
+    {
+      "command": [
+        "/opt/acs-capabilities/quantum-espresso-7.4/bin/dos.x",
+        "-in",
+        "dos.in"
+      ],
+      "cwd": "/work/result/dos",
+      "input_sha256": "b784a2db20b584a54fe27e5ad86a36545ebd97de1e05e54dbb2642eb1edc89cb",
+      "start_unix": 1792811246.0223694,
+      "returncode": 0,
+      "wall_seconds": 12.516456842422485,
+      "output_sha256": "924714ff66021a9f52da87bbff5971cd47b459f8d662c8a94cc440d12ab9003c"
+    },
+    {
+      "command": [
+        "/opt/acs-capabilities/quantum-espresso-7.4/bin/projwfc.x",
+        "-in",
+        "projwfc.in"
+      ],
+      "cwd": "/work/result/dos",
+      "input_sha256": "d6067a963907d26e07368a30593bed55439cae9224b12db0d84c4d2daa6ad7a8",
+      "start_unix": 1792811258.53948,
+      "returncode": 0,
+      "wall_seconds": 3.078519821166992,
+      "output_sha256": "8768ad25f5c7fcecfc971fe256be1fc7d3f44a21da6eb503e657015e9f581e48"
+    },
+    {
+      "command": [
+        "/opt/acs-capabilities/quantum-espresso-7.4/bin/bands.x",
+        "-in",
+        "bands.in"
+      ],
+      "cwd": "/work/result/bands",
+      "input_sha256": "6939daf94a7134e182516eaa02f72ff461d29a8e33db776f41e3ee51295dc6d4",
+      "start_unix": 1792811261.6194534,
+      "returncode": 0,
+      "wall_seconds": 1.822364330291748,
+      "output_sha256": "2361894269ee8d5637fee6d43092bf4869a104d6c58739307a004c671ed5d2e7"
+    },
+    {
+      "command": [
+        "/opt/acs-capabilities/quantum-espresso-7.4/bin/projwfc.x",
+        "-in",
+        "projwfc.in"
+      ],
+      "cwd": "/work/result/bands",
+      "input_sha256": "ae587f46d4e673f3e5c0beed8d4703fe580d2d8e51d5853c3f3324fd85870f65",
+      "start_unix": 1792811263.442473,
+      "returncode": 0,
+      "wall_seconds": 11.261146545410156,
+      "output_sha256": "03bd371d63d3921ad42574a82f6ac9a36cc24e9af43848c1b8a0b51d4f267b78"
+    },
+    {
+      "command": [
+        "/opt/acs-capabilities/quantum-espresso-7.4/bin/pw.x",
+        "-in",
+        "pw.in"
+      ],
+      "cwd": "/work/result/control_00",
+      "input_sha256": "aaacd69054b9b3a25b525a73910ac55ee20b116e64d0956b2ad7c9d24c7f556a",
+      "start_unix": 1792811278.6251025,
+      "returncode": 0,
+      "wall_seconds": 12.674016237258911,
+      "output_sha256": "34e9165fcfdda6e4c7b3f4947570cb3702c25ab2a2e88c545a946a9e3cc4aebf"
+    },
+    {
+      "command": [
+        "/opt/acs-capabilities/quantum-espresso-7.4/bin/pw.x",
+        "-in",
+        "pw.in"
+      ],
+      "cwd": "/work/result/control_01",
+      "input_sha256": "98121f9cf712f2080c29d1e6e6d41795148f51fa5f88e7cf837a0bfa23cb870c",
+      "start_unix": 1792811291.3082452,
+      "returncode": 0,
+      "wall_seconds": 22.72229790687561,
+      "output_sha256": "f9b4d2b6ea6e33804f9894c05aa03ade70eac8bd5b53af71d1e08b5a347ecd5a"
+    },
+    {
+      "command": [
+        "/opt/acs-capabilities/quantum-espresso-7.4/bin/pw.x",
+        "-in",
+        "pw.in"
+      ],
+      "cwd": "/work/result/control_02",
+      "input_sha256": "986368144bb3e2f8a2f3c65243febbe276192ec0dd4d09e5b37cdf4e70b975ef",
+      "start_unix": 1792811314.0353863,
+      "returncode": 0,
+      "wall_seconds": 12.520758867263794,
+      "output_sha256": "afcaf6698da28a5e3054d5eb479859f9e4221afbc547754414a3c72030a82b57"
+    },
+    {
+      "command": [
+        "/opt/acs-capabilities/quantum-espresso-7.4/bin/pw.x",
+        "-in",
+        "pw.in"
+      ],
+      "cwd": "/work/result/control_03",
+      "input_sha256": "adde1360a60b46aed8a49fdde2c6d120ceacd72f2a8d04bbfba6c18bf480b65d",
+      "start_unix": 1792811326.5605023,
+      "returncode": 0,
+      "wall_seconds": 27.7563738822937,
+      "output_sha256": "d6191d5bcc97b3b83b96e27594696aa58be17d156b201a6f33ac8528e0f5b2b5"
+    }
+  ],
+  "total_energy_ev": -261.1400496140446,
+  "nelec": 8.0,
+  "occupied_bands": 4,
+  "lattice_volume_angstrom3": 40.86428270952675,
+  "path_gap_ev": 0.6139796488928093,
+  "path_vbm_ev": 5.981537835645502,
+  "path_cbm_ev": 6.595517484538311,
+  "max_bands_xml_difference_ev": 0.000499876273512001,
+  "projection_sum_range": [
+    2.1694390584114895e-17,
+    0.9970324114381036
+  ],
+  "max_force_ry_bohr": 3.123993200452803e-33,
+  "pressure_kbar": 2.3064049623740553e-05,
+  "checks": {
+    "completed": true,
+    "relaxation_completed": true,
+    "checkpoint_preserved": true,
+    "branches_independent": true,
+    "bands_indices_verified": true,
+    "projection_indices_verified": true,
+    "dos_pdos_finite": true,
+    "path_gap_ev_in_range": true,
+    "max_force_ry_bohr_in_range": true
+  },
+  "convergence": [
+    {
+      "settings": {
+        "ecutwfc_ry": 40,
+        "ecutrho_ry": 200
+      },
+      "energy_ev": -261.1398636155562,
+      "delta_mev_per_atom": 0.09299924420247407,
+      "max_force_ry_bohr": 0.0,
+      "pressure_kbar": 0.015237712713426091
+    },
+    {
+      "settings": {
+        "ecutwfc_ry": 60,
+        "ecutrho_ry": 300
+      },
+      "energy_ev": -261.1407248351734,
+      "delta_mev_per_atom": -0.3376105644008476,
+      "max_force_ry_bohr": 1.947211584301005e-33,
+      "pressure_kbar": 0.0016129640488966332
+    },
+    {
+      "settings": {
+        "scf_k": [
+          8,
+          8,
+          8
+        ]
+      },
+      "energy_ev": -261.1369291011776,
+      "delta_mev_per_atom": 1.5602564334926683,
+      "max_force_ry_bohr": 0.0,
+      "pressure_kbar": 0.052009907107616285
+    },
+    {
+      "settings": {
+        "scf_k": [
+          12,
+          12,
+          12
+        ]
+      },
+      "energy_ev": -261.1406262295039,
+      "delta_mev_per_atom": -0.2883077296473857,
+      "max_force_ry_bohr": 6.290060858794014e-34,
+      "pressure_kbar": 0.005052387322150061
+    }
+  ],
+  "wall_seconds": 278.5882921218872,
+  "output_bytes": 199306124
+}

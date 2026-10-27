@@ -1,0 +1,30 @@
+{
+  "execution_receipt.json": {
+    "sha256": "d9697d8bafe5b22a532689c5fd0705c23b411633a7ce8f0480b64adb5da7e2c7",
+    "bytes": 328
+  },
+  "guided_readiness.json": {
+    "sha256": "c0821fd34b0acd10352003a7a693dd0f149c82eb9829c208cfbc05ae808e77fc",
+    "bytes": 329
+  },
+  "guided_summary.json": {
+    "sha256": "a89089a8e4a501742be81ddf319b1270fb8c3590f515f7db769b1398641f80d9",
+    "bytes": 5000
+  },
+  "guided_verification.json": {
+    "sha256": "3b5b3aafab536822189120e6f2d1294e172387cc206af8d3f44f250a6ea8d857",
+    "bytes": 1231
+  },
+  "scf/pw.in": {
+    "sha256": "ddc4f63389cfaada16dd99b15fac09531226dda4d68bde370a33113fa1caae6d",
+    "bytes": 738
+  },
+  "scf/pw.out": {
+    "sha256": "823d5271e2bbc3b0b4571ca223d4eb151fd5a824d8613ee862bf38b524544cfb",
+    "bytes": 28586
+  },
+  "summary.json": {
+    "sha256": "86cd42e7c01f4f94b433feed1e1ba78e3e6a0f5ebb3749331d34816f7fa3a556",
+    "bytes": 5005
+  }
+}

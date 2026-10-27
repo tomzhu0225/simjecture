@@ -1,0 +1,32 @@
+{
+  "scope": "Actual SCF-only guided reproduction; full Fe guided replay was not run",
+  "configuration_and_source_match": true,
+  "total_energy_difference_ev": 1.2778400559909642e-10,
+  "total_moment_difference_muB_per_cell": 1.2594242093655339e-08,
+  "original_experiment_sha256": "6eecc9e559264f304d2be4b8a528e6dc43f5c17e3c51e6a442f8ec7b0e0bab0f",
+  "binding": {
+    "source": "workflow.py",
+    "args": [
+      "run",
+      "--case",
+      "case.json",
+      "--pseudo-dir",
+      "pseudo",
+      "--output",
+      "result",
+      "--profile",
+      "small",
+      "--smoke"
+    ],
+    "inputs": {
+      "workflow.py": "a2d559ffa9cc19ad60ad180fe0e814d6dcdba04a2d5f6898317a6403ea7156f0",
+      "PROTOCOL.md": "962918184b97f1e3cf4ca2e29020f34ef697430a065bf422ac66b692aa1cccc2",
+      "case.json": "dce01e0c640dd58ae2061ef9129b7b11c8374b4701957b09a0e4de25795bf052",
+      "pseudo/fe_pbe_v1.5.uspp.F.UPF": "6c132e6e7ac1c42df5cb6a13d0c99bb7af5bf3d6e2349f5658f0c22abfe3911a"
+    },
+    "capability": "quantum-espresso-7.4",
+    "runtime_sha256": "4fd1b70b4e9dcfb0b5c8b11c02a541bd195aa17bccb52d86f64a590bcac2ac97"
+  },
+  "no_missing_or_mutated_outputs": true,
+  "scientific_evidence_eligible": false
+}

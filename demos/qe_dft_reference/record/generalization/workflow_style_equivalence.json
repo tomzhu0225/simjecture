@@ -1,0 +1,6 @@
+{
+  "scope": "Line wrapping only; original executed bytes preserved separately",
+  "ast_equal_to_executing_fe02": true,
+  "current_sha256": "998b094ce5b4e13cd16a4b2acc3695896b38760e1a904b4f99fe9bb41d09ac6d",
+  "executed_sha256": "a2d559ffa9cc19ad60ad180fe0e814d6dcdba04a2d5f6898317a6403ea7156f0"
+}

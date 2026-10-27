@@ -38,6 +38,7 @@ ELMER_CAPABILITY = "elmer-0.1"
 FEOS_CAPABILITY = "feos-16.7"
 MATERIAL_EOS_CAPABILITY = "material-eos-0.1"
 OPTAB_CAPABILITY = "optab-1.3.1"
+QE_CAPABILITY = "quantum-espresso-7.4"
 FAC_CAPABILITY = "fac-1.1.5"
 ITER_PACK_CAPABILITY = "iter-pack-1.0"
 WARP_LBM_CAPABILITY = "warp-lbm-cylinder-1.0"
@@ -51,6 +52,7 @@ PRIVATE_ROOT_ENV = "SIMJECTURE_PRIVATE_ROOT"
 FLASH_BOOTSTRAP_SCRIPT = "skills/flash-mhd/scripts/bootstrap_flash.sh"
 
 _CAPABILITY_CONFIGS = {
+    QE_CAPABILITY: "quantum-espresso-7.4.json",
     FREECAD_CAPABILITY: "freecad-1.1.3.json",
     GMSH_CAPABILITY: "gmsh-4.15.2.json",
     ELMER_CAPABILITY: "elmer-0.1.json",
@@ -107,10 +109,11 @@ def report_install_stage(stage: str, detail: str = "") -> None:
         temporary.unlink(missing_ok=True)
 
 
-def _run_install_command(command, *, capture_output=False):
+def _run_install_command(command, *, capture_output=False, environment=None):
     """Keep live build output while retaining a bounded failure diagnostic."""
+    options = {"env": environment} if environment is not None else {}
     if capture_output:
-        return subprocess.run(command, check=False, text=True, capture_output=True)
+        return subprocess.run(command, check=False, text=True, capture_output=True, **options)
     from collections import deque
 
     report_install_stage("install", f"Running {Path(str(command[0])).name}")
@@ -121,6 +124,7 @@ def _run_install_command(command, *, capture_output=False):
         stderr=subprocess.STDOUT,
         text=True,
         bufsize=1,
+        **options,
     ) as process:
         for line in process.stdout:
             print(line, end="", flush=True)
@@ -148,9 +152,11 @@ class DeploymentProfile(StrEnum):
     MATERIAL_EOS = "material-eos"
     OPTAB = "optab"
     FAC = "fac"
+    QUANTUM_ESPRESSO = "quantum-espresso"
 
 
 _PROFILE_BY_CAPABILITY = {
+    QE_CAPABILITY: DeploymentProfile.QUANTUM_ESPRESSO,
     FREECAD_CAPABILITY: DeploymentProfile.FREECAD,
     GMSH_CAPABILITY: DeploymentProfile.GMSH,
     ELMER_CAPABILITY: DeploymentProfile.ELMER,
@@ -168,6 +174,7 @@ _PROFILE_BY_CAPABILITY = {
     FAC_CAPABILITY: DeploymentProfile.FAC,
 }
 _MISSING_RUNTIME_REMEDY = {
+    QE_CAPABILITY: "Run simjecture install quantum-espresso.",
     FREECAD_CAPABILITY: "Run `simjecture install freecad`.",
     GMSH_CAPABILITY: "Run `simjecture install gmsh`.",
     ELMER_CAPABILITY: "Run `simjecture install elmer --source /path/to/elmer-install`.",
@@ -209,6 +216,7 @@ _MISSING_RUNTIME_REMEDY = {
     ),
 }
 _PREFLIGHT_REMEDY = {
+    QE_CAPABILITY: "Inspect QE logs; rerun simjecture install quantum-espresso --repair.",
     FREECAD_CAPABILITY: "Inspect STEP checks; rerun `simjecture install freecad --repair`.",
     GMSH_CAPABILITY: "Inspect the mesh check; rerun `simjecture install gmsh --repair`.",
     ELMER_CAPABILITY: "Inspect the Elmer runtime check and the supplied build.",
@@ -255,6 +263,14 @@ class _BootstrapSpec:
 
 
 _BOOTSTRAP_SPECS = {
+    DeploymentProfile.QUANTUM_ESPRESSO: _BootstrapSpec(
+        capability=QE_CAPABILITY,
+        script="skills/quantum-espresso/scripts/bootstrap.sh",
+        managed_marker="share/build-record.json",
+        pinned_revision="7.4",
+        source_label="Quantum ESPRESSO conda-forge package",
+        verify_revision=False,
+    ),
     DeploymentProfile.FREECAD: _BootstrapSpec(
         capability=FREECAD_CAPABILITY,
         script="skills/freecad/scripts/bootstrap.sh",
@@ -1184,7 +1200,15 @@ class DeploymentManager:
                 command=command,
                 checks=tuple(checks),
             )
-        result = _run_install_command(command, capture_output=capture_output)
+        install_options = {}
+        if profile is DeploymentProfile.QUANTUM_ESPRESSO:
+            environment = os.environ.copy()
+            if not environment.get("SIMJECTURE_BOOTSTRAP_PYTHON"):
+                environment["SIMJECTURE_BOOTSTRAP_PYTHON"] = sys.executable
+            install_options["environment"] = environment
+        result = _run_install_command(
+            command, capture_output=capture_output, **install_options
+        )
         if result.returncode != 0:
             detail = result.stderr.strip()
             checks.append(

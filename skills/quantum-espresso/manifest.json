@@ -1,0 +1,10 @@
+{
+  "schema_version": "0.1.0",
+  "name": "quantum-espresso",
+  "version": "1.0.0",
+  "entrypoint": "SKILL.md",
+  "description": "QE deployment and material-configured scalar/collinear DFT workflow",
+  "capability_names": [
+    "quantum-espresso-7.4"
+  ]
+}

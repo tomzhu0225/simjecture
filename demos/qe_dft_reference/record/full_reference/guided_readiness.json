@@ -1,0 +1,8 @@
+{
+  "experiment": "exp_1f73965c7f406ef9bbf54ca7",
+  "status": "succeeded",
+  "package_sha256": "7b263c9da2f2bf998b6dbfacd10477d5b3b06ff3ba17a134d22c111b7bd8f058",
+  "scientific_evidence_eligible": false,
+  "scope": "Anchor reproduction only; no hypothesis or new geometry qualification",
+  "elapsed_seconds": 420.3249852657318
+}

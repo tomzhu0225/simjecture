@@ -1,0 +1,49 @@
+{
+  "scope": "local qualification; no paid provider or autonomous research run",
+  "affected_regression": {
+    "passed": 61,
+    "skipped": 1,
+    "skip_reason": "optional smolagents unavailable"
+  },
+  "additional_si_acceptance_regression": {
+    "passed": 2,
+    "deselected": 25,
+    "synthetic": true
+  },
+  "ruff": "passed",
+  "strict_sphinx": "passed",
+  "generated_documentation_links": 0,
+  "windows_deployment_entry": [
+    {
+      "invocation": 1,
+      "install_ready": true,
+      "doctor_ready": true,
+      "changed": false,
+      "original_log_sha256": "2f91a41e337c571f0392761e1bd2daaa6baaebb0aa70e3bf2f99266de0cc19ef"
+    },
+    {
+      "invocation": 2,
+      "install_ready": true,
+      "doctor_ready": true,
+      "changed": false,
+      "original_log_sha256": "e75b98e26674459636417e99c72c7632b933d9d0d00978e92a8f8a86ce7bbe37"
+    }
+  ],
+  "source_logs_sha256": {
+    "final-regression.log": "23d215f1ebfc36e4d0f8433360116bfb1899d4bc39d8335e731ab13ab274d5d1",
+    "si-acceptance-regression.log": "5d56fcdbdb4ec940021ab60de87f592505a249507480944a47e6fc56bf79c647",
+    "final-ruff.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "sphinx-build.log": "c086a1e3c975fcea27c8bfc3e06f301e10eaf2b115f922b41688bcbe7cacc5ae",
+    "docs-links-windows.log": "4381d1cc4e0286fa998a625d5dcecd90675c3c39f38c449467dcc2b9aa8760d9"
+  },
+  "final_host_resources": {
+    "scope": "targeted final resource check; no disk scan or changes",
+    "available_host_memory_mib": 3670.0,
+    "free_gib": {
+      "C": 13.976,
+      "G": 10.823,
+      "D": 94.338
+    },
+    "checked_at_utc": "2026-10-24T03:20:08.9779352Z"
+  }
+}

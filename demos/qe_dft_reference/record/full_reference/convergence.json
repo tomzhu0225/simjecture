@@ -1,0 +1,48 @@
+[
+  {
+    "settings": {
+      "ecutwfc_ry": 40,
+      "ecutrho_ry": 200
+    },
+    "energy_ev": -261.13986361555516,
+    "delta_mev_per_atom": 0.09299923669914278,
+    "max_force_ry_bohr": 6.686426409995533e-33,
+    "pressure_kbar": 0.015237713837268027
+  },
+  {
+    "settings": {
+      "ecutwfc_ry": 60,
+      "ecutrho_ry": 300
+    },
+    "energy_ev": -261.1407248351702,
+    "delta_mev_per_atom": -0.3376105708241539,
+    "max_force_ry_bohr": 1.4973339811418746e-33,
+    "pressure_kbar": 0.0016129650229440135
+  },
+  {
+    "settings": {
+      "scf_k": [
+        8,
+        8,
+        8
+      ]
+    },
+    "energy_ev": -261.13692910117,
+    "delta_mev_per_atom": 1.5602564292862553,
+    "max_force_ry_bohr": 0.0,
+    "pressure_kbar": 0.05200990794956205
+  },
+  {
+    "settings": {
+      "scf_k": [
+        12,
+        12,
+        12
+      ]
+    },
+    "energy_ev": -261.14062622948376,
+    "delta_mev_per_atom": -0.28830772760102263,
+    "max_force_ry_bohr": 1.2580121717588029e-33,
+    "pressure_kbar": 0.005052387782932055
+  }
+]

@@ -1,0 +1,4 @@
+&DOS
+ prefix='sample', outdir='./out',
+ fildos='dos.dat', bz_sum='tetrahedra', DeltaE=0.03,
+/

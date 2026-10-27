@@ -1,0 +1,256 @@
+{
+  "schema_version": "1",
+  "status": "passed",
+  "scope": "exploratory commissioning",
+  "configuration": {
+    "schema_version": "1",
+    "description": "bcc ferromagnetic Fe PBE/GBRV v1.5: collinear metallic commissioning",
+    "functional": "PBE",
+    "spin": "collinear",
+    "nspin": 2,
+    "occupations": "smearing",
+    "smearing": "mv",
+    "degauss_ry": 0.02,
+    "dos_occupations": "smearing",
+    "dos_smearing": "mv",
+    "dos_degauss_ry": 0.02,
+    "energy_reference": "fermi",
+    "starting_magnetization": {
+      "Fe": 0.3
+    },
+    "cell_angstrom": [
+      [
+        -1.42,
+        1.42,
+        1.42
+      ],
+      [
+        1.42,
+        -1.42,
+        1.42
+      ],
+      [
+        1.42,
+        1.42,
+        -1.42
+      ]
+    ],
+    "species": [
+      {
+        "label": "Fe",
+        "mass": 55.845,
+        "pseudo": "fe_pbe_v1.5.uspp.F.UPF",
+        "url": "https://www.physics.rutgers.edu/gbrv/fe_pbe_v1.5.uspp.F.UPF",
+        "sha256": "6c132e6e7ac1c42df5cb6a13d0c99bb7af5bf3d6e2349f5658f0c22abfe3911a",
+        "license": "GPL-3.0; author site links gpl-3.0.txt",
+        "source": "GBRV Fe PBE v1.5 (2015-06-15), scalar-relativistic USPP/NLCC; 16 valence electrons"
+      }
+    ],
+    "atoms": [
+      {
+        "species": "Fe",
+        "fractional": [
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "ecutwfc_ry": 40,
+    "ecutrho_ry": 200,
+    "conv_thr_ry": 1e-08,
+    "mixing_beta": 0.3,
+    "electron_maxstep": 200,
+    "forc_conv_thr_ry_bohr": 0.0001,
+    "etot_conv_thr_ry": 1e-06,
+    "press_conv_thr_kbar": 0.2,
+    "cell_dofree": "all",
+    "relax_k": [
+      4,
+      4,
+      4
+    ],
+    "scf_k": [
+      4,
+      4,
+      4
+    ],
+    "dos_k": [
+      6,
+      6,
+      6
+    ],
+    "nbnd": 16,
+    "path": [
+      {
+        "label": "\u0393",
+        "k": [
+          0,
+          0,
+          0
+        ],
+        "points": 12
+      },
+      {
+        "label": "H",
+        "k": [
+          0.5,
+          -0.5,
+          0.5
+        ],
+        "points": 8
+      },
+      {
+        "label": "N",
+        "k": [
+          0,
+          0,
+          0.5
+        ],
+        "points": 8
+      },
+      {
+        "label": "\u0393",
+        "k": [
+          0,
+          0,
+          0
+        ],
+        "points": 12
+      },
+      {
+        "label": "P",
+        "k": [
+          0.25,
+          0.25,
+          0.25
+        ],
+        "points": 8
+      },
+      {
+        "label": "H",
+        "k": [
+          0.5,
+          -0.5,
+          0.5
+        ],
+        "points": 1
+      }
+    ],
+    "projection_states": [
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "dos_delta_ev": 0.03,
+    "plot_energy_ev": [
+      -8,
+      6
+    ],
+    "command_timeout_seconds": 900,
+    "acceptance": {
+      "mean_total_magnetization_muB_per_atom": [
+        1.8,
+        2.6
+      ],
+      "max_force_ry_bohr": [
+        0,
+        0.0002
+      ]
+    },
+    "convergence": [
+      {
+        "ecutwfc_ry": 40,
+        "ecutrho_ry": 200
+      },
+      {
+        "ecutwfc_ry": 60,
+        "ecutrho_ry": 300
+      },
+      {
+        "scf_k": [
+          12,
+          12,
+          12
+        ]
+      },
+      {
+        "degauss_ry": 0.01
+      },
+      {
+        "starting_magnetization": {
+          "Fe": 0.1
+        }
+      },
+      {
+        "starting_magnetization": {
+          "Fe": 0.6
+        }
+      },
+      {
+        "starting_magnetization": {
+          "Fe": -0.3
+        }
+      }
+    ],
+    "profiles": {
+      "small": {
+        "ecutwfc_ry": 40,
+        "ecutrho_ry": 200,
+        "scf_k": [
+          4,
+          4,
+          4
+        ],
+        "relax_k": [
+          4,
+          4,
+          4
+        ],
+        "dos_k": [
+          6,
+          6,
+          6
+        ],
+        "conv_thr_ry": 1e-08
+      }
+    }
+  },
+  "source_sha256": "a2d559ffa9cc19ad60ad180fe0e814d6dcdba04a2d5f6898317a6403ea7156f0",
+  "commands": [
+    {
+      "command": [
+        "/opt/acs-capabilities/quantum-espresso-7.4/bin/pw.x",
+        "-in",
+        "pw.in"
+      ],
+      "cwd": "/work/result/scf",
+      "input_sha256": "ddc4f63389cfaada16dd99b15fac09531226dda4d68bde370a33113fa1caae6d",
+      "start_unix": 1792815414.311007,
+      "returncode": 0,
+      "wall_seconds": 15.158157348632812,
+      "output_sha256": "9682e2b704edbef76b695729cc0511a02ef533f00d5e05793049de8a64eacea5"
+    }
+  ],
+  "total_energy_ev": -3406.1153476472773,
+  "nelec": 16.0,
+  "spin_components": 2,
+  "magnetization": {
+    "total_muB_per_cell": 1.92780627070798,
+    "absolute_muB_per_cell": 2.01064779255598,
+    "mean_total_muB_per_atom": 1.92780627070798,
+    "mean_absolute_muB_per_atom": 2.01064779255598,
+    "number_of_atoms": 1,
+    "scope": "Integrated spin density; the per-atom mean is not a site-resolved moment"
+  },
+  "fermi_energy_ev": 18.35497925701711,
+  "checks": {
+    "completed": true,
+    "finite_energy": true,
+    "spin_layout_matches_configuration": true
+  },
+  "wall_seconds": 15.165442943572998,
+  "output_bytes": 3033302
+}

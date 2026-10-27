@@ -1,0 +1,42 @@
+{
+  "scope": "Si PBE exploratory reference; not held-out scientific evidence",
+  "measured": {
+    "conventional_lattice_angstrom": 5.467657354256896,
+    "path_sampled_indirect_gap_ev": 0.6139796488905915,
+    "gamma_direct_gap_ev": 2.5581664260089036,
+    "gamma_to_x_endpoint_ev": 0.7560455507788273
+  },
+  "primitive_metric": {
+    "lengths_angstrom": [
+      3.8662175923995483,
+      3.8662175923995483,
+      3.8662175923995483
+    ],
+    "angles_degrees": [
+      60.00000000000001,
+      60.00000000000001,
+      60.00000000000001
+    ],
+    "relative_length_spread": 0.0,
+    "max_angle_departure_from_60_degrees": 7.105427357601002e-15
+  },
+  "external_comparison": {
+    "PBE_lattice_angstrom": 5.466,
+    "delta_lattice_angstrom": 0.0016573542568956157,
+    "lattice_source": "https://arxiv.org/abs/0903.4037 (Table II, different implementation)",
+    "GPAW_gamma_direct_ev": 2.559,
+    "GPAW_gamma_x_endpoint_ev": 0.707,
+    "band_source": "https://gpaw.readthedocs.io/tutorialsexercises/electronic/pbe0/pbe0.html",
+    "comparability": "Different PP, lattice and basis; physical scale only; no tight numerical identity"
+  },
+  "checks": {
+    "broad_PBE_lattice_range": true,
+    "50_to_60_Ry_2mev_per_atom": true,
+    "k_10x10x10_to_12x12x12_2mev_per_atom": true
+  },
+  "limitations": [
+    "Sampled path gap does not prove the global band extremum.",
+    "Pairwise energy checks do not establish a complete stress, lattice or DOS error bound.",
+    "PBE gaps are not experimental quasiparticle gaps; absolute total energies are not cross-compared."
+  ]
+}

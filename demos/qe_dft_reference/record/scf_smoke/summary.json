@@ -1,0 +1,208 @@
+{
+  "schema_version": "1",
+  "status": "passed",
+  "scope": "exploratory commissioning",
+  "configuration": {
+    "schema_version": "1",
+    "description": "Diamond Si PBE with GBRV v1 USPP: exploratory reference instrument",
+    "functional": "PBE",
+    "spin": "nonmagnetic",
+    "occupations": "fixed",
+    "cell_angstrom": [
+      [
+        0,
+        2.735,
+        2.735
+      ],
+      [
+        2.735,
+        0,
+        2.735
+      ],
+      [
+        2.735,
+        2.735,
+        0
+      ]
+    ],
+    "species": [
+      {
+        "label": "Si",
+        "mass": 28.0855,
+        "pseudo": "si_pbe_v1.uspp.F.UPF",
+        "url": "https://www.physics.rutgers.edu/gbrv/si_pbe_v1.uspp.F.UPF",
+        "sha256": "2c4b1bce6f4e3fa41dd4381f20760fe142399a42784b697712339d0b6b31c316",
+        "license": "GPL-3.0; author site links gpl-3.0.txt",
+        "source": "GBRV Si PBE v1 (2013-05-13), scalar relativistic USPP/NLCC, four valence electrons"
+      }
+    ],
+    "atoms": [
+      {
+        "species": "Si",
+        "fractional": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "species": "Si",
+        "fractional": [
+          0.252,
+          0.25,
+          0.25
+        ]
+      }
+    ],
+    "ecutwfc_ry": 40,
+    "ecutrho_ry": 200,
+    "conv_thr_ry": 1e-09,
+    "forc_conv_thr_ry_bohr": 0.0001,
+    "etot_conv_thr_ry": 1e-06,
+    "press_conv_thr_kbar": 0.2,
+    "relax_k": [
+      4,
+      4,
+      4
+    ],
+    "scf_k": [
+      4,
+      4,
+      4
+    ],
+    "dos_k": [
+      6,
+      6,
+      6
+    ],
+    "nbnd": 12,
+    "path": [
+      {
+        "label": "\u0393",
+        "k": [
+          0,
+          0,
+          0
+        ],
+        "points": 12
+      },
+      {
+        "label": "X",
+        "k": [
+          0.5,
+          0,
+          0.5
+        ],
+        "points": 1
+      }
+    ],
+    "dos_delta_ev": 0.03,
+    "plot_energy_ev": [
+      -12,
+      8
+    ],
+    "command_timeout_seconds": 900,
+    "acceptance": {
+      "path_gap_ev": [
+        0.2,
+        1.2
+      ],
+      "max_force_ry_bohr": [
+        0,
+        0.0004
+      ]
+    },
+    "convergence": [
+      {
+        "ecutwfc_ry": 40,
+        "ecutrho_ry": 200
+      },
+      {
+        "ecutwfc_ry": 60,
+        "ecutrho_ry": 300
+      },
+      {
+        "scf_k": [
+          8,
+          8,
+          8
+        ]
+      }
+    ],
+    "profiles": {
+      "small": {
+        "ecutwfc_ry": 40,
+        "ecutrho_ry": 200,
+        "relax_k": [
+          4,
+          4,
+          4
+        ],
+        "scf_k": [
+          4,
+          4,
+          4
+        ],
+        "dos_k": [
+          6,
+          6,
+          6
+        ],
+        "path": [
+          {
+            "label": "\u0393",
+            "k": [
+              0,
+              0,
+              0
+            ],
+            "points": 12
+          },
+          {
+            "label": "X",
+            "k": [
+              0.5,
+              0,
+              0.5
+            ],
+            "points": 1
+          }
+        ],
+        "acceptance": {
+          "path_gap_ev": [
+            0.2,
+            1.2
+          ],
+          "max_force_ry_bohr": [
+            0,
+            0.0004
+          ]
+        }
+      }
+    }
+  },
+  "source_sha256": "574000968ebe071f32866e808d18a52b659c7b9a0d35cd425ec4ee3ff68b7a48",
+  "commands": [
+    {
+      "command": [
+        "/opt/acs-capabilities/quantum-espresso-7.4/bin/pw.x",
+        "-in",
+        "pw.in"
+      ],
+      "cwd": "/work/result/scf",
+      "input_sha256": "d011d6883d6137bb3eff27f6084ce22cd33c1c811a9c8c4006a6dda23bf146c6",
+      "start_unix": 1792764922.2836719,
+      "returncode": 0,
+      "wall_seconds": 34.618919134140015,
+      "output_sha256": "cf9b1a5bc86a611a44cd7b3809cf1b82d65c10239864af5b60b659a201fe85e8"
+    }
+  ],
+  "total_energy_ev": -260.9557831325364,
+  "nelec": 8.0,
+  "checks": {
+    "completed": true,
+    "finite_energy": true
+  },
+  "wall_seconds": 35.75635743141174,
+  "output_bytes": 3908215
+}
