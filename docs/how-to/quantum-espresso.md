@@ -115,20 +115,22 @@ installer and doctor. Optional arguments are -RuntimeBase (absolute Linux path),
 environment). It never migrates an existing runtime.
 
 
-## Conditional setup and known prerequisite gaps
+## Conditional setup and prerequisites
 
 This is automated QE setup on supported Linux/x86_64 or already configured WSL2,
 not a verified clean-machine one-click installation. The application environment,
-working user namespaces/Bubblewrap, an available uv command (or configured path),
-and python3 on PATH must already be usable. Docker is not required.
+working user namespaces/Bubblewrap, and an available Linux uv command (or configured
+path) must already be usable. Docker is not required.
 
-The QE bootstrap currently calls PATH python3 independently of the interpreter
-running Simjecture; if absent, it can fail with exit 127. Missing uv in the QE
-wrapper currently surfaces as command-not-found rather than a complete guided
-installation step. Simjecture's base installation can prepare uv/Python and may
-prepare Bubblewrap on supported Linux systems, but that prerequisite flow is not
-fully connected to these QE wrappers. Application-package diagnostics can suggest
-uv sync --frozen, and missing QE has its install command; diagnostics are therefore
-partial, not entirely absent. A clean second-machine end-to-end deployment has
-not been validated. These known gaps are disclosed here rather than silently
-installing prerequisites or changing host settings.
+The public installer passes its running Python interpreter to the bootstrap;
+a separate python3 on PATH is not required. An explicit
+`SIMJECTURE_BOOTSTRAP_PYTHON` overrides that choice. When invoking bootstrap.sh
+directly, set that variable if python3 is unavailable. The QE wrapper reports
+missing uv with installation/configuration guidance before creating runtime
+paths; use `--uv /absolute/path/to/uv` (PowerShell: `-Uv`) for an existing executable,
+and `uv sync --frozen` to prepare the application environment.
+
+Simjecture's base installation can prepare uv/Python and may prepare Bubblewrap
+on supported Linux systems, but the QE wrappers do not install these prerequisites
+or change host settings. A clean second-machine end-to-end deployment has not
+been validated.

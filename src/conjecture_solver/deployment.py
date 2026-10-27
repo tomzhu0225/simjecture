@@ -111,8 +111,12 @@ def report_install_stage(stage: str, detail: str = "") -> None:
 
 def _run_install_command(command, *, capture_output=False):
     """Keep live build output while retaining a bounded failure diagnostic."""
+    environment = os.environ.copy()
+    environment.setdefault("SIMJECTURE_BOOTSTRAP_PYTHON", sys.executable)
     if capture_output:
-        return subprocess.run(command, check=False, text=True, capture_output=True)
+        return subprocess.run(
+            command, check=False, text=True, capture_output=True, env=environment
+        )
     from collections import deque
 
     report_install_stage("install", f"Running {Path(str(command[0])).name}")
@@ -123,6 +127,7 @@ def _run_install_command(command, *, capture_output=False):
         stderr=subprocess.STDOUT,
         text=True,
         bufsize=1,
+        env=environment,
     ) as process:
         for line in process.stdout:
             print(line, end="", flush=True)

@@ -2,6 +2,7 @@
 
 import json
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -30,7 +31,7 @@ try:
         and "Error in routine  read_namelists" in text
         and "could not find namelist &control" in text
     )
-    checks["version_matches"] = "v.7.4" in result.stdout
+    checks["version_matches"] = re.search(r"\bPWSCF\s+v\.7\.4(?=\s|$)", result.stdout) is not None
     checks["completed"] = True
 except (OSError, subprocess.SubprocessError) as error:
     report["error"] = str(error)

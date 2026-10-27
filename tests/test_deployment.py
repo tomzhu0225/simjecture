@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -16,6 +17,27 @@ from conjecture_solver.deployment import (
     resolve_project_root,
 )
 from conjecture_solver.mvp_skills import MVPCapabilityConfig
+
+
+@pytest.mark.parametrize("capture_output", [True, False])
+@pytest.mark.parametrize("override", [None, "/configured/bootstrap/python"])
+def test_install_command_passes_application_python_without_path_python(
+    tmp_path, monkeypatch, capsys, capture_output, override
+):
+    from conjecture_solver.deployment import _run_install_command
+
+    monkeypatch.setenv("PATH", str(tmp_path))
+    if override is None:
+        monkeypatch.delenv("SIMJECTURE_BOOTSTRAP_PYTHON", raising=False)
+    else:
+        monkeypatch.setenv("SIMJECTURE_BOOTSTRAP_PYTHON", override)
+    result = _run_install_command(
+        [sys.executable, "-c", "import os; print(os.environ['SIMJECTURE_BOOTSTRAP_PYTHON'])"],
+        capture_output=capture_output,
+    )
+    assert result.returncode == 0
+    output = result.stdout if capture_output else capsys.readouterr().out
+    assert output.strip() == (override or sys.executable)
 
 
 def _capability_payload(name: str, runtime_root: str) -> dict[str, object]:

@@ -2,6 +2,7 @@
 
 import hashlib
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -48,7 +49,7 @@ with tempfile.TemporaryDirectory(prefix="qe-startup-", dir=prefix.parent) as tem
 probe_text = result.stdout + result.stderr
 if not (
     result.returncode == 1
-    and "v.7.4" in result.stdout
+    and re.search(r"\bPWSCF\s+v\.7\.4(?=\s|$)", result.stdout)
     and "Error in routine  read_namelists" in probe_text
     and "could not find namelist &control" in probe_text
 ):
