@@ -109,10 +109,11 @@ def report_install_stage(stage: str, detail: str = "") -> None:
         temporary.unlink(missing_ok=True)
 
 
-def _run_install_command(command, *, capture_output=False):
+def _run_install_command(command, *, capture_output=False, environment=None):
     """Keep live build output while retaining a bounded failure diagnostic."""
+    options = {"env": environment} if environment is not None else {}
     if capture_output:
-        return subprocess.run(command, check=False, text=True, capture_output=True)
+        return subprocess.run(command, check=False, text=True, capture_output=True, **options)
     from collections import deque
 
     report_install_stage("install", f"Running {Path(str(command[0])).name}")
@@ -123,6 +124,7 @@ def _run_install_command(command, *, capture_output=False):
         stderr=subprocess.STDOUT,
         text=True,
         bufsize=1,
+        **options,
     ) as process:
         for line in process.stdout:
             print(line, end="", flush=True)
@@ -1198,7 +1200,15 @@ class DeploymentManager:
                 command=command,
                 checks=tuple(checks),
             )
-        result = _run_install_command(command, capture_output=capture_output)
+        install_options = {}
+        if profile is DeploymentProfile.QUANTUM_ESPRESSO:
+            environment = os.environ.copy()
+            if not environment.get("SIMJECTURE_BOOTSTRAP_PYTHON"):
+                environment["SIMJECTURE_BOOTSTRAP_PYTHON"] = sys.executable
+            install_options["environment"] = environment
+        result = _run_install_command(
+            command, capture_output=capture_output, **install_options
+        )
         if result.returncode != 0:
             detail = result.stderr.strip()
             checks.append(

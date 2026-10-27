@@ -15,7 +15,13 @@ uv run simjecture install quantum-espresso --jobs 1
 uv run simjecture doctor --profile quantum-espresso
 ```
 
-Windows users can run `scripts/deploy_qe.ps1` against an existing WSL distribution.
+For prerequisite checks before provisioning, use
+`bash skills/quantum-espresso/scripts/deploy.sh --project-root "$PWD"`.
+Windows users can run `scripts/deploy_qe.ps1` against an existing WSL2 distribution.
+See `skills/quantum-espresso/references/deployment.md`
+for missing uv/application Python/Bubblewrap guidance and custom paths. The checks
+stop before QE installation on missing prerequisites; they do not install host
+packages. Second-machine clean deployment has not been verified.
 No Docker daemon is required. Check Windows physical space as well as the Linux
 filesystem's reported capacity. Use a Linux-native filesystem for the QE
 environment: OpenMPI includes case-distinct links that ordinary Windows-mounted

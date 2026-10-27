@@ -43,20 +43,59 @@ bwrap when it is outside the default PATH). Missing Bubblewrap is a prerequisite
 failure. It never migrates an existing runtime.
 
 
-## Conditional setup and known prerequisite gaps
+## Prerequisite checks and remedies
 
-This is automated QE setup on supported Linux/x86_64 or already configured WSL2,
-not a verified clean-machine one-click installation. The application environment,
-working user namespaces/Bubblewrap, an available uv command (or configured path),
-and python3 on PATH must already be usable. Docker is not required.
+This is conditional automated QE setup on Linux x86_64 or an already configured
+WSL2 x86_64 distribution. A second clean-machine end-to-end deployment has not
+been validated. The wrappers diagnose prerequisites; they do not install WSL,
+uv, application packages or operating-system packages, or change host policy.
 
-The QE bootstrap currently calls PATH python3 independently of the interpreter
-running Simjecture; if absent, it can fail with exit 127. Missing uv in the QE
-wrapper currently surfaces as command-not-found rather than a complete guided
-installation step. Simjecture's base installation can prepare uv/Python and may
-prepare Bubblewrap on supported Linux systems, but that prerequisite flow is not
-fully connected to these QE wrappers. Application-package diagnostics can suggest
-uv sync --frozen, and missing QE has its install command; diagnostics are therefore
-partial, not entirely absent. A clean second-machine end-to-end deployment has
-not been validated. These known gaps are disclosed here rather than silently
-installing prerequisites or changing host settings.
+Use the checked wrapper from a source checkout:
+
+```bash
+bash skills/quantum-espresso/scripts/deploy.sh --project-root "$PWD"
+```
+
+Before creating runtime directories/links or invoking the installer, it checks:
+
+| Requirement | Remedy when missing or unusable |
+|---|---|
+| Linux x86_64, Bash, coreutils, util-linux (`findmnt`) | Use supported Linux/WSL2; install the distribution packages before retrying. The Windows wrapper checks for an existing WSL2 distribution and gives `wsl --list --verbose` / `-Distribution` guidance. |
+| Working uv executable | Follow the Simjecture [base installation](../../../docs/getting-started/installation.md), add uv to PATH, or pass `--uv /absolute/path/to/uv` (PowerShell `-Uv`). |
+| Existing application Python >=3.11 and locked packages | Prepare the application with `uv sync --frozen`. For an existing external environment set `UV_PROJECT_ENVIRONMENT=/absolute/environment/path` (PowerShell `-ApplicationEnvironment`). |
+| Bubblewrap and working user namespaces | Install the distribution's `bubblewrap` package (Debian/Ubuntu: `sudo apt install bubblewrap`), or supply `--bubblewrap-dir /existing/bin`. The existing core doctor probes namespaces and checks application package versions. Ask your administrator about policy restrictions; the wrapper does not relax them. |
+| Linux-native runtime filesystem and sufficient storage | Choose `--runtime-base /absolute/linux/path`, preserve the physical Windows reserves described above, and retry once adequate space is available. |
+
+The application installer passes its running `sys.executable` to the QE bootstrap.
+An explicit `SIMJECTURE_BOOTSTRAP_PYTHON=/absolute/application/python` overrides it;
+an invalid override fails rather than silently choosing another interpreter.
+For the internal bootstrap, selection is: explicit override, existing
+`UV_PROJECT_ENVIRONMENT/bin/python` (or `.venv/bin/python`), then PATH `python3`.
+A nonempty explicit `UV_PROJECT_ENVIRONMENT` must contain executable `bin/python`;
+invalid targets are rejected even when another usable Python exists. Relative
+paths are resolved against the checkout, normalized and passed unchanged in
+meaning to uv. Empty values retain default selection.
+
+The checked deployment wrapper requires an existing application environment.
+It checks application packages/core doctor using the selected uv target's
+`bin/python`, even if a separate bootstrap interpreter is configured. With no
+explicit uv target, it binds uv to the selected existing application interpreter's
+standard `ENV/bin/python` environment (including an explicit bootstrap path).
+For other interpreter layouts, set `UV_PROJECT_ENVIRONMENT` explicitly. A PATH
+Python alone does not validate an uncreated project environment: first prepare
+that environment with `uv sync --frozen`.
+An application launched with a valid interpreter no longer needs a separate
+PATH `python3`. Quote paths containing spaces. The checked wrapper uses that
+interpreter for the read-only core doctor before any QE provisioning, explicitly
+probing Bubblewrap because the QE launcher requires it.
+
+QE, OpenMPI, the runtime Python and its numerical libraries are **installer
+outputs**, not prerequisites. The pinned dependency download still requires
+network access to the official bootstrap/conda-forge sources and sufficient
+cache space. Pseudopotentials remain a separate, licensed, hash-checked research
+input. Prerequisite failures stop before QE installation; failures during a later
+network/package install retain diagnostics and may leave managed partial state.
+No clean-machine success guarantee follows from the isolated mock regression
+tests or the earlier existing-environment deployment. Passing environment checks
+does not approve scientific execution: the research-plan confirmation is still
+required before running a calculation.

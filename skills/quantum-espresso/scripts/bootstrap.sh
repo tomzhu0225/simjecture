@@ -14,7 +14,9 @@ while (($#)); do
 done
 [[ -n "$prefix" && -n "$project_root" ]] || exit 2
 project_root="$(cd "$project_root" && pwd)"
-bootstrap_python="${SIMJECTURE_BOOTSTRAP_PYTHON:-python3}"
+source "$project_root/skills/quantum-espresso/scripts/prerequisites.sh"
+qe_platform
+qe_python
 "$bootstrap_python" "$project_root/skills/quantum-espresso/scripts/finalize_runtime.py" --check-disk "$prefix"
 runtime_profile="quantum-espresso"
 source "$project_root/scripts/runtime_environment.sh"
