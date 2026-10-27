@@ -43,7 +43,7 @@ build or optional Python dependency:
 
 ```bash
 uv sync --frozen
-uv run simjecture web demos/gray_scott_counterexample/record
+uv run simjecture web demos/kepler_energy/record
 ```
 
 This starts a local server at `http://127.0.0.1:8765/` and opens the default
@@ -51,7 +51,13 @@ browser. Use `--no-open` to print the address without opening it, `--open` to
 state the default explicitly, or `--port 0` to select an available local port
 automatically.
 
-The interface has five connected projections:
+In **Study details · Evidence & review**, a minimal study presents its recorded
+hypothesis, requirements, completion policy, experiments, prospective repair
+commitments, independent claim and methods reviews, director decisions, and
+study ledger.
+
+When attached to an archived classic campaign record, the interface also renders
+its five legacy projections:
 
 - **Claim graph:** one view of the durable ledger, with all four claim kinds as
   first-class nodes: `scientific`, `instrument`, `diagnostic`, and `control`.
@@ -145,7 +151,7 @@ browser or pressing Ctrl-C in the server terminal does not stop a campaign.
 For review or screen sharing, disable every mutation:
 
 ```bash
-uv run simjecture web demos/gray_scott_counterexample/record --read-only
+uv run simjecture web demos/kepler_energy/record --read-only
 ```
 
 ## Advanced hypothesis launch

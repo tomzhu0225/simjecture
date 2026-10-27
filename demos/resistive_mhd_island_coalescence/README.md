@@ -23,27 +23,11 @@ solver states are omitted with hashes; verification checks retained bytes rather
 than rerunning the physics. A new agent investigation needs qualified local
 capabilities and a configured backend.
 
-## Historical setup and records
+## Earlier minimal records and guided FLASH anchor
 
-Everything below describes the earlier setup and investigations, whose inputs,
-figures and outcomes are retained. See the [historical walkthrough](../../docs/demos/island-coalescence-historical.md).
-
-This demo has two deliberately separate layers:
-
-1. a known-runnable, operator-validated FLASH 4.8 anchor used to commission an
-   instrument and make field figures; and
-2. an audit extract from a local Simjecture/DeepSeek campaign that tested a
-   scaling hypothesis.
-
-The anchor is not scientific evidence, and the campaign extract is not a
-portable completed evidence record. The distinction is part of the demo: a
-plausible simulation and a fitted curve are not, by themselves, a closed
-scientific claim.
-
-![Actual Simjecture web record](figures/simjecture_web_dashboard.png)
-
-*Actual read-only browser capture of the local campaign after its six-hour
-budget was exhausted. This is a UI projection, not scientific evidence.*
+Everything below describes the guided FLASH starting instrument and the earlier
+minimal-workflow investigations, whose inputs, compact audits and outcomes are
+retained. See the [historical walkthrough](../../docs/demos/island-coalescence-historical.md).
 
 ## Scientific question
 
@@ -70,21 +54,19 @@ single-fluid capability cannot answer kinetic electron-scale questions.
 
 | Path | Purpose |
 | --- | --- |
-| [`hypothesis.txt`](hypothesis.txt) | Exact natural-language root hypothesis |
-| [`campaign_instruction.txt`](campaign_instruction.txt) | Operational constraints given to the autonomous campaign |
+| [`hypothesis.txt`](hypothesis.txt) | Exact natural-language root hypothesis for the earlier minimal studies |
+| [`minimal_instructions.txt`](minimal_instructions.txt) | Operational instructions for minimal-workflow island-coalescence studies |
+| [`minimal_requirements.json`](minimal_requirements.json) | Recorded minimal-workflow requirements |
 | [`guided/island_coalescence.py`](guided/island_coalescence.py) | Contained launcher and validator for the operator-supplied FLASH executable |
 | [`guided_commission.json`](guided_commission.json) | Frozen guided-commission manifest and limitations |
 | [`guided/anchor_validation.json`](guided/anchor_validation.json) | Checked-in validation summary; permanently non-evidentiary |
 | [`guided/operator_validation.json`](guided/operator_validation.json) | Separate manufactured-solution/operator check; permanently non-evidentiary |
-| [`campaign_audit.json`](campaign_audit.json) | Small, explicitly labelled extract of the local campaign results |
-| [`plot_results.py`](plot_results.py) | Generates the field, profile, and scaling figures from real inputs |
-| [`figures/README.md`](figures/README.md) | Figure provenance and capture notes |
+| [`fresh_v070_record/`](fresh_v070_record/) | Fresh v0.7.0 minimal study audit with accepted root falsification |
+| [`minimal_record/`](minimal_record/), [`sol_medium_record/`](sol_medium_record/), [`continuation_record/`](continuation_record/) | Preserved earlier minimal-workflow audit extracts |
+| [`postrun_coordinate_check.py`](postrun_coordinate_check.py) | Analytic and post-run coordinate-consistency diagnostic check |
 
 The raw `guided/anchor_run/` directory is ignored by Git because FLASH output
-is large and depends on the operator's installation. Run the anchor locally,
-then run `plot_results.py` to regenerate the first three figures. The
-dashboard image is a captured view of the actual local record; it is not a
-mock-up.
+is large and depends on the operator's installation.
 
 ## Guided FLASH anchor
 
@@ -125,118 +107,34 @@ uv run python demos/resistive_mhd_island_coalescence/guided/island_coalescence.p
   --output demos/resistive_mhd_island_coalescence/guided/anchor_run \
   --summary demos/resistive_mhd_island_coalescence/guided/anchor_validation.json \
   --overwrite
-
-uv run python demos/resistive_mhd_island_coalescence/plot_results.py
 ```
 
 The command rewrites only the marked anchor directory. The validation summary
 records the executable and parameter-file hashes so the operator can audit
 which local FLASH build produced the states.
 
-## Historical campaign disposition and current interpretation
+## Launching a fresh minimal study
 
-The local campaign record is
-`artifacts/resistive-mhd-island-coalescence-dsh-0001`. It ended with
-`status=budget_exhausted` after six hours and 328 model turns. The durable
-claim ledger records the historical disposition; it does not make the statistical
-interpretation correct.
-
-**Current interpretation:** the reported root interval `[-0.423266, -0.389641]`
-overlaps the allowed exponent band `[-0.60, -0.40]`. An upper edge above `-0.40`
-alone does not establish falsification of that band. The original audit JSON,
-ledger disposition and figure are preserved for inspection; the historical
-falsification is not independently endorsed here. This is a correction to the
-summary, not a new simulation, reanalysis or accepted scientific verdict.
-
-| Branch | Fresh-data result | Durable disposition |
-| --- | --- | --- |
-| `claim_root` | Six `256²` cases gave `p = -0.406453`; 95% CI `[-0.423266, -0.389641]`, whose upper edge is above `-0.40` | Recorded **falsified**; see interpretation warning above |
-| Root refinement | The `S_eta=250`, `512²` context point gave a refined fit `p = -0.396338`; CI `[-0.403641, -0.389034]` | Context for the root branch; not evidence for the repair |
-| `claim_repair_root_v1` | Audit fit over five `256²` cases plus the actual `S_eta=350`, `512²` run gave `p = -0.390961`; CI `[-0.408482, -0.373440]` | **Open**, not supported or falsified |
-
-The root row shows what the campaign recorded, not a validated rejection of
-the exponent band. The repair line shows what it explored, not a second discovery.
-The original child contract requested a `S_eta=2000` refinement; the executed
-high-resolution run was instead `S_eta=350`. In addition, the analyzer/fit
-inputs did not pass the final sealed-input coverage check. Because the evidence
-lineage was not closure-eligible, the harness correctly left the repair claim
-open rather than promoting a curve to a verdict.
-
-## Figures
-
-The field and profile figures are generated from the actual guided anchor and
-are embedded here so that the demo can be inspected without opening each asset
-separately. They remain reproducibility artifacts, not scientific evidence.
-
-### Guided-anchor field evolution
-
-![Four guided FLASH states showing current density, flux contours, and field lines](figures/island_coalescence_evolution.png)
-
-The four panels use the recorded states nearest to `t=0`, `0.35`, `0.70`, and
-the final time. The source asset is
-[`island_coalescence_evolution.png`](figures/island_coalescence_evolution.png).
-
-### Reconnection-layer diagnostics
-
-![Current density, density, pressure, and velocity diagnostics near the reconnection layer](figures/reconnection_layer_physics.png)
-
-This view uses the recorded state nearest `t=0.70`. The source asset is
-[`reconnection_layer_physics.png`](figures/reconnection_layer_physics.png).
-
-### Centerline profiles and run history
-
-![Centerline profiles with flux-window and divergence history](figures/reconnection_microphysics_profiles.png)
-
-These profiles and histories are read from the anchor HDF5 output. The source
-asset is
-[`reconnection_microphysics_profiles.png`](figures/reconnection_microphysics_profiles.png).
-
-### Campaign audit and interface
-
-![Audit view of the scaling fit and open repair branch](figures/scaling_law_discovery.png)
-
-The scaling view uses only the checked-in audit extract. It displays the
-historical root disposition and leaves the repair branch open; the root
-interpretation needs the warning above. It is not a portable
-evidence record. The source asset is
-[`scaling_law_discovery.png`](figures/scaling_law_discovery.png).
-
-The actual browser capture is embedded at the top of this README and is also
-available as [`simjecture_web_dashboard.png`](figures/simjecture_web_dashboard.png).
-
-## Launching a fresh campaign
-
-After installing and commissioning FLASH on the local machine, a fresh
-campaign can start from the same natural-language inputs:
+After installing and commissioning FLASH on the local machine, launch a new
+minimal-workflow investigation from the repository root:
 
 ```bash
-uv run simjecture mvp \
+uv run simjecture study \
+  --campaign artifacts/my-island-minimal \
   --hypothesis-file demos/resistive_mhd_island_coalescence/hypothesis.txt \
-  --instruction-file demos/resistive_mhd_island_coalescence/campaign_instruction.txt \
+  --instructions-file demos/resistive_mhd_island_coalescence/minimal_instructions.txt \
+  --requirements-file demos/resistive_mhd_island_coalescence/minimal_requirements.json \
   --guided-commission demos/resistive_mhd_island_coalescence/guided_commission.json \
-  --output artifacts/my-resistive-mhd-campaign
+  --capabilities /path/to/qualified/capabilities \
+  --backend codex --model gpt-6.1-sol --reasoning-effort medium \
+  --judge-model gpt-6.1-sol --judge-reasoning-effort high \
+  --mode minimal --completion-policy repair --wall-seconds 3600 --director
 ```
-
-Do not reuse the audit extract as evidence. Let the new campaign register and
-commission its simulator and analyzer prospectively, freeze its contracts,
-collect fresh outputs, and leave any unresolved branch explicitly open.
-
-To inspect the local campaign shown in the screenshot without starting work:
-
-```bash
-uv run simjecture status artifacts/resistive-mhd-island-coalescence-dsh-0001
-uv run simjecture web artifacts/resistive-mhd-island-coalescence-dsh-0001 \
-  --read-only --port 8080
-```
-
-The web page is a projection of the durable ledger and activity record. It
-does not turn the anchor, a plot, or model prose into scientific evidence.
-
 
 ### Visual walkthrough and continuation
 
-The separate `continuation_record/` preserves the later 30-minute continuation;
-the parent record is unchanged. `visual_data/` contains compact plotting arrays
+The separate `continuation_record/` preserves the earlier 30-minute continuation;
+the parent records are unchanged. `visual_data/` contains compact plotting arrays
 with source hashes, selected-frame metadata and the original scientific/report
 status. These operator-rendered figures do not add a scientific verdict.
 

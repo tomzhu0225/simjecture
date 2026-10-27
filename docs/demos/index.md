@@ -39,16 +39,17 @@ repair completion policy. Ordinary CPU Python is enough. It falsified the origin
 validation. The record identifies human framing, agent work, independent reviews
 and the observed outcome.
 
-## Historical autonomous records
+## Capability and toolchain reference cases
 
-| Record | Workflow and purpose |
+| Case | Scope and verification |
 |---|---|
-| [Gray–Scott counterexample](gray-scott.md) | Version 0.1 classic campaign: finite-domain pattern counterexample and a refused claim closure followed by fresh evidence |
-| [Collisionless GEM reconnection](collisionless-gem.md) | Historical guided plasma campaign with its original qualification and interpretation limits |
+| [Qin-1 hardware-to-plasma](qin1-hardware-plasma.md) | Operator-assisted CAD → Gmsh → Elmer/RLC → 3D WarpX → PyVista study with retained sensitivity checks (`demos/qin1_multiphysics/`) |
+| [Quantum ESPRESSO DFT references](../how-to/quantum-espresso.md) | Material-specific diamond-Si (`demos/qe_dft_reference/`) and magnetic bcc-Fe (`demos/qe_fe_reference/`) protocols, Bubblewrap execution receipts and completion-bound reassessment |
 
-These records preserve the original behavior and results. They are useful for
-following the development of the evidence system; they are not presented as fresh
-runs of the current default workflow.
+Earlier `v0.1`–`v0.6.2` classic-workflow demo directories have been retired from
+the active tree and remain available in the
+[`v0.6.2` release tag](https://github.com/tomzhu0225/simjecture/tree/v0.6.2/demos)
+and [research archive](../archive/index.md).
 
 ## Research audits
 
