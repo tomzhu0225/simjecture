@@ -1,0 +1,95 @@
+{
+  "recorded_at": 1793099804.8014438,
+  "scope": "Nine original unstarted assignments after explicit user resumption; prior 55 attempts preserved; no new training",
+  "initial_allocation_failure": {
+    "stage": "failed",
+    "started_at": 1793099485.524686,
+    "notebook": "e95bfd5b-02cd-437a-a2bd-628272791bd9",
+    "assignment_http": {
+      "method": "POST",
+      "host": "colab.research.google.com",
+      "path": "/tun/m/assign",
+      "started_at": 1793099490.0880055,
+      "ended_at": 1793099551.2541182,
+      "curl_returncode": 56,
+      "http_status": "000",
+      "http_version": "0",
+      "error_markers": []
+    },
+    "error_type": "RuntimeError",
+    "handoff_confirmed": false,
+    "endpoint": null,
+    "ended_at": 1793099551.254791
+  },
+  "empty_account_reconciliation": {
+    "at": 1793099616.522023,
+    "allocations": [],
+    "scope": "Read-only account reconciliation after allocation POST returned curl 56 with no endpoint receipt; no retry performed"
+  },
+  "successful_allocation": {
+    "stage": "running",
+    "started_at": 1793099677.0561998,
+    "notebook": "fa7b5fdf-a46e-4695-ac8b-4f48e6a62c2e",
+    "assignment_http": {
+      "method": "POST",
+      "host": "colab.research.google.com",
+      "path": "/tun/m/assign",
+      "started_at": 1793099681.4889288,
+      "ended_at": 1793099701.8309288,
+      "curl_returncode": 0,
+      "http_status": "200",
+      "http_version": "2",
+      "error_summary": "",
+      "error_markers": []
+    },
+    "endpoint": "gpu-a100-hm-kkb-ass1c0-2kuyy6jc3df0o",
+    "local_guard_pid": 217222,
+    "remote_guard_pid": 3846716,
+    "scheduled_control_installed": true,
+    "pids": {
+      "deploy_r11_a100.py": 3846750,
+      "run_base_sft_r11.py": 3846751,
+      "finish_r11.py": 3846752,
+      "attach_r11.py": 3846753
+    },
+    "stop_by": 1793114477.8560505
+  },
+  "launch": {
+    "stage": "running",
+    "started_at": 1793099705.6730409,
+    "pids": {
+      "deploy_r11_a100.py": 3846750,
+      "run_base_sft_r11.py": 3846751,
+      "finish_r11.py": 3846752,
+      "attach_r11.py": 3846753
+    },
+    "launched_at": 1793099705.6842308,
+    "lease": {
+      "created_at": 1793099701.831379,
+      "stop_by": 1793114477.8560505,
+      "session": "simjecture-science-20261027e",
+      "endpoint": "gpu-a100-hm-kkb-ass1c0-2kuyy6jc3df0o",
+      "starting_balance": 1129.7,
+      "observed_balance": 1113.75,
+      "compute_cap": 55,
+      "parent_lease": "r11-resource-plan.json",
+      "scope": "Continuation of nine unstarted original scientific workflows; 55 earlier attempts preserved; unchanged R9 parent deadline and aggregate spending ceiling"
+    }
+  },
+  "auth_preflight": {
+    "sha256": "f875124a33b8301ccc7d99fc9d6fb498372686e75bb11c3321967e38511f0fd8",
+    "value": {
+      "stage": "completed",
+      "started_at": 1793099379.4356387,
+      "wrapper_pid": 3846003,
+      "returncode": 0,
+      "ended_at": 1793099392.8416944
+    }
+  },
+  "unchanged_bounds": {
+    "stop_by": 1793114477.8560505,
+    "aggregate_parent_compute_cap": 55,
+    "prior_native_starts_including_preflight": 280,
+    "remaining_native_starts": 360
+  }
+}

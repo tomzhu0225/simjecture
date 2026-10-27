@@ -1,14 +1,23 @@
-# Scientific attention adapter: continued-SFT candidate
+# Conjecture 1 — scientific attention adapter
+
+By Simjecture. Working release identity: `tomzhu0225/Conjecture-1-4B`,
+initial tag `v0.1`. The name was proposed by the user; the repository has not
+been created and no weights have been uploaded. This is a continued-SFT PEFT
+LoRA adapter for Intern-Decision-4B, with the pretrained base required separately.
 
 **Unpublished release draft.** This candidate has not established a reliable
 workflow advantage over the pretrained base and strong deployment comparators.
-The repeated-workflow study has audited 47 of 64 original assignments;
-a separately bounded R10 phase is collecting the remaining 17 after
-infrastructure interruptions. No weight upload or
+The repeated-workflow study has audited 55 of 64 original assignments:
+49 verified completions, four infrastructure failures and two SFT workflow
+completion failures. Nine original assignments remain unstarted after a
+user-requested pause; a replacement R11 phase has launched under the
+unchanged parent resource bounds and requires fresh model qualification before
+timed collection. No weight upload or
 public release is implied by this document. The pinned base declares Apache-2.0 and its distribution
 listing has been checked. The portable adapter passed a fresh A100 reload.
-Workflow validation, final release documentation, a destination repository and
-write authentication remain pending.
+Workflow validation, final release documentation and repository creation remain
+pending. Hugging Face browser authentication succeeded as `tomzhu0225`;
+repository-specific write access has not yet been exercised.
 
 ## Identity and intended use
 
@@ -131,22 +140,24 @@ It omitted the pretrained-base arm. These promising observed differences do not
 answer the missing base/SFT workflow comparison. The subsequently registered
 64-workflow replication retained its initial verified rules episode and
 provider-failed base episode, then resumed only previously unstarted assignments.
-Through R9, 47 original assignments have audit records: 43 verified completions
-and four infrastructure failures. The partial registered SFT-minus-base
-restricted-completion estimate is +28.5 seconds (95% interval −137.8 to +212.0);
-excluding whole infrastructure-affected blocks gives −8.0 seconds
-(−137.1 to +121.5). Neither establishes an overall advantage. The first two fully repeated
+Through R10, 55 original assignments have audit records: 49 verified completions,
+four infrastructure failures and two SFT workflow completion failures. The partial
+registered SFT-minus-base restricted-completion estimate is +36.3 seconds
+(95% interval −113.2 to +200.9); excluding the predefined whole
+infrastructure-affected blocks gives +6.1 seconds (−114.9 to +127.3).
+Neither establishes an overall advantage. The first two fully repeated
 families show large gains on publication-retry workflows and a slower SFT mean
-on quiet workflows. A separately bounded R10 phase has resumed the remaining 17
-original assignments; its results are not included in these terminal R9 figures.
+on quiet workflows. The R10 phase stopped at a workflow boundary for the user's
+review, preserved all outcomes and released its A100. Nine assignments remain.
 These are partial observations, not a completed effect estimate or a release gate. See
 [the continuation record](CONTINUATION_RESULTS.md) for all arms and caveats.
 
-The first R10 SFT source-binding workflow failed completion verification despite
-successful physical controls and an authorized repair. Its four main-worker turns
-were exhausted during replanning/help/reprocessing, leaving no final report and
-one required return unacknowledged. This is retained as an unsuccessful workflow
-under the registered limits. Model attention can consume coordination capacity
+Both R10 SFT source-binding workflows failed completion verification despite
+successful physical controls and authorized repairs. Their four main-worker turns
+were exhausted during replanning/help/reprocessing, leaving no final reports and
+one required return unacknowledged in each. These are retained as unsuccessful
+workflows under the registered limits, each receiving the 650-second restricted
+completion penalty. Model attention can consume coordination capacity
 as well as save it; these data do not establish that every early intervention
 helps a capable worker.
 

@@ -1,0 +1,13 @@
+{
+  "display_name": "Conjecture 1",
+  "attribution": "by Simjecture",
+  "proposed_repository": "tomzhu0225/Conjecture-1-4B",
+  "initial_release_tag": "v0.1",
+  "status": "Working name proposed by user; repository not created and weights not uploaded",
+  "base": "internlm/Intern-Decision-4B",
+  "base_revision": "38c9dafbbef52dd04bae943c0c6ac918419adfd5",
+  "artifact_type": "PEFT LoRA adapter; base weights required separately",
+  "checkpoint": "continued_sft",
+  "authentication_verified_for": "tomzhu0225",
+  "decided_at": 1793099526.1553864
+}

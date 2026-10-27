@@ -1,10 +1,32 @@
 # Preserved transport interruptions and bounded continuations
 
-**Current state:** R10 has resumed the 17 unstarted original assignments on a new
-guarded runtime. The R9 parent hard stop of **15:21:17 UTC** and aggregate
-55-compute-unit ceiling from its original balance remain unchanged. It has at
-most 417 native starts remaining after retaining 223 prior/preflight starts.
-No checkpoint, scientific criterion, original assignment or analysis changed.
+**Latest terminal state:** R10 stopped at a workflow boundary for the user's
+review and released its owned A100 at **10:58:46 UTC on 27 October 2026**.
+All 56 native starts are closed, and the temporary Windows control task was
+removed. Eight workflows ran: six verified and two SFT completion failures,
+with no new infrastructure-affected scientific attempt. The combined audit has
+55 attempted IDs, 49 verified completions and nine unstarted assignments.
+[The terminal record](replication-through-r10.json) preserves all outcomes.
+
+The user approved continuing after review. R11 has launched for the nine
+unstarted assignments, with the same R9 parent hard stop of **15:21:17 UTC**
+and aggregate 55-compute-unit ceiling from its original balance. Its single
+successful authentication preflight brings the retained count to 280 of the
+original 640 native starts, leaving at most 360. No checkpoint, scientific
+criterion, original assignment or analysis changes. Both original P40 controls
+passed again, and all 945 frozen scientific-source file hashes were checked.
+The registered model qualification remains a prerequisite to timed collection.
+
+An initial allocation POST failed with curl return code 56 and no HTTP response
+or endpoint receipt. Read-only account reconciliation found no assigned runtime.
+The same US listener served successful HTTP/2 checks, and one allocation retry
+then succeeded. No GGDD configuration, node or global selector changed.
+[The launch record](continuation-r11-launch.json) preserves both attempts.
+
+R10's controller reports `failed` because its existing stop-file handling
+raises an exception between workflows. This is the explicit operator pause,
+not an additional failed scientific assignment. The model release interrupted
+the attempted terminal probability check; only initial qualification passed.
 
 Readiness permits at most six `ssh ... test -x BINARY` checks over 180 seconds
 before assigning a worker. It records stderr and stops immediately on known
@@ -23,7 +45,7 @@ registration was completed and startup resumed on that existing allocation.
 failure and recovery. This is an orchestration failure outside scientific trials,
 not evidence of a production Simjecture defect.
 
-**Latest terminal phase:** R9 stopped after nine verified workflows when a read-only
+**Historical R9 phase:** R9 stopped after nine verified workflows when a read-only
 connection check failed before starting the next assignment. The A100 was
 released at **2026-10-27 08:39:51 UTC**. All native roles are closed; the temporary
 Windows task and local failsafe are absent. The original cohort has 47 recorded

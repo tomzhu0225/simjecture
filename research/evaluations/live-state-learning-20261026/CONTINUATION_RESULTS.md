@@ -1,27 +1,56 @@
 # Base versus continued SFT: partial replication
 
-**Current status:** R10 is collecting the 17 original assignments left after R9.
-It uses the same scientific source, model weights and analysis, with bounded
-retries of read-only readiness checks before assignment. Its replacement runtime
-retains the original R9 parent deadline and cumulative spending ceiling.
+**Latest terminal audit:** R10 stopped at a workflow boundary for the user's
+review and released its A100 at **2026-10-27 10:58:46 UTC**. It added eight
+attempts: six verified completions and two SFT workflow completion failures.
+The original cohort now has **55 attempted assignments: 49 verified, four
+earlier infrastructure failures and two workflow failures; nine remain
+unstarted**. All 56 R10 native starts are closed. The user subsequently approved
+continuation, and R11 has launched for exactly those nine unstarted IDs under
+the unchanged R9 parent deadline and cumulative spending ceiling. Its model
+must pass saved prediction probes before any timed assignment starts.
 
-The first resumed SFT source-binding workflow was **not verified**. Both physical
-controls succeeded and a judge-authorized repair was applied, but the worker
+The [R11 manifest](continuation-r11-manifest.json),
+[registration](continuation-r11-registration.json),
+[physics qualification](continuation-r11-qualification.json) and
+[launch record](continuation-r11-launch.json) retain the exact replacement phase.
+The first allocation POST lost its transport without returning an endpoint;
+a subsequent account query found zero allocations. One retry on the same route
+succeeded. The failed allocation is preserved, and no scientific ID was retried.
+Registration and all operation hashes were verified before allocation.
+
+[The terminal R10 record](replication-through-r10.json) reports zero audit
+violations. The registered SFT-minus-base restricted-time estimate is
+**+36.3 seconds** (95% interval **−113.2 to +200.9**), from 14 pairs in eight
+mechanism families. The predefined whole-infrastructure-block sensitivity gives
+**+6.1 seconds** (−114.9 to +127.3), from 11 pairs in seven families. The primary
+SFT-minus-worker-only estimate is −0.3 seconds (97.5% interval −157.7 to +155.5),
+and SFT-minus-rules is +42.2 seconds (−125.5 to +204.2). These partial estimates
+establish no overall advantage. Both scientific failures stay in the primary
+and sensitivity analyses with the registered 650-second penalty.
+
+The operator pause caused the model transport to close before terminal saved
+probability probes could finish. The failure is retained explicitly; R10 has
+successful initial model qualification but no successful terminal probability
+qualification. No scientific assignment was interrupted by this pause.
+
+Both resumed SFT source-binding workflows were **not verified**. Their physical
+controls succeeded and judge-authorized repairs were applied, but each worker
 exhausted its four permitted turns without a final report and left one required
-help return unacknowledged. The original scoring assigns an unsuccessful workflow
-650 seconds of restricted completion time; its observed 327-second duration is
-not a timing win. [The complete outcome and feedback trace](continuation-r10-source-binding-outcome.json)
-are retained. This is a failure under the registered workflow budget, not a P40
-transport failure or a failed numerical control. It does not alone isolate a
-causal model effect.
+help return unacknowledged. Their observed 327- and 361-second durations are not
+timing wins. [The first complete outcome and feedback trace](continuation-r10-source-binding-outcome.json)
+and both audited records are retained. These are failures under the registered
+workflow budget, not P40 transport failures or failed numerical controls. They
+do not alone isolate the causal contribution of model decisions versus the
+controller's coordination limits.
 
-**Latest terminal audit:** R9 completed nine additional workflows, all verified, then
+**Historical R9 audit:** R9 completed nine additional workflows, all verified, then
 stopped when a read-only P40 readiness check failed before the next assignment.
-No additional scientific attempt failed. There are now **47 recorded original
+No additional scientific attempt failed. At that point there were **47 recorded original
 outcomes: 43 verified and four earlier infrastructure failures; 17 IDs remain
 unstarted**. The runtime was released at **2026-10-27 08:39:51 UTC**, and its
-temporary local control task and failsafe have exited. R10 is a separate owned
-allocation; its in-progress outcomes are not included in the terminal R9 figures.
+temporary local control task and failsafe exited. R10 was a separate owned
+allocation; its outcomes are not included in the historical terminal R9 figures.
 
 [The terminal R9 audit](replication-through-r9.json) reports zero consistency
 violations. Its partial registered SFT-minus-base restricted-time estimate is
