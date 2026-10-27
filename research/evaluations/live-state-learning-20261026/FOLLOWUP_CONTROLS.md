@@ -1,7 +1,7 @@
 # Controls needed to interpret the workflow timing differences
 
-Status: **implemented for prospective use; not commissioned or evaluated with new
-native workers**. The ongoing 64-assignment base/SFT comparison remains frozen
+Status: **staged and queued for commissioning; not yet evaluated with new native
+workers**. The ongoing 64-assignment base/SFT comparison remains frozen
 at source `04f905c`, with its original instructions and four arms. None of the
 changes below has been deployed into that cohort or used for model training.
 
@@ -160,3 +160,35 @@ independently assessed unsupported alerts, and general-decision retention. The
 prepared adapter bundle remains unpublished. Its earlier documentation snapshot
 must be refreshed with these limitations and the completed evaluation before any
 release decision.
+
+## Autonomous commissioning sequence
+
+After the user approved the continuation plan and requested autonomous execution
+without a formal goal, the six-assignment pilot was staged on the coordinator.
+The scientific source archive matches its registered SHA-256 and all 537 file
+hashes. A separate operator archive from commit `e0ae6fa` matches the four
+registered planning, execution and audit tool hashes.
+
+The first staging import check exposed an environment configuration issue:
+`replication-env` deliberately prepends the original `04f905c` source through a
+`.pth` hook, ahead of a new `PYTHONPATH`. That environment is correct for the
+running frozen comparison but cannot select the new control source. It was left
+unchanged. A separate `control-commission-env` now uses the same base Python and
+existing dependency directories through plain path entries, without executing
+their research-source hooks. Actual import receipts verify the operator module
+from `e0ae6fa` and the scientific prompt renderer from `45f0204`; both command
+help checks pass. The actual 55-record partial predecessor is still rejected.
+This staging problem is not an independently established production bug.
+
+[The staging evidence](followup-control-staging.json) retains the failure,
+environment qualification and bounded sequence registration. Exact setup and
+sequence scripts are in `followup-control-operations/`. The sequence waits for
+all 64 original assignments, zero audit violations, closed native roles and the
+R11 GPU release. It then runs fresh matched physics qualification and invokes
+the registered two-hour, 73-start pilot with no decision-model server or GPU
+allocation. No optimizer update is scheduled. An unsuccessful qualification or
+pilot is preserved and stops this sequence.
+
+At the saved staging snapshot the sequence was waiting, with no pilot campaign,
+new native worker or physics qualification started. This is a ready execution
+path, not evidence that the new controls work or improve workflow performance.

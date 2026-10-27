@@ -1,0 +1,113 @@
+{
+  "control-commission-deployment-plan.json": {
+    "archives": [
+      {
+        "kind": "science",
+        "revision": "45f0204061ef44d8b9c974c3d5d85a2c7fe5c8f1",
+        "file": "control-commission-science-45f0204.tar",
+        "sha256": "61909b58d66a6e77136724954bd66ff13faed870a39546c6832b915203197cbe",
+        "bytes": 16609280,
+        "remote_directory": "control-commission-science-45f0204"
+      },
+      {
+        "kind": "tools",
+        "revision": "e0ae6fa63984bba1f811545f861db2bf6fc35822",
+        "file": "control-commission-tools-e0ae6fa.tar",
+        "sha256": "562e68169b94c4b1b3e0e309225328e6664dbeb7e1ec025cf21944975115323d",
+        "bytes": 16660480,
+        "remote_directory": "control-commission-tools-e0ae6fa"
+      }
+    ],
+    "manifest_sha256": "7456d0f0620d17039f3d62db8960cf5810248bfbbc53d36a4f6c0317f87b2f06",
+    "scope": "Staging only; no workers, models or new physics jobs. Runner requires complete audited predecessor and released GPU."
+  },
+  "control-commission-environment.json": {
+    "at": 1793101780.5170522,
+    "python": "/home/simjecture/investigations/scientific-attention-20261025/control-commission-env/bin/python",
+    "base_python": "/home/simjecture/.local/share/uv/python/cpython-3.12-linux-x86_64-gnu/bin/python3.12",
+    "dependency_path_file_sha256": "1981298752993be3350a7934d33909544242bbefa2c322ca56626d05672e7eb9",
+    "shared_dependency_directories": [
+      "/home/simjecture/investigations/scientific-attention-20261025/env/lib/python3.12/site-packages",
+      "/home/simjecture/agent-runtimes/simjecture-0.6.2-replan-recovery-20261018/lib/python3.12/site-packages"
+    ],
+    "probes": {
+      "operator": {
+        "module": "simjecture_monitor.control_commission",
+        "file": "/home/simjecture/investigations/scientific-attention-20261025/control-commission-tools-e0ae6fa/packages/simjecture-monitor/src/simjecture_monitor/control_commission.py",
+        "python": "/home/simjecture/investigations/scientific-attention-20261025/control-commission-env/bin/python",
+        "pydantic": "2.14.1",
+        "yt": "4.4.3",
+        "help_passed": true
+      },
+      "science": {
+        "module": "simjecture_monitor.workflow_prompt",
+        "file": "/home/simjecture/investigations/scientific-attention-20261025/control-commission-science-45f0204/packages/simjecture-monitor/src/simjecture_monitor/workflow_prompt.py",
+        "python": "/home/simjecture/investigations/scientific-attention-20261025/control-commission-env/bin/python",
+        "pydantic": "2.14.1",
+        "yt": "4.4.3",
+        "help_passed": true
+      }
+    },
+    "stage": "prepared",
+    "actual_partial_predecessor_rejected": true,
+    "source_files_verified": 537,
+    "operator_tools_verified": 4,
+    "native_workers_started": 0,
+    "physics_jobs_started": 0,
+    "gpu_allocated": false
+  },
+  "control-commission-sequence-registration.json": {
+    "created_at": 1793102033.2769427,
+    "scripts_sha256": {
+      "qualify_control_commission_physics.py": "058f535ebdeca07497ddee20851a563f1fba587785b637effae9c7e88059f0f6",
+      "start_control_commission_after_r11.py": "deb51f62218663296003f90e40c903f539f9980ac7ff00265c5d0458b53910e8"
+    },
+    "plan_sha256": "7456d0f0620d17039f3d62db8960cf5810248bfbbc53d36a4f6c0317f87b2f06",
+    "prerequisites": "All 64 original assignments audited with zero violations; R11 GPU released and native roles closed; fresh matching physics qualification",
+    "bounds": {
+      "workflows": 6,
+      "wall_seconds": 7200,
+      "native_starts": 73,
+      "maximum_parallel_workflows": 1,
+      "decision_model_calls": 0,
+      "optimizer_updates": 0,
+      "gpu_allocations": 0
+    },
+    "authorization": "User approved the continuation plan and explicitly requested autonomous execution without a formal goal"
+  },
+  "control-commission-sequence-launch.json": {
+    "sequence_pid": 3856014,
+    "registered": true,
+    "scope": "Wait for complete original comparison before any new physics or workers"
+  },
+  "control-commission-sequence-live.json": {
+    "at": 1793102199.4668405,
+    "sequence": {
+      "stage": "waiting_for_original_comparison",
+      "started_at": 1793102035.8139544,
+      "pid": 3856014,
+      "decision_model_calls": 0,
+      "optimizer_updates": 0,
+      "original_comparison_modified": false,
+      "scope": "User-authorized follow-up integration commission, six assignments, two hours, at most 73 native starts; no GPU allocation or model calls"
+    },
+    "process_exists": true,
+    "campaign_exists": false,
+    "qualification_exists": false
+  },
+  "control-commission-staging-diagnostic.json": {
+    "manifest_exists": true,
+    "at": 1793101582.699866,
+    "source_mismatches": [],
+    "tool_mismatches": [],
+    "help": {
+      "returncode": 1,
+      "stderr": "Traceback (most recent call last):\n  File \"/home/simjecture/investigations/scientific-attention-20261025/control-commission-tools-e0ae6fa/packages/simjecture-monitor/scripts/run_control_commission.py\", line 19, in <module>\n    from simjecture_monitor.control_commission import ARMS, SCHEMA, check_predecessor, check_tool_hashes\nModuleNotFoundError: No module named 'simjecture_monitor.control_commission'\n",
+      "stdout": ""
+    },
+    "gate": {
+      "returncode": 1,
+      "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\nModuleNotFoundError: No module named 'simjecture_monitor.control_commission'\n"
+    }
+  }
+}
