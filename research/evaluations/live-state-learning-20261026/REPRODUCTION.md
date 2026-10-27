@@ -2,8 +2,8 @@
 
 This is an unpublished candidate. File preparation does not establish a workflow
 win or authorize a public performance claim. The registered workflow comparison
-is still collecting, and the portable copy has not yet passed a fresh runtime
-reload/probability check. No new optimizer updates were performed during this
+is still collecting. The portable copy has passed a separate fresh A100 reload
+and probability check. No new optimizer updates were performed during this
 preparation.
 
 ## Identities
@@ -28,7 +28,10 @@ weights were downloaded to the user's local host.
 A 13-file candidate bundle has been assembled offhost with documentation,
 provenance, reproduction scripts and notices. Its
 [package receipt](candidate-package-receipt.json) records every file hash and
-keeps runtime reload and workflow release validation explicitly pending.
+records the initial preparation stage. The subsequent
+[portable reload receipt](portable-reload-evidence.json) establishes mechanical
+reload equivalence; workflow release validation remains pending. The original
+bundle's documentation snapshot must be refreshed before publication.
 
 ## Data
 
@@ -99,10 +102,12 @@ becomes the repository ID and `revision` becomes the immutable base commit.
 The real candidate was exported successfully offhost, with the identities above.
 
 The original `adapter_export.json` deliberately records
-`runtime_reload_verified: false`. A separate reload receipt must demonstrate
-that the portable copy reproduces the saved base/SFT probes before publication.
-Do that after the current timed cohort, so loading a second model does not
-interfere with its measurements.
+`runtime_reload_verified: false` for that preparation stage. The separate reload
+receipt now records an actual fresh load: all 496 tensors (32,464,896 elements)
+match exactly, and three base/SFT probability probes agree within `6.19e-8`.
+The check ran after R7 collection was stopped and all native actors were closed,
+before further timed assignments. It therefore did not compete with a measured
+workflow. The historical export manifest is preserved rather than rewritten.
 
 For inference, use the pinned base snapshot, Simjecture's scientific input
 compiler and the tested `fla-prefill` profile. Temperature is 1 and the reported
@@ -123,5 +128,5 @@ the model card and provenance when assembling a distribution.
 
 Before uploading, finish the registered workflow analysis and infrastructure
 sensitivity, reconcile supported claims with the general-decision regressions,
-validate the portable reload, and verify the destination repository and write
-access. Prepared files alone do not satisfy those release conditions.
+include the portable reload proof, and verify the destination repository and
+write access. Prepared files alone do not satisfy those release conditions.

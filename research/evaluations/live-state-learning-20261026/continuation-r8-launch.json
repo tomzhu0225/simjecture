@@ -1,0 +1,17 @@
+{
+  "stage": "launched",
+  "at": 1793078746.2112687,
+  "pids": {
+    "run_base_sft_r8.py": 3785675,
+    "finish_r8.py": 3785676
+  },
+  "retained_resource_guard": 3738622,
+  "retained_model_link": 3738684,
+  "lease_file": "r7-lease.json",
+  "resource_deadline": 1793093028.4663672,
+  "compute_cap": 70,
+  "no_new_allocation": true,
+  "original_unstarted_assignments": 34,
+  "source_revision": "04f905c9f4538886a0713135bba29a1d4becea0b",
+  "manifest_sha256": "866dc60b31d7ee12543f5d6bc9a6cfef06f92828657e82f3957816bb8a11c1cb"
+}

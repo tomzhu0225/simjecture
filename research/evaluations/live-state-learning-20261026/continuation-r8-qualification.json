@@ -1,0 +1,90 @@
+{
+  "readiness": {
+    "at": 1793078630.155805,
+    "presubmission_failure_recognized": 2,
+    "healthy_and_other_phase_rejected": true,
+    "aggregate_matches_previous_registered_statistics": true,
+    "duplicate_assignments_rejected": true,
+    "unstarted_assignments": 34,
+    "parent_native_starts": 132,
+    "remaining_native_starts": 508,
+    "original_deadline": 1793093028.4663672,
+    "original_compute_cap": 70
+  },
+  "physics": {
+    "stage": "completed",
+    "started_at": 1793078127.7826812,
+    "scope": "Two engineering transport controls; no native worker, model decision or training",
+    "backend_sha256": "767932e64586bccce1d49d0d204ac48f83b84956fc3200f365d41d70788ad5ba",
+    "source_files_sha256": {
+      "data_units.json": "0c2bf50836d1ff0bc020202e20f78f8e1b197e1c69f8e9a5b2a5d47b42fbd1d3",
+      "original_analysis.py": "8892dcd3bb6309289fedbf80a0a080e017b92daefce97fc42ab8fe1931d90a15",
+      "inputs": "fd941c6e27e60b471ee0796997d465e9aec43192fd075c9ebd8665fb87b337b3",
+      "run_warpx.py": "852df901a0fd0d38c6a3583b77c9bef2e1207b8a5de8625d43b717df6210ccf6",
+      "analysis_probe.py": "d30384f911454972a0508967292794421bf51850e71a379ce603c764de6ab281",
+      "analysis_options.json": "da7c1c51e414ac458e01b67106c99c852bd884f9acae96afb4e7e13069f3f1ff",
+      "experiment.py": "504983f0f0f0ac7dab5292f991a06abcd5eea2e9bd9b5e0288bbf4aeb5a7e270",
+      "environment.json": "e666f5a5fd840212c02aa148b519a9696d0647ec7771589c9627efefe3bed0b1",
+      "harness/bridge.py": "bce8043ae2a6ca41d9c75e4066162e44dcef14a6ec0728062d0170be668637af"
+    },
+    "ended_at": 1793078144.5973077,
+    "receipts": [
+      {
+        "name": "mesh_64",
+        "request_id": "aa486eaf87bd400e825158855b20bdef",
+        "cells": 64,
+        "steps": 40,
+        "command": [
+          "/opt/simote/radiation-production-20260930/warpx/build/foundation-cuda/bin/warpx.1d.MPI.CUDA.DP.PDP",
+          "inputs",
+          "amr.n_cell=64",
+          "max_step=40",
+          "amr.max_level=0",
+          "diagnostics.diags_names=diag1",
+          "diag1.file_prefix=plot",
+          "diag1.intervals=40",
+          "amrex.the_arena_init_size=67108864",
+          "warpx.verbose=0"
+        ],
+        "binary_sha256": "40259ed2687707b4c693e5b0e7fbadef54dca4fab64898d9d42e654fbdf644eb",
+        "input_sha256": "fd941c6e27e60b471ee0796997d465e9aec43192fd075c9ebd8665fb87b337b3",
+        "remote_host": "ca10411836e6",
+        "status": "succeeded",
+        "queued_at": 1793078131.600817,
+        "started_at": 1793078131.6010897,
+        "returncode": 0,
+        "wall_seconds": 0.9687393642961979,
+        "ended_at": 1793078132.570198,
+        "coordinator_roundtrip_seconds": 4.147762775421143
+      },
+      {
+        "name": "mesh_128",
+        "request_id": "bb60c402b28349eaba2bce89f532d285",
+        "cells": 128,
+        "steps": 80,
+        "command": [
+          "/opt/simote/radiation-production-20260930/warpx/build/foundation-cuda/bin/warpx.1d.MPI.CUDA.DP.PDP",
+          "inputs",
+          "amr.n_cell=128",
+          "max_step=80",
+          "amr.max_level=0",
+          "diagnostics.diags_names=diag1",
+          "diag1.file_prefix=plot",
+          "diag1.intervals=80",
+          "amrex.the_arena_init_size=67108864",
+          "warpx.verbose=0"
+        ],
+        "binary_sha256": "40259ed2687707b4c693e5b0e7fbadef54dca4fab64898d9d42e654fbdf644eb",
+        "input_sha256": "fd941c6e27e60b471ee0796997d465e9aec43192fd075c9ebd8665fb87b337b3",
+        "remote_host": "ca10411836e6",
+        "status": "succeeded",
+        "queued_at": 1793078142.435552,
+        "started_at": 1793078142.436039,
+        "returncode": 0,
+        "wall_seconds": 1.1181960701942444,
+        "ended_at": 1793078143.5545185,
+        "coordinator_roundtrip_seconds": 4.296216726303101
+      }
+    ]
+  }
+}

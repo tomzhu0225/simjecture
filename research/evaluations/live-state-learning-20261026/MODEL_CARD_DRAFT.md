@@ -5,8 +5,9 @@ workflow advantage over the pretrained base and strong deployment comparators.
 The repeated-workflow study is collecting the remaining original assignments
 after an infrastructure interruption. No weight upload or public release is
 implied by this document. The pinned base declares Apache-2.0 and its distribution
-listing has been checked. Workflow validation, a portable runtime reload,
-a destination repository and write authentication remain pending.
+listing has been checked. The portable adapter passed a fresh A100 reload.
+Workflow validation, final release documentation, a destination repository and
+write authentication remain pending.
 
 ## Identity and intended use
 
@@ -144,13 +145,17 @@ provenance and exact split reproduction are recorded separately. These checks
 alone do not complete release.
 
 A portable candidate copy preserves the weight-file hash and changes only the
-base repository reference and pinned revision in its configuration. Its runtime
-reload remains unverified; the ongoing scientific study continues to use the
-original adapter and configuration.
+base repository reference and pinned revision in its configuration. After timed
+collection stopped for transport recovery, a separate fresh A100 load matched
+all 496 adapter tensors exactly and reproduced all three saved base/SFT probes,
+with maximum probability discrepancy `6.19e-8` against the unchanged `1e-4`
+tolerance. [The reload evidence](portable-reload-evidence.json) records this check.
+The ongoing scientific comparison continues to use the original adapter and
+configuration; no optimizer ran during export or reload.
 
 Before publishing, complete the registered workflow evidence and its
-infrastructure sensitivity analysis, include the checked notices, validate the
-portable adapter's reload without changing the weight tensors, and include exact
+infrastructure sensitivity analysis, include the checked notices and portable
+reload receipt without changing the weight tensors, and include exact
 input/compiler, training and evaluation manifests. Disclose the general regressions and observed attention
 errors. Publish only claims supported by that completed evidence.
 
