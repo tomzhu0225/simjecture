@@ -15,7 +15,7 @@ from collections import defaultdict
 from pydantic import BaseModel, ConfigDict, Field
 
 from . import attention_support as protocol
-from .attention_server import sampled_answers
+from .action_distribution import INDEPENDENT, kind, replay
 from .decision_interface import scientific_request
 from .measured_wait import read_receipt
 from .reward import RewardWeights
@@ -169,6 +169,8 @@ def workflow_advantages(rows, root):
         if episode["decision_ids"] and (
             episode["model_identity"] != manifest["model_identity"]
             or episode["temperature"] != plan["temperature"]
+            or episode.get("decision_distribution", INDEPENDENT)
+            != plan.get("decision_distribution", INDEPENDENT)
         ):
             raise ValueError("Behavior changed across the frozen episode cohort")
         episodes[identity] = episode
@@ -206,7 +208,9 @@ def workflow_advantages(rows, root):
             or behavior.get("temperature") != episode["temperature"]
         ):
             raise ValueError("Behavior input, temperature or model identity mismatch")
-        answers, logp = sampled_answers(behavior["probabilities"], behavior["seed"])
+        if kind(behavior) != plan.get("decision_distribution", INDEPENDENT):
+            raise ValueError("Behavior distribution differs from the prospective plan")
+        answers, logp = replay(behavior, rendered)
         if (
             answers != behavior["sampled_answers"]
             or answers != {key: target["label"] for key, target in row["targets"].items()}

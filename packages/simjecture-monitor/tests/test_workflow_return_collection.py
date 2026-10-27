@@ -9,8 +9,11 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from simjecture_monitor.action_distribution import CONTRACT, INDEPENDENT
+from simjecture_monitor.attention_server import AttentionService
 from simjecture_monitor.events import digest, put
 from simjecture_monitor.sampling_trace import SamplingTrace
+from test_action_distribution import DenseProvider
 from test_sampling_trace import model, observed, response, save
 
 
@@ -28,8 +31,9 @@ def load(monkeypatch):
 @pytest.mark.parametrize(
     "purpose,fail", [("train", False), ("commissioning", False), ("train", True)]
 )
+@pytest.mark.parametrize("distribution", [INDEPENDENT, CONTRACT])
 def test_live_lifecycle_commands_export_only_complete_training_cohorts(
-    tmp_path, monkeypatch, purpose, fail
+    tmp_path, monkeypatch, purpose, fail, distribution
 ):
     module = load(monkeypatch)
     root = tmp_path / "cohort"
@@ -41,6 +45,7 @@ def test_live_lifecycle_commands_export_only_complete_training_cohorts(
             replicates=2 if purpose == "train" else 1,
             native_cap=12,
             temperature=3.0,
+            decision_distribution=distribution,
             family=["progressing_work"],
             configuration_seed=13,
             order_seed=19,
@@ -66,7 +71,11 @@ def test_live_lifecycle_commands_export_only_complete_training_cohorts(
         "request",
         lambda *args, **kw: dict(
             status=dict(
-                stage="ready", policies=["adapted"], temperature=3.0, model_identity=server_identity
+                stage="ready",
+                policies=["adapted"],
+                temperature=3.0,
+                model_identity=server_identity,
+                decision_distribution=distribution,
             )
         ),
     )
@@ -149,9 +158,25 @@ def test_live_lifecycle_commands_export_only_complete_training_cohorts(
                     folder / "monitor",
                     seed=int(command[command.index("--sampling-seed") + 1]),
                     split=purpose,
+                    decision_distribution=distribution,
                 )
                 packet = observed()
-                value = response(trace, packet)
+                if distribution == CONTRACT:
+                    assert command[command.index("--decision-distribution") + 1] == distribution
+                    service = AttentionService(
+                        DenseProvider(),
+                        adapter_loaded=True,
+                        maximum_tokens=100000,
+                        decision_distribution=distribution,
+                    )
+                    value = service.predict(
+                        dict(
+                            observation=packet.model_dump(),
+                            **trace.request(packet, policy="adapted"),
+                        )
+                    )
+                else:
+                    value = response(trace, packet)
                 value["model_identity"] = server_identity
                 value["behavior"]["model_identity"] = server_identity
                 # Match DecisionModel.predict: only total scoring time is

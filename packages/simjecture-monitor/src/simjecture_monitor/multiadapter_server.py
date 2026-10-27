@@ -10,14 +10,22 @@ import re
 import time
 from pathlib import Path
 
+from .action_distribution import DISTRIBUTIONS, INDEPENDENT
 from .attention_server import AttentionService, serve
 
 
 class MultiAdapterService(AttentionService):
     """serve() serializes selection, inference, and identity binding."""
 
-    def __init__(self, model, adapters, identities, *, maximum_tokens=8192):
-        super().__init__(model, adapter_loaded=True, maximum_tokens=maximum_tokens)
+    def __init__(
+        self, model, adapters, identities, *, maximum_tokens=8192, decision_distribution=INDEPENDENT
+    ):
+        super().__init__(
+            model,
+            adapter_loaded=True,
+            maximum_tokens=maximum_tokens,
+            decision_distribution=decision_distribution,
+        )
         if not adapters or set(adapters) != set(identities) or "base" in adapters:
             raise ValueError("Named adapter policies and identities must agree")
         self.adapters = dict(adapters)
@@ -57,6 +65,7 @@ def main():
     parser.add_argument("--wall-seconds", type=int, required=True)
     parser.add_argument("--idle-seconds", type=int, default=1800)
     parser.add_argument("--temperature", type=float, default=1.0)
+    parser.add_argument("--decision-distribution", choices=DISTRIBUTIONS, default=INDEPENDENT)
     args = parser.parse_args()
     if not math.isfinite(args.temperature) or args.temperature <= 0:
         parser.error("--temperature must be finite and positive")
@@ -98,7 +107,13 @@ def main():
                 ).hexdigest()
         identities[name] = identity
     model.model.eval()
-    service = MultiAdapterService(model, adapters, identities, maximum_tokens=args.maximum_tokens)
+    service = MultiAdapterService(
+        model,
+        adapters,
+        identities,
+        maximum_tokens=args.maximum_tokens,
+        decision_distribution=args.decision_distribution,
+    )
     status = dict(
         stage="ready",
         started_at=time.time(),
@@ -106,6 +121,7 @@ def main():
         source_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         policies=["base", *paths],
         temperature=args.temperature,
+        decision_distribution=args.decision_distribution,
         requests=0,
     )
     serve(

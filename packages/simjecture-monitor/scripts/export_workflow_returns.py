@@ -11,6 +11,7 @@ from pathlib import Path
 from audit_generalization import completion_measurement
 from audit_scientific_workflows import verifier_report_value
 from execute_checkpoint_decision import require_confirmed_solver_outcomes
+from simjecture_monitor.action_distribution import INDEPENDENT, kind, replay
 from simjecture_monitor.events import digest, put
 from simjecture_monitor.feedback_audit import feedback_measurement
 from simjecture_monitor.measured_wait import read_receipt
@@ -64,7 +65,9 @@ def require_parked_requests(root, outcome, requests, starts):
             raise ValueError("Model request overlaps an active main-worker invocation")
 
 
-def export_episode(root, block, trial, *, plan_reference, starts, output, split):
+def export_episode(
+    root, block, trial, *, plan_reference, starts, output, split, decision_distribution=INDEPENDENT
+):
     receipt = read(root.parent / (root.name + "-controller.json"))
     if receipt.get("stage") != "completed" or receipt.get("returncode") != 0:
         raise ValueError("Episode controller failed; do not fabricate a workflow return")
@@ -118,6 +121,7 @@ def export_episode(root, block, trial, *, plan_reference, starts, output, split)
             or sampling["episode_id"] != root.name
             or sampling["seed"] != trial["sampling_seed"]
             or sampling["split"] != split
+            or sampling.get("decision_distribution", INDEPENDENT) != decision_distribution
         ):
             raise ValueError("Sampling trace is not the closed assigned episode")
         requests = sampling["requests"]
@@ -143,6 +147,18 @@ def export_episode(root, block, trial, *, plan_reference, starts, output, split)
                 or row["split"] != split
             ):
                 raise ValueError("Sampled row policy or episode identity mismatch")
+            if kind(row["behavior"]) != decision_distribution:
+                raise ValueError("Episode action distribution differs from the frozen plan")
+            if row["behavior"] != record["result"].get("behavior"):
+                raise ValueError("Exported behavior differs from its live decision receipt")
+            answers, logp = replay(row["behavior"], row)
+            if answers != {k: t["label"] for k, t in row["targets"].items()} or not math.isclose(
+                logp,
+                row["behavior"]["sampled_joint_log_probability"],
+                abs_tol=1e-10,
+                rel_tol=1e-10,
+            ):
+                raise ValueError("Exported decision differs from its behavior distribution")
             destination = output / (row["id"] + "-decision.json")
             put(destination, record)
             row["decision_receipt"] = file_reference(destination)
@@ -187,6 +203,7 @@ def export_episode(root, block, trial, *, plan_reference, starts, output, split)
         decision_ids=[row["id"] for row in rows],
         model_identity=model_identity,
         temperature=temperature,
+        decision_distribution=decision_distribution if trial["role"] == "sampled" else None,
         monitor_usage=usage,
         source_artifacts={
             name: hashlib.sha256((root / name).read_bytes()).hexdigest() for name in artifact_names
@@ -235,6 +252,7 @@ def export(root, output, budget):
                 starts=read(budget)["starts"],
                 output=output,
                 split=plan["split"],
+                decision_distribution=plan.get("decision_distribution", INDEPENDENT),
             )
             manifest["episodes"].append(reference)
             rows.extend(part)

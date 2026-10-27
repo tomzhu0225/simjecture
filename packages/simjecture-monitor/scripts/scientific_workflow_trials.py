@@ -17,13 +17,21 @@ from pathlib import Path
 
 import live_trials as live
 from simjecture_monitor import attention_support as protocol
+from simjecture_monitor.action_distribution import DISTRIBUTIONS, INDEPENDENT
 from simjecture_monitor.attention_server import request
 from simjecture_monitor.events import digest, put
 from simjecture_monitor.sampling_trace import SamplingTrace
 from simjecture_monitor.workflow_attention import ScientificConsistencyRules, observation
 
 
-def supervisor_type(legacy, *, model_policy=None, sampling_seed=None, sampling_split="train"):
+def supervisor_type(
+    legacy,
+    *,
+    model_policy=None,
+    sampling_seed=None,
+    sampling_split="train",
+    decision_distribution=INDEPENDENT,
+):
     class ScientificSupervisor(legacy.RawSupervisor):
         def initialize(self, arm):
             super().initialize("observe")
@@ -40,7 +48,12 @@ def supervisor_type(legacy, *, model_policy=None, sampling_seed=None, sampling_s
             self.attention_revision = 0
             self.attention_revision_digest = None
             self.sampling_trace = (
-                SamplingTrace(self.monitor_dir, seed=sampling_seed, split=sampling_split)
+                SamplingTrace(
+                    self.monitor_dir,
+                    seed=sampling_seed,
+                    split=sampling_split,
+                    decision_distribution=decision_distribution,
+                )
                 if sampling_seed is not None
                 else None
             )
@@ -175,7 +188,11 @@ def supervisor_type(legacy, *, model_policy=None, sampling_seed=None, sampling_s
                 return
             packet = self.canonical(raw, time.time())
             if self.attention_arm in {"base", "adapted"}:
-                payload = dict(observation=packet.model_dump(), policy=self.attention_model_policy)
+                payload = dict(
+                    observation=packet.model_dump(),
+                    policy=self.attention_model_policy,
+                    distribution=decision_distribution,
+                )
                 if self.sampling_trace is not None:
                     payload.update(
                         self.sampling_trace.request(packet, policy=self.attention_model_policy)
@@ -245,6 +262,7 @@ def main():
         "--sampling-seed", type=int, help="Log categorical decisions for a training episode"
     )
     parser.add_argument("--sampling-split", choices=["train", "commissioning"], default="train")
+    parser.add_argument("--decision-distribution", choices=DISTRIBUTIONS, default=INDEPENDENT)
     args = parser.parse_args()
     if args.model_policy and args.arm not in {"base", "adapted"}:
         parser.error("--model-policy requires a model arm")
@@ -259,6 +277,7 @@ def main():
         legacy,
         model_policy=args.model_policy,
         sampling_seed=args.sampling_seed,
+        decision_distribution=args.decision_distribution,
         sampling_split=args.sampling_split,
     )
     legacy.run(args.root, args.family, args.arm, args.seed, args.socket, args.wrapper)
