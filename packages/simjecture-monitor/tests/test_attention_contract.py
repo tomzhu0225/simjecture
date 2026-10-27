@@ -118,6 +118,58 @@ def test_persistent_silence_can_escalate_and_replayed_snapshot_cannot_confirm_it
     )
 
 
+def test_replayed_decision_cannot_confirm_itself_against_a_fresher_host_snapshot():
+    gate = AdmissionGate()
+    first = observation()
+    view = encode(first)
+    decision = proposal(first, view)
+    assert evaluate(gate, first)["disposition"] == "pending"
+    current = observation(at=105_000, sequence=2)
+    result = gate.evaluate(first, view, decision, current, now_ms=current.captured_ms)
+    assert result["reason"] == "no_new_observation"
+    assert gate.pending[first.scope()]["count"] == 1
+    assert evaluate(gate, current)["disposition"] == "admitted"
+
+
+def test_inference_delay_does_not_turn_close_input_snapshots_into_persistent_evidence():
+    gate = AdmissionGate()
+    first = observation()
+    assert evaluate(gate, first)["disposition"] == "pending"
+    submitted = observation(at=101_000, sequence=2)
+    view = encode(submitted)
+    current = observation(at=106_000, sequence=3)
+    result = gate.evaluate(
+        submitted, view, proposal(submitted, view), current, now_ms=current.captured_ms
+    )
+    assert result["reason"] == "awaiting_persistence"
+    assert gate.pending[first.scope()]["last_ms"] == 101_000
+    later = observation(at=105_000, sequence=3)
+    current = observation(at=107_000, sequence=4)
+    view = encode(later)
+    assert (
+        gate.evaluate(later, view, proposal(later, view), current, now_ms=current.captured_ms)[
+            "disposition"
+        ]
+        == "admitted"
+    )
+
+
+def test_older_inflight_request_cannot_replace_newer_confirmation_using_current_host_time():
+    gate = AdmissionGate()
+    newer = observation(at=105_000, sequence=3)
+    assert evaluate(gate, newer)["disposition"] == "pending"
+    old = observation(at=102_000, sequence=2)
+    view = encode(old)
+    current = observation(at=106_000, sequence=4)
+    result = gate.evaluate(
+        old, view, proposal(old, view, action="wake_director"), current, now_ms=106_000
+    )
+    assert result["reason"] == "no_new_observation"
+    pending = gate.pending[newer.scope()]
+    assert pending["sequence"] == 3 and pending["action"] == "request_worker_help"
+    assert evaluate(gate, observation(at=110_000, sequence=5))["disposition"] == "admitted"
+
+
 def test_new_operation_is_not_suppressed_by_old_incident_or_another_workers_helper():
     gate = AdmissionGate()
     gate.record_dispatch(observation())
