@@ -89,3 +89,37 @@ def test_response_from_another_adapter_cannot_be_admitted(monkeypatch):
     sup.initialize("adapted")
     with pytest.raises(ValueError, match="differs from the requested"):
         sup.receive(None, None, {"policy": "continued_sft"}, None)
+
+
+def test_sampling_occurs_only_when_parked_and_never_logs_forwarding_credentials(
+    monkeypatch, tmp_path
+):
+    import json
+
+    mod = module(monkeypatch)
+    clock = [100.0]
+    monkeypatch.setattr(mod.time, "monotonic", lambda: clock[0])
+    token = tmp_path / "token"
+    token.write_text("test-forwarding-credential" * 3)
+    monkeypatch.setenv("SIMJECTURE_ATTENTION_TOKEN_FILE", str(token))
+    sup = mod.supervisor_type(SimpleNamespace(RawSupervisor=Lifecycle), sampling_seed=17)()
+    sup.monitor_dir = tmp_path / "episode/monitor"
+    sup.initialize("adapted")
+    sent = []
+    sup.monitor_socket = "/private/service.sock"
+    sup.monitor_executor = SimpleNamespace(
+        submit=lambda fn, path, payload, **kw: sent.append(payload)
+    )
+    sup.worker_parked = False
+    sup.monitor_tick(None)
+    assert sent == [] and sup.sampling_trace.data["requests"] == []
+    clock[0] = 105.0
+    sup.worker_parked = True
+    sup.monitor_tick(None)
+    assert len(sent) == 1 and sent[0]["sample"] is True
+    assert sent[0]["seed"] == sup.sampling_trace.data["requests"][0]["seed"]
+    assert sent[0]["observation"]["worker_state"] == "parked"
+    assert sent[0]["auth_token"] == token.read_text()
+    for path in sup.monitor_dir.glob("*.json"):
+        assert token.read_text() not in path.read_text()
+        json.loads(path.read_text())

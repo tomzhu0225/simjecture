@@ -19,10 +19,11 @@ import live_trials as live
 from simjecture_monitor import attention_support as protocol
 from simjecture_monitor.attention_server import request
 from simjecture_monitor.events import digest, put
+from simjecture_monitor.sampling_trace import SamplingTrace
 from simjecture_monitor.workflow_attention import ScientificConsistencyRules, observation
 
 
-def supervisor_type(legacy, *, model_policy=None):
+def supervisor_type(legacy, *, model_policy=None, sampling_seed=None, sampling_split="train"):
     class ScientificSupervisor(legacy.RawSupervisor):
         def initialize(self, arm):
             super().initialize("observe")
@@ -38,6 +39,11 @@ def supervisor_type(legacy, *, model_policy=None):
             self.attention_count = 0
             self.attention_revision = 0
             self.attention_revision_digest = None
+            self.sampling_trace = (
+                SamplingTrace(self.monitor_dir, seed=sampling_seed, split=sampling_split)
+                if sampling_seed is not None
+                else None
+            )
 
         def canonical(self, raw, now):
             public = raw["state"]["host_state"]["public_artifacts"]
@@ -89,6 +95,8 @@ def supervisor_type(legacy, *, model_policy=None):
                 received_at=now,
             )
             put(path, record)
+            if self.sampling_trace is not None:
+                self.sampling_trace.record(submitted, result, decision_path=path)
             if admission["disposition"] != "admitted":
                 return
             if decision.support_kind != "none":
@@ -168,6 +176,10 @@ def supervisor_type(legacy, *, model_policy=None):
             packet = self.canonical(raw, time.time())
             if self.attention_arm in {"base", "adapted"}:
                 payload = dict(observation=packet.model_dump(), policy=self.attention_model_policy)
+                if self.sampling_trace is not None:
+                    payload.update(
+                        self.sampling_trace.request(packet, policy=self.attention_model_policy)
+                    )
                 if os.environ.get("SIMJECTURE_ATTENTION_TOKEN_FILE"):
                     payload["auth_token"] = (
                         Path(os.environ["SIMJECTURE_ATTENTION_TOKEN_FILE"]).read_text().strip()
@@ -212,6 +224,8 @@ def supervisor_type(legacy, *, model_policy=None):
                 # A completed trial cannot admit delayed expert requests.
                 self.attention_future = None
             super().close_monitor()
+            if self.sampling_trace is not None:
+                self.sampling_trace.close()
 
     return ScientificSupervisor
 
@@ -227,15 +241,26 @@ def main():
     parser.add_argument("--python", type=Path, required=True)
     parser.add_argument("--plasma-assets", type=Path, required=True)
     parser.add_argument("--model-policy", help="Explicit named adapter for a model arm")
+    parser.add_argument(
+        "--sampling-seed", type=int, help="Log categorical decisions for a training episode"
+    )
+    parser.add_argument("--sampling-split", choices=["train", "commissioning"], default="train")
     args = parser.parse_args()
     if args.model_policy and args.arm not in {"base", "adapted"}:
         parser.error("--model-policy requires a model arm")
+    if args.sampling_seed is not None and args.arm not in {"base", "adapted"}:
+        parser.error("--sampling-seed requires a model arm")
     live.PYTHON = args.python
     live.SCRIPTS = live.SOLVER = args.plasma_assets
     # Task text captures paths at import time, after configuring this new backend.
     import generalization_trials as legacy
 
-    legacy.RawSupervisor = supervisor_type(legacy, model_policy=args.model_policy)
+    legacy.RawSupervisor = supervisor_type(
+        legacy,
+        model_policy=args.model_policy,
+        sampling_seed=args.sampling_seed,
+        sampling_split=args.sampling_split,
+    )
     legacy.run(args.root, args.family, args.arm, args.seed, args.socket, args.wrapper)
 
 

@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import copy
 import hashlib
+import math
 import re
 import time
 from pathlib import Path
@@ -55,7 +56,10 @@ def main():
     parser.add_argument("--maximum-tokens", type=int, default=8192)
     parser.add_argument("--wall-seconds", type=int, required=True)
     parser.add_argument("--idle-seconds", type=int, default=1800)
+    parser.add_argument("--temperature", type=float, default=1.0)
     args = parser.parse_args()
+    if not math.isfinite(args.temperature) or args.temperature <= 0:
+        parser.error("--temperature must be finite and positive")
     if args.socket.exists():
         raise ValueError("Refuse to replace an existing server socket")
     token = args.auth_token_file.read_text().strip()
@@ -78,7 +82,7 @@ def main():
         max_tokens=args.maximum_tokens,
         kernel_profile="fla-prefill",
     )
-    model.temperature = 1.0
+    model.temperature = args.temperature
     adapters, identities = {}, {}
     for name, path in paths.items():
         adapter_name = "default" if name == first else name
@@ -101,6 +105,7 @@ def main():
         model_identities=identities,
         source_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         policies=["base", *paths],
+        temperature=args.temperature,
         requests=0,
     )
     serve(

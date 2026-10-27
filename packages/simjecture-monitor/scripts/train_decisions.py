@@ -65,6 +65,38 @@ def measured_advantages(rows, root):
     return result
 
 
+def require_behavior_weights(rows, base, adapter):
+    """Nearby probabilities cannot stand in for the exact recorded adapter."""
+    config = hashlib.sha256((Path(base) / "config.json").read_bytes()).hexdigest()
+    files = {}
+    if adapter is not None:
+        for name in ["adapter_config.json", "adapter_model.safetensors"]:
+            with (Path(adapter) / name).open("rb") as stream:
+                files[name] = hashlib.file_digest(stream, "sha256").hexdigest()
+    for row in rows:
+        behavior = row["behavior"]
+        identity = behavior.get("model_identity", {})
+        expected = identity.get("adapter_files_sha256", {})
+        if behavior.get("adapter_active") is False:
+            expected = {}
+        if identity.get("checkpoint_config_sha256") != config or expected != files:
+            raise ValueError(
+                "Initial base configuration or adapter differs from logged behavior weights"
+            )
+
+
+def episode_normalization(rows, audit):
+    episodes = [episode for group in audit.values() for episode in group["sampled_episodes"]]
+    if not episodes or sum(episode["decisions"] for episode in episodes) != len(rows):
+        raise ValueError("Episode normalization requires the complete sampled decision count")
+    return dict(
+        unit="sampled_episode",
+        sampled_episodes=len(episodes),
+        decision_rows=len(rows),
+        row_to_episode_scale=len(rows) / len(episodes),
+    )
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--base", required=True)
@@ -84,7 +116,9 @@ def main():
     parser.add_argument("--kl-coefficient", type=float, default=0.02)
     parser.add_argument("--temperature", type=float, default=1.0)
     parser.add_argument(
-        "--advantage-baseline", choices=("leave-one-out", "measured-wait"), default="leave-one-out"
+        "--advantage-baseline",
+        choices=("leave-one-out", "measured-wait", "workflow-wait"),
+        default="leave-one-out",
     )
     args = parser.parse_args()
     if (
@@ -103,21 +137,34 @@ def main():
         raise ValueError("Training limits and rates must be positive")
     rows = read_data(args.data)
     advantage_audit = None
-    if args.advantage_baseline == "measured-wait":
+    normalization = dict(unit="training_row", row_to_episode_scale=1.0)
+    if args.advantage_baseline in {"measured-wait", "workflow-wait"}:
         if args.mode != "policy-gradient":
             raise ValueError("A measured wait baseline applies only to policy-gradient updates")
-        from simjecture_monitor.measured_wait import wait_controlled_advantages
+        if args.advantage_baseline == "workflow-wait":
+            from simjecture_monitor.workflow_returns import workflow_advantages
 
-        advantages, advantage_audit = wait_controlled_advantages(rows, args.data.parent)
+            advantages, advantage_audit = workflow_advantages(rows, args.data.parent)
+            normalization = episode_normalization(rows, advantage_audit)
+        else:
+            from simjecture_monitor.measured_wait import wait_controlled_advantages
+
+            advantages, advantage_audit = wait_controlled_advantages(rows, args.data.parent)
     else:
         advantages = (
             measured_advantages(rows, args.data.parent) if args.mode == "policy-gradient" else {}
         )
     if args.mode == "policy-gradient" and args.steps * args.accumulation > 2 * len(rows):
         raise ValueError("Measured-return updates allow at most two passes over logged behavior")
+    if args.mode == "policy-gradient" and any(
+        row["behavior"].get("temperature", args.temperature) != args.temperature for row in rows
+    ):
+        raise ValueError("Training temperature must match every logged behavior distribution")
+    if args.mode == "policy-gradient":
+        require_behavior_weights(rows, args.base, args.initial_adapter)
     args.output.mkdir(parents=True, exist_ok=False)
     if advantage_audit is not None:
-        put(args.output / "measured-wait-advantages.json", advantage_audit)
+        put(args.output / (args.advantage_baseline + "-advantages.json"), advantage_audit)
     import torch
     from peft import LoraConfig, PeftModel, get_peft_model
     from simjecture_monitor.decision_model import DecisionModel
@@ -129,6 +176,7 @@ def main():
         stage="loading",
         started_at=started,
         rows=len(rows),
+        loss_normalization=normalization,
         arguments={
             key: str(value) if isinstance(value, Path) else value
             for key, value in vars(args).items()
@@ -272,6 +320,7 @@ def main():
                     -torch.minimum(ratio * advantage, ratio.clamp(0.8, 1.2) * advantage)
                     + args.kl_coefficient * kl
                 )
+            loss = loss * normalization["row_to_episode_scale"]
             if not torch.isfinite(loss):
                 raise ValueError("Nonfinite training loss")
             (loss / args.accumulation).backward()
