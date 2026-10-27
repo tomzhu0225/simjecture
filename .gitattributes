@@ -22,3 +22,7 @@ demos/qe_dft_reference/record/** -text -whitespace
 tests/fixtures/qe_scf_smoke.xml -text
 
 demos/qe_fe_reference/record/** -text -whitespace
+
+# Fresh v0.7.0 receipts, sources and native logs are immutable audit bytes.
+demos/resistive_mhd_island_coalescence/fresh_v070_record/** -text -whitespace
+demos/flash_warpx_kinetic_patch/fresh_v070_record/** -text -whitespace

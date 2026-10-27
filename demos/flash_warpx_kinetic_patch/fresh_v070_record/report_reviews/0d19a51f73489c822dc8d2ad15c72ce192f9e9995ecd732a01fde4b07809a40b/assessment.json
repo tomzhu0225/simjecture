@@ -1,0 +1,5 @@
+{
+  "decision": "accepted",
+  "summary": "Independent recomputation from retained tensors reproduces all four fresh means (0.04733\u20130.05205) over the complete declared window. Receipt and artifact hashes match; the uncertainty ledger yields upper values 0.14747075 for ions and 0.15448238 for electrons, below 0.20. The findings-first report accurately records the existing supported verdict, distinguishes fresh evidence from exploratory qualification, and explains failures and numerical limitations. Figures are traceable to retained data and analysis. Support is appropriately bounded to this finite, conditioned realization; the diagnostic envelope does not establish continuum convergence. Report acceptance neither independently approves the scientific claim nor changes experiment stages.",
+  "issues": []
+}

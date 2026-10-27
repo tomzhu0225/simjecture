@@ -1,0 +1,248 @@
+{
+  "id": "exp_2f42b96d98fb476429596b6c",
+  "status": "failed",
+  "operator_guidance_ids": [],
+  "created_at": 1792929181.0611296,
+  "timeout": 600,
+  "execution_deadline": 1792933565.5981443,
+  "workspace_limit_bytes": 4294967296,
+  "binding": {
+    "source": "island_coalescence.py",
+    "args": [
+      "--eta",
+      "0.001",
+      "--nx",
+      "128",
+      "--ny",
+      "128",
+      "--alpha",
+      "20",
+      "--tmax",
+      "1.2",
+      "--plot-interval",
+      "0.05",
+      "--ranks",
+      "4",
+      "--iprocs",
+      "2",
+      "--jprocs",
+      "2",
+      "--output",
+      "outputs/commissioning__20261025T1141/native",
+      "--summary",
+      "outputs/commissioning__20261025T1141/validation.json"
+    ],
+    "inputs": {
+      "island_coalescence.py": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b",
+      "assets/literature_basis.md": "b3837a433a90125145174939e149ac059e3af5982ccc567ad7ba7e491bc886a9",
+      "assets/operator_validation.json": "08ac3d4b43a6cafdabbf6f078c3fb3dfce542082a10f08852de267e5d70f537d"
+    },
+    "capability": "flash-island-coalescence-resistive-mhd-4.8",
+    "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+  },
+  "outputs": [
+    "assets/runtime_validation.json"
+  ],
+  "commitment": null,
+  "key": "guided-anchor",
+  "stage": "exploration",
+  "method": null,
+  "review_documents": null,
+  "parent_experiment": null,
+  "purpose": "validation",
+  "plan": null,
+  "pid": 742962,
+  "worker_identity": {
+    "pid": 742962,
+    "starttime": "4540882",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture-prx-island-v0.7.0/.venv/bin/python",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153",
+      "--execute",
+      "exp_2f42b96d98fb476429596b6c"
+    ],
+    "launched_at": "2026-10-25T11:53:01.228539+00:00",
+    "run_directory": null
+  },
+  "started_at": 1792929181.2287948,
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": 0,
+    "stdout": "{\"checks\": {\"completed\": true, \"representation\": true, \"physics_controls\": true, \"boundaries\": true, \"diagnostics\": true, \"numerical_regime\": true, \"flux_window_reached\": true, \"scientific_evidence_eligible\": false}, \"metrics\": {\"l_over_eta_nominal\": 1000.0, \"flux_low\": 0.01, \"flux_high\": 0.05, \"flux_low_crossing_time\": 0.26033823854649724, \"flux_high_crossing_time\": 1.0763841963235288, \"reconnection_time\": 0.8160459577770316, \"normalized_flux_slope\": 0.0490168471748367, \"flux_path_max_abs_mismatch\": 4.657228519738127e-05, \"max_abs_divb\": 9.36140054363932e-13, \"max_boundary_normal_fraction\": 0.031049113904913106, \"initial_sheet_cells\": 6.4, \"plot_file_count\": 24}}",
+    "stderr": "",
+    "timed_out": false,
+    "cancelled": false,
+    "workspace_exceeded": false,
+    "stdout_truncated": false,
+    "stderr_truncated": false,
+    "heartbeat_count": 0,
+    "wall_seconds": 20.028474315993662,
+    "workspace_bytes": 21104481,
+    "executor_sha256": "b92087579abbb99f55ce2c75d98765355c8ccd4a6ccf3ba55b15ddd5491a22ec",
+    "resource_limits": {
+      "max_file_bytes": 4294967296,
+      "max_workspace_bytes": 4294967296,
+      "max_memory_bytes": 4294967296
+    }
+  },
+  "artifacts": {
+    "assets/literature_basis.md": {
+      "sha256": "b3837a433a90125145174939e149ac059e3af5982ccc567ad7ba7e491bc886a9",
+      "bytes": 2329
+    },
+    "assets/operator_validation.json": {
+      "sha256": "08ac3d4b43a6cafdabbf6f078c3fb3dfce542082a10f08852de267e5d70f537d",
+      "bytes": 1665
+    },
+    "island_coalescence.py": {
+      "sha256": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b",
+      "bytes": 14667
+    },
+    "outputs/commissioning__20261025T1141/native/.simjecture-flash-guided-output": {
+      "sha256": "67d1f5ea486320558047f5cff49a53b2b0f1eaca0f699ba9abc1c1f60bcedc67",
+      "bytes": 49
+    },
+    "outputs/commissioning__20261025T1141/native/flash.par": {
+      "sha256": "d85dd7177a73bf7184934b2ff33e5b2b5e615a69b0bcc550ed0d7f24d9eceac1",
+      "bytes": 1779
+    },
+    "outputs/commissioning__20261025T1141/native/flash_run.dat": {
+      "sha256": "ee3297f2204fbcaf25c439dcacfa499de70d08f0b240cbad7b66c088930b05a4",
+      "bytes": 357436
+    },
+    "outputs/commissioning__20261025T1141/native/flash_run.log": {
+      "sha256": "c95a77747b029fa42ef81655c247ad896f4cd4945a5cb23a9b84a9c1688391b5",
+      "bytes": 151493
+    },
+    "outputs/commissioning__20261025T1141/native/flash_run_forced_hdf5_plt_cnt_0000": {
+      "sha256": "39fa80b841ffaa430e6dbf05ddc4d81031ca572f8f5251120c0738d32ad375ad",
+      "bytes": 580876
+    },
+    "outputs/commissioning__20261025T1141/native/flash_run_hdf5_chk_0000": {
+      "sha256": "4d50c1b032f03a5cde35fdd90ab3db19994592df94095e49ce6021807d05f64d",
+      "bytes": 2950412
+    },
+    "outputs/commissioning__20261025T1141/native/flash_run_hdf5_chk_0001": {
+      "sha256": "f9ba1acb59dd2054dc59f7b0543bbad91f582e607e05aad277ebc86581c9b759",
+      "bytes": 2950412
+    },
+    "outputs/commissioning__20261025T1141/native/flash_run_hdf5_plt_cnt_0000": {
+      "sha256": "57071f418cb42bc8a4560fefd83ba62b303c94e6e4a259c32883cde4c6b58097",
+      "bytes": 580876
+    },
+    "outputs/commissioning__20261025T1141/native/flash_run_hdf5_plt_cnt_0001": {
+      "sha256": "415e76ac58b91a3a3ae344b0eebd936f2bcbaf23cff82f9e218237eb02ca92ad",
+      "bytes": 580876
+    },
+    "outputs/commissioning__20261025T1141/native/flash_run_hdf5_plt_cnt_0002": {
+      "sha256": "35a945bed0323752f3f035772308629f868451f25bc922cd6518698417454110",
+      "bytes": 580876
+    },
+    "outputs/commissioning__20261025T1141/native/flash_run_hdf5_plt_cnt_0003": {
+      "sha256": "5534f55483a6ad97b86fddc0d0cbf9f8744d1c4b75b64aec2a48f61cf93bb775",
+      "bytes": 580876
+    },
+    "outputs/commissioning__20261025T1141/native/flash_run_hdf5_plt_cnt_0004": {
+      "sha256": "19a7fcd4fbd1e4e9df3ddb04ee649c092e00ba89a442c6e7a710909752ff220c",
+      "bytes": 580876
+    },
+    "outputs/commissioning__20261025T1141/native/flash_run_hdf5_plt_cnt_0005": {
+      "sha256": "24812fe3025f147d84269d6844a114f46d33d00eb5902b2d617f97d5284a9363",
+      "bytes": 580876
+    },
+    "outputs/commissioning__20261025T1141/native/flash_run_hdf5_plt_cnt_0006": {
+      "sha256": "17bf59a36a947cb72d4dfe949f84a99940918f2185c6ed683ab97a0d6262598d",
+      "bytes": 580876
+    },
+    "outputs/commissioning__20261025T1141/native/flash_run_hdf5_plt_cnt_0007": {
+      "sha256": "43e197ba3de14f460e7bc2da7638db6cd03c0fb3bc9c27db9ae776f879ba9db0",
+      "bytes": 580876
+    },
+    "outputs/commissioning__20261025T1141/native/flash_run_hdf5_plt_cnt_0008": {
+      "sha256": "6d8defe22d8738f5c4b65d916ad2b257e75cfda77f296e42c525bd274b6caf47",
+      "bytes": 580876
+    },
+    "outputs/commissioning__20261025T1141/native/flash_run_hdf5_plt_cnt_0009": {
+      "sha256": "6311525cd20ce34a1258cfc123c8c9e701347aee39effa9f351dd07d4d31d2eb",
+      "bytes": 580876
+    },
+    "outputs/commissioning__20261025T1141/native/flash_run_hdf5_plt_cnt_0010": {
+      "sha256": "ea1f60f70256e6a44b49960db9d6f7bb43bbb9fb7d6e602a52057ce3ae691402",
+      "bytes": 580876
+    },
+    "outputs/commissioning__20261025T1141/native/flash_run_hdf5_plt_cnt_0011": {
+      "sha256": "f85f65cfc775893282eb5a503148786bca3b611d59c57b4c795191d63354e400",
+      "bytes": 580876
+    },
+    "outputs/commissioning__20261025T1141/native/flash_run_hdf5_plt_cnt_0012": {
+      "sha256": "153aacb499042d20081bbbbc0307501a35ff139864a9060c3e439278868c0bd0",
+      "bytes": 580876
+    },
+    "outputs/commissioning__20261025T1141/native/flash_run_hdf5_plt_cnt_0013": {
+      "sha256": "2578089c887b2efa014620240595dbbca170eee24873c27ce917b5b3d0f441cf",
+      "bytes": 580876
+    },
+    "outputs/commissioning__20261025T1141/native/flash_run_hdf5_plt_cnt_0014": {
+      "sha256": "503820f49fc07ba7aba661ed46259a9c6241a7af6eec00eaa10c137b7a4f7751",
+      "bytes": 580876
+    },
+    "outputs/commissioning__20261025T1141/native/flash_run_hdf5_plt_cnt_0015": {
+      "sha256": "6837f75ff27ccf540cabf40f64f5038d2b35e3e09760b1fd4794579743aa7bc6",
+      "bytes": 580876
+    },
+    "outputs/commissioning__20261025T1141/native/flash_run_hdf5_plt_cnt_0016": {
+      "sha256": "eba48a01269896fd7335d651d77ab6878459e1ae1255337da26328dcf74ed98a",
+      "bytes": 580876
+    },
+    "outputs/commissioning__20261025T1141/native/flash_run_hdf5_plt_cnt_0017": {
+      "sha256": "8060924621c5db9d1970d24993a41290b43ee535c1bc822db8c1d7392e1ee7d7",
+      "bytes": 580876
+    },
+    "outputs/commissioning__20261025T1141/native/flash_run_hdf5_plt_cnt_0018": {
+      "sha256": "14793aa777a3673819a81c54971802182a317c51b5ada31f6d563cbf4d74ed61",
+      "bytes": 580876
+    },
+    "outputs/commissioning__20261025T1141/native/flash_run_hdf5_plt_cnt_0019": {
+      "sha256": "86c17651da17ecdd6efd42af613ebe18df96e9c6f7db14035b8d6237662a8b7c",
+      "bytes": 580876
+    },
+    "outputs/commissioning__20261025T1141/native/flash_run_hdf5_plt_cnt_0020": {
+      "sha256": "5c0626c7fde37ec603ef53d23394ad034ace6293350a6e62fea8254e3ab5e04c",
+      "bytes": 580876
+    },
+    "outputs/commissioning__20261025T1141/native/flash_run_hdf5_plt_cnt_0021": {
+      "sha256": "950815e80bda7d33e25309a1f442eafaa28a2c184ee695c2c1e63023656938c2",
+      "bytes": 580876
+    },
+    "outputs/commissioning__20261025T1141/native/flash_run_hdf5_plt_cnt_0022": {
+      "sha256": "5960bb0f978bc878cfcb606f1ee7f7250dbeac8fe7d92c901edcd200a6648ab1",
+      "bytes": 580876
+    },
+    "outputs/commissioning__20261025T1141/native/flash_run_hdf5_plt_cnt_0023": {
+      "sha256": "e9436ec1402bdbc03a0ee65f969f6929f77d9024bf85af0d822e316f2024af45",
+      "bytes": 580876
+    },
+    "outputs/commissioning__20261025T1141/native/launcher_stderr.txt": {
+      "sha256": "b02b461e24dcd2e6b070047f42137aa8a806941ce4796a6bb96cf4a506dd057d",
+      "bytes": 504
+    },
+    "outputs/commissioning__20261025T1141/native/launcher_stdout.txt": {
+      "sha256": "947da9e5911d7aa6a603d90c3b2cc30bd15302f8c986a310e706965f09a70301",
+      "bytes": 142272
+    },
+    "outputs/commissioning__20261025T1141/validation.json": {
+      "sha256": "f64f382c707c3193cc44f66b3e74f1b1ee1a456f7c426763d8964fdfdf6ed84f",
+      "bytes": 9563
+    }
+  },
+  "missing_outputs": [
+    "assets/runtime_validation.json"
+  ],
+  "input_mutations": [],
+  "output_findings": [],
+  "scientific_status": "unreviewed",
+  "finished_at": 1792929201.3527155
+}

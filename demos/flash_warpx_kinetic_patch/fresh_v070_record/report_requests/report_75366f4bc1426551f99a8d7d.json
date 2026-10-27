@@ -1,0 +1,14 @@
+{
+  "id": "report_75366f4bc1426551f99a8d7d",
+  "status": "deferred",
+  "created_at": 1793007099.5628598,
+  "reason": "Assess completed fresh FLASH-to-WarpX study, two prospective evidence seeds and full conservative uncertainty ledger. Worker assessment supports finite prediction (upper .14747ions,.15448electrons); independent claim review review_01645441bd0eaebf3e6391fd pending. Report distinguishes measurements, qualification, limitations and formalverdict, retains failedcontrols and figures/provenance.",
+  "report": "report_reviews/75366f4bc1426551f99a8d7daeb82fe3d675951e1e6e3cf1cc379a158f016caf/RESULTS.md",
+  "source_report": "research/RESULTS.md",
+  "packet": "report_reviews/75366f4bc1426551f99a8d7daeb82fe3d675951e1e6e3cf1cc379a158f016caf/packet.json",
+  "report_sha256": "96a9fde5ff46754b2fbd828d41574ebdb2443d58b4bbef84c79eed4ed61da84c",
+  "packet_sha256": "8eadef98721155cfad680a77c15c4af3dffdae3e8a354fe489cf49b27d6b39dc",
+  "authority": "Report review only; never scientific claim acceptance",
+  "error": "Protected report review ended before this separate report could be assessed; no acceptance is inferred.",
+  "resolved_at": 1793007575.7856889
+}

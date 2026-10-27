@@ -1,0 +1,20 @@
+{
+  "id": "note_7621e8f49ae49d16d542dcfb",
+  "created_at": 1792935404.9304852,
+  "authority": "worker_note",
+  "statement": "S2000 384 rate.0382424469; previous256.0381339413,192.0381551781. Last change.2837% exceeds preceding.0557%, so recorded gate fails despite small error. Preserve this failed control and add512 forS2000 only, retaining same physics and R. Forecast512 cost977*(512/384)^3~2316s, timeout3000. Cadence.01 instead.005 limits initial raw512 output to~1.52GB pluscheckpoint~0.1GB; streamed lossless magnetic reduction and representative archive keep peak near1.65GB rather than duplicate allrawarchive. Require >=1.8GB reservation. Commission compact driver first at128S1000, checking every magnetic frame readback bitwise before any deletion. Keep last-three-mesh and all other gates unchanged; no claim evidence before independent approval.",
+  "kind": "next_test",
+  "experiments": [
+    "exp_9ed2782a9af6b2446c71285a",
+    "exp_cd08ebc4f1287d48388eddc6"
+  ],
+  "sources": [],
+  "claim": "root",
+  "supersedes": null,
+  "alternatives": {},
+  "estimated_seconds": 2400.0,
+  "evidence_bindings": {
+    "exp_9ed2782a9af6b2446c71285a": "d999306a0cbc09e35183024bed34ebad7d1102ae0e2e376496f8f1db7d6ab777",
+    "exp_cd08ebc4f1287d48388eddc6": "cbe97b8643d24393abaa82b8fb0dec6b102c212078fcfd375dff2f3cfd1849e6"
+  }
+}

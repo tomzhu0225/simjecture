@@ -1,0 +1,8 @@
+{
+  "phase": "finished",
+  "report_status": "unreviewed",
+  "budget_revision": 0,
+  "finished_at": 1793007575.7897515,
+  "error": "1 validation error for ReportAssessment\n  Value error, Accepted report requires no blocking issues; revision requires issues [type=value_error, input_value={'decision': 'accepted', ...nks remain available.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/value_error",
+  "updated_at": 1793007575.7898686
+}

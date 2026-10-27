@@ -63,19 +63,19 @@ fields, numerical controls, model usage, API cost estimates and the controller
 failures exposed by two days of research. Public tables reproduce the accounting.
 
 [**Magnetic-island coalescence with FLASH**](https://drawingsword.com/simjecture/demos/island-coalescence.html)
-shows density, magnetic geometry and a current sheet evolving in a real MHD
-calculation. Follow five resistivity cases, two refinements and their evidence
-map to see what was measured and why the full-range question remains open.
-The classic campaign and subsequent diagnostic audits remain available.
+shows a fresh v0.7.0 investigation that falsified a reconnection-rate slope band.
+Follow the evolving plasma fields, numerical qualification and accepted
+counterexample. The proposed replacement law remains unvalidated.
 
-![Four fresh FLASH snapshots: density with magnetic field lines above, current density below](https://raw.githubusercontent.com/tomzhu0225/simjecture/main/docs/_static/demos/island-field-walkthrough.png)
+![Fresh FLASH fields and the independently reviewed reconnection-rate contrast](https://raw.githubusercontent.com/tomzhu0225/simjecture/main/docs/_static/demos/fresh-v070-island-fields.png)
 
 [**FLASH → WarpX kinetic follow-up**](https://drawingsword.com/simjecture/demos/flash-warpx-patch.html)
-follows an actual MHD current sheet into a kinetic particle simulation. The visual
-walkthrough locates the patch, opens its pressure-measurement region, and connects
-field maps and numerical controls to the unresolved scientific claim.
+connects a fresh MHD current sheet to local kinetic calculations. Two new particle
+seeds and numerical controls support the finite pressure prediction, with
+independent claim and report acceptance. The earlier unresolved records remain
+available alongside both fresh examples.
 
-![Actual FLASH source, pressure-measurement region and evolved WarpX field](https://raw.githubusercontent.com/tomzhu0225/simjecture/main/docs/_static/demos/coupled-field-handoff.png)
+![Fresh FLASH source, kinetic fields, pressure maps and reviewed numerical controls](https://raw.githubusercontent.com/tomzhu0225/simjecture/main/docs/_static/demos/fresh-v070-coupled-fields.png)
 
 [**From hardware design to 3D plasma (Qin-1)**](https://drawingsword.com/simjecture/demos/qin1-hardware-plasma.html)
 connects **CAD → mesh → circuits and electromagnetics → 3D plasma → visualization**.

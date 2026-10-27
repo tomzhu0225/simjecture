@@ -1,0 +1,18 @@
+{
+  "id": "note_70f4152b4de2dd95effb259c",
+  "created_at": 1792937746.1633658,
+  "authority": "worker_note",
+  "statement": "Conditional helper proposal inspected, unreviewed. Native offline calibration of the specified measured-strain ODE using retained384 bracket states predictsR1000=.03725 andR2000=.02646 versus recorded.04969,.03824: roughly25-31% low, failing its required5% calibration replay gate. The local erf profile fits but measured central strain with a shared upstream curve does not predict the observed width/rate dynamics. This rejects that simple closure before neweta validation; no coefficients may be silently rescaled within it. A separate exploratory effective-width-budget diagnostic inferred from width derivatives (not fitted rates) gives common stage-dependent effective thinning larger than measured linear strain, suggesting nonuniform-flow/finite-geometry contributions; it remains unrecorded and uncommitted, not a supported repair.",
+  "kind": "interpretation",
+  "experiments": [
+    "exp_cd08ebc4f1287d48388eddc6"
+  ],
+  "sources": [],
+  "claim": "root",
+  "supersedes": null,
+  "alternatives": {},
+  "estimated_seconds": null,
+  "evidence_bindings": {
+    "exp_cd08ebc4f1287d48388eddc6": "cbe97b8643d24393abaa82b8fb0dec6b102c212078fcfd375dff2f3cfd1849e6"
+  }
+}

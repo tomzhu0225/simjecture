@@ -1,0 +1,23 @@
+{
+  "id": "director_22e31587f076253f95e491da",
+  "created_at": 1792930303.5256026,
+  "packet_sha256": "2a7dd04e82ec1c0e8e34239f85ab38168e0a5969b1620dbee5fb2db1c6695f1f",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "The completed 192-mesh controls reached both flux thresholds in 130\u2013172 seconds and recorded small conservation and divergence errors. Their rates preserve the exploratory discrepancy, but timestep qualification, finest-mesh admissibility and independent methods review remain outstanding; no scientific verdict follows. Keep both 256-mesh controls running. Approximately 3333 seconds remain before the compute cutoff, so targeted qualification and fresh evidence remain affordable at observed costs. The methods dossier now exists, while preliminary reporting and independent review preparation can proceed during the active runs.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "feasible",
+  "stop_experiments": [],
+  "wake_worker": true,
+  "park_worker": false,
+  "report_assessment": null,
+  "closeout_report": null,
+  "next_action": "While both controls run, prepare the independent methods-review submission, explicitly identifying outstanding mesh and CFL results. Generate the preliminary scaling/slope plot and begin the self-contained report and decision timeline from existing fresh records. Inspect representative 192-mesh fields for topology and boundary behavior; repeat at the finest mesh when available. On completion, evaluate the committed mesh-convergence gates, run the complete-window CFL control for both contrast members, and propagate the prescribed deterministic uncertainty without changing it retrospectively. Obtain independent methods qualification before fresh claim-bearing production evidence. Forecast storage for those runs using retained archive sizes, including older duplicate fields; the total allowance remains 8 GiB. Keep numerical work before the compute cutoff and preserve the 600-second report reserve. If qualification fails, report the unresolved limitation explicitly.",
+  "storage_increase": null,
+  "registration_tuning": null,
+  "time_request": null,
+  "operating_limits": null,
+  "helper_tasks": [],
+  "help_replies": []
+}

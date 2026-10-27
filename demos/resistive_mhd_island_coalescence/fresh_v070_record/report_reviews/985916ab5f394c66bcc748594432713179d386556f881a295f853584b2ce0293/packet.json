@@ -1,0 +1,2132 @@
+{
+  "original_hypothesis": "In the supplied two-dimensional, compressible, single-fluid resistive-MHD island-coalescence model, with uniform magnetic diffusivity eta, fixed initial state and boundaries, the normalized inverse-resistivity control is S_eta=1/eta. For mesh-qualified, pre-plasmoid cases with S_eta in [250,4000], the flux-window-averaged reconnection rate R has a log-slope in the band [-0.55,-0.45]. For a declared contrast Sa<Sb, p_eff=[ln R(Sb)-ln R(Sa)]/[ln Sb-ln Sa] must lie in that band after accounting for numerical uncertainty. Define R=(0.05-0.01)/(t(psi_rec=0.05)-t(psi_rec=0.01)) using the same initial-state-subtracted reconnected flux and normalization for both cases. The exponent may vary between contrasts: this hypothesis does not require an exact global power law or posit a probability distribution for exponents. A qualified contrast with its numerical-uncertainty interval wholly outside the band is a counterexample. Test this claim and, if it fails, investigate a minimal explanatory repair with a prediction challenged by fresh simulations.\n",
+  "operator_protocol": "Run a fresh autonomous investigation from the supplied commissioned FLASH instrument. This is a new study, not a continuation; do not import earlier study outputs, fitted slopes, verdicts, or manuscript conclusions. The guide and validation examples are instrument context only. All claim-bearing outputs must be newly generated after the relevant protocol or repair commitment is fixed.\n\nThe root is a band for contrast-dependent log-slopes, not an exact single-power-law goodness-of-fit claim or a random-exponent distribution. Fix the rate reducer, contrast-selection plan, numerical uncertainty envelope, topology/admissibility criteria and decision rule before evidence collection. Both members of a contrast must reach the flux window, realize uniform resistivity, preserve acceptable divergence and boundaries, and remain in the declared single-sheet/pre-plasmoid regime. Keep numerical uncertainty separate from statistical confidence. Propagate rate uncertainty into slope intervals; do not treat deterministic mesh points as random Gaussian samples.\n\nMap at least five distinct logarithmically separated resistivity settings unless a justified early counterexample makes broader mapping unnecessary. Start economically and target spatial and time/output-cadence controls at the actual contrast supporting a verdict. Several resolutions should establish whether a mismatch persists. One sufficiently qualified counterexample is enough for falsification; unrelated cases need not all finish. Do not require one fitted exponent to explain the whole curve. The worker and independent reviewer must assess actual evidence and may conclude support on the tested domain, falsification or unresolved. No verdict is prescribed.\n\nIf falsified, explain the physical or measurement mechanism and commit to a narrowly scoped, falsifiable repaired prediction before collecting its validation data. Use new resistivity settings or otherwise prospectively specified independent validation cases. Distinguish original and revised claims, numerical qualification and human scientific interpretation. Investigation completion does not require every branch to close automatically.\n\nResources: 90 minutes study wall time on the local 24-logical-CPU machine. Use at most 16 MPI ranks in aggregate and OMP_NUM_THREADS=1; leave capacity for the user. Existing FLASH and Python/HDF5 runtimes are supplied. Reuse the compiled solver; develop case drivers and diagnostics as needed. Do not compile or modify FLASH or other solvers for this study. Retain generated records inside managed experiment workspaces. Avoid loading every full-resolution snapshot into memory together.\n\nDeliver a self-contained scientific report, a machine-readable table of every fresh run (S_eta, eta, mesh, timing, rate, numerical checks, slope intervals, field paths and hashes), representative evolution fields, a scaling/slope plot and a short decision timeline. Preserve input/build/program identities and informative failed controls. Prepare the report before the deadline; prioritize defensible evidence over exhaustive sweeps. Neither a harness completion flag nor an approval refusal alone is a physical verdict. Use independent methods and claim reviews, and accurately state unfinished validation.\n",
+  "study_root": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153",
+  "scientific_snapshot": {
+    "finalization": {
+      "reserve_seconds": 600,
+      "compute_deadline": 1792941775.5981443,
+      "phase": "research",
+      "report_status": "not_started",
+      "compute_remaining_seconds": 982.0297658443451
+    },
+    "report_assessments": [],
+    "worker_wait": {
+      "status": "woken",
+      "reason": "Await first production contrast member; fixed endpoint reducer and current report are prepared.",
+      "subjects": {
+        "experiments": [
+          "exp_755dffd11e2a3f05a6b86b49"
+        ]
+      },
+      "for_operator": false,
+      "operator_ids": [],
+      "created_at": 1792938735.7933297,
+      "deadline": 1792942375.5981443,
+      "authority": "Worker scheduling only; no scientific approval or deadline change",
+      "wake_events": [
+        {
+          "kind": "experiments",
+          "id": "exp_755dffd11e2a3f05a6b86b49",
+          "status": "succeeded"
+        }
+      ],
+      "woken_at": 1792940162.2422645,
+      "wake_reason": "Director requested useful work"
+    },
+    "help_requests": [
+      {
+        "id": "help_4b4209d29f037d00c1b5699e",
+        "status": "resolved",
+        "created_at": 1792936685.8934162,
+        "request_sha256": "4b4209d29f037d00c1b5699eb14adb2d2dba4de3ee6cf7a0f12e8a93de806377",
+        "question": "Assess a minimal explanatory repair if the selected root contrast is eventually accepted as falsified. Fresh map and refined slopes flatten near -.38, but root qualification is still pending512. Need a physically or measurement-motivated, narrowly scoped prediction challenged by newS settings, without pretending a fitted band is explanatory or using old studies.",
+        "success_criteria": "Return one affordable repair proposal with explicit mechanism/evidence distinction, frozen prediction formula, independent new resistivity cases and a quantitative falsifier. Identify what fresh diagnostics would challenge the mechanism. No solver changes, no evidence runs, no claim approval.",
+        "context": "Fixed2D compressible resistive MHD, transient coalescence, uniformeta, fixedinitialandreflectingboundaries. R=.04/(first.05-.01 crossing times), initial-subtracted boundary-to-center flux. FivefreshS250-4000 map and192/256/384 refinements. Corrected topology1X2O; matchedJ varies2-3% across256->384 while R changes<.3%. Candidate cause is transient sheet/current and upstream geometry rather than stationary universalSP law. Rootnotyetaccepted; proposed repair must be committed only after accepted falsification and validated on newcases. Affordable future validation roughly2x384 trajectories.",
+        "files": {
+          "RESULTS.md": "50372cf34c025ef0e68585103001b521f1908b302aa7fdf264d713f2e3d3c42b",
+          "spatial_qualification.json": "4cd292ddc578bb871c0a7c3c9b4428cc4c2d85be2a8e40d56f99668eba972534",
+          "calculation.py": "2b78c89dc7551f90848e8989d2c50c379e9d3428281858c9343d2b231ec71183"
+        },
+        "tasks": [
+          "helper_455dc9453f2c7e52a0be658b"
+        ],
+        "context_file": "help_context/help_4b4209d29f037d00c1b5699e/CONTEXT.json",
+        "context_sha256": "a00019b9f71d60a539c85edf6b314b4ee4b1759732ac77389feb1f37451e3309",
+        "resolved_at": 1792937333.8571692
+      }
+    ],
+    "helper_tasks": [
+      {
+        "id": "helper_455dc9453f2c7e52a0be658b",
+        "status": "completed",
+        "created_at": 1792936772.3649805,
+        "director": "director_e0734cfd3902f2ccd1ea3426",
+        "request": "help_4b4209d29f037d00c1b5699e",
+        "task": "Using the attached fresh-study records only, assess one minimal explanatory repair conditional on the selected root contrast eventually receiving independent acceptance as a counterexample. Distinguish observed evidence from proposed mechanism. Investigate whether transient sheet evolution or upstream geometry can support a quantitative prediction without assuming a stationary Sweet\u2013Parker sheet. Specify a frozen formula predicting rates or crossing durations at new resistivity settings, calibration inputs and parameter values or an explicit procedure for fixing them before validation, numerical allowances, and a quantitative falsifier. Select affordable independent settings prospectively, explain what field diagnostics would challenge the mechanism, and estimate costs from recorded completed trajectories. Do not present a fitted exponent band or an identity using validation-measured current as an explanatory prediction. If the available evidence cannot identify a defensible predictive repair, explain the missing information and propose the smallest discriminating diagnostic. No solver changes, simulations, imports from earlier studies, or scientific approvals.",
+        "completion_criteria": "Deliver one bounded conditional proposal with explicit mechanism/evidence separation, a prospectively freezable prediction, independent validation cases, quantitative failure criteria, diagnostic requirements and a budget estimate. Clearly identify unsupported assumptions and whether additional calibration is required before commitment.",
+        "outputs": [
+          "conditional_repair_proposal.md",
+          "conditional_repair_prediction.json"
+        ],
+        "timeout_seconds": 600.0,
+        "input_hashes": {
+          "RESULTS.md": "50372cf34c025ef0e68585103001b521f1908b302aa7fdf264d713f2e3d3c42b",
+          "spatial_qualification.json": "4cd292ddc578bb871c0a7c3c9b4428cc4c2d85be2a8e40d56f99668eba972534",
+          "calculation.py": "2b78c89dc7551f90848e8989d2c50c379e9d3428281858c9343d2b231ec71183"
+        },
+        "context_sha256": "9085a496508a207a8d8ba44544ccff3aa1c3761b55adf4a56a5a09f0c5ca2ca0",
+        "workspace": "helpers/helper_455dc9453f2c7e52a0be658b/research",
+        "scientific_status": "unreviewed",
+        "deadline": 1792937374.386692,
+        "process_identity": {
+          "pid": 114645,
+          "starttime": "5300215",
+          "argv": [
+            "/home/tomzhu0225/src/simjecture-prx-island-v0.7.0/.venv/bin/python",
+            "-m",
+            "conjecture_solver.research_helpers",
+            "--root",
+            "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153",
+            "--execute",
+            "helper_455dc9453f2c7e52a0be658b"
+          ],
+          "launched_at": "2026-10-25T13:59:34.394736+00:00",
+          "run_directory": null
+        },
+        "started_at": 1792936774.5667453,
+        "returncode": 0,
+        "finished_at": 1792937333.8494334,
+        "usage": {
+          "usage_legacy_unmeasured_calls": 0,
+          "usage_unreported_threads": {},
+          "usage_coverage_since": 1792936774.571952,
+          "usage_by_thread": {
+            "01a1735c-0c6c-7261-867c-2f6311afed36": {
+              "input_tokens": 740555,
+              "cached_input_tokens": 688128,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 14199,
+              "reasoning_output_tokens": 3039
+            }
+          },
+          "usage_roles_by_thread": {
+            "01a1735c-0c6c-7261-867c-2f6311afed36": "worker"
+          },
+          "usage_updated_at": 1792937333.8444262
+        },
+        "result": {
+          "status": "completed",
+          "summary": "Delivered one bounded conditional transient strain-diffusion candidate with a prospectively freezable ODE prediction procedure, explicit calibration gates, new S=750 and 1500 cases, numerical allowances and quantitative rate/field falsifiers. The packet does not identify defensible numerical coefficients or rate predictions: additional retained initial/velocity diagnostics are required before commitment. Reconstructed rates and independently defined profile widths support evolution within the flux window, not the proposed mechanism. Two main 384 trajectories cost an estimated 1642 s base / 2463 s with reserve; full numerical qualification can cost materially more. No simulations, solver changes, earlier-study imports, agents or approvals were performed.",
+          "artifacts": {
+            "conditional_repair_proposal.md": {
+              "bytes": 16306,
+              "sha256": "a25725681de17ed3d8f831864584dbddc1e9bb8be25dfab9d1a42c8d7a620e63"
+            },
+            "conditional_repair_prediction.json": {
+              "bytes": 12177,
+              "sha256": "8c0b4ee9d5da643952d0c0f4dbd8e566f22ade4d27246b8f6e1e42e4674d138d"
+            },
+            "fresh_record_analysis.json": {
+              "bytes": 5148,
+              "sha256": "a748ce113e9e24d469af24768e3b5fd21e4fcc91f3444305614e547ac02f1a65"
+            },
+            "analyze_fresh.py": {
+              "bytes": 3790,
+              "sha256": "549bb2e4e2d8228de4499a615ce94277159bb808194737548c8e5f592f230fb8"
+            },
+            "write_prediction.py": {
+              "bytes": 10785,
+              "sha256": "97c8836900bebeaeaf6bbaf06f2365a596f0667c43a7fae679e8e76670004db9"
+            },
+            "verify_artifacts.py": {
+              "bytes": 2788,
+              "sha256": "68c0777333ea64049d78452d06dbaac1c3f4db27caf5811349cb2e48317d9cbd"
+            },
+            "artifact_checks.json": {
+              "bytes": 725,
+              "sha256": "62f7654feb0e2438e8b4db4daec6b8d067aa1d61275fe2dbd8af9e896712952f"
+            }
+          },
+          "checks": [
+            "All supplied inputs unchanged; all three CONTEXT-declared input hashes match.",
+            "New eta settings are independent of mapped settings; missing calibration and numeric predictions explicitly null.",
+            "Both reconstructed 384 crossing-duration rates match supplied rates within 1e-12 relative.",
+            "Per-case cost sum and aggregate reserved budget are internally consistent; full qualification costs separated.",
+            "Candidate width equation matches analytic zero/constant-strain limits in bounded local arithmetic checks; this is not physics validation.",
+            "Required Markdown and machine-readable prediction artifacts exist and JSON parses without nonfinite values."
+          ],
+          "unresolved": [
+            "Root contrast acceptance remains pending in supplied records; no 512 result is supplied.",
+            "Initial-state profiles, velocity strain, density at upstream peaks and boundary/longitudinal EMF diagnostics are unavailable in this packet.",
+            "Candidate parameters and point predictions remain explicitly null until fixed calibration gates pass and predictions are hashed before validation.",
+            "Shared stage-dependent strain/upstream supply and Gaussian width closure are unsupported assumptions that the proposed diagnostic may reject.",
+            "Two new main trajectories alone do not establish numerical qualification; extra mesh/CFL controls may exceed the approximate two-trajectory budget."
+          ]
+        }
+      }
+    ],
+    "workflow": "minimal",
+    "hypothesis": "In the supplied two-dimensional, compressible, single-fluid resistive-MHD island-coalescence model, with uniform magnetic diffusivity eta, fixed initial state and boundaries, the normalized inverse-resistivity control is S_eta=1/eta. For mesh-qualified, pre-plasmoid cases with S_eta in [250,4000], the flux-window-averaged reconnection rate R has a log-slope in the band [-0.55,-0.45]. For a declared contrast Sa<Sb, p_eff=[ln R(Sb)-ln R(Sa)]/[ln Sb-ln Sa] must lie in that band after accounting for numerical uncertainty. Define R=(0.05-0.01)/(t(psi_rec=0.05)-t(psi_rec=0.01)) using the same initial-state-subtracted reconnected flux and normalization for both cases. The exponent may vary between contrasts: this hypothesis does not require an exact global power law or posit a probability distribution for exponents. A qualified contrast with its numerical-uncertainty interval wholly outside the band is a counterexample. Test this claim and, if it fails, investigate a minimal explanatory repair with a prediction challenged by fresh simulations.\n",
+    "remaining_seconds": 1582.029626607895,
+    "deadline": 1792942375.5981443,
+    "resource_limits": {
+      "max_experiment_bytes": 4294967296,
+      "max_total_bytes": 8589934592
+    },
+    "resource_policy": {
+      "director_can_increase": false
+    },
+    "registration": {
+      "policy": {
+        "director_can_tune": true
+      },
+      "limits": {
+        "timeout_seconds": 60.0,
+        "max_attempts": 1
+      },
+      "recent_attempts": []
+    },
+    "storage_adjustments": [],
+    "solver_development": {
+      "policy": {
+        "allowed": false,
+        "source": "operator_launch_setting",
+        "preserve_reference": true,
+        "qualification": "source_bound_methods_review"
+      },
+      "builds": [],
+      "omitted_builds": 0
+    },
+    "completion_policy": "repair",
+    "original_disposition": "falsified",
+    "completed": false,
+    "scientific_completed": false,
+    "campaign_closeout": {},
+    "experiments": [
+      {
+        "id": "exp_0b86a9ee47886cb02451c2c2",
+        "binding": {
+          "source": "calculation.py",
+          "args": [
+            "--S",
+            "1000",
+            "--n",
+            "256",
+            "--tmax",
+            "1.3",
+            "--cadence",
+            "0.005",
+            "--cfl",
+            "0.2"
+          ],
+          "inputs": {
+            "calculation.py": "a48d3b920e2ecb365307441d5201fe7a8dee59b09275ee6720821071c12c38cc",
+            "island_coalescence.py": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b"
+          },
+          "capability": "flash-island-coalescence-resistive-mhd-4.8",
+          "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+        },
+        "key": "cfl256-recovery-1000",
+        "source": "calculation.py",
+        "finished_at": 1792932534.379506,
+        "execution": {
+          "wall_seconds": 442.77988532699965,
+          "returncode": 0,
+          "timed_out": false
+        },
+        "error": null,
+        "created_at": 1792932091.0627563,
+        "status": "succeeded",
+        "parent_experiment": null,
+        "started_at": 1792932091.2009163,
+        "timeout": 800,
+        "monitor": null,
+        "telemetry": null,
+        "cancel_requested": false,
+        "stop_reason": null,
+        "purpose": "validation",
+        "plan": null,
+        "machine": "local",
+        "resources": null,
+        "remote_job": null,
+        "transport_status": null,
+        "assigned_gpu_ids": null,
+        "commitment": null,
+        "outputs": [
+          "result.json",
+          "fields.tar.gz"
+        ],
+        "stage": "exploration",
+        "method": null,
+        "scientific_status": "unreviewed",
+        "review_ids": [],
+        "output_findings": [],
+        "workspace": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_0b86a9ee47886cb02451c2c2/workspace",
+        "receipt": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_0b86a9ee47886cb02451c2c2.json"
+      },
+      {
+        "id": "exp_2f42b96d98fb476429596b6c",
+        "binding": {
+          "source": "island_coalescence.py",
+          "args": [
+            "--eta",
+            "0.001",
+            "--nx",
+            "128",
+            "--ny",
+            "128",
+            "--alpha",
+            "20",
+            "--tmax",
+            "1.2",
+            "--plot-interval",
+            "0.05",
+            "--ranks",
+            "4",
+            "--iprocs",
+            "2",
+            "--jprocs",
+            "2",
+            "--output",
+            "outputs/commissioning__20261025T1141/native",
+            "--summary",
+            "outputs/commissioning__20261025T1141/validation.json"
+          ],
+          "inputs": {
+            "island_coalescence.py": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b",
+            "assets/literature_basis.md": "b3837a433a90125145174939e149ac059e3af5982ccc567ad7ba7e491bc886a9",
+            "assets/operator_validation.json": "08ac3d4b43a6cafdabbf6f078c3fb3dfce542082a10f08852de267e5d70f537d"
+          },
+          "capability": "flash-island-coalescence-resistive-mhd-4.8",
+          "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+        },
+        "key": "guided-anchor",
+        "source": "island_coalescence.py",
+        "finished_at": 1792929201.3527155,
+        "execution": {
+          "wall_seconds": 20.028474315993662,
+          "returncode": 0,
+          "timed_out": false
+        },
+        "error": null,
+        "created_at": 1792929181.0611296,
+        "status": "failed",
+        "parent_experiment": null,
+        "started_at": 1792929181.2287948,
+        "timeout": 600,
+        "monitor": null,
+        "telemetry": null,
+        "cancel_requested": false,
+        "stop_reason": null,
+        "purpose": "validation",
+        "plan": null,
+        "machine": "local",
+        "resources": null,
+        "remote_job": null,
+        "transport_status": null,
+        "assigned_gpu_ids": null,
+        "commitment": null,
+        "outputs": [
+          "assets/runtime_validation.json"
+        ],
+        "stage": "exploration",
+        "method": null,
+        "scientific_status": "unreviewed",
+        "review_ids": [],
+        "output_findings": [],
+        "workspace": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_2f42b96d98fb476429596b6c/workspace",
+        "receipt": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_2f42b96d98fb476429596b6c.json"
+      },
+      {
+        "id": "exp_349433d01686c1d23c0186c8",
+        "binding": {
+          "source": "calculation.py",
+          "args": [
+            "--S",
+            "500",
+            "--n",
+            "128",
+            "--tmax",
+            "3",
+            "--cadence",
+            "0.025"
+          ],
+          "inputs": {
+            "calculation.py": "3627bce52320c86e035fe970c4d3c95629f148da95d089767a6c6277c7a266c5",
+            "island_coalescence.py": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b"
+          },
+          "capability": "flash-island-coalescence-resistive-mhd-4.8",
+          "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+        },
+        "key": "pilot-500",
+        "source": "calculation.py",
+        "finished_at": 1792929395.1382468,
+        "execution": {
+          "wall_seconds": 62.476441148995946,
+          "returncode": 0,
+          "timed_out": false
+        },
+        "error": null,
+        "created_at": 1792929332.0852382,
+        "status": "succeeded",
+        "parent_experiment": null,
+        "started_at": 1792929332.2398744,
+        "timeout": 300,
+        "monitor": null,
+        "telemetry": null,
+        "cancel_requested": false,
+        "stop_reason": null,
+        "purpose": "validation",
+        "plan": null,
+        "machine": "local",
+        "resources": null,
+        "remote_job": null,
+        "transport_status": null,
+        "assigned_gpu_ids": null,
+        "commitment": null,
+        "outputs": [
+          "result.json",
+          "fields.tar.gz"
+        ],
+        "stage": "exploration",
+        "method": null,
+        "scientific_status": "unreviewed",
+        "review_ids": [],
+        "output_findings": [],
+        "workspace": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_349433d01686c1d23c0186c8/workspace",
+        "receipt": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_349433d01686c1d23c0186c8.json"
+      },
+      {
+        "id": "exp_40aac93038caa57671014925",
+        "binding": {
+          "source": "calculation.py",
+          "args": [
+            "--S",
+            "1000",
+            "--n",
+            "384",
+            "--tmax",
+            "1.15",
+            "--cadence",
+            "0.005"
+          ],
+          "inputs": {
+            "calculation.py": "2b78c89dc7551f90848e8989d2c50c379e9d3428281858c9343d2b231ec71183",
+            "island_coalescence.py": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b",
+            "null_diagnostic.py": "2127895b89607561427f6b35024e5b85761c89bac53c4e58a411e49c14c5d53f"
+          },
+          "capability": "flash-island-coalescence-resistive-mhd-4.8",
+          "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+        },
+        "key": "production-root-S1000",
+        "source": "calculation.py",
+        "finished_at": 1792939677.5163524,
+        "execution": {
+          "wall_seconds": 547.2753422720052,
+          "returncode": 0,
+          "timed_out": false
+        },
+        "error": null,
+        "created_at": 1792939129.8827033,
+        "status": "succeeded",
+        "parent_experiment": null,
+        "started_at": 1792939130.0219746,
+        "timeout": 1000,
+        "monitor": null,
+        "telemetry": null,
+        "cancel_requested": false,
+        "stop_reason": null,
+        "purpose": "comparison",
+        "plan": null,
+        "machine": "local",
+        "resources": null,
+        "remote_job": null,
+        "transport_status": null,
+        "assigned_gpu_ids": null,
+        "commitment": null,
+        "outputs": [
+          "result.json",
+          "fields.tar.gz",
+          "magnetic_series.h5"
+        ],
+        "stage": "evidence",
+        "method": "method_661a2c5064ad92c6494cf179",
+        "scientific_status": "reviewed",
+        "review_ids": [
+          "review_d8ed7a3364483fc612a029c3"
+        ],
+        "output_findings": [],
+        "workspace": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_40aac93038caa57671014925/workspace",
+        "receipt": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_40aac93038caa57671014925.json"
+      },
+      {
+        "id": "exp_42cf28ee0c7c41a2f8d923be",
+        "binding": {
+          "source": "calculation.py",
+          "args": [
+            "--S",
+            "2000",
+            "--n",
+            "128",
+            "--tmax",
+            "3",
+            "--cadence",
+            "0.025"
+          ],
+          "inputs": {
+            "calculation.py": "3627bce52320c86e035fe970c4d3c95629f148da95d089767a6c6277c7a266c5",
+            "island_coalescence.py": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b"
+          },
+          "capability": "flash-island-coalescence-resistive-mhd-4.8",
+          "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+        },
+        "key": "pilot-2000",
+        "source": "calculation.py",
+        "finished_at": 1792929483.7699652,
+        "execution": {
+          "wall_seconds": 70.01251081599912,
+          "returncode": 0,
+          "timed_out": false
+        },
+        "error": null,
+        "created_at": 1792929413.2841015,
+        "status": "succeeded",
+        "parent_experiment": null,
+        "started_at": 1792929413.4669542,
+        "timeout": 300,
+        "monitor": null,
+        "telemetry": null,
+        "cancel_requested": false,
+        "stop_reason": null,
+        "purpose": "validation",
+        "plan": null,
+        "machine": "local",
+        "resources": null,
+        "remote_job": null,
+        "transport_status": null,
+        "assigned_gpu_ids": null,
+        "commitment": null,
+        "outputs": [
+          "result.json",
+          "fields.tar.gz"
+        ],
+        "stage": "exploration",
+        "method": null,
+        "scientific_status": "unreviewed",
+        "review_ids": [],
+        "output_findings": [],
+        "workspace": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_42cf28ee0c7c41a2f8d923be/workspace",
+        "receipt": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_42cf28ee0c7c41a2f8d923be.json"
+      },
+      {
+        "id": "exp_56eca6327dc2e3f0fd4942d4",
+        "binding": {
+          "source": "calculation.py",
+          "args": [
+            "--S",
+            "1000",
+            "--n",
+            "384",
+            "--tmax",
+            "1.3",
+            "--cadence",
+            "0.005"
+          ],
+          "inputs": {
+            "calculation.py": "c3f362653d863059093b187b43df0091e592f043831a37e58c850d766d48de53",
+            "island_coalescence.py": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b"
+          },
+          "capability": "flash-island-coalescence-resistive-mhd-4.8",
+          "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+        },
+        "key": "refine384-1000",
+        "source": "calculation.py",
+        "finished_at": 1792933996.8706515,
+        "execution": {
+          "wall_seconds": 681.5188568340018,
+          "returncode": 0,
+          "timed_out": false
+        },
+        "error": null,
+        "created_at": 1792933314.412219,
+        "status": "succeeded",
+        "parent_experiment": null,
+        "started_at": 1792933314.548896,
+        "timeout": 1800,
+        "monitor": null,
+        "telemetry": null,
+        "cancel_requested": false,
+        "stop_reason": null,
+        "purpose": "validation",
+        "plan": "note_2c50b2f1b41745480ad78aef",
+        "machine": "local",
+        "resources": null,
+        "remote_job": null,
+        "transport_status": null,
+        "assigned_gpu_ids": null,
+        "commitment": null,
+        "outputs": [
+          "result.json",
+          "fields.tar.gz"
+        ],
+        "stage": "exploration",
+        "method": null,
+        "scientific_status": "unreviewed",
+        "review_ids": [],
+        "output_findings": [],
+        "workspace": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_56eca6327dc2e3f0fd4942d4/workspace",
+        "receipt": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_56eca6327dc2e3f0fd4942d4.json"
+      },
+      {
+        "id": "exp_5705eedd35d71964238c0e87",
+        "binding": {
+          "source": "bracket_check.py",
+          "args": [],
+          "inputs": {
+            "bracket_check.py": "deb1b61eaef73c972f1173ebbbb579a9da507bc8b566c527c01a6edb03312ea4",
+            "null_diagnostic.py": "2127895b89607561427f6b35024e5b85761c89bac53c4e58a411e49c14c5d53f",
+            "upper_bracket.h5": "16066e91f7af31100dae0a8db84585f6b8b42bc60b6290d526d97a1fefe2ca54",
+            "upper_bracket_identity.json": "f01be5761f7f25b250d23ead12dca05a80c7dc5ea18aa2ca7fcf5e56203817fc"
+          },
+          "capability": null,
+          "runtime_sha256": null
+        },
+        "key": null,
+        "source": "bracket_check.py",
+        "finished_at": 1792933704.118149,
+        "execution": {
+          "wall_seconds": 0.1546223579935031,
+          "returncode": 0,
+          "timed_out": false
+        },
+        "error": null,
+        "created_at": 1792933703.769753,
+        "status": "succeeded",
+        "parent_experiment": "exp_f2da6ae1b2ce992ddf16cf82",
+        "started_at": 1792933703.9378319,
+        "timeout": 60,
+        "monitor": null,
+        "telemetry": null,
+        "cancel_requested": false,
+        "stop_reason": null,
+        "purpose": "diagnostic",
+        "plan": null,
+        "machine": "local",
+        "resources": null,
+        "remote_job": null,
+        "transport_status": null,
+        "assigned_gpu_ids": null,
+        "commitment": null,
+        "outputs": [
+          "bracket_result.json"
+        ],
+        "stage": "exploration",
+        "method": null,
+        "scientific_status": "unreviewed",
+        "review_ids": [],
+        "output_findings": [],
+        "workspace": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_5705eedd35d71964238c0e87/workspace",
+        "receipt": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_5705eedd35d71964238c0e87.json"
+      },
+      {
+        "id": "exp_58adb12d461c94104daeff23",
+        "binding": {
+          "source": "calculation.py",
+          "args": [
+            "--S",
+            "2000",
+            "--n",
+            "512",
+            "--tmax",
+            "1.8",
+            "--cadence",
+            "0.01"
+          ],
+          "inputs": {
+            "calculation.py": "2b78c89dc7551f90848e8989d2c50c379e9d3428281858c9343d2b231ec71183",
+            "island_coalescence.py": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b",
+            "null_diagnostic.py": "2127895b89607561427f6b35024e5b85761c89bac53c4e58a411e49c14c5d53f"
+          },
+          "capability": "flash-island-coalescence-resistive-mhd-4.8",
+          "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+        },
+        "key": "refine512-2000",
+        "source": "calculation.py",
+        "finished_at": 1792937860.7565243,
+        "execution": {
+          "wall_seconds": 2075.0111093790038,
+          "returncode": 0,
+          "timed_out": false
+        },
+        "error": null,
+        "created_at": 1792935785.2819712,
+        "status": "succeeded",
+        "parent_experiment": null,
+        "started_at": 1792935785.4312525,
+        "timeout": 3000,
+        "monitor": null,
+        "telemetry": null,
+        "cancel_requested": false,
+        "stop_reason": null,
+        "purpose": "validation",
+        "plan": null,
+        "machine": "local",
+        "resources": null,
+        "remote_job": null,
+        "transport_status": null,
+        "assigned_gpu_ids": null,
+        "commitment": null,
+        "outputs": [
+          "result.json",
+          "fields.tar.gz",
+          "magnetic_series.h5"
+        ],
+        "stage": "exploration",
+        "method": null,
+        "scientific_status": "unreviewed",
+        "review_ids": [],
+        "output_findings": [],
+        "workspace": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_58adb12d461c94104daeff23/workspace",
+        "receipt": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_58adb12d461c94104daeff23.json"
+      },
+      {
+        "id": "exp_755dffd11e2a3f05a6b86b49",
+        "binding": {
+          "source": "calculation.py",
+          "args": [
+            "--S",
+            "2000",
+            "--n",
+            "384",
+            "--tmax",
+            "1.6",
+            "--cadence",
+            "0.01"
+          ],
+          "inputs": {
+            "calculation.py": "2b78c89dc7551f90848e8989d2c50c379e9d3428281858c9343d2b231ec71183",
+            "island_coalescence.py": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b",
+            "null_diagnostic.py": "2127895b89607561427f6b35024e5b85761c89bac53c4e58a411e49c14c5d53f"
+          },
+          "capability": "flash-island-coalescence-resistive-mhd-4.8",
+          "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+        },
+        "key": "production-root-S2000",
+        "source": "calculation.py",
+        "finished_at": 1792939058.4326997,
+        "execution": {
+          "wall_seconds": 772.9078574480009,
+          "returncode": 0,
+          "timed_out": false
+        },
+        "error": null,
+        "created_at": 1792938285.2281008,
+        "status": "succeeded",
+        "parent_experiment": null,
+        "started_at": 1792938285.3643591,
+        "timeout": 1300,
+        "monitor": null,
+        "telemetry": null,
+        "cancel_requested": false,
+        "stop_reason": null,
+        "purpose": "comparison",
+        "plan": null,
+        "machine": "local",
+        "resources": null,
+        "remote_job": null,
+        "transport_status": null,
+        "assigned_gpu_ids": null,
+        "commitment": null,
+        "outputs": [
+          "result.json",
+          "fields.tar.gz",
+          "magnetic_series.h5"
+        ],
+        "stage": "evidence",
+        "method": "method_661a2c5064ad92c6494cf179",
+        "scientific_status": "reviewed",
+        "review_ids": [
+          "review_d8ed7a3364483fc612a029c3"
+        ],
+        "output_findings": [],
+        "workspace": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_755dffd11e2a3f05a6b86b49/workspace",
+        "receipt": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_755dffd11e2a3f05a6b86b49.json"
+      },
+      {
+        "id": "exp_7eb023a1353c625c137e6b4e",
+        "binding": {
+          "source": "amplitude_check.py",
+          "args": [],
+          "inputs": {
+            "amplitude_check.py": "cfeee1cf2dfeda7aff30ee6dd2b6afd202a0398db70db7cb7aae3fdcb3f39540",
+            "conditional_calibration.json": "a46316deb8ddd56cb3312e5e5645cf81bfc2d62e4e9b15858ee9f88fef86539c"
+          },
+          "capability": null,
+          "runtime_sha256": null
+        },
+        "key": null,
+        "source": "amplitude_check.py",
+        "finished_at": 1792940474.5756252,
+        "execution": {
+          "wall_seconds": 0.45507937100046547,
+          "returncode": 0,
+          "timed_out": false
+        },
+        "error": null,
+        "created_at": 1792940473.945796,
+        "status": "succeeded",
+        "parent_experiment": "exp_ed30761478eaae5229acd789",
+        "started_at": 1792940474.1050186,
+        "timeout": 60,
+        "monitor": null,
+        "telemetry": null,
+        "cancel_requested": false,
+        "stop_reason": null,
+        "purpose": "diagnostic",
+        "plan": null,
+        "machine": "local",
+        "resources": null,
+        "remote_job": null,
+        "transport_status": null,
+        "assigned_gpu_ids": null,
+        "commitment": null,
+        "outputs": [
+          "amplitude_calibration.json"
+        ],
+        "stage": "exploration",
+        "method": null,
+        "scientific_status": "unreviewed",
+        "review_ids": [],
+        "output_findings": [],
+        "workspace": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_7eb023a1353c625c137e6b4e/workspace",
+        "receipt": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_7eb023a1353c625c137e6b4e.json"
+      },
+      {
+        "id": "exp_82b78fe2f19144b3b6ca29af",
+        "binding": {
+          "source": "calculation.py",
+          "args": [
+            "--S",
+            "2000",
+            "--n",
+            "192",
+            "--tmax",
+            "1.8",
+            "--cadence",
+            "0.005"
+          ],
+          "inputs": {
+            "calculation.py": "afd21ba54ad9e6bf3813fe86165719c9278ec90ccdde9a258271b6433591dd52",
+            "island_coalescence.py": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b"
+          },
+          "capability": "flash-island-coalescence-resistive-mhd-4.8",
+          "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+        },
+        "key": "refine192-2000",
+        "source": "calculation.py",
+        "finished_at": 1792929909.6794934,
+        "execution": {
+          "wall_seconds": 172.1334001599971,
+          "returncode": 0,
+          "timed_out": false
+        },
+        "error": null,
+        "created_at": 1792929734.4833336,
+        "status": "succeeded",
+        "parent_experiment": null,
+        "started_at": 1792929734.669403,
+        "timeout": 600,
+        "monitor": null,
+        "telemetry": null,
+        "cancel_requested": false,
+        "stop_reason": null,
+        "purpose": "validation",
+        "plan": "note_b30f1809cc99d72af560e638",
+        "machine": "local",
+        "resources": null,
+        "remote_job": null,
+        "transport_status": null,
+        "assigned_gpu_ids": null,
+        "commitment": null,
+        "outputs": [
+          "result.json",
+          "fields.tar.gz"
+        ],
+        "stage": "exploration",
+        "method": null,
+        "scientific_status": "unreviewed",
+        "review_ids": [],
+        "output_findings": [],
+        "workspace": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_82b78fe2f19144b3b6ca29af/workspace",
+        "receipt": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_82b78fe2f19144b3b6ca29af.json"
+      },
+      {
+        "id": "exp_8adee806b81f5d005af5e201",
+        "binding": {
+          "source": "final_qualification.py",
+          "args": [],
+          "inputs": {
+            "final_qualification.py": "34e392beb918543706e92388e8db06e9ef2842f3e98966c0c113c99eedf5bc2c",
+            "fine512.json": "e9d84fcf16129c6f4019f134a867b1e3f6a5e54ff9213ede60d6e745f9f5ab85",
+            "base384_2000.json": "776b54cbe6a7339fb4b13da033e49809b8bbd2a124c7d5f9f96df69a55bb64ac",
+            "base384_1000.json": "136b6f0a29912b01d7d055d84b6425fff558060148e2d71e2587910d6889205a",
+            "retention_pilot.json": "259f0777ddcc8e8b2b046f210519a5f571dba1c3fe03074b31745b3195ba09e4",
+            "previous_spatial.json": "4cd292ddc578bb871c0a7c3c9b4428cc4c2d85be2a8e40d56f99668eba972534",
+            "cadence_comparison.json": "b14284705c775d687c02d47d86fe75ca2de6f1171b76debf338e920845265269"
+          },
+          "capability": null,
+          "runtime_sha256": null
+        },
+        "key": null,
+        "source": "final_qualification.py",
+        "finished_at": 1792937959.4659257,
+        "execution": {
+          "wall_seconds": 0.10309052600496216,
+          "returncode": 0,
+          "timed_out": false
+        },
+        "error": null,
+        "created_at": 1792937959.19005,
+        "status": "succeeded",
+        "parent_experiment": "exp_58adb12d461c94104daeff23",
+        "started_at": 1792937959.3419278,
+        "timeout": 60,
+        "monitor": null,
+        "telemetry": null,
+        "cancel_requested": false,
+        "stop_reason": null,
+        "purpose": "diagnostic",
+        "plan": null,
+        "machine": "local",
+        "resources": null,
+        "remote_job": null,
+        "transport_status": null,
+        "assigned_gpu_ids": null,
+        "commitment": null,
+        "outputs": [
+          "final_qualification.json"
+        ],
+        "stage": "exploration",
+        "method": null,
+        "scientific_status": "unreviewed",
+        "review_ids": [],
+        "output_findings": [],
+        "workspace": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_8adee806b81f5d005af5e201/workspace",
+        "receipt": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_8adee806b81f5d005af5e201.json"
+      },
+      {
+        "id": "exp_9a9dff759f89368261125a4b",
+        "binding": {
+          "source": "calculation.py",
+          "args": [
+            "--S",
+            "2000",
+            "--n",
+            "256",
+            "--tmax",
+            "1.8",
+            "--cadence",
+            "0.005",
+            "--cfl",
+            "0.2"
+          ],
+          "inputs": {
+            "calculation.py": "a48d3b920e2ecb365307441d5201fe7a8dee59b09275ee6720821071c12c38cc",
+            "island_coalescence.py": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b"
+          },
+          "capability": "flash-island-coalescence-resistive-mhd-4.8",
+          "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+        },
+        "key": "cfl256-recovery-2000",
+        "source": "calculation.py",
+        "finished_at": 1792932676.958095,
+        "execution": {
+          "wall_seconds": 585.0933864260005,
+          "returncode": 0,
+          "timed_out": false
+        },
+        "error": null,
+        "created_at": 1792932091.262656,
+        "status": "succeeded",
+        "parent_experiment": null,
+        "started_at": 1792932091.4240549,
+        "timeout": 800,
+        "monitor": null,
+        "telemetry": null,
+        "cancel_requested": false,
+        "stop_reason": null,
+        "purpose": "validation",
+        "plan": null,
+        "machine": "local",
+        "resources": null,
+        "remote_job": null,
+        "transport_status": null,
+        "assigned_gpu_ids": null,
+        "commitment": null,
+        "outputs": [
+          "result.json",
+          "fields.tar.gz"
+        ],
+        "stage": "exploration",
+        "method": null,
+        "scientific_status": "unreviewed",
+        "review_ids": [],
+        "output_findings": [],
+        "workspace": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_9a9dff759f89368261125a4b/workspace",
+        "receipt": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_9a9dff759f89368261125a4b.json"
+      },
+      {
+        "id": "exp_9ed2782a9af6b2446c71285a",
+        "binding": {
+          "source": "calculation.py",
+          "args": [
+            "--S",
+            "2000",
+            "--n",
+            "384",
+            "--tmax",
+            "1.8",
+            "--cadence",
+            "0.005"
+          ],
+          "inputs": {
+            "calculation.py": "32b881192cc8680863f5d6ab4223e75349fa4b5e8fdfc1c6ae07b802e7d52b7c",
+            "island_coalescence.py": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b",
+            "null_diagnostic.py": "2127895b89607561427f6b35024e5b85761c89bac53c4e58a411e49c14c5d53f"
+          },
+          "capability": "flash-island-coalescence-resistive-mhd-4.8",
+          "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+        },
+        "key": "refine384-2000-sequential",
+        "source": "calculation.py",
+        "finished_at": 1792935156.9024427,
+        "execution": {
+          "wall_seconds": 977.0390992069952,
+          "returncode": 0,
+          "timed_out": false
+        },
+        "error": null,
+        "created_at": 1792934178.3502166,
+        "status": "succeeded",
+        "parent_experiment": null,
+        "started_at": 1792934178.4843504,
+        "timeout": 1800,
+        "monitor": null,
+        "telemetry": null,
+        "cancel_requested": false,
+        "stop_reason": null,
+        "purpose": "validation",
+        "plan": null,
+        "machine": "local",
+        "resources": null,
+        "remote_job": null,
+        "transport_status": null,
+        "assigned_gpu_ids": null,
+        "commitment": null,
+        "outputs": [
+          "result.json",
+          "fields.tar.gz"
+        ],
+        "stage": "exploration",
+        "method": null,
+        "scientific_status": "unreviewed",
+        "review_ids": [],
+        "output_findings": [],
+        "workspace": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_9ed2782a9af6b2446c71285a/workspace",
+        "receipt": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_9ed2782a9af6b2446c71285a.json"
+      },
+      {
+        "id": "exp_a2d9039a3b1d3ba9ec78f86c",
+        "binding": {
+          "source": "calculation.py",
+          "args": [
+            "--S",
+            "250",
+            "--n",
+            "128",
+            "--tmax",
+            "3",
+            "--cadence",
+            "0.025"
+          ],
+          "inputs": {
+            "calculation.py": "3627bce52320c86e035fe970c4d3c95629f148da95d089767a6c6277c7a266c5",
+            "island_coalescence.py": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b"
+          },
+          "capability": "flash-island-coalescence-resistive-mhd-4.8",
+          "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+        },
+        "key": "pilot-250",
+        "source": "calculation.py",
+        "finished_at": 1792929393.4537485,
+        "execution": {
+          "wall_seconds": 61.04552234300354,
+          "returncode": 0,
+          "timed_out": false
+        },
+        "error": null,
+        "created_at": 1792929331.8867242,
+        "status": "succeeded",
+        "parent_experiment": null,
+        "started_at": 1792929332.0536811,
+        "timeout": 300,
+        "monitor": null,
+        "telemetry": null,
+        "cancel_requested": false,
+        "stop_reason": null,
+        "purpose": "validation",
+        "plan": null,
+        "machine": "local",
+        "resources": null,
+        "remote_job": null,
+        "transport_status": null,
+        "assigned_gpu_ids": null,
+        "commitment": null,
+        "outputs": [
+          "result.json",
+          "fields.tar.gz"
+        ],
+        "stage": "exploration",
+        "method": null,
+        "scientific_status": "unreviewed",
+        "review_ids": [],
+        "output_findings": [],
+        "workspace": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_a2d9039a3b1d3ba9ec78f86c/workspace",
+        "receipt": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_a2d9039a3b1d3ba9ec78f86c.json"
+      },
+      {
+        "id": "exp_aaef37fed668e2be86673215",
+        "binding": {
+          "source": "calculation.py",
+          "args": [
+            "--S",
+            "1000",
+            "--n",
+            "256",
+            "--tmax",
+            "1.3",
+            "--cadence",
+            "0.005",
+            "--cfl",
+            "0.2"
+          ],
+          "inputs": {
+            "calculation.py": "a48d3b920e2ecb365307441d5201fe7a8dee59b09275ee6720821071c12c38cc",
+            "island_coalescence.py": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b"
+          },
+          "capability": "flash-island-coalescence-resistive-mhd-4.8",
+          "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+        },
+        "key": "cfl256-1000",
+        "source": "calculation.py",
+        "finished_at": 1792931711.6074717,
+        "execution": {
+          "wall_seconds": null,
+          "returncode": null,
+          "timed_out": null
+        },
+        "error": "Experiment worker disappeared before writing a terminal receipt",
+        "created_at": 1792930416.978758,
+        "status": "failed",
+        "parent_experiment": null,
+        "started_at": 1792930417.131078,
+        "timeout": 800,
+        "monitor": null,
+        "telemetry": null,
+        "cancel_requested": false,
+        "stop_reason": null,
+        "purpose": "validation",
+        "plan": null,
+        "machine": "local",
+        "resources": null,
+        "remote_job": null,
+        "transport_status": null,
+        "assigned_gpu_ids": null,
+        "commitment": null,
+        "outputs": [
+          "result.json",
+          "fields.tar.gz"
+        ],
+        "stage": "exploration",
+        "method": null,
+        "scientific_status": "unreviewed",
+        "review_ids": [],
+        "output_findings": [],
+        "workspace": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_aaef37fed668e2be86673215/workspace",
+        "receipt": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_aaef37fed668e2be86673215.json"
+      },
+      {
+        "id": "exp_b2df128c1c1ecc1d990f7dc5",
+        "binding": {
+          "source": "calculation.py",
+          "args": [
+            "--S",
+            "4000",
+            "--n",
+            "128",
+            "--tmax",
+            "3",
+            "--cadence",
+            "0.025"
+          ],
+          "inputs": {
+            "calculation.py": "3627bce52320c86e035fe970c4d3c95629f148da95d089767a6c6277c7a266c5",
+            "island_coalescence.py": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b"
+          },
+          "capability": "flash-island-coalescence-resistive-mhd-4.8",
+          "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+        },
+        "key": "pilot-4000",
+        "source": "calculation.py",
+        "finished_at": 1792929659.5373218,
+        "execution": {
+          "wall_seconds": 67.52814869899885,
+          "returncode": 0,
+          "timed_out": false
+        },
+        "error": null,
+        "created_at": 1792929591.5255828,
+        "status": "succeeded",
+        "parent_experiment": null,
+        "started_at": 1792929591.7160795,
+        "timeout": 300,
+        "monitor": null,
+        "telemetry": null,
+        "cancel_requested": false,
+        "stop_reason": null,
+        "purpose": "validation",
+        "plan": null,
+        "machine": "local",
+        "resources": null,
+        "remote_job": null,
+        "transport_status": null,
+        "assigned_gpu_ids": null,
+        "commitment": null,
+        "outputs": [
+          "result.json",
+          "fields.tar.gz"
+        ],
+        "stage": "exploration",
+        "method": null,
+        "scientific_status": "unreviewed",
+        "review_ids": [],
+        "output_findings": [],
+        "workspace": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_b2df128c1c1ecc1d990f7dc5/workspace",
+        "receipt": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_b2df128c1c1ecc1d990f7dc5.json"
+      },
+      {
+        "id": "exp_bc3989c6f90215ea0fc96df9",
+        "binding": {
+          "source": "qualify.py",
+          "args": [],
+          "inputs": {
+            "qualify.py": "b8d89704dab1d0eb31295c2407f0ffd2e3b45eb05283ce4bd1811f02061cc2a0",
+            "analysis_inputs.json": "04f0ee2881c36976bc6e284e355e5e3a692a3bd86444a66a2b722b4cc8e2434d",
+            "input_1000_256_cfl.json": "cc6f0d8dc3effb08483d080bb105acea07baf2f9263c9b3916060dcd83bb614d",
+            "input_1000_192_base.json": "94e64fa76384b2d64eb64aa340c79183d6626ae80c806e913aed652245b0f1e6",
+            "input_2000_256_cfl.json": "15fd6646045db6f0a2ddbcfbaf65113e5e034072c6980846a3fc73faf9de8d34",
+            "input_2000_192_base.json": "920a14e1a5a41a70006251fbdd86f642409f0d083a1e9061f410549b7b599865",
+            "input_2000_256_base.json": "450c503db938921605e0190c1e8f834110f2284c625524c490a290905e439131",
+            "input_2000_256.tar.gz": "2d731b1903527e15e69f076bd5c0c59bb8abbdc8b29c48ab6f14c1babd7c49fa",
+            "input_2000_128_base.json": "3f32fdb6c7aed5b4cf550d72d5eb9449396615fc1be9124866c2a01b0487f251",
+            "input_1000_256_base.json": "73d0dd81f125143bc180a410792d74f353a31ced138f19bb5adf529e964b2475",
+            "input_1000_256.tar.gz": "534bab861b43b136863f6418d768aebb9277ae3d7a33c17468232c02259a93d6",
+            "input_1000_128_base.json": "c8398e4825631cd1813c5392087494980cc3af7b346a116ff7161ac2d6d8596f"
+          },
+          "capability": null,
+          "runtime_sha256": null
+        },
+        "key": null,
+        "source": "qualify.py",
+        "finished_at": 1792932722.7233214,
+        "execution": {
+          "wall_seconds": 4.883600981003838,
+          "returncode": 0,
+          "timed_out": false
+        },
+        "error": null,
+        "created_at": 1792932716.5595098,
+        "status": "succeeded",
+        "parent_experiment": "exp_d72d5627834d2ca1456a280c",
+        "started_at": 1792932716.6959069,
+        "timeout": 180,
+        "monitor": null,
+        "telemetry": null,
+        "cancel_requested": false,
+        "stop_reason": null,
+        "purpose": "diagnostic",
+        "plan": null,
+        "machine": "local",
+        "resources": null,
+        "remote_job": null,
+        "transport_status": null,
+        "assigned_gpu_ids": null,
+        "commitment": null,
+        "outputs": [
+          "qualification.json"
+        ],
+        "stage": "exploration",
+        "method": null,
+        "scientific_status": "unreviewed",
+        "review_ids": [],
+        "output_findings": [],
+        "workspace": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_bc3989c6f90215ea0fc96df9/workspace",
+        "receipt": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_bc3989c6f90215ea0fc96df9.json"
+      },
+      {
+        "id": "exp_bcf499766e6d03faf83066d7",
+        "binding": {
+          "source": "calculation.py",
+          "args": [
+            "--S",
+            "2000",
+            "--n",
+            "384",
+            "--tmax",
+            "1.8",
+            "--cadence",
+            "0.005"
+          ],
+          "inputs": {
+            "calculation.py": "c3f362653d863059093b187b43df0091e592f043831a37e58c850d766d48de53",
+            "island_coalescence.py": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b"
+          },
+          "capability": "flash-island-coalescence-resistive-mhd-4.8",
+          "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+        },
+        "key": "refine384-2000",
+        "source": "calculation.py",
+        "finished_at": 1792933315.282523,
+        "execution": {
+          "wall_seconds": 0.5072246680065291,
+          "returncode": null,
+          "timed_out": false
+        },
+        "error": null,
+        "created_at": 1792933314.6027474,
+        "status": "failed",
+        "parent_experiment": null,
+        "started_at": 1792933314.7488277,
+        "timeout": 2100,
+        "monitor": null,
+        "telemetry": null,
+        "cancel_requested": false,
+        "stop_reason": null,
+        "purpose": "validation",
+        "plan": "note_2c50b2f1b41745480ad78aef",
+        "machine": "local",
+        "resources": null,
+        "remote_job": null,
+        "transport_status": null,
+        "assigned_gpu_ids": null,
+        "commitment": null,
+        "outputs": [
+          "result.json",
+          "fields.tar.gz"
+        ],
+        "stage": "exploration",
+        "method": null,
+        "scientific_status": "unreviewed",
+        "review_ids": [],
+        "output_findings": [],
+        "workspace": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_bcf499766e6d03faf83066d7/workspace",
+        "receipt": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_bcf499766e6d03faf83066d7.json"
+      },
+      {
+        "id": "exp_c90e9b96ba8406a99246fb8e",
+        "binding": {
+          "source": "calculation.py",
+          "args": [
+            "--S",
+            "1000",
+            "--n",
+            "192",
+            "--tmax",
+            "1.3",
+            "--cadence",
+            "0.005"
+          ],
+          "inputs": {
+            "calculation.py": "afd21ba54ad9e6bf3813fe86165719c9278ec90ccdde9a258271b6433591dd52",
+            "island_coalescence.py": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b"
+          },
+          "capability": "flash-island-coalescence-resistive-mhd-4.8",
+          "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+        },
+        "key": "refine192-1000",
+        "source": "calculation.py",
+        "finished_at": 1792929866.1171827,
+        "execution": {
+          "wall_seconds": 129.86814681599935,
+          "returncode": 0,
+          "timed_out": false
+        },
+        "error": null,
+        "created_at": 1792929734.2661905,
+        "status": "succeeded",
+        "parent_experiment": null,
+        "started_at": 1792929734.4207563,
+        "timeout": 600,
+        "monitor": null,
+        "telemetry": null,
+        "cancel_requested": false,
+        "stop_reason": null,
+        "purpose": "validation",
+        "plan": "note_b30f1809cc99d72af560e638",
+        "machine": "local",
+        "resources": null,
+        "remote_job": null,
+        "transport_status": null,
+        "assigned_gpu_ids": null,
+        "commitment": null,
+        "outputs": [
+          "result.json",
+          "fields.tar.gz"
+        ],
+        "stage": "exploration",
+        "method": null,
+        "scientific_status": "unreviewed",
+        "review_ids": [],
+        "output_findings": [],
+        "workspace": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_c90e9b96ba8406a99246fb8e/workspace",
+        "receipt": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_c90e9b96ba8406a99246fb8e.json"
+      },
+      {
+        "id": "exp_c99f4a2aba5c70b7330e4ada",
+        "binding": {
+          "source": "calculation.py",
+          "args": [
+            "--S",
+            "1000",
+            "--n",
+            "128",
+            "--tmax",
+            "1.3",
+            "--cadence",
+            "0.005"
+          ],
+          "inputs": {
+            "calculation.py": "2b78c89dc7551f90848e8989d2c50c379e9d3428281858c9343d2b231ec71183",
+            "island_coalescence.py": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b",
+            "null_diagnostic.py": "2127895b89607561427f6b35024e5b85761c89bac53c4e58a411e49c14c5d53f"
+          },
+          "capability": "flash-island-coalescence-resistive-mhd-4.8",
+          "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+        },
+        "key": "compact-retention-commissioning",
+        "source": "calculation.py",
+        "finished_at": 1792935428.6338532,
+        "execution": {
+          "wall_seconds": 23.313010010002472,
+          "returncode": 0,
+          "timed_out": false
+        },
+        "error": null,
+        "created_at": 1792935405.114215,
+        "status": "succeeded",
+        "parent_experiment": null,
+        "started_at": 1792935405.2747307,
+        "timeout": 180,
+        "monitor": null,
+        "telemetry": null,
+        "cancel_requested": false,
+        "stop_reason": null,
+        "purpose": "validation",
+        "plan": null,
+        "machine": "local",
+        "resources": null,
+        "remote_job": null,
+        "transport_status": null,
+        "assigned_gpu_ids": null,
+        "commitment": null,
+        "outputs": [
+          "result.json",
+          "fields.tar.gz",
+          "magnetic_series.h5"
+        ],
+        "stage": "exploration",
+        "method": null,
+        "scientific_status": "unreviewed",
+        "review_ids": [],
+        "output_findings": [],
+        "workspace": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_c99f4a2aba5c70b7330e4ada/workspace",
+        "receipt": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_c99f4a2aba5c70b7330e4ada.json"
+      },
+      {
+        "id": "exp_cd08ebc4f1287d48388eddc6",
+        "binding": {
+          "source": "spatial_qualification.py",
+          "args": [],
+          "inputs": {
+            "spatial_qualification.py": "d1631ad03fbf1d048c9148a991d8ee3e2a5fbd421ed4bc1266c80172b9e10471",
+            "spatial_inputs.json": "b367ef5046006d07a093772f94b800ac9edb3ed595342025723c78103723b867",
+            "null_diagnostic.py": "2127895b89607561427f6b35024e5b85761c89bac53c4e58a411e49c14c5d53f",
+            "reduce_archive.py": "68df90d157c8ef5a746fe64635d3504b713c57c82450223d2bda2aff3b41fa25",
+            "spatial_S1000_n192.json": "94e64fa76384b2d64eb64aa340c79183d6626ae80c806e913aed652245b0f1e6",
+            "raw_S1000_n192_i0.h5": "2effaa9a5986f20740c816009c167b2a3f6461a60b91d39d121bd2f2a74aa435",
+            "raw_S1000_n192_i51.h5": "f76c7c065f99acab885fee3f3dfd5ee8c763dc5a6e5bfe010be0c6af4b0cb094",
+            "raw_S1000_n192_i52.h5": "b2c5942d24158b8134aa305d33738bd3746d7f8cdaa26229d37295aa07ef9385",
+            "raw_S1000_n192_i130.h5": "d1755084ffabc4a68ab9208d62531de1d19b3c03b5a15c834021a681a7343017",
+            "raw_S1000_n192_i131.h5": "085ef20a19cb0fc3d38a59f2575a74ba1cb516db215d91d16f6962bfe02c558d",
+            "raw_S1000_n192_i213.h5": "ae6e228cf01d8af7a7c5ce0d33795e5c54f9cf613aad6942668248e3907d6596",
+            "raw_S1000_n192_i214.h5": "c7637f529c77088c5230bf072d9cec3a2f1c4859b2bc6e9258af20d2083cdc98",
+            "spatial_S1000_n256.json": "73d0dd81f125143bc180a410792d74f353a31ced138f19bb5adf529e964b2475",
+            "raw_S1000_n256_i0.h5": "5b076f2220c57364988156f336af7c37b58a4cfea7a7a5db9b651dc5c224b8f6",
+            "raw_S1000_n256_i51.h5": "2d01f8ff985c303e2b4194783c3baeee7beaa2de69d5958069174e3dcfe491a2",
+            "raw_S1000_n256_i52.h5": "0523446ce73e1143b2adb4ee24bc63493255a556b33b276cb6cc11fd7e485e40",
+            "raw_S1000_n256_i130.h5": "b472d2401d608afad52e5aaf97251f857db3a69198afea5951984385a5985658",
+            "raw_S1000_n256_i131.h5": "dc65aeb20201d04c4904024de5f368891386cfce84d29764017337f134395bb4",
+            "raw_S1000_n256_i213.h5": "5b96c692c7bb8945c8ae2567a1ccfa7feb420fd74106260b19cf91b149049a7e",
+            "raw_S1000_n256_i214.h5": "16066e91f7af31100dae0a8db84585f6b8b42bc60b6290d526d97a1fefe2ca54",
+            "spatial_S1000_n384.json": "136b6f0a29912b01d7d055d84b6425fff558060148e2d71e2587910d6889205a",
+            "raw_S1000_n384_i0.h5": "9a2b614886572b4b960a1b9a7c6611cf1acfe936cac117b0c64bb09329a57ad0",
+            "raw_S1000_n384_i51.h5": "122bc71df994483706109c43fda30278153784d1c1e13b5322bf17a041c49eeb",
+            "raw_S1000_n384_i52.h5": "dcb9295080edf4a3cfd701deccedb74a09f21679b2f661900265f957d2c96ff6",
+            "raw_S1000_n384_i130.h5": "7ee6fc823ea2ddb04e5f636594d3721391a0b354f36c77c7650a717709753922",
+            "raw_S1000_n384_i131.h5": "cce2440de5d4b8f88686c09f4ec05cd8395da06902dbf89eb2e765805d627e8c",
+            "raw_S1000_n384_i212.h5": "6fb35abf72edb81d16ae2090a303a9496bf2ef6d33fd87cc3bce9734112df325",
+            "raw_S1000_n384_i213.h5": "ba00282f4ef680e5db9bf64e3a81a53ac097b4e01d692cf9336f35171bcf6b2f",
+            "S1000_n384_magnetic.h5": "cbca558f128d422c85c90f775ef6bcabdb17423d2ded3b4f6883ccc04e4cbfba",
+            "cfl_1000.json": "cc6f0d8dc3effb08483d080bb105acea07baf2f9263c9b3916060dcd83bb614d",
+            "base256_1000.json": "73d0dd81f125143bc180a410792d74f353a31ced138f19bb5adf529e964b2475",
+            "spatial_S2000_n192.json": "920a14e1a5a41a70006251fbdd86f642409f0d083a1e9061f410549b7b599865",
+            "raw_S2000_n192_i0.h5": "7f922fd55338fb8aaac50ac10b612d9a948ce90d4672eeb7d33acb1a0fe477c9",
+            "raw_S2000_n192_i80.h5": "e12c18a51ebd5021d21b7c9bd4da096e0a1d12e72c1a884434841bd202050313",
+            "raw_S2000_n192_i81.h5": "f3088a8a87dd4dd091e0a1a747254bd92dc6790d4e18b66e8223cfb117e69907",
+            "raw_S2000_n192_i184.h5": "1ba511ea5b606f9fc6c14dbd61b1620bcc280c9c6048086d962cdd6d8fc756c4",
+            "raw_S2000_n192_i185.h5": "ce6de0e870e6fdd6e03a89f672dcf3903449a61ab8aee6fc16cacb8a83f7c48f",
+            "raw_S2000_n192_i290.h5": "9418ee8f28d0be2aad742e935ccc223b79ed27497512482a37824e66a709d5db",
+            "raw_S2000_n192_i291.h5": "d4dbb38c75f1ea2ea11a88a55ed7a241d26b99c0151370a17dc43f3f64965a05",
+            "spatial_S2000_n256.json": "450c503db938921605e0190c1e8f834110f2284c625524c490a290905e439131",
+            "raw_S2000_n256_i0.h5": "1ebb1e105179aa6d2fd251fce5531b28e7cc094dcdc45d35722a6f2cb796e4d6",
+            "raw_S2000_n256_i80.h5": "f0b02e1d6b617d2eca1cb3372bc5e831156342d019210edbb66f7810511fa162",
+            "raw_S2000_n256_i81.h5": "e479bcdefbf4bc67989648ce6cbf7f9e0dd8fc2ef859577804aa1c631a9fa3c2",
+            "raw_S2000_n256_i184.h5": "74794b3434846e11b04ee26f5021f0ab8aff869f0010fc2e010275d7c294af1a",
+            "raw_S2000_n256_i185.h5": "d2284583096b311c779608fe03134725f6614dcee64170772fa05d25f92228fc",
+            "raw_S2000_n256_i290.h5": "90b10e3a8de25bfc1db1086001761de3319ab208d512e69ad207bb381a416517",
+            "raw_S2000_n256_i291.h5": "d5fdec7a8952507e62d89615249e6da819a722e16f43a84aa118e387d2995f69",
+            "spatial_S2000_n384.json": "776b54cbe6a7339fb4b13da033e49809b8bbd2a124c7d5f9f96df69a55bb64ac",
+            "raw_S2000_n384_i0.h5": "d0f0f6b00cf85f48eaacd5596d984983c3e3d143f6397aa87a1b31e8fe3c642f",
+            "raw_S2000_n384_i80.h5": "362ededdab297fdf56a0702ddb634f50dc3da61b5c2ccdb45a837e1c34df56c2",
+            "raw_S2000_n384_i81.h5": "7be4b9c1716d0f967b94da06107a2aec7597738ce2cfe3129fd3a7658804ba7d",
+            "raw_S2000_n384_i184.h5": "a6db170823adfd1dd600b8eaf51c6695b7dbe4f573fd5074f8eddda6c2ba9c6a",
+            "raw_S2000_n384_i185.h5": "f10e506acb6b53f85e7ee389d2a0bbc4d94153d6255ab4255f6f3cec9d2f99f4",
+            "raw_S2000_n384_i289.h5": "e03b738a3b7e27533e8c73fa87f2dabc20870b3f969166fcb2b30acde92ba29c",
+            "raw_S2000_n384_i290.h5": "6fc40032f0e852fa24d970ffd937830290b9d4c68a218ab7867568eadba04712",
+            "S2000_n384_magnetic.h5": "1beadde2acf221fb84777b4150a35b5deaac9cf213a3e7fabdd2f91fe7334bc5",
+            "cfl_2000.json": "15fd6646045db6f0a2ddbcfbaf65113e5e034072c6980846a3fc73faf9de8d34",
+            "base256_2000.json": "450c503db938921605e0190c1e8f834110f2284c625524c490a290905e439131"
+          },
+          "capability": null,
+          "runtime_sha256": null
+        },
+        "key": null,
+        "source": "spatial_qualification.py",
+        "finished_at": 1792935293.1588132,
+        "execution": {
+          "wall_seconds": 3.1797620319994166,
+          "returncode": 0,
+          "timed_out": false
+        },
+        "error": null,
+        "created_at": 1792935289.0076885,
+        "status": "succeeded",
+        "parent_experiment": "exp_9ed2782a9af6b2446c71285a",
+        "started_at": 1792935289.155406,
+        "timeout": 180,
+        "monitor": null,
+        "telemetry": null,
+        "cancel_requested": false,
+        "stop_reason": null,
+        "purpose": "diagnostic",
+        "plan": null,
+        "machine": "local",
+        "resources": null,
+        "remote_job": null,
+        "transport_status": null,
+        "assigned_gpu_ids": null,
+        "commitment": null,
+        "outputs": [
+          "spatial_qualification.json"
+        ],
+        "stage": "exploration",
+        "method": null,
+        "scientific_status": "unreviewed",
+        "review_ids": [],
+        "output_findings": [],
+        "workspace": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_cd08ebc4f1287d48388eddc6/workspace",
+        "receipt": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_cd08ebc4f1287d48388eddc6.json"
+      },
+      {
+        "id": "exp_d72d5627834d2ca1456a280c",
+        "binding": {
+          "source": "calculation.py",
+          "args": [
+            "--S",
+            "2000",
+            "--n",
+            "256",
+            "--tmax",
+            "1.8",
+            "--cadence",
+            "0.005"
+          ],
+          "inputs": {
+            "calculation.py": "a48d3b920e2ecb365307441d5201fe7a8dee59b09275ee6720821071c12c38cc",
+            "island_coalescence.py": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b"
+          },
+          "capability": "flash-island-coalescence-resistive-mhd-4.8",
+          "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+        },
+        "key": "refine256-2000",
+        "source": "calculation.py",
+        "finished_at": 1792930429.4342422,
+        "execution": {
+          "wall_seconds": 372.1729282910019,
+          "returncode": 0,
+          "timed_out": false
+        },
+        "error": null,
+        "created_at": 1792930056.2741191,
+        "status": "succeeded",
+        "parent_experiment": null,
+        "started_at": 1792930056.5221796,
+        "timeout": 700,
+        "monitor": null,
+        "telemetry": null,
+        "cancel_requested": false,
+        "stop_reason": null,
+        "purpose": "validation",
+        "plan": null,
+        "machine": "local",
+        "resources": null,
+        "remote_job": null,
+        "transport_status": null,
+        "assigned_gpu_ids": null,
+        "commitment": null,
+        "outputs": [
+          "result.json",
+          "fields.tar.gz"
+        ],
+        "stage": "exploration",
+        "method": null,
+        "scientific_status": "unreviewed",
+        "review_ids": [],
+        "output_findings": [],
+        "workspace": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_d72d5627834d2ca1456a280c/workspace",
+        "receipt": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_d72d5627834d2ca1456a280c.json"
+      },
+      {
+        "id": "exp_ed30761478eaae5229acd789",
+        "binding": {
+          "source": "record_closures.py",
+          "args": [],
+          "inputs": {
+            "record_closures.py": "ab67709e38904a01df4b4a8aafdd96eab0d28ec362eaf9709491456d7181f527",
+            "calibrate_transient.py": "6560d0693c614be0b2ebaed3e2199970041ea3c33314de3b9112acfe13178c1b",
+            "effective_width_calibration.py": "9dfd1f0ed4e7443c636ad314648885956e7968df1da5fa92ae24f819dde08b1a",
+            "S1000_n384_magnetic.h5": "cbca558f128d422c85c90f775ef6bcabdb17423d2ded3b4f6883ccc04e4cbfba",
+            "S2000_n384_magnetic.h5": "1beadde2acf221fb84777b4150a35b5deaac9cf213a3e7fabdd2f91fe7334bc5",
+            "spatial_S1000_n384.json": "136b6f0a29912b01d7d055d84b6425fff558060148e2d71e2587910d6889205a",
+            "spatial_S2000_n384.json": "776b54cbe6a7339fb4b13da033e49809b8bbd2a124c7d5f9f96df69a55bb64ac",
+            "raw_S1000_n384_i0.h5": "9a2b614886572b4b960a1b9a7c6611cf1acfe936cac117b0c64bb09329a57ad0",
+            "raw_S1000_n384_i51.h5": "122bc71df994483706109c43fda30278153784d1c1e13b5322bf17a041c49eeb",
+            "raw_S1000_n384_i52.h5": "dcb9295080edf4a3cfd701deccedb74a09f21679b2f661900265f957d2c96ff6",
+            "raw_S1000_n384_i130.h5": "7ee6fc823ea2ddb04e5f636594d3721391a0b354f36c77c7650a717709753922",
+            "raw_S1000_n384_i131.h5": "cce2440de5d4b8f88686c09f4ec05cd8395da06902dbf89eb2e765805d627e8c",
+            "raw_S1000_n384_i212.h5": "6fb35abf72edb81d16ae2090a303a9496bf2ef6d33fd87cc3bce9734112df325",
+            "raw_S1000_n384_i213.h5": "ba00282f4ef680e5db9bf64e3a81a53ac097b4e01d692cf9336f35171bcf6b2f",
+            "raw_S2000_n384_i0.h5": "d0f0f6b00cf85f48eaacd5596d984983c3e3d143f6397aa87a1b31e8fe3c642f",
+            "raw_S2000_n384_i80.h5": "362ededdab297fdf56a0702ddb634f50dc3da61b5c2ccdb45a837e1c34df56c2",
+            "raw_S2000_n384_i81.h5": "7be4b9c1716d0f967b94da06107a2aec7597738ce2cfe3129fd3a7658804ba7d",
+            "raw_S2000_n384_i184.h5": "a6db170823adfd1dd600b8eaf51c6695b7dbe4f573fd5074f8eddda6c2ba9c6a",
+            "raw_S2000_n384_i185.h5": "f10e506acb6b53f85e7ee389d2a0bbc4d94153d6255ab4255f6f3cec9d2f99f4",
+            "raw_S2000_n384_i289.h5": "e03b738a3b7e27533e8c73fa87f2dabc20870b3f969166fcb2b30acde92ba29c",
+            "raw_S2000_n384_i290.h5": "6fc40032f0e852fa24d970ffd937830290b9d4c68a218ab7867568eadba04712"
+          },
+          "capability": null,
+          "runtime_sha256": null
+        },
+        "key": null,
+        "source": "record_closures.py",
+        "finished_at": 1792940156.0027628,
+        "execution": {
+          "wall_seconds": 2.3171387350012083,
+          "returncode": 0,
+          "timed_out": false
+        },
+        "error": null,
+        "created_at": 1792940152.7972765,
+        "status": "succeeded",
+        "parent_experiment": "exp_cd08ebc4f1287d48388eddc6",
+        "started_at": 1792940152.9608738,
+        "timeout": 120,
+        "monitor": null,
+        "telemetry": null,
+        "cancel_requested": false,
+        "stop_reason": null,
+        "purpose": "diagnostic",
+        "plan": null,
+        "machine": "local",
+        "resources": null,
+        "remote_job": null,
+        "transport_status": null,
+        "assigned_gpu_ids": null,
+        "commitment": null,
+        "outputs": [
+          "conditional_calibration.json",
+          "effective_width_calibration.json"
+        ],
+        "stage": "exploration",
+        "method": null,
+        "scientific_status": "unreviewed",
+        "review_ids": [],
+        "output_findings": [],
+        "workspace": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_ed30761478eaae5229acd789/workspace",
+        "receipt": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_ed30761478eaae5229acd789.json"
+      },
+      {
+        "id": "exp_f2da6ae1b2ce992ddf16cf82",
+        "binding": {
+          "source": "calculation.py",
+          "args": [
+            "--S",
+            "1000",
+            "--n",
+            "256",
+            "--tmax",
+            "1.3",
+            "--cadence",
+            "0.005"
+          ],
+          "inputs": {
+            "calculation.py": "a48d3b920e2ecb365307441d5201fe7a8dee59b09275ee6720821071c12c38cc",
+            "island_coalescence.py": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b"
+          },
+          "capability": "flash-island-coalescence-resistive-mhd-4.8",
+          "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+        },
+        "key": "refine256-1000",
+        "source": "calculation.py",
+        "finished_at": 1792930342.7776694,
+        "execution": {
+          "wall_seconds": 285.98072947200126,
+          "returncode": 0,
+          "timed_out": false
+        },
+        "error": null,
+        "created_at": 1792930055.9694052,
+        "status": "succeeded",
+        "parent_experiment": null,
+        "started_at": 1792930056.13107,
+        "timeout": 700,
+        "monitor": null,
+        "telemetry": null,
+        "cancel_requested": false,
+        "stop_reason": null,
+        "purpose": "validation",
+        "plan": null,
+        "machine": "local",
+        "resources": null,
+        "remote_job": null,
+        "transport_status": null,
+        "assigned_gpu_ids": null,
+        "commitment": null,
+        "outputs": [
+          "result.json",
+          "fields.tar.gz"
+        ],
+        "stage": "exploration",
+        "method": null,
+        "scientific_status": "unreviewed",
+        "review_ids": [],
+        "output_findings": [],
+        "workspace": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_f2da6ae1b2ce992ddf16cf82/workspace",
+        "receipt": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_f2da6ae1b2ce992ddf16cf82.json"
+      },
+      {
+        "id": "exp_ff929c68f5acb2eafb2f340b",
+        "binding": {
+          "source": "calculation.py",
+          "args": [
+            "--S",
+            "1000",
+            "--n",
+            "128",
+            "--tmax",
+            "3",
+            "--cadence",
+            "0.025"
+          ],
+          "inputs": {
+            "calculation.py": "3627bce52320c86e035fe970c4d3c95629f148da95d089767a6c6277c7a266c5",
+            "island_coalescence.py": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b"
+          },
+          "capability": "flash-island-coalescence-resistive-mhd-4.8",
+          "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+        },
+        "key": "pilot-1000",
+        "source": "calculation.py",
+        "finished_at": 1792929473.2784886,
+        "execution": {
+          "wall_seconds": 67.31193883800006,
+          "returncode": 0,
+          "timed_out": false
+        },
+        "error": null,
+        "created_at": 1792929405.4292743,
+        "status": "succeeded",
+        "parent_experiment": null,
+        "started_at": 1792929405.59172,
+        "timeout": 300,
+        "monitor": null,
+        "telemetry": null,
+        "cancel_requested": false,
+        "stop_reason": null,
+        "purpose": "validation",
+        "plan": null,
+        "machine": "local",
+        "resources": null,
+        "remote_job": null,
+        "transport_status": null,
+        "assigned_gpu_ids": null,
+        "commitment": null,
+        "outputs": [
+          "result.json",
+          "fields.tar.gz"
+        ],
+        "stage": "exploration",
+        "method": null,
+        "scientific_status": "unreviewed",
+        "review_ids": [],
+        "output_findings": [],
+        "workspace": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_ff929c68f5acb2eafb2f340b/workspace",
+        "receipt": "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153/experiments/exp_ff929c68f5acb2eafb2f340b.json"
+      }
+    ],
+    "commitments": [],
+    "reviews": [
+      {
+        "id": "review_d8ed7a3364483fc612a029c3",
+        "created_at": 1792939782.5843916,
+        "claim": "root",
+        "status": "resolved",
+        "verdict": {
+          "claim_id": "root",
+          "decision": "approved",
+          "disposition": "falsified",
+          "rationale": "The fresh, qualified S_eta=1000 versus 2000 contrast is a counterexample to the entire claimed band. Inspection of the hash-verified production summaries, retained magnetic series and archived crossing-bracket fields independently reproduces R1000=0.04968858391 and R2000=0.03824212964, giving p_eff=-0.37775156. Recomputing the prospectively approved deterministic uncertainty envelope, including conservative transport from the S2000 512\u00b2 control, gives relative rate allowances of 1.3076% and 2.3909%. Endpoint propagation yields [-0.43140540,-0.32467595], wholly above -0.45. The five-setting exploratory map and declared selection rule targeted this contrast before refinement; production followed method approval. Recorded solver provenance shows diagnostic and retention changes without solver development. Actual complete-window evolution, multiple meshes, shrinking final rate changes, improving matched-flux profiles and completed CFL controls provide relevant commissioning. Production initial fields are identical; runtime resistivity and boundaries agree with the declared model. Recomputed conservation drifts are small, retained states are positive, and all saved magnetic frames through the actual upper brackets contain one X and two O points. Both production output_findings lists are empty. Qualification remains limited to an empirical numerical envelope, CFL sensitivity transferred from 256\u00b2, saved-field topology, and unavailable separate floor/energyFix accounting; these do not block this bounded counterexample. This verdict establishes neither a global scaling law nor a repaired prediction. Accepting the original falsification does not depend on completing a later repair.",
+          "evidence_gaps": [],
+          "next_test": null
+        },
+        "blocked_by_claims": null
+      }
+    ],
+    "methods": [
+      {
+        "id": "method_4e91240e074e8dcad20103cb",
+        "created_at": 1792932846.9109445,
+        "status": "resolved",
+        "scope": "production",
+        "binding": {
+          "source": "calculation.py",
+          "inputs": {
+            "calculation.py": "a48d3b920e2ecb365307441d5201fe7a8dee59b09275ee6720821071c12c38cc",
+            "island_coalescence.py": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b"
+          },
+          "capability": "flash-island-coalescence-resistive-mhd-4.8",
+          "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+        },
+        "verdict": {
+          "decision": "revise",
+          "rationale": "The completed evolution and CFL controls substantially strengthen commissioning, but the declared production method still needs justified evolving-sheet spatial qualification and a corrected topology-window selection. These are methods limitations, not falsification of the physical hypothesis.",
+          "findings": [
+            "The required FLASH instrument-family identity is satisfied. Solver development remains prohibited; inspected driver revisions add diagnostics and archive cleanup without changing solver numerics or physical parameters. Registered hashes establish identity, not correctness.",
+            "The recorded prospective protocol predates the exploratory map and fixes the reducer, contrast selection, deterministic uncertainty envelope and decision rule. Hash-verified summaries confirm five distinct settings, S_eta=250,500,1000,2000,4000, reaching the flux window. Selecting 1000 versus 2000 follows the declared rule.",
+            "Both selected settings completed full-window evolution at 128,192,256 cells per direction. Finest-grid rates are 0.0496264246 and 0.0381339413. Completed CFL=0.2 controls change those rates by approximately 0.0899% and 0.0717%; the earlier missing-control prerequisite is satisfied.",
+            "Inspected code implements initial-state subtraction, first interpolated crossings and R=0.04/delta_t consistently. Endpoint propagation reproduces the exploratory slope interval [-0.448977433,-0.310153585]. This deterministic empirical envelope is not a statistical confidence interval or a proven continuum bound; its separation from the hypothesis band is only 0.001023.",
+            "Runtime readbacks preserve the square geometry, reflecting boundaries, fixed physical parameters and configured explicit resistivity. Finest-grid summaries report divergence below 4.5e-12, boundary-normal fractions below 0.026, mass drift below 1e-14 and energy drift below 1.1e-5. Sampled density and pressure remain far above floors. Separate floor and energyFix correction amounts remain unmeasured; net conservation does not identify them individually.",
+            "Integral-rate mesh changes shrink, but the numerical_regime flag checks initial sheet width. At S_eta=2000, the evolving halfwidth proxy reaches 2.84 cells at 256, while peak current changes approximately 4.4% from 192 to 256. The dossier retains useful profiles but does not yet connect their spatial sensitivity to the adequacy of the declared rate uncertainty. This does not establish that the integral rate is inaccurate; it leaves that qualification unresolved.",
+            "The inspected qualification JSON records one X point and two O points in every analyzed frame. However, qualify.py selects frames using time <= upper_crossing + nominal_cadence. For S_eta=1000 this excludes the actual upper bracketing frame: the inventory ends at time 1.065099635 with flux 0.049998575, before the crossing at 1.065128943; the next saved frame is at 1.070330826. Thus the stated complete-window topology coverage is slightly overstated. Raw archive contents were not independently inspected here.",
+            "Progress is substantive: both timestep controls and recorded topology analysis completed, rather than repeated intentions or polling. All submitted runs are recorded as exploration/validation or diagnostic work, not accepted hypothesis evidence. At the snapshot approximately 1316 seconds remain, including a 600-second reporting reserve. Measured 256-grid receipts cost approximately 286\u2013585 seconds; finer-grid throughput is unmeasured. receipt_progress is empty, and the requested extension is pending, so neither additional time nor completion of finer controls can be assumed."
+          ],
+          "next_action": "Submit a corrected qualification dossier for the selected contrast, using actual crossing-bracket indices for topology coverage and a matched-flux spatial assessment that justifies the rate allowance; choose targeted refinement if the retained evidence cannot resolve that assessment.",
+          "prerequisites": [
+            "Establish evolving-sheet spatial adequacy for the selected integral flux observable and justify its empirical spatial uncertainty allowance using matched-flux profile/current and rate convergence, or a targeted finer control. Initial-width and shrinking-rate flags alone do not resolve the outstanding assessment.",
+            "Correct topology frame selection to include both actual crossing brackets, inspect the omitted S_eta=1000 upper-bracket field under its registered identity, and document complete-window coverage. Requalify the changed diagnostic without modifying the prohibited solver."
+          ],
+          "evidence_requests": []
+        }
+      },
+      {
+        "id": "method_661a2c5064ad92c6494cf179",
+        "created_at": 1792938066.6341262,
+        "status": "resolved",
+        "scope": "production",
+        "binding": {
+          "source": "calculation.py",
+          "inputs": {
+            "calculation.py": "2b78c89dc7551f90848e8989d2c50c379e9d3428281858c9343d2b231ec71183",
+            "island_coalescence.py": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b",
+            "null_diagnostic.py": "2127895b89607561427f6b35024e5b85761c89bac53c4e58a411e49c14c5d53f"
+          },
+          "capability": "flash-island-coalescence-resistive-mhd-4.8",
+          "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+        },
+        "verdict": {
+          "decision": "continue",
+          "rationale": "The inspected production method is sufficiently qualified to collect fresh evidence for the selected S_eta=1000 versus 2000 contrast. The new refinement addresses the previous spatial and topology-coverage concerns, and the proposed conservative uncertainty transport to 384\u00b2 is acceptable within this limited scope. This approves evidence collection only; it accepts no scientific claim.",
+          "findings": [
+            "The required FLASH instrument family is satisfied. Registered provenance and inspected driver changes show diagnostic and retention development, with unchanged solver inputs and reported executable identity. Solver development remains prohibited.",
+            "The prospective protocol fixes the flux reducer, contrast-selection rule, deterministic uncertainty envelope, admissibility criteria and endpoint slope propagation. Hash-checked summaries confirm five fresh exploratory resistivity settings; these are not production claim evidence.",
+            "Both selected cases complete the flux window across several meshes. The latest relative rate changes shrink from 0.2915% to 0.1251% for S_eta=1000 and from 0.2837% to 0.1959% for S_eta=2000. Matched-flux current profiles also improve with refinement.",
+            "Corrected topology inventories cover the actual upper crossing brackets: 214 frames at 384\u00b2 for S_eta=1000 and 146 frames at 512\u00b2 for S_eta=2000 report one X and two O points. This qualifies saved cell-center topology, with no guarantee about subcell or between-output structures.",
+            "The inspected 512\u00b2 archive and six crossing-bracket fields match registered hashes. Geometry, input parameters, positivity, divergence and reflection diagnostics agree with the dossier. Recomputed log diagnostics give mass drift 2.34e-14 and total-energy drift 5.15e-6. Other listed raw archives were not independently inspected.",
+            "The empirical fine-grid rate allowances are 1.31% and 1.98%. Transporting the latter to 384\u00b2 adds the observed grid shift, giving approximately 2.18% before fresh-run adjustments. This preserves the qualified finer allowance rather than treating the failed earlier 384\u00b2 shrinking gate as passed.",
+            "Limitations remain explicit: CFL sensitivity is transferred from complete-window 256\u00b2 controls; uncertainty is empirical rather than a rigorous continuum enclosure; separate floor and energyFix corrections are unavailable. Approval covers the selected contrast and declared observable, not additional resistivities or a repaired physical prediction.",
+            "Progress includes completed refinement and corrected diagnostics, not merely repeated intentions. receipt_progress is empty. Recorded 384\u00b2 costs total about 1659 seconds against approximately 4306 seconds remaining under the recorded operator-authorized extension, making fresh collection and reporting plausible; that forecast is not guaranteed."
+          ],
+          "next_action": "Collect the prospectively registered fresh 384\u00b2 selected contrast using the approved transported uncertainty envelope, retaining its production admissibility diagnostics and provenance for independent claim review.",
+          "prerequisites": [],
+          "evidence_requests": []
+        }
+      },
+      {
+        "id": "method_cf2dda08b06de67032c4f290",
+        "created_at": 1792932094.5209007,
+        "status": "resolved",
+        "scope": "production",
+        "binding": {
+          "source": "calculation.py",
+          "inputs": {
+            "calculation.py": "a48d3b920e2ecb365307441d5201fe7a8dee59b09275ee6720821071c12c38cc",
+            "island_coalescence.py": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b"
+          },
+          "capability": "flash-island-coalescence-resistive-mhd-4.8",
+          "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+        },
+        "verdict": {
+          "decision": "revise",
+          "rationale": "The production method has substantial fresh evolution qualification and uses the required supplied FLASH instrument, but its declared timestep controls remain unavailable and spatial/topology qualification of the selected contrast is incomplete. These limitations prevent production-method approval; they do not falsify the physical hypothesis.",
+          "findings": [
+            "Instrument-family identity is satisfied. Solver development is prohibited, registration contains no replacement build, and inspected driver revisions add diagnostics and archive cleanup without changing solver numerics. Matching hashes establish provenance, not correctness.",
+            "The prospective notebook protocol predates the exploratory map and fixes the flux reducer, contrast-selection rule, deterministic uncertainty envelope and decision rule. Selecting S_eta=1000 versus 2000 follows that recorded rule. The method preserves contrast-dependent slopes rather than imposing a global power law.",
+            "Hash-verified JSON artifacts show both selected settings reaching the complete flux window at 128\u00b2, 192\u00b2 and 256\u00b2. Rates respectively change from 0.0490252 to 0.0494818 to 0.0496264, and from 0.0379460 to 0.0381552 to 0.0381339. The corresponding central slopes are approximately -0.36958, -0.37502 and -0.38003. These are exploratory qualification results, not accepted claim evidence.",
+            "The inspected input files and runtime readbacks agree on the square geometry, reflecting boundaries, fixed physical parameters and configured explicit resistivity. Reported finest-grid divergence is below 3.3e-12, boundary-normal fractions below 0.026, mass drift below 1e-14 and total-energy drift below 1.1e-5. The hash-verified conservation-file headers support the driver's column interpretation. Separate floor and energyFix correction accounting remains unavailable; positivity and net conservation do not measure those corrections individually.",
+            "The numerical_regime flag tests initial sheet width, not evolving sheet resolution. The S_eta=2000 halfwidth diagnostic reaches about 2.22 cells at 192\u00b2 and 2.84 cells at 256\u00b2, while peak central current changes from about 74.43 to 77.69. Shrinking integral-rate changes are encouraging but do not alone establish adequate local resolution or the spatial uncertainty envelope.",
+            "Central-sheet sign counts remain one. The inspected S_eta=2000 figure shows no obvious secondary islands in its three displayed, cropped views, but neither that figure nor the line count establishes full-domain admissibility throughout the window. Raw field archives are registered; their contents were not independently verified in this review.",
+            "Both requested CFL-control excerpts explicitly report running experiments with no recorded JSON output available. The earlier worker disappearance is an execution/reporting failure, not demonstrated numerical instability or physical falsification. The missing CFL contribution prevents completion of the declared uncertainty envelope.",
+            "Progress includes five distinct exploratory settings and targeted three-mesh coverage, rather than intentions alone. The supplied recent activity does not establish repeated polling. At the snapshot, about 2068 seconds remain, including a 600-second reporting reserve; completed 256\u00b2 runs cost approximately 286 and 372 seconds. Same-case repeats appear feasible, but pending controls, possible further refinement and independent review compete for that time. receipt_progress is empty, so no receipt-based target forecast is available."
+          ],
+          "next_action": "Assemble and resubmit one qualification dossier for the selected contrast, incorporating the completed CFL controls and a targeted assessment of evolving sheet resolution and full-domain topology; retain an unresolved status if qualification cannot be completed.",
+          "prerequisites": [
+            "Provide recorded complete-window CFL=0.2 results for both selected settings, compare them with CFL=0.4, and evaluate every term of the declared deterministic rate envelope and propagated slope interval.",
+            "Demonstrate that the selected contrast has adequate evolving-sheet spatial qualification, using retained profile/current convergence evidence or targeted further refinement as needed; distinguish this assessment from the initial-width passed flag and justify the spatial uncertainty allowance.",
+            "Document full-domain topology assessment for both selected settings across the measurement window, tied to registered field identities, sufficient to support the declared single-sheet/pre-plasmoid admissibility criterion."
+          ],
+          "evidence_requests": []
+        }
+      }
+    ],
+    "capability_additions": [],
+    "progress": [],
+    "budget": {
+      "supported": true,
+      "operating_limits": {
+        "worker_action_limit": null,
+        "worker_checkpoint_seconds": null,
+        "review_seconds": null,
+        "helper_workers": null
+      },
+      "can_extend": true,
+      "deadline": 1792942375.5981443,
+      "compute_deadline": 1792941775.5981443,
+      "remaining_seconds": 1582.0198595523834,
+      "total_seconds": 13214.0,
+      "original_deadline": 1792934165.5981443,
+      "revision": 1,
+      "extensions": [
+        {
+          "id": "extension_a92941530efa45498a55eb9ba2f53122",
+          "request_key": "user-outage-restoration-plus-two-hours-20261025",
+          "created_at": 1792932853.412023,
+          "actor": "operator:tomzhu0225",
+          "reason": "User authorized additional hours to complete scientific qualification, with natural completion earlier. Restore 1010 seconds lost between the last observed pre-interruption heartbeat and resumption, plus 7200 seconds additional research allowance. Hypothesis, numerical gates, scientific instructions and reviewer independence remain unchanged.",
+          "additional_seconds": 8210.0,
+          "previous_deadline": 1792934165.5981443,
+          "new_deadline": 1792942375.5981443,
+          "request_id": null,
+          "scope": "Operator budget authorization only; existing experiment limits are unchanged."
+        }
+      ],
+      "requests": [
+        {
+          "id": "time_813c9fffe831411b88dd9d2e3a28d2f8",
+          "created_at": 1792932844.7755928,
+          "hours": 0.5,
+          "reason": "A worker disappearance consumed qualification time. Fresh three-mesh trajectories and both complete-window CFL controls now exist; root slope empirical interval misses band by only .00102 while S2000 sheet halfwidth is2.84cells. Additional384 refinement, independent methods review, fresh evidence and any accepted-counterexample repair validation require roughly30minutes beyond current remainder. Continue against current cutoff unless operator grants.",
+          "requested_by": "worker",
+          "request_key": null,
+          "authority": "Request only; the operator must authorize any additional budget.",
+          "status": "pending"
+        }
+      ],
+      "experiment_limits": [],
+      "scope": "Extra campaign time does not change individual experiment limits or evidence rules."
+    },
+    "audit": {
+      "recommended_review_reserve_seconds": 600,
+      "budget_warning": null,
+      "execution_counts": {
+        "succeeded": 23,
+        "failed": 3
+      },
+      "scientific_status": "unresolved",
+      "coverage": [],
+      "estimated_serial_validation_seconds": 0.0,
+      "estimate_note": "Heuristic from completed jobs, excluding analysis/review; not a guarantee.",
+      "flagged_experiments": [],
+      "no_independent_review": false
+    }
+  },
+  "continuation": {},
+  "report": "# Fresh resistive-MHD island-coalescence investigation\n\nThe original slope-band hypothesis is **falsified** by the fresh, qualified S_eta=1000\u21922000 contrast. Independent review `review_d8ed7a3364483fc612a029c3` accepted p_eff=\u22120.37775156 with deterministic numerical interval **[\u22120.43140540,\u22120.32467595]**, wholly above the claimed band [\u22120.55,\u22120.45]. This is a counterexample in the supplied fixed physical model. It establishes neither a common global power law nor a result for other physical models.\n\nThe explanatory repair is **unfinished**. Recorded calibration of a measured-strain transient-width closure underpredicts the anchor rates by about 25\u201331% and fails its fixed 5% duration-replay gate. An amplitude-budget extension also fails that gate. A response-derived effective thinning coefficient remains phenomenological and unvalidated. No repaired scientific claim was committed or independently supported, and no new-resistivity validation trajectories were collected. The study's repair completion policy is therefore not satisfied.\n\n## Accepted production evidence\n\nSource-bound production method `method_661a2c5064ad92c6494cf179` was independently approved before these fresh observations. The root reviewer inspected hash-verified production summaries, magnetic series and retained crossing-bracket fields, independently reproduced the rates, numerical envelopes and sampled topology, and accepted the falsification.\n\n|Quantity|S_eta=1000|S_eta=2000|\n|---|---:|---:|\n|eta|0.001|0.0005|\n|Mesh|384\u00b2|384\u00b2|\n|First crossing, flux0.01|0.2587485323|0.4022872241|\n|First crossing, flux0.05|1.0637624179|1.4482540773|\n|R|0.04968858391|0.03824212964|\n|Relative numerical allowance|1.3075619%|2.3908687%|\n|R interval|[0.04903887490,0.05033829292]|[0.03732781052,0.03915644876]|\n|Wall time|547.28s|772.91s|\n|Receipt|exp_40aac93038caa57671014925|exp_755dffd11e2a3f05a6b86b49|\n\nThe same supplied By-path center flux, with each run's initial value subtracted, defines both rates. First crossings are linearly interpolated between actual saved times:\n\n$$R=\\frac{0.04}{t(\\psi_{rec}=0.05)-t(\\psi_{rec}=0.01)},\\qquad p_{eff}=\\frac{\\ln(R_b/R_a)}{\\ln(S_b/S_a)}.$$\n\nEndpoint propagation uses p_low=ln(Rb_low/Ra_high)/ln2 and p_high=ln(Rb_high/Ra_low)/ln2. Its lower endpoint is0.01859 above\u22120.45. These are deterministic empirical numerical envelopes, not statistical confidence intervals or rigorous continuum bounds. Mesh points are not treated as Gaussian samples. [contrast.json](contrast.json) preserves the arithmetic, checks and values; [evaluate_contrast.py](evaluate_contrast.py) is its fixed evaluator. The accepted verdict rests on the two production receipts and independently reviewed uncertainty rule, not promotion of exploratory analyses.\n\n![Scaling and contrast slopes](scaling.png)\n\nGray points are the exploratory five-setting map. Navy points and their numerical envelopes show the accepted fresh contrast. No common fitted exponent is imposed.\n\n## Physical setup and prospective protocol\n\nThe supplied FLASH4.8 application evolves normalized 2D compressible single-fluid resistive MHD with uniform eta. The initial state, alpha=20, temperature=3, pressure offset=6, gamma=5/3, reflecting boundaries and square[-0.5,0.5]\u00b2 remain fixed. S_eta=1/eta is nominal inverse magnetic diffusivity, not a dimensional Lundquist number. The reference executable was reused without source modification or compilation.\n\nBefore the fresh map, note_29642e7a3142dea6e9d7b988 fixed the reducer, five logarithmically separated settings 250,500,1000,2000,4000, adjacent-contrast selection, uncertainty and admissibility. The128\u00b2 exploratory rates were0.0891647,0.0651272,0.0490252,0.0379460,0.0289067, with adjacent slopes\u22120.4532,\u22120.4097,\u22120.3696,\u22120.3925. The recorded largest-departure rule selected1000\u21922000. These data remain exploratory qualification; the scientific verdict uses later fresh production.\n\nFor each finest control, u=max[0.01,2max(successive relative rate changes over the last three meshes)+full crossing-bracket relative deviation+orthogonal Bx-path rate difference+measured same-mesh CFL difference]. The last mesh change must be<= 5% and smaller than its predecessor; u<=15%. Other gates require complete crossings, finite positive rho andp>100floors, correct runtime parameters, max|divB|<1e\u22129, boundary-normal fraction<0.05, mass drift<1e\u22126, energy drift<1%, and the declared single-sheet/pre-plasmoid topology. A qualified slope interval wholly outside the entire band falsifies it; overlap cannot falsify it.\n\n## Spatial, timestep and diagnostic qualification\n\nBoth selected settings completed the flux window at 128\u00b2,192\u00b2,256\u00b2 and384\u00b2. S1000 rate changes shrink0.2915%\u21920.1251% over192\u2192256\u2192384. S2000 initially failed the gate:0.0557% over192\u2192256, then0.2837% over256\u2192384. That failure was preserved. The additional512\u00b2 control exp_58adb12d461c94104daeff23 gives R=0.038317512 and next change0.1959%, smaller than0.2837%, passing the unchanged gate; it cost2075.01s. Matched-flux384\u2192512 central-current differences shrink to about0.7\u20131.3%. Minimum reported evolving halfwidths are5.80cells at S1000/384 and5.44cells at S2000/512, distinct from the legacy initial-width flag.\n\nComplete-window256\u00b2 CFL0.4/0.2 controls change rates by0.0899% and0.0717%. The approved scope transfers that measured timestep contribution to finer grids. Striding0.005-cadence trajectories to approximately0.01 while retaining the last endpoint changes rates by at most8.30e\u22126 relative; [cadence_comparison.json](cadence_comparison.json) lists each case. Actual saved times are used. Fresh S2000's full crossing-bracket allowance is1.5464%, which is retained in its conservative envelope.\n\nThe fine-grid allowances are1.3076% (S1000/384) and1.9826% (S2000/512). Independent methods review explicitly approved transport to fresh384\u00b2 S2000 production: retain the fine absolute allowance, add the observed512\u2192384 shift and any fresh-anchor difference, then add excess fresh cadence uncertainty; use the larger of this, the direct fresh error sum and the1% floor. Here the absolute components are0.00075969324,0.00007506496 and0.00000031722; the extra relative cadence component is0.00207215724. They yield2.3909%. This does not pretend that the historical384\u00b2 shrinking gate passed. [final_qualification.json](final_qualification.json) and [spatial_qualification.json](spatial_qualification.json) preserve the recorded controls and matched profiles.\n\n## Admissibility and full-domain fields\n\nThe fresh production cases realize uniform explicit resistivity, identical initial fields and the intended reflecting boundaries. Max|divB| values are5.59e\u221212/6.54e\u221212; boundary-normal fractions0.01182/0.01726; mass drifts1.34e\u221214/1.62e\u221214; energy drifts3.56e\u22126/7.96e\u22126. Minimum densities0.944/0.928 and pressures5.863/5.759 are far above1e\u221212 floors. Net conservation does not separately identify floor or energyFix corrections, which are unexported.\n\nFull-domain bilinear null inventories cover all saved cell-center fields from initialization through the actual upper brackets. There is one X point and two O points in every 214/146 production frame. The final bracket fluxes are0.0500673/0.0500714. No extra resolved null pair appears. This qualifies saved-field topology, without certifying subcell, between-output or ghost-layer structures. The independent root reviewer reproduced this bounded assessment.\n\n![S1000 fresh production fields](fields_S1000.png)\n\n![S2000 fresh production fields](fields_S2000.png)\n\nThese full-domain Jz maps and magnetic-potential contours use nearest saved states at flux0.01,0.03,0.05. Crossing times use the prescribed interpolation. [figure_provenance.json](figure_provenance.json) identifies each source receipt, member, time, index and SHA256.\n\n## Repair investigation and remaining scientific need\n\nThe measured profiles change substantially across the flux window. Independently defined half-amplitude width and upstream peak field vary with stage and resistivity. This makes stationary geometry questionable but does not establish the causal reason for the flatter slope. Strain, upstream supply, finite geometry and longitudinal evolution require a predictive closure and independent challenges.\n\nThe imported helper proposal used w=sigma\u00b2, measured inward velocity strain a(psi), upstream peak B_u(psi), common initial w0 and\n\n$$\\dot w=-2a(\\psi)w+2\\eta,\\qquad\\dot\\psi=\\eta\\sqrt{2/\\pi}\\,B_u(\\psi)/\\sqrt w.$$\n\nKnots were fixed at flux0,0.01,0.03,0.05, with arithmetic anchor means and linear interpolation. Width was determined from the half-amplitude profile, not J. No rate coefficient was fitted. Its required calibration gate was duration error<= 5% on both anchors before validation. Recorded retained-field analysis exp_ed30761478eaae5229acd789 reproduces extraction and ODE integration from registered inputs:\n\n|S_eta|Anchor R|Model R|Rate underprediction|Duration error|\n|---|---:|---:|---:|---:|\n|1000|0.049688584|0.037249353|25.03%|33.39%|\n|2000|0.038242447|0.026457552|30.82%|44.54%|\n\nThis necessary replay gate fails, so that candidate stops before validation. Other proposed gates\u2014complete omitted-EMF accounting and all closure uncertainties\u2014remain unfinished; the report does not imply they passed. [conditional_calibration.json](conditional_calibration.json) records the failed replay, not an accepted scientific counterexample to a committed repair.\n\nA local magnetic-slope/amplitude-budget extension checked without rate fitting in exp_7eb023a1353c625c137e6b4e also fails the fixed 5% duration-replay gate on one anchor. The alternative effective thinning coefficient inferred from observed width derivatives improves calibration but uses response-derived information; it is not measured strain and is nonzero initially despite zero initial flow. It cannot presently establish the mechanism or justify new validation. [amplitude_calibration.json](amplitude_calibration.json) and [effective_width_calibration.json](effective_width_calibration.json) preserve these exploratory diagnostics.\n\nNo new-resistivity FLASH validation cases were run for these proposals. ODE values at proposed settings are uncommitted planning calculations, not independent observations. No replacement exponent band, repaired physical law or completed mechanism is claimed. The smallest remaining scientific need is a closure that explains the width/amplitude budget, survives calibration without rate rescaling and makes a frozen prediction at a new setting, followed by qualified fresh simulations. No such supported repair exists here.\n\n## Every fresh run and decision timeline\n\n[run_table.json](run_table.json) contains all fresh receipts, including failed trajectories and analyses: S_eta/eta/mesh, arguments, timing, rate or explicit null reason, numerical checks, production slope intervals, fields and hashes, source/input/runtime identities, execution and scientific status. Analysis rows are not counted as independent MHD trajectories.\n\n|Receipt|Kind/stage|S_eta / mesh|Execution|R or note|\n|---|---|---|---|---|\n|exp_2f42b96d98fb476429596b6c|trajectory/exploration|1000 / 128\u00b2|failed|undefined; see receipt|\n|exp_a2d9039a3b1d3ba9ec78f86c|trajectory/exploration|250 / 128\u00b2|succeeded|0.08916469|\n|exp_349433d01686c1d23c0186c8|trajectory/exploration|500 / 128\u00b2|succeeded|0.06512725|\n|exp_ff929c68f5acb2eafb2f340b|trajectory/exploration|1000 / 128\u00b2|succeeded|0.04902521|\n|exp_42cf28ee0c7c41a2f8d923be|trajectory/exploration|2000 / 128\u00b2|succeeded|0.03794595|\n|exp_b2df128c1c1ecc1d990f7dc5|trajectory/exploration|4000 / 128\u00b2|succeeded|0.02890667|\n|exp_c90e9b96ba8406a99246fb8e|trajectory/exploration|1000 / 192\u00b2|succeeded|0.04948176|\n|exp_82b78fe2f19144b3b6ca29af|trajectory/exploration|2000 / 192\u00b2|succeeded|0.03815518|\n|exp_f2da6ae1b2ce992ddf16cf82|trajectory/exploration|1000 / 256\u00b2|succeeded|0.04962642|\n|exp_d72d5627834d2ca1456a280c|trajectory/exploration|2000 / 256\u00b2|succeeded|0.03813394|\n|exp_aaef37fed668e2be86673215|trajectory/exploration|1000 / 256\u00b2|failed|undefined; see receipt|\n|exp_0b86a9ee47886cb02451c2c2|trajectory/exploration|1000 / 256\u00b2|succeeded|0.04967105|\n|exp_9a9dff759f89368261125a4b|trajectory/exploration|2000 / 256\u00b2|succeeded|0.03816129|\n|exp_bc3989c6f90215ea0fc96df9|analysis/exploration|\u2014|succeeded|postprocessing|\n|exp_56eca6327dc2e3f0fd4942d4|trajectory/exploration|1000 / 384\u00b2|succeeded|0.04968858|\n|exp_bcf499766e6d03faf83066d7|trajectory/exploration|2000 / 384\u00b2|failed|undefined; see receipt|\n|exp_5705eedd35d71964238c0e87|analysis/exploration|\u2014|succeeded|postprocessing|\n|exp_9ed2782a9af6b2446c71285a|trajectory/exploration|2000 / 384\u00b2|succeeded|0.03824245|\n|exp_cd08ebc4f1287d48388eddc6|analysis/exploration|\u2014|succeeded|postprocessing|\n|exp_c99f4a2aba5c70b7330e4ada|trajectory/exploration|1000 / 128\u00b2|succeeded|0.04903149|\n|exp_58adb12d461c94104daeff23|trajectory/exploration|2000 / 512\u00b2|succeeded|0.03831751|\n|exp_8adee806b81f5d005af5e201|analysis/exploration|\u2014|succeeded|postprocessing|\n|exp_755dffd11e2a3f05a6b86b49|trajectory/evidence|2000 / 384\u00b2|succeeded|0.03824213|\n|exp_40aac93038caa57671014925|trajectory/evidence|1000 / 384\u00b2|succeeded|0.04968858|\n|exp_ed30761478eaae5229acd789|analysis/exploration|\u2014|succeeded|postprocessing|\n|exp_7eb023a1353c625c137e6b4e|analysis/exploration|\u2014|succeeded|postprocessing|\n\n1. Exact anchor exp_2f42b96d98fb476429596b6c evolved successfully but its receipt failed because declared and actual summary paths differed. Its actual fresh output and failed receipt remain preserved; this is not physics evidence.\n2. Recorded the prospective protocol, completed five exploratory settings and selected the declared contrast. The early256\u00b2 interval missed the band by only0.001023, motivating further refinement.\n3. Completed spatial/CFL/cadence controls. exp_aaef37fed668e2be86673215 lost its worker without terminal outputs; process inspection found no remaining solver before successful retries. This is an execution/reporting failure, not instability evidence.\n4. Independent methods reviews required evolving-sheet and topology qualification. The original nominal-cadence selector omitted S1000's actual upper bracket; exp_5705eedd35d71964238c0e87 verifies that field and known3-/15-null controls. Corrected analysis uses actual crossing indices; earlier overstated coverage remains in the record.\n5. Operator-authorized extension enabled384\u00b2 controls. Concurrent S2000 launch exp_bcf499766e6d03faf83066d7 failed under a9.7MB residual reservation; sequential retry succeeded. No storage failure was treated as physics. The failed384\u00b2 convergence gate was retained, followed by successful512\u00b2 qualification.\n6. Compact retention was commissioned with bitwise readback. Corrected source-bound method_661a2c5064ad92c6494cf179 approved the selected production contrast and conservative uncertainty transport.\n7. Fresh production completed sequentially in773s and547s. Review_d8ed7a3364483fc612a029c3 accepted original falsification. This acceptance is independent of later repair success.\n8. Recorded unsuccessful closure calibrations. No failed calibration was retuned into supported validation, and no exploratory artifact was promoted to hypothesis evidence.\n\n## Reproducibility and retained artifacts\n\n[calculation.py](calculation.py) uses [island_coalescence.py](island_coalescence.py) and [null_diagnostic.py](null_diagnostic.py). Every receipt preserves the exact source revision. Production driver SHA256 is `2b78c89dc7551f90848e8989d2c50c379e9d3428281858c9343d2b231ec71183`; executable SHA256 is `40cf57b987e85f9befc01abae4e89f27c230d1eb42391ba3abea8655a0f7024b`; capability-runtime SHA256 is `1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80`. Parameter hashes and complete launcher commands are in both production summaries and the run table. Four MPI ranks and OMP_NUM_THREADS=1 were used, within the 16-rank aggregate limit. No solver was modified or rebuilt.\n\nEach compact trajectory retains every saved magx/magy array losslessly in magnetic_series.h5, with exact readback checked before duplicate removal. fields.tar.gz retains complete initial/final states and both brackets at flux0.01,0.03,0.05, plus parameters, logs and conservation history. Older full-field archives are immutable. fields[].retained_full_state and magnetic_series_index distinguish retained complete states from reduced-snapshot identities; hashes of removed full states are not presented as retrievable files.\n\nExact fresh production reruns use lab.run('calculation.py', ...) with inputs=['island_coalescence.py','null_diagnostic.py'], outputs=['result.json','fields.tar.gz','magnetic_series.h5'], capability='flash-island-coalescence-resistive-mhd-4.8', method='method_661a2c5064ad92c6494cf179', stage='evidence', and a new key:\n\n|Case|args|timeout|\n|---|---|---:|\n|S1000|['--S','1000','--n','384','--tmax','1.15','--cadence','0.005']|1000s|\n|S2000|['--S','2000','--n','384','--tmax','1.6','--cadence','0.01']|1300s|\n\nRun sequentially after checking the required storage allowance. The method ID applies only to its recorded source/input/runtime binding and selected scope. Offline diagnostic sources and exact inputs are in their corresponding receipts. Source/build hashes establish identity, not correctness; numerical and independent reviews supply the separate qualification.\n\n**Current disposition:** original band independently falsified; physical explanation and supported repair unfinished. No solver execution is active. The full investigation is not marked complete.\n",
+  "report_sha256": "6a54730d84e89a2deea44e13ebdae10c10816e2aa87ca8bfbf504cfc3ba5749b",
+  "source_report": "research/RESULTS.md",
+  "record_identity": {
+    "report_sha256": "6a54730d84e89a2deea44e13ebdae10c10816e2aa87ca8bfbf504cfc3ba5749b",
+    "source_report": "research/RESULTS.md",
+    "protocol_sha256": "10ddf666fc5b8836dcc8a137b0f1bd9502f75ae36722534469fc5e7532bd8be5",
+    "records": {
+      "experiments": [
+        [
+          "exp_0b86a9ee47886cb02451c2c2",
+          "9b43adcc20ae7539c7025dce4b9afee721b2c48f7a1889359b3f0058aa658c07"
+        ],
+        [
+          "exp_2f42b96d98fb476429596b6c",
+          "b91a67aa04ee1b69108ed8e5d4aa510c83254200686421afafdf9997f50be801"
+        ],
+        [
+          "exp_349433d01686c1d23c0186c8",
+          "17f4b444dbaf642533664957988c4712ba0f9ed65d5dbfb42c1909c5a837648f"
+        ],
+        [
+          "exp_40aac93038caa57671014925",
+          "fbd6fc503464e224b544dd930556f83b29745c6d78c35fb8318f2d4229be2882"
+        ],
+        [
+          "exp_42cf28ee0c7c41a2f8d923be",
+          "181020005b78a5101328442cfadf803e670786af8f53145db407c5074fa3fb33"
+        ],
+        [
+          "exp_56eca6327dc2e3f0fd4942d4",
+          "ee164d4fc92062a36055fc687b687bde5e79b87d8f2082c9fde53b7bab2fe836"
+        ],
+        [
+          "exp_5705eedd35d71964238c0e87",
+          "b286671dc042af42b891f7773db04aadc1114d0986b54ecd599eb4aadade18ea"
+        ],
+        [
+          "exp_58adb12d461c94104daeff23",
+          "1a0b54ad64d077b1b838bb8a4c5e1f54d1e5246ba57e53a06b54ae123c99bbff"
+        ],
+        [
+          "exp_755dffd11e2a3f05a6b86b49",
+          "f3517fc6a5239904208f462c26868fcb8df91449d4fcb0a48f95ccae88ce0c5c"
+        ],
+        [
+          "exp_7eb023a1353c625c137e6b4e",
+          "42dd5341d5ef44b3730994b5afc500296b0f384070dcd19c3e5231ea86ba8c44"
+        ],
+        [
+          "exp_82b78fe2f19144b3b6ca29af",
+          "e1c3bc40743f55c8a5cbd6fe78385c0f32e482d6413a524390a60841e1f8d038"
+        ],
+        [
+          "exp_8adee806b81f5d005af5e201",
+          "778b53e0532f3577ea11af5e8cffff4da5b792daaacfe959f1b90a031b05203a"
+        ],
+        [
+          "exp_9a9dff759f89368261125a4b",
+          "c02b5a4348dffc3a9312623436ce20e3e8b7ffda4c5cba2b93985719769ac82a"
+        ],
+        [
+          "exp_9ed2782a9af6b2446c71285a",
+          "7d3c0a44220a3ec8ec6323f12405e2e1ccadcfef5feae2c35e5448d9e637e790"
+        ],
+        [
+          "exp_a2d9039a3b1d3ba9ec78f86c",
+          "56406ea0a42dc4c95bae84c58ff439ec6e0d95858c41ae3fa20aba04f30b3801"
+        ],
+        [
+          "exp_aaef37fed668e2be86673215",
+          "586d9a302d180976c01800a71555da127e5da5826bb9e13415eb7f7c0d4811ec"
+        ],
+        [
+          "exp_b2df128c1c1ecc1d990f7dc5",
+          "55dc6bc7ae2010a66bc0940b0f30ff295dd9a47f8593ad4848e2b70f5f8bcc0c"
+        ],
+        [
+          "exp_bc3989c6f90215ea0fc96df9",
+          "809a10f236a196fb27a99ceacac646d10c0ac4b90944ebca286bfa6c69f9ddc7"
+        ],
+        [
+          "exp_bcf499766e6d03faf83066d7",
+          "5f22696e4b6480abe6c8a5b2bb5e52321e66a8107717d1b96ec3bc99cda5a449"
+        ],
+        [
+          "exp_c90e9b96ba8406a99246fb8e",
+          "1604aa57efcecbfce9a0e02c0a544de91a5667fc7bd236ab5c47b6bada47b2fe"
+        ],
+        [
+          "exp_c99f4a2aba5c70b7330e4ada",
+          "440abad9dfa0dba84bd9f799434ba88d17d464019f81936a188a3be477df3911"
+        ],
+        [
+          "exp_cd08ebc4f1287d48388eddc6",
+          "1d72f25de5682e8c597671158d2aedd6104feb7881569d7d43f5100ec8e6c7aa"
+        ],
+        [
+          "exp_d72d5627834d2ca1456a280c",
+          "aa46bc41650b015d5471cf87a3c7ec576bb0e0268478ba106a1e728279450224"
+        ],
+        [
+          "exp_ed30761478eaae5229acd789",
+          "542f5bdd2d1de30e19c4e2c0195bd560ec865dd709d646acfe476f748c083bfd"
+        ],
+        [
+          "exp_f2da6ae1b2ce992ddf16cf82",
+          "6ea968655077d77b50b95c9fd0f682bc2632155e3c6915da2e0f291cd47ceb34"
+        ],
+        [
+          "exp_ff929c68f5acb2eafb2f340b",
+          "316d3f2fb6a3846c5ee1f617979919d3bb1007f0d219d34111a64ba3e460c409"
+        ]
+      ],
+      "methods": [
+        [
+          "method_4e91240e074e8dcad20103cb",
+          "7b69a6e91503b17cc40683057e6a44a3fbe10a8394a43cc18703cba4020a3442"
+        ],
+        [
+          "method_661a2c5064ad92c6494cf179",
+          "e6338a4e035e5c3596ebcc5d10020be4b582b833e8c4335193449ea8da679814"
+        ],
+        [
+          "method_cf2dda08b06de67032c4f290",
+          "de40963bff7dfccf711e5911256cc318a665877164baad73f0074c0009a7607f"
+        ]
+      ],
+      "reviews": [
+        [
+          "review_d8ed7a3364483fc612a029c3",
+          "2bed196b0569e217c96c710b455b03246c1ac82dea951f9b37d86eeab871ed46"
+        ]
+      ],
+      "commitments": []
+    }
+  },
+  "scope": "Report assessment only; does not approve claims or change evidence stages."
+}

@@ -1,0 +1,6 @@
+{"time": 1793010949.52062, "kind": "post_run_call", "role": "judge-claim", "allowance_seconds": 300}
+{"time": 1793010949.5221756, "kind": "judge_started", "pid": 392730, "directory": "/home/tomzhu0225/src/simulations/other_demos/flash_warpx_pressure_closure/outputs/review_completion__20261026T103548Z/judge-claim-1"}
+{"time": 1793011147.0606792, "kind": "post_run_call", "role": "report-draft", "allowance_seconds": 300}
+{"time": 1793011147.0615468, "kind": "judge_started", "pid": 395886, "directory": "/home/tomzhu0225/src/simulations/other_demos/flash_warpx_pressure_closure/outputs/review_completion__20261026T103548Z/report-draft-1"}
+{"time": 1793011315.1736991, "kind": "post_run_call", "role": "judge-report", "allowance_seconds": 300}
+{"time": 1793011315.1746721, "kind": "judge_started", "pid": 397970, "directory": "/home/tomzhu0225/src/simulations/other_demos/flash_warpx_pressure_closure/outputs/review_completion__20261026T103548Z/judge-report-1"}

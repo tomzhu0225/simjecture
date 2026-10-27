@@ -1,0 +1,23 @@
+{
+  "id": "director_38786565676bc897379c467b",
+  "created_at": 1792940452.9026697,
+  "packet_sha256": "4bce51731ed0be6d3491e9e22d44fc51989b7f208b79726d3d4de2b027777e5a",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "The new recorded calibration preserves the measured-strain candidate's approximately 25\u201331% underprediction of both calibration rates. Its artifact explicitly remains exploratory with incomplete gate assessment; the effective-width closure also remains unvalidated. Neither warrants fresh validation runs now. The independently accepted root verdict remains unchanged. Scientific usefulness is adequate for reporting the reviewed counterexample and unfinished repair investigation. Budget feasibility is adequate for retained-data analysis and independent report assessment, with approximately 1403 seconds before the compute cutoff and a protected 600-second report reserve. RESULTS.md still contains obsolete unresolved/running statements, while worker activity shows report and figure preparation underway. All help requests are resolved.",
+  "scientific_feasibility": "adequate",
+  "budget_feasibility": "feasible",
+  "stop_experiments": [],
+  "wake_worker": false,
+  "park_worker": false,
+  "report_assessment": null,
+  "closeout_report": null,
+  "next_action": "Complete the report update already underway. Replace obsolete current-status statements with the accepted production contrast, approved uncertainty interval and review identity; retain earlier failed gates as historical controls. Include both production receipts, all fresh runs, updated figures and provenance. Cite exp_ed30761478eaae5229acd789 for the exploratory calibration reproduction, quantify its rate discrepancies, and distinguish incomplete diagnostic gates from failure of the proposed closure's calibration criterion. Keep the effective-width closure explicitly unvalidated and the physical explanation unresolved. Launch no new repair trajectories. Promptly submit the completed RESULTS.md for independent report assessment, leaving time to address review findings within the authoritative deadline.",
+  "storage_increase": null,
+  "registration_tuning": null,
+  "time_request": null,
+  "operating_limits": null,
+  "helper_tasks": [],
+  "help_replies": []
+}

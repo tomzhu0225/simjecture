@@ -1,0 +1,23 @@
+{
+  "id": "director_834f54581a470d7c09bc5628",
+  "created_at": 1792935388.8021154,
+  "packet_sha256": "d0c746889c01f14414a2a6fe9ec844a5593028eb3cc41c3e79529a51f2a58f37",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "The completed S_eta=2000, 384\u00b2 refinement provides useful new qualification data: rate 0.03824245, minimum reported sheet halfwidth 4.13 cells through the upper crossing bracket, and a saved-field inventory reporting one X and two O points through that bracket. These remain unreviewed diagnostics, not method approval or a physical verdict. The five-setting exploratory map is already recorded. The two 384\u00b2 runs cost approximately 1659 seconds combined; approximately 6497 compute seconds remain under the authorized extension, making qualification and a fresh selected contrast plausible. Spatial-error adequacy, corrected topology coverage and retention validation still require independent assessment. The worker is already performing the relevant analysis, so no interruption or additional wake-up is warranted.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "at_risk",
+  "stop_experiments": [],
+  "wake_worker": false,
+  "park_worker": false,
+  "report_assessment": null,
+  "closeout_report": null,
+  "next_action": "Complete the matched-flux analysis across available meshes, propagate the unchanged numerical-uncertainty rule into the selected contrast interval, and verify topology through each actual upper crossing bracket. Validate the reduced retention format against source values and hashes before pruning. Submit the corrected source-bound qualification dossier for independent methods review, including the retention change. Update RESULTS.md, the run table and timeline with both 384\u00b2 results and their limitations. Before fresh claim-bearing runs, forecast execution, storage and review costs using measured runtimes and the authoritative compute cutoff. If qualification permits, prioritize the prospectively selected fresh contrast; any explanatory repair must be committed before its independent validation data. Preserve the 600-second report reserve and report unresolved qualification honestly.",
+  "storage_increase": null,
+  "registration_tuning": null,
+  "time_request": null,
+  "operating_limits": null,
+  "helper_tasks": [],
+  "help_replies": []
+}

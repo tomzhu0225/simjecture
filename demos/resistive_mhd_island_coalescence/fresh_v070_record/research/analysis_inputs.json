@@ -1,0 +1,44 @@
+[
+  {
+    "experiment": "exp_0b86a9ee47886cb02451c2c2",
+    "kind": "cfl",
+    "summary": "input_1000_256_cfl.json"
+  },
+  {
+    "experiment": "exp_c90e9b96ba8406a99246fb8e",
+    "kind": "base",
+    "summary": "input_1000_192_base.json"
+  },
+  {
+    "experiment": "exp_9a9dff759f89368261125a4b",
+    "kind": "cfl",
+    "summary": "input_2000_256_cfl.json"
+  },
+  {
+    "experiment": "exp_82b78fe2f19144b3b6ca29af",
+    "kind": "base",
+    "summary": "input_2000_192_base.json"
+  },
+  {
+    "experiment": "exp_d72d5627834d2ca1456a280c",
+    "kind": "base",
+    "summary": "input_2000_256_base.json",
+    "archive": "input_2000_256.tar.gz"
+  },
+  {
+    "experiment": "exp_42cf28ee0c7c41a2f8d923be",
+    "kind": "base",
+    "summary": "input_2000_128_base.json"
+  },
+  {
+    "experiment": "exp_f2da6ae1b2ce992ddf16cf82",
+    "kind": "base",
+    "summary": "input_1000_256_base.json",
+    "archive": "input_1000_256.tar.gz"
+  },
+  {
+    "experiment": "exp_ff929c68f5acb2eafb2f340b",
+    "kind": "base",
+    "summary": "input_1000_128_base.json"
+  }
+]

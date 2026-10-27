@@ -1,0 +1,67 @@
+{
+  "measurement": {
+    "dens": {
+      "relative_RMS": 0.0025980848423813293,
+      "max_absolute": 0.00650916126904999
+    },
+    "pres": {
+      "relative_RMS": 0.0004700395841465407,
+      "max_absolute": 0.003815043810762475
+    },
+    "magx": {
+      "relative_RMS": 0.004707700003166511,
+      "max_absolute": 0.0021744161429220754
+    },
+    "magy": {
+      "relative_RMS": 0.004488872857682788,
+      "max_absolute": 4.009146654742387e-05
+    },
+    "velx": {
+      "relative_RMS": 0.00725052880762371,
+      "max_absolute": 0.0023288322327477406
+    },
+    "vely": {
+      "relative_RMS": 0.00201844310715449,
+      "max_absolute": 7.739926546609238e-05
+    },
+    "current_y": {
+      "relative_RMS": 0.006458843916907897,
+      "max_absolute": 0.5152880903651393
+    }
+  },
+  "patch": {
+    "dens": {
+      "relative_RMS": 0.0005285880159384224,
+      "max_absolute": 0.00650916126904999
+    },
+    "pres": {
+      "relative_RMS": 7.665491504849045e-05,
+      "max_absolute": 0.003815036072107425
+    },
+    "magx": {
+      "relative_RMS": 0.0010528884180452,
+      "max_absolute": 0.0028123054241864483
+    },
+    "magy": {
+      "relative_RMS": 0.000446939367359635,
+      "max_absolute": 0.0003086797513154882
+    },
+    "velx": {
+      "relative_RMS": 0.007990381320424704,
+      "max_absolute": 0.018245717808845097
+    },
+    "vely": {
+      "relative_RMS": 0.0019495221200465879,
+      "max_absolute": 0.000368437397389427
+    },
+    "current_y": {
+      "relative_RMS": 0.006228026286941981,
+      "max_absolute": 1.1012009776075313
+    }
+  },
+  "source_times": [
+    0.8002032631186956,
+    0.8001113920335353
+  ],
+  "time_difference": -9.187108516028886e-05
+}

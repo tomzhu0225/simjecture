@@ -1,0 +1,34 @@
+{
+  "session": "/home/tomzhu0225/src/simulations/other_demos/flash_warpx_pressure_closure/outputs/review_completion__20261026T103548Z",
+  "authority": "Independent post-run review only",
+  "numerical_status": "budget_exhausted",
+  "claim_review": "review_01645441bd0eaebf3e6391fd",
+  "report_status": "reviewed",
+  "started_at": 1793010949.1000643,
+  "deadline": 1793012749.1000648,
+  "authorization_sha256": "fd976d5fbcbfc53b72471dd9392748e57a3c9dc468580deb784e111e88bc2707",
+  "claim_verdict": {
+    "claim_id": "root",
+    "decision": "approved",
+    "disposition": "supported",
+    "rationale": "The recorded evidence supports this particular finite, conditioned local prediction. Fresh FLASH experiment exp_7772fa68048aff22c2b815c3 supplies the inspected source snapshot at t=0.8001113920 and the hash-linked kinetic inputs. The declared half-width definition gives delta/di=1.0114 and 8.218 source cells. The implementation preserves mass ratio 25, equal initial species temperatures, the coordinate transformation and the declared collisionless continuation; no solver-source development is recorded. Source selection, mapping, measurement region, window and decision rule were bound before decisive runs.\n\nIndependent calculation from the retained pressure tensors reproduces ion means 0.04938627 and 0.04779225 and electron means 0.04732667 and 0.05204808. Both fresh trajectories cover the complete [0.4,0.9]/Omega_ci window. Tensors are finite and positive, required bins remain populated, and the estimator subtracts local species flow before averaging local departures. Finer-bin means remain below 0.084. Recorded initialization, relaxation and energy audits pass the frozen gates.\n\nThe challenge includes actual source, mesh, timestep, particle-count and matched larger-patch evolutions, followed by prospectively specified fresh seeds. I checked the control tensor outputs and their identities. Boundary sensitivity is empirically tested rather than inferred from light travel. Including every frozen error contribution gives upper values 0.14747075 for ions and 0.15448238 for electrons, below 0.20.\n\nSupport is limited to the stated finite realization and observable. Debye underresolution, appreciable electric-field noise sensitivity, approximate boundary-flux quadrature and finite-grid convergence prevent general solver or continuum validation. The inspected pressure controls and retained allowances are sufficient for this threshold decision. The copied non-evidence annotation and failed FLASH reconnection-flux check do not invalidate the fresh local-pressure evidence.",
+    "evidence_gaps": [],
+    "next_test": null
+  },
+  "claim_response": "judge-claim-1",
+  "report_writer_response": "report-draft-1",
+  "assessment": {
+    "decision": "accepted",
+    "summary": "Independent recomputation from retained tensors reproduces all four fresh means (0.04733\u20130.05205) over the complete declared window. Receipt and artifact hashes match; the uncertainty ledger yields upper values 0.14747075 for ions and 0.15448238 for electrons, below 0.20. The findings-first report accurately records the existing supported verdict, distinguishes fresh evidence from exploratory qualification, and explains failures and numerical limitations. Figures are traceable to retained data and analysis. Support is appropriately bounded to this finite, conditioned realization; the diagnostic envelope does not establish continuum convergence. Report acceptance neither independently approves the scientific claim nor changes experiment stages.",
+    "issues": []
+  },
+  "report": "report_reviews/0d19a51f73489c822dc8d2ad15c72ce192f9e9995ecd732a01fde4b07809a40b/RESULTS.md",
+  "packet": "report_reviews/0d19a51f73489c822dc8d2ad15c72ce192f9e9995ecd732a01fde4b07809a40b/packet.json",
+  "report_sha256": "e46b734bac825a5704749eee58997265533e00dee77188081e1885b844ffa451",
+  "packet_sha256": "e7247bccba63744a701ca05bdc16b68c42a00adce3c42d3c467d21727694cf3d",
+  "assessment_sha256": "cad2a7d4aaaa82d29d1ebd05dc5a946accb2d43cc2080fefaeaa679ac2ba4703",
+  "report_response": "judge-report-1",
+  "finished_at": 1793011418.230737,
+  "session_status": "completed",
+  "protected_records_unchanged": true
+}

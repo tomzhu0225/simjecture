@@ -1,0 +1,86 @@
+{
+  "id": "exp_7eb023a1353c625c137e6b4e",
+  "status": "succeeded",
+  "operator_guidance_ids": [],
+  "created_at": 1792940473.945796,
+  "timeout": 60,
+  "execution_deadline": 1792942015.5981443,
+  "workspace_limit_bytes": 791852438,
+  "binding": {
+    "source": "amplitude_check.py",
+    "args": [],
+    "inputs": {
+      "amplitude_check.py": "cfeee1cf2dfeda7aff30ee6dd2b6afd202a0398db70db7cb7aae3fdcb3f39540",
+      "conditional_calibration.json": "a46316deb8ddd56cb3312e5e5645cf81bfc2d62e4e9b15858ee9f88fef86539c"
+    },
+    "capability": null,
+    "runtime_sha256": null
+  },
+  "outputs": [
+    "amplitude_calibration.json"
+  ],
+  "commitment": null,
+  "key": null,
+  "stage": "exploration",
+  "method": null,
+  "review_documents": null,
+  "parent_experiment": "exp_ed30761478eaae5229acd789",
+  "purpose": "diagnostic",
+  "plan": null,
+  "pid": 182184,
+  "worker_identity": {
+    "pid": 182184,
+    "starttime": "5670170",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture-prx-island-v0.7.0/.venv/bin/python",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153",
+      "--execute",
+      "exp_7eb023a1353c625c137e6b4e"
+    ],
+    "launched_at": "2026-10-25T15:01:14.104883+00:00",
+    "run_directory": null
+  },
+  "started_at": 1792940474.1050186,
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": 0,
+    "stdout": "[{\"S_eta\": 1000, \"t_low\": 0.25701708075450164, \"t_high\": 0.9902725779679526, \"model_rate\": 0.05455124462347669, \"anchor_rate\": 0.04968858390778796, \"duration_relative_error\": 0.08913931752156645, \"required_5pct_replay_gate\": false}, {\"S_eta\": 2000, \"t_low\": 0.4497530939696468, \"t_high\": 1.480258510668934, \"model_rate\": 0.03881590465397081, \"anchor_rate\": 0.03824244686429199, \"duration_relative_error\": 0.014773783962810705, \"required_5pct_replay_gate\": true}]",
+    "stderr": "",
+    "timed_out": false,
+    "cancelled": false,
+    "workspace_exceeded": false,
+    "stdout_truncated": false,
+    "stderr_truncated": false,
+    "heartbeat_count": 0,
+    "wall_seconds": 0.45507937100046547,
+    "workspace_bytes": 8673,
+    "executor_sha256": "b92087579abbb99f55ce2c75d98765355c8ccd4a6ccf3ba55b15ddd5491a22ec",
+    "resource_limits": {
+      "max_file_bytes": 791852438,
+      "max_workspace_bytes": 791852438,
+      "max_memory_bytes": 4294967296
+    }
+  },
+  "artifacts": {
+    "amplitude_calibration.json": {
+      "sha256": "ef93ad24bdfd29236d4692290e08dc7946641141152c0f78451179ff18baa5a5",
+      "bytes": 1055
+    },
+    "amplitude_check.py": {
+      "sha256": "cfeee1cf2dfeda7aff30ee6dd2b6afd202a0398db70db7cb7aae3fdcb3f39540",
+      "bytes": 1739
+    },
+    "conditional_calibration.json": {
+      "sha256": "a46316deb8ddd56cb3312e5e5645cf81bfc2d62e4e9b15858ee9f88fef86539c",
+      "bytes": 5879
+    }
+  },
+  "missing_outputs": [],
+  "input_mutations": [],
+  "output_findings": [],
+  "scientific_status": "unreviewed",
+  "finished_at": 1792940474.5756252
+}

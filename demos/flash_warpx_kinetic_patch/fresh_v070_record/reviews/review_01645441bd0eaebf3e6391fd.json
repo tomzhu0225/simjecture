@@ -1,0 +1,31 @@
+{
+  "id": "review_01645441bd0eaebf3e6391fd",
+  "status": "resolved",
+  "created_at": 1793006961.3860962,
+  "experiments": [
+    "exp_7772fa68048aff22c2b815c3",
+    "exp_8e19bd425cb2bd2ef03a61ea",
+    "exp_882ac26f8158ec6e67fd8372"
+  ],
+  "conclusion": "Request support for originalfinite-domainroot with unchanged .20threshold. Evidence: freshFLASH firstt>=.8 source (delta/di1.0114,8.218sourcecells) -> exact NPZc04a015181c150cb0bd1162976252b0e85f3caf7458ced7d024eb0dca4e35ef7 -> frozenfreshseeds6101/6102, approvedmethod_e1bc80492ec63eead697af43. Massratio25,Ti/Te1,vA/c.01,localmean-subtractedvelocitypressure, fixedROI+/- (.04,.015),full[.4,.9]/Omega_ci. Solver-emitted means ions .04938627,.04779225; electrons .04732667,.05204808. Eachcompleted.90008788. Alldeclaredqualificationgatespass in qualifiedsource-bound postprocessing. Frozen additiveledger: ionsU=.09808448,upper=.14747075; electronsU=.10243430,upper=.15448238. Ledger includes source,boundary,mesh,time,ppc,fullfreshseedrange,fourthmomentsampling,shear,primarysecondarybins andrelativistictracecorrection. Full ledger/replay exp_cef42c711fc9dc4c8638c440 and qualificationaudits exp_3e16729b5240dd577dbe960d,exp_6cdf470bcffa5a00adfd8755 remain exploratoryqualification, NOT submitted/promotedclaim evidence. Rootmeans emitted directly byfreshsolver evidence. Rawtensorsretained. Material binerror~.034,electronrelcorrection.02134 explicitlyretained. Debyeunderresolution5.84/2.92 andapproximatePoyntingspatialquadrature constrainfinite errorenvelope; not rigorouscontinuumbound. Fieldauditshows tinydivBbutE-fieldRMSnoise changes withresolution; E/thermalandpressure/density/energygatespass. No globalrate,couplingorradiationclaim. Current RESULTS.md/EVIDENCE_INDEX.json contain fullnumericledger,rawhashes,figures and limitations. Independent assessment requested; workerdoesnotdeclareverdict.",
+  "claim": "root",
+  "disposition": "supported",
+  "challenge": {
+    "strategy": "Prospectively freeze two fresh independent particle realizations to challenge whether the qualified finite pressureprediction survives seed variability; earlier source,mesh,dt,ppc,boundary andbins tests supply method qualification and additiveerrorallowances.",
+    "experiments": [
+      "exp_8e19bd425cb2bd2ef03a61ea",
+      "exp_882ac26f8158ec6e67fd8372"
+    ],
+    "outcome": "Both freshseeds completefullwindowwith eligiblemeasurements; fullseedranges .001594ion,.004721electron included. Maximumfreshmeansplusallfrozenerrorallowances .14747ion,.15448electron below.20; numericalandfinite-domainlimitationsretained."
+  },
+  "verdict": {
+    "claim_id": "root",
+    "decision": "approved",
+    "disposition": "supported",
+    "rationale": "The recorded evidence supports this particular finite, conditioned local prediction. Fresh FLASH experiment exp_7772fa68048aff22c2b815c3 supplies the inspected source snapshot at t=0.8001113920 and the hash-linked kinetic inputs. The declared half-width definition gives delta/di=1.0114 and 8.218 source cells. The implementation preserves mass ratio 25, equal initial species temperatures, the coordinate transformation and the declared collisionless continuation; no solver-source development is recorded. Source selection, mapping, measurement region, window and decision rule were bound before decisive runs.\n\nIndependent calculation from the retained pressure tensors reproduces ion means 0.04938627 and 0.04779225 and electron means 0.04732667 and 0.05204808. Both fresh trajectories cover the complete [0.4,0.9]/Omega_ci window. Tensors are finite and positive, required bins remain populated, and the estimator subtracts local species flow before averaging local departures. Finer-bin means remain below 0.084. Recorded initialization, relaxation and energy audits pass the frozen gates.\n\nThe challenge includes actual source, mesh, timestep, particle-count and matched larger-patch evolutions, followed by prospectively specified fresh seeds. I checked the control tensor outputs and their identities. Boundary sensitivity is empirically tested rather than inferred from light travel. Including every frozen error contribution gives upper values 0.14747075 for ions and 0.15448238 for electrons, below 0.20.\n\nSupport is limited to the stated finite realization and observable. Debye underresolution, appreciable electric-field noise sensitivity, approximate boundary-flux quadrature and finite-grid convergence prevent general solver or continuum validation. The inspected pressure controls and retained allowances are sufficient for this threshold decision. The copied non-evidence annotation and failed FLASH reconnection-flux check do not invalidate the fresh local-pressure evidence.",
+    "evidence_gaps": [],
+    "next_test": null
+  },
+  "packet_sha256": "4c043a3b17947fef37c13d348fe4762fea9a6e511a8a3dc60a2995d75f37712a",
+  "resolved_at": 1793011147.0323343
+}

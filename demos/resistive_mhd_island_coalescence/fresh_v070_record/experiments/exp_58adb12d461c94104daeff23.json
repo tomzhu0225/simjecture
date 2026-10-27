@@ -1,0 +1,130 @@
+{
+  "id": "exp_58adb12d461c94104daeff23",
+  "status": "succeeded",
+  "operator_guidance_ids": [],
+  "created_at": 1792935785.2819712,
+  "timeout": 3000,
+  "execution_deadline": 1792941775.5981443,
+  "workspace_limit_bytes": 1866922112,
+  "binding": {
+    "source": "calculation.py",
+    "args": [
+      "--S",
+      "2000",
+      "--n",
+      "512",
+      "--tmax",
+      "1.8",
+      "--cadence",
+      "0.01"
+    ],
+    "inputs": {
+      "calculation.py": "2b78c89dc7551f90848e8989d2c50c379e9d3428281858c9343d2b231ec71183",
+      "island_coalescence.py": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b",
+      "null_diagnostic.py": "2127895b89607561427f6b35024e5b85761c89bac53c4e58a411e49c14c5d53f"
+    },
+    "capability": "flash-island-coalescence-resistive-mhd-4.8",
+    "runtime_sha256": "1dbefbee9b1ae4784d75f242e60d9cb64e12f95a30c2017d0a5b8e5b04e36d80"
+  },
+  "outputs": [
+    "result.json",
+    "fields.tar.gz",
+    "magnetic_series.h5"
+  ],
+  "commitment": null,
+  "key": "refine512-2000",
+  "stage": "exploration",
+  "method": null,
+  "review_documents": null,
+  "parent_experiment": null,
+  "purpose": "validation",
+  "plan": null,
+  "pid": 96220,
+  "worker_identity": {
+    "pid": 96220,
+    "starttime": "5201304",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture-prx-island-v0.7.0/.venv/bin/python",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simulations/other_demos/resistive_mhd_island_scaling/outputs/fresh_band_v070__20261025T1153",
+      "--execute",
+      "exp_58adb12d461c94104daeff23"
+    ],
+    "launched_at": "2026-10-25T13:43:05.431121+00:00",
+    "run_directory": null
+  },
+  "started_at": 1792935785.4312525,
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": 0,
+    "stdout": "{\"config\": {\"S_eta\": 2000.0, \"eta\": 0.0005, \"n\": 512, \"tmax\": 1.8, \"cadence\": 0.01, \"cfl\": 0.4, \"ranks\": 4, \"threads\": 1}, \"metrics\": {\"l_over_eta_nominal\": 2000.0, \"flux_low\": 0.01, \"flux_high\": 0.05, \"flux_low_crossing_time\": 0.4022568428163855, \"flux_high_crossing_time\": 1.4461659616026792, \"reconnection_time\": 1.0439091187862937, \"normalized_flux_slope\": 0.03831751182182047, \"flux_path_max_abs_mismatch\": 1.9938149149242163e-05, \"max_abs_divb\": 1.0608403044898296e-11, \"max_boundary_normal_fraction\": 0.013192657601803218, \"initial_sheet_cells\": 25.6, \"plot_file_count\": 180}, \"conservation\": {\"mass_max_relative_drift\": 2.3425705819590803e-14, \"energy_max_relative_drift\": 5.145433208841865e-06, \"max_absolute_net_momentum\": 4.888938646280261e-16, \"floor_corrections\": \"not separately exported; positivity margins retained; energyFix active as commissioned\"}, \"topology\": 1, \"wall\": 2059.9163460229975}",
+    "stderr": "",
+    "timed_out": false,
+    "cancelled": false,
+    "workspace_exceeded": false,
+    "stdout_truncated": false,
+    "stderr_truncated": false,
+    "heartbeat_count": 69,
+    "wall_seconds": 2075.0111093790038,
+    "workspace_bytes": 267621617,
+    "executor_sha256": "b92087579abbb99f55ce2c75d98765355c8ccd4a6ccf3ba55b15ddd5491a22ec",
+    "resource_limits": {
+      "max_file_bytes": 1866922112,
+      "max_workspace_bytes": 1866922112,
+      "max_memory_bytes": 4294967296
+    }
+  },
+  "artifacts": {
+    "calculation.py": {
+      "sha256": "2b78c89dc7551f90848e8989d2c50c379e9d3428281858c9343d2b231ec71183",
+      "bytes": 10102
+    },
+    "fields.tar.gz": {
+      "sha256": "1bd59c02bc4c127f68ed8d5bcd71653cdcb36def07c39348ad81b6df1a25eb18",
+      "bytes": 42268020
+    },
+    "island_coalescence.py": {
+      "sha256": "41df318f28226686cde60a40ba9c3cbedb9486143bdf7e1a3c58f1a1f83a023b",
+      "bytes": 14667
+    },
+    "magnetic_series.h5": {
+      "sha256": "3f2e47bce6955fc2e1385b30819b356009e3e39bb637ba2a56634635a1b33061",
+      "bytes": 221061998
+    },
+    "native/flash.par": {
+      "sha256": "d87a39c3e0066b08160a0183c0f55f36bdacb501be82d33c246e91d44c36c7ba",
+      "bytes": 1782
+    },
+    "native/flash_run.dat": {
+      "sha256": "e91ac004ffe553f4c60734882de937f1ddee899426ca127d5736dfe8b5eca13a",
+      "bytes": 2219341
+    },
+    "native/flash_run.log": {
+      "sha256": "aa3f2899b15453a6d945f7df0f23d9c34c88f2cf04bd22f5498572b15931a6f0",
+      "bytes": 781631
+    },
+    "native/stderr.txt": {
+      "sha256": "8376a589157706a9b2265e40086c3e1bf504cbba9ae7600379e558dc612a5a51",
+      "bytes": 840
+    },
+    "native/stdout.txt": {
+      "sha256": "f0a3e817e7d85ea46b8d254ed41adb100a9455e1ee4a899400e0ad484da42353",
+      "bytes": 879924
+    },
+    "null_diagnostic.py": {
+      "sha256": "2127895b89607561427f6b35024e5b85761c89bac53c4e58a411e49c14c5d53f",
+      "bytes": 1112
+    },
+    "result.json": {
+      "sha256": "e9d84fcf16129c6f4019f134a867b1e3f6a5e54ff9213ede60d6e745f9f5ab85",
+      "bytes": 382200
+    }
+  },
+  "missing_outputs": [],
+  "input_mutations": [],
+  "output_findings": [],
+  "scientific_status": "unreviewed",
+  "finished_at": 1792937860.7565243
+}

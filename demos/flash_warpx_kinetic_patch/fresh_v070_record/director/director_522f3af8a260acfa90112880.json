@@ -1,0 +1,23 @@
+{
+  "id": "director_522f3af8a260acfa90112880",
+  "created_at": 1793004623.2267783,
+  "packet_sha256": "c92420268e1f68c04b9ac5814b96efbdf27a823b317bfaf4b8fac333740f6456",
+  "control_actions": [],
+  "authority": "Execution strategy; not scientific approval",
+  "decision": "continue",
+  "rationale": "The corrected replay resolved the spatial-bin audit defects, and both source-bound production methods now permit prospective evidence collection. The timestep and ppc64 controls have completed; ppc64 took approximately 240 seconds. Their corrected comparisons remain outstanding. The audited mesh comparison shows mean-A changes of 0.01630 for ions and 0.00837 for electrons, while primary-secondary bin differences remain material uncertainty contributions. These results justify continued qualification, without establishing the hypothesis. Budget feasibility remains at risk but has improved: approximately 2511 seconds remain before the compute cutoff, and the 871-second fresh FLASH trajectory can overlap remaining GPU qualification. The existing time-extension request remains pending and grants no additional time.",
+  "scientific_feasibility": "limited",
+  "budget_feasibility": "at_risk",
+  "stop_experiments": [],
+  "wake_worker": true,
+  "park_worker": false,
+  "report_assessment": null,
+  "closeout_report": null,
+  "next_action": "Resume now. Launch the approved fresh 512-cell FLASH trajectory using the frozen source-selection rule, overlapping it with corrected audits of the completed timestep and ppc64 controls. Record all frozen anisotropy, pressure, density, initialization, relaxation and energy comparisons. Complete the matched refined-source larger-patch control to resolve the remaining source dependence of boundary qualification. Preserve its physical ROI, cell scale, timestep and particle count. After the fresh handoff passes its frozen checks, run prospective seeds6101 and6102 sequentially on the GPU under the approved method bindings. Apply the complete declared uncertainty envelope, including the material primary-secondary difference. Update the critical-path forecast using the measured 240-second ppc64 cost; plan against the unchanged deadline while the extension request is pending. Protect independent claim/report review and the final report reserve. If a required gate fails or completion cannot fit, record the specific limitation and submit an honest unresolved report for independent assessment without narrowing the window or relaxing tolerances.",
+  "storage_increase": null,
+  "registration_tuning": null,
+  "time_request": null,
+  "operating_limits": null,
+  "helper_tasks": [],
+  "help_replies": []
+}
