@@ -1,0 +1,3461 @@
+{
+  "observed_at": 1793084717.7902725,
+  "scope": "Terminal partial replication through R8; no final 64-assignment claim",
+  "source_hashes": {
+    "r8-p40-route-reconciliation.json": "a610aed351bc2ee60bafd3a2ba538740fa3b03c90c6d81c701b086c3bc8c7364",
+    "r8-finalizer-status.json": "85702131b406dc549a041a3d766abfd5b928eff5b7909c54cd13ed1cc73bfe41",
+    "r8-combined-summary.json": "b03c12b728e806b60571484b62448b2844920d478116ac50ee173993df82a817",
+    "r8-audit/summary.json": "4ee6af932d4ac2f467295495e7bfa1023eb018d29b1bf175d8903b2a2a5e4b2d",
+    "r8-audit/records.json": "ece8484e05e497dfd525af9d1eead10a5ec14c22e5d5acc71036052d3bd7e800",
+    "r8-all-continuation-records/audit/records.json": "c180e792788ccb2287d638dbdad6f56b7f9ed3acfc3788f6c5bb99467d8659ae",
+    "rep2-audit/records.json": "bd9bf8a131034130a6b5246b01ac23707a07687a4778dc6cea5496233f9a1bae",
+    "base-sft-replication-v4/CAMPAIGN.json": "65c13fe000735e5f94c43e0988dad7b60bd8bc2ac6ca98c841ef2ebadcea666a",
+    "base-sft-replication-v4/bswf-e587cb0721bd8468/research/runs/mesh_64/receipt.json": "702bce889f4d7b6c361b289c117f5a2e8a42107af7cde0553cddad70620dfb1c",
+    "base-sft-replication-v4/FINAL_QUALIFICATION.json": "79fd4f33206c14b35405eb687be93525f29a932fce1b67e7ce2fd23b84dcb9fd"
+  },
+  "records": [
+    {
+      "id": "bswf-72768c255b07c852",
+      "family": "artifact_consumer",
+      "seed": 202611010004,
+      "repeat": 0,
+      "arm": "rules",
+      "block": "bsblock-01",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 351.4643864631653,
+      "restricted_completion_seconds": 351.4643864631653,
+      "native_starts": 4,
+      "automatic_alerts": 1,
+      "alert_actions": [
+        "request_worker_help"
+      ],
+      "quiet_family": false,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "policy_choice": 4,
+        "awaiting_persistence": 1,
+        "fresh_grounded_persistent_request": 1
+      },
+      "proposed_actions": {
+        "observe": 4,
+        "request_worker_help": 2
+      },
+      "input_token_range": null,
+      "prediction_latency_mean": null,
+      "completion_censored": false
+    },
+    {
+      "id": "bswf-730e00587920c699",
+      "family": "artifact_consumer",
+      "seed": 202611010004,
+      "repeat": 0,
+      "arm": "base",
+      "block": "bsblock-01",
+      "stage": "failed",
+      "whole_workflow_verified": 0,
+      "raw_quality": 0,
+      "elapsed_seconds": 9.267107009887695,
+      "restricted_completion_seconds": 650.0,
+      "native_starts": 1,
+      "automatic_alerts": 0,
+      "alert_actions": [],
+      "quiet_family": false,
+      "required_feedback_misses": 0,
+      "finish_reason": null,
+      "error": "ProviderFailure: Provider transient failure (exit 1)",
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": false,
+      "admissions": {},
+      "proposed_actions": {},
+      "input_token_range": null,
+      "prediction_latency_mean": null,
+      "completion_censored": false
+    },
+    {
+      "id": "bswf-569b06dd00e7f949",
+      "family": "artifact_consumer",
+      "seed": 202611010004,
+      "repeat": 0,
+      "arm": "continued_sft",
+      "block": "bsblock-01",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 372.0867154598236,
+      "restricted_completion_seconds": 372.0867154598236,
+      "native_starts": 5,
+      "automatic_alerts": 1,
+      "alert_actions": [
+        "request_worker_help"
+      ],
+      "quiet_family": false,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "policy_choice": 1,
+        "silence_allowance_not_exceeded": 3,
+        "awaiting_persistence": 1,
+        "fresh_grounded_persistent_request": 1
+      },
+      "proposed_actions": {
+        "observe": 1,
+        "request_worker_help": 5
+      },
+      "input_token_range": [
+        3300,
+        3389
+      ],
+      "prediction_latency_mean": 2.069701661499986,
+      "completion_censored": false
+    },
+    {
+      "id": "bswf-8a37cba973c5addf",
+      "family": "artifact_consumer",
+      "seed": 202611010004,
+      "repeat": 0,
+      "arm": "observe",
+      "block": "bsblock-01",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 435.9254925251007,
+      "restricted_completion_seconds": 435.9254925251007,
+      "native_starts": 6,
+      "automatic_alerts": 0,
+      "alert_actions": [],
+      "quiet_family": false,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "policy_choice": 18
+      },
+      "proposed_actions": {
+        "observe": 18
+      },
+      "input_token_range": null,
+      "prediction_latency_mean": null,
+      "completion_censored": false
+    },
+    {
+      "id": "bswf-548616ebf33b6b76",
+      "family": "publication_retry",
+      "seed": 202611010002,
+      "repeat": 1,
+      "arm": "base",
+      "block": "bsblock-02",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 433.869535446167,
+      "restricted_completion_seconds": 433.869535446167,
+      "native_starts": 6,
+      "automatic_alerts": 0,
+      "alert_actions": [],
+      "quiet_family": true,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "policy_choice": 10
+      },
+      "proposed_actions": {
+        "observe": 9,
+        "recheck": 1
+      },
+      "input_token_range": [
+        3515,
+        4980
+      ],
+      "prediction_latency_mean": 0.27602343659998496,
+      "completion_censored": false
+    },
+    {
+      "id": "bswf-d7107218573c3f83",
+      "family": "publication_retry",
+      "seed": 202611010002,
+      "repeat": 1,
+      "arm": "continued_sft",
+      "block": "bsblock-02",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 180.96103930473328,
+      "restricted_completion_seconds": 180.96103930473328,
+      "native_starts": 3,
+      "automatic_alerts": 1,
+      "alert_actions": [
+        "request_worker_help"
+      ],
+      "quiet_family": true,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "state_changed": 1,
+        "policy_choice": 1,
+        "awaiting_persistence": 1,
+        "fresh_grounded_persistent_request": 1
+      },
+      "proposed_actions": {
+        "observe": 1,
+        "recheck": 1,
+        "request_worker_help": 2
+      },
+      "input_token_range": [
+        3468,
+        3875
+      ],
+      "prediction_latency_mean": 0.34090545475010003,
+      "completion_censored": false
+    },
+    {
+      "id": "bswf-122366d88f28d7d1",
+      "family": "publication_retry",
+      "seed": 202611010002,
+      "repeat": 1,
+      "arm": "observe",
+      "block": "bsblock-02",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 450.1399004459381,
+      "restricted_completion_seconds": 450.1399004459381,
+      "native_starts": 6,
+      "automatic_alerts": 0,
+      "alert_actions": [],
+      "quiet_family": true,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "policy_choice": 11
+      },
+      "proposed_actions": {
+        "observe": 11
+      },
+      "input_token_range": null,
+      "prediction_latency_mean": null,
+      "completion_censored": false
+    },
+    {
+      "id": "bswf-d767f4ac1a3f6b62",
+      "family": "publication_retry",
+      "seed": 202611010002,
+      "repeat": 1,
+      "arm": "rules",
+      "block": "bsblock-02",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 409.3446879386902,
+      "restricted_completion_seconds": 409.3446879386902,
+      "native_starts": 6,
+      "automatic_alerts": 0,
+      "alert_actions": [],
+      "quiet_family": true,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "policy_choice": 10
+      },
+      "proposed_actions": {
+        "observe": 10
+      },
+      "input_token_range": null,
+      "prediction_latency_mean": null,
+      "completion_censored": false
+    },
+    {
+      "id": "bswf-9e5fda3473a34492",
+      "family": "publication_retry",
+      "seed": 202611010002,
+      "repeat": 0,
+      "arm": "continued_sft",
+      "block": "bsblock-03",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 170.2622582912445,
+      "restricted_completion_seconds": 170.2622582912445,
+      "native_starts": 3,
+      "automatic_alerts": 1,
+      "alert_actions": [
+        "request_worker_help"
+      ],
+      "quiet_family": true,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "awaiting_persistence": 1,
+        "fresh_grounded_persistent_request": 1
+      },
+      "proposed_actions": {
+        "request_worker_help": 2
+      },
+      "input_token_range": [
+        3434,
+        3492
+      ],
+      "prediction_latency_mean": 0.3234949585000777,
+      "completion_censored": false
+    },
+    {
+      "id": "bswf-5e2e5d69dcc78d66",
+      "family": "publication_retry",
+      "seed": 202611010002,
+      "repeat": 0,
+      "arm": "observe",
+      "block": "bsblock-03",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 385.97846817970276,
+      "restricted_completion_seconds": 385.97846817970276,
+      "native_starts": 6,
+      "automatic_alerts": 0,
+      "alert_actions": [],
+      "quiet_family": true,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "policy_choice": 10
+      },
+      "proposed_actions": {
+        "observe": 10
+      },
+      "input_token_range": null,
+      "prediction_latency_mean": null,
+      "completion_censored": false
+    },
+    {
+      "id": "bswf-bea4e043518caba7",
+      "family": "publication_retry",
+      "seed": 202611010002,
+      "repeat": 0,
+      "arm": "rules",
+      "block": "bsblock-03",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 415.3642609119415,
+      "restricted_completion_seconds": 415.3642609119415,
+      "native_starts": 6,
+      "automatic_alerts": 0,
+      "alert_actions": [],
+      "quiet_family": true,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "policy_choice": 12
+      },
+      "proposed_actions": {
+        "observe": 12
+      },
+      "input_token_range": null,
+      "prediction_latency_mean": null,
+      "completion_censored": false
+    },
+    {
+      "id": "bswf-52d1ce22f4ae03c2",
+      "family": "publication_retry",
+      "seed": 202611010002,
+      "repeat": 0,
+      "arm": "base",
+      "block": "bsblock-03",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 412.29373478889465,
+      "restricted_completion_seconds": 412.29373478889465,
+      "native_starts": 6,
+      "automatic_alerts": 0,
+      "alert_actions": [],
+      "quiet_family": true,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "state_changed": 1,
+        "policy_choice": 8,
+        "awaiting_persistence": 1
+      },
+      "proposed_actions": {
+        "observe": 9,
+        "request_worker_help": 1
+      },
+      "input_token_range": [
+        3443,
+        4950
+      ],
+      "prediction_latency_mean": 0.26446582469980057,
+      "completion_censored": false
+    },
+    {
+      "id": "bswf-49ab84677dcc52b5",
+      "family": "announced_quiet",
+      "seed": 202611010001,
+      "repeat": 0,
+      "arm": "observe",
+      "block": "bsblock-04",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 184.8722357749939,
+      "restricted_completion_seconds": 184.8722357749939,
+      "native_starts": 2,
+      "automatic_alerts": 0,
+      "alert_actions": [],
+      "quiet_family": true,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "policy_choice": 10
+      },
+      "proposed_actions": {
+        "observe": 10
+      },
+      "input_token_range": null,
+      "prediction_latency_mean": null,
+      "completion_censored": false
+    },
+    {
+      "id": "bswf-8fced947ac9585d9",
+      "family": "announced_quiet",
+      "seed": 202611010001,
+      "repeat": 0,
+      "arm": "rules",
+      "block": "bsblock-04",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 174.38706493377686,
+      "restricted_completion_seconds": 174.38706493377686,
+      "native_starts": 2,
+      "automatic_alerts": 0,
+      "alert_actions": [],
+      "quiet_family": true,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "policy_choice": 10
+      },
+      "proposed_actions": {
+        "observe": 10
+      },
+      "input_token_range": null,
+      "prediction_latency_mean": null,
+      "completion_censored": false
+    },
+    {
+      "id": "bswf-df645e993709be23",
+      "family": "announced_quiet",
+      "seed": 202611010001,
+      "repeat": 0,
+      "arm": "base",
+      "block": "bsblock-04",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 176.47007608413696,
+      "restricted_completion_seconds": 176.47007608413696,
+      "native_starts": 2,
+      "automatic_alerts": 0,
+      "alert_actions": [],
+      "quiet_family": true,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "policy_choice": 10
+      },
+      "proposed_actions": {
+        "observe": 10
+      },
+      "input_token_range": [
+        3201,
+        4776
+      ],
+      "prediction_latency_mean": 0.25225698809990715,
+      "completion_censored": false
+    },
+    {
+      "id": "bswf-1102012cac4676bc",
+      "family": "announced_quiet",
+      "seed": 202611010001,
+      "repeat": 0,
+      "arm": "continued_sft",
+      "block": "bsblock-04",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 186.44953513145447,
+      "restricted_completion_seconds": 186.44953513145447,
+      "native_starts": 2,
+      "automatic_alerts": 0,
+      "alert_actions": [],
+      "quiet_family": true,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "policy_choice": 9
+      },
+      "proposed_actions": {
+        "observe": 9
+      },
+      "input_token_range": [
+        3201,
+        4853
+      ],
+      "prediction_latency_mean": 0.3331710778892456,
+      "completion_censored": false
+    },
+    {
+      "id": "bswf-ad564078760b6ea6",
+      "family": "announced_quiet",
+      "seed": 202611010001,
+      "repeat": 1,
+      "arm": "rules",
+      "block": "bsblock-05",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 171.0183289051056,
+      "restricted_completion_seconds": 171.0183289051056,
+      "native_starts": 2,
+      "automatic_alerts": 0,
+      "alert_actions": [],
+      "quiet_family": true,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "policy_choice": 10
+      },
+      "proposed_actions": {
+        "observe": 10
+      },
+      "input_token_range": null,
+      "prediction_latency_mean": null,
+      "completion_censored": false
+    },
+    {
+      "id": "bswf-855a07113b13af51",
+      "family": "announced_quiet",
+      "seed": 202611010001,
+      "repeat": 1,
+      "arm": "base",
+      "block": "bsblock-05",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 172.38689756393433,
+      "restricted_completion_seconds": 172.38689756393433,
+      "native_starts": 2,
+      "automatic_alerts": 0,
+      "alert_actions": [],
+      "quiet_family": true,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "state_changed": 1,
+        "policy_choice": 9
+      },
+      "proposed_actions": {
+        "observe": 10
+      },
+      "input_token_range": [
+        3186,
+        4858
+      ],
+      "prediction_latency_mean": 0.21840608619986596,
+      "completion_censored": false
+    },
+    {
+      "id": "bswf-d84e25c5e9c0ae13",
+      "family": "announced_quiet",
+      "seed": 202611010001,
+      "repeat": 1,
+      "arm": "continued_sft",
+      "block": "bsblock-05",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 416.1420612335205,
+      "restricted_completion_seconds": 416.1420612335205,
+      "native_starts": 6,
+      "automatic_alerts": 0,
+      "alert_actions": [],
+      "quiet_family": true,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "state_changed": 1,
+        "policy_choice": 8,
+        "ungrounded_attention": 1
+      },
+      "proposed_actions": {
+        "observe": 9,
+        "wake_director": 1
+      },
+      "input_token_range": [
+        3242,
+        4850
+      ],
+      "prediction_latency_mean": 0.3377453656999023,
+      "completion_censored": false
+    },
+    {
+      "id": "bswf-273cf119d7ddeb6a",
+      "family": "announced_quiet",
+      "seed": 202611010001,
+      "repeat": 1,
+      "arm": "observe",
+      "block": "bsblock-05",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 198.91875910758972,
+      "restricted_completion_seconds": 198.91875910758972,
+      "native_starts": 2,
+      "automatic_alerts": 0,
+      "alert_actions": [],
+      "quiet_family": true,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "policy_choice": 10
+      },
+      "proposed_actions": {
+        "observe": 10
+      },
+      "input_token_range": null,
+      "prediction_latency_mean": null,
+      "completion_censored": false
+    },
+    {
+      "id": "bswf-740b8f480066f634",
+      "family": "progressing_work",
+      "seed": 202611010000,
+      "repeat": 0,
+      "arm": "base",
+      "block": "bsblock-06",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 175.38922142982483,
+      "restricted_completion_seconds": 175.38922142982483,
+      "native_starts": 2,
+      "automatic_alerts": 0,
+      "alert_actions": [],
+      "quiet_family": true,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "policy_choice": 10
+      },
+      "proposed_actions": {
+        "observe": 10
+      },
+      "input_token_range": [
+        4588,
+        4956
+      ],
+      "prediction_latency_mean": 0.2961525874000472,
+      "completion_censored": false
+    },
+    {
+      "id": "bswf-eaea8a0edf39092c",
+      "family": "progressing_work",
+      "seed": 202611010000,
+      "repeat": 0,
+      "arm": "continued_sft",
+      "block": "bsblock-06",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 398.85990738868713,
+      "restricted_completion_seconds": 398.85990738868713,
+      "native_starts": 6,
+      "automatic_alerts": 0,
+      "alert_actions": [],
+      "quiet_family": true,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "policy_choice": 9,
+        "ungrounded_attention": 1
+      },
+      "proposed_actions": {
+        "observe": 9,
+        "wake_director": 1
+      },
+      "input_token_range": [
+        3128,
+        4962
+      ],
+      "prediction_latency_mean": 0.42971278100012567,
+      "completion_censored": false
+    },
+    {
+      "id": "bswf-acb3ea38789f5127",
+      "family": "progressing_work",
+      "seed": 202611010000,
+      "repeat": 0,
+      "arm": "observe",
+      "block": "bsblock-06",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 263.3874008655548,
+      "restricted_completion_seconds": 263.3874008655548,
+      "native_starts": 4,
+      "automatic_alerts": 0,
+      "alert_actions": [],
+      "quiet_family": true,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "policy_choice": 10
+      },
+      "proposed_actions": {
+        "observe": 10
+      },
+      "input_token_range": null,
+      "prediction_latency_mean": null,
+      "completion_censored": false
+    },
+    {
+      "id": "bswf-d57e158cfb483a18",
+      "family": "progressing_work",
+      "seed": 202611010000,
+      "repeat": 0,
+      "arm": "rules",
+      "block": "bsblock-06",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 369.50068974494934,
+      "restricted_completion_seconds": 369.50068974494934,
+      "native_starts": 6,
+      "automatic_alerts": 0,
+      "alert_actions": [],
+      "quiet_family": true,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "policy_choice": 9
+      },
+      "proposed_actions": {
+        "observe": 9
+      },
+      "input_token_range": null,
+      "prediction_latency_mean": null,
+      "completion_censored": false
+    },
+    {
+      "id": "bswf-d49346fb1923a532",
+      "family": "update_cycle",
+      "seed": 202611010007,
+      "repeat": 1,
+      "arm": "continued_sft",
+      "block": "bsblock-07",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 248.86913394927979,
+      "restricted_completion_seconds": 248.86913394927979,
+      "native_starts": 5,
+      "automatic_alerts": 1,
+      "alert_actions": [
+        "request_worker_help"
+      ],
+      "quiet_family": false,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "state_changed": 1,
+        "policy_choice": 3,
+        "silence_allowance_not_exceeded": 3,
+        "awaiting_persistence": 1,
+        "fresh_grounded_persistent_request": 1
+      },
+      "proposed_actions": {
+        "observe": 4,
+        "request_worker_help": 5
+      },
+      "input_token_range": [
+        3146,
+        4922
+      ],
+      "prediction_latency_mean": 0.4226204291110965,
+      "completion_censored": false
+    },
+    {
+      "id": "bswf-45e84aa32d435873",
+      "family": "update_cycle",
+      "seed": 202611010007,
+      "repeat": 1,
+      "arm": "observe",
+      "block": "bsblock-07",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 400.4886848926544,
+      "restricted_completion_seconds": 400.4886848926544,
+      "native_starts": 6,
+      "automatic_alerts": 0,
+      "alert_actions": [],
+      "quiet_family": false,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "policy_choice": 18
+      },
+      "proposed_actions": {
+        "observe": 18
+      },
+      "input_token_range": null,
+      "prediction_latency_mean": null,
+      "completion_censored": false
+    },
+    {
+      "id": "bswf-be9b44cf639d4cc9",
+      "family": "update_cycle",
+      "seed": 202611010007,
+      "repeat": 1,
+      "arm": "rules",
+      "block": "bsblock-07",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 238.9137487411499,
+      "restricted_completion_seconds": 238.9137487411499,
+      "native_starts": 4,
+      "automatic_alerts": 1,
+      "alert_actions": [
+        "request_worker_help"
+      ],
+      "quiet_family": false,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "policy_choice": 5,
+        "awaiting_persistence": 1,
+        "fresh_grounded_persistent_request": 1
+      },
+      "proposed_actions": {
+        "observe": 5,
+        "request_worker_help": 2
+      },
+      "input_token_range": null,
+      "prediction_latency_mean": null,
+      "completion_censored": false
+    },
+    {
+      "id": "bswf-86afd7debe7922f7",
+      "family": "update_cycle",
+      "seed": 202611010007,
+      "repeat": 1,
+      "arm": "base",
+      "block": "bsblock-07",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 421.5916314125061,
+      "restricted_completion_seconds": 421.5916314125061,
+      "native_starts": 6,
+      "automatic_alerts": 0,
+      "alert_actions": [],
+      "quiet_family": false,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "policy_choice": 13,
+        "stale_response": 1
+      },
+      "proposed_actions": {
+        "observe": 14
+      },
+      "input_token_range": [
+        3128,
+        4931
+      ],
+      "prediction_latency_mean": 0.2873481270713195,
+      "completion_censored": false
+    },
+    {
+      "id": "bswf-72a677d05f0aa023",
+      "family": "unit_conversion",
+      "seed": 202611010005,
+      "repeat": 1,
+      "arm": "observe",
+      "block": "bsblock-08",
+      "stage": "completed",
+      "whole_workflow_verified": 0,
+      "raw_quality": 0.0,
+      "elapsed_seconds": 396.782262802124,
+      "restricted_completion_seconds": 650.0,
+      "native_starts": 7,
+      "automatic_alerts": 0,
+      "alert_actions": [],
+      "quiet_family": false,
+      "required_feedback_misses": 0,
+      "finish_reason": "boundary_or_parent_turn_limit",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "policy_choice": 18
+      },
+      "proposed_actions": {
+        "observe": 18
+      },
+      "input_token_range": null,
+      "prediction_latency_mean": null,
+      "completion_censored": false
+    },
+    {
+      "id": "bswf-0bfdfb7031bf1e83",
+      "family": "unit_conversion",
+      "seed": 202611010005,
+      "repeat": 1,
+      "arm": "rules",
+      "block": "bsblock-08",
+      "stage": "completed",
+      "whole_workflow_verified": 0,
+      "raw_quality": 0.0,
+      "elapsed_seconds": 297.2457983493805,
+      "restricted_completion_seconds": 650.0,
+      "native_starts": 6,
+      "automatic_alerts": 0,
+      "alert_actions": [],
+      "quiet_family": false,
+      "required_feedback_misses": 0,
+      "finish_reason": "boundary_or_parent_turn_limit",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "awaiting_persistence": 1,
+        "fresh_grounded_persistent_request": 17
+      },
+      "proposed_actions": {
+        "request_worker_help": 18
+      },
+      "input_token_range": null,
+      "prediction_latency_mean": null,
+      "completion_censored": false
+    },
+    {
+      "id": "bswf-4b9f8d11a274bcdc",
+      "family": "unit_conversion",
+      "seed": 202611010005,
+      "repeat": 1,
+      "arm": "base",
+      "block": "bsblock-08",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 359.5692129135132,
+      "restricted_completion_seconds": 359.5692129135132,
+      "native_starts": 6,
+      "automatic_alerts": 0,
+      "alert_actions": [],
+      "quiet_family": false,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "policy_choice": 11
+      },
+      "proposed_actions": {
+        "observe": 11
+      },
+      "input_token_range": [
+        3174,
+        4963
+      ],
+      "prediction_latency_mean": 0.2816478227273778,
+      "completion_censored": false
+    },
+    {
+      "id": "bswf-4c8f33d75072871d",
+      "family": "unit_conversion",
+      "seed": 202611010005,
+      "repeat": 1,
+      "arm": "continued_sft",
+      "block": "bsblock-08",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 238.3921229839325,
+      "restricted_completion_seconds": 238.3921229839325,
+      "native_starts": 4,
+      "automatic_alerts": 1,
+      "alert_actions": [
+        "wake_director"
+      ],
+      "quiet_family": false,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "policy_choice": 2,
+        "awaiting_persistence": 1,
+        "fresh_grounded_persistent_request": 1
+      },
+      "proposed_actions": {
+        "observe": 2,
+        "wake_director": 2
+      },
+      "input_token_range": [
+        3137,
+        4862
+      ],
+      "prediction_latency_mean": 0.361901341999328,
+      "completion_censored": false
+    },
+    {
+      "id": "bswf-c8137d45f1ea4f03",
+      "family": "unit_conversion",
+      "seed": 202611010005,
+      "repeat": 0,
+      "arm": "rules",
+      "block": "bsblock-09",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 264.4783465862274,
+      "restricted_completion_seconds": 264.4783465862274,
+      "native_starts": 4,
+      "automatic_alerts": 1,
+      "alert_actions": [
+        "wake_director"
+      ],
+      "quiet_family": false,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "policy_choice": 2,
+        "awaiting_persistence": 1,
+        "fresh_grounded_persistent_request": 1
+      },
+      "proposed_actions": {
+        "observe": 2,
+        "wake_director": 2
+      },
+      "input_token_range": null,
+      "prediction_latency_mean": null,
+      "completion_censored": false
+    },
+    {
+      "id": "bswf-ced7690a441dbc15",
+      "family": "unit_conversion",
+      "seed": 202611010005,
+      "repeat": 0,
+      "arm": "base",
+      "block": "bsblock-09",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 268.2366681098938,
+      "restricted_completion_seconds": 268.2366681098938,
+      "native_starts": 5,
+      "automatic_alerts": 0,
+      "alert_actions": [],
+      "quiet_family": false,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "policy_choice": 9,
+        "state_changed": 1
+      },
+      "proposed_actions": {
+        "observe": 10
+      },
+      "input_token_range": [
+        3115,
+        4949
+      ],
+      "prediction_latency_mean": 0.2831838930998856,
+      "completion_censored": false
+    },
+    {
+      "id": "bswf-6bb1a591b43f0ce8",
+      "family": "unit_conversion",
+      "seed": 202611010005,
+      "repeat": 0,
+      "arm": "continued_sft",
+      "block": "bsblock-09",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 276.1756896972656,
+      "restricted_completion_seconds": 276.1756896972656,
+      "native_starts": 4,
+      "automatic_alerts": 1,
+      "alert_actions": [
+        "wake_director"
+      ],
+      "quiet_family": false,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "policy_choice": 2,
+        "awaiting_persistence": 1,
+        "fresh_grounded_persistent_request": 1
+      },
+      "proposed_actions": {
+        "observe": 2,
+        "wake_director": 2
+      },
+      "input_token_range": [
+        3185,
+        4858
+      ],
+      "prediction_latency_mean": 0.36369998700001815,
+      "completion_censored": false
+    },
+    {
+      "id": "bswf-b49b4f897ffa0bf8",
+      "family": "unit_conversion",
+      "seed": 202611010005,
+      "repeat": 0,
+      "arm": "observe",
+      "block": "bsblock-09",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 375.2805907726288,
+      "restricted_completion_seconds": 375.2805907726288,
+      "native_starts": 6,
+      "automatic_alerts": 0,
+      "alert_actions": [],
+      "quiet_family": false,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "policy_choice": 10
+      },
+      "proposed_actions": {
+        "observe": 10
+      },
+      "input_token_range": null,
+      "prediction_latency_mean": null,
+      "completion_censored": false
+    },
+    {
+      "id": "bswf-3212560ae1a849ea",
+      "family": "recovered_history",
+      "seed": 202611010003,
+      "repeat": 0,
+      "arm": "base",
+      "block": "bsblock-10",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 192.37486362457275,
+      "restricted_completion_seconds": 192.37486362457275,
+      "native_starts": 2,
+      "automatic_alerts": 0,
+      "alert_actions": [],
+      "quiet_family": true,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "policy_choice": 9
+      },
+      "proposed_actions": {
+        "observe": 9
+      },
+      "input_token_range": [
+        3166,
+        4965
+      ],
+      "prediction_latency_mean": 0.2602908225558672,
+      "completion_censored": false
+    },
+    {
+      "id": "bswf-e587cb0721bd8468",
+      "family": "recovered_history",
+      "seed": 202611010003,
+      "repeat": 0,
+      "arm": "continued_sft",
+      "block": "bsblock-10",
+      "stage": "completed",
+      "whole_workflow_verified": 0,
+      "raw_quality": 0.0,
+      "elapsed_seconds": 423.85005831718445,
+      "restricted_completion_seconds": 650.0,
+      "native_starts": 7,
+      "automatic_alerts": 0,
+      "alert_actions": [],
+      "quiet_family": true,
+      "required_feedback_misses": 0,
+      "finish_reason": "boundary_or_parent_turn_limit",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "policy_choice": 12,
+        "awaiting_persistence": 5
+      },
+      "proposed_actions": {
+        "observe": 1,
+        "request_worker_help": 5,
+        "recheck": 11
+      },
+      "input_token_range": [
+        2385,
+        3426
+      ],
+      "prediction_latency_mean": 0.3121889632940806,
+      "completion_censored": false
+    }
+  ],
+  "analysis": {
+    "primary_all_attempts": {
+      "planned": 64,
+      "started": 38,
+      "unstarted": [
+        {
+          "id": "bswf-a6b2a7645d6c0ef2",
+          "family": "recovered_history",
+          "seed": 202611010003,
+          "repeat": 0,
+          "arm": "observe"
+        },
+        {
+          "id": "bswf-643cd6901e76d3be",
+          "family": "recovered_history",
+          "seed": 202611010003,
+          "repeat": 0,
+          "arm": "rules"
+        },
+        {
+          "id": "bswf-7d047a91de1070bc",
+          "family": "artifact_consumer",
+          "seed": 202611010004,
+          "repeat": 1,
+          "arm": "continued_sft"
+        },
+        {
+          "id": "bswf-6a8fc9a67ad14eaa",
+          "family": "artifact_consumer",
+          "seed": 202611010004,
+          "repeat": 1,
+          "arm": "observe"
+        },
+        {
+          "id": "bswf-3809a61a2c5840ce",
+          "family": "artifact_consumer",
+          "seed": 202611010004,
+          "repeat": 1,
+          "arm": "rules"
+        },
+        {
+          "id": "bswf-d37e1f8de859a7b3",
+          "family": "artifact_consumer",
+          "seed": 202611010004,
+          "repeat": 1,
+          "arm": "base"
+        },
+        {
+          "id": "bswf-bb23cddfc9ff0321",
+          "family": "source_binding",
+          "seed": 202611010006,
+          "repeat": 1,
+          "arm": "observe"
+        },
+        {
+          "id": "bswf-785040159704c49e",
+          "family": "source_binding",
+          "seed": 202611010006,
+          "repeat": 1,
+          "arm": "rules"
+        },
+        {
+          "id": "bswf-5e05435ef43d2830",
+          "family": "source_binding",
+          "seed": 202611010006,
+          "repeat": 1,
+          "arm": "base"
+        },
+        {
+          "id": "bswf-8ebb728b89fdc00b",
+          "family": "source_binding",
+          "seed": 202611010006,
+          "repeat": 1,
+          "arm": "continued_sft"
+        },
+        {
+          "id": "bswf-eab12a6f92587e5c",
+          "family": "progressing_work",
+          "seed": 202611010000,
+          "repeat": 1,
+          "arm": "rules"
+        },
+        {
+          "id": "bswf-999327eaca4883ce",
+          "family": "progressing_work",
+          "seed": 202611010000,
+          "repeat": 1,
+          "arm": "base"
+        },
+        {
+          "id": "bswf-6b5e2f8e2db5a0b3",
+          "family": "progressing_work",
+          "seed": 202611010000,
+          "repeat": 1,
+          "arm": "continued_sft"
+        },
+        {
+          "id": "bswf-b44a136d616a842d",
+          "family": "progressing_work",
+          "seed": 202611010000,
+          "repeat": 1,
+          "arm": "observe"
+        },
+        {
+          "id": "bswf-c964906bd8930701",
+          "family": "source_binding",
+          "seed": 202611010006,
+          "repeat": 0,
+          "arm": "base"
+        },
+        {
+          "id": "bswf-94c620c42e9c1018",
+          "family": "source_binding",
+          "seed": 202611010006,
+          "repeat": 0,
+          "arm": "continued_sft"
+        },
+        {
+          "id": "bswf-ad81204014679614",
+          "family": "source_binding",
+          "seed": 202611010006,
+          "repeat": 0,
+          "arm": "observe"
+        },
+        {
+          "id": "bswf-499e7b269550daa6",
+          "family": "source_binding",
+          "seed": 202611010006,
+          "repeat": 0,
+          "arm": "rules"
+        },
+        {
+          "id": "bswf-b2d58fbc56d34c9f",
+          "family": "update_cycle",
+          "seed": 202611010007,
+          "repeat": 0,
+          "arm": "continued_sft"
+        },
+        {
+          "id": "bswf-a09a605e238e961d",
+          "family": "update_cycle",
+          "seed": 202611010007,
+          "repeat": 0,
+          "arm": "observe"
+        },
+        {
+          "id": "bswf-6131a20fd16d1c75",
+          "family": "update_cycle",
+          "seed": 202611010007,
+          "repeat": 0,
+          "arm": "rules"
+        },
+        {
+          "id": "bswf-461d02ed8ca7e045",
+          "family": "update_cycle",
+          "seed": 202611010007,
+          "repeat": 0,
+          "arm": "base"
+        },
+        {
+          "id": "bswf-a7a3b0beb3ccea5a",
+          "family": "recovered_history",
+          "seed": 202611010003,
+          "repeat": 1,
+          "arm": "observe"
+        },
+        {
+          "id": "bswf-ac91ac8be4f7d5fc",
+          "family": "recovered_history",
+          "seed": 202611010003,
+          "repeat": 1,
+          "arm": "rules"
+        },
+        {
+          "id": "bswf-97b85b444d4c0d22",
+          "family": "recovered_history",
+          "seed": 202611010003,
+          "repeat": 1,
+          "arm": "base"
+        },
+        {
+          "id": "bswf-6795ab0a628c12a7",
+          "family": "recovered_history",
+          "seed": 202611010003,
+          "repeat": 1,
+          "arm": "continued_sft"
+        }
+      ],
+      "complete_design": false,
+      "audit_violations": [],
+      "arms": {
+        "observe": {
+          "planned": 16,
+          "started": 9,
+          "verified": 8,
+          "mean_elapsed_seconds": 343.53042170736524,
+          "mean_restricted_completion_seconds": 371.6657258404626,
+          "native_starts": 45,
+          "automatic_alerts": 0,
+          "quiet_started": 5,
+          "quiet_with_alert": 0
+        },
+        "rules": {
+          "planned": 16,
+          "started": 9,
+          "verified": 8,
+          "mean_elapsed_seconds": 299.07970139715405,
+          "mean_restricted_completion_seconds": 338.27461269166736,
+          "native_starts": 40,
+          "automatic_alerts": 3,
+          "quiet_started": 5,
+          "quiet_with_alert": 0
+        },
+        "base": {
+          "planned": 16,
+          "started": 10,
+          "verified": 9,
+          "mean_elapsed_seconds": 262.14489483833313,
+          "mean_restricted_completion_seconds": 326.21818413734434,
+          "native_starts": 38,
+          "automatic_alerts": 0,
+          "quiet_started": 6,
+          "quiet_with_alert": 0
+        },
+        "continued_sft": {
+          "planned": 16,
+          "started": 10,
+          "verified": 9,
+          "mean_elapsed_seconds": 291.2048521757126,
+          "mean_restricted_completion_seconds": 313.81984634399413,
+          "native_starts": 45,
+          "automatic_alerts": 6,
+          "quiet_started": 6,
+          "quiet_with_alert": 2
+        }
+      },
+      "continued_sft_minus_baseline": {
+        "base": {
+          "restricted_completion_seconds": {
+            "pairs": 10,
+            "family_clusters": 7,
+            "difference": 7.605475885527475,
+            "interval": [
+              -171.06022327286857,
+              207.8429764509201
+            ],
+            "confidence": 0.95,
+            "replicates": 10000,
+            "seed": 202610261338,
+            "cluster_unit": "mechanism family, then repetitions within family",
+            "paired_differences": [
+              {
+                "block": "bsblock-01",
+                "family": "artifact_consumer",
+                "repeat": 0,
+                "difference": -277.9132845401764
+              },
+              {
+                "block": "bsblock-02",
+                "family": "publication_retry",
+                "repeat": 1,
+                "difference": -252.90849614143372
+              },
+              {
+                "block": "bsblock-03",
+                "family": "publication_retry",
+                "repeat": 0,
+                "difference": -242.03147649765015
+              },
+              {
+                "block": "bsblock-04",
+                "family": "announced_quiet",
+                "repeat": 0,
+                "difference": 9.979459047317505
+              },
+              {
+                "block": "bsblock-05",
+                "family": "announced_quiet",
+                "repeat": 1,
+                "difference": 243.75516366958618
+              },
+              {
+                "block": "bsblock-06",
+                "family": "progressing_work",
+                "repeat": 0,
+                "difference": 223.4706859588623
+              },
+              {
+                "block": "bsblock-07",
+                "family": "update_cycle",
+                "repeat": 1,
+                "difference": -172.72249746322632
+              },
+              {
+                "block": "bsblock-08",
+                "family": "unit_conversion",
+                "repeat": 1,
+                "difference": -121.17708992958069
+              },
+              {
+                "block": "bsblock-09",
+                "family": "unit_conversion",
+                "repeat": 0,
+                "difference": 7.939021587371826
+              },
+              {
+                "block": "bsblock-10",
+                "family": "recovered_history",
+                "repeat": 0,
+                "difference": 457.62513637542725
+              }
+            ]
+          },
+          "whole_workflow_verified": {
+            "pairs": 10,
+            "family_clusters": 7,
+            "difference": 0,
+            "interval": [
+              -0.42857142857142855,
+              0.42857142857142855
+            ],
+            "confidence": 0.95,
+            "replicates": 10000,
+            "seed": 202610261338,
+            "cluster_unit": "mechanism family, then repetitions within family",
+            "paired_differences": [
+              {
+                "block": "bsblock-01",
+                "family": "artifact_consumer",
+                "repeat": 0,
+                "difference": 1
+              },
+              {
+                "block": "bsblock-02",
+                "family": "publication_retry",
+                "repeat": 1,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-03",
+                "family": "publication_retry",
+                "repeat": 0,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-04",
+                "family": "announced_quiet",
+                "repeat": 0,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-05",
+                "family": "announced_quiet",
+                "repeat": 1,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-06",
+                "family": "progressing_work",
+                "repeat": 0,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-07",
+                "family": "update_cycle",
+                "repeat": 1,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-08",
+                "family": "unit_conversion",
+                "repeat": 1,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-09",
+                "family": "unit_conversion",
+                "repeat": 0,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-10",
+                "family": "recovered_history",
+                "repeat": 0,
+                "difference": -1
+              }
+            ]
+          },
+          "native_starts": {
+            "pairs": 10,
+            "family_clusters": 7,
+            "difference": 1.3571428571428572,
+            "interval": [
+              -0.9285714285714286,
+              3.5714285714285716
+            ],
+            "confidence": 0.95,
+            "replicates": 10000,
+            "seed": 202610261338,
+            "cluster_unit": "mechanism family, then repetitions within family",
+            "paired_differences": [
+              {
+                "block": "bsblock-01",
+                "family": "artifact_consumer",
+                "repeat": 0,
+                "difference": 4
+              },
+              {
+                "block": "bsblock-02",
+                "family": "publication_retry",
+                "repeat": 1,
+                "difference": -3
+              },
+              {
+                "block": "bsblock-03",
+                "family": "publication_retry",
+                "repeat": 0,
+                "difference": -3
+              },
+              {
+                "block": "bsblock-04",
+                "family": "announced_quiet",
+                "repeat": 0,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-05",
+                "family": "announced_quiet",
+                "repeat": 1,
+                "difference": 4
+              },
+              {
+                "block": "bsblock-06",
+                "family": "progressing_work",
+                "repeat": 0,
+                "difference": 4
+              },
+              {
+                "block": "bsblock-07",
+                "family": "update_cycle",
+                "repeat": 1,
+                "difference": -1
+              },
+              {
+                "block": "bsblock-08",
+                "family": "unit_conversion",
+                "repeat": 1,
+                "difference": -2
+              },
+              {
+                "block": "bsblock-09",
+                "family": "unit_conversion",
+                "repeat": 0,
+                "difference": -1
+              },
+              {
+                "block": "bsblock-10",
+                "family": "recovered_history",
+                "repeat": 0,
+                "difference": 5
+              }
+            ]
+          }
+        },
+        "observe": {
+          "restricted_completion_seconds": {
+            "pairs": 9,
+            "family_clusters": 6,
+            "difference": -78.06490755081177,
+            "interval": [
+              -225.01259609063467,
+              72.96500925223033
+            ],
+            "confidence": 0.975,
+            "replicates": 10000,
+            "seed": 202610261338,
+            "cluster_unit": "mechanism family, then repetitions within family",
+            "paired_differences": [
+              {
+                "block": "bsblock-01",
+                "family": "artifact_consumer",
+                "repeat": 0,
+                "difference": -63.8387770652771
+              },
+              {
+                "block": "bsblock-02",
+                "family": "publication_retry",
+                "repeat": 1,
+                "difference": -269.17886114120483
+              },
+              {
+                "block": "bsblock-03",
+                "family": "publication_retry",
+                "repeat": 0,
+                "difference": -215.71620988845825
+              },
+              {
+                "block": "bsblock-04",
+                "family": "announced_quiet",
+                "repeat": 0,
+                "difference": 1.5772993564605713
+              },
+              {
+                "block": "bsblock-05",
+                "family": "announced_quiet",
+                "repeat": 1,
+                "difference": 217.2233021259308
+              },
+              {
+                "block": "bsblock-06",
+                "family": "progressing_work",
+                "repeat": 0,
+                "difference": 135.47250652313232
+              },
+              {
+                "block": "bsblock-07",
+                "family": "update_cycle",
+                "repeat": 1,
+                "difference": -151.61955094337463
+              },
+              {
+                "block": "bsblock-08",
+                "family": "unit_conversion",
+                "repeat": 1,
+                "difference": -411.6078770160675
+              },
+              {
+                "block": "bsblock-09",
+                "family": "unit_conversion",
+                "repeat": 0,
+                "difference": -99.10490107536316
+              }
+            ]
+          },
+          "whole_workflow_verified": {
+            "pairs": 9,
+            "family_clusters": 6,
+            "difference": 0.08333333333333333,
+            "interval": [
+              0,
+              0.3333333333333333
+            ],
+            "confidence": 0.975,
+            "replicates": 10000,
+            "seed": 202610261338,
+            "cluster_unit": "mechanism family, then repetitions within family",
+            "paired_differences": [
+              {
+                "block": "bsblock-01",
+                "family": "artifact_consumer",
+                "repeat": 0,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-02",
+                "family": "publication_retry",
+                "repeat": 1,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-03",
+                "family": "publication_retry",
+                "repeat": 0,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-04",
+                "family": "announced_quiet",
+                "repeat": 0,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-05",
+                "family": "announced_quiet",
+                "repeat": 1,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-06",
+                "family": "progressing_work",
+                "repeat": 0,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-07",
+                "family": "update_cycle",
+                "repeat": 1,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-08",
+                "family": "unit_conversion",
+                "repeat": 1,
+                "difference": 1
+              },
+              {
+                "block": "bsblock-09",
+                "family": "unit_conversion",
+                "repeat": 0,
+                "difference": 0
+              }
+            ]
+          },
+          "native_starts": {
+            "pairs": 9,
+            "family_clusters": 6,
+            "difference": -0.5833333333333334,
+            "interval": [
+              -2.25,
+              1.3333333333333333
+            ],
+            "confidence": 0.975,
+            "replicates": 10000,
+            "seed": 202610261338,
+            "cluster_unit": "mechanism family, then repetitions within family",
+            "paired_differences": [
+              {
+                "block": "bsblock-01",
+                "family": "artifact_consumer",
+                "repeat": 0,
+                "difference": -1
+              },
+              {
+                "block": "bsblock-02",
+                "family": "publication_retry",
+                "repeat": 1,
+                "difference": -3
+              },
+              {
+                "block": "bsblock-03",
+                "family": "publication_retry",
+                "repeat": 0,
+                "difference": -3
+              },
+              {
+                "block": "bsblock-04",
+                "family": "announced_quiet",
+                "repeat": 0,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-05",
+                "family": "announced_quiet",
+                "repeat": 1,
+                "difference": 4
+              },
+              {
+                "block": "bsblock-06",
+                "family": "progressing_work",
+                "repeat": 0,
+                "difference": 2
+              },
+              {
+                "block": "bsblock-07",
+                "family": "update_cycle",
+                "repeat": 1,
+                "difference": -1
+              },
+              {
+                "block": "bsblock-08",
+                "family": "unit_conversion",
+                "repeat": 1,
+                "difference": -3
+              },
+              {
+                "block": "bsblock-09",
+                "family": "unit_conversion",
+                "repeat": 0,
+                "difference": -2
+              }
+            ]
+          }
+        },
+        "rules": {
+          "restricted_completion_seconds": {
+            "pairs": 9,
+            "family_clusters": 6,
+            "difference": -41.361343244711556,
+            "interval": [
+              -184.86802913745245,
+              77.49050637086232
+            ],
+            "confidence": 0.975,
+            "replicates": 10000,
+            "seed": 202610261338,
+            "cluster_unit": "mechanism family, then repetitions within family",
+            "paired_differences": [
+              {
+                "block": "bsblock-01",
+                "family": "artifact_consumer",
+                "repeat": 0,
+                "difference": 20.622328996658325
+              },
+              {
+                "block": "bsblock-02",
+                "family": "publication_retry",
+                "repeat": 1,
+                "difference": -228.3836486339569
+              },
+              {
+                "block": "bsblock-03",
+                "family": "publication_retry",
+                "repeat": 0,
+                "difference": -245.10200262069702
+              },
+              {
+                "block": "bsblock-04",
+                "family": "announced_quiet",
+                "repeat": 0,
+                "difference": 12.062470197677612
+              },
+              {
+                "block": "bsblock-05",
+                "family": "announced_quiet",
+                "repeat": 1,
+                "difference": 245.12373232841492
+              },
+              {
+                "block": "bsblock-06",
+                "family": "progressing_work",
+                "repeat": 0,
+                "difference": 29.359217643737793
+              },
+              {
+                "block": "bsblock-07",
+                "family": "update_cycle",
+                "repeat": 1,
+                "difference": 9.955385208129883
+              },
+              {
+                "block": "bsblock-08",
+                "family": "unit_conversion",
+                "repeat": 1,
+                "difference": -411.6078770160675
+              },
+              {
+                "block": "bsblock-09",
+                "family": "unit_conversion",
+                "repeat": 0,
+                "difference": 11.697343111038208
+              }
+            ]
+          },
+          "whole_workflow_verified": {
+            "pairs": 9,
+            "family_clusters": 6,
+            "difference": 0.08333333333333333,
+            "interval": [
+              0,
+              0.3333333333333333
+            ],
+            "confidence": 0.975,
+            "replicates": 10000,
+            "seed": 202610261338,
+            "cluster_unit": "mechanism family, then repetitions within family",
+            "paired_differences": [
+              {
+                "block": "bsblock-01",
+                "family": "artifact_consumer",
+                "repeat": 0,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-02",
+                "family": "publication_retry",
+                "repeat": 1,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-03",
+                "family": "publication_retry",
+                "repeat": 0,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-04",
+                "family": "announced_quiet",
+                "repeat": 0,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-05",
+                "family": "announced_quiet",
+                "repeat": 1,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-06",
+                "family": "progressing_work",
+                "repeat": 0,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-07",
+                "family": "update_cycle",
+                "repeat": 1,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-08",
+                "family": "unit_conversion",
+                "repeat": 1,
+                "difference": 1
+              },
+              {
+                "block": "bsblock-09",
+                "family": "unit_conversion",
+                "repeat": 0,
+                "difference": 0
+              }
+            ]
+          },
+          "native_starts": {
+            "pairs": 9,
+            "family_clusters": 6,
+            "difference": 0,
+            "interval": [
+              -1.6666666666666667,
+              1.5
+            ],
+            "confidence": 0.975,
+            "replicates": 10000,
+            "seed": 202610261338,
+            "cluster_unit": "mechanism family, then repetitions within family",
+            "paired_differences": [
+              {
+                "block": "bsblock-01",
+                "family": "artifact_consumer",
+                "repeat": 0,
+                "difference": 1
+              },
+              {
+                "block": "bsblock-02",
+                "family": "publication_retry",
+                "repeat": 1,
+                "difference": -3
+              },
+              {
+                "block": "bsblock-03",
+                "family": "publication_retry",
+                "repeat": 0,
+                "difference": -3
+              },
+              {
+                "block": "bsblock-04",
+                "family": "announced_quiet",
+                "repeat": 0,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-05",
+                "family": "announced_quiet",
+                "repeat": 1,
+                "difference": 4
+              },
+              {
+                "block": "bsblock-06",
+                "family": "progressing_work",
+                "repeat": 0,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-07",
+                "family": "update_cycle",
+                "repeat": 1,
+                "difference": 1
+              },
+              {
+                "block": "bsblock-08",
+                "family": "unit_conversion",
+                "repeat": 1,
+                "difference": -2
+              },
+              {
+                "block": "bsblock-09",
+                "family": "unit_conversion",
+                "repeat": 0,
+                "difference": 0
+              }
+            ]
+          }
+        }
+      },
+      "scope": "Fresh stochastic executions of previously explored mechanisms; reviewer judgments are not workflow outcomes",
+      "limitations": [
+        "Unstarted trials are reported, not assigned fabricated failures.",
+        "Unmatched started trials remain in arm summaries; paired contrasts require both members.",
+        "A partial design does not complete the registered rep2.",
+        "Quiet attention incidence is not adjudicated false-alert incidence.",
+        "Equal observed completion counts do not establish population equivalence."
+      ]
+    },
+    "clean_block_sensitivity": {
+      "planned": 52,
+      "started": 28,
+      "unstarted": [
+        {
+          "id": "bswf-7d047a91de1070bc",
+          "family": "artifact_consumer",
+          "seed": 202611010004,
+          "repeat": 1,
+          "arm": "continued_sft"
+        },
+        {
+          "id": "bswf-6a8fc9a67ad14eaa",
+          "family": "artifact_consumer",
+          "seed": 202611010004,
+          "repeat": 1,
+          "arm": "observe"
+        },
+        {
+          "id": "bswf-3809a61a2c5840ce",
+          "family": "artifact_consumer",
+          "seed": 202611010004,
+          "repeat": 1,
+          "arm": "rules"
+        },
+        {
+          "id": "bswf-d37e1f8de859a7b3",
+          "family": "artifact_consumer",
+          "seed": 202611010004,
+          "repeat": 1,
+          "arm": "base"
+        },
+        {
+          "id": "bswf-bb23cddfc9ff0321",
+          "family": "source_binding",
+          "seed": 202611010006,
+          "repeat": 1,
+          "arm": "observe"
+        },
+        {
+          "id": "bswf-785040159704c49e",
+          "family": "source_binding",
+          "seed": 202611010006,
+          "repeat": 1,
+          "arm": "rules"
+        },
+        {
+          "id": "bswf-5e05435ef43d2830",
+          "family": "source_binding",
+          "seed": 202611010006,
+          "repeat": 1,
+          "arm": "base"
+        },
+        {
+          "id": "bswf-8ebb728b89fdc00b",
+          "family": "source_binding",
+          "seed": 202611010006,
+          "repeat": 1,
+          "arm": "continued_sft"
+        },
+        {
+          "id": "bswf-eab12a6f92587e5c",
+          "family": "progressing_work",
+          "seed": 202611010000,
+          "repeat": 1,
+          "arm": "rules"
+        },
+        {
+          "id": "bswf-999327eaca4883ce",
+          "family": "progressing_work",
+          "seed": 202611010000,
+          "repeat": 1,
+          "arm": "base"
+        },
+        {
+          "id": "bswf-6b5e2f8e2db5a0b3",
+          "family": "progressing_work",
+          "seed": 202611010000,
+          "repeat": 1,
+          "arm": "continued_sft"
+        },
+        {
+          "id": "bswf-b44a136d616a842d",
+          "family": "progressing_work",
+          "seed": 202611010000,
+          "repeat": 1,
+          "arm": "observe"
+        },
+        {
+          "id": "bswf-c964906bd8930701",
+          "family": "source_binding",
+          "seed": 202611010006,
+          "repeat": 0,
+          "arm": "base"
+        },
+        {
+          "id": "bswf-94c620c42e9c1018",
+          "family": "source_binding",
+          "seed": 202611010006,
+          "repeat": 0,
+          "arm": "continued_sft"
+        },
+        {
+          "id": "bswf-ad81204014679614",
+          "family": "source_binding",
+          "seed": 202611010006,
+          "repeat": 0,
+          "arm": "observe"
+        },
+        {
+          "id": "bswf-499e7b269550daa6",
+          "family": "source_binding",
+          "seed": 202611010006,
+          "repeat": 0,
+          "arm": "rules"
+        },
+        {
+          "id": "bswf-b2d58fbc56d34c9f",
+          "family": "update_cycle",
+          "seed": 202611010007,
+          "repeat": 0,
+          "arm": "continued_sft"
+        },
+        {
+          "id": "bswf-a09a605e238e961d",
+          "family": "update_cycle",
+          "seed": 202611010007,
+          "repeat": 0,
+          "arm": "observe"
+        },
+        {
+          "id": "bswf-6131a20fd16d1c75",
+          "family": "update_cycle",
+          "seed": 202611010007,
+          "repeat": 0,
+          "arm": "rules"
+        },
+        {
+          "id": "bswf-461d02ed8ca7e045",
+          "family": "update_cycle",
+          "seed": 202611010007,
+          "repeat": 0,
+          "arm": "base"
+        },
+        {
+          "id": "bswf-a7a3b0beb3ccea5a",
+          "family": "recovered_history",
+          "seed": 202611010003,
+          "repeat": 1,
+          "arm": "observe"
+        },
+        {
+          "id": "bswf-ac91ac8be4f7d5fc",
+          "family": "recovered_history",
+          "seed": 202611010003,
+          "repeat": 1,
+          "arm": "rules"
+        },
+        {
+          "id": "bswf-97b85b444d4c0d22",
+          "family": "recovered_history",
+          "seed": 202611010003,
+          "repeat": 1,
+          "arm": "base"
+        },
+        {
+          "id": "bswf-6795ab0a628c12a7",
+          "family": "recovered_history",
+          "seed": 202611010003,
+          "repeat": 1,
+          "arm": "continued_sft"
+        }
+      ],
+      "complete_design": false,
+      "audit_violations": [],
+      "arms": {
+        "observe": {
+          "planned": 13,
+          "started": 7,
+          "verified": 7,
+          "mean_elapsed_seconds": 322.72372000558033,
+          "mean_restricted_completion_seconds": 322.72372000558033,
+          "native_starts": 32,
+          "automatic_alerts": 0,
+          "quiet_started": 5,
+          "quiet_with_alert": 0
+        },
+        "rules": {
+          "planned": 13,
+          "started": 7,
+          "verified": 7,
+          "mean_elapsed_seconds": 291.8581611088344,
+          "mean_restricted_completion_seconds": 291.8581611088344,
+          "native_starts": 30,
+          "automatic_alerts": 2,
+          "quiet_started": 5,
+          "quiet_with_alert": 0
+        },
+        "base": {
+          "planned": 13,
+          "started": 7,
+          "verified": 7,
+          "mean_elapsed_seconds": 294.3196806907654,
+          "mean_restricted_completion_seconds": 294.3196806907654,
+          "native_starts": 29,
+          "automatic_alerts": 0,
+          "quiet_started": 5,
+          "quiet_with_alert": 0
+        },
+        "continued_sft": {
+          "planned": 13,
+          "started": 7,
+          "verified": 7,
+          "mean_elapsed_seconds": 268.24566071374073,
+          "mean_restricted_completion_seconds": 268.24566071374073,
+          "native_starts": 29,
+          "automatic_alerts": 4,
+          "quiet_started": 5,
+          "quiet_with_alert": 2
+        }
+      },
+      "continued_sft_minus_baseline": {
+        "base": {
+          "restricted_completion_seconds": {
+            "pairs": 7,
+            "family_clusters": 5,
+            "difference": -12.383092975616455,
+            "interval": [
+              -166.48918919563295,
+              145.37181129455567
+            ],
+            "confidence": 0.95,
+            "replicates": 10000,
+            "seed": 202610261338,
+            "cluster_unit": "mechanism family, then repetitions within family",
+            "paired_differences": [
+              {
+                "block": "bsblock-02",
+                "family": "publication_retry",
+                "repeat": 1,
+                "difference": -252.90849614143372
+              },
+              {
+                "block": "bsblock-03",
+                "family": "publication_retry",
+                "repeat": 0,
+                "difference": -242.03147649765015
+              },
+              {
+                "block": "bsblock-04",
+                "family": "announced_quiet",
+                "repeat": 0,
+                "difference": 9.979459047317505
+              },
+              {
+                "block": "bsblock-05",
+                "family": "announced_quiet",
+                "repeat": 1,
+                "difference": 243.75516366958618
+              },
+              {
+                "block": "bsblock-06",
+                "family": "progressing_work",
+                "repeat": 0,
+                "difference": 223.4706859588623
+              },
+              {
+                "block": "bsblock-07",
+                "family": "update_cycle",
+                "repeat": 1,
+                "difference": -172.72249746322632
+              },
+              {
+                "block": "bsblock-09",
+                "family": "unit_conversion",
+                "repeat": 0,
+                "difference": 7.939021587371826
+              }
+            ]
+          },
+          "whole_workflow_verified": {
+            "pairs": 7,
+            "family_clusters": 5,
+            "difference": 0,
+            "interval": [
+              0,
+              0
+            ],
+            "confidence": 0.95,
+            "replicates": 10000,
+            "seed": 202610261338,
+            "cluster_unit": "mechanism family, then repetitions within family",
+            "paired_differences": [
+              {
+                "block": "bsblock-02",
+                "family": "publication_retry",
+                "repeat": 1,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-03",
+                "family": "publication_retry",
+                "repeat": 0,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-04",
+                "family": "announced_quiet",
+                "repeat": 0,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-05",
+                "family": "announced_quiet",
+                "repeat": 1,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-06",
+                "family": "progressing_work",
+                "repeat": 0,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-07",
+                "family": "update_cycle",
+                "repeat": 1,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-09",
+                "family": "unit_conversion",
+                "repeat": 0,
+                "difference": 0
+              }
+            ]
+          },
+          "native_starts": {
+            "pairs": 7,
+            "family_clusters": 5,
+            "difference": 0.2,
+            "interval": [
+              -1.8,
+              2.6
+            ],
+            "confidence": 0.95,
+            "replicates": 10000,
+            "seed": 202610261338,
+            "cluster_unit": "mechanism family, then repetitions within family",
+            "paired_differences": [
+              {
+                "block": "bsblock-02",
+                "family": "publication_retry",
+                "repeat": 1,
+                "difference": -3
+              },
+              {
+                "block": "bsblock-03",
+                "family": "publication_retry",
+                "repeat": 0,
+                "difference": -3
+              },
+              {
+                "block": "bsblock-04",
+                "family": "announced_quiet",
+                "repeat": 0,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-05",
+                "family": "announced_quiet",
+                "repeat": 1,
+                "difference": 4
+              },
+              {
+                "block": "bsblock-06",
+                "family": "progressing_work",
+                "repeat": 0,
+                "difference": 4
+              },
+              {
+                "block": "bsblock-07",
+                "family": "update_cycle",
+                "repeat": 1,
+                "difference": -1
+              },
+              {
+                "block": "bsblock-09",
+                "family": "unit_conversion",
+                "repeat": 0,
+                "difference": -1
+              }
+            ]
+          }
+        },
+        "observe": {
+          "restricted_completion_seconds": {
+            "pairs": 7,
+            "family_clusters": 5,
+            "difference": -49.65983605384827,
+            "interval": [
+              -190.45674686431886,
+              104.90718412399292
+            ],
+            "confidence": 0.975,
+            "replicates": 10000,
+            "seed": 202610261338,
+            "cluster_unit": "mechanism family, then repetitions within family",
+            "paired_differences": [
+              {
+                "block": "bsblock-02",
+                "family": "publication_retry",
+                "repeat": 1,
+                "difference": -269.17886114120483
+              },
+              {
+                "block": "bsblock-03",
+                "family": "publication_retry",
+                "repeat": 0,
+                "difference": -215.71620988845825
+              },
+              {
+                "block": "bsblock-04",
+                "family": "announced_quiet",
+                "repeat": 0,
+                "difference": 1.5772993564605713
+              },
+              {
+                "block": "bsblock-05",
+                "family": "announced_quiet",
+                "repeat": 1,
+                "difference": 217.2233021259308
+              },
+              {
+                "block": "bsblock-06",
+                "family": "progressing_work",
+                "repeat": 0,
+                "difference": 135.47250652313232
+              },
+              {
+                "block": "bsblock-07",
+                "family": "update_cycle",
+                "repeat": 1,
+                "difference": -151.61955094337463
+              },
+              {
+                "block": "bsblock-09",
+                "family": "unit_conversion",
+                "repeat": 0,
+                "difference": -99.10490107536316
+              }
+            ]
+          },
+          "whole_workflow_verified": {
+            "pairs": 7,
+            "family_clusters": 5,
+            "difference": 0,
+            "interval": [
+              0,
+              0
+            ],
+            "confidence": 0.975,
+            "replicates": 10000,
+            "seed": 202610261338,
+            "cluster_unit": "mechanism family, then repetitions within family",
+            "paired_differences": [
+              {
+                "block": "bsblock-02",
+                "family": "publication_retry",
+                "repeat": 1,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-03",
+                "family": "publication_retry",
+                "repeat": 0,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-04",
+                "family": "announced_quiet",
+                "repeat": 0,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-05",
+                "family": "announced_quiet",
+                "repeat": 1,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-06",
+                "family": "progressing_work",
+                "repeat": 0,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-07",
+                "family": "update_cycle",
+                "repeat": 1,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-09",
+                "family": "unit_conversion",
+                "repeat": 0,
+                "difference": 0
+              }
+            ]
+          },
+          "native_starts": {
+            "pairs": 7,
+            "family_clusters": 5,
+            "difference": -0.4,
+            "interval": [
+              -2.4,
+              1.8
+            ],
+            "confidence": 0.975,
+            "replicates": 10000,
+            "seed": 202610261338,
+            "cluster_unit": "mechanism family, then repetitions within family",
+            "paired_differences": [
+              {
+                "block": "bsblock-02",
+                "family": "publication_retry",
+                "repeat": 1,
+                "difference": -3
+              },
+              {
+                "block": "bsblock-03",
+                "family": "publication_retry",
+                "repeat": 0,
+                "difference": -3
+              },
+              {
+                "block": "bsblock-04",
+                "family": "announced_quiet",
+                "repeat": 0,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-05",
+                "family": "announced_quiet",
+                "repeat": 1,
+                "difference": 4
+              },
+              {
+                "block": "bsblock-06",
+                "family": "progressing_work",
+                "repeat": 0,
+                "difference": 2
+              },
+              {
+                "block": "bsblock-07",
+                "family": "update_cycle",
+                "repeat": 1,
+                "difference": -1
+              },
+              {
+                "block": "bsblock-09",
+                "family": "unit_conversion",
+                "repeat": 0,
+                "difference": -2
+              }
+            ]
+          }
+        },
+        "rules": {
+          "restricted_completion_seconds": {
+            "pairs": 7,
+            "family_clusters": 5,
+            "difference": -11.427555680274963,
+            "interval": [
+              -137.71514971256255,
+              107.90349054336548
+            ],
+            "confidence": 0.975,
+            "replicates": 10000,
+            "seed": 202610261338,
+            "cluster_unit": "mechanism family, then repetitions within family",
+            "paired_differences": [
+              {
+                "block": "bsblock-02",
+                "family": "publication_retry",
+                "repeat": 1,
+                "difference": -228.3836486339569
+              },
+              {
+                "block": "bsblock-03",
+                "family": "publication_retry",
+                "repeat": 0,
+                "difference": -245.10200262069702
+              },
+              {
+                "block": "bsblock-04",
+                "family": "announced_quiet",
+                "repeat": 0,
+                "difference": 12.062470197677612
+              },
+              {
+                "block": "bsblock-05",
+                "family": "announced_quiet",
+                "repeat": 1,
+                "difference": 245.12373232841492
+              },
+              {
+                "block": "bsblock-06",
+                "family": "progressing_work",
+                "repeat": 0,
+                "difference": 29.359217643737793
+              },
+              {
+                "block": "bsblock-07",
+                "family": "update_cycle",
+                "repeat": 1,
+                "difference": 9.955385208129883
+              },
+              {
+                "block": "bsblock-09",
+                "family": "unit_conversion",
+                "repeat": 0,
+                "difference": 11.697343111038208
+              }
+            ]
+          },
+          "whole_workflow_verified": {
+            "pairs": 7,
+            "family_clusters": 5,
+            "difference": 0,
+            "interval": [
+              0,
+              0
+            ],
+            "confidence": 0.975,
+            "replicates": 10000,
+            "seed": 202610261338,
+            "cluster_unit": "mechanism family, then repetitions within family",
+            "paired_differences": [
+              {
+                "block": "bsblock-02",
+                "family": "publication_retry",
+                "repeat": 1,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-03",
+                "family": "publication_retry",
+                "repeat": 0,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-04",
+                "family": "announced_quiet",
+                "repeat": 0,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-05",
+                "family": "announced_quiet",
+                "repeat": 1,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-06",
+                "family": "progressing_work",
+                "repeat": 0,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-07",
+                "family": "update_cycle",
+                "repeat": 1,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-09",
+                "family": "unit_conversion",
+                "repeat": 0,
+                "difference": 0
+              }
+            ]
+          },
+          "native_starts": {
+            "pairs": 7,
+            "family_clusters": 5,
+            "difference": 0,
+            "interval": [
+              -1.8,
+              1.8
+            ],
+            "confidence": 0.975,
+            "replicates": 10000,
+            "seed": 202610261338,
+            "cluster_unit": "mechanism family, then repetitions within family",
+            "paired_differences": [
+              {
+                "block": "bsblock-02",
+                "family": "publication_retry",
+                "repeat": 1,
+                "difference": -3
+              },
+              {
+                "block": "bsblock-03",
+                "family": "publication_retry",
+                "repeat": 0,
+                "difference": -3
+              },
+              {
+                "block": "bsblock-04",
+                "family": "announced_quiet",
+                "repeat": 0,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-05",
+                "family": "announced_quiet",
+                "repeat": 1,
+                "difference": 4
+              },
+              {
+                "block": "bsblock-06",
+                "family": "progressing_work",
+                "repeat": 0,
+                "difference": 0
+              },
+              {
+                "block": "bsblock-07",
+                "family": "update_cycle",
+                "repeat": 1,
+                "difference": 1
+              },
+              {
+                "block": "bsblock-09",
+                "family": "unit_conversion",
+                "repeat": 0,
+                "difference": 0
+              }
+            ]
+          }
+        }
+      },
+      "scope": "Fresh stochastic executions of previously explored mechanisms; reviewer judgments are not workflow outcomes",
+      "limitations": [
+        "Unstarted trials are reported, not assigned fabricated failures.",
+        "Unmatched started trials remain in arm summaries; paired contrasts require both members.",
+        "A partial design does not complete the registered rep2.",
+        "Quiet attention incidence is not adjudicated false-alert incidence.",
+        "Equal observed completion counts do not establish population equivalence."
+      ]
+    },
+    "excluded_blocks": [
+      "bsblock-01",
+      "bsblock-08",
+      "bsblock-10"
+    ],
+    "original_manifest_sha256": "97388f629e1451a20045567de869c775b3020907b33ab0648858dd3b6fdcf2db",
+    "record_hashes": {
+      "/home/simjecture/investigations/scientific-attention-20261025/rep2-audit/records.json": "bd9bf8a131034130a6b5246b01ac23707a07687a4778dc6cea5496233f9a1bae",
+      "/home/simjecture/investigations/scientific-attention-20261025/r8-all-continuation-records/audit/records.json": "c180e792788ccb2287d638dbdad6f56b7f9ed3acfc3788f6c5bb99467d8659ae"
+    },
+    "scope": "Original outcomes retained, including provider failures; the sensitivity removes whole affected blocks and is conditional, not a replacement primary analysis"
+  },
+  "r8_audit": {
+    "manifest_sha256": "0a9963822440ca9b97898c5298805111661d8146319fa6e53f8ffc900875550a",
+    "arms": {
+      "observe": {
+        "assigned": 1,
+        "verified": 1,
+        "mean_native_starts": 6,
+        "mean_elapsed_seconds": 375.2805907726288,
+        "mean_restricted_completion_seconds": 375.2805907726288,
+        "automatic_alerts": 0,
+        "quiet_trials": 0,
+        "quiet_trials_with_alert": 0,
+        "collector_failed": 0,
+        "trials_with_monitor_errors": 0
+      },
+      "rules": {
+        "assigned": 1,
+        "verified": 1,
+        "mean_native_starts": 4,
+        "mean_elapsed_seconds": 264.4783465862274,
+        "mean_restricted_completion_seconds": 264.4783465862274,
+        "automatic_alerts": 1,
+        "quiet_trials": 0,
+        "quiet_trials_with_alert": 0,
+        "collector_failed": 0,
+        "trials_with_monitor_errors": 0
+      },
+      "base": {
+        "assigned": 3,
+        "verified": 3,
+        "mean_native_starts": 4.333333333333333,
+        "mean_elapsed_seconds": 273.3935815493266,
+        "mean_restricted_completion_seconds": 273.3935815493266,
+        "automatic_alerts": 0,
+        "quiet_trials": 1,
+        "quiet_trials_with_alert": 0,
+        "collector_failed": 0,
+        "trials_with_monitor_errors": 0
+      },
+      "continued_sft": {
+        "assigned": 3,
+        "verified": 2,
+        "mean_native_starts": 5,
+        "mean_elapsed_seconds": 312.8059569994609,
+        "mean_restricted_completion_seconds": 388.1892708937327,
+        "automatic_alerts": 2,
+        "quiet_trials": 1,
+        "quiet_trials_with_alert": 0,
+        "collector_failed": 0,
+        "trials_with_monitor_errors": 0
+      }
+    },
+    "continued_sft_minus_baseline": {
+      "observe": {
+        "whole_workflow_verified": {
+          "difference": 0,
+          "interval95": [
+            0,
+            0
+          ],
+          "clusters": 1,
+          "cluster_unit": "mechanism family; both fresh-seed pairs kept together",
+          "scope": "Descriptive paired percentile bootstrap; eight known families are not new domains"
+        },
+        "native_starts": {
+          "difference": -2,
+          "interval95": [
+            -2,
+            -2
+          ],
+          "clusters": 1,
+          "cluster_unit": "mechanism family; both fresh-seed pairs kept together",
+          "scope": "Descriptive paired percentile bootstrap; eight known families are not new domains"
+        },
+        "restricted_completion_seconds": {
+          "difference": -99.10490107536316,
+          "interval95": [
+            -99.10490107536316,
+            -99.10490107536316
+          ],
+          "clusters": 1,
+          "cluster_unit": "mechanism family; both fresh-seed pairs kept together",
+          "scope": "Descriptive paired percentile bootstrap; eight known families are not new domains"
+        }
+      },
+      "rules": {
+        "whole_workflow_verified": {
+          "difference": 0,
+          "interval95": [
+            0,
+            0
+          ],
+          "clusters": 1,
+          "cluster_unit": "mechanism family; both fresh-seed pairs kept together",
+          "scope": "Descriptive paired percentile bootstrap; eight known families are not new domains"
+        },
+        "native_starts": {
+          "difference": 0,
+          "interval95": [
+            0,
+            0
+          ],
+          "clusters": 1,
+          "cluster_unit": "mechanism family; both fresh-seed pairs kept together",
+          "scope": "Descriptive paired percentile bootstrap; eight known families are not new domains"
+        },
+        "restricted_completion_seconds": {
+          "difference": 11.697343111038208,
+          "interval95": [
+            11.697343111038208,
+            11.697343111038208
+          ],
+          "clusters": 1,
+          "cluster_unit": "mechanism family; both fresh-seed pairs kept together",
+          "scope": "Descriptive paired percentile bootstrap; eight known families are not new domains"
+        }
+      },
+      "base": {
+        "whole_workflow_verified": {
+          "difference": -0.5,
+          "interval95": [
+            -1,
+            0
+          ],
+          "clusters": 2,
+          "cluster_unit": "mechanism family; both fresh-seed pairs kept together",
+          "scope": "Descriptive paired percentile bootstrap; eight known families are not new domains"
+        },
+        "native_starts": {
+          "difference": 1.75,
+          "interval95": [
+            -1.5,
+            5
+          ],
+          "clusters": 2,
+          "cluster_unit": "mechanism family; both fresh-seed pairs kept together",
+          "scope": "Descriptive paired percentile bootstrap; eight known families are not new domains"
+        },
+        "restricted_completion_seconds": {
+          "difference": 200.5030511021614,
+          "interval95": [
+            -56.61903417110443,
+            457.62513637542725
+          ],
+          "clusters": 2,
+          "cluster_unit": "mechanism family; both fresh-seed pairs kept together",
+          "scope": "Descriptive paired percentile bootstrap; eight known families are not new domains"
+        }
+      }
+    },
+    "violations": [],
+    "limitations": [
+      "All assigned failures retained; no patched-host results mixed into this cohort.",
+      "Quiet-family alerts are a proxy for unnecessary attention, not independently adjudicated false alerts.",
+      "Restricted completion assigns 650 seconds to failures; it is not actual measured runtime.",
+      "Native sessions are stochastic; only one execution per arm/configuration."
+    ]
+  },
+  "r8_finalizer": {
+    "stage": "completed",
+    "started_at": 1793078746.4119062,
+    "coverage": {
+      "planned_workflows": 34,
+      "started_workflows": 8,
+      "complete_blocks": 1,
+      "unstarted": [
+        {
+          "id": "bswf-a6b2a7645d6c0ef2",
+          "family": "recovered_history",
+          "seed": 202611010003,
+          "repeat": 0,
+          "arm": "observe"
+        },
+        {
+          "id": "bswf-643cd6901e76d3be",
+          "family": "recovered_history",
+          "seed": 202611010003,
+          "repeat": 0,
+          "arm": "rules"
+        },
+        {
+          "id": "bswf-7d047a91de1070bc",
+          "family": "artifact_consumer",
+          "seed": 202611010004,
+          "repeat": 1,
+          "arm": "continued_sft"
+        },
+        {
+          "id": "bswf-6a8fc9a67ad14eaa",
+          "family": "artifact_consumer",
+          "seed": 202611010004,
+          "repeat": 1,
+          "arm": "observe"
+        },
+        {
+          "id": "bswf-3809a61a2c5840ce",
+          "family": "artifact_consumer",
+          "seed": 202611010004,
+          "repeat": 1,
+          "arm": "rules"
+        },
+        {
+          "id": "bswf-d37e1f8de859a7b3",
+          "family": "artifact_consumer",
+          "seed": 202611010004,
+          "repeat": 1,
+          "arm": "base"
+        },
+        {
+          "id": "bswf-bb23cddfc9ff0321",
+          "family": "source_binding",
+          "seed": 202611010006,
+          "repeat": 1,
+          "arm": "observe"
+        },
+        {
+          "id": "bswf-785040159704c49e",
+          "family": "source_binding",
+          "seed": 202611010006,
+          "repeat": 1,
+          "arm": "rules"
+        },
+        {
+          "id": "bswf-5e05435ef43d2830",
+          "family": "source_binding",
+          "seed": 202611010006,
+          "repeat": 1,
+          "arm": "base"
+        },
+        {
+          "id": "bswf-8ebb728b89fdc00b",
+          "family": "source_binding",
+          "seed": 202611010006,
+          "repeat": 1,
+          "arm": "continued_sft"
+        },
+        {
+          "id": "bswf-eab12a6f92587e5c",
+          "family": "progressing_work",
+          "seed": 202611010000,
+          "repeat": 1,
+          "arm": "rules"
+        },
+        {
+          "id": "bswf-999327eaca4883ce",
+          "family": "progressing_work",
+          "seed": 202611010000,
+          "repeat": 1,
+          "arm": "base"
+        },
+        {
+          "id": "bswf-6b5e2f8e2db5a0b3",
+          "family": "progressing_work",
+          "seed": 202611010000,
+          "repeat": 1,
+          "arm": "continued_sft"
+        },
+        {
+          "id": "bswf-b44a136d616a842d",
+          "family": "progressing_work",
+          "seed": 202611010000,
+          "repeat": 1,
+          "arm": "observe"
+        },
+        {
+          "id": "bswf-c964906bd8930701",
+          "family": "source_binding",
+          "seed": 202611010006,
+          "repeat": 0,
+          "arm": "base"
+        },
+        {
+          "id": "bswf-94c620c42e9c1018",
+          "family": "source_binding",
+          "seed": 202611010006,
+          "repeat": 0,
+          "arm": "continued_sft"
+        },
+        {
+          "id": "bswf-ad81204014679614",
+          "family": "source_binding",
+          "seed": 202611010006,
+          "repeat": 0,
+          "arm": "observe"
+        },
+        {
+          "id": "bswf-499e7b269550daa6",
+          "family": "source_binding",
+          "seed": 202611010006,
+          "repeat": 0,
+          "arm": "rules"
+        },
+        {
+          "id": "bswf-b2d58fbc56d34c9f",
+          "family": "update_cycle",
+          "seed": 202611010007,
+          "repeat": 0,
+          "arm": "continued_sft"
+        },
+        {
+          "id": "bswf-a09a605e238e961d",
+          "family": "update_cycle",
+          "seed": 202611010007,
+          "repeat": 0,
+          "arm": "observe"
+        },
+        {
+          "id": "bswf-6131a20fd16d1c75",
+          "family": "update_cycle",
+          "seed": 202611010007,
+          "repeat": 0,
+          "arm": "rules"
+        },
+        {
+          "id": "bswf-461d02ed8ca7e045",
+          "family": "update_cycle",
+          "seed": 202611010007,
+          "repeat": 0,
+          "arm": "base"
+        },
+        {
+          "id": "bswf-a7a3b0beb3ccea5a",
+          "family": "recovered_history",
+          "seed": 202611010003,
+          "repeat": 1,
+          "arm": "observe"
+        },
+        {
+          "id": "bswf-ac91ac8be4f7d5fc",
+          "family": "recovered_history",
+          "seed": 202611010003,
+          "repeat": 1,
+          "arm": "rules"
+        },
+        {
+          "id": "bswf-97b85b444d4c0d22",
+          "family": "recovered_history",
+          "seed": 202611010003,
+          "repeat": 1,
+          "arm": "base"
+        },
+        {
+          "id": "bswf-6795ab0a628c12a7",
+          "family": "recovered_history",
+          "seed": 202611010003,
+          "repeat": 1,
+          "arm": "continued_sft"
+        }
+      ],
+      "campaign_stage": "completed",
+      "stop_reason": "Infrastructure failure or three consecutive pre-action provider rejections; preserve every attempt",
+      "infrastructure_failures": [
+        {
+          "id": "bswf-e587cb0721bd8468",
+          "kind": "unconfirmed_solver_transport"
+        }
+      ]
+    },
+    "ended_at": 1793081822.0565414
+  },
+  "r8_physics_transport_receipt": {
+    "status": "unknown",
+    "request_id": "34db54300d304aadb6a448108a64ab32",
+    "queued_at": 1793081395.9098122,
+    "name": "mesh_64",
+    "cells": 64,
+    "steps": 40,
+    "returncode": null,
+    "transport_status": "failed",
+    "transport_returncode": 255,
+    "transport_error_type": "RuntimeError",
+    "transport_ended_at": 1793081410.9492254,
+    "reconciliation_required": true
+  },
+  "route_reconciliation": {
+    "at": 1793084186.9274917,
+    "request_id": "34db54300d304aadb6a448108a64ab32",
+    "observations": [
+      {
+        "route": "direct",
+        "returncode": 0,
+        "seconds": 0.6106975078582764,
+        "stdout": "{\"host\": \"ca10411836e6\", \"request_directory_exists\": false, \"receipt\": null}\n",
+        "stderr": ""
+      },
+      {
+        "route": "proxy",
+        "returncode": 0,
+        "seconds": 0.6840245723724365,
+        "stdout": "{\"host\": \"ca10411836e6\", \"request_directory_exists\": false, \"receipt\": null}\n",
+        "stderr": ""
+      },
+      {
+        "route": "direct",
+        "returncode": 0,
+        "seconds": 0.6096231937408447,
+        "stdout": "{\"host\": \"ca10411836e6\", \"request_directory_exists\": false, \"receipt\": null}\n",
+        "stderr": ""
+      },
+      {
+        "route": "proxy",
+        "returncode": 0,
+        "seconds": 0.5407500267028809,
+        "stdout": "{\"host\": \"ca10411836e6\", \"request_directory_exists\": false, \"receipt\": null}\n",
+        "stderr": ""
+      }
+    ]
+  },
+  "reconciliation_interpretation": "Four successful read-only checks found no matching remote directory; original unknown receipt and unsuccessful assignment retained unchanged. These spot checks do not establish sustained route reliability.",
+  "post_collection_probe_checks": [
+    {
+      "policy": "continued_sft",
+      "maximum_probability_error": 1.896643408993981e-08
+    },
+    {
+      "policy": "continued_sft",
+      "maximum_probability_error": 2.8430518494992896e-08
+    },
+    {
+      "policy": "base",
+      "maximum_probability_error": 6.189326950956087e-08
+    }
+  ],
+  "resource_release": {
+    "stage": "released",
+    "at": 1793081864.0581734,
+    "reason": "operator_stop",
+    "balance": 1130.26
+  },
+  "owned_pid_exists": {
+    "3785675": false,
+    "3785676": false,
+    "3785681": false,
+    "3738622": false,
+    "3738684": false
+  },
+  "native_budget_summary": {
+    "native-budget-r7.json": {
+      "starts": 125,
+      "active": 0
+    },
+    "native-budget-r8.json": {
+      "starts": 38,
+      "active": 0
+    }
+  },
+  "local_resource_control_cleanup": {
+    "started_at": 1793082309.9454691,
+    "pid": 110491,
+    "endpoint": "gpu-a100-hm-ass1c0-1hzxh3w5vi3no",
+    "stage": "released",
+    "evidence": "Matching remote guard release receipt",
+    "task_cleanup_returncode": 0,
+    "ended_at": 1793082313.975614
+  }
+}

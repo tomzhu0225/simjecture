@@ -1,11 +1,51 @@
-# Base versus continued SFT: collection in progress
+# Base versus continued SFT: partial replication
 
-Snapshot: **2026-10-27 03:43 UTC**. Eighteen continuation episodes have completed;
+Latest collection stopped on **2026-10-27 at 06:17 UTC**. Across all phases,
+**38 of 64 original assignments were attempted: 34 verified and four affected by
+infrastructure failures**. Twenty-six original assignments remain unstarted.
+R8 contributed eight attempts, seven verified, before a P40 SSH connection
+timeout. Its audit reports zero consistency violations. The model runtime was
+released automatically; no collection is currently running.
+
+[The terminal evidence](replication-through-r8.json) retains all 38 audit records,
+the unchanged registered analysis, transport reconciliation and resource-release
+receipt. The [remaining assignment list](continuation-unstarted-after-r8.json)
+contains only the 26 unstarted IDs. It is prepared, not launched. Failed attempts
+will not be replayed or replaced.
+
+| Partial registered comparison: SFT minus baseline | All-attempt estimate | Interval | Whole-infrastructure-block sensitivity | Interval |
+|---|---:|---:|---:|---:|
+| Pretrained base | +7.6 s | −171.1 to +207.8 s (95%) | −12.4 s | −166.5 to +145.4 s (95%) |
+| Rules | −41.4 s | −184.9 to +77.5 s (97.5%) | −11.4 s | −137.7 to +107.9 s (97.5%) |
+| Worker only | −78.1 s | −225.0 to +73.0 s (97.5%) | −49.7 s | −190.5 to +104.9 s (97.5%) |
+
+Negative differences favor SFT. These estimates weight mechanism families equally,
+then repetitions within family, and use the registered hierarchical bootstrap.
+They measure restricted completion time, with unsuccessful attempts assigned
+650 seconds. The base comparison has ten paired attempts from seven families;
+the other two comparisons have nine pairs from six families. Unmatched records
+remain in the audit. The sensitivity excludes entire infrastructure-affected
+blocks 01, 08 and 10, leaving seven complete four-arm blocks from five families.
+It is conditional on those exclusions and does not replace the primary analysis.
+Every interval includes zero: this partial study establishes no overall advantage.
+
+For an accessible descriptive view, those seven unaffected blocks have mean
+verified times of **268.2 s SFT, 294.3 s base, 291.9 s rules and 322.7 s worker
+only**. These equally weighted episode means differ from the registered
+family-weighted estimates above. They are not the final 64-assignment result.
+All four arms verified in these seven blocks; this does not establish population
+equivalence in scientific quality. SFT admitted attention in two of five
+quiet-family episodes, which is an interruption proxy, not an adjudicated
+false-alert rate.
+
+## Earlier trace inspection
+
+Historical snapshot: **2026-10-27 03:43 UTC**. Eighteen continuation episodes had completed;
 all passed the frozen per-episode workflow, numerical and report verifiers.
 Together with the two preserved earlier attempts, these cover 20 of the original
 64 assignments. One earlier base attempt failed at its first provider call before
 any scientific action. It remains in the primary analysis. The full registered
-audit and comparisons await terminal collection; this is an interim inspection.
+audit and comparisons were pending at that snapshot; the newer partial audit is above.
 
 The exact adapter is the continued-SFT checkpoint behind the earlier 224-second
 mean. No new training, checkpoint selection or scientific-host change was made.
@@ -59,9 +99,9 @@ bug. The running study retains its registered fallback in every arm.
 
 The publication-retry gain is large enough to investigate seriously. The quiet
 results prevent treating those first favorable cases as a general SFT win.
-Continue all originally assigned cases under the fixed resource bounds, retain
-failures, and calculate the registered family/repetition comparisons only after
-collection stops. Equal observed verification counts will not prove population
+Continue only unstarted originally assigned cases under explicit resource bounds,
+retain failures, and preserve the registered family/repetition analysis. Equal
+observed verification counts will not prove population
 equivalence in scientific quality.
 
 A future prospective comparison should test whether inexpensive fixed early
@@ -79,12 +119,16 @@ The current comparison keeps those common instructions unchanged.
 
 ## Resource continuity
 
-Inference remains on the remote A100 and physics on the remote P40s. Local
+During collection, inference used the remote A100 and physics the remote P40s. Local
 control processes were lost in Windows/WSL restarts while remote collection
 continued. Credential renewal was restored before the remote guard's expiry
-cutoff. A temporary Windows task, `Simjecture-R7-20261027`, runs a bounded
-credential/release check every ten minutes, expires at 09:34:48 UTC, and is
-configured for automatic deletion one minute later. The check returns after
-renewal; superseded resident helper processes have been stopped. It adds no
-local model or simulation work.
-The remote guard retains the original continuation deadline and spending ceiling.
+cutoff. The temporary Windows control task was unregistered after observing the
+remote release receipt. The model runtime is released and the recorded study
+actors have exited. A continuation requires a new bounded lease; the old lease
+is not extended.
+
+Two separate local CPU plasma controls have passed the original numerical checks
+and closely reproduced the P40 references. This qualifies a numerical fallback
+for those small controls, not a commissioned remote-worker-to-local execution
+path. Training remains remote. See [the transport record](TRANSPORT_RECOVERY.md)
+for backend differences and resource measurements.

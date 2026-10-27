@@ -1,5 +1,31 @@
 # Preserved interruption and continuation on the original resource lease
 
+**Current status:** R8 has also stopped, after eight attempts and seven verified
+completions. The A100 was released at **2026-10-27 06:17:44 UTC**. Across all
+phases there are 38 attempted original IDs, 34 verified completions, four
+infrastructure failures and 26 unstarted IDs. The sections below retain the R7
+handoff history; they do not describe a currently running allocation.
+
+The R8 interruption was a connection timeout before the P40 SSH session was
+established, on continued-SFT assignment `bswf-e587cb0721bd8468`. The wrapper
+preserved request `34db54300d304aadb6a448108a64ab32` with an unknown execution
+receipt. Four subsequent read-only checks, alternating direct and existing proxy
+routes, found no matching remote job directory. All four checks succeeded in
+0.54–0.69 seconds. This is evidence of current reachability, not sustained
+reliability or a demonstrated proxy advantage. The unsuccessful assignment and
+its original receipt remain unchanged. No GPU hardware failure is established.
+
+The controller stopped further assignments, the audit found zero consistency
+violations, and the final three model probes remained within the original
+tolerance. The release guard exited after releasing its owned runtime; the local
+temporary Windows task then unregistered itself. See
+[the complete partial record](replication-through-r8.json). The next
+[assignment list](continuation-unstarted-after-r8.json) is prepared but not
+launched; it contains only the original 26 unstarted IDs and requires a new
+bounded inference lease and transport qualification.
+
+## Earlier R7 interruption
+
 R7 collection stopped after 28 attempts: 26 verified completions and two
 pre-submission transport failures. Together with the two earlier attempts, the
 original design then had 30 attempted IDs, 27 verified completions and three
@@ -96,7 +122,7 @@ The local executable reports `WarpX 26.08-86-g3555857d39a6-dirty` and
 `AMReX 26.08-36-gf2cbba4afc9e`; its exact binary hash is retained. This is a
 different executable from the P40 reference. The qualification covers only these
 two bounded controls, not arbitrary plasma studies or overall workflow speed.
-The running comparison still uses P40s. A remote-worker-to-local execution path
+The collected comparison used P40s. A remote-worker-to-local execution path
 has not been commissioned, so numerical agreement alone is not a tested drop-in
 backend. The exact qualification commands and original diagnostic function are
 retained in `local-physics-operations/`.
