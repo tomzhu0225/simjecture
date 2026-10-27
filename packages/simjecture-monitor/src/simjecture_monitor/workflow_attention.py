@@ -20,6 +20,15 @@ def digest(value):
     return hashlib.sha256(json.dumps(value, sort_keys=True).encode()).hexdigest()
 
 
+def duration_milliseconds(seconds):
+    if not isinstance(seconds, (int, float)) or isinstance(seconds, bool) or seconds < 0:
+        return None
+    try:
+        return round(seconds * 1000)
+    except (ValueError, OverflowError):
+        return None
+
+
 def observation(
     raw,
     *,
@@ -127,6 +136,14 @@ def observation(
         if host.get("pending_explicit_help")
         else "none"
     )
+    progress_seconds = telemetry.get("no_new_output_seconds")
+    progress_age_ms = duration_milliseconds(progress_seconds)
+    missing_channels = [] if telemetry else ["workflow_telemetry"]
+    if progress_seconds is not None and progress_age_ms is None:
+        # Legacy snapshots can capture `now` before a newly launched job stamps
+        # its latest progress. Preserve that raw evidence but do not invent an
+        # elapsed duration or abort the worker for this observer-only problem.
+        missing_channels.append("progress_age")
     return protocol.Observation(
         schema_version=protocol.VERSION,
         packet_id=f"packet-{sequence}-{digest(raw)[:16]}",
@@ -156,9 +173,7 @@ def observation(
             phase_elapsed_ms=max(0, round((wall_time - plan["started_at"]) * 1000))
             if plan.get("started_at") is not None
             else None,
-            progress_age_ms=round(telemetry["no_new_output_seconds"] * 1000)
-            if telemetry.get("no_new_output_seconds") is not None
-            else None,
+            progress_age_ms=progress_age_ms,
             heartbeat_age_ms=0 if public.get("process_alive") else None,
             quiet_state=quiet,
             quiet_remaining_ms=remaining,
@@ -172,7 +187,7 @@ def observation(
         questions=[],
         retrieval_history=[],
         retrieval_history_complete=True,
-        missing_channels=[] if telemetry else ["workflow_telemetry"],
+        missing_channels=missing_channels,
     )
 
 
