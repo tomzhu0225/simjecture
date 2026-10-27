@@ -76,8 +76,27 @@ the existing tolerance. [That check](portable-reload-evidence.json) advances
 release preparation; it is not a workflow-performance result.
 
 The user has also authorized local physics execution following a memory upgrade.
-The local WSL session currently exposes about 62 GiB, with about 55 GiB available,
-and an RTX 4000 Ada with about 20 GiB of device memory. Local capability descriptors
-refer to different WarpX builds, so a local substitute would require its own
-numerical qualification and explicit backend record. No local model training or
-physics execution was introduced for this recovery. Training remains on the A100.
+The local WSL session exposes about 62 GiB, with about 55 GiB available, and an
+RTX 4000 Ada with about 20 GiB of device memory. Training remains on the A100.
+
+A separate [local CPU qualification](local-physics-qualification.json) subsequently
+ran the same 64-cell/40-step and 128-cell/80-step controls using an existing
+one-dimensional executable. Both passed the unchanged field-error and charge
+checks. Absolute differences in relative field error were below `3.2e-16`,
+relative differences in the saved electric-field peak were below `2.3e-16`, and
+the physical times matched the retained P40 references exactly.
+
+The local solver launches took about 0.07 seconds each with two OpenMP threads.
+The solver processes peaked at about 41–43 MiB; the separate analysis process
+peaked at about 562 MiB. Each solver launch had an 8 GiB virtual-memory bound,
+60 CPU-second bound and a 90-second external wall timer with a kill grace period.
+These small controls did not require a rebuild, a GPU or a model load.
+
+The local executable reports `WarpX 26.08-86-g3555857d39a6-dirty` and
+`AMReX 26.08-36-gf2cbba4afc9e`; its exact binary hash is retained. This is a
+different executable from the P40 reference. The qualification covers only these
+two bounded controls, not arbitrary plasma studies or overall workflow speed.
+The running comparison still uses P40s. A remote-worker-to-local execution path
+has not been commissioned, so numerical agreement alone is not a tested drop-in
+backend. The exact qualification commands and original diagnostic function are
+retained in `local-physics-operations/`.
