@@ -4,8 +4,9 @@
 workflow advantage over the pretrained base and strong deployment comparators.
 The repeated-workflow study is collecting the remaining original assignments
 after an infrastructure interruption. No weight upload or public release is
-implied by this document. The pinned base declares Apache-2.0; distribution
-notice checks, a destination repository and write authentication remain pending.
+implied by this document. The pinned base declares Apache-2.0 and its distribution
+listing has been checked. Workflow validation, a portable runtime reload,
+a destination repository and write authentication remain pending.
 
 ## Identity and intended use
 
@@ -68,6 +69,14 @@ This candidate then received eight continued-SFT updates with learning rate
 SFT/RL experiment, not the RL checkpoint. The later live-state reviewer
 judgments and repeated-workflow outcomes have not been used to update it.
 
+The full training mixture and all scientific evaluation splits were rebuilt from
+the pinned source and match the original byte hashes. An audit found no identical
+compiled visible inputs or shared IDs between training, development and test.
+The training mixture has 5,506 distinct visible inputs among 5,520 rows. Its
+constructed mechanisms remain shared across splits; this is not task-disjoint
+generalization. See [the reproduction record](REPRODUCTION.md) for source,
+data and weight identities and the original training commands.
+
 ## Evaluation available so far
 
 | Measure | Pretrained base | Continued SFT |
@@ -121,15 +130,20 @@ off the disposable A100 runtime.
 The pinned base README declares Apache-2.0. Its `LICENSE` and `LICENSE-QWEN`
 files contain Apache License 2.0 with Shanghai AI Laboratory and Alibaba Cloud
 copyright notices, respectively. Their exact text and hashes are retained in
-[the license evidence](pinned-base-license-evidence.json). Checking the complete
-upstream distribution for additional notices and training-data provenance
-remains part of packaging; this metadata check alone does not complete release.
+[the license evidence](pinned-base-license-evidence.json). The complete pinned
+upstream listing contains no additional NOTICE or attribution file. Training-data
+provenance and exact split reproduction are recorded separately. These checks
+alone do not complete release.
+
+A portable candidate copy preserves the weight-file hash and changes only the
+base repository reference and pinned revision in its configuration. Its runtime
+reload remains unverified; the ongoing scientific study continues to use the
+original adapter and configuration.
 
 Before publishing, complete the registered workflow evidence and its
-infrastructure sensitivity analysis, finish attribution and data checks,
-package a portable adapter configuration without
-changing the weight tensors, and include exact input/compiler, training and
-evaluation manifests. Disclose the general regressions and observed attention
+infrastructure sensitivity analysis, include the checked notices, validate the
+portable adapter's reload without changing the weight tensors, and include exact
+input/compiler, training and evaluation manifests. Disclose the general regressions and observed attention
 errors. Publish only claims supported by that completed evidence.
 
 The [training/retention report](https://github.com/tomzhu0225/simjecture/blob/docs/scientific-attention-results/research/evaluations/scientific-attention-training-20261025/TRAINING_RESULTS.md),

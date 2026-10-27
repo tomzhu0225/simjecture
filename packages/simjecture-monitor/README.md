@@ -337,6 +337,30 @@ same normalized distribution. The default independent profile and general-task
 inputs remain unchanged. This removes impossible output combinations; it does
 not guarantee fewer false alerts or more useful interventions.
 
+## Portable adapter export
+
+`python -m simjecture_monitor.adapter_export` prepares a separate adapter directory
+without loading a model or touching a GPU. Supply the exact evaluated weight and
+configuration hashes; it rejects changed inputs, mutable base revisions and an
+existing output directory.
+
+```bash
+python -m simjecture_monitor.adapter_export \
+  --adapter /models/evaluated-adapter --output /release/adapter \
+  --base-model internlm/Intern-Decision-4B \
+  --revision 38c9dafbbef52dd04bae943c0c6ac918419adfd5 \
+  --expected-weights-sha256 EVALUATED_WEIGHTS_SHA256 \
+  --expected-config-sha256 EVALUATED_CONFIG_SHA256
+```
+
+It copies the weight file unchanged and updates only `base_model_name_or_path`
+and `revision` in the copied configuration. `adapter_export.json` records original
+and exported identities and leaves runtime reload and workflow release validation
+explicitly unverified. Complete those checks and supply the training provenance,
+model card and applicable notices before publishing. This command never uploads.
+The [candidate reproduction record](../../research/evaluations/live-state-learning-20261026/REPRODUCTION.md)
+documents the actual frozen data and adapter preparation.
+
 ## Follow-up reward design
 
 The [draft scientific attention interface](specs/scientific-attention-0.1-draft/README.md)
@@ -351,7 +375,8 @@ The separate [0.2 support and training-data draft](specs/scientific-attention-0.
 adds scoped knowledge lookup/literature review requests and retrieval history.
 Its reproducible 16,000-example synthetic curriculum teaches scripted procedural
 preferences; it contains no measured intervention utility or RL outcomes. LoRA
-can train on large datasets, but no new adapter has been trained on this contract.
+can train on large datasets. That interface-only release contained no newly
+trained adapter; the later training cycle below evaluates adaptation separately.
 
 The [prospective training cycle](../../research/evaluations/scientific-attention-training-20261025/PROTOCOL.md)
 adds a shared masked-decision compiler, supervised LoRA training, a measured-return

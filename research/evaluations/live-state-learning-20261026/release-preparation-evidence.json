@@ -1,0 +1,472 @@
+{
+  "prepared_at": 1793074342.9282172,
+  "release_status": "unpublished_candidate",
+  "runtime_reload_verified": false,
+  "workflow_release_gate": "pending",
+  "records": {
+    "SOURCE.json": {
+      "sha256": "165c8399a2cb42edecd5e40244d70e906bf93b068542ec43245ffa232dfc287c",
+      "value": {
+        "revision": "37f4773bee1af218c3687b2bdce5d9b2120ad875",
+        "archive_sha256": "382d5ca061575d8a2afc8b8f90db8e9343451930d1b9a245962e6203d9b9dea4",
+        "files_sha256": {
+          "NOTICE": "34c8e8b6319fb6d9c7df26fb424da5c9215548207683eaa9df89c47fe972cb3d",
+          "THIRD_PARTY_NOTICES.md": "a81007f987f9e693760afdae621fb9c5e6447671205ab6a88fedb9cdaf21cccb",
+          "LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+          "packages/simjecture-monitor/scripts/build_scientific_training.py": "a9ac8939d9b8d8a1bf529657ecdc6b328cf1fa33f5214a65dd3f57e56ba94d62",
+          "packages/simjecture-monitor/src/simjecture_monitor/decision_model.py": "25d83791c08a2b671dce5f0eff251c37eac159e231a80722e71979be2469552d",
+          "packages/simjecture-monitor/src/simjecture_monitor/model.py": "0932fe4ce41c293e8231f64c6ef1624891e71dbc1bb6d9356d04dd41e1fb648a",
+          "packages/simjecture-monitor/src/simjecture_monitor/reward.py": "8344c9e90d28e4e009896fe512f7eae3174f8349f31d665d8e4e4f4e80c05ec4",
+          "packages/simjecture-monitor/src/simjecture_monitor/ledger.py": "9ba801174ccc29caa7830967b0aac8960cf5400715e69da44229a657ef54f447",
+          "packages/simjecture-monitor/src/simjecture_monitor/accounting.py": "64daddd6b70fb57fe4dad0eef6b651335922f4739964cafd2cdfefddd90a064e",
+          "packages/simjecture-monitor/src/simjecture_monitor/synthetic_attention.py": "1d8195b63cd5515db270f0fd8c7165c7e076dbd84d31d1784c8b259335121674",
+          "packages/simjecture-monitor/src/simjecture_monitor/attention_contract.py": "5576fdd62e9b418214cfca19b1f8a5417d2e59a7f6f632918c9d6a02de1290e3",
+          "packages/simjecture-monitor/src/simjecture_monitor/decision_interface.py": "03c33560fda8a89d3ac63ded8ca6c0be6621b3f2aa70da94a3d0cc6065d6b115",
+          "packages/simjecture-monitor/src/simjecture_monitor/checks_policy.py": "809533fd1ae37b78d6d795fc3db3b35d386ae72031ae13e866704584d9534c76",
+          "packages/simjecture-monitor/src/simjecture_monitor/attention_support.py": "3ff8a395d8a8cd1cdb216be071e8610088f74994b69dd03cbc5942f9eebb61d0",
+          "packages/simjecture-monitor/src/simjecture_monitor/repair_roles.py": "ea83c40086fcc17a6ec9687e670cfcab5dc8f155382d6c24b66d9b4fb5d29456",
+          "packages/simjecture-monitor/src/simjecture_monitor/native_guard.py": "ae65e4d74b7c853b22c670b631f2aa370cc91f529b2f1d9212ab76038967f9da",
+          "packages/simjecture-monitor/src/simjecture_monitor/policy.py": "50a69650ed7de3fd45b0a0e0278761eea2e0977d1c1a3f58c74a9a28fe3627cc",
+          "packages/simjecture-monitor/src/simjecture_monitor/__init__.py": "8769e4a05daec354874894663bd2801db264954c908b427413ff4fcbac660479",
+          "packages/simjecture-monitor/src/simjecture_monitor/scientific_curriculum.py": "0450ac609fe57da9374a53c09f1f621aa1b29534f8fba80c53b0afa3ee608943",
+          "packages/simjecture-monitor/src/simjecture_monitor/host.py": "a127e7658a304e11ad9632ea953f239d71136c0638920c03e81ac20a013baa52",
+          "packages/simjecture-monitor/src/simjecture_monitor/feedback_audit.py": "9231d738cbf1092f3528a81ade139f7a405b8d5b0f97a68a898aa316996f3a60",
+          "packages/simjecture-monitor/src/simjecture_monitor/parked_wake.py": "ae067511656e67e5d579a982d05658aee42294820f916304227ed40c856a9956",
+          "packages/simjecture-monitor/src/simjecture_monitor/repair.py": "2c8f777630530e5aae20b9a435b1d15d4d01f319e68ba7871c0a71d9442f71a7",
+          "packages/simjecture-monitor/src/simjecture_monitor/kernels.py": "83b6d3ba2813ad883725be94e13477cd1db7b9ca2af9654e040b35fb10a936a1",
+          "packages/simjecture-monitor/src/simjecture_monitor/checkpoint.py": "34bff26048c2fbb8920590147c915d267bc1361bb1cda3f30666905d2cca6f5d",
+          "packages/simjecture-monitor/src/simjecture_monitor/state_policy.py": "2ba25d9f46e89d91be8023d2196c31b754fd9c51ceeb38e0b6bd8469cf1c7967",
+          "packages/simjecture-monitor/src/simjecture_monitor/attention_admission.py": "4c73bc15b9dd69b1f23c7f60605dca6fe69bd73b5172770e498927c3115f2b1a",
+          "packages/simjecture-monitor/src/simjecture_monitor/events.py": "c780b9881fe5d96a51c4cdf6a9834158d7c8e97a5ecb171b77c71bdd39176706",
+          "packages/simjecture-monitor/src/simjecture_monitor/generic_policy.py": "8a363baf733cbf02801484b24f72242ff30b7e8de75a1d99c37301718a234925",
+          "packages/simjecture-monitor/src/simjecture_monitor/completion_gate.py": "f11c52a394ed33996be1b1714744875df6bf5b27f684d7735df722ff3efc54e3",
+          "packages/simjecture-monitor/src/simjecture_monitor/startup.py": "346ca90c01bc8e0fc767cb4a063ed8a2cced82edfb30151da7ad07df5b60fa28",
+          "packages/simjecture-monitor/src/simjecture_monitor/server.py": "7dc3088545c8338163fd5ac8b3b0563f187e32b30c01a2d729bbfb3fcba12b44"
+        }
+      }
+    },
+    "STATUS.json": {
+      "sha256": "c8fe72fd3f6e16ccc12448c99ef235076c016f45fc686b5c0b88a501c376c998",
+      "value": {
+        "stage": "completed",
+        "pid": 3771455,
+        "started_at": 1793074038.8605878,
+        "data": "completed",
+        "adapter": "completed",
+        "ended_at": 1793074041.712937
+      }
+    },
+    "reproduced-data/REPRODUCED.json": {
+      "sha256": "9b4c1f30747e1afe631c464c1460dbbfcb86b3118c651b4cc9c863e5d5eab0ee",
+      "value": {
+        "recipe_source_revision": "37f4773bee1af218c3687b2bdce5d9b2120ad875",
+        "source_package_files": {
+          "src/simjecture_monitor/__init__.py": "8769e4a05daec354874894663bd2801db264954c908b427413ff4fcbac660479",
+          "src/simjecture_monitor/accounting.py": "64daddd6b70fb57fe4dad0eef6b651335922f4739964cafd2cdfefddd90a064e",
+          "src/simjecture_monitor/attention_admission.py": "4c73bc15b9dd69b1f23c7f60605dca6fe69bd73b5172770e498927c3115f2b1a",
+          "src/simjecture_monitor/attention_contract.py": "5576fdd62e9b418214cfca19b1f8a5417d2e59a7f6f632918c9d6a02de1290e3",
+          "src/simjecture_monitor/attention_support.py": "3ff8a395d8a8cd1cdb216be071e8610088f74994b69dd03cbc5942f9eebb61d0",
+          "src/simjecture_monitor/checkpoint.py": "34bff26048c2fbb8920590147c915d267bc1361bb1cda3f30666905d2cca6f5d",
+          "src/simjecture_monitor/checks_policy.py": "809533fd1ae37b78d6d795fc3db3b35d386ae72031ae13e866704584d9534c76",
+          "src/simjecture_monitor/completion_gate.py": "f11c52a394ed33996be1b1714744875df6bf5b27f684d7735df722ff3efc54e3",
+          "src/simjecture_monitor/decision_interface.py": "03c33560fda8a89d3ac63ded8ca6c0be6621b3f2aa70da94a3d0cc6065d6b115",
+          "src/simjecture_monitor/decision_model.py": "25d83791c08a2b671dce5f0eff251c37eac159e231a80722e71979be2469552d",
+          "src/simjecture_monitor/events.py": "c780b9881fe5d96a51c4cdf6a9834158d7c8e97a5ecb171b77c71bdd39176706",
+          "src/simjecture_monitor/feedback_audit.py": "9231d738cbf1092f3528a81ade139f7a405b8d5b0f97a68a898aa316996f3a60",
+          "src/simjecture_monitor/generic_policy.py": "8a363baf733cbf02801484b24f72242ff30b7e8de75a1d99c37301718a234925",
+          "src/simjecture_monitor/host.py": "a127e7658a304e11ad9632ea953f239d71136c0638920c03e81ac20a013baa52",
+          "src/simjecture_monitor/kernels.py": "83b6d3ba2813ad883725be94e13477cd1db7b9ca2af9654e040b35fb10a936a1",
+          "src/simjecture_monitor/ledger.py": "9ba801174ccc29caa7830967b0aac8960cf5400715e69da44229a657ef54f447",
+          "src/simjecture_monitor/model.py": "0932fe4ce41c293e8231f64c6ef1624891e71dbc1bb6d9356d04dd41e1fb648a",
+          "src/simjecture_monitor/native_guard.py": "ae65e4d74b7c853b22c670b631f2aa370cc91f529b2f1d9212ab76038967f9da",
+          "src/simjecture_monitor/parked_wake.py": "ae067511656e67e5d579a982d05658aee42294820f916304227ed40c856a9956",
+          "src/simjecture_monitor/policy.py": "50a69650ed7de3fd45b0a0e0278761eea2e0977d1c1a3f58c74a9a28fe3627cc",
+          "src/simjecture_monitor/repair.py": "2c8f777630530e5aae20b9a435b1d15d4d01f319e68ba7871c0a71d9442f71a7",
+          "src/simjecture_monitor/repair_roles.py": "ea83c40086fcc17a6ec9687e670cfcab5dc8f155382d6c24b66d9b4fb5d29456",
+          "src/simjecture_monitor/reward.py": "8344c9e90d28e4e009896fe512f7eae3174f8349f31d665d8e4e4f4e80c05ec4",
+          "src/simjecture_monitor/scientific_curriculum.py": "0450ac609fe57da9374a53c09f1f621aa1b29534f8fba80c53b0afa3ee608943",
+          "src/simjecture_monitor/server.py": "7dc3088545c8338163fd5ac8b3b0563f187e32b30c01a2d729bbfb3fcba12b44",
+          "src/simjecture_monitor/startup.py": "346ca90c01bc8e0fc767cb4a063ed8a2cced82edfb30151da7ad07df5b60fa28",
+          "src/simjecture_monitor/state_policy.py": "2ba25d9f46e89d91be8023d2196c31b754fd9c51ceeb38e0b6bd8469cf1c7967",
+          "src/simjecture_monitor/synthetic_attention.py": "1d8195b63cd5515db270f0fd8c7165c7e076dbd84d31d1784c8b259335121674"
+        },
+        "scientific_splits": {
+          "train": {
+            "groups": 256,
+            "seed": 202610250000,
+            "wording": 0,
+            "sha256": "ac1074af55dcfe47dc5b2d9210e7e13961f93dfebc8e59987c1c7cfa95be153f"
+          },
+          "development": {
+            "groups": 32,
+            "seed": 202610260000,
+            "wording": 1,
+            "sha256": "9feca2b1f24b3714e80949211759968ed118854ab9ffd573a617de56a400d9b4"
+          },
+          "test": {
+            "groups": 64,
+            "seed": 202610270000,
+            "wording": 2,
+            "sha256": "006dc11cafed9b33122a6f477ac2adc4aeea1fccb252b6a28ebdcc6feb9e7a4e"
+          }
+        },
+        "training_mixture": {
+          "rows": 5520,
+          "counts": {
+            "science": 4096,
+            "procedural": 400,
+            "general_rehearsal": 1024
+          },
+          "unique_inputs": 5506,
+          "seed": 20261025,
+          "sha256": "af040302d72ec38c1ce29e73b0cf0bf1809bec072baff5d8db5cb3f8ee160756",
+          "sources": {
+            "/home/simjecture/investigations/scientific-attention-20261025/release-preparation/reproduced-data/data/scientific-train.jsonl": "ac1074af55dcfe47dc5b2d9210e7e13961f93dfebc8e59987c1c7cfa95be153f",
+            "/home/simjecture/investigations/scientific-attention-20261025/release-preparation/reproduced-data/data/procedural-train.jsonl": "ab25a78c34441e5661943c6a8305f4ca1227f06084bcfa5be1bbcbb1a77580a0"
+          },
+          "scope": "Supervised preferences and independently constructed rehearsal; no public test data or RL utility labels"
+        },
+        "scope": "Byte-identical constructed data; development/test splits remain optimizer-excluded"
+      }
+    },
+    "candidate-continued-sft/adapter_export.json": {
+      "sha256": "a5be30fab38dc57d099a7d7e7a87c48c580011fc9a8b747d62b06a4909104e38",
+      "value": {
+        "schema": "simjecture.adapter-export.v1",
+        "base_model": "internlm/Intern-Decision-4B",
+        "base_revision": "38c9dafbbef52dd04bae943c0c6ac918419adfd5",
+        "original_adapter_sha256": {
+          "adapter_model.safetensors": "76bf1bdf4c6d6a261211057d3cab4c8609131788827569f9c33f802d3491dab5",
+          "adapter_config.json": "5ab93c62a751ccfe082c88caabd6c40c064d04442e3b1e164387690af6e8ba6a"
+        },
+        "files": {
+          "adapter_model.safetensors": {
+            "sha256": "76bf1bdf4c6d6a261211057d3cab4c8609131788827569f9c33f802d3491dab5",
+            "bytes": 129934448
+          },
+          "adapter_config.json": {
+            "sha256": "f4f837242ce1749736b833544fdcc6c584a80f75ffc886eaaaea8a39eac7c132",
+            "bytes": 1293
+          }
+        },
+        "configuration_changes": {
+          "base_model_name_or_path": {
+            "before": "/root/.cache/huggingface/hub/models--internlm--Intern-Decision-4B/snapshots/38c9dafbbef52dd04bae943c0c6ac918419adfd5",
+            "after": "internlm/Intern-Decision-4B"
+          },
+          "revision": {
+            "before": null,
+            "after": "38c9dafbbef52dd04bae943c0c6ac918419adfd5"
+          }
+        },
+        "validation": {
+          "weight_bytes_preserved": true,
+          "runtime_reload_verified": false,
+          "workflow_release_gate": "not_assessed"
+        },
+        "scope": "Portable adapter files only; runtime probes, provenance and release validation remain separate"
+      }
+    },
+    "data-provenance-audit-v2.json": {
+      "sha256": "3c0ea7ea5db684d3a535badc62248ce6d7c77a80921469185c53f876b9e95618",
+      "value": {
+        "inputs_sha256": {
+          "mixture/train.jsonl": "af040302d72ec38c1ce29e73b0cf0bf1809bec072baff5d8db5cb3f8ee160756",
+          "data/scientific-development.jsonl": "9feca2b1f24b3714e80949211759968ed118854ab9ffd573a617de56a400d9b4",
+          "data/scientific-test.jsonl": "006dc11cafed9b33122a6f477ac2adc4aeea1fccb252b6a28ebdcc6feb9e7a4e"
+        },
+        "splits": {
+          "train": {
+            "rows": 5520,
+            "unique_prompts": 5506,
+            "origins": {
+              "constructed": 5120,
+              "synthetic": 400
+            },
+            "generators": {
+              "scientific-consistency-v1": 4096,
+              "scripted-context-variants-v1": 400,
+              "general-rehearsal-v1": 1024
+            },
+            "label_sources": {
+              "authored_scientific_contract_preference": 4096,
+              "scripted_preference_from_visible_state": 400,
+              "explicit_routing_and_priority_contract": 1024
+            },
+            "families": {
+              "dimensional_reporting": 512,
+              "negative_control": 512,
+              "progress_trend": 512,
+              "source_identity": 512,
+              "acceptance_threshold": 512,
+              "protected_receipt": 512,
+              "retrieval_applicability": 512,
+              "quiet_progress": 512,
+              "quiet_active": 25,
+              "quiet_just_ended": 25,
+              "persistent_silence": 25,
+              "missing_telemetry": 25,
+              "lookup_needed": 25,
+              "lookup_active": 25,
+              "lookup_recent_no_match": 25,
+              "lookup_recent_matches": 25,
+              "lookup_stale": 25,
+              "lookup_context_changed": 25,
+              "lookup_failed_cooldown": 25,
+              "literature_active": 25,
+              "literature_recent": 25,
+              "question_resolved": 25,
+              "measurement_disagreement": 25,
+              "receipt_disagreement": 25,
+              "null": 1024
+            }
+          },
+          "development": {
+            "rows": 512,
+            "unique_prompts": 512,
+            "origins": {
+              "constructed": 512
+            },
+            "generators": {
+              "scientific-consistency-v1": 512
+            },
+            "label_sources": {
+              "authored_scientific_contract_preference": 512
+            },
+            "families": {
+              "dimensional_reporting": 64,
+              "negative_control": 64,
+              "progress_trend": 64,
+              "source_identity": 64,
+              "acceptance_threshold": 64,
+              "protected_receipt": 64,
+              "retrieval_applicability": 64,
+              "quiet_progress": 64
+            }
+          },
+          "test": {
+            "rows": 1024,
+            "unique_prompts": 1024,
+            "origins": {
+              "constructed": 1024
+            },
+            "generators": {
+              "scientific-consistency-v1": 1024
+            },
+            "label_sources": {
+              "authored_scientific_contract_preference": 1024
+            },
+            "families": {
+              "dimensional_reporting": 128,
+              "negative_control": 128,
+              "progress_trend": 128,
+              "source_identity": 128,
+              "acceptance_threshold": 128,
+              "protected_receipt": 128,
+              "retrieval_applicability": 128,
+              "quiet_progress": 128
+            }
+          }
+        },
+        "overlaps": {
+          "train_development": {
+            "id_overlap": 0,
+            "visible_input_overlap_rows": 0,
+            "overlap_families": {},
+            "overlap_rows": []
+          },
+          "train_test": {
+            "id_overlap": 0,
+            "visible_input_overlap_rows": 0,
+            "overlap_families": {},
+            "overlap_rows": []
+          },
+          "development_test": {
+            "id_overlap": 0,
+            "visible_input_overlap_rows": 0,
+            "overlap_families": {},
+            "overlap_rows": []
+          }
+        },
+        "scope": "Exact compiled visible-message identity only; shared templates and mechanisms remain, so this does not establish semantic or task-disjoint generalization"
+      }
+    },
+    "upstream-distribution.json": {
+      "sha256": "ef0361c75335fdc4025de97243e3b19fdaa377f3ea538c79c765035162dae703",
+      "value": {
+        "at": 1793074081.8550696,
+        "repository": "internlm/Intern-Decision-4B",
+        "revision": "38c9dafbbef52dd04bae943c0c6ac918419adfd5",
+        "pages": [
+          {
+            "url": "https://huggingface.co/api/models/internlm/Intern-Decision-4B/tree/38c9dafbbef52dd04bae943c0c6ac918419adfd5?recursive=true&expand=false",
+            "sha256": "d9621239b1b94e33064724dc190078edda6f59ed15a8cfaf274d3b1a4bc08ded"
+          }
+        ],
+        "entries": [
+          {
+            "type": "file",
+            "oid": "12531084461a17a1f80b27f12765195de12d66af",
+            "size": 102,
+            "path": ".gitattributes"
+          },
+          {
+            "type": "file",
+            "oid": "1c1c160c3af8a3d18b039efc1f9ed2021699ef5f",
+            "size": 11558,
+            "path": "LICENSE"
+          },
+          {
+            "type": "file",
+            "oid": "f938136e3adacfd92be087f6e113b5d6d97f678f",
+            "size": 11544,
+            "path": "LICENSE-QWEN"
+          },
+          {
+            "type": "file",
+            "oid": "6b674781248eab7a6e58c8742be897127a903b32",
+            "size": 10200,
+            "path": "README.md"
+          },
+          {
+            "type": "file",
+            "oid": "ba128ef8a099bf93a90870440818b6b467bb5f22",
+            "size": 928,
+            "path": "added_tokens.json"
+          },
+          {
+            "type": "file",
+            "oid": "a585dec894e63da457d9440ec6aa7caa16d20860",
+            "size": 7756,
+            "path": "chat_template.jinja"
+          },
+          {
+            "type": "file",
+            "oid": "557d961b205319c6a7da5f757f565b69b3967b7d",
+            "size": 3161,
+            "path": "config.json"
+          },
+          {
+            "type": "file",
+            "oid": "5061000eff5444abda26418a4646253e745d9c2a",
+            "size": 16256,
+            "path": "inference.py"
+          },
+          {
+            "type": "file",
+            "oid": "f08945b961d2ec392da209998b51d931f1194f4c",
+            "size": 3353273,
+            "path": "merges.txt"
+          },
+          {
+            "type": "file",
+            "oid": "066c0c4e596dcaeb45c5bc8922f5f9b66c0c1d76",
+            "size": 4259095264,
+            "lfs": {
+              "oid": "ea71a535feda64b433d048d8d773637d9b1e5f317b832af531c70221159770ac",
+              "size": 4259095264,
+              "pointerSize": 135
+            },
+            "xetHash": "9dd6c2bc4b693b0015a63450ade12e89cfa633b9ba20543a9e8b18d767dd9f69",
+            "path": "model-language-0001-save_rank0.safetensors"
+          },
+          {
+            "type": "file",
+            "oid": "aedf4b2029da298800144e9dc4813bbb7b644934",
+            "size": 4152470040,
+            "lfs": {
+              "oid": "c0a64383b5e5ca18c1086135dba5ee123a6c203ad86ffa4a08bdb9107ef61d6e",
+              "size": 4152470040,
+              "pointerSize": 135
+            },
+            "xetHash": "b832f9f2eafba98f30fa14f3dc643d3d4c812f4b86555c61c9d3d1c7584c0a91",
+            "path": "model-language-0002-save_rank0.safetensors"
+          },
+          {
+            "type": "file",
+            "oid": "22bf8609c1e9bf92ef0dedb4169ef469b20e0c2a",
+            "size": 54543992,
+            "lfs": {
+              "oid": "a918679313b12c1d31659cd3b492e8be53c616217c2f7ec658ed7f0fdfa22ee0",
+              "size": 54543992,
+              "pointerSize": 133
+            },
+            "xetHash": "5c29fa125baa6e882893196f69318c98b69acb62d894ac75752e47e2edeccbf1",
+            "path": "model-projector-0001-save_rank0.safetensors"
+          },
+          {
+            "type": "file",
+            "oid": "2763caa192490c9e1676a49154eaa0227ec09b37",
+            "size": 612517440,
+            "lfs": {
+              "oid": "cf1793360eb8e8f1de0678df1a4c8b0b9042ae79e618aff1fa24c30f3b41b233",
+              "size": 612517440,
+              "pointerSize": 134
+            },
+            "xetHash": "6aacaec56d931e42f6edc5950d229b207dc7f56f5eebacd625918ebe32079126",
+            "path": "model-vision-0001-save_rank0.safetensors"
+          },
+          {
+            "type": "file",
+            "oid": "10c936ae6c369751149db632e3238bef3fe1ce12",
+            "size": 75719,
+            "path": "model.safetensors.index.json"
+          },
+          {
+            "type": "file",
+            "oid": "2ea84a437d448ff71b08df68fdd949d5cc4ebb64",
+            "size": 390,
+            "path": "preprocessor_config.json"
+          },
+          {
+            "type": "file",
+            "oid": "5139e110eba8bc04676268fb6f3c6eb5464cecf3",
+            "size": 69,
+            "path": "requirements.txt"
+          },
+          {
+            "type": "file",
+            "oid": "0195db277ac22bceeef8fe850d5496087a159eac",
+            "size": 735,
+            "path": "special_tokens_map.json"
+          },
+          {
+            "type": "file",
+            "oid": "24e9039cb9d37c0d4bd9e263f46694ef12814a39",
+            "size": 19989530,
+            "lfs": {
+              "oid": "94a639c4b33b192cc5a22cd3d7f0aaf6d97efa9577957a0382b55292ca4f0f00",
+              "size": 19989530,
+              "pointerSize": 133
+            },
+            "xetHash": "d29a95186d667726ac48ce25be7a995be0d3537b393ae65e2ec5ea2139058b1b",
+            "path": "tokenizer.json"
+          },
+          {
+            "type": "file",
+            "oid": "6fb6abc18754fa46ca33a8bb43aac3b3294850ad",
+            "size": 7291,
+            "path": "tokenizer_config.json"
+          },
+          {
+            "type": "file",
+            "oid": "3ba673a5ad7d4d13f54155ecd38b2a94a6dac8fe",
+            "size": 385,
+            "path": "video_preprocessor_config.json"
+          },
+          {
+            "type": "file",
+            "oid": "b94df23d650b0c60a2264d9de779cb3b7fb8570c",
+            "size": 5234494,
+            "path": "vocab.json"
+          }
+        ],
+        "additional_notices": {}
+      }
+    }
+  },
+  "preparation_environment": {
+    "python": "3.12.14",
+    "pydantic": "2.14.1"
+  }
+}

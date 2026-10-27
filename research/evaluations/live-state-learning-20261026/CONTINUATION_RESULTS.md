@@ -76,7 +76,9 @@ not an adjudicated false-alert rate.
 Inference remains on the remote A100 and physics on the remote P40s. Local
 control processes were lost in Windows/WSL restarts while remote collection
 continued. Credential renewal was restored before the remote guard's expiry
-cutoff. A temporary Windows task, `Simjecture-R7-20261027`, now restarts only the
-bounded control helper if needed, expires at 09:34:48 UTC, and is configured for
-automatic deletion one minute later. It adds no local model or simulation work.
+cutoff. A temporary Windows task, `Simjecture-R7-20261027`, runs a bounded
+credential/release check every ten minutes, expires at 09:34:48 UTC, and is
+configured for automatic deletion one minute later. The check returns after
+renewal; superseded resident helper processes have been stopped. It adds no
+local model or simulation work.
 The remote guard retains the original continuation deadline and spending ceiling.
