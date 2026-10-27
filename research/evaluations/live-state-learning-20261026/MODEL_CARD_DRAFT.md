@@ -2,9 +2,9 @@
 
 **Unpublished release draft.** This candidate has not established a reliable
 workflow advantage over the pretrained base and strong deployment comparators.
-The repeated-workflow study has audited 38 of 64 original assignments;
-the remaining 26 are being collected in a separate continuation after
-infrastructure interruptions. No weight upload or
+The repeated-workflow study has audited 47 of 64 original assignments;
+17 remain unstarted after infrastructure interruptions. The latest runtime
+has been released. No weight upload or
 public release is implied by this document. The pinned base declares Apache-2.0 and its distribution
 listing has been checked. The portable adapter passed a fresh A100 reload.
 Workflow validation, final release documentation, a destination repository and

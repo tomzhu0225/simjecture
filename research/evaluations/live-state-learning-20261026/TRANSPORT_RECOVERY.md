@@ -1,5 +1,16 @@
 # Preserved transport interruptions and bounded continuations
 
+**Latest state:** R9 stopped after nine verified workflows when a read-only
+connection check failed before starting the next assignment. The A100 was
+released at **2026-10-27 08:39:51 UTC**. All native roles are closed; the temporary
+Windows task and local failsafe are absent. The original cohort has 47 recorded
+attempts, 43 verified completions, four earlier infrastructure failures and 17
+unstarted IDs. The failed readiness check is not an additional scientific
+attempt. [The terminal evidence](replication-through-r9.json) preserves its exit
+code, a later successful read-only check, the audit and cleanup. Stderr was not
+retained, so the precise SSH cause is unknown. The exception skipped R9's final
+model-probability probes; only its initial probability qualification is verified.
+
 **Audited R8 status:** R8 also stopped, after eight attempts and seven verified
 completions. The A100 was released at **2026-10-27 06:17:44 UTC**. Across all
 phases there are 38 attempted original IDs, 34 verified completions, four
@@ -23,8 +34,8 @@ temporary Windows task then unregistered itself. See
 [assignment list](continuation-unstarted-after-r8.json) contains only the original
 26 unstarted IDs. A new bounded inference lease and transport qualification have
 now been established for R9, whose separate manifest governs their resumed
-execution. Its new model runtime is active; the R8 release receipt applies only
-to the earlier allocation.
+execution. That R9 runtime has now also been released as described above; each
+release receipt applies only to its own allocation.
 
 ## R9: retry connection establishment, preserve submitted jobs
 

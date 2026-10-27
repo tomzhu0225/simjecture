@@ -1,13 +1,31 @@
 # Base versus continued SFT: partial replication
 
-Latest fully audited collection stopped on **2026-10-27 at 06:17 UTC**. Through R8,
+**Current status:** R9 completed nine additional workflows, all verified, then
+stopped when a read-only P40 readiness check failed before the next assignment.
+No additional scientific attempt failed. There are now **47 recorded original
+outcomes: 43 verified and four earlier infrastructure failures; 17 IDs remain
+unstarted**. The runtime was released at **2026-10-27 08:39:51 UTC**, and its
+temporary local control task and failsafe have exited. No collection is running.
+
+[The terminal R9 audit](replication-through-r9.json) reports zero consistency
+violations. Its partial registered SFT-minus-base restricted-time estimate is
++28.5 seconds (95% interval −137.8 to +212.0). The original whole-infrastructure-block
+sensitivity gives −8.0 seconds (−137.1 to +121.5). Neither establishes an overall
+gain. The [17 remaining assignments](continuation-unstarted-after-r9.json) are
+prepared without replaying any attempted ID. The preflight retained exit code
+255 but discarded stderr, so its exact cause is undetermined; a subsequent
+identical read-only check succeeded. The exception also skipped the final
+probability-probe section. Initial model qualification passed, but terminal R9
+probability qualification must not be claimed.
+
+Historical R8 collection stopped on **2026-10-27 at 06:17 UTC**. Through R8,
 **38 of 64 original assignments were attempted: 34 verified and four affected by
 infrastructure failures**. Twenty-six original assignments were then unstarted.
 R8 contributed eight attempts, seven verified, before a P40 SSH connection
 timeout. Its audit reports zero consistency violations. That model runtime was
 released automatically. R9 has since resumed the unstarted assignments on a
-fresh, separately bounded runtime; its pending outcomes are not included in the
-terminal R8 analysis below.
+fresh, separately bounded runtime and later stopped as described above. Its
+outcomes are not included in the historical R8 analysis below.
 
 [The terminal evidence](replication-through-r8.json) retains all 38 audit records,
 the unchanged registered analysis, transport reconciliation and resource-release
