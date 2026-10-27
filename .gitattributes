@@ -20,3 +20,6 @@ demos/flash_warpx_kinetic_patch/continuation_record/** -text -whitespace
 # Fresh v0.7.0 receipts, sources and native logs are immutable audit bytes.
 demos/resistive_mhd_island_coalescence/fresh_v070_record/** -text -whitespace
 demos/flash_warpx_kinetic_patch/fresh_v070_record/** -text -whitespace
+
+# Preserve the recorded attention-study table, including its CSV line endings.
+research/evaluations/monitor-paired-20261024/paired-values.csv -text -whitespace

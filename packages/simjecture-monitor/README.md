@@ -11,6 +11,27 @@ The package depends on a Simjecture checkout containing the helper workflow from
 integration, with its own evaluation driver; it does not enable monitoring or
 self-modification in ordinary production studies.
 
+## Development branch
+
+`research/monitor-coprocessor` is the canonical integration branch for this
+package. [PR 46](https://github.com/tomzhu0225/simjecture/pull/46) remains the
+umbrella draft against `main`. Target new monitor-specific fixes and experiments
+at this branch; extract independently useful production changes into separate
+PRs against `main`.
+
+The integrated history retains the original commits from PRs 61–70, 72 and 73:
+admission and repair fixes, remote execution accounting, measured-wait and
+parked-workflow return collection, constrained decisions, fresh snapshots and
+the completed training/workflow reports. Integration does not rerun or requalify
+those experiments. Reproduce a recorded study using its pinned source and
+protocol; the current branch includes changes made after those frozen runs.
+
+The [training and workflow results](../../research/evaluations/scientific-attention-training-20261025/WORKFLOW_RESULTS.md)
+and [parked-workflow commissioning](../../research/evaluations/parked-return-training-20261026/RESULTS.md)
+retain their original limitations. This branch is optional research
+infrastructure; it does not establish an RL advantage, calibrated false-alert
+rates, or a production monitoring release.
+
 See the [overnight results and limitations](../../research/evaluations/monitor-coprocessor-20261023/RESULTS.md)
 for the real-worker comparison, sampled-return update and fresh base/adapter
 evaluation. The experiments establish a working integration, not an advantage
