@@ -82,6 +82,21 @@ This is one new execution, not evidence of a model effect. It belongs to block 1
 which remains excluded from the registered infrastructure sensitivity because of
 the earlier SFT transport failure.
 
+At **2026-10-27 08:34 UTC**, eight R9 workflows had completed and passed their
+per-workflow verifiers. Their controller receipts match their final outcomes,
+quality receipts match, and their native starts are closed. Together with the
+retained earlier attempts, this gives **46 recorded outcomes: 42 verified and four
+infrastructure failures**. This inspection is not the terminal campaign audit;
+R9 is still collecting. [The eight outcomes and actual attention/return records](continuation-r9-interim-evidence.json)
+are retained without recomputing or selecting a new model.
+
+The newly completed four-arm artifact-consumer block took 337.3 seconds with SFT,
+323.3 with base, 349.4 with rules and 341.6 with worker-only execution. All four
+verified. SFT, rules and worker-only used five native starts; base used four.
+SFT and rules each dispatched one automatic request. This block provides no
+SFT timing advantage over base. The registered overall comparison awaits all
+original assignments, with this block retained alongside favorable cases.
+
 ## Earlier trace inspection
 
 Historical snapshot: **2026-10-27 03:43 UTC**. Eighteen continuation episodes had completed;

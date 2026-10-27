@@ -1,0 +1,22 @@
+{
+  "prepared_at": 1793088319.176206,
+  "execution_started": false,
+  "plan_sha256": "7456d0f0620d17039f3d62db8960cf5810248bfbbc53d36a4f6c0317f87b2f06",
+  "scientific_source_revision": "45f0204061ef44d8b9c974c3d5d85a2c7fe5c8f1",
+  "source_files_verified": true,
+  "real_predecessor_check": {
+    "source": "replication-through-r8.json",
+    "started": 38,
+    "planned": 64,
+    "owned_runtime_released": true,
+    "launch_permitted": false,
+    "reason": "Original comparison is incomplete or has audit violations"
+  },
+  "scope": "Prepared commissioning only; current R9 remains collecting and no follow-up workers or model calls were started",
+  "verified_source_files": 537,
+  "operator_tools_verified": true,
+  "tests": {
+    "selected_passed": 22,
+    "scope": "Planner/auditor, failed-runner preservation, prompt and routine-policy checks; no native scientific qualification"
+  }
+}

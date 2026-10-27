@@ -59,6 +59,16 @@ The 26 assignments, 55-compute-unit ceiling, 15:21:17 UTC hard stop and remainin
 and launch evidence. The local CPU qualification remains a numerical fallback;
 it has not been substituted into the original cohort.
 
+The inference SSH connection subsequently exited between assignments. Its
+supervisor established a replacement **37.3 seconds** after the old connection
+ended, within the existing 90-second inter-workflow gap. Collection continued
+with no extra failed assignment at that interruption. The connection identities
+and timings are in [the R9 interim evidence](continuation-r9-interim-evidence.json).
+No timed model request was active at that point; this does not demonstrate an
+in-flight recovery within the unchanged 25-second host request bound. The earlier
+forced in-flight qualification remains evidence for its tested instance, not a
+guarantee for every future outage.
+
 ## Earlier R7 interruption
 
 R7 collection stopped after 28 attempts: 26 verified completions and two

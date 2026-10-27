@@ -91,6 +91,62 @@ diagnostic assistance and protected-component repair. Check actual solver and
 report verification, explicit help/wait/return behavior, authority boundaries,
 and the one-request allowance before counting new comparative outcomes.
 
+### Prepared integration commission
+
+The [six-assignment manifest](followup-control-commission-manifest.json) now pins
+scientific source `45f0204061ef44d8b9c974c3d5d85a2c7fe5c8f1`, all 537 tracked
+regular files under its source/script/monitor-package directories, and the four
+new planning, execution and audit tools. It has not been executed. Every trial
+uses `task_protocol`; worker-only and routine-help arms each cover healthy
+progress, worker-owned unit conversion, and protected source binding. This is
+integration qualification on known mechanisms, not a model comparison or unseen
+scientific-task validation.
+
+`plan_control_commission.py` builds this plan directly from an immutable Git
+commit and refuses to overwrite an existing output. For example, from the
+repository root:
+
+```bash
+PYTHONPATH=packages/simjecture-monitor/src python \
+  packages/simjecture-monitor/scripts/plan_control_commission.py \
+  --source . --revision 45f0204061ef44d8b9c974c3d5d85a2c7fe5c8f1 \
+  --output /path/to/new-control-plan.json
+```
+
+`run_control_commission.py` supplies the bounded serial coordinator. Before
+creating a campaign or calling a native worker, it requires a complete original
+comparison with no audit violations, closed prior native roles, and a release
+receipt for the prior owned model runtime. It checks both source and operator
+tool hashes and requires successful matched physics qualification of the chosen
+backend within the preceding 15 minutes. A terminal partial phase does not meet
+the completion requirement: the check rejected the actual 38-of-64 R8 record.
+[Preparation evidence](followup-control-preparation.json) retains that result.
+
+The separate proposed allowance is two hours and 73 native starts: one native
+authentication preflight plus at most 12 starts per workflow, with one workflow
+and at most six native roles active at a time. Native workers still use the
+large-model provider. No decision-model server, GPU allocation or optimizer
+update is part of this commission. The runner preserves the selected virtualenv
+interpreter path, reserves each attempted ID before launching its process, stops
+on an unsuccessful assignment, and retains its outcome and logs. Unstarted IDs
+remain unstarted even when outcome parsing or auditing fails.
+
+After execution, the pinned ordinary workflow auditor checks numerical/report
+completion and artifact consistency. `audit_control_commission.py` additionally
+binds the actual prompt-mode receipt to the task and renderer hashes. It checks
+the automatic-dispatch allowance and required-feedback reconciliation. At least
+one actual routine expert dispatch, an acknowledged help return, and a completed
+judge-authorized protected repair must have been exercised. A proposal, grant
+without deployment, or missing return cannot fill those coverage requirements.
+Missing coverage leaves commissioning incomplete; it is not evidence of benefit
+or a reason to fabricate an exercised path.
+
+Twenty-two selected tests pass, including the new planner/auditor and runner
+failure-path checks plus the existing prompt/routine-policy checks. The runner
+tests substitute local process doubles and do not claim native integration
+qualification. All outputs remain ineligible for optimization by default, and
+the ongoing original cohort has not loaded these tools or changed instructions.
+
 Then freeze a fresh assignment manifest, source revision, resource bounds and
 analysis before starting a comparison. Within a comparison, all policy arms must
 share the selected worker instructions. A causal comparison of the two instruction
