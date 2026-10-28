@@ -25,3 +25,29 @@ pre-decision counts. This audit creates neither training samples nor projected
 scientific outcomes. The next step is the [frozen live-observation label audit](PROTOCOL.md),
 followed by repeated real workflows and fresh validation. The previously
 proposed reward-to-go change is not being presented as a demonstrated remedy.
+
+
+## Return tradeoff in the completed C12/C13 commission
+
+The [six-episode commission](sampling-commission-c13-completed.json) gives mean
+utility 0.85960 for sampled SFT and 0.88462 for waiting under the unchanged
+registered reward. The sampled arm is 10.69 seconds faster on average but uses
+four more native starts in total. All six quality terms are one and feedback/
+duplicate terms are zero, so the negative utility difference is entirely the
+declared execution-cost tradeoff.
+
+The coefficient 0.02 per native start and time cost 0.1 per 650 seconds imply
+that one additional start requires 130 seconds saved to break even when all
+other terms match. Two extra roles therefore require 260 seconds saved. This is
+an explicit preference encoded by a research proxy, not a measured monetary
+exchange rate or evidence that the model is intrinsically worse. Preserve it for
+this cohort. Future reward experiments should declare their success/cost tradeoff
+prospectively and report verified quality, wall time and native usage separately,
+rather than changing coefficients after outcomes merely to obtain a positive score.
+
+In the healthy episode the positive sampled-minus-wait return difference is
+0.00245 despite neither arm dispatching automatic attention. That return would
+also credit eight rejected/pending wake proposals under an episodic estimator.
+This is another small-sample variance example; it does not make the likelihood-
+ratio estimator mathematically invalid. It reinforces the need for repeated
+controls and honest episode-level sample counts before optimizer updates.

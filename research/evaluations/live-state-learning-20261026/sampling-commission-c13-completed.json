@@ -1,0 +1,2889 @@
+{
+  "at": 1793186220.3010461,
+  "controller": {
+    "stage": "completed",
+    "started_at": 1793171286.1826596,
+    "model_identities": {
+      "continued_sft": {
+        "checkpoint_path": "/root/.cache/huggingface/hub/models--internlm--Intern-Decision-4B/snapshots/38c9dafbbef52dd04bae943c0c6ac918419adfd5",
+        "checkpoint_config_sha256": "ddc63e1c717afa86c865bb5e01313d89d72bb53b97ad4a8a03ba8510c0621670",
+        "adapter_files_sha256": {
+          "adapter_config.json": "5ab93c62a751ccfe082c88caabd6c40c064d04442e3b1e164387690af6e8ba6a",
+          "adapter_model.safetensors": "76bf1bdf4c6d6a261211057d3cab4c8609131788827569f9c33f802d3491dab5"
+        },
+        "runtime": {
+          "profile": "fla-prefill",
+          "fla_core": "0.6.0",
+          "adapter_source_sha256": "83b6d3ba2813ad883725be94e13477cd1db7b9ca2af9654e040b35fb10a936a1",
+          "convolution": "fla.modules.causal_conv1d:causal_conv1d; BCT/BTC layout adapter",
+          "scope": "Dense single-pass CUDA prefill, use_cache=False; no packed sequences"
+        }
+      }
+    },
+    "initial_qualification": [
+      {
+        "policy": "continued_sft",
+        "maximum_probability_error": 1.896643408993981e-08
+      },
+      {
+        "policy": "continued_sft",
+        "maximum_probability_error": 2.8430518494992896e-08
+      },
+      {
+        "policy": "base",
+        "maximum_probability_error": 6.189326950956087e-08
+      }
+    ],
+    "bridge_pid": 3954932,
+    "collector_pid": 3954933,
+    "collector_returncode": 0,
+    "final_qualification": [
+      {
+        "policy": "continued_sft",
+        "maximum_probability_error": 1.896643408993981e-08
+      },
+      {
+        "policy": "continued_sft",
+        "maximum_probability_error": 2.8430518494992896e-08
+      },
+      {
+        "policy": "base",
+        "maximum_probability_error": 6.189326950956087e-08
+      }
+    ],
+    "collection_export": {
+      "eligible": false,
+      "collection_verified": true,
+      "sampling_exercised": true,
+      "split": "commissioning",
+      "episodes": 6,
+      "sampled_decisions": 20,
+      "data": {
+        "path": "commissioning.jsonl",
+        "sha256": "ea13ec4de34e7a0fa00082fd0597db6d8718da317c09f856c0b18e10a4140e53"
+      },
+      "reason": "Commissioning is deliberately excluded from the optimizer"
+    },
+    "campaign_stage": "completed",
+    "unstarted_episodes": [],
+    "ended_at": 1793173773.6248548,
+    "native_starts": 26,
+    "native_active_at_finalization": 0
+  },
+  "campaign": {
+    "stage": "completed",
+    "started_at": 1793171616.912337,
+    "plan_sha256": "e9522e69325a76acc8c61a84d72b93427dbc5ad3d840c9f71f88161534b75148",
+    "model_identity": {
+      "checkpoint_path": "/root/.cache/huggingface/hub/models--internlm--Intern-Decision-4B/snapshots/38c9dafbbef52dd04bae943c0c6ac918419adfd5",
+      "checkpoint_config_sha256": "ddc63e1c717afa86c865bb5e01313d89d72bb53b97ad4a8a03ba8510c0621670",
+      "adapter_files_sha256": {
+        "adapter_config.json": "5ab93c62a751ccfe082c88caabd6c40c064d04442e3b1e164387690af6e8ba6a",
+        "adapter_model.safetensors": "76bf1bdf4c6d6a261211057d3cab4c8609131788827569f9c33f802d3491dab5"
+      },
+      "runtime": {
+        "profile": "fla-prefill",
+        "fla_core": "0.6.0",
+        "adapter_source_sha256": "83b6d3ba2813ad883725be94e13477cd1db7b9ca2af9654e040b35fb10a936a1",
+        "convolution": "fla.modules.causal_conv1d:causal_conv1d; BCT/BTC layout adapter",
+        "scope": "Dense single-pass CUDA prefill, use_cache=False; no packed sequences"
+      }
+    },
+    "blocks": [
+      {
+        "id": "configuration-3",
+        "started_at": 1793171617.8294153,
+        "results": [
+          {
+            "id": "episode-07fe40a4140d7a83",
+            "role": "sampled",
+            "replicate": 0,
+            "sampling_seed": 7849398355541762657,
+            "started_at": 1793171706.912978,
+            "plan_sha256": "e9522e69325a76acc8c61a84d72b93427dbc5ad3d840c9f71f88161534b75148",
+            "returncode": 0,
+            "stage": "completed",
+            "ended_at": 1793171973.641909
+          },
+          {
+            "id": "episode-28f3461d04ff7784",
+            "role": "wait",
+            "replicate": 0,
+            "sampling_seed": null,
+            "started_at": 1793172063.9043581,
+            "plan_sha256": "e9522e69325a76acc8c61a84d72b93427dbc5ad3d840c9f71f88161534b75148",
+            "returncode": 0,
+            "stage": "completed",
+            "ended_at": 1793172327.9368412
+          }
+        ],
+        "ended_at": 1793172328.0107388
+      },
+      {
+        "id": "configuration-1",
+        "started_at": 1793172329.4432602,
+        "results": [
+          {
+            "id": "episode-70eb7f84d678390c",
+            "role": "wait",
+            "replicate": 0,
+            "sampling_seed": null,
+            "started_at": 1793172417.9452012,
+            "plan_sha256": "e9522e69325a76acc8c61a84d72b93427dbc5ad3d840c9f71f88161534b75148",
+            "returncode": 0,
+            "stage": "completed",
+            "ended_at": 1793172587.0157042
+          },
+          {
+            "id": "episode-e685e628287c5a43",
+            "role": "sampled",
+            "replicate": 0,
+            "sampling_seed": 3558361207830416231,
+            "started_at": 1793172677.0160375,
+            "plan_sha256": "e9522e69325a76acc8c61a84d72b93427dbc5ad3d840c9f71f88161534b75148",
+            "returncode": 0,
+            "stage": "completed",
+            "ended_at": 1793172828.9277592
+          }
+        ],
+        "ended_at": 1793172828.928436
+      },
+      {
+        "id": "configuration-2",
+        "started_at": 1793172829.7373145,
+        "results": [
+          {
+            "id": "episode-4e07712d731e91ac",
+            "role": "wait",
+            "replicate": 0,
+            "sampling_seed": null,
+            "started_at": 1793172918.928082,
+            "plan_sha256": "e9522e69325a76acc8c61a84d72b93427dbc5ad3d840c9f71f88161534b75148",
+            "returncode": 0,
+            "stage": "completed",
+            "ended_at": 1793173308.2977595
+          },
+          {
+            "id": "episode-2306a14e4264b0a8",
+            "role": "sampled",
+            "replicate": 0,
+            "sampling_seed": 8593618109000519370,
+            "started_at": 1793173398.3108945,
+            "plan_sha256": "e9522e69325a76acc8c61a84d72b93427dbc5ad3d840c9f71f88161534b75148",
+            "returncode": 0,
+            "stage": "completed",
+            "ended_at": 1793173769.6886098
+          }
+        ],
+        "ended_at": 1793173769.6893196
+      }
+    ],
+    "ended_at": 1793173770.3351114,
+    "unstarted_blocks": [],
+    "unstarted_episodes": [],
+    "export": {
+      "eligible": false,
+      "collection_verified": true,
+      "sampling_exercised": true,
+      "split": "commissioning",
+      "episodes": 6,
+      "sampled_decisions": 20,
+      "data": {
+        "path": "commissioning.jsonl",
+        "sha256": "ea13ec4de34e7a0fa00082fd0597db6d8718da317c09f856c0b18e10a4140e53"
+      },
+      "reason": "Commissioning is deliberately excluded from the optimizer"
+    }
+  },
+  "guard": {
+    "stage": "released",
+    "at": 1793173808.0838594,
+    "reason": "operator_stop",
+    "balance": 1101.88
+  },
+  "native": {
+    "starts": 26,
+    "active": 0
+  },
+  "final_probes": [
+    {
+      "policy": "continued_sft",
+      "maximum_probability_error": 1.896643408993981e-08,
+      "reference_prompt_sha256": "361d970450af495a4946e0541ccdc8e3c835602cddddfd8fafcd2c74e848bc0e",
+      "actual_prompt_sha256": "361d970450af495a4946e0541ccdc8e3c835602cddddfd8fafcd2c74e848bc0e"
+    },
+    {
+      "policy": "continued_sft",
+      "maximum_probability_error": 2.8430518494992896e-08,
+      "reference_prompt_sha256": "3d3d77ed6ca99d4a3edbfd12f90e97f943270bdd0d872774670b78fa138dcd0f",
+      "actual_prompt_sha256": "3d3d77ed6ca99d4a3edbfd12f90e97f943270bdd0d872774670b78fa138dcd0f"
+    },
+    {
+      "policy": "base",
+      "maximum_probability_error": 6.189326950956087e-08,
+      "reference_prompt_sha256": "361d970450af495a4946e0541ccdc8e3c835602cddddfd8fafcd2c74e848bc0e",
+      "actual_prompt_sha256": "361d970450af495a4946e0541ccdc8e3c835602cddddfd8fafcd2c74e848bc0e"
+    }
+  ],
+  "input_hashes": {
+    "c13-controller-status.json": "7f4a99344a9f8e046972f096750bec16f730826073c23946fac63523fb9e95e7",
+    "c13-final-probes.json": "3e3f64f959a9dbf24623756d1a69822d0ec2ebe09e0820c2f6054084c7566129",
+    "c13-guard-status.json": "70646a8868ae7e5845543ebbc90141124abd83c891a52940efd508778b5709d9",
+    "parked-commission-c12/PLAN.json": "e9522e69325a76acc8c61a84d72b93427dbc5ad3d840c9f71f88161534b75148",
+    "parked-commission-c12/CAMPAIGN.json": "3dbfdbe83f425b8529e5820d263dabf63d7bf9dec400a651d98261b7a1df3db7",
+    "parked-commission-c12/receipts/commissioning.jsonl": "ea13ec4de34e7a0fa00082fd0597db6d8718da317c09f856c0b18e10a4140e53"
+  },
+  "raw_terminal_evidence_sha256": "61372b1a6cbffc36c3f8e8734d92ee6760c1f421e2b087d3a0863fee411736d5",
+  "episodes": [
+    {
+      "family": "unit_conversion",
+      "trial": {
+        "id": "episode-07fe40a4140d7a83",
+        "role": "sampled",
+        "replicate": 0,
+        "sampling_seed": 7849398355541762657
+      },
+      "exported_episode": {
+        "source_kind": "executed_parked_workflow",
+        "status": "completed",
+        "id": "episode-07fe40a4140d7a83",
+        "role": "sampled",
+        "context": {
+          "configuration_sha256": "0c62542a88623b4d9bedab9d4f5bb76b3134dd8cab102c877a80ba7fd41806c1",
+          "worker_config_sha256": "2741462d6ad9b7b56029a3ec589f27b369d611be3483c34347b9bb2b983ba3db",
+          "host_policy_sha256": "0dacc3cb3814dcd43ece7da8d6a782e0a5cd2d2781b1e64cd933af5ed06734ab",
+          "criteria_sha256": "48330c6e6491a00376f377377a49827eff6c3b72aefd9fce1736379c623c9cff",
+          "environment_sha256": "a2fb8cce5eeacf7762b50c27fcc8dfb44bda7f40ed104e687738bdd4d4255cba",
+          "budget_seconds": 650
+        },
+        "plan_sha256": "e9522e69325a76acc8c61a84d72b93427dbc5ad3d840c9f71f88161534b75148",
+        "lifecycle": "parked_until_terminal_fallback_or_returned_attention/v1",
+        "checks": {
+          "collector_completed": true,
+          "solver_outcomes_confirmed": true,
+          "artifact_audit_passed": true,
+          "no_recorded_provider_errors": true,
+          "monitor_coverage_complete": true,
+          "native_invocations_closed": true
+        },
+        "measurements": {
+          "verified_quality": 1.0,
+          "native_starts": 5,
+          "elapsed_seconds": 266.50430727005005,
+          "required_feedback_misses": 0,
+          "duplicate_wakeups": 0,
+          "invalid_proposals": 0
+        },
+        "utility": 0.8589993373430692,
+        "utility_components": {
+          "verified_quality": 1.0,
+          "native_starts": -0.1,
+          "elapsed_time": -0.04100066265693078,
+          "required_feedback": -0.0,
+          "duplicate_wakeups": -0.0
+        },
+        "automatic_alerts": 1,
+        "requested_decisions": 4,
+        "decision_ids": [
+          "decision-b54e4eb3e2f9416f5bf6",
+          "decision-bf02bcb1b763f501d64b",
+          "decision-cd55b22f5daaa4d2b2c8",
+          "decision-32ed43c41b5d4d9a2b1a"
+        ],
+        "model_identity": {
+          "checkpoint_path": "/root/.cache/huggingface/hub/models--internlm--Intern-Decision-4B/snapshots/38c9dafbbef52dd04bae943c0c6ac918419adfd5",
+          "checkpoint_config_sha256": "ddc63e1c717afa86c865bb5e01313d89d72bb53b97ad4a8a03ba8510c0621670",
+          "adapter_files_sha256": {
+            "adapter_config.json": "5ab93c62a751ccfe082c88caabd6c40c064d04442e3b1e164387690af6e8ba6a",
+            "adapter_model.safetensors": "76bf1bdf4c6d6a261211057d3cab4c8609131788827569f9c33f802d3491dab5"
+          },
+          "runtime": {
+            "profile": "fla-prefill",
+            "fla_core": "0.6.0",
+            "adapter_source_sha256": "83b6d3ba2813ad883725be94e13477cd1db7b9ca2af9654e040b35fb10a936a1",
+            "convolution": "fla.modules.causal_conv1d:causal_conv1d; BCT/BTC layout adapter",
+            "scope": "Dense single-pass CUDA prefill, use_cache=False; no packed sequences"
+          }
+        },
+        "temperature": 1.0,
+        "decision_distribution": "scientific-route-question/v1",
+        "host_execution": {
+          "worker_prompt": "task_protocol",
+          "task_sha256": "90925e69838fb797ba28e95200b9b2ae42d1f93f4f15e5df21a23e15d394af71",
+          "parent_turn_limit": 12,
+          "parent_turn_count": 4
+        },
+        "monitor_usage": {
+          "inferences": 4,
+          "input_tokens": 17979,
+          "total_scoring_seconds": 23.092631389000076
+        },
+        "source_artifacts": {
+          "OUTCOME.json": "9e81acd3784586793bb4acd681660f27819a1c9dff656e846e7850953e4b4c78",
+          "INITIAL.json": "9f961eae691615f07ad99f0938d84532e8bab0c4307ca591c888c3af80b9f13a",
+          "QUALITY.json": "002a4929ec8f3df04968c8bbd183272ca8b60eb123ace2b5996e787dc4c0c16d",
+          "incident-ledger.json": "25ed8592aff483eb77a5ae3701c59d5f8eadfa3b3704888352b258f0b9971337",
+          "research.json": "a8e6243294e152d7dccf8443833abbe071e1f9ea0cce6d21ffe9b9647860e085",
+          "WORKER_PROMPT_MODE.json": "607bb7169fc575297b2e128a2825a9f1a5af050e42f2fdfe1b363050b0b68a2f",
+          "VERIFIED.json": "34d693bf34866c8a1c2419cd67168162d020a017ac70e5eeb1d64085941d4246",
+          "QUANTITY_VERIFIED.json": "1f1a4c2df6694a3300dfc16eb82cd9e7899c09f5d4cb09bc1dd7043bf5e203b3",
+          "monitor/SAMPLING.json": "057790f447bfc8c86d6254464ecbc3755e374ab5588c51a9815b211e3de0e958"
+        },
+        "monitor_cost_scope": "Measured inference work reported separately; utility uses whole-episode elapsed time and native starts, not billing prices"
+      },
+      "parent_turns": 4,
+      "decisions": [
+        {
+          "receipt": "episode-07fe40a4140d7a83/monitor/attention-00001.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-8-b42f77a17367fe5a",
+            "model_view_sha256": "00a696134eeb4ad4fb00c7d5eef2de4f89907cc2d08c887e580291e282823c11",
+            "policy_id": "scientific-attention-continued_sft",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "selected",
+            "evidence_ids": [
+              "telemetry-0"
+            ],
+            "basis": "silence",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "recheck",
+            "reason": "state_changed",
+            "proposed_action": "observe",
+            "packet_id": "packet-8-b42f77a17367fe5a",
+            "current_packet_id": "packet-11-0c0a957a2252aa0d",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793171751.0082
+        },
+        {
+          "receipt": "episode-07fe40a4140d7a83/monitor/attention-00002.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-13-9e04a391d88aad28",
+            "model_view_sha256": "61074a1bf90e3373818caf0ad3f8ca81133d05e72983b3257cbd7e307b993419",
+            "policy_id": "scientific-attention-continued_sft",
+            "status": "ok",
+            "action": "wake_director",
+            "evidence_basis": "selected",
+            "evidence_ids": [
+              "diagnostic_0-0"
+            ],
+            "basis": "measurement",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "pending",
+            "reason": "awaiting_persistence",
+            "proposed_action": "wake_director",
+            "packet_id": "packet-13-9e04a391d88aad28",
+            "current_packet_id": "packet-16-2172c6128725b440",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793171765.5457206
+        },
+        {
+          "receipt": "episode-07fe40a4140d7a83/monitor/attention-00003.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-18-d64d9f80676c5813",
+            "model_view_sha256": "d361eff595e8dde08d2fbbcd35450bc8f603d0b80dc25d94d344264fc5c86346",
+            "policy_id": "scientific-attention-continued_sft",
+            "status": "ok",
+            "action": "wake_director",
+            "evidence_basis": "selected",
+            "evidence_ids": [
+              "diagnostic_0-0"
+            ],
+            "basis": "measurement",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "pending",
+            "reason": "awaiting_persistence",
+            "proposed_action": "wake_director",
+            "packet_id": "packet-18-d64d9f80676c5813",
+            "current_packet_id": "packet-20-326410ef7ad515dc",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793171772.6032712
+        },
+        {
+          "receipt": "episode-07fe40a4140d7a83/monitor/attention-00004.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-21-86659071419bd67d",
+            "model_view_sha256": "4167fdc8d0ac6a248207ea6773ae37d54976774cc05d7175315a0e55612bef91",
+            "policy_id": "scientific-attention-continued_sft",
+            "status": "ok",
+            "action": "wake_director",
+            "evidence_basis": "selected",
+            "evidence_ids": [
+              "diagnostic_0-0",
+              "diagnostic_1-0"
+            ],
+            "basis": "measurement",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "admitted",
+            "reason": "fresh_grounded_persistent_request",
+            "proposed_action": "wake_director",
+            "packet_id": "packet-21-86659071419bd67d",
+            "current_packet_id": "packet-23-101369ca115a4a8c",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793171777.6250515
+        }
+      ],
+      "actual_alerts": [
+        {
+          "origin": "coprocessor",
+          "action": "wake_director",
+          "created_at": 1793171777.6250515,
+          "packet_sha256": "db2c8c75349edf9a9f879ebb902741e7b203afbb32abfeb25fc91d5654841563",
+          "authority": "Attention request only; no repair permission or scientific approval"
+        }
+      ],
+      "solver_receipts": [
+        {
+          "name": "mesh_128",
+          "cells": 128,
+          "steps": 80,
+          "status": "succeeded",
+          "binary_sha256": "40259ed2687707b4c693e5b0e7fbadef54dca4fab64898d9d42e654fbdf644eb",
+          "input_sha256": "fd941c6e27e60b471ee0796997d465e9aec43192fd075c9ebd8665fb87b337b3",
+          "returncode": 0
+        },
+        {
+          "name": "mesh_64",
+          "cells": 64,
+          "steps": 40,
+          "status": "succeeded",
+          "binary_sha256": "40259ed2687707b4c693e5b0e7fbadef54dca4fab64898d9d42e654fbdf644eb",
+          "input_sha256": "fd941c6e27e60b471ee0796997d465e9aec43192fd075c9ebd8665fb87b337b3",
+          "returncode": 0
+        }
+      ]
+    },
+    {
+      "family": "unit_conversion",
+      "trial": {
+        "id": "episode-28f3461d04ff7784",
+        "role": "wait",
+        "replicate": 0,
+        "sampling_seed": null
+      },
+      "exported_episode": {
+        "source_kind": "executed_parked_workflow",
+        "status": "completed",
+        "id": "episode-28f3461d04ff7784",
+        "role": "wait",
+        "context": {
+          "configuration_sha256": "0c62542a88623b4d9bedab9d4f5bb76b3134dd8cab102c877a80ba7fd41806c1",
+          "worker_config_sha256": "2741462d6ad9b7b56029a3ec589f27b369d611be3483c34347b9bb2b983ba3db",
+          "host_policy_sha256": "0dacc3cb3814dcd43ece7da8d6a782e0a5cd2d2781b1e64cd933af5ed06734ab",
+          "criteria_sha256": "48330c6e6491a00376f377377a49827eff6c3b72aefd9fce1736379c623c9cff",
+          "environment_sha256": "a2fb8cce5eeacf7762b50c27fcc8dfb44bda7f40ed104e687738bdd4d4255cba",
+          "budget_seconds": 650
+        },
+        "plan_sha256": "e9522e69325a76acc8c61a84d72b93427dbc5ad3d840c9f71f88161534b75148",
+        "lifecycle": "parked_until_terminal_fallback_or_returned_attention/v1",
+        "checks": {
+          "collector_completed": true,
+          "solver_outcomes_confirmed": true,
+          "artifact_audit_passed": true,
+          "no_recorded_provider_errors": true,
+          "monitor_coverage_complete": true,
+          "native_invocations_closed": true
+        },
+        "measurements": {
+          "verified_quality": 1.0,
+          "native_starts": 3,
+          "elapsed_seconds": 263.19797229766846,
+          "required_feedback_misses": 0,
+          "duplicate_wakeups": 0,
+          "invalid_proposals": 0
+        },
+        "utility": 0.8995080042618971,
+        "utility_components": {
+          "verified_quality": 1.0,
+          "native_starts": -0.06,
+          "elapsed_time": -0.040491995738102846,
+          "required_feedback": -0.0,
+          "duplicate_wakeups": -0.0
+        },
+        "automatic_alerts": 0,
+        "requested_decisions": 0,
+        "decision_ids": [],
+        "model_identity": null,
+        "temperature": null,
+        "decision_distribution": null,
+        "host_execution": {
+          "worker_prompt": "task_protocol",
+          "task_sha256": "90925e69838fb797ba28e95200b9b2ae42d1f93f4f15e5df21a23e15d394af71",
+          "parent_turn_limit": 12,
+          "parent_turn_count": 3
+        },
+        "monitor_usage": {
+          "inferences": 0,
+          "input_tokens": 0,
+          "total_scoring_seconds": 0.0
+        },
+        "source_artifacts": {
+          "OUTCOME.json": "8306a117d22607b2a7287838a22fdacf4526662d6cb2f7fbe60134a891b5ee36",
+          "INITIAL.json": "635f1b401af8d8a5a4cd8963a1c1314b2c293209231d9c558a74aaeec9c3cfa9",
+          "QUALITY.json": "d83e7345177be22ef5a5366cb122ef15778ec0258a003b5d2b26f3b1e1da9f19",
+          "incident-ledger.json": "3b2ab4f8dd96a7241a8d38181655fbdf8d8d21c97bdb61ef840ad1938272ce38",
+          "research.json": "0ae37226adae757ecaaa4e964ee22b8106646000f4536d2350bc1fed53dab6cd",
+          "WORKER_PROMPT_MODE.json": "607bb7169fc575297b2e128a2825a9f1a5af050e42f2fdfe1b363050b0b68a2f",
+          "VERIFIED.json": "1bf78ed1254313108f14bc0811b6e5734c308c61e6c545d01fe6a4a6a0dc9a19",
+          "QUANTITY_VERIFIED.json": "af4ba0e81b62e6b8183296b220f94a574da3d515b9534880cbc4b52a2b3fd027"
+        },
+        "monitor_cost_scope": "Measured inference work reported separately; utility uses whole-episode elapsed time and native starts, not billing prices"
+      },
+      "parent_turns": 3,
+      "decisions": [
+        {
+          "receipt": "episode-28f3461d04ff7784/monitor/attention-00001.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-6-c25d3e7babf12690",
+            "model_view_sha256": "1482a17f126c7ba611cc9b9f77c5724108edb51745e6b003d8170815c93f7b77",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-6-c25d3e7babf12690",
+            "current_packet_id": "packet-7-5c2606b852de19db",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172084.7926524
+        },
+        {
+          "receipt": "episode-28f3461d04ff7784/monitor/attention-00002.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-9-da15bd9a7fb7fe5f",
+            "model_view_sha256": "de0ee555f75bccb4ca4a05bf19dec95d9a6263cba79b0b727e8ecbdcd892e7f1",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-9-da15bd9a7fb7fe5f",
+            "current_packet_id": "packet-10-4f209b31af2314f5",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172089.808014
+        },
+        {
+          "receipt": "episode-28f3461d04ff7784/monitor/attention-00003.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-12-161da9b2651391f6",
+            "model_view_sha256": "3a5f7e0a0028e7c6b996c8f766b4b37410ed7253b3e0086abd3d080954b31797",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-12-161da9b2651391f6",
+            "current_packet_id": "packet-13-d8f86c609e2c68db",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172094.8244076
+        },
+        {
+          "receipt": "episode-28f3461d04ff7784/monitor/attention-00004.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-15-21caf6630852cd81",
+            "model_view_sha256": "dd735ee73a4c3e8a59d8eb7a91dea09c03f02f7920eaffed1eda3512b94e99d1",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-15-21caf6630852cd81",
+            "current_packet_id": "packet-16-eefd8210e2943f36",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172101.6610105
+        },
+        {
+          "receipt": "episode-28f3461d04ff7784/monitor/attention-00005.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-18-8aee2203075bc252",
+            "model_view_sha256": "2d9d11c1cd4d98b03951a1b85f20e7e67b42d5ad22e48622b54c3476e0b7331b",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-18-8aee2203075bc252",
+            "current_packet_id": "packet-19-fb6dc444af213d2c",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172106.6767094
+        },
+        {
+          "receipt": "episode-28f3461d04ff7784/monitor/attention-00006.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-21-433bbb2d48cb0247",
+            "model_view_sha256": "5b9a0f3e9d34d643702b1f4aef02ca42faf17b897540d24f34e9dff4c274e764",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-21-433bbb2d48cb0247",
+            "current_packet_id": "packet-22-7eda05abac27a8f2",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172111.6931753
+        },
+        {
+          "receipt": "episode-28f3461d04ff7784/monitor/attention-00007.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-24-373093bff70d93f2",
+            "model_view_sha256": "07e0e6f957442f3ec970a5715665819a9a22ce600af77345b999a15ece32fffe",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-24-373093bff70d93f2",
+            "current_packet_id": "packet-25-0b6fd3634044cf91",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172116.7062488
+        },
+        {
+          "receipt": "episode-28f3461d04ff7784/monitor/attention-00008.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-27-ca6128a8ca8d8261",
+            "model_view_sha256": "c3c2cedb80971e2797b0ea38f9dbc0e72bbd14a61f85faca667348216371e889",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-27-ca6128a8ca8d8261",
+            "current_packet_id": "packet-28-50aff451434739e2",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172121.7381258
+        },
+        {
+          "receipt": "episode-28f3461d04ff7784/monitor/attention-00009.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-30-60bc66d3aec0d2f9",
+            "model_view_sha256": "e06fc328cfb60c46f936bc8c18a9a6708a193c83e969a3e64e78dd7966cd9a85",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-30-60bc66d3aec0d2f9",
+            "current_packet_id": "packet-31-0a418f59aad5e57c",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172126.752484
+        },
+        {
+          "receipt": "episode-28f3461d04ff7784/monitor/attention-00010.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-46-a26835745438ce62",
+            "model_view_sha256": "ff6a6cd9b170d54e051872cb875da0962d537df1f0e9d0ba6dd19d3a808e167e",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-46-a26835745438ce62",
+            "current_packet_id": "packet-47-410433b17cb65dc3",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172190.6589103
+        },
+        {
+          "receipt": "episode-28f3461d04ff7784/monitor/attention-00011.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-49-7615487014b8bae7",
+            "model_view_sha256": "f321960b46ff0f927986705139d259fdb73f6afa3696912247911e313a57b7c0",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-49-7615487014b8bae7",
+            "current_packet_id": "packet-50-20c0c75b6f0b4665",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172195.678331
+        },
+        {
+          "receipt": "episode-28f3461d04ff7784/monitor/attention-00012.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-52-946a47127a1a9533",
+            "model_view_sha256": "09475acc426ae33470624917c13675844cf7dac13b82bd42b9e2639d4a91f2be",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-52-946a47127a1a9533",
+            "current_packet_id": "packet-53-16282b52fe3de34e",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172200.6910934
+        },
+        {
+          "receipt": "episode-28f3461d04ff7784/monitor/attention-00013.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-55-54081f3c1ec3b473",
+            "model_view_sha256": "219e137c47f79113c57bc5921d8feb5e392ab73607b2a6e792aac060694f161b",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-55-54081f3c1ec3b473",
+            "current_packet_id": "packet-56-efe13a6f556e57ce",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172207.4159572
+        },
+        {
+          "receipt": "episode-28f3461d04ff7784/monitor/attention-00014.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-58-a5143d94bca955da",
+            "model_view_sha256": "c0b7341ba02e7a704ae8f97d5ae3d42d27cc727dbd1edb086d0ec130176fc1bf",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-58-a5143d94bca955da",
+            "current_packet_id": "packet-59-0b469ec6e6afe810",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172212.4308631
+        },
+        {
+          "receipt": "episode-28f3461d04ff7784/monitor/attention-00015.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-61-7369f30aaa9bca73",
+            "model_view_sha256": "9cd08bbfdb60363958f0c6e92a9df7695e55182b6d58f250b23edd93589580a5",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-61-7369f30aaa9bca73",
+            "current_packet_id": "packet-62-4d8b11ec886cfa70",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172217.470396
+        },
+        {
+          "receipt": "episode-28f3461d04ff7784/monitor/attention-00016.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-64-ffbc83f54b7657da",
+            "model_view_sha256": "2a66838b208ef3e3d6c92afebca7d1fece5a30fdececa2ae1e7311315aaa3428",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-64-ffbc83f54b7657da",
+            "current_packet_id": "packet-65-da1287dd1b650745",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172222.485823
+        },
+        {
+          "receipt": "episode-28f3461d04ff7784/monitor/attention-00017.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-67-884a5cc368a924e5",
+            "model_view_sha256": "cfb716176aac55b55c7f4f5a44feac8961c0e86240515f52733dacb35d379aa5",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-67-884a5cc368a924e5",
+            "current_packet_id": "packet-68-41ad9f7ea09e9dd8",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172227.5011044
+        },
+        {
+          "receipt": "episode-28f3461d04ff7784/monitor/attention-00018.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-70-a165b4da46f57869",
+            "model_view_sha256": "fd6a5722703c7f454dac93a71d8a69e7c4cc7fdad974bbd2771f62fc97fc1f43",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-70-a165b4da46f57869",
+            "current_packet_id": "packet-71-5872ed63aa1eef86",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172232.5184097
+        }
+      ],
+      "actual_alerts": [],
+      "solver_receipts": [
+        {
+          "name": "mesh_128",
+          "cells": 128,
+          "steps": 80,
+          "status": "succeeded",
+          "binary_sha256": "40259ed2687707b4c693e5b0e7fbadef54dca4fab64898d9d42e654fbdf644eb",
+          "input_sha256": "fd941c6e27e60b471ee0796997d465e9aec43192fd075c9ebd8665fb87b337b3",
+          "returncode": 0
+        },
+        {
+          "name": "mesh_64",
+          "cells": 64,
+          "steps": 40,
+          "status": "succeeded",
+          "binary_sha256": "40259ed2687707b4c693e5b0e7fbadef54dca4fab64898d9d42e654fbdf644eb",
+          "input_sha256": "fd941c6e27e60b471ee0796997d465e9aec43192fd075c9ebd8665fb87b337b3",
+          "returncode": 0
+        }
+      ]
+    },
+    {
+      "family": "progressing_work",
+      "trial": {
+        "id": "episode-70eb7f84d678390c",
+        "role": "wait",
+        "replicate": 0,
+        "sampling_seed": null
+      },
+      "exported_episode": {
+        "source_kind": "executed_parked_workflow",
+        "status": "completed",
+        "id": "episode-70eb7f84d678390c",
+        "role": "wait",
+        "context": {
+          "configuration_sha256": "04a7ba1384dea4fde8f49ca514fc11530103434eb5b449c5723a8e31349bb147",
+          "worker_config_sha256": "2741462d6ad9b7b56029a3ec589f27b369d611be3483c34347b9bb2b983ba3db",
+          "host_policy_sha256": "0dacc3cb3814dcd43ece7da8d6a782e0a5cd2d2781b1e64cd933af5ed06734ab",
+          "criteria_sha256": "48330c6e6491a00376f377377a49827eff6c3b72aefd9fce1736379c623c9cff",
+          "environment_sha256": "a2fb8cce5eeacf7762b50c27fcc8dfb44bda7f40ed104e687738bdd4d4255cba",
+          "budget_seconds": 650
+        },
+        "plan_sha256": "e9522e69325a76acc8c61a84d72b93427dbc5ad3d840c9f71f88161534b75148",
+        "lifecycle": "parked_until_terminal_fallback_or_returned_attention/v1",
+        "checks": {
+          "collector_completed": true,
+          "solver_outcomes_confirmed": true,
+          "artifact_audit_passed": true,
+          "no_recorded_provider_errors": true,
+          "monitor_coverage_complete": true,
+          "native_invocations_closed": true
+        },
+        "measurements": {
+          "verified_quality": 1.0,
+          "native_starts": 2,
+          "elapsed_seconds": 167.5435676574707,
+          "required_feedback_misses": 0,
+          "duplicate_wakeups": 0,
+          "invalid_proposals": 0
+        },
+        "utility": 0.9342240665142353,
+        "utility_components": {
+          "verified_quality": 1.0,
+          "native_starts": -0.04,
+          "elapsed_time": -0.025775933485764728,
+          "required_feedback": -0.0,
+          "duplicate_wakeups": -0.0
+        },
+        "automatic_alerts": 0,
+        "requested_decisions": 0,
+        "decision_ids": [],
+        "model_identity": null,
+        "temperature": null,
+        "decision_distribution": null,
+        "host_execution": {
+          "worker_prompt": "task_protocol",
+          "task_sha256": "90925e69838fb797ba28e95200b9b2ae42d1f93f4f15e5df21a23e15d394af71",
+          "parent_turn_limit": 12,
+          "parent_turn_count": 2
+        },
+        "monitor_usage": {
+          "inferences": 0,
+          "input_tokens": 0,
+          "total_scoring_seconds": 0.0
+        },
+        "source_artifacts": {
+          "OUTCOME.json": "df9ac04a4d5bd458539d596521b8d0565210d28553f739c5efcab0822b805a97",
+          "INITIAL.json": "165bbf9b5ed3340335929724d899303a857f28df9efc02babbbc15ebe3492cc8",
+          "QUALITY.json": "e0d5c63fe6399207d0ae1ef32337d19a3b7450190368cc1f624349d81cfd25d9",
+          "incident-ledger.json": "3d40baec7989f62c28a6ac59168d864c40f1023057d94cc93c0729696b59e2b7",
+          "research.json": "b36f160f4127efb44a71c8e991a498339898b7fe373e4b43f9b3fb3a5c5a866c",
+          "WORKER_PROMPT_MODE.json": "607bb7169fc575297b2e128a2825a9f1a5af050e42f2fdfe1b363050b0b68a2f",
+          "VERIFIED.json": "0b431d0c84090dff45a9323126ac89aa4213caee96cc4e13f5c6c766b646f5de",
+          "QUANTITY_VERIFIED.json": "733f314d5801aa5b5f3530eaa94951e0c84288533a967d70b678d2d96c081ba1"
+        },
+        "monitor_cost_scope": "Measured inference work reported separately; utility uses whole-episode elapsed time and native starts, not billing prices"
+      },
+      "parent_turns": 2,
+      "decisions": [
+        {
+          "receipt": "episode-70eb7f84d678390c/monitor/attention-00001.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-7-709476f9181f60db",
+            "model_view_sha256": "4b1c83ed3c7fc7692630430e49c74c23cc956a6489a20996609ce45d686a37d3",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-7-709476f9181f60db",
+            "current_packet_id": "packet-8-fe48e5bb8216e37a",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172446.4467912
+        },
+        {
+          "receipt": "episode-70eb7f84d678390c/monitor/attention-00002.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-10-c6f9a389ba06081c",
+            "model_view_sha256": "5d4d33d4d8ad8684a11acc9a0a69db3ca7028d695f13b0aa1670d585b0ec86c5",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-10-c6f9a389ba06081c",
+            "current_packet_id": "packet-11-f82af35224031799",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172451.4619627
+        },
+        {
+          "receipt": "episode-70eb7f84d678390c/monitor/attention-00003.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-13-d168147c84f74204",
+            "model_view_sha256": "bdde649402189cefbd08a0c2a29b97e5037e58d6c88c48164d233a978220b527",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-13-d168147c84f74204",
+            "current_packet_id": "packet-14-9eeb66d6cbef1b8d",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172456.4773262
+        },
+        {
+          "receipt": "episode-70eb7f84d678390c/monitor/attention-00004.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-16-8cda6118803c9abc",
+            "model_view_sha256": "1c5f075b2855b72f26ad7bbcabcef7bae699674fa885c39d411409704cdf2665",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-16-8cda6118803c9abc",
+            "current_packet_id": "packet-17-d5a0fa10a27c30ca",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172461.4946396
+        },
+        {
+          "receipt": "episode-70eb7f84d678390c/monitor/attention-00005.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-19-daa5a3efa3ed83fe",
+            "model_view_sha256": "8a23b06c98b3c24496b386ccd47389a422f8ad722444df13ac215a5897fe336d",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-19-daa5a3efa3ed83fe",
+            "current_packet_id": "packet-20-7b05ddf5ce42b5f9",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172466.510362
+        },
+        {
+          "receipt": "episode-70eb7f84d678390c/monitor/attention-00006.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-22-4aec21c3ee9ffe6c",
+            "model_view_sha256": "1d04bb8dd6151d4fb39000b1d4601985c43770afd236b3491e7ea05058c013be",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-22-4aec21c3ee9ffe6c",
+            "current_packet_id": "packet-23-4b478ed2d3f9cd64",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172471.5269861
+        },
+        {
+          "receipt": "episode-70eb7f84d678390c/monitor/attention-00007.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-25-92d5cf1cd72db40d",
+            "model_view_sha256": "32a208fdf4e2090bc6be64f1a31261a3c45ba878f93850f9f8b7cfa1faea450d",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-25-92d5cf1cd72db40d",
+            "current_packet_id": "packet-26-a916c6e3cf5353c7",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172476.543443
+        },
+        {
+          "receipt": "episode-70eb7f84d678390c/monitor/attention-00008.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-28-954a2ecbe39e5ff0",
+            "model_view_sha256": "abf87046b8c1723b85226c94326c64423331ba795607f4bd4dc0226b5db9d794",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-28-954a2ecbe39e5ff0",
+            "current_packet_id": "packet-29-3eb7fe122b64b7d5",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172483.3352764
+        },
+        {
+          "receipt": "episode-70eb7f84d678390c/monitor/attention-00009.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-31-d7d0b7ee2160dc9a",
+            "model_view_sha256": "a50b8ada1c1106fa345df8a6f71298e3709ccfc8692eb27a4914c98ccc292c25",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-31-d7d0b7ee2160dc9a",
+            "current_packet_id": "packet-32-dcb633de9a25a7a9",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172488.3516176
+        },
+        {
+          "receipt": "episode-70eb7f84d678390c/monitor/attention-00010.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-34-dba89fe4523a17c1",
+            "model_view_sha256": "44d055346cc50ffef045c6678c10a76afdf31732d1c11cdd4c7c5285cecc436b",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-34-dba89fe4523a17c1",
+            "current_packet_id": "packet-35-a8f21ae3cf8c594c",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172493.3640647
+        }
+      ],
+      "actual_alerts": [],
+      "solver_receipts": [
+        {
+          "name": "mesh_128",
+          "cells": 128,
+          "steps": 80,
+          "status": "succeeded",
+          "binary_sha256": "40259ed2687707b4c693e5b0e7fbadef54dca4fab64898d9d42e654fbdf644eb",
+          "input_sha256": "fd941c6e27e60b471ee0796997d465e9aec43192fd075c9ebd8665fb87b337b3",
+          "returncode": 0
+        },
+        {
+          "name": "mesh_64",
+          "cells": 64,
+          "steps": 40,
+          "status": "succeeded",
+          "binary_sha256": "40259ed2687707b4c693e5b0e7fbadef54dca4fab64898d9d42e654fbdf644eb",
+          "input_sha256": "fd941c6e27e60b471ee0796997d465e9aec43192fd075c9ebd8665fb87b337b3",
+          "returncode": 0
+        }
+      ]
+    },
+    {
+      "family": "progressing_work",
+      "trial": {
+        "id": "episode-e685e628287c5a43",
+        "role": "sampled",
+        "replicate": 0,
+        "sampling_seed": 3558361207830416231
+      },
+      "exported_episode": {
+        "source_kind": "executed_parked_workflow",
+        "status": "completed",
+        "id": "episode-e685e628287c5a43",
+        "role": "sampled",
+        "context": {
+          "configuration_sha256": "04a7ba1384dea4fde8f49ca514fc11530103434eb5b449c5723a8e31349bb147",
+          "worker_config_sha256": "2741462d6ad9b7b56029a3ec589f27b369d611be3483c34347b9bb2b983ba3db",
+          "host_policy_sha256": "0dacc3cb3814dcd43ece7da8d6a782e0a5cd2d2781b1e64cd933af5ed06734ab",
+          "criteria_sha256": "48330c6e6491a00376f377377a49827eff6c3b72aefd9fce1736379c623c9cff",
+          "environment_sha256": "a2fb8cce5eeacf7762b50c27fcc8dfb44bda7f40ed104e687738bdd4d4255cba",
+          "budget_seconds": 650
+        },
+        "plan_sha256": "e9522e69325a76acc8c61a84d72b93427dbc5ad3d840c9f71f88161534b75148",
+        "lifecycle": "parked_until_terminal_fallback_or_returned_attention/v1",
+        "checks": {
+          "collector_completed": true,
+          "solver_outcomes_confirmed": true,
+          "artifact_audit_passed": true,
+          "no_recorded_provider_errors": true,
+          "monitor_coverage_complete": true,
+          "native_invocations_closed": true
+        },
+        "measurements": {
+          "verified_quality": 1.0,
+          "native_starts": 2,
+          "elapsed_seconds": 151.6468951702118,
+          "required_feedback_misses": 0,
+          "duplicate_wakeups": 0,
+          "invalid_proposals": 0
+        },
+        "utility": 0.936669708435352,
+        "utility_components": {
+          "verified_quality": 1.0,
+          "native_starts": -0.04,
+          "elapsed_time": -0.02333029156464797,
+          "required_feedback": -0.0,
+          "duplicate_wakeups": -0.0
+        },
+        "automatic_alerts": 0,
+        "requested_decisions": 9,
+        "decision_ids": [
+          "decision-3df9118e2876ec9ff1e3",
+          "decision-23e8b7463d013a7b4b59",
+          "decision-3dcbf4aeb5f80cd355bb",
+          "decision-800f9dbe33062dd1119f",
+          "decision-f48f884374d4ebf98cfb",
+          "decision-b993910f723826c71d0e",
+          "decision-2cbf564d55747377b650",
+          "decision-40b719f7620ba4e44ef1",
+          "decision-ed35690435c488d07d07"
+        ],
+        "model_identity": {
+          "checkpoint_path": "/root/.cache/huggingface/hub/models--internlm--Intern-Decision-4B/snapshots/38c9dafbbef52dd04bae943c0c6ac918419adfd5",
+          "checkpoint_config_sha256": "ddc63e1c717afa86c865bb5e01313d89d72bb53b97ad4a8a03ba8510c0621670",
+          "adapter_files_sha256": {
+            "adapter_config.json": "5ab93c62a751ccfe082c88caabd6c40c064d04442e3b1e164387690af6e8ba6a",
+            "adapter_model.safetensors": "76bf1bdf4c6d6a261211057d3cab4c8609131788827569f9c33f802d3491dab5"
+          },
+          "runtime": {
+            "profile": "fla-prefill",
+            "fla_core": "0.6.0",
+            "adapter_source_sha256": "83b6d3ba2813ad883725be94e13477cd1db7b9ca2af9654e040b35fb10a936a1",
+            "convolution": "fla.modules.causal_conv1d:causal_conv1d; BCT/BTC layout adapter",
+            "scope": "Dense single-pass CUDA prefill, use_cache=False; no packed sequences"
+          }
+        },
+        "temperature": 1.0,
+        "decision_distribution": "scientific-route-question/v1",
+        "host_execution": {
+          "worker_prompt": "task_protocol",
+          "task_sha256": "90925e69838fb797ba28e95200b9b2ae42d1f93f4f15e5df21a23e15d394af71",
+          "parent_turn_limit": 12,
+          "parent_turn_count": 2
+        },
+        "monitor_usage": {
+          "inferences": 9,
+          "input_tokens": 43768,
+          "total_scoring_seconds": 3.896164735999946
+        },
+        "source_artifacts": {
+          "OUTCOME.json": "b3691058d2d538ddd142deb0ec9a270492f30c64d6e2d81124904769d346bd0b",
+          "INITIAL.json": "bc43531d05c17577c78348ad101eb715b829e6d7d131fe9e029fdd269ea6dd06",
+          "QUALITY.json": "ddc2ff026ab5546a9144b6df4131b1aadbf507df8cb318c6062869548f5de2ff",
+          "incident-ledger.json": "8ddf4efd333a040936cb4cc734b63b38d810b61893d6441118d440e441884a6a",
+          "research.json": "1054e85077b5725ec313b0a224d005cb6584a46ab8a079489234d7eb90fd1270",
+          "WORKER_PROMPT_MODE.json": "607bb7169fc575297b2e128a2825a9f1a5af050e42f2fdfe1b363050b0b68a2f",
+          "VERIFIED.json": "f45ccd7cbd5f9e7c4c2382dfd582305759cb483f8c4b529d0ada96a86492c1c2",
+          "QUANTITY_VERIFIED.json": "e7b74323b8d417b121349a5e634ae7dc54a143ea3d9f8d3d5af8b20b37b1d339",
+          "monitor/SAMPLING.json": "04572f3ffe14e152ef1d48ef91ecd674080ba6f544dbfd784ceff2cb3bf08113"
+        },
+        "monitor_cost_scope": "Measured inference work reported separately; utility uses whole-episode elapsed time and native starts, not billing prices"
+      },
+      "parent_turns": 2,
+      "decisions": [
+        {
+          "receipt": "episode-e685e628287c5a43/monitor/attention-00001.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-6-c2488764d4d5623f",
+            "model_view_sha256": "7b98202fe681f3729ede3983b1d8b47ce54b93b58e6ac46f2143826233bfdf3d",
+            "policy_id": "scientific-attention-continued_sft",
+            "status": "ok",
+            "action": "wake_director",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "recheck",
+            "reason": "ungrounded_attention",
+            "proposed_action": "wake_director",
+            "packet_id": "packet-6-c2488764d4d5623f",
+            "current_packet_id": "packet-7-e54ad46a6bf75cf9",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172700.791893
+        },
+        {
+          "receipt": "episode-e685e628287c5a43/monitor/attention-00002.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-9-4c008decbc5b8d20",
+            "model_view_sha256": "b0f408d886464573acc6975b15afe1eafe146590fd5ee5638cd8629e3d843044",
+            "policy_id": "scientific-attention-continued_sft",
+            "status": "ok",
+            "action": "wake_director",
+            "evidence_basis": "selected",
+            "evidence_ids": [
+              "progress-0"
+            ],
+            "basis": "measurement",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "pending",
+            "reason": "awaiting_persistence",
+            "proposed_action": "wake_director",
+            "packet_id": "packet-9-4c008decbc5b8d20",
+            "current_packet_id": "packet-10-81beef5d2215aae0",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172705.813023
+        },
+        {
+          "receipt": "episode-e685e628287c5a43/monitor/attention-00003.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-12-941292f3ff9d8ec1",
+            "model_view_sha256": "6283ff4a1d4fd9132a55b8194909b7d6f8f6ae43d159641bd505d874a3b94ddb",
+            "policy_id": "scientific-attention-continued_sft",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "selected",
+            "evidence_ids": [
+              "progress-0"
+            ],
+            "basis": "measurement",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-12-941292f3ff9d8ec1",
+            "current_packet_id": "packet-13-f50ae4c76d34c4a9",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172710.8346837
+        },
+        {
+          "receipt": "episode-e685e628287c5a43/monitor/attention-00004.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-15-a01295afeaf34d75",
+            "model_view_sha256": "71fe0193b56b4a7b8b4ac2d31c83f24c46c7b8b5e0e2fcbfe92e2ba6c422200a",
+            "policy_id": "scientific-attention-continued_sft",
+            "status": "ok",
+            "action": "wake_director",
+            "evidence_basis": "selected",
+            "evidence_ids": [
+              "progress-0"
+            ],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "recheck",
+            "reason": "ungrounded_attention",
+            "proposed_action": "wake_director",
+            "packet_id": "packet-15-a01295afeaf34d75",
+            "current_packet_id": "packet-16-0dfcc3daae822278",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172715.853398
+        },
+        {
+          "receipt": "episode-e685e628287c5a43/monitor/attention-00005.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-18-ba70060a2869def4",
+            "model_view_sha256": "3eaf7b3d8a72121c4fbfc55ca7b2fc41c9772513660850600ff4d35a20b5f8a9",
+            "policy_id": "scientific-attention-continued_sft",
+            "status": "ok",
+            "action": "wake_director",
+            "evidence_basis": "selected",
+            "evidence_ids": [
+              "progress-0"
+            ],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "recheck",
+            "reason": "ungrounded_attention",
+            "proposed_action": "wake_director",
+            "packet_id": "packet-18-ba70060a2869def4",
+            "current_packet_id": "packet-19-cd2a952b50ee5538",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172720.8663979
+        },
+        {
+          "receipt": "episode-e685e628287c5a43/monitor/attention-00006.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-21-fc2a05d7e26cd070",
+            "model_view_sha256": "954a86965f2572adcbdf93f170c43ff64131caf1b59f09c994df0cbb727bef4a",
+            "policy_id": "scientific-attention-continued_sft",
+            "status": "ok",
+            "action": "wake_director",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "measurement",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "recheck",
+            "reason": "ungrounded_attention",
+            "proposed_action": "wake_director",
+            "packet_id": "packet-21-fc2a05d7e26cd070",
+            "current_packet_id": "packet-22-d406bfb90f507692",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172727.9718206
+        },
+        {
+          "receipt": "episode-e685e628287c5a43/monitor/attention-00007.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-24-0f6b4f6699018b49",
+            "model_view_sha256": "4bcdd847537339fff88bb2487ddf55e59de7a8896f11bc2da55ae63a6ab4edea",
+            "policy_id": "scientific-attention-continued_sft",
+            "status": "ok",
+            "action": "wake_director",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "recheck",
+            "reason": "ungrounded_attention",
+            "proposed_action": "wake_director",
+            "packet_id": "packet-24-0f6b4f6699018b49",
+            "current_packet_id": "packet-25-8fc9b5229e2d0f9d",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172732.9927037
+        },
+        {
+          "receipt": "episode-e685e628287c5a43/monitor/attention-00008.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-27-438fd96d73c84525",
+            "model_view_sha256": "13959dafb8c60f339983ecf6434ecc184ffff2625359700511b818ef8111486d",
+            "policy_id": "scientific-attention-continued_sft",
+            "status": "ok",
+            "action": "wake_director",
+            "evidence_basis": "selected",
+            "evidence_ids": [
+              "progress-0"
+            ],
+            "basis": "measurement",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "pending",
+            "reason": "awaiting_persistence",
+            "proposed_action": "wake_director",
+            "packet_id": "packet-27-438fd96d73c84525",
+            "current_packet_id": "packet-28-c8920d888a56d3e6",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172738.0091116
+        },
+        {
+          "receipt": "episode-e685e628287c5a43/monitor/attention-00009.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-30-089f20e93fee94ab",
+            "model_view_sha256": "35449b65732508a359963bf106d9fabe0973b1336bae5abf3c28e7d6f422c4b9",
+            "policy_id": "scientific-attention-continued_sft",
+            "status": "ok",
+            "action": "wake_director",
+            "evidence_basis": "selected",
+            "evidence_ids": [
+              "progress-0"
+            ],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "recheck",
+            "reason": "ungrounded_attention",
+            "proposed_action": "wake_director",
+            "packet_id": "packet-30-089f20e93fee94ab",
+            "current_packet_id": "packet-31-bf749abfde9e52e0",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172743.0267563
+        }
+      ],
+      "actual_alerts": [],
+      "solver_receipts": [
+        {
+          "name": "mesh_128",
+          "cells": 128,
+          "steps": 80,
+          "status": "succeeded",
+          "binary_sha256": "40259ed2687707b4c693e5b0e7fbadef54dca4fab64898d9d42e654fbdf644eb",
+          "input_sha256": "fd941c6e27e60b471ee0796997d465e9aec43192fd075c9ebd8665fb87b337b3",
+          "returncode": 0
+        },
+        {
+          "name": "mesh_64",
+          "cells": 64,
+          "steps": 40,
+          "status": "succeeded",
+          "binary_sha256": "40259ed2687707b4c693e5b0e7fbadef54dca4fab64898d9d42e654fbdf644eb",
+          "input_sha256": "fd941c6e27e60b471ee0796997d465e9aec43192fd075c9ebd8665fb87b337b3",
+          "returncode": 0
+        }
+      ]
+    },
+    {
+      "family": "source_binding",
+      "trial": {
+        "id": "episode-4e07712d731e91ac",
+        "role": "wait",
+        "replicate": 0,
+        "sampling_seed": null
+      },
+      "exported_episode": {
+        "source_kind": "executed_parked_workflow",
+        "status": "completed",
+        "id": "episode-4e07712d731e91ac",
+        "role": "wait",
+        "context": {
+          "configuration_sha256": "f0482da37b64960dcfe57ada7fdec461dabb60f23c9098e10217f81877ef4836",
+          "worker_config_sha256": "2741462d6ad9b7b56029a3ec589f27b369d611be3483c34347b9bb2b983ba3db",
+          "host_policy_sha256": "0dacc3cb3814dcd43ece7da8d6a782e0a5cd2d2781b1e64cd933af5ed06734ab",
+          "criteria_sha256": "48330c6e6491a00376f377377a49827eff6c3b72aefd9fce1736379c623c9cff",
+          "environment_sha256": "a2fb8cce5eeacf7762b50c27fcc8dfb44bda7f40ed104e687738bdd4d4255cba",
+          "budget_seconds": 650
+        },
+        "plan_sha256": "e9522e69325a76acc8c61a84d72b93427dbc5ad3d840c9f71f88161534b75148",
+        "lifecycle": "parked_until_terminal_fallback_or_returned_attention/v1",
+        "checks": {
+          "collector_completed": true,
+          "solver_outcomes_confirmed": true,
+          "artifact_audit_passed": true,
+          "no_recorded_provider_errors": true,
+          "monitor_coverage_complete": true,
+          "native_invocations_closed": true
+        },
+        "measurements": {
+          "verified_quality": 1.0,
+          "native_starts": 6,
+          "elapsed_seconds": 389.1005742549896,
+          "required_feedback_misses": 0,
+          "duplicate_wakeups": 0,
+          "invalid_proposals": 0
+        },
+        "utility": 0.82013837319154,
+        "utility_components": {
+          "verified_quality": 1.0,
+          "native_starts": -0.12,
+          "elapsed_time": -0.05986162680845994,
+          "required_feedback": -0.0,
+          "duplicate_wakeups": -0.0
+        },
+        "automatic_alerts": 0,
+        "requested_decisions": 0,
+        "decision_ids": [],
+        "model_identity": null,
+        "temperature": null,
+        "decision_distribution": null,
+        "host_execution": {
+          "worker_prompt": "task_protocol",
+          "task_sha256": "90925e69838fb797ba28e95200b9b2ae42d1f93f4f15e5df21a23e15d394af71",
+          "parent_turn_limit": 12,
+          "parent_turn_count": 4
+        },
+        "monitor_usage": {
+          "inferences": 0,
+          "input_tokens": 0,
+          "total_scoring_seconds": 0.0
+        },
+        "source_artifacts": {
+          "OUTCOME.json": "8e703f9a94dd3fc9889401082f9e50ca3158cc47bba01b9f45dc3b10348ba2d0",
+          "INITIAL.json": "5cd291d09daffee84ea00e8b0d573a94b20f8405868ad059546457958407a445",
+          "QUALITY.json": "0d56217d3ecf47bd247628a6256ed59f88436d8ce8c0f1d4a4c18f70fa865135",
+          "incident-ledger.json": "329ba062e15769ecc138dc94a54387e0689b59f996619f81cff5785262768e4d",
+          "research.json": "98a86283162a871f8e126f3a41da340d3404169a0bd3d5a00821f592df3f8d0f",
+          "WORKER_PROMPT_MODE.json": "607bb7169fc575297b2e128a2825a9f1a5af050e42f2fdfe1b363050b0b68a2f",
+          "VERIFIED.json": "463ae477ec9e0e030134f8282fdf29a870e19edee2123ea3568dca64268afc94",
+          "QUANTITY_VERIFIED.json": "44a1e8b729d6c54696d51e47cd56cd820179643abae0a96484fc58c03eae570f"
+        },
+        "monitor_cost_scope": "Measured inference work reported separately; utility uses whole-episode elapsed time and native starts, not billing prices"
+      },
+      "parent_turns": 4,
+      "decisions": [
+        {
+          "receipt": "episode-4e07712d731e91ac/monitor/attention-00001.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-6-c4699e4b98f27830",
+            "model_view_sha256": "410c5e14655aee1af363101fa946b2564afe092db97ed5c86e7adf89024d0e32",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-6-c4699e4b98f27830",
+            "current_packet_id": "packet-7-312e99cc44d01748",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172941.0283737
+        },
+        {
+          "receipt": "episode-4e07712d731e91ac/monitor/attention-00002.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-9-d37b4e3f00f52cf2",
+            "model_view_sha256": "9df13ad23fbc0fb1666077295d1aa513c17ee156a461b80abec4c95748f64bf0",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-9-d37b4e3f00f52cf2",
+            "current_packet_id": "packet-10-3e293529ca322ac1",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172946.0435932
+        },
+        {
+          "receipt": "episode-4e07712d731e91ac/monitor/attention-00003.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-12-2d03a566d4755e92",
+            "model_view_sha256": "814bdab06d57360101a1998bf224d6ff5c75d2767b77a124301096dd723aad15",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-12-2d03a566d4755e92",
+            "current_packet_id": "packet-13-d6a118ce3a758d2c",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172951.057054
+        },
+        {
+          "receipt": "episode-4e07712d731e91ac/monitor/attention-00004.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-15-96b5ddf135899402",
+            "model_view_sha256": "dc79cff1afbdc7a8b4cd31954e1b9a428addc888bb06435ace428664fade4304",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-15-96b5ddf135899402",
+            "current_packet_id": "packet-16-857bdd9b4a1b7b69",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172956.0750053
+        },
+        {
+          "receipt": "episode-4e07712d731e91ac/monitor/attention-00005.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-18-1f63dcce4ac3c0f8",
+            "model_view_sha256": "1dc772c9cf123f388842725d08f78ce25840f2761cd4b35c33f3fdc5061d95d7",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-18-1f63dcce4ac3c0f8",
+            "current_packet_id": "packet-19-dfec7d784bd1c536",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172961.092325
+        },
+        {
+          "receipt": "episode-4e07712d731e91ac/monitor/attention-00006.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-21-bcf5d69c6ba20a14",
+            "model_view_sha256": "600aece9ca0a185b1fcd4e296f13053d39b3c72ef882f13f3a9f475206bd2704",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-21-bcf5d69c6ba20a14",
+            "current_packet_id": "packet-22-ec3cb8403f1e6aec",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172968.0925279
+        },
+        {
+          "receipt": "episode-4e07712d731e91ac/monitor/attention-00007.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-24-5bc1707cb9a7a7ec",
+            "model_view_sha256": "bab935a94a21431f4a4e9c8f131e15cc98681f57e11a077057d1fa0753d64302",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-24-5bc1707cb9a7a7ec",
+            "current_packet_id": "packet-25-9005173621da7468",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172973.1082895
+        },
+        {
+          "receipt": "episode-4e07712d731e91ac/monitor/attention-00008.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-27-b8f455c81fecd271",
+            "model_view_sha256": "f608de1027d35b606ad571e9011d8324c95377db939b6405dd523cc154837f2d",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-27-b8f455c81fecd271",
+            "current_packet_id": "packet-28-e121a3f4bd9a800a",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172978.1380985
+        },
+        {
+          "receipt": "episode-4e07712d731e91ac/monitor/attention-00009.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-30-b281a63bd3aa6565",
+            "model_view_sha256": "b1f7f90475fc9c08eb4b950b26dd9f46d8e2eb03f1a991add26292f53b2e16be",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-30-b281a63bd3aa6565",
+            "current_packet_id": "packet-31-ca1fd13737ad6483",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172983.1534946
+        },
+        {
+          "receipt": "episode-4e07712d731e91ac/monitor/attention-00010.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-33-ceff046959dd9c94",
+            "model_view_sha256": "aebd672f8be0359b17bb60f807e1ffa0aa5ac8158ae0020b62d301de52d7bcaa",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-33-ceff046959dd9c94",
+            "current_packet_id": "packet-34-759245cc5caeac2d",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793172988.1673782
+        },
+        {
+          "receipt": "episode-4e07712d731e91ac/monitor/attention-00011.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-76-26af381469f02f46",
+            "model_view_sha256": "842ddff200fb45f89074b3ddef6c4b8641c040acb5155c37390d32981c9348a5",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-76-26af381469f02f46",
+            "current_packet_id": "packet-77-a7e751e0fbf48b05",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793173157.9420145
+        },
+        {
+          "receipt": "episode-4e07712d731e91ac/monitor/attention-00012.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-79-31b470d5be885eed",
+            "model_view_sha256": "522b17dc777741072e5eb712f4add5f2e83f38ab6a5c84bef253a39c9d1fb534",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-79-31b470d5be885eed",
+            "current_packet_id": "packet-80-ebc5b18cce0151bb",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793173162.9857297
+        },
+        {
+          "receipt": "episode-4e07712d731e91ac/monitor/attention-00013.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-82-f362658e82e2e2a7",
+            "model_view_sha256": "58489f9bf520a24727079f1116cb94b9d0b1eaf96c0b90eb54e40f006df3bbf7",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-82-f362658e82e2e2a7",
+            "current_packet_id": "packet-83-0a7faec712014a2b",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793173168.0490718
+        },
+        {
+          "receipt": "episode-4e07712d731e91ac/monitor/attention-00014.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-85-d1562a586db8c988",
+            "model_view_sha256": "bbba03db4c9872013fd6158423b486945b55f4b82eb1f8182abaf06dde995ec1",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-85-d1562a586db8c988",
+            "current_packet_id": "packet-86-d8fe0862a54919a6",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793173173.102763
+        },
+        {
+          "receipt": "episode-4e07712d731e91ac/monitor/attention-00015.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-88-03bcb9fe05fcc389",
+            "model_view_sha256": "9263293bb0b9b7498e106e19739d1af9430e113dc601c847e322dc2d7481664b",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-88-03bcb9fe05fcc389",
+            "current_packet_id": "packet-89-509d883037389738",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793173179.9483454
+        },
+        {
+          "receipt": "episode-4e07712d731e91ac/monitor/attention-00016.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-91-a0d12c9c1f084732",
+            "model_view_sha256": "e889e4062f246528b9cc50713212e2b7353fac7aa33634e465ecb7c58d74ecbb",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-91-a0d12c9c1f084732",
+            "current_packet_id": "packet-92-18e20806c0c73499",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793173185.002739
+        },
+        {
+          "receipt": "episode-4e07712d731e91ac/monitor/attention-00017.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-94-b20e3c296e167fb3",
+            "model_view_sha256": "e8fc8bc38b6a5bcdfbc52634c20fcd0887c48694b1d85139ad35f744c5a32c58",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-94-b20e3c296e167fb3",
+            "current_packet_id": "packet-95-2aba5e1de5382dd1",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793173190.0472522
+        },
+        {
+          "receipt": "episode-4e07712d731e91ac/monitor/attention-00018.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-97-d695673e535e9812",
+            "model_view_sha256": "20e4239c1bed3d827ae08e6ed687b1d635f49718f0311487a18fae355b77e57a",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-97-d695673e535e9812",
+            "current_packet_id": "packet-98-fe3486c0ae6e8a60",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793173195.0983763
+        },
+        {
+          "receipt": "episode-4e07712d731e91ac/monitor/attention-00019.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-100-e3512225d0e28b1a",
+            "model_view_sha256": "13e15896651b90e87c790c1bd215845dc1b099114c4de00c191f88b1f159b881",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-100-e3512225d0e28b1a",
+            "current_packet_id": "packet-101-d8c6f55aaab28e1a",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793173200.1421652
+        },
+        {
+          "receipt": "episode-4e07712d731e91ac/monitor/attention-00020.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-103-1921af94103fc0a6",
+            "model_view_sha256": "6f1897c66148b61d2e6c9a861cb63e579f94d818f33339cdcd693c3989013134",
+            "policy_id": "observe",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-103-1921af94103fc0a6",
+            "current_packet_id": "packet-104-c5967dc8e212fdda",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793173205.1915026
+        }
+      ],
+      "actual_alerts": [],
+      "solver_receipts": [
+        {
+          "name": "mesh_128",
+          "cells": 128,
+          "steps": 80,
+          "status": "succeeded",
+          "binary_sha256": "40259ed2687707b4c693e5b0e7fbadef54dca4fab64898d9d42e654fbdf644eb",
+          "input_sha256": "fd941c6e27e60b471ee0796997d465e9aec43192fd075c9ebd8665fb87b337b3",
+          "returncode": 0
+        },
+        {
+          "name": "mesh_64",
+          "cells": 64,
+          "steps": 40,
+          "status": "succeeded",
+          "binary_sha256": "40259ed2687707b4c693e5b0e7fbadef54dca4fab64898d9d42e654fbdf644eb",
+          "input_sha256": "fd941c6e27e60b471ee0796997d465e9aec43192fd075c9ebd8665fb87b337b3",
+          "returncode": 0
+        }
+      ]
+    },
+    {
+      "family": "source_binding",
+      "trial": {
+        "id": "episode-2306a14e4264b0a8",
+        "role": "sampled",
+        "replicate": 0,
+        "sampling_seed": 8593618109000519370
+      },
+      "exported_episode": {
+        "source_kind": "executed_parked_workflow",
+        "status": "completed",
+        "id": "episode-2306a14e4264b0a8",
+        "role": "sampled",
+        "context": {
+          "configuration_sha256": "f0482da37b64960dcfe57ada7fdec461dabb60f23c9098e10217f81877ef4836",
+          "worker_config_sha256": "2741462d6ad9b7b56029a3ec589f27b369d611be3483c34347b9bb2b983ba3db",
+          "host_policy_sha256": "0dacc3cb3814dcd43ece7da8d6a782e0a5cd2d2781b1e64cd933af5ed06734ab",
+          "criteria_sha256": "48330c6e6491a00376f377377a49827eff6c3b72aefd9fce1736379c623c9cff",
+          "environment_sha256": "a2fb8cce5eeacf7762b50c27fcc8dfb44bda7f40ed104e687738bdd4d4255cba",
+          "budget_seconds": 650
+        },
+        "plan_sha256": "e9522e69325a76acc8c61a84d72b93427dbc5ad3d840c9f71f88161534b75148",
+        "lifecycle": "parked_until_terminal_fallback_or_returned_attention/v1",
+        "checks": {
+          "collector_completed": true,
+          "solver_outcomes_confirmed": true,
+          "artifact_audit_passed": true,
+          "no_recorded_provider_errors": true,
+          "monitor_coverage_complete": true,
+          "native_invocations_closed": true
+        },
+        "measurements": {
+          "verified_quality": 1.0,
+          "native_starts": 8,
+          "elapsed_seconds": 369.6245129108429,
+          "required_feedback_misses": 0,
+          "duplicate_wakeups": 0,
+          "invalid_proposals": 0
+        },
+        "utility": 0.7831346903214088,
+        "utility_components": {
+          "verified_quality": 1.0,
+          "native_starts": -0.16,
+          "elapsed_time": -0.05686530967859122,
+          "required_feedback": -0.0,
+          "duplicate_wakeups": -0.0
+        },
+        "automatic_alerts": 1,
+        "requested_decisions": 7,
+        "decision_ids": [
+          "decision-3444de417cc13c567a3e",
+          "decision-43e6155b047d5977da55",
+          "decision-72ad6bb69512f4474088",
+          "decision-42b68adc70de56e3bf9d",
+          "decision-dcc93fea32b828cd9e84",
+          "decision-973381b8bb1574f93b7c",
+          "decision-470efee1637382df92cf"
+        ],
+        "model_identity": {
+          "checkpoint_path": "/root/.cache/huggingface/hub/models--internlm--Intern-Decision-4B/snapshots/38c9dafbbef52dd04bae943c0c6ac918419adfd5",
+          "checkpoint_config_sha256": "ddc63e1c717afa86c865bb5e01313d89d72bb53b97ad4a8a03ba8510c0621670",
+          "adapter_files_sha256": {
+            "adapter_config.json": "5ab93c62a751ccfe082c88caabd6c40c064d04442e3b1e164387690af6e8ba6a",
+            "adapter_model.safetensors": "76bf1bdf4c6d6a261211057d3cab4c8609131788827569f9c33f802d3491dab5"
+          },
+          "runtime": {
+            "profile": "fla-prefill",
+            "fla_core": "0.6.0",
+            "adapter_source_sha256": "83b6d3ba2813ad883725be94e13477cd1db7b9ca2af9654e040b35fb10a936a1",
+            "convolution": "fla.modules.causal_conv1d:causal_conv1d; BCT/BTC layout adapter",
+            "scope": "Dense single-pass CUDA prefill, use_cache=False; no packed sequences"
+          }
+        },
+        "temperature": 1.0,
+        "decision_distribution": "scientific-route-question/v1",
+        "host_execution": {
+          "worker_prompt": "task_protocol",
+          "task_sha256": "90925e69838fb797ba28e95200b9b2ae42d1f93f4f15e5df21a23e15d394af71",
+          "parent_turn_limit": 12,
+          "parent_turn_count": 5
+        },
+        "monitor_usage": {
+          "inferences": 7,
+          "input_tokens": 32006,
+          "total_scoring_seconds": 2.898997332000363
+        },
+        "source_artifacts": {
+          "OUTCOME.json": "087f4eac6678ee113a3c04abbaff57d7df5a1f1320a4bb715e07bcdffe28cf8e",
+          "INITIAL.json": "9dcf44a21897fbd1dcfc777e5884bf9695beee44dacf94bb937e7a20cd00eceb",
+          "QUALITY.json": "2330deac89a70173ce785eddd006c6b53d325137abf68ffac340b0d90eb1f270",
+          "incident-ledger.json": "81e6ded6bbbbe3e3871c469a9519e7453dcf16cb013f13eb68246aabe040aa9c",
+          "research.json": "65c2c2432fc7c0c3e12a057bfac957ef771727c18f4f3f1722bd0a1bc3cd9ae1",
+          "WORKER_PROMPT_MODE.json": "607bb7169fc575297b2e128a2825a9f1a5af050e42f2fdfe1b363050b0b68a2f",
+          "VERIFIED.json": "527b8c9cea632670c049d159d0745ea98996a64601076a8b1acf7febe80e8a7a",
+          "QUANTITY_VERIFIED.json": "819d4919e72206543c938c591866b1884d5890a06bd95075bc9a9d2272e5d843",
+          "monitor/SAMPLING.json": "b0dccea3ff81258e5ba40b22f8c309482316af4f720b94f85cca76569f350d9c"
+        },
+        "monitor_cost_scope": "Measured inference work reported separately; utility uses whole-episode elapsed time and native starts, not billing prices"
+      },
+      "parent_turns": 5,
+      "decisions": [
+        {
+          "receipt": "episode-2306a14e4264b0a8/monitor/attention-00001.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-7-ee0037d8fdfc8505",
+            "model_view_sha256": "0bcee7bffe67cc1855526091263494cfefca6973487dc8f71a124bd5d17e2774",
+            "policy_id": "scientific-attention-continued_sft",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "selected",
+            "evidence_ids": [
+              "declared_task-0"
+            ],
+            "basis": "silence",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-7-ee0037d8fdfc8505",
+            "current_packet_id": "packet-8-fde261bfa61162c2",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793173428.0704355
+        },
+        {
+          "receipt": "episode-2306a14e4264b0a8/monitor/attention-00002.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-10-67dee4ffb0734e2b",
+            "model_view_sha256": "c27eebc1c28fc03d7330db8ce2acd21fe33ed0fc62a9d8255f13838055c4f57e",
+            "policy_id": "scientific-attention-continued_sft",
+            "status": "ok",
+            "action": "wake_director",
+            "evidence_basis": "selected",
+            "evidence_ids": [
+              "progress-0"
+            ],
+            "basis": "silence",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "pending",
+            "reason": "silence_allowance_not_exceeded",
+            "proposed_action": "wake_director",
+            "packet_id": "packet-10-67dee4ffb0734e2b",
+            "current_packet_id": "packet-11-db65c05328216433",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793173433.5910478
+        },
+        {
+          "receipt": "episode-2306a14e4264b0a8/monitor/attention-00003.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-13-90aab7a6e105ed6e",
+            "model_view_sha256": "91cbd179ddb71528ed5067d16181fc6fb65ee94407e53e41734108686f4157a9",
+            "policy_id": "scientific-attention-continued_sft",
+            "status": "ok",
+            "action": "observe",
+            "evidence_basis": "selected",
+            "evidence_ids": [
+              "progress-0"
+            ],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "observe",
+            "reason": "policy_choice",
+            "proposed_action": "observe",
+            "packet_id": "packet-13-90aab7a6e105ed6e",
+            "current_packet_id": "packet-14-f312fb65c09bebeb",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793173438.6099503
+        },
+        {
+          "receipt": "episode-2306a14e4264b0a8/monitor/attention-00004.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-16-ca5bb0e1d9779663",
+            "model_view_sha256": "cdf011699945f180ef59d5823959cd60967be314954dd6f54d802311ee047818",
+            "policy_id": "scientific-attention-continued_sft",
+            "status": "ok",
+            "action": "wake_director",
+            "evidence_basis": "whole_view",
+            "evidence_ids": [],
+            "basis": "measurement",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "recheck",
+            "reason": "ungrounded_attention",
+            "proposed_action": "wake_director",
+            "packet_id": "packet-16-ca5bb0e1d9779663",
+            "current_packet_id": "packet-17-e5968ee1378e1e7d",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793173443.632478
+        },
+        {
+          "receipt": "episode-2306a14e4264b0a8/monitor/attention-00005.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-19-b13f429b6582ec53",
+            "model_view_sha256": "749a0f42e6855f42f7488cc946de3a47d26c967a068c73ce2e202b8c554f4254",
+            "policy_id": "scientific-attention-continued_sft",
+            "status": "ok",
+            "action": "wake_director",
+            "evidence_basis": "selected",
+            "evidence_ids": [
+              "progress-0"
+            ],
+            "basis": "unspecified",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "recheck",
+            "reason": "ungrounded_attention",
+            "proposed_action": "wake_director",
+            "packet_id": "packet-19-b13f429b6582ec53",
+            "current_packet_id": "packet-20-63561adcdb7d32e9",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793173448.6543705
+        },
+        {
+          "receipt": "episode-2306a14e4264b0a8/monitor/attention-00006.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-22-2fc51fbe90e8266e",
+            "model_view_sha256": "ac8cdc8ebdc92a3eb1de979abecf024ec4453e5939846bd1a683a01e9ed0d16f",
+            "policy_id": "scientific-attention-continued_sft",
+            "status": "ok",
+            "action": "wake_director",
+            "evidence_basis": "selected",
+            "evidence_ids": [
+              "progress-0"
+            ],
+            "basis": "measurement",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "pending",
+            "reason": "awaiting_persistence",
+            "proposed_action": "wake_director",
+            "packet_id": "packet-22-2fc51fbe90e8266e",
+            "current_packet_id": "packet-23-32adf84d857b8578",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793173455.615353
+        },
+        {
+          "receipt": "episode-2306a14e4264b0a8/monitor/attention-00007.json",
+          "decision": {
+            "schema_version": "scientific-attention/0.2-draft",
+            "packet_id": "packet-25-9ef3d4fcd55e8c63",
+            "model_view_sha256": "022c198af9b36d0494e253a3d10f45d0f352008ee4886fe277a3dacc648294f7",
+            "policy_id": "scientific-attention-continued_sft",
+            "status": "ok",
+            "action": "wake_director",
+            "evidence_basis": "selected",
+            "evidence_ids": [
+              "progress-0",
+              "declared_task-0"
+            ],
+            "basis": "measurement",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "admission": {
+            "disposition": "admitted",
+            "reason": "fresh_grounded_persistent_request",
+            "proposed_action": "wake_director",
+            "packet_id": "packet-25-9ef3d4fcd55e8c63",
+            "current_packet_id": "packet-26-da8df87efd28bac8",
+            "incident_id": "diagnostic-episode",
+            "authority": "attention_only",
+            "support_kind": "none",
+            "question_ref": null
+          },
+          "received_at": 1793173460.6347046
+        }
+      ],
+      "actual_alerts": [
+        {
+          "origin": "coprocessor",
+          "action": "wake_director",
+          "created_at": 1793173460.6347046,
+          "packet_sha256": "8ed99550b922b9f9c856d0a18b639731eb54a5104ad0bff28fbc20e6bee3cc25",
+          "authority": "Attention request only; no repair permission or scientific approval"
+        }
+      ],
+      "solver_receipts": [
+        {
+          "name": "mesh_128",
+          "cells": 128,
+          "steps": 80,
+          "status": "succeeded",
+          "binary_sha256": "40259ed2687707b4c693e5b0e7fbadef54dca4fab64898d9d42e654fbdf644eb",
+          "input_sha256": "fd941c6e27e60b471ee0796997d465e9aec43192fd075c9ebd8665fb87b337b3",
+          "returncode": 0
+        },
+        {
+          "name": "mesh_64",
+          "cells": 64,
+          "steps": 40,
+          "status": "succeeded",
+          "binary_sha256": "40259ed2687707b4c693e5b0e7fbadef54dca4fab64898d9d42e654fbdf644eb",
+          "input_sha256": "fd941c6e27e60b471ee0796997d465e9aec43192fd075c9ebd8665fb87b337b3",
+          "returncode": 0
+        }
+      ]
+    }
+  ],
+  "mean_elapsed_seconds": {
+    "sampled": 262.5919051170349,
+    "wait": 273.2807047367096
+  },
+  "descriptive_reduction_fraction": 0.03911289540171792,
+  "observed_compute_units": 4.789999999999964,
+  "local_cleanup": {
+    "started_at": 1793174295.0810661,
+    "pid": 122550,
+    "endpoint": "gpu-a100-hm-ass1c0-xh1g7qqyufz4",
+    "stage": "released",
+    "evidence": "Matching remote guard release receipt",
+    "task_cleanup_returncode": 0,
+    "ended_at": 1793174297.6847203
+  },
+  "limitations": [
+    "Three configuration pairs; one execution per arm; integration commissioning, not a powered efficacy study.",
+    "No pretrained-base arm or optimizer update in this commission.",
+    "Twenty correlated decisions are not twenty independent scientific outcomes.",
+    "Healthy-case proposals and host admission are separate; no population false-alert estimate.",
+    "Recorded compute balance includes setup/recovery and may lag billing."
+  ]
+}

@@ -176,3 +176,68 @@ and `6.19e-8` against the unchanged `1e-4` tolerance. Actual prompt hashes match
 The collector then entered the registered commissioning campaign using the
 constrained distribution. At this saved qualification snapshot it was waiting
 through the initial 90-second gap; scientific outcomes were not yet available.
+
+
+## Completed C12/C13 native sampling commission
+
+All six assigned workflows completed verified scientific reports; all twelve
+physical solver receipts succeeded. There were no missing required feedback
+acknowledgments, duplicate wakeups, malformed sampled proposals or unstarted
+assignments. Collection/export checks passed for twenty decisions across three
+sampled episodes. The commissioning split remains optimizer-ineligible by design.
+The [terminal evidence](../live-state-learning-20261026/sampling-commission-c13-completed.json)
+retains every episode, proposal/admission, actual alert, measured utility and
+accounting record. No training update ran.
+
+| Mechanism | No automatic attention: seconds / native starts | Sampled SFT: seconds / native starts | Actual automatic action |
+|---|---:|---:|---|
+| Unit conversion | 263.20 / 3 | 266.50 / 5 | Wake director once |
+| Healthy progress | 167.54 / 2 | 151.65 / 2 | None |
+| Protected source binding | 389.10 / 6 | 369.62 / 8 | Wake director once |
+
+The descriptive mean is 262.59 seconds for sampled SFT versus 273.28 for waiting,
+a 3.91% reduction, with fifteen versus eleven total native starts. One pair per
+configuration cannot establish a repeatable efficiency advantage. The healthy
+pair differs in elapsed time despite zero automatic dispatches in both arms;
+its difference cannot be attributed to a successful intervention. The protected
+sampled workflow used five parent turns and completed, exercising the revised
+resumption path with real model decisions in the loop.
+
+The policy proposed `wake_director` sixteen times and `observe` four times.
+Only two wake proposals dispatched. In the healthy episode, eight of nine samples
+proposed waking: six were rejected as ungrounded and two did not establish
+persistence. Zero actual healthy wakes therefore reflects the host gate and is
+not evidence that the learned policy has solved false alerts. These nine polls
+are one correlated trajectory, not a measured deployment false-positive rate.
+
+An [offline decoder audit](../live-state-learning-20261026/sampling-commission-c13-decoding.json)
+reused the saved probabilities without model execution. Both independent and
+contract-constrained greedy decoding would select director on five of the nine
+healthy observations, versus eight sampled choices. Thus sampling contributes,
+but deterministic decoding alone does not remove the proposal problem on this
+trace. These are alternative choices on stored states, not executed alternative
+workflows or counterfactual dispatch/timing outcomes. The structural decoder
+eliminated missing-question combinations in this run; that is a different
+criterion from scientifically warranted attention.
+
+The twenty scoring calls consumed 93,753 input tokens and 29.888 seconds in
+aggregate. The first two unit-conversion calls took 11.117 and 11.106 seconds;
+subsequent calls took 0.301–0.455 seconds. Three prior reference probes had passed,
+so reference-probe warmup alone did not remove these early delays. Their cause
+is not established by these records. The costs remain in the measured outcomes.
+
+Initial and terminal base/SFT reproduction checks all passed with maximum
+probability discrepancy `6.19e-8`. All 26 workflow native starts closed; with
+authentication the phase used 27 of its 73-start ceiling. The owned A100 was
+released automatically at 07:50:08 UTC (15:50 China time), before its deadline.
+The expiring local control task was removed and the local failsafe acknowledged
+release. Recorded balance decreased by 4.79 CU from the phase baseline, including
+the failed deployment and recovery; this is observed accounting, not a final
+itemized billing statement.
+
+The next model-development priority is reducing unsupported and premature wake
+proposals while retaining sensitivity to actual diagnostic faults. Training
+examples should include realistic healthy trajectories and genuinely ambiguous
+states; development/test episodes and measured workflow returns must remain
+separate. This commission validates the collection path and exposes that target;
+it does not authorize relabelling its commissioning rows as training returns.
