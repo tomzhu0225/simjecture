@@ -1,0 +1,74 @@
+{
+  "c12-local-allocation-http2-retry01-status.json": {
+    "stage": "running",
+    "started_at": 1793170514.1329236,
+    "prior_attempt": "c12-local-allocation-http2-status.json",
+    "notebook": "b868a6a7-bc7f-47bf-bae5-e4b4ee742c81",
+    "balance": 1106.67,
+    "assignment_http": {
+      "method": "POST",
+      "host": "colab.research.google.com",
+      "path": "/tun/m/assign",
+      "started_at": 1793170518.8762698,
+      "ended_at": 1793170527.4654045,
+      "curl_returncode": 0,
+      "http_status": "200",
+      "http_version": "2",
+      "error_summary": "",
+      "error_markers": []
+    },
+    "endpoint": "gpu-a100-hm-euw4a0-dpio09w5iige",
+    "local_guard_pid": 72293,
+    "remote_guard_pid": 3952892,
+    "scheduled_control_installed": true,
+    "pids": {
+      "deploy_c12_a100.py": 3952952,
+      "run_c12_sampling.py": 3952953,
+      "attach_c12.py": 3952954
+    },
+    "stop_by": 1793177377.323619
+  },
+  "c12-lease.json": {
+    "created_at": 1793170527.4657907,
+    "stop_by": 1793177377.323619,
+    "session": "simjecture-science-20261028a",
+    "endpoint": "gpu-a100-hm-euw4a0-dpio09w5iige",
+    "starting_balance": 1106.67,
+    "observed_balance": 1106.67,
+    "compute_cap": 20,
+    "parent_lease": "c12-resource-plan.json",
+    "scope": "New six-workflow native sampling commission; no optimizer; fresh two-hour and 20-CU ceiling"
+  },
+  "c12-scheduled-control.json": {
+    "at": 1793170530.8681214,
+    "task": "Simjecture-C12-20261028",
+    "endpoint": "gpu-a100-hm-euw4a0-dpio09w5iige",
+    "stop_by": 1793177377.323619,
+    "task_expires_at": 1793178037.323619,
+    "returncode": 0,
+    "result": "{\"TaskName\":\"Simjecture-C12-20261028\",\"State\":4}",
+    "error": ""
+  },
+  "c12-launch.json": {
+    "stage": "running",
+    "started_at": 1793170531.5931275,
+    "pids": {
+      "deploy_c12_a100.py": 3952952,
+      "run_c12_sampling.py": 3952953,
+      "attach_c12.py": 3952954
+    },
+    "launched_at": 1793170531.594391,
+    "lease": {
+      "created_at": 1793170527.4657907,
+      "stop_by": 1793177377.323619,
+      "session": "simjecture-science-20261028a",
+      "endpoint": "gpu-a100-hm-euw4a0-dpio09w5iige",
+      "starting_balance": 1106.67,
+      "observed_balance": 1106.67,
+      "compute_cap": 20,
+      "parent_lease": "c12-resource-plan.json",
+      "scope": "New six-workflow native sampling commission; no optimizer; fresh two-hour and 20-CU ceiling"
+    }
+  },
+  "scope": "Allocation/startup receipt; no claim that model qualification or native assignments have yet completed."
+}

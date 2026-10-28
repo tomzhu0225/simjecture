@@ -133,3 +133,18 @@ complete-cohort-only training export, both action distributions, changed prompt
 rejection, resumption-limit mismatch, and concurrency/gap violations. These tests
 use process doubles; native sampling with this revised collector still requires
 its own commissioning before training.
+
+
+C12 was subsequently [registered](../live-state-learning-20261026/sampling-commission-c12-registration.json)
+and [launched](../live-state-learning-20261026/sampling-commission-c12-launch.json)
+on a newly owned remote A100. Read-only validation against all six actual pilot
+records passed, then both fresh P40 controls and native authentication passed.
+The first allocation POST failed without an endpoint; an account reconciliation
+found no assigned runtime and unchanged observed balance. One recorded retry on
+the same isolated route succeeded. The original C12 deadline and credit ceiling
+were retained. No proxy configuration or global node was changed.
+
+At this launch snapshot the model was being deployed, so new native sampling,
+probability qualification and collection export were still pending. The launch
+receipt is not a completed experiment. The six prospective IDs remain separate
+from every earlier pilot and the original 64-workflow comparison.
