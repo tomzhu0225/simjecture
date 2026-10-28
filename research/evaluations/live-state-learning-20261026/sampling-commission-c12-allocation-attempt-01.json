@@ -1,0 +1,30 @@
+{
+  "attempt": {
+    "stage": "failed",
+    "started_at": 1793170324.4927118,
+    "notebook": "3abb1264-dc5c-480a-831a-4fb4621f4168",
+    "balance": 1106.67,
+    "assignment_http": {
+      "method": "POST",
+      "host": "colab.research.google.com",
+      "path": "/tun/m/assign",
+      "started_at": 1793170329.2110443,
+      "ended_at": 1793170390.6016545,
+      "curl_returncode": 56,
+      "http_status": "000",
+      "http_version": "0",
+      "error_markers": []
+    },
+    "error_type": "RuntimeError",
+    "handoff_confirmed": false,
+    "endpoint": null,
+    "ended_at": 1793170390.6020386
+  },
+  "reconciliation": {
+    "at": 1793170480.257213,
+    "assigned_endpoints": [],
+    "balance": 1106.67,
+    "scope": "Account reconciliation after failed allocation POST; no release or new allocation"
+  },
+  "interpretation": "Allocation POST failed at transport before an endpoint was returned. Follow-up live account query found zero assigned runtimes and unchanged observed balance. A single separately recorded retry uses the same route and unchanged resource deadline; no task has been rerun."
+}
