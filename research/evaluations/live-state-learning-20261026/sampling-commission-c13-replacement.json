@@ -1,0 +1,212 @@
+{
+  "c12-guard-status.json": {
+    "stage": "released",
+    "at": 1793170838.1141236,
+    "reason": "operator_stop",
+    "balance": 1106.67
+  },
+  "c12-deploy-status.json": {
+    "stage": "failed",
+    "started_at": 1793170531.6271045,
+    "error_type": "TimeoutExpired",
+    "error": "Traceback (most recent call last):\n  File \"/home/simjecture/investigations/scientific-attention-20261025/deploy_c12_a100.py\", line 26, in <module>\n    with (R/source).open('rb') as data:x=subprocess.run(ssh+['python3 -c '+shlex.quote(program)],stdin=data,capture_output=True,timeout=240)\n                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/subprocess.py\", line 550, in run\n    stdout, stderr = process.communicate(input, timeout=timeout)\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/subprocess.py\", line 1209, in communicate\n    stdout, stderr = self._communicate(input, endtime, timeout)\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/subprocess.py\", line 2116, in _communicate\n    self._check_timeout(endtime, orig_timeout, stdout, stderr)\n  File \"/usr/lib/python3.12/subprocess.py\", line 1253, in _check_timeout\n    raise TimeoutExpired(\nsubprocess.TimeoutExpired: Command '['ssh', '-S', '/home/simjecture/investigations/scientific-attention-20261025/private/c12-a100.sock', '-o', 'ControlMaster=no', '-o', 'ProxyCommand=false', '-o', 'BatchMode=yes', 'root@colab-c12', 'python3 -c \\'from pathlib import Path;import sys,shutil,os;os.umask(0o077);p=Path(\\'\"\\'\"\\'/content/science-attention/validation-model-assets.tar.gz\\'\"\\'\"\\');f=p.open(\\'\"\\'\"\\'wb\\'\"\\'\"\\');shutil.copyfileobj(sys.stdin.buffer,f);f.close();p.chmod(0o600)\\'']' timed out after 240 seconds\n",
+    "ended_at": 1793170809.3794224
+  },
+  "c12-controller-status.json": {
+    "stage": "failed",
+    "started_at": 1793170531.7026308,
+    "error": "Traceback (most recent call last):\n  File \"/home/simjecture/investigations/scientific-attention-20261025/run_c12_sampling.py\", line 39, in <module>\n    if (R/'STOP_C12_COLAB').exists():raise RuntimeError('Owned runtime stopped before model readiness')\n                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: Owned runtime stopped before model readiness\n",
+    "ended_at": 1793170819.1708858,
+    "native_starts": 0,
+    "native_active_at_finalization": 0
+  },
+  "c12-link-status.json": {
+    "stage": "stopped",
+    "started_at": 1793170532.013648,
+    "connections": [
+      {
+        "pid": 3952958,
+        "identity": {
+          "pid": 3952958,
+          "ppid": 3952957,
+          "session": 3952958,
+          "starttime": "221549954"
+        },
+        "started_at": 1793170532.0148053,
+        "ready_at": 1793170543.6291776,
+        "ended_at": 1793170809.5513964,
+        "returncode": -9,
+        "ready": true
+      }
+    ],
+    "current_pid": 3952958,
+    "ended_at": 1793170809.851985
+  },
+  "c13-phase-plan.json": {
+    "created_at": 1793171231.3653264,
+    "source_revision": "171ac44dab39904e6934609de8ba41be325790c7",
+    "workflows": 6,
+    "optimizer_updates": 0,
+    "scope": "Replace timed-out 240 MB deployment with 120 MB identical-SFT subset; unchanged scientific source/IDs/model/decoder/resource ceilings",
+    "assignment_plan_sha256": "e9522e69325a76acc8c61a84d72b93427dbc5ad3d840c9f71f88161534b75148",
+    "orchestration_sha256": {
+      "attach_c13.py": "f26082217e108dd3d0766586bf40e5128bf345f9b14323188ecbca1ee2f37c7b",
+      "deploy_c13_a100.py": "2414acdbcd93bf09cc8d8a753f96848fbe0a1d7db342809b0eefa07c95aad78e",
+      "prepare_c13_a100.py": "559a2ca08e54f8644f597470a75b2e4bd2b26403cc5cffb92010ff233f877c8a",
+      "c13_service.py": "9d1249d1942e6af3313fb45a809b552a9dfc9024e5e4e9fa471635cb15d49e56",
+      "remote_c13_guard.py": "c4ad45492e34cad3249e938fc0fac448e59ef8fcaf71a337e1fe258f8bf3668f",
+      "remote_c13_proxy.py": "a2a8fdf47c98c58ca95e4933989e4a04189ba07132904f27113e66dccf704eba",
+      "c13_colab_control.py": "7720921bcb64d675b68bcf0c35998b876b038b3fc161ff146b45dcf413f18c79",
+      "run_c13_sampling.py": "a3840d2edf3664b61d66151a0299d62938d10813881628c5f11c2227e4d9c100",
+      "start_c13_phase.py": "106b724e7140bc5b697ba2a7d376db6453222beec7633634990f8cf73e6147c5",
+      "c13-native-codex": "19c5859f457c9130b24083bc89fe1d9d6005b9f66eaf53eadd618a5f3d513369",
+      "attention_transport_r7.py": "13b212bc6cc0d81a7c044dd27044b8d87cf3a260e968f260094e3b2567cdbf90",
+      "supervise_attention_link.py": "b42dadbe31a77f9ad82923c502eea7bc6676cc309504d5bbd3f0248d00ef04e1",
+      "recovery_kernel_check.py": "ecec926d95f01c423c57f53df3708fa77ed4f0cc3de2aaf355d773388c1cd996"
+    },
+    "adapter_sha256": "76bf1bdf4c6d6a261211057d3cab4c8609131788827569f9c33f802d3491dab5",
+    "probes_sha256": "82e9d32929a5db9916c1d3c6c2d9389bd864925c84b73a36c7cbd0a49a33a7e1",
+    "resource_plan_sha256": "88115b3541415131c3813c45ebd11f5ccdc8abceb494a6f6332c8c908170bb69",
+    "physics_sha256": "311b903b42165ac019dcdc14f16838c861a2fef7601e1d78004f36ffb53e5d33",
+    "host_record_qualification_sha256": "55efed92f207c10f39d38272623513055084585eb7713de2e90034fd6b1e5a1e",
+    "collection_settings": {
+      "worker_prompt": "task_protocol",
+      "parent_turn_limit": 12,
+      "maximum_parallel_workflows": 1,
+      "minimum_gap_seconds": 90.0
+    },
+    "decision_distribution": "scientific-route-question/v1",
+    "temperature": 1.0,
+    "replacement_of": "c12-phase-plan.json",
+    "parent_plan_sha256": "599879ba07a10cc8cbc26814f6f633e95898b7100c55147645d358ddf3f0a6c4",
+    "asset_archive": {
+      "at": 1793171052.636444,
+      "path": "/home/simjecture/investigations/scientific-attention-20261025/validation-model-assets-c13.tar.gz",
+      "size": 120562046,
+      "sha256": "ce4494689a92d5da131f9e45115bbd6baac296b160fc2df41cd9ac8a2d5fc62e",
+      "models": {
+        "continued_sft": {
+          "adapter_hashes": {
+            "adapter_config.json": "5ab93c62a751ccfe082c88caabd6c40c064d04442e3b1e164387690af6e8ba6a",
+            "adapter_model.safetensors": "76bf1bdf4c6d6a261211057d3cab4c8609131788827569f9c33f802d3491dab5"
+          },
+          "original_archive_sha256": "33800ed5d21eb465f3df3a79356a09fe83983ec8c064179bae82a560a3c444d3",
+          "optimizer_steps": 8
+        }
+      },
+      "source_archive_sha256": "4b7a12dfa53e2bfc18ad0073c5fa5b820b6da08fa04c36ac8de722fcaee47bd0",
+      "scope": "Subset of original archive; continued-SFT adapter files byte-identical; no tensor loading or model call"
+    },
+    "unchanged_scientific_assignments": true,
+    "prior_scientific_attempts": 0
+  },
+  "c13-resource-plan.json": {
+    "created_at": 1793171171.9089558,
+    "stop_by": 1793177377.323619,
+    "starting_balance": 1106.67,
+    "compute_cap": 20,
+    "maximum_native_starts": 73,
+    "authentication_preflight_starts": 1,
+    "maximum_per_workflow": 12,
+    "maximum_concurrent_native": 6,
+    "maximum_parallel_workflows": 1,
+    "minimum_gap_seconds": 90,
+    "maximum_workflows": 6,
+    "optimizer_updates": 0,
+    "owned_assignment_count_before_allocation": 0,
+    "scope": "Deployment replacement only; all six original C12 scientific IDs unstarted; unchanged parent deadline/cumulative compute cap/native ceiling",
+    "observed_balance": 1106.11,
+    "parent_resource_plan": "c12-resource-plan.json",
+    "parent_sha256": "4889308b25dd543f46110a640a4e1171d642bf4bb55dd005c1c31c29a34ea078"
+  },
+  "c13-assets.json": {
+    "at": 1793171052.636444,
+    "path": "/home/simjecture/investigations/scientific-attention-20261025/validation-model-assets-c13.tar.gz",
+    "size": 120562046,
+    "sha256": "ce4494689a92d5da131f9e45115bbd6baac296b160fc2df41cd9ac8a2d5fc62e",
+    "models": {
+      "continued_sft": {
+        "adapter_hashes": {
+          "adapter_config.json": "5ab93c62a751ccfe082c88caabd6c40c064d04442e3b1e164387690af6e8ba6a",
+          "adapter_model.safetensors": "76bf1bdf4c6d6a261211057d3cab4c8609131788827569f9c33f802d3491dab5"
+        },
+        "original_archive_sha256": "33800ed5d21eb465f3df3a79356a09fe83983ec8c064179bae82a560a3c444d3",
+        "optimizer_steps": 8
+      }
+    },
+    "source_archive_sha256": "4b7a12dfa53e2bfc18ad0073c5fa5b820b6da08fa04c36ac8de722fcaee47bd0",
+    "scope": "Subset of original archive; continued-SFT adapter files byte-identical; no tensor loading or model call"
+  },
+  "native_c12": {
+    "starts": 0
+  },
+  "scientific_campaign_exists": false,
+  "c12_local_cleanup": {
+    "started_at": 1793171044.5412028,
+    "pid": 82575,
+    "endpoint": "gpu-a100-hm-euw4a0-dpio09w5iige",
+    "stage": "released",
+    "evidence": "Matching remote guard release receipt",
+    "task_cleanup_returncode": 0,
+    "ended_at": 1793171047.020267
+  },
+  "c13-local-allocation-http2-status.json": {
+    "stage": "running",
+    "started_at": 1793171256.6106768,
+    "notebook": "5b719d08-479c-4b43-9af5-0945bef6a3a4",
+    "balance": 1106.11,
+    "assignment_http": {
+      "method": "POST",
+      "host": "colab.research.google.com",
+      "path": "/tun/m/assign",
+      "started_at": 1793171262.0766897,
+      "ended_at": 1793171281.0028563,
+      "curl_returncode": 0,
+      "http_status": "200",
+      "http_version": "2",
+      "error_summary": "",
+      "error_markers": []
+    },
+    "endpoint": "gpu-a100-hm-ass1c0-xh1g7qqyufz4",
+    "local_guard_pid": 84561,
+    "remote_guard_pid": 3954262,
+    "scheduled_control_installed": true,
+    "pids": {
+      "deploy_c13_a100.py": 3954322,
+      "run_c13_sampling.py": 3954323,
+      "attach_c13.py": 3954324
+    },
+    "stop_by": 1793177377.323619
+  },
+  "c13-scheduled-control.json": {
+    "at": 1793171284.0112417,
+    "task": "Simjecture-C13-20261028",
+    "endpoint": "gpu-a100-hm-ass1c0-xh1g7qqyufz4",
+    "stop_by": 1793177377.323619,
+    "task_expires_at": 1793178037.323619,
+    "returncode": 0,
+    "result": "{\"TaskName\":\"Simjecture-C13-20261028\",\"State\":4}",
+    "error": ""
+  },
+  "c13-launch.json": {
+    "stage": "running",
+    "started_at": 1793171285.2395518,
+    "pids": {
+      "deploy_c13_a100.py": 3954322,
+      "run_c13_sampling.py": 3954323,
+      "attach_c13.py": 3954324
+    },
+    "launched_at": 1793171285.3688073,
+    "lease": {
+      "created_at": 1793171281.0033076,
+      "stop_by": 1793177377.323619,
+      "session": "simjecture-science-20261028b",
+      "endpoint": "gpu-a100-hm-ass1c0-xh1g7qqyufz4",
+      "starting_balance": 1106.67,
+      "observed_balance": 1106.11,
+      "compute_cap": 20,
+      "parent_lease": "c13-resource-plan.json",
+      "scope": "Deployment replacement for six untouched C12 assignments; unchanged C12 deadline and cumulative 20-CU ceiling"
+    }
+  }
+}

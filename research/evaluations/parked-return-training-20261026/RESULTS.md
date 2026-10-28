@@ -148,3 +148,22 @@ At this launch snapshot the model was being deployed, so new native sampling,
 probability qualification and collection export were still pending. The launch
 receipt is not a completed experiment. The six prospective IDs remain separate
 from every earlier pilot and the original 64-workflow comparison.
+
+
+The first C12 deployment then exceeded its 240-second asset-upload timeout.
+A metadata observation shortly beforehand showed 222,363,648 of 240,457,000 bytes
+transferred. No model preparation, inference or scientific assignment began;
+the native-workflow counter stayed zero. The controller stopped, the remote
+guard released its owned endpoint, and the temporary local control task was
+removed. Fresh account reconciliation showed no assigned runtime and 1,106.11 CU,
+a 0.56-CU observed decrease from the phase baseline, subject to billing lag.
+
+[C13 replacement evidence](../live-state-learning-20261026/sampling-commission-c13-replacement.json)
+retains this failure and the replacement plan. The payload now includes only the
+continued-SFT adapter needed for this commission: 120,562,046 compressed bytes.
+Its adapter/configuration bytes match the original hashes exactly; the unused RL
+adapter was excluded. The transfer bound is 600 seconds, still within the same
+parent phase deadline. The six original IDs, scientific source, sampler, model,
+native-start ceiling, 08:49:37 UTC deadline and cumulative 20-CU ceiling remain
+unchanged. No scientific attempt was rerun. The replacement runtime is separately
+owned and guarded; this record establishes launch, not completed qualification.
