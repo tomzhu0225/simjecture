@@ -18,7 +18,8 @@
     "src/simjecture_monitor/server.py": "7dc3088545c8338163fd5ac8b3b0563f187e32b30c01a2d729bbfb3fcba12b44",
     "src/simjecture_monitor/decision_interface.py": "03c33560fda8a89d3ac63ded8ca6c0be6621b3f2aa70da94a3d0cc6065d6b115",
     "src/simjecture_monitor/sampling_trace.py": "efaf158504c5c74abe6e509b6fbc854c606287ded193fe714906021b9d87eac3",
-    "src/simjecture_monitor/__init__.py": "8769e4a05daec354874894663bd2801db264954c908b427413ff4fcbac660479"
+    "src/simjecture_monitor/__init__.py": "8769e4a05daec354874894663bd2801db264954c908b427413ff4fcbac660479",
+    "src/simjecture_monitor/decision_model.py": "25d83791c08a2b671dce5f0eff251c37eac159e231a80722e71979be2469552d"
   },
   "scope": "Portable contracts and inference only; experimental workflow drivers and allocation scripts excluded. New tool/normal-study integration requires its own qualification."
 }

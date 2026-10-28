@@ -159,3 +159,15 @@ def test_closing_observer_cannot_dispatch_a_late_response(tmp_path, monkeypatch)
     clock[0] += 10
     value.tick(observe, lambda *args: calls.append(args))
     assert calls == []
+
+
+def test_model_entrypoints_import_without_loading_torch():
+    import subprocess
+    import sys
+
+    code = """import importlib,sys
+for name in ['decision_model','multiadapter_server','attention_server','tool']:
+ importlib.import_module('simjecture_monitor.'+name)
+assert 'torch' not in sys.modules and 'transformers' not in sys.modules
+"""
+    subprocess.run([sys.executable, "-c", code], check=True)
