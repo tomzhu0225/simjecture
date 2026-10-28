@@ -97,6 +97,7 @@ def test_real_study_observation_has_no_private_reasoning_and_uses_unknown_timing
     assert observer.observe().worker_state == "active"
     observer.directory = None
     assert observer.observe().worker_state == "parked"
+    assert "Submitted calculation" in observer.observe().model_dump_json()
     observer.close()
 
 

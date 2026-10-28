@@ -100,13 +100,16 @@ class StudyAttention:
             path = Path(self.directory) / "response.json"
             if not hasattr(self, "stream") or self.stream.path != path:
                 self.stream = PublicStream(path, subject="main-worker", maximum=5)
+        if hasattr(self, "stream"):
             self.stream.poll(now=now)
             for index, event in enumerate(self.stream.events):
                 append(f"worker_event_{index}", event["body"], kind="tool_result", origin="worker")
         # Bounded public progress/experiment records. Never read numerical arrays,
         # private provider state or arbitrary worker-selected paths while polling.
         for kind in ["progress", "experiments"]:
-            paths = sorted((sup.root / kind).glob("*.json"))[-4:]
+            paths = sorted(
+                (sup.root / kind).glob("*.json"), key=lambda path: path.stat().st_mtime_ns
+            )[-4:]
             for index, path in enumerate(paths):
                 if path.is_symlink() or path.stat().st_size > 65536:
                     continue
