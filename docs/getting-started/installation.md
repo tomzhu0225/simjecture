@@ -204,7 +204,7 @@ The browser dashboard itself is included with the core installation. Recorded
 campaigns can be opened without Node.js or a model runtime:
 
 ```bash
-uv run simjecture web demos/gray_scott_counterexample/record --read-only
+uv run simjecture web demos/kepler_energy/record --read-only
 ```
 
 The default browser entry point is the research workspace. Use a compatible API or

@@ -34,6 +34,8 @@ For current benchmark instructions and interpretation, use the
 - [MiMo/Flash comparison checks](../testing/mimo-flash-comparison.md)
 - [Guided model comparison](../research/llm-comparison.md)
 - [DSH upgrade assessment](../how-to/dsh-upgrade-assessment.md)
+- [DeepSeek Harness removal note](../how-to/deepseek-harness.md)
+- [Historical Simote agent roles](../how-to/simote-agent-roles.md)
 
 ```{toctree}
 :hidden:
@@ -43,6 +45,8 @@ For current benchmark instructions and interpretation, use the
 ../testing/mimo-flash-comparison
 ../research/llm-comparison
 ../how-to/dsh-upgrade-assessment
+../how-to/deepseek-harness
+../how-to/simote-agent-roles
 ```
 
 ## Campaign audits and historical plans

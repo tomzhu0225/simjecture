@@ -149,8 +149,6 @@ line-length = 100
 target-version = "py311"
 extend-exclude = [
   "src/conjecture_solver/vendor",
-  "demos/agent_roles_validation/record",
-  "demos/gray_scott_counterexample/record",
   "demos/kepler_energy/record",
   "demos/resistive_mhd_island_coalescence/minimal_record",
   "demos/resistive_mhd_island_coalescence/sol_medium_record",
@@ -159,8 +157,6 @@ extend-exclude = [
   "demos/flash_warpx_kinetic_patch/fresh_v070_record",
   "demos/flash_warpx_kinetic_patch/continuation_record",
   "demos/flash_warpx_kinetic_patch/record",
-  "demos/collisionless_gem_reconnection/guided",
-  "demos/collisionless_gem_reconnection/record",
 ]
 
 [tool.ruff.lint]

@@ -102,12 +102,6 @@ experiments, hypothesis revisions and independent review. It found five countere
 four-case repair using fresh simulations and independent review. The retained
 record can be verified without a model call.
 
-Earlier records remain available. In the
-[historical Gray–Scott study](https://drawingsword.com/simjecture/demos/gray-scott.html), the harness rejected an
-attempt to close a claim using evidence commissioned for a different claim. The
-agent registered the missing contract and ran fresh experiments before closing it.
-That record documents the classic workflow; it is not presented as a new-version run.
-
 ## What the evidence system preserves
 
 | Question you should be able to ask | Recorded material |
@@ -162,7 +156,8 @@ the same project operations for external agents and scripts.
 
 Ordinary Python studies work without an external solver. Optional capabilities
 include WarpX, operator-supplied FLASH, [CAD, meshing and FEM tools](https://drawingsword.com/simjecture/how-to/cad-and-simulation.html)
-(FreeCAD, Gmsh, Elmer), EOS/opacity and FAC atomic-physics tools, ITER diagnostics and
+(FreeCAD, Gmsh, Elmer), [Quantum ESPRESSO DFT](https://drawingsword.com/simjecture/how-to/quantum-espresso.html),
+EOS/opacity and FAC atomic-physics tools, ITER diagnostics and
 [GPU cylinder flow](https://drawingsword.com/simjecture/how-to/cylinder-flow.html). The cylinder solver and its
 validation records were contributed by [Zifei Meng](https://github.com/ZifeiMengSPH).
 

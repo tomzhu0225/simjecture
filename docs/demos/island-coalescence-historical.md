@@ -69,33 +69,17 @@ $$
 that persists under spatial refinement. Here $S_\eta$ is the normalized
 inverse-resistivity control used by this setup, not a dimensional Lundquist
 number. The rate diagnostic, flux window, sheet resolution and branch eligibility
-must be established before interpreting a fit. This single-fluid model does not
+must be established before interpreting a fit. That single-fluid model does not
 resolve electron-scale kinetic reconnection.
 
-## The classic campaign remains available
+## Earlier six-hour classic campaign note
 
-![Four FLASH states showing current density and magnetic-field contours during island coalescence](../../demos/resistive_mhd_island_coalescence/figures/island_coalescence_evolution.png)
-
-*Preserved commissioning run: 2D FLASH 4.8, 128 × 128 cells, four MPI ranks,
-uniform resistivity. These are actual computed fields. The commissioning run
-establishes a working instrument; it is not evidence for a scaling law.*
-
-
-The [original demo](https://github.com/tomzhu0225/simjecture/tree/main/demos/resistive_mhd_island_coalescence)
-retains the guided input, plotting code, field and profile figures, a real GUI
-capture and the six-hour campaign's audit extract. No original figure or record
-has been replaced by the refreshed documentation.
-
-That campaign recorded the root as falsified and left its repair open. The later
-audit identified an important interpretation error: the root's reported 95%
-interval, $[-0.423266,-0.389641]$, overlaps the proposed exponent band. An upper
-edge above $-0.40$ does not, by itself, reject the whole band. The repair also
-missed its specified refinement case and failed final analysis-lineage checks.
-Read the original record together with its appended correction.
-
-This is a useful example of why a convincing field plot, a regression and a
-recorded verdict need to be assessed separately. The historical audit extract
-is not a portable, completed scientific evidence package.
+An earlier six-hour classic-workflow campaign (`v0.6.2` tag) recorded the root
+as falsified and left its repair open. A subsequent audit identified an
+interpretation error: the root's reported 95% interval, $[-0.423266,-0.389641]$,
+overlaps the proposed exponent band. An upper edge above $-0.40$ does not, by
+itself, reject the whole band. The repair also missed its specified refinement
+case and failed final analysis-lineage checks.
 
 ## The fresh one-hour minimal run
 

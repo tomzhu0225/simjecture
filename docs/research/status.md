@@ -24,8 +24,8 @@ remains the origin domain.
 - A planted matched-moment kinetic-stability counterexample verified by analytic,
   independent PIC, and WarpX paths.
 - Real magnetic-mirror, nonlinear-Landau, Gray–Scott, and two-dimensional
-  collisionless GEM autonomous campaigns, including a preserved 12-run CUDA
-  [GEM demonstration](../demos/collisionless-gem.md).
+  collisionless GEM autonomous campaigns, including the archived 12-run CUDA
+  [GEM run 0004 audit](run-0004.md).
 
 The [fresh FLASH island-coalescence audit](../demos/island-coalescence.md)
 also preserves an unresolved outcome and a post-run correction: a half-cell error

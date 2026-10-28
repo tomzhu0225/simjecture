@@ -105,8 +105,6 @@ demos/island-coalescence
 demos/flash-warpx-patch
 demos/qin1-hardware-plasma
 demos/kepler-energy
-demos/gray-scott
-demos/collisionless-gem
 ```
 
 ```{toctree}
@@ -155,8 +153,6 @@ how-to/ssh-workers
 how-to/restricted-containers
 how-to/public-trials
 how-to/llm-bench
-how-to/deepseek-harness
-how-to/simote-agent-roles
 ```
 
 ```{toctree}

@@ -46,7 +46,7 @@ The `study` launcher accepts the same package for minimal research:
 uv run simjecture study --mode minimal \
   --campaign artifacts/guided-study \
   --hypothesis-file demos/resistive_mhd_island_coalescence/hypothesis.txt \
-  --instructions-file demos/resistive_mhd_island_coalescence/campaign_instruction.txt \
+  --instructions-file demos/resistive_mhd_island_coalescence/minimal_instructions.txt \
   --guided-commission demos/resistive_mhd_island_coalescence/guided_commission.json \
   --capabilities /path/to/installed-capabilities \
   --backend codex-glm --model glm-5.3 --wall-seconds 3600
