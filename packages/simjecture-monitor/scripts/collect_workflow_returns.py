@@ -23,6 +23,7 @@ from simjecture_monitor.attention_server import request
 from simjecture_monitor.events import digest, put
 from simjecture_monitor.native_guard import process_stat, stop_session
 from simjecture_monitor.sampling_trace import file_reference
+from simjecture_monitor.workflow_collection import DEFAULTS, block_wall_seconds, settings
 
 SCRIPTS = Path(__file__).resolve().parent
 HOST_POLICY = dict(
@@ -52,6 +53,8 @@ def sources():
 
 
 def plan(args):
+    configuration = settings({key: getattr(args, key, value) for key, value in DEFAULTS.items()})
+    host_policy = HOST_POLICY | dict(maximum_parent_turns=configuration["parent_turn_limit"])
     distribution = getattr(args, "decision_distribution", INDEPENDENT)
     if distribution not in DISTRIBUTIONS:
         raise ValueError("Unknown action distribution")
@@ -73,7 +76,12 @@ def plan(args):
             configuration_sha256=digest(dict(family=family, seed=seed)),
             worker_config_sha256=digest(WORKER),
             host_policy_sha256=digest(
-                dict(policy=HOST_POLICY, native_cap=args.native_cap, sources=fingerprint)
+                dict(
+                    policy=host_policy,
+                    collection=configuration,
+                    native_cap=args.native_cap,
+                    sources=fingerprint,
+                )
             ),
             criteria_sha256=digest(CRITERIA),
             environment_sha256=backend_hash,
@@ -82,7 +90,10 @@ def plan(args):
         trials = []
         for replicate in range(args.replicates):
             for role in ["sampled", "wait"]:
-                name = "episode-" + digest([args.order_seed, family, seed, replicate, role])[:16]
+                identity = [args.order_seed, family, seed, replicate, role]
+                if configuration != DEFAULTS:
+                    identity.append(configuration)
+                name = "episode-" + digest(identity)[:16]
                 trials.append(
                     dict(
                         id=name,
@@ -111,7 +122,8 @@ def plan(args):
         blocks=blocks,
         source_files_sha256=fingerprint,
         worker=WORKER,
-        host_policy=HOST_POLICY,
+        host_policy=host_policy,
+        collection_settings=configuration,
         native_cap=args.native_cap,
         backend_sha256=backend_hash,
         model_policy=args.model_policy,
@@ -120,7 +132,7 @@ def plan(args):
         decision_distribution=distribution,
         order_seed=args.order_seed,
         scope="Fresh native episodes sharing task configuration; no matched private worker prefix",
-        maximum_parallel_workflows=2,
+        maximum_parallel_workflows=configuration["maximum_parallel_workflows"],
     )
     args.root.mkdir(parents=True, exist_ok=False)
     put(args.root / "PLAN.json", result)
@@ -138,6 +150,12 @@ def run(args):
         raise ValueError("Frozen plan or collector sources changed")
     if (root / "CAMPAIGN.json").exists():
         raise ValueError("Campaign already attempted; never restart over recorded outcomes")
+    configuration = settings(frozen.get("collection_settings"))
+    if (
+        frozen["maximum_parallel_workflows"] != configuration["maximum_parallel_workflows"]
+        or frozen["host_policy"]["maximum_parent_turns"] != configuration["parent_turn_limit"]
+    ):
+        raise ValueError("Inconsistent frozen execution settings")
     if file_reference(args.backend)["sha256"] != frozen["backend_sha256"]:
         raise ValueError("Physical backend differs from the frozen environment")
     lease = read(args.budget)
@@ -183,6 +201,7 @@ def run(args):
 
     def one(block, trial):
         result = dict(**trial, started_at=time.time(), plan_sha256=plan_hash)
+        put(root / (trial["id"] + "-controller.json"), result | dict(stage="started"))
         deadline = min(time.time() + 750, read(args.budget)["deadline"])
         env = dict(
             os.environ,
@@ -213,6 +232,10 @@ def run(args):
             str(args.python.absolute()),
             "--plasma-assets",
             str(args.plasma_assets.absolute()),
+            "--worker-prompt",
+            configuration["worker_prompt"],
+            "--parent-turn-limit",
+            str(configuration["parent_turn_limit"]),
         ]
         if trial["role"] == "sampled":
             command += [
@@ -245,13 +268,14 @@ def run(args):
         return result
 
     save()
+    previous_end = time.time()
     try:
         for block in frozen["blocks"]:
             lease = read(args.budget)
             count = len(block["trials"])
             if (
                 lease["maximum_starts"] - len(lease["starts"]) < count * frozen["native_cap"]
-                or time.time() + math.ceil(count / 2) * 760 + 60 >= lease["deadline"]
+                or time.time() + block_wall_seconds(count, configuration) >= lease["deadline"]
             ):
                 state["stop_reason"] = "No full new block fits the existing lease"
                 break
@@ -264,11 +288,36 @@ def run(args):
             record = dict(id=block["id"], started_at=time.time(), results=[])
             state["blocks"].append(record)
             save()
-            with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
-                futures = [pool.submit(one, block, t) for t in block["trials"]]
-                for future in concurrent.futures.as_completed(futures):
-                    record["results"].append(future.result())
+            if configuration["maximum_parallel_workflows"] == 1:
+                for trial in block["trials"]:
+                    while time.time() < previous_end + configuration["minimum_gap_seconds"]:
+                        time.sleep(
+                            max(
+                                0,
+                                min(
+                                    1,
+                                    previous_end
+                                    + configuration["minimum_gap_seconds"]
+                                    - time.time(),
+                                ),
+                            )
+                        )
+                    if time.time() + 750 >= read(args.budget)["deadline"]:
+                        raise TimeoutError("No further assignment fits the existing lease")
+                    result = one(block, trial)
+                    record["results"].append(result)
+                    previous_end = result["ended_at"]
                     save()
+                    if result["stage"] != "completed":
+                        raise RuntimeError("Collector failure; later assignments remain unstarted")
+            else:
+                with concurrent.futures.ThreadPoolExecutor(
+                    max_workers=configuration["maximum_parallel_workflows"]
+                ) as pool:
+                    futures = [pool.submit(one, block, t) for t in block["trials"]]
+                    for future in concurrent.futures.as_completed(futures):
+                        record["results"].append(future.result())
+                        save()
             record["ended_at"] = time.time()
             save()
             if sources() != frozen["source_files_sha256"]:
@@ -318,6 +367,12 @@ def run(args):
         state.update(
             stage="failed", ended_at=time.time(), error=type(error).__name__ + ": " + str(error)
         )
+    state["unstarted_episodes"] = [
+        trial["id"]
+        for block in frozen["blocks"]
+        for trial in block["trials"]
+        if not (root / (trial["id"] + "-controller.json")).exists()
+    ]
     save()
     # Let owned wrapper accounting settle after bounded helper cancellation.
     for _ in range(20):
@@ -350,6 +405,12 @@ def main():
     planning.add_argument("--temperature", type=float, default=3.0)
     planning.add_argument("--decision-distribution", choices=DISTRIBUTIONS, default=INDEPENDENT)
     planning.add_argument("--backend", type=Path, required=True)
+    planning.add_argument(
+        "--worker-prompt", choices=["inherited", "task_protocol"], default="inherited"
+    )
+    planning.add_argument("--parent-turn-limit", type=int, choices=range(1, 13), default=4)
+    planning.add_argument("--maximum-parallel-workflows", type=int, choices=[1, 2], default=2)
+    planning.add_argument("--minimum-gap-seconds", type=float, default=0.0)
     for name in [
         "budget",
         "backend",

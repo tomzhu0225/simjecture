@@ -1,5 +1,6 @@
 """CLI orchestration checks use fake children and never run local physics/models."""
 
+import hashlib
 import importlib.util
 import json
 import os
@@ -32,8 +33,9 @@ def load(monkeypatch):
     "purpose,fail", [("train", False), ("commissioning", False), ("train", True)]
 )
 @pytest.mark.parametrize("distribution", [INDEPENDENT, CONTRACT])
+@pytest.mark.parametrize("serial", [False, True])
 def test_live_lifecycle_commands_export_only_complete_training_cohorts(
-    tmp_path, monkeypatch, purpose, fail, distribution
+    tmp_path, monkeypatch, purpose, fail, distribution, serial
 ):
     module = load(monkeypatch)
     root = tmp_path / "cohort"
@@ -52,6 +54,10 @@ def test_live_lifecycle_commands_export_only_complete_training_cohorts(
             model_policy="adapted",
             adapter_sha256="a" * 64,
             backend=tmp_path / "backend",
+            worker_prompt="task_protocol" if serial else "inherited",
+            parent_turn_limit=12 if serial else 4,
+            maximum_parallel_workflows=1 if serial else 2,
+            minimum_gap_seconds=0.01 if serial else 0.0,
         )
     )
     budget = tmp_path / "budget.json"
@@ -93,6 +99,10 @@ def test_live_lifecycle_commands_export_only_complete_training_cohorts(
             invoked.append((identity, sampled))
             assert command[command.index("--arm") + 1] == ("adapted" if sampled else "observe")
             assert kwargs["env"]["SIMJECTURE_CONTINUATION"] == identity
+            assert command[command.index("--worker-prompt") + 1] == (
+                "task_protocol" if serial else "inherited"
+            )
+            assert command[command.index("--parent-turn-limit") + 1] == ("12" if serial else "4")
             if not sampled:
                 assert "--model-policy" not in command
             self.code = 1 if fail and identity == failed_id else 0
@@ -109,6 +119,19 @@ def test_live_lifecycle_commands_export_only_complete_training_cohorts(
             )
             put(folder / "QUALITY.json", quality)
             put(folder / "INITIAL.json", dict(criteria=module.CRITERIA))
+            task = "Explicit test fixture task"
+            put(folder / "research.json", dict(operator_protocol=task))
+            if serial:
+                put(
+                    folder / "WORKER_PROMPT_MODE.json",
+                    dict(
+                        mode="task_protocol",
+                        task_sha256=hashlib.sha256(task.encode()).hexdigest(),
+                        renderer_sha256=planned["source_files_sha256"][
+                            "src/simjecture_monitor/workflow_prompt.py"
+                        ],
+                    ),
+                )
             put(folder / "incident-ledger.json", dict(feedback=[]))
             put(
                 folder / "HOST_CASE.json",
@@ -151,6 +174,7 @@ def test_live_lifecycle_commands_export_only_complete_training_cohorts(
                     completion_checks=[dict(allowed=True)],
                     finish_reason="worker_finished_with_obligations_reconciled",
                     verified_complete=True,
+                    parent_turn_limit=12 if serial else 4,
                 ),
             )
             if sampled:
@@ -207,8 +231,14 @@ def test_live_lifecycle_commands_export_only_complete_training_cohorts(
             plasma_assets=tmp_path / "plasma",
         )
     )
-    assert len(invoked) == len(planned["blocks"][0]["trials"])
-    assert sum(sampled for _, sampled in invoked) == (2 if purpose == "train" else 1)
+    if fail and serial:
+        assert len(invoked) == 1
+        assert len(outcome["unstarted_episodes"]) == len(planned["blocks"][0]["trials"]) - 1
+        assert outcome["stage"] == "failed"
+    else:
+        assert len(invoked) == len(planned["blocks"][0]["trials"])
+        assert sum(sampled for _, sampled in invoked) == (2 if purpose == "train" else 1)
+        assert outcome["unstarted_episodes"] == []
     assert outcome["export"]["eligible"] is (purpose == "train" and not fail)
     assert (root / "receipts/train.jsonl").exists() is (purpose == "train" and not fail)
     if not fail:
@@ -221,10 +251,93 @@ def test_live_lifecycle_commands_export_only_complete_training_cohorts(
                 input_tokens=1000 if sampled else 0,
                 total_scoring_seconds=0.02 if sampled else 0.0,
             )
+            assert episode["host_execution"]["parent_turn_limit"] == (12 if serial else 4)
+            assert episode["host_execution"]["worker_prompt"] == (
+                "task_protocol" if serial else "inherited"
+            )
         if purpose == "commissioning":
             assert (root / "receipts/commissioning.jsonl").exists()
     with pytest.raises(ValueError, match="already attempted"):
         module.run(SimpleNamespace(root=root))
+
+
+def test_export_rejects_changed_prompt_or_resumption_settings(tmp_path, monkeypatch):
+    load(monkeypatch)
+    from export_workflow_returns import require_host_configuration
+
+    task = "Registered test task"
+    put(tmp_path / "research.json", dict(operator_protocol=task))
+    receipt = dict(
+        mode="task_protocol",
+        task_sha256=hashlib.sha256(task.encode()).hexdigest(),
+        renderer_sha256="a" * 64,
+    )
+    plan = dict(
+        collection_settings=dict(worker_prompt="task_protocol", parent_turn_limit=12),
+        source_files_sha256={"src/simjecture_monitor/workflow_prompt.py": "a" * 64},
+    )
+    outcome = dict(parent_turn_limit=12, turns=[{}] * 5)
+    put(tmp_path / "WORKER_PROMPT_MODE.json", receipt)
+    assert require_host_configuration(tmp_path, outcome, plan)["parent_turn_count"] == 5
+    with pytest.raises(ValueError, match="parent turns"):
+        require_host_configuration(tmp_path, outcome | dict(parent_turn_limit=4), plan)
+    for key in ["task_sha256", "renderer_sha256", "mode"]:
+        put(tmp_path / "WORKER_PROMPT_MODE.json", receipt | {key: "changed"})
+        with pytest.raises(ValueError, match="worker prompt"):
+            require_host_configuration(tmp_path, outcome, plan)
+
+
+def test_collection_settings_bind_ids_and_context(tmp_path, monkeypatch):
+    module = load(monkeypatch)
+    backend = tmp_path / "backend"
+    put(backend, {})
+    args = dict(
+        purpose="train",
+        replicates=2,
+        native_cap=12,
+        temperature=1.0,
+        family=["progressing_work"],
+        configuration_seed=13,
+        order_seed=19,
+        model_policy="adapted",
+        adapter_sha256="a" * 64,
+        backend=backend,
+    )
+    original = module.plan(SimpleNamespace(root=tmp_path / "original", **args))
+    extended = module.plan(
+        SimpleNamespace(
+            root=tmp_path / "extended",
+            **args,
+            worker_prompt="task_protocol",
+            parent_turn_limit=12,
+            maximum_parallel_workflows=1,
+            minimum_gap_seconds=90,
+        )
+    )
+    a, b = original["blocks"][0], extended["blocks"][0]
+    assert not {t["id"] for t in a["trials"]} & {t["id"] for t in b["trials"]}
+    assert a["context"]["host_policy_sha256"] != b["context"]["host_policy_sha256"]
+
+
+def test_schedule_checks_and_resource_admission():
+    from simjecture_monitor.workflow_collection import block_wall_seconds, check_schedule, settings
+
+    config = settings(dict(maximum_parallel_workflows=1, minimum_gap_seconds=90))
+    assert block_wall_seconds(4, config) == 4 * (760 + 90) + 60
+    good = [dict(started_at=100, ended_at=200), dict(started_at=290, ended_at=400)]
+    check_schedule(good, config)
+    with pytest.raises(ValueError, match="gap"):
+        check_schedule([good[0], dict(started_at=289, ended_at=400)], config)
+    with pytest.raises(ValueError, match="concurrency"):
+        check_schedule([good[0], dict(started_at=150, ended_at=400)], config)
+    for bad in [
+        dict(parent_turn_limit=13),
+        dict(maximum_parallel_workflows=0),
+        dict(minimum_gap_seconds=float("nan")),
+        dict(minimum_gap_seconds=90),
+    ]:
+        with pytest.raises(ValueError):
+            settings(bad)
 
 
 def test_provider_errors_are_not_confused_with_failed_scientific_tool_commands(

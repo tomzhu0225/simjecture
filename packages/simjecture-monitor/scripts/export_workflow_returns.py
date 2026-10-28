@@ -16,6 +16,7 @@ from simjecture_monitor.events import digest, put
 from simjecture_monitor.feedback_audit import feedback_measurement
 from simjecture_monitor.measured_wait import read_receipt
 from simjecture_monitor.sampling_trace import file_reference
+from simjecture_monitor.workflow_collection import check_schedule, settings
 from simjecture_monitor.workflow_returns import CHECKS, workflow_advantages, workflow_utility
 
 
@@ -65,8 +66,47 @@ def require_parked_requests(root, outcome, requests, starts):
             raise ValueError("Model request overlaps an active main-worker invocation")
 
 
+def require_host_configuration(root, outcome, plan):
+    """Bind new exports to the actual prompt and resumption receipts."""
+    config = settings(plan["collection_settings"])
+    count = len(outcome["turns"])
+    if outcome.get("parent_turn_limit") != config["parent_turn_limit"] or not (
+        0 < count <= config["parent_turn_limit"]
+    ):
+        raise ValueError("Executed parent turns differ from the frozen host configuration")
+    task = read(root / "research.json")["operator_protocol"]
+    task_hash = hashlib.sha256(task.encode()).hexdigest()
+    receipt = root / "WORKER_PROMPT_MODE.json"
+    if config["worker_prompt"] == "task_protocol":
+        value = read(receipt)
+        if (
+            value.get("mode") != "task_protocol"
+            or value.get("task_sha256") != task_hash
+            or value.get("renderer_sha256")
+            != plan["source_files_sha256"]["src/simjecture_monitor/workflow_prompt.py"]
+        ):
+            raise ValueError("Executed worker prompt differs from the frozen host configuration")
+    elif receipt.exists():
+        raise ValueError("Inherited worker unexpectedly used a task-protocol prompt")
+    return dict(
+        worker_prompt=config["worker_prompt"],
+        task_sha256=task_hash,
+        parent_turn_limit=config["parent_turn_limit"],
+        parent_turn_count=count,
+    )
+
+
 def export_episode(
-    root, block, trial, *, plan_reference, starts, output, split, decision_distribution=INDEPENDENT
+    root,
+    block,
+    trial,
+    *,
+    plan_reference,
+    starts,
+    output,
+    split,
+    decision_distribution=INDEPENDENT,
+    plan=None,
 ):
     receipt = read(root.parent / (root.name + "-controller.json"))
     if receipt.get("stage") != "completed" or receipt.get("returncode") != 0:
@@ -76,6 +116,11 @@ def export_episode(
     outcome = read(root / "OUTCOME.json")
     if outcome.get("stage") != "completed":
         raise ValueError("Workflow collector failed")
+    host_execution = (
+        require_host_configuration(root, outcome, plan)
+        if plan is not None and "collection_settings" in plan
+        else None
+    )
     case = read(root / "HOST_CASE.json")
     expected_arm = "adapted" if trial["role"] == "sampled" else "observe"
     if case != dict(family=block["family"], seed=block["seed"], arm=expected_arm):
@@ -181,6 +226,10 @@ def export_episode(
     )
     scored = workflow_utility(measured)
     artifact_names = ["OUTCOME.json", "INITIAL.json", "QUALITY.json", "incident-ledger.json"]
+    if host_execution is not None:
+        artifact_names.append("research.json")
+        if (root / "WORKER_PROMPT_MODE.json").is_file():
+            artifact_names.append("WORKER_PROMPT_MODE.json")
     artifact_names += [
         name
         for name in ["VERIFIED.json", "QUANTITY_VERIFIED.json", "monitor/SAMPLING.json"]
@@ -204,6 +253,7 @@ def export_episode(
         model_identity=model_identity,
         temperature=temperature,
         decision_distribution=decision_distribution if trial["role"] == "sampled" else None,
+        host_execution=host_execution,
         monitor_usage=usage,
         source_artifacts={
             name: hashlib.sha256((root / name).read_bytes()).hexdigest() for name in artifact_names
@@ -232,6 +282,11 @@ def export(root, output, budget):
         raise ValueError(
             "Assigned cohort is incomplete; keep all raw outcomes without selected training export"
         )
+    if "collection_settings" in plan:
+        check_schedule(
+            [read(root / (identity + "-controller.json")) for identity in assigned],
+            plan["collection_settings"],
+        )
     output.mkdir(parents=True, exist_ok=False)
     (output / "PLAN.json").write_bytes((root / "PLAN.json").read_bytes())
     plan_ref = file_reference(output / "PLAN.json")
@@ -253,6 +308,7 @@ def export(root, output, budget):
                 output=output,
                 split=plan["split"],
                 decision_distribution=plan.get("decision_distribution", INDEPENDENT),
+                plan=plan,
             )
             manifest["episodes"].append(reference)
             rows.extend(part)
