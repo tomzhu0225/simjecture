@@ -1,0 +1,97 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "scientific-attention/0.1-draft",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "packet_id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Packet Id",
+      "type": "string"
+    },
+    "model_view_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Model View Sha256",
+      "type": "string"
+    },
+    "policy_id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Policy Id",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "ok",
+        "insufficient_input",
+        "inference_error"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "action": {
+      "anyOf": [
+        {
+          "enum": [
+            "observe",
+            "recheck",
+            "request_worker_help",
+            "wake_director",
+            "request_repair_judge"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Action"
+    },
+    "evidence_basis": {
+      "default": "whole_view",
+      "enum": [
+        "whole_view",
+        "selected"
+      ],
+      "title": "Evidence Basis",
+      "type": "string"
+    },
+    "evidence_ids": {
+      "items": {
+        "maxLength": 160,
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Evidence Ids",
+      "type": "array"
+    },
+    "basis": {
+      "default": "unspecified",
+      "enum": [
+        "unspecified",
+        "silence",
+        "repetition",
+        "measurement",
+        "source",
+        "missing"
+      ],
+      "title": "Basis",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "packet_id",
+    "model_view_sha256",
+    "policy_id",
+    "status",
+    "action"
+  ],
+  "title": "Decision",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:simjecture:scientific-attention:0.1-draft:Decision"
+}

@@ -537,11 +537,17 @@ def build_parser() -> argparse.ArgumentParser:
         )
     )
 
+    from .attention_cli import configure as configure_attention
     from .knowledge_cli import configure as configure_knowledge
     from .workspace_cli import configure as configure_workspace
 
     configure_knowledge(
         subcommands.add_parser("knowledge", help="Search and connect local research knowledge")
+    )
+    configure_attention(
+        subcommands.add_parser(
+            "attention", help="Inspect or connect optional scientific attention tooling"
+        )
     )
 
     for kind in ("workspace", "project", "conversation"):
@@ -900,7 +906,7 @@ def main() -> int:
             return 0
         except ValueError as error:
             parser.error(str(error))
-    if args.command == "study":
+    if args.command in {"study", "attention"}:
         try:
             return int(args.handler(args))
         except ValueError as error:

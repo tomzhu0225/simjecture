@@ -1,0 +1,13 @@
+{
+  "schema_version": "scientific-attention/0.2-draft",
+  "packet_id": "f55482b9bd9e21d863cc5032",
+  "model_view_sha256": "e8cc8cf64dee84a52fac61f9bc4ffa0bba888aa47e67f70d778f674951068022",
+  "policy_id": "scripted-example-not-model-prediction",
+  "status": "ok",
+  "action": "observe",
+  "evidence_basis": "whole_view",
+  "evidence_ids": [],
+  "basis": "unspecified",
+  "support_kind": "none",
+  "question_ref": null
+}

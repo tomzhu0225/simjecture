@@ -1,0 +1,65 @@
+{
+  "conflicting_targets": 0,
+  "counts": {
+    "mechanism": {
+      "literature_active": 1000,
+      "literature_recent": 1000,
+      "lookup_active": 1000,
+      "lookup_context_changed": 1000,
+      "lookup_failed_cooldown": 1000,
+      "lookup_needed": 1000,
+      "lookup_recent_matches": 1000,
+      "lookup_recent_no_match": 1000,
+      "lookup_stale": 1000,
+      "measurement_disagreement": 1000,
+      "missing_telemetry": 1000,
+      "persistent_silence": 1000,
+      "question_resolved": 1000,
+      "quiet_active": 1000,
+      "quiet_just_ended": 1000,
+      "receipt_disagreement": 1000
+    },
+    "split": {
+      "synthetic_audit": 1376,
+      "train": 13024,
+      "validation": 1600
+    },
+    "target": {
+      "observe.none": 7000,
+      "recheck.knowledge_lookup": 3000,
+      "recheck.none": 1000,
+      "request_repair_judge.none": 1000,
+      "request_worker_help.knowledge_lookup": 1000,
+      "request_worker_help.literature_review": 1000,
+      "request_worker_help.none": 1000,
+      "wake_director.none": 1000
+    }
+  },
+  "cross_split_group_leaks": 0,
+  "exact_duplicate_inputs": 0,
+  "files": {
+    "synthetic_audit.jsonl": "010deec7c4770e80909e44be29b329ce25054f7bedca7ce1fd0a20fedfc6e754",
+    "train.jsonl": "19a94a7b04698e79e836c16f4bbea442e9a4cdf4e6f6911bcada61fbf2ce896b",
+    "validation.jsonl": "9a5a7ca3345f17bc934ed70b706f96ad25137cd3223e3f23a062a70a8278996d"
+  },
+  "group_counts": {
+    "synthetic_audit": 86,
+    "train": 814,
+    "validation": 100
+  },
+  "groups": 1000,
+  "rows": 16000,
+  "schema_version": "scientific-attention-curriculum-manifest/0.1-draft",
+  "scope": "Scripted procedural preferences from synthetic visible states. No model predictions, actual scientific outcomes, intervention utility labels, or RL behavior probabilities. Synthetic audit is not a real-task test set. Context grouping does not hold out mechanisms or vocabulary templates.",
+  "seed": 20261025,
+  "source_sha256": {
+    "attention_support.py": "3ff8a395d8a8cd1cdb216be071e8610088f74994b69dd03cbc5942f9eebb61d0",
+    "build_attention_curriculum.py": "47043b143951d938be9346ff6100b6a515de2fe432a4d1b405b9215ea015b704",
+    "synthetic_attention.py": "1d8195b63cd5515db270f0fd8c7165c7e076dbd84d31d1784c8b259335121674"
+  },
+  "tokenization": "Full text only; tokenize using the eventual training chat template.",
+  "training_fields": [
+    "input_text",
+    "target"
+  ]
+}

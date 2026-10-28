@@ -42,6 +42,7 @@ class NativeStudyRequest(MVPLaunchRequest):
     reasoning_effort: Literal["low", "medium", "high", "xhigh", "max", "ultra"] | None = None
     judge_reasoning_effort: Literal["low", "medium", "high", "xhigh", "max", "ultra"] | None = None
     director_enabled: bool = Field(default=True, strict=True)
+    attention_config: str | None = None
     allow_solver_development: bool | None = Field(default=True, strict=True)
     agent_executable: str | None = None
     machine_registry: str | None = None
@@ -223,6 +224,8 @@ def materialize_native(request, *, resume=False):
     if request.judge_reasoning_effort:
         argv += ["--judge-reasoning-effort", request.judge_reasoning_effort]
     argv += ["--director" if request.director_enabled else "--no-director"]
+    if request.attention_config:
+        argv += ["--attention-config", str(Path(request.attention_config).expanduser().resolve())]
     if request.mode == "minimal" and request.allow_solver_development is not None:
         argv += ["--allow-solver-development" if request.allow_solver_development
                  else "--no-allow-solver-development"]

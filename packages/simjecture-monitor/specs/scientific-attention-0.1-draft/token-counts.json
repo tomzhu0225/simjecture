@@ -1,0 +1,668 @@
+{
+  "scope": "Synthetic development examples; actual tokenizer counts only. No policy accuracy, latency or false-alert improvement measured.",
+  "framing": "Existing pinned checkpoint chat template and route-only decision slot. Grounded output prompting needs separate validation.",
+  "identity": {
+    "tokenizer": "/home/tomzhu0225/src/simjecture-monitor-coprocessor/artifacts/models/Decision-verified",
+    "tokenizer_sha256": "94a639c4b33b192cc5a22cd3d7f0aaf6d97efa9577957a0382b55292ca4f0f00",
+    "template_sha256": "a4aee8afcf2e0711942cf848899be66016f8d14a889ff9ede07bca099c28f715",
+    "system_sha256": "e7dd9b1d7b770f37ff000d564c3115a1569dffec2f0263936aee13c55503e6af",
+    "symbol_token_ids": {
+      "A": [
+        32
+      ],
+      "B": [
+        33
+      ],
+      "C": [
+        34
+      ],
+      "D": [
+        35
+      ],
+      "E": [
+        36
+      ]
+    },
+    "marker_token_ids": [
+      248077
+    ]
+  },
+  "rows": [
+    {
+      "example": "progress",
+      "schema_version": "scientific-attention/0.1-draft",
+      "packet_id": "packet-0001",
+      "format": "named-json",
+      "token_counter_id": "intern-decision-4b:route-only-chat:0.1-draft",
+      "sha256": "8d311f07eb595b1ac47cef6a34b44af40745fd2d6c06c884c95a77cf1f2ca989",
+      "input_tokens": 747,
+      "budget_tokens": 512,
+      "included_ids": [
+        "record-0",
+        "record-1",
+        "record-2"
+      ],
+      "omitted_ids": [],
+      "status": "insufficient_budget"
+    },
+    {
+      "example": "progress",
+      "schema_version": "scientific-attention/0.1-draft",
+      "packet_id": "packet-0001",
+      "format": "named-json",
+      "token_counter_id": "intern-decision-4b:route-only-chat:0.1-draft",
+      "sha256": "8d311f07eb595b1ac47cef6a34b44af40745fd2d6c06c884c95a77cf1f2ca989",
+      "input_tokens": 747,
+      "budget_tokens": 1024,
+      "included_ids": [
+        "record-0",
+        "record-1",
+        "record-2"
+      ],
+      "omitted_ids": [],
+      "status": "ready"
+    },
+    {
+      "example": "progress",
+      "schema_version": "scientific-attention/0.1-draft",
+      "packet_id": "packet-0001",
+      "format": "named-json",
+      "token_counter_id": "intern-decision-4b:route-only-chat:0.1-draft",
+      "sha256": "8d311f07eb595b1ac47cef6a34b44af40745fd2d6c06c884c95a77cf1f2ca989",
+      "input_tokens": 747,
+      "budget_tokens": 2048,
+      "included_ids": [
+        "record-0",
+        "record-1",
+        "record-2"
+      ],
+      "omitted_ids": [],
+      "status": "ready"
+    },
+    {
+      "example": "progress",
+      "schema_version": "scientific-attention/0.1-draft",
+      "packet_id": "packet-0001",
+      "format": "named-json",
+      "token_counter_id": "intern-decision-4b:route-only-chat:0.1-draft",
+      "sha256": "8d311f07eb595b1ac47cef6a34b44af40745fd2d6c06c884c95a77cf1f2ca989",
+      "input_tokens": 747,
+      "budget_tokens": 4096,
+      "included_ids": [
+        "record-0",
+        "record-1",
+        "record-2"
+      ],
+      "omitted_ids": [],
+      "status": "ready"
+    },
+    {
+      "example": "progress",
+      "schema_version": "scientific-attention/0.1-draft",
+      "packet_id": "packet-0001",
+      "format": "named-json",
+      "token_counter_id": "intern-decision-4b:route-only-chat:0.1-draft",
+      "sha256": "8d311f07eb595b1ac47cef6a34b44af40745fd2d6c06c884c95a77cf1f2ca989",
+      "input_tokens": 747,
+      "budget_tokens": 16384,
+      "included_ids": [
+        "record-0",
+        "record-1",
+        "record-2"
+      ],
+      "omitted_ids": [],
+      "status": "ready"
+    },
+    {
+      "example": "progress",
+      "schema_version": "scientific-attention/0.1-draft",
+      "packet_id": "packet-0001",
+      "format": "column-json",
+      "token_counter_id": "intern-decision-4b:route-only-chat:0.1-draft",
+      "sha256": "f222f9c569a69402b46be7c2e462e81a638e802938245f62829f4ba01345d736",
+      "input_tokens": 685,
+      "budget_tokens": 512,
+      "included_ids": [
+        "record-0",
+        "record-1",
+        "record-2"
+      ],
+      "omitted_ids": [],
+      "status": "insufficient_budget"
+    },
+    {
+      "example": "progress",
+      "schema_version": "scientific-attention/0.1-draft",
+      "packet_id": "packet-0001",
+      "format": "column-json",
+      "token_counter_id": "intern-decision-4b:route-only-chat:0.1-draft",
+      "sha256": "f222f9c569a69402b46be7c2e462e81a638e802938245f62829f4ba01345d736",
+      "input_tokens": 685,
+      "budget_tokens": 1024,
+      "included_ids": [
+        "record-0",
+        "record-1",
+        "record-2"
+      ],
+      "omitted_ids": [],
+      "status": "ready"
+    },
+    {
+      "example": "progress",
+      "schema_version": "scientific-attention/0.1-draft",
+      "packet_id": "packet-0001",
+      "format": "column-json",
+      "token_counter_id": "intern-decision-4b:route-only-chat:0.1-draft",
+      "sha256": "f222f9c569a69402b46be7c2e462e81a638e802938245f62829f4ba01345d736",
+      "input_tokens": 685,
+      "budget_tokens": 2048,
+      "included_ids": [
+        "record-0",
+        "record-1",
+        "record-2"
+      ],
+      "omitted_ids": [],
+      "status": "ready"
+    },
+    {
+      "example": "progress",
+      "schema_version": "scientific-attention/0.1-draft",
+      "packet_id": "packet-0001",
+      "format": "column-json",
+      "token_counter_id": "intern-decision-4b:route-only-chat:0.1-draft",
+      "sha256": "f222f9c569a69402b46be7c2e462e81a638e802938245f62829f4ba01345d736",
+      "input_tokens": 685,
+      "budget_tokens": 4096,
+      "included_ids": [
+        "record-0",
+        "record-1",
+        "record-2"
+      ],
+      "omitted_ids": [],
+      "status": "ready"
+    },
+    {
+      "example": "progress",
+      "schema_version": "scientific-attention/0.1-draft",
+      "packet_id": "packet-0001",
+      "format": "column-json",
+      "token_counter_id": "intern-decision-4b:route-only-chat:0.1-draft",
+      "sha256": "f222f9c569a69402b46be7c2e462e81a638e802938245f62829f4ba01345d736",
+      "input_tokens": 685,
+      "budget_tokens": 16384,
+      "included_ids": [
+        "record-0",
+        "record-1",
+        "record-2"
+      ],
+      "omitted_ids": [],
+      "status": "ready"
+    },
+    {
+      "example": "quiet-expiry",
+      "schema_version": "scientific-attention/0.1-draft",
+      "packet_id": "packet-0002",
+      "format": "named-json",
+      "token_counter_id": "intern-decision-4b:route-only-chat:0.1-draft",
+      "sha256": "a74c63bfad97bc53d14fcad680ebfd3d44e4a513131419fea2190e544134cdc0",
+      "input_tokens": 751,
+      "budget_tokens": 512,
+      "included_ids": [
+        "record-0",
+        "record-1",
+        "record-2"
+      ],
+      "omitted_ids": [],
+      "status": "insufficient_budget"
+    },
+    {
+      "example": "quiet-expiry",
+      "schema_version": "scientific-attention/0.1-draft",
+      "packet_id": "packet-0002",
+      "format": "named-json",
+      "token_counter_id": "intern-decision-4b:route-only-chat:0.1-draft",
+      "sha256": "a74c63bfad97bc53d14fcad680ebfd3d44e4a513131419fea2190e544134cdc0",
+      "input_tokens": 751,
+      "budget_tokens": 1024,
+      "included_ids": [
+        "record-0",
+        "record-1",
+        "record-2"
+      ],
+      "omitted_ids": [],
+      "status": "ready"
+    },
+    {
+      "example": "quiet-expiry",
+      "schema_version": "scientific-attention/0.1-draft",
+      "packet_id": "packet-0002",
+      "format": "named-json",
+      "token_counter_id": "intern-decision-4b:route-only-chat:0.1-draft",
+      "sha256": "a74c63bfad97bc53d14fcad680ebfd3d44e4a513131419fea2190e544134cdc0",
+      "input_tokens": 751,
+      "budget_tokens": 2048,
+      "included_ids": [
+        "record-0",
+        "record-1",
+        "record-2"
+      ],
+      "omitted_ids": [],
+      "status": "ready"
+    },
+    {
+      "example": "quiet-expiry",
+      "schema_version": "scientific-attention/0.1-draft",
+      "packet_id": "packet-0002",
+      "format": "named-json",
+      "token_counter_id": "intern-decision-4b:route-only-chat:0.1-draft",
+      "sha256": "a74c63bfad97bc53d14fcad680ebfd3d44e4a513131419fea2190e544134cdc0",
+      "input_tokens": 751,
+      "budget_tokens": 4096,
+      "included_ids": [
+        "record-0",
+        "record-1",
+        "record-2"
+      ],
+      "omitted_ids": [],
+      "status": "ready"
+    },
+    {
+      "example": "quiet-expiry",
+      "schema_version": "scientific-attention/0.1-draft",
+      "packet_id": "packet-0002",
+      "format": "named-json",
+      "token_counter_id": "intern-decision-4b:route-only-chat:0.1-draft",
+      "sha256": "a74c63bfad97bc53d14fcad680ebfd3d44e4a513131419fea2190e544134cdc0",
+      "input_tokens": 751,
+      "budget_tokens": 16384,
+      "included_ids": [
+        "record-0",
+        "record-1",
+        "record-2"
+      ],
+      "omitted_ids": [],
+      "status": "ready"
+    },
+    {
+      "example": "quiet-expiry",
+      "schema_version": "scientific-attention/0.1-draft",
+      "packet_id": "packet-0002",
+      "format": "column-json",
+      "token_counter_id": "intern-decision-4b:route-only-chat:0.1-draft",
+      "sha256": "ad5646301ef686a342f7faa7a6b0acc278a51569b55b45b5fb65b2843181fece",
+      "input_tokens": 689,
+      "budget_tokens": 512,
+      "included_ids": [
+        "record-0",
+        "record-1",
+        "record-2"
+      ],
+      "omitted_ids": [],
+      "status": "insufficient_budget"
+    },
+    {
+      "example": "quiet-expiry",
+      "schema_version": "scientific-attention/0.1-draft",
+      "packet_id": "packet-0002",
+      "format": "column-json",
+      "token_counter_id": "intern-decision-4b:route-only-chat:0.1-draft",
+      "sha256": "ad5646301ef686a342f7faa7a6b0acc278a51569b55b45b5fb65b2843181fece",
+      "input_tokens": 689,
+      "budget_tokens": 1024,
+      "included_ids": [
+        "record-0",
+        "record-1",
+        "record-2"
+      ],
+      "omitted_ids": [],
+      "status": "ready"
+    },
+    {
+      "example": "quiet-expiry",
+      "schema_version": "scientific-attention/0.1-draft",
+      "packet_id": "packet-0002",
+      "format": "column-json",
+      "token_counter_id": "intern-decision-4b:route-only-chat:0.1-draft",
+      "sha256": "ad5646301ef686a342f7faa7a6b0acc278a51569b55b45b5fb65b2843181fece",
+      "input_tokens": 689,
+      "budget_tokens": 2048,
+      "included_ids": [
+        "record-0",
+        "record-1",
+        "record-2"
+      ],
+      "omitted_ids": [],
+      "status": "ready"
+    },
+    {
+      "example": "quiet-expiry",
+      "schema_version": "scientific-attention/0.1-draft",
+      "packet_id": "packet-0002",
+      "format": "column-json",
+      "token_counter_id": "intern-decision-4b:route-only-chat:0.1-draft",
+      "sha256": "ad5646301ef686a342f7faa7a6b0acc278a51569b55b45b5fb65b2843181fece",
+      "input_tokens": 689,
+      "budget_tokens": 4096,
+      "included_ids": [
+        "record-0",
+        "record-1",
+        "record-2"
+      ],
+      "omitted_ids": [],
+      "status": "ready"
+    },
+    {
+      "example": "quiet-expiry",
+      "schema_version": "scientific-attention/0.1-draft",
+      "packet_id": "packet-0002",
+      "format": "column-json",
+      "token_counter_id": "intern-decision-4b:route-only-chat:0.1-draft",
+      "sha256": "ad5646301ef686a342f7faa7a6b0acc278a51569b55b45b5fb65b2843181fece",
+      "input_tokens": 689,
+      "budget_tokens": 16384,
+      "included_ids": [
+        "record-0",
+        "record-1",
+        "record-2"
+      ],
+      "omitted_ids": [],
+      "status": "ready"
+    },
+    {
+      "example": "long-history",
+      "schema_version": "scientific-attention/0.1-draft",
+      "packet_id": "packet-0003",
+      "format": "named-json",
+      "token_counter_id": "intern-decision-4b:route-only-chat:0.1-draft",
+      "sha256": "7f2b10806c140e42910a413cf9de66c5dbd1995757bd2ddd734aa2a6a44234c7",
+      "input_tokens": 748,
+      "budget_tokens": 512,
+      "included_ids": [
+        "record-0",
+        "record-1",
+        "record-2"
+      ],
+      "omitted_ids": [
+        "old-0",
+        "old-1",
+        "old-2",
+        "old-3",
+        "old-4",
+        "old-5",
+        "old-6",
+        "old-7",
+        "old-8",
+        "old-9",
+        "old-10",
+        "old-11"
+      ],
+      "status": "insufficient_budget"
+    },
+    {
+      "example": "long-history",
+      "schema_version": "scientific-attention/0.1-draft",
+      "packet_id": "packet-0003",
+      "format": "named-json",
+      "token_counter_id": "intern-decision-4b:route-only-chat:0.1-draft",
+      "sha256": "4b27e3c518dbd6783da2989da4523217ca394fa7d49beba1052f822d7cffd0b3",
+      "input_tokens": 889,
+      "budget_tokens": 1024,
+      "included_ids": [
+        "record-0",
+        "record-1",
+        "record-2",
+        "old-0"
+      ],
+      "omitted_ids": [
+        "old-1",
+        "old-2",
+        "old-3",
+        "old-4",
+        "old-5",
+        "old-6",
+        "old-7",
+        "old-8",
+        "old-9",
+        "old-10",
+        "old-11"
+      ],
+      "status": "ready"
+    },
+    {
+      "example": "long-history",
+      "schema_version": "scientific-attention/0.1-draft",
+      "packet_id": "packet-0003",
+      "format": "named-json",
+      "token_counter_id": "intern-decision-4b:route-only-chat:0.1-draft",
+      "sha256": "46a809075d92f0f96d5c1bc1f5e5e9fecc44a9024ac66ed93b71180d3039b5ff",
+      "input_tokens": 2028,
+      "budget_tokens": 2048,
+      "included_ids": [
+        "record-0",
+        "record-1",
+        "record-2",
+        "old-0",
+        "old-1",
+        "old-2",
+        "old-3",
+        "old-4",
+        "old-5",
+        "old-6",
+        "old-7",
+        "old-8"
+      ],
+      "omitted_ids": [
+        "old-9",
+        "old-10",
+        "old-11"
+      ],
+      "status": "ready"
+    },
+    {
+      "example": "long-history",
+      "schema_version": "scientific-attention/0.1-draft",
+      "packet_id": "packet-0003",
+      "format": "named-json",
+      "token_counter_id": "intern-decision-4b:route-only-chat:0.1-draft",
+      "sha256": "c1eb0ef4a58e4318f42f1e14729cbee8ed95d2de0b986c621163ae7fede95d78",
+      "input_tokens": 2472,
+      "budget_tokens": 4096,
+      "included_ids": [
+        "record-0",
+        "record-1",
+        "record-2",
+        "old-0",
+        "old-1",
+        "old-2",
+        "old-3",
+        "old-4",
+        "old-5",
+        "old-6",
+        "old-7",
+        "old-8",
+        "old-9",
+        "old-10",
+        "old-11"
+      ],
+      "omitted_ids": [],
+      "status": "ready"
+    },
+    {
+      "example": "long-history",
+      "schema_version": "scientific-attention/0.1-draft",
+      "packet_id": "packet-0003",
+      "format": "named-json",
+      "token_counter_id": "intern-decision-4b:route-only-chat:0.1-draft",
+      "sha256": "c1eb0ef4a58e4318f42f1e14729cbee8ed95d2de0b986c621163ae7fede95d78",
+      "input_tokens": 2472,
+      "budget_tokens": 16384,
+      "included_ids": [
+        "record-0",
+        "record-1",
+        "record-2",
+        "old-0",
+        "old-1",
+        "old-2",
+        "old-3",
+        "old-4",
+        "old-5",
+        "old-6",
+        "old-7",
+        "old-8",
+        "old-9",
+        "old-10",
+        "old-11"
+      ],
+      "omitted_ids": [],
+      "status": "ready"
+    },
+    {
+      "example": "long-history",
+      "schema_version": "scientific-attention/0.1-draft",
+      "packet_id": "packet-0003",
+      "format": "column-json",
+      "token_counter_id": "intern-decision-4b:route-only-chat:0.1-draft",
+      "sha256": "ebf8efe3ee1aa33e713bc7c7990d3f8639a4a9ef9199a14fced317589d414731",
+      "input_tokens": 686,
+      "budget_tokens": 512,
+      "included_ids": [
+        "record-0",
+        "record-1",
+        "record-2"
+      ],
+      "omitted_ids": [
+        "old-0",
+        "old-1",
+        "old-2",
+        "old-3",
+        "old-4",
+        "old-5",
+        "old-6",
+        "old-7",
+        "old-8",
+        "old-9",
+        "old-10",
+        "old-11"
+      ],
+      "status": "insufficient_budget"
+    },
+    {
+      "example": "long-history",
+      "schema_version": "scientific-attention/0.1-draft",
+      "packet_id": "packet-0003",
+      "format": "column-json",
+      "token_counter_id": "intern-decision-4b:route-only-chat:0.1-draft",
+      "sha256": "8dbf63cf6f200eaed7770ba145d3fc3e439d7c1b7effc3cca349360c546a3d83",
+      "input_tokens": 927,
+      "budget_tokens": 1024,
+      "included_ids": [
+        "record-0",
+        "record-1",
+        "record-2",
+        "old-0",
+        "old-1"
+      ],
+      "omitted_ids": [
+        "old-2",
+        "old-3",
+        "old-4",
+        "old-5",
+        "old-6",
+        "old-7",
+        "old-8",
+        "old-9",
+        "old-10",
+        "old-11"
+      ],
+      "status": "ready"
+    },
+    {
+      "example": "long-history",
+      "schema_version": "scientific-attention/0.1-draft",
+      "packet_id": "packet-0003",
+      "format": "column-json",
+      "token_counter_id": "intern-decision-4b:route-only-chat:0.1-draft",
+      "sha256": "94f72f956b9d9772159b7ac6b1692eb95dd84812dc9df6358a649f1994d72cfc",
+      "input_tokens": 2029,
+      "budget_tokens": 2048,
+      "included_ids": [
+        "record-0",
+        "record-1",
+        "record-2",
+        "old-0",
+        "old-1",
+        "old-2",
+        "old-3",
+        "old-4",
+        "old-5",
+        "old-6",
+        "old-7",
+        "old-8",
+        "old-9",
+        "old-10"
+      ],
+      "omitted_ids": [
+        "old-11"
+      ],
+      "status": "ready"
+    },
+    {
+      "example": "long-history",
+      "schema_version": "scientific-attention/0.1-draft",
+      "packet_id": "packet-0003",
+      "format": "column-json",
+      "token_counter_id": "intern-decision-4b:route-only-chat:0.1-draft",
+      "sha256": "fcb5423446ae2596945d77a8fe0ca4fc06c01a8f85c5318e570ab75dd5b25ce7",
+      "input_tokens": 2158,
+      "budget_tokens": 4096,
+      "included_ids": [
+        "record-0",
+        "record-1",
+        "record-2",
+        "old-0",
+        "old-1",
+        "old-2",
+        "old-3",
+        "old-4",
+        "old-5",
+        "old-6",
+        "old-7",
+        "old-8",
+        "old-9",
+        "old-10",
+        "old-11"
+      ],
+      "omitted_ids": [],
+      "status": "ready"
+    },
+    {
+      "example": "long-history",
+      "schema_version": "scientific-attention/0.1-draft",
+      "packet_id": "packet-0003",
+      "format": "column-json",
+      "token_counter_id": "intern-decision-4b:route-only-chat:0.1-draft",
+      "sha256": "fcb5423446ae2596945d77a8fe0ca4fc06c01a8f85c5318e570ab75dd5b25ce7",
+      "input_tokens": 2158,
+      "budget_tokens": 16384,
+      "included_ids": [
+        "record-0",
+        "record-1",
+        "record-2",
+        "old-0",
+        "old-1",
+        "old-2",
+        "old-3",
+        "old-4",
+        "old-5",
+        "old-6",
+        "old-7",
+        "old-8",
+        "old-9",
+        "old-10",
+        "old-11"
+      ],
+      "omitted_ids": [],
+      "status": "ready"
+    }
+  ]
+}

@@ -1756,6 +1756,7 @@ class Workspace(MachineWorkspace, ProjectCollections):
         return {"name": name, "bytes": len(data)}
 
     def catalogue(self):
+        from ..attention_cli import catalogue_card
         from ..deployment import DeploymentManager, resolve_project_root
         from .inventory import discover_installed, discover_system_warpx
 
@@ -1925,6 +1926,7 @@ class Workspace(MachineWorkspace, ProjectCollections):
                     "log": self.tool_log(tool["id"]),
                 }
             )
+        cards.append(catalogue_card())
         return cards
 
     def tool_operation(self, name):
