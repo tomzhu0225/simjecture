@@ -28,6 +28,9 @@ Principal command families:
   requires a private Unix HTTP socket and a separately commissioned Linux broker;
   see [server mode](../how-to/public-trials.md);
 - `study`: minimal research with recorded launch contracts;
+- `attention`: inspect optional Conjecture 1 scientific-attention tooling, write an
+  example config, verify a resident model service or score an observation
+  ([scientific attention](../how-to/scientific-attention.md));
 - `steer`: advisory guidance for an existing minimal study;
 - `llm-benchmark`: prepare, grade, run and publish recorded-diagnostic coding tasks
   (distinct from the simulation `benchmark` command);

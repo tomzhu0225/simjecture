@@ -3,6 +3,7 @@
 | Path | Purpose |
 |---|---|
 | `src/conjecture_solver/` | Typed models, ledgers, sandbox, orchestration, providers, CLI, and local web UI |
+| `packages/simjecture-monitor/` | Optional scientific-attention client, contract schemas, admission gate, GPU scorer, and offline SFT/RL training tools |
 | `skills/` | Versioned model-readable interfaces and scientific practice |
 | `capabilities/` | Harness-owned executable runtime manifests; optional solver binaries remain local and untracked |
 | `environments/` | Release-pinned operator provisioning specifications |

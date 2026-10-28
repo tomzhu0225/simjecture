@@ -52,6 +52,20 @@ storage increases for large builds and checkpoints. The monitor shows failures,
 before/after limits and the reasons for changes; scientific acceptance and the
 campaign deadline remain separate. See [director control and recovery](https://drawingsword.com/simjecture/how-to/minimal-oversight.html#instrument-registration-recovery).
 
+[**Conjecture 1 (v0.1)**](https://huggingface.co/tomzhu0225/Conjecture-1-4B/tree/v0.1)
+is available as an optional scientific-attention coprocessor in
+[`packages/simjecture-monitor`](https://github.com/tomzhu0225/simjecture/tree/main/packages/simjecture-monitor).
+When opted in with `--attention-config`, the observer inspects bounded public
+study state against a separately managed model service without requiring GPU
+dependencies on the client. It defaults to `shadow` mode (recording proposed
+decisions without waking an agent); explicit `alerts` mode routes admitted help or
+director proposals through the existing director while keeping scientific review and
+repair authority with the host. The package also includes offline SFT and
+measured-return RL training and evaluation tools (`simjecture-attention-train`,
+`simjecture-attention-evaluate`). Because current workflow evaluations show mixed
+results and healthy-case over-alerting rather than a repeatable speed win, start in
+shadow mode; see the [scientific attention guide](https://drawingsword.com/simjecture/how-to/scientific-attention.html).
+
 Read [how the loop works](https://drawingsword.com/simjecture/concepts/research-loop.html) or
 [how evidence is checked](https://drawingsword.com/simjecture/concepts/evidence-and-claims.html).
 
@@ -170,6 +184,7 @@ model commissioning.
 
 - [Commission a scientific instrument](https://drawingsword.com/simjecture/how-to/guided-commissioning.html) or
   [add your own capability](https://drawingsword.com/simjecture/how-to/add-a-capability.html).
+- [Configure optional scientific attention with Conjecture 1](https://drawingsword.com/simjecture/how-to/scientific-attention.html).
 - [Run experiments on local or SSH workers](https://drawingsword.com/simjecture/how-to/ssh-workers.html).
 - [Steer or continue an investigation](https://drawingsword.com/simjecture/how-to/continuation-steering.html).
 - [Compare agents on recorded diagnostic tasks](https://drawingsword.com/simjecture/how-to/llm-bench.html).
