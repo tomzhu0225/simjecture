@@ -1,21 +1,21 @@
 # Conjecture 1 — scientific attention adapter
 
-By Simjecture. Working release identity: `tomzhu0225/Conjecture-1-4B`,
-initial tag `v0.1`. The name was proposed by the user; the repository has not
-been created and no weights have been uploaded. This is a continued-SFT PEFT
-LoRA adapter for Intern-Decision-4B, with the pretrained base required separately.
+By Simjecture. [Conjecture 1 v0.1 is public on Hugging Face](https://huggingface.co/tomzhu0225/Conjecture-1-4B/tree/v0.1).
+The immutable release tag points to commit
+`90c57d47e26c012811c51312698ee41475b1baab`. This repository document retains its
+historical filename; the published model card accompanies that tag.
 
-**Unpublished experimental release draft.** This candidate has not established a reliable
-workflow advantage over the pretrained base and strong deployment comparators.
-The repeated-workflow study has audited all 64 original assignments:
-58 verified completions, four infrastructure failures and two SFT workflow
-completion failures. The final nine assignments completed, final saved-prediction
-checks passed, and the A100 was released. No weight upload or
-public release is implied by this document. The pinned base declares Apache-2.0 and its distribution
-listing has been checked. The portable adapter passed a fresh A100 reload.
-The registered workflow evaluation is complete. Final release packaging and
-repository creation remain pending. Hugging Face browser authentication succeeded as `tomzhu0225`;
-repository-specific write access has not yet been exercised.
+**Experimental research preview.** This continued-SFT PEFT LoRA adapter requires
+the pretrained Intern-Decision-4B base separately. It has not established a
+reliable overall workflow advantage. The completed 64-assignment comparison
+contains 58 verified completions, four infrastructure failures and two SFT
+workflow failures. Mixed/negative findings and general-decision regressions
+are included in the public release.
+
+The [publication receipt](conjecture-1-publication.json) records the verified
+remote weight hash, package hash and unauthenticated public tag lookup. The
+portable adapter passed a fresh A100 reload before release. Publication is
+availability of an experimental checkpoint, not validation of scientific efficacy.
 
 ## Identity and intended use
 

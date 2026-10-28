@@ -1,0 +1,8 @@
+{
+  "input-encoding-analysis-02/summary.json": "0e46d66c3c35a415831e6d29fc0fc76787a8d0379aeb1cd5b1e2a86f422923a5",
+  "input-encoding-analysis-02/rows.jsonl": "90db962da5c9ea280a670c87411dd61a4a46269ffe0b4a1863d13d15c8204c3a",
+  "input-encoding-analysis-02/input-hashes.json": "42a0c5ac784608140cf0412e7a193d39cb73c1bc629602af29090b55c9acae65",
+  "measure_observation_encodings.py": "7c5dc897012fde8f4fbd23486c41c5f748da6decb6dd9392ec3a1cfd58df9fc1",
+  "input-encoding-analysis-01.log": "8eb6fd0b8b81142913702b5d3f8262547ef02bfa7482b7fe2b39cd16ba3cd32d",
+  "tokenizer-analysis-jinja-install.json": "a68d421aea138a536801350d328731c0997af87d31d6c8dd9d3e226fe59f6188"
+}

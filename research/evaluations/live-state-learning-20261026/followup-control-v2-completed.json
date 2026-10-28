@@ -1,0 +1,421 @@
+{
+  "at": 1793111210.9819448,
+  "COMMISSION.json": {
+    "schema": "scientific-attention-control-commission/v1",
+    "commissioned": true,
+    "attempted": 6,
+    "unstarted": [],
+    "violations": [],
+    "exercised": {
+      "routine_expert_dispatch": true,
+      "help_return_acknowledged": true,
+      "judge_authorized_protected_repair": true,
+      "resumption_after_four_turns": true
+    },
+    "interpretation": "Integration evidence only; unsupported-alert rate and model benefit unmeasured",
+    "eligible_for_optimizer": false,
+    "inputs_sha256": {
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-02/PLAN.json": "8626f011a09c8dd62748bfebddbc51d332788345fd50d47ecd0a8af1399d0d55",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-02/STARTED.json": "7f60ef97789d3af33e995324b3284da91921a7087df7cdc6aaa832fc535a80a3",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-02/CAMPAIGN.json": "f6e1352b257c23a5fc0a3d69fdc4a769f14c1bdeffd9b6fc4dd284d37023f98d",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-02/workflow-audit/records.json": "5cb5d619571e6ba5fda4f5122052d8feb73a65605e6e89335f8f1ff5030d3746",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-02/workflow-audit/summary.json": "58c104215d83000a6e0c92a34db654d7ea314af48c6bfc5d362199e6f787645c",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-02/workflow-audit/hashes.json": "27a6066b762360bc1cab46cd52cfd95661280760aa8fc268dd58b7ec13fb180b",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-02/ctl-14cb1bb90815528c/OUTCOME.json": "c3d29c413392ca4fef2bf6fa3dc57daf0fd3b847c09fad09a0c25e2b05d7e2e7",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-02/ctl-14cb1bb90815528c/QUALITY.json": "d2177e1e09ef389d49b12421ad295ec439295d0cd8d9d30046e40bf5ffc256b0",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-02/ctl-14cb1bb90815528c/incident-ledger.json": "03f816f5b3f367d7c560783a82a3a8930b5c7e8ebe85ffb43950fa053300b877",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-02/ctl-f98f0c450363c508/OUTCOME.json": "a5d743811f1237742951b5ef7b462f88fe571c6d8584ad79b1bc7a1eafe86c51",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-02/ctl-f98f0c450363c508/QUALITY.json": "51adb26e5571934a8ca2c6a2cc10f09e3569adcbef9e2e504cff4b76a99afe78",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-02/ctl-f98f0c450363c508/incident-ledger.json": "db713065e854e804b44730ece88106a32d379b1703bc1596f2b1ccd53f150e8b",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-02/ctl-bac174df0597ad53/OUTCOME.json": "a7f2fdc447e84648844ae079b732928ae87430d25286ff343ff34d4c8d06d82a",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-02/ctl-bac174df0597ad53/QUALITY.json": "42cc49668697e7b6cb9d81d83b84513e847390d324f3b7e37f3d0efdb35ce31c",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-02/ctl-bac174df0597ad53/incident-ledger.json": "4c3e37dab0dcc1a4d5f0e24714209d67955ded9583e3b0a020980927fa3759a6",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-02/ctl-6e4171eb6d5fcd23/OUTCOME.json": "dcc4edb33ae7bd3f6b39669af913396a95eaac75cfa3b00665fcc371cbfd15fd",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-02/ctl-6e4171eb6d5fcd23/QUALITY.json": "4d929b4482b02c481d33cbfc56c21d553a4be350f1d1b4f77e1ef8b97e259824",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-02/ctl-6e4171eb6d5fcd23/incident-ledger.json": "aab988498fdd6102e8a2f6c8ea0a8e33354b00fc5682ea0ba8dd991e63a9e26a",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-02/ctl-75b1cb0522584a8a/OUTCOME.json": "4c66446bed69b94b2819617a5414cd61481a66019bae3b4fd06f87fe50d6deb6",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-02/ctl-75b1cb0522584a8a/QUALITY.json": "c94d9e3da84de0c8e1975fa5d2c2aa560f19a67c8d72f4de78223f26674f9897",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-02/ctl-75b1cb0522584a8a/incident-ledger.json": "20576bc9013ecdeec52e7d88208c5c09b6c0e893c00c676edcb9f2b3a2eaf167",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-02/ctl-232232726ec72c81/OUTCOME.json": "de94efd8e9ffa75db0d254b06fb91906464f90500fd1418ad34e377cf2a090cf",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-02/ctl-232232726ec72c81/QUALITY.json": "d559a1393bc75bf7f9e53d37819a2b2837e8e856628dde15c8921c3c81783111",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-02/ctl-232232726ec72c81/incident-ledger.json": "4bf81c157b9ce60dbf0f420f7e3ffb1f132c96a1303578bbb482ab349fd7ffc1",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-02/ctl-14cb1bb90815528c/research.json": "9e28bb38cc4e53974b7d9e89c37601466ed61a0c086b8b21dbcf6712117e293f",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-02/ctl-14cb1bb90815528c/WORKER_PROMPT_MODE.json": "607bb7169fc575297b2e128a2825a9f1a5af050e42f2fdfe1b363050b0b68a2f",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-02/ctl-f98f0c450363c508/research.json": "9586b6edd4129d814a3912b86be2d03e41e00036e2a6113674c18f0081f75ce9",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-02/ctl-f98f0c450363c508/WORKER_PROMPT_MODE.json": "607bb7169fc575297b2e128a2825a9f1a5af050e42f2fdfe1b363050b0b68a2f",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-02/ctl-bac174df0597ad53/research.json": "bf1b1b0464aef872790dc37904ab78f2c5d0643ab0593fc7d6850dc2b90af08c",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-02/ctl-bac174df0597ad53/WORKER_PROMPT_MODE.json": "607bb7169fc575297b2e128a2825a9f1a5af050e42f2fdfe1b363050b0b68a2f",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-02/ctl-6e4171eb6d5fcd23/research.json": "ed8a66a06598ef78962fd1c7aa8127be28d007836d0e83d3a00d1212cb19a8d4",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-02/ctl-6e4171eb6d5fcd23/WORKER_PROMPT_MODE.json": "607bb7169fc575297b2e128a2825a9f1a5af050e42f2fdfe1b363050b0b68a2f",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-02/ctl-75b1cb0522584a8a/research.json": "3d1adac8042ff9ee9c4a31588480221d1fd6844891c7fa43808dbf2c1dc6abc6",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-02/ctl-75b1cb0522584a8a/WORKER_PROMPT_MODE.json": "607bb7169fc575297b2e128a2825a9f1a5af050e42f2fdfe1b363050b0b68a2f",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-02/ctl-232232726ec72c81/research.json": "24d8216307f5dfbf5a32f2a6facc98eda8ee731f7e76d289374316cb71b523af",
+      "/home/simjecture/investigations/scientific-attention-20261025/control-commission-02/ctl-232232726ec72c81/WORKER_PROMPT_MODE.json": "607bb7169fc575297b2e128a2825a9f1a5af050e42f2fdfe1b363050b0b68a2f"
+    }
+  },
+  "FINALIZATION.json": {
+    "stage": "qualified",
+    "attempted": 6,
+    "unstarted": [],
+    "audit_returncodes": [
+      0,
+      0
+    ]
+  },
+  "CAMPAIGN.json": {
+    "stage": "completed",
+    "started_at": 1793105769.0327036,
+    "blocks": [
+      {
+        "id": "control-03",
+        "started_at": 1793105784.3941522,
+        "trials": [
+          {
+            "id": "ctl-14cb1bb90815528c",
+            "arm": "observe",
+            "started_at": 1793105874.3946323,
+            "ended_at": 1793106197.9789598
+          },
+          {
+            "id": "ctl-f98f0c450363c508",
+            "arm": "routine_help",
+            "started_at": 1793106287.9795868,
+            "ended_at": 1793106690.6970408
+          }
+        ],
+        "ended_at": 1793106690.70565
+      },
+      {
+        "id": "control-01",
+        "started_at": 1793106690.7061152,
+        "trials": [
+          {
+            "id": "ctl-bac174df0597ad53",
+            "arm": "observe",
+            "started_at": 1793106780.6977634,
+            "ended_at": 1793106935.1971064
+          },
+          {
+            "id": "ctl-6e4171eb6d5fcd23",
+            "arm": "routine_help",
+            "started_at": 1793107025.1974185,
+            "ended_at": 1793107198.3598514
+          }
+        ],
+        "ended_at": 1793107198.3601632
+      },
+      {
+        "id": "control-02",
+        "started_at": 1793107198.3606775,
+        "trials": [
+          {
+            "id": "ctl-75b1cb0522584a8a",
+            "arm": "routine_help",
+            "started_at": 1793107288.361262,
+            "ended_at": 1793107562.9952292
+          },
+          {
+            "id": "ctl-232232726ec72c81",
+            "arm": "observe",
+            "started_at": 1793107652.9956408,
+            "ended_at": 1793107901.114907
+          }
+        ],
+        "ended_at": 1793107901.116179
+      }
+    ],
+    "ended_at": 1793107901.1166341
+  },
+  "workflow-audit/summary.json": {
+    "manifest_sha256": "7f60ef97789d3af33e995324b3284da91921a7087df7cdc6aaa832fc535a80a3",
+    "arms": {
+      "observe": {
+        "assigned": 3,
+        "verified": 3,
+        "mean_native_starts": 3.6666666666666665,
+        "mean_elapsed_seconds": 241.20746199289957,
+        "mean_restricted_completion_seconds": 241.20746199289957,
+        "automatic_alerts": 0,
+        "quiet_trials": 1,
+        "quiet_trials_with_alert": 0,
+        "collector_failed": 0,
+        "trials_with_monitor_errors": 0
+      },
+      "routine_help": {
+        "assigned": 3,
+        "verified": 3,
+        "mean_native_starts": 5.333333333333333,
+        "mean_elapsed_seconds": 283.03539125124615,
+        "mean_restricted_completion_seconds": 283.03539125124615,
+        "automatic_alerts": 3,
+        "quiet_trials": 1,
+        "quiet_trials_with_alert": 1,
+        "collector_failed": 0,
+        "trials_with_monitor_errors": 0
+      }
+    },
+    "routine_help_minus_baseline": {
+      "observe": {
+        "whole_workflow_verified": {
+          "difference": 0,
+          "interval95": [
+            0,
+            0
+          ],
+          "clusters": 3,
+          "cluster_unit": "mechanism family; both fresh-seed pairs kept together",
+          "scope": "Descriptive paired percentile bootstrap; eight known families are not new domains"
+        },
+        "native_starts": {
+          "difference": 1.6666666666666667,
+          "interval95": [
+            1,
+            2
+          ],
+          "clusters": 3,
+          "cluster_unit": "mechanism family; both fresh-seed pairs kept together",
+          "scope": "Descriptive paired percentile bootstrap; eight known families are not new domains"
+        },
+        "restricted_completion_seconds": {
+          "difference": 41.82792925834656,
+          "interval95": [
+            19.22761583328247,
+            79.80645084381104
+          ],
+          "clusters": 3,
+          "cluster_unit": "mechanism family; both fresh-seed pairs kept together",
+          "scope": "Descriptive paired percentile bootstrap; eight known families are not new domains"
+        }
+      }
+    },
+    "violations": [],
+    "limitations": [
+      "All assigned failures retained; no patched-host results mixed into this cohort.",
+      "Quiet-family alerts are a proxy for unnecessary attention, not independently adjudicated false alerts.",
+      "Restricted completion assigns 650 seconds to failures; it is not actual measured runtime.",
+      "Native sessions are stochastic; only one execution per arm/configuration."
+    ]
+  },
+  "workflow-audit/records.json": [
+    {
+      "id": "ctl-14cb1bb90815528c",
+      "family": "source_binding",
+      "seed": 202610271033,
+      "repeat": 0,
+      "arm": "observe",
+      "worker_prompt": "task_protocol",
+      "block": "control-03",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 322.67930579185486,
+      "restricted_completion_seconds": 322.67930579185486,
+      "native_starts": 6,
+      "automatic_alerts": 0,
+      "alert_actions": [],
+      "quiet_family": false,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "policy_choice": 19
+      },
+      "proposed_actions": {
+        "observe": 19
+      },
+      "input_token_range": null,
+      "prediction_latency_mean": null,
+      "completion_censored": false
+    },
+    {
+      "id": "ctl-f98f0c450363c508",
+      "family": "source_binding",
+      "seed": 202610271033,
+      "repeat": 0,
+      "arm": "routine_help",
+      "worker_prompt": "task_protocol",
+      "block": "control-03",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 402.4857566356659,
+      "restricted_completion_seconds": 402.4857566356659,
+      "native_starts": 8,
+      "automatic_alerts": 1,
+      "alert_actions": [
+        "request_worker_help"
+      ],
+      "quiet_family": false,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "awaiting_persistence": 1,
+        "fresh_grounded_persistent_request": 1
+      },
+      "proposed_actions": {
+        "request_worker_help": 2
+      },
+      "input_token_range": null,
+      "prediction_latency_mean": null,
+      "completion_censored": false
+    },
+    {
+      "id": "ctl-bac174df0597ad53",
+      "family": "progressing_work",
+      "seed": 202610271031,
+      "repeat": 0,
+      "arm": "observe",
+      "worker_prompt": "task_protocol",
+      "block": "control-01",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 153.6898899078369,
+      "restricted_completion_seconds": 153.6898899078369,
+      "native_starts": 2,
+      "automatic_alerts": 0,
+      "alert_actions": [],
+      "quiet_family": true,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "policy_choice": 10
+      },
+      "proposed_actions": {
+        "observe": 10
+      },
+      "input_token_range": null,
+      "prediction_latency_mean": null,
+      "completion_censored": false
+    },
+    {
+      "id": "ctl-6e4171eb6d5fcd23",
+      "family": "progressing_work",
+      "seed": 202610271031,
+      "repeat": 0,
+      "arm": "routine_help",
+      "worker_prompt": "task_protocol",
+      "block": "control-01",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 172.91750574111938,
+      "restricted_completion_seconds": 172.91750574111938,
+      "native_starts": 3,
+      "automatic_alerts": 1,
+      "alert_actions": [
+        "request_worker_help"
+      ],
+      "quiet_family": true,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "awaiting_persistence": 1,
+        "fresh_grounded_persistent_request": 1
+      },
+      "proposed_actions": {
+        "request_worker_help": 2
+      },
+      "input_token_range": null,
+      "prediction_latency_mean": null,
+      "completion_censored": false
+    },
+    {
+      "id": "ctl-75b1cb0522584a8a",
+      "family": "unit_conversion",
+      "seed": 202610271032,
+      "repeat": 0,
+      "arm": "routine_help",
+      "worker_prompt": "task_protocol",
+      "block": "control-02",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 273.7029113769531,
+      "restricted_completion_seconds": 273.7029113769531,
+      "native_starts": 5,
+      "automatic_alerts": 1,
+      "alert_actions": [
+        "request_worker_help"
+      ],
+      "quiet_family": false,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "awaiting_persistence": 1,
+        "fresh_grounded_persistent_request": 1
+      },
+      "proposed_actions": {
+        "request_worker_help": 2
+      },
+      "input_token_range": null,
+      "prediction_latency_mean": null,
+      "completion_censored": false
+    },
+    {
+      "id": "ctl-232232726ec72c81",
+      "family": "unit_conversion",
+      "seed": 202610271032,
+      "repeat": 0,
+      "arm": "observe",
+      "worker_prompt": "task_protocol",
+      "block": "control-02",
+      "stage": "completed",
+      "whole_workflow_verified": 1,
+      "raw_quality": 1.0,
+      "elapsed_seconds": 247.25319027900696,
+      "restricted_completion_seconds": 247.25319027900696,
+      "native_starts": 3,
+      "automatic_alerts": 0,
+      "alert_actions": [],
+      "quiet_family": false,
+      "required_feedback_misses": 0,
+      "finish_reason": "worker_finished_with_obligations_reconciled",
+      "error": null,
+      "monitor_error_count": 0,
+      "monitor_error_messages": [],
+      "results_artifact_exists": true,
+      "admissions": {
+        "policy_choice": 20
+      },
+      "proposed_actions": {
+        "observe": 20
+      },
+      "input_token_range": null,
+      "prediction_latency_mean": null,
+      "completion_censored": false
+    }
+  ],
+  "controller_alive": {
+    "3867913": false,
+    "3867929": false
+  },
+  "native_accounting": {
+    "starts": 28,
+    "active": 0,
+    "workflow_starts": 27,
+    "authentication_starts": 1,
+    "original_pilot_starts": 14,
+    "both_pilots_total_starts": 42,
+    "original_ceiling": 73
+  }
+}

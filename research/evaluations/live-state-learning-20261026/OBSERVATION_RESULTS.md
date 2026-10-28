@@ -114,3 +114,43 @@ permissions, decoding policy, hardware and budgets matched. Existing frozen
 checkpoints can answer this question without another optimizer update. The
 previously reported cohort remains exploratory and is not retrospectively
 relabelled as a confirmatory SFT study.
+
+
+## Full-input serialization measurements after the completed comparison
+
+The [token-count record](input-encoding-analysis/summary.json) covers all 313
+stored learned-model observations from 31 of the completed comparison's
+workflows. Every original prompt SHA-256 and token count reproduced exactly.
+The analysis then compared four complete five-field masked-chat inputs on the
+same observations, retaining evidence selection, alias bindings, questions and
+all semantic data. Column-form data were reconstructed and checked against the
+named-field JSON for every observation.
+
+| Representation | Mean tokens | Total tokens | Reduction in total tokens |
+|---|---:|---:|---:|
+| Original named JSON, outer string escaped | 4,293.44 | 1,343,848 | — |
+| Column JSON, outer string escaped | 3,994.65 | 1,250,326 | 6.96% |
+| Named JSON, raw state insertion | 3,881.11 | 1,214,787 | 9.60% |
+| Column JSON, raw state insertion | 3,611.61 | 1,130,434 | 15.88% |
+
+These are paired size measurements, not model quality, latency or workflow
+results. Repeated observations are correlated and not 313 independent tasks.
+Lossless data representation does not imply identical model decisions. Raw
+insertion also changes prompt boundaries and needs a dedicated robustness check
+with delimiter-like evidence before any deployment. The released v0.1 protocol
+remains unchanged; this completed test cohort is development evidence for a
+future representation, not an untouched test set for selecting that representation.
+
+The computation ran on the remote coordinator's CPU in an isolated tokenizer-only
+environment, with no Torch, model weights, GPU calls or optimizer updates. The
+first attempt stopped before measuring a row because Jinja2 was absent; its
+[original log](input-encoding-analysis/input-encoding-analysis-01.log) is retained.
+Adding Jinja2 3.1.6 and MarkupSafe 3.0.4 only to that environment allowed the second
+attempt to finish all observations in 6.51 seconds. This is analysis runtime,
+not inference speed. Exact analyzer, per-observation counts/hashes, input hashes,
+compiler/tokenizer identities and dependency installation receipt are retained.
+
+The next representation experiment must keep the full observation set fixed,
+measure predictions and citation/contract behavior as well as tokens and model
+scoring time, and qualify original-format probability reproduction before any
+comparison. It must not train on or select a threshold using a claimed fresh test.

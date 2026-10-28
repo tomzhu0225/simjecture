@@ -1,0 +1,19 @@
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+Traceback (most recent call last):
+  File "/home/simjecture/investigations/scientific-attention-20261025/measure_observation_encodings.py", line 140, in <module>
+    main()
+  File "/home/simjecture/investigations/scientific-attention-20261025/measure_observation_encodings.py", line 94, in main
+    rendered = tokenizer.apply_chat_template(messages, tokenize=False,
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/simjecture/investigations/scientific-attention-20261025/tokenizer-analysis-env/lib/python3.12/site-packages/transformers/tokenization_utils_base.py", line 3145, in apply_chat_template
+    rendered_chat, generation_indices = render_jinja_template(
+                                        ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/simjecture/investigations/scientific-attention-20261025/tokenizer-analysis-env/lib/python3.12/site-packages/transformers/utils/chat_template_utils.py", line 623, in render_jinja_template
+    compiled_template = _compile_jinja_template(chat_template)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/simjecture/investigations/scientific-attention-20261025/tokenizer-analysis-env/lib/python3.12/site-packages/transformers/utils/chat_template_utils.py", line 530, in _compile_jinja_template
+    return _cached_compile_jinja_template(chat_template)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/simjecture/investigations/scientific-attention-20261025/tokenizer-analysis-env/lib/python3.12/site-packages/transformers/utils/chat_template_utils.py", line 536, in _cached_compile_jinja_template
+    raise ImportError(
+ImportError: apply_chat_template requires jinja2 to be installed. Please install it using `pip install jinja2`.

@@ -1,0 +1,6 @@
+{
+  "at": 1793169329.6184113,
+  "returncode": 0,
+  "stdout": "",
+  "stderr": "Using Python 3.12.14 environment at: investigations/scientific-attention-20261025/tokenizer-analysis-env\nResolved 2 packages in 5.83s\nInstalled 2 packages in 59ms\n + jinja2==3.1.6\n + markupsafe==3.0.4\n"
+}

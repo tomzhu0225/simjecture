@@ -1,7 +1,7 @@
 # Controls needed to interpret the workflow timing differences
 
-Status: **first native commissioning attempt incomplete; the revised resumption
-control is collecting a separate native qualification round**. The original 64-assignment base/SFT comparison completed
+Status: **the first pilot is retained incomplete; the revised resumption
+control completed all six workflows and passed native qualification**. The original 64-assignment base/SFT comparison completed
 at source `04f905c`, with its original instructions and four arms. None of the
 changes below was deployed into that cohort or used for model training.
 
@@ -30,9 +30,9 @@ The limit is in this experiment's `range(1, 5)` worker loop, not an independentl
 established production Simjecture bug. The prospective `--parent-turn-limit`
 option permits 1–12 main-worker resumptions while the existing wall deadline and
 shared native-start guard still apply to every role. Its default remains four,
-and the default task text is byte-for-byte unchanged. A new commission will
-register 12 for both arms, use new assignment IDs, and retain the two original
-pilot outcomes. It receives only the original pilot's unused native starts and
+and the default task text is byte-for-byte unchanged. The second commission
+registered 12 for both arms, used new assignment IDs, and retained the two original
+pilot outcomes. It received only the original pilot's unused native starts and
 unexpired wall budget, not a renewed two-hour allowance.
 
 Nondefault commissioning verifies the limit recorded in each actual outcome
@@ -40,7 +40,7 @@ and requires at least one successful workflow to exercise a resumption beyond
 four turns. Missing coverage remains incomplete. Thirty-six targeted checks
 pass, covering the new audit requirement, unchanged resource ceilings, invalid
 limit rejection, original completion/feedback checks, and existing controls.
-These checks do not replace the forthcoming native qualification.
+The completed native qualification below additionally exercises these paths.
 
 The [second-round manifest](followup-control-v2-manifest.json) pins source
 `8626a773f8995a42ee99f24703b13ecb386d7679` and all 543 source files. It uses
@@ -50,16 +50,33 @@ starts**, with no extension of the original **14:19:33 UTC** deadline.
 The actual child runner ends its native allowance approximately 30 seconds
 earlier. Fresh physics checks passed before the new authentication and workers.
 
-At the [saved launch snapshot](followup-control-v2-launch.json), the first three
-new workflows had verified. The new routine-help protected-repair trial required
-five main-worker turns and eight native starts, completing in 402.5 seconds.
-This exercises the previously unavailable fifth resumption and completes the
-report within the original per-workflow wall and shared-start limits. The paired
-worker-only trial verified in 322.7 seconds with four main-worker turns; the
-healthy worker-only trial also verified. These are integration observations,
-not an estimate of learned-policy benefit. Full six-trial qualification remains
-pending at this snapshot. [Physics receipts](followup-control-v2-qualification.json)
-and exact second-round operator scripts are retained alongside the first round.
+The [completed second-round record](followup-control-v2-completed.json) contains
+six verified workflows, zero audit violations and no unstarted assignments.
+All required paths were exercised: routine expert dispatch, acknowledged help
+return, judge-authorized applied repair and successful resumption beyond four
+main-worker turns. All 28 native invocations are closed (27 workflow starts plus
+one authentication check); the first pilot used 14, for 42 of the original 73.
+Both controllers exited. No decision model, GPU allocation or optimizer ran.
+
+| Mechanism | Worker only: seconds / starts | Routine help: seconds / starts |
+|---|---:|---:|
+| Protected source binding | 322.68 / 6 | 402.49 / 8 |
+| Healthy progress | 153.69 / 2 | 172.92 / 3 |
+| Worker-owned unit conversion | 247.25 / 3 | 273.70 / 5 |
+
+The routine-help protected-repair trial used five main-worker turns. It completed
+the report within the unchanged 650-second and 12-shared-start limits. Routine
+help took 41.83 seconds more on average over these three pairs, but these are
+integration controls with one execution per arm/configuration, not a powered
+policy-effectiveness study. A quiet-family alert is not an independently
+adjudicated false alert. The generic audit's inherited bootstrap prose refers
+to the old eight-family/two-repeat design; this pilot has three families and one
+pair per family. Do not interpret those generic intervals as confirmatory.
+
+The [launch snapshot](followup-control-v2-launch.json),
+[physics receipts](followup-control-v2-qualification.json) and exact operator
+scripts preserve how the second round was started. The failed first round
+remains in the record and is not replaced by this successful qualification.
 
 ## Recorded instruction mismatch
 
@@ -152,7 +169,7 @@ and the one-request allowance before counting new comparative outcomes.
 The [six-assignment manifest](followup-control-commission-manifest.json) now pins
 scientific source `45f0204061ef44d8b9c974c3d5d85a2c7fe5c8f1`, all 537 tracked
 regular files under its source/script/monitor-package directories, and the four
-new planning, execution and audit tools. It has not been executed. Every trial
+new planning, execution and audit tools. It governed the retained first attempt above. Every trial
 uses `task_protocol`; worker-only and routine-help arms each cover healthy
 progress, worker-owned unit conversion, and protected source binding. This is
 integration qualification on known mechanisms, not a model comparison or unseen
@@ -201,7 +218,7 @@ Twenty-two selected tests pass, including the new planner/auditor and runner
 failure-path checks plus the existing prompt/routine-policy checks. The runner
 tests substitute local process doubles and do not claim native integration
 qualification. All outputs remain ineligible for optimization by default, and
-the ongoing original cohort has not loaded these tools or changed instructions.
+the completed original cohort never loaded these tools or changed instructions.
 
 Then freeze a fresh assignment manifest, source revision, resource bounds and
 analysis before starting a comparison. Within a comparison, all policy arms must
@@ -212,10 +229,9 @@ Use completed pilot variance to choose the prospective sample size, not interim
 success to stop collection or select favorable mechanisms.
 
 These controls do not replace the need for new scientific tasks and mechanisms,
-independently assessed unsupported alerts, and general-decision retention. The
-prepared adapter bundle remains unpublished. Its earlier documentation snapshot
-must be refreshed with these limitations and the completed evaluation before any
-release decision.
+independently assessed unsupported alerts, and general-decision retention. [Conjecture 1 v0.1](https://huggingface.co/tomzhu0225/Conjecture-1-4B/tree/v0.1)
+is now public as an experimental research preview, with the completed mixed/negative
+evaluation and these scope limits. Publication does not validate deployment benefit.
 
 ## Autonomous commissioning sequence
 

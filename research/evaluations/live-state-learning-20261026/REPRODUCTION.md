@@ -1,7 +1,7 @@
 # Reproducing the continued-SFT candidate
 
-This is the unpublished Conjecture 1 experimental candidate. File preparation
-does not establish a workflow win. The registered 64-assignment comparison is
+Conjecture 1 v0.1 is [public on Hugging Face](https://huggingface.co/tomzhu0225/Conjecture-1-4B/tree/v0.1)
+as an experimental adapter. Publication does not establish a workflow win. The registered 64-assignment comparison is
 complete and found no reliable overall workflow advantage. The portable copy has passed a separate fresh A100 reload
 and probability check. No new optimizer updates were performed during this
 preparation.
@@ -33,8 +33,12 @@ provenance, reproduction scripts and notices. Its
 records the initial preparation stage. The subsequent
 [portable reload receipt](portable-reload-evidence.json) establishes mechanical
 reload equivalence. The completed workflow comparison supplies negative/mixed
-efficacy evidence, retained in the release documentation. The original
-bundle's documentation snapshot must be refreshed before publication.
+efficacy evidence, retained in the release documentation. That initial package
+receipt is historical: the final public release contains 32 files and binds
+its complete package to SHA-256
+`05bda467517afb4e902f5767361609970b94d921c845fc3e46eee6c7828a959d`.
+The [publication receipt](conjecture-1-publication.json) records the verified
+release commit and remote weight identity.
 
 ## Data
 
@@ -124,9 +128,9 @@ general-decision regressions and unvalidated deployment settings.
 
 The following recipe targets the tested A100/CUDA environment and the pinned
 scientific scorer. It is not a validated CPU or quantized deployment recipe.
-Run model loading on the intended GPU host. The example repository/tag below
-is the planned Conjecture 1 release identity; publication status is recorded
-separately from this draft.
+Run model loading on the intended GPU host. The published `v0.1` tag is pinned
+to commit `90c57d47e26c012811c51312698ee41475b1baab`; future releases must use
+new versions rather than moving that tag.
 
 ```bash
 git clone https://github.com/tomzhu0225/simjecture.git

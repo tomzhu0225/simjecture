@@ -1,0 +1,118 @@
+{
+  "stage": "completed",
+  "started_at": 1793169330.8076863,
+  "ended_at": 1793169337.318941,
+  "observations": 313,
+  "episodes": 31,
+  "baseline_prompt_hashes_reproduced": 313,
+  "baseline_token_counts_reproduced": 313,
+  "profiles": {
+    "named_escaped": {
+      "tokens": {
+        "count": 313,
+        "minimum": 2385,
+        "median": 4776,
+        "mean": 4293.444089456869,
+        "maximum": 5203,
+        "total": 1343848
+      },
+      "fractional_reduction": {
+        "count": 313,
+        "minimum": 0.0,
+        "median": 0.0,
+        "mean": 0.0,
+        "maximum": 0.0,
+        "total": 0.0
+      },
+      "total_token_reduction_fraction": 0.0
+    },
+    "column_escaped": {
+      "tokens": {
+        "count": 313,
+        "minimum": 2189,
+        "median": 4410,
+        "mean": 3994.6517571884983,
+        "maximum": 4837,
+        "total": 1250326
+      },
+      "fractional_reduction": {
+        "count": 313,
+        "minimum": 0.05034500383337592,
+        "median": 0.073805202661827,
+        "mean": 0.06835979658910035,
+        "maximum": 0.08218029350104816,
+        "total": 21.39661633238841
+      },
+      "total_token_reduction_fraction": 0.06959269203064633
+    },
+    "named_raw": {
+      "tokens": {
+        "count": 313,
+        "minimum": 2238,
+        "median": 4308,
+        "mean": 3881.108626198083,
+        "maximum": 4714,
+        "total": 1214787
+      },
+      "fractional_reduction": {
+        "count": 313,
+        "minimum": 0.06163522012578615,
+        "median": 0.09808365959200493,
+        "mean": 0.09548467825475612,
+        "maximum": 0.10102564102564104,
+        "total": 29.886704293738667
+      },
+      "total_token_reduction_fraction": 0.09603839124662905
+    },
+    "column_raw": {
+      "tokens": {
+        "count": 313,
+        "minimum": 2061,
+        "median": 3977,
+        "mean": 3611.6102236421725,
+        "maximum": 4383,
+        "total": 1130434
+      },
+      "fractional_reduction": {
+        "count": 313,
+        "minimum": 0.1278659611992945,
+        "median": 0.16465135026199118,
+        "mean": 0.15709203351586087,
+        "maximum": 0.16971112999150384,
+        "total": 49.16980649046445
+      },
+      "total_token_reduction_fraction": 0.158808139015722
+    }
+  },
+  "tokenizer_files_sha256": {
+    "tokenizer.json": "94a639c4b33b192cc5a22cd3d7f0aaf6d97efa9577957a0382b55292ca4f0f00",
+    "special_tokens_map.json": "02c0c88f275a15197a3b600ccd6ae7976e9b8b67e8eb5d7500d256d91cb6791b",
+    "chat_template.jinja": "a4aee8afcf2e0711942cf848899be66016f8d14a889ff9ede07bca099c28f715",
+    "config.json": "ddc63e1c717afa86c865bb5e01313d89d72bb53b97ad4a8a03ba8510c0621670",
+    "tokenizer_config.json": "f26d55ed6da1fc0de69fbaefae7b855f762e36d0052c05f4fdec312f72a22ae1"
+  },
+  "packages": {
+    "transformers": "5.20.1",
+    "tokenizers": "0.23.3",
+    "huggingface-hub": "1.33.0",
+    "pydantic": "2.13.4"
+  },
+  "compiler_source_sha256": {
+    "attention_support.py": "3ff8a395d8a8cd1cdb216be071e8610088f74994b69dd03cbc5942f9eebb61d0",
+    "attention_contract.py": "5576fdd62e9b418214cfca19b1f8a5417d2e59a7f6f632918c9d6a02de1290e3",
+    "decision_interface.py": "03c33560fda8a89d3ac63ded8ca6c0be6621b3f2aa70da94a3d0cc6065d6b115"
+  },
+  "model_weights_loaded": false,
+  "gpu_calls": 0,
+  "optimizer_updates": 0,
+  "limits": {
+    "cpu_seconds": 180,
+    "virtual_memory_bytes": 4294967296
+  },
+  "scope": "Token counts only; all evidence, aliases, fields and semantic data retained. Counterfactual formats are not enabled in the released model.",
+  "limitations": [
+    "No model prediction, accuracy, latency or intervention utility is measured.",
+    "Lossless data serialization does not imply equivalent model behavior.",
+    "Repeated observations are correlated; this is a paired descriptive size comparison."
+  ]
+}

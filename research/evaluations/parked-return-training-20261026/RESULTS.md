@@ -102,3 +102,34 @@ fresh scientific tasks, against both worker-only and frozen strong baselines,
 while measuring false alerts per complete healthy episode. The earlier
 28-workflow comparison remains unchanged: it did not establish an RL advantage
 or a reliable timing advantage over rules.
+
+
+## Prospective collector configuration after control qualification
+
+The original two-episode commissioning result above is unchanged. A separate
+[no-model control pilot](../live-state-learning-20261026/FOLLOWUP_CONTROLS.md)
+exposed a four-turn experiment limit and subsequently qualified six workflows
+with task-focused instructions and up to twelve parent turns, still inside the
+same 650-second and twelve-total-native-start ceilings.
+
+The return collector now accepts explicit `--worker-prompt`,
+`--parent-turn-limit`, `--maximum-parallel-workflows` and
+`--minimum-gap-seconds` settings. Historical defaults remain inherited prompts,
+four turns, two parallel workflows and no gap. A prospective qualified-host
+configuration uses `task_protocol`, twelve turns, one workflow and a 90-second
+gap. These choices are frozen in the plan and host-context hash; changing them
+produces disjoint episode IDs. Lease admission accounts for serial execution
+and every gap. An interrupted serial cohort retains failed and unstarted IDs.
+
+For new plans, export verifies actual turn limits/counts, the task-protocol
+receipt against task text and registered renderer hash, and measured controller
+intervals against concurrency and spacing. Exported episodes retain these
+execution identities. Legacy datasets can still be read without retroactively
+inventing those receipts. These additions do not turn old commissioning rows
+into optimizer data or change the reward formula.
+
+Twenty-eight collector/return tests pass, including serial failure preservation,
+complete-cohort-only training export, both action distributions, changed prompt
+rejection, resumption-limit mismatch, and concurrency/gap violations. These tests
+use process doubles; native sampling with this revised collector still requires
+its own commissioning before training.

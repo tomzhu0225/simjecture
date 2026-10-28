@@ -1,0 +1,18 @@
+{
+  "stage": "published_verified",
+  "started_at": 1793109420.4663618,
+  "repository": "tomzhu0225/Conjecture-1-4B",
+  "tag": "v0.1",
+  "release_kind": "experimental research adapter; no overall workflow advantage claimed",
+  "package_sha256": "05bda467517afb4e902f5767361609970b94d921c845fc3e46eee6c7828a959d",
+  "created_at": 1793109424.5181339,
+  "commit": "90c57d47e26c012811c51312698ee41475b1baab",
+  "commit_url": "https://huggingface.co/tomzhu0225/Conjecture-1-4B/commit/90c57d47e26c012811c51312698ee41475b1baab",
+  "uploaded_at": 1793109641.4864717,
+  "verified_at": 1793109647.1818671,
+  "remote_weights_sha256": "76bf1bdf4c6d6a261211057d3cab4c8609131788827569f9c33f802d3491dab5",
+  "published_at": 1793109648.8019598,
+  "public_tag_commit": "90c57d47e26c012811c51312698ee41475b1baab",
+  "ended_at": 1793109649.3943012,
+  "url": "https://huggingface.co/tomzhu0225/Conjecture-1-4B"
+}
