@@ -19,7 +19,24 @@
     "src/simjecture_monitor/decision_interface.py": "03c33560fda8a89d3ac63ded8ca6c0be6621b3f2aa70da94a3d0cc6065d6b115",
     "src/simjecture_monitor/sampling_trace.py": "efaf158504c5c74abe6e509b6fbc854c606287ded193fe714906021b9d87eac3",
     "src/simjecture_monitor/__init__.py": "8769e4a05daec354874894663bd2801db264954c908b427413ff4fcbac660479",
-    "src/simjecture_monitor/decision_model.py": "25d83791c08a2b671dce5f0eff251c37eac159e231a80722e71979be2469552d"
+    "src/simjecture_monitor/decision_model.py": "25d83791c08a2b671dce5f0eff251c37eac159e231a80722e71979be2469552d",
+    "src/simjecture_monitor/reward.py": "8344c9e90d28e4e009896fe512f7eae3174f8349f31d665d8e4e4f4e80c05ec4",
+    "src/simjecture_monitor/measured_wait.py": "6e6a6a7d249cecd1d3c7da9c9f58a31daf4e5888efdc5ea99be8beecf988718c",
+    "src/simjecture_monitor/workflow_returns.py": "91a44686d068cde49d9c724b16f65d5edb26a03fe9c1e70baf5bd2f97623fac6",
+    "src/simjecture_monitor/scientific_curriculum.py": "0450ac609fe57da9374a53c09f1f621aa1b29534f8fba80c53b0afa3ee608943",
+    "src/simjecture_monitor/workflow_collection.py": "d6569b0a0601298ad850f32839b82b4448d3fa6dfe53e4c49731abc4461622eb"
   },
-  "scope": "Portable contracts and inference only; experimental workflow drivers and allocation scripts excluded. New tool/normal-study integration requires its own qualification."
+  "scope": "Portable contracts and inference only; experimental workflow drivers and allocation scripts excluded. New tool/normal-study integration requires its own qualification.",
+  "training_extraction": {
+    "original_trainer": "scripts/train_decisions.py",
+    "original_sha256": "adf0343c4730f3c2800fb5c55db70b3af909f8425aaa248ea41ed323ea536745",
+    "packaged_trainer": "src/simjecture_monitor/training.py",
+    "changes": [
+      "CPU-only --validate-only preflight",
+      "Validate every target before loading a model"
+    ],
+    "evaluation_source": "scripts/evaluate_scientific_states.py",
+    "evaluation_sha256": "954e9d58f62f3b461786581b20b8abd8c6a45eb009f52bf4b69262dffefa8a5f",
+    "hardware_validation": "Historical A100 evidence belongs to original pinned research revisions; no optimizer executed during this extraction"
+  }
 }
