@@ -167,3 +167,12 @@ parent phase deadline. The six original IDs, scientific source, sampler, model,
 native-start ceiling, 08:49:37 UTC deadline and cumulative 20-CU ceiling remain
 unchanged. No scientific attempt was rerun. The replacement runtime is separately
 owned and guarded; this record establishes launch, not completed qualification.
+
+
+The smaller deployment subsequently completed. The fresh A100 loaded the pinned
+base and continued-SFT adapter, and all [three saved probability probes](../live-state-learning-20261026/sampling-commission-c13-model-qualification.json)
+passed before native collection: maximum discrepancies were `1.90e-8`, `2.84e-8`
+and `6.19e-8` against the unchanged `1e-4` tolerance. Actual prompt hashes matched.
+The collector then entered the registered commissioning campaign using the
+constrained distribution. At this saved qualification snapshot it was waiting
+through the initial 90-second gap; scientific outcomes were not yet available.
