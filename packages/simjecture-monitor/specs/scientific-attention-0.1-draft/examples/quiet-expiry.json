@@ -1,0 +1,101 @@
+{
+  "schema_version": "scientific-attention/0.1-draft",
+  "packet_id": "packet-0002",
+  "subject_id": "subject-0001",
+  "operation_id": "operation-0001",
+  "incident_id": "incident-0001",
+  "clock_id": "observer-boot-0001",
+  "captured_ms": 100000,
+  "sequence": 1,
+  "state_revision": 1,
+  "task": "Complete two plasma controls and report independently checked diagnostics.",
+  "phase": "diagnostic_aggregation",
+  "scientific_contract": [
+    "Report the saved absolute peak electric field in V/m.",
+    "Keep original tolerances unchanged. An accurately reported negative result is valid."
+  ],
+  "worker_state": "parked",
+  "workflow_state": "running",
+  "assistance": "none",
+  "timing": {
+    "phase_elapsed_ms": 40000,
+    "progress_age_ms": 35160,
+    "heartbeat_age_ms": 500,
+    "quiet_state": "expired",
+    "quiet_remaining_ms": 0,
+    "since_quiet_end_ms": 142,
+    "retries_remaining": 2,
+    "budget_remaining_ms": 600000
+  },
+  "evidence": [
+    {
+      "id": "record-0",
+      "source": "opaque-source-0",
+      "source_role": "solver_progress",
+      "source_sha256": "08cf1d195b364f5233dc91159b8a64c1bf32685100bd3ab1f91a876614f86785",
+      "kind": "progress",
+      "age_ms": 1500,
+      "origin": "instrument",
+      "content": "The current diagnostic phase declared 36 seconds of quiet work.",
+      "measurements": [],
+      "required": true,
+      "excerpted": false
+    },
+    {
+      "id": "record-1",
+      "source": "opaque-source-1",
+      "source_role": "storage_metadata",
+      "source_sha256": "eb03468596852a1e74ddcca1d50e1c6b8f301baa39ebe9ec5c6a9b492f307fa6",
+      "kind": "expectation",
+      "age_ms": 1500,
+      "origin": "instrument",
+      "content": "Stored electric fields use V/m.",
+      "measurements": [],
+      "required": true,
+      "excerpted": false
+    },
+    {
+      "id": "record-2",
+      "source": "opaque-source-2",
+      "source_role": "diagnostic_summary",
+      "source_sha256": "8511f3f40ac3d138058104a7f5c560038528a9b6c8d832ad1fc19bae169946a2",
+      "kind": "measurement",
+      "age_ms": 1500,
+      "origin": "instrument",
+      "content": "Measured values from the current run.",
+      "measurements": [
+        {
+          "name": "physical_time",
+          "value": 6.67e-14,
+          "unit": "s",
+          "validity": "measured",
+          "reference": null
+        },
+        {
+          "name": "stored_peak_field",
+          "value": 1520000000.0,
+          "unit": "V/m",
+          "validity": "measured",
+          "reference": null
+        },
+        {
+          "name": "reported_peak_field",
+          "value": 1520000000.0,
+          "unit": "V/m",
+          "validity": "measured",
+          "reference": null
+        },
+        {
+          "name": "charge_residual",
+          "value": 8.35e-12,
+          "unit": "1",
+          "validity": "measured",
+          "reference": "Operator-declared original tolerance: 1e-11."
+        }
+      ],
+      "required": true,
+      "excerpted": false
+    }
+  ],
+  "missing_channels": []
+}

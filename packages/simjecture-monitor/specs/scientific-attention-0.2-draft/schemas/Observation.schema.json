@@ -1,0 +1,586 @@
+{
+  "$defs": {
+    "Evidence": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "source": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Source",
+          "type": "string"
+        },
+        "source_role": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Source Role",
+          "type": "string"
+        },
+        "source_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Sha256",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "progress",
+            "measurement",
+            "tool_result",
+            "expectation",
+            "assistance",
+            "receipt"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "age_ms": {
+          "minimum": 0,
+          "title": "Age Ms",
+          "type": "integer"
+        },
+        "origin": {
+          "enum": [
+            "instrument",
+            "host",
+            "worker",
+            "operator"
+          ],
+          "title": "Origin",
+          "type": "string"
+        },
+        "content": {
+          "maxLength": 1600,
+          "title": "Content",
+          "type": "string"
+        },
+        "measurements": {
+          "items": {
+            "$ref": "#/$defs/Measurement"
+          },
+          "maxItems": 16,
+          "title": "Measurements",
+          "type": "array"
+        },
+        "required": {
+          "default": true,
+          "title": "Required",
+          "type": "boolean"
+        },
+        "excerpted": {
+          "default": false,
+          "title": "Excerpted",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "source",
+        "source_role",
+        "source_sha256",
+        "kind",
+        "age_ms",
+        "origin",
+        "content"
+      ],
+      "title": "Evidence",
+      "type": "object"
+    },
+    "Measurement": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Value"
+        },
+        "unit": {
+          "maxLength": 48,
+          "minLength": 1,
+          "title": "Unit",
+          "type": "string"
+        },
+        "validity": {
+          "enum": [
+            "measured",
+            "missing",
+            "invalid"
+          ],
+          "title": "Validity",
+          "type": "string"
+        },
+        "reference": {
+          "anyOf": [
+            {
+              "maxLength": 320,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reference"
+        }
+      },
+      "required": [
+        "name",
+        "value",
+        "unit",
+        "validity"
+      ],
+      "title": "Measurement",
+      "type": "object"
+    },
+    "Question": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "text": {
+          "maxLength": 480,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "context_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Context Sha256",
+          "type": "string"
+        },
+        "resolution": {
+          "enum": [
+            "open",
+            "resolved",
+            "unknown"
+          ],
+          "title": "Resolution",
+          "type": "string"
+        },
+        "evidence_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 8,
+          "minItems": 1,
+          "title": "Evidence Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "text",
+        "context_sha256",
+        "resolution",
+        "evidence_ids"
+      ],
+      "title": "Question",
+      "type": "object"
+    },
+    "Retrieval": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "question_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Question Id",
+          "type": "string"
+        },
+        "context_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Context Sha256",
+          "type": "string"
+        },
+        "support_kind": {
+          "enum": [
+            "knowledge_lookup",
+            "literature_review"
+          ],
+          "title": "Support Kind",
+          "type": "string"
+        },
+        "action": {
+          "enum": [
+            "observe",
+            "recheck",
+            "request_worker_help",
+            "wake_director",
+            "request_repair_judge"
+          ],
+          "title": "Action",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "pending",
+            "active",
+            "completed",
+            "failed"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "outcome": {
+          "enum": [
+            "matches",
+            "no_matches",
+            "inconclusive",
+            "unavailable"
+          ],
+          "title": "Outcome",
+          "type": "string"
+        },
+        "age_ms": {
+          "minimum": 0,
+          "title": "Age Ms",
+          "type": "integer"
+        },
+        "reusable_for_ms": {
+          "minimum": 0,
+          "title": "Reusable For Ms",
+          "type": "integer"
+        },
+        "cooldown_remaining_ms": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Cooldown Remaining Ms",
+          "type": "integer"
+        },
+        "evidence_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Evidence Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "question_id",
+        "context_sha256",
+        "support_kind",
+        "action",
+        "status",
+        "outcome",
+        "age_ms",
+        "reusable_for_ms"
+      ],
+      "title": "Retrieval",
+      "type": "object"
+    },
+    "Timing": {
+      "additionalProperties": false,
+      "properties": {
+        "phase_elapsed_ms": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Phase Elapsed Ms"
+        },
+        "progress_age_ms": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Progress Age Ms"
+        },
+        "heartbeat_age_ms": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Heartbeat Age Ms"
+        },
+        "quiet_state": {
+          "enum": [
+            "none",
+            "active",
+            "expired",
+            "unknown"
+          ],
+          "title": "Quiet State",
+          "type": "string"
+        },
+        "quiet_remaining_ms": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Quiet Remaining Ms"
+        },
+        "since_quiet_end_ms": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Since Quiet End Ms"
+        },
+        "retries_remaining": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retries Remaining"
+        },
+        "budget_remaining_ms": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Budget Remaining Ms"
+        }
+      },
+      "required": [
+        "phase_elapsed_ms",
+        "progress_age_ms",
+        "heartbeat_age_ms",
+        "quiet_state"
+      ],
+      "title": "Timing",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "scientific-attention/0.2-draft",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "packet_id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Packet Id",
+      "type": "string"
+    },
+    "subject_id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Subject Id",
+      "type": "string"
+    },
+    "operation_id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Operation Id",
+      "type": "string"
+    },
+    "incident_id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Incident Id",
+      "type": "string"
+    },
+    "clock_id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Clock Id",
+      "type": "string"
+    },
+    "captured_ms": {
+      "minimum": 0,
+      "title": "Captured Ms",
+      "type": "integer"
+    },
+    "sequence": {
+      "minimum": 0,
+      "title": "Sequence",
+      "type": "integer"
+    },
+    "state_revision": {
+      "minimum": 0,
+      "title": "State Revision",
+      "type": "integer"
+    },
+    "task": {
+      "maxLength": 1200,
+      "minLength": 1,
+      "title": "Task",
+      "type": "string"
+    },
+    "phase": {
+      "maxLength": 120,
+      "minLength": 1,
+      "title": "Phase",
+      "type": "string"
+    },
+    "scientific_contract": {
+      "items": {
+        "maxLength": 320,
+        "minLength": 1,
+        "type": "string"
+      },
+      "maxItems": 16,
+      "minItems": 1,
+      "title": "Scientific Contract",
+      "type": "array"
+    },
+    "worker_state": {
+      "enum": [
+        "active",
+        "parked",
+        "unknown"
+      ],
+      "title": "Worker State",
+      "type": "string"
+    },
+    "workflow_state": {
+      "enum": [
+        "running",
+        "complete",
+        "unknown"
+      ],
+      "title": "Workflow State",
+      "type": "string"
+    },
+    "assistance": {
+      "enum": [
+        "none",
+        "pending",
+        "active",
+        "returned_required",
+        "unknown"
+      ],
+      "title": "Assistance",
+      "type": "string"
+    },
+    "timing": {
+      "$ref": "#/$defs/Timing"
+    },
+    "evidence": {
+      "items": {
+        "$ref": "#/$defs/Evidence"
+      },
+      "maxItems": 32,
+      "minItems": 1,
+      "title": "Evidence",
+      "type": "array"
+    },
+    "missing_channels": {
+      "items": {
+        "maxLength": 80,
+        "minLength": 1,
+        "type": "string"
+      },
+      "maxItems": 16,
+      "title": "Missing Channels",
+      "type": "array"
+    },
+    "questions": {
+      "items": {
+        "$ref": "#/$defs/Question"
+      },
+      "maxItems": 16,
+      "title": "Questions",
+      "type": "array"
+    },
+    "retrieval_history": {
+      "items": {
+        "$ref": "#/$defs/Retrieval"
+      },
+      "maxItems": 32,
+      "title": "Retrieval History",
+      "type": "array"
+    },
+    "retrieval_history_complete": {
+      "title": "Retrieval History Complete",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "schema_version",
+    "packet_id",
+    "subject_id",
+    "operation_id",
+    "incident_id",
+    "clock_id",
+    "captured_ms",
+    "sequence",
+    "state_revision",
+    "task",
+    "phase",
+    "scientific_contract",
+    "worker_state",
+    "workflow_state",
+    "assistance",
+    "timing",
+    "evidence",
+    "questions",
+    "retrieval_history",
+    "retrieval_history_complete"
+  ],
+  "title": "Observation",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:simjecture:scientific-attention:0.2-draft:Observation"
+}

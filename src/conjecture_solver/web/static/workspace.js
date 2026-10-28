@@ -1180,6 +1180,7 @@ async function refreshBenchmarks() {
 }
 
 const toolLabels = {
+  "conjecture-1": ["Conjecture 1", "Scientific attention", "C1", "Workflow assistance"],
   "elmer": ["Elmer", "Finite-element simulation", "FE", "CAD & simulation"],
   "freecad": ["FreeCAD", "Parametric CAD", "CAD", "CAD & simulation"],
   "gmsh": ["Gmsh", "Geometry and meshing", "MS", "CAD & simulation"],
@@ -1270,6 +1271,7 @@ function toolSection(tool) {
 function toolPresentation(tool) {
   const [name,category,glyph] = toolLabels[tool.id] || [tool.name,"Connected tool","RS"];
   const base = {name, category, glyph};
+  if(tool.kind === "attention")return {...base,status:tool.installed ? "Client installed" : "Optional",kind:tool.installed ? "installed" : "available",note:"Model service connected per study · disabled by default"};
   if(tool.included)return {...base,status:"Included",kind:"installed",note:"Included with Simjecture"};
   if(hosted)return {...base,status:"Available",kind:"installed",note:"Provided by your administrator"};
   if(toolRunning(tool)){
@@ -1286,6 +1288,7 @@ function toolPresentation(tool) {
     note:["agent","source"].includes(tool.action) ? "Guided setup with your agent" : "One-click install when you need it"};
 }
 function toolActionLabel(tool) {
+  if(tool.kind === "attention")return "Setup guide";
   if(toolRunning(tool))return tool.operation?.action === "check" ? "Checking…" : "Installing…";
   if(toolNeedsDiagnosis(tool))return "Diagnose with agent";
   return tool.installed ? tool.registered === false ? "View installations" : "Check readiness" :
@@ -1429,6 +1432,9 @@ function updateToolConsole(details, tool) {
   if (following) pre.scrollTop = pre.scrollHeight;
 }
 async function runToolAction(tool, button) {
+  if(tool.kind === "attention"){
+    window.open(tool.documentation_url,"_blank","noopener,noreferrer");return;
+  }
   if(hosted || state.readonly || tool.included || toolRunning(tool))return;
   await action(button,async()=>{
     if(toolNeedsDiagnosis(tool)){closeToolDetails();await assistInstallation(tool,true);return;}
@@ -1490,7 +1496,9 @@ function openToolDetails(tool, section=null) {
 }
 function toolSetupExplainer(tool) {
   const box = el("div", undefined, "tool-explainer");
-  if (["agent", "source"].includes(tool.action)) {
+  if(tool.kind === "attention") {
+    box.append(el("strong", "Optional attention tool"), el("p", "Connect a separately managed model service and enable it for a study. Shadow mode records suggestions; alert mode permits bounded director requests. Opening this guide does not download weights or allocate a GPU."));
+  } else if (["agent", "source"].includes(tool.action)) {
     box.append(el("strong", "Guided setup"), el("p", tool.id === "flash"
       ? "FLASH is licensed software, so you supply the source. Install with agent opens a conversation that asks for it, along with the application and physics you need, then builds and registers the runtime."
       : "This tool needs choices that only you can make. Install with agent opens a conversation with setup instructions for your agent. You review the request and choose the agent before anything runs."));
@@ -1555,6 +1563,7 @@ function renderToolDetails(tool,section=null) {
     const log=output.querySelector("pre");log.scrollTop=following ? log.scrollHeight : logScroll;
   }
   $("tool-detail-status").textContent=hosted ? "This collection is managed by your administrator." : state.readonly ? "Read-only workspace · tool setup is disabled." : tool.included ? "Included with Simjecture. No installation needed." :
+    tool.kind === "attention" ? "Optional per study · shadow by default · model service managed separately." :
     running ? "You can close this window; setup continues and its progress stays on this page." :
     toolNeedsDiagnosis(tool) ? "Your agent receives the saved error and output. You choose the agent and send the request." :
     tool.installed ? "Installation is separate from scientific validation." : "Optional research tool · install when you need it";
@@ -1589,7 +1598,7 @@ function renderToolOptions(tool) {
   const previousChoice=actions.querySelector("select")?.value;
   const previousTool=actions.dataset.selectedTool;
   actions.replaceChildren();actions.dataset.revision=revision;actions.dataset.selectedTool=tool.id;
-  if(tool.included)return;
+  if(tool.included || tool.kind === "attention")return;
   if(!hosted && toolRunning(tool)){
     const stop=el("button",tool.operation?.stopping ? "Stopping…" : "Stop setup","quiet danger-text");stop.type="button";
     stop.disabled=state.readonly || !!tool.operation?.stopping;

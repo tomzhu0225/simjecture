@@ -219,6 +219,14 @@ lab = Client()
         self._full_prompt()  # Durable instructions also exist when resuming older sessions.
         self.housekeeping("journal", lambda: sync_journal(self.service))
         self.housekeeping("brief", self.service.write_brief)
+        from .research_attention import configure as configure_attention
+
+        self._attention = configure_attention(self)
+
+    def attention_tick(self, directory=None):
+        observer = getattr(self, "_attention", None)
+        if observer is not None:
+            self.housekeeping("attention", lambda: observer.tick(directory))
 
     def diagnostic_error(self, component, error):
         errors = self.state.setdefault("diagnostic_errors", {})
@@ -687,6 +695,7 @@ Do not edit service records or other studies. Resume from lab.status() and your 
             try:
                 while not self.boundary():
                     try:
+                        self.attention_tick()
                         self.process_helpers()
                         if self.finalization_due() and not self.service.campaign_closeout():
                             self.finalize_report()
@@ -840,6 +849,8 @@ Do not edit service records or other studies. Resume from lab.status() and your 
                 self.report()
                 return 124 if self.state["status"] == "budget_exhausted" else 0
             finally:
+                if getattr(self, "_attention", None) is not None:
+                    self._attention.close()
                 self.stop_background_director()
                 self.stop_helpers()
                 self.save()

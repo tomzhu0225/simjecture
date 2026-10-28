@@ -1,0 +1,10 @@
+{
+  "action": "request_worker_help",
+  "support_kind": "literature_review",
+  "question_ref": "q0",
+  "basis": "missing",
+  "evidence": [
+    "e1",
+    "e2"
+  ]
+}

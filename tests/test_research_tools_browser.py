@@ -324,3 +324,39 @@ def test_catalog_search_filters_keyboard_and_setup_permissions(tmp_path, monkeyp
     finally:
         server.shutdown()
         server.server_close()
+
+
+def test_attention_card_opens_setup_without_installing_or_creating_a_simulation(
+    tmp_path, monkeypatch
+):
+    playwright = pytest.importorskip("playwright.sync_api")
+    from conjecture_solver.attention_cli import catalogue_card
+
+    app = SimjectureWebApplication(runs_root=tmp_path / "runs", scan_roots=(tmp_path,))
+    card = catalogue_card() | dict(installed=False, state="available")
+    monkeypatch.setattr(app.workspace, "catalogue", lambda: [card])
+    installations = []
+    monkeypatch.setattr(
+        app.workspace, "start_install", lambda payload: installations.append(payload)
+    )
+    server = create_server(app, port=0)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    try:
+        with playwright.sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page(viewport={"width": 1440, "height": 1000})
+            page.goto(f"http://127.0.0.1:{server.server_port}/workspace#tools")
+            page.locator('[data-tool="conjecture-1"]').click()
+            playwright.expect(page.locator("#tool-details-dialog")).to_be_visible()
+            playwright.expect(page.locator("#tool-details-body")).to_contain_text("Shadow mode")
+            assert page.locator("#tool-detail-options button").count() == 0
+            page.evaluate(
+                "() => { window.opened=[]; window.open=(...args)=>window.opened.push(args); }"
+            )
+            page.get_by_role("button", name="Setup guide", exact=True).click()
+            assert page.evaluate("opened[0][0]") == card["documentation_url"]
+            assert installations == []
+            browser.close()
+    finally:
+        server.shutdown()
+        server.server_close()

@@ -1,0 +1,13 @@
+{
+  "schema_version": "scientific-attention/0.1-draft",
+  "packet_id": "packet-0001",
+  "model_view_sha256": "8d311f07eb595b1ac47cef6a34b44af40745fd2d6c06c884c95a77cf1f2ca989",
+  "policy_id": "example-only-not-a-real-prediction",
+  "status": "ok",
+  "action": "recheck",
+  "evidence_basis": "selected",
+  "evidence_ids": [
+    "record-2"
+  ],
+  "basis": "missing"
+}

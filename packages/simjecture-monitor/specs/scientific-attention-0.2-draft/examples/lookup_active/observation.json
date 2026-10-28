@@ -1,0 +1,102 @@
+{
+  "schema_version": "scientific-attention/0.2-draft",
+  "packet_id": "f55482b9bd9e21d863cc5032",
+  "subject_id": "4df326bf8a9cff21e033c191",
+  "operation_id": "ab1c90d4ed5c50d8f9d2e29d",
+  "incident_id": "1e04884ee32892ca7ec5d8b5",
+  "clock_id": "2c31e669da9ed2e2a9f0149e",
+  "captured_ms": 200000,
+  "sequence": 1,
+  "state_revision": 1,
+  "task": "Check this thermal simulation and report the actual diagnostic quantities.",
+  "phase": "diagnostic_review",
+  "scientific_contract": [
+    "Stored and reported temperature must use the declared unit K.",
+    "A valid negative result remains valid science; preserve original criteria.",
+    "Protected adapter repairs require an independent authority decision."
+  ],
+  "worker_state": "parked",
+  "workflow_state": "running",
+  "assistance": "none",
+  "timing": {
+    "phase_elapsed_ms": 96417,
+    "progress_age_ms": 1885,
+    "heartbeat_age_ms": 100,
+    "quiet_state": "none",
+    "quiet_remaining_ms": null,
+    "since_quiet_end_ms": null,
+    "retries_remaining": 0,
+    "budget_remaining_ms": 599537
+  },
+  "evidence": [
+    {
+      "id": "f73d3c722e907920e21990d6",
+      "source": "0ac5e603fcb6440cf77299cf",
+      "source_role": "current_diagnostics",
+      "source_sha256": "cdd35b57eb20cb33cdce7c071afe9eff59483cb459e77a0c868f7fae6d32740d",
+      "kind": "measurement",
+      "age_ms": 100,
+      "origin": "instrument",
+      "content": "Stored and reported values for the current run.",
+      "measurements": [
+        {
+          "name": "stored_temperature",
+          "value": 385.3325303838595,
+          "unit": "K",
+          "validity": "measured",
+          "reference": null
+        },
+        {
+          "name": "reported_temperature",
+          "value": 385.3325303838595,
+          "unit": "K",
+          "validity": "measured",
+          "reference": null
+        }
+      ],
+      "required": true,
+      "excerpted": false
+    },
+    {
+      "id": "d11172949856490727d3f63d",
+      "source": "3d87b8b44d3973fe53ce2dab",
+      "source_role": "worker_question",
+      "source_sha256": "ae85bd0a68dda1659759d0415380e7ee4662c725273b04bc99f24fcbacb2fed9",
+      "kind": "expectation",
+      "age_ms": 100,
+      "origin": "worker",
+      "content": "Which approved reference procedure defines convergence for this thermal simulation configuration?",
+      "measurements": [],
+      "required": true,
+      "excerpted": false
+    }
+  ],
+  "missing_channels": [],
+  "questions": [
+    {
+      "id": "829a9e076585dd5c17b9c1de",
+      "text": "Which approved reference procedure defines convergence for this thermal simulation configuration?",
+      "context_sha256": "f77c513a176e0c42d185f85de69488f73cc35eaaa6edce8be1164b9888da19f5",
+      "resolution": "open",
+      "evidence_ids": [
+        "d11172949856490727d3f63d"
+      ]
+    }
+  ],
+  "retrieval_history": [
+    {
+      "id": "ffc339be141e91c390efef83",
+      "question_id": "829a9e076585dd5c17b9c1de",
+      "context_sha256": "f77c513a176e0c42d185f85de69488f73cc35eaaa6edce8be1164b9888da19f5",
+      "support_kind": "knowledge_lookup",
+      "action": "recheck",
+      "status": "active",
+      "outcome": "unavailable",
+      "age_ms": 1942,
+      "reusable_for_ms": 60000,
+      "cooldown_remaining_ms": 0,
+      "evidence_ids": []
+    }
+  ],
+  "retrieval_history_complete": true
+}

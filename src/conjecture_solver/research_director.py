@@ -192,6 +192,7 @@ class ResearchDirector:
                 "Execution strategy, delegated storage increases and registration tuning; "
                 "cannot change hypothesis or approve claims"
             ),
+            attention_request=self.state.get("attention_notice"),
         )
 
     def director_prompt(self, packet):
@@ -401,6 +402,7 @@ reviews or genuinely needed operator input remain park_worker, not finish.
         # The background transport has its own state, process identity and log files.
         from .research_oversight import trace_summary
 
+        getattr(self, "attention_tick", lambda directory: None)(directory)
         getattr(self, "process_helpers", lambda: None)()
 
         if time.time() >= getattr(self, "_next_live_director_check", 0):

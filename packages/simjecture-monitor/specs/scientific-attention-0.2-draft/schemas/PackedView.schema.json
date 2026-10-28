@@ -1,0 +1,103 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "scientific-attention/0.2-draft",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "packet_id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Packet Id",
+      "type": "string"
+    },
+    "format": {
+      "enum": [
+        "named-json",
+        "column-json"
+      ],
+      "title": "Format",
+      "type": "string"
+    },
+    "token_counter_id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Token Counter Id",
+      "type": "string"
+    },
+    "text": {
+      "title": "Text",
+      "type": "string"
+    },
+    "sha256": {
+      "title": "Sha256",
+      "type": "string"
+    },
+    "input_tokens": {
+      "minimum": 0,
+      "title": "Input Tokens",
+      "type": "integer"
+    },
+    "budget_tokens": {
+      "minimum": 0,
+      "title": "Budget Tokens",
+      "type": "integer"
+    },
+    "included_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Included Ids",
+      "type": "array"
+    },
+    "omitted_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Omitted Ids",
+      "type": "array"
+    },
+    "aliases": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Aliases",
+      "type": "object"
+    },
+    "status": {
+      "enum": [
+        "ready",
+        "insufficient_budget"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "question_aliases": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Question Aliases",
+      "type": "object"
+    }
+  },
+  "required": [
+    "schema_version",
+    "packet_id",
+    "format",
+    "token_counter_id",
+    "text",
+    "sha256",
+    "input_tokens",
+    "budget_tokens",
+    "included_ids",
+    "omitted_ids",
+    "aliases",
+    "status",
+    "question_aliases"
+  ],
+  "title": "PackedView",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:simjecture:scientific-attention:0.2-draft:PackedView"
+}

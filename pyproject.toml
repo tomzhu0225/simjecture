@@ -141,7 +141,8 @@ exclude = [
 
 [tool.pytest.ini_options]
 addopts = "-ra --strict-markers"
-testpaths = ["tests"]
+testpaths = ["tests", "packages/simjecture-monitor/tests"]
+pythonpath = ["src", "packages/simjecture-monitor/src"]
 
 [tool.ruff]
 line-length = 100

@@ -142,6 +142,7 @@ getting-started/web-interface
 how-to/guided-commissioning
 how-to/multi-tool-studies
 how-to/add-a-capability
+how-to/scientific-attention
 how-to/quantum-espresso
 how-to/deploy-runtimes
 how-to/material-eos

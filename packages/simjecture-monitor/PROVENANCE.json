@@ -1,0 +1,25 @@
+{
+  "source_revision": "93a5c3b9266f311aed6a8f3321421c14df23d39a",
+  "unchanged_files_sha256": {
+    "src/simjecture_monitor/attention_server.py": "f3ae280bf1fcd90b56bc8f599bb12590447316063f10b218b381667136a2a15d",
+    "src/simjecture_monitor/attention_contract.py": "5576fdd62e9b418214cfca19b1f8a5417d2e59a7f6f632918c9d6a02de1290e3",
+    "src/simjecture_monitor/attention_support.py": "3ff8a395d8a8cd1cdb216be071e8610088f74994b69dd03cbc5942f9eebb61d0",
+    "src/simjecture_monitor/multiadapter_server.py": "46549dd928dfa1c44279a66ce8e683762175e47b71af610b8dc3550dcf762c11",
+    "src/simjecture_monitor/model.py": "0932fe4ce41c293e8231f64c6ef1624891e71dbc1bb6d9356d04dd41e1fb648a",
+    "src/simjecture_monitor/kernels.py": "83b6d3ba2813ad883725be94e13477cd1db7b9ca2af9654e040b35fb10a936a1",
+    "src/simjecture_monitor/policy.py": "50a69650ed7de3fd45b0a0e0278761eea2e0977d1c1a3f58c74a9a28fe3627cc",
+    "src/simjecture_monitor/adapter_export.py": "4c54cd79465506aabbb35860383ed62775d95126baeeaa59a3c1d3b53b7d0ebe",
+    "src/simjecture_monitor/attention_admission.py": "f481e0654abc865412114299093ef3740d363b195c94c266b68edbd2bc103189",
+    "src/simjecture_monitor/attention_transport.py": "13b212bc6cc0d81a7c044dd27044b8d87cf3a260e968f260094e3b2567cdbf90",
+    "src/simjecture_monitor/events.py": "c780b9881fe5d96a51c4cdf6a9834158d7c8e97a5ecb171b77c71bdd39176706",
+    "src/simjecture_monitor/synthetic_attention.py": "1d8195b63cd5515db270f0fd8c7165c7e076dbd84d31d1784c8b259335121674",
+    "src/simjecture_monitor/action_distribution.py": "3db8932465584801bc032c40d2f8cdaefb77d496cede134d7f45bc478205a9b2",
+    "src/simjecture_monitor/workflow_attention.py": "f771588c6dc349a57d70bea4e9d74999829f0b6c5a76a7e00f67e711424d2f2e",
+    "src/simjecture_monitor/server.py": "7dc3088545c8338163fd5ac8b3b0563f187e32b30c01a2d729bbfb3fcba12b44",
+    "src/simjecture_monitor/decision_interface.py": "03c33560fda8a89d3ac63ded8ca6c0be6621b3f2aa70da94a3d0cc6065d6b115",
+    "src/simjecture_monitor/sampling_trace.py": "efaf158504c5c74abe6e509b6fbc854c606287ded193fe714906021b9d87eac3",
+    "src/simjecture_monitor/__init__.py": "8769e4a05daec354874894663bd2801db264954c908b427413ff4fcbac660479",
+    "src/simjecture_monitor/decision_model.py": "25d83791c08a2b671dce5f0eff251c37eac159e231a80722e71979be2469552d"
+  },
+  "scope": "Portable contracts and inference only; experimental workflow drivers and allocation scripts excluded. New tool/normal-study integration requires its own qualification."
+}

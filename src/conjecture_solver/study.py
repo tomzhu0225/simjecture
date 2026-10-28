@@ -100,6 +100,10 @@ def configure_parser(parser):
     )
     parser.add_argument("--executable")
     parser.add_argument(
+        "--attention-config", type=Path,
+        help="Optional attention service JSON; shadow by default, mode=alerts permits requests",
+    )
+    parser.add_argument(
         "--director",
         dest="director_enabled",
         action=argparse.BooleanOptionalAction,
@@ -232,6 +236,13 @@ def _run(args):
     args.director_enabled = (
         chosen_director if chosen_director is not None else saved_director if previous else True
     )
+    saved_attention = previous.get("request", {}).get("attention_config")
+    attention = getattr(args, "attention_config", None)
+    if attention is not None:
+        attention = str(attention.expanduser().resolve())
+    if previous and attention is not None and attention != saved_attention:
+        raise ValueError("Attention configuration is part of the saved launch contract")
+    args.attention_config = attention if attention is not None else saved_attention
     args.state_dir = (args.state_dir or saved_state or args.campaign / "supervisor").resolve()
     if saved_state and args.state_dir != saved_state.resolve():
         raise ValueError("State directory is part of the saved launch contract")
@@ -466,6 +477,7 @@ def _run(args):
             reasoning_effort=args.reasoning_effort,
             judge_reasoning_effort=args.judge_reasoning_effort,
             director_enabled=args.director_enabled,
+            attention_config=args.attention_config,
             allow_solver_development=args.allow_solver_development,
             capability_directory=str(args.capabilities) if args.capabilities else None,
             method_review_scope=supervisor.service.manifest.get("method_review_scope", "study"),
