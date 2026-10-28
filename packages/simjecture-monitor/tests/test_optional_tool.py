@@ -36,6 +36,8 @@ def result(p):
     )
     return dict(
         policy="conjecture1",
+        input_prompt_sha256="f" * 64,
+        prediction=dict(temperature=1.0, prompt_sha256="f" * 64),
         adapter_active=True,
         model_identity=dict(
             checkpoint_config_sha256=tool.BASE_CONFIG_SHA256,
@@ -134,7 +136,7 @@ def test_client_rejects_wrong_weights_policy_and_fabricated_view(monkeypatch):
     client = tool.AttentionClient(config())
     monkeypatch.setattr(client, "call", lambda payload: good)
     assert client.score(p)["policy"] == "conjecture1"
-    for kind in ["weights", "policy", "text", "aliases", "packet"]:
+    for kind in ["weights", "policy", "text", "aliases", "packet", "temperature", "sampling"]:
         bad = copy.deepcopy(good)
         if kind == "weights":
             bad["model_identity"]["adapter_files_sha256"]["adapter_model.safetensors"] = "0" * 64
@@ -144,6 +146,10 @@ def test_client_rejects_wrong_weights_policy_and_fabricated_view(monkeypatch):
             bad["view"]["text"] += "fabricated"
         elif kind == "aliases":
             bad["view"]["aliases"] = {}
+        elif kind == "temperature":
+            bad["prediction"]["temperature"] = 3.0
+        elif kind == "sampling":
+            bad["behavior"] = {"seed": 123}
         else:
             bad["decision"]["packet_id"] = "other"
         monkeypatch.setattr(client, "call", lambda payload, response=bad: response)
@@ -162,12 +168,18 @@ def test_closing_observer_cannot_dispatch_a_late_response(tmp_path, monkeypatch)
 
 
 def test_model_entrypoints_import_without_loading_torch():
+    import os
     import subprocess
     import sys
+    from pathlib import Path
 
     code = """import importlib,sys
 for name in ['decision_model','multiadapter_server','attention_server','tool']:
  importlib.import_module('simjecture_monitor.'+name)
 assert 'torch' not in sys.modules and 'transformers' not in sys.modules
 """
-    subprocess.run([sys.executable, "-c", code], check=True)
+    subprocess.run(
+        [sys.executable, "-c", code],
+        check=True,
+        env=dict(os.environ, PYTHONPATH=str(Path(__file__).parents[1] / "src")),
+    )

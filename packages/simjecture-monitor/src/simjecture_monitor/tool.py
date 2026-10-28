@@ -31,6 +31,7 @@ class AttentionConfig(BaseModel):
     adapter_sha256: str = Field(default=ADAPTER_SHA256, pattern=r"^[0-9a-f]{64}$")
     base_config_sha256: str = Field(default=BASE_CONFIG_SHA256, pattern=r"^[0-9a-f]{64}$")
     decision_distribution: Literal[INDEPENDENT, CONTRACT] = INDEPENDENT
+    temperature: float = Field(default=1.0, gt=0, le=10)
     poll_seconds: float = Field(default=5.0, ge=1, le=300)
     timeout_seconds: float = Field(default=10.0, gt=0, le=25)
     maximum_requests: int = Field(default=720, ge=1, le=10000)
@@ -80,6 +81,7 @@ class AttentionClient:
             value.get("stage") != "ready"
             or self.config.policy not in value.get("policies", [])
             or value.get("decision_distribution", INDEPENDENT) != self.config.decision_distribution
+            or value.get("temperature") != self.config.temperature
         ):
             raise ValueError("Configured attention policy is not ready on this service")
         identity = value.get("model_identities", {}).get(
@@ -100,6 +102,14 @@ class AttentionClient:
         if result.get("policy") != self.config.policy or not result.get("adapter_active"):
             raise ValueError("Attention response did not use the configured adapter")
         self.check_identity(result.get("model_identity", {}))
+        prediction = result.get("prediction", {})
+        if result.get("decision", {}).get("status") == "ok" and (
+            prediction.get("temperature") != self.config.temperature
+            or prediction.get("prompt_sha256") != result.get("input_prompt_sha256")
+            or not prediction.get("prompt_sha256")
+            or result.get("behavior") is not None
+        ):
+            raise ValueError("Attention response used different scoring or sampling settings")
         view = protocol.PackedView.model_validate(result["view"])
         decision = protocol.Decision.model_validate(result["decision"])
         expected = protocol.pack(
