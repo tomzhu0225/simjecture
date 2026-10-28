@@ -59,3 +59,47 @@ Run CPU-only contracts/client tests with:
 ```bash
 PYTHONPATH=src:packages/simjecture-monitor/src pytest packages/simjecture-monitor/tests tests/test_research_attention.py
 ```
+
+
+## Optional SFT and measured-return training
+
+The package also exposes `simjecture-attention-train` (or
+`python -m simjecture_monitor.training`) and `simjecture-attention-evaluate`.
+Install `[model]` dependencies only in the intended GPU environment. No training
+starts as part of installing the client or enabling an observer.
+
+Check a prospective dataset without importing Torch, loading model weights or
+creating an adapter directory:
+
+```bash
+simjecture-attention-train --mode sft --base /models/pinned-base \
+  --data /data/train.jsonl --output /outputs/new-adapter --validate-only
+```
+
+This checks row identities, explicit targets and declared splits. RL preflight
+also checks actual-return receipts, behavior weights and comparison eligibility.
+Token lengths and model compatibility are checked later by the actual tokenizer;
+a passed data preflight does not claim GPU runtime readiness.
+
+For SFT, remove `--validate-only` and explicitly choose update/budget settings on
+the GPU host. For RL, use `--mode policy-gradient` and
+`--advantage-baseline workflow-wait` with a complete, frozen, training-only cohort
+of actual parked-worker episodes and repeated independent waiting controls.
+`measured-wait` supports the separate checkpoint-continuation protocol. Missing
+outcomes, altered receipts, incompatible policies and commissioning/test/dev rows
+cannot be substituted for valid training returns. Polls share an episode return;
+they are not independent scientific outcomes.
+
+The reference reward remains a declared research proxy. Components for verified
+quality, elapsed time, native starts and feedback are retained separately. Do not
+change coefficients after seeing results merely to make a candidate win.
+Constructed scientific examples and rehearsal generators provide supervised
+preferences, never measured RL utility. The source-specific native WarpX collectors
+remain on the research branch; the generic observer's JSON log alone is not an
+eligible RL dataset.
+
+`simjecture-attention-evaluate` scores a frozen authored scientific dataset and
+retains predictions, identities, route accuracy and structural citation checks.
+Those metrics do not demonstrate real intervention value or semantic correctness
+of citations. Workflow evaluation still requires real workers, independent
+scientific verification and held-out episodes.

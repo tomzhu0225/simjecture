@@ -13,3 +13,7 @@ dependencies = ["pydantic>=2.9,<3"]
 
 [project.optional-dependencies]
 model = ["torch==2.11.0", "transformers==5.20.1", "peft==0.21.2", "huggingface-hub==1.33.0"]
+
+[project.scripts]
+simjecture-attention-train = "simjecture_monitor.training:main"
+simjecture-attention-evaluate = "simjecture_monitor.evaluation:main"

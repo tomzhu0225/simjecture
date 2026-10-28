@@ -1,5 +1,8 @@
 import copy
+import hashlib
+import importlib.util
 import json
+from pathlib import Path
 
 import pytest
 from simjecture_monitor import attention_support as attention
@@ -103,7 +106,86 @@ def test_model_prediction_does_not_receive_fabricated_support_or_citations():
         attention.bind_choice(packet, view, choice, policy_id="test")
 
 
+def test_rl_rejects_scripted_outcomes_and_constant_measured_returns(tmp_path):
+    path = Path(__file__).parents[1] / "scripts/train_decisions.py"
+    spec = importlib.util.spec_from_file_location("trainer_test", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    request = row()
+    request.update(return_group="same-task", behavior={"prompt_sha256": "a" * 64})
+    result = dict(
+        source_kind="synthetic",
+        status="completed",
+        utility=1,
+        prompt_sha256="a" * 64,
+        sampled_answers={k: v["label"] for k, v in request["targets"].items()},
+        verification_sha256="b" * 64,
+    )
+
+    def save_receipt():
+        raw = json.dumps(result).encode()
+        (tmp_path / "receipt.json").write_bytes(raw)
+        request["outcome_receipt"] = dict(
+            path="receipt.json", sha256=hashlib.sha256(raw).hexdigest()
+        )
+
+    save_receipt()
+    with pytest.raises(ValueError, match="verified continuation"):
+        module.measured_advantages([request], tmp_path)
+    result["source_kind"] = "executed_worker_continuation"
+    save_receipt()
+    with pytest.raises(ValueError, match="No measured return variation"):
+        module.measured_advantages([request, request | {"id": "another"}], tmp_path)
+    (tmp_path / "receipt.json").write_text("{}")
+    with pytest.raises(ValueError, match="receipt changed"):
+        module.measured_advantages([request], tmp_path)
 
 
+def test_rl_initial_adapter_identity_is_checked_before_loading_a_model(tmp_path):
+    path = Path(__file__).parents[1] / "scripts/train_decisions.py"
+    spec = importlib.util.spec_from_file_location("trainer_identity_test", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    base, adapter = tmp_path / "base", tmp_path / "adapter"
+    base.mkdir()
+    adapter.mkdir()
+    (base / "config.json").write_text("{}")
+    files = {}
+    for name in ["adapter_config.json", "adapter_model.safetensors"]:
+        (adapter / name).write_text("identity-only test fixture")
+        files[name] = hashlib.sha256((adapter / name).read_bytes()).hexdigest()
+    rows = [
+        dict(
+            behavior=dict(
+                adapter_active=True,
+                model_identity=dict(
+                    checkpoint_config_sha256=hashlib.sha256(
+                        (base / "config.json").read_bytes()
+                    ).hexdigest(),
+                    adapter_files_sha256=files,
+                ),
+            )
+        )
+    ]
+    module.require_behavior_weights(rows, base, adapter)
+    (adapter / "adapter_model.safetensors").write_text("a nearby but different update")
+    with pytest.raises(ValueError, match="differs from logged behavior"):
+        module.require_behavior_weights(rows, base, adapter)
+    rows[0]["behavior"]["adapter_active"] = False
+    module.require_behavior_weights(rows, base, None)
 
 
+def test_episode_objective_counts_zero_opportunity_episodes_instead_of_averaging_polls():
+    path = Path(__file__).parents[1] / "scripts/train_decisions.py"
+    spec = importlib.util.spec_from_file_location("trainer_episode_scale_test", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    # Three episodes contribute three, one and zero score-function terms.
+    audit = {"configuration": dict(sampled_episodes=[dict(decisions=n) for n in [3, 1, 0]])}
+    terms = [2.0, 3.0, -1.0, 4.0]
+    normalization = module.episode_normalization(terms, audit)
+    row_mean = sum(terms) / len(terms)
+    explicit_episode_mean = ((2 + 3 - 1) + 4 + 0) / 3
+    assert row_mean * normalization["row_to_episode_scale"] == pytest.approx(explicit_episode_mean)
+    with pytest.raises(ValueError, match="complete sampled decision count"):
+        module.episode_normalization(terms[:-1], audit)

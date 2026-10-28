@@ -127,3 +127,51 @@ The observation format is `scientific-attention/0.2-draft`. Its draft version is
 independent of model release v0.1. Exact runtime/compiler identities and the
 [model card](https://huggingface.co/tomzhu0225/Conjecture-1-4B/tree/v0.1) describe
 training provenance, evaluation limits and general-decision regressions.
+
+
+## Train or evaluate a candidate separately
+
+Training is an explicit offline tool, never part of starting a study. The
+separately installable package includes these commands:
+
+- `simjecture-attention-train`: supervised LoRA or policy-gradient updates from
+  verified measured-return data.
+- `simjecture-attention-evaluate`: frozen scientific decision evaluation, with
+  prediction and model-identity records.
+- `python -m simjecture_monitor.adapter_export`: portable adapter export that
+  verifies input file identities and retains the weight bytes.
+
+A CPU-only preflight can reject invalid input before spending GPU time:
+
+```bash
+simjecture-attention-train --mode sft --base /models/pinned-base \
+  --data /data/train.jsonl --output /outputs/new-adapter --validate-only
+```
+
+It does not load a model, update weights or check tokenizer-specific token limits.
+Run actual training only in the intended GPU environment with the model extra:
+
+```bash
+simjecture-attention-train --mode sft --base /models/pinned-base \
+  --data /data/train.jsonl --output /outputs/new-adapter \
+  --steps 128 --accumulation 4 --rank 16 --learning-rate 1e-5 \
+  --maximum-tokens 8192 --wall-seconds 1800 --kernel-profile fla-prefill
+```
+
+These are example settings, not a demonstrated improved checkpoint. Version and
+publish a new candidate separately; never overwrite Conjecture 1's immutable
+`v0.1` release.
+
+For RL, `--mode policy-gradient --advantage-baseline workflow-wait` requires
+complete actual-workflow returns, repeated waiting controls, exact behavior
+weights/probabilities and a training-only split. The alternate `measured-wait`
+baseline uses independently executed checkpoint continuations. Neither scripted
+preferences nor ordinary observation logs establish intervention utility. The
+machine-specific research collectors remain in their pinned research branches;
+no automatic collector deployment, GPU allocation or optimizer runs in a normal
+study. Commissioning, development and test data remain excluded from training.
+
+Always report quality, time, native invocations, model cost and unnecessary
+attention separately. Authored decision accuracy and valid citations do not
+establish a workflow improvement. Retain prospective scientific tasks and general
+decision checks for candidate evaluation.
