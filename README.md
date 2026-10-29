@@ -36,35 +36,19 @@ claim. New browser studies default to answer; the CLI defaults to repair. Both u
 the minimal workflow: flexible agent strategy, recorded experiments and explicit
 scientific acceptance. A deadline can leave the question unresolved.
 
-Version 0.6.3 removes classical/MVP, DSH, structured and frontier launch routes.
-Existing records remain readable. See the [migration guide](https://drawingsword.com/simjecture/how-to/minimal-migration.html)
-for new launches and handling older runs.
-
-New minimal studies allow experimental solver development by default. The agent can
-work in a private source fork while preserving the reference installation. Changed
-builds need independent, source-bound qualification before supporting a claim. Turn
-this off in the study brief or with `--no-allow-solver-development`; see
-[solver development and qualification](https://drawingsword.com/simjecture/how-to/minimal-oversight.html#solver-development-permission).
-
 The optional research director can stop unaffordable experiments, request a replan
 and tune remote instrument probe deadlines and retries. Operators can also delegate
 storage increases for large builds and checkpoints. The monitor shows failures,
 before/after limits and the reasons for changes; scientific acceptance and the
 campaign deadline remain separate. See [director control and recovery](https://drawingsword.com/simjecture/how-to/minimal-oversight.html#instrument-registration-recovery).
 
-[**Conjecture 1 (v0.1)**](https://huggingface.co/tomzhu0225/Conjecture-1-4B/tree/v0.1)
-is available as an optional scientific-attention coprocessor in
-[`packages/simjecture-monitor`](https://github.com/tomzhu0225/simjecture/tree/main/packages/simjecture-monitor).
-When opted in with `--attention-config`, the observer inspects bounded public
-study state against a separately managed model service without requiring GPU
-dependencies on the client. It defaults to `shadow` mode (recording proposed
-decisions without waking an agent); explicit `alerts` mode routes admitted help or
-director proposals through the existing director while keeping scientific review and
-repair authority with the host. The package also includes offline SFT and
-measured-return RL training and evaluation tools (`simjecture-attention-train`,
-`simjecture-attention-evaluate`). Because current workflow evaluations show mixed
-results and healthy-case over-alerting rather than a repeatable speed win, start in
-shadow mode; see the [scientific attention guide](https://drawingsword.com/simjecture/how-to/scientific-attention.html).
+[**Conjecture 1**](https://huggingface.co/tomzhu0225/Conjecture-1-4B/tree/v0.1) is an
+optional scientific-attention coprocessor
+([`packages/simjecture-monitor`](https://github.com/tomzhu0225/simjecture/tree/main/packages/simjecture-monitor))
+that observes public study state and proposes when an investigation may need help or
+director review, while keeping scientific review and repair authority with the host.
+The package also provides offline SFT and measured-return RL training and evaluation
+tools; see [scientific attention](https://drawingsword.com/simjecture/how-to/scientific-attention.html).
 
 Read [how the loop works](https://drawingsword.com/simjecture/concepts/research-loop.html) or
 [how evidence is checked](https://drawingsword.com/simjecture/concepts/evidence-and-claims.html).
