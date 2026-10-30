@@ -1,0 +1,341 @@
+{
+  "$defs": {
+    "DeploymentAttention": {
+      "additionalProperties": false,
+      "properties": {
+        "config_file": {
+          "pattern": "^[a-z][a-z0-9-]{0,39}$",
+          "title": "Config File",
+          "type": "string"
+        },
+        "required": {
+          "default": true,
+          "title": "Required",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "config_file"
+      ],
+      "title": "DeploymentAttention",
+      "type": "object"
+    },
+    "DeploymentCapability": {
+      "additionalProperties": false,
+      "properties": {
+        "contract_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Contract Sha256"
+        },
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "DeploymentCapability",
+      "type": "object"
+    },
+    "DeploymentFile": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[a-z][a-z0-9-]{0,39}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "machine": {
+          "anyOf": [
+            {
+              "pattern": "^[a-z][a-z0-9-]{0,39}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Machine"
+        },
+        "path": {
+          "minLength": 1,
+          "title": "Path",
+          "type": "string"
+        },
+        "purpose": {
+          "default": "other",
+          "enum": [
+            "hypothesis",
+            "instructions",
+            "prior_evidence",
+            "restart",
+            "material",
+            "source",
+            "attention_config",
+            "other"
+          ],
+          "title": "Purpose",
+          "type": "string"
+        },
+        "required": {
+          "default": true,
+          "title": "Required",
+          "type": "boolean"
+        },
+        "sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "path",
+        "sha256"
+      ],
+      "title": "DeploymentFile",
+      "type": "object"
+    },
+    "DeploymentRole": {
+      "additionalProperties": false,
+      "properties": {
+        "backend": {
+          "enum": [
+            "codex",
+            "codex-glm",
+            "grok",
+            "agy",
+            "builtin"
+          ],
+          "title": "Backend",
+          "type": "string"
+        },
+        "model": {
+          "minLength": 1,
+          "title": "Model",
+          "type": "string"
+        },
+        "reasoning_effort": {
+          "anyOf": [
+            {
+              "enum": [
+                "low",
+                "medium",
+                "high",
+                "xhigh",
+                "max",
+                "ultra"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reasoning Effort"
+        }
+      },
+      "required": [
+        "backend",
+        "model"
+      ],
+      "title": "DeploymentRole",
+      "type": "object"
+    },
+    "DeploymentSoftware": {
+      "additionalProperties": false,
+      "properties": {
+        "python_source_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Python Source Sha256"
+        },
+        "simjecture_version": {
+          "minLength": 1,
+          "title": "Simjecture Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "simjecture_version"
+      ],
+      "title": "DeploymentSoftware",
+      "type": "object"
+    },
+    "DeploymentStudy": {
+      "additionalProperties": false,
+      "properties": {
+        "director": {
+          "$ref": "#/$defs/DeploymentRole"
+        },
+        "director_storage_increases": {
+          "default": false,
+          "title": "Director Storage Increases",
+          "type": "boolean"
+        },
+        "initial_max_experiment_bytes": {
+          "exclusiveMinimum": 0,
+          "maximum": 9223372036854775807,
+          "title": "Initial Max Experiment Bytes",
+          "type": "integer"
+        },
+        "initial_max_total_bytes": {
+          "exclusiveMinimum": 0,
+          "maximum": 9223372036854775807,
+          "title": "Initial Max Total Bytes",
+          "type": "integer"
+        },
+        "report_reserve_seconds": {
+          "exclusiveMinimum": 0,
+          "title": "Report Reserve Seconds",
+          "type": "number"
+        },
+        "reviewer": {
+          "$ref": "#/$defs/DeploymentRole"
+        },
+        "wall_seconds": {
+          "exclusiveMinimum": 0,
+          "title": "Wall Seconds",
+          "type": "number"
+        },
+        "worker": {
+          "$ref": "#/$defs/DeploymentRole"
+        }
+      },
+      "required": [
+        "worker",
+        "director",
+        "reviewer",
+        "wall_seconds",
+        "report_reserve_seconds",
+        "initial_max_experiment_bytes",
+        "initial_max_total_bytes"
+      ],
+      "title": "DeploymentStudy",
+      "type": "object"
+    },
+    "DeploymentWorker": {
+      "additionalProperties": false,
+      "properties": {
+        "capabilities": {
+          "items": {
+            "$ref": "#/$defs/DeploymentCapability"
+          },
+          "title": "Capabilities",
+          "type": "array"
+        },
+        "config_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Config Sha256"
+        },
+        "id": {
+          "pattern": "^[a-z][a-z0-9-]{0,39}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "minimum_free_bytes": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Minimum Free Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "title": "DeploymentWorker",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "attention": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/DeploymentAttention"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "files": {
+      "items": {
+        "$ref": "#/$defs/DeploymentFile"
+      },
+      "title": "Files",
+      "type": "array"
+    },
+    "machine_registry": {
+      "minLength": 1,
+      "title": "Machine Registry",
+      "type": "string"
+    },
+    "name": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Name",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "simjecture-deployment/1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "software": {
+      "$ref": "#/$defs/DeploymentSoftware"
+    },
+    "study": {
+      "$ref": "#/$defs/DeploymentStudy"
+    },
+    "workers": {
+      "items": {
+        "$ref": "#/$defs/DeploymentWorker"
+      },
+      "minItems": 1,
+      "title": "Workers",
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "name",
+    "machine_registry",
+    "software",
+    "workers",
+    "study"
+  ],
+  "title": "CampaignDeploymentManifest",
+  "type": "object"
+}

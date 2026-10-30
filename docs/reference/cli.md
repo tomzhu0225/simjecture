@@ -17,6 +17,8 @@ Principal command families:
 - `machines`: register, prepare, check and inspect local/SSH numerical workers
   (from 0.5.3rc2; [SSH guide](../how-to/ssh-workers.md));
 - `doctor`: inspect core and optional capability health, with JSON output;
+- `deployment`: plan or check a versioned campaign deployment without installing
+  software or starting a study ([deployment manifest](../how-to/campaign-deployment.md));
 - `status`: compact read-only snapshot of a durable research directory;
 - `watch`: follow durable research events until a terminal report or pause;
 - `pause`: request an action-boundary pause of a verified live runner;

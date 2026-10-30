@@ -143,6 +143,7 @@ how-to/add-a-capability
 how-to/scientific-attention
 how-to/quantum-espresso
 how-to/deploy-runtimes
+how-to/campaign-deployment
 how-to/material-eos
 how-to/cad-and-simulation
 how-to/iter-pack
