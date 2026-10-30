@@ -96,7 +96,7 @@ def answer(
     )
 
     def launch(directory, prompt, **kwargs):
-        assert kwargs["judge"]
+        assert kwargs["judge"] and kwargs["director"]
         assert "MVP research strategy" in prompt
         (directory / "response.json").write_text(
             json.dumps(
@@ -733,3 +733,46 @@ def test_native_uuid_usage_retains_its_director_role(tmp_path):
     assert totals["usage_details"]["by_role"]["director"]["input_tokens"] == 123
     assert totals["usage_details"]["request_count_complete"] is False
     assert "other" not in totals["usage_details"]["by_role"]
+
+
+def test_director_and_reviewer_use_separate_read_only_models(tmp_path):
+    import sys
+
+    sup = supervisor(tmp_path)
+    capture = tmp_path / "argv.jsonl"
+    agent = tmp_path / "codex-fixture"
+    agent.write_text(
+        f"#!{sys.executable}\nimport json, sys\n"
+        f"with open({str(capture)!r}, 'a') as f: f.write(json.dumps(sys.argv[1:]) + '\\n')\n"
+        "print(json.dumps({'type':'turn.completed','usage':{}}))\n"
+    )
+    agent.chmod(0o755)
+    sup.args.executable = str(agent)
+    sup.args.turn_seconds = 10
+    sup.args.model = "worker"
+    sup.args.judge_model = "reviewer"
+    sup.args.judge_reasoning_effort = "medium"
+    sup.args.director_model = "director"
+    sup.args.director_reasoning_effort = "high"
+    for name, options in [("director", dict(judge=True, director=True)),
+                          ("reviewer", dict(judge=True)), ("worker", {})]:
+        directory = sup.directory / name
+        directory.mkdir()
+        assert sup.launch(directory, "fixture", **options) == 0
+    director, reviewer, worker = [json.loads(line) for line in capture.read_text().splitlines()]
+    assert director[director.index("--model") + 1] == "director"
+    assert 'model_reasoning_effort="high"' in director
+    assert reviewer[reviewer.index("--model") + 1] == "reviewer"
+    assert 'model_reasoning_effort="medium"' in reviewer
+    assert worker[worker.index("--model") + 1] == "worker"
+    for command in (director, reviewer):
+        assert command[command.index("--sandbox") + 1] == "read-only"
+        assert "--ephemeral" in command
+    del sup.args.director_model
+    del sup.args.director_reasoning_effort
+    directory = sup.directory / "inherited"
+    directory.mkdir()
+    assert sup.launch(directory, "fixture", judge=True, director=True) == 0
+    inherited = json.loads(capture.read_text().splitlines()[-1])
+    assert inherited[inherited.index("--model") + 1] == "reviewer"
+    assert 'model_reasoning_effort="medium"' in inherited

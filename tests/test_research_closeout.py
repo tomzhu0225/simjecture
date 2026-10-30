@@ -49,8 +49,8 @@ def prepared(tmp_path):
 def finish_response(supervisor, report, monkeypatch):
     launches = []
 
-    def launch(directory, prompt, *, judge=False):
-        assert judge, "Closing an idle investigation must not launch another worker"
+    def launch(directory, prompt, *, judge=False, director=False):
+        assert judge and director, "Closing must use the director review route"
         launches.append(directory.name)
         value = dict(
             decision="finish",

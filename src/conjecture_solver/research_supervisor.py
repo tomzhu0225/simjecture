@@ -159,6 +159,12 @@ class ResearchSupervisor(
             "reasoning_effort": getattr(args, "judge_reasoning_effort", None)
             or getattr(args, "reasoning_effort", None),
         }
+        self.state["director_route"] = {
+            "backend": self.review_backend(),
+            "model": getattr(args, "director_model", None) or args.judge_model,
+            "reasoning_effort": getattr(args, "director_reasoning_effort", None)
+            or self.state["reviewer_route"]["reasoning_effort"],
+        }
         self.save()
         directory = self.directory / "research"
         if not directory.exists():

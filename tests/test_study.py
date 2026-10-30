@@ -122,3 +122,28 @@ def test_legacy_resume_inherits_wrapper_and_rejects_changed_review_route(tmp_pat
             run(parser.parse_args([*argv, field, value]))
     assert run(parser.parse_args([*argv, "--judge-backend", "codex-glm"])) == 0
     assert json.loads((root / "research.json").read_text())["deadline"] == deadline
+
+
+def test_director_route_is_saved_and_immutable_on_resume(tmp_path, monkeypatch):
+    from conjecture_solver.research_supervisor import ResearchSupervisor
+
+    hypothesis, instructions = tmp_path / "h.txt", tmp_path / "i.txt"
+    hypothesis.write_text("A finite claim.")
+    instructions.write_text("Check the claim.")
+    parser = argparse.ArgumentParser()
+    configure_parser(parser)
+    root = tmp_path / "study"
+    argv = ["--campaign", str(root), "--hypothesis-file", str(hypothesis),
+            "--instructions-file", str(instructions), "--executable", sys.executable]
+    monkeypatch.setattr(ResearchSupervisor, "run", lambda self: 0)
+    selected = ["--judge-model", "reviewer", "--director-model", "director",
+                "--director-reasoning-effort", "high"]
+    assert run(parser.parse_args(argv + selected)) == 0
+    saved = json.loads((root / "study-launch.json").read_text())["request"]
+    assert saved["director_model"] == "director"
+    assert saved["director_reasoning_effort"] == "high"
+    assert run(parser.parse_args(argv)) == 0
+    for option, value in [("--director-model", "other"),
+                          ("--director-reasoning-effort", "low")]:
+        with pytest.raises(ValueError, match="saved launch contract"):
+            run(parser.parse_args(argv + [option, value]))

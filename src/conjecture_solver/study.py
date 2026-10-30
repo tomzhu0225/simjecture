@@ -85,6 +85,10 @@ def configure_parser(parser):
     parser.add_argument("--completion-policy", choices=["answer", "repair"])
     parser.add_argument("--model")
     parser.add_argument("--judge-model")
+    parser.add_argument("--director-model")
+    parser.add_argument(
+        "--director-reasoning-effort", choices=["low", "medium", "high", "xhigh", "max", "ultra"]
+    )
     parser.add_argument(
         "--judge-backend",
         choices=["codex-glm", "codex", "grok", "agy", "builtin"],
@@ -229,6 +233,12 @@ def _run(args):
     if previous and judge_effort is not None and judge_effort != saved_judge_effort:
         raise ValueError("Judge reasoning effort is part of the saved launch contract")
     args.judge_reasoning_effort = judge_effort if judge_effort is not None else saved_judge_effort
+    for field in ("director_model", "director_reasoning_effort"):
+        saved = previous.get("request", {}).get(field)
+        chosen = getattr(args, field, None)
+        if previous and chosen is not None and chosen != saved:
+            raise ValueError(f"{field} is part of the saved launch contract")
+        setattr(args, field, chosen if chosen is not None else saved)
     saved_director = previous.get("request", {}).get("director_enabled", False)
     chosen_director = getattr(args, "director_enabled", None)
     if previous and chosen_director is not None and chosen_director != saved_director:
@@ -476,6 +486,8 @@ def _run(args):
             judge_provider_config=args.judge_provider_config,
             reasoning_effort=args.reasoning_effort,
             judge_reasoning_effort=args.judge_reasoning_effort,
+            director_model=args.director_model,
+            director_reasoning_effort=args.director_reasoning_effort,
             director_enabled=args.director_enabled,
             attention_config=args.attention_config,
             allow_solver_development=args.allow_solver_development,
