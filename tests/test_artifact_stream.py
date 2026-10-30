@@ -156,7 +156,11 @@ def test_dispatch_retries_terminal_result_after_deadline_without_resubmission(mo
         def call(self, method, **kwargs):
             calls.append(method)
             assert method == "status" and kwargs["identifier"] == job
-            return {"id": job, "status": "succeeded", "artifacts": {"result": {"bytes": 1}}}
+            return {
+                "id": job,
+                "status": "succeeded",
+                "artifacts": {"result": {"bytes": 1, "sha256": hashlib.sha256(b"x").hexdigest()}},
+            }
 
     class Registry:
         def __init__(self, *args):
@@ -187,7 +191,9 @@ def test_dispatch_retries_terminal_result_after_deadline_without_resubmission(mo
     assert len(attempts) == 1 and record["status"] == "running"
     assert record["collection_deferred"]
     assert record["remote_terminal_status"] == "succeeded"
-    assert record["remote_artifacts"] == {"result": {"bytes": 1}}
+    assert record["remote_artifacts"] == {
+        "result": {"bytes": 1, "sha256": hashlib.sha256(b"x").hexdigest()}
+    }
 
 
 @pytest.mark.parametrize("condition", ["terminal", "deferred", "cancelled"])
@@ -470,7 +476,7 @@ def test_cancel_does_not_mark_uncollected_terminal_job_complete(monkeypatch):
         "remote_terminal_status": "succeeded",
         "collection_deferred": True,
     }
-    service = object()
+    service = type("Service", (), {"artifact_policy": lambda _: "eager"})()
     monkeypatch.setattr(
         module, "MachineRegistry", lambda *_: pytest.fail("must not contact worker")
     )
@@ -489,7 +495,7 @@ def test_successful_worker_racing_cancel_still_needs_collection(monkeypatch):
 
     job = "job_" + "a" * 40
     record = {"id": "exp_fixture", "machine": "fixture", "status": "running"}
-    service = type("Service", (), {})()
+    service = type("Service", (), {"artifact_policy": lambda _: "eager"})()
     service.manifest = {"execution_pool": {"registry": "unused", "workers": {"fixture": {}}}}
 
     class FakeTransport:
@@ -552,12 +558,13 @@ def test_cancel_stalled_stream_reaps_process_and_keeps_partial(tmp_path, monkeyp
     assert started[0].poll() is not None
 
 
-def test_successful_import_clears_deferred_and_cancel_flags(tmp_path, monkeypatch):
+def test_successful_import_clears_deferred_and_cancel_flags(tmp_path):
     import conjecture_solver.execution_pool as module
+    from conjecture_solver.research_service import ResearchService, put
 
-    service = type("Service", (), {})()
-    service.root = tmp_path
-    service.manifest = {"deadline": time.time() + 60}
+    service = ResearchService.create(
+        tmp_path / "study", "Synthetic import", artifact_policy="eager"
+    )
     record = {
         "id": "exp_fixture",
         "status": "running",
@@ -575,12 +582,9 @@ def test_successful_import_clears_deferred_and_cancel_flags(tmp_path, monkeypatc
         "scientific_status": "unreviewed",
     }
 
-    def save(_service, _record, **values):
-        record.update(values)
-        return record
-
-    monkeypatch.setattr(module, "save_progress", save)
+    put(service.root / "experiments" / (record["id"] + ".json"), record)
     module.import_result(service, record, object(), remote)
+    record = service._read("experiments", record["id"])
     assert record["status"] == "succeeded"
     assert not record["collection_deferred"] and not record["collection_cancel_requested"]
     assert record["transport_error"] is None and record["scientific_status"] == "unreviewed"
@@ -622,7 +626,7 @@ def test_cancel_receipt_rejects_changed_source_request_hash(monkeypatch):
 
     job = "job_" + "a" * 40
     record = {"id": "exp_fixture", "machine": "fixture", "status": "running"}
-    service = type("Service", (), {})()
+    service = type("Service", (), {"artifact_policy": lambda _: "eager"})()
     service.manifest = {"execution_pool": {"registry": "unused", "workers": {"fixture": {}}}}
 
     class FakeTransport:

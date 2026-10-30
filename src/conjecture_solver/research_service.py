@@ -26,6 +26,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from .mvp_agent import BubblewrapSandbox
 from .mvp_skills import MVPCapabilityRegistry
+from .research_artifacts import ArtifactService
 from .research_budget import BudgetRequests
 from .research_control import ControlService, ExperimentMonitor
 from .research_development import DevelopmentService
@@ -91,6 +92,7 @@ def _positive_finite_seconds(value):
 
 
 class ResearchService(
+    ArtifactService,
     BudgetRequests,
     GuidedResearch,
     MethodService,
@@ -150,6 +152,7 @@ class ResearchService(
         max_total_bytes=None,
         allow_solver_development=None,
         method_review_scope=None,
+        artifact_policy=None,
     ):
         root = Path(root).resolve()
         for value in (max_experiment_bytes, max_total_bytes):
@@ -163,11 +166,15 @@ class ResearchService(
             raise ValueError("Report reserve must be positive and finite")
         if method_review_scope not in {None, "study", "used_instruments"}:
             raise ValueError("Unknown method review scope")
+        if artifact_policy not in {None, "remote", "eager"}:
+            raise ValueError("artifact_policy must be remote or eager")
         if allow_solver_development is not None and type(allow_solver_development) is not bool:
             raise ValueError("Solver development permission must be a boolean")
         root.mkdir(parents=True, exist_ok=True)
         if (root / "research.json").exists():
             existing = cls(root)
+            if artifact_policy is not None and artifact_policy != existing.artifact_policy():
+                raise ValueError("Artifact collection policy is immutable within a study")
             if method_review_scope is not None and method_review_scope != existing.manifest.get(
                 "method_review_scope", "study"
             ):
@@ -267,6 +274,7 @@ class ResearchService(
                 registration_policy=dict(director_can_tune=True),
                 completion_policy=completion_policy,
                 execution_backend=execution_backend,
+                artifact_policy=artifact_policy or "remote",
                 solver_development_policy=dict(
                     allowed=True if allow_solver_development is None else allow_solver_development,
                     source="operator_launch_setting",
@@ -338,9 +346,15 @@ class ResearchService(
             raise ValueError("Source/input must be a regular local file")
         return p
 
-    def _binding(self, source, args, inputs, capability):
+    def _binding(self, source, args, inputs, capability, remote_inputs=None):
+        from .worker_protocol import distinct_files
+
         paths = list(dict.fromkeys([source, *inputs]))
         hashes = {p: sha(self._source(p)) for p in paths}
+        resident = self.resolve_remote_inputs(remote_inputs)
+        if {Path(p).as_posix() for p in hashes} & set(resident):
+            raise ValueError("Remote input destinations cannot replace local source or inputs")
+        distinct_files([*hashes, *resident])
         runtime = None
         remote = (self.execution_pool() or {}).get("capabilities", {}).get(capability)
         if capability:
@@ -354,6 +368,12 @@ class ResearchService(
                 runtime = registry.get(capability).contract_hash
             if runtime != self.capability_hashes().get(capability):
                 raise ValueError("Capability identity changed since study creation")
+        if (
+            resident
+            and capability
+            and (not remote or remote["machine"] != next(iter(resident.values()))["machine"])
+        ):
+            raise ValueError("Choose a capability on the resident inputs' worker")
         return dict(
             source=source,
             args=list(args),
@@ -361,6 +381,7 @@ class ResearchService(
             capability=capability,
             runtime_sha256=runtime,
             **({"worker_capability": remote["worker_capability"]} if remote else {}),
+            **({"remote_inputs": resident} if resident else {}),
         )
 
     def lineage(self, claim):
@@ -390,6 +411,7 @@ class ResearchService(
         capability=None,
         parent="root",
         rationale=None,
+        remote_inputs=None,
     ):
         """Freeze a repaired prediction and exact planned commands before testing it."""
         if not statement.strip() or not acceptance.strip() or not cases:
@@ -399,7 +421,9 @@ class ResearchService(
             raise ValueError("A repair must change its parent statement")
         if self.manifest["schema_version"] >= 2 and (not rationale or not rationale.strip()):
             raise ValueError("Explain the smallest justified repair in rationale")
-        bindings = [self._binding(source, args, inputs, capability) for args in cases]
+        bindings = [
+            self._binding(source, args, inputs, capability, remote_inputs) for args in cases
+        ]
         body = dict(
             statement=statement,
             parent=parent,
@@ -447,6 +471,7 @@ class ResearchService(
         machine=None,
         resources=None,
         monitor=None,
+        remote_inputs=None,
     ):
         """Snapshot inputs, launch a bounded experiment, return an immediate receipt."""
         if self.campaign_closeout():
@@ -456,11 +481,20 @@ class ResearchService(
         for p in outputs:
             if Path(p).is_absolute() or ".." in Path(p).parts:
                 raise ValueError("Result paths must stay inside the experiment workspace")
-        sizes = [self._source(p).stat().st_size for p in dict.fromkeys([source, *inputs])]
+        binding = self._binding(source, args, inputs, capability, remote_inputs)
+        resident = binding.get("remote_inputs", {})
+        sizes = [self._source(p).stat().st_size for p in binding["inputs"]]
+        sizes.extend(r["bytes"] for r in resident.values())
         if sum(sizes) > self.storage_limits()["max_experiment_bytes"]:
             raise ValueError("Declared inputs exceed experiment storage limits")
-        binding = self._binding(source, args, inputs, capability)
         pool = self.execution_pool()
+        if resident:
+            input_machine = next(iter(resident.values()))["machine"]
+            if machine is not None and machine != input_machine:
+                raise ValueError(
+                    "Resident input reuse requires the same worker; migrate explicitly"
+                )
+            machine = input_machine
         selected_machine = None
         if pool and (not capability or capability in pool["capabilities"] or machine):
             from .worker_protocol import Resources
@@ -474,8 +508,13 @@ class ResearchService(
             not review_documents or any(p not in outputs for p in review_documents)
         ):
             raise ValueError("review_documents must be nonempty declared outputs")
-        if set(outputs) & set(binding["inputs"]):
+        if {Path(p).as_posix() for p in outputs} & (
+            {Path(p).as_posix() for p in binding["inputs"]} | set(resident)
+        ):
             raise ValueError("Declared outputs cannot also be supplied inputs")
+        from .worker_protocol import distinct_files
+
+        distinct_files([*binding["inputs"], *resident, *outputs])
         self.check_method(binding, method, stage)
         self.validate_experiment_context(parent_experiment, purpose, plan)
         if commitment:
@@ -512,19 +551,9 @@ class ResearchService(
             self.check_director(stage, purpose, timeout)
             if time.time() >= self.manifest["deadline"]:
                 raise ValueError("Study deadline exhausted")
-            used = BubblewrapSandbox._tree_bytes(self.root / "experiments")
+            storage = self.artifact_storage()
+            used, reserved = storage["used_bytes"], storage["reserved_bytes"]
             limits = self.storage_limits()
-            reserved = sum(
-                max(
-                    0,
-                    x.get("workspace_limit_bytes", self.manifest["max_experiment_bytes"])
-                    - BubblewrapSandbox._tree_bytes(
-                        self.root / "experiments" / x["id"] / "workspace"
-                    ),
-                )
-                for x in self._all("experiments")
-                if x["status"] in ["queued", "running"]
-            )
             workspace_limit = min(
                 limits["max_experiment_bytes"],
                 limits["max_total_bytes"] - used - reserved,
@@ -862,6 +891,7 @@ class ResearchService(
                     record=receipt_projection(self, record),
                     sources=sources,
                     source_references=source_references,
+                    remote_inputs=self.remote_input_review(record["binding"]),
                     documents=documents,
                     raw_artifacts=raw_artifacts,
                     output_findings=findings,
@@ -1004,6 +1034,8 @@ class ResearchService(
             remaining_seconds=max(0, self.manifest["deadline"] - time.time()),
             deadline=self.manifest["deadline"],
             resource_limits=self.storage_limits(),
+            artifact_policy=self.artifact_policy(),
+            artifact_storage=self.artifact_storage(),
             resource_policy=self.resource_policy(),
             registration=self.registration_status(),
             storage_adjustments=self._all("storage_adjustments"),
@@ -1075,6 +1107,12 @@ class ResearchService(
                     resources=e.get("resources"),
                     remote_job=e.get("remote_job"),
                     remote_terminal_status=e.get("remote_terminal_status"),
+                    artifact_policy=e.get("artifact_policy", self.artifact_policy()),
+                    artifact_locations={
+                        name: "coordinator" if name in e.get("artifacts", {}) else "worker"
+                        for name in e["outputs"]
+                        if name in e.get("artifacts", {}) or name in e.get("remote_artifacts", {})
+                    },
                     collection_deferred=e.get("collection_deferred", False),
                     collection_cancel_requested=e.get("collection_cancel_requested", False),
                     transport_status=e.get("transport_status"),
@@ -1154,6 +1192,7 @@ class ResearchService(
             name: {
                 "label": worker["profile"]["label"],
                 "capacity": worker["profile"]["config"],
+                "features": worker["probe"].get("features", {}),
                 "capabilities": {
                     alias: cap
                     for alias, cap in pool["capabilities"].items()

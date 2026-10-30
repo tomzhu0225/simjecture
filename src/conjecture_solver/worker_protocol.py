@@ -96,6 +96,21 @@ class Machine(BaseModel):
         return self
 
 
+class RemoteArtifactInput(BaseModel):
+    """Immutable reference to an artifact recorded by a job on the same worker."""
+
+    model_config = ConfigDict(extra="forbid")
+    job: str = Field(pattern=r"^job_[a-f0-9]{40}$")
+    path: str
+    sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    bytes: int = Field(strict=True, ge=0)
+
+    @model_validator(mode="after")
+    def validate_path(self):
+        safe_relative(self.path)
+        return self
+
+
 class Experiment(BaseModel):
     model_config = ConfigDict(extra="forbid")
     protocol: Literal["simjecture-worker/1"] = PROTOCOL
@@ -107,6 +122,7 @@ class Experiment(BaseModel):
     workspace_bytes: int = Field(default=4 * 1024**3, ge=1024**2, le=1024**4)
     resources: Resources = Field(default_factory=Resources)
     monitor: ExperimentMonitor | None = None
+    remote_inputs: dict[str, RemoteArtifactInput] = Field(default_factory=dict)
     config_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     worker_code_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
     worker_id: str | None = Field(default=None, pattern=r"^[a-f0-9]{32}$")
@@ -116,6 +132,8 @@ class Experiment(BaseModel):
         value = handler(self)
         if self.monitor is None:
             value.pop("monitor", None)
+        if not self.remote_inputs:
+            value.pop("remote_inputs", None)
         return value
 
     @model_validator(mode="after")
@@ -127,8 +145,15 @@ class Experiment(BaseModel):
             safe_relative(name)
         if len(set(self.outputs)) != len(self.outputs) or set(self.outputs) & set(b["inputs"]):
             raise ValueError("Outputs must be distinct and separate from inputs")
+        distinct_files([*b["inputs"], *self.outputs])
         if any(not re.fullmatch(r"[a-f0-9]{64}", h) for h in b["inputs"].values()):
             raise ValueError("Invalid input SHA256")
+        for name, reference in self.remote_inputs.items():
+            safe_relative(name)
+            if name not in b["inputs"] or b["inputs"][name] != reference.sha256:
+                raise ValueError("Remote inputs must match frozen input hashes")
+            if reference.job == self.id:
+                raise ValueError("A job cannot reference its own artifact")
         if not isinstance(b.get("args"), list) or any(
             not isinstance(arg, str) or "\x00" in arg for arg in b["args"]
         ):
@@ -137,6 +162,8 @@ class Experiment(BaseModel):
 
 
 def safe_relative(name):
+    if not isinstance(name, str):
+        raise ValueError("Use a contained relative file path")
     path = Path(name)
     if (
         not isinstance(name, str)
@@ -148,6 +175,41 @@ def safe_relative(name):
     ):
         raise ValueError("Use a contained relative file path")
     return path
+
+
+def distinct_files(names):
+    """Reject equivalent paths and files used as directories before any staging."""
+    paths = [safe_relative(name) for name in names]
+    selected = set(paths)
+    if len(selected) != len(paths) or any(
+        parent in selected for path in paths for parent in path.parents
+    ):
+        raise ValueError(
+            "Input and output file paths must be distinct and cannot contain each other"
+        )
+
+
+def validate_artifact_receipt(remote):
+    """Validate the terminal index even when no artifact bytes are downloaded."""
+    artifacts = remote.get("artifacts", {})
+    if not isinstance(artifacts, dict):
+        raise ValueError("Worker artifact index must be a mapping")
+    for name, metadata in artifacts.items():
+        if safe_relative(name).as_posix() != name:
+            raise ValueError("Worker artifact paths must be canonical")
+        if not isinstance(metadata, dict) or not isinstance(metadata.get("sha256"), str):
+            raise ValueError("Invalid worker artifact metadata")
+        if not re.fullmatch(r"[a-f0-9]{64}", metadata["sha256"]):
+            raise ValueError("Invalid worker artifact SHA256")
+        if type(metadata.get("bytes")) is not int or metadata["bytes"] < 0:
+            raise ValueError("Invalid worker artifact byte count")
+    distinct_files(artifacts)
+    execution = remote.get("execution") or {}
+    if not isinstance(execution, dict):
+        raise ValueError("Worker execution receipt must be a mapping")
+    count = execution.get("workspace_bytes", 0)
+    if type(count) is not int or count < 0:
+        raise ValueError("Invalid worker workspace byte count")
 
 
 def contained(root, name):

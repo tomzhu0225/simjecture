@@ -76,7 +76,9 @@ def review_documents(workspace, record, *, require_document=True, review_root=No
     for name in selected:
         path = workspace / name
         if not path.is_file():
-            raise ValueError("Review documents must exist")
+            raise ValueError(
+                "Review documents must exist; fetch compact remote documents with lab.fetch_remote"
+            )
         if path.stat().st_size > 32768:
             from .review_assets import freeze_file
 
@@ -97,8 +99,24 @@ def review_documents(workspace, record, *, require_document=True, review_root=No
                 "Review documents must be UTF-8 text; retain binary outputs separately"
             ) from error
     if require_document and not documents:
-        raise ValueError("Supply a compact text/JSON result document alongside raw outputs")
-    raw = {p: record.get("artifacts", {}).get(p) for p in record["outputs"] if p not in documents}
+        raise ValueError(
+            "Supply a compact text/JSON result document alongside raw outputs; "
+            "fetch remote review documents with lab.fetch_remote first"
+        )
+    raw = {}
+    for name in record["outputs"]:
+        if name in documents:
+            continue
+        metadata = record.get("artifacts", {}).get(name)
+        if metadata is None and name in record.get("remote_artifacts", {}):
+            metadata = record["remote_artifacts"][name] | {
+                "location": "worker",
+                "machine": record.get("machine"),
+                "job": record.get("remote_job"),
+                "path": name,
+                "inspected": False,
+            }
+        raw[name] = metadata
     return documents, raw, output_findings(workspace, record["outputs"])
 
 

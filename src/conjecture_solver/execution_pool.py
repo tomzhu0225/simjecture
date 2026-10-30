@@ -887,9 +887,19 @@ def _specification(service, record):
     pool = service.manifest["execution_pool"]
     machine = record["machine"]
     probe = pool["workers"][machine]["probe"]
+    binding = dict(record["binding"])
+    resident = binding.get("remote_inputs", {})
+    if resident:
+        binding["inputs"] = dict(binding["inputs"]) | {
+            name: reference["sha256"] for name, reference in resident.items()
+        }
     return Experiment(
         id=job_identifier(service, record),
-        binding=record["binding"],
+        binding=binding,
+        remote_inputs={
+            name: {k: reference[k] for k in ("job", "path", "sha256", "bytes")}
+            for name, reference in resident.items()
+        },
         outputs=record["outputs"],
         deadline=record.get("execution_deadline", service.manifest["deadline"]),
         timeout=record["timeout"],
@@ -1059,15 +1069,24 @@ def download(transport, job, name, metadata, destination, *, deadline=None, shou
 
 
 def import_result(service, record, transport, remote):
+    from .worker_protocol import validate_artifact_receipt
+
+    validate_artifact_receipt(remote)
     workspace = service.root / "experiments" / record["id"] / "workspace"
     artifacts = remote.get("artifacts", {})
-    selected = set(record["outputs"]) | set(record["binding"]["inputs"])
+    resident = service.artifact_policy() == "remote"
+    selected = set() if resident else set(record["outputs"]) | set(record["binding"]["inputs"])
     # Small diagnostic files remain convenient; large undeclared arrays stay worker-local.
-    selected |= {
-        name
-        for name, meta in artifacts.items()
-        if meta["bytes"] <= 262144 and Path(name).suffix in {".json", ".txt", ".md", ".log", ".csv"}
-    }
+    selected |= (
+        set()
+        if resident
+        else {
+            name
+            for name, meta in artifacts.items()
+            if meta["bytes"] <= 262144
+            and Path(name).suffix in {".json", ".txt", ".md", ".log", ".csv"}
+        }
+    )
     transferred = {}
     if (
         sum(artifacts[name]["bytes"] for name in selected if name in artifacts)
@@ -1109,15 +1128,23 @@ def import_result(service, record, transport, remote):
         if key in remote
     }
     result.update(
-        artifacts=transferred,
         remote_artifacts=artifacts,
         remote_job=remote["id"],
         transport_status="connected",
         transport_error=None,
         collection_deferred=False,
         collection_cancel_requested=False,
+        artifact_policy=service.artifact_policy(),
     )
-    return save_progress(service, record, **result)
+    # Publish the execution receipt independently of on-demand output retrieval.
+    # Preserve cache entries fetched concurrently after the remote terminal receipt.
+    with service.lock():
+        current = service._read("experiments", record["id"])
+        if current["status"] not in TERMINAL:
+            current.update(result)
+            current["artifacts"] = current.get("artifacts", {}) | transferred
+            put(service.root / "experiments" / (record["id"] + ".json"), current)
+        return current
 
 
 def _stage_input(transport, job, name, path):
@@ -1184,8 +1211,16 @@ def dispatch(service, record):
                 state = transport.call("cancel", identifier=job)
             if state["status"] == "staging":
                 for name in spec["binding"]["inputs"]:
-                    path = contained(workspace, name)
-                    _stage_input(transport, job, name, path)
+                    if name in spec.get("remote_inputs", {}):
+                        remaining = min(record["timeout"], spec["deadline"] - time.time())
+                        if remaining <= 0:
+                            raise WorkerTimeout("Resident input staging deadline expired")
+                        transport.call(
+                            "stage_artifact", identifier=job, name=name, timeout=remaining
+                        )
+                    else:
+                        path = contained(workspace, name)
+                        _stage_input(transport, job, name, path)
                 state = transport.call("submit", identifier=job)
             if time.time() >= service.manifest["deadline"] and state["status"] in ACTIVE:
                 state = transport.call("cancel", identifier=job, reason="deadline")
@@ -1194,6 +1229,9 @@ def dispatch(service, record):
                     state.get("request_sha256") and state["request_sha256"] != fingerprint(spec)
                 ):
                     raise ValueError("Terminal receipt binds a different experiment request")
+                from .worker_protocol import validate_artifact_receipt
+
+                validate_artifact_receipt(state)
                 terminal_seen = True
                 save_progress(
                     service,
@@ -1254,9 +1292,10 @@ def dispatch(service, record):
 
 
 def cancel_remote(service, record):
-    # A terminal worker is already stopped; never turn an incomplete import into
-    # a completed coordinator receipt merely because cancel returns that state.
-    if record.get("remote_terminal_status"):
+    resident = service.artifact_policy() == "remote"
+    # Eager collection may be cancelled independently of completed computation.
+    # Remote policy has no collection prerequisite: import the terminal receipt.
+    if record.get("remote_terminal_status") and not resident:
         return save_progress(service, record, collection_cancel_requested=True)
     pool = service.manifest["execution_pool"]
     try:
@@ -1267,6 +1306,22 @@ def cancel_remote(service, record):
         state = transport.call("cancel", identifier=job)
         if state.get("id") != job:
             raise ValueError("Worker returned a different job identity")
+        if resident and state["status"] in TERMINAL:
+            if state.get("request_sha256") and state["request_sha256"] != fingerprint(
+                _specification(service, record)
+            ):
+                raise ValueError("Terminal receipt binds a different experiment request")
+            save_progress(
+                service,
+                record,
+                remote_job=job,
+                remote_terminal_status=state["status"],
+                cancel_requested=True,
+                cancellation_confirmed=True,
+            )
+            return import_result(
+                service, record, transport, state | {"cancellation_confirmed": True}
+            )
         if state["status"] == "succeeded":
             if state.get("request_sha256") and state["request_sha256"] != fingerprint(
                 _specification(service, record)
