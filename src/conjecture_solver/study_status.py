@@ -209,7 +209,7 @@ def study_status(root):
         campaign_closeout=read(root / "campaign_closeout.json"),
         worker_wait=worker_wait,
         director_policy=manifest.get("director_policy", {"enabled": False}),
-        director_route=state.get("reviewer_route", {}),
+        director_route=state.get("director_route", state.get("reviewer_route", {})),
         background_review=state.get("background_review"),
         director_decisions=director_decisions,
         resource_limits=resource_limits,

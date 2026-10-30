@@ -386,3 +386,21 @@ def test_cancel_interrupts_provider_reconnect_wait(tmp_path):
         if process.poll() is None:
             process.terminate()
             process.wait(timeout=10)
+
+
+def test_director_route_status_and_ui_projection_support_legacy_state(tmp_path):
+    from conjecture_solver.study_status import study_status
+    from conjecture_solver.web.application import _engine_projection
+
+    service = ResearchService.create(tmp_path / "study", "A finite claim.")
+    directory = service.root / "supervisor"
+    directory.mkdir()
+    reviewer = dict(backend="codex", model="reviewer", reasoning_effort="medium")
+    director = dict(backend="codex", model="director", reasoning_effort="high")
+    path = directory / "state.json"
+    put(path, dict(reviewer_route=reviewer, director_route=director))
+    assert study_status(service.root)["director_route"] == director
+    assert _engine_projection(service.root)["director_route"] == director
+    put(path, dict(reviewer_route=reviewer))
+    assert study_status(service.root)["director_route"] == reviewer
+    assert _engine_projection(service.root)["director_route"] == reviewer
