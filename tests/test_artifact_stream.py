@@ -364,8 +364,16 @@ def test_reconcile_does_not_respawn_deferred_collection_after_deadline(tmp_path,
 
 
 def test_continuous_stream_is_stopped_at_absolute_deadline(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+
     import conjecture_solver.execution_pool as module
 
+    # Subprocess startup can exceed 0.2 s under CI coverage. Advance the absolute
+    # clock only after observing real progress; leave the frame-idle clock real.
+    clock = [1000.0]
+    monkeypatch.setattr(
+        module, "time", SimpleNamespace(time=lambda: clock[0], monotonic=time.monotonic)
+    )
     monkeypatch.setattr(
         module,
         "_FETCH_STREAM",
@@ -394,10 +402,12 @@ def test_continuous_stream_is_stopped_at_absolute_deadline(tmp_path, monkeypatch
     chunks = []
     with pytest.raises(WorkerTimeout):
         for chunk in _stream_fetch(
-            transport, "job-a", "result", {"bytes": 10**9}, 0, timeout=2, deadline=time.time() + 0.2
+            transport, "job-a", "result", {"bytes": 10**9}, 0, timeout=10, deadline=1010.0
         ):
             chunks.append(chunk)
-    assert len(chunks) > 1
+            if len(chunks) == 3:
+                clock[0] = 1011.0
+    assert len(chunks) == 3
     assert started[0].poll() is not None
 
 
