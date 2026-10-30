@@ -9,7 +9,7 @@ import uuid
 from pathlib import Path
 from typing import Literal
 
-from pydantic import Field
+from pydantic import Field, model_validator
 
 from .agent_routes import review_route
 from .mvp_launch import (
@@ -53,6 +53,27 @@ class NativeStudyRequest(MVPLaunchRequest):
     machine_ids: list[str] = []
     method_review_scope: Literal["study", "used_instruments"] = "study"
 
+    max_experiment_bytes: int | None = Field(default=None, strict=True, gt=0, le=sys.maxsize)
+    max_total_bytes: int | None = Field(default=None, strict=True, gt=0, le=sys.maxsize)
+    report_reserve_seconds: float | None = Field(
+        default=None, strict=True, gt=0, allow_inf_nan=False
+    )
+
+    @model_validator(mode="after")
+    def validate_initial_budgets(self):
+        if (
+            self.max_experiment_bytes is not None
+            and self.max_total_bytes is not None
+            and self.max_total_bytes < self.max_experiment_bytes
+        ):
+            raise ValueError("Total storage allowance must cover one experiment")
+        if (
+            self.report_reserve_seconds is not None
+            and self.report_reserve_seconds >= self.max_wall_seconds
+        ):
+            raise ValueError("Report reserve must be smaller than the wall budget")
+        return self
+
 
 def materialize_native(request, *, resume=False):
     if request.mode != "minimal" or request.engine != "native":
@@ -62,8 +83,11 @@ def materialize_native(request, *, resume=False):
     root = Path(request.output_directory).expanduser().resolve()
     record = root / "study-launch.json"
     existing = read(record)
-    if not resume and not existing and request.mode == "minimal" and (
-        request.allow_solver_development is None
+    if (
+        not resume
+        and not existing
+        and request.mode == "minimal"
+        and (request.allow_solver_development is None)
     ):
         raise ValueError("Choose a boolean solver development permission for a new study")
     model = request.model or ("glm-5.3" if request.backend == "codex-glm" else None)
@@ -80,8 +104,11 @@ def materialize_native(request, *, resume=False):
     elif shutil.which(executable) is None:
         raise ValueError(f"Backend executable {executable!r} not found; install its CLI first")
     review = review_route(
-        request.backend, executable, request.provider_config,
-        judge_backend=request.judge_backend, judge_executable=request.judge_executable,
+        request.backend,
+        executable,
+        request.provider_config,
+        judge_backend=request.judge_backend,
+        judge_executable=request.judge_executable,
         judge_provider_config=request.judge_provider_config,
     )
     if review["backend"] == "builtin":
@@ -106,16 +133,33 @@ def materialize_native(request, *, resume=False):
             capabilities = None  # Frozen workers advertise their own installed tools.
         else:
             capabilities = freeze_available_tools(
-                automatic_tool_paths(), root.parent / ".simjecture-tools" / uuid.uuid4().hex,
+                automatic_tool_paths(),
+                root.parent / ".simjecture-tools" / uuid.uuid4().hex,
             )
-        request = request.model_copy(update={
-            "capability_directory": capabilities,
-            "method_review_scope": saved_request.get("method_review_scope", "study")
-            if existing else "used_instruments",
-        })
+        request = request.model_copy(
+            update={
+                "capability_directory": capabilities,
+                "method_review_scope": saved_request.get("method_review_scope", "study")
+                if existing
+                else "used_instruments",
+            }
+        )
     elif request.capability_directory == "none":
         request = request.model_copy(update={"capability_directory": None})
     if saved_request:
+        # Omitted optional budget fields inherit the saved launch contract on resume.
+        if resume:
+            request = request.model_copy(
+                update={
+                    name: saved_request.get(name)
+                    for name in (
+                        "max_experiment_bytes",
+                        "max_total_bytes",
+                        "report_reserve_seconds",
+                    )
+                    if name not in request.model_fields_set
+                }
+            )
         if "director_enabled" not in saved_request:
             saved_request = saved_request | {"director_enabled": False}
         if "allow_solver_development" not in saved_request:
@@ -160,6 +204,9 @@ def materialize_native(request, *, resume=False):
             execution_pool=pool,
             allow_solver_development=request.allow_solver_development,
             method_review_scope=request.method_review_scope,
+            max_experiment_bytes=request.max_experiment_bytes,
+            max_total_bytes=request.max_total_bytes,
+            report_reserve_seconds=request.report_reserve_seconds,
         )
         service.freeze_protocol(protocol)
     directory = Path(existing.get("state_dir") or root / "supervisor")
@@ -169,7 +216,8 @@ def materialize_native(request, *, resume=False):
             raise ResumeError("Study is terminal; create a new study to change its budget")
         deadline = (
             read(root / "research.json").get("deadline", state.get("deadline"))
-            if request.mode == "minimal" else state.get("deadline")
+            if request.mode == "minimal"
+            else state.get("deadline")
         )
         if deadline is not None and deadline <= time.time():
             raise ResumeError("The current wall-time deadline has expired")
@@ -208,6 +256,10 @@ def materialize_native(request, *, resume=False):
         "--turn-seconds",
         str(min(request.max_command_seconds, request.max_wall_seconds)),
     ]
+    for name in ("max_experiment_bytes", "max_total_bytes", "report_reserve_seconds"):
+        value = getattr(request, name)
+        if value is not None:
+            argv += ["--" + name.replace("_", "-"), str(value)]
     if request.capability_directory:
         argv += ["--capabilities", request.capability_directory]
     if request.machine_ids:
@@ -235,8 +287,11 @@ def materialize_native(request, *, resume=False):
     if request.attention_config:
         argv += ["--attention-config", str(Path(request.attention_config).expanduser().resolve())]
     if request.mode == "minimal" and request.allow_solver_development is not None:
-        argv += ["--allow-solver-development" if request.allow_solver_development
-                 else "--no-allow-solver-development"]
+        argv += [
+            "--allow-solver-development"
+            if request.allow_solver_development
+            else "--no-allow-solver-development"
+        ]
     put(
         record,
         dict(

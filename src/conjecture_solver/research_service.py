@@ -146,10 +146,21 @@ class ResearchService(
         completion_policy=None,
         execution_pool=None,
         report_reserve_seconds=None,
+        max_experiment_bytes=None,
+        max_total_bytes=None,
         allow_solver_development=None,
         method_review_scope=None,
     ):
         root = Path(root).resolve()
+        for value in (max_experiment_bytes, max_total_bytes):
+            if value is not None and (type(value) is not int or not 0 < value <= sys.maxsize):
+                raise ValueError(
+                    "Storage allowances must be positive integers within system limits"
+                )
+        if report_reserve_seconds is not None and not _positive_finite_seconds(
+            report_reserve_seconds
+        ):
+            raise ValueError("Report reserve must be positive and finite")
         if method_review_scope not in {None, "study", "used_instruments"}:
             raise ValueError("Unknown method review scope")
         if allow_solver_development is not None and type(allow_solver_development) is not bool:
@@ -165,6 +176,14 @@ class ResearchService(
                 existing.solver_development_policy()["allowed"] != allow_solver_development
             ):
                 raise ValueError("Solver development permission is immutable within a study")
+            for name, value in (
+                ("max_experiment_bytes", max_experiment_bytes),
+                ("max_total_bytes", max_total_bytes),
+            ):
+                if value is not None and (
+                    type(value) is not int or value != existing.manifest[name]
+                ):
+                    raise ValueError(f"Initial {name} is immutable within a study")
             if existing.manifest["hypothesis"] != hypothesis:
                 raise ValueError("Original hypothesis is immutable")
             if (
@@ -205,6 +224,24 @@ class ResearchService(
             or report_reserve_seconds >= wall_seconds
         ):
             raise ValueError("Report reserve must be positive and smaller than the wall budget")
+        initial_experiment = (
+            max_experiment_bytes if max_experiment_bytes is not None else 4 * 1024**3
+        )
+        initial_total = (
+            max_total_bytes
+            if max_total_bytes is not None
+            else max(
+                8,
+                sum(
+                    w["profile"]["config"]["max_jobs"]
+                    for w in (execution_pool or {}).get("workers", {}).values()
+                )
+                * 4,
+            )
+            * 1024**3
+        )
+        if initial_total < initial_experiment:
+            raise ValueError("Total storage allowance must cover one experiment")
         for name in ["research", "experiments", "commitments", "reviews"]:
             (root / name).mkdir(exist_ok=True)
         registry = (
@@ -251,16 +288,8 @@ class ResearchService(
                 ),
                 capabilities=str(Path(capabilities).resolve()) if capabilities else None,
                 capability_hashes=registry.hashes | remote_capabilities,
-                max_experiment_bytes=4 * 1024**3,
-                max_total_bytes=max(
-                    8,
-                    sum(
-                        w["profile"]["config"]["max_jobs"]
-                        for w in (execution_pool or {}).get("workers", {}).values()
-                    )
-                    * 4,
-                )
-                * 1024**3,
+                max_experiment_bytes=initial_experiment,
+                max_total_bytes=initial_total,
                 **({"execution_pool": execution_pool} if execution_pool else {}),
             ),
         )

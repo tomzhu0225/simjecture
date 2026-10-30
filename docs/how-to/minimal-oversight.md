@@ -153,6 +153,13 @@ build outputs; it has no additional fixed 512 MiB ceiling. Input staging is boun
 by the same workspace allowance. Time, memory and aggregate storage checks remain.
 Receipts report the executor hash and actual execution limits.
 
+At launch the operator can also set the initial limits with
+`--max-experiment-bytes` and `--max-total-bytes`; total must be at least the
+per-experiment limit. `--report-reserve-seconds` sets a positive reporting
+reserve smaller than the wall budget. These options are immutable on resume.
+They do not reserve physical free space. The native API accepts the same fields;
+when omitted, existing launch-path defaults remain in effect.
+
 On a dedicated machine, an operator can delegate storage increases at launch:
 
 ```bash

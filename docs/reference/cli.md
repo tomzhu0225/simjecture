@@ -79,8 +79,14 @@ checkpoint, not a research conclusion or an extra model-generated summary.
 Older evidence remains in project files, receipts and the research journal;
 independent reviewers receive separate contexts.
 `--wall-seconds` fixes the study budget and `--turn-seconds` controls the native
-session allowance/watchdog. Resume with the same campaign and instructions;
-mode and deadline are preserved. `--continue-from` instead creates a new minimal
+session allowance/watchdog. Set `--max-experiment-bytes` and `--max-total-bytes`
+for the initial per-experiment and aggregate logical storage allowances; the total
+must cover at least one experiment. Set `--report-reserve-seconds` to a positive
+value smaller than the wall budget to reserve time for final reporting. Omitted
+options retain existing defaults. Resume with the same campaign and instructions;
+initial allowances, report reserve, mode and deadline are preserved. Explicitly
+changing an initial allowance or report reserve on resume is rejected. Storage
+allowances are logical limits, not a guaranteed physical free-space reserve. `--continue-from` instead creates a new minimal
 phase with a fresh explicit budget and selected context; see
 [continuation and steering](../how-to/continuation-steering.md). `simjecture-supervise` and `simjecture-research`
 are equivalent launchers. The browser also launches minimal studies.

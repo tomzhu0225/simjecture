@@ -414,6 +414,9 @@ class SimjectureWebApplication:
                 director_model=payload.get("director_model") or None,
                 director_reasoning_effort=payload.get("director_reasoning_effort") or None,
                 allow_solver_development=payload.get("allow_solver_development", True),
+                max_experiment_bytes=payload.get("max_experiment_bytes"),
+                max_total_bytes=payload.get("max_total_bytes"),
+                report_reserve_seconds=payload.get("report_reserve_seconds"),
             )
             request = NativeStudyRequest(
                 **extra,
