@@ -42,6 +42,7 @@ def study(tmp_path, registry, source=None, seconds=120):
         "Finite worker controls",
         wall_seconds=seconds,
         execution_pool=registry.freeze(["node-a", "node-b"]),
+        artifact_policy="eager",
     )
     (service.work / "calc.py").write_text(
         source
@@ -304,7 +305,8 @@ def test_native_worker_analysis_preserves_frozen_inputs_and_receipt(tmp_path):
     )
     registry.prepare("native")
     service = ResearchService.create(
-        tmp_path / "study", "Native analysis receipt", execution_pool=registry.freeze(["native"])
+        tmp_path / "study", "Native analysis receipt", execution_pool=registry.freeze(["native"]),
+        artifact_policy="eager",
     )
     (service.work / "input.json").write_text('{"value": 21}')
     (service.work / "calc.py").write_text(

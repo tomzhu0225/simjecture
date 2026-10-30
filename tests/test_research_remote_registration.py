@@ -102,6 +102,7 @@ def test_remote_append_runs_and_remains_source_bound(remote_study, tmp_path):
     assert result["status"] == "succeeded", result
     assert result["binding"]["worker_capability"] == "new-runtime"
     assert result["binding"]["runtime_sha256"] == added["runtime_sha256"]
+    service.fetch_remote(experiment=result["id"], path="result.json")
     method = service.method(
         source="calc.py",
         capability=alias,

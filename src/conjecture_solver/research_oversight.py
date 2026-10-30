@@ -217,6 +217,10 @@ conservation/floor accounting, diagnostic interpretation, and changes to numeric
 Missing prerequisites or censored outcomes are not falsification. Separate implementation
 repairs from hypothesis changes. Require fresh qualification after relevant source changes.
 Raw artifacts are listed but not inspected; do not assert their contents are verified.
+Remote inputs carry recorded worker/job/path/hash identities, not inspected contents.
+Check their source_dependency notes: an unfetched code/configuration dependency is a
+review gap when its contents matter. Request a compact fetch or recorded same-worker
+analysis without requiring bulk raw data to be copied to the coordinator.
 Review the explicit method scope. For scope=instrument, judge ONLY the declared model,
 geometry, observable and validation capability. Do not demand the future production matrix
 or unrelated diagnostics. Approval records limited instrument readiness and NEVER authorizes

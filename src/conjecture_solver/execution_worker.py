@@ -123,7 +123,7 @@ class Worker:
                 )
         return {
             "protocol": PROTOCOL,
-            "features": {"experiment_monitor": True},
+            "features": {"experiment_monitor": True, "artifact_inputs": True},
             "worker_id": load(self.root / "identity.json")["worker_id"],
             "host": socket.gethostname(),
             "uid": os.geteuid(),
@@ -218,13 +218,18 @@ class Worker:
             destination = contained(directory / "workspace", name)
             expected = spec.binding["inputs"][name]
             if destination.is_file():
+                if destination.stat().st_nlink != 1:
+                    raise ValueError("Staged inputs must not be hard links")
                 if checksum(destination) != expected:
                     raise ValueError("Previously staged input changed")
                 return {"offset": destination.stat().st_size, "complete": True}
             if state["status"] != "staging":
                 raise ValueError("Job is no longer accepting inputs")
             destination.parent.mkdir(parents=True, exist_ok=True)
-            partial = destination.with_name("." + destination.name + ".upload")
+            partial_name = Path(name).with_name("." + Path(name).name + ".upload")
+            partial = contained(directory / "workspace", str(partial_name))
+            if partial.exists() and partial.stat().st_nlink != 1:
+                raise ValueError("Staged inputs must not be hard links")
             size = partial.stat().st_size if partial.exists() else 0
             if offset < size:
                 with partial.open("rb") as stream:
@@ -250,6 +255,80 @@ class Worker:
                     raise ValueError("Staged input hash mismatch")
                 partial.replace(destination)
             return {"offset": offset + len(raw), "complete": final}
+
+    def stage_artifact(self, identifier, name):
+        """Copy a frozen same-worker artifact through bounded staged input checks."""
+        directory = self.directory(identifier)
+        spec = Experiment.model_validate(load(directory / "request.json"))
+        reference = spec.remote_inputs.get(name)
+        if reference is None:
+            raise ValueError("Input has no frozen remote artifact reference")
+
+        def check_deadline():
+            if time.time() >= spec.deadline:
+                self.status(identifier)
+                raise ValueError("Artifact staging deadline expired")
+
+        check_deadline()
+        source_state = self.status(reference.job)
+        if source_state.get("status") not in TERMINAL:
+            raise ValueError("Source job has no terminal receipt")
+        metadata = source_state.get("artifacts", {}).get(reference.path)
+        if (
+            not isinstance(metadata, dict)
+            or type(metadata.get("bytes")) is not int
+            or metadata.get("bytes") != reference.bytes
+            or metadata.get("sha256") != reference.sha256
+        ):
+            raise ValueError("Source artifact does not match its recorded identity")
+        source = contained(self.directory(reference.job) / "workspace", reference.path)
+        if not source.is_file() or source.stat().st_size != reference.bytes:
+            raise ValueError("Source artifact unavailable or changed size")
+        # Resume by length; the final full-file hash verifies the complete prefix.
+        # Only hold the worker lock for this short snapshot, never the whole copy.
+        with lock(self.root):
+            target = contained(directory / "workspace", name)
+            partial_name = Path(name).with_name("." + Path(name).name + ".upload")
+            partial = contained(directory / "workspace", str(partial_name))
+            state = load(directory / "state.json")
+            completed = target.is_file()
+            if not completed and state.get("status") != "staging":
+                raise ValueError("Job is no longer accepting inputs")
+            if partial.exists() and partial.stat().st_nlink != 1:
+                raise ValueError("Staged inputs must not be hard links")
+            offset = partial.stat().st_size if partial.exists() else 0
+            if offset > reference.bytes:
+                raise ValueError("Staged artifact exceeds its frozen size")
+        if completed:
+            result = self.stage(identifier, name, 0, "", False)
+            if result.get("offset") != reference.bytes or not result.get("complete"):
+                raise ValueError("Staged artifact size mismatch")
+            return result
+        check_deadline()
+        if offset == reference.bytes:
+            return self.stage(identifier, name, offset, "", True)
+        while offset < reference.bytes:
+            check_deadline()
+            chunk = self.fetch(reference.job, reference.path, offset, CHUNK_BYTES)
+            if (
+                chunk.get("sha256") != reference.sha256
+                or chunk.get("bytes") != reference.bytes
+                or chunk.get("offset") != offset
+            ):
+                raise ValueError("Source artifact identity changed during copy")
+            raw = base64.b64decode(chunk["data"], validate=True)
+            if not raw or len(raw) > CHUNK_BYTES or offset + len(raw) > reference.bytes:
+                raise ValueError("Invalid source artifact chunk")
+            final = offset + len(raw) == reference.bytes
+            result = self.stage(identifier, name, offset, chunk["data"], final)
+            if result.get("complete"):
+                if result.get("offset") != reference.bytes:
+                    raise ValueError("Staged artifact size mismatch")
+                return result
+            if result.get("offset") != offset + len(raw):
+                raise ValueError("Staged artifact offset mismatch")
+            offset += len(raw)
+        raise ValueError("Incomplete artifact staging")
 
     def submit(self, identifier):
         from .mvp_launch import read_process_identity
@@ -633,6 +712,7 @@ class Worker:
             "probe",
             "create",
             "stage",
+            "stage_artifact",
             "submit",
             "status",
             "heartbeat",

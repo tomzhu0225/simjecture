@@ -70,6 +70,11 @@ def configure_parser(parser):
     )
     parser.add_argument("--machine-registry", type=Path, help="Local/SSH worker registry directory")
     parser.add_argument(
+        "--artifact-policy",
+        choices=("remote", "eager"),
+        help="Retain worker artifacts remotely (new-study default), or eagerly import outputs",
+    )
+    parser.add_argument(
         "--machine",
         dest="machine_ids",
         action="append",
@@ -450,6 +455,7 @@ def _run(args):
         max_experiment_bytes=getattr(args, "max_experiment_bytes", None),
         max_total_bytes=getattr(args, "max_total_bytes", None),
         allow_solver_development=args.allow_solver_development,
+        artifact_policy=getattr(args, "artifact_policy", None),
         method_review_scope=existing_research.get("method_review_scope", "study")
         if existing_research
         else "used_instruments",
@@ -489,6 +495,7 @@ def _run(args):
             max_experiment_bytes=getattr(args, "max_experiment_bytes", None),
             max_total_bytes=getattr(args, "max_total_bytes", None),
             report_reserve_seconds=reserve,
+            artifact_policy=getattr(args, "artifact_policy", None),
             mode=mode,
             execution_backend=args.execution_backend,
             backend=args.backend,

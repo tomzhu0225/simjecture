@@ -178,11 +178,69 @@ lab.read_instrument(
 lab.fetch_remote(experiment=receipt["id"], path="diagnostics/fields.h5")
 ```
 
-Choose a registered `readable_roots` entry for a source mount. Only declared outputs,
-input programs and small text diagnostics are imported automatically. Other recorded
-arrays remain on the worker until explicitly retrieved. Transfers are chunked and
-SHA256-verified; a solver exit or a transferred file never grants scientific approval.
-Large explicitly declared outputs are transferred even when they are arrays.
+Choose a registered `readable_roots` entry for a source mount.
+
+### Keep analysis with its data
+
+New studies use `--artifact-policy remote`. A completed worker returns its terminal
+receipt and complete artifact index without downloading its outputs. Bulk fields,
+checkpoints and archives remain on that worker. `lab.status()` reports the policy,
+recorded hashes, artifact locations and logical storage consumption. Explicitly fetch
+the compact results needed by `lab.progress`, `lab.compare` and independent review:
+
+```python
+lab.fetch_remote(experiment=receipt["id"], path="result.json")
+```
+
+To analyze a retained file, submit the reader to the same worker:
+
+```python
+analysis = lab.analyze(
+    "reader.py",
+    remote_inputs={
+        "fields.h5": {"experiment": receipt["id"], "path": "diagnostics/fields.h5"}
+    },
+    outputs=["summary.json", "figure.png"],
+    parent_experiment=receipt["id"],
+    timeout=600,
+)
+# After analysis completes:
+lab.fetch_remote(experiment=analysis["id"], path="summary.json")
+lab.fetch_remote(experiment=analysis["id"], path="figure.png")
+```
+
+The source experiment must belong to this study and have a recorded terminal
+artifact index. The host freezes its worker, job, path, SHA256 and size, and selects
+that worker for the follow-up job. Before execution the worker copies and verifies
+the data locally into an independent input file; there is no coordinator round trip
+or shared writable hard link. Missing or changed data fail staging. Destination
+names must be separate from source, other inputs and outputs. Cross-worker inputs
+or capabilities are rejected; this interface does not implicitly migrate data.
+Workers must advertise `artifact_inputs`; prepare a capable worker for a new study
+if an older frozen worker lacks it.
+
+`remote_inputs` is also accepted by `lab.run`, `lab.method` and `lab.commit`.
+References participate in source-bound qualification and prospective commitments,
+so changing a referenced dataset requires a matching method review. `lab.analyze`
+remains exploratory. Fetch compact validation documents before methods review and
+compact evidence documents before claim review. Review packets distinguish readable
+documents from remote, uninspected raw data. Fetch relevant code/configuration
+dependencies for source inspection; recorded hashes alone never qualify a method
+or approve a scientific claim.
+
+Retained remote data remain charged after a job finishes. The logical study allowance
+uses the larger of the local cache and the recorded remote footprint for each job,
+plus active reservations. Caching a replica does not charge it twice; a downstream
+job's independent staged copy has its own charge. Physical free space on both hosts
+still matters. An explicit fetch failure leaves computation terminal and allows a
+later retry; successful cache publication requires a full SHA256 check.
+
+### Legacy collection and transfer recovery
+
+`--artifact-policy eager` retains automatic import of declared outputs, input
+programs and small text diagnostics. Existing study manifests without a policy
+keep this behavior on resume. Policy is immutable within a study; changing it requires
+a new study. In eager mode large explicitly declared outputs are transferred too.
 Artifact retrieval uses one bounded stream of the worker's existing fetch operation,
 so older workers remain compatible. A stalled stream times out after 60 seconds
 without a complete chunk; retries resume an identity-bound partial file. A complete
@@ -190,13 +248,13 @@ file becomes visible only after its full SHA256 matches the terminal worker rece
 Partial data consume the same workspace storage allowance and can remain after an
 interrupted transfer. Once a terminal worker receipt is observed, a temporary
 transport failure does not turn that completed job into a timed-out simulation.
-Automatic collection stops at the study wall deadline: the observed remote terminal
+In eager mode, automatic collection stops at the study wall deadline: the observed remote terminal
 status and partial file remain, and automatic retries resume after a budget extension.
 A cancellation during collection stops the stream and retains the partial and remote
 terminal status; automatic retries remain disabled for that cancelled collection.
 An explicit fetch of a recorded artifact from a terminal worker, including deferred
 or cancelled collection, does not inherit an expired study deadline. Fetching one
-file does not mark the full experiment imported or approve a scientific claim. No numerical job is resubmitted. These checks do not guarantee a
+file does not finish deferred eager collection or approve a scientific claim. No numerical job is resubmitted. These checks do not guarantee a
 particular throughput on an untested connection.
 
 On filesystems with unstable directory inodes, the operator can provide a

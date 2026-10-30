@@ -52,6 +52,7 @@ class NativeStudyRequest(MVPLaunchRequest):
     machine_registry: str | None = None
     machine_ids: list[str] = []
     method_review_scope: Literal["study", "used_instruments"] = "study"
+    artifact_policy: Literal["remote", "eager"] | None = None
 
     max_experiment_bytes: int | None = Field(default=None, strict=True, gt=0, le=sys.maxsize)
     max_total_bytes: int | None = Field(default=None, strict=True, gt=0, le=sys.maxsize)
@@ -147,7 +148,7 @@ def materialize_native(request, *, resume=False):
     elif request.capability_directory == "none":
         request = request.model_copy(update={"capability_directory": None})
     if saved_request:
-        # Omitted optional budget fields inherit the saved launch contract on resume.
+        # Omitted optional fields inherit the saved launch contract on resume.
         if resume:
             request = request.model_copy(
                 update={
@@ -156,6 +157,7 @@ def materialize_native(request, *, resume=False):
                         "max_experiment_bytes",
                         "max_total_bytes",
                         "report_reserve_seconds",
+                        "artifact_policy",
                     )
                     if name not in request.model_fields_set
                 }
@@ -207,6 +209,7 @@ def materialize_native(request, *, resume=False):
             max_experiment_bytes=request.max_experiment_bytes,
             max_total_bytes=request.max_total_bytes,
             report_reserve_seconds=request.report_reserve_seconds,
+            artifact_policy=request.artifact_policy,
         )
         service.freeze_protocol(protocol)
     directory = Path(existing.get("state_dir") or root / "supervisor")
@@ -262,6 +265,8 @@ def materialize_native(request, *, resume=False):
             argv += ["--" + name.replace("_", "-"), str(value)]
     if request.capability_directory:
         argv += ["--capabilities", request.capability_directory]
+    if request.artifact_policy is not None:
+        argv += ["--artifact-policy", request.artifact_policy]
     if request.machine_ids:
         argv += ["--machine-registry", request.machine_registry]
         for machine in request.machine_ids:

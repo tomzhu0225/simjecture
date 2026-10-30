@@ -56,8 +56,12 @@ check does not establish scientific suitability, qualification, or support for a
 Check the target's entire domain, source correctness, actual numerical outputs,
 provenance, physical model limits, controls and convergence. Inspect output_findings:
 invalid JSON, failed checks and uninspected binary artifacts are explicit limitations.
-Raw artifact hashes establish identity, not numerical validity. A Laplacian unit test
-is not an evolution/conservation benchmark. Demand actual commissioning of the used solver.
+Raw artifact hashes establish identity, not numerical validity. Remote input references
+carry immutable worker/job/path/hash identities, not inspected contents. Missing inspection of a
+relevant code or configuration dependency is a review gap; request a compact fetch
+or a recorded same-worker analysis rather than assuming the dependency was inspected.
+A Laplacian unit test is not an evolution/conservation benchmark.
+Demand actual commissioning of the used solver.
 Apply the operator's
 scientific requirements relevant to this claim. Process exit or metadata alone
 is not scientific support. Reject fitted data-extrema repair bounds checked only
@@ -414,8 +418,22 @@ Write source normally here. All recorded numerical experiments use the existing 
   explicit requests and instrument aliases remain bound to their worker. Several
   asynchronous experiments can run in parallel when capacity permits. Jobs survive
   SSH interruptions; inspect transport_status before deciding a run failed.
-  Declared outputs are retrieved with hash verification. Other large files remain
-  in remote_artifacts; lab.fetch_remote(experiment='exp_ID',path='file') retrieves one.
+  This study's artifact policy is {self.service.artifact_policy()!r}. With 'remote',
+  completion imports the terminal receipt and artifact index without downloading files.
+  Keep bulk data on its worker; lab.fetch_remote(experiment='exp_ID',path='result.json')
+  explicitly caches a hash-verified file. Fetch compact results before progress/compare
+  or independent review. A cache failure does not change completed computation.
+  'eager' retains automatic collection of declared outputs and small text diagnostics.
+  Retained worker data count toward the logical study allowance after completion;
+  caching the same data is not charged twice, but downstream copies are charged.
+  For follow-up work, pass remote_inputs={{'fields.h5':{{'experiment':'exp_ID',
+  'path':'case/fields.h5'}}}} to lab.run, lab.analyze, lab.method or lab.commit.
+  The host freezes the recorded identity and selects the same worker. It verifies an
+  independent local copy there, without a download/reupload. No implicit cross-worker
+  migration occurs. The worker must advertise artifact_inputs in lab.machines().
+  Remote references participate in method and commitment bindings: changing the dataset
+  needs a matching method review. Fetch relevant code/configuration dependencies for
+  source inspection. A hash alone never establishes content or scientific validity.
   lab.read_instrument(capability='alias',root='runtime',path='.') lists registered
   read-only instrument files. Use a readable_roots entry from lab.machines() for
   source mounts and a relative path to retrieve a bounded UTF-8 excerpt.
@@ -472,7 +490,9 @@ Write source normally here. All recorded numerical experiments use the existing 
   or rejected requests require repair, not a longer timeout. Report reserve is protected.
 - Keep raw arrays in outputs, with a compact result.json; optionally specify
   review_documents=['result.json']. Reviewers see compact documents and raw file hashes,
-  not binary contents. Use strict JSON (null plus an explicit reason for undefined values),
+  not binary contents. Under the remote policy, explicitly fetch those compact documents
+  before methods/claim review; analyze large arrays on their worker using remote_inputs.
+  Use strict JSON (null plus an explicit reason for undefined values),
   numeric arrays rather than pickle/object arrays, and periodic on-disk checkpoints.
 - Optional memory: lab.note('what was observed', kind='observation', experiments=['exp_ID']).
   Use kind='interpretation' for explanations, 'implementation' for code corrections,

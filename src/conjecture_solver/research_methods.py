@@ -190,7 +190,9 @@ class MethodService(RegistrationService):
 
     @staticmethod
     def method_binding(binding):
-        return {k: binding[k] for k in ("source", "inputs", "capability", "runtime_sha256")}
+        return {k: binding[k] for k in ("source", "inputs", "capability", "runtime_sha256")} | (
+            {"remote_inputs": binding["remote_inputs"]} if binding.get("remote_inputs") else {}
+        )
 
     def check_method(self, binding, method, stage):
         requirements = self.manifest.get("requirements", {})
@@ -244,6 +246,7 @@ class MethodService(RegistrationService):
         blocker_experiments=(),
         limitations=(),
         scope="production",
+        remote_inputs=None,
     ):
         """Freeze the method and actual commissioning evidence for host-triggered review."""
         from .research_service import fingerprint, put
@@ -274,7 +277,7 @@ class MethodService(RegistrationService):
         )
         if any(not isinstance(v, str) or not v.strip() for v in fields.values()):
             raise ValueError("Describe every method field")
-        binding = self.method_binding(self._binding(source, (), inputs, capability))
+        binding = self.method_binding(self._binding(source, (), inputs, capability, remote_inputs))
         # Even a model reviewer cannot waive an explicit instrument requirement.
         prefixes = self.manifest.get("requirements", {}).get("required_capability_prefixes", [])
         if prefixes and not any((capability or "").startswith(p) for p in prefixes):
@@ -312,7 +315,15 @@ class MethodService(RegistrationService):
                 if sha(w / name) != meta["sha256"]:
                     raise ValueError("Commissioning artifact changed")
             docs, raw, findings = review_documents(
-                w, r, require_document=False, review_root=self.root
+                w,
+                r,
+                require_document=(
+                    self.artifact_policy() == "remote"
+                    and bool(r.get("machine"))
+                    and identifier in validation_experiments
+                    and r["status"] == "succeeded"
+                ),
+                review_root=self.root,
             )
             validation_sources, validation_references = source_views(
                 self.root,
@@ -332,6 +343,7 @@ class MethodService(RegistrationService):
                     documents=docs,
                     sources=validation_sources,
                     source_references=validation_references,
+                    remote_inputs=self.remote_input_review(r["binding"]),
                     raw_artifacts=raw,
                     output_findings=findings,
                 )
@@ -355,6 +367,7 @@ class MethodService(RegistrationService):
             binding=binding,
             sources=sources,
             source_references=source_references,
+            remote_inputs=self.remote_input_review(binding),
             solver_development=dict(
                 policy=self.solver_development_policy(),
                 registration=next(

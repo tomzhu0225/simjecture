@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import csv
+import hashlib
 import json
 import math
 from collections import Counter
@@ -76,29 +77,61 @@ def review_documents(workspace, record, *, require_document=True, review_root=No
     for name in selected:
         path = workspace / name
         if not path.is_file():
-            raise ValueError("Review documents must exist")
+            raise ValueError(
+                "Review documents must exist; fetch compact remote documents with lab.fetch_remote"
+            )
+        remote_metadata = record.get("remote_artifacts", {}).get(name)
+        if record.get("remote_job") and remote_metadata is None:
+            raise ValueError("Remote review document is absent from the recorded artifact index")
         if path.stat().st_size > 32768:
             from .review_assets import freeze_file
 
-            documents[name] = dict(
-                reference=freeze_file(
-                    review_root or workspace,
-                    path,
-                    expected_sha256=record.get("artifacts", {}).get(name, {}).get("sha256"),
+            reference = freeze_file(
+                review_root or workspace,
+                path,
+                expected_sha256=(remote_metadata or record.get("artifacts", {}).get(name, {})).get(
+                    "sha256"
                 ),
+            )
+            if remote_metadata and reference["bytes"] != remote_metadata["bytes"]:
+                raise ValueError("Remote review document changed from its recorded size")
+            documents[name] = dict(
+                reference=reference,
                 inspected=False,
                 note="Retrieve relevant ranges; not inspected inline",
             )
             continue
         try:
-            documents[name] = path.read_text()
+            data = path.read_bytes()
+            if remote_metadata and (
+                len(data) != remote_metadata["bytes"]
+                or hashlib.sha256(data).hexdigest() != remote_metadata["sha256"]
+            ):
+                raise ValueError("Remote review document changed from its recorded identity")
+            documents[name] = data.decode("utf-8")
         except UnicodeError as error:
             raise ValueError(
                 "Review documents must be UTF-8 text; retain binary outputs separately"
             ) from error
     if require_document and not documents:
-        raise ValueError("Supply a compact text/JSON result document alongside raw outputs")
-    raw = {p: record.get("artifacts", {}).get(p) for p in record["outputs"] if p not in documents}
+        raise ValueError(
+            "Supply a compact text/JSON result document alongside raw outputs; "
+            "fetch remote review documents with lab.fetch_remote first"
+        )
+    raw = {}
+    for name in record["outputs"]:
+        if name in documents:
+            continue
+        metadata = record.get("artifacts", {}).get(name)
+        if metadata is None and name in record.get("remote_artifacts", {}):
+            metadata = record["remote_artifacts"][name] | {
+                "location": "worker",
+                "machine": record.get("machine"),
+                "job": record.get("remote_job"),
+                "path": name,
+                "inspected": False,
+            }
+        raw[name] = metadata
     return documents, raw, output_findings(workspace, record["outputs"])
 
 
