@@ -13,6 +13,12 @@ def config(mode="shadow", **changes):
     )
 
 
+def test_long_campaign_request_budget_accepted():
+    cfg = config("alerts", maximum_requests=100000, maximum_alerts=25)
+    assert cfg.maximum_requests == 100000
+    assert cfg.maximum_alerts == 25
+
+
 def packet(clock, sequence):
     return protocol.Observation.model_validate(
         observation(at=round(clock * 1000), sequence=sequence).model_dump()

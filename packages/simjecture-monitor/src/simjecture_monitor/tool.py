@@ -34,7 +34,7 @@ class AttentionConfig(BaseModel):
     temperature: float = Field(default=1.0, gt=0, le=10)
     poll_seconds: float = Field(default=5.0, ge=1, le=300)
     timeout_seconds: float = Field(default=10.0, gt=0, le=25)
-    maximum_requests: int = Field(default=720, ge=1, le=10000)
+    maximum_requests: int = Field(default=720, ge=1, le=100000)
     maximum_alerts: int = Field(default=1, ge=1, le=100)
     cooldown_seconds: float = Field(default=90.0, ge=5, le=86400)
 
