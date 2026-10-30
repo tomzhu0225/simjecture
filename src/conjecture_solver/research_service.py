@@ -951,6 +951,11 @@ class ResearchService(
                 if process_identity_matches(ProcessIdentity.model_validate(identity)):
                     continue
                 if record.get("machine"):
+                    if record.get("collection_cancel_requested") or (
+                        record.get("collection_deferred")
+                        and time.time() >= self.manifest["deadline"]
+                    ):
+                        continue
                     # A coordinator restart does not establish remote experiment failure.
                     record.update(status="queued", recovery_started_at=time.time())
                     self._spawn_experiment(record)
@@ -1156,7 +1161,7 @@ class ResearchService(
         }
 
     def fetch_remote(self, experiment, path):
-        from .execution_pool import MachineRegistry, download
+        from .execution_pool import MachineRegistry, _partial_path, download
 
         record = self._read("experiments", experiment)
         pool = self.manifest.get("execution_pool")
@@ -1175,8 +1180,11 @@ class ResearchService(
 
         destination = contained(workspace, path)
         used = BubblewrapSandbox._tree_bytes(workspace)
-        if destination.is_file():
+        if destination.is_file() and not destination.is_symlink():
             used -= destination.stat().st_size
+        partial = _partial_path(destination, record["remote_job"], path, metadata)
+        if partial.is_file() and not partial.is_symlink():
+            used -= partial.stat().st_size
         if used + metadata["bytes"] > record["workspace_limit_bytes"]:
             raise ValueError("Artifact exceeds the coordinator storage reservation")
 

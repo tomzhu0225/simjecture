@@ -183,6 +183,20 @@ input programs and small text diagnostics are imported automatically. Other reco
 arrays remain on the worker until explicitly retrieved. Transfers are chunked and
 SHA256-verified; a solver exit or a transferred file never grants scientific approval.
 Large explicitly declared outputs are transferred even when they are arrays.
+Artifact retrieval uses one bounded stream of the worker's existing fetch operation,
+so older workers remain compatible. A stalled stream times out after 60 seconds
+without a complete chunk; retries resume an identity-bound partial file. A complete
+file becomes visible only after its full SHA256 matches the terminal worker receipt.
+Partial data consume the same workspace storage allowance and can remain after an
+interrupted transfer. Once a terminal worker receipt is observed, a temporary
+transport failure does not turn that completed job into a timed-out simulation.
+Automatic collection stops at the study wall deadline: the observed remote terminal
+status and partial file remain, and automatic retries resume after a budget extension.
+A cancellation during collection stops the stream and retains the partial and remote
+terminal status; automatic retries remain disabled for that cancelled collection.
+An explicit fetch of an already imported terminal record does not inherit an expired
+study deadline. No numerical job is resubmitted. These checks do not guarantee a
+particular throughput on an untested connection.
 
 On filesystems with unstable directory inodes, the operator can provide a
 `.simjecture-source-manifest.json` inside a reference dependency root. It maps
