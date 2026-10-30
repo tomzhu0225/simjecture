@@ -103,6 +103,7 @@ def test_dispatch_recovers_malformed_reply_without_false_terminal_failure(tmp_pa
         },
         _read=lambda *args: load(path),
         lock=nullcontext,
+        artifact_policy=lambda: "eager",
     )
     remote = {"id": job_identifier(service, record), "status": "succeeded", "artifacts": {}}
     replies = iter([{"ok": True}, {"ok": True, "result": remote}])
