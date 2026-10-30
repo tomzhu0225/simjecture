@@ -194,8 +194,9 @@ Automatic collection stops at the study wall deadline: the observed remote termi
 status and partial file remain, and automatic retries resume after a budget extension.
 A cancellation during collection stops the stream and retains the partial and remote
 terminal status; automatic retries remain disabled for that cancelled collection.
-An explicit fetch of an already imported terminal record does not inherit an expired
-study deadline. No numerical job is resubmitted. These checks do not guarantee a
+An explicit fetch of a recorded artifact from a terminal worker, including deferred
+or cancelled collection, does not inherit an expired study deadline. Fetching one
+file does not mark the full experiment imported or approve a scientific claim. No numerical job is resubmitted. These checks do not guarantee a
 particular throughput on an untested connection.
 
 On filesystems with unstable directory inodes, the operator can provide a

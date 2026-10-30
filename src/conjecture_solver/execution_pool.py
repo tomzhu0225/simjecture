@@ -1113,6 +1113,9 @@ def import_result(service, record, transport, remote):
         remote_artifacts=artifacts,
         remote_job=remote["id"],
         transport_status="connected",
+        transport_error=None,
+        collection_deferred=False,
+        collection_cancel_requested=False,
     )
     return save_progress(service, record, **result)
 
@@ -1187,9 +1190,17 @@ def dispatch(service, record):
             if time.time() >= service.manifest["deadline"] and state["status"] in ACTIVE:
                 state = transport.call("cancel", identifier=job, reason="deadline")
             if state["status"] in TERMINAL:
+                if state.get("id") != job or (
+                    state.get("request_sha256") and state["request_sha256"] != fingerprint(spec)
+                ):
+                    raise ValueError("Terminal receipt binds a different experiment request")
                 terminal_seen = True
                 save_progress(
-                    service, record, remote_job=job, remote_terminal_status=state["status"]
+                    service,
+                    record,
+                    remote_job=job,
+                    remote_terminal_status=state["status"],
+                    remote_artifacts=state.get("artifacts", {}),
                 )
                 import_result(service, record, transport, state)
                 return
@@ -1257,12 +1268,17 @@ def cancel_remote(service, record):
         if state.get("id") != job:
             raise ValueError("Worker returned a different job identity")
         if state["status"] == "succeeded":
+            if state.get("request_sha256") and state["request_sha256"] != fingerprint(
+                _specification(service, record)
+            ):
+                raise ValueError("Terminal receipt binds a different experiment request")
             # Completion raced with cancellation; the dispatcher must still import it.
             return save_progress(
                 service,
                 record,
                 remote_job=job,
                 remote_terminal_status="succeeded",
+                remote_artifacts=state.get("artifacts", {}),
                 collection_cancel_requested=True,
                 cancel_requested=True,
                 cancellation_confirmed=True,

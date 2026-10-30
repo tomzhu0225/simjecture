@@ -156,7 +156,7 @@ def test_dispatch_retries_terminal_result_after_deadline_without_resubmission(mo
         def call(self, method, **kwargs):
             calls.append(method)
             assert method == "status" and kwargs["identifier"] == job
-            return {"id": job, "status": "succeeded"}
+            return {"id": job, "status": "succeeded", "artifacts": {"result": {"bytes": 1}}}
 
     class Registry:
         def __init__(self, *args):
@@ -187,9 +187,11 @@ def test_dispatch_retries_terminal_result_after_deadline_without_resubmission(mo
     assert len(attempts) == 1 and record["status"] == "running"
     assert record["collection_deferred"]
     assert record["remote_terminal_status"] == "succeeded"
+    assert record["remote_artifacts"] == {"result": {"bytes": 1}}
 
 
-def test_explicit_fetch_accounts_for_existing_partial_only_once(tmp_path, monkeypatch):
+@pytest.mark.parametrize("condition", ["terminal", "deferred", "cancelled"])
+def test_explicit_fetch_accounts_for_existing_partial_only_once(tmp_path, monkeypatch, condition):
     import conjecture_solver.execution_pool as module
     from conjecture_solver.research_service import ResearchService, put
 
@@ -207,7 +209,11 @@ def test_explicit_fetch_accounts_for_existing_partial_only_once(tmp_path, monkey
         service.root / "experiments" / (experiment + ".json"),
         {
             "id": experiment,
-            "status": "succeeded",
+            "status": "succeeded" if condition == "terminal" else "running",
+            "remote_terminal_status": "succeeded",
+            "collection_deferred": condition == "deferred",
+            "collection_cancel_requested": condition == "cancelled",
+            "scientific_status": "unreviewed",
             "remote_job": job,
             "machine": "fixture",
             "remote_artifacts": {"result.bin": meta},
@@ -238,6 +244,10 @@ def test_explicit_fetch_accounts_for_existing_partial_only_once(tmp_path, monkey
     monkeypatch.setattr(module, "MachineRegistry", Registry)
     result = service.fetch_remote(experiment, "result.bin")
     assert Path(result["path"]).read_bytes() == data
+    current = service._read("experiments", experiment)
+    assert current["status"] == ("succeeded" if condition == "terminal" else "running")
+    assert current["scientific_status"] == "unreviewed"
+    assert current["artifacts"]["result.bin"] == meta
 
 
 def test_changed_remote_identity_is_rejected_without_replacing_existing_file(tmp_path):
@@ -475,7 +485,7 @@ def test_successful_worker_racing_cancel_still_needs_collection(monkeypatch):
     class FakeTransport:
         def call(self, method, **kwargs):
             assert method == "cancel" and kwargs["identifier"] == job
-            return {"id": job, "status": "succeeded"}
+            return {"id": job, "status": "succeeded", "artifacts": {"out": {"bytes": 1}}}
 
     class Registry:
         def __init__(self, *_):
@@ -494,6 +504,7 @@ def test_successful_worker_racing_cancel_still_needs_collection(monkeypatch):
     monkeypatch.setattr(module, "save_progress", save)
     module.cancel_remote(service, record)
     assert record["status"] == "running" and record["remote_terminal_status"] == "succeeded"
+    assert record["remote_artifacts"] == {"out": {"bytes": 1}}
 
 
 def test_cancel_stalled_stream_reaps_process_and_keeps_partial(tmp_path, monkeypatch):
@@ -529,3 +540,100 @@ def test_cancel_stalled_stream_reaps_process_and_keeps_partial(tmp_path, monkeyp
         )
     assert partial.read_bytes() == b"te" and not destination.exists()
     assert started[0].poll() is not None
+
+
+def test_successful_import_clears_deferred_and_cancel_flags(tmp_path, monkeypatch):
+    import conjecture_solver.execution_pool as module
+
+    service = type("Service", (), {})()
+    service.root = tmp_path
+    service.manifest = {"deadline": time.time() + 60}
+    record = {
+        "id": "exp_fixture",
+        "status": "running",
+        "outputs": [],
+        "binding": {"inputs": {}},
+        "workspace_limit_bytes": 100,
+        "collection_deferred": True,
+        "collection_cancel_requested": True,
+        "transport_error": "old error",
+    }
+    remote = {
+        "id": "job_fixture",
+        "status": "succeeded",
+        "artifacts": {},
+        "scientific_status": "unreviewed",
+    }
+
+    def save(_service, _record, **values):
+        record.update(values)
+        return record
+
+    monkeypatch.setattr(module, "save_progress", save)
+    module.import_result(service, record, object(), remote)
+    assert record["status"] == "succeeded"
+    assert not record["collection_deferred"] and not record["collection_cancel_requested"]
+    assert record["transport_error"] is None and record["scientific_status"] == "unreviewed"
+
+
+def test_compact_status_shows_remote_terminal_and_collection_state(tmp_path):
+    from conjecture_solver.research_service import ResearchService, put
+
+    service = ResearchService.create(
+        tmp_path / "study", "A synthetic claim.", execution_backend="process-cooperative"
+    )
+    (service.work / "calc.py").write_text(
+        "from pathlib import Path\nPath('out').write_text('ok')\n"
+    )
+    receipt = service.run("calc.py", outputs=["out"], stage="exploration")
+    deadline = time.monotonic() + 15
+    while time.monotonic() < deadline:
+        record = service._read("experiments", receipt["id"])
+        if record["status"] not in {"running", "queued"}:
+            break
+        time.sleep(0.05)
+    assert record["status"] == "succeeded"
+    record.update(
+        status="running",
+        worker_identity=None,
+        remote_terminal_status="succeeded",
+        collection_deferred=True,
+        collection_cancel_requested=True,
+    )
+    put(service.root / "experiments" / (record["id"] + ".json"), record)
+    compact = service.status(compact=True)["experiments"][0]
+    assert compact["status"] == "running" and compact["remote_terminal_status"] == "succeeded"
+    assert compact["collection_deferred"] and compact["collection_cancel_requested"]
+    assert compact["scientific_status"] == "unreviewed"
+
+
+def test_cancel_receipt_rejects_changed_source_request_hash(monkeypatch):
+    import conjecture_solver.execution_pool as module
+
+    job = "job_" + "a" * 40
+    record = {"id": "exp_fixture", "machine": "fixture", "status": "running"}
+    service = type("Service", (), {})()
+    service.manifest = {"execution_pool": {"registry": "unused", "workers": {"fixture": {}}}}
+
+    class FakeTransport:
+        def call(self, *_args, **_kwargs):
+            return {
+                "id": job,
+                "status": "succeeded",
+                "request_sha256": "0" * 64,
+                "artifacts": {"out": {"bytes": 1}},
+            }
+
+    class Registry:
+        def __init__(self, *_):
+            pass
+
+        def transport(self, *_args, **_kwargs):
+            return FakeTransport()
+
+    monkeypatch.setattr(module, "MachineRegistry", Registry)
+    monkeypatch.setattr(module, "job_identifier", lambda *_: job)
+    monkeypatch.setattr(module, "_specification", lambda *_: {"id": job})
+    with pytest.raises(ValueError, match="different experiment request"):
+        module.cancel_remote(service, record)
+    assert "remote_artifacts" not in record
