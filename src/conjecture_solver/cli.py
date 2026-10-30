@@ -537,6 +537,12 @@ def build_parser() -> argparse.ArgumentParser:
         )
     )
 
+    from .campaign_deployment import configure_parser as configure_deployment
+
+    configure_deployment(subcommands.add_parser(
+        "deployment", help="Plan and check a versioned campaign deployment without launching it"
+    ))
+
     from .attention_cli import configure as configure_attention
     from .knowledge_cli import configure as configure_knowledge
     from .workspace_cli import configure as configure_workspace
@@ -906,7 +912,7 @@ def main() -> int:
             return 0
         except ValueError as error:
             parser.error(str(error))
-    if args.command in {"study", "attention"}:
+    if args.command in {"study", "attention", "deployment"}:
         try:
             return int(args.handler(args))
         except ValueError as error:

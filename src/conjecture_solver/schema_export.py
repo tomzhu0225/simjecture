@@ -45,6 +45,7 @@ from .benchmarks.electrostatic_pic import (
     PICSufficiencyResult,
 )
 from .benchmarks.kinetic_sufficiency import KineticSufficiencyResult
+from .campaign_deployment import CampaignDeploymentManifest, CampaignDeploymentReport
 from .confirmation import (
     PICConfirmationAttempt,
     PICConfirmationDesign,
@@ -124,6 +125,8 @@ from .warpx_confirmation import (
 ModelType: TypeAlias = type[BaseModel]
 
 PUBLIC_MODELS: tuple[ModelType, ...] = (
+    CampaignDeploymentManifest,
+    CampaignDeploymentReport,
     ResearchHypothesis,
     ResearchRelation,
     ResearchBudget,

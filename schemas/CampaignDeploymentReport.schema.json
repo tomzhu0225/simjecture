@@ -1,0 +1,234 @@
+{
+  "$defs": {
+    "DeploymentCheck": {
+      "additionalProperties": false,
+      "properties": {
+        "detail": {
+          "title": "Detail",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "next_action": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Next Action"
+        },
+        "observed": {
+          "additionalProperties": true,
+          "title": "Observed",
+          "type": "object"
+        },
+        "required": {
+          "default": true,
+          "title": "Required",
+          "type": "boolean"
+        },
+        "status": {
+          "enum": [
+            "planned",
+            "passed",
+            "failed",
+            "skipped"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "status",
+        "detail"
+      ],
+      "title": "DeploymentCheck",
+      "type": "object"
+    },
+    "DeploymentRole": {
+      "additionalProperties": false,
+      "properties": {
+        "backend": {
+          "enum": [
+            "codex",
+            "codex-glm",
+            "grok",
+            "agy",
+            "builtin"
+          ],
+          "title": "Backend",
+          "type": "string"
+        },
+        "model": {
+          "minLength": 1,
+          "title": "Model",
+          "type": "string"
+        },
+        "reasoning_effort": {
+          "anyOf": [
+            {
+              "enum": [
+                "low",
+                "medium",
+                "high",
+                "xhigh",
+                "max",
+                "ultra"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reasoning Effort"
+        }
+      },
+      "required": [
+        "backend",
+        "model"
+      ],
+      "title": "DeploymentRole",
+      "type": "object"
+    },
+    "DeploymentStudy": {
+      "additionalProperties": false,
+      "properties": {
+        "director": {
+          "$ref": "#/$defs/DeploymentRole"
+        },
+        "director_storage_increases": {
+          "default": false,
+          "title": "Director Storage Increases",
+          "type": "boolean"
+        },
+        "initial_max_experiment_bytes": {
+          "exclusiveMinimum": 0,
+          "maximum": 9223372036854775807,
+          "title": "Initial Max Experiment Bytes",
+          "type": "integer"
+        },
+        "initial_max_total_bytes": {
+          "exclusiveMinimum": 0,
+          "maximum": 9223372036854775807,
+          "title": "Initial Max Total Bytes",
+          "type": "integer"
+        },
+        "report_reserve_seconds": {
+          "exclusiveMinimum": 0,
+          "title": "Report Reserve Seconds",
+          "type": "number"
+        },
+        "reviewer": {
+          "$ref": "#/$defs/DeploymentRole"
+        },
+        "wall_seconds": {
+          "exclusiveMinimum": 0,
+          "title": "Wall Seconds",
+          "type": "number"
+        },
+        "worker": {
+          "$ref": "#/$defs/DeploymentRole"
+        }
+      },
+      "required": [
+        "worker",
+        "director",
+        "reviewer",
+        "wall_seconds",
+        "report_reserve_seconds",
+        "initial_max_experiment_bytes",
+        "initial_max_total_bytes"
+      ],
+      "title": "DeploymentStudy",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "checked_at": {
+      "title": "Checked At",
+      "type": "number"
+    },
+    "checks": {
+      "items": {
+        "$ref": "#/$defs/DeploymentCheck"
+      },
+      "title": "Checks",
+      "type": "array"
+    },
+    "declared_study": {
+      "$ref": "#/$defs/DeploymentStudy"
+    },
+    "manifest_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Manifest Sha256",
+      "type": "string"
+    },
+    "mode": {
+      "enum": [
+        "plan",
+        "check"
+      ],
+      "title": "Mode",
+      "type": "string"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "simjecture-deployment-report/1",
+      "default": "simjecture-deployment-report/1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "scientific_qualification": {
+      "const": "not_assessed",
+      "default": "not_assessed",
+      "title": "Scientific Qualification",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "planned",
+        "ready",
+        "blocked"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "study_created": {
+      "const": false,
+      "default": false,
+      "title": "Study Created",
+      "type": "boolean"
+    },
+    "unchecked": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Unchecked",
+      "type": "array"
+    }
+  },
+  "required": [
+    "name",
+    "manifest_sha256",
+    "mode",
+    "checked_at",
+    "status",
+    "checks",
+    "declared_study"
+  ],
+  "title": "CampaignDeploymentReport",
+  "type": "object"
+}
