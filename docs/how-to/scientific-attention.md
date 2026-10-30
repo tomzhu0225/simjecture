@@ -60,7 +60,11 @@ proposals are logged as unsupported host actions in this first integration.
 
 The generic study adapter reads bounded public worker messages/tool results,
 progress records and experiment metadata. Private reasoning and numerical arrays
-are excluded. Unknown scientific progress timing stays unknown. Domain-specific
+are excluded. Experiment timing distinguishes the age of a process heartbeat from
+the time since the observer first saw a measured value or saw it change. The latter
+is a lower bound, not proof of scientific progress; unavailable timing stays unknown.
+Incidents are bound to stable host and operator records, so losing or replaying a
+worker excerpt on restart cannot alone create another automatic attempt. Domain-specific
 observations should use the typed observation contract rather than assuming that
 ordinary process status measures scientific health. The integration is separate
 from the historical WarpX evaluation driver and does not inherit its accuracy

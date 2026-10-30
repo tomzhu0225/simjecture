@@ -515,14 +515,22 @@ reviews or genuinely needed operator input remain park_worker, not finish.
             self._director_pending = None
             self.state.pop("background_review", None)
             try:
-                rc = pending["future"].result()
-            except (OSError, ValueError, RuntimeError) as error:
+                try:
+                    rc = pending["future"].result()
+                except (OSError, ValueError, RuntimeError) as error:
+                    self.collect_director_usage(pending)
+                    return self.director_error(error)
                 self.collect_director_usage(pending)
-                return self.director_error(error)
-            self.collect_director_usage(pending)
-            return self.finish_director(
-                pending["directory"], pending["packet"], pending["signature"], rc
-            )
+                return self.finish_director(
+                    pending["directory"], pending["packet"], pending["signature"], rc
+                )
+            finally:
+                # The request belonged to this single attempt, including failures.
+                # Do not remove an independently created, newer attention notice.
+                notice = pending["packet"].get("attention_request")
+                if notice is not None and self.state.get("attention_notice") == notice:
+                    self.state.pop("attention_notice", None)
+                    self.save()
         policy = self.service.manifest.get("director_policy", {})
         if not policy.get("enabled") or self.boundary():
             return False
