@@ -40,6 +40,7 @@ def test_separate_reviewer_route_survives_native_resume(tmp_path):
         model="worker-model", agent_executable=sys.executable,
         judge_backend="codex", judge_executable=sys.executable,
         judge_model="review-model", judge_reasoning_effort="high",
+        director_model="director-model", director_reasoning_effort="medium",
     )
     plan = materialize_operator_input(request)
     root = Path(plan.output_directory)
@@ -49,6 +50,8 @@ def test_separate_reviewer_route_survives_native_resume(tmp_path):
         assert argv[argv.index("--judge-backend") + 1] == "codex"
         assert argv[argv.index("--judge-executable") + 1] == sys.executable
         assert argv[argv.index("--judge-model") + 1] == "review-model"
+        assert argv[argv.index("--director-model") + 1] == "director-model"
+        assert argv[argv.index("--director-reasoning-effort") + 1] == "medium"
     assert ResearchService(root).manifest["deadline"] == before
 
 

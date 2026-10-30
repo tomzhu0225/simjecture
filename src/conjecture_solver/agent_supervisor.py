@@ -241,7 +241,15 @@ class AgentSupervisor:
             return "budget_exhausted"
         return None
 
-    def launch(self, directory: Path, prompt: str, *, judge=False):
+    def launch(self, directory: Path, prompt: str, *, judge=False, director=False):
+        if director and not judge:
+            raise ValueError("Director must use the read-only reviewer permissions")
+        model = (getattr(self.args, "director_model", None) if director else None) or (
+            self.args.judge_model if judge else self.args.model
+        )
+        effort = (getattr(self.args, "director_reasoning_effort", None) if director else None) or (
+            getattr(self.args, "judge_reasoning_effort", None) if judge else None
+        ) or getattr(self.args, "reasoning_effort", None)
         unbounded = getattr(self.args, "unbounded_interactive", False) and not judge
         remaining = (
             float("inf") if self.state["deadline"] is None else self.state["deadline"] - time.time()
@@ -289,7 +297,7 @@ class AgentSupervisor:
                 "--cwd",
                 str(work_directory),
                 "--model",
-                self.args.judge_model if judge else self.args.model,
+                model,
                 "--wall-seconds",
                 str(max(1, remaining)),
             ]
@@ -309,7 +317,7 @@ class AgentSupervisor:
                 command += ["resume", cursor]
             command += [
                 "--model",
-                self.args.judge_model if judge else self.args.model,
+                model,
                 "--json",
                 "--skip-git-repo-check",
             ]
@@ -318,9 +326,6 @@ class AgentSupervisor:
             else:
                 command += ["--dangerously-bypass-approvals-and-sandbox"]
             command += [prompt]
-            effort = (
-                getattr(self.args, "judge_reasoning_effort", None) if judge else None
-            ) or getattr(self.args, "reasoning_effort", None)
             if effort:
                 command[-1:-1] = ["-c", f'model_reasoning_effort="{effort}"']
         elif backend == "grok":
@@ -331,7 +336,7 @@ class AgentSupervisor:
                 "--cwd",
                 str(work_directory),
                 "--model",
-                self.args.judge_model if judge else self.args.model,
+                model,
                 "--output-format",
                 "streaming-messages-json",
             ]
@@ -341,9 +346,6 @@ class AgentSupervisor:
                 and getattr(self.args, "interactive_activity", False)
             ):
                 command += ["--resume", self.state["worker_cursor"]]
-            effort = (
-                getattr(self.args, "judge_reasoning_effort", None) if judge else None
-            ) or getattr(self.args, "reasoning_effort", None)
             if effort:
                 command += ["--reasoning-effort", effort]
             if judge:
@@ -371,7 +373,7 @@ class AgentSupervisor:
                 "--print",
                 prompt,
                 "--model",
-                self.args.judge_model if judge else self.args.model,
+                model,
                 "--print-timeout",
                 "0",
                 "--output-format",

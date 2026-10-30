@@ -579,7 +579,9 @@ reviews or genuinely needed operator input remain park_worker, not finish.
             executor = getattr(self, "_director_executor", None)
             if executor is None:
                 executor = self._director_executor = ThreadPoolExecutor(max_workers=1)
-            future = executor.submit(runner.launch, d, self.director_prompt(packet), judge=True)
+            future = executor.submit(
+                runner.launch, d, self.director_prompt(packet), judge=True, director=True
+            )
             self._director_pending = dict(
                 future=future, runner=runner, directory=d, packet=packet, signature=signature
             )
@@ -593,7 +595,7 @@ reviews or genuinely needed operator input remain park_worker, not finish.
             original_allowance = getattr(self.args, "turn_seconds", None)
             self.args.turn_seconds = self.review_allowance()
             try:
-                rc = self.launch(d, self.director_prompt(packet), judge=True)
+                rc = self.launch(d, self.director_prompt(packet), judge=True, director=True)
             finally:
                 if original_allowance is None:
                     del self.args.turn_seconds

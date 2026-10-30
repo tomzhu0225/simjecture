@@ -398,12 +398,21 @@ to use the returned work; helpers do not acquire review or acceptance authority.
 Earlier studies retain their saved progress-oversight policy when upgraded.
 
 New minimal studies enable a research director by default. The launch settings in
-the workspace expose the switch, reviewer/director model and effort; CLI launches
+the workspace expose the switch and reviewer model and effort; CLI launches
 accept `--director` and `--no-director`. Existing launches retain their saved
 policy, including studies created before the director existed. Other workflow
 modes retain their existing supervision.
 
-The director uses the reviewer route with a fresh context and checks execution
+The director uses the reviewer backend, executable and provider with a fresh context.
+Set `--director-model` and `--director-reasoning-effort` independently when launching
+a study; omitted values inherit the reviewer model and effort. These settings are
+immutable on resume. Reasoning effort is passed to Codex and Grok; other backends
+do not use this setting. Independent scientific, methods and report reviews continue to
+use the reviewer model and retain their own review authority. For example, use
+`--director-model gpt-6-astra --director-reasoning-effort high --judge-model
+gpt-6.1-sol --judge-reasoning-effort high` with a compatible reviewer backend.
+
+The director checks execution
 strategy about every five minutes, including when the worker is waiting for a
 long experiment. Since rc2, new studies can defer model
 reviews of healthy, unchanged work to at most 15 minutes, with operational checks

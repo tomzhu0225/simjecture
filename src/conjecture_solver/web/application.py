@@ -411,6 +411,8 @@ class SimjectureWebApplication:
                 judge_executable=payload.get("judge_executable") or None,
                 judge_provider_config=payload.get("judge_provider_config") or None,
                 judge_reasoning_effort=payload.get("judge_reasoning_effort") or None,
+                director_model=payload.get("director_model") or None,
+                director_reasoning_effort=payload.get("director_reasoning_effort") or None,
                 allow_solver_development=payload.get("allow_solver_development", True),
             )
             request = NativeStudyRequest(

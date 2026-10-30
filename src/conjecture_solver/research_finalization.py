@@ -115,7 +115,7 @@ class ResearchFinalization:
         policy = self.service.manifest.get("finalization_policy")
         return bool(policy and time.time() >= policy["compute_deadline"])
 
-    def launch(self, directory, prompt, *, judge=False):
+    def launch(self, directory, prompt, *, judge=False, director=False):
         # Native workers have an inactivity timeout, so use an additional absolute
         # per-call boundary for both workers and supervisory reviewers.
         previous = getattr(self, "launch_deadline", None)
@@ -141,7 +141,7 @@ class ResearchFinalization:
         if not judge:
             self._worker_turn_active = True
         try:
-            return super().launch(directory, prompt, judge=judge)
+            return super().launch(directory, prompt, judge=judge, director=director)
         finally:
             self._worker_turn_active = previous_worker_active
             self.launch_deadline = previous
