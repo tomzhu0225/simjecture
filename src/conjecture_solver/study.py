@@ -79,6 +79,15 @@ def configure_parser(parser):
     parser.add_argument("--wall-seconds", type=float, default=3600)
     parser.add_argument("--turn-seconds", type=float, default=600)
     parser.add_argument(
+        "--max-experiment-bytes", type=int, help="Initial per-experiment allowance in bytes"
+    )
+    parser.add_argument(
+        "--max-total-bytes", type=int, help="Initial shared study allowance in bytes"
+    )
+    parser.add_argument(
+        "--report-reserve-seconds", type=float, help="Time reserved for final reporting"
+    )
+    parser.add_argument(
         "--backend", choices=["codex-glm", "codex", "grok", "agy", "builtin"], default="codex-glm"
     )
     parser.add_argument("--provider-config")
@@ -104,7 +113,8 @@ def configure_parser(parser):
     )
     parser.add_argument("--executable")
     parser.add_argument(
-        "--attention-config", type=Path,
+        "--attention-config",
+        type=Path,
         help="Optional attention service JSON; shadow by default, mode=alerts permits requests",
     )
     parser.add_argument(
@@ -424,25 +434,25 @@ def _run(args):
     if not (args.campaign / "research.json").exists() and hypothesis is None:
         raise ValueError("New study requires --hypothesis-file")
     from .research_finalization import default_report_reserve
-    service = (
-        ResearchService.create(
-            args.campaign,
-            hypothesis,
-            wall_seconds=args.wall_seconds,
-            capabilities=args.capabilities,
-            execution_backend=args.execution_backend,
-            completion_policy=getattr(args, "completion_policy", None),
-            execution_pool=pool,
-            report_reserve_seconds=default_report_reserve(args.wall_seconds)
-            if not (args.campaign / "research.json").exists()
-            else None,
-            allow_solver_development=args.allow_solver_development,
-            method_review_scope=existing_research.get("method_review_scope", "study")
-            if existing_research
-            else "used_instruments",
-        )
-        if hypothesis is not None
-        else ResearchService(args.campaign)
+
+    reserve = getattr(args, "report_reserve_seconds", None)
+    if reserve is None and not existing_research:
+        reserve = default_report_reserve(args.wall_seconds)
+    service = ResearchService.create(
+        args.campaign,
+        hypothesis if hypothesis is not None else existing_research["hypothesis"],
+        wall_seconds=args.wall_seconds,
+        capabilities=args.capabilities,
+        execution_backend=args.execution_backend,
+        completion_policy=getattr(args, "completion_policy", None),
+        execution_pool=pool,
+        report_reserve_seconds=reserve,
+        max_experiment_bytes=getattr(args, "max_experiment_bytes", None),
+        max_total_bytes=getattr(args, "max_total_bytes", None),
+        allow_solver_development=args.allow_solver_development,
+        method_review_scope=existing_research.get("method_review_scope", "study")
+        if existing_research
+        else "used_instruments",
     )
     service.freeze_protocol(args.instructions_file.read_text())
     if getattr(args, "requirements_file", None):
@@ -451,6 +461,7 @@ def _run(args):
         service.install_guidance(args.guided_commission)
     if parent:
         from .research_continuation import attach
+
         attach(service, parent, getattr(args, "inherit_file", []))
     supervisor = ResearchSupervisor(args)
     put(args.campaign / "study-mode.json", dict(mode=mode, schema_version=1))
@@ -469,13 +480,15 @@ def _run(args):
         from .study_launch import NativeStudyRequest
 
         record["request"] = NativeStudyRequest(
-            hypothesis=hypothesis
-            or supervisor.service.manifest["hypothesis"],
+            hypothesis=hypothesis or supervisor.service.manifest["hypothesis"],
             instruction=args.instructions_file.read_text(),
             campaign_id=("study-" + re.sub(r"[^A-Za-z0-9_.-]", "-", args.campaign.name))[:128],
             output_directory=str(args.campaign),
             max_wall_seconds=args.wall_seconds,
             max_command_seconds=args.turn_seconds,
+            max_experiment_bytes=getattr(args, "max_experiment_bytes", None),
+            max_total_bytes=getattr(args, "max_total_bytes", None),
+            report_reserve_seconds=reserve,
             mode=mode,
             execution_backend=args.execution_backend,
             backend=args.backend,
@@ -504,8 +517,7 @@ def _run(args):
         # The request schema normalizes whitespace. Preserve the exact frozen
         # hypothesis for resumes, which compare it with the service manifest.
         (operator / "hypothesis.txt").write_text(
-            hypothesis
-            or supervisor.service.manifest["hypothesis"]
+            hypothesis or supervisor.service.manifest["hypothesis"]
         )
         (operator / "instruction.txt").write_text(args.instructions_file.read_text())
     record.update(
