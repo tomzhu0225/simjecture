@@ -434,6 +434,7 @@ class AgentSupervisor:
             )
             limit = time.monotonic() + duration
             turn_timed_out = False
+            interruption_reason = None
             activity = None
             observed_bytes = 0
             stream_offset = 0
@@ -502,6 +503,19 @@ class AgentSupervisor:
                         or time.monotonic() >= min(limit, slice_limit)
                     ):
                         turn_timed_out = boundary is None
+                        interruption_reason = (
+                            "boundary"
+                            if boundary
+                            else "review_handoff"
+                            if handoff
+                            else "absolute_call_boundary"
+                            if call_expired
+                            else "host_checkpoint"
+                            if time.monotonic() >= slice_limit
+                            else "inactivity"
+                            if self.workflow == "frontier"
+                            else "turn_allowance"
+                        )
                         os.killpg(child.pid, signal.SIGTERM)
                         try:
                             child.wait(timeout=5)
@@ -515,17 +529,7 @@ class AgentSupervisor:
                         "worker_turn_timeout",
                         duration_seconds=time.monotonic() - provider_started,
                         allowance_seconds=duration,
-                        reason=(
-                            "review_handoff"
-                            if handoff
-                            else "absolute_call_boundary"
-                            if call_expired
-                            else "host_checkpoint"
-                            if time.monotonic() >= slice_limit
-                            else "inactivity"
-                            if self.workflow == "frontier"
-                            else "turn_allowance"
-                        ),
+                        reason=interruption_reason,
                     )
                     return 124
                 failure = provider_failure(directory, returncode)
@@ -592,6 +596,8 @@ class AgentSupervisor:
                         usage=usage,
                         backend=backend,
                         returncode=child.returncode,
+                        effective_returncode=124 if turn_timed_out else child.returncode,
+                        interruption_reason=interruption_reason,
                     )
                 elif (
                     backend in {"grok", "agy"}

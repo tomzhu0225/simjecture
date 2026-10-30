@@ -581,3 +581,36 @@ def test_interactive_work_can_run_past_old_turn_allowance(tmp_path):
     assert supervisor.state["deadline"] is None
     assert supervisor.launch(directory, "Long investigation; no provider call") == 0
     assert supervisor.boundary() is None
+
+
+def test_review_handoff_records_effective_status_and_unknown_native_usage(tmp_path, monkeypatch):
+    import sys
+
+    root = tmp_path / "campaign"
+    root.mkdir()
+    fake = tmp_path / "fake-codex"
+    fake.write_text(
+        f"#!{sys.executable}\n"
+        "import json, signal, sys, time\n"
+        "signal.signal(signal.SIGTERM, lambda *_: sys.exit(0))\n"
+        "print(json.dumps({'type': 'thread.started', "
+        "'thread_id': 'synthetic-thread'}), flush=True)\n"
+        "while True: time.sleep(0.1)\n"
+    )
+    fake.chmod(0o700)
+    args = argparse.Namespace(
+        campaign=root, state_dir=tmp_path / "supervisor", wall_seconds=30, turn_seconds=20,
+        executable=str(fake), backend="codex", model="synthetic", judge_model="synthetic",
+        workflow="frontier",
+    )
+    supervisor = AgentSupervisor(args)
+    monkeypatch.setattr(supervisor, "worker_checkpoint_requested", lambda: True, raising=False)
+    directory = supervisor.directory / "turn-00001"
+    directory.mkdir()
+    assert supervisor.launch(directory, "synthetic handoff") == 124
+    receipt = json.loads((directory / "usage.json").read_text())
+    assert receipt["returncode"] == 0  # Process handled SIGTERM cleanly.
+    assert receipt["effective_returncode"] == 124
+    assert receipt["interruption_reason"] == "review_handoff"
+    assert receipt["usage"] is None and receipt["missing_usage"]
+    assert supervisor.state["usage_unreported_threads"] == {"synthetic-thread": "worker"}

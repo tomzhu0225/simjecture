@@ -132,7 +132,18 @@ def request_accounting(path):
     )
 
 
-def invocation_accounting(state, directory, *, role, thread_id, usage, backend, returncode):
+def invocation_accounting(
+    state,
+    directory,
+    *,
+    role,
+    thread_id,
+    usage,
+    backend,
+    returncode,
+    effective_returncode=None,
+    interruption_reason=None,
+):
     """Persist counter coverage without treating interrupted native calls as free."""
     missing = state.setdefault("usage_unreported_threads", {})
     if thread_id:
@@ -147,6 +158,10 @@ def invocation_accounting(state, directory, *, role, thread_id, usage, backend, 
         role=role,
         thread_id=thread_id,
         returncode=returncode,
+        effective_returncode=(
+            effective_returncode if effective_returncode is not None else returncode
+        ),
+        interruption_reason=interruption_reason,
         reported_at=time.time(),
         usage=usage,
         scope="cumulative_thread" if backend in {"codex", "codex-glm"} else "provider_requests",
