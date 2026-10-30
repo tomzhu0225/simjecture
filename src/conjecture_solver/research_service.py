@@ -951,6 +951,11 @@ class ResearchService(
                 if process_identity_matches(ProcessIdentity.model_validate(identity)):
                     continue
                 if record.get("machine"):
+                    if record.get("collection_cancel_requested") or (
+                        record.get("collection_deferred")
+                        and time.time() >= self.manifest["deadline"]
+                    ):
+                        continue
                     # A coordinator restart does not establish remote experiment failure.
                     record.update(status="queued", recovery_started_at=time.time())
                     self._spawn_experiment(record)
@@ -1069,6 +1074,9 @@ class ResearchService(
                     machine=e.get("machine", "local"),
                     resources=e.get("resources"),
                     remote_job=e.get("remote_job"),
+                    remote_terminal_status=e.get("remote_terminal_status"),
+                    collection_deferred=e.get("collection_deferred", False),
+                    collection_cancel_requested=e.get("collection_cancel_requested", False),
                     transport_status=e.get("transport_status"),
                     assigned_gpu_ids=e.get("assigned_gpu_ids"),
                     commitment=e.get("commitment"),
@@ -1156,27 +1164,37 @@ class ResearchService(
         }
 
     def fetch_remote(self, experiment, path):
-        from .execution_pool import MachineRegistry, download
+        from .execution_pool import MachineRegistry, _partial_path, download
+        from .worker_protocol import TERMINAL, contained
 
         record = self._read("experiments", experiment)
         pool = self.manifest.get("execution_pool")
         if (
             not pool
             or not record.get("remote_job")
-            or record["status"]
-            not in {"succeeded", "failed", "timed_out", "cancelled", "interrupted"}
+            or (
+                record["status"] not in TERMINAL
+                and not (
+                    record.get("remote_terminal_status") in TERMINAL
+                    and (
+                        record.get("collection_deferred")
+                        or record.get("collection_cancel_requested")
+                    )
+                )
+            )
         ):
             raise ValueError("Select a completed worker experiment")
         metadata = record.get("remote_artifacts", {}).get(path)
         if not metadata:
             raise ValueError("Remote artifact was not recorded")
         workspace = self.root / "experiments" / experiment / "workspace"
-        from .worker_protocol import contained
-
         destination = contained(workspace, path)
         used = BubblewrapSandbox._tree_bytes(workspace)
-        if destination.is_file():
+        if destination.is_file() and not destination.is_symlink():
             used -= destination.stat().st_size
+        partial = _partial_path(destination, record["remote_job"], path, metadata)
+        if partial.is_file() and not partial.is_symlink():
+            used -= partial.stat().st_size
         if used + metadata["bytes"] > record["workspace_limit_bytes"]:
             raise ValueError("Artifact exceeds the coordinator storage reservation")
 
@@ -1186,7 +1204,7 @@ class ResearchService(
         download(transport, record["remote_job"], path, metadata, destination)
         with self.lock():
             current = self._read("experiments", experiment)
-            current["artifacts"][path] = metadata
+            current.setdefault("artifacts", {})[path] = metadata
             put(self.root / "experiments" / (experiment + ".json"), current)
         return {"path": str(workspace / path), **metadata}
 

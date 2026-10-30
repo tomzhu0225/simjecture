@@ -1,16 +1,21 @@
 """Local/SSH machine registry and durable experiment transport."""
 
 import base64
+import fcntl
+import hashlib
 import io
 import json
 import os
+import re
+import selectors
 import shlex
 import shutil
+import signal
+import stat
 import subprocess
 import sys
 import tempfile
 import time
-import uuid
 import zipfile
 from pathlib import Path
 
@@ -38,6 +43,10 @@ class WorkerUnavailable(RuntimeError):
 
 class WorkerTimeout(WorkerUnavailable):
     """The request deadline expired without a confirmed response."""
+
+
+class CollectionCancelled(WorkerUnavailable):
+    """Artifact collection was stopped without changing the worker outcome."""
 
 
 def profile_identity(profile):
@@ -198,6 +207,144 @@ class Transport:
         if not isinstance(result, dict):
             raise WorkerUnavailable(f"Worker {self.machine.id}: invalid RPC result")
         return result
+
+
+# Runs against the installed worker's existing fetch method, including old workers.
+# Requests still pass through its terminal-receipt, contained-path and size checks.
+_FETCH_STREAM = r"""
+import base64, json, sys
+from conjecture_solver.execution_worker import Worker
+request = json.load(sys.stdin)
+worker = Worker(request["root"])
+offset = request["offset"]
+while offset < request["bytes"]:
+    try:
+        result = worker.fetch(request["job"], request["name"], offset, request["length"])
+        data = base64.b64decode(result["data"], validate=True)
+        if not data:
+            raise ValueError("Empty artifact chunk")
+        print(json.dumps({"ok": True, "result": result}), flush=True)
+        offset += len(data)
+    except Exception as error:
+        print(json.dumps({"ok": False, "error": str(error)}), flush=True)
+        sys.exit(1)
+"""
+
+
+def _stream_fetch(
+    transport, job, name, metadata, offset, *, timeout=60, deadline=None, should_stop=None
+):
+    """Read bounded JSON frames from one SSH process; stop after stalled frames."""
+    env = dict(os.environ)
+    askpass_directory = None
+    if transport.password:
+        askpass_directory = tempfile.TemporaryDirectory(prefix="simjecture-ssh-askpass-")
+        askpass = Path(askpass_directory.name) / "askpass.sh"
+        askpass.write_text(
+            "#!/bin/sh\nexec "
+            + shlex.join([sys.executable, str(Path(__file__).with_name("ssh_askpass.py"))])
+            + ' "$@"\n'
+        )
+        askpass.chmod(0o700)
+        env.update(
+            SIMJECTURE_SSH_PASSWORD=transport.password,
+            SSH_ASKPASS=str(askpass),
+            SSH_ASKPASS_REQUIRE="force",
+            DISPLAY="simjecture-worker",
+        )
+    process = None
+    try:
+        with tempfile.TemporaryFile() as errors:
+            try:
+                process = subprocess.Popen(
+                    transport.command([transport.machine.python, "-u", "-c", _FETCH_STREAM]),
+                    stdin=subprocess.PIPE,
+                    stdout=subprocess.PIPE,
+                    stderr=errors,
+                    env=env,
+                    start_new_session=True,
+                )
+                request = dict(
+                    root=transport.machine.root,
+                    job=job,
+                    name=name,
+                    offset=offset,
+                    bytes=metadata["bytes"],
+                    length=CHUNK_BYTES,
+                )
+                process.stdin.write(json.dumps(request).encode())
+                process.stdin.close()
+            except OSError as error:
+                raise WorkerUnavailable("Could not start artifact stream") from error
+            selector = selectors.DefaultSelector()
+            try:
+                selector.register(process.stdout, selectors.EVENT_READ)
+                pending = bytearray()
+                frame_deadline = time.monotonic() + timeout
+                while offset < metadata["bytes"]:
+                    if should_stop and should_stop():
+                        raise CollectionCancelled("Artifact collection cancelled")
+                    remaining = frame_deadline - time.monotonic()
+                    if deadline is not None:
+                        remaining = min(remaining, deadline - time.time())
+                    if remaining <= 0:
+                        raise WorkerTimeout(
+                            "Artifact stream deadline expired; response unconfirmed"
+                        )
+                    if not selector.select(min(remaining, 1) if should_stop else remaining):
+                        continue
+                    data = os.read(process.stdout.fileno(), 262144)
+                    if not data:
+                        raise WorkerUnavailable("Artifact stream ended before completion")
+                    pending.extend(data)
+                    while b"\n" in pending:
+                        line, _, rest = pending.partition(b"\n")
+                        pending = bytearray(rest)
+                        try:
+                            envelope = json.loads(line)
+                        except (ValueError, UnicodeDecodeError) as error:
+                            raise WorkerUnavailable("Invalid artifact stream response") from error
+                        if not isinstance(envelope, dict) or type(envelope.get("ok")) is not bool:
+                            raise WorkerUnavailable("Invalid artifact stream envelope")
+                        if not envelope["ok"]:
+                            raise ValueError(
+                                "Worker rejected artifact stream: "
+                                + (
+                                    str(envelope.get("error")).replace(
+                                        transport.password, "[redacted]"
+                                    )
+                                    if transport.password
+                                    else str(envelope.get("error"))
+                                )
+                            )
+                        chunk = envelope.get("result")
+                        if not isinstance(chunk, dict):
+                            raise WorkerUnavailable("Invalid artifact stream chunk")
+                        if should_stop and should_stop():
+                            raise CollectionCancelled("Artifact collection cancelled")
+                        if deadline is not None and time.time() >= deadline:
+                            raise WorkerTimeout("Artifact collection deadline expired")
+                        yield chunk
+                        offset += len(base64.b64decode(chunk["data"], validate=True))
+                        frame_deadline = time.monotonic() + timeout
+                    if len(pending) > 2 * CHUNK_BYTES:
+                        raise WorkerUnavailable("Oversized artifact stream frame")
+            finally:
+                selector.close()
+    finally:
+        if process is not None:
+            if process.poll() is None:
+                try:
+                    os.killpg(process.pid, signal.SIGTERM)
+                    process.wait(timeout=2)
+                except (ProcessLookupError, subprocess.TimeoutExpired):
+                    if process.poll() is None:
+                        os.killpg(process.pid, signal.SIGKILL)
+            process.wait()
+            if process.stdout:
+                process.stdout.close()
+        if askpass_directory:
+            askpass_directory.cleanup()
 
 
 HOST_SETUP = r"""
@@ -767,39 +914,148 @@ def save_progress(service, record, **values):
     return current
 
 
-def download(transport, job, name, metadata, destination):
+def _partial_path(destination, job, name, metadata):
+    identity = fingerprint(
+        dict(
+            destination=destination.name,
+            job=job,
+            name=name,
+            bytes=metadata["bytes"],
+            sha256=metadata["sha256"],
+        )
+    )
+    return destination.with_name(".simjecture-partial-" + identity)
+
+
+def download(transport, job, name, metadata, destination, *, deadline=None, should_stop=None):
     destination = Path(destination)
-    if destination.is_file() and checksum(destination) == metadata["sha256"]:
-        return
+    if (
+        type(metadata.get("bytes")) is not int
+        or metadata["bytes"] < 0
+        or not isinstance(metadata.get("sha256"), str)
+        or not re.fullmatch(r"[a-f0-9]{64}", metadata["sha256"])
+    ):
+        raise ValueError("Invalid artifact identity")
     if destination.is_symlink():
         raise ValueError("Artifact destination is linked")
+    if destination.is_file() and checksum(destination) == metadata["sha256"]:
+        return
     destination.parent.mkdir(parents=True, exist_ok=True)
-    temporary = destination.with_name("." + destination.name + "." + uuid.uuid4().hex)
+    temporary = _partial_path(destination, job, name, metadata)
+    # Do not follow links or append to a hard-linked file when resuming a partial.
+    flags = os.O_RDWR | os.O_CREAT | getattr(os, "O_NOFOLLOW", 0)
     try:
-        with temporary.open("wb") as output:
-            while output.tell() < metadata["bytes"]:
-                chunk = transport.call(
-                    "fetch", identifier=job, name=name, offset=output.tell(), length=CHUNK_BYTES
+        fd = os.open(temporary, flags, 0o600)
+    except OSError as error:
+        raise ValueError("Unsafe artifact partial") from error
+    with os.fdopen(fd, "r+b") as output:
+        try:
+            fcntl.flock(output, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError as error:
+            raise WorkerUnavailable("Artifact retrieval is already in progress") from error
+        info = os.fstat(output.fileno())
+        if (
+            not stat.S_ISREG(info.st_mode)
+            or info.st_nlink != 1
+            or info.st_uid != os.geteuid()
+            or info.st_mode & 0o077
+        ):
+            raise ValueError("Unsafe artifact partial")
+        try:
+            path_info = temporary.lstat()
+        except FileNotFoundError as error:
+            raise WorkerUnavailable("Artifact partial moved while waiting for its lock") from error
+        if not stat.S_ISREG(path_info.st_mode) or (path_info.st_dev, path_info.st_ino) != (
+            info.st_dev,
+            info.st_ino,
+        ):
+            raise WorkerUnavailable("Artifact partial changed while waiting for its lock")
+        if info.st_size > metadata["bytes"]:
+            output.truncate(0)
+        output.seek(0, os.SEEK_END)
+        if output.tell() < metadata["bytes"]:
+            if isinstance(transport, Transport):
+                chunks = _stream_fetch(
+                    transport,
+                    job,
+                    name,
+                    metadata,
+                    output.tell(),
+                    deadline=deadline,
+                    should_stop=should_stop,
                 )
-                if (
-                    chunk["sha256"] != metadata["sha256"]
-                    or chunk["bytes"] != metadata["bytes"]
-                    or chunk["offset"] != output.tell()
-                ):
-                    raise ValueError("Artifact identity changed during retrieval")
-                raw = base64.b64decode(chunk["data"], validate=True)
-                if (
-                    not raw
-                    or len(raw) > CHUNK_BYTES
-                    or output.tell() + len(raw) > metadata["bytes"]
-                ):
-                    raise ValueError("Invalid artifact chunk")
-                output.write(raw)
-        if checksum(temporary) != metadata["sha256"]:
+            else:
+
+                def calls():
+                    while output.tell() < metadata["bytes"]:
+                        if should_stop and should_stop():
+                            raise CollectionCancelled("Artifact collection cancelled")
+                        remaining = 60 if deadline is None else min(60, deadline - time.time())
+                        if remaining <= 0:
+                            raise WorkerTimeout("Artifact collection deadline expired")
+                        yield transport.call(
+                            "fetch",
+                            identifier=job,
+                            name=name,
+                            offset=output.tell(),
+                            length=CHUNK_BYTES,
+                            timeout=remaining,
+                        )
+
+                chunks = calls()
+            try:
+                for chunk in chunks:
+                    if (
+                        chunk["sha256"] != metadata["sha256"]
+                        or chunk["bytes"] != metadata["bytes"]
+                        or chunk["offset"] != output.tell()
+                    ):
+                        raise ValueError("Artifact identity changed during retrieval")
+                    raw = base64.b64decode(chunk["data"], validate=True)
+                    if (
+                        not raw
+                        or len(raw) > CHUNK_BYTES
+                        or output.tell() + len(raw) > metadata["bytes"]
+                    ):
+                        raise ValueError("Invalid artifact chunk")
+                    output.write(raw)
+            except ValueError:
+                output.seek(0)
+                output.truncate()
+                raise
+            finally:
+                chunks.close()
+            output.flush()
+        if should_stop and should_stop():
+            raise CollectionCancelled("Artifact collection cancelled")
+        if deadline is not None and time.time() >= deadline:
+            raise WorkerTimeout("Artifact collection deadline expired")
+        output.seek(0)
+        digest = hashlib.sha256()
+        for block in iter(lambda: output.read(CHUNK_BYTES), b""):
+            if should_stop and should_stop():
+                raise CollectionCancelled("Artifact collection cancelled")
+            if deadline is not None and time.time() >= deadline:
+                raise WorkerTimeout("Artifact collection deadline expired")
+            digest.update(block)
+        if should_stop and should_stop():
+            raise CollectionCancelled("Artifact collection cancelled")
+        if deadline is not None and time.time() >= deadline:
+            raise WorkerTimeout("Artifact collection deadline expired")
+        if digest.hexdigest() != metadata["sha256"]:
+            # Clear corrupt bytes under the held lock without unlinking another opener's file.
+            output.seek(0)
+            output.truncate()
             raise ValueError("Retrieved artifact SHA256 mismatch")
+        if destination.is_symlink():
+            raise ValueError("Artifact destination is linked")
+        try:
+            current = temporary.lstat()
+        except FileNotFoundError as error:
+            raise WorkerUnavailable("Artifact partial moved before publication") from error
+        if (current.st_dev, current.st_ino) != (info.st_dev, info.st_ino) or current.st_nlink != 1:
+            raise WorkerUnavailable("Artifact partial changed before publication")
         temporary.replace(destination)
-    finally:
-        temporary.unlink(missing_ok=True)
 
 
 def import_result(service, record, transport, remote):
@@ -820,7 +1076,17 @@ def import_result(service, record, transport, remote):
         raise ValueError("Imported artifacts exceed the coordinator storage reservation")
     for name in sorted(selected):
         if name in artifacts:
-            download(transport, remote["id"], name, artifacts[name], contained(workspace, name))
+            download(
+                transport,
+                remote["id"],
+                name,
+                artifacts[name],
+                contained(workspace, name),
+                deadline=service.manifest["deadline"],
+                should_stop=lambda: service._read("experiments", record["id"]).get(
+                    "collection_cancel_requested", False
+                ),
+            )
             transferred[name] = artifacts[name]
     result = {
         key: remote[key]
@@ -847,6 +1113,9 @@ def import_result(service, record, transport, remote):
         remote_artifacts=artifacts,
         remote_job=remote["id"],
         transport_status="connected",
+        transport_error=None,
+        collection_deferred=False,
+        collection_cancel_requested=False,
     )
     return save_progress(service, record, **result)
 
@@ -886,9 +1155,15 @@ def dispatch(service, record):
     spec = _specification(service, record)
     workspace = service.root / "experiments" / record["id"] / "workspace"
     job = spec["id"]
+    terminal_seen = False
     while True:
         current = service._read("experiments", record["id"])
         if current["status"] in TERMINAL:
+            return
+        if current.get("collection_cancel_requested"):
+            save_progress(
+                service, record, collection_deferred=True, transport_status="collection_cancelled"
+            )
             return
         # A restored key/password/control socket can recover an existing job.
         transport = MachineRegistry(pool["registry"]).transport(
@@ -901,6 +1176,8 @@ def dispatch(service, record):
                     save_progress(service, record, status="timed_out", finished_at=time.time())
                     return
                 state = transport.call("create", specification=spec)
+            if state.get("id") != job:
+                raise ValueError("Worker returned a different job identity")
             if state.get("request_sha256") and state["request_sha256"] != fingerprint(spec):
                 raise ValueError("Worker job receipt binds a different experiment request")
             if current.get("cancel_requested") and state["status"] in ACTIVE:
@@ -913,6 +1190,18 @@ def dispatch(service, record):
             if time.time() >= service.manifest["deadline"] and state["status"] in ACTIVE:
                 state = transport.call("cancel", identifier=job, reason="deadline")
             if state["status"] in TERMINAL:
+                if state.get("id") != job or (
+                    state.get("request_sha256") and state["request_sha256"] != fingerprint(spec)
+                ):
+                    raise ValueError("Terminal receipt binds a different experiment request")
+                terminal_seen = True
+                save_progress(
+                    service,
+                    record,
+                    remote_job=job,
+                    remote_terminal_status=state["status"],
+                    remote_artifacts=state.get("artifacts", {}),
+                )
                 import_result(service, record, transport, state)
                 return
             save_progress(
@@ -931,10 +1220,27 @@ def dispatch(service, record):
                 execution_heartbeat=state.get("execution_heartbeat"),
             )
         except WorkerUnavailable as error:
+            if isinstance(error, CollectionCancelled):
+                save_progress(
+                    service,
+                    record,
+                    collection_deferred=True,
+                    transport_status="collection_cancelled",
+                    transport_error=str(error),
+                )
+                return
             save_progress(
                 service, record, transport_status="unreachable", transport_error=str(error)
             )
             if time.time() >= service.manifest["deadline"]:
+                if terminal_seen or current.get("remote_terminal_status"):
+                    save_progress(
+                        service,
+                        record,
+                        collection_deferred=True,
+                        transport_status="collection_deferred",
+                    )
+                    return
                 # Worker enforces the same absolute deadline; do not claim a confirmed stop.
                 save_progress(
                     service,
@@ -948,12 +1254,35 @@ def dispatch(service, record):
 
 
 def cancel_remote(service, record):
+    # A terminal worker is already stopped; never turn an incomplete import into
+    # a completed coordinator receipt merely because cancel returns that state.
+    if record.get("remote_terminal_status"):
+        return save_progress(service, record, collection_cancel_requested=True)
     pool = service.manifest["execution_pool"]
     try:
         transport = MachineRegistry(pool["registry"]).transport(
             record["machine"], frozen=pool["workers"][record["machine"]]
         )
-        state = transport.call("cancel", identifier=job_identifier(service, record))
+        job = job_identifier(service, record)
+        state = transport.call("cancel", identifier=job)
+        if state.get("id") != job:
+            raise ValueError("Worker returned a different job identity")
+        if state["status"] == "succeeded":
+            if state.get("request_sha256") and state["request_sha256"] != fingerprint(
+                _specification(service, record)
+            ):
+                raise ValueError("Terminal receipt binds a different experiment request")
+            # Completion raced with cancellation; the dispatcher must still import it.
+            return save_progress(
+                service,
+                record,
+                remote_job=job,
+                remote_terminal_status="succeeded",
+                remote_artifacts=state.get("artifacts", {}),
+                collection_cancel_requested=True,
+                cancel_requested=True,
+                cancellation_confirmed=True,
+            )
         return save_progress(
             service,
             record,
