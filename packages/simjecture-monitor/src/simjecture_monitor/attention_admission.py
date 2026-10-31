@@ -36,10 +36,6 @@ class AdmissionProfile:
             raise ValueError("Admission durations must be positive")
         if self.minimum_confirmations < 2:
             raise ValueError("This reference profile requires at least two distinct snapshots")
-        if (self.minimum_confirmations - 1) * self.maximum_gap_ms < self.persistence_ms:
-            raise ValueError(
-                "Confirmation gap is too small to reach persistence within minimum_confirmations"
-            )
 
 
 class AdmissionGate:
