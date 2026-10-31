@@ -451,15 +451,26 @@ def deployment_report(path, *, check=False, timeout_seconds=120):
                     if hashlib.sha256(raw).hexdigest() != item.sha256:
                         raise ValueError("Attention configuration changed during inspection")
                     config = AttentionConfig.model_validate_json(raw)
+                    liveness = config.verify_liveness()
                     value = AttentionClient(config).health()
                     if value.get("ready") is not True:
                         raise ValueError("Attention service is not ready")
                     add(
                         "attention",
                         "passed",
-                        "Service health and pinned model identity verified",
+                        "Service health, pinned model identity, and cadence liveness verified",
                         required=manifest.attention.required,
-                        observed={"ready": value["ready"], "policy": value["policy"]},
+                        observed={
+                            "ready": value["ready"],
+                            "policy": value["policy"],
+                            "mode": config.mode,
+                            "poll_seconds": config.poll_seconds,
+                            "maximum_gap_ms": liveness["maximum_gap_ms"],
+                            "confirmations_required": liveness["confirmations_required"],
+                            "budget_horizon_seconds": liveness["budget_horizon_seconds"],
+                            "covers_study_wall": liveness["budget_horizon_seconds"]
+                            >= manifest.study.wall_seconds,
+                        },
                     )
                 except Exception as error:
                     add(

@@ -56,9 +56,11 @@ def run(args):
     else:
         if args.config is None:
             raise ValueError("Specify --config for the separately managed attention service")
-        client = AttentionClient(AttentionConfig.read(args.config))
+        config = AttentionConfig.read(args.config)
+        client = AttentionClient(config)
         if args.operation == "check":
-            value = client.health()
+            liveness = config.verify_liveness()
+            value = client.health() | {"admission_liveness": liveness}
         else:
             if args.observation is None:
                 raise ValueError("Specify --observation with a scientific-attention packet")

@@ -387,6 +387,12 @@ def test_attention_checks_identity_without_scoring_or_leaking_token(tmp_path, mo
     monkeypatch.setattr(AttentionClient, "score", lambda *a: pytest.fail("No model inference"))
     report = deployment.deployment_report(path, check=True)
     assert report.status == "ready" and calls == ["health"]
+    observed = items(report)["attention"].observed
+    assert observed["poll_seconds"] == 5.0
+    assert observed["maximum_gap_ms"] == 10000
+    assert observed["confirmations_required"] == 2
+    assert observed["budget_horizon_seconds"] == 3600.0
+    assert observed["covers_study_wall"] is False
     assert "secret-fixture" not in report.model_dump_json()
     assert any("warm-up" in limitation for limitation in report.unchecked)
 

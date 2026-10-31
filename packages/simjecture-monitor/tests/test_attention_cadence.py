@@ -221,3 +221,52 @@ def test_legacy_state_adds_profile_without_rewriting_old_decision(tmp_path, monk
     assert new_decision["admission_profile"]["maximum_gap_ms"] == 75000
     assert decision_path.read_bytes() == old_bytes
     restored.close()
+
+
+@pytest.mark.parametrize("poll", [1.0, 5.0, 60.0, 300.0])
+def test_preflight_liveness_and_funnel_counters(tmp_path, monkeypatch, poll):
+    from simjecture_monitor import attention_support as protocol
+    from simjecture_monitor.attention_admission import AdmissionProfile
+
+    cfg = config("alerts", poll_seconds=poll, maximum_requests=3000)
+    liveness = cfg.verify_liveness()
+    assert liveness["maximum_gap_ms"] > poll * 1000
+    assert liveness["budget_horizon_seconds"] == 3000 * poll
+    short_gap = AdmissionProfile(minimum_confirmations=2, persistence_ms=5000, maximum_gap_ms=4000)
+    assert config("alerts", poll_seconds=3.0).verify_liveness(profile=short_gap) == dict(
+        confirmations_required=3,
+        confirmation_span_ms=6000,
+        maximum_gap_ms=4000,
+        maximum_age_ms=15000,
+        budget_horizon_seconds=2160.0,
+    )
+    gate = protocol.AdmissionGate(short_gap)
+    outcomes = []
+    for index, seconds in enumerate((1000, 1003, 1006), start=1):
+        obs = packet(seconds, index)
+        response = result(obs)
+        outcomes.append(
+            gate.evaluate(
+                obs,
+                protocol.PackedView.model_validate(response["view"]),
+                protocol.Decision.model_validate(response["decision"]),
+                obs,
+                now_ms=obs.captured_ms,
+            )["disposition"]
+        )
+    assert outcomes == ["pending", "pending", "admitted"]
+    if poll >= 60.0:
+        with pytest.raises(ValueError, match="confirmation gap must exceed"):
+            cfg.verify_liveness(profile=AdmissionProfile())
+
+    value, clock, observe = observer(tmp_path, "alerts", monkeypatch, poll_seconds=60.0)
+    calls = []
+    for at in (1000, 1001, 1060, 1061):
+        tick_at(value, clock, observe, calls, at)
+    state = json.loads((tmp_path / "state.json").read_text())
+    assert state["admission_reasons"] == {
+        "awaiting_persistence": 1,
+        "fresh_grounded_persistent_request": 1,
+    }
+    assert state["host_dispositions"] == {"dispatched": 1}
+    value.close()

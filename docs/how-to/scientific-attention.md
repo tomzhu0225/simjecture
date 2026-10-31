@@ -59,7 +59,10 @@ the reference 10-second gap. A missed poll at either longer cadence resets the
 confirmation sequence. Each response still has a separate 15-second freshness
 limit; increasing the polling interval does not make stale responses acceptable.
 The effective admission profile is recorded in observer state and each new
-decision record. Older records without that field retain their original provenance.
+decision record, and `state.json` tracks cumulative `admission_reasons` and
+`host_dispositions` funnel counts so operators can verify early in a campaign
+that observations progress rather than stalling in `awaiting_persistence`. Older
+records without those fields retain their original provenance.
 
 The host checks freshness, packet/evidence binding, persistence, current help,
 incident duplication and the explicit attempt allowance. An admitted help or
