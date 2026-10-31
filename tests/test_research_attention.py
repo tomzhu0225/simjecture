@@ -144,6 +144,81 @@ def test_attention_dispatch_uses_existing_director_and_respects_host_boundaries(
     observer.close()
 
 
+def test_long_poll_confirmations_reach_the_background_director(tmp_path, monkeypatch):
+    import time
+    from concurrent.futures import Future
+
+    from simjecture_monitor import attention_support as protocol
+
+    from conjecture_solver.agent_supervisor import AgentSupervisor
+    from tests.test_research_director import supervisor
+
+    clock = [1000.0]
+    monkeypatch.setattr(time, "time", lambda: clock[0])
+    monkeypatch.setattr(time, "monotonic", lambda: clock[0])
+    sup = supervisor(tmp_path)
+    sup.args.attention_config = tmp_path / "attention.json"
+    sup.args.attention_config.write_text(json.dumps(dict(
+        mode="alerts", socket="/private/model.sock", auth_token_file="/private/token",
+        poll_seconds=60.0,
+    )))
+    attention = research_attention.configure(sup)
+
+    class Immediate:
+        def submit(self, function, *args):
+            future = Future()
+            future.set_result(function(*args))
+            return future
+
+        def shutdown(self, **kwargs):
+            pass
+
+    class Client:
+        def score(self, observation):
+            view = protocol.pack(
+                observation, len, token_counter_id="fixture", budget_tokens=1000000
+            )
+            choice = protocol.Choice(
+                action="wake_director", support_kind="none", question_ref=None,
+                basis="measurement", evidence=[next(iter(view.aliases))],
+            )
+            return dict(
+                view=view.model_dump(),
+                decision=protocol.bind_choice(
+                    observation, view, choice, policy_id="fixture"
+                ).model_dump(),
+            )
+
+    launched = []
+
+    def launch(runner, directory, prompt, **kwargs):
+        launched.append((directory, kwargs))
+        return 0
+
+    monkeypatch.setattr(AgentSupervisor, "launch", launch)
+    attention.observer.executor.shutdown()
+    attention.observer.executor = Immediate()
+    attention.observer.client = Client()
+    try:
+        for at in (1000, 1001, 1060, 1061):
+            clock[0] = at
+            attention.observer.tick(attention.observe, attention.dispatch)
+        pending = sup._director_pending
+        assert pending is not None
+        assert pending["future"].result(timeout=5) == 0
+        assert len(launched) == 1
+        assert launched[0][1] == {"judge": True, "director": True}
+        assert sup.state["director_count"] == 1
+        assert pending["packet"]["attention_request"] == sup.state["attention_notice"]
+        assert attention.observer.state["attempts"][0]["status"] == "dispatched"
+        assert attention.observer.state["requests"] == 2
+        assert sup.service._all("reviews") == []
+    finally:
+        attention.close()
+        if hasattr(sup, "_director_executor"):
+            sup._director_executor.shutdown(wait=True)
+
+
 def test_experiment_evidence_compacts_artifacts_and_ignores_heartbeat_churn(tmp_path):
     from conjecture_solver.research_service import put
 
