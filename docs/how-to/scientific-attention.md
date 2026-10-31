@@ -50,6 +50,17 @@ command already enables the director. Configurations are immutable on resume;
 changing a config file cannot silently turn a shadow study into an alert study.
 Request counts, attempt reservations and cooldowns persist across restarts.
 
+Persistence requires at least two distinct, fresh observations supporting the same
+request. The observer allows a confirmation gap matching `poll_seconds`, plus
+scheduling slack of half a polling interval capped at 15 seconds, with a minimum
+gap allowance of 10 seconds. Thus a 60-second cadence allows a 75-second gap,
+and a 300-second cadence allows 315 seconds. The default five-second cadence keeps
+the reference 10-second gap. A missed poll at either longer cadence resets the
+confirmation sequence. Each response still has a separate 15-second freshness
+limit; increasing the polling interval does not make stale responses acceptable.
+The effective admission profile is recorded in observer state and each new
+decision record. Older records without that field retain their original provenance.
+
 The host checks freshness, packet/evidence binding, persistence, current help,
 incident duplication and the explicit attempt allowance. An admitted help or
 director proposal can request the existing director, which decides whether to
@@ -57,6 +68,10 @@ help, launch temporary workers or continue normally. The model does not directly
 interrupt the main worker, change scientific requirements, stop a solver,
 approve a claim or grant code-repair authority. Repair-judge and knowledge-support
 proposals are logged as unsupported host actions in this first integration.
+
+Successful inference alone does not establish useful assistance. Check admitted
+proposals, durable host dispatch attempts, and the resulting director decisions
+separately before attributing an intervention or improvement to the coprocessor.
 
 The generic study adapter reads bounded public worker messages/tool results,
 progress records and experiment metadata. Private reasoning and numerical arrays

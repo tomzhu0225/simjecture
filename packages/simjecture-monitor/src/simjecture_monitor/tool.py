@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import time
 from concurrent.futures import ThreadPoolExecutor
+from dataclasses import asdict, replace
 from pathlib import Path
 from typing import Literal
 
@@ -13,6 +15,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from . import attention_support as protocol
 from .action_distribution import CONTRACT, INDEPENDENT
+from .attention_admission import AdmissionProfile
 from .events import put
 from .server import request
 
@@ -156,7 +159,19 @@ class AttentionObserver:
         if previous != config.model_dump():
             raise ValueError("Attention configuration is immutable within a study")
         self.client = client or AttentionClient(config)
-        self.gate = protocol.AdmissionGate()
+        # The reference profile assumes short polling. Longer configured polls
+        # must allow a fresh second observation to confirm the same request.
+        # Bound scheduling slack below a whole extra poll and leave response
+        # freshness, grounding and all other admission rules unchanged.
+        reference = AdmissionProfile()
+        poll_ms = math.ceil(config.poll_seconds * 1000)
+        maximum_gap_ms = max(
+            reference.maximum_gap_ms,
+            poll_ms + min(poll_ms // 2, reference.maximum_age_ms),
+        )
+        self.admission_profile = replace(reference, maximum_gap_ms=maximum_gap_ms)
+        self.state["admission_profile"] = asdict(self.admission_profile)
+        self.gate = protocol.AdmissionGate(self.admission_profile)
         self.gate.dispatched.update(
             tuple(row["scope"]) for row in self.state["attempts"] if row["status"] == "dispatched"
         )
@@ -178,7 +193,12 @@ class AttentionObserver:
             if not future.done():
                 return
             self.pending = None
-            record = dict(submitted=submitted.model_dump(), mode=self.config.mode, at=now)
+            record = dict(
+                submitted=submitted.model_dump(),
+                mode=self.config.mode,
+                at=now,
+                admission_profile=asdict(self.admission_profile),
+            )
             try:
                 result = future.result()
                 current = protocol.Observation.model_validate(observe())

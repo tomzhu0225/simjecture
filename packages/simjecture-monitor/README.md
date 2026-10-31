@@ -34,6 +34,13 @@ never silently repeats an uncertain action. Every response/error and actual
 host dispatch is logged separately. Service failure leaves ordinary supervision,
 worker help and scientific review in place.
 
+The host confirmation gap follows the configured polling cadence: 60-second
+polling permits a 75-second gap between confirming observations. Response
+freshness remains 15 seconds, and default five-second polling retains the
+reference 10-second confirmation gap. Effective profiles are recorded with
+decisions. Inference success, admitted proposals, actual host actions and useful
+outcomes are separate measurements.
+
 The first normal-study adapter reads bounded public workflow metadata and public
 worker events. It does not read private reasoning or infer progress from silence
 when timing is unknown. Domain-specific measurements need an instrument producer
