@@ -53,6 +53,94 @@ class AttentionConfig(BaseModel):
     def read(cls, path):
         return cls.model_validate_json(Path(path).read_text())
 
+    def admission_profile(self) -> AdmissionProfile:
+        # The reference profile assumes short polling. Longer configured polls
+        # must allow a fresh second observation to confirm the same request.
+        # Bound scheduling slack below a whole extra poll and leave response
+        # freshness, grounding and all other admission rules unchanged.
+        reference = AdmissionProfile()
+        poll_ms = math.ceil(self.poll_seconds * 1000)
+        maximum_gap_ms = max(
+            reference.maximum_gap_ms,
+            poll_ms + min(poll_ms // 2, reference.maximum_age_ms),
+        )
+        return replace(reference, maximum_gap_ms=maximum_gap_ms)
+
+    def verify_liveness(self, *, profile: AdmissionProfile | None = None) -> dict:
+        profile = profile or self.admission_profile()
+        poll_ms = math.ceil(self.poll_seconds * 1000)
+        if profile.maximum_gap_ms <= poll_ms:
+            raise ValueError("Admission confirmation gap must exceed the polling interval")
+        steps = max(
+            profile.minimum_confirmations,
+            math.ceil(profile.persistence_ms / poll_ms) + 1,
+        )
+        gate = protocol.AdmissionGate(profile)
+        content = "Synthetic pre-flight confirmation probe."
+        digest = hashlib.sha256(content.encode()).hexdigest()
+        last = None
+        for index in range(steps):
+            at_ms = 100_000 + index * poll_ms
+            packet = protocol.Observation(
+                schema_version=protocol.VERSION,
+                packet_id=f"preflight-{index + 1}",
+                subject_id="preflight-worker",
+                operation_id="preflight-operation",
+                incident_id="preflight-incident",
+                clock_id="preflight-clock",
+                captured_ms=at_ms,
+                sequence=index + 1,
+                state_revision=1,
+                task="Verify cadence confirmation liveness.",
+                phase="diagnostic",
+                scientific_contract=["Confirm two fresh grounded observations."],
+                worker_state="parked",
+                workflow_state="running",
+                assistance="none",
+                timing=dict(
+                    phase_elapsed_ms=40_000,
+                    progress_age_ms=35_000,
+                    heartbeat_age_ms=100,
+                    quiet_state="none",
+                ),
+                evidence=[
+                    dict(
+                        id="preflight-evidence",
+                        source="preflight-source",
+                        source_role="diagnostic_log",
+                        source_sha256=digest,
+                        kind="progress",
+                        age_ms=35_000,
+                        origin="instrument",
+                        content=content,
+                    )
+                ],
+                questions=[],
+                retrieval_history=[],
+                retrieval_history_complete=True,
+            )
+            view = protocol.pack(
+                packet, len, token_counter_id="preflight:characters", budget_tokens=100_000
+            )
+            choice = protocol.Choice(
+                action="wake_director",
+                support_kind="none",
+                question_ref=None,
+                basis="measurement",
+                evidence=[next(iter(view.aliases))],
+            )
+            decision = protocol.bind_choice(packet, view, choice, policy_id=self.policy)
+            last = gate.evaluate(packet, view, decision, packet, now_ms=at_ms)
+        if not last or last.get("disposition") != "admitted":
+            raise ValueError("Admission gate cannot confirm at the configured polling interval")
+        return dict(
+            confirmations_required=steps,
+            confirmation_span_ms=(steps - 1) * poll_ms,
+            maximum_gap_ms=profile.maximum_gap_ms,
+            maximum_age_ms=profile.maximum_age_ms,
+            budget_horizon_seconds=self.maximum_requests * self.poll_seconds,
+        )
+
 
 class AttentionClient:
     def __init__(self, config):
@@ -159,17 +247,8 @@ class AttentionObserver:
         if previous != config.model_dump():
             raise ValueError("Attention configuration is immutable within a study")
         self.client = client or AttentionClient(config)
-        # The reference profile assumes short polling. Longer configured polls
-        # must allow a fresh second observation to confirm the same request.
-        # Bound scheduling slack below a whole extra poll and leave response
-        # freshness, grounding and all other admission rules unchanged.
-        reference = AdmissionProfile()
-        poll_ms = math.ceil(config.poll_seconds * 1000)
-        maximum_gap_ms = max(
-            reference.maximum_gap_ms,
-            poll_ms + min(poll_ms // 2, reference.maximum_age_ms),
-        )
-        self.admission_profile = replace(reference, maximum_gap_ms=maximum_gap_ms)
+        self.admission_profile = config.admission_profile()
+        config.verify_liveness(profile=self.admission_profile)
         self.state["admission_profile"] = asdict(self.admission_profile)
         self.gate = protocol.AdmissionGate(self.admission_profile)
         self.gate.dispatched.update(
@@ -207,6 +286,9 @@ class AttentionObserver:
                 admission = self.gate.evaluate(
                     submitted, view, decision, current, now_ms=current.captured_ms
                 )
+                if reason := admission.get("reason"):
+                    reasons = self.state.setdefault("admission_reasons", {})
+                    reasons[reason] = reasons.get(reason, 0) + 1
                 record.update(
                     result=result,
                     current=current.model_dump(),
@@ -239,6 +321,9 @@ class AttentionObserver:
                             self.gate.record_dispatch(submitted)
                         attempt["status"] = "dispatched" if started else "host_declined"
                         record.update(dispatched=started, host_disposition=attempt["status"])
+                    dispositions = self.state.setdefault("host_dispositions", {})
+                    disposition = record["host_disposition"]
+                    dispositions[disposition] = dispositions.get(disposition, 0) + 1
             except Exception as error:
                 # Endpoint errors must never become synthetic observe decisions;
                 # persist the type without copying credentials from remote text.

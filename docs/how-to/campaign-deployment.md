@@ -146,11 +146,14 @@ report. A failed configuration hash prevents contacting the service. With
 `required: false`, a service outage is reported but does not block other required
 checks; the configuration file itself still needs its declared identity.
 
-Health verifies the resident policy and pinned model identity. It does **not**
-score a warm-up request, check the compute lease, supervise forwarding, or prove
-recovery. Those remain explicit steps in the [attention guide](scientific-attention.md).
-Likewise, solver execution, convergence and scientific claim review remain
-separate from deployment readiness.
+Health verifies the resident policy, pinned model identity, and synthetic
+confirmation liveness at the configured `poll_seconds` cadence, recording
+`maximum_gap_ms`, `confirmations_required`, `budget_horizon_seconds`, and
+`covers_study_wall` in the observed check details. It does **not** score a
+warm-up request against the model service, check the compute lease, supervise
+forwarding, or prove recovery. Those remain explicit steps in the
+[attention guide](scientific-attention.md). Likewise, solver execution,
+convergence and scientific claim review remain separate from deployment readiness.
 
 ## Scope of this first version
 
