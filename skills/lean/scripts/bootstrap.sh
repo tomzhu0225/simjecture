@@ -49,7 +49,7 @@ fi
   echo 'Unexpected Mathlib revision; inspect the runtime before retrying.' >&2; exit 2;
 }
 export PATH="$prefix/toolchain/bin:$PATH"
-(cd "$prefix/mathlib" && lake exe cache get Mathlib/Algebra/BigOperators/Group/Finset/Basic.lean Mathlib/Data/Real/Basic.lean Mathlib/Tactic/Ring.lean Mathlib/Tactic/NormNum.lean Mathlib/Tactic/FieldSimp.lean Mathlib/Data/Rat/Cast/Order.lean Mathlib/Data/Real/Sqrt.lean Mathlib/Algebra/BigOperators/Fin.lean Mathlib/Data/Finset/Card.lean Mathlib/Data/Fintype/Card.lean)
+(cd "$prefix/mathlib" && lake exe cache get Mathlib/Algebra/BigOperators/Group/Finset/Basic.lean Mathlib/Data/Real/Basic.lean Mathlib/Tactic/Ring.lean Mathlib/Tactic/NormNum.lean Mathlib/Tactic/FieldSimp.lean Mathlib/Data/Rat/Cast/Order.lean Mathlib/Data/Real/Sqrt.lean Mathlib/Algebra/BigOperators/Fin.lean Mathlib/Data/Finset/Card.lean Mathlib/Data/Fintype/Card.lean Mathlib/Algebra/Order/BigOperators/Group/Finset.lean Mathlib/Algebra/BigOperators/Ring/Finset.lean Mathlib/Analysis/SpecialFunctions/Trigonometric/Deriv.lean Mathlib/Tactic/Linarith.lean)
 cp "$project_root/src/conjecture_solver/lean_check.py" "$prefix/share/lean_check.py"
 cp --remove-destination "$(readlink -f "$(command -v python3)")" "$prefix/bin/python"
 chmod +x "$prefix/bin/python"

@@ -1,0 +1,247 @@
+{
+  "ContactReference.lean": {
+    "schema_version": "0.1.0",
+    "status": "proved",
+    "checked": true,
+    "source_sha256": "c689dd2619c171b5a62a04edfbc7ab638cc18a4139bf3eefb084c66d2869e9e0",
+    "theorems": [
+      "ContactReference.contact_pressure",
+      "ContactReference.contact_velocity",
+      "ContactReference.transported_contact_residual",
+      "ContactReference.sinusoidal_transport_jet",
+      "ContactReference.density_controls_components"
+    ],
+    "allowed_axioms": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "axioms": {
+      "ContactReference.contact_pressure": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "ContactReference.contact_velocity": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "ContactReference.transported_contact_residual": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "ContactReference.sinusoidal_transport_jet": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "ContactReference.density_controls_components": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    "timeout_seconds": 90,
+    "memory_mb": 2048,
+    "threads": 1,
+    "scope": "Named Lean propositions only; no implementation or PDE convergence claim.",
+    "execution_boundary": "Use the Simjecture capability sandbox for untrusted source.",
+    "runtime": {
+      "lean_version": "Lean (version 4.24.0, x86_64-unknown-linux-gnu, commit 797c613eb9b6d4ec95db23e3e00af9ac6657f24b, Release)",
+      "lean_archive_sha256": "b14f5e5159219dd1a1956c3b806813319f5e94ccd5bdfd56f54520609a5bb5ec",
+      "mathlib_revision": "f897ebcf72cd16f89ab4577d0c826cd14afaafc7",
+      "mathlib_manifest_sha256": "d1208145605d20579ecc91977126e7647e0216a3f7b7d2b9a55d33d040bcd0b8",
+      "scope": "Lean/Mathlib theorem checking; no solver qualification"
+    },
+    "runtime_record_sha256": "f5eea0937279c73445a042c9e000a5c53a29b301c557367938940c88d35e3cb6",
+    "lean_version": "Lean (version 4.24.0, x86_64-unknown-linux-gnu, commit 797c613eb9b6d4ec95db23e3e00af9ac6657f24b, Release)",
+    "commands": [
+      [
+        "/opt/acs-capabilities/lean-4.24.0/toolchain/bin/lean",
+        "-j1",
+        "-M2048",
+        "-T200000",
+        "-DwarningAsError=true",
+        "-o",
+        "Candidate.olean",
+        "Candidate.lean"
+      ],
+      [
+        "/opt/acs-capabilities/lean-4.24.0/toolchain/bin/lean",
+        "-j1",
+        "-M2048",
+        "-T200000",
+        "-DwarningAsError=true",
+        "Audit.lean"
+      ]
+    ],
+    "compile_returncode": 0,
+    "audit_returncode": 0,
+    "wall_seconds": 2.312051082997641,
+    "artifact_sha256": {
+      "Audit.lean": "284b8e1caf43b6a2a936d5342ade8740734b8883ccaec70d360f3416d3f632ed",
+      "Candidate.lean": "c689dd2619c171b5a62a04edfbc7ab638cc18a4139bf3eefb084c66d2869e9e0",
+      "Candidate.olean": "18eb2d724d5ab8eb54ea61c7bbaff719936cf3e5701397b3c377c952c6f987d6",
+      "audit.log": "dcc54423c4cff87ea588350dcc79cdbd4979f3f3d78b05674fd3876856edbd70",
+      "compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "WaveDerivative.lean": {
+    "schema_version": "0.1.0",
+    "status": "proved",
+    "checked": true,
+    "source_sha256": "4c6a1514faa4b9d9dddbf66b976bfc3b71bb52d2d23215fa9fb33bafdb4a7fec",
+    "theorems": [
+      "WaveDerivative.wave_derivative",
+      "WaveDerivative.phase_transport"
+    ],
+    "allowed_axioms": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "axioms": {
+      "WaveDerivative.wave_derivative": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "WaveDerivative.phase_transport": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    "timeout_seconds": 90,
+    "memory_mb": 2048,
+    "threads": 1,
+    "scope": "Named Lean propositions only; no implementation or PDE convergence claim.",
+    "execution_boundary": "Use the Simjecture capability sandbox for untrusted source.",
+    "runtime": {
+      "lean_version": "Lean (version 4.24.0, x86_64-unknown-linux-gnu, commit 797c613eb9b6d4ec95db23e3e00af9ac6657f24b, Release)",
+      "lean_archive_sha256": "b14f5e5159219dd1a1956c3b806813319f5e94ccd5bdfd56f54520609a5bb5ec",
+      "mathlib_revision": "f897ebcf72cd16f89ab4577d0c826cd14afaafc7",
+      "mathlib_manifest_sha256": "d1208145605d20579ecc91977126e7647e0216a3f7b7d2b9a55d33d040bcd0b8",
+      "scope": "Lean/Mathlib theorem checking; no solver qualification"
+    },
+    "runtime_record_sha256": "f5eea0937279c73445a042c9e000a5c53a29b301c557367938940c88d35e3cb6",
+    "lean_version": "Lean (version 4.24.0, x86_64-unknown-linux-gnu, commit 797c613eb9b6d4ec95db23e3e00af9ac6657f24b, Release)",
+    "commands": [
+      [
+        "/opt/acs-capabilities/lean-4.24.0/toolchain/bin/lean",
+        "-j1",
+        "-M2048",
+        "-T200000",
+        "-DwarningAsError=true",
+        "-o",
+        "Candidate.olean",
+        "Candidate.lean"
+      ],
+      [
+        "/opt/acs-capabilities/lean-4.24.0/toolchain/bin/lean",
+        "-j1",
+        "-M2048",
+        "-T200000",
+        "-DwarningAsError=true",
+        "Audit.lean"
+      ]
+    ],
+    "compile_returncode": 0,
+    "audit_returncode": 0,
+    "wall_seconds": 2.8610792059989762,
+    "artifact_sha256": {
+      "Audit.lean": "8cc96b7418ab250ef0e2f236f6c277bd18b6b81013ddf5bec51343b1314b0479",
+      "Candidate.lean": "4c6a1514faa4b9d9dddbf66b976bfc3b71bb52d2d23215fa9fb33bafdb4a7fec",
+      "Candidate.olean": "34552eaa5118bf6782a5961da18da02e23d20fd0317ba799ed99b79a79d753b3",
+      "audit.log": "61be3c3432bca6dbd05c88b0945a095e43c0a9be9aa74ee20fb518b253928ffd",
+      "compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "ErrorWork.lean": {
+    "schema_version": "0.1.0",
+    "status": "proved",
+    "checked": true,
+    "source_sha256": "aaf92e89bb1436604c44b8f20898ffbd2648e0fd445c16d985cef93863c7b695",
+    "theorems": [
+      "ErrorWork.stencil_nonexpansive",
+      "ErrorWork.accumulate_error",
+      "ErrorWork.first_order_budget",
+      "ErrorWork.total_work_bound",
+      "ErrorWork.smallest_certified_grid_minimizes_work"
+    ],
+    "allowed_axioms": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "axioms": {
+      "ErrorWork.stencil_nonexpansive": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+      ],
+      "ErrorWork.accumulate_error": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "ErrorWork.first_order_budget": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "ErrorWork.total_work_bound": [
+        "propext"
+      ],
+      "ErrorWork.smallest_certified_grid_minimizes_work": [
+        "propext"
+      ]
+    },
+    "timeout_seconds": 90,
+    "memory_mb": 2048,
+    "threads": 1,
+    "scope": "Named Lean propositions only; no implementation or PDE convergence claim.",
+    "execution_boundary": "Use the Simjecture capability sandbox for untrusted source.",
+    "runtime": {
+      "lean_version": "Lean (version 4.24.0, x86_64-unknown-linux-gnu, commit 797c613eb9b6d4ec95db23e3e00af9ac6657f24b, Release)",
+      "lean_archive_sha256": "b14f5e5159219dd1a1956c3b806813319f5e94ccd5bdfd56f54520609a5bb5ec",
+      "mathlib_revision": "f897ebcf72cd16f89ab4577d0c826cd14afaafc7",
+      "mathlib_manifest_sha256": "d1208145605d20579ecc91977126e7647e0216a3f7b7d2b9a55d33d040bcd0b8",
+      "scope": "Lean/Mathlib theorem checking; no solver qualification"
+    },
+    "runtime_record_sha256": "f5eea0937279c73445a042c9e000a5c53a29b301c557367938940c88d35e3cb6",
+    "lean_version": "Lean (version 4.24.0, x86_64-unknown-linux-gnu, commit 797c613eb9b6d4ec95db23e3e00af9ac6657f24b, Release)",
+    "commands": [
+      [
+        "/opt/acs-capabilities/lean-4.24.0/toolchain/bin/lean",
+        "-j1",
+        "-M2048",
+        "-T200000",
+        "-DwarningAsError=true",
+        "-o",
+        "Candidate.olean",
+        "Candidate.lean"
+      ],
+      [
+        "/opt/acs-capabilities/lean-4.24.0/toolchain/bin/lean",
+        "-j1",
+        "-M2048",
+        "-T200000",
+        "-DwarningAsError=true",
+        "Audit.lean"
+      ]
+    ],
+    "compile_returncode": 0,
+    "audit_returncode": 0,
+    "wall_seconds": 2.4104494259954663,
+    "artifact_sha256": {
+      "Audit.lean": "68f806db07fe13baf51ff121c94829939d956b3e70192fcfe9086bda7a7a140f",
+      "Candidate.lean": "aaf92e89bb1436604c44b8f20898ffbd2648e0fd445c16d985cef93863c7b695",
+      "Candidate.olean": "f28c23b63523813703f295674d566a5529fabe0a1c1342cb3b4de1bac99b872c",
+      "audit.log": "dc10c5e903dd67d36d2e4aceb78f0c4ae1daca6a48b01ba5ac59ef87f6a0f3d4",
+      "compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

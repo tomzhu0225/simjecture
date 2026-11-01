@@ -48,3 +48,9 @@ and a local benchmark. It is retained as a baseline for the 3D Euler work.
 The next [3D Euler optimization stage](lean_euler/optimization/README.md) records
 a thermodynamic-cache experiment, Lean-checked exact equivalence and a scoped
 caching optimum, with an updated PDF. General solver optimality remains open.
+
+[Stage 3: Euler work at a prescribed error](lean_euler/accuracy/README.md) adds
+full-solve timing, sampled accuracy/work comparisons, an output-representation
+negative control, and a [PDF report](lean_euler/accuracy/report.pdf). Its reference
+and conditional budget lemmas pass Lean; the nonlinear convergence assumptions
+remain unproved.

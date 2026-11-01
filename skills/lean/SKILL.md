@@ -77,3 +77,10 @@ immutable old-state data, a cold cache, mandatory directional preparation, and
 no algebraic bypass or cross-cell sharing. Report the result as caching-schedule
 optimality. The Python call-count checks and hardware speed ratios are separate
 empirical evidence, not a verified floating-point refinement or PDE optimality.
+
+For total work at prescribed solution error, `demos/lean_euler/accuracy` keeps a
+frozen analytic-reference contract and separates cell-average from reconstructed
+field error. Its error/work theorems are conditional: do not treat their accepted
+proof status as evidence that stability or truncation hypotheses hold for a
+nonlinear solver. Count timestep selection, all stages, setup, error analysis,
+and calibration separately; keep the output representation and error norm explicit.

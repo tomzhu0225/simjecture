@@ -66,9 +66,12 @@ The numerical timing ratio is still empirical, and no hardware optimum follows.
    bound and a matching cached schedule. Weighted library-cost optimality excludes
    algebraic bypasses, warm caches and changed numerical methods. NumPy/Lean
    correspondence remains empirical; no floating-point refinement is claimed.
-3. **Time to a prescribed accuracy.** Add manufactured smooth solutions and
-   independently validated shock problems, resolution studies, stronger reference
-   solvers, and accuracy/admissibility gates. Count all steps and preprocessing.
+3. **Time to a prescribed accuracy — empirical ruler implemented.**
+   [Stage 3](../accuracy/README.md) compares 72 complete solves against an analytic
+   transported Euler wave, including a second-order comparator, timestep work,
+   reference/reconstruction audits and conditional Lean error/work lemmas.
+   The nonlinear stability and defect hypotheses are still open; this is not an
+   unconditional PDE error certificate. Smooth nonlinear and shock tests remain.
 4. **Broader algorithm discovery.** Expand flux, reconstruction, and time
    integration choices only after the previous evidence chain is reliable. A
    new class needs a new upper/lower-bound argument. There is no promised date
