@@ -46,5 +46,5 @@ exact discrete solve, a proved 11N+6 work upper bound and N output lower bound,
 and a local benchmark. It is retained as a baseline for the 3D Euler work.
 
 The next [3D Euler optimization stage](lean_euler/optimization/README.md) records
-a same-update thermodynamic-cache experiment and a preliminary PDF. General
-solver optimality remains open.
+a thermodynamic-cache experiment, Lean-checked exact equivalence and a scoped
+caching optimum, with an updated PDF. General solver optimality remains open.

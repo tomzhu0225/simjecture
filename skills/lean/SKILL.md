@@ -70,3 +70,10 @@ charges input reads, arithmetic, branch inspections, and output writes. Exact
 rational arithmetic has unit cost in that model; bit complexity and fastest
 wall time are different questions. Use its report and definitions when extending
 complexity claims, and keep the algorithm class and output representation explicit.
+
+For exact-real 3D Euler cache equivalence and a scoped implementation cost model,
+see `demos/lean_euler/optimization/formal`. Its `Eval/Use/Drop` lower bound assumes
+immutable old-state data, a cold cache, mandatory directional preparation, and
+no algebraic bypass or cross-cell sharing. Report the result as caching-schedule
+optimality. The Python call-count checks and hardware speed ratios are separate
+empirical evidence, not a verified floating-point refinement or PDE optimality.

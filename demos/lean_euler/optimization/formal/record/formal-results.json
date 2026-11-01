@@ -1,0 +1,209 @@
+{
+  "EulerCache.lean": {
+    "schema_version": "0.1.0",
+    "status": "proved",
+    "checked": true,
+    "source_sha256": "16ce51c0893ed0d33c8eece25d51d5c784a0e8ed8c4ebb19d7cce9addff6ee14",
+    "theorems": [
+      "EulerCache.face_consistency",
+      "EulerCache.step_equivalence",
+      "EulerCache.admissible_step_equivalence",
+      "EulerCache.trajectory_equivalence",
+      "EulerCache.cached_conservation"
+    ],
+    "allowed_axioms": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "axioms": {
+      "EulerCache.face_consistency": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "EulerCache.step_equivalence": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "EulerCache.admissible_step_equivalence": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "EulerCache.trajectory_equivalence": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "EulerCache.cached_conservation": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+      ]
+    },
+    "timeout_seconds": 90,
+    "memory_mb": 2048,
+    "threads": 1,
+    "scope": "Named Lean propositions only; no implementation or PDE convergence claim.",
+    "execution_boundary": "Use the Simjecture capability sandbox for untrusted source.",
+    "runtime": {
+      "lean_version": "Lean (version 4.24.0, x86_64-unknown-linux-gnu, commit 797c613eb9b6d4ec95db23e3e00af9ac6657f24b, Release)",
+      "lean_archive_sha256": "b14f5e5159219dd1a1956c3b806813319f5e94ccd5bdfd56f54520609a5bb5ec",
+      "mathlib_revision": "f897ebcf72cd16f89ab4577d0c826cd14afaafc7",
+      "mathlib_manifest_sha256": "d1208145605d20579ecc91977126e7647e0216a3f7b7d2b9a55d33d040bcd0b8",
+      "scope": "Lean/Mathlib theorem checking; no solver qualification"
+    },
+    "runtime_record_sha256": "f5eea0937279c73445a042c9e000a5c53a29b301c557367938940c88d35e3cb6",
+    "lean_version": "Lean (version 4.24.0, x86_64-unknown-linux-gnu, commit 797c613eb9b6d4ec95db23e3e00af9ac6657f24b, Release)",
+    "commands": [
+      [
+        "/opt/acs-capabilities/lean-4.24.0/toolchain/bin/lean",
+        "-j1",
+        "-M2048",
+        "-T200000",
+        "-DwarningAsError=true",
+        "-o",
+        "Candidate.olean",
+        "Candidate.lean"
+      ],
+      [
+        "/opt/acs-capabilities/lean-4.24.0/toolchain/bin/lean",
+        "-j1",
+        "-M2048",
+        "-T200000",
+        "-DwarningAsError=true",
+        "Audit.lean"
+      ]
+    ],
+    "compile_returncode": 0,
+    "audit_returncode": 0,
+    "wall_seconds": 2.919968947004236,
+    "artifact_sha256": {
+      "Audit.lean": "ce87b07a2bbdccd4113a7703212f43689be688d3a60e8bb282814ba7512447b5",
+      "Candidate.lean": "16ce51c0893ed0d33c8eece25d51d5c784a0e8ed8c4ebb19d7cce9addff6ee14",
+      "Candidate.olean": "59d65698a2592a779b665937012ac72ed1a95560fd04c084d18f06198d6cb686",
+      "audit.log": "6a4090804a1c848832de5694f04f4495e992cdaa0c1538bcd52c6a900b57dc58",
+      "compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "CacheSchedule.lean": {
+    "schema_version": "0.1.0",
+    "status": "proved",
+    "checked": true,
+    "source_sha256": "56d2ce9cc217d439385d6fcfaf19de5dc8a4a3f1bbb52d7840247d26f3a6df30",
+    "theorems": [
+      "CacheSchedule.reference_legal",
+      "CacheSchedule.cold_use_rejected",
+      "CacheSchedule.evicted_use_rejected",
+      "CacheSchedule.cache_optimal",
+      "CacheSchedule.saves_two_evaluations_per_cell",
+      "CacheSchedule.cached_library_cost",
+      "CacheSchedule.reference_library_cost",
+      "CacheSchedule.weighted_cache_optimal",
+      "CacheSchedule.weighted_saving",
+      "CacheSchedule.weighted_strict_improvement"
+    ],
+    "allowed_axioms": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "axioms": {
+      "CacheSchedule.reference_legal": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+      ],
+      "CacheSchedule.cold_use_rejected": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+      ],
+      "CacheSchedule.evicted_use_rejected": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+      ],
+      "CacheSchedule.cache_optimal": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+      ],
+      "CacheSchedule.saves_two_evaluations_per_cell": [
+        "propext",
+        "Quot.sound"
+      ],
+      "CacheSchedule.cached_library_cost": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "CacheSchedule.reference_library_cost": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+      ],
+      "CacheSchedule.weighted_cache_optimal": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+      ],
+      "CacheSchedule.weighted_saving": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+      ],
+      "CacheSchedule.weighted_strict_improvement": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+      ]
+    },
+    "timeout_seconds": 90,
+    "memory_mb": 2048,
+    "threads": 1,
+    "scope": "Named Lean propositions only; no implementation or PDE convergence claim.",
+    "execution_boundary": "Use the Simjecture capability sandbox for untrusted source.",
+    "runtime": {
+      "lean_version": "Lean (version 4.24.0, x86_64-unknown-linux-gnu, commit 797c613eb9b6d4ec95db23e3e00af9ac6657f24b, Release)",
+      "lean_archive_sha256": "b14f5e5159219dd1a1956c3b806813319f5e94ccd5bdfd56f54520609a5bb5ec",
+      "mathlib_revision": "f897ebcf72cd16f89ab4577d0c826cd14afaafc7",
+      "mathlib_manifest_sha256": "d1208145605d20579ecc91977126e7647e0216a3f7b7d2b9a55d33d040bcd0b8",
+      "scope": "Lean/Mathlib theorem checking; no solver qualification"
+    },
+    "runtime_record_sha256": "f5eea0937279c73445a042c9e000a5c53a29b301c557367938940c88d35e3cb6",
+    "lean_version": "Lean (version 4.24.0, x86_64-unknown-linux-gnu, commit 797c613eb9b6d4ec95db23e3e00af9ac6657f24b, Release)",
+    "commands": [
+      [
+        "/opt/acs-capabilities/lean-4.24.0/toolchain/bin/lean",
+        "-j1",
+        "-M2048",
+        "-T200000",
+        "-DwarningAsError=true",
+        "-o",
+        "Candidate.olean",
+        "Candidate.lean"
+      ],
+      [
+        "/opt/acs-capabilities/lean-4.24.0/toolchain/bin/lean",
+        "-j1",
+        "-M2048",
+        "-T200000",
+        "-DwarningAsError=true",
+        "Audit.lean"
+      ]
+    ],
+    "compile_returncode": 0,
+    "audit_returncode": 0,
+    "wall_seconds": 2.8648982660015463,
+    "artifact_sha256": {
+      "Audit.lean": "5d621de841bbfb7866cb75033ee892152aad697e85f1543dbd2bffe8a72be663",
+      "Candidate.lean": "56d2ce9cc217d439385d6fcfaf19de5dc8a4a3f1bbb52d7840247d26f3a6df30",
+      "Candidate.olean": "14dfeaeaad6232ad26275e78b04f0e60448e7fce53664dab927d1a6d7ef9f434",
+      "audit.log": "2379c8882c4a19babc025259904fd498e3f3687e228ae650a0c9ea5fdd9243ad",
+      "compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

@@ -1,9 +1,10 @@
-# 3D Euler optimization — stage 1
+# 3D Euler optimization — stages 1 and 2
 
 The research target is a provable optimum within a specified solver class.
-This first stage tests whether the system can improve a real 3D Euler
-implementation while preserving its fixed discrete update. **No 3D Euler
-optimality theorem has been proved.** PR #90 remains draft.
+Stage 1 tests a faster implementation of a fixed discrete update.
+[Stage 2](formal/README.md) now proves exact-real equivalence, conservation, and
+minimum cost within an explicit thermodynamic-caching schedule class.
+**General 3D Euler time-to-accuracy optimality remains open.** PR #90 remains draft.
 
 The restricted problem is ideal-gas compressible Euler (`gamma=2`), five
 conservative variables, uniform periodic Cartesian cells, first-order shared-face
@@ -24,8 +25,8 @@ Use a new directory. The driver runs the experiment through the real Simjecture
 lab sandbox with frozen source inputs. The committed
 [record](record/optimization.json) contains all 11 timing samples per kernel and
 grid, source hashes, trajectory checks, and claim statuses.
-The [PDF](report.pdf) is a preliminary stage-1 report about 3D Euler, not a report
-claiming solver optimality.
+The [PDF](report.pdf) covers the measured stage-1 result and the checked stage-2 cache optimum. It
+does not claim an optimal Euler method or verified floating-point execution.
 
 ## Observed evidence
 
@@ -50,20 +51,21 @@ maximum absolute drift of a volume-weighted conserved total was 1.66e-14.
 These are finite empirical checks. The blast has no validated reference solution
 in this stage, and there is no shock accuracy or convergence claim.
 
-By source inspection, pressure and sound-speed evaluations fall from `3N` to `N`
-per step. Their accounting is not yet a lower-bound theorem, and the speedup over
-one baseline is not proof of optimality.
+Stage 2 instruments the `3N` to `N` pressure/sound-speed evaluation counts and
+proves N minimal in a cold-cache Eval/Use/Drop interface. See the explicit class
+restrictions and weighted-cost theorem in [the formal record](formal/README.md).
+The numerical timing ratio is still empirical, and no hardware optimum follows.
 
 ## Step-by-step capability gates
 
 1. **Same-update improvement — completed empirically.** Freeze the discrete
    method, test general nonlinear 3D states, retain failures and all timing samples.
-2. **Formal equivalence and cost model — next.** Formalize the actual 3D Euler
-   flux and cached update over admissible states. Prove exact-arithmetic
-   equivalence, define the allowed dataflow transformations, and derive a lower
-   bound that the implementation might attain. If only thermodynamic-evaluation
-   optimality is established, label it that narrowly. Do not call it complete
-   solver optimality.
+2. **Formal equivalence and cost model — completed within the stated class.**
+   Fifteen audited theorems cover the concrete real-valued Euler flux/update,
+   fresh-cache equivalence, fixed-ratio iterates, conservation, the N-call lower
+   bound and a matching cached schedule. Weighted library-cost optimality excludes
+   algebraic bypasses, warm caches and changed numerical methods. NumPy/Lean
+   correspondence remains empirical; no floating-point refinement is claimed.
 3. **Time to a prescribed accuracy.** Add manufactured smooth solutions and
    independently validated shock problems, resolution studies, stronger reference
    solvers, and accuracy/admissibility gates. Count all steps and preprocessing.
