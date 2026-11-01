@@ -1,0 +1,33 @@
+{
+  "runtime_root": "../.runtime/lean-4.24.0",
+  "executable": "bin/python",
+  "identity_files": [
+    "share/build-record.json",
+    "share/lean_check.py",
+    "toolchain/bin/lean",
+    "mathlib/lean-toolchain",
+    "mathlib/lake-manifest.json"
+  ],
+  "environment": {
+    "SIMJECTURE_LEAN_ROOT": "/opt/acs-capabilities/lean-4.24.0",
+    "PYTHONPATH": "/opt/acs-capabilities/lean-4.24.0/share",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONNOUSERSITE": "1"
+  },
+  "manifest": {
+    "name": "lean-4.24.0",
+    "version": "4.24.0",
+    "skill": "lean",
+    "executable_kind": "python-lean",
+    "description": "Lean 4 and Mathlib theorem checking with frozen sources, bounded execution and transitive axiom audits",
+    "preflight_resource": "examples/health_check.py",
+    "preflight_result": "lean_health.json",
+    "preflight_checks": [
+      "checks.valid_proof",
+      "checks.false_claim_unproved",
+      "checks.placeholder_rejected",
+      "checks.definition_rejected",
+      "checks.native_axiom_rejected"
+    ]
+  }
+}

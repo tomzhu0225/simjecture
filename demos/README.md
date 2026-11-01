@@ -34,3 +34,9 @@ outputs and review decisions. Distinguish human framing and commissioning from
 autonomous scientific work and later corrections. See
 [the contribution guide](../CONTRIBUTING.md) and
 [documentation development](../docs/development/documentation.md).
+
+## Lean and compressible Euler
+
+[Lean/Euler](lean_euler/README.md) is a local commissioning example with seven
+checked theorems, an exact positivity counterexample, and a periodic 3D NumPy
+reference run. It includes a replay driver using Simjecture lab receipts.

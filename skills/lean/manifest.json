@@ -1,0 +1,7 @@
+{
+  "name": "lean",
+  "version": "0.1.0",
+  "description": "Formalize and check numerical-method propositions in Lean; audit assumptions and retain proof and counterexample artifacts.",
+  "entrypoint": "SKILL.md",
+  "capability_names": ["lean-4.24.0"]
+}
