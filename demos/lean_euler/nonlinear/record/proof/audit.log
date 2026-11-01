@@ -1,0 +1,4 @@
+SIMJECTURE_AXIOMS NonlinearEuler.pressure_z_derivative: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS NonlinearEuler.nonzero_initial_pressure_force: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS NonlinearEuler.positive_initial_pressure_force: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS NonlinearEuler.vertical_momentum_must_change: [propext, Classical.choice, Quot.sound]

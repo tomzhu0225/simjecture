@@ -1,7 +1,14 @@
 # Work-optimal reconstruction for a restricted 3D Euler family
 
-This example proves **minimax-order work optimality** for a precisely fixed
-family of full, three-dimensional, compressible Euler problems. It constructs a
+**Research status correction (2026-11-02):** this is an optimal-reconstruction
+exercise for an analytically known motion. It does not fulfill the requested
+goal of optimizing a solver for unknown nonlinear Euler evolution. The active
+problem family is documented in [../nonlinear](../nonlinear/README.md); accuracy
+and optimality for that family remain unproved. The mathematical records below
+are retained without changing their frozen inputs or conclusions.
+
+This example proves **minimax-order reconstruction work optimality** for an
+analytically known three-dimensional compressible Euler motion. It constructs a
 finite representation with certified uniform error in all five conserved
 variables. Every deterministic adaptive point-query algorithm that solves the
 same family has a matching worst-case work lower bound:

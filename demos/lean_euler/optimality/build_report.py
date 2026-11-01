@@ -213,8 +213,15 @@ def page():
     story.append(PageBreak())
 
 
-para("A Lean-checked work-optimal solver<br/>for a restricted 3D Euler family", "TitleX")
-para("Simjecture research experiment • 1 November 2026 • Draft PR #90", "SmallX")
+para("Optimal reconstruction for an<br/>analytically solvable Euler family", "TitleX")
+para("Simjecture research experiment • scope corrected 2 November 2026 • PR #90", "SmallX")
+para(
+    "<b>Research status correction.</b> This is a proof-workflow and reconstruction "
+    "exercise. Its motion is already analytic, so it does not meet the requested "
+    "goal of finding an optimal solver for unknown nonlinear Euler dynamics. "
+    "The replacement 3D compressible Taylor–Green family is documented in "
+    "demos/lean_euler/nonlinear; its accuracy and optimality remain unproved."
+)
 para(
     "<b>Result.</b> A finite characteristic reconstruction attains a "
     "prescribed uniform physical-field error with work proportional to "
@@ -548,7 +555,11 @@ def footer(canvas, doc):
     canvas.line(45, 40, A4[0] - 45, 40)
     canvas.setFont("ReportSans", 7.2)
     canvas.setFillColor(colors.HexColor("#607080"))
-    canvas.drawString(45, 27, "Simjecture • restricted 3D Euler work optimality • 2026-11-01")
+    canvas.drawString(
+        45,
+        27,
+        "Simjecture • analytically solvable Euler reconstruction • scope corrected 2026-11-02",
+    )
     canvas.drawRightString(A4[0] - 45, 27, str(doc.page))
 
 
@@ -559,7 +570,7 @@ SimpleDocTemplate(
     leftMargin=52,
     topMargin=45,
     bottomMargin=55,
-    title="Lean-checked work optimality for a restricted 3D Euler family",
+    title="Optimal reconstruction for an analytically solvable Euler family",
     author="Simjecture research experiment",
 ).build(story, onFirstPage=footer, onLaterPages=footer)
 print(HERE / "report.pdf")

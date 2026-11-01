@@ -1,0 +1,103 @@
+{
+  "scope": "Initial nonlinear dynamics commissioning only; no continuum accuracy or optimality claim",
+  "initialization": "Cell-center conservative states; not exact cell averages",
+  "method": "Existing first-order gamma=2 Rusanov finite-volume baseline",
+  "rows": [
+    {
+      "n": 16,
+      "A": 0.5,
+      "delta": -0.05,
+      "final_time": 0.25,
+      "steps": 14,
+      "cell_updates": 57344,
+      "max_abs_vertical_velocity": 0.008771874534439035,
+      "max_abs_pressure_change": 0.046302118852314944,
+      "max_abs_density_change": 0.0097045317580986,
+      "min_density": 0.9625317135891956,
+      "min_pressure": 0.9617156015148021,
+      "mean_conserved_drift": 8.215650382226158e-15,
+      "solver_seconds": 0.02687213999990945
+    },
+    {
+      "n": 32,
+      "A": 0.5,
+      "delta": -0.05,
+      "final_time": 0.25,
+      "steps": 27,
+      "cell_updates": 884736,
+      "max_abs_vertical_velocity": 0.012441368322286648,
+      "max_abs_pressure_change": 0.02850564012016721,
+      "max_abs_density_change": 0.005600493995819855,
+      "min_density": 0.9563193125489597,
+      "min_pressure": 0.9369711066793712,
+      "mean_conserved_drift": 3.064215547965432e-14,
+      "solver_seconds": 0.36039546999995764
+    },
+    {
+      "n": 16,
+      "A": 0.75,
+      "delta": 0.0,
+      "final_time": 0.25,
+      "steps": 15,
+      "cell_updates": 61440,
+      "max_abs_vertical_velocity": 0.019292611118500773,
+      "max_abs_pressure_change": 0.10449204560375491,
+      "max_abs_density_change": 0.001829967153624379,
+      "min_density": 0.9981700328463756,
+      "min_pressure": 0.9145560135682654,
+      "mean_conserved_drift": 1.4876988529977098e-14,
+      "solver_seconds": 0.013033501999984765
+    },
+    {
+      "n": 32,
+      "A": 0.75,
+      "delta": 0.0,
+      "final_time": 0.25,
+      "steps": 30,
+      "cell_updates": 983040,
+      "max_abs_vertical_velocity": 0.027637103093186104,
+      "max_abs_pressure_change": 0.0634624162456422,
+      "max_abs_density_change": 0.002648118154836898,
+      "min_density": 0.9973518818451631,
+      "min_pressure": 0.8579030963740878,
+      "mean_conserved_drift": 2.398081733190338e-14,
+      "solver_seconds": 0.341775294999934
+    },
+    {
+      "n": 16,
+      "A": 1.0,
+      "delta": 0.05,
+      "final_time": 0.25,
+      "steps": 16,
+      "cell_updates": 65536,
+      "max_abs_vertical_velocity": 0.03349414122336396,
+      "max_abs_pressure_change": 0.1856506228913991,
+      "max_abs_density_change": 0.011800064396531362,
+      "min_density": 0.9646272462276284,
+      "min_pressure": 0.8474189702387903,
+      "mean_conserved_drift": 1.8207657603852567e-14,
+      "solver_seconds": 0.015361887000040042
+    },
+    {
+      "n": 32,
+      "A": 1.0,
+      "delta": 0.05,
+      "final_time": 0.25,
+      "steps": 33,
+      "cell_updates": 1081344,
+      "max_abs_vertical_velocity": 0.048380931206568084,
+      "max_abs_pressure_change": 0.11021610429005013,
+      "max_abs_density_change": 0.007533849596990216,
+      "min_density": 0.9582526681501301,
+      "min_pressure": 0.7441630188678298,
+      "mean_conserved_drift": 1.4876988529977098e-14,
+      "solver_seconds": 0.3819649949999757
+    }
+  ],
+  "analytic_witness": "At (0,0,pi/4), initial vertical acceleration is A^2/4 >= 1/16",
+  "sources": {
+    "nonlinear/probe.py": "8969e744ba0313a040076d6b5b3fcdfce59ea0f9299b7b1965ed78aee66344f6",
+    "euler.py": "505ebff19d161561f3723a259e65e9476e7c0b40c357146df905dfa56e95d2c2",
+    "nonlinear/contract.json": "59d2abf1b1bdce7080c68fedded2478a95d1a0b0defd73e1cf94ffefa99b8ecf"
+  }
+}

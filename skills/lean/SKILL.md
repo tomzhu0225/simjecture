@@ -97,3 +97,10 @@ uses proved smooth perturbations and an explicit oracle indistinguishability
 argument. `assemble.py` produces a self-contained checker input from the tracked
 components; `check_formal.py` retains audited receipts and an altered-resolution
 negative control. The installer includes these calculus dependencies.
+
+The affine-shear example has analytically known dynamics; its work theorem is
+principally a function-reconstruction result. It does not fulfill a request for
+an optimal solver of unknown nonlinear Euler evolution. For that research
+target, use `demos/lean_euler/nonlinear` as the problem-family specification.
+Initial pressure-force checks and numerical commissioning there are not solver
+accuracy or optimality proofs.

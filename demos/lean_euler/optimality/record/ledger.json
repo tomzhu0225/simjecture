@@ -18,5 +18,7 @@
   "representation": "Finite n^3 density table plus exact affine reconstruction rule; post-construction output-point evaluations cost extra.",
   "lower_bound_constant": "Fixed existential K >= 1; not evaluated numerically.",
   "work_model": "Exact-real RAM with unit-cost point oracle, scalar arithmetic/ceiling, indexing/storage. Modeled work is not NumPy FLOPs or hardware time.",
-  "retained_binaries": "Compiled Lean olean files remain in local artifact runs and can be rebuilt; source, audit, hashes and receipts are tracked."
+  "retained_binaries": "Compiled Lean olean files remain in local artifact runs and can be rebuilt; source, audit, hashes and receipts are tracked.",
+  "research_goal_status": "Not achieved for the user-intended unknown nonlinear Euler dynamics. This record is an analytically known-motion reconstruction exercise.",
+  "replacement_family": "demos/lean_euler/nonlinear/contract.json; solver accuracy and optimality remain unproved"
 }

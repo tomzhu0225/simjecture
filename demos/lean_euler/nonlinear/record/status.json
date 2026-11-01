@@ -1,0 +1,11 @@
+{
+  "problem": "Nonlinear compressible 3D Taylor-Green family",
+  "initial_pressure_derivative": "Lean checked",
+  "vertical_momentum_consequence": "Lean checked conditional on the Euler balance at the initial point",
+  "baseline_evolution": "six numerical commissioning runs completed",
+  "uniform_smooth_existence_interval": "unproved",
+  "continuum_solver_accuracy": "unproved",
+  "competitor_class": "initial search scope only; formal definition pending",
+  "solver_optimality": "unproved",
+  "previous_affine_result": "retained as reconstruction/proof-workflow exercise; does not fulfill this research goal"
+}
