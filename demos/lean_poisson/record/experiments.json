@@ -1,0 +1,46 @@
+[
+  {
+    "id": "exp_696c056a8781bd627ffab05f",
+    "status": "succeeded",
+    "created_at": 1793534445.6541069,
+    "binding": {
+      "source": "poisson.py",
+      "args": [],
+      "inputs": {
+        "poisson.py": "d33a03d2855141a007c414d9358ba551e1b1159b16e0b3095fafac8831e58a9b"
+      },
+      "capability": null,
+      "runtime_sha256": null
+    },
+    "outputs": [
+      "measurements.json"
+    ],
+    "stage": "exploration",
+    "finished_at": 1793534446.1632056
+  },
+  {
+    "id": "exp_24becd7f95282d43a4a42ea6",
+    "status": "succeeded",
+    "created_at": 1793534445.6714795,
+    "binding": {
+      "source": "check_proof.py",
+      "args": [],
+      "inputs": {
+        "check_proof.py": "940ac19eb210c11f79bc224b336f6cdae278dae76c31ca6d259c582af12a14e0",
+        "Optimality.lean": "775e8330e9f1e0ee10982b77a8b32f618bf617ae9c0f3e79d1046de3128e272c"
+      },
+      "capability": "lean-4.24.0",
+      "runtime_sha256": "eb5b2a2a4753cf304a47dfaa6ea3c0ed0262cc77bd90af0e264193c1f9761ea0"
+    },
+    "outputs": [
+      "proof.json",
+      "proof/Candidate.lean",
+      "proof/Audit.lean",
+      "proof/compile.log",
+      "proof/audit.log",
+      "proof/result.json"
+    ],
+    "stage": "exploration",
+    "finished_at": 1793534449.4678068
+  }
+]

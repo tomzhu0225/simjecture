@@ -1,0 +1,6 @@
+SIMJECTURE_AXIOMS Poisson.solve_correct: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS Poisson.solve_unique: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS Poisson.trace_correct: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS Poisson.solve_cost: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS Poisson.any_solver_lower_bound: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS Poisson.work_optimal: [propext, Classical.choice, Quot.sound]

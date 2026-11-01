@@ -62,6 +62,7 @@ def check(source, theorems, *, output="lean-result", timeout=60, memory_mb=2048)
         "axioms": {},
         "timeout_seconds": timeout,
         "memory_mb": memory_mb,
+        "threads": 1,
         "scope": "Named Lean propositions only; no implementation or PDE convergence claim.",
         "execution_boundary": "Use the Simjecture capability sandbox for untrusted source.",
     }
@@ -124,7 +125,7 @@ def check(source, theorems, *, output="lean-result", timeout=60, memory_mb=2048)
         report["lean_version"] = subprocess.check_output(
             [str(lean), "--version"], text=True, timeout=min(timeout, 10), env=env
         ).strip()
-        flags = [f"-M{memory_mb}", "-T200000", "-DwarningAsError=true"]
+        flags = ["-j1", f"-M{memory_mb}", "-T200000", "-DwarningAsError=true"]
         code = run("compile", [*flags, "-o", "Candidate.olean", "Candidate.lean"])
         report["compile_returncode"] = code
         if code:

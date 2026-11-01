@@ -92,7 +92,9 @@ admissibility for arbitrary states. The rational witness falsifies unrestricted
 positivity; a failed proof attempt by itself would not do so. Decreasing error
 on three grids is numerical evidence, not a PDE convergence theorem. Floating
 point refinement, entropy, shocks, a general CFL positivity theorem, novel
-algorithms, matched-accuracy speedups, and optimality are all unproved here.
+algorithms, matched-accuracy speedups, and Euler solver optimality are all unproved here.
+The companion [1D Poisson example](../lean_poisson/README.md) now establishes
+complete-solve correctness and linear-work optimality in an explicit scalar model.
 
 The next research experiment can let a Simjecture agent propose a precise CFL
 positivity claim, search for exact counterexamples, refine the assumptions, and

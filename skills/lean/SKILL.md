@@ -8,7 +8,7 @@ description: Formalize and check mathematical propositions and numerical-method 
 Install `simjecture install lean`; check `simjecture doctor --profile lean`.
 The capability `lean-4.24.0` pins Lean and Mathlib v4.24.0. Its Python entrypoint
 supports ordinary standard-library scripts importing `lean_check`. The installer
-fetches the finite-sum, real-arithmetic, `Ring`, and `NormNum` dependency closure;
+fetches the finite-sum, real-arithmetic, `Ring`, `NormNum`, and `FieldSimp` dependency closure;
 use focused imports such as `Mathlib.Tactic.Ring`. Broad `Mathlib.Tactic` imports
 can exceed the sandbox memory allowance and are not installed by this recipe.
 
@@ -63,3 +63,10 @@ Do not label a scripted sequence autonomous discovery.
 The repository demo `demos/lean_euler` progresses from scalar decay to periodic
 finite-volume conservation and a compressible Euler counterexample. The example
 `examples/health_check.py` tests installation behavior, not scientific qualification.
+
+The `demos/lean_poisson` example proves correctness, uniqueness, and linear-work
+optimality of a complete 1D discrete Dirichlet solve. Its scalar trace model
+charges input reads, arithmetic, branch inspections, and output writes. Exact
+rational arithmetic has unit cost in that model; bit complexity and fastest
+wall time are different questions. Use its report and definitions when extending
+complexity claims, and keep the algorithm class and output representation explicit.

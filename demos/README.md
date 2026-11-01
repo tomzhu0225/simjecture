@@ -40,3 +40,11 @@ autonomous scientific work and later corrections. See
 [Lean/Euler](lean_euler/README.md) is a local commissioning example with seven
 checked theorems, an exact positivity counterexample, and a periodic 3D NumPy
 reference run. It includes a replay driver using Simjecture lab receipts.
+
+[1D Poisson optimality](lean_poisson/README.md) extends this with a complete
+exact discrete solve, a proved 11N+6 work upper bound and N output lower bound,
+and a local benchmark. It is retained as a baseline for the 3D Euler work.
+
+The next [3D Euler optimization stage](lean_euler/optimization/README.md) records
+a same-update thermodynamic-cache experiment and a preliminary PDF. General
+solver optimality remains open.
