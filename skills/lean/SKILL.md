@@ -84,3 +84,16 @@ field error. Its error/work theorems are conditional: do not treat their accepte
 proof status as evidence that stability or truncation hypotheses hold for a
 nonlinear solver. Count timestep selection, all stages, setup, error analysis,
 and calibration separately; keep the output representation and error norm explicit.
+
+The `demos/lean_euler/optimality` example connects a classical 3D affine-shear
+Euler solution to uniform full-state accuracy and matching asymptotic work
+bounds. Its input is an arbitrary C1 Lipschitz density in a fixed pressure-uniform
+flow family. The lower bound covers deterministic adaptive point-oracle machines,
+including machines that terminate only on admissible inputs. Read the frozen
+contract and exact theorem signatures before reusing the claim: the result is
+minimax-order optimality in an exact-real RAM model, not best constants, a
+pressure-driven Euler solver, or certified floating-point execution. The proof
+uses proved smooth perturbations and an explicit oracle indistinguishability
+argument. `assemble.py` produces a self-contained checker input from the tracked
+components; `check_formal.py` retains audited receipts and an altered-resolution
+negative control. The installer includes these calculus dependencies.

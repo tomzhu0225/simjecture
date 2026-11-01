@@ -1,0 +1,52 @@
+[
+  {
+    "run": "lab-01",
+    "experiment": "exp_e383230ba620a50d015c018e",
+    "status": "failed",
+    "execution": {
+      "isolation_backend": "bubblewrap",
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/work/check_formal.py\", line 70, in <module>\n    main()\n  File \"/work/check_formal.py\", line 63, in main\n    assert result[\"checked\"], result\n           ~~~~~~^^^^^^^^^^^\nAssertionError: {'schema_version': '0.1.0', 'status': 'undecided', 'checked': False, 'source_sha256': 'a95367ca119b6d0d7ae3d48056c68c5cf1192b8cec3e50a505c3866fbc8c3611', 'theorems': ['Certificate.admissible_is_classical_euler', 'Certificate.family_nonempty', 'ShearEuler.pressure_of_conserved', 'ShearEuler.inverse_flow', 'ShearEuler.flow_inverse', 'Grid.center_covers_cube', 'Grid.centers_separated', 'Recovery.exists_base_bump', 'Recovery.perturb_admissible', 'Optimality.exists_unqueried_cell', 'Optimality.accuracy_at_tolerance', 'Optimality.sampling_values', 'Optimality.euler_algorithm_queries', 'Work.solver_program_matches_query_algorithm', 'Work.solver_work_exact', 'Work.total_work_upper', 'Machines.same_answers', 'Machines.tree_correct', 'Machines.general_machine_work_lower', 'Machines.certified_general_optimality'], 'allowed_axioms': ['Classical.choice', 'Quot.sound', 'propext'], 'axioms': {}, 'timeout_seconds': 120, 'memory_mb': 2048, 'threads': 1, 'scope': 'Named Lean propositions only; no implementation or PDE convergence claim.', 'execution_boundary': 'Use the Simjecture capability sandbox for untrusted source.', 'runtime': {'lean_version': 'Lean (version 4.24.0, x86_64-unknown-linux-gnu, commit 797c613eb9b6d4ec95db23e3e00af9ac6657f24b, Release)', 'lean_archive_sha256': 'b14f5e5159219dd1a1956c3b806813319f5e94ccd5bdfd56f54520609a5bb5ec', 'mathlib_revision': 'f897ebcf72cd16f89ab4577d0c826cd14afaafc7', 'mathlib_manifest_sha256': 'd1208145605d20579ecc91977126e7647e0216a3f7b7d2b9a55d33d040bcd0b8', 'scope': 'Lean/Mathlib theorem checking; no solver qualification'}, 'runtime_record_sha256': 'f5eea0937279c73445a042c9e000a5c53a29b301c557367938940c88d35e3cb6', 'lean_version': 'Lean (version 4.24.0, x86_64-unknown-linux-gnu, commit 797c613eb9b6d4ec95db23e3e00af9ac6657f24b, Release)', 'commands': [['/opt/acs-capabilities/lean-4.24.0/toolchain/bin/lean', '-j1', '-M2048', '-T200000', '-DwarningAsError=true', '-o', 'Candidate.olean', 'Candidate.lean']], 'compile_returncode': -11, 'wall_seconds': 3.601088214003539, 'artifact_sha256': {'Candidate.lean': 'a95367ca119b6d0d7ae3d48056c68c5cf1192b8cec3e50a505c3866fbc8c3611', 'compile.log': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'}}",
+      "timed_out": false,
+      "cancelled": false,
+      "workspace_exceeded": false,
+      "stdout_truncated": false,
+      "stderr_truncated": false,
+      "heartbeat_count": 0,
+      "wall_seconds": 7.05063837099442,
+      "workspace_bytes": 298295,
+      "executor_sha256": "b92087579abbb99f55ce2c75d98765355c8ccd4a6ccf3ba55b15ddd5491a22ec",
+      "resource_limits": {
+        "max_file_bytes": 4294967296,
+        "max_workspace_bytes": 4294967296,
+        "max_memory_bytes": 4294967296
+      }
+    }
+  },
+  {
+    "run": "lab-02",
+    "experiment": "exp_b2c200eb28dd119bc252923e",
+    "status": "failed",
+    "execution": {
+      "isolation_backend": "bubblewrap",
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/work/check_formal.py\", line 70, in <module>\n    main()\n  File \"/work/check_formal.py\", line 63, in main\n    assert result[\"checked\"], result\n           ~~~~~~^^^^^^^^^^^\nAssertionError: {'schema_version': '0.1.0', 'status': 'undecided', 'checked': False, 'source_sha256': 'd0a2e3fa4140e21145d2ecdb5225132fe501bc32399847f951ce47fafb7b7967', 'theorems': ['Certificate.admissible_is_classical_euler', 'Certificate.family_nonempty', 'ShearEuler.pressure_of_conserved', 'ShearEuler.inverse_flow', 'ShearEuler.flow_inverse', 'Grid.center_covers_cube', 'Grid.centers_separated', 'Recovery.exists_base_bump', 'Recovery.perturb_admissible', 'Optimality.exists_unqueried_cell', 'Optimality.accuracy_at_tolerance', 'Optimality.sampling_values', 'Optimality.euler_algorithm_queries', 'Work.solver_program_matches_query_algorithm', 'Work.solver_work_exact', 'Work.total_work_upper', 'Machines.same_answers', 'Machines.tree_correct', 'Machines.general_machine_work_lower', 'Machines.certified_general_optimality'], 'allowed_axioms': ['Classical.choice', 'Quot.sound', 'propext'], 'axioms': {}, 'timeout_seconds': 120, 'memory_mb': 2048, 'threads': 1, 'scope': 'Named Lean propositions only; no implementation or PDE convergence claim.', 'execution_boundary': 'Use the Simjecture capability sandbox for untrusted source.', 'runtime': {'lean_version': 'Lean (version 4.24.0, x86_64-unknown-linux-gnu, commit 797c613eb9b6d4ec95db23e3e00af9ac6657f24b, Release)', 'lean_archive_sha256': 'b14f5e5159219dd1a1956c3b806813319f5e94ccd5bdfd56f54520609a5bb5ec', 'mathlib_revision': 'f897ebcf72cd16f89ab4577d0c826cd14afaafc7', 'mathlib_manifest_sha256': 'd1208145605d20579ecc91977126e7647e0216a3f7b7d2b9a55d33d040bcd0b8', 'scope': 'Lean/Mathlib theorem checking; no solver qualification'}, 'runtime_record_sha256': 'f5eea0937279c73445a042c9e000a5c53a29b301c557367938940c88d35e3cb6', 'lean_version': 'Lean (version 4.24.0, x86_64-unknown-linux-gnu, commit 797c613eb9b6d4ec95db23e3e00af9ac6657f24b, Release)', 'commands': [['/opt/acs-capabilities/lean-4.24.0/toolchain/bin/lean', '-j1', '-M2048', '-T200000', '-DwarningAsError=true', '-o', 'Candidate.olean', 'Candidate.lean']], 'compile_returncode': -6, 'wall_seconds': 4.603864151999005, 'artifact_sha256': {'Candidate.lean': 'd0a2e3fa4140e21145d2ecdb5225132fe501bc32399847f951ce47fafb7b7967', 'compile.log': '32a60967270365f092cad81a408cf0e68f13aceab4359f32700f140a54129b9b'}}",
+      "timed_out": false,
+      "cancelled": false,
+      "workspace_exceeded": false,
+      "stdout_truncated": false,
+      "stderr_truncated": false,
+      "heartbeat_count": 0,
+      "wall_seconds": 9.06374424200476,
+      "workspace_bytes": 305898,
+      "executor_sha256": "b92087579abbb99f55ce2c75d98765355c8ccd4a6ccf3ba55b15ddd5491a22ec",
+      "resource_limits": {
+        "max_file_bytes": 4294967296,
+        "max_workspace_bytes": 4294967296,
+        "max_memory_bytes": 4294967296
+      }
+    }
+  }
+]

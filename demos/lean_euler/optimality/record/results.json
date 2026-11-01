@@ -1,0 +1,167 @@
+{
+  "started_utc": "2026-11-01T14:54:25.274050+00:00",
+  "sources": {
+    "solver.py": "b99cfe251935a171564b10ab1f6d3e78ea0abaa320eb9dc0f5d42783dbd2a405",
+    "run_experiment.py": "b4ea17a9419b5058b05eb9e7e5086f6151393344b6fc27b6dec2bd8edbd7a7f6",
+    "CONTRACT.json": "0b458ed9613ee10bf1a4b16a99758beb8bc657a9e124105309241aed13280b4f"
+  },
+  "resolution_negative_control": {
+    "epsilon": 0.05,
+    "lipschitz": 2.0,
+    "correct_n": 30,
+    "altered_n": 10,
+    "witness_material": [
+      0.4999999999,
+      1.0,
+      1.0
+    ],
+    "correct_error": 0.04856414438957879,
+    "altered_error": 0.14795165222344808,
+    "density": "1.5 + 0.49*tanh((2/0.49)*(X-0.45)); global range [1.01,1.99], Lipschitz <= 2"
+  },
+  "schema_version": "0.1.0",
+  "scope": "Floating-point illustration, not executable verification or a general Euler benchmark",
+  "platform": "Linux-6.18.54.1-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "python": "3.12.13",
+  "numpy": "2.5.1",
+  "seed": 20261101,
+  "lipschitz": 2.0,
+  "times": [
+    0.0,
+    0.25,
+    0.75,
+    1.0
+  ],
+  "test_points_per_time": 100008,
+  "flow_inverse_sample_max_error": 5.551115123125783e-16,
+  "finite_difference_euler_residual_max": 1.5543120124306142e-09,
+  "finite_difference_step": 1e-05,
+  "rows": [
+    {
+      "epsilon": 0.1,
+      "n": 15,
+      "oracle_queries": 3375,
+      "formal_ram_work": 65097,
+      "density_array_bytes": 27000,
+      "exact_real_uniform_bound": 0.1,
+      "sampled_full_state_max_error_by_time": [
+        0.026331344488363495,
+        0.026331344488363495,
+        0.026331344488363495,
+        0.02633134448836394
+      ],
+      "build_seconds": [
+        0.0003048369981115684,
+        0.0001727170019876212,
+        0.00013021600170759484
+      ],
+      "median_build_seconds": 0.0001727170019876212,
+      "evaluate_100008_points_seconds": [
+        0.013967758997750934,
+        0.00694087399460841,
+        0.0037093540013302118,
+        0.0033248659965465777
+      ]
+    },
+    {
+      "epsilon": 0.05,
+      "n": 30,
+      "oracle_queries": 27000,
+      "formal_ram_work": 516732,
+      "density_array_bytes": 216000,
+      "exact_real_uniform_bound": 0.05,
+      "sampled_full_state_max_error_by_time": [
+        0.013448380753047662,
+        0.013448380753047662,
+        0.013448380753047662,
+        0.013448380753047662
+      ],
+      "build_seconds": [
+        0.0009550780014251359,
+        0.0014683959961985238,
+        0.0010898539985646494
+      ],
+      "median_build_seconds": 0.0010898539985646494,
+      "evaluate_100008_points_seconds": [
+        0.0031456689976039343,
+        0.0026025680053862743,
+        0.003403535003599245,
+        0.004242834002070595
+      ]
+    },
+    {
+      "epsilon": 0.025,
+      "n": 60,
+      "oracle_queries": 216000,
+      "formal_ram_work": 4118652,
+      "density_array_bytes": 1728000,
+      "exact_real_uniform_bound": 0.025,
+      "sampled_full_state_max_error_by_time": [
+        0.006676411023741391,
+        0.006676411023741391,
+        0.006676411023741391,
+        0.006676411023741391
+      ],
+      "build_seconds": [
+        0.012166068998340052,
+        0.008699793994310312,
+        0.00820697099698009
+      ],
+      "median_build_seconds": 0.008699793994310312,
+      "evaluate_100008_points_seconds": [
+        0.004095285999937914,
+        0.004301264001696836,
+        0.004409911001857836,
+        0.0031904510033200495
+      ]
+    },
+    {
+      "epsilon": 0.0125,
+      "n": 120,
+      "oracle_queries": 1728000,
+      "formal_ram_work": 32890092,
+      "density_array_bytes": 13824000,
+      "exact_real_uniform_bound": 0.0125,
+      "sampled_full_state_max_error_by_time": [
+        0.003352722926635021,
+        0.003352722926635021,
+        0.003352722926635021,
+        0.003352722926635021
+      ],
+      "build_seconds": [
+        0.11649919300543843,
+        0.07719977700617164,
+        0.07785012800013646
+      ],
+      "median_build_seconds": 0.07785012800013646,
+      "evaluate_100008_points_seconds": [
+        0.003857585004880093,
+        0.003860992001136765,
+        0.0037213569958112203,
+        0.003684786999656353
+      ]
+    }
+  ],
+  "hard_pair": {
+    "n": 8,
+    "queries": 511,
+    "available_cells": 512,
+    "epsilon": 0.005208333333333333,
+    "lipschitz_upper_bound": 2.0,
+    "all_query_answers_equal": true,
+    "unqueried_center": [
+      0.4375,
+      0.5625,
+      0.3125
+    ],
+    "plus_at_center": 1.5104166666666667,
+    "minus_at_center": 1.4895833333333333,
+    "separation_at_center": 0.020833333333333332,
+    "note": "Numerical illustration uses a quartic bump; the formal proof uses Mathlib's smooth bump and an existential fixed Lipschitz constant."
+  },
+  "limitations": [
+    "The global smoothness/Lipschitz class is an analytic input contract, not inferred from samples.",
+    "Lean checks exact-real mathematics and the stated RAM model, not NumPy or IEEE rounding.",
+    "Wall times are descriptive; no speed comparison to a general-purpose Euler solver is made."
+  ]
+}

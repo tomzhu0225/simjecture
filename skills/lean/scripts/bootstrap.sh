@@ -49,7 +49,41 @@ fi
   echo 'Unexpected Mathlib revision; inspect the runtime before retrying.' >&2; exit 2;
 }
 export PATH="$prefix/toolchain/bin:$PATH"
-(cd "$prefix/mathlib" && lake exe cache get Mathlib/Algebra/BigOperators/Group/Finset/Basic.lean Mathlib/Data/Real/Basic.lean Mathlib/Tactic/Ring.lean Mathlib/Tactic/NormNum.lean Mathlib/Tactic/FieldSimp.lean Mathlib/Data/Rat/Cast/Order.lean Mathlib/Data/Real/Sqrt.lean Mathlib/Algebra/BigOperators/Fin.lean Mathlib/Data/Finset/Card.lean Mathlib/Data/Fintype/Card.lean Mathlib/Algebra/Order/BigOperators/Group/Finset.lean Mathlib/Algebra/BigOperators/Ring/Finset.lean Mathlib/Analysis/SpecialFunctions/Trigonometric/Deriv.lean Mathlib/Tactic/Linarith.lean)
+cache_targets=(
+  Mathlib/Algebra/BigOperators/Group/Finset/Basic.lean
+  Mathlib/Data/Real/Basic.lean
+  Mathlib/Tactic/Ring.lean
+  Mathlib/Tactic/NormNum.lean
+  Mathlib/Tactic/FieldSimp.lean
+  Mathlib/Data/Rat/Cast/Order.lean
+  Mathlib/Data/Real/Sqrt.lean
+  Mathlib/Algebra/BigOperators/Fin.lean
+  Mathlib/Data/Finset/Card.lean
+  Mathlib/Data/Fintype/Card.lean
+  Mathlib/Algebra/Order/BigOperators/Group/Finset.lean
+  Mathlib/Algebra/BigOperators/Ring/Finset.lean
+  Mathlib/Analysis/SpecialFunctions/Trigonometric/Deriv.lean
+  Mathlib/Tactic/Linarith.lean
+  Mathlib/Analysis/Calculus/BumpFunction/InnerProduct.lean
+  Mathlib/Analysis/Calculus/ContDiff/RCLike.lean
+  Mathlib/Analysis/Calculus/Deriv/Prod.lean
+  Mathlib/Analysis/Calculus/Deriv/Pow.lean
+  Mathlib/Analysis/Calculus/FDeriv/Prod.lean
+  Mathlib/Data/Fin/VecNotation.lean
+  Mathlib/Data/Fintype/Pi.lean
+  Mathlib/Data/Real/Archimedean.lean
+  Mathlib/Tactic/FinCases.lean
+  Mathlib/Tactic/FunProp.lean
+  Mathlib/Tactic/LinearCombination.lean
+  Mathlib/Analysis/Calculus/ContDiff/Operations.lean
+  Mathlib/Analysis/Calculus/Deriv/Add.lean
+  Mathlib/Analysis/Calculus/Deriv/Mul.lean
+  Mathlib/Analysis/Calculus/Deriv/Comp.lean
+  Mathlib/Analysis/Normed/Group/Constructions.lean
+  Mathlib/Analysis/Normed/Field/Basic.lean
+  Mathlib/Tactic/Positivity.lean
+)
+(cd "$prefix/mathlib" && lake exe cache get "${cache_targets[@]}")
 cp "$project_root/src/conjecture_solver/lean_check.py" "$prefix/share/lean_check.py"
 cp --remove-destination "$(readlink -f "$(command -v python3)")" "$prefix/bin/python"
 chmod +x "$prefix/bin/python"

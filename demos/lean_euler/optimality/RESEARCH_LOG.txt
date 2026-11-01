@@ -1,0 +1,20 @@
+2026-11-01 13:35 UTC: Goal activated. Deadline 17:29:19 UTC. Existing code/proofs and research brief reviewed.
+2026-11-01 13:44 UTC: Contract frozen before new formal proof construction.
+Route: volume-preserving 3D affine shear with arbitrary C1 Lipschitz density.
+Aim: exact Euler flow + full-field uniform approximation + adaptive-query lower bound.
+Candidate map: (X+tY, Y+tZ, Z+t), inverse polynomial map as recorded.
+Main proof risks: connecting actual derivatives to full Euler equations; smooth compact lower-bound perturbations; adaptive-query indistinguishability and 3D sample covering.
+No success claimed yet. Broad general-Euler initial/boundary data remain outside this contract.
+
+2026-11-01 14:05:41 UTC: Actual conservative Euler equations, initial state and boundary velocity checked.
+2026-11-01 14:12:28 UTC: Uniform full-state accuracy and matching adaptive-query exponent checked.
+2026-11-01 14:22:23 UTC: Combined exact-real RAM work certificate checked in trusted direct Lean execution.
+2026-11-01 14:25:02 UTC: General adaptive-machine lower bound checked; only admissible inputs need terminate.
+2026-11-01 14:31:15 UTC: First local-lab numerical job passed; proof process failed under the default 4 GB address-space limit before mathematical diagnostics.
+2026-11-01 14:37:03 UTC: Reduced imports to tensor products of one-dimensional bumps; all hard-input membership conditions remain proved. The 4 GB replay still hit a thread-creation failure.
+2026-11-01 14:47:40 UTC: Isolated 8 GB local-worker replay succeeded under Bubblewrap. Both numerical and proof jobs passed; all 20 named statements passed the transitive-axiom audit, and the insufficient-resolution mutation failed with proof errors.
+2026-11-01 14:49 UTC: 20 relevant regression tests passed. Six-page 3D PDF generated and rendered for visual inspection. Python lint, shell syntax and skill validation passed.
+
+Scientific outcome: The frozen pressure-uniform affine-shear density-oracle family has a constructed algorithm with uniform full-state error <= epsilon and minimax-order work Theta((L/epsilon)^3). The lower-bound constant K is fixed but existential. This is an exact-real RAM/oracle theorem, not a verified NumPy executable, sharp-constant optimum, pressure-driven/shock solver, or general 3D Euler optimality result. Mathematical novelty is not established. The original contract is unchanged; current claims are recorded in record/ledger.json.
+
+2026-11-01 14:55:11 UTC: Final replay after source whitespace cleanup passed both lab jobs, all 20 named audits, and the expected failing mutation. Retained sources and report refer to this final replay.
