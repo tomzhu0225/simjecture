@@ -79,3 +79,14 @@ def test_real_checker_missing_theorem_and_deadline(tmp_path):
     timeout = lean_check.check(source, ["actual"], output=tmp_path / "timeout", timeout=0.00001)
     assert timeout["status"] == "timeout"
     assert not timeout["checked"]
+
+
+@pytest.mark.skipif(not INSTALLED, reason="installed Lean required")
+def test_real_checker_large_theorem_batch(tmp_path):
+    names = [f"batch_{i}" for i in range(80)]
+    source = tmp_path / "Batch.lean"
+    source.write_text("\n".join(f"theorem {name} : True := True.intro" for name in names) + "\n")
+    result = lean_check.check(source, names, output=tmp_path / "batch")
+    assert result["checked"], (tmp_path / "batch/audit.log").read_text()
+    assert set(result["axioms"]) == set(names)
+    assert all(not dependencies for dependencies in result["axioms"].values())

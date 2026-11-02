@@ -132,9 +132,12 @@ def check(source, theorems, *, output="lean-result", timeout=60, memory_mb=2048)
             return finish()
         # The driver authors this audit, outside the candidate. It checks declaration
         # kind and transitive axioms from the checked environment, not candidate prose.
-        lines = ["import Candidate", "import Lean", "open Lean Elab Command", "run_cmd do"]
+        lines = ["import Candidate", "import Lean", "open Lean Elab Command"]
         for name in theorems:
+            # Separate commands avoid a deeply nested generated `do` block when
+            # auditing many declarations, without changing elaborator limits.
             lines += [
+                "run_cmd do",
                 f"  let n := `{name}",
                 "  match (← getEnv).find? n with",
                 "  | some (.thmInfo _) => pure ()",
