@@ -29,7 +29,7 @@ def main():
     assert package.package_sha256 == ready["package_sha256"], "Commissioning changed"
     campaign = task / "study"
     assert not campaign.exists(), "Do not restart or replace a study's original clock"
-    pool = MachineRegistry(task / "machines").freeze(["uu-local"])
+    pool = MachineRegistry(ready["registry"]).freeze(["uu-local"])
     hypothesis = (
         "Find a useful numerical algorithm for the frozen nonlinear compressible 3D Euler "
         "Taylor-Green family, with a Lean-checked continuum accuracy theorem and matching "
@@ -111,7 +111,7 @@ def main():
         "--completion-policy",
         "repair",
         "--machine-registry",
-        str(task / "machines"),
+        ready["registry"],
         "--machine",
         "uu-local",
         "--wall-seconds",

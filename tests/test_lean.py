@@ -90,3 +90,16 @@ def test_real_checker_large_theorem_batch(tmp_path):
     assert result["checked"], (tmp_path / "batch/audit.log").read_text()
     assert set(result["axioms"]) == set(names)
     assert all(not dependencies for dependencies in result["axioms"].values())
+
+
+@pytest.mark.skipif(not INSTALLED, reason="installed Lean required")
+def test_checker_pins_sysroot_despite_caller_environment(tmp_path, monkeypatch):
+    monkeypatch.setenv("LEAN_SYSROOT", str(tmp_path / "untrusted-sysroot"))
+    monkeypatch.setenv("LEAN_PATH", str(tmp_path / "untrusted-modules"))
+    source = tmp_path / "Ring.lean"
+    source.write_text(
+        "import Mathlib.Tactic.Ring\ntheorem sample (x : Rat) : x + 0 = x := by ring\n"
+    )
+    result = lean_check.check(source, ["sample"], output=tmp_path / "checked")
+    assert result["checked"], result
+    assert set(result["axioms"]["sample"]) <= lean_check.ALLOWED_AXIOMS

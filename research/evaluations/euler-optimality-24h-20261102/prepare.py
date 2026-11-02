@@ -16,11 +16,14 @@ from conjecture_solver.research_service import ResearchService, put
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--task", type=Path, required=True)
+    parser.add_argument("--attempt", default="01")
+    parser.add_argument("--runtime-root", type=Path)
     args = parser.parse_args()
     task = args.task.resolve()
+    assert args.attempt.isalnum(), "Use an alphanumeric attempt identifier"
     source = task / "source"
     case = source / "research/evaluations/euler-optimality-24h-20261102"
-    package = task / "commissioning-package"
+    package = task / f"commissioning-package-{args.attempt}"
     package.mkdir(exist_ok=False)
     files = subprocess.check_output(
         ["git", "ls-files", "demos/lean_euler", "demos/lean_poisson"], cwd=source, text=True
@@ -40,17 +43,19 @@ def main():
         source / "demos/lean_euler/nonlinear/record/solver/solver-formal.json", package / summary
     )
     names.append(summary)
-    capabilities = task / "capabilities"
+    capabilities = task / f"capabilities-{args.attempt}"
     capabilities.mkdir()
     cap = json.loads((source / "capabilities/lean-4.24.0.json").read_text())
-    cap["runtime_root"] = str(source / ".runtime/lean-4.24.0")
+    cap["runtime_root"] = str(
+        args.runtime_root.resolve() if args.runtime_root else source / ".runtime/lean-4.24.0"
+    )
     put(capabilities / "lean-4.24.0.json", cap)
-    registry = MachineRegistry(task / "machines")
+    registry = MachineRegistry(task / f"machines-{args.attempt}")
     registry.save(
         dict(
             id="uu-local",
             kind="local",
-            root=str(task / "execution-worker"),
+            root=str(task / f"execution-worker-{args.attempt}"),
             python=sys.executable,
             config=dict(
                 cpus=12,
@@ -92,7 +97,7 @@ def main():
     put(manifest, spec)
     frozen = MVPGuidedCommissioningPackage.read(manifest)
     lab = ResearchService.create(
-        task / "readiness",
+        task / f"readiness-{args.attempt}",
         "Reproduce commissioning only; no new research conclusion.",
         execution_pool=pool,
         wall_seconds=1200,
@@ -127,6 +132,7 @@ def main():
         else "failed",
         package_sha256=frozen.package_sha256,
         package=str(manifest),
+        registry=str(registry.root),
         jobs=[{"id": r["id"], "status": r["status"]} for r in receipts],
         models=models,
         scientific_evidence_eligible=False,
@@ -134,7 +140,9 @@ def main():
             ["git", "rev-parse", "HEAD"], cwd=source, text=True
         ).strip(),
     )
-    put(task / "operator/readiness.json", ready)
+    put(task / f"operator/readiness-{args.attempt}.json", ready)
+    if ready["status"] == "passed":
+        put(task / "operator/readiness.json", ready)
     print(json.dumps(ready, indent=2))
     if ready["status"] != "passed":
         raise SystemExit(1)

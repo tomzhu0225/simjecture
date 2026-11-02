@@ -10,6 +10,7 @@
   ],
   "environment": {
     "SIMJECTURE_LEAN_ROOT": "/opt/acs-capabilities/lean-4.24.0",
+    "LEAN_SYSROOT": "/opt/acs-capabilities/lean-4.24.0/toolchain",
     "PYTHONPATH": "/opt/acs-capabilities/lean-4.24.0/share",
     "PYTHONDONTWRITEBYTECODE": "1",
     "PYTHONNOUSERSITE": "1"

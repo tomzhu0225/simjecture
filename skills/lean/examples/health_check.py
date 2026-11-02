@@ -3,7 +3,7 @@
 import json
 from pathlib import Path
 
-from lean_check import check
+from lean_check import ALLOWED_AXIOMS, check
 
 cases = {
     "valid_proof": "import Mathlib.Tactic.Ring\ntheorem sample (x : ℚ) : x + 0 = x := by ring\n",
@@ -19,6 +19,23 @@ for name, source in cases.items():
     path = Path(name + ".lean")
     path.write_text(source)
     result = check(path, ["sample"], output=name, timeout=25)
-    checks[name] = result["checked"] if name == "valid_proof" else not result["checked"]
+    if name == "valid_proof":
+        checks[name] = result["checked"]
+    elif name == "placeholder_rejected":
+        checks[name] = result["status"] == "rejected_source"
+    elif name == "false_claim_unproved":
+        checks[name] = result["status"] == "undecided" and result.get("compile_returncode") == 1
+    elif name == "definition_rejected":
+        checks[name] = (
+            result.get("compile_returncode") == 0
+            and result.get("audit_returncode") == 1
+            and "Not a theorem" in (Path(name) / "audit.log").read_text()
+        )
+    else:
+        checks[name] = (
+            result.get("compile_returncode") == 0
+            and result.get("audit_returncode") == 0
+            and bool(set(result.get("axioms", {}).get("sample", [])) - ALLOWED_AXIOMS)
+        )
 Path("lean_health.json").write_text(json.dumps({"checks": checks}, indent=2))
 assert all(checks.values()), checks

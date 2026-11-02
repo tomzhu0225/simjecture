@@ -46,6 +46,9 @@ def check(source, theorems, *, output="lean-result", timeout=60, memory_mb=2048)
     root = runtime().resolve()
     lean = root / "toolchain/bin/lean"
     env = os.environ.copy()
+    # Imported tooling may call findSysroot independently of the compiler's
+    # executable path. Bind it to this installation after namespace relocation.
+    env["LEAN_SYSROOT"] = str(root / "toolchain")
     # No workspace modules or caller-controlled LEAN_PATH. Dependencies are installed read-only.
     library_paths = [root / "mathlib/.lake/build/lib/lean"]
     library_paths += sorted((root / "mathlib/.lake/packages").glob("*/.lake/build/lib/lean"))
