@@ -37,6 +37,8 @@ an independently generated audit. Each requested name must be a theorem, with
 transitive axioms limited to `propext`, `Classical.choice`, and `Quot.sound`.
 Receipts retain source hashes, runtime identity, exact commands, diagnostics,
 resource limits, and per-theorem axioms. Output directories must be new.
+The generated audit uses one command per declaration so large theorem batches
+do not create a deeply nested command block; Lean's limits stay unchanged.
 `proved` applies only to the named, inspected mathematical statements.
 `undecided`, `timeout`, `unavailable`, and `rejected_source` do not falsify a claim.
 Inspect theorem assumptions and definitions even when the audit passes.
@@ -125,6 +127,13 @@ constant. A fully discrete dissipation argument must account for entropy
 production from the explicit time step; semidiscrete stability alone is not
 sufficient. Read the lower-bound outline in `RESEARCH_NOTES.txt` before extending
 that argument or finalizing the competitor class.
+
+`EntropyRegion.lean` now derives a finite-step dissipation estimate for the
+actual nonlinear Rusanov update under explicit convex-region, Hessian, flux,
+viscosity and timestep conditions. It includes temporal entropy production.
+Do not report this as a full-solver theorem: uniform trajectory membership and
+the bounds for the current CFL=.3 numerical settings remain unproved. Concrete
+state-region bounds, continuum error, and matching work bounds are still needed.
 
 The affine-shear example has analytically known dynamics; its work theorem is
 principally a function-reconstruction result. It does not fulfill a request for

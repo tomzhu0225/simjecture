@@ -9,7 +9,7 @@
     "matching lower bound tied to necessary evolution accuracy",
     "reviewable proof, numerical and PR/report artifacts"
   ],
-  "current_front": "Derive quantitative entropy dissipation for the actual finite-volume time step, while proving the smooth-time/trajectory bounds and nonlinear accuracy bridge. The physical entropy derivatives, convexity and local conservation identity are now checked; numerical entropy loss is observed but not a certified physical error.",
+  "current_front": "Derive concrete uniform state-region/Hessian/flux bounds, prove full trajectory membership and useful timestep/viscosity conditions, then connect entropy dissipation to continuum error and full work. The conditional actual finite-step entropy theorem has passed; full-solve accuracy and optimality remain unproved.",
   "not_completion": [
     "initial-force diagnostics",
     "positivity or conservation alone",
@@ -42,11 +42,12 @@
     "exact positive-coefficient CFL=1/2 counterexample to varying-metric contraction",
     "actual conserved-variable mathematical entropy gradient, positive Hessian and convexity on the admissible state domain",
     "finite doubly stochastic averaging cannot increase mathematical entropy",
-    "canonical entropy-flux potential and local entropy balance derived from differentiable conservative Euler balance"
+    "canonical entropy-flux potential and local entropy balance derived from differentiable conservative Euler balance",
+    "actual nonlinear finite-step entropy dissipation under explicit convex-region, Hessian, flux, viscosity and timestep bounds"
   ],
-  "latest_evidence": "record/solver: 29 audited statements, candidate validation and nine entropy trajectories, replayed through three successful bounded local-lab jobs; research/lab-entropy-01",
+  "latest_evidence": "record/solver: 37 audited statements and two numerical validation jobs, replayed through three successful bounded local-lab jobs; research/lab-step-02. Large audit-command recursion fixed and an 80-theorem regression checked without changing Lean limits.",
   "remaining_obligations": [
-    "quantitative actual-step entropy dissipation and continuous reconstruction/integral bridge for the proposed accuracy-based lower-bound route",
+    "discharge the region, curvature, flux, viscosity and timestep hypotheses for the full solve, plus continuous reconstruction/integral and grid-Poincare bridges for the entropy lower-bound route",
     "common smooth-time and quantitative regularity for the full parameter family",
     "formal initialization/reconstruction bounds",
     "derive uniform coefficient-difference bounds, control metric time variation and bridge principal stability to the actual nonlinear conservative update",

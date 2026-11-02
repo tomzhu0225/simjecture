@@ -162,7 +162,8 @@ Entropy checkpoint, research/lab-entropy-01:
   failures were proof elaboration/notation issues, including finite-index
   normalization and namespace ambiguity; they are retained in research logs.
 
-Next actual-step calculation to formalize (derived outline, NOT yet proved):
+Earlier actual-step calculation outline (superseded by the checked result below;
+its numerical constants differ and were not proved as written):
 Let a convex state set K contain all edge paths and paths from U^n to U^{n+1}.
 Require actual entropy Hessian lambda*I <= H <= M*I on K and actual flux
 Lipschitz constant L. These bounds must be derived for the chosen state set;
@@ -188,3 +189,46 @@ Primary reference inspected: Tadmor, Acta Numerica 12 (2003), sections 7-8,
 https://www.math.umd.edu/~tadmor/pub/TV%2Bentropy/Tadmor_Acta2003.pdf
 It explains balancing spatial dissipation against explicit time entropy
 production. It does not supply a Lean theorem or this family's work lower bound.
+
+Finite-step checkpoint, research/lab-step-02:
+- EntropyTaylor.lean derives a scalar second-derivative remainder estimate using
+  concavity, then applies the actual conservative entropy Hessian to a segment.
+- VectorEstimates.lean and FiniteVolumeEntropy.lean connect the actual Rusanov
+  grid update to six neighbor contributions and periodic flux pairings. The
+  checked increment bound is sum|D_i|^2 <= 6*(A^2+L^2)*sum_edges|deltaU|^2.
+- EntropyGeometry.lean derives the actual symmetric conservative Hessian
+  bilinear form, a Young bound, and its physical flux compatibility.
+- FaceEntropy.lean derives the central entropy residual from those actual
+  derivatives, strong gradient monotonicity, and the dissipative Rusanov term.
+- EntropyRegion.lean packages actual Hessian bounds lambda I <= D2 eta <= M I
+  and flux Lipschitz bound L on a convex admissible region K. If every old and
+  new cell state is in K, M*(1+L^2) <= amin*lambda/2, and
+  3*M*r*(A^2+L^2) <= amin*lambda/8, then
+    sum eta(U_new) <= sum eta(U) - (r*amin*lambda/8)*sum_edges|deltaU|^2.
+  Here amin<=a_d and a_d^2<=A^2. This is a conditional finite-step theorem,
+  not a trajectory bound, continuum error estimate, or optimality result.
+- The direct eight-theorem step-audit-01 passed in about 71 seconds. A full
+  37-theorem sandbox batch compiled but its generated single audit command
+  hit the elaborator recursion limit. lean_check.py now emits one command per
+  declaration. The 80-theorem regression passes without relaxing checker limits.
+  Installed .runtime/lean-4.24.0/share/lean_check.py was refreshed from source;
+  the capability's identity_files records the changed adapter hash.
+
+Next obligations after the conditional finite-step result:
+1. Construct and verify a concrete convex state region and quantitative bounds
+   on its ACTUAL entropy Hessian and flux. One candidate is
+     rho>=1/4, |U_j|<=4 for all components, pressure>=1/4.
+   Its convexity can be proved from pressure concavity using supportEnergy and
+   complete_square in Admissible.lean. It implies rho,p in [1/4,4] and |v|^2<=30.
+   Those bounds have not yet been formalized for this set.
+2. A useful conservative Hessian expression to verify is
+     H_U[k,k] = kr^2/rho + rho*(P/p-kr/rho)^2 + sum_i(kmi-vi*kr)^2/p,
+   where P=pressureD(U,k). This should make concrete coercivity and upper
+   bounds easier. It must be connected to conservativeHessian, not just defined.
+3. Coarse bounds may be too loose for useful viscosity/timestep choices. Do not
+   claim the present maximum-wave-speed/CFL=.3 candidate satisfies them. A
+   sharper estimate using smooth small neighbor jumps and the already checked
+   frozen principal energy machinery is another route worth investigating.
+4. Uniform trajectory membership, existence to T=.25, grid Poincare, continuous
+   reconstruction/integral entropy balance, nonlinear convergence, and the
+   justified competitor class with matching complete work bounds remain open.

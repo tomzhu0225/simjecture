@@ -199,6 +199,12 @@ table(
             "states, finite averaging bound, canonical entropy-flux potential and local "
             "entropy balance implied by differentiable Euler balance.",
         ],
+        [
+            "Actual finite-step entropy estimate",
+            "Flux residual, six-neighbor increment bound and finite-step Taylor remainder "
+            "combine into entropy dissipation under explicit convex-region and step conditions. "
+            "These conditions are not established for the full numerical trajectory.",
+        ],
     ],
     [140, 365],
 )
@@ -329,8 +335,8 @@ for row in entropy_record["rows"]:
         )
 table(rows, [120, 120, 115, 150])
 para(
-    "<b>Remaining argument.</b> Derive a quantitative entropy-loss inequality for the "
-    "actual finite time step, including temporal entropy production. Connect accumulated "
+    "<b>Remaining argument.</b> Discharge the region and step conditions in the new "
+    "finite-step theorem on the next page. Connect accumulated "
     "loss to final continuum error through proved state bounds and the reconstruction. "
     "Only then could a necessary mesh resolution support a total-work lower bound. "
     "The data above do not discharge any of these obligations."
@@ -347,6 +353,68 @@ para(
     "balance between spatial entropy dissipation and explicit time discretization. "
     "The reference is not imported as a Lean theorem.",
     "SmallR",
+)
+
+story.append(PageBreak())
+para("A checked finite-step theorem", "TitleR")
+para(
+    "The new theorem concerns the actual nonlinear Rusanov finite-volume update. "
+    "It includes explicit time discretization. It is a conditional method theorem; "
+    "the required uniform state region and the constants for the complete solve "
+    "remain to be established."
+)
+para("The region conditions", "HeadingR")
+para(
+    "Let K be a convex set of positive-density, positive-pressure conserved states. "
+    "Both the old and the updated cell states must lie in K. Throughout K, for every "
+    "conserved-state tangent k, require<br/>"
+    "λ |k|² ≤ D²η(U)[k,k] ≤ M |k|²,<br/>"
+    "and |F<sub>d</sub>(V) − F<sub>d</sub>(U)|² ≤ L² |V − U|² for every direction. "
+    "These are bounds on the actual physical entropy Hessian and flux, using the "
+    "sum of the five squared nondimensional components. They are not numerical "
+    "error estimates supplied as assumptions."
+)
+para("The viscosity and timestep conditions", "HeadingR")
+para(
+    "Write r = Δt/h and 0 &lt; a<sub>min</sub> ≤ a<sub>d</sub> ≤ a<sub>max</sub> "
+    "for the directional global viscosities. A sufficient pair of conditions is<br/>"
+    "M(1 + L²) ≤ a<sub>min</sub>λ/2,<br/>"
+    "3 M r (a<sub>max</sub>² + L²) ≤ a<sub>min</sub>λ/8."
+)
+para(
+    "With H<sub>total</sub> = Σ<sub>cells</sub> η(U) and "
+    "J = Σ<sub>forward periodic faces</sub> |U<sub>right</sub> − U<sub>left</sub>|², "
+    "Lean proves<br/><b>H<sub>total</sub>(after) ≤ H<sub>total</sub>(before) "
+    "− (r a<sub>min</sub> λ/8) J.</b>"
+)
+para("How the proof connects to the update", "HeadingR")
+table(
+    [
+        ["Checked piece", "Role"],
+        [
+            "Actual entropy calculus",
+            "The derivative of the actual entropy gradient pairs with the Euler flux "
+            "to give the momentum component of the tangent.",
+        ],
+        [
+            "Rusanov face residual",
+            "The Hessian and flux bounds control the central flux term; sufficiently "
+            "large LF viscosity supplies a negative quadratic face contribution.",
+        ],
+        [
+            "Periodic sum and finite step",
+            "The entropy potential telescopes. A six-neighbor quadratic bound and an "
+            "actual Hessian-based Taylor estimate control temporal entropy production.",
+        ],
+    ],
+    [155, 350],
+)
+para(
+    "<b>Practical limitation.</b> These sufficient conditions may require a stronger "
+    "viscosity or smaller step than the current CFL = 0.3 numerical runs. Those runs "
+    "have not been certified to satisfy them. No uniform region, continuum error, "
+    "cost lower bound or optimality result follows until the outstanding hypotheses "
+    "and the full-solve bridges are discharged."
 )
 SimpleDocTemplate(
     str(HERE / "report.pdf"),

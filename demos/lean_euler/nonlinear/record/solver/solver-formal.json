@@ -3,7 +3,7 @@
     "schema_version": "0.1.0",
     "status": "proved",
     "checked": true,
-    "source_sha256": "3300ac727772f2ebe3eae111c584aac98cc86089e4ce0430df61cb8e0f25c442",
+    "source_sha256": "1c9be355e73eca7921f946968ffaf53382fd2a719a489994327827d7407f8529",
     "theorems": [
       "EulerAdmissible.convex_sum_admissible",
       "EulerAdmissible.flux_splitting_admissible",
@@ -33,7 +33,15 @@
       "EulerEntropyConvexity.entropy_convex",
       "EulerEntropyConvexity.averaging_entropy_bound",
       "EulerEntropyDynamics.canonical_entropy_potential",
-      "EulerEntropyDynamics.smooth_entropy_balance"
+      "EulerEntropyDynamics.smooth_entropy_balance",
+      "EulerEntropyTaylor.entropy_taylor_upper",
+      "EulerEntropyGeometry.hessian_flux_compatibility",
+      "EulerFaceEntropy.rusanov_face_entropy_bound",
+      "EulerFiniteVolumeEntropy.update_pairing",
+      "EulerFiniteVolumeEntropy.total_increment_bound",
+      "EulerFiniteVolumeEntropy.entropy_step_bound",
+      "EulerFiniteVolumeEntropy.entropy_step_dissipation",
+      "EulerEntropyRegion.nonlinear_step_entropy_from_region"
     ],
     "allowed_axioms": [
       "Classical.choice",
@@ -185,6 +193,46 @@
         "propext",
         "Classical.choice",
         "Quot.sound"
+      ],
+      "EulerEntropyTaylor.entropy_taylor_upper": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "EulerEntropyGeometry.hessian_flux_compatibility": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "EulerFaceEntropy.rusanov_face_entropy_bound": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "EulerFiniteVolumeEntropy.update_pairing": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+      ],
+      "EulerFiniteVolumeEntropy.total_increment_bound": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+      ],
+      "EulerFiniteVolumeEntropy.entropy_step_bound": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+      ],
+      "EulerFiniteVolumeEntropy.entropy_step_dissipation": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+      ],
+      "EulerEntropyRegion.nonlinear_step_entropy_from_region": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
       ]
     },
     "timeout_seconds": 150,
@@ -223,12 +271,12 @@
     ],
     "compile_returncode": 0,
     "audit_returncode": 0,
-    "wall_seconds": 65.8859244840005,
+    "wall_seconds": 81.8789146250001,
     "artifact_sha256": {
-      "Audit.lean": "a176e14294d41fc386d862bbc95f2b1528eb7cb60acea0c2fa27e4cf13560789",
-      "Candidate.lean": "3300ac727772f2ebe3eae111c584aac98cc86089e4ce0430df61cb8e0f25c442",
-      "Candidate.olean": "2f7d5f5db0ca9727e41784dae261f09c787d09c087c59aec6a32ad3ed74aa5ec",
-      "audit.log": "31c5738b760e28bf1727b538a7db20b087433dd07422e2589846b99b340b8313",
+      "Audit.lean": "68ddf2ae9e2c70041f919312f340a4b4d9b029a241959e184cce0ac0e1cdcff0",
+      "Candidate.lean": "1c9be355e73eca7921f946968ffaf53382fd2a719a489994327827d7407f8529",
+      "Candidate.olean": "799789099788673737f9a2b53a2fee7af7831af09de4aa1aad29883b83a9a3a6",
+      "audit.log": "2b66e5c9eb89f43b044db95b329cb99e7e6e2f6761cf88bda08c8183296aa242",
       "compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     }
   },
@@ -244,7 +292,13 @@
     "VariableStability.lean": "69b482ac05aa707ea5224b8628b6eb7134d0cde4a5320fd75289df32b5d078f6",
     "Entropy.lean": "292c1cd766203fad3cdc1974a4597a4bce0ccf813fa5cd55ff3fadfe3fa93abd",
     "EntropyConvexity.lean": "f313e272e7587bc4d2c0f42e38c2b7aa75395e1078a395ecc3bbb7f875ab1d39",
-    "EntropyDynamics.lean": "a162fa1423477eb3bb4e4e5cd35a152c556ba9ea9fd761acf6ad022a0bf4ff3a"
+    "EntropyDynamics.lean": "a162fa1423477eb3bb4e4e5cd35a152c556ba9ea9fd761acf6ad022a0bf4ff3a",
+    "EntropyTaylor.lean": "843b074d254cd3293b0100888811f1f867a715c8eb54e2c0b4219a675c9808d0",
+    "VectorEstimates.lean": "67bd9a94561bb7105799da71f37ed63b25b27019834a4cba929db43745162aec",
+    "EntropyGeometry.lean": "ab2ab99fb46429153d7006ca1e6cf8492fed31a2dc44a685f1d116f69419e23b",
+    "FaceEntropy.lean": "b9a623f89f7247e148e05f101c91a39ecde41c9f49ac2725bdfa3fb7dd2a892a",
+    "FiniteVolumeEntropy.lean": "5f2146d3945c2a7636c3a465ba9cdb8ce00559c8f25fe66595a3608e9b207634",
+    "EntropyRegion.lean": "e4e571d3f23e51869d24f921516a25fa35d98296a3fb136462b9bf6ea1e3f4ea"
   },
-  "scope": "Nonlinear update admissibility/conservation; conservative-to-primitive derivative connection; frozen and spatially varying principal-update energy estimates; grid-independent 3D embedding; exact noncontraction witness; actual entropy derivatives, convexity, finite averaging bound and local Euler entropy balance. The variable-coefficient estimate assumes explicit state and spatial-difference bounds. Existence, nonlinear full-solve stability, continuum solver accuracy actual-step quantitative entropy dissipation and matching work optimality remain unproved."
+  "scope": "Nonlinear update admissibility/conservation; conservative-to-primitive derivative connection; frozen and spatially varying principal-update energy estimates; grid-independent 3D embedding; exact noncontraction witness; actual entropy derivatives, convexity, finite averaging bound and local Euler entropy balance. The variable-coefficient estimate assumes explicit state and spatial-difference bounds. Existence, nonlinear full-solve stability, continuum solver accuracy and matching work optimality remain unproved. Actual nonlinear finite-step entropy dissipation is checked under explicit convex-region, curvature, flux, viscosity and timestep conditions. Uniform trajectory membership and those conditions for the current numerical settings remain unproved."
 }

@@ -1903,3 +1903,648 @@ theorem smooth_entropy_balance (w ht : State) (hx : Fin 3 → State)
   rw [hprim,entropyDifferential_zero]
 
 end EulerEntropyDynamics
+
+-- Assemble after EntropyConvexity.lean. The finite-step remainder is derived
+-- from the actual entropy Hessian along the segment between the two states.
+noncomputable section
+namespace EulerEntropyTaylor
+open EulerEntropy EulerEntropyConvexity EulerEnergyBounds
+
+theorem scalar_first_derivative_lower (f df : ℝ → ℝ) (C : ℝ)
+    (hf : ∀ t ∈ Set.Icc (0 : ℝ) 1, HasDerivAt f (df t) t)
+    (hdf : ∀ t ∈ Set.Icc (0 : ℝ) 1, C ≤ df t) : C ≤ f 1-f 0 := by
+  let g := fun t => f t-C*t
+  have hg (t : ℝ) (ht : t ∈ Set.Icc (0 : ℝ) 1) : HasDerivAt g (df t-C) t := by
+    convert (hf t ht).sub ((hasDerivAt_id t).const_mul C) using 1
+    ring
+  have hm := monotoneOn_of_hasDerivWithinAt_nonneg (convex_Icc (0 : ℝ) 1)
+    (fun t ht => (hg t ht).continuousAt.continuousWithinAt)
+    (fun t ht => (hg t (interior_subset ht)).hasDerivWithinAt)
+    (fun t ht => sub_nonneg.mpr (hdf t (interior_subset ht)))
+  have hh := hm (by norm_num : (0 : ℝ) ∈ Set.Icc (0 : ℝ) 1)
+    (by norm_num : (1 : ℝ) ∈ Set.Icc (0 : ℝ) 1) (by norm_num : (0 : ℝ) ≤ 1)
+  simp only [g,mul_zero,mul_one,sub_zero] at hh
+  linarith
+
+theorem scalar_first_derivative_upper (f df : ℝ → ℝ) (C : ℝ)
+    (hf : ∀ t ∈ Set.Icc (0 : ℝ) 1, HasDerivAt f (df t) t)
+    (hdf : ∀ t ∈ Set.Icc (0 : ℝ) 1, df t ≤ C) : f 1-f 0 ≤ C := by
+  have hh := scalar_first_derivative_lower (fun t => -f t) (fun t => -df t) (-C)
+    (fun t ht => (hf t ht).neg) (fun t ht => neg_le_neg (hdf t ht))
+  linarith
+
+theorem scalar_second_derivative_upper (f df ddf : ℝ → ℝ) (C : ℝ)
+    (hf : ∀ t ∈ Set.Icc (0 : ℝ) 1, HasDerivAt f (df t) t)
+    (hdf : ∀ t ∈ Set.Icc (0 : ℝ) 1, HasDerivAt df (ddf t) t)
+    (hddf : ∀ t ∈ Set.Icc (0 : ℝ) 1, ddf t ≤ C) :
+    f 1 ≤ f 0+df 0+C/2 := by
+  let g := fun t => f t-(C/2)*t^2
+  let dg := fun t => df t-C*t
+  have hg (t : ℝ) (ht : t ∈ Set.Icc (0 : ℝ) 1) : HasDerivAt g (dg t) t := by
+    convert (hf t ht).sub (((hasDerivAt_id t).pow 2).const_mul (C/2)) using 1
+    dsimp [dg]
+    ring
+  have hdg (t : ℝ) (ht : t ∈ Set.Icc (0 : ℝ) 1) : HasDerivAt dg (ddf t-C) t := by
+    convert (hdf t ht).sub ((hasDerivAt_id t).const_mul C) using 1
+    ring
+  have hc : ConcaveOn ℝ (Set.Icc (0 : ℝ) 1) g :=
+    concaveOn_of_hasDerivWithinAt2_nonpos (convex_Icc (0 : ℝ) 1)
+      (fun t ht => (hg t ht).continuousAt.continuousWithinAt)
+      (fun t ht => (hg t (interior_subset ht)).hasDerivWithinAt)
+      (fun t ht => (hdg t (interior_subset ht)).hasDerivWithinAt)
+      (fun t ht => sub_nonpos.mpr (hddf t (interior_subset ht)))
+  have hi0 : (0 : ℝ) ∈ Set.Icc (0 : ℝ) 1 := by norm_num
+  have hi1 : (1 : ℝ) ∈ Set.Icc (0 : ℝ) 1 := by norm_num
+  have hb := hc.slope_le_of_hasDerivAt hi0 hi1 (by norm_num) (hg 0 hi0)
+  simp only [slope_def_field,g,dg,zero_pow (by norm_num : (2 : ℕ) ≠ 0),
+    one_pow,mul_zero,mul_one,sub_zero,div_one] at hb
+  linarith
+
+def conservativeHessian (u k : State) : ℝ := hessianForm (toPrimitive u) (primitiveD u k)
+
+theorem entropy_taylor_upper (u v : State)
+    (hu : EulerAdmissible.Admissible u) (hv : EulerAdmissible.Admissible v) (M : ℝ)
+    (hH : ∀ t ∈ Set.Icc (0 : ℝ) 1,
+      conservativeHessian (segment u v t) (v-u) ≤ M*sizeSquared (v-u)) :
+    entropy v ≤ entropy u+dot (gradient u) (v-u)+(M/2)*sizeSquared (v-u) := by
+  let f := fun t => entropy (segment u v t)
+  let df := fun t => dot (gradient (segment u v t)) (v-u)
+  let ddf := fun t => conservativeHessian (segment u v t) (v-u)
+  have hf (t : ℝ) (ht : t ∈ Set.Icc (0 : ℝ) 1) : HasDerivAt f (df t) t := by
+    obtain ⟨hr,hp⟩ := segment_admissible u v hu hv t ht
+    exact entropy_derivative (segment_derivative u v t) (ne_of_gt hr) (ne_of_gt hp)
+  have hdf (t : ℝ) (ht : t ∈ Set.Icc (0 : ℝ) 1) : HasDerivAt df (ddf t) t := by
+    obtain ⟨hr,hp⟩ := segment_admissible u v hu hv t ht
+    exact entropy_second_directional (segment_derivative u v t) hr hp
+  have hb := scalar_second_derivative_upper f df ddf (M*sizeSquared (v-u)) hf hdf hH
+  simp [f,df,EulerEntropyConvexity.segment] at hb
+  nlinarith
+
+end EulerEntropyTaylor
+
+-- Finite-dimensional real identities used by the actual finite-volume update.
+noncomputable section
+namespace EulerVectorEstimates
+open EulerEntropy EulerEnergyBounds
+open scoped BigOperators
+
+theorem dot_add_left (x y z : State) : dot (x+y) z=dot x z+dot y z := by dsimp [dot]; ring
+theorem dot_add_right (x y z : State) : dot x (y+z)=dot x y+dot x z := by dsimp [dot]; ring
+theorem dot_sub_left (x y z : State) : dot (x-y) z=dot x z-dot y z := by dsimp [dot]; ring
+theorem dot_sub_right (x y z : State) : dot x (y-z)=dot x y-dot x z := by dsimp [dot]; ring
+theorem dot_smul_left (a : ℝ) (x y : State) : dot (a • x) y=a*dot x y := by dsimp [dot]; ring
+theorem dot_smul_right (a : ℝ) (x y : State) : dot x (a • y)=a*dot x y := by dsimp [dot]; ring
+theorem dot_neg_right (x y : State) : dot x (-y)= -dot x y := by dsimp [dot]; ring
+theorem dot_self (x : State) : dot x x=sizeSquared x := by dsimp [dot,sizeSquared]; ring
+
+theorem dot_sum_right {I : Type*} [Fintype I] (x : State) (u : I → State) :
+    dot x (∑ i, u i) = ∑ i, dot x (u i) := by
+  simp only [dot,Finset.sum_apply,Finset.sum_add_distrib,Finset.mul_sum]
+
+theorem size_nonnegative (x : State) : 0 ≤ sizeSquared x := by dsimp [sizeSquared]; positivity
+theorem size_smul (a : ℝ) (x : State) : sizeSquared (a • x)=a^2*sizeSquared x := by
+  dsimp [sizeSquared]
+  ring
+theorem size_sub_comm (x y : State) : sizeSquared (x-y)=sizeSquared (y-x) := by
+  dsimp [sizeSquared]
+  ring
+theorem size_as_sum (x : State) : sizeSquared x=∑ j, x j^2 := by
+  simp [sizeSquared,Fin.sum_univ_succ]
+  ring
+
+theorem size_add_bound (x y : State) : sizeSquared (x+y) ≤ 2*sizeSquared x+2*sizeSquared y := by
+  dsimp [sizeSquared]
+  nlinarith [sq_nonneg (x 0-y 0),sq_nonneg (x 1-y 1),sq_nonneg (x 2-y 2),
+    sq_nonneg (x 3-y 3),sq_nonneg (x 4-y 4)]
+
+theorem size_sum_bound {I : Type*} [Fintype I] (u : I → State) :
+    sizeSquared (∑ i, u i) ≤ (Fintype.card I : ℝ)*∑ i, sizeSquared (u i) := by
+  have hpoint (j : Fin 5) : (∑ i, u i j)^2 ≤ (Fintype.card I : ℝ)*∑ i, (u i j)^2 := by
+    have hh := Finset.sum_mul_sq_le_sq_mul_sq Finset.univ (fun _ : I => (1 : ℝ)) (fun i => u i j)
+    simpa [nsmul_eq_mul] using hh
+  rw [size_as_sum]
+  simp only [Finset.sum_apply]
+  calc
+    _ ≤ ∑ j, (Fintype.card I : ℝ)*∑ i, (u i j)^2 := Finset.sum_le_sum (fun j _ => hpoint j)
+    _ = (Fintype.card I : ℝ)*∑ i, ∑ j, (u i j)^2 := by
+      rw [← Finset.mul_sum,Finset.sum_comm]
+    _ = _ := by simp only [← size_as_sum]
+
+end EulerVectorEstimates
+
+-- Actual conservative entropy Hessian as a bilinear form, with its physical
+-- flux compatibility. Uniform Hessian constants are explicit hypotheses below.
+noncomputable section
+namespace EulerEntropyGeometry
+open EulerEntropy EulerEntropyTaylor EulerVectorEstimates EulerEnergyBounds
+open EulerConservativePrimitive
+abbrev State := Fin 5 → ℝ
+
+def hessianVector (u k : State) : State := variablesD (toPrimitive u) (primitiveD u k)
+def hessianPair (u k z : State) : ℝ := dot (hessianVector u k) z
+
+def primitivePair (w h k : State) : ℝ :=
+  h 4*k 4/(2*(w 4)^2*w 0)+(h 1*k 1+h 2*k 2+h 3*k 3)/(w 4*(w 0)^2)+
+    (2/w 0)*(h 0/w 0+h 4/(2*w 4))*(k 0/w 0+k 4/(2*w 4))
+
+theorem hessian_pullback_bilinear (w h k : State) (hq : w 0 ≠ 0) (hp : w 4 ≠ 0) :
+    dot (variablesD w h) (jacobian w k)=primitivePair w h k := by
+  dsimp [dot,variablesD,jacobian,kinetic,kineticD,primitivePair]
+  field_simp
+  ring
+
+theorem hessian_pair_primitive (u k z : State) (hu : EulerAdmissible.Admissible u) :
+    hessianPair u k z=primitivePair (toPrimitive u) (primitiveD u k) (primitiveD u z) := by
+  have hh := hessian_pullback_bilinear (toPrimitive u) (primitiveD u k) (primitiveD u z)
+    (by dsimp [toPrimitive]; exact ne_of_gt (one_div_pos.mpr hu.1)) (ne_of_gt hu.2)
+  rw [jacobian_primitiveD u z (ne_of_gt hu.1)] at hh
+  exact hh
+
+theorem hessian_pair_self (u k : State) (hu : EulerAdmissible.Admissible u) :
+    hessianPair u k k=conservativeHessian u k := by
+  rw [hessian_pair_primitive u k k hu]
+  dsimp [primitivePair,conservativeHessian,hessianForm]
+  ring
+
+theorem hessian_pair_symmetric (u k z : State) (hu : EulerAdmissible.Admissible u) :
+    hessianPair u k z=hessianPair u z k := by
+  rw [hessian_pair_primitive u k z hu,hessian_pair_primitive u z k hu]
+  dsimp [primitivePair]
+  ring
+
+theorem primitiveD_sub (u k z : State) : primitiveD u (k-z)=primitiveD u k-primitiveD u z := by
+  funext i
+  fin_cases i <;> dsimp [primitiveD,pressureD] <;> ring
+
+theorem variablesD_sub (w k z : State) : variablesD w (k-z)=variablesD w k-variablesD w z := by
+  funext i
+  fin_cases i <;> dsimp [variablesD,kineticD] <;> ring
+
+theorem hessian_pair_sub_left (u x y z : State) :
+    hessianPair u (x-y) z=hessianPair u x z-hessianPair u y z := by
+  simp only [hessianPair,hessianVector,primitiveD_sub,variablesD_sub,dot_sub_left]
+
+theorem hessian_pair_sub_right (u x y z : State) :
+    hessianPair u x (y-z)=hessianPair u x y-hessianPair u x z := by
+  simp only [hessianPair,dot_sub_right]
+
+theorem hessian_young_bound (u k z : State) (hu : EulerAdmissible.Admissible u) (M : ℝ)
+    (hk : conservativeHessian u k ≤ M*sizeSquared k)
+    (hz : conservativeHessian u z ≤ M*sizeSquared z) :
+    hessianPair u k z ≤ (M/2)*(sizeSquared k+sizeSquared z) := by
+  have hn : 0 ≤ hessianPair u (k-z) (k-z) := by
+    rw [hessian_pair_self u _ hu]
+    exact hessian_nonnegative _ _ (by dsimp [toPrimitive]; exact one_div_pos.mpr hu.1) hu.2
+  rw [hessian_pair_sub_left,hessian_pair_sub_right,hessian_pair_sub_right,
+    hessian_pair_symmetric u z k hu,hessian_pair_self u k hu,hessian_pair_self u z hu] at hn
+  linarith
+
+theorem primitive_hessian_flux (w h : State) (hq : w 0 ≠ 0) (hp : w 4 ≠ 0) (d : Fin 3) :
+    dot (variablesD w h) (primitiveFlux w d)=(jacobian w h) ⟨d.val+1,by omega⟩ := by
+  fin_cases d <;> dsimp [dot,variablesD,primitiveFlux,jacobian,kinetic,kineticD] <;>
+    field_simp <;> ring
+
+theorem hessian_flux_compatibility (u k : State) (hu : EulerAdmissible.Admissible u) (d : Fin 3) :
+    hessianPair u k (EulerAdmissible.eulerFlux u d)=k ⟨d.val+1,by omega⟩ := by
+  have hq : 0 < toPrimitive u 0 := by dsimp [toPrimitive]; exact one_div_pos.mpr hu.1
+  have hc := canonical_flux (toPrimitive u) hq d
+  rw [conserved_toPrimitive u (ne_of_gt hu.1)] at hc
+  dsimp [hessianPair,hessianVector]
+  rw [hc,primitive_hessian_flux _ _ (ne_of_gt hq) (ne_of_gt hu.2) d,
+    jacobian_primitiveD u k (ne_of_gt hu.1)]
+
+theorem gradient_pair_derivative {u : ℝ → State} {k : State} {t : ℝ}
+    (hder : HasDerivAt u k t) (hu : EulerAdmissible.Admissible (u t)) (z : State) :
+    HasDerivAt (fun s => dot (gradient (u s)) z) (hessianPair (u t) k z) t :=
+  dot_derivative (gradient_derivative hder hu.1 hu.2) z
+
+end EulerEntropyGeometry
+
+-- Actual Rusanov face entropy residual from proved entropy calculus. The
+-- quantitative Hessian and flux bounds on the state segment are explicit.
+noncomputable section
+namespace EulerFaceEntropy
+open EulerEntropy EulerEntropyTaylor EulerEntropyConvexity EulerEntropyGeometry
+open EulerVectorEstimates EulerEnergyBounds
+abbrev State := Fin 5 → ℝ
+
+def meanFlux (u v : State) (d : Fin 3) : State :=
+  (1/2 : ℝ) • (EulerAdmissible.eulerFlux u d+EulerAdmissible.eulerFlux v d)
+
+theorem flux_midpoint_bound (u v w : State) (d : Fin 3) (L : ℝ)
+    (h0 : sizeSquared (EulerAdmissible.eulerFlux w d-EulerAdmissible.eulerFlux u d) ≤
+      L^2*sizeSquared (v-u))
+    (h1 : sizeSquared (EulerAdmissible.eulerFlux w d-EulerAdmissible.eulerFlux v d) ≤
+      L^2*sizeSquared (v-u)) :
+    sizeSquared (meanFlux u v d-EulerAdmissible.eulerFlux w d) ≤ L^2*sizeSquared (v-u) := by
+  have he : meanFlux u v d-EulerAdmissible.eulerFlux w d = (1/2 : ℝ) •
+      ((EulerAdmissible.eulerFlux u d-EulerAdmissible.eulerFlux w d)+
+        (EulerAdmissible.eulerFlux v d-EulerAdmissible.eulerFlux w d)) := by
+    funext j
+    dsimp [meanFlux]
+    ring
+  rw [he,size_smul]
+  have hh := size_add_bound (EulerAdmissible.eulerFlux u d-EulerAdmissible.eulerFlux w d)
+    (EulerAdmissible.eulerFlux v d-EulerAdmissible.eulerFlux w d)
+  rw [size_sub_comm (EulerAdmissible.eulerFlux u d) _,size_sub_comm (EulerAdmissible.eulerFlux v d) _] at hh
+  nlinarith
+
+theorem residual_derivative (u v : State) (d : Fin 3) (t : ℝ)
+    (ht : EulerAdmissible.Admissible (EulerEntropyConvexity.segment u v t)) :
+    HasDerivAt (fun s => dot (gradient (EulerEntropyConvexity.segment u v s)) (meanFlux u v d)-
+      (EulerEntropyConvexity.segment u v s) ⟨d.val+1,by omega⟩)
+      (hessianPair (EulerEntropyConvexity.segment u v t) (v-u)
+        (meanFlux u v d-EulerAdmissible.eulerFlux (EulerEntropyConvexity.segment u v t) d)) t := by
+  have hcurve := segment_derivative u v t
+  have hh := (gradient_pair_derivative hcurve ht (meanFlux u v d)).sub
+    ((hasDerivAt_pi.mp hcurve) ⟨d.val+1,by omega⟩)
+  simpa only [hessian_pair_sub_right,hessian_flux_compatibility _ _ ht d] using hh
+
+theorem central_entropy_residual (u v : State) (d : Fin 3) (M L : ℝ)
+    (hu : EulerAdmissible.Admissible u) (hv : EulerAdmissible.Admissible v) (hM : 0 ≤ M)
+    (hH : ∀ t ∈ Set.Icc (0 : ℝ) 1, ∀ k,
+      conservativeHessian (EulerEntropyConvexity.segment u v t) k ≤ M*sizeSquared k)
+    (hF : ∀ t ∈ Set.Icc (0 : ℝ) 1,
+      sizeSquared (EulerAdmissible.eulerFlux (EulerEntropyConvexity.segment u v t) d-
+        EulerAdmissible.eulerFlux u d) ≤ L^2*sizeSquared (v-u) ∧
+      sizeSquared (EulerAdmissible.eulerFlux (EulerEntropyConvexity.segment u v t) d-
+        EulerAdmissible.eulerFlux v d) ≤ L^2*sizeSquared (v-u)) :
+    dot (gradient v-gradient u) (meanFlux u v d)-(v ⟨d.val+1,by omega⟩-u ⟨d.val+1,by omega⟩) ≤
+      (M/2)*(1+L^2)*sizeSquared (v-u) := by
+  let f := fun t => dot (gradient (EulerEntropyConvexity.segment u v t)) (meanFlux u v d)-
+    (EulerEntropyConvexity.segment u v t) ⟨d.val+1,by omega⟩
+  let df := fun t => hessianPair (EulerEntropyConvexity.segment u v t) (v-u)
+    (meanFlux u v d-EulerAdmissible.eulerFlux (EulerEntropyConvexity.segment u v t) d)
+  have hd (t : ℝ) (ht : t ∈ Set.Icc (0 : ℝ) 1) : HasDerivAt f (df t) t :=
+    residual_derivative u v d t (segment_admissible u v hu hv t ht)
+  have hb (t : ℝ) (ht : t ∈ Set.Icc (0 : ℝ) 1) :
+      df t ≤ (M/2)*(1+L^2)*sizeSquared (v-u) := by
+    have hh := hessian_young_bound (EulerEntropyConvexity.segment u v t) (v-u)
+      (meanFlux u v d-EulerAdmissible.eulerFlux (EulerEntropyConvexity.segment u v t) d)
+      (segment_admissible u v hu hv t ht) M
+      (hH t ht _) (hH t ht _)
+    have hflux := flux_midpoint_bound u v (EulerEntropyConvexity.segment u v t) d L
+      (hF t ht).1 (hF t ht).2
+    have hmult := mul_le_mul_of_nonneg_left hflux (by positivity : 0 ≤ M/2)
+    dsimp [df]
+    nlinarith
+  have hs := scalar_first_derivative_upper f df ((M/2)*(1+L^2)*sizeSquared (v-u)) hd hb
+  simp [f,EulerEntropyConvexity.segment] at hs
+  rw [dot_sub_left]
+  linarith
+
+theorem gradient_strong_monotonicity (u v : State) (lambda : ℝ)
+    (hu : EulerAdmissible.Admissible u) (hv : EulerAdmissible.Admissible v)
+    (hH : ∀ t ∈ Set.Icc (0 : ℝ) 1,
+      lambda*sizeSquared (v-u) ≤ conservativeHessian (EulerEntropyConvexity.segment u v t) (v-u)) :
+    lambda*sizeSquared (v-u) ≤ dot (gradient v-gradient u) (v-u) := by
+  let f := fun t => dot (gradient (EulerEntropyConvexity.segment u v t)) (v-u)
+  let df := fun t => conservativeHessian (EulerEntropyConvexity.segment u v t) (v-u)
+  have hd (t : ℝ) (ht : t ∈ Set.Icc (0 : ℝ) 1) : HasDerivAt f (df t) t := by
+    have h := segment_admissible u v hu hv t ht
+    exact entropy_second_directional (segment_derivative u v t) h.1 h.2
+  have hs := scalar_first_derivative_lower f df (lambda*sizeSquared (v-u)) hd hH
+  simpa [f,EulerEntropyConvexity.segment,dot_sub_left] using hs
+
+theorem rusanov_face_entropy_bound (u v : State) (d : Fin 3) (a M L lambda : ℝ)
+    (hu : EulerAdmissible.Admissible u) (hv : EulerAdmissible.Admissible v)
+    (ha : 0 ≤ a) (hM : 0 ≤ M)
+    (hHupper : ∀ t ∈ Set.Icc (0 : ℝ) 1, ∀ k,
+      conservativeHessian (EulerEntropyConvexity.segment u v t) k ≤ M*sizeSquared k)
+    (hHlower : ∀ t ∈ Set.Icc (0 : ℝ) 1,
+      lambda*sizeSquared (v-u) ≤ conservativeHessian (EulerEntropyConvexity.segment u v t) (v-u))
+    (hF : ∀ t ∈ Set.Icc (0 : ℝ) 1,
+      sizeSquared (EulerAdmissible.eulerFlux (EulerEntropyConvexity.segment u v t) d-
+        EulerAdmissible.eulerFlux u d) ≤ L^2*sizeSquared (v-u) ∧
+      sizeSquared (EulerAdmissible.eulerFlux (EulerEntropyConvexity.segment u v t) d-
+        EulerAdmissible.eulerFlux v d) ≤ L^2*sizeSquared (v-u))
+    (hvisc : M*(1+L^2) ≤ a*lambda/2) :
+    dot (gradient v-gradient u) (EulerAdmissible.faceFlux u v a d)-
+      (v ⟨d.val+1,by omega⟩-u ⟨d.val+1,by omega⟩) ≤
+      -(a*lambda/4)*sizeSquared (v-u) := by
+  have hcentral := central_entropy_residual u v d M L hu hv hM hHupper hF
+  have hmono := gradient_strong_monotonicity u v lambda hu hv hHlower
+  have hmult := mul_le_mul_of_nonneg_left hmono (by positivity : 0 ≤ a/2)
+  have hmargin := mul_le_mul_of_nonneg_right hvisc (size_nonnegative (v-u))
+  have he : dot (gradient v-gradient u) (EulerAdmissible.faceFlux u v a d) =
+      dot (gradient v-gradient u) (meanFlux u v d)-(a/2)*dot (gradient v-gradient u) (v-u) := by
+    simp only [EulerAdmissible.faceFlux,meanFlux,dot_smul_right,dot_sub_right,dot_add_right]
+    ring
+  rw [he]
+  nlinarith
+
+end EulerFaceEntropy
+
+-- Algebra and quadratic estimates for the actual nonlinear Rusanov update.
+-- Spatial entropy residuals and Hessian bounds are still required to obtain
+-- a quantitative finite-step dissipation theorem.
+noncomputable section
+namespace EulerFiniteVolumeEntropy
+open EulerEntropy EulerEnergyBounds EulerVectorEstimates
+open scoped BigOperators
+
+def gridFace {I : Type*} (u : I → State) (neighbor : Fin 3 → Equiv.Perm I)
+    (a : Fin 3 → ℝ) (d : Fin 3) (i : I) : State :=
+  EulerAdmissible.faceFlux (u i) (u (neighbor d i)) (a d) d
+
+def gridIncrement {I : Type*} (u : I → State) (neighbor : Fin 3 → Equiv.Perm I)
+    (a : Fin 3 → ℝ) (i : I) : State :=
+  -(∑ d, (gridFace u neighbor a d i-gridFace u neighbor a d ((neighbor d).symm i)))
+
+def gridUpdate {I : Type*} (u : I → State) (neighbor : Fin 3 → Equiv.Perm I)
+    (a : Fin 3 → ℝ) (ratio : ℝ) (i : I) : State :=
+  EulerAdmissible.update (u i) (fun d => u (neighbor d i))
+    (fun d => u ((neighbor d).symm i)) ratio a
+
+theorem update_increment {I : Type*} (u : I → State) (neighbor : Fin 3 → Equiv.Perm I)
+    (a : Fin 3 → ℝ) (ratio : ℝ) (i : I) :
+    gridUpdate u neighbor a ratio i=u i+ratio • gridIncrement u neighbor a i := by
+  funext j
+  simp [gridUpdate,EulerAdmissible.update,gridIncrement,gridFace,Fin.sum_univ_succ]
+  ring
+
+theorem periodic_pairing {I : Type*} [Fintype I] (neighbor : Equiv.Perm I) (g flux : I → State) :
+    (∑ i, dot (g i) (flux i-flux (neighbor.symm i))) =
+      -(∑ i, dot (g (neighbor i)-g i) (flux i)) := by
+  have heq : (∑ i, dot (g i) (flux (neighbor.symm i))) =
+      ∑ i, dot (g (neighbor i)) (flux i) := by
+    have h := Equiv.sum_comp neighbor (fun i => dot (g i) (flux (neighbor.symm i)))
+    simpa only [Equiv.symm_apply_apply] using h.symm
+  simp only [dot_sub_right,dot_sub_left,Finset.sum_sub_distrib,heq]
+  ring
+
+theorem increment_pairing {I : Type*} [Fintype I] (u : I → State)
+    (neighbor : Fin 3 → Equiv.Perm I) (a : Fin 3 → ℝ) (g : I → State) :
+    (∑ i, dot (g i) (gridIncrement u neighbor a i)) =
+      ∑ d, ∑ i, dot (g (neighbor d i)-g i) (gridFace u neighbor a d i) := by
+  simp only [gridIncrement,dot_neg_right,dot_sum_right,Finset.sum_neg_distrib]
+  rw [Finset.sum_comm]
+  simp only [periodic_pairing,Finset.sum_neg_distrib,neg_neg]
+
+theorem update_pairing {I : Type*} [Fintype I] (u : I → State)
+    (neighbor : Fin 3 → Equiv.Perm I) (a : Fin 3 → ℝ) (ratio : ℝ) (g : I → State) :
+    (∑ i, dot (g i) (gridUpdate u neighbor a ratio i-u i)) =
+      ratio*(∑ d, ∑ i, dot (g (neighbor d i)-g i) (gridFace u neighbor a d i)) := by
+  simp only [update_increment,add_sub_cancel_left,dot_smul_right,← Finset.mul_sum,increment_pairing]
+
+def edgeAction (u v : State) (a sign : ℝ) (d : Fin 3) : State :=
+  a • (v-u)+sign • (EulerAdmissible.eulerFlux v d-EulerAdmissible.eulerFlux u d)
+
+theorem edge_action_bound (u v : State) (a sign A L : ℝ) (d : Fin 3)
+    (ha : a^2 ≤ A^2) (hs : sign^2=1)
+    (hF : sizeSquared (EulerAdmissible.eulerFlux v d-EulerAdmissible.eulerFlux u d) ≤
+      L^2*sizeSquared (v-u)) :
+    sizeSquared (edgeAction u v a sign d) ≤ 2*(A^2+L^2)*sizeSquared (v-u) := by
+  have hh := size_add_bound (a • (v-u))
+    (sign • (EulerAdmissible.eulerFlux v d-EulerAdmissible.eulerFlux u d))
+  simp only [size_smul,hs,one_mul] at hh
+  have hmult := mul_le_mul_of_nonneg_right ha (size_nonnegative (v-u))
+  dsimp [edgeAction]
+  nlinarith
+
+def neighborState {I : Type*} (u : I → State) (neighbor : Fin 3 → Equiv.Perm I)
+    (i : I) : Fin 6 → State :=
+  ![u (neighbor 0 i),u ((neighbor 0).symm i),u (neighbor 1 i),u ((neighbor 1).symm i),
+    u (neighbor 2 i),u ((neighbor 2).symm i)]
+
+def contributions {I : Type*} (u : I → State) (neighbor : Fin 3 → Equiv.Perm I)
+    (a : Fin 3 → ℝ) (i : I) : Fin 6 → State :=
+  ![edgeAction (u i) (u (neighbor 0 i)) (a 0) (-1) 0,
+    edgeAction (u i) (u ((neighbor 0).symm i)) (a 0) 1 0,
+    edgeAction (u i) (u (neighbor 1 i)) (a 1) (-1) 1,
+    edgeAction (u i) (u ((neighbor 1).symm i)) (a 1) 1 1,
+    edgeAction (u i) (u (neighbor 2 i)) (a 2) (-1) 2,
+    edgeAction (u i) (u ((neighbor 2).symm i)) (a 2) 1 2]
+
+theorem increment_six_neighbors {I : Type*} (u : I → State)
+    (neighbor : Fin 3 → Equiv.Perm I) (a : Fin 3 → ℝ) (i : I) :
+    gridIncrement u neighbor a i=(1/2 : ℝ) • ∑ j, contributions u neighbor a i j := by
+  funext k
+  simp [gridIncrement,gridFace,contributions,edgeAction,EulerAdmissible.faceFlux,Fin.sum_univ_succ]
+  ring
+
+theorem point_increment_bound {I : Type*} (u : I → State)
+    (neighbor : Fin 3 → Equiv.Perm I) (a : Fin 3 → ℝ) (A L : ℝ)
+    (ha : ∀ d, (a d)^2 ≤ A^2)
+    (hF : ∀ i j d, sizeSquared (EulerAdmissible.eulerFlux (neighborState u neighbor i j) d-
+      EulerAdmissible.eulerFlux (u i) d) ≤ L^2*sizeSquared (neighborState u neighbor i j-u i))
+    (i : I) : sizeSquared (gridIncrement u neighbor a i) ≤
+      3*(A^2+L^2)*(∑ j, sizeSquared (neighborState u neighbor i j-u i)) := by
+  have hc (j : Fin 6) : sizeSquared (contributions u neighbor a i j) ≤
+      2*(A^2+L^2)*sizeSquared (neighborState u neighbor i j-u i) := by
+    fin_cases j
+    · exact edge_action_bound _ _ _ _ _ _ _ (ha 0) (by norm_num) (hF i 0 0)
+    · exact edge_action_bound _ _ _ _ _ _ _ (ha 0) (by norm_num) (hF i 1 0)
+    · exact edge_action_bound _ _ _ _ _ _ _ (ha 1) (by norm_num) (hF i 2 1)
+    · exact edge_action_bound _ _ _ _ _ _ _ (ha 1) (by norm_num) (hF i 3 1)
+    · exact edge_action_bound _ _ _ _ _ _ _ (ha 2) (by norm_num) (hF i 4 2)
+    · exact edge_action_bound _ _ _ _ _ _ _ (ha 2) (by norm_num) (hF i 5 2)
+  have hs := Finset.sum_le_sum (fun j (_ : j ∈ Finset.univ) => hc j)
+  rw [← Finset.mul_sum] at hs
+  have hb := size_sum_bound (contributions u neighbor a i)
+  norm_num only [Fintype.card_fin,Nat.cast_ofNat] at hb
+  rw [increment_six_neighbors,size_smul]
+  nlinarith
+
+def edgeEnergy {I : Type*} [Fintype I] (u : I → State) (neighbor : Fin 3 → Equiv.Perm I) : ℝ :=
+  ∑ d, ∑ i, sizeSquared (u (neighbor d i)-u i)
+
+theorem neighbor_energy_sum {I : Type*} [Fintype I] (u : I → State)
+    (neighbor : Fin 3 → Equiv.Perm I) :
+    (∑ i, ∑ j, sizeSquared (neighborState u neighbor i j-u i)) = 2*edgeEnergy u neighbor := by
+  have heq (d : Fin 3) : (∑ i, sizeSquared (u ((neighbor d).symm i)-u i)) =
+      ∑ i, sizeSquared (u (neighbor d i)-u i) := by
+    have hh := Equiv.sum_comp (neighbor d) (fun i => sizeSquared (u ((neighbor d).symm i)-u i))
+    simpa only [Equiv.symm_apply_apply,size_sub_comm] using hh.symm
+  simp [neighborState,Fin.sum_univ_succ,Finset.sum_add_distrib,heq,edgeEnergy]
+  ring
+
+theorem total_increment_bound {I : Type*} [Fintype I] (u : I → State)
+    (neighbor : Fin 3 → Equiv.Perm I) (a : Fin 3 → ℝ) (A L : ℝ)
+    (ha : ∀ d, (a d)^2 ≤ A^2)
+    (hF : ∀ i j d, sizeSquared (EulerAdmissible.eulerFlux (neighborState u neighbor i j) d-
+      EulerAdmissible.eulerFlux (u i) d) ≤ L^2*sizeSquared (neighborState u neighbor i j-u i)) :
+    (∑ i, sizeSquared (gridIncrement u neighbor a i)) ≤
+      6*(A^2+L^2)*edgeEnergy u neighbor := by
+  calc
+    _ ≤ ∑ i, 3*(A^2+L^2)*(∑ j, sizeSquared (neighborState u neighbor i j-u i)) :=
+      Finset.sum_le_sum (fun i _ => point_increment_bound u neighbor a A L ha hF i)
+    _ = _ := by rw [← Finset.mul_sum,neighbor_energy_sum]; ring
+
+theorem edge_energy_nonnegative {I : Type*} [Fintype I] (u : I → State)
+    (neighbor : Fin 3 → Equiv.Perm I) : 0 ≤ edgeEnergy u neighbor :=
+  Finset.sum_nonneg (fun _ _ => Finset.sum_nonneg (fun _ _ => size_nonnegative _))
+
+theorem face_entropy_sum_bound {I : Type*} [Fintype I] (u : I → State)
+    (neighbor : Fin 3 → Equiv.Perm I) (a : Fin 3 → ℝ) (C : ℝ)
+    (hface : ∀ d i, dot (gradient (u (neighbor d i))-gradient (u i)) (gridFace u neighbor a d i)-
+      (u (neighbor d i) ⟨d.val+1,by omega⟩-u i ⟨d.val+1,by omega⟩) ≤
+        -C*sizeSquared (u (neighbor d i)-u i)) :
+    (∑ d, ∑ i, dot (gradient (u (neighbor d i))-gradient (u i)) (gridFace u neighbor a d i)) ≤
+      -C*edgeEnergy u neighbor := by
+  have hp (d : Fin 3) : (∑ i, (u (neighbor d i) ⟨d.val+1,by omega⟩-u i ⟨d.val+1,by omega⟩))=0 := by
+    rw [Finset.sum_sub_distrib]
+    have hh := Equiv.sum_comp (neighbor d) (fun i => u i ⟨d.val+1,by omega⟩)
+    rw [hh,sub_self]
+  have hd (d : Fin 3) :
+      (∑ i, dot (gradient (u (neighbor d i))-gradient (u i)) (gridFace u neighbor a d i)) ≤
+        -C*(∑ i, sizeSquared (u (neighbor d i)-u i)) := by
+    calc
+      _ ≤ ∑ i, ((u (neighbor d i) ⟨d.val+1,by omega⟩-u i ⟨d.val+1,by omega⟩)-
+          C*sizeSquared (u (neighbor d i)-u i)) :=
+        Finset.sum_le_sum (fun i _ => by linarith [hface d i])
+      _ = _ := by rw [Finset.sum_sub_distrib,hp,← Finset.mul_sum]; ring
+  calc
+    _ ≤ ∑ d, -C*(∑ i, sizeSquared (u (neighbor d i)-u i)) := Finset.sum_le_sum (fun d _ => hd d)
+    _ = _ := by rw [← Finset.mul_sum]; rfl
+
+theorem entropy_step_bound {I : Type*} [Fintype I] (u : I → State)
+    (neighbor : Fin 3 → Equiv.Perm I) (a : Fin 3 → ℝ) (ratio A L M C : ℝ)
+    (hr : 0 ≤ ratio) (hM : 0 ≤ M)
+    (hu : ∀ i, EulerAdmissible.Admissible (u i))
+    (hv : ∀ i, EulerAdmissible.Admissible (gridUpdate u neighbor a ratio i))
+    (ha : ∀ d, (a d)^2 ≤ A^2)
+    (hF : ∀ i j d, sizeSquared (EulerAdmissible.eulerFlux (neighborState u neighbor i j) d-
+      EulerAdmissible.eulerFlux (u i) d) ≤ L^2*sizeSquared (neighborState u neighbor i j-u i))
+    (hH : ∀ i t, t ∈ Set.Icc (0 : ℝ) 1 →
+      EulerEntropyTaylor.conservativeHessian
+        (EulerEntropyConvexity.segment (u i) (gridUpdate u neighbor a ratio i) t)
+        (gridUpdate u neighbor a ratio i-u i) ≤ M*sizeSquared (gridUpdate u neighbor a ratio i-u i))
+    (hface : ∀ d i, dot (gradient (u (neighbor d i))-gradient (u i)) (gridFace u neighbor a d i)-
+      (u (neighbor d i) ⟨d.val+1,by omega⟩-u i ⟨d.val+1,by omega⟩) ≤
+        -C*sizeSquared (u (neighbor d i)-u i)) :
+    (∑ i, entropy (gridUpdate u neighbor a ratio i)) ≤ (∑ i, entropy (u i))-
+      ratio*C*edgeEnergy u neighbor+3*M*ratio^2*(A^2+L^2)*edgeEnergy u neighbor := by
+  have hlinear : (∑ i, dot (gradient (u i)) (gridUpdate u neighbor a ratio i-u i)) ≤
+      -ratio*C*edgeEnergy u neighbor := by
+    rw [update_pairing]
+    have hh := mul_le_mul_of_nonneg_left (face_entropy_sum_bound u neighbor a C hface) hr
+    convert hh using 1
+    ring
+  have hquad : (∑ i, sizeSquared (gridUpdate u neighbor a ratio i-u i)) ≤
+      ratio^2*(6*(A^2+L^2)*edgeEnergy u neighbor) := by
+    simp only [update_increment,add_sub_cancel_left,size_smul,← Finset.mul_sum]
+    exact mul_le_mul_of_nonneg_left (total_increment_bound u neighbor a A L ha hF) (sq_nonneg ratio)
+  have ht (i : I) := EulerEntropyTaylor.entropy_taylor_upper (u i) (gridUpdate u neighbor a ratio i)
+    (hu i) (hv i) M (hH i)
+  have hs := Finset.sum_le_sum (fun i (_ : i ∈ Finset.univ) => ht i)
+  simp only [Finset.sum_add_distrib,← Finset.mul_sum] at hs
+  have hquadratic := mul_le_mul_of_nonneg_left hquad (by positivity : 0 ≤ M/2)
+  nlinarith
+
+theorem entropy_step_dissipation {I : Type*} [Fintype I] (u : I → State)
+    (neighbor : Fin 3 → Equiv.Perm I) (a : Fin 3 → ℝ) (ratio A L M C : ℝ)
+    (hr : 0 ≤ ratio) (hM : 0 ≤ M)
+    (hu : ∀ i, EulerAdmissible.Admissible (u i))
+    (hv : ∀ i, EulerAdmissible.Admissible (gridUpdate u neighbor a ratio i))
+    (ha : ∀ d, (a d)^2 ≤ A^2)
+    (hF : ∀ i j d, sizeSquared (EulerAdmissible.eulerFlux (neighborState u neighbor i j) d-
+      EulerAdmissible.eulerFlux (u i) d) ≤ L^2*sizeSquared (neighborState u neighbor i j-u i))
+    (hH : ∀ i t, t ∈ Set.Icc (0 : ℝ) 1 →
+      EulerEntropyTaylor.conservativeHessian
+        (EulerEntropyConvexity.segment (u i) (gridUpdate u neighbor a ratio i) t)
+        (gridUpdate u neighbor a ratio i-u i) ≤ M*sizeSquared (gridUpdate u neighbor a ratio i-u i))
+    (hface : ∀ d i, dot (gradient (u (neighbor d i))-gradient (u i)) (gridFace u neighbor a d i)-
+      (u (neighbor d i) ⟨d.val+1,by omega⟩-u i ⟨d.val+1,by omega⟩) ≤
+        -C*sizeSquared (u (neighbor d i)-u i))
+    (hstep : 3*M*ratio*(A^2+L^2) ≤ C/2) :
+    (∑ i, entropy (gridUpdate u neighbor a ratio i)) ≤ (∑ i, entropy (u i))-
+      (ratio*C/2)*edgeEnergy u neighbor := by
+  have hb := entropy_step_bound u neighbor a ratio A L M C hr hM hu hv ha hF hH hface
+  have hs := mul_le_mul_of_nonneg_right hstep (mul_nonneg hr (edge_energy_nonnegative u neighbor))
+  nlinarith
+
+end EulerFiniteVolumeEntropy
+
+-- Conditional finite-step theorem for the actual nonlinear method. The region
+-- is defined by actual entropy-Hessian and physical-flux bounds; proving the
+-- full trajectory stays in such a region remains an explicit obligation.
+noncomputable section
+namespace EulerEntropyRegion
+open EulerEntropy EulerEntropyTaylor EulerEntropyGeometry EulerFaceEntropy
+open EulerFiniteVolumeEntropy EulerVectorEstimates EulerEnergyBounds
+open scoped BigOperators
+abbrev State := Fin 5 → ℝ
+
+structure RegionBounds (K : Set State) (M lambda L : ℝ) : Prop where
+  convex : Convex ℝ K
+  admissible : ∀ u ∈ K, EulerAdmissible.Admissible u
+  hessian_upper : ∀ u ∈ K, ∀ k, conservativeHessian u k ≤ M*sizeSquared k
+  hessian_lower : ∀ u ∈ K, ∀ k, lambda*sizeSquared k ≤ conservativeHessian u k
+  flux_bound : ∀ u ∈ K, ∀ v ∈ K, ∀ d,
+    sizeSquared (EulerAdmissible.eulerFlux v d-EulerAdmissible.eulerFlux u d) ≤ L^2*sizeSquared (v-u)
+
+theorem segment_in_region (K : Set State) (hc : Convex ℝ K) (u v : State)
+    (hu : u ∈ K) (hv : v ∈ K) (t : ℝ) (ht : t ∈ Set.Icc (0 : ℝ) 1) :
+    EulerEntropyConvexity.segment u v t ∈ K := by
+  rw [EulerEntropyConvexity.segment_mix]
+  exact hc hu hv (sub_nonneg.mpr ht.2) ht.1 (by ring)
+
+theorem segment_distance_bounds (u v : State) (t : ℝ) (ht : t ∈ Set.Icc (0 : ℝ) 1) :
+    sizeSquared (EulerEntropyConvexity.segment u v t-u) ≤ sizeSquared (v-u) ∧
+    sizeSquared (EulerEntropyConvexity.segment u v t-v) ≤ sizeSquared (v-u) := by
+  have hS := size_nonnegative (v-u)
+  have ht2 : t^2 ≤ 1 := by nlinarith [ht.1,ht.2]
+  have htm2 : (t-1)^2 ≤ 1 := by nlinarith [ht.1,ht.2]
+  have he0 : EulerEntropyConvexity.segment u v t-u=t • (v-u) := by
+    simp [EulerEntropyConvexity.segment]
+  have he1 : EulerEntropyConvexity.segment u v t-v=(t-1) • (v-u) := by
+    funext j
+    dsimp [EulerEntropyConvexity.segment]
+    ring
+  rw [he0,he1,size_smul,size_smul]
+  constructor
+  · simpa only [one_mul] using mul_le_mul_of_nonneg_right ht2 hS
+  · simpa only [one_mul] using mul_le_mul_of_nonneg_right htm2 hS
+
+theorem region_face_entropy (K : Set State) (M lambda L a : ℝ)
+    (hK : RegionBounds K M lambda L) (u v : State) (hu : u ∈ K) (hv : v ∈ K)
+    (d : Fin 3) (ha : 0 ≤ a) (hM : 0 ≤ M) (hvisc : M*(1+L^2) ≤ a*lambda/2) :
+    dot (gradient v-gradient u) (EulerAdmissible.faceFlux u v a d)-
+      (v ⟨d.val+1,by omega⟩-u ⟨d.val+1,by omega⟩) ≤ -(a*lambda/4)*sizeSquared (v-u) := by
+  have hseg (t : ℝ) (ht : t ∈ Set.Icc (0 : ℝ) 1) := segment_in_region K hK.convex u v hu hv t ht
+  apply rusanov_face_entropy_bound u v d a M L lambda (hK.admissible u hu) (hK.admissible v hv)
+    ha hM (fun t ht k => hK.hessian_upper _ (hseg t ht) k)
+    (fun t ht => hK.hessian_lower _ (hseg t ht) _) _ hvisc
+  intro t ht
+  obtain ⟨h0,h1⟩ := segment_distance_bounds u v t ht
+  constructor
+  · exact (hK.flux_bound u hu _ (hseg t ht) d).trans (mul_le_mul_of_nonneg_left h0 (sq_nonneg L))
+  · exact (hK.flux_bound v hv _ (hseg t ht) d).trans (mul_le_mul_of_nonneg_left h1 (sq_nonneg L))
+
+theorem nonlinear_step_entropy_from_region {I : Type*} [Fintype I]
+    (K : Set State) (M lambda L : ℝ) (hK : RegionBounds K M lambda L)
+    (u : I → State) (neighbor : Fin 3 → Equiv.Perm I) (a : Fin 3 → ℝ) (ratio amin A : ℝ)
+    (hu : ∀ i, u i ∈ K) (hv : ∀ i, gridUpdate u neighbor a ratio i ∈ K)
+    (hr : 0 ≤ ratio) (hM : 0 ≤ M) (hlambda : 0 ≤ lambda) (hamin : 0 ≤ amin)
+    (ha : ∀ d, amin ≤ a d) (haA : ∀ d, (a d)^2 ≤ A^2)
+    (hvisc : M*(1+L^2) ≤ amin*lambda/2)
+    (hstep : 3*M*ratio*(A^2+L^2) ≤ amin*lambda/8) :
+    (∑ i, entropy (gridUpdate u neighbor a ratio i)) ≤ (∑ i, entropy (u i))-
+      (ratio*amin*lambda/8)*edgeEnergy u neighbor := by
+  have hneighbor (i : I) (j : Fin 6) : neighborState u neighbor i j ∈ K := by
+    fin_cases j
+    all_goals exact hu _
+  have hface (d : Fin 3) (i : I) :
+      dot (gradient (u (neighbor d i))-gradient (u i)) (gridFace u neighbor a d i)-
+      (u (neighbor d i) ⟨d.val+1,by omega⟩-u i ⟨d.val+1,by omega⟩) ≤
+        -(amin*lambda/4)*sizeSquared (u (neighbor d i)-u i) := by
+    have hb := region_face_entropy K M lambda L (a d) hK (u i) (u (neighbor d i)) (hu i) (hu _)
+      d (hamin.trans (ha d)) hM
+      (hvisc.trans (by nlinarith [mul_le_mul_of_nonneg_right (ha d) hlambda]))
+    have hm := mul_le_mul_of_nonneg_right (ha d) hlambda
+    have hs := mul_le_mul_of_nonneg_right hm (size_nonnegative (u (neighbor d i)-u i))
+    exact hb.trans (by nlinarith)
+  have hH (i : I) (t : ℝ) (ht : t ∈ Set.Icc (0 : ℝ) 1) :=
+    hK.hessian_upper _ (segment_in_region K hK.convex _ _ (hu i) (hv i) t ht)
+      (gridUpdate u neighbor a ratio i-u i)
+  have hb := entropy_step_dissipation u neighbor a ratio A L M (amin*lambda/4) hr hM
+    (fun i => hK.admissible _ (hu i)) (fun i => hK.admissible _ (hv i)) haA
+    (fun i j d => hK.flux_bound _ (hu i) _ (hneighbor i j) d) hH hface
+    (by
+      convert hstep using 1
+      ring)
+  convert hb using 1
+  ring
+
+end EulerEntropyRegion

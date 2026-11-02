@@ -16,6 +16,12 @@ COMPONENTS = [
     "Entropy.lean",
     "EntropyConvexity.lean",
     "EntropyDynamics.lean",
+    "EntropyTaylor.lean",
+    "VectorEstimates.lean",
+    "EntropyGeometry.lean",
+    "FaceEntropy.lean",
+    "FiniteVolumeEntropy.lean",
+    "EntropyRegion.lean",
 ]
 
 

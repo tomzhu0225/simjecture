@@ -2,7 +2,7 @@
   "schema_version": "0.1.0",
   "status": "proved",
   "checked": true,
-  "source_sha256": "3300ac727772f2ebe3eae111c584aac98cc86089e4ce0430df61cb8e0f25c442",
+  "source_sha256": "1c9be355e73eca7921f946968ffaf53382fd2a719a489994327827d7407f8529",
   "theorems": [
     "EulerAdmissible.convex_sum_admissible",
     "EulerAdmissible.flux_splitting_admissible",
@@ -32,7 +32,15 @@
     "EulerEntropyConvexity.entropy_convex",
     "EulerEntropyConvexity.averaging_entropy_bound",
     "EulerEntropyDynamics.canonical_entropy_potential",
-    "EulerEntropyDynamics.smooth_entropy_balance"
+    "EulerEntropyDynamics.smooth_entropy_balance",
+    "EulerEntropyTaylor.entropy_taylor_upper",
+    "EulerEntropyGeometry.hessian_flux_compatibility",
+    "EulerFaceEntropy.rusanov_face_entropy_bound",
+    "EulerFiniteVolumeEntropy.update_pairing",
+    "EulerFiniteVolumeEntropy.total_increment_bound",
+    "EulerFiniteVolumeEntropy.entropy_step_bound",
+    "EulerFiniteVolumeEntropy.entropy_step_dissipation",
+    "EulerEntropyRegion.nonlinear_step_entropy_from_region"
   ],
   "allowed_axioms": [
     "Classical.choice",
@@ -184,6 +192,46 @@
       "propext",
       "Classical.choice",
       "Quot.sound"
+    ],
+    "EulerEntropyTaylor.entropy_taylor_upper": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerEntropyGeometry.hessian_flux_compatibility": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerFaceEntropy.rusanov_face_entropy_bound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerFiniteVolumeEntropy.update_pairing": [
+      "propext",
+      "Quot.sound",
+      "Classical.choice"
+    ],
+    "EulerFiniteVolumeEntropy.total_increment_bound": [
+      "propext",
+      "Quot.sound",
+      "Classical.choice"
+    ],
+    "EulerFiniteVolumeEntropy.entropy_step_bound": [
+      "propext",
+      "Quot.sound",
+      "Classical.choice"
+    ],
+    "EulerFiniteVolumeEntropy.entropy_step_dissipation": [
+      "propext",
+      "Quot.sound",
+      "Classical.choice"
+    ],
+    "EulerEntropyRegion.nonlinear_step_entropy_from_region": [
+      "propext",
+      "Quot.sound",
+      "Classical.choice"
     ]
   },
   "timeout_seconds": 150,
@@ -222,12 +270,12 @@
   ],
   "compile_returncode": 0,
   "audit_returncode": 0,
-  "wall_seconds": 65.8859244840005,
+  "wall_seconds": 81.8789146250001,
   "artifact_sha256": {
-    "Audit.lean": "a176e14294d41fc386d862bbc95f2b1528eb7cb60acea0c2fa27e4cf13560789",
-    "Candidate.lean": "3300ac727772f2ebe3eae111c584aac98cc86089e4ce0430df61cb8e0f25c442",
-    "Candidate.olean": "2f7d5f5db0ca9727e41784dae261f09c787d09c087c59aec6a32ad3ed74aa5ec",
-    "audit.log": "31c5738b760e28bf1727b538a7db20b087433dd07422e2589846b99b340b8313",
+    "Audit.lean": "68ddf2ae9e2c70041f919312f340a4b4d9b029a241959e184cce0ac0e1cdcff0",
+    "Candidate.lean": "1c9be355e73eca7921f946968ffaf53382fd2a719a489994327827d7407f8529",
+    "Candidate.olean": "799789099788673737f9a2b53a2fee7af7831af09de4aa1aad29883b83a9a3a6",
+    "audit.log": "2b66e5c9eb89f43b044db95b329cb99e7e6e2f6761cf88bda08c8183296aa242",
     "compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
   }
 }

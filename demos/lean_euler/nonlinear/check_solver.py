@@ -42,6 +42,14 @@ THEOREMS = [
     "EulerEntropyConvexity.averaging_entropy_bound",
     "EulerEntropyDynamics.canonical_entropy_potential",
     "EulerEntropyDynamics.smooth_entropy_balance",
+    "EulerEntropyTaylor.entropy_taylor_upper",
+    "EulerEntropyGeometry.hessian_flux_compatibility",
+    "EulerFaceEntropy.rusanov_face_entropy_bound",
+    "EulerFiniteVolumeEntropy.update_pairing",
+    "EulerFiniteVolumeEntropy.total_increment_bound",
+    "EulerFiniteVolumeEntropy.entropy_step_bound",
+    "EulerFiniteVolumeEntropy.entropy_step_dissipation",
+    "EulerEntropyRegion.nonlinear_step_entropy_from_region",
 ]
 
 
@@ -67,8 +75,10 @@ def main():
             "derivatives, convexity, finite averaging bound and local Euler entropy balance. "
             "The variable-coefficient estimate assumes explicit state and spatial-difference "
             "bounds. Existence, nonlinear full-solve stability, continuum solver accuracy "
-            "actual-step quantitative entropy dissipation and matching work optimality "
-            "remain unproved."
+            "and matching work optimality remain unproved. Actual nonlinear finite-step "
+            "entropy dissipation is checked under explicit convex-region, curvature, flux, "
+            "viscosity and timestep conditions. Uniform trajectory membership and those "
+            "conditions for the current numerical settings remain unproved."
         ),
     )
     (args.output / "solver-formal.json").write_text(json.dumps(record, indent=2) + "\n")

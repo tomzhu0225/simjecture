@@ -66,6 +66,9 @@ def test_solver_foundations_and_independent_validation_provenance(tmp_path):
         "EulerEntropyConvexity.entropy_convex",
         "EulerEntropyDynamics.canonical_entropy_potential",
         "EulerEntropyDynamics.smooth_entropy_balance",
+        "EulerFaceEntropy.rusanov_face_entropy_bound",
+        "EulerFiniteVolumeEntropy.entropy_step_dissipation",
+        "EulerEntropyRegion.nonlinear_step_entropy_from_region",
     } <= set(proof["result"]["theorems"])
     for dependencies in proof["result"]["axioms"].values():
         assert set(dependencies) <= {"propext", "Classical.choice", "Quot.sound"}

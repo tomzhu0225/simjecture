@@ -130,7 +130,7 @@ error estimate, and matching complexity bounds remain open. The initial-cell
 average formulas have an independent quadrature check; their formal
 initialization/reconstruction bridge also remains to be proved.
 
-Twenty-nine named solver-foundation statements and the independent numerical checks
+Thirty-seven named solver-foundation statements and the independent numerical checks
 are retained under `record/solver`. Replay them through the bounded local lab:
 
 ```bash
@@ -179,7 +179,7 @@ local entropy balance implied by differentiable conservative Euler balance.
 These are connected to the actual physical flux and entropy definitions.
 They do not establish smooth existence or the periodic integral theorem.
 
-The latest replay is
+The entropy-calculus replay is
 `artifacts/lean-euler/20261102/nonlinear/research/lab-entropy-01`: three successful
 bounded jobs cover candidate validation, entropy diagnostics, and 29 named
 Lean statements. The new `validate_entropy.py` records nine trajectories on
@@ -202,3 +202,39 @@ A proposed LF/Rusanov class with convex reconstruction remains under
 investigation. Its scientific justification, actual dissipation, necessary
 accuracy and complete work bounds all require proof. None of the measured
 entropy ratios is used as a certified universal constant.
+
+## Conditional finite-step dissipation
+
+The expanded proof now combines actual conserved-variable entropy calculus,
+Rusanov face fluxes, periodic summation, a six-neighbor increment bound and the
+finite-step Taylor remainder. `EntropyRegion.lean` states the result using an
+explicit convex state region K. Both old and updated states must belong to K.
+Throughout K, the actual entropy Hessian must have bounds λ I ≤ D²η ≤ M I,
+and each physical flux must be L-Lipschitz in the five-component Euclidean norm.
+
+For r = Δt/h and global directional viscosities between a_min and a_max,
+sufficient conditions are
+
+\[
+M(1+L^2)\le a_{\min}\lambda/2,\qquad
+3Mr(a_{\max}^2+L^2)\le a_{\min}\lambda/8.
+\]
+
+The proved conclusion for the actual nonlinear update is
+
+\[
+\sum_i\eta(U_i^{\rm new})\le\sum_i\eta(U_i)
+-\frac{r a_{\min}\lambda}{8}\sum_{\text{forward periodic faces}}|\Delta U|^2.
+\]
+
+This is a **conditional method theorem**. It does not prove trajectory membership
+in K or supply uniform constants for the target family. The sufficient bounds
+may require stronger viscosity or smaller steps than the current CFL = 0.3 runs.
+Those runs have not been certified to satisfy the conditions. This theorem is
+not the requested continuum-accuracy or optimality result.
+
+The 37-statement replay is retained in
+`artifacts/lean-euler/20261102/nonlinear/research/lab-step-02`. The first batch
+compiled the mathematical source but hit Lean's recursion limit in the generated
+auditor. The checker now generates a separate audit command for each declaration;
+an 80-theorem regression test checks the fix without changing Lean's limits.
