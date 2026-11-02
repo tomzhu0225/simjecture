@@ -484,3 +484,59 @@ run_cmd do
   | _ => throwError "Not a theorem: EulerRegionEscape.accepted_step_leaves_region"
   let axioms ← collectAxioms n
   logInfo m!"SIMJECTURE_AXIOMS EulerRegionEscape.accepted_step_leaves_region: {axioms.toList}"
+run_cmd do
+  let n := `EulerGridPoincare.vector_poincare
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerGridPoincare.vector_poincare"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerGridPoincare.vector_poincare: {axioms.toList}"
+run_cmd do
+  let n := `EulerEntropyDecay.entropy_excess_nonnegative
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerEntropyDecay.entropy_excess_nonnegative"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerEntropyDecay.entropy_excess_nonnegative: {axioms.toList}"
+run_cmd do
+  let n := `EulerEntropyDecay.entropy_excess_poincare
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerEntropyDecay.entropy_excess_poincare"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerEntropyDecay.entropy_excess_poincare: {axioms.toList}"
+run_cmd do
+  let n := `EulerEntropyDecay.backtracked_step_decay
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerEntropyDecay.backtracked_step_decay"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerEntropyDecay.backtracked_step_decay: {axioms.toList}"
+run_cmd do
+  let n := `EulerEntropyDecay.computed_trace_entropy_loss
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerEntropyDecay.computed_trace_entropy_loss"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerEntropyDecay.computed_trace_entropy_loss: {axioms.toList}"
+run_cmd do
+  let n := `EulerEntropyError.entropy_lipschitz
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerEntropyError.entropy_lipschitz"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerEntropyError.entropy_lipschitz: {axioms.toList}"
+run_cmd do
+  let n := `EulerEntropyError.integrated_entropy_error
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerEntropyError.integrated_entropy_error"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerEntropyError.integrated_entropy_error: {axioms.toList}"
+run_cmd do
+  let n := `EulerEntropyError.entropy_gap_error_lower_bound
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerEntropyError.entropy_gap_error_lower_bound"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerEntropyError.entropy_gap_error_lower_bound: {axioms.toList}"

@@ -82,6 +82,14 @@ THEOREMS = [
     "EulerRegionEscape.initial_in_region",
     "EulerRegionEscape.center_energy_increment",
     "EulerRegionEscape.accepted_step_leaves_region",
+    "EulerGridPoincare.vector_poincare",
+    "EulerEntropyDecay.entropy_excess_nonnegative",
+    "EulerEntropyDecay.entropy_excess_poincare",
+    "EulerEntropyDecay.backtracked_step_decay",
+    "EulerEntropyDecay.computed_trace_entropy_loss",
+    "EulerEntropyError.entropy_lipschitz",
+    "EulerEntropyError.integrated_entropy_error",
+    "EulerEntropyError.entropy_gap_error_lower_bound",
 ]
 
 
@@ -132,6 +140,13 @@ def main():
             "compression counterexample starts inside that region but every positive "
             "step leaves its energy ceiling, including the exact-real accepted step. "
             "Those compression data are not the Taylor-Green research family."
+            " A periodic 3D Poincare estimate now yields conditional accumulated entropy "
+            "loss for the actual finite EC+LF trace with computed wave speeds. Separately, "
+            "an actual integral entropy gap divided by 160 is a lower bound on maximum "
+            "component L1 error for integrable fields in the stated region, with respect "
+            "to any specified measure. Common smooth existence, continuous Euler integral "
+            "entropy conservation, the actual reconstruction/initialization bridge and "
+            "a justified complete work-optimality result are still unproved."
         ),
     )
     (args.output / "solver-formal.json").write_text(json.dumps(record, indent=2) + "\n")

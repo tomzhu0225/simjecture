@@ -82,6 +82,9 @@ def test_solver_foundations_and_independent_validation_provenance(tmp_path):
         "EulerECFluxBounds.flux_consistency_bound",
         "EulerECFluxBounds.flux_consistency_bound_right",
         "EulerRegionEscape.accepted_step_leaves_region",
+        "EulerGridPoincare.vector_poincare",
+        "EulerEntropyDecay.computed_trace_entropy_loss",
+        "EulerEntropyError.entropy_gap_error_lower_bound",
     } <= set(proof["result"]["theorems"])
     for dependencies in proof["result"]["axioms"].values():
         assert set(dependencies) <= {"propext", "Classical.choice", "Quot.sound"}
@@ -165,3 +168,25 @@ def test_region_consistency_record_and_compression_escape_control():
     for row in record["family_rows"]:
         assert row["final_time"] == 0.25
         assert row["minimum_region_margin"] >= 0
+
+
+def test_accumulated_entropy_loss_and_l1_comparison_record():
+    record = json.loads((DEMO / "record/solver/entropy-decay-validation.json").read_text())
+    for name, checksum in record["sources"].items():
+        assert hashlib.sha256((DEMO / name).read_bytes()).hexdigest() == checksum
+    assert record["pair_variance_max_scaled_error"] < 2e-14
+    assert record["random_grid_max_poincare_ratio"] <= 1.5
+    assert abs(record["constant_state_entropy_excess"]) < 1e-14
+    errors = record["entropy_error_checks"]
+    assert errors["max_independent_gradient_component"] <= 32
+    assert errors["max_pointwise_entropy_over_component_l1"] <= 32
+    assert errors["entropy_gap_lower_bound"] <= errors["weighted_max_component_l1"]
+    assert len(record["rows"]) == 9
+    for row in record["rows"]:
+        assert row["final_time"] == 0.25
+        assert row["min_region_margin"] >= 0
+        assert row["mean_conservation_error"] < 1e-11
+        assert row["max_variance_over_n2_edges"] <= 1.5
+        assert row["max_excess_over_n2_edges"] <= 75_000
+        assert row["min_dissipation_over_edges"] >= 1 / 100_000
+        assert row["entropy_loss"] >= row["conditional_loss_lower_bound"] > 0

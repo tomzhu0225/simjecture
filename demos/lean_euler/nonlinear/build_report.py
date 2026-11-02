@@ -31,6 +31,7 @@ entropy_record = json.loads((RECORD / "entropy-validation.json").read_text())
 ec_record = json.loads((RECORD / "ec-validation.json").read_text())
 step_record = json.loads((RECORD / "step-bound-validation.json").read_text())
 region_record = json.loads((RECORD / "region-validation.json").read_text())
+decay_record = json.loads((RECORD / "entropy-decay-validation.json").read_text())
 proof = formal["result"]
 assert proof["checked"]
 figures = HERE / "figures"
@@ -626,7 +627,7 @@ para(
 para(
     "Sources: PressurePolynomial.lean and EntropyStepBounds.lean. Five bounded jobs "
     "replayed that checkpoint; step-bound-validation.json retains the measurements "
-    "and their source hashes. The current six-job replay adds the next page's checks.",
+    "and their source hashes. The six-job checkpoint adds the next page's checks.",
     "SmallR",
 )
 
@@ -698,6 +699,77 @@ para(
 para(
     "Sources: ECFluxBounds.lean, RegionEscape.lean and region-validation.json. "
     "The full accuracy-and-work-optimality goal remains open.",
+    "SmallR",
+)
+
+story.append(PageBreak())
+para("Toward an evolution-error<br/>lower bound", "TitleR")
+para(
+    "Two further pieces are now checked: accumulated entropy loss for a finite "
+    "numerical trace, and an integral inequality relating entropy gaps to the requested "
+    "L1 error. The connection through the actual continuous Euler solution and "
+    "reconstruction remains unfinished."
+)
+para("Conditional accumulated loss of the actual method", "HeadingR")
+para(
+    "For an n³ periodic grid, set H = Ση(U<sub>i</sub>), "
+    "R = H − n³η(mean U), and J = Σ<sub>forward faces</sub>|ΔU|². "
+    "The new Poincaré estimate is<br/>"
+    "Σ|U<sub>i</sub>−mean U|² ≤ (3/2)n²J.<br/>"
+    "For old states in K, Lean derives R ≥ 0, R ≤ 75000 n²J and D ≥ J/100000. "
+    "The computed wave speeds satisfy the required a<sub>d</sub> ≥ 1/4 on K."
+)
+para(
+    "For a completed finite sequence of accepted EC+LF steps, assuming every old "
+    "state is in K, conservation and telescoping yield<br/>"
+    "<b>H(U₀) − H(U<sub>m</sub>) ≥ T R(U<sub>m</sub>) / (3·10¹⁰ π n).</b><br/>"
+    "Here T = (2π/n)Σr<sub>k</sub>. Dividing H and R by n³ gives the same inequality "
+    "for normalized grid averages. This theorem does not prove region membership "
+    "or that the method reaches T in finitely many steps."
+)
+rows = [["A / δ, n = 64", "Observed mean entropy loss", "Conditional lower bound"]]
+for row in decay_record["rows"]:
+    if row["n"] == 64:
+        rows.append(
+            [
+                f"{row['A']:g} / {row['delta']:g}",
+                f"{row['entropy_loss']:.6f}",
+                f"{row['conditional_loss_lower_bound']:.2e}",
+            ]
+        )
+table(rows, [135, 185, 185])
+para(
+    "The proof constant is very coarse. Observed losses are trillions of times "
+    "the lower bound; no measured ratio is substituted into the theorem. These "
+    "are entropy diagnostics, not certified physical solution errors.",
+    "SmallR",
+)
+para("An actual integral comparison with the accuracy norm", "HeadingR")
+para(
+    "On K, each component of the actual entropy gradient has absolute value at most 32. "
+    "For K-valued fields U,V with the stated integrability assumptions and any "
+    "specified measure μ, Lean proves<br/>"
+    "<b>|∫η(V)dμ − ∫η(U)dμ| / 160 ≤ max<sub>j=1,…,5</sub> ∫|V<sub>j</sub>−U<sub>j</sub>|dμ.</b>"
+)
+para(
+    "With μ equal to normalized volume on the physical cube, the right side is the "
+    "requested error norm. This is a necessary accuracy comparison using actual "
+    "integrals, not an assumed solver error estimate or an accuracy upper bound. "
+    "Independent gradients and weighted finite-measure samples exercise the formula."
+)
+para("Still required to obtain solver optimality", "HeadingR")
+para(
+    "Prove common smooth Euler existence and periodic integral entropy conservation; "
+    "instantiate the continuous reconstruction and initialization; establish nonzero "
+    "initial excess across the family and uniform evolution bounds; then prove an "
+    "accuracy upper bound and matching complete work bounds in a justified class. "
+    "The present dissipative argument does not establish optimality against the "
+    "higher-order initial search scope."
+)
+para(
+    "Sources: GridPoincare.lean, EntropyDecay.lean and EntropyError.lean. The current "
+    "seven-job replay retains the proof and entropy-decay-validation.json. "
+    "Floating-point and continuum-error certification remain open.",
     "SmallR",
 )
 SimpleDocTemplate(

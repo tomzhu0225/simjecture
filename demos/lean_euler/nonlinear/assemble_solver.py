@@ -32,6 +32,9 @@ COMPONENTS = [
     "EntropyStepBounds.lean",
     "ECFluxBounds.lean",
     "RegionEscape.lean",
+    "GridPoincare.lean",
+    "EntropyDecay.lean",
+    "EntropyError.lean",
 ]
 
 

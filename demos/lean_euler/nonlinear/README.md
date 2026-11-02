@@ -130,7 +130,7 @@ error estimate, and matching complexity bounds remain open. The initial-cell
 average formulas have an independent quadrature check; their formal
 initialization/reconstruction bridge also remains to be proved.
 
-Sixty-nine named solver-foundation statements and the independent numerical checks
+Seventy-seven named solver-foundation statements and the independent numerical checks
 are retained under `record/solver`. Replay them through the bounded local lab:
 
 ```bash
@@ -437,5 +437,66 @@ required.
 reproduces the compression control, and scans 25 parameter combinations at 16³
 plus six 32³/64³ runs. The target-family samples stay inside K through T = 0.25;
 this is finite numerical evidence, not a universal theorem. The six-job
-`research/lab-region-escape-01` replay retains the current 69-statement audit
+`research/lab-region-escape-01` replay retains that 69-statement checkpoint audit
 and `region-validation.json`.
+
+## Accumulated entropy loss and the L1 error comparison
+
+`GridPoincare.lean` defines the actual periodic neighbors on an n³ grid and proves
+
+\[
+\sum_i |U_i-\bar U|^2\le\frac32 n^2 J,
+\qquad J=\sum_{\text{forward periodic faces}}|\Delta U|^2.
+\]
+
+The proof uses periodic telescoping along the three coordinates and the exact
+pairwise-variance identity. It applies componentwise to all five conserved fields.
+`EntropyDecay.lean` then defines the actual excess entropy
+R = H(U) − n³η(mean U), with H(U) = Ση(U_i). For old states in K, Lean proves
+R ≥ 0, R ≤ 75000 n²J, and D ≥ J/100000. The latter bound follows from the actual
+entropy Hessian and directional diffusion coefficients at least 1/4. The computed
+physical wave-speed recipe has this lower bound on K.
+
+For any **completed finite trace** of the EC+LF method whose old states lie in K
+and whose steps pass the existing acceptance test, conservation and telescoping
+give
+
+\[
+H(U_0)-H(U_m)\ge\frac{T R(U_m)}{3\cdot10^{10}\pi n},
+\qquad T=\frac{2\pi}{n}\sum_{k<m}r_k.
+\]
+
+Both H and R can be divided by n³ to state the same result for cell averages.
+This is a conditional accumulated-loss theorem for the actual method, including
+time stepping. The constant is deliberately coarse: in the nine diagnostic runs,
+observed loss is roughly trillions of times the resulting lower bound. No measured
+factor is substituted into the theorem. Neither finite-time completion nor
+whole-trajectory membership in K is inferred from this result.
+
+`EntropyError.lean` provides a separate, actual integral comparison. The entropy
+gradient components have absolute value at most 32 on K. For K-valued fields
+U,V, with the stated integrability hypotheses and any specified measure μ,
+
+\[
+\frac{\left|\int\eta(V)\,d\mu-\int\eta(U)\,d\mu\right|}{160}
+\le \max_{j=1,\ldots,5}\int|V_j-U_j|\,d\mu.
+\]
+
+When μ is normalized volume on the physical cube, the right side is the requested
+accuracy norm. This theorem bounds actual integrals of the defined physical
+entropy; it does not assume a numerical error estimate. It is a **necessary
+accuracy comparison**, not an accuracy upper bound for the solver.
+
+To turn these pieces into the requested evolution-error/work lower bound, we still
+must prove the common smooth Euler solution and its periodic integral entropy
+conservation, instantiate the continuous reconstruction and initialization bridges,
+and connect the nonzero initial excess entropy to the whole parameter family.
+Uniform numerical evolution bounds, an accuracy upper bound and the justified
+competitor class remain unfinished. In particular, this dissipative argument does
+not establish optimality against the higher-order initial search scope.
+
+The seven-job `research/lab-entropy-decay-01` replay retains the 77-statement audit
+and `entropy-decay-validation.json`. Its numerical checks cover small-grid pairwise
+variance identities, constant states, independent entropy gradients and weighted
+finite-measure comparisons, plus nine nonlinear trajectories. These checks are
+not certified floating-point or continuum-error enclosures.

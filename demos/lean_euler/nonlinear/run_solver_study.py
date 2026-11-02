@@ -59,6 +59,7 @@ def main():
         "validate_entropy_candidate.py",
         "validate_step_bound.py",
         "validate_region_bounds.py",
+        "validate_entropy_decay.py",
         "contract.json",
     ]
     for name in files:
@@ -141,6 +142,19 @@ def main():
             "contract.json",
         ],
         ["region/region-validation.json"],
+        timeout=300,
+    )
+    execute(
+        "validate_entropy_decay.py",
+        ["--output", "decay"],
+        [
+            "entropy_candidate.py",
+            "validate_entropy_candidate.py",
+            "validate_region_bounds.py",
+            "finite_volume.py",
+            "contract.json",
+        ],
+        ["decay/entropy-decay-validation.json"],
         timeout=300,
     )
     proof_outputs = ["checked/solver-formal.json"]

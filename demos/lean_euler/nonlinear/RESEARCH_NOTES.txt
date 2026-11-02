@@ -437,3 +437,63 @@ Sobolev spaces. They are a possible methodological lead, not a theorem for the
 present compressible gamma=2 family and not an imported Lean existence proof.
 https://arxiv.org/pdf/1104.3832
 https://arxiv.org/abs/1310.5642
+
+Accumulated-loss and L1 checkpoint, research/lab-entropy-decay-01:
+- GridPoincare.lean defines canonical periodic coordinate neighbors on
+  Fin n x (Fin n x Fin n), n>0. The exact pair-variance identity and three
+  coordinate telescoping bounds give
+    sum_cells |U-mean U|^2 <= (3/2)*n^2*sum_forward_faces |jump U|^2.
+  The Fin.NatCast scope is local to the one-dimensional conversion lemma;
+  it is not enabled globally, avoiding accidental wraparound coercions.
+- EntropyDecay.lean derives the actual nonnegative entropy excess
+    R(U)=H(U)-n^3*eta(mean U), H(U)=sum_cells eta(U).
+  Convexity gives the mean's region membership; the actual Hessian upper bound
+  and mean cancellation give R<=50000*variance<=75000*n^2*J. Strong entropy
+  gradient monotonicity gives D>=J/100000 when directional coefficients>=1/4.
+  The computed global physical speeds obey that lower bound for old states in K.
+- The actual accepted step satisfies r*R_old<=1.5e10*n^2*(R_old-R_new).
+  Conservation and finite telescoping, with monotonicity of R, then imply
+    H(U0)-H(Um) >= T*R(Um)/(3e10*pi*n), T=(2*pi/n)*sum_steps r.
+  This is proved for a completed finite actual EC+LF trace, with old states in K
+  and the existing entropy acceptance rule. It does not prove termination at T,
+  region membership for the target family, or any continuum solution error.
+- EntropyError.lean proves actual entropy-gradient components <=32 in absolute
+  value on K. The proof uses |log rho|,|log p|<=3 and the sharper identity
+  |m|^2/(2*rho*p)=(E-p)/p<=15, rather than a loose velocity-only estimate.
+  It derives |eta(V)-eta(U)|<=32*sum_j|V_j-U_j|, then actual Bochner-integral
+  comparisons for any specified measure with explicit integrability hypotheses:
+    |integral eta(V)-integral eta(U)|/160
+      <= max_j integral |V_j-U_j|.
+  With normalized physical volume this is the requested componentwise L1 norm.
+  The theorem is a necessary comparison between fields, not an assumed numerical
+  accuracy estimate and not a proved accuracy upper bound for this solver.
+- validate_entropy_decay.py checks pairwise variance identities on small periodic
+  grids, a constant state, 4096 region-state pairs with independent complex-step
+  gradients and weighted finite-measure comparisons, and nine solver traces.
+  The largest checked gradient component is 15.6101 (<32); the largest pointwise
+  entropy/component-L1 ratio is 2.57756. Observed trajectory entropy losses are
+  3.42e12 to 5.50e12 times the coarse conditional bound. These measured factors
+  are never substituted for proof constants and do not certify physical errors.
+- All seven bounded jobs succeed; all 77 selected statements pass the assembled
+  audit in 145.30 seconds, with only propext/Classical.choice/Quot.sound. This
+  is close to the current 150-second wall allowance; future larger assemblies
+  may need a measured wall-time adjustment, without changing kernel proof limits.
+  Mathlib.Algebra.Group.Fin.Basic and MeasureTheory.Integral.Bochner.Basic are
+  explicitly included in the pinned installation cache targets. Seven focused
+  nonlinear/installer tests, Ruff and installer shell syntax pass. The ten-page
+  PDF is rendered and its new final page visually inspected.
+
+Next connection toward the real accuracy/work theorem:
+1. Prove continuous periodic Euler integral entropy conservation, starting from
+   the existing actual local entropy balance. A direct conservative entropy-flux
+   derivative lemma may simplify the coordinate/time interface; then use FTC and
+   justified space-time integral interchange on the physical periodic cube.
+2. Instantiate normalized volume, actual continuous reconstruction and initial
+   averaging. The general integral comparison alone does not equate a grid sum
+   with a reconstructed-field entropy integral. Prove that bridge explicitly.
+3. Establish nonzero initial excess uniformly over the actual trigonometric
+   parameter family and the required smooth/exact and numerical state bounds.
+   Only then can accumulated loss force a physical-accuracy resolution bound.
+4. Keep the class issue explicit: a fixed LF-dissipation mechanism does not cover
+   the whole higher-order initial search scope. The justified competitor class,
+   full accuracy upper bound and all-operation upper/lower work proof remain open.

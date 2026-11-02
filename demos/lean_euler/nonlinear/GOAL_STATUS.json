@@ -9,7 +9,7 @@
     "matching lower bound tied to necessary evolution accuracy",
     "reviewable proof, numerical and PR/report artifacts"
   ],
-  "current_front": "Concrete endpoint flux-consistency bounds are proved on the physical region. Derive grid-independent residual/cap estimates from them, and establish a family-specific evolution bound. Global invariance of that region is false for the method, as a checked compression control shows. Full smoothness, continuum accuracy and total-work optimality remain open.",
+  "current_front": "Conditional accumulated entropy loss is proved for the actual periodic EC+LF trace, and actual integral entropy gaps now lower-bound maximum component L1 error on the physical region. Connect these through continuous Euler integral entropy conservation and the specified reconstruction/initialization, while establishing family-specific existence/trajectory bounds. No accuracy upper bound or optimality result is yet proved.",
   "not_completion": [
     "initial-force diagnostics",
     "positivity or conservation alone",
@@ -64,10 +64,14 @@
     "actual entropy Hessian expressed through the quadratic pressure polynomial along a trial line; explicit admissible path radius and directional curvature bound derived from current state/residual",
     "explicit per-state acceptance cap, logarithmic halving-index upper bound, and accepted-ratio lower bound for the same exact-real EC+LF search, including the stationary zero-dissipation branch",
     "actual EC flux symmetry and concrete endpoint consistency bounds on the physical region, independent of cell count",
-    "exact periodic 3^3 compression control: all old states belong to the physical region but every positive trial and the actual entropy-accepted step leave its cell-energy ceiling; this control is not the Taylor-Green family"
+    "exact periodic 3^3 compression control: all old states belong to the physical region but every positive trial and the actual entropy-accepted step leave its cell-energy ceiling; this control is not the Taylor-Green family",
+    "periodic 3D vector Poincare estimate, actual nonnegative entropy excess, and quantitative excess/edge-dissipation bounds",
+    "conditional accumulated entropy loss for completed finite EC+LF traces with computed wave speeds and old states in the physical region",
+    "actual entropy gradient bound and measure-integral comparison: entropy gap divided by 160 lower-bounds maximum conserved-component L1 error for integrable K-valued fields"
   ],
-  "latest_evidence": "record/solver: 69 audited statements and five numerical validation jobs in six successful lab-region-escape-01 jobs. Regional flux probes and the exact compression escape control are retained. Thirty-one target-family trajectories stay in the region numerically, but no universal evolution bound is inferred.",
+  "latest_evidence": "record/solver: 77 audited statements and six numerical validation jobs in seven successful lab-entropy-decay-01 jobs. New checks cover periodic pair/variance identities, constant fields, entropy-gradient/L1 comparisons and nine accumulated-loss trajectories. The loss constant is very coarse; no measured factor is promoted to a proof constant or physical-error certificate.",
   "remaining_obligations": [
+    "prove continuous periodic Euler integral entropy conservation, instantiate the actual continuous reconstruction/initialization and normalized-volume L1 bridge, and prove uniform nonzero initial excess for the full family",
     "derive uniform residual/cap/retry estimates and prove a family-specific whole-trajectory bound; global method-level invariance of the present region is disproved; target-time completion and integral/reconstruction/grid-Poincare bridges remain open",
     "common smooth-time and quantitative regularity for the full parameter family",
     "formal initialization/reconstruction bounds",

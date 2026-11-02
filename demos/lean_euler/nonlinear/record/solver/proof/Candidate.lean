@@ -24,6 +24,8 @@ import Mathlib.Analysis.Convex.Jensen
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import Mathlib.Data.Nat.Log
 import Mathlib.Algebra.Order.Floor.Semiring
+import Mathlib.Algebra.Group.Fin.Basic
+import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
 
 noncomputable section
@@ -4574,3 +4576,492 @@ theorem accepted_step_leaves_region (a : Fin 3 → ℝ) (ha : ∀ d, 0 < a d)
   exact positive_step_leaves_region a _ hh.1
 
 end EulerRegionEscape
+
+
+-- Periodic-grid variance control for the dissipation-to-error argument.
+-- This is a spatial identity/estimate, not a continuum existence theorem.
+noncomputable section
+namespace EulerGridPoincare
+open scoped BigOperators
+abbrev Cell (n : ℕ) := Fin n × (Fin n × Fin n)
+
+def scalarMean {I : Type*} [Fintype I] (f : I → ℝ) : ℝ := (∑ i, f i)/(Fintype.card I : ℝ)
+def scalarVariance {I : Type*} [Fintype I] (f : I → ℝ) : ℝ := ∑ i, (f i-scalarMean f)^2
+
+theorem pair_variance_identity {I : Type*} [Fintype I] [Nonempty I] (f : I → ℝ) :
+    (∑ i, ∑ j, (f i-f j)^2)=2*(Fintype.card I : ℝ)*scalarVariance f := by
+  have hn : (Fintype.card I : ℝ) ≠ 0 := by exact_mod_cast Fintype.card_ne_zero
+  simp only [sub_sq,Finset.sum_add_distrib,Finset.sum_sub_distrib,
+    Finset.sum_const,Finset.card_univ,nsmul_eq_mul,← Finset.mul_sum,← Finset.sum_mul,
+    scalarVariance,scalarMean]
+  field_simp
+  ring
+
+open Fin.NatCast in
+theorem line_oscillation (n : ℕ) [NeZero n] (f : Fin n → ℝ) (i j : Fin n) :
+    (f i-f j)^2 ≤ (n : ℝ)*∑ k : Fin n, (f (k+1)-f k)^2 := by
+  have hh := EulerGridSobolev.oscillation (fun k : ℕ => f (Fin.ofNat n k)) n i.val j.val i.isLt j.isLt
+  have he : (∑ k ∈ Finset.range n, (f (Fin.ofNat n (k+1))-f (Fin.ofNat n k))^2)=
+      ∑ k : Fin n, (f (k+1)-f k)^2 := by
+    rw [← Fin.sum_univ_eq_sum_range]
+    simp only [Fin.ofNat_eq_cast,Nat.cast_add,Nat.cast_one,Fin.cast_val_eq_self]
+  rw [he] at hh
+  simpa only [Fin.ofNat_eq_cast,Fin.cast_val_eq_self] using hh
+
+def lineX {n : ℕ} [NeZero n] (f : Cell n → ℝ) (j k : Fin n) : ℝ :=
+  ∑ i : Fin n, (f (i+1,(j,k))-f (i,(j,k)))^2
+def lineY {n : ℕ} [NeZero n] (f : Cell n → ℝ) (i k : Fin n) : ℝ :=
+  ∑ j : Fin n, (f (i,(j+1,k))-f (i,(j,k)))^2
+def lineZ {n : ℕ} [NeZero n] (f : Cell n → ℝ) (i j : Fin n) : ℝ :=
+  ∑ k : Fin n, (f (i,(j,k+1))-f (i,(j,k)))^2
+def scalarEdges {n : ℕ} [NeZero n] (f : Cell n → ℝ) : ℝ :=
+  (∑ j, ∑ k, lineX f j k)+(∑ i, ∑ k, lineY f i k)+(∑ i, ∑ j, lineZ f i j)
+
+theorem grid_pair_bound (n : ℕ) [NeZero n] (f : Cell n → ℝ) (x y : Cell n) :
+    (f x-f y)^2 ≤ 3*(n : ℝ)*(lineX f x.2.1 x.2.2+lineY f y.1 x.2.2+lineZ f y.1 y.2.1) := by
+  rcases x with ⟨i,j,k⟩
+  rcases y with ⟨a,b,c⟩
+  have hx := line_oscillation n (fun z => f (z,(j,k))) i a
+  have hy := line_oscillation n (fun z => f (a,(z,k))) j b
+  have hz := line_oscillation n (fun z => f (a,(b,z))) k c
+  have hs := EulerPhysicalRegion.three_sum_bound (f (i,(j,k))-f (a,(j,k)))
+    (f (a,(j,k))-f (a,(b,k))) (f (a,(b,k))-f (a,(b,c)))
+  change (f (i,(j,k))-f (a,(j,k)))^2 ≤ (n : ℝ)*lineX f j k at hx
+  change (f (a,(j,k))-f (a,(b,k)))^2 ≤ (n : ℝ)*lineY f a k at hy
+  change (f (a,(b,k))-f (a,(b,c)))^2 ≤ (n : ℝ)*lineZ f a b at hz
+  dsimp only
+  nlinarith
+
+theorem coordinate_pair_sum (n : ℕ) (X Y Z : Fin n → Fin n → ℝ) :
+    (∑ x : Cell n, ∑ y : Cell n, (X x.2.1 x.2.2+Y y.1 x.2.2+Z y.1 y.2.1)) =
+      (n : ℝ)^4*((∑ i, ∑ j, X i j)+(∑ i, ∑ j, Y i j)+(∑ i, ∑ j, Z i j)) := by
+  have hy : (∑ k, ∑ a, Y a k)=∑ a, ∑ k, Y a k := Finset.sum_comm
+  simp only [Fintype.sum_prod_type,Finset.sum_add_distrib,Finset.sum_const,
+    Finset.card_univ,Fintype.card_prod,Fintype.card_fin,nsmul_eq_mul,← Finset.mul_sum,Cell,Nat.cast_mul]
+  rw [hy]
+  ring
+
+theorem scalar_poincare (n : ℕ) [NeZero n] (f : Cell n → ℝ) :
+    scalarVariance f ≤ (3/2 : ℝ)*(n : ℝ)^2*scalarEdges f := by
+  have hh := Finset.sum_le_sum (fun x (_ : x ∈ Finset.univ) =>
+    Finset.sum_le_sum (fun y (_ : y ∈ Finset.univ) => grid_pair_bound n f x y))
+  simp only [← Finset.mul_sum,coordinate_pair_sum] at hh
+  rw [pair_variance_identity f] at hh
+  have hcard : (Fintype.card (Cell n) : ℝ)=(n : ℝ)^3 := by simp [Cell,pow_succ]; ring
+  rw [hcard] at hh
+  have hn : 0 < (n : ℝ) := by exact_mod_cast (NeZero.pos n)
+  apply (mul_le_mul_iff_right₀ (pow_pos hn 3)).mp
+  dsimp [scalarEdges] at *
+  nlinarith only [hh]
+
+def neighbors (n : ℕ) [NeZero n] : Fin 3 → Equiv.Perm (Cell n) :=
+  ![Equiv.prodCongr (Equiv.addRight (1 : Fin n)) (Equiv.refl _),
+    Equiv.prodCongr (Equiv.refl _) (Equiv.prodCongr (Equiv.addRight (1 : Fin n)) (Equiv.refl _)),
+    Equiv.prodCongr (Equiv.refl _) (Equiv.prodCongr (Equiv.refl _) (Equiv.addRight (1 : Fin n)))]
+
+theorem scalar_edges_as_cells (n : ℕ) [NeZero n] (f : Cell n → ℝ) :
+    scalarEdges f=∑ d, ∑ x, (f (neighbors n d x)-f x)^2 := by
+  have hx : (∑ j, ∑ k, ∑ i, (f (i+1,(j,k))-f (i,(j,k)))^2)=
+      ∑ i, ∑ j, ∑ k, (f (i+1,(j,k))-f (i,(j,k)))^2 := by
+    calc
+      _ = ∑ j, ∑ i, ∑ k, (f (i+1,(j,k))-f (i,(j,k)))^2 :=
+        Finset.sum_congr rfl (fun j _ => Finset.sum_comm)
+      _ = _ := Finset.sum_comm
+  have hy : (∑ i, ∑ k, ∑ j, (f (i,(j+1,k))-f (i,(j,k)))^2)=
+      ∑ i, ∑ j, ∑ k, (f (i,(j+1,k))-f (i,(j,k)))^2 :=
+    Finset.sum_congr rfl (fun i _ => Finset.sum_comm)
+  simp only [scalarEdges,lineX,lineY,lineZ,hx,hy,Fin.sum_univ_succ,neighbors,
+    Matrix.cons_val_zero,Equiv.prodCongr_apply,Fintype.sum_prod_type]
+  simp [add_assoc]
+
+def meanState {I : Type*} [Fintype I] (u : I → EulerEntropy.State) : EulerEntropy.State :=
+  (1/(Fintype.card I : ℝ)) • ∑ i, u i
+
+theorem mean_component {I : Type*} [Fintype I] (u : I → EulerEntropy.State) (j : Fin 5) :
+    meanState u j=scalarMean (fun i => u i j) := by
+  simp only [meanState,Pi.smul_apply,Finset.sum_apply,smul_eq_mul,scalarMean]
+  ring
+
+theorem vector_poincare (n : ℕ) [NeZero n] (u : Cell n → EulerEntropy.State) :
+    (∑ i, EulerEnergyBounds.sizeSquared (u i-meanState u)) ≤
+      (3/2 : ℝ)*(n : ℝ)^2*EulerFiniteVolumeEntropy.edgeEnergy u (neighbors n) := by
+  have hj (j : Fin 5) := scalar_poincare n (fun i => u i j)
+  have hh := Finset.sum_le_sum (fun j (_ : j ∈ Finset.univ) => hj j)
+  simp only [scalarVariance,← mean_component,scalar_edges_as_cells] at hh
+  rw [Finset.sum_comm] at hh
+  simp only [← Finset.mul_sum] at hh
+  have he : (∑ j : Fin 5, ∑ d : Fin 3, ∑ i : Cell n,
+      (u (neighbors n d i) j-u i j)^2)=EulerFiniteVolumeEntropy.edgeEnergy u (neighbors n) := by
+    rw [Finset.sum_comm]
+    simp only [EulerFiniteVolumeEntropy.edgeEnergy,EulerVectorEstimates.size_as_sum,Pi.sub_apply]
+    exact Finset.sum_congr rfl (fun d _ => Finset.sum_comm)
+  rw [he] at hh
+  simpa only [EulerVectorEstimates.size_as_sum,Pi.sub_apply] using hh
+
+end EulerGridPoincare
+
+-- Quantitative entropy loss of the actual periodic EC+LF update. The bridge
+-- to continuous Euler accuracy and the trajectory bounds remain obligations.
+noncomputable section
+namespace EulerEntropyDecay
+open EulerEntropy EulerEntropyCandidateStep EulerGridPoincare
+open EulerPhysicalRegion EulerEntropyTaylor EulerEnergyBounds EulerVectorEstimates
+open scoped BigOperators
+abbrev State := Fin 5 → ℝ
+
+theorem uniform_weights_sum {I : Type*} [Fintype I] [Nonempty I] :
+    (∑ _i : I, 1/(Fintype.card I : ℝ))=1 := by
+  have hn : (Fintype.card I : ℝ) ≠ 0 := by exact_mod_cast Fintype.card_ne_zero
+  simp only [Finset.sum_const,Finset.card_univ,nsmul_eq_mul]
+  field_simp
+
+theorem mean_in_region {I : Type*} [Fintype I] [Nonempty I] (u : I → State)
+    (hu : ∀ i, u i ∈ region) : meanState u ∈ region := by
+  have hh := region_convex.sum_mem
+    (fun _i (_ : _i ∈ Finset.univ) => by positivity : ∀ i ∈ Finset.univ, (0 : ℝ) ≤ 1/(Fintype.card I : ℝ))
+    (uniform_weights_sum (I := I)) (fun i _ => hu i)
+  simpa only [← Finset.smul_sum,meanState] using hh
+
+theorem sum_centered {I : Type*} [Fintype I] [Nonempty I] (u : I → State) :
+    (∑ i, (u i-meanState u))=0 := by
+  have hn : (Fintype.card I : ℝ) ≠ 0 := by exact_mod_cast Fintype.card_ne_zero
+  funext j
+  simp only [Finset.sum_apply,Pi.sub_apply,Finset.sum_sub_distrib,Finset.sum_const,
+    Finset.card_univ,nsmul_eq_mul,mean_component,scalarMean,Pi.zero_apply]
+  field_simp
+  ring
+
+theorem mean_conservation {I : Type*} [Fintype I] (u : I → State)
+    (neighbor : Fin 3 → Equiv.Perm I) (a : Fin 3 → ℝ) (r : ℝ) :
+    meanState (trial u neighbor a r)=meanState u := by
+  simp only [meanState,trial_conservation]
+
+def entropyExcess {I : Type*} [Fintype I] (u : I → State) : ℝ :=
+  totalEntropy u-(Fintype.card I : ℝ)*entropy (meanState u)
+
+theorem entropy_excess_nonnegative {I : Type*} [Fintype I] [Nonempty I] (u : I → State)
+    (hu : ∀ i, EulerAdmissible.Admissible (u i)) : 0 ≤ entropyExcess u := by
+  have hn : (Fintype.card I : ℝ) ≠ 0 := by exact_mod_cast Fintype.card_ne_zero
+  have hconv := EulerEntropyConvexity.entropy_convex_mixture
+    (fun _i : I => 1/(Fintype.card I : ℝ)) u (fun _ => by positivity)
+    (uniform_weights_sum (I := I)) hu
+  simp only [← Finset.smul_sum,← Finset.mul_sum] at hconv
+  have hh : (Fintype.card I : ℝ)*entropy (meanState u) ≤ totalEntropy u := by
+    calc
+      _ ≤ (Fintype.card I : ℝ)*((1/(Fintype.card I : ℝ))*totalEntropy u) :=
+        mul_le_mul_of_nonneg_left hconv (Nat.cast_nonneg _)
+      _ = _ := by field_simp
+  exact sub_nonneg.mpr hh
+
+theorem entropy_excess_upper {I : Type*} [Fintype I] [Nonempty I] (u : I → State)
+    (hu : ∀ i, u i ∈ region) :
+    entropyExcess u ≤ 50000*∑ i, sizeSquared (u i-meanState u) := by
+  have hm := mean_in_region u hu
+  have hi (i : I) := entropy_taylor_upper (meanState u) (u i)
+    (region_admissible _ hm) (region_admissible _ (hu i)) 100000
+    (fun t ht => hessian_upper_bound _ _
+      (EulerEntropyRegion.segment_in_region region region_convex _ _ hm (hu i) t ht))
+  have hlin : (∑ i, dot (gradient (meanState u)) (u i-meanState u))=0 := by
+    rw [← dot_sum_right,sum_centered]
+    simp [dot]
+  have hh := Finset.sum_le_sum (fun i (_ : i ∈ Finset.univ) => hi i)
+  simp only [Finset.sum_add_distrib,Finset.sum_const,Finset.card_univ,nsmul_eq_mul,
+    ← Finset.mul_sum,hlin,add_zero] at hh
+  dsimp [entropyExcess,totalEntropy]
+  linarith
+
+theorem entropy_excess_poincare (n : ℕ) [NeZero n] (u : Cell n → State)
+    (hu : ∀ i, u i ∈ region) :
+    entropyExcess u ≤ 75000*(n : ℝ)^2*EulerFiniteVolumeEntropy.edgeEnergy u (neighbors n) := by
+  have hh := entropy_excess_upper u hu
+  have hp := mul_le_mul_of_nonneg_left (vector_poincare n u) (by norm_num : (0 : ℝ) ≤ 50000)
+  linarith
+
+theorem dissipation_controls_edges {I : Type*} [Fintype I] (u : I → State)
+    (neighbor : Fin 3 → Equiv.Perm I) (a : Fin 3 → ℝ)
+    (hu : ∀ i, u i ∈ region) (ha : ∀ d, 1/4 ≤ a d) :
+    (1/100000 : ℝ)*EulerFiniteVolumeEntropy.edgeEnergy u neighbor ≤ dissipation u neighbor a := by
+  have hi (d : Fin 3) (i : I) :
+      (1/100000 : ℝ)*sizeSquared (u (neighbor d i)-u i) ≤
+        (a d/2)*dot (gradient (u (neighbor d i))-gradient (u i)) (u (neighbor d i)-u i) := by
+    have hmono := EulerFaceEntropy.gradient_strong_monotonicity (u i) (u (neighbor d i)) (1/12500)
+      (region_admissible _ (hu i)) (region_admissible _ (hu _))
+      (fun t ht => hessian_coercivity _ _
+        (EulerEntropyRegion.segment_in_region region region_convex _ _ (hu i) (hu _) t ht))
+    have hmult := mul_le_mul_of_nonneg_left hmono (by linarith [ha d] : 0 ≤ a d/2)
+    have hcoeff := mul_le_mul_of_nonneg_right (ha d) (size_nonnegative (u (neighbor d i)-u i))
+    nlinarith
+  have hh := Finset.sum_le_sum (fun d (_ : d ∈ Finset.univ) =>
+    Finset.sum_le_sum (fun i (_ : i ∈ Finset.univ) => hi d i))
+  simpa only [EulerFiniteVolumeEntropy.edgeEnergy,dissipation,← Finset.mul_sum] using hh
+
+theorem region_wave_speed_lower (u : State) (hu : u ∈ region) (d : Fin 3) :
+    (1/4 : ℝ) ≤ EulerAdmissible.waveSpeed u d := by
+  have hphys := region_admissible u hu
+  have hQ : (1/8 : ℝ) ≤ 2*EulerAdmissible.pressure u/u 0 := by
+    apply (le_div_iff₀ hphys.1).mpr
+    linarith [hu.2.1,hu.2.2.2]
+  have hQpos : 0 ≤ 2*EulerAdmissible.pressure u/u 0 := by positivity
+  have hs := Real.sq_sqrt hQpos
+  have hc : (1/4 : ℝ) ≤ Real.sqrt (2*EulerAdmissible.pressure u/u 0) := by
+    nlinarith [Real.sqrt_nonneg (2*EulerAdmissible.pressure u/u 0)]
+  dsimp [EulerAdmissible.waveSpeed]
+  linarith [abs_nonneg (EulerAdmissible.fromVelocity u d)]
+
+theorem computed_speed_lower {I : Type*} [Fintype I] [Nonempty I] (u : I → State)
+    (hu : ∀ i, u i ∈ region) (d : Fin 3) : (1/4 : ℝ) ≤ EulerAdmissible.globalSpeed u d := by
+  obtain ⟨i⟩ := ‹Nonempty I›
+  exact (region_wave_speed_lower (u i) (hu i) d).trans (EulerAdmissible.globalSpeed_bound u d i)
+
+theorem accepted_step_decay (n : ℕ) [NeZero n] (u : Cell n → State)
+    (a : Fin 3 → ℝ) (r : ℝ) (hu : ∀ i, u i ∈ region) (ha : ∀ d, 1/4 ≤ a d)
+    (hr : 0 ≤ r) (haccept : Acceptable u (neighbors n) a r) :
+    r*entropyExcess u ≤ 15000000000*(n : ℝ)^2*
+      (entropyExcess u-entropyExcess (trial u (neighbors n) a r)) := by
+  have hR := entropy_excess_poincare n u hu
+  have hD := dissipation_controls_edges u (neighbors n) a hu ha
+  have hmult := mul_le_mul_of_nonneg_left hD (by positivity : 0 ≤ 7500000000*(n : ℝ)^2)
+  have hbudget : entropyExcess u ≤ 7500000000*(n : ℝ)^2*dissipation u (neighbors n) a := by
+    nlinarith only [hR,hmult]
+  have htime := mul_le_mul_of_nonneg_left hbudget hr
+  have hdrop : (r/2)*dissipation u (neighbors n) a ≤
+      entropyExcess u-entropyExcess (trial u (neighbors n) a r) := by
+    simp only [entropyExcess,mean_conservation]
+    linarith [haccept.2]
+  have hdropmult := mul_le_mul_of_nonneg_left hdrop (by positivity : 0 ≤ 15000000000*(n : ℝ)^2)
+  nlinarith only [htime,hdropmult]
+
+theorem backtracked_step_decay (n : ℕ) [NeZero n] (u : Cell n → State)
+    (a : Fin 3 → ℝ) (proposal : ℝ) (hu : ∀ i, u i ∈ region)
+    (ha : ∀ d, 1/4 ≤ a d) (hproposal : 0 < proposal) :
+    let hphys := fun i => region_admissible (u i) (hu i)
+    let hapos := fun d => lt_of_lt_of_le (by norm_num : (0 : ℝ) < 1/4) (ha d)
+    let r := acceptedRatio u (neighbors n) a proposal hphys hapos hproposal
+    r*entropyExcess u ≤ 15000000000*(n : ℝ)^2*
+      (entropyExcess u-entropyExcess (trial u (neighbors n) a r)) := by
+  dsimp only
+  have hh := backtracked_step u (neighbors n) a proposal
+    (fun i => region_admissible (u i) (hu i))
+    (fun d => lt_of_lt_of_le (by norm_num : (0 : ℝ) < 1/4) (ha d)) hproposal
+  exact accepted_step_decay n u a _ hu ha hh.1.le hh.2.1
+
+theorem scalar_trace_loss (R r : ℕ → ℝ) (m : ℕ) (C : ℝ)
+    (hr : ∀ k < m, 0 ≤ r k) (hmono : ∀ k < m, R (k+1) ≤ R k)
+    (hstep : ∀ k < m, r k*R k ≤ C*(R k-R (k+1))) :
+    (∑ k ∈ Finset.range m, r k)*R m ≤ C*(R 0-R m) := by
+  have hc : Antitone (fun k => R (min k m)) := by
+    apply antitone_nat_of_succ_le
+    intro k
+    by_cases hk : k < m
+    · simpa only [Nat.min_eq_left (by omega : k+1 ≤ m),Nat.min_eq_left (by omega : k ≤ m)] using hmono k hk
+    · simp only [Nat.min_eq_right (by omega : m ≤ k+1),Nat.min_eq_right (by omega : m ≤ k),le_refl]
+  have hpoint (k : ℕ) (hk : k ∈ Finset.range m) : r k*R m ≤ C*(R k-R (k+1)) := by
+    have hkm := Finset.mem_range.mp hk
+    have hR : R m ≤ R k := by
+      simpa only [Nat.min_self,Nat.min_eq_left hkm.le] using hc hkm.le
+    exact (mul_le_mul_of_nonneg_left hR (hr k hkm)).trans (hstep k hkm)
+  have hh := Finset.sum_le_sum hpoint
+  rw [← Finset.sum_mul,← Finset.mul_sum,Finset.sum_range_sub'] at hh
+  exact hh
+
+theorem trace_mean_conservation {I : Type*} [Fintype I] (u : ℕ → I → State)
+    (neighbor : Fin 3 → Equiv.Perm I) (a : ℕ → Fin 3 → ℝ) (r : ℕ → ℝ) (m : ℕ)
+    (hupdate : ∀ k < m, u (k+1)=trial (u k) neighbor (a k) (r k)) :
+    meanState (u m)=meanState (u 0) := by
+  have hi (k : ℕ) (hk : k ≤ m) : meanState (u k)=meanState (u 0) := by
+    induction k with
+    | zero => rfl
+    | succ k ih =>
+      rw [hupdate k (by omega),mean_conservation]
+      exact ih (by omega)
+  exact hi m le_rfl
+
+theorem actual_trace_entropy_loss (n : ℕ) [NeZero n] (u : ℕ → Cell n → State)
+    (a : ℕ → Fin 3 → ℝ) (r : ℕ → ℝ) (m : ℕ)
+    (hupdate : ∀ k < m, u (k+1)=trial (u k) (neighbors n) (a k) (r k))
+    (hu : ∀ k < m, ∀ i, u k i ∈ region) (ha : ∀ k < m, ∀ d, 1/4 ≤ a k d)
+    (hr : ∀ k < m, 0 ≤ r k) (haccept : ∀ k < m, Acceptable (u k) (neighbors n) (a k) (r k)) :
+    (∑ k ∈ Finset.range m, r k)*entropyExcess (u m) ≤
+      15000000000*(n : ℝ)^2*(totalEntropy (u 0)-totalEntropy (u m)) := by
+  have hstep (k : ℕ) (hk : k < m) := accepted_step_decay n (u k) (a k) (r k)
+    (hu k hk) (ha k hk) (hr k hk) (haccept k hk)
+  have hmono (k : ℕ) (hk : k < m) : entropyExcess (u (k+1)) ≤ entropyExcess (u k) := by
+    rw [hupdate k hk]
+    have hD := dissipation_nonnegative (u k) (neighbors n) (a k)
+      (fun i => region_admissible _ (hu k hk i)) (fun d => by linarith [ha k hk d])
+    have htime := mul_nonneg (hr k hk) hD
+    simp only [entropyExcess,mean_conservation]
+    linarith [(haccept k hk).2]
+  have hh := scalar_trace_loss (fun k => entropyExcess (u k)) r m (15000000000*(n : ℝ)^2)
+    hr hmono (fun k hk => by dsimp only; rw [hupdate k hk]; exact hstep k hk)
+  dsimp only at hh
+  have hm := trace_mean_conservation u (neighbors n) a r m hupdate
+  have he : entropyExcess (u 0)-entropyExcess (u m)=totalEntropy (u 0)-totalEntropy (u m) := by
+    simp only [entropyExcess,hm]
+    ring
+  rwa [he] at hh
+
+theorem physical_time_entropy_loss (n : ℕ) [NeZero n] (u : ℕ → Cell n → State)
+    (a : ℕ → Fin 3 → ℝ) (r : ℕ → ℝ) (m : ℕ) (T : ℝ)
+    (hupdate : ∀ k < m, u (k+1)=trial (u k) (neighbors n) (a k) (r k))
+    (hu : ∀ k < m, ∀ i, u k i ∈ region) (ha : ∀ k < m, ∀ d, 1/4 ≤ a k d)
+    (hr : ∀ k < m, 0 ≤ r k) (haccept : ∀ k < m, Acceptable (u k) (neighbors n) (a k) (r k))
+    (hT : (2*Real.pi/(n : ℝ))*(∑ k ∈ Finset.range m, r k)=T) :
+    T*entropyExcess (u m) ≤
+      (30000000000*Real.pi*(n : ℝ))*(totalEntropy (u 0)-totalEntropy (u m)) := by
+  have hn : (n : ℝ) ≠ 0 := by exact_mod_cast (NeZero.ne n)
+  have hh := actual_trace_entropy_loss n u a r m hupdate hu ha hr haccept
+  have hs := mul_le_mul_of_nonneg_left hh (by positivity : 0 ≤ 2*Real.pi/(n : ℝ))
+  calc
+    _ = (2*Real.pi/(n : ℝ))*((∑ k ∈ Finset.range m, r k)*entropyExcess (u m)) := by rw [← hT]; ring
+    _ ≤ _ := hs
+    _ = _ := by field_simp; ring
+
+theorem computed_trace_entropy_loss (n : ℕ) [NeZero n] (u : ℕ → Cell n → State)
+    (r : ℕ → ℝ) (m : ℕ) (T : ℝ)
+    (hupdate : ∀ k < m, u (k+1)=trial (u k) (neighbors n) (EulerAdmissible.globalSpeed (u k)) (r k))
+    (hu : ∀ k < m, ∀ i, u k i ∈ region) (hr : ∀ k < m, 0 ≤ r k)
+    (haccept : ∀ k < m, Acceptable (u k) (neighbors n) (EulerAdmissible.globalSpeed (u k)) (r k))
+    (hT : (2*Real.pi/(n : ℝ))*(∑ k ∈ Finset.range m, r k)=T) :
+    T*entropyExcess (u m) ≤
+      (30000000000*Real.pi*(n : ℝ))*(totalEntropy (u 0)-totalEntropy (u m)) := by
+  exact physical_time_entropy_loss n u (fun k => EulerAdmissible.globalSpeed (u k)) r m T hupdate hu
+    (fun k hk => computed_speed_lower (u k) (hu k hk)) hr haccept hT
+
+end EulerEntropyDecay
+
+
+-- A direct link between physical entropy and conserved-component L1 errors.
+-- This does not supply an exact Euler solution or prove its integral balance.
+noncomputable section
+namespace EulerEntropyError
+open EulerEntropy EulerPhysicalRegion
+open scoped BigOperators
+abbrev State := Fin 5 → ℝ
+
+theorem box_log_bound (x : ℝ) (hlo : 1/4 ≤ x) (hhi : x ≤ 4) : |Real.log x| ≤ 3 := by
+  have hx : 0 < x := by linarith
+  have hlog := Real.log_le_sub_one_of_pos hx
+  have hi := (EulerCoefficientBounds.reciprocal_bounds x hlo).2
+  have hilog := Real.log_le_sub_one_of_pos (inv_pos.mpr hx)
+  rw [Real.log_inv] at hilog
+  rw [one_div] at hi
+  exact abs_le.mpr ⟨by linarith,by linarith⟩
+
+theorem gradient_component_bound (u : State) (hu : u ∈ region) (j : Fin 5) :
+    |gradient u j| ≤ 32 := by
+  have hphys := region_admissible u hu
+  have hrpos := hphys.1
+  have hppos := hphys.2
+  have hr := ne_of_gt hphys.1
+  have hp := ne_of_gt hphys.2
+  have hlogr := abs_le.mp (box_log_bound (u 0) hu.1 hu.2.1)
+  have hlogp := abs_le.mp (box_log_bound (EulerAdmissible.pressure u) hu.2.2.2 (pressure_upper u hu))
+  let q := (u 1^2+u 2^2+u 3^2)/(2*u 0*EulerAdmissible.pressure u)
+  have hq0 : 0 ≤ q := by dsimp [q]; positivity
+  have he : q=(u 4-EulerAdmissible.pressure u)/EulerAdmissible.pressure u := by
+    dsimp [q,EulerAdmissible.pressure]
+    field_simp
+    ring
+  have hq15 : q ≤ 15 := by
+    rw [he]
+    apply (div_le_iff₀ hphys.2).mpr
+    linarith [hu.2.2.1,hu.2.2.2]
+  have hm (i : Fin 3) : |u ⟨i.val+1,by omega⟩/EulerAdmissible.pressure u| ≤ 24 := by
+    have hh := EulerECFluxBounds.quotient_abs_bound (u ⟨i.val+1,by omega⟩) (EulerAdmissible.pressure u)
+      (1/4) 6 (by norm_num) hu.2.2.2 (EulerECFluxBounds.momentum_abs_bound u hu i)
+    norm_num at hh
+    exact hh
+  have hE : |u 0/EulerAdmissible.pressure u| ≤ 16 := by
+    have hh := EulerECFluxBounds.quotient_abs_bound (u 0) (EulerAdmissible.pressure u)
+      (1/4) 4 (by norm_num) hu.2.2.2 (by rw [abs_of_pos hphys.1]; exact hu.2.1)
+    norm_num at hh
+    exact hh
+  fin_cases j
+  · change |2-(Real.log (EulerAdmissible.pressure u)-2*Real.log (u 0))-q| ≤ 32
+    exact abs_le.mpr ⟨by linarith,by linarith⟩
+  · change |u 1/EulerAdmissible.pressure u| ≤ 32
+    exact (hm 0).trans (by norm_num)
+  · change |u 2/EulerAdmissible.pressure u| ≤ 32
+    exact (hm 1).trans (by norm_num)
+  · change |u 3/EulerAdmissible.pressure u| ≤ 32
+    exact (hm 2).trans (by norm_num)
+  · change |(-u 0)/EulerAdmissible.pressure u| ≤ 32
+    rw [neg_div,abs_neg]
+    exact hE.trans (by norm_num)
+
+def componentL1 (k : State) : ℝ := ∑ j, |k j|
+
+theorem dot_as_sum (u k : State) : dot u k=∑ j, u j*k j := by
+  simp [dot,Fin.sum_univ_succ]
+  ring
+
+theorem gradient_pairing_bound (u k : State) (hu : u ∈ region) :
+    |dot (gradient u) k| ≤ 32*componentL1 k := by
+  rw [dot_as_sum]
+  calc
+    _ ≤ ∑ j, |gradient u j*k j| := Finset.abs_sum_le_sum_abs _ _
+    _ ≤ ∑ j, 32*|k j| := Finset.sum_le_sum (fun j _ => by
+      rw [abs_mul]
+      exact mul_le_mul_of_nonneg_right (gradient_component_bound u hu j) (abs_nonneg _))
+    _ = _ := by rw [← Finset.mul_sum]; rfl
+
+theorem entropy_lipschitz (u v : State) (hu : u ∈ region) (hv : v ∈ region) :
+    |entropy v-entropy u| ≤ 32*componentL1 (v-u) := by
+  let f := fun t => entropy (EulerEntropyConvexity.segment u v t)
+  let df := fun t => dot (gradient (EulerEntropyConvexity.segment u v t)) (v-u)
+  have hseg (t : ℝ) (ht : t ∈ Set.Icc (0 : ℝ) 1) :=
+    EulerEntropyRegion.segment_in_region region region_convex u v hu hv t ht
+  have hd (t : ℝ) (ht : t ∈ Set.Icc (0 : ℝ) 1) : HasDerivAt f (df t) t :=
+    entropy_derivative (EulerEntropyConvexity.segment_derivative u v t)
+      (ne_of_gt (region_admissible _ (hseg t ht)).1) (ne_of_gt (region_admissible _ (hseg t ht)).2)
+  obtain ⟨t,ht,he⟩ := exists_hasDerivAt_eq_slope f df (by norm_num : (0 : ℝ) < 1)
+    (fun t ht => (hd t ht).continuousAt.continuousWithinAt)
+    (fun t ht => hd t ⟨ht.1.le,ht.2.le⟩)
+  have hh := gradient_pairing_bound (EulerEntropyConvexity.segment u v t) (v-u) (hseg t ⟨ht.1.le,ht.2.le⟩)
+  change |df t| ≤ 32*componentL1 (v-u) at hh
+  simp [f,EulerEntropyConvexity.segment] at he
+  rwa [he] at hh
+
+open MeasureTheory
+
+theorem integrated_entropy_error {X : Type*} [MeasurableSpace X] (mu : Measure X) (u v : X → State)
+    (hu : ∀ x, u x ∈ region) (hv : ∀ x, v x ∈ region)
+    (hEu : Integrable (fun x => entropy (u x)) mu) (hEv : Integrable (fun x => entropy (v x)) mu)
+    (herr : ∀ j, Integrable (fun x => |v x j-u x j|) mu) :
+    |(∫ x, entropy (v x) ∂mu)-(∫ x, entropy (u x) ∂mu)| ≤
+      32*∑ j, ∫ x, |v x j-u x j| ∂mu := by
+  have hi : Integrable (fun x => ∑ j : Fin 5, |v x j-u x j|) mu :=
+    integrable_finset_sum Finset.univ (fun j _ => herr j)
+  rw [← integral_sub hEv hEu]
+  calc
+    _ ≤ ∫ x, |entropy (v x)-entropy (u x)| ∂mu := abs_integral_le_integral_abs
+    _ ≤ ∫ x, 32*(∑ j : Fin 5, |v x j-u x j|) ∂mu :=
+      integral_mono (hEv.sub hEu).abs (hi.const_mul 32) (fun x => entropy_lipschitz (u x) (v x) (hu x) (hv x))
+    _ = _ := by rw [integral_const_mul,integral_finset_sum Finset.univ (fun j _ => herr j)]
+
+theorem component_accuracy_controls_entropy {X : Type*} [MeasurableSpace X] (mu : Measure X)
+    (u v : X → State) (epsilon : ℝ) (hu : ∀ x, u x ∈ region) (hv : ∀ x, v x ∈ region)
+    (hEu : Integrable (fun x => entropy (u x)) mu) (hEv : Integrable (fun x => entropy (v x)) mu)
+    (herr : ∀ j, Integrable (fun x => |v x j-u x j|) mu)
+    (haccuracy : ∀ j, (∫ x, |v x j-u x j| ∂mu) ≤ epsilon) :
+    |(∫ x, entropy (v x) ∂mu)-(∫ x, entropy (u x) ∂mu)| ≤ 160*epsilon := by
+  have hh := integrated_entropy_error mu u v hu hv hEu hEv herr
+  have hs := Finset.sum_le_sum (fun j (_ : j ∈ Finset.univ) => haccuracy j)
+  simp only [Finset.sum_const,Finset.card_univ,Fintype.card_fin,nsmul_eq_mul] at hs
+  norm_num only [Nat.cast_ofNat] at hs
+  linarith
+
+def maxComponentError {X : Type*} [MeasurableSpace X] (mu : Measure X) (u v : X → State) : ℝ :=
+  Finset.univ.sup' Finset.univ_nonempty (fun j : Fin 5 => ∫ x, |v x j-u x j| ∂mu)
+
+theorem entropy_gap_error_lower_bound {X : Type*} [MeasurableSpace X] (mu : Measure X)
+    (u v : X → State) (hu : ∀ x, u x ∈ region) (hv : ∀ x, v x ∈ region)
+    (hEu : Integrable (fun x => entropy (u x)) mu) (hEv : Integrable (fun x => entropy (v x)) mu)
+    (herr : ∀ j, Integrable (fun x => |v x j-u x j|) mu) :
+    |(∫ x, entropy (v x) ∂mu)-(∫ x, entropy (u x) ∂mu)|/160 ≤ maxComponentError mu u v := by
+  have hh := component_accuracy_controls_entropy mu u v (maxComponentError mu u v) hu hv hEu hEv herr
+    (fun j => Finset.le_sup' (f := fun j : Fin 5 => ∫ x, |v x j-u x j| ∂mu) (Finset.mem_univ j))
+  exact (div_le_iff₀ (by norm_num : (0 : ℝ) < 160)).mpr (by linarith)
+
+end EulerEntropyError
