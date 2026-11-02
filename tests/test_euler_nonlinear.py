@@ -79,6 +79,9 @@ def test_solver_foundations_and_independent_validation_provenance(tmp_path):
         "EulerPressurePolynomial.path_curvature_bound",
         "EulerEntropyStepBounds.quantitative_retry_bound",
         "EulerEntropyStepBounds.accepted_ratio_lower_bound",
+        "EulerECFluxBounds.flux_consistency_bound",
+        "EulerECFluxBounds.flux_consistency_bound_right",
+        "EulerRegionEscape.accepted_step_leaves_region",
     } <= set(proof["result"]["theorems"])
     for dependencies in proof["result"]["axioms"].values():
         assert set(dependencies) <= {"propext", "Classical.choice", "Quot.sound"}
@@ -139,3 +142,26 @@ def test_quantitative_retry_record_and_independent_derivative_checks():
         assert 0 <= row["max_actual_halvings"] <= row["max_predicted_halvings"]
         assert 0 < row["max_proposal_over_cap"] < 1
         assert row["min_entropy_budget_slack"] > 0
+
+
+def test_region_consistency_record_and_compression_escape_control():
+    record = json.loads((DEMO / "record/solver/region-validation.json").read_text())
+    for name, checksum in record["sources"].items():
+        assert hashlib.sha256((DEMO / name).read_bytes()).hexdigest() == checksum
+    assert record["random_pairs"] == 4096
+    assert record["near_pair_scales"] == [1, 1e-8]
+    assert record["maximum_observed_flux_consistency_ratio"] <= record["proved_flux_bound"]
+    control = record["compression_control"]
+    assert control["shape"] == [3, 3, 3]
+    assert control["before"]["minimum_region_margin"] == 0
+    assert control["after"]["max_energy"] > 4
+    assert control["after"]["min_density"] > 0
+    assert control["after"]["min_pressure"] > 0
+    assert control["rejected"] == 0
+    assert control["entropy_margin"] >= 0
+    assert control["conservation_error"] < 1e-11
+    assert len(record["family_rows"]) == 31
+    assert len([row for row in record["family_rows"] if row["n"] == 16]) == 25
+    for row in record["family_rows"]:
+        assert row["final_time"] == 0.25
+        assert row["minimum_region_margin"] >= 0

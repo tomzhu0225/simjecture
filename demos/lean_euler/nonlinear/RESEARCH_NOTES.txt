@@ -381,3 +381,59 @@ observed regime; neither nine trajectories nor a per-state formula prevents that
 This requires state/regularity control, then a bridge to a common smooth Euler
 solution and complete spatial/temporal reconstruction error. The justified
 competitor class and matching all-operation work bound remain unfinished.
+
+Regional flux and escape checkpoint, research/lab-region-escape-01:
+- ECFluxBounds.lean proves symmetry and the actual endpoint consistency bounds
+    |fEC(U,V)-F(U)|^2 <= (300000000)^2*|V-U|^2,
+  and likewise for F(V), for U,V in the concrete physical region K. The proof
+  uses explicit density/pressure/velocity/beta bounds, finite physical-pressure
+  differences and the interval property of the logarithmic mean. It does not
+  differentiate through the equal-input mean branch. This is an endpoint
+  consistency estimate, not a four-input Lipschitz or full solver error theorem.
+- The constant is deliberately coarse. In 4096 random region pairs plus their
+  1e-8 mixtures, the largest measured ratio was 22.6006. That sample is not used
+  to replace the proved bound. The solver still uses ordinary wave-speed
+  diffusion; this proof constant does not become a numerical viscosity.
+- A proposed global-invariance shortcut is now falsified exactly. On a periodic
+  3^3 cube, rho=1,E=4, and x-momentum is (1,0,-1) on successive x-planes.
+  Other momenta vanish. All old states lie in K. For the central plane,
+    increment_E = 1/(2*LM(1/7,1/8))+56/15 > 0.
+  Thus every positive step, for any diffusion coefficients, leaves E<=4.
+  RegionEscape.lean connects this to the actual first entropy-accepted step,
+  which still preserves positive rho/p, total conserved quantities and the
+  entropy inequality. An additional E<=4 guard would stall on these states.
+- These compression states are a separate negative control, not the target
+  Taylor-Green family. The result rejects global K-invariance from the checked
+  method properties alone; it does not refute a family-specific or expanding
+  state bound. The family initially has substantial margin inside K.
+- validate_region_bounds.py reproduces the exact-control formula numerically:
+  CFL=.3, ratio=.0322490, no rejections, max E=4.2409716, entropy acceptance
+  margin=.0131268, and conservation drift=2.22e-16. It also scans 25 amplitude/
+  density-perturbation combinations at n=16 and three cases each at n=32,64.
+  All 31 target-family trajectories stay in K through T=.25. Minimum sampled
+  region margins by resolution are .43461,.39075,.378995. These finite float
+  results do not discharge the universal trajectory hypothesis.
+- All six bounded jobs succeeded. The complete 69-statement audit took 128.55
+  seconds and has only propext/Classical.choice/Quot.sound dependencies. The
+  five nonlinear provenance/diagnostic tests and Ruff pass. The nine-page report
+  was rendered and its revised final pages inspected. Development errors and
+  discarded simplification attempts remain in uniform-dev-* logs; no checker
+  limits or accepted mathematical principles were changed.
+
+Next substantive work:
+Use the checked endpoint flux bounds to control the full residual and the
+per-state cap uniformly on a specified region, while pursuing a separate
+family-specific evolution estimate. Do not replace that estimate with the
+disproved global invariance shortcut or with the 31 sampled trajectories.
+Common smooth existence through T=.25, continuum reconstruction/error and the
+justified competitor lower/upper work proof still remain open.
+
+Additional literature lead, inspected 2026-11-02:
+Morosi and Pizzocchero, arXiv:1104.3832 (2011), introduction; and the abstract of
+Morosi, Pernici and Pizzocchero, arXiv:1310.5642 (2013), discuss using residual
+and growth bounds around approximate solutions to certify existence intervals
+and errors. Both concern incompressible Euler/Navier-Stokes in divergence-free
+Sobolev spaces. They are a possible methodological lead, not a theorem for the
+present compressible gamma=2 family and not an imported Lean existence proof.
+https://arxiv.org/pdf/1104.3832
+https://arxiv.org/abs/1310.5642

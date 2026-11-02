@@ -76,6 +76,12 @@ THEOREMS = [
     "EulerEntropyStepBounds.below_cap_acceptable",
     "EulerEntropyStepBounds.quantitative_retry_bound",
     "EulerEntropyStepBounds.accepted_ratio_lower_bound",
+    "EulerECFluxBounds.flux_consistency_bound",
+    "EulerECFluxBounds.flux_consistency_bound_right",
+    "EulerECFluxBounds.flux_symmetric",
+    "EulerRegionEscape.initial_in_region",
+    "EulerRegionEscape.center_energy_increment",
+    "EulerRegionEscape.accepted_step_leaves_region",
 ]
 
 
@@ -120,6 +126,12 @@ def main():
             "the trial path. These are not uniform bounds over the evolving family. There "
             "is no certified floating-point guard or proof of reaching "
             "the target time, continuum error bound or total-work optimality result."
+            " The alternative flux now has a concrete diagonal consistency bound on "
+            "the physical region, independent of grid resolution. This does not yet "
+            "give a uniform trajectory or full-solver stability bound. A checked 3x3x3 "
+            "compression counterexample starts inside that region but every positive "
+            "step leaves its energy ceiling, including the exact-real accepted step. "
+            "Those compression data are not the Taylor-Green research family."
         ),
     )
     (args.output / "solver-formal.json").write_text(json.dumps(record, indent=2) + "\n")

@@ -2,7 +2,7 @@
   "schema_version": "0.1.0",
   "status": "proved",
   "checked": true,
-  "source_sha256": "3a71ade9c27254d8f689fc9035a1cf94dbecf79e392dcbfab4040950b6773174",
+  "source_sha256": "5de26c3d6b5c2b51d7df4c3b6619c7686032c506196c55ec4bdec8ed6b005a97",
   "theorems": [
     "EulerAdmissible.convex_sum_admissible",
     "EulerAdmissible.flux_splitting_admissible",
@@ -66,7 +66,13 @@
     "EulerEntropyStepBounds.total_entropy_upper",
     "EulerEntropyStepBounds.below_cap_acceptable",
     "EulerEntropyStepBounds.quantitative_retry_bound",
-    "EulerEntropyStepBounds.accepted_ratio_lower_bound"
+    "EulerEntropyStepBounds.accepted_ratio_lower_bound",
+    "EulerECFluxBounds.flux_consistency_bound",
+    "EulerECFluxBounds.flux_consistency_bound_right",
+    "EulerECFluxBounds.flux_symmetric",
+    "EulerRegionEscape.initial_in_region",
+    "EulerRegionEscape.center_energy_increment",
+    "EulerRegionEscape.accepted_step_leaves_region"
   ],
   "allowed_axioms": [
     "Classical.choice",
@@ -388,6 +394,36 @@
       "propext",
       "Quot.sound",
       "Classical.choice"
+    ],
+    "EulerECFluxBounds.flux_consistency_bound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerECFluxBounds.flux_consistency_bound_right": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerECFluxBounds.flux_symmetric": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerRegionEscape.initial_in_region": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerRegionEscape.center_energy_increment": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerRegionEscape.accepted_step_leaves_region": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
     ]
   },
   "timeout_seconds": 150,
@@ -426,12 +462,12 @@
   ],
   "compile_returncode": 0,
   "audit_returncode": 0,
-  "wall_seconds": 111.45935650299725,
+  "wall_seconds": 128.55453420100093,
   "artifact_sha256": {
-    "Audit.lean": "3703af02e4b164f27f99857127feb4092711d044bdcbafb47682feb870a51124",
-    "Candidate.lean": "3a71ade9c27254d8f689fc9035a1cf94dbecf79e392dcbfab4040950b6773174",
-    "Candidate.olean": "58b0dbf1a38a7fb9c12b7fef32c0774f131d78bfe53376b1101a1edcb26eaa62",
-    "audit.log": "542801512a5f6fdf705fbca2d423bf494e47811a10c8848b9b2eede1755dd2a1",
+    "Audit.lean": "8d968a814ee7c337934551ba7791bfdcb7623ec0a65ffa06d4dd2ec69aac1ea8",
+    "Candidate.lean": "5de26c3d6b5c2b51d7df4c3b6619c7686032c506196c55ec4bdec8ed6b005a97",
+    "Candidate.olean": "9ab12a6c599ca450385bbef111b2f5e6fc7b3edc9cf3c1dc4e7996ed2b98d75a",
+    "audit.log": "a72c3ea9e31583f097c8884e7b9ad3ca93a7bba3f280e604ea2d8dc4e1db7173",
     "compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
   }
 }

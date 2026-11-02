@@ -30,6 +30,8 @@ COMPONENTS = [
     "EntropyCandidateStep.lean",
     "PressurePolynomial.lean",
     "EntropyStepBounds.lean",
+    "ECFluxBounds.lean",
+    "RegionEscape.lean",
 ]
 
 

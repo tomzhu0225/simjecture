@@ -130,7 +130,7 @@ error estimate, and matching complexity bounds remain open. The initial-cell
 average formulas have an independent quadrature check; their formal
 initialization/reconstruction bridge also remains to be proved.
 
-Sixty-three named solver-foundation statements and the independent numerical checks
+Sixty-nine named solver-foundation statements and the independent numerical checks
 are retained under `record/solver`. Replay them through the bounded local lab:
 
 ```bash
@@ -393,3 +393,49 @@ completion, uniform total cost, continuum accuracy and work optimality remain
 unproved. Floating-point evaluations of the formulas are diagnostics, not
 certified rounding enclosures. The five-job `research/lab-step-bound-01` replay
 checks the 63 named statements and retains `step-bound-validation.json`.
+
+## Regional flux bounds and a failed invariance shortcut
+
+`ECFluxBounds.lean` proves symmetry of the actual entropy-conservative flux and,
+for any two states U,V in the concrete region K, the bounds
+
+\[
+|f^{EC}_d(U,V)-F_d(U)|\le 3\cdot10^8|V-U|,\qquad
+|f^{EC}_d(U,V)-F_d(V)|\le 3\cdot10^8|V-U|.
+\]
+
+The norm is Euclidean on the five conserved components; Lean checks the squared
+inequalities. The constants follow from physical state bounds and the logarithmic
+mean's interval property. They are deliberately coarse, not fitted from experiments.
+These are bounds relative to the physical flux at each endpoint, not yet a full
+nonlinear solver stability or continuum consistency-error theorem. They provide
+an ingredient for bounding the update residual independently of cell count.
+
+Keeping the whole trajectory in K needs a separate argument. `RegionEscape.lean`
+disproves global invariance of K for this method. On a periodic 3³ grid, take
+ρ = 1 and E = 4 everywhere, with x-momentum (1,0,−1) along successive x-planes
+and zero other momenta. Every state initially lies in K. At the middle plane,
+the actual residual's energy component is
+
+\[
+k_E=\frac{1}{2\operatorname{LM}(1/7,1/8)}+\frac{56}{15}>0.
+\]
+
+Thus every positive ratio gives E_new = 4 + r k_E > 4, independently of the
+diffusion coefficients. Lean connects this to the actual first accepted step:
+it preserves positivity, conserved totals and the entropy condition, while
+leaving K. Adding E ≤ 4 as an acceptance guard would reject every positive
+trial for these data. E is a cell energy density; total energy stays conserved.
+
+**These compression data are not the Taylor–Green family.** The counterexample
+rules out deducing universal region invariance from positivity/conservation/entropy
+alone. It does not show that the target family leaves K or that a larger,
+time-dependent bound is impossible. A family-specific evolution estimate is still
+required.
+
+`validate_region_bounds.py` checks 4,096 region-state pairs and nearby mixtures,
+reproduces the compression control, and scans 25 parameter combinations at 16³
+plus six 32³/64³ runs. The target-family samples stay inside K through T = 0.25;
+this is finite numerical evidence, not a universal theorem. The six-job
+`research/lab-region-escape-01` replay retains the current 69-statement audit
+and `region-validation.json`.

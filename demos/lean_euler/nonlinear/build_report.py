@@ -30,6 +30,7 @@ numeric = json.loads((RECORD / "validation.json").read_text())
 entropy_record = json.loads((RECORD / "entropy-validation.json").read_text())
 ec_record = json.loads((RECORD / "ec-validation.json").read_text())
 step_record = json.loads((RECORD / "step-bound-validation.json").read_text())
+region_record = json.loads((RECORD / "region-validation.json").read_text())
 proof = formal["result"]
 assert proof["checked"]
 figures = HERE / "figures"
@@ -624,8 +625,79 @@ para(
 )
 para(
     "Sources: PressurePolynomial.lean and EntropyStepBounds.lean. Five bounded jobs "
-    "replay the current audit and numerical diagnostics; step-bound-validation.json "
-    "retains the new measurements and their source hashes.",
+    "replayed that checkpoint; step-bound-validation.json retains the measurements "
+    "and their source hashes. The current six-job replay adds the next page's checks.",
+    "SmallR",
+)
+
+story.append(PageBreak())
+para("Regional estimates and an<br/>invariance counterexample", "TitleR")
+para(
+    "A uniform cost argument needs control of the evolving states. Lean now proves "
+    "a regional flux estimate and checks why positivity, conservation and entropy "
+    "decrease alone do not establish the required region membership."
+)
+para("The actual alternative flux on the physical region", "HeadingR")
+para(
+    "For K = {1/4 ≤ ρ ≤ 4, E ≤ 4, p ≥ 1/4}, the checked Euclidean estimate is<br/>"
+    "|f<super>EC</super><sub>d</sub>(U,V) − F<sub>d</sub>(U)| ≤ 3·10⁸ |V−U|,<br/>"
+    "with the same bound relative to F<sub>d</sub>(V). It follows from the physical "
+    "state bounds and logarithmic-mean interval property. The large constant is "
+    "a coarse analytical bound; the solver continues to use computed wave speeds. "
+    "This is an ingredient for a residual estimate, not yet nonlinear stability "
+    "or continuum accuracy."
+)
+para("A checked failure of global region invariance", "HeadingR")
+para(
+    "On a periodic 3³ grid, set ρ = 1 and E = 4 everywhere. Let x-momentum be "
+    "(1,0,−1) on successive x-planes, with the other momenta zero. All initial "
+    "states belong to K. At the middle plane, Lean proves the exact residual<br/>"
+    "k<sub>E</sub> = 1/[2 LM(1/7,1/8)] + 56/15 &gt; 0.<br/>"
+    "Consequently every positive ratio r gives E<sub>new</sub> = 4 + rk<sub>E</sub> &gt; 4, "
+    "independently of the diffusion coefficients. The theorem applies to the actual "
+    "first entropy-accepted step."
+)
+control = region_record["compression_control"]
+table(
+    [
+        ["Compression control", "Observed value"],
+        ["Old / new maximum cell energy", f"4 / {control['after']['max_energy']:.6f}"],
+        ["Entropy acceptance margin", f"{control['entropy_margin']:.6f}"],
+        [
+            "Rejected trials / conservation drift",
+            f"{control['rejected']} / {control['conservation_error']:.2e}",
+        ],
+    ],
+    [300, 205],
+)
+para(
+    "The cell energy ceiling fails while density/pressure stay positive, the entropy "
+    "test passes and total energy is conserved. Adding E ≤ 4 as an extra acceptance "
+    "guard would reject every positive trial for these data."
+)
+para("Implication for the target family", "HeadingR")
+para(
+    "<b>The compression data are not the Taylor–Green family.</b> This counterexample "
+    "rejects a global method-level invariance shortcut. It does not refute a "
+    "family-specific or time-dependent state bound. Those bounds still require proof."
+)
+rows = [["Target-family grid", "Parameter cases", "Smallest sampled margin inside K"]]
+for n in [16, 32, 64]:
+    selected = [row for row in region_record["family_rows"] if row["n"] == n]
+    rows.append(
+        [f"{n}³", len(selected), f"{min(row['minimum_region_margin'] for row in selected):.5f}"]
+    )
+table(rows, [140, 120, 245])
+para(
+    "The 31 target-family trajectories stay in K numerically through T = 0.25. "
+    "The margin is the minimum of ρ−1/4, 4−ρ, 4−E and p−1/4 over sampled states. "
+    "The 16³ scan covers five amplitudes and five density perturbations. These finite "
+    "float observations do not discharge a universal evolution theorem.",
+    "SmallR",
+)
+para(
+    "Sources: ECFluxBounds.lean, RegionEscape.lean and region-validation.json. "
+    "The full accuracy-and-work-optimality goal remains open.",
     "SmallR",
 )
 SimpleDocTemplate(

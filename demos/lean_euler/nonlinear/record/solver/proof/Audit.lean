@@ -442,3 +442,45 @@ run_cmd do
   | _ => throwError "Not a theorem: EulerEntropyStepBounds.accepted_ratio_lower_bound"
   let axioms ← collectAxioms n
   logInfo m!"SIMJECTURE_AXIOMS EulerEntropyStepBounds.accepted_ratio_lower_bound: {axioms.toList}"
+run_cmd do
+  let n := `EulerECFluxBounds.flux_consistency_bound
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerECFluxBounds.flux_consistency_bound"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerECFluxBounds.flux_consistency_bound: {axioms.toList}"
+run_cmd do
+  let n := `EulerECFluxBounds.flux_consistency_bound_right
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerECFluxBounds.flux_consistency_bound_right"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerECFluxBounds.flux_consistency_bound_right: {axioms.toList}"
+run_cmd do
+  let n := `EulerECFluxBounds.flux_symmetric
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerECFluxBounds.flux_symmetric"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerECFluxBounds.flux_symmetric: {axioms.toList}"
+run_cmd do
+  let n := `EulerRegionEscape.initial_in_region
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerRegionEscape.initial_in_region"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerRegionEscape.initial_in_region: {axioms.toList}"
+run_cmd do
+  let n := `EulerRegionEscape.center_energy_increment
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerRegionEscape.center_energy_increment"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerRegionEscape.center_energy_increment: {axioms.toList}"
+run_cmd do
+  let n := `EulerRegionEscape.accepted_step_leaves_region
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerRegionEscape.accepted_step_leaves_region"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerRegionEscape.accepted_step_leaves_region: {axioms.toList}"

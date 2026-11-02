@@ -3,9 +3,9 @@
     "id": "exp_6f62fc7879c551622f9e3955",
     "status": "succeeded",
     "operator_guidance_ids": [],
-    "created_at": 1793592537.3682046,
+    "created_at": 1793594981.6174011,
     "timeout": 120,
-    "execution_deadline": 1793593437.2570734,
+    "execution_deadline": 1793595881.4877152,
     "workspace_limit_bytes": 4294967296,
     "binding": {
       "source": "validate_candidate.py",
@@ -36,30 +36,30 @@
     "method": null,
     "review_documents": null,
     "machine": "local-lean",
-    "pid": 302730,
+    "pid": 335150,
     "worker_identity": {
-      "pid": 302730,
-      "starttime": "1732521",
+      "pid": 335150,
+      "starttime": "1976946",
       "argv": [
         "/home/tomzhu0225/src/simjecture/.venv/bin/python",
         "-m",
         "conjecture_solver.research_service",
         "--root",
-        "/home/tomzhu0225/src/simjecture/artifacts/lean-euler/20261102/nonlinear/research/lab-step-bound-01/study",
+        "/home/tomzhu0225/src/simjecture/artifacts/lean-euler/20261102/nonlinear/research/lab-region-escape-01/study",
         "--execute",
         "exp_6f62fc7879c551622f9e3955"
       ],
-      "launched_at": "2026-11-02T04:08:57.522216+00:00",
+      "launched_at": "2026-11-02T04:49:41.783990+00:00",
       "run_directory": null
     },
-    "started_at": 1793592538.2985356,
-    "remote_job": "job_c9a7707c09e9527c601294df7169bc73ed79d485",
+    "started_at": 1793594982.6416533,
+    "remote_job": "job_6bac41cbbd6c1a321663ffb598cf6702e432e5fd",
     "transport_status": "connected",
     "assigned_gpu_ids": [],
     "telemetry": null,
     "execution_heartbeat": {
-      "elapsed_wall_seconds": 0.7047390040024766,
-      "observed_at": 1793592539.0316966
+      "elapsed_wall_seconds": 0.754351970001153,
+      "observed_at": 1793594983.4233832
     },
     "remote_terminal_status": "succeeded",
     "remote_artifacts": {
@@ -91,7 +91,7 @@
       "stdout_truncated": false,
       "stderr_truncated": false,
       "heartbeat_count": 0,
-      "wall_seconds": 0.7047390040024766,
+      "wall_seconds": 0.754351970001153,
       "workspace_bytes": 14371,
       "executor_sha256": "b92087579abbb99f55ce2c75d98765355c8ccd4a6ccf3ba55b15ddd5491a22ec",
       "resource_limits": {
@@ -104,7 +104,7 @@
     "input_mutations": [],
     "output_findings": [],
     "scientific_status": "unreviewed",
-    "finished_at": 1793592539.0356386,
+    "finished_at": 1793594983.427405,
     "transport_error": null,
     "collection_deferred": false,
     "collection_cancel_requested": false,
@@ -132,9 +132,9 @@
     "id": "exp_c2894c83807af48a6b7ebef3",
     "status": "succeeded",
     "operator_guidance_ids": [],
-    "created_at": 1793592540.0014665,
+    "created_at": 1793594984.2441142,
     "timeout": 240,
-    "execution_deadline": 1793593437.2570734,
+    "execution_deadline": 1793595881.4877152,
     "workspace_limit_bytes": 4294967296,
     "binding": {
       "source": "validate_entropy.py",
@@ -165,30 +165,30 @@
     "method": null,
     "review_documents": null,
     "machine": "local-lean",
-    "pid": 302759,
+    "pid": 335185,
     "worker_identity": {
-      "pid": 302759,
-      "starttime": "1732785",
+      "pid": 335185,
+      "starttime": "1977209",
       "argv": [
         "/home/tomzhu0225/src/simjecture/.venv/bin/python",
         "-m",
         "conjecture_solver.research_service",
         "--root",
-        "/home/tomzhu0225/src/simjecture/artifacts/lean-euler/20261102/nonlinear/research/lab-step-bound-01/study",
+        "/home/tomzhu0225/src/simjecture/artifacts/lean-euler/20261102/nonlinear/research/lab-region-escape-01/study",
         "--execute",
         "exp_c2894c83807af48a6b7ebef3"
       ],
-      "launched_at": "2026-11-02T04:09:00.157693+00:00",
+      "launched_at": "2026-11-02T04:49:44.404786+00:00",
       "run_directory": null
     },
-    "started_at": 1793592540.9600413,
-    "remote_job": "job_0f4266b6ee72a6b19e28093df30dab994f70c05e",
+    "started_at": 1793594985.23118,
+    "remote_job": "job_f68f39e5981f01f644be5bc887ceb226e93bb460",
     "transport_status": "connected",
     "assigned_gpu_ids": [],
     "telemetry": null,
     "execution_heartbeat": {
-      "elapsed_wall_seconds": 13.901813600998139,
-      "observed_at": 1793592554.889333
+      "elapsed_wall_seconds": 14.199907456000801,
+      "observed_at": 1793594999.4604661
     },
     "remote_terminal_status": "succeeded",
     "remote_artifacts": {
@@ -220,7 +220,7 @@
       "stdout_truncated": false,
       "stderr_truncated": false,
       "heartbeat_count": 0,
-      "wall_seconds": 13.901813600998139,
+      "wall_seconds": 14.199907456000801,
       "workspace_bytes": 23640,
       "executor_sha256": "b92087579abbb99f55ce2c75d98765355c8ccd4a6ccf3ba55b15ddd5491a22ec",
       "resource_limits": {
@@ -233,7 +233,7 @@
     "input_mutations": [],
     "output_findings": [],
     "scientific_status": "unreviewed",
-    "finished_at": 1793592554.896489,
+    "finished_at": 1793594999.4646318,
     "transport_error": null,
     "collection_deferred": false,
     "collection_cancel_requested": false,
@@ -261,9 +261,9 @@
     "id": "exp_0c49227bd3b58bf5c56df54b",
     "status": "succeeded",
     "operator_guidance_ids": [],
-    "created_at": 1793592555.6694884,
+    "created_at": 1793595000.4153247,
     "timeout": 300,
-    "execution_deadline": 1793593437.2570734,
+    "execution_deadline": 1793595881.4877152,
     "workspace_limit_bytes": 4294967296,
     "binding": {
       "source": "validate_entropy_candidate.py",
@@ -295,30 +295,30 @@
     "method": null,
     "review_documents": null,
     "machine": "local-lean",
-    "pid": 302925,
+    "pid": 335316,
     "worker_identity": {
-      "pid": 302925,
-      "starttime": "1734351",
+      "pid": 335316,
+      "starttime": "1978826",
       "argv": [
         "/home/tomzhu0225/src/simjecture/.venv/bin/python",
         "-m",
         "conjecture_solver.research_service",
         "--root",
-        "/home/tomzhu0225/src/simjecture/artifacts/lean-euler/20261102/nonlinear/research/lab-step-bound-01/study",
+        "/home/tomzhu0225/src/simjecture/artifacts/lean-euler/20261102/nonlinear/research/lab-region-escape-01/study",
         "--execute",
         "exp_0c49227bd3b58bf5c56df54b"
       ],
-      "launched_at": "2026-11-02T04:09:15.826372+00:00",
+      "launched_at": "2026-11-02T04:50:00.577051+00:00",
       "run_directory": null
     },
-    "started_at": 1793592556.6970286,
-    "remote_job": "job_b7cbfbd8b72641e3b26f7d291c61ddd6a740f44d",
+    "started_at": 1793595001.4683535,
+    "remote_job": "job_da449de0d1fc8f70e489d014dc78c3cfb4fe28af",
     "transport_status": "connected",
     "assigned_gpu_ids": [],
     "telemetry": null,
     "execution_heartbeat": {
-      "elapsed_wall_seconds": 21.98097152399714,
-      "observed_at": 1793592578.7070856
+      "elapsed_wall_seconds": 22.079037349998544,
+      "observed_at": 1793595023.575665
     },
     "remote_terminal_status": "succeeded",
     "remote_artifacts": {
@@ -354,7 +354,7 @@
       "stdout_truncated": false,
       "stderr_truncated": false,
       "heartbeat_count": 0,
-      "wall_seconds": 21.98097152399714,
+      "wall_seconds": 22.079037349998544,
       "workspace_bytes": 28582,
       "executor_sha256": "b92087579abbb99f55ce2c75d98765355c8ccd4a6ccf3ba55b15ddd5491a22ec",
       "resource_limits": {
@@ -367,7 +367,7 @@
     "input_mutations": [],
     "output_findings": [],
     "scientific_status": "unreviewed",
-    "finished_at": 1793592578.7113106,
+    "finished_at": 1793595023.5797622,
     "transport_error": null,
     "collection_deferred": false,
     "collection_cancel_requested": false,
@@ -399,9 +399,9 @@
     "id": "exp_84326daeccfc7986de97e073",
     "status": "succeeded",
     "operator_guidance_ids": [],
-    "created_at": 1793592579.3843215,
+    "created_at": 1793595024.6370006,
     "timeout": 300,
-    "execution_deadline": 1793593437.2570734,
+    "execution_deadline": 1793595881.4877152,
     "workspace_limit_bytes": 4294967296,
     "binding": {
       "source": "validate_step_bound.py",
@@ -434,30 +434,30 @@
     "method": null,
     "review_documents": null,
     "machine": "local-lean",
-    "pid": 303333,
+    "pid": 335782,
     "worker_identity": {
-      "pid": 303333,
-      "starttime": "1736723",
+      "pid": 335782,
+      "starttime": "1981248",
       "argv": [
         "/home/tomzhu0225/src/simjecture/.venv/bin/python",
         "-m",
         "conjecture_solver.research_service",
         "--root",
-        "/home/tomzhu0225/src/simjecture/artifacts/lean-euler/20261102/nonlinear/research/lab-step-bound-01/study",
+        "/home/tomzhu0225/src/simjecture/artifacts/lean-euler/20261102/nonlinear/research/lab-region-escape-01/study",
         "--execute",
         "exp_84326daeccfc7986de97e073"
       ],
-      "launched_at": "2026-11-02T04:09:39.540645+00:00",
+      "launched_at": "2026-11-02T04:50:24.796852+00:00",
       "run_directory": null
     },
-    "started_at": 1793592580.490365,
-    "remote_job": "job_770b7175c17704cadaf05107c383b9499f275e74",
+    "started_at": 1793595025.7840862,
+    "remote_job": "job_fc603754501587f7354cd4636fcbb9d7ee0b13e7",
     "transport_status": "connected",
     "assigned_gpu_ids": [],
     "telemetry": null,
     "execution_heartbeat": {
-      "elapsed_wall_seconds": 24.591459939001652,
-      "observed_at": 1793592605.1091022
+      "elapsed_wall_seconds": 24.93944754799668,
+      "observed_at": 1793595050.7524543
     },
     "remote_terminal_status": "succeeded",
     "remote_artifacts": {
@@ -497,7 +497,7 @@
       "stdout_truncated": false,
       "stderr_truncated": false,
       "heartbeat_count": 0,
-      "wall_seconds": 24.591459939001652,
+      "wall_seconds": 24.93944754799668,
       "workspace_bytes": 35004,
       "executor_sha256": "b92087579abbb99f55ce2c75d98765355c8ccd4a6ccf3ba55b15ddd5491a22ec",
       "resource_limits": {
@@ -510,7 +510,7 @@
     "input_mutations": [],
     "output_findings": [],
     "scientific_status": "unreviewed",
-    "finished_at": 1793592605.1136243,
+    "finished_at": 1793595050.7566705,
     "transport_error": null,
     "collection_deferred": false,
     "collection_cancel_requested": false,
@@ -543,12 +543,159 @@
     }
   },
   {
-    "id": "exp_4d06d43c69a8f4ec3c902eca",
+    "id": "exp_cca307214472639c9aa28ee5",
     "status": "succeeded",
     "operator_guidance_ids": [],
-    "created_at": 1793592605.6494324,
+    "created_at": 1793595052.414517,
+    "timeout": 300,
+    "execution_deadline": 1793595881.4877152,
+    "workspace_limit_bytes": 4294967296,
+    "binding": {
+      "source": "validate_region_bounds.py",
+      "args": [
+        "--output",
+        "region"
+      ],
+      "inputs": {
+        "validate_region_bounds.py": "01acf35111510de28464c5af6c63129b90dcf1beaec2feef74480f29643102eb",
+        "entropy_candidate.py": "3c155ccb2a4d520d8e1d26347a56263e53adb068cc2b8ede05ac622e7e9a41cc",
+        "validate_entropy_candidate.py": "059907a933f1078ed9db897df8acf757e073221642887c3234fb057e0b044db7",
+        "finite_volume.py": "77c81b82bd152cb967c15d494d715e3006c9cac5d2a44ed1c63693b3f4b9ecd4",
+        "contract.json": "59d2abf1b1bdce7080c68fedded2478a95d1a0b0defd73e1cf94ffefa99b8ecf"
+      },
+      "capability": null,
+      "runtime_sha256": null
+    },
+    "outputs": [
+      "region/region-validation.json"
+    ],
+    "commitment": null,
+    "key": null,
+    "execution_target": "auto",
+    "resources": {
+      "cpus": 1,
+      "memory_mb": 2048,
+      "gpus": 0
+    },
+    "stage": "exploration",
+    "method": null,
+    "review_documents": null,
+    "machine": "local-lean",
+    "pid": 336062,
+    "worker_identity": {
+      "pid": 336062,
+      "starttime": "1984026",
+      "argv": [
+        "/home/tomzhu0225/src/simjecture/.venv/bin/python",
+        "-m",
+        "conjecture_solver.research_service",
+        "--root",
+        "/home/tomzhu0225/src/simjecture/artifacts/lean-euler/20261102/nonlinear/research/lab-region-escape-01/study",
+        "--execute",
+        "exp_cca307214472639c9aa28ee5"
+      ],
+      "launched_at": "2026-11-02T04:50:52.577448+00:00",
+      "run_directory": null
+    },
+    "started_at": 1793595053.5328722,
+    "remote_job": "job_016a711fb4204ea4b4b8e122545145e21f20d3f4",
+    "transport_status": "connected",
+    "assigned_gpu_ids": [],
+    "telemetry": null,
+    "execution_heartbeat": {
+      "elapsed_wall_seconds": 23.18125752999913,
+      "observed_at": 1793595076.7422626
+    },
+    "remote_terminal_status": "succeeded",
+    "remote_artifacts": {
+      "contract.json": {
+        "sha256": "59d2abf1b1bdce7080c68fedded2478a95d1a0b0defd73e1cf94ffefa99b8ecf",
+        "bytes": 3798
+      },
+      "entropy_candidate.py": {
+        "sha256": "3c155ccb2a4d520d8e1d26347a56263e53adb068cc2b8ede05ac622e7e9a41cc",
+        "bytes": 7389
+      },
+      "finite_volume.py": {
+        "sha256": "77c81b82bd152cb967c15d494d715e3006c9cac5d2a44ed1c63693b3f4b9ecd4",
+        "bytes": 3534
+      },
+      "region/region-validation.json": {
+        "sha256": "56c0f38636395d627e9c39f12656e23ec98ce601ef2e71b4bec25aa597c0e8f7",
+        "bytes": 11750
+      },
+      "validate_entropy_candidate.py": {
+        "sha256": "059907a933f1078ed9db897df8acf757e073221642887c3234fb057e0b044db7",
+        "bytes": 7273
+      },
+      "validate_region_bounds.py": {
+        "sha256": "01acf35111510de28464c5af6c63129b90dcf1beaec2feef74480f29643102eb",
+        "bytes": 5700
+      }
+    },
+    "execution": {
+      "isolation_backend": "bubblewrap",
+      "returncode": 0,
+      "stdout": "{\"n\": 16, \"A\": 0.5, \"delta\": -0.05, \"steps\": 11, \"final_time\": 0.25, \"min_density\": 0.9537289527494595, \"max_density\": 1.0462710472505405, \"min_pressure\": 0.9211532411029442, \"max_energy\": 1.1077078012987, \"minimum_region_margin\": 0.6711532411029442}\n{\"n\": 16, \"A\": 0.5, \"delta\": -0.025, \"steps\": 11, \"final_time\": 0.25, \"min_density\": 0.9768644763747297, \"max_density\": 1.0231355236252704, \"min_pressure\": 0.9211656693447254, \"max_energy\": 1.1076141303952904, \"minimum_region_margin\": 0.6711656693447254}\n{\"n\": 16, \"A\": 0.5, \"delta\": 0.0, \"steps\": 11, \"final_time\": 0.25, \"min_density\": 0.9989273449277686, \"max_density\": 1.000795868550883, \"min_pressure\": 0.9211780973578153, \"max_energy\": 1.1075204594918808, \"minimum_region_margin\": 0.6711780973578153}\n{\"n\": 16, \"A\": 0.5, \"delta\": 0.02500000000000001, \"steps\": 11, \"final_time\": 0.25, \"min_density\": 0.9768644763747297, \"max_density\": 1.0231355236252704, \"min_pressure\": 0.9211656693447254, \"max_energy\": 1.1076141303952904, \"minimum_region_margin\": 0.6711656693447254}\n{\"n\": 16, \"A\": 0.5, \"delta\": 0.05, \"steps\": 11, \"final_time\": 0.25, \"min_density\": 0.9537289527494595, \"max_density\": 1.0462710472505405, \"min_pressure\": 0.9211532411029442, \"max_energy\": 1.1077078012987, \"minimum_region_margin\": 0.6711532411029442}\n{\"n\": 16, \"A\": 0.625, \"delta\": -0.05, \"steps\": 12, \"final_time\": 0.25, \"min_density\": 0.9537289527494595, \"max_density\": 1.0462710472505405, \"min_pressure\": 0.8768019392233501, \"max_energy\": 1.1682934395292188, \"minimum_region_margin\": 0.6268019392233501}\n{\"n\": 16, \"A\": 0.625, \"delta\": -0.025, \"steps\": 12, \"final_time\": 0.25, \"min_density\": 0.9768644763747297, \"max_density\": 1.0231355236252704, \"min_pressure\": 0.8768213583511336, \"max_energy\": 1.1681470787426413, \"minimum_region_margin\": 0.6268213583511336}\n{\"n\": 16, \"A\": 0.625, \"delta\": 0.0, \"steps\": 12, \"final_time\": 0.25, \"min_density\": 0.9982900402330017, \"max_density\": 1.0012529342987007, \"min_pressure\": 0.8768407771215865, \"max_energy\": 1.1680007179560636, \"minimum_region_margin\": 0.6268407771215865}\n{\"n\": 16, \"A\": 0.625, \"delta\": 0.02500000000000001, \"steps\": 12, \"final_time\": 0.25, \"min_density\": 0.9768644763747297, \"max_density\": 1.0231355236252704, \"min_pressure\": 0.8768213583511336, \"max_energy\": 1.1681470787426413, \"minimum_region_margin\": 0.6268213583511336}\n{\"n\": 16, \"A\": 0.625, \"delta\": 0.05, \"steps\": 12, \"final_time\": 0.25, \"min_density\": 0.9537289527494595, \"max_density\": 1.0462710472505405, \"min_pressure\": 0.8768019392233501, \"max_energy\": 1.1682934395292188, \"minimum_region_margin\": 0.6268019392233501}\n{\"n\": 16, \"A\": 0.75, \"delta\": -0.05, \"steps\": 12, \"final_time\": 0.25, \"min_density\": 0.9537289527494595, \"max_density\": 1.0462710472505405, \"min_pressure\": 0.8225947924816241, \"max_energy\": 1.242342552922075, \"minimum_region_margin\": 0.5725947924816241}\n{\"n\": 16, \"A\": 0.75, \"delta\": -0.025, \"steps\": 12, \"final_time\": 0.25, \"min_density\": 0.9768644763747297, \"max_density\": 1.0231355236252704, \"min_pressure\": 0.8226227560256324, \"max_energy\": 1.2421317933894034, \"minimum_region_margin\": 0.5726227560256324}\n{\"n\": 16, \"A\": 0.75, \"delta\": 0.0, \"steps\": 12, \"final_time\": 0.25, \"min_density\": 0.9974974174932689, \"max_density\": 1.0018123271991854, \"min_pressure\": 0.8226507190550845, \"max_energy\": 1.2419210338567317, \"minimum_region_margin\": 0.5726507190550845}\n{\"n\": 16, \"A\": 0.75, \"delta\": 0.02500000000000001, \"steps\": 12, \"final_time\": 0.25, \"min_density\": 0.9768644763747297, \"max_density\": 1.0231355236252704, \"min_pressure\": 0.8226227560256324, \"max_energy\": 1.2421317933894034, \"minimum_region_margin\": 0.5726227560256324}\n{\"n\": 16, \"A\": 0.75, \"delta\": 0.05, \"steps\": 12, \"final_time\": 0.25, \"min_density\": 0.9537289527494595, \"max_density\": 1.0462710472505405, \"min_pressure\": 0.8225947924816241, \"max_energy\": 1.242342552922075, \"minimum_region_margin\": 0.5725947924816241}\n{\"n\": 16, \"A\": 0.875, \"delta\": -0.05, \"steps\": 13, \"final_time\": 0.25, \"min_density\": 0.9537289527494595, \"max_density\": 1.0462710472505405, \"min_pressure\": 0.7585318008777663, \"max_energy\": 1.3298551414772688, \"minimum_region_margin\": 0.5085318008777663}\n{\"n\": 16, \"A\": 0.875, \"delta\": -0.025, \"steps\": 13, \"final_time\": 0.25, \"min_density\": 0.9768644763747297, \"max_density\": 1.0231355236252704, \"min_pressure\": 0.7585698623682219, \"max_energy\": 1.3295682743355768, \"minimum_region_margin\": 0.5085698623682219}\n{\"n\": 16, \"A\": 0.875, \"delta\": 0.0, \"steps\": 13, \"final_time\": 0.25, \"min_density\": 0.996544061689166, \"max_density\": 1.0024828756038844, \"min_pressure\": 0.7586079231583095, \"max_energy\": 1.3292814071938848, \"minimum_region_margin\": 0.5086079231583095}\n{\"n\": 16, \"A\": 0.875, \"delta\": 0.02500000000000001, \"steps\": 13, \"final_time\": 0.25, \"min_density\": 0.9768644763747297, \"max_density\": 1.0231355236252704, \"min_pressure\": 0.7585698623682219, \"max_energy\": 1.3295682743355768, \"minimum_region_margin\": 0.5085698623682219}\n{\"n\": 16, \"A\": 0.875, \"delta\": 0.05, \"steps\": 13, \"final_time\": 0.25, \"min_density\": 0.9537289527494595, \"max_density\": 1.0462710472505405, \"min_pressure\": 0.7585318008777663, \"max_energy\": 1.3298551414772688, \"minimum_region_margin\": 0.5085318008777663}\n{\"n\": 16, \"A\": 1.0, \"delta\": -0.05, \"steps\": 13, \"final_time\": 0.25, \"min_density\": 0.9537289527494595, \"max_density\": 1.0462710472505405, \"min_pressure\": 0.6846129644117764, \"max_energy\": 1.4308312051948, \"minimum_region_margin\": 0.43461296441177644}\n{\"n\": 16, \"A\": 1.0, \"delta\": -0.025, \"steps\": 13, \"final_time\": 0.25, \"min_density\": 0.9768644763747297, \"max_density\": 1.0231355236252704, \"min_pressure\": 0.6846626773789021, \"max_energy\": 1.4304565215811615, \"minimum_region_margin\": 0.4346626773789021}\n{\"n\": 16, \"A\": 1.0, \"delta\": 0.0, \"steps\": 13, \"final_time\": 0.25, \"min_density\": 0.99543641075697, \"max_density\": 1.0032533226060711, \"min_pressure\": 0.6847123894312614, \"max_energy\": 1.430081837967523, \"minimum_region_margin\": 0.43471238943126145}\n{\"n\": 16, \"A\": 1.0, \"delta\": 0.02500000000000001, \"steps\": 13, \"final_time\": 0.25, \"min_density\": 0.9768644763747297, \"max_density\": 1.0231355236252704, \"min_pressure\": 0.6846626773789021, \"max_energy\": 1.4304565215811615, \"minimum_region_margin\": 0.4346626773789021}\n{\"n\": 16, \"A\": 1.0, \"delta\": 0.05, \"steps\": 13, \"final_time\": 0.25, \"min_density\": 0.9537289527494595, \"max_density\": 1.0462710472505405, \"min_pressure\": 0.6846129644117764, \"max_energy\": 1.4308312051948, \"minimum_region_margin\": 0.43461296441177644}\n{\"n\": 32, \"A\": 0.5, \"delta\": -0.05, \"steps\": 23, \"final_time\": 0.25, \"min_density\": 0.9509558162447848, \"max_density\": 1.0490441837552151, \"min_pressure\": 0.9101880238859011, \"max_energy\": 1.1203551807004815, \"minimum_region_margin\": 0.6601880238859011}\n{\"n\": 32, \"A\": 0.75, \"delta\": 0, \"steps\": 25, \"final_time\": 0.25, \"min_density\": 0.997774187818365, \"max_density\": 1.0021779481338824, \"min_pressure\": 0.7979314024667633, \"max_energy\": 1.2706720122086193, \"minimum_region_margin\": 0.5479314024667633}\n{\"n\": 32, \"A\": 1, \"delta\": 0.05, \"steps\": 27, \"final_time\": 0.25, \"min_density\": 0.9509558162447848, \"max_density\": 1.0490441837552151, \"min_pressure\": 0.6407520955436049, \"max_energy\": 1.4814207228019258, \"minimum_region_margin\": 0.3907520955436049}\n{\"n\": 64, \"A\": 0.5, \"delta\": -0.05, \"steps\": 45, \"final_time\": 0.25, \"min_density\": 0.9502404545555593, \"max_density\": 1.0497595454444408, \"min_pressure\": 0.9072488112009696, \"max_energy\": 1.123817487539701, \"minimum_region_margin\": 0.6572488112009696}\n{\"n\": 64, \"A\": 0.75, \"delta\": 0, \"steps\": 50, \"final_time\": 0.25, \"min_density\": 0.9978237712387573, \"max_density\": 1.002610396044505, \"min_pressure\": 0.7913109173043882, \"max_energy\": 1.278556001665129, \"minimum_region_margin\": 0.5413109173043882}\n{\"n\": 64, \"A\": 1, \"delta\": 0.05, \"steps\": 55, \"final_time\": 0.25, \"min_density\": 0.9502404545555593, \"max_density\": 1.0497595454444408, \"min_pressure\": 0.6289952448038781, \"max_energy\": 1.4952699501588038, \"minimum_region_margin\": 0.37899524480387814}",
+      "stderr": "",
+      "timed_out": false,
+      "cancelled": false,
+      "workspace_exceeded": false,
+      "stdout_truncated": false,
+      "stderr_truncated": false,
+      "heartbeat_count": 0,
+      "wall_seconds": 23.18125752999913,
+      "workspace_bytes": 39444,
+      "executor_sha256": "b92087579abbb99f55ce2c75d98765355c8ccd4a6ccf3ba55b15ddd5491a22ec",
+      "resource_limits": {
+        "max_file_bytes": 4294967296,
+        "max_workspace_bytes": 4294967296,
+        "max_memory_bytes": 2147483648
+      }
+    },
+    "missing_outputs": [],
+    "input_mutations": [],
+    "output_findings": [],
+    "scientific_status": "unreviewed",
+    "finished_at": 1793595076.7463152,
+    "transport_error": null,
+    "collection_deferred": false,
+    "collection_cancel_requested": false,
+    "artifact_policy": "eager",
+    "artifacts": {
+      "contract.json": {
+        "sha256": "59d2abf1b1bdce7080c68fedded2478a95d1a0b0defd73e1cf94ffefa99b8ecf",
+        "bytes": 3798
+      },
+      "entropy_candidate.py": {
+        "sha256": "3c155ccb2a4d520d8e1d26347a56263e53adb068cc2b8ede05ac622e7e9a41cc",
+        "bytes": 7389
+      },
+      "finite_volume.py": {
+        "sha256": "77c81b82bd152cb967c15d494d715e3006c9cac5d2a44ed1c63693b3f4b9ecd4",
+        "bytes": 3534
+      },
+      "region/region-validation.json": {
+        "sha256": "56c0f38636395d627e9c39f12656e23ec98ce601ef2e71b4bec25aa597c0e8f7",
+        "bytes": 11750
+      },
+      "validate_entropy_candidate.py": {
+        "sha256": "059907a933f1078ed9db897df8acf757e073221642887c3234fb057e0b044db7",
+        "bytes": 7273
+      },
+      "validate_region_bounds.py": {
+        "sha256": "01acf35111510de28464c5af6c63129b90dcf1beaec2feef74480f29643102eb",
+        "bytes": 5700
+      }
+    }
+  },
+  {
+    "id": "exp_80c78170690d08440e3a4b5b",
+    "status": "succeeded",
+    "operator_guidance_ids": [],
+    "created_at": 1793595077.6925497,
     "timeout": 240,
-    "execution_deadline": 1793593437.2570734,
+    "execution_deadline": 1793595881.4877152,
     "workspace_limit_bytes": 4294967296,
     "binding": {
       "source": "check_solver.py",
@@ -557,8 +704,8 @@
         "checked"
       ],
       "inputs": {
-        "check_solver.py": "fb57903ff4aec74ec4dab1375b6d53c0e1e1865255d86bcd13334f367266be39",
-        "assemble_solver.py": "c3066a43cb347e2672d4736fe3591a85dea15661185408dbc958644930f61f33",
+        "check_solver.py": "25148c1ba6258c38ae080a6fc24f972629771da72cd99902b9f5f4749e7bf87a",
+        "assemble_solver.py": "5363294663430a15e917a407f46b754577710329ef62516305dc97f285932263",
         "formal/Admissible.lean": "137920bcc9f864001f27ed16e0c251b0e551988974cde6607a3789553acfd204",
         "formal/PrimitiveEnergy.lean": "652a9d57bf336553918cded1337b00f569ff71db0d696db429dca7e095314e09",
         "formal/ConservativePrimitive.lean": "a3eb81b04068b56631d0fde39c2f2fd795dfcdb6598b0befec34b0db6755b2ac",
@@ -584,7 +731,9 @@
         "formal/EntropyConservativeFlux.lean": "a4a11ff5b48f9900c9d093d9e9e41e825927c4c8332ec2de235406b7ff96c3c4",
         "formal/EntropyCandidateStep.lean": "4cd47d8eb7d51b82c99b280f1de9cc2d218c8e05192336305fe5b8a1a27a53cd",
         "formal/PressurePolynomial.lean": "a7e912ed6847ae1c10512513366c729d140ec286668740d17243e30e9521a853",
-        "formal/EntropyStepBounds.lean": "e1f8957ede8ccb64f266a275c5e0eef0efd1778eea42c1f32c8c233401230f22"
+        "formal/EntropyStepBounds.lean": "e1f8957ede8ccb64f266a275c5e0eef0efd1778eea42c1f32c8c233401230f22",
+        "formal/ECFluxBounds.lean": "5c618ccd587671fde55bce22a721cb0107e464922d76241d3a8a93d23c467820",
+        "formal/RegionEscape.lean": "2475ed6ed9a478be98d289ff11e54c261896c541bf842fde76c8c43a5b9da108"
       },
       "capability": "lean-4.24.0--at-local-lean",
       "runtime_sha256": "026ddb3c1c49b3d7e35a0244560af9837be5933a9d01a366e55eaa42119abbe5",
@@ -610,72 +759,72 @@
     "method": null,
     "review_documents": null,
     "machine": "local-lean",
-    "pid": 303605,
+    "pid": 336456,
     "worker_identity": {
-      "pid": 303605,
-      "starttime": "1739349",
+      "pid": 336456,
+      "starttime": "1986554",
       "argv": [
         "/home/tomzhu0225/src/simjecture/.venv/bin/python",
         "-m",
         "conjecture_solver.research_service",
         "--root",
-        "/home/tomzhu0225/src/simjecture/artifacts/lean-euler/20261102/nonlinear/research/lab-step-bound-01/study",
+        "/home/tomzhu0225/src/simjecture/artifacts/lean-euler/20261102/nonlinear/research/lab-region-escape-01/study",
         "--execute",
-        "exp_4d06d43c69a8f4ec3c902eca"
+        "exp_80c78170690d08440e3a4b5b"
       ],
-      "launched_at": "2026-11-02T04:10:05.809242+00:00",
+      "launched_at": "2026-11-02T04:51:17.849511+00:00",
       "run_directory": null
     },
-    "started_at": 1793592608.8276358,
-    "remote_job": "job_514e840c5f904d24a5e79bc806600f84f0a0d48a",
+    "started_at": 1793595081.1255608,
+    "remote_job": "job_942734dfe932b1274b7dca82411671e7d39084c1",
     "transport_status": "connected",
     "assigned_gpu_ids": [],
     "telemetry": null,
     "execution_heartbeat": {
-      "elapsed_wall_seconds": 111.56624272000045,
-      "observed_at": 1793592720.4748244
+      "elapsed_wall_seconds": 128.64541560200087,
+      "observed_at": 1793595209.8694105
     },
     "remote_terminal_status": "succeeded",
     "remote_artifacts": {
       "assemble_solver.py": {
-        "sha256": "c3066a43cb347e2672d4736fe3591a85dea15661185408dbc958644930f61f33",
-        "bytes": 1445
+        "sha256": "5363294663430a15e917a407f46b754577710329ef62516305dc97f285932263",
+        "bytes": 1495
       },
       "check_solver.py": {
-        "sha256": "fb57903ff4aec74ec4dab1375b6d53c0e1e1865255d86bcd13334f367266be39",
-        "bytes": 6717
+        "sha256": "25148c1ba6258c38ae080a6fc24f972629771da72cd99902b9f5f4749e7bf87a",
+        "bytes": 7518
       },
       "checked/Solver.lean": {
-        "sha256": "3a71ade9c27254d8f689fc9035a1cf94dbecf79e392dcbfab4040950b6773174",
-        "bytes": 204194
+        "sha256": "5de26c3d6b5c2b51d7df4c3b6619c7686032c506196c55ec4bdec8ed6b005a97",
+        "bytes": 228345
       },
       "checked/proof/Audit.lean": {
-        "sha256": "3703af02e4b164f27f99857127feb4092711d044bdcbafb47682feb870a51124",
-        "bytes": 21796
+        "sha256": "8d968a814ee7c337934551ba7791bfdcb7623ec0a65ffa06d4dd2ec69aac1ea8",
+        "bytes": 23785
       },
       "checked/proof/Candidate.lean": {
-        "sha256": "3a71ade9c27254d8f689fc9035a1cf94dbecf79e392dcbfab4040950b6773174",
-        "bytes": 204194
+        "sha256": "5de26c3d6b5c2b51d7df4c3b6619c7686032c506196c55ec4bdec8ed6b005a97",
+        "bytes": 228345
       },
       "checked/proof/Candidate.olean": {
-        "sha256": "58b0dbf1a38a7fb9c12b7fef32c0774f131d78bfe53376b1101a1edcb26eaa62",
-        "bytes": 28735800
+        "sha256": "9ab12a6c599ca450385bbef111b2f5e6fc7b3edc9cf3c1dc4e7996ed2b98d75a",
+        "bytes": 30421176
       },
       "checked/proof/audit.log": {
-        "sha256": "542801512a5f6fdf705fbca2d423bf494e47811a10c8848b9b2eede1755dd2a1",
-        "bytes": 6578
+        "sha256": "a72c3ea9e31583f097c8884e7b9ad3ca93a7bba3f280e604ea2d8dc4e1db7173",
+        "bytes": 7177
       },
       "checked/proof/compile.log": {
         "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "bytes": 0
       },
       "checked/proof/result.json": {
-        "sha256": "0f6dbde42306def92f81fb59e62f0fb7aa8e9d29d85335f882e18dcdbd015e19",
-        "bytes": 13256
+        "sha256": "52251f0a0103ba04b36806c4b84ceb4ec973431dfddbbca44f930fe44ea6e840",
+        "bytes": 14256
       },
       "checked/solver-formal.json": {
-        "sha256": "371efbee63012dfa69503e6631f46bded14171fed04b17d2ff93875e8ad35b7f",
-        "bytes": 18537
+        "sha256": "3899a842868f6eccaf72310f92163329a62a9270f6c489b6066646eabfd15711",
+        "bytes": 20219
       },
       "formal/Admissible.lean": {
         "sha256": "137920bcc9f864001f27ed16e0c251b0e551988974cde6607a3789553acfd204",
@@ -692,6 +841,10 @@
       "formal/DiscreteEnergy.lean": {
         "sha256": "c4073f2c2d91f2b69765c3371da31f9ad9cb04f2003afdb57f9f5b45e57225c4",
         "bytes": 10736
+      },
+      "formal/ECFluxBounds.lean": {
+        "sha256": "5c618ccd587671fde55bce22a721cb0107e464922d76241d3a8a93d23c467820",
+        "bytes": 20198
       },
       "formal/EnergyBounds.lean": {
         "sha256": "d2a931f019988a40d4de20b71c844dd0d9dbec37e67b481d7eb300e5d5f64716",
@@ -768,6 +921,10 @@
       "formal/PrimitiveEnergy.lean": {
         "sha256": "652a9d57bf336553918cded1337b00f569ff71db0d696db429dca7e095314e09",
         "bytes": 3811
+      },
+      "formal/RegionEscape.lean": {
+        "sha256": "2475ed6ed9a478be98d289ff11e54c261896c541bf842fde76c8c43a5b9da108",
+        "bytes": 3951
       },
       "formal/VariableEnergy.lean": {
         "sha256": "aa4fe016bcabff9cff0e049e1acc7f0b6b639c0778ebeb35140592d97aaf72be",
@@ -785,16 +942,16 @@
     "execution": {
       "isolation_backend": "bubblewrap",
       "returncode": 0,
-      "stdout": "{\"status\": \"proved\", \"theorems\": 63}",
+      "stdout": "{\"status\": \"proved\", \"theorems\": 69}",
       "stderr": "",
       "timed_out": false,
       "cancelled": false,
       "workspace_exceeded": false,
       "stdout_truncated": false,
       "stderr_truncated": false,
-      "heartbeat_count": 3,
-      "wall_seconds": 111.56624272000045,
-      "workspace_bytes": 29417077,
+      "heartbeat_count": 4,
+      "wall_seconds": 128.64541560200087,
+      "workspace_bytes": 31181025,
       "executor_sha256": "b92087579abbb99f55ce2c75d98765355c8ccd4a6ccf3ba55b15ddd5491a22ec",
       "resource_limits": {
         "max_file_bytes": 4294967296,
@@ -806,43 +963,43 @@
     "input_mutations": [],
     "output_findings": [],
     "scientific_status": "unreviewed",
-    "finished_at": 1793592720.4948153,
+    "finished_at": 1793595209.8897777,
     "transport_error": null,
     "collection_deferred": false,
     "collection_cancel_requested": false,
     "artifact_policy": "eager",
     "artifacts": {
       "assemble_solver.py": {
-        "sha256": "c3066a43cb347e2672d4736fe3591a85dea15661185408dbc958644930f61f33",
-        "bytes": 1445
+        "sha256": "5363294663430a15e917a407f46b754577710329ef62516305dc97f285932263",
+        "bytes": 1495
       },
       "check_solver.py": {
-        "sha256": "fb57903ff4aec74ec4dab1375b6d53c0e1e1865255d86bcd13334f367266be39",
-        "bytes": 6717
+        "sha256": "25148c1ba6258c38ae080a6fc24f972629771da72cd99902b9f5f4749e7bf87a",
+        "bytes": 7518
       },
       "checked/proof/Audit.lean": {
-        "sha256": "3703af02e4b164f27f99857127feb4092711d044bdcbafb47682feb870a51124",
-        "bytes": 21796
+        "sha256": "8d968a814ee7c337934551ba7791bfdcb7623ec0a65ffa06d4dd2ec69aac1ea8",
+        "bytes": 23785
       },
       "checked/proof/Candidate.lean": {
-        "sha256": "3a71ade9c27254d8f689fc9035a1cf94dbecf79e392dcbfab4040950b6773174",
-        "bytes": 204194
+        "sha256": "5de26c3d6b5c2b51d7df4c3b6619c7686032c506196c55ec4bdec8ed6b005a97",
+        "bytes": 228345
       },
       "checked/proof/audit.log": {
-        "sha256": "542801512a5f6fdf705fbca2d423bf494e47811a10c8848b9b2eede1755dd2a1",
-        "bytes": 6578
+        "sha256": "a72c3ea9e31583f097c8884e7b9ad3ca93a7bba3f280e604ea2d8dc4e1db7173",
+        "bytes": 7177
       },
       "checked/proof/compile.log": {
         "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "bytes": 0
       },
       "checked/proof/result.json": {
-        "sha256": "0f6dbde42306def92f81fb59e62f0fb7aa8e9d29d85335f882e18dcdbd015e19",
-        "bytes": 13256
+        "sha256": "52251f0a0103ba04b36806c4b84ceb4ec973431dfddbbca44f930fe44ea6e840",
+        "bytes": 14256
       },
       "checked/solver-formal.json": {
-        "sha256": "371efbee63012dfa69503e6631f46bded14171fed04b17d2ff93875e8ad35b7f",
-        "bytes": 18537
+        "sha256": "3899a842868f6eccaf72310f92163329a62a9270f6c489b6066646eabfd15711",
+        "bytes": 20219
       },
       "formal/Admissible.lean": {
         "sha256": "137920bcc9f864001f27ed16e0c251b0e551988974cde6607a3789553acfd204",
@@ -859,6 +1016,10 @@
       "formal/DiscreteEnergy.lean": {
         "sha256": "c4073f2c2d91f2b69765c3371da31f9ad9cb04f2003afdb57f9f5b45e57225c4",
         "bytes": 10736
+      },
+      "formal/ECFluxBounds.lean": {
+        "sha256": "5c618ccd587671fde55bce22a721cb0107e464922d76241d3a8a93d23c467820",
+        "bytes": 20198
       },
       "formal/EnergyBounds.lean": {
         "sha256": "d2a931f019988a40d4de20b71c844dd0d9dbec37e67b481d7eb300e5d5f64716",
@@ -935,6 +1096,10 @@
       "formal/PrimitiveEnergy.lean": {
         "sha256": "652a9d57bf336553918cded1337b00f569ff71db0d696db429dca7e095314e09",
         "bytes": 3811
+      },
+      "formal/RegionEscape.lean": {
+        "sha256": "2475ed6ed9a478be98d289ff11e54c261896c541bf842fde76c8c43a5b9da108",
+        "bytes": 3951
       },
       "formal/VariableEnergy.lean": {
         "sha256": "aa4fe016bcabff9cff0e049e1acc7f0b6b639c0778ebeb35140592d97aaf72be",
