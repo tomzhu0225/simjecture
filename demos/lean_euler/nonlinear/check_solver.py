@@ -50,6 +50,14 @@ THEOREMS = [
     "EulerFiniteVolumeEntropy.entropy_step_bound",
     "EulerFiniteVolumeEntropy.entropy_step_dissipation",
     "EulerEntropyRegion.nonlinear_step_entropy_from_region",
+    "EulerPhysicalRegion.region_convex",
+    "EulerPhysicalRegion.conservative_hessian_squares",
+    "EulerInitialRegion.initial_family_in_region",
+    "EulerPhysicalFluxBounds.flux_derivative",
+    "EulerPhysicalFluxBounds.concrete_region_bounds",
+    "EulerPhysicalFluxBounds.coarse_viscosity_requirement",
+    "EulerPhysicalFluxBounds.initial_family_contains_rest",
+    "EulerPhysicalFluxBounds.current_speeds_fail_any_region_constants",
 ]
 
 
@@ -79,6 +87,10 @@ def main():
             "entropy dissipation is checked under explicit convex-region, curvature, flux, "
             "viscosity and timestep conditions. Uniform trajectory membership and those "
             "conditions for the current numerical settings remain unproved."
+            " Concrete physical-region bounds and initial-family membership are checked. "
+            "A checked obstruction shows that the global sufficient viscosity criterion "
+            "cannot certify the current wave-speed recipe on that region, even with "
+            "improved valid curvature constants. It does not refute actual solver stability."
         ),
     )
     (args.output / "solver-formal.json").write_text(json.dumps(record, indent=2) + "\n")

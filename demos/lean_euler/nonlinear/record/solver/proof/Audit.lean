@@ -260,3 +260,59 @@ run_cmd do
   | _ => throwError "Not a theorem: EulerEntropyRegion.nonlinear_step_entropy_from_region"
   let axioms ← collectAxioms n
   logInfo m!"SIMJECTURE_AXIOMS EulerEntropyRegion.nonlinear_step_entropy_from_region: {axioms.toList}"
+run_cmd do
+  let n := `EulerPhysicalRegion.region_convex
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerPhysicalRegion.region_convex"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerPhysicalRegion.region_convex: {axioms.toList}"
+run_cmd do
+  let n := `EulerPhysicalRegion.conservative_hessian_squares
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerPhysicalRegion.conservative_hessian_squares"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerPhysicalRegion.conservative_hessian_squares: {axioms.toList}"
+run_cmd do
+  let n := `EulerInitialRegion.initial_family_in_region
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerInitialRegion.initial_family_in_region"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerInitialRegion.initial_family_in_region: {axioms.toList}"
+run_cmd do
+  let n := `EulerPhysicalFluxBounds.flux_derivative
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerPhysicalFluxBounds.flux_derivative"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerPhysicalFluxBounds.flux_derivative: {axioms.toList}"
+run_cmd do
+  let n := `EulerPhysicalFluxBounds.concrete_region_bounds
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerPhysicalFluxBounds.concrete_region_bounds"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerPhysicalFluxBounds.concrete_region_bounds: {axioms.toList}"
+run_cmd do
+  let n := `EulerPhysicalFluxBounds.coarse_viscosity_requirement
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerPhysicalFluxBounds.coarse_viscosity_requirement"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerPhysicalFluxBounds.coarse_viscosity_requirement: {axioms.toList}"
+run_cmd do
+  let n := `EulerPhysicalFluxBounds.initial_family_contains_rest
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerPhysicalFluxBounds.initial_family_contains_rest"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerPhysicalFluxBounds.initial_family_contains_rest: {axioms.toList}"
+run_cmd do
+  let n := `EulerPhysicalFluxBounds.current_speeds_fail_any_region_constants
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerPhysicalFluxBounds.current_speeds_fail_any_region_constants"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerPhysicalFluxBounds.current_speeds_fail_any_region_constants: {axioms.toList}"

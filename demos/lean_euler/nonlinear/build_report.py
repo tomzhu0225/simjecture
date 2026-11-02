@@ -205,10 +205,16 @@ table(
             "combine into entropy dissipation under explicit convex-region and step conditions. "
             "These conditions are not established for the full numerical trajectory.",
         ],
+        [
+            "Concrete bounds and obstruction",
+            "A convex physical region contains the full initial family and has proved "
+            "curvature/flux bounds. An exact witness shows the present global viscosity "
+            "criterion cannot certify the candidate's wave-speed recipe there.",
+        ],
     ],
     [140, 365],
 )
-para("The new stability estimate", "HeadingR")
+para("Principal-update energy estimate", "HeadingR")
 para(
     "Write q = 1/ρ, e = (e<sub>q</sub>, e<sub>v</sub>, e<sub>p</sub>) and "
     "g<sub>q,p</sub>(e,e) = e<sub>p</sub>²/(2p) + |e<sub>v</sub>|²/q + "
@@ -335,8 +341,8 @@ for row in entropy_record["rows"]:
         )
 table(rows, [120, 120, 115, 150])
 para(
-    "<b>Remaining argument.</b> Discharge the region and step conditions in the new "
-    "finite-step theorem on the next page. Connect accumulated "
+    "<b>Remaining argument.</b> Develop a sharper finite-step estimate compatible with "
+    "the candidate, and prove the uniform trajectory conditions. Connect accumulated "
     "loss to final continuum error through proved state bounds and the reconstruction. "
     "Only then could a necessary mesh resolution support a total-work lower bound. "
     "The data above do not discharge any of these obligations."
@@ -360,8 +366,9 @@ para("A checked finite-step theorem", "TitleR")
 para(
     "The new theorem concerns the actual nonlinear Rusanov finite-volume update. "
     "It includes explicit time discretization. It is a conditional method theorem; "
-    "the required uniform state region and the constants for the complete solve "
-    "remain to be established."
+    "the required uniform trajectory membership and a useful certified parameter "
+    "choice remain to be established. Concrete region constants and their limitation "
+    "are checked on the following page."
 )
 para("The region conditions", "HeadingR")
 para(
@@ -375,6 +382,11 @@ para(
     "error estimates supplied as assumptions."
 )
 para("The viscosity and timestep conditions", "HeadingR")
+para(
+    "Here viscosity refers to artificial diffusion in the numerical face flux: "
+    "the Rusanov term is −(a<sub>d</sub>/2)(U<sub>right</sub> − U<sub>left</sub>). "
+    "It is not physical fluid viscosity. The target PDE remains inviscid 3D Euler."
+)
 para(
     "Write r = Δt/h and 0 &lt; a<sub>min</sub> ≤ a<sub>d</sub> ≤ a<sub>max</sub> "
     "for the directional global viscosities. A sufficient pair of conditions is<br/>"
@@ -410,11 +422,65 @@ table(
     [155, 350],
 )
 para(
-    "<b>Practical limitation.</b> These sufficient conditions may require a stronger "
-    "viscosity or smaller step than the current CFL = 0.3 numerical runs. Those runs "
-    "have not been certified to satisfy them. No uniform region, continuum error, "
-    "cost lower bound or optimality result follows until the outstanding hypotheses "
-    "and the full-solve bridges are discharged."
+    "<b>Practical limitation.</b> On the concrete region considered next, this "
+    "sufficient viscosity criterion cannot certify the current wave-speed recipe, "
+    "even with improved global curvature constants. A smaller timestep alone cannot "
+    "resolve that viscosity condition. This does not refute the solver's actual "
+    "entropy behaviour. Uniform trajectory bounds, continuum error and work "
+    "optimality remain unproved."
+)
+
+story.append(PageBreak())
+para("Concrete bounds and a<br/>proof-method obstruction", "TitleR")
+para(
+    "Lean now checks a concrete convex region K of conserved states with "
+    "1/4 ≤ ρ ≤ 4, total energy density E ≤ 4, and p ≥ 1/4. "
+    "It implies p ≤ 4 and |v|² ≤ 30. The complete initial family belongs to K "
+    "for every allowed A, δ and every spatial point. This is initial membership, "
+    "not invariance during the nonlinear evolution."
+)
+para("Explicit bounds, derived from the physical definitions", "HeadingR")
+para(
+    "Throughout K, the checked constants are λ = 1/12500, M = 100000 and L = 1200. "
+    "The Hessian is the actual conserved-variable entropy Hessian. The finite flux "
+    "bound follows from proved physical-flux derivatives and the mean value theorem. "
+    "The constants are deliberately coarse. Inserting them into the preceding "
+    "viscosity criterion would require a ≥ 3,600,002,500,000,000, which is not a "
+    "useful certificate for the present method."
+)
+para("Improving those constants alone is insufficient on K", "HeadingR")
+para(
+    "The rest state U* = (1,0,0,0,1) belongs to K and occurs in every member of "
+    "the actual initial family at (0, π/2, π/2). Lean checks two exact directional "
+    "Hessian values there:"
+)
+table(
+    [
+        ["Direction k", "|k|²", "D²η(U*)[k,k]", "Necessary bound"],
+        ["(1,0,0,0,2)", "5", "2", "λ ≤ 2/5"],
+        ["(2,0,0,0,−1)", "5", "13", "M ≥ 13/5"],
+    ],
+    [170, 55, 130, 150],
+)
+para(
+    "For every state in K, each physical directional wave speed is at most 12. "
+    "Therefore the candidate's computed global directional speeds are at most 12 "
+    "whenever its grid states are in K. The sufficient condition then has a left "
+    "side M(1+L²) ≥ 13/5 and a right side aλ/2 ≤ 12/5. It is impossible. "
+    "This obstruction holds for any valid global curvature constants on K, not "
+    "only the coarse numerical values above."
+)
+para(
+    "<b>Meaning.</b> This rules out certifying the candidate with this particular "
+    "global sufficient criterion on K. It does not prove the numerical method "
+    "unstable, falsify the observed entropy loss, or show that Euler solver "
+    "optimality is impossible. The physical problem and accuracy goal are unchanged."
+)
+para(
+    "<b>Next direction.</b> Use Euler's entropy-weighted energy and local variation "
+    "between neighbouring states to obtain a sharper estimate. Uniform regularity, "
+    "common smooth existence to T = 0.25, continuous reconstruction, full nonlinear "
+    "accuracy and matching work bounds still require proof."
 )
 SimpleDocTemplate(
     str(HERE / "report.pdf"),

@@ -2,7 +2,7 @@
   "schema_version": "0.1.0",
   "status": "proved",
   "checked": true,
-  "source_sha256": "1c9be355e73eca7921f946968ffaf53382fd2a719a489994327827d7407f8529",
+  "source_sha256": "05fa7a9c7e331ca9a3c73c08f9833d0ac64f79d5a68e20a55097e7bfb2ebef4f",
   "theorems": [
     "EulerAdmissible.convex_sum_admissible",
     "EulerAdmissible.flux_splitting_admissible",
@@ -40,7 +40,15 @@
     "EulerFiniteVolumeEntropy.total_increment_bound",
     "EulerFiniteVolumeEntropy.entropy_step_bound",
     "EulerFiniteVolumeEntropy.entropy_step_dissipation",
-    "EulerEntropyRegion.nonlinear_step_entropy_from_region"
+    "EulerEntropyRegion.nonlinear_step_entropy_from_region",
+    "EulerPhysicalRegion.region_convex",
+    "EulerPhysicalRegion.conservative_hessian_squares",
+    "EulerInitialRegion.initial_family_in_region",
+    "EulerPhysicalFluxBounds.flux_derivative",
+    "EulerPhysicalFluxBounds.concrete_region_bounds",
+    "EulerPhysicalFluxBounds.coarse_viscosity_requirement",
+    "EulerPhysicalFluxBounds.initial_family_contains_rest",
+    "EulerPhysicalFluxBounds.current_speeds_fail_any_region_constants"
   ],
   "allowed_axioms": [
     "Classical.choice",
@@ -232,6 +240,46 @@
       "propext",
       "Quot.sound",
       "Classical.choice"
+    ],
+    "EulerPhysicalRegion.region_convex": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerPhysicalRegion.conservative_hessian_squares": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerInitialRegion.initial_family_in_region": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerPhysicalFluxBounds.flux_derivative": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerPhysicalFluxBounds.concrete_region_bounds": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerPhysicalFluxBounds.coarse_viscosity_requirement": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerPhysicalFluxBounds.initial_family_contains_rest": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerPhysicalFluxBounds.current_speeds_fail_any_region_constants": [
+      "propext",
+      "Quot.sound",
+      "Classical.choice"
     ]
   },
   "timeout_seconds": 150,
@@ -270,12 +318,12 @@
   ],
   "compile_returncode": 0,
   "audit_returncode": 0,
-  "wall_seconds": 81.8789146250001,
+  "wall_seconds": 102.04315572100131,
   "artifact_sha256": {
-    "Audit.lean": "68ddf2ae9e2c70041f919312f340a4b4d9b029a241959e184cce0ac0e1cdcff0",
-    "Candidate.lean": "1c9be355e73eca7921f946968ffaf53382fd2a719a489994327827d7407f8529",
-    "Candidate.olean": "799789099788673737f9a2b53a2fee7af7831af09de4aa1aad29883b83a9a3a6",
-    "audit.log": "2b66e5c9eb89f43b044db95b329cb99e7e6e2f6761cf88bda08c8183296aa242",
+    "Audit.lean": "9039bbba42130bd47de71708b43149318226d53ce84047b4d9ff6de24e591fa3",
+    "Candidate.lean": "05fa7a9c7e331ca9a3c73c08f9833d0ac64f79d5a68e20a55097e7bfb2ebef4f",
+    "Candidate.olean": "b44357a1a333f9eb93ef8df3c66950e61f4af861c2e5936c3cd4d4f4bbca7816",
+    "audit.log": "c820e906cb0e8c7a4dc8f9b39ac95b6574ad6460376685f21b81a947130d02b5",
     "compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
   }
 }

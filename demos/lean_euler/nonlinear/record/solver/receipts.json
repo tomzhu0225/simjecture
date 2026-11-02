@@ -3,9 +3,9 @@
     "id": "exp_6f62fc7879c551622f9e3955",
     "status": "succeeded",
     "operator_guidance_ids": [],
-    "created_at": 1793585519.1156263,
+    "created_at": 1793587579.3606937,
     "timeout": 120,
-    "execution_deadline": 1793586418.9902122,
+    "execution_deadline": 1793588479.2369657,
     "workspace_limit_bytes": 4294967296,
     "binding": {
       "source": "validate_candidate.py",
@@ -36,30 +36,30 @@
     "method": null,
     "review_documents": null,
     "machine": "local-lean",
-    "pid": 192134,
+    "pid": 231494,
     "worker_identity": {
-      "pid": 192134,
-      "starttime": "1030696",
+      "pid": 231494,
+      "starttime": "1236721",
       "argv": [
         "/home/tomzhu0225/src/simjecture/.venv/bin/python",
         "-m",
         "conjecture_solver.research_service",
         "--root",
-        "/home/tomzhu0225/src/simjecture/artifacts/lean-euler/20261102/nonlinear/research/lab-step-02/study",
+        "/home/tomzhu0225/src/simjecture/artifacts/lean-euler/20261102/nonlinear/research/lab-region-01/study",
         "--execute",
         "exp_6f62fc7879c551622f9e3955"
       ],
-      "launched_at": "2026-11-02T02:11:59.302202+00:00",
+      "launched_at": "2026-11-02T02:46:19.522476+00:00",
       "run_directory": null
     },
-    "started_at": 1793585520.1877074,
-    "remote_job": "job_a04a5d95e016b54452ff3255bfdb1aeb77571ba0",
+    "started_at": 1793587580.6042032,
+    "remote_job": "job_8ae2d3333f2f9ad17ba41ff2484d355af19596e1",
     "transport_status": "connected",
     "assigned_gpu_ids": [],
     "telemetry": null,
     "execution_heartbeat": {
-      "elapsed_wall_seconds": 0.855760594999083,
-      "observed_at": 1793585521.0726442
+      "elapsed_wall_seconds": 0.9054248550000921,
+      "observed_at": 1793587581.58483
     },
     "remote_terminal_status": "succeeded",
     "remote_artifacts": {
@@ -91,7 +91,7 @@
       "stdout_truncated": false,
       "stderr_truncated": false,
       "heartbeat_count": 0,
-      "wall_seconds": 0.855760594999083,
+      "wall_seconds": 0.9054248550000921,
       "workspace_bytes": 14371,
       "executor_sha256": "b92087579abbb99f55ce2c75d98765355c8ccd4a6ccf3ba55b15ddd5491a22ec",
       "resource_limits": {
@@ -104,7 +104,7 @@
     "input_mutations": [],
     "output_findings": [],
     "scientific_status": "unreviewed",
-    "finished_at": 1793585521.0790942,
+    "finished_at": 1793587581.5891929,
     "transport_error": null,
     "collection_deferred": false,
     "collection_cancel_requested": false,
@@ -132,9 +132,9 @@
     "id": "exp_c2894c83807af48a6b7ebef3",
     "status": "succeeded",
     "operator_guidance_ids": [],
-    "created_at": 1793585521.743881,
+    "created_at": 1793587581.9837966,
     "timeout": 240,
-    "execution_deadline": 1793586418.9902122,
+    "execution_deadline": 1793588479.2369657,
     "workspace_limit_bytes": 4294967296,
     "binding": {
       "source": "validate_entropy.py",
@@ -165,30 +165,30 @@
     "method": null,
     "review_documents": null,
     "machine": "local-lean",
-    "pid": 192260,
+    "pid": 231526,
     "worker_identity": {
-      "pid": 192260,
-      "starttime": "1030959",
+      "pid": 231526,
+      "starttime": "1236983",
       "argv": [
         "/home/tomzhu0225/src/simjecture/.venv/bin/python",
         "-m",
         "conjecture_solver.research_service",
         "--root",
-        "/home/tomzhu0225/src/simjecture/artifacts/lean-euler/20261102/nonlinear/research/lab-step-02/study",
+        "/home/tomzhu0225/src/simjecture/artifacts/lean-euler/20261102/nonlinear/research/lab-region-01/study",
         "--execute",
         "exp_c2894c83807af48a6b7ebef3"
       ],
-      "launched_at": "2026-11-02T02:12:01.914306+00:00",
+      "launched_at": "2026-11-02T02:46:22.158206+00:00",
       "run_directory": null
     },
-    "started_at": 1793585522.7762852,
-    "remote_job": "job_f105beb4b326379f831308f798d9667418db35c2",
+    "started_at": 1793587583.1025116,
+    "remote_job": "job_695cf40f8939d2495f9aeef136f628a1ebf5e095",
     "transport_status": "connected",
     "assigned_gpu_ids": [],
     "telemetry": null,
     "execution_heartbeat": {
-      "elapsed_wall_seconds": 16.106174698999894,
-      "observed_at": 1793585538.9107013
+      "elapsed_wall_seconds": 15.905296578999696,
+      "observed_at": 1793587599.039793
     },
     "remote_terminal_status": "succeeded",
     "remote_artifacts": {
@@ -220,7 +220,7 @@
       "stdout_truncated": false,
       "stderr_truncated": false,
       "heartbeat_count": 0,
-      "wall_seconds": 16.106174698999894,
+      "wall_seconds": 15.905296578999696,
       "workspace_bytes": 23640,
       "executor_sha256": "b92087579abbb99f55ce2c75d98765355c8ccd4a6ccf3ba55b15ddd5491a22ec",
       "resource_limits": {
@@ -233,7 +233,7 @@
     "input_mutations": [],
     "output_findings": [],
     "scientific_status": "unreviewed",
-    "finished_at": 1793585538.9158547,
+    "finished_at": 1793587599.044223,
     "transport_error": null,
     "collection_deferred": false,
     "collection_cancel_requested": false,
@@ -258,12 +258,12 @@
     }
   },
   {
-    "id": "exp_6c9582f91683661397a140b5",
+    "id": "exp_504e2a90d9be66da7b7a497e",
     "status": "succeeded",
     "operator_guidance_ids": [],
-    "created_at": 1793585540.4402912,
+    "created_at": 1793587600.683612,
     "timeout": 240,
-    "execution_deadline": 1793586418.9902122,
+    "execution_deadline": 1793588479.2369657,
     "workspace_limit_bytes": 4294967296,
     "binding": {
       "source": "check_solver.py",
@@ -272,8 +272,8 @@
         "checked"
       ],
       "inputs": {
-        "check_solver.py": "5c8f615d0b8a38d1e426fd032e84d8a52bf4cbd735f70cdfb156c749eb932c5d",
-        "assemble_solver.py": "1852e9a2e7dc21e5a96c1af5ea40beb669203b76084e741f95615d28de3907a9",
+        "check_solver.py": "8a6ad60d2427eccb2b361f3b0387456a01dd5446b59a7ec8277b6ad5992a67fc",
+        "assemble_solver.py": "16486f2180616ab24b0ac55097e95666b626391ca453c364b54ef513d384eb6c",
         "formal/Admissible.lean": "137920bcc9f864001f27ed16e0c251b0e551988974cde6607a3789553acfd204",
         "formal/PrimitiveEnergy.lean": "652a9d57bf336553918cded1337b00f569ff71db0d696db429dca7e095314e09",
         "formal/ConservativePrimitive.lean": "a3eb81b04068b56631d0fde39c2f2fd795dfcdb6598b0befec34b0db6755b2ac",
@@ -291,7 +291,10 @@
         "formal/EntropyGeometry.lean": "ab2ab99fb46429153d7006ca1e6cf8492fed31a2dc44a685f1d116f69419e23b",
         "formal/FaceEntropy.lean": "b9a623f89f7247e148e05f101c91a39ecde41c9f49ac2725bdfa3fb7dd2a892a",
         "formal/FiniteVolumeEntropy.lean": "5f2146d3945c2a7636c3a465ba9cdb8ce00559c8f25fe66595a3608e9b207634",
-        "formal/EntropyRegion.lean": "e4e571d3f23e51869d24f921516a25fa35d98296a3fb136462b9bf6ea1e3f4ea"
+        "formal/EntropyRegion.lean": "e4e571d3f23e51869d24f921516a25fa35d98296a3fb136462b9bf6ea1e3f4ea",
+        "formal/PhysicalRegion.lean": "820b1bb688aa5e05ac50abd5db8665d5656a036db0d15a6ba647b612e28cc2d1",
+        "formal/InitialRegion.lean": "07ec89b516db230694cd75d3023bf0d97805bb5c7c073e12151a8867978fddf4",
+        "formal/PhysicalFluxBounds.lean": "f08c3916daabf8a2a4c4cb6f9d305d7918383025a0b0972e48fcf58f78d1939b"
       },
       "capability": "lean-4.24.0--at-local-lean",
       "runtime_sha256": "026ddb3c1c49b3d7e35a0244560af9837be5933a9d01a366e55eaa42119abbe5",
@@ -317,72 +320,72 @@
     "method": null,
     "review_documents": null,
     "machine": "local-lean",
-    "pid": 192764,
+    "pid": 232073,
     "worker_identity": {
-      "pid": 192764,
-      "starttime": "1032829",
+      "pid": 232073,
+      "starttime": "1238853",
       "argv": [
         "/home/tomzhu0225/src/simjecture/.venv/bin/python",
         "-m",
         "conjecture_solver.research_service",
         "--root",
-        "/home/tomzhu0225/src/simjecture/artifacts/lean-euler/20261102/nonlinear/research/lab-step-02/study",
+        "/home/tomzhu0225/src/simjecture/artifacts/lean-euler/20261102/nonlinear/research/lab-region-01/study",
         "--execute",
-        "exp_6c9582f91683661397a140b5"
+        "exp_504e2a90d9be66da7b7a497e"
       ],
-      "launched_at": "2026-11-02T02:12:20.607556+00:00",
+      "launched_at": "2026-11-02T02:46:40.841194+00:00",
       "run_directory": null
     },
-    "started_at": 1793585543.0995064,
-    "remote_job": "job_241be5a4eb04dba9e6182febe610a6c6c3a28967",
+    "started_at": 1793587603.476932,
+    "remote_job": "job_c48e44f62bb5c1bffb1fad2547ba13ac91dfd7f8",
     "transport_status": "connected",
     "assigned_gpu_ids": [],
     "telemetry": null,
     "execution_heartbeat": {
-      "elapsed_wall_seconds": 81.98368925700015,
-      "observed_at": 1793585625.1574736
+      "elapsed_wall_seconds": 102.14514926999982,
+      "observed_at": 1793587705.6971335
     },
     "remote_terminal_status": "succeeded",
     "remote_artifacts": {
       "assemble_solver.py": {
-        "sha256": "1852e9a2e7dc21e5a96c1af5ea40beb669203b76084e741f95615d28de3907a9",
-        "bytes": 1211
+        "sha256": "16486f2180616ab24b0ac55097e95666b626391ca453c364b54ef513d384eb6c",
+        "bytes": 1295
       },
       "check_solver.py": {
-        "sha256": "5c8f615d0b8a38d1e426fd032e84d8a52bf4cbd735f70cdfb156c749eb932c5d",
-        "bytes": 3988
+        "sha256": "8a6ad60d2427eccb2b361f3b0387456a01dd5446b59a7ec8277b6ad5992a67fc",
+        "bytes": 4790
       },
       "checked/Solver.lean": {
-        "sha256": "1c9be355e73eca7921f946968ffaf53382fd2a719a489994327827d7407f8529",
-        "bytes": 124859
+        "sha256": "05fa7a9c7e331ca9a3c73c08f9833d0ac64f79d5a68e20a55097e7bfb2ebef4f",
+        "bytes": 158428
       },
       "checked/proof/Audit.lean": {
-        "sha256": "68ddf2ae9e2c70041f919312f340a4b4d9b029a241959e184cce0ac0e1cdcff0",
-        "bytes": 12690
+        "sha256": "9039bbba42130bd47de71708b43149318226d53ce84047b4d9ff6de24e591fa3",
+        "bytes": 15517
       },
       "checked/proof/Candidate.lean": {
-        "sha256": "1c9be355e73eca7921f946968ffaf53382fd2a719a489994327827d7407f8529",
-        "bytes": 124859
+        "sha256": "05fa7a9c7e331ca9a3c73c08f9833d0ac64f79d5a68e20a55097e7bfb2ebef4f",
+        "bytes": 158428
       },
       "checked/proof/Candidate.olean": {
-        "sha256": "799789099788673737f9a2b53a2fee7af7831af09de4aa1aad29883b83a9a3a6",
-        "bytes": 18641408
+        "sha256": "b44357a1a333f9eb93ef8df3c66950e61f4af861c2e5936c3cd4d4f4bbca7816",
+        "bytes": 22664000
       },
       "checked/proof/audit.log": {
-        "sha256": "2b66e5c9eb89f43b044db95b329cb99e7e6e2f6761cf88bda08c8183296aa242",
-        "bytes": 3818
+        "sha256": "c820e906cb0e8c7a4dc8f9b39ac95b6574ad6460376685f21b81a947130d02b5",
+        "bytes": 4677
       },
       "checked/proof/compile.log": {
         "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "bytes": 0
       },
       "checked/proof/result.json": {
-        "sha256": "ba2eb456b54fe66e206ec5ed11996f81cc47f23ef2958027df4e8ddd5f86cd35",
-        "bytes": 8596
+        "sha256": "228c95f553a7b075f9329da82aecc92f1a3298dcdf37555d8e71e0cfdb69707f",
+        "bytes": 10048
       },
       "checked/solver-formal.json": {
-        "sha256": "4cd422fb09410c55bb96bf3c00740852437e6d983a583474329353946ac90c9b",
-        "bytes": 11689
+        "sha256": "c1854efd8d15fb6dea0dd63a0e3e4e3ff91609d75865350a03e01b38d71dbb15",
+        "bytes": 13826
       },
       "formal/Admissible.lean": {
         "sha256": "137920bcc9f864001f27ed16e0c251b0e551988974cde6607a3789553acfd204",
@@ -439,6 +442,18 @@
       "formal/GridSobolev.lean": {
         "sha256": "474618d8f9294e2bb513da0da964e3a532f75216d7514f77b1efee42f6bccd11",
         "bytes": 5494
+      },
+      "formal/InitialRegion.lean": {
+        "sha256": "07ec89b516db230694cd75d3023bf0d97805bb5c7c073e12151a8867978fddf4",
+        "bytes": 4429
+      },
+      "formal/PhysicalFluxBounds.lean": {
+        "sha256": "f08c3916daabf8a2a4c4cb6f9d305d7918383025a0b0972e48fcf58f78d1939b",
+        "bytes": 14241
+      },
+      "formal/PhysicalRegion.lean": {
+        "sha256": "820b1bb688aa5e05ac50abd5db8665d5656a036db0d15a6ba647b612e28cc2d1",
+        "bytes": 14896
       },
       "formal/PrimitiveEnergy.lean": {
         "sha256": "652a9d57bf336553918cded1337b00f569ff71db0d696db429dca7e095314e09",
@@ -460,16 +475,16 @@
     "execution": {
       "isolation_backend": "bubblewrap",
       "returncode": 0,
-      "stdout": "{\"status\": \"proved\", \"theorems\": 37}",
+      "stdout": "{\"status\": \"proved\", \"theorems\": 45}",
       "stderr": "",
       "timed_out": false,
       "cancelled": false,
       "workspace_exceeded": false,
       "stdout_truncated": false,
       "stderr_truncated": false,
-      "heartbeat_count": 2,
-      "wall_seconds": 81.98368925700015,
-      "workspace_bytes": 19058351,
+      "heartbeat_count": 3,
+      "wall_seconds": 102.14514926999982,
+      "workspace_bytes": 23189808,
       "executor_sha256": "b92087579abbb99f55ce2c75d98765355c8ccd4a6ccf3ba55b15ddd5491a22ec",
       "resource_limits": {
         "max_file_bytes": 4294967296,
@@ -481,43 +496,43 @@
     "input_mutations": [],
     "output_findings": [],
     "scientific_status": "unreviewed",
-    "finished_at": 1793585625.1717172,
+    "finished_at": 1793587705.7146678,
     "transport_error": null,
     "collection_deferred": false,
     "collection_cancel_requested": false,
     "artifact_policy": "eager",
     "artifacts": {
       "assemble_solver.py": {
-        "sha256": "1852e9a2e7dc21e5a96c1af5ea40beb669203b76084e741f95615d28de3907a9",
-        "bytes": 1211
+        "sha256": "16486f2180616ab24b0ac55097e95666b626391ca453c364b54ef513d384eb6c",
+        "bytes": 1295
       },
       "check_solver.py": {
-        "sha256": "5c8f615d0b8a38d1e426fd032e84d8a52bf4cbd735f70cdfb156c749eb932c5d",
-        "bytes": 3988
+        "sha256": "8a6ad60d2427eccb2b361f3b0387456a01dd5446b59a7ec8277b6ad5992a67fc",
+        "bytes": 4790
       },
       "checked/proof/Audit.lean": {
-        "sha256": "68ddf2ae9e2c70041f919312f340a4b4d9b029a241959e184cce0ac0e1cdcff0",
-        "bytes": 12690
+        "sha256": "9039bbba42130bd47de71708b43149318226d53ce84047b4d9ff6de24e591fa3",
+        "bytes": 15517
       },
       "checked/proof/Candidate.lean": {
-        "sha256": "1c9be355e73eca7921f946968ffaf53382fd2a719a489994327827d7407f8529",
-        "bytes": 124859
+        "sha256": "05fa7a9c7e331ca9a3c73c08f9833d0ac64f79d5a68e20a55097e7bfb2ebef4f",
+        "bytes": 158428
       },
       "checked/proof/audit.log": {
-        "sha256": "2b66e5c9eb89f43b044db95b329cb99e7e6e2f6761cf88bda08c8183296aa242",
-        "bytes": 3818
+        "sha256": "c820e906cb0e8c7a4dc8f9b39ac95b6574ad6460376685f21b81a947130d02b5",
+        "bytes": 4677
       },
       "checked/proof/compile.log": {
         "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "bytes": 0
       },
       "checked/proof/result.json": {
-        "sha256": "ba2eb456b54fe66e206ec5ed11996f81cc47f23ef2958027df4e8ddd5f86cd35",
-        "bytes": 8596
+        "sha256": "228c95f553a7b075f9329da82aecc92f1a3298dcdf37555d8e71e0cfdb69707f",
+        "bytes": 10048
       },
       "checked/solver-formal.json": {
-        "sha256": "4cd422fb09410c55bb96bf3c00740852437e6d983a583474329353946ac90c9b",
-        "bytes": 11689
+        "sha256": "c1854efd8d15fb6dea0dd63a0e3e4e3ff91609d75865350a03e01b38d71dbb15",
+        "bytes": 13826
       },
       "formal/Admissible.lean": {
         "sha256": "137920bcc9f864001f27ed16e0c251b0e551988974cde6607a3789553acfd204",
@@ -574,6 +589,18 @@
       "formal/GridSobolev.lean": {
         "sha256": "474618d8f9294e2bb513da0da964e3a532f75216d7514f77b1efee42f6bccd11",
         "bytes": 5494
+      },
+      "formal/InitialRegion.lean": {
+        "sha256": "07ec89b516db230694cd75d3023bf0d97805bb5c7c073e12151a8867978fddf4",
+        "bytes": 4429
+      },
+      "formal/PhysicalFluxBounds.lean": {
+        "sha256": "f08c3916daabf8a2a4c4cb6f9d305d7918383025a0b0972e48fcf58f78d1939b",
+        "bytes": 14241
+      },
+      "formal/PhysicalRegion.lean": {
+        "sha256": "820b1bb688aa5e05ac50abd5db8665d5656a036db0d15a6ba647b612e28cc2d1",
+        "bytes": 14896
       },
       "formal/PrimitiveEnergy.lean": {
         "sha256": "652a9d57bf336553918cded1337b00f569ff71db0d696db429dca7e095314e09",

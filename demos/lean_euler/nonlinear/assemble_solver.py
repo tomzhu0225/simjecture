@@ -22,6 +22,9 @@ COMPONENTS = [
     "FaceEntropy.lean",
     "FiniteVolumeEntropy.lean",
     "EntropyRegion.lean",
+    "PhysicalRegion.lean",
+    "InitialRegion.lean",
+    "PhysicalFluxBounds.lean",
 ]
 
 

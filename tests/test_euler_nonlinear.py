@@ -69,6 +69,9 @@ def test_solver_foundations_and_independent_validation_provenance(tmp_path):
         "EulerFaceEntropy.rusanov_face_entropy_bound",
         "EulerFiniteVolumeEntropy.entropy_step_dissipation",
         "EulerEntropyRegion.nonlinear_step_entropy_from_region",
+        "EulerInitialRegion.initial_family_in_region",
+        "EulerPhysicalFluxBounds.concrete_region_bounds",
+        "EulerPhysicalFluxBounds.current_speeds_fail_any_region_constants",
     } <= set(proof["result"]["theorems"])
     for dependencies in proof["result"]["axioms"].values():
         assert set(dependencies) <= {"propext", "Classical.choice", "Quot.sound"}

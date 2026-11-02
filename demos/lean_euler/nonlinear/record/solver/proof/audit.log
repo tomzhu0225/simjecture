@@ -35,3 +35,13 @@ SIMJECTURE_AXIOMS EulerFiniteVolumeEntropy.total_increment_bound: [propext, Quot
 SIMJECTURE_AXIOMS EulerFiniteVolumeEntropy.entropy_step_bound: [propext, Quot.sound, Classical.choice]
 SIMJECTURE_AXIOMS EulerFiniteVolumeEntropy.entropy_step_dissipation: [propext, Quot.sound, Classical.choice]
 SIMJECTURE_AXIOMS EulerEntropyRegion.nonlinear_step_entropy_from_region: [propext, Quot.sound, Classical.choice]
+SIMJECTURE_AXIOMS EulerPhysicalRegion.region_convex: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS EulerPhysicalRegion.conservative_hessian_squares: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS EulerInitialRegion.initial_family_in_region: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS EulerPhysicalFluxBounds.flux_derivative: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS EulerPhysicalFluxBounds.concrete_region_bounds: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS EulerPhysicalFluxBounds.coarse_viscosity_requirement: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS EulerPhysicalFluxBounds.initial_family_contains_rest: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS EulerPhysicalFluxBounds.current_speeds_fail_any_region_constants: [propext,
+ Quot.sound,
+ Classical.choice]

@@ -133,7 +133,16 @@ actual nonlinear Rusanov update under explicit convex-region, Hessian, flux,
 viscosity and timestep conditions. It includes temporal entropy production.
 Do not report this as a full-solver theorem: uniform trajectory membership and
 the bounds for the current CFL=.3 numerical settings remain unproved. Concrete
-state-region bounds, continuum error, and matching work bounds are still needed.
+trajectory bounds, continuum error, and matching work bounds are still needed.
+
+The concrete region and initial-family membership are now proved in
+`PhysicalRegion.lean`, `InitialRegion.lean`, and `PhysicalFluxBounds.lean`.
+They also prove a structural obstruction: the current global sufficient
+viscosity criterion cannot certify the baseline wave-speed recipe on this
+region, even with improved valid global curvature constants. This is a
+limitation of that criterion, not a proof of numerical instability or PDE
+impossibility. Read the exact obstruction and research notes before pursuing
+the same inequality again or counting it as completion.
 
 The affine-shear example has analytically known dynamics; its work theorem is
 principally a function-reconstruction result. It does not fulfill a request for

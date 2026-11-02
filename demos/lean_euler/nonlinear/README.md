@@ -130,7 +130,7 @@ error estimate, and matching complexity bounds remain open. The initial-cell
 average formulas have an independent quadrature check; their formal
 initialization/reconstruction bridge also remains to be proved.
 
-Thirty-seven named solver-foundation statements and the independent numerical checks
+Forty-five named solver-foundation statements and the independent numerical checks
 are retained under `record/solver`. Replay them through the bounded local lab:
 
 ```bash
@@ -220,6 +220,11 @@ M(1+L^2)\le a_{\min}\lambda/2,\qquad
 3Mr(a_{\max}^2+L^2)\le a_{\min}\lambda/8.
 \]
 
+Here “viscosity” means artificial numerical diffusion: a_d is the coefficient
+of the state jump in the Rusanov face flux, −(a_d/2)(U_right−U_left). It is not
+physical fluid viscosity; the target PDE remains inviscid 3D Euler. The theorem
+guarantees a one-step entropy inequality, not a complete accurate solution.
+
 The proved conclusion for the actual nonlinear update is
 
 \[
@@ -228,13 +233,49 @@ The proved conclusion for the actual nonlinear update is
 \]
 
 This is a **conditional method theorem**. It does not prove trajectory membership
-in K or supply uniform constants for the target family. The sufficient bounds
-may require stronger viscosity or smaller steps than the current CFL = 0.3 runs.
-Those runs have not been certified to satisfy the conditions. This theorem is
-not the requested continuum-accuracy or optimality result.
+in K. Concrete constants and a limitation of this criterion are now proved below.
+The current wave-speed recipe cannot satisfy the criterion on that region;
+reducing the timestep alone does not fix the viscosity condition. This theorem
+is not the requested continuum-accuracy or optimality result.
 
 The 37-statement replay is retained in
 `artifacts/lean-euler/20261102/nonlinear/research/lab-step-02`. The first batch
 compiled the mathematical source but hit Lean's recursion limit in the generated
 auditor. The checker now generates a separate audit command for each declaration;
 an 80-theorem regression test checks the fix without changing Lean's limits.
+
+## Concrete state bounds and a failed proof criterion
+
+`PhysicalRegion.lean` proves convexity of
+
+\[
+K=\{U:1/4\le\rho\le4,\ E\le4,\ p\ge1/4\}.
+\]
+
+It derives the actual conservative entropy Hessian's sum-of-squares formula,
+with lower constant λ = 1/12500 and upper constant M = 100000.
+`PhysicalFluxBounds.lean` derives the actual Euler flux derivative and the
+finite flux Lipschitz bound L = 1200. `InitialRegion.lean` proves that every
+spatial point of the complete parameterized initial family lies in K.
+The evolving trajectory and initialization by exact cell averages still need
+their formal bridges.
+
+These coarse constants would require viscosity at least
+3,600,002,500,000,000 in the global criterion. A stronger exact obstruction
+shows that improving the global constants alone is insufficient on K:
+
+- The rest state U* = (1,0,0,0,1) occurs in every initial-family member at
+  (0,π/2,π/2).
+- Two actual Hessian evaluations at U* force M ≥ 13/5 and λ ≤ 2/5 for any
+  valid global curvature bounds on K.
+- Every physical directional wave speed in K, and hence every computed
+  directional maximum on a grid contained in K, is at most 12.
+- Consequently M(1+L²) ≥ 13/5, while aλ/2 ≤ 12/5: the criterion cannot hold.
+
+This rejects the **sufficient global criterion for this wave-speed recipe**.
+It does not refute the solver's actual entropy behaviour or show that the
+research goal is impossible. The next work needs a sharper estimate using
+Euler's entropy-weighted structure and local state variation, or a different
+consistent numerical flux. The physical family and full accuracy/work goal
+are unchanged. The complete 45-statement replay is retained in
+`artifacts/lean-euler/20261102/nonlinear/research/lab-region-01`.

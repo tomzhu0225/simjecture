@@ -215,20 +215,70 @@ Finite-step checkpoint, research/lab-step-02:
   the capability's identity_files records the changed adapter hash.
 
 Next obligations after the conditional finite-step result:
-1. Construct and verify a concrete convex state region and quantitative bounds
-   on its ACTUAL entropy Hessian and flux. One candidate is
-     rho>=1/4, |U_j|<=4 for all components, pressure>=1/4.
-   Its convexity can be proved from pressure concavity using supportEnergy and
-   complete_square in Admissible.lean. It implies rho,p in [1/4,4] and |v|^2<=30.
-   Those bounds have not yet been formalized for this set.
-2. A useful conservative Hessian expression to verify is
+1. Concrete region bounds are now proved below, using
+     1/4<=rho<=4, total energy E<=4, pressure>=1/4.
+   This replaces the earlier proposed componentwise box. Convexity follows
+   from pressure concavity using supportEnergy and complete_square.
+   It implies rho,p in [1/4,4] and |v|^2<=30.
+2. The following actual conservative Hessian expression is now checked:
      H_U[k,k] = kr^2/rho + rho*(P/p-kr/rho)^2 + sum_i(kmi-vi*kr)^2/p,
-   where P=pressureD(U,k). This should make concrete coercivity and upper
-   bounds easier. It must be connected to conservativeHessian, not just defined.
-3. Coarse bounds may be too loose for useful viscosity/timestep choices. Do not
-   claim the present maximum-wave-speed/CFL=.3 candidate satisfies them. A
+   where P=pressureD(U,k). It is connected to conservativeHessian by exact
+   algebra from the previously checked derivative definitions.
+3. The global criterion is now proved too restrictive for the baseline speeds
+   on this region even with improved valid global curvature constants. A
    sharper estimate using smooth small neighbor jumps and the already checked
    frozen principal energy machinery is another route worth investigating.
 4. Uniform trajectory membership, existence to T=.25, grid Poincare, continuous
    reconstruction/integral entropy balance, nonlinear convergence, and the
    justified competitor class with matching complete work bounds remain open.
+
+Concrete-region checkpoint, research/lab-region-01:
+- All 45 selected statements pass the bounded audit; all three lab jobs succeed.
+- PhysicalRegion.lean: convex conserved-state region, actual Hessian square
+  decomposition, quantitative coercivity 1/12500 and upper bound 100000.
+- InitialRegion.lean: full trigonometric initial family lies in this region
+  uniformly in all allowed parameters and spatial points. This is not a
+  positive-time analytical solution or an evolved-state bound.
+- PhysicalFluxBounds.lean: actual conservative Euler flux derivative, its
+  squared norm bound 250000*|k|^2, and finite flux Lipschitz constant 1200.
+  RegionBounds is therefore instantiated without assuming curvature/flux bounds.
+- Coarse viscosity requirement is at least 3,600,002,500,000,000. More strongly,
+  restState=(1,0,0,0,1) belongs to the initial family at (0,pi/2,pi/2) for EVERY
+  A,delta. For k_soft=(1,0,0,0,2), H[k,k]=2 and |k|^2=5; for
+  k_hard=(2,0,0,0,-1), H[k,k]=13 and |k|^2=5. Any valid global region constants
+  obey lambda<=2/5 and M>=13/5. Current global physical wave speeds are <=12
+  on the region, so M*(1+L^2)<=a*lambda/2 is impossible for any such constants.
+  This is an obstruction to THAT sufficient estimate, not to solver entropy
+  stability, the PDE, or the optimality goal. Do not silently crank the viscosity
+  to an astronomical value and call it a useful optimized solver.
+- Trusted local development used import Candidate against the immutable compiled
+  base in region-audit-01 to avoid rechecking the full prefix after every edit.
+  Final lab-region-01 assembles and checks all source anew with only allowed
+  Mathlib/Std/Init imports; no local-module import is part of the final certificate.
+
+Next proof/candidate routes to compare:
+A. Use the actual entropy-weighted principal form and a small-neighbor-jump
+   estimate, retaining the physical wave-speed CFL at leading order. Global
+   Euclidean M/lambda comparisons lose too much structure. The previously
+   checked frozen matrix Jensen argument may help, but must be transferred to
+   the physical Hessian and actual nonlinear remainder. Uniform regularity is
+   still necessary and is not supplied by the observed trajectories.
+B. Investigate an entropy-conservative two-point base flux plus LF dissipation.
+   Its exact Tadmor jump identity could remove the central entropy-residual
+   bound that forced the failed viscosity requirement. This changes the actual
+   method, so positivity, finite time entropy production, cost and convergence
+   all need their own checked bridges; do not reuse baseline positivity blindly.
+   Primary sources read: Chandrashekar, arXiv:1209.4994, section 4.4; Ranocha,
+   arXiv:1701.02264v2, equations (52), Theorem 6.1 and Corollary 6.1. The latter
+   positivity result is for density, not a full pressure/convergence theorem.
+   https://arxiv.org/pdf/1209.4994
+   https://arxiv.org/pdf/1701.02264
+   In 3D, the known flux can be written with beta=rho/(2*p), arithmetic bars
+   and positive logarithmic mean LM(a,b)=(b-a)/(log b-log a), continuously a
+   when a=b:
+     f_rho=LM(rhoL,rhoR)*bar(v_d), p_hat=bar(rho)/(2*bar(beta)),
+     f_mi=f_rho*bar(v_i)+delta_id*p_hat,
+     f_E=f_rho*(1/(2*LM(betaL,betaR)) - .5*bar(|v|^2)) + sum_i bar(v_i)*f_mi
+   for gamma=2. The square mean is mean(|v|^2), NOT |mean(v)|^2. Verify the
+   exact multidimensional formula and logarithmic-mean branches in Lean.
+   This is an existing literature method, not a claim of novel discovery.
