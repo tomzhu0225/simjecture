@@ -3,9 +3,9 @@
     "id": "exp_6f62fc7879c551622f9e3955",
     "status": "succeeded",
     "operator_guidance_ids": [],
-    "created_at": 1793581702.097297,
+    "created_at": 1793583203.4789424,
     "timeout": 120,
-    "execution_deadline": 1793582601.9737334,
+    "execution_deadline": 1793584103.3660936,
     "workspace_limit_bytes": 4294967296,
     "binding": {
       "source": "validate_candidate.py",
@@ -36,30 +36,30 @@
     "method": null,
     "review_documents": null,
     "machine": "local-lean",
-    "pid": 118837,
+    "pid": 146089,
     "worker_identity": {
-      "pid": 118837,
-      "starttime": "648994",
+      "pid": 146089,
+      "starttime": "799132",
       "argv": [
         "/home/tomzhu0225/src/simjecture/.venv/bin/python",
         "-m",
         "conjecture_solver.research_service",
         "--root",
-        "/home/tomzhu0225/src/simjecture/artifacts/lean-euler/20261102/nonlinear/research/lab-energy-03/study",
+        "/home/tomzhu0225/src/simjecture/artifacts/lean-euler/20261102/nonlinear/research/lab-entropy-01/study",
         "--execute",
         "exp_6f62fc7879c551622f9e3955"
       ],
-      "launched_at": "2026-11-02T01:08:22.264030+00:00",
+      "launched_at": "2026-11-02T01:33:23.640688+00:00",
       "run_directory": null
     },
-    "started_at": 1793581703.1001632,
-    "remote_job": "job_4ab39a3e39440933559415845b7b9863231f4092",
+    "started_at": 1793583204.4478037,
+    "remote_job": "job_4f241fe25315f27450f747788373b96ad553556c",
     "transport_status": "connected",
     "assigned_gpu_ids": [],
     "telemetry": null,
     "execution_heartbeat": {
-      "elapsed_wall_seconds": 0.7554815019993839,
-      "observed_at": 1793581703.8850105
+      "elapsed_wall_seconds": 0.7550703879996945,
+      "observed_at": 1793583205.231575
     },
     "remote_terminal_status": "succeeded",
     "remote_artifacts": {
@@ -91,7 +91,7 @@
       "stdout_truncated": false,
       "stderr_truncated": false,
       "heartbeat_count": 0,
-      "wall_seconds": 0.7554815019993839,
+      "wall_seconds": 0.7550703879996945,
       "workspace_bytes": 14371,
       "executor_sha256": "b92087579abbb99f55ce2c75d98765355c8ccd4a6ccf3ba55b15ddd5491a22ec",
       "resource_limits": {
@@ -104,7 +104,7 @@
     "input_mutations": [],
     "output_findings": [],
     "scientific_status": "unreviewed",
-    "finished_at": 1793581703.8917515,
+    "finished_at": 1793583205.2353349,
     "transport_error": null,
     "collection_deferred": false,
     "collection_cancel_requested": false,
@@ -129,12 +129,141 @@
     }
   },
   {
-    "id": "exp_960c90b7562e4dbf20addd31",
+    "id": "exp_c2894c83807af48a6b7ebef3",
     "status": "succeeded",
     "operator_guidance_ids": [],
-    "created_at": 1793581704.7263355,
+    "created_at": 1793583206.105568,
     "timeout": 240,
-    "execution_deadline": 1793582601.9737334,
+    "execution_deadline": 1793584103.3660936,
+    "workspace_limit_bytes": 4294967296,
+    "binding": {
+      "source": "validate_entropy.py",
+      "args": [
+        "--output",
+        "entropy"
+      ],
+      "inputs": {
+        "validate_entropy.py": "dd6203397944c4d467142f84926b80c0def7b16377e11459837defa869c4a64d",
+        "finite_volume.py": "77c81b82bd152cb967c15d494d715e3006c9cac5d2a44ed1c63693b3f4b9ecd4",
+        "contract.json": "59d2abf1b1bdce7080c68fedded2478a95d1a0b0defd73e1cf94ffefa99b8ecf"
+      },
+      "capability": null,
+      "runtime_sha256": null
+    },
+    "outputs": [
+      "entropy/entropy-validation.json"
+    ],
+    "commitment": null,
+    "key": null,
+    "execution_target": "auto",
+    "resources": {
+      "cpus": 1,
+      "memory_mb": 2048,
+      "gpus": 0
+    },
+    "stage": "exploration",
+    "method": null,
+    "review_documents": null,
+    "machine": "local-lean",
+    "pid": 146197,
+    "worker_identity": {
+      "pid": 146197,
+      "starttime": "799395",
+      "argv": [
+        "/home/tomzhu0225/src/simjecture/.venv/bin/python",
+        "-m",
+        "conjecture_solver.research_service",
+        "--root",
+        "/home/tomzhu0225/src/simjecture/artifacts/lean-euler/20261102/nonlinear/research/lab-entropy-01/study",
+        "--execute",
+        "exp_c2894c83807af48a6b7ebef3"
+      ],
+      "launched_at": "2026-11-02T01:33:26.289718+00:00",
+      "run_directory": null
+    },
+    "started_at": 1793583207.1521866,
+    "remote_job": "job_f416a2dabcd5d76a4e1da9a9fac2b5229ce50d0d",
+    "transport_status": "connected",
+    "assigned_gpu_ids": [],
+    "telemetry": null,
+    "execution_heartbeat": {
+      "elapsed_wall_seconds": 14.048893715999839,
+      "observed_at": 1793583221.2333739
+    },
+    "remote_terminal_status": "succeeded",
+    "remote_artifacts": {
+      "contract.json": {
+        "sha256": "59d2abf1b1bdce7080c68fedded2478a95d1a0b0defd73e1cf94ffefa99b8ecf",
+        "bytes": 3798
+      },
+      "entropy/entropy-validation.json": {
+        "sha256": "e689ffdb71296e2081ca775755d7726500ce7b6f4be1f6238dd333869c942074",
+        "bytes": 11217
+      },
+      "finite_volume.py": {
+        "sha256": "77c81b82bd152cb967c15d494d715e3006c9cac5d2a44ed1c63693b3f4b9ecd4",
+        "bytes": 3534
+      },
+      "validate_entropy.py": {
+        "sha256": "dd6203397944c4d467142f84926b80c0def7b16377e11459837defa869c4a64d",
+        "bytes": 5091
+      }
+    },
+    "execution": {
+      "isolation_backend": "bubblewrap",
+      "returncode": 0,
+      "stdout": "{\"n\": 16, \"A\": 0.5, \"delta\": -0.05, \"final_time\": 0.25, \"cfl\": 0.3, \"steps\": 11, \"entropy_initial\": -0.00036436837134807415, \"entropy_final\": -0.01256753412290372, \"entropy_loss\": 0.012203165751555646, \"entropy_loss_over_dx\": 0.03107510641167688, \"relative_entropy_initial\": 0.030407290295393557, \"relative_entropy_final\": 0.01820412454385926, \"minimum_step_entropy_drop\": 0.0007855262039491613, \"minimum_drop_over_dt_dx_relative\": 5.005693996492273, \"minimum_drop_over_ratio_edge_squared\": 0.8143991819987003, \"min_density\": 0.9537289527494595, \"max_density\": 1.0462710472505405, \"min_pressure\": 0.9211532411029442, \"max_pressure\": 1.0844664449329124, \"max_abs_velocity\": 0.4627317502902116, \"conservation_error\": 1.9761969838327786e-14, \"direct_solver_replay_max_error\": 0.0}\n{\"n\": 32, \"A\": 0.5, \"delta\": -0.05, \"final_time\": 0.25, \"cfl\": 0.3, \"steps\": 23, \"entropy_initial\": 0.0005516375694864248, \"entropy_final\": -0.00668378312927686, \"entropy_loss\": 0.007235420698763284, \"entropy_loss_over_dx\": 0.03684969502584295, \"relative_entropy_initial\": 0.0313232962362849, \"relative_entropy_final\": 0.02408787553755459, \"minimum_step_entropy_drop\": 5.9914402999933225e-05, \"minimum_drop_over_dt_dx_relative\": 5.256698174968619, \"minimum_drop_over_ratio_edge_squared\": 0.8432841646632063, \"min_density\": 0.9509558162447848, \"max_density\": 1.0490441837552151, \"min_pressure\": 0.9101880238859011, \"max_pressure\": 1.0914547102391692, \"max_abs_velocity\": 0.4904433283714102, \"conservation_error\": 4.1300296516055823e-14, \"direct_solver_replay_max_error\": null}\n{\"n\": 64, \"A\": 0.5, \"delta\": -0.05, \"final_time\": 0.25, \"cfl\": 0.3, \"steps\": 45, \"entropy_initial\": 0.0007847510899081905, \"entropy_final\": -0.0031368346870937532, \"entropy_loss\": 0.003921585777001944, \"entropy_loss_over_dx\": 0.03994494471479875, \"relative_entropy_initial\": 0.031556409756609775, \"relative_entropy_final\": 0.027634823979744025, \"minimum_step_entropy_drop\": 6.349276642746409e-05, \"minimum_drop_over_dt_dx_relative\": 5.3687472719031, \"minimum_drop_over_ratio_edge_squared\": 0.8566427783628303, \"min_density\": 0.9502404545555593, \"max_density\": 1.0497595454444408, \"min_pressure\": 0.9072488112009696, \"max_pressure\": 1.0932336317789708, \"max_abs_velocity\": 0.49759555030230573, \"conservation_error\": 5.928590951498336e-14, \"direct_solver_replay_max_error\": null}\n{\"n\": 16, \"A\": 0.75, \"delta\": 0, \"final_time\": 0.25, \"cfl\": 0.3, \"steps\": 12, \"entropy_initial\": -3.189354686734206e-05, \"entropy_final\": -0.02970571190926088, \"entropy_loss\": 0.02967381836239354, \"entropy_loss_over_dx\": 0.07556375796457572, \"relative_entropy_initial\": 0.06791876836163002, \"relative_entropy_final\": 0.038244949999245034, \"minimum_step_entropy_drop\": 0.001705661801621499, \"minimum_drop_over_dt_dx_relative\": 5.523619319214118, \"minimum_drop_over_ratio_edge_squared\": 0.8502378533830461, \"min_density\": 0.997845456283821, \"max_density\": 1.0019187902204731, \"min_pressure\": 0.8226507190550845, \"max_pressure\": 1.1901495390661296, \"max_abs_velocity\": 0.694065708758109, \"conservation_error\": 8.215650382226158e-15, \"direct_solver_replay_max_error\": 0.0}\n{\"n\": 32, \"A\": 0.75, \"delta\": 0, \"final_time\": 0.25, \"cfl\": 0.3, \"steps\": 25, \"entropy_initial\": 0.002085322633370505, \"entropy_final\": -0.015984369573330617, \"entropy_loss\": 0.018069692206701123, \"entropy_loss_over_dx\": 0.09202818671505862, \"relative_entropy_initial\": 0.07003598454188095, \"relative_entropy_final\": 0.05196629233520497, \"minimum_step_entropy_drop\": 0.00030356700797359165, \"minimum_drop_over_dt_dx_relative\": 5.925210804747969, \"minimum_drop_over_ratio_edge_squared\": 0.8952487196044178, \"min_density\": 0.9979432739623629, \"max_density\": 1.0021404042315638, \"min_pressure\": 0.7979314024667633, \"max_pressure\": 1.2058886072090655, \"max_abs_velocity\": 0.7356627563282281, \"conservation_error\": 2.8199664825478976e-14, \"direct_solver_replay_max_error\": null}\n{\"n\": 64, \"A\": 0.75, \"delta\": 0, \"final_time\": 0.25, \"cfl\": 0.3, \"steps\": 50, \"entropy_initial\": 0.0026249178579237703, \"entropy_final\": -0.007322455398069696, \"entropy_loss\": 0.009947373255993467, \"entropy_loss_over_dx\": 0.10132311196617484, \"relative_entropy_initial\": 0.07057557976644292, \"relative_entropy_final\": 0.06062820651054375, \"minimum_step_entropy_drop\": 9.990950975128417e-05, \"minimum_drop_over_dt_dx_relative\": 6.1257592573897055, \"minimum_drop_over_ratio_edge_squared\": 0.9177743650511825, \"min_density\": 0.9978135547282837, \"max_density\": 1.0025864880444386, \"min_pressure\": 0.7913109173043882, \"max_pressure\": 1.2098627687491, \"max_abs_velocity\": 0.7463931816666111, \"conservation_error\": 7.704947790898586e-14, \"direct_solver_replay_max_error\": null}\n{\"n\": 16, \"A\": 1.0, \"delta\": 0.05, \"final_time\": 0.25, \"cfl\": 0.3, \"steps\": 13, \"entropy_initial\": 0.003979269398816239, \"entropy_final\": -0.05408052924263764, \"entropy_loss\": 0.05805979864145388, \"entropy_loss_over_dx\": 0.14784806317931992, \"relative_entropy_initial\": 0.12176230505519772, \"relative_entropy_final\": 0.06370250641373013, \"minimum_step_entropy_drop\": 0.0031330538008037395, \"minimum_drop_over_dt_dx_relative\": 6.109106788203128, \"minimum_drop_over_ratio_edge_squared\": 0.8801162380502724, \"min_density\": 0.9537289527494595, \"max_density\": 1.0462710472505405, \"min_pressure\": 0.6846129644117764, \"max_pressure\": 1.3381691955965909, \"max_abs_velocity\": 0.9254635005804231, \"conservation_error\": 1.0436096431476471e-14, \"direct_solver_replay_max_error\": 0.0}\n{\"n\": 32, \"A\": 1.0, \"delta\": 0.05, \"final_time\": 0.25, \"cfl\": 0.3, \"steps\": 27, \"entropy_initial\": 0.00799014195456566, \"entropy_final\": -0.028513554177486668, \"entropy_loss\": 0.03650369613205233, \"entropy_loss_over_dx\": 0.1859117977773001, \"relative_entropy_initial\": 0.12577317761092108, \"relative_entropy_final\": 0.08926948147887545, \"minimum_step_entropy_drop\": 0.000973333993610933, \"minimum_drop_over_dt_dx_relative\": 6.718281821112546, \"minimum_drop_over_ratio_edge_squared\": 0.9453051648256069, \"min_density\": 0.9509558162447848, \"max_density\": 1.0490441837552151, \"min_pressure\": 0.6407520955436049, \"max_pressure\": 1.3661504332182772, \"max_abs_velocity\": 0.9808866567428204, \"conservation_error\": 3.197442310920451e-14, \"direct_solver_replay_max_error\": null}\n{\"n\": 64, \"A\": 1.0, \"delta\": 0.05, \"final_time\": 0.25, \"cfl\": 0.3, \"steps\": 55, \"entropy_initial\": 0.009015244225218128, \"entropy_final\": -0.011497184642907714, \"entropy_loss\": 0.02051242886812584, \"entropy_loss_over_dx\": 0.20893788474771965, \"relative_entropy_initial\": 0.12679827988161163, \"relative_entropy_final\": 0.10628585101353646, \"minimum_step_entropy_drop\": 0.0001857188217495604, \"minimum_drop_over_dt_dx_relative\": 7.076122041765222, \"minimum_drop_over_ratio_edge_squared\": 0.9841646922774184, \"min_density\": 0.9502404545555593, \"max_density\": 1.0497595454444408, \"min_pressure\": 0.6289952448038781, \"max_pressure\": 1.3731839704301338, \"max_abs_velocity\": 0.9951911006046115, \"conservation_error\": 2.7755575615628914e-14, \"direct_solver_replay_max_error\": null}",
+      "stderr": "",
+      "timed_out": false,
+      "cancelled": false,
+      "workspace_exceeded": false,
+      "stdout_truncated": false,
+      "stderr_truncated": false,
+      "heartbeat_count": 0,
+      "wall_seconds": 14.048893715999839,
+      "workspace_bytes": 23640,
+      "executor_sha256": "b92087579abbb99f55ce2c75d98765355c8ccd4a6ccf3ba55b15ddd5491a22ec",
+      "resource_limits": {
+        "max_file_bytes": 4294967296,
+        "max_workspace_bytes": 4294967296,
+        "max_memory_bytes": 2147483648
+      }
+    },
+    "missing_outputs": [],
+    "input_mutations": [],
+    "output_findings": [],
+    "scientific_status": "unreviewed",
+    "finished_at": 1793583221.2375364,
+    "transport_error": null,
+    "collection_deferred": false,
+    "collection_cancel_requested": false,
+    "artifact_policy": "eager",
+    "artifacts": {
+      "contract.json": {
+        "sha256": "59d2abf1b1bdce7080c68fedded2478a95d1a0b0defd73e1cf94ffefa99b8ecf",
+        "bytes": 3798
+      },
+      "entropy/entropy-validation.json": {
+        "sha256": "e689ffdb71296e2081ca775755d7726500ce7b6f4be1f6238dd333869c942074",
+        "bytes": 11217
+      },
+      "finite_volume.py": {
+        "sha256": "77c81b82bd152cb967c15d494d715e3006c9cac5d2a44ed1c63693b3f4b9ecd4",
+        "bytes": 3534
+      },
+      "validate_entropy.py": {
+        "sha256": "dd6203397944c4d467142f84926b80c0def7b16377e11459837defa869c4a64d",
+        "bytes": 5091
+      }
+    }
+  },
+  {
+    "id": "exp_afd133edcf2788b42b7d44cb",
+    "status": "succeeded",
+    "operator_guidance_ids": [],
+    "created_at": 1793583222.2862604,
+    "timeout": 240,
+    "execution_deadline": 1793584103.3660936,
     "workspace_limit_bytes": 4294967296,
     "binding": {
       "source": "check_solver.py",
@@ -143,8 +272,8 @@
         "checked"
       ],
       "inputs": {
-        "check_solver.py": "5dbc3a7e29bac309ebd6b9ea559ad7d26aa6711e577177a3b513045f12f103d6",
-        "assemble_solver.py": "7287dedb11e87d3ee3381e77bb71886360b343e6d2ae5290a2bcf1bc8792ceaa",
+        "check_solver.py": "6f2dfb64793e19a1ec2067063a301460da054b20c9c4e04e391650bc8b106f2c",
+        "assemble_solver.py": "8106b14ef90fb2462af3f6eb370356e964fe41b86fd3f44ffd231a0290e8c258",
         "formal/Admissible.lean": "137920bcc9f864001f27ed16e0c251b0e551988974cde6607a3789553acfd204",
         "formal/PrimitiveEnergy.lean": "652a9d57bf336553918cded1337b00f569ff71db0d696db429dca7e095314e09",
         "formal/ConservativePrimitive.lean": "a3eb81b04068b56631d0fde39c2f2fd795dfcdb6598b0befec34b0db6755b2ac",
@@ -153,7 +282,10 @@
         "formal/VariableEnergy.lean": "aa4fe016bcabff9cff0e049e1acc7f0b6b639c0778ebeb35140592d97aaf72be",
         "formal/GridSobolev.lean": "474618d8f9294e2bb513da0da964e3a532f75216d7514f77b1efee42f6bccd11",
         "formal/CoefficientBounds.lean": "77ec763eb0e20fcf4b75120ccf14ec72f672dcadc37b8906b1adcb05f7f65406",
-        "formal/VariableStability.lean": "69b482ac05aa707ea5224b8628b6eb7134d0cde4a5320fd75289df32b5d078f6"
+        "formal/VariableStability.lean": "69b482ac05aa707ea5224b8628b6eb7134d0cde4a5320fd75289df32b5d078f6",
+        "formal/Entropy.lean": "292c1cd766203fad3cdc1974a4597a4bce0ccf813fa5cd55ff3fadfe3fa93abd",
+        "formal/EntropyConvexity.lean": "f313e272e7587bc4d2c0f42e38c2b7aa75395e1078a395ecc3bbb7f875ab1d39",
+        "formal/EntropyDynamics.lean": "a162fa1423477eb3bb4e4e5cd35a152c556ba9ea9fd761acf6ad022a0bf4ff3a"
       },
       "capability": "lean-4.24.0--at-local-lean",
       "runtime_sha256": "df30fb893a78d6965a4c651f6353ba19982f867b36e71823c54a2e314cf08738",
@@ -179,72 +311,72 @@
     "method": null,
     "review_documents": null,
     "machine": "local-lean",
-    "pid": 118925,
+    "pid": 146536,
     "worker_identity": {
-      "pid": 118925,
-      "starttime": "649257",
+      "pid": 146536,
+      "starttime": "801013",
       "argv": [
         "/home/tomzhu0225/src/simjecture/.venv/bin/python",
         "-m",
         "conjecture_solver.research_service",
         "--root",
-        "/home/tomzhu0225/src/simjecture/artifacts/lean-euler/20261102/nonlinear/research/lab-energy-03/study",
+        "/home/tomzhu0225/src/simjecture/artifacts/lean-euler/20261102/nonlinear/research/lab-entropy-01/study",
         "--execute",
-        "exp_960c90b7562e4dbf20addd31"
+        "exp_afd133edcf2788b42b7d44cb"
       ],
-      "launched_at": "2026-11-02T01:08:24.890963+00:00",
+      "launched_at": "2026-11-02T01:33:42.445027+00:00",
       "run_directory": null
     },
-    "started_at": 1793581706.4525921,
-    "remote_job": "job_07941d8b03515a243f77ec3593c7ecea3d48bf5b",
+    "started_at": 1793583224.243549,
+    "remote_job": "job_c3d2534754e92f8d33ff46ed22cd176e4b40c489",
     "transport_status": "connected",
     "assigned_gpu_ids": [],
     "telemetry": null,
     "execution_heartbeat": {
-      "elapsed_wall_seconds": 50.29278456699922,
-      "observed_at": 1793581756.8063014
+      "elapsed_wall_seconds": 65.96198546800042,
+      "observed_at": 1793583290.277246
     },
     "remote_terminal_status": "succeeded",
     "remote_artifacts": {
       "assemble_solver.py": {
-        "sha256": "7287dedb11e87d3ee3381e77bb71886360b343e6d2ae5290a2bcf1bc8792ceaa",
-        "bytes": 970
+        "sha256": "8106b14ef90fb2462af3f6eb370356e964fe41b86fd3f44ffd231a0290e8c258",
+        "bytes": 1047
       },
       "check_solver.py": {
-        "sha256": "5dbc3a7e29bac309ebd6b9ea559ad7d26aa6711e577177a3b513045f12f103d6",
-        "bytes": 2786
+        "sha256": "6f2dfb64793e19a1ec2067063a301460da054b20c9c4e04e391650bc8b106f2c",
+        "bytes": 3335
       },
       "checked/Solver.lean": {
-        "sha256": "769f19ff16454574b600707bc1fceafdb261ec6971d0195e0304122c9994451f",
-        "bytes": 68348
+        "sha256": "3300ac727772f2ebe3eae111c584aac98cc86089e4ce0430df61cb8e0f25c442",
+        "bytes": 89576
       },
       "checked/proof/Audit.lean": {
-        "sha256": "cfa982fe6a41834a5d155f0154a0765c52e60e9b202be9a8019ee3640fdf9fdc",
-        "bytes": 7056
+        "sha256": "a176e14294d41fc386d862bbc95f2b1528eb7cb60acea0c2fa27e4cf13560789",
+        "bytes": 9609
       },
       "checked/proof/Candidate.lean": {
-        "sha256": "769f19ff16454574b600707bc1fceafdb261ec6971d0195e0304122c9994451f",
-        "bytes": 68348
+        "sha256": "3300ac727772f2ebe3eae111c584aac98cc86089e4ce0430df61cb8e0f25c442",
+        "bytes": 89576
       },
       "checked/proof/Candidate.olean": {
-        "sha256": "6061875e8e4fe8ceeefa3662a13b7f66f7aa36259fa91b3b8b839f2c9224e7f2",
-        "bytes": 11779264
+        "sha256": "2f7d5f5db0ca9727e41784dae261f09c787d09c087c59aec6a32ad3ed74aa5ec",
+        "bytes": 14990608
       },
       "checked/proof/audit.log": {
-        "sha256": "1475497a92693aa174aba0c0dec49881c6f5c9d4465aef4ade8116d681cc4951",
-        "bytes": 2184
+        "sha256": "31c5738b760e28bf1727b538a7db20b087433dd07422e2589846b99b340b8313",
+        "bytes": 2979
       },
       "checked/proof/compile.log": {
         "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "bytes": 0
       },
       "checked/proof/result.json": {
-        "sha256": "d8a23f48f612a64af5aa27a35b391626823296984294683d34db75cbe8667605",
-        "bytes": 5858
+        "sha256": "66d653efdfca8c9d90fa2af981e1b0394098d9f707f985e16ba3d7a52214e848",
+        "bytes": 7182
       },
       "checked/solver-formal.json": {
-        "sha256": "0324171d51700950c02156aaf84017d08b00dc6f867fbea5fd6e2629eeeea7de",
-        "bytes": 7566
+        "sha256": "abf3a092ad9eb1bdbfcc199cce2431848b6b6c7491ef580135172a99dd83b3af",
+        "bytes": 9407
       },
       "formal/Admissible.lean": {
         "sha256": "137920bcc9f864001f27ed16e0c251b0e551988974cde6607a3789553acfd204",
@@ -265,6 +397,18 @@
       "formal/EnergyBounds.lean": {
         "sha256": "d2a931f019988a40d4de20b71c844dd0d9dbec37e67b481d7eb300e5d5f64716",
         "bytes": 3986
+      },
+      "formal/Entropy.lean": {
+        "sha256": "292c1cd766203fad3cdc1974a4597a4bce0ccf813fa5cd55ff3fadfe3fa93abd",
+        "bytes": 12305
+      },
+      "formal/EntropyConvexity.lean": {
+        "sha256": "f313e272e7587bc4d2c0f42e38c2b7aa75395e1078a395ecc3bbb7f875ab1d39",
+        "bytes": 4429
+      },
+      "formal/EntropyDynamics.lean": {
+        "sha256": "a162fa1423477eb3bb4e4e5cd35a152c556ba9ea9fd761acf6ad022a0bf4ff3a",
+        "bytes": 4491
       },
       "formal/GridSobolev.lean": {
         "sha256": "474618d8f9294e2bb513da0da964e3a532f75216d7514f77b1efee42f6bccd11",
@@ -286,16 +430,16 @@
     "execution": {
       "isolation_backend": "bubblewrap",
       "returncode": 0,
-      "stdout": "{\"status\": \"proved\", \"theorems\": 21}",
+      "stdout": "{\"status\": \"proved\", \"theorems\": 29}",
       "stderr": "",
       "timed_out": false,
       "cancelled": false,
       "workspace_exceeded": false,
       "stdout_truncated": false,
       "stderr_truncated": false,
-      "heartbeat_count": 1,
-      "wall_seconds": 50.29278456699922,
-      "workspace_bytes": 12011111,
+      "heartbeat_count": 2,
+      "wall_seconds": 65.96198546800042,
+      "workspace_bytes": 15293275,
       "executor_sha256": "b92087579abbb99f55ce2c75d98765355c8ccd4a6ccf3ba55b15ddd5491a22ec",
       "resource_limits": {
         "max_file_bytes": 4294967296,
@@ -307,43 +451,43 @@
     "input_mutations": [],
     "output_findings": [],
     "scientific_status": "unreviewed",
-    "finished_at": 1793581756.8173246,
+    "finished_at": 1793583290.2927155,
     "transport_error": null,
     "collection_deferred": false,
     "collection_cancel_requested": false,
     "artifact_policy": "eager",
     "artifacts": {
       "assemble_solver.py": {
-        "sha256": "7287dedb11e87d3ee3381e77bb71886360b343e6d2ae5290a2bcf1bc8792ceaa",
-        "bytes": 970
+        "sha256": "8106b14ef90fb2462af3f6eb370356e964fe41b86fd3f44ffd231a0290e8c258",
+        "bytes": 1047
       },
       "check_solver.py": {
-        "sha256": "5dbc3a7e29bac309ebd6b9ea559ad7d26aa6711e577177a3b513045f12f103d6",
-        "bytes": 2786
+        "sha256": "6f2dfb64793e19a1ec2067063a301460da054b20c9c4e04e391650bc8b106f2c",
+        "bytes": 3335
       },
       "checked/proof/Audit.lean": {
-        "sha256": "cfa982fe6a41834a5d155f0154a0765c52e60e9b202be9a8019ee3640fdf9fdc",
-        "bytes": 7056
+        "sha256": "a176e14294d41fc386d862bbc95f2b1528eb7cb60acea0c2fa27e4cf13560789",
+        "bytes": 9609
       },
       "checked/proof/Candidate.lean": {
-        "sha256": "769f19ff16454574b600707bc1fceafdb261ec6971d0195e0304122c9994451f",
-        "bytes": 68348
+        "sha256": "3300ac727772f2ebe3eae111c584aac98cc86089e4ce0430df61cb8e0f25c442",
+        "bytes": 89576
       },
       "checked/proof/audit.log": {
-        "sha256": "1475497a92693aa174aba0c0dec49881c6f5c9d4465aef4ade8116d681cc4951",
-        "bytes": 2184
+        "sha256": "31c5738b760e28bf1727b538a7db20b087433dd07422e2589846b99b340b8313",
+        "bytes": 2979
       },
       "checked/proof/compile.log": {
         "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "bytes": 0
       },
       "checked/proof/result.json": {
-        "sha256": "d8a23f48f612a64af5aa27a35b391626823296984294683d34db75cbe8667605",
-        "bytes": 5858
+        "sha256": "66d653efdfca8c9d90fa2af981e1b0394098d9f707f985e16ba3d7a52214e848",
+        "bytes": 7182
       },
       "checked/solver-formal.json": {
-        "sha256": "0324171d51700950c02156aaf84017d08b00dc6f867fbea5fd6e2629eeeea7de",
-        "bytes": 7566
+        "sha256": "abf3a092ad9eb1bdbfcc199cce2431848b6b6c7491ef580135172a99dd83b3af",
+        "bytes": 9407
       },
       "formal/Admissible.lean": {
         "sha256": "137920bcc9f864001f27ed16e0c251b0e551988974cde6607a3789553acfd204",
@@ -364,6 +508,18 @@
       "formal/EnergyBounds.lean": {
         "sha256": "d2a931f019988a40d4de20b71c844dd0d9dbec37e67b481d7eb300e5d5f64716",
         "bytes": 3986
+      },
+      "formal/Entropy.lean": {
+        "sha256": "292c1cd766203fad3cdc1974a4597a4bce0ccf813fa5cd55ff3fadfe3fa93abd",
+        "bytes": 12305
+      },
+      "formal/EntropyConvexity.lean": {
+        "sha256": "f313e272e7587bc4d2c0f42e38c2b7aa75395e1078a395ecc3bbb7f875ab1d39",
+        "bytes": 4429
+      },
+      "formal/EntropyDynamics.lean": {
+        "sha256": "a162fa1423477eb3bb4e4e5cd35a152c556ba9ea9fd761acf6ad022a0bf4ff3a",
+        "bytes": 4491
       },
       "formal/GridSobolev.lean": {
         "sha256": "474618d8f9294e2bb513da0da964e3a532f75216d7514f77b1efee42f6bccd11",

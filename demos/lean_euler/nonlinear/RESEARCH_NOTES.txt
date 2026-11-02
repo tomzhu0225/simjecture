@@ -30,8 +30,8 @@ Established in the current proof components:
   energy1 = mean(f^2)+n*sum(Delta f)^2; energy2/3 recurse in each coordinate.
   These are unit-coordinate scaled forward differences, valid on periodic
   extensions. A bound on the derivative energies along trajectories is absent.
-- All 21 selected foundation theorems were audited in the local capability in
-  research/lab-energy-03. Numeric and formal jobs both succeeded. The previous
+- The first 21 selected foundation theorems were audited in the local capability
+  in research/lab-energy-03. Numeric and formal jobs both succeeded. The previous
   lab-energy-01 attempt hit a simplifier recursion limit in the final exact
   witness; smaller intermediate lemmas fixed it without raising checker limits.
   This does not establish solution existence or numerical convergence.
@@ -130,11 +130,61 @@ Accuracy-based lower-bound route to investigate (NOT established):
   LF viscosity and strict CFL margin may control both via explicit entropy
   Hessian and flux bounds, but inclusion of the actual candidate must be
   demonstrated. Numerical dissipation is not itself an error certificate.
-- Useful algebra to verify: the conservative entropy Hessian pulled back to
-  primitive variations (dq,dv,dp) should be
+- The conservative entropy Hessian pulled back to primitive variations
+  (dq,dv,dp) is now derived from actual derivatives in Entropy.lean:
       2*dq^2/q^3 + 2*dq*dp/(p*q^2) + dp^2/(q*p^2)
         + |dv|^2/(p*q^2)
     = dp^2/(2*p^2*q) + |dv|^2/(p*q^2)
         + (2/q)*(dq/q+dp/(2*p))^2.
-  This differs from the current convenient symmetrizer g. It must be connected
-  to actual derivatives of eta(U), not merely defined to have the desired form.
+  This differs from the convenient symmetrizer g. The actual derivative bridge
+  is checked, not just an algebraic definition of a desired positive form.
+
+Entropy checkpoint, research/lab-entropy-01:
+- Entropy.lean: actual conserved pressure and entropy derivatives, canonical
+  entropy variables, actual derivatives of those variables, positive Hessian
+  pullback, inverse primitive coordinates and arbitrary conservative directional
+  second derivatives. All are ordinary HasDerivAt proofs.
+- EntropyConvexity.lean: convexity on the full admissible conserved-state domain
+  follows from the actual nonnegative second derivatives along segments.
+  Finite Jensen and doubly stochastic averaging follow. Continuous trilinear
+  output and integral conservation are not yet formalized.
+- EntropyDynamics.lean: entropy potential grad(eta).F - eta*v_d = momentum_d,
+  and local entropy balance derived from differentiable conservative Euler
+  balance via the existing residual equivalence. No smooth solution is assumed
+  to exist merely because this implication is checked.
+- Three local-lab jobs succeeded: original candidate validation, nine entropy
+  trajectories at n=16/32/64 and 24 random one-step probes, and 29-theorem audit.
+  For A=1,delta=.05, measured total discrete entropy loss/h is .14785,.18591,
+  .20894 at n=16,32,64. At n=64 minimum observed drop/(dt*h*R_before) ranges
+  5.3687 to 7.0761 across the three parameter choices. These are observations,
+  never certified constants or a physical accuracy estimate.
+- Direct audits entropy-audit-01 and entropy-audit-03 also passed. Intermediate
+  failures were proof elaboration/notation issues, including finite-index
+  normalization and namespace ambiguity; they are retained in research logs.
+
+Next actual-step calculation to formalize (derived outline, NOT yet proved):
+Let a convex state set K contain all edge paths and paths from U^n to U^{n+1}.
+Require actual entropy Hessian lambda*I <= H <= M*I on K and actual flux
+Lipschitz constant L. These bounds must be derived for the chosen state set;
+merely accepting them as unverified physical assumptions does not complete the goal.
+Let alpha_min <= alpha_d <= A be directional LF viscosities and r=dt/h.
+1. Entropy potential compatibility gives, for each edge deltaU,
+   deltaV . (F_L+F_R)/2 - deltaPsi <= (M*L/2)*|deltaU|^2.
+   Strong convexity gives deltaV.deltaU >= lambda*|deltaU|^2.
+   If alpha_min >= 2*M*L/lambda, the LF edge entropy residual is at most
+   -(alpha_min*lambda/4)*|deltaU|^2.
+2. For the actual 3D update U_new=U+r*D, six-neighbor Cauchy-Schwarz gives
+   sum_i |D_i|^2 <= 3*(A+L)^2*sum_forward_edges |deltaU|^2.
+   The finite-step Taylor remainder is at most (M/2)*r^2*sum_i|D_i|^2.
+   Thus r <= alpha_min*lambda/(12*M*(A+L)^2) should retain dissipation
+   at least r*alpha_min*lambda/8 times the edge-square sum.
+3. A proved grid Poincare bound and relative entropy upper bound would turn
+   this into c*dt*h*R_n. This still requires positive, uniform trajectory
+   state bounds and an actual operator/cost definition of the competitor class.
+4. The factor may demand stronger viscosity / smaller CFL than the present
+   numerical candidate. Do not claim the current CFL=.3/max-speed recipe
+   satisfies this conservative sufficient bound without proving it.
+Primary reference inspected: Tadmor, Acta Numerica 12 (2003), sections 7-8,
+https://www.math.umd.edu/~tadmor/pub/TV%2Bentropy/Tadmor_Acta2003.pdf
+It explains balancing spatial dissipation against explicit time entropy
+production. It does not supply a Lean theorem or this family's work lower bound.

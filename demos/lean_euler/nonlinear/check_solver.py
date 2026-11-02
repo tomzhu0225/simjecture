@@ -34,6 +34,14 @@ THEOREMS = [
     "EulerCoefficientBounds.metric_variation",
     "EulerVariableStability.variable_principal_energy_growth",
     "EulerVariableStability.varying_metric_energy_increase",
+    "EulerEntropy.entropy_derivative",
+    "EulerEntropy.conservative_hessian_derivative",
+    "EulerEntropy.entropy_second_directional",
+    "EulerEntropy.hessian_positive",
+    "EulerEntropyConvexity.entropy_convex",
+    "EulerEntropyConvexity.averaging_entropy_bound",
+    "EulerEntropyDynamics.canonical_entropy_potential",
+    "EulerEntropyDynamics.smooth_entropy_balance",
 ]
 
 
@@ -55,10 +63,12 @@ def main():
         scope=(
             "Nonlinear update admissibility/conservation; conservative-to-primitive derivative "
             "connection; frozen and spatially varying principal-update energy estimates; "
-            "grid-independent 3D embedding; exact noncontraction witness. "
+            "grid-independent 3D embedding; exact noncontraction witness; actual entropy "
+            "derivatives, convexity, finite averaging bound and local Euler entropy balance. "
             "The variable-coefficient estimate assumes explicit state and spatial-difference "
             "bounds. Existence, nonlinear full-solve stability, continuum solver accuracy "
-            "and matching work optimality remain unproved."
+            "actual-step quantitative entropy dissipation and matching work optimality "
+            "remain unproved."
         ),
     )
     (args.output / "solver-formal.json").write_text(json.dumps(record, indent=2) + "\n")

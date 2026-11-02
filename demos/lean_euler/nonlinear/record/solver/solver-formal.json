@@ -3,7 +3,7 @@
     "schema_version": "0.1.0",
     "status": "proved",
     "checked": true,
-    "source_sha256": "769f19ff16454574b600707bc1fceafdb261ec6971d0195e0304122c9994451f",
+    "source_sha256": "3300ac727772f2ebe3eae111c584aac98cc86089e4ce0430df61cb8e0f25c442",
     "theorems": [
       "EulerAdmissible.convex_sum_admissible",
       "EulerAdmissible.flux_splitting_admissible",
@@ -25,7 +25,15 @@
       "EulerGridSobolev.three_dimensional_embedding",
       "EulerCoefficientBounds.metric_variation",
       "EulerVariableStability.variable_principal_energy_growth",
-      "EulerVariableStability.varying_metric_energy_increase"
+      "EulerVariableStability.varying_metric_energy_increase",
+      "EulerEntropy.entropy_derivative",
+      "EulerEntropy.conservative_hessian_derivative",
+      "EulerEntropy.entropy_second_directional",
+      "EulerEntropy.hessian_positive",
+      "EulerEntropyConvexity.entropy_convex",
+      "EulerEntropyConvexity.averaging_entropy_bound",
+      "EulerEntropyDynamics.canonical_entropy_potential",
+      "EulerEntropyDynamics.smooth_entropy_balance"
     ],
     "allowed_axioms": [
       "Classical.choice",
@@ -137,6 +145,46 @@
         "propext",
         "Classical.choice",
         "Quot.sound"
+      ],
+      "EulerEntropy.entropy_derivative": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "EulerEntropy.conservative_hessian_derivative": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "EulerEntropy.entropy_second_directional": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "EulerEntropy.hessian_positive": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "EulerEntropyConvexity.entropy_convex": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "EulerEntropyConvexity.averaging_entropy_bound": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+      ],
+      "EulerEntropyDynamics.canonical_entropy_potential": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "EulerEntropyDynamics.smooth_entropy_balance": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
       ]
     },
     "timeout_seconds": 150,
@@ -175,12 +223,12 @@
     ],
     "compile_returncode": 0,
     "audit_returncode": 0,
-    "wall_seconds": 50.197661794999476,
+    "wall_seconds": 65.8859244840005,
     "artifact_sha256": {
-      "Audit.lean": "cfa982fe6a41834a5d155f0154a0765c52e60e9b202be9a8019ee3640fdf9fdc",
-      "Candidate.lean": "769f19ff16454574b600707bc1fceafdb261ec6971d0195e0304122c9994451f",
-      "Candidate.olean": "6061875e8e4fe8ceeefa3662a13b7f66f7aa36259fa91b3b8b839f2c9224e7f2",
-      "audit.log": "1475497a92693aa174aba0c0dec49881c6f5c9d4465aef4ade8116d681cc4951",
+      "Audit.lean": "a176e14294d41fc386d862bbc95f2b1528eb7cb60acea0c2fa27e4cf13560789",
+      "Candidate.lean": "3300ac727772f2ebe3eae111c584aac98cc86089e4ce0430df61cb8e0f25c442",
+      "Candidate.olean": "2f7d5f5db0ca9727e41784dae261f09c787d09c087c59aec6a32ad3ed74aa5ec",
+      "audit.log": "31c5738b760e28bf1727b538a7db20b087433dd07422e2589846b99b340b8313",
       "compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     }
   },
@@ -193,7 +241,10 @@
     "VariableEnergy.lean": "aa4fe016bcabff9cff0e049e1acc7f0b6b639c0778ebeb35140592d97aaf72be",
     "GridSobolev.lean": "474618d8f9294e2bb513da0da964e3a532f75216d7514f77b1efee42f6bccd11",
     "CoefficientBounds.lean": "77ec763eb0e20fcf4b75120ccf14ec72f672dcadc37b8906b1adcb05f7f65406",
-    "VariableStability.lean": "69b482ac05aa707ea5224b8628b6eb7134d0cde4a5320fd75289df32b5d078f6"
+    "VariableStability.lean": "69b482ac05aa707ea5224b8628b6eb7134d0cde4a5320fd75289df32b5d078f6",
+    "Entropy.lean": "292c1cd766203fad3cdc1974a4597a4bce0ccf813fa5cd55ff3fadfe3fa93abd",
+    "EntropyConvexity.lean": "f313e272e7587bc4d2c0f42e38c2b7aa75395e1078a395ecc3bbb7f875ab1d39",
+    "EntropyDynamics.lean": "a162fa1423477eb3bb4e4e5cd35a152c556ba9ea9fd761acf6ad022a0bf4ff3a"
   },
-  "scope": "Nonlinear update admissibility/conservation; conservative-to-primitive derivative connection; frozen and spatially varying principal-update energy estimates; grid-independent 3D embedding; exact noncontraction witness. The variable-coefficient estimate assumes explicit state and spatial-difference bounds. Existence, nonlinear full-solve stability, continuum solver accuracy and matching work optimality remain unproved."
+  "scope": "Nonlinear update admissibility/conservation; conservative-to-primitive derivative connection; frozen and spatially varying principal-update energy estimates; grid-independent 3D embedding; exact noncontraction witness; actual entropy derivatives, convexity, finite averaging bound and local Euler entropy balance. The variable-coefficient estimate assumes explicit state and spatial-difference bounds. Existence, nonlinear full-solve stability, continuum solver accuracy actual-step quantitative entropy dissipation and matching work optimality remain unproved."
 }

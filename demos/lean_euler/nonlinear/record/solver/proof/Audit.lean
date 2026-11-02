@@ -128,3 +128,51 @@ run_cmd do
   | _ => throwError "Not a theorem: EulerVariableStability.varying_metric_energy_increase"
   let axioms ← collectAxioms n
   logInfo m!"SIMJECTURE_AXIOMS EulerVariableStability.varying_metric_energy_increase: {axioms.toList}"
+  let n := `EulerEntropy.entropy_derivative
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerEntropy.entropy_derivative"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerEntropy.entropy_derivative: {axioms.toList}"
+  let n := `EulerEntropy.conservative_hessian_derivative
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerEntropy.conservative_hessian_derivative"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerEntropy.conservative_hessian_derivative: {axioms.toList}"
+  let n := `EulerEntropy.entropy_second_directional
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerEntropy.entropy_second_directional"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerEntropy.entropy_second_directional: {axioms.toList}"
+  let n := `EulerEntropy.hessian_positive
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerEntropy.hessian_positive"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerEntropy.hessian_positive: {axioms.toList}"
+  let n := `EulerEntropyConvexity.entropy_convex
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerEntropyConvexity.entropy_convex"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerEntropyConvexity.entropy_convex: {axioms.toList}"
+  let n := `EulerEntropyConvexity.averaging_entropy_bound
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerEntropyConvexity.averaging_entropy_bound"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerEntropyConvexity.averaging_entropy_bound: {axioms.toList}"
+  let n := `EulerEntropyDynamics.canonical_entropy_potential
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerEntropyDynamics.canonical_entropy_potential"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerEntropyDynamics.canonical_entropy_potential: {axioms.toList}"
+  let n := `EulerEntropyDynamics.smooth_entropy_balance
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerEntropyDynamics.smooth_entropy_balance"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerEntropyDynamics.smooth_entropy_balance: {axioms.toList}"

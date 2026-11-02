@@ -2,7 +2,7 @@
   "schema_version": "0.1.0",
   "status": "proved",
   "checked": true,
-  "source_sha256": "769f19ff16454574b600707bc1fceafdb261ec6971d0195e0304122c9994451f",
+  "source_sha256": "3300ac727772f2ebe3eae111c584aac98cc86089e4ce0430df61cb8e0f25c442",
   "theorems": [
     "EulerAdmissible.convex_sum_admissible",
     "EulerAdmissible.flux_splitting_admissible",
@@ -24,7 +24,15 @@
     "EulerGridSobolev.three_dimensional_embedding",
     "EulerCoefficientBounds.metric_variation",
     "EulerVariableStability.variable_principal_energy_growth",
-    "EulerVariableStability.varying_metric_energy_increase"
+    "EulerVariableStability.varying_metric_energy_increase",
+    "EulerEntropy.entropy_derivative",
+    "EulerEntropy.conservative_hessian_derivative",
+    "EulerEntropy.entropy_second_directional",
+    "EulerEntropy.hessian_positive",
+    "EulerEntropyConvexity.entropy_convex",
+    "EulerEntropyConvexity.averaging_entropy_bound",
+    "EulerEntropyDynamics.canonical_entropy_potential",
+    "EulerEntropyDynamics.smooth_entropy_balance"
   ],
   "allowed_axioms": [
     "Classical.choice",
@@ -136,6 +144,46 @@
       "propext",
       "Classical.choice",
       "Quot.sound"
+    ],
+    "EulerEntropy.entropy_derivative": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerEntropy.conservative_hessian_derivative": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerEntropy.entropy_second_directional": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerEntropy.hessian_positive": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerEntropyConvexity.entropy_convex": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerEntropyConvexity.averaging_entropy_bound": [
+      "propext",
+      "Quot.sound",
+      "Classical.choice"
+    ],
+    "EulerEntropyDynamics.canonical_entropy_potential": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerEntropyDynamics.smooth_entropy_balance": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
     ]
   },
   "timeout_seconds": 150,
@@ -174,12 +222,12 @@
   ],
   "compile_returncode": 0,
   "audit_returncode": 0,
-  "wall_seconds": 50.197661794999476,
+  "wall_seconds": 65.8859244840005,
   "artifact_sha256": {
-    "Audit.lean": "cfa982fe6a41834a5d155f0154a0765c52e60e9b202be9a8019ee3640fdf9fdc",
-    "Candidate.lean": "769f19ff16454574b600707bc1fceafdb261ec6971d0195e0304122c9994451f",
-    "Candidate.olean": "6061875e8e4fe8ceeefa3662a13b7f66f7aa36259fa91b3b8b839f2c9224e7f2",
-    "audit.log": "1475497a92693aa174aba0c0dec49881c6f5c9d4465aef4ade8116d681cc4951",
+    "Audit.lean": "a176e14294d41fc386d862bbc95f2b1528eb7cb60acea0c2fa27e4cf13560789",
+    "Candidate.lean": "3300ac727772f2ebe3eae111c584aac98cc86089e4ce0430df61cb8e0f25c442",
+    "Candidate.olean": "2f7d5f5db0ca9727e41784dae261f09c787d09c087c59aec6a32ad3ed74aa5ec",
+    "audit.log": "31c5738b760e28bf1727b538a7db20b087433dd07422e2589846b99b340b8313",
     "compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
   }
 }

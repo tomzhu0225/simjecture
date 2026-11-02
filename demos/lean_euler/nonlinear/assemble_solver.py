@@ -13,6 +13,9 @@ COMPONENTS = [
     "GridSobolev.lean",
     "CoefficientBounds.lean",
     "VariableStability.lean",
+    "Entropy.lean",
+    "EntropyConvexity.lean",
+    "EntropyDynamics.lean",
 ]
 
 

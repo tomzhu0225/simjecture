@@ -54,6 +54,7 @@ def main():
         "check_solver.py",
         "finite_volume.py",
         "validate_candidate.py",
+        "validate_entropy.py",
         "contract.json",
     ]
     for name in files:
@@ -99,6 +100,13 @@ def main():
         ["finite_volume.py", "contract.json"],
         ["numeric/validation.json"],
         timeout=120,
+    )
+    execute(
+        "validate_entropy.py",
+        ["--output", "entropy"],
+        ["finite_volume.py", "contract.json"],
+        ["entropy/entropy-validation.json"],
+        timeout=240,
     )
     proof_outputs = ["checked/solver-formal.json"]
     proof_outputs += [

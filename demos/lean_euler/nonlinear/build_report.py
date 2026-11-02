@@ -3,19 +3,60 @@
 import json
 from pathlib import Path
 
+import matplotlib
+import numpy as np
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.platypus import PageBreak, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
+from reportlab.platypus import (
+    Image,
+    PageBreak,
+    Paragraph,
+    SimpleDocTemplate,
+    Spacer,
+    Table,
+    TableStyle,
+)
 
 HERE = Path(__file__).resolve().parent
 RECORD = HERE / "record/solver"
 formal = json.loads((RECORD / "solver-formal.json").read_text())
 numeric = json.loads((RECORD / "validation.json").read_text())
+entropy_record = json.loads((RECORD / "entropy-validation.json").read_text())
 proof = formal["result"]
 assert proof["checked"]
+figures = HERE / "figures"
+figures.mkdir(exist_ok=True)
+fig, axes = plt.subplots(1, 2, figsize=(8.7, 3.0), constrained_layout=True)
+for amplitude in [0.5, 0.75, 1.0]:
+    rows = [row for row in entropy_record["rows"] if row["A"] == amplitude]
+    n = np.array([row["n"] for row in rows])
+    loss = np.array([row["entropy_loss"] for row in rows])
+    label = f"A={amplitude:g}, δ={rows[0]['delta']:g}"
+    axes[0].loglog(2 * np.pi / n, loss, "o-", label=label)
+    axes[1].plot(
+        n,
+        [row["relative_entropy_final"] / row["relative_entropy_initial"] for row in rows],
+        "o-",
+        label=label,
+    )
+guide_h = 2 * np.pi / np.array([16, 32, 64])
+axes[0].loglog(guide_h, 0.21 * guide_h, "--", color="gray", label="h guide (scaled)")
+axes[0].set(xlabel="Grid spacing h", ylabel="Observed discrete entropy loss")
+axes[0].legend(fontsize=7)
+axes[1].set(xlabel="Cells per axis n", ylabel="Remaining relative entropy R(T)/R(0)", ylim=(0, 1))
+axes[1].set_xticks([16, 32, 64])
+for axis in axes:
+    axis.grid(alpha=0.25, which="both")
+    axis.spines[["top", "right"]].set_visible(False)
+fig.savefig(figures / "entropy_loss.png", dpi=180)
+fig.savefig(figures / "entropy_loss.pdf")
+plt.close(fig)
 
 fontroot = Path("/usr/share/fonts/truetype/dejavu")
 for name, filename in [("Report", "DejaVuSans.ttf"), ("ReportBold", "DejaVuSans-Bold.ttf")]:
@@ -152,6 +193,12 @@ table(
             "A mesh-independent 3D embedding and explicit coercivity/coefficient bounds. "
             "The trajectory's derivative energies and state-box membership are not bounded yet.",
         ],
+        [
+            "Actual mathematical entropy",
+            "Conserved-variable gradient and positive Hessian, convexity on admissible "
+            "states, finite averaging bound, canonical entropy-flux potential and local "
+            "entropy balance implied by differentiable Euler balance.",
+        ],
     ],
     [140, 365],
 )
@@ -241,6 +288,64 @@ para(
     f"{proof['source_sha256'][32:]}<br/>"
     'Draft PR: <link href="https://github.com/tomzhu0225/simjecture/pull/90">'
     "github.com/tomzhu0225/simjecture/pull/90</link>",
+    "SmallR",
+)
+
+story.append(PageBreak())
+para("Entropy: the proposed error mechanism", "TitleR")
+para(
+    "For γ = 2, the mathematical entropy is η(U) = −ρ log(p/ρ²). Lean now checks "
+    "its actual gradient and Hessian, convexity on the admissible conserved-state set, "
+    "and the local entropy balance that follows from differentiable Euler balance. "
+    "The Hessian was derived from η, not defined as a convenient positive form. "
+    "Existence of a smooth solution and the periodic integral conservation theorem "
+    "are still required."
+)
+para(
+    "A further checked result says a finite averaging map with nonnegative weights and "
+    "unit row/column sums cannot increase this convex entropy. A bridge to the actual "
+    "continuous output reconstruction remains unfinished."
+)
+story.append(Image(str(figures / "entropy_loss.png"), width=505, height=505 * 3 / 8.7))
+story.append(Spacer(1, 8))
+para(
+    "<b>Observed quantities, not certified continuum errors.</b> Nine runs of the actual "
+    "Rusanov update use n = 16, 32, 64, CFL = 0.3 and T = 0.25. Entropy loss is measured "
+    "between discrete initial and final states. R is relative entropy about the conserved "
+    "grid mean. The scaled h line is a visual guide; no rate or proof constant is inferred "
+    "from this finite sample.",
+    "SmallR",
+)
+rows = [["A / δ (n = 64)", "Entropy loss / h", "R(T) / R(0)", "Min observed drop / (Δt h R)"]]
+for row in entropy_record["rows"]:
+    if row["n"] == 64:
+        rows.append(
+            [
+                f"{row['A']:g} / {row['delta']:g}",
+                f"{row['entropy_loss_over_dx']:.6f}",
+                f"{row['relative_entropy_final'] / row['relative_entropy_initial']:.6f}",
+                f"{row['minimum_drop_over_dt_dx_relative']:.6f}",
+            ]
+        )
+table(rows, [120, 120, 115, 150])
+para(
+    "<b>Remaining argument.</b> Derive a quantitative entropy-loss inequality for the "
+    "actual finite time step, including temporal entropy production. Connect accumulated "
+    "loss to final continuum error through proved state bounds and the reconstruction. "
+    "Only then could a necessary mesh resolution support a total-work lower bound. "
+    "The data above do not discharge any of these obligations."
+)
+para(
+    "The initial search scope includes higher-order methods; first-order Rusanov cannot "
+    "be declared optimal in that scope without further argument. The proposed LF/Rusanov "
+    "class with convex reconstruction is still under investigation, with explicit "
+    "initial formulas and all preprocessing available to competitors."
+)
+para(
+    'Reference: <link href="https://www.math.umd.edu/~tadmor/pub/TV%2Bentropy/'
+    'Tadmor_Acta2003.pdf">Tadmor, Acta Numerica 12 (2003), §§7–8</link>, on the '
+    "balance between spatial entropy dissipation and explicit time discretization. "
+    "The reference is not imported as a Lean theorem.",
     "SmallR",
 )
 SimpleDocTemplate(

@@ -130,7 +130,7 @@ error estimate, and matching complexity bounds remain open. The initial-cell
 average formulas have an independent quadrature check; their formal
 initialization/reconstruction bridge also remains to be proved.
 
-Twenty-one named solver-foundation statements and the independent numerical checks
+Twenty-nine named solver-foundation statements and the independent numerical checks
 are retained under `record/solver`. Replay them through the bounded local lab:
 
 ```bash
@@ -163,8 +163,42 @@ forward differences, with each coordinate differentiated at most once, scaled
 to unit coordinates. This controls values from derivative energies, not the
 growth of those derivative energies during evolution.
 
-The expanded audit is replayed in
+The energy audit is replayed in
 `artifacts/lean-euler/20261102/nonlinear/research/lab-energy-03`. The earlier
 `lab-energy-01` attempt is retained: its final negative-control proof hit Lean's
 simplifier recursion limit. Factoring the computation into smaller checked
 lemmas resolved it without increasing checker limits.
+
+## Entropy and the accuracy-based lower-bound route
+
+`Entropy.lean` derives the actual gradient and Hessian of
+η(U) = −ρ log(p/ρ²). `EntropyConvexity.lean` proves convexity on the admissible
+conserved-state domain and the finite averaging inequality.
+`EntropyDynamics.lean` proves the canonical entropy-flux potential and the
+local entropy balance implied by differentiable conservative Euler balance.
+These are connected to the actual physical flux and entropy definitions.
+They do not establish smooth existence or the periodic integral theorem.
+
+The latest replay is
+`artifacts/lean-euler/20261102/nonlinear/research/lab-entropy-01`: three successful
+bounded jobs cover candidate validation, entropy diagnostics, and 29 named
+Lean statements. The new `validate_entropy.py` records nine trajectories on
+16³/32³/64³ grids and 24 randomized one-step checks. All tested updates lose
+mathematical entropy. For A = 1, δ = 0.05, total discrete entropy loss falls
+from 0.05806 at n = 16 to 0.02051 at n = 64. Loss divided by h changes from
+0.14785 to 0.20894. These observations are consistent with a leading error
+proportional to h, but do not certify a rate or an error constant.
+
+The proposed argument is to prove actual-step entropy dissipation, accumulate
+it over time, and connect it to unavoidable error in the evolved output.
+The explicit time discretization must be included; semidiscrete entropy
+stability is insufficient. See [Tadmor (2003), §§7–8](https://www.math.umd.edu/~tadmor/pub/TV%2Bentropy/Tadmor_Acta2003.pdf)
+for the established spatial/time entropy framework. That reference is not
+imported as a formal theorem.
+
+The original search scope includes higher-order methods. First-order Rusanov
+cannot be called optimal in that scope merely because these foundations pass.
+A proposed LF/Rusanov class with convex reconstruction remains under
+investigation. Its scientific justification, actual dissipation, necessary
+accuracy and complete work bounds all require proof. None of the measured
+entropy ratios is used as a certified universal constant.

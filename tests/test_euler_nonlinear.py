@@ -63,6 +63,9 @@ def test_solver_foundations_and_independent_validation_provenance(tmp_path):
         "EulerGridSobolev.three_dimensional_embedding",
         "EulerVariableStability.variable_principal_energy_growth",
         "EulerVariableStability.varying_metric_energy_increase",
+        "EulerEntropyConvexity.entropy_convex",
+        "EulerEntropyDynamics.canonical_entropy_potential",
+        "EulerEntropyDynamics.smooth_entropy_balance",
     } <= set(proof["result"]["theorems"])
     for dependencies in proof["result"]["axioms"].values():
         assert set(dependencies) <= {"propext", "Classical.choice", "Quot.sound"}
@@ -73,3 +76,16 @@ def test_solver_foundations_and_independent_validation_provenance(tmp_path):
     assert numerical["random_state_split_min_pressure"] > 0
     assert numerical["random_state_update_conservation_error"] < 1e-11
     assert numerical["unsafe_flux_splitting_pressure"] == -49
+    entropy_record = json.loads((record / "entropy-validation.json").read_text())
+    for name, checksum in entropy_record["sources"].items():
+        assert hashlib.sha256((DEMO / name).read_bytes()).hexdigest() == checksum
+    assert len(entropy_record["rows"]) == 9
+    assert {row["n"] for row in entropy_record["rows"]} == {16, 32, 64}
+    for row in entropy_record["rows"]:
+        assert row["final_time"] == 0.25
+        assert row["entropy_loss"] > 0
+        assert row["relative_entropy_final"] > 0
+        assert row["conservation_error"] < 1e-11
+        if row["n"] == 16:
+            assert row["direct_solver_replay_max_error"] == 0
+    assert len(entropy_record["random_states"]) == 24

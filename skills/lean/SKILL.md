@@ -114,6 +114,18 @@ None of these foundations establishes continuum accuracy or work optimality.
 `run_solver_study.py` replays the candidate checks and assembled proof through
 an isolated local lab. The corresponding PDF reports explicit outstanding work.
 
+The nonlinear entropy components derive the gradient/Hessian of the actual
+conserved-state function eta(U)=-rho*log(p/rho^2), prove its convexity, and derive
+local entropy balance from differentiable Euler balance. This is distinct from
+the convenient principal energy form. A local differential implication does
+not establish existence or a periodic integral theorem. Finite convex averaging
+does not yet formalize continuous output reconstruction. Observed entropy loss
+in `validate_entropy.py` is not a certified physical error or a uniform proof
+constant. A fully discrete dissipation argument must account for entropy
+production from the explicit time step; semidiscrete stability alone is not
+sufficient. Read the lower-bound outline in `RESEARCH_NOTES.txt` before extending
+that argument or finalizing the competitor class.
+
 The affine-shear example has analytically known dynamics; its work theorem is
 principally a function-reconstruction result. It does not fulfill a request for
 an optimal solver of unknown nonlinear Euler evolution. For that research
