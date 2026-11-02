@@ -25,6 +25,9 @@ COMPONENTS = [
     "PhysicalRegion.lean",
     "InitialRegion.lean",
     "PhysicalFluxBounds.lean",
+    "LogMean.lean",
+    "EntropyConservativeFlux.lean",
+    "EntropyCandidateStep.lean",
 ]
 
 

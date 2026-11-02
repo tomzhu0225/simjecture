@@ -45,3 +45,14 @@ SIMJECTURE_AXIOMS EulerPhysicalFluxBounds.initial_family_contains_rest: [propext
 SIMJECTURE_AXIOMS EulerPhysicalFluxBounds.current_speeds_fail_any_region_constants: [propext,
  Quot.sound,
  Classical.choice]
+SIMJECTURE_AXIOMS EulerLogMean.jump_identity: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS EulerLogMean.between: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS EulerEntropyConservativeFlux.canonical_entropy_conservation: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS EulerEntropyConservativeFlux.dissipative_flux_consistency: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS EulerEntropyConservativeFlux.face_entropy_stable: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS EulerEntropyCandidateStep.gradient_strict_monotonicity: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS EulerEntropyCandidateStep.total_entropy_trial_derivative: [propext, Quot.sound, Classical.choice]
+SIMJECTURE_AXIOMS EulerEntropyCandidateStep.zero_dissipation_stationary: [propext, Quot.sound, Classical.choice]
+SIMJECTURE_AXIOMS EulerEntropyCandidateStep.exists_acceptable_halving: [propext, Quot.sound, Classical.choice]
+SIMJECTURE_AXIOMS EulerEntropyCandidateStep.backtracked_step: [propext, Quot.sound, Classical.choice]
+SIMJECTURE_AXIOMS EulerEntropyCandidateStep.earlier_trials_rejected: [propext, Quot.sound, Classical.choice]

@@ -28,6 +28,7 @@ RECORD = HERE / "record/solver"
 formal = json.loads((RECORD / "solver-formal.json").read_text())
 numeric = json.loads((RECORD / "validation.json").read_text())
 entropy_record = json.loads((RECORD / "entropy-validation.json").read_text())
+ec_record = json.loads((RECORD / "ec-validation.json").read_text())
 proof = formal["result"]
 assert proof["checked"]
 figures = HERE / "figures"
@@ -135,8 +136,9 @@ para(
 )
 para("Candidate and intended result", "HeadingR")
 para(
-    "The current candidate is a conservative, explicit, global-speed Rusanov finite-volume "
-    "method with exact-formula initial cell averages and a final-time-clipped CFL step. "
+    "The baseline is a conservative, explicit, global-speed Rusanov finite-volume "
+    "method. An alternative uses an existing entropy-conservative flux plus LF diffusion "
+    "and a timestep-halving acceptance test (page 7). Both use analytic initial averages. "
     "T = 0.25 is the numerical target; a common smooth existence interval is still unproved. "
     "The intended error includes the full evolved field, spatial reconstruction and time "
     "integration, using volume-normalized L1 error in each conserved component."
@@ -477,10 +479,82 @@ para(
     "optimality is impossible. The physical problem and accuracy goal are unchanged."
 )
 para(
-    "<b>Next direction.</b> Use Euler's entropy-weighted energy and local variation "
-    "between neighbouring states to obtain a sharper estimate. Uniform regularity, "
+    "<b>Next direction.</b> The alternative flux on the following page cancels the "
+    "central face entropy residual exactly, avoiding this criterion. Uniform regularity, "
     "common smooth existence to T = 0.25, continuous reconstruction, full nonlinear "
     "accuracy and matching work bounds still require proof."
+)
+
+story.append(PageBreak())
+para("An alternative with a<br/>terminating one-step search", "TitleR")
+para(
+    "The new candidate uses Chandrashekar's existing logarithmic-mean entropy-conservative "
+    "flux, plus −(a<sub>d</sub>/2)(U<sub>R</sub>−U<sub>L</sub>). It changes the numerical "
+    "method; no exact equivalence to the Rusanov baseline or speedup is claimed. "
+    "The physical PDE remains inviscid Euler."
+)
+para("What the new Lean proof establishes", "HeadingR")
+para(
+    "The actual five-component flux satisfies the physical Euler consistency and "
+    "canonical entropy jump identities in all three directions. Its dissipative face "
+    "residual is nonpositive for <b>any nonnegative a<sub>d</sub></b>. This eliminates "
+    "the large-diffusion condition of the previous face estimate."
+)
+para(
+    "For any finite admissible periodic grid, define D as the sum of "
+    "(a<sub>d</sub>/2) Δη′ · ΔU over forward faces, and H = Ση(U). Freeze the old-state "
+    "residual while halving a positive trial ratio r = Δt/h. Accept a trial only when "
+    "every cell has positive density and pressure and<br/>"
+    "<b>H(U<sub>trial</sub>) ≤ H(U) − rD/2.</b>"
+)
+para(
+    "Lean proves that the derivative of trial entropy at r = 0 is −D. For D &gt; 0, "
+    "sufficiently small positive trials pass. For D = 0 with positive coefficients, "
+    "strict entropy-gradient monotonicity forces equal states across neighboring faces; "
+    "the residual is then zero. Thus <b>a finite real-arithmetic halving search succeeds</b>. "
+    "The first accepted positive step preserves all conserved totals, admissibility "
+    "and the finite-step entropy inequality; earlier trials fail its acceptance test."
+)
+para("Independent numerical checks", "HeadingR")
+para(
+    "Logarithmic means are compared with 70-digit arithmetic. An independent complex-step "
+    "entropy gradient checks 1,024 random state pairs in all directions. The maximum "
+    f"scaled entropy-identity residual is {ec_record['tadmor_identity_max_scaled_error']:.2e}. "
+    "An excessive proposal triggers two halvings; a constant-state control stays unchanged."
+)
+table(
+    [["A / δ at n = 64", "Accepted steps", "Rejected", "Min ρ / min p"]]
+    + [
+        [
+            f"{row['A']:g} / {row['delta']:g}",
+            row["steps"],
+            row["rejected_steps"],
+            f"{row['min_density']:.5f} / {row['min_pressure']:.5f}",
+        ]
+        for row in ec_record["rows"]
+        if row["n"] == 64
+    ],
+    [145, 110, 80, 170],
+)
+para(
+    "All nine 16³/32³/64³ runs reach T = 0.25 with ordinary wave-speed diffusion and "
+    "CFL = 0.3, without rejected trials. All sampled entropy margins are nonnegative. "
+    "These are finite observations, not universal accuracy or cost bounds.",
+    "SmallR",
+)
+para(
+    "<b>Remaining gap.</b> The theorem uses exact real comparisons, not verified "
+    "floating-point guards. It gives no uniform retry/timestep bound, no guarantee for "
+    "Python's cap of 60 halvings, and no proof of reaching T in finitely many steps. "
+    "Continuum accuracy, complete computational work and a matching competitor lower "
+    "bound remain unproved. The goal is still active."
+)
+para(
+    'Reference: <link href="https://arxiv.org/pdf/1209.4994">Chandrashekar (2013), '
+    "section 4.4</link>. Sources: LogMean.lean, EntropyConservativeFlux.lean, "
+    "EntropyCandidateStep.lean. Retained evidence: record/solver, including "
+    "ec-validation.json and the 56-statement audit.",
+    "SmallR",
 )
 SimpleDocTemplate(
     str(HERE / "report.pdf"),

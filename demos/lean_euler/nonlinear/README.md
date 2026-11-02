@@ -130,7 +130,7 @@ error estimate, and matching complexity bounds remain open. The initial-cell
 average formulas have an independent quadrature check; their formal
 initialization/reconstruction bridge also remains to be proved.
 
-Forty-five named solver-foundation statements and the independent numerical checks
+Fifty-six named solver-foundation statements and the independent numerical checks
 are retained under `record/solver`. Replay them through the bounded local lab:
 
 ```bash
@@ -279,3 +279,59 @@ Euler's entropy-weighted structure and local state variation, or a different
 consistent numerical flux. The physical family and full accuracy/work goal
 are unchanged. The complete 45-statement replay is retained in
 `artifacts/lean-euler/20261102/nonlinear/research/lab-region-01`.
+
+## Alternative flux and a terminating one-step search
+
+`entropy_candidate.py` now implements the existing logarithmic-mean
+entropy-conservative flux of [Chandrashekar (2013), section 4.4](https://arxiv.org/pdf/1209.4994),
+with a Lax–Friedrichs jump term. This changes the numerical method; it is not
+an exact-equivalence optimization of the Rusanov update, and no speedup is
+claimed. The target equations remain inviscid Euler.
+
+`LogMean.lean` proves the positive logarithmic mean and its exact jump identity.
+`EntropyConservativeFlux.lean` connects the actual five-component flux to the
+physical Euler flux at equal states and proves the canonical entropy identity
+in all three directions. Adding any nonnegative diffusion coefficient gives
+a nonpositive face entropy residual. This removes the preceding global
+viscosity threshold from the face argument; finite time integration still
+requires its own check.
+
+For a fixed old grid state, let D be the sum over faces of
+`(a_d/2) (gradient η(U_right) − gradient η(U_left)) · (U_right − U_left)`.
+The alternative candidate freezes the residual and positive directional speeds
+while trying successively halved values of r = Δt/h. It accepts a trial only
+when density and pressure are positive and
+
+\[
+H(U^{\rm trial})\le H(U)-rD/2,\qquad H(U)=\sum_i\eta(U_i).
+\]
+
+`EntropyCandidateStep.lean` proves that this **real-arithmetic one-step search
+has a finite acceptable trial** for every finite admissible periodic grid and
+every positive proposal and positive directional diffusion coefficient. The
+total entropy derivative at r = 0 is −D. If D > 0, sufficiently small positive
+steps pass. If D = 0, strict entropy-gradient monotonicity forces equal states
+across every neighboring face, and the residual vanishes. The first accepted
+trial preserves all five conserved totals, positive density/pressure, and the
+stated entropy inequality; all earlier trial indices fail the acceptance test.
+
+The formal search uses exact real comparisons. It does **not** certify Python's
+floating-point comparisons or its retry cap of 60, give a uniform timestep or
+retry bound, rule out an accumulation of timesteps before T, or establish
+continuum accuracy or optimality. The previous baseline positivity theorem is
+not silently transferred to this different flux.
+
+`validate_entropy_candidate.py` independently differentiates the entropy using
+complex steps, checks 1,024 random state pairs in all directions, and compares
+logarithmic means against 70-digit arithmetic. An excessive-step control triggers
+two halvings; a constant-state control is unchanged without halving. Nine runs
+on 16³, 32³ and 64³ grids reach T = 0.25 with the original wave-speed coefficients
+and CFL = 0.3: no trial is rejected, sampled density and pressure stay positive,
+and all entropy margins are nonnegative. These observations provide no certified
+continuum error, uniform bound over the parameter family, or speed ranking.
+
+The four-job replay is `research/lab-ec-01` under the dated artifact directory.
+Its source hashes, 56-statement audit and numerical results are retained under
+`record/solver`, including `ec-validation.json`. The next task is a quantitative
+step/work bound compatible with useful speeds and evolving state bounds, followed
+by the still-open continuum-error and competitor lower-bound arguments.

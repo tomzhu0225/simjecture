@@ -316,3 +316,80 @@ run_cmd do
   | _ => throwError "Not a theorem: EulerPhysicalFluxBounds.current_speeds_fail_any_region_constants"
   let axioms ← collectAxioms n
   logInfo m!"SIMJECTURE_AXIOMS EulerPhysicalFluxBounds.current_speeds_fail_any_region_constants: {axioms.toList}"
+run_cmd do
+  let n := `EulerLogMean.jump_identity
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerLogMean.jump_identity"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerLogMean.jump_identity: {axioms.toList}"
+run_cmd do
+  let n := `EulerLogMean.between
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerLogMean.between"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerLogMean.between: {axioms.toList}"
+run_cmd do
+  let n := `EulerEntropyConservativeFlux.canonical_entropy_conservation
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerEntropyConservativeFlux.canonical_entropy_conservation"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerEntropyConservativeFlux.canonical_entropy_conservation: {axioms.toList}"
+run_cmd do
+  let n := `EulerEntropyConservativeFlux.dissipative_flux_consistency
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerEntropyConservativeFlux.dissipative_flux_consistency"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerEntropyConservativeFlux.dissipative_flux_consistency: {axioms.toList}"
+run_cmd do
+  let n := `EulerEntropyConservativeFlux.face_entropy_stable
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerEntropyConservativeFlux.face_entropy_stable"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerEntropyConservativeFlux.face_entropy_stable: {axioms.toList}"
+run_cmd do
+  let n := `EulerEntropyCandidateStep.gradient_strict_monotonicity
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerEntropyCandidateStep.gradient_strict_monotonicity"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerEntropyCandidateStep.gradient_strict_monotonicity: {axioms.toList}"
+run_cmd do
+  let n := `EulerEntropyCandidateStep.total_entropy_trial_derivative
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerEntropyCandidateStep.total_entropy_trial_derivative"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerEntropyCandidateStep.total_entropy_trial_derivative: {axioms.toList}"
+run_cmd do
+  let n := `EulerEntropyCandidateStep.zero_dissipation_stationary
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerEntropyCandidateStep.zero_dissipation_stationary"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerEntropyCandidateStep.zero_dissipation_stationary: {axioms.toList}"
+run_cmd do
+  let n := `EulerEntropyCandidateStep.exists_acceptable_halving
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerEntropyCandidateStep.exists_acceptable_halving"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerEntropyCandidateStep.exists_acceptable_halving: {axioms.toList}"
+run_cmd do
+  let n := `EulerEntropyCandidateStep.backtracked_step
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerEntropyCandidateStep.backtracked_step"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerEntropyCandidateStep.backtracked_step: {axioms.toList}"
+run_cmd do
+  let n := `EulerEntropyCandidateStep.earlier_trials_rejected
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerEntropyCandidateStep.earlier_trials_rejected"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerEntropyCandidateStep.earlier_trials_rejected: {axioms.toList}"

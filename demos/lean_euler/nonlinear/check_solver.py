@@ -58,6 +58,17 @@ THEOREMS = [
     "EulerPhysicalFluxBounds.coarse_viscosity_requirement",
     "EulerPhysicalFluxBounds.initial_family_contains_rest",
     "EulerPhysicalFluxBounds.current_speeds_fail_any_region_constants",
+    "EulerLogMean.jump_identity",
+    "EulerLogMean.between",
+    "EulerEntropyConservativeFlux.canonical_entropy_conservation",
+    "EulerEntropyConservativeFlux.dissipative_flux_consistency",
+    "EulerEntropyConservativeFlux.face_entropy_stable",
+    "EulerEntropyCandidateStep.gradient_strict_monotonicity",
+    "EulerEntropyCandidateStep.total_entropy_trial_derivative",
+    "EulerEntropyCandidateStep.zero_dissipation_stationary",
+    "EulerEntropyCandidateStep.exists_acceptable_halving",
+    "EulerEntropyCandidateStep.backtracked_step",
+    "EulerEntropyCandidateStep.earlier_trials_rejected",
 ]
 
 
@@ -91,6 +102,14 @@ def main():
             "A checked obstruction shows that the global sufficient viscosity criterion "
             "cannot certify the current wave-speed recipe on that region, even with "
             "improved valid curvature constants. It does not refute actual solver stability."
+            " An alternative existing logarithmic-mean entropy-conservative flux plus LF "
+            "diffusion has a checked exact entropy identity, physical-flux consistency and "
+            "nonpositive face residual for any nonnegative diffusion. With positive "
+            "coefficients, a finite real-arithmetic halving search finds a positive, "
+            "admissible, conservative step satisfying a finite-step entropy decrease "
+            "condition. The zero-dissipation case is also proved stationary. There is "
+            "no uniform retry bound, certified floating-point guard, proof of reaching "
+            "the target time, continuum error bound or total-work optimality result."
         ),
     )
     (args.output / "solver-formal.json").write_text(json.dumps(record, indent=2) + "\n")

@@ -282,3 +282,54 @@ B. Investigate an entropy-conservative two-point base flux plus LF dissipation.
    for gamma=2. The square mean is mean(|v|^2), NOT |mean(v)|^2. Verify the
    exact multidimensional formula and logarithmic-mean branches in Lean.
    This is an existing literature method, not a claim of novel discovery.
+
+Alternative EC+LF checkpoint, research/lab-ec-01:
+- LogMean.lean formalizes the exact-real logarithmic mean, including equal
+  arguments, positivity, interval bounds and the exact logarithmic jump identity.
+- EntropyConservativeFlux.lean implements the above gamma=2 3D flux and proves
+  its consistency with actual physical Euler fluxes and its canonical entropy
+  identity. The LF term gives a nonpositive face residual for any nonnegative
+  diffusion coefficient. The failed Rusanov global viscosity threshold is not
+  needed for this different flux. Do not claim equivalence to Rusanov or a speedup.
+- EntropyCandidateStep.lean defines the periodic residual, freezes it during
+  timestep backtracking, and proves total-entropy derivative = -D, where D is
+  the sum of (a_d/2)*gradientJump dot stateJump over forward faces. D>=0.
+- Actual entropy-gradient strict monotonicity follows from the positive Hessian
+  on the admissible segment. With positive a_d, D=0 forces all neighboring
+  states equal, so the full residual vanishes. For D>0, derivative negativity
+  and continuity of density/pressure imply sufficiently small acceptable steps.
+- A positive proposal*(1/2)^n therefore passes for some finite n. Nat.find
+  specifies the first accepted index; its step preserves admissibility, all
+  five conserved totals and H_after<=H_before-r*D/2. Earlier trials are rejected.
+  This is an exact-real mathematical search, not an executable real-number
+  decision procedure or a verified floating-point program. It supplies no
+  uniform retry bound, time-completion bound or work-to-accuracy theorem.
+- entropy_candidate.py implements the method with ordinary global wave speeds,
+  CFL=.3 proposals and explicit finite-density/pressure/entropy checks. Each
+  rejection halves the timestep while retaining the same old-state residual.
+  Python caps retries at 60 and can report failure; Lean does not certify this
+  cap or rounding-sensitive guards. Preprocessing/checking costs are not omitted
+  from the goal, but the recorded face/update counts are only diagnostics.
+- validate_entropy_candidate.py uses independent 70-digit Decimal logarithmic
+  means and complex-step differentiation of the actual entropy. It checks 1024
+  random state pairs in three directions, symmetry and physical-flux consistency.
+  Maximum scaled entropy-identity residual is 2.09e-14. An excessive proposal
+  needs two halvings, while the constant-state control has zero residual and
+  no halving. Nine 16^3/32^3/64^3 family runs reach T=.25 at ordinary speeds,
+  with no rejections, positive sampled rho/p and nonnegative entropy margins.
+- All four bounded local-lab jobs succeeded, including the full 56-declaration
+  audit. Only propext/Classical.choice/Quot.sound occur in transitive dependencies.
+  Trusted development imported an immutable earlier Candidate.olean only to
+  shorten iteration; the retained bounded proof is fully reassembled and checked
+  with allowed imports. Failed scratch logs ec-dev-03/05/06 are retained.
+- Ten focused nonlinear/accuracy/cache tests pass, including exact assembled
+  proof correspondence and all numerical source hashes. Ruff passes. The updated
+  seven-page PDF was rendered and its revised first and final pages inspected.
+
+Next substantive obligation after EC+LF one-step termination:
+Derive quantitative step/retry estimates compatible with ordinary speeds and
+uniform evolving-state bounds. One-step existence alone permits arbitrarily
+small accepted steps; it does not rule out accumulation before the target time.
+Then establish common smooth Euler existence/regularity, initialization and
+continuous reconstruction, full spatial/temporal error, a justified competitor
+class, and matching complete work bounds. The active goal is not complete.

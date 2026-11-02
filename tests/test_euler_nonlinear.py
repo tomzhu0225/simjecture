@@ -72,6 +72,10 @@ def test_solver_foundations_and_independent_validation_provenance(tmp_path):
         "EulerInitialRegion.initial_family_in_region",
         "EulerPhysicalFluxBounds.concrete_region_bounds",
         "EulerPhysicalFluxBounds.current_speeds_fail_any_region_constants",
+        "EulerEntropyConservativeFlux.canonical_entropy_conservation",
+        "EulerEntropyConservativeFlux.face_entropy_stable",
+        "EulerEntropyCandidateStep.backtracked_step",
+        "EulerEntropyCandidateStep.earlier_trials_rejected",
     } <= set(proof["result"]["theorems"])
     for dependencies in proof["result"]["axioms"].values():
         assert set(dependencies) <= {"propext", "Classical.choice", "Quot.sound"}
@@ -95,3 +99,19 @@ def test_solver_foundations_and_independent_validation_provenance(tmp_path):
         if row["n"] == 16:
             assert row["direct_solver_replay_max_error"] == 0
     assert len(entropy_record["random_states"]) == 24
+    alternative = json.loads((record / "ec-validation.json").read_text())
+    for name, checksum in alternative["sources"].items():
+        assert hashlib.sha256((DEMO / name).read_bytes()).hexdigest() == checksum
+    assert alternative["logmean_high_precision_max_relative_error"] < 2e-14
+    assert alternative["entropy_gradient_complex_step_max_scaled_error"] < 1e-10
+    assert alternative["tadmor_identity_max_scaled_error"] < 1e-10
+    assert alternative["excessive_proposal_control"]["rejected"] > 0
+    assert alternative["constant_state_control"]["state_max_error"] == 0
+    assert alternative["constant_state_control"]["rejected"] == 0
+    assert len(alternative["rows"]) == 9
+    assert {row["n"] for row in alternative["rows"]} == {16, 32, 64}
+    for row in alternative["rows"]:
+        assert row["final_time"] == 0.25
+        assert row["min_density"] > 0 and row["min_pressure"] > 0
+        assert row["minimum_entropy_margin"] >= 0
+        assert row["conservation_error"] < 1e-11
