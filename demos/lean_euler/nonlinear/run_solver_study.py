@@ -16,7 +16,25 @@ from conjecture_solver.research_service import ResearchService
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--output", type=Path, required=True)
-    p.add_argument("--proof-only", action="store_true", help="Replay only the assembled Lean audit")
+    selection = p.add_mutually_exclusive_group()
+    selection.add_argument(
+        "--proof-only", action="store_true", help="Replay only the assembled Lean audit"
+    )
+    selection.add_argument(
+        "--checks",
+        nargs="+",
+        help="Replay only the specified validation programs",
+        choices=[
+            "validate_candidate.py",
+            "validate_entropy.py",
+            "validate_entropy_candidate.py",
+            "validate_step_bound.py",
+            "validate_region_bounds.py",
+            "validate_entropy_decay.py",
+            "validate_reconstruction.py",
+            "check_solver.py",
+        ],
+    )
     args = p.parse_args()
     out = args.output.resolve()
     out.mkdir(parents=True, exist_ok=False)
@@ -61,6 +79,8 @@ def main():
         "validate_step_bound.py",
         "validate_region_bounds.py",
         "validate_entropy_decay.py",
+        "reconstruction.py",
+        "validate_reconstruction.py",
         "contract.json",
     ]
     for name in files:
@@ -70,6 +90,10 @@ def main():
     receipts = []
 
     def execute(source, argv, inputs, outputs, capability=None, timeout=180):
+        if args.proof_only and source != "check_solver.py":
+            return
+        if args.checks and source not in args.checks:
+            return
         job = lab.run(
             source,
             argv,
@@ -100,65 +124,78 @@ def main():
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(workspace / name, target)
 
-    if not args.proof_only:
-        execute(
-            "validate_candidate.py",
-            ["--output", "numeric"],
-            ["finite_volume.py", "contract.json"],
-            ["numeric/validation.json"],
-            timeout=120,
-        )
-        execute(
-            "validate_entropy.py",
-            ["--output", "entropy"],
-            ["finite_volume.py", "contract.json"],
-            ["entropy/entropy-validation.json"],
-            timeout=240,
-        )
-        execute(
+    execute(
+        "validate_candidate.py",
+        ["--output", "numeric"],
+        ["finite_volume.py", "contract.json"],
+        ["numeric/validation.json"],
+        timeout=120,
+    )
+    execute(
+        "validate_entropy.py",
+        ["--output", "entropy"],
+        ["finite_volume.py", "contract.json"],
+        ["entropy/entropy-validation.json"],
+        timeout=240,
+    )
+    execute(
+        "validate_entropy_candidate.py",
+        ["--output", "ec"],
+        ["entropy_candidate.py", "finite_volume.py", "contract.json"],
+        ["ec/validation.json"],
+        timeout=300,
+    )
+    execute(
+        "validate_step_bound.py",
+        ["--output", "step-bound"],
+        [
+            "entropy_candidate.py",
             "validate_entropy_candidate.py",
-            ["--output", "ec"],
-            ["entropy_candidate.py", "finite_volume.py", "contract.json"],
-            ["ec/validation.json"],
-            timeout=300,
-        )
-        execute(
-            "validate_step_bound.py",
-            ["--output", "step-bound"],
-            [
-                "entropy_candidate.py",
-                "validate_entropy_candidate.py",
-                "finite_volume.py",
-                "contract.json",
-            ],
-            ["step-bound/step-bound-validation.json"],
-            timeout=300,
-        )
-        execute(
+            "finite_volume.py",
+            "contract.json",
+        ],
+        ["step-bound/step-bound-validation.json"],
+        timeout=300,
+    )
+    execute(
+        "validate_region_bounds.py",
+        ["--output", "region"],
+        [
+            "entropy_candidate.py",
+            "validate_entropy_candidate.py",
+            "finite_volume.py",
+            "contract.json",
+        ],
+        ["region/region-validation.json"],
+        timeout=300,
+    )
+    execute(
+        "validate_entropy_decay.py",
+        ["--output", "decay"],
+        [
+            "entropy_candidate.py",
+            "validate_entropy_candidate.py",
             "validate_region_bounds.py",
-            ["--output", "region"],
-            [
-                "entropy_candidate.py",
-                "validate_entropy_candidate.py",
-                "finite_volume.py",
-                "contract.json",
-            ],
-            ["region/region-validation.json"],
-            timeout=300,
-        )
-        execute(
-            "validate_entropy_decay.py",
-            ["--output", "decay"],
-            [
-                "entropy_candidate.py",
-                "validate_entropy_candidate.py",
-                "validate_region_bounds.py",
-                "finite_volume.py",
-                "contract.json",
-            ],
-            ["decay/entropy-decay-validation.json"],
-            timeout=300,
-        )
+            "finite_volume.py",
+            "contract.json",
+        ],
+        ["decay/entropy-decay-validation.json"],
+        timeout=300,
+    )
+    execute(
+        "validate_reconstruction.py",
+        ["--output", "reconstruction"],
+        [
+            "reconstruction.py",
+            "entropy_candidate.py",
+            "finite_volume.py",
+            "validate_region_bounds.py",
+            "validate_entropy_candidate.py",
+            "contract.json",
+        ],
+        ["reconstruction/reconstruction-validation.json"],
+        timeout=300,
+    )
     proof_outputs = ["checked/solver-formal.json"]
     proof_outputs += [
         f"checked/proof/{name}"
@@ -172,15 +209,17 @@ def main():
         "lean-4.24.0--at-local-lean",
         timeout=300,
     )
-    result = json.loads((out / "checked/solver-formal.json").read_text())
-    assert result["result"]["checked"]
+    formal_path = out / "checked/solver-formal.json"
+    result = json.loads(formal_path.read_text()) if formal_path.exists() else None
+    if result is not None:
+        assert result["result"]["checked"]
     print(
         json.dumps(
             {
-                "status": result["result"]["status"],
-                "theorems": len(result["result"]["theorems"]),
+                "status": result["result"]["status"] if result else "succeeded",
+                "theorems": len(result["result"]["theorems"]) if result else 0,
                 "jobs": [r["id"] for r in receipts],
-                "scope": result["scope"],
+                "scope": result["scope"] if result else "Selected numerical diagnostics only",
             },
             indent=2,
         )

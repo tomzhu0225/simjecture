@@ -562,3 +562,91 @@ Next substantive connection:
 4. The solver accuracy upper bound, justified competitor class, and complete
    computational-work lower/upper proof remain unfinished. The current
    first-order dissipative mechanism does not cover higher-order competitors.
+
+Continuous reconstruction checkpoint, research/lab-reconstruction-01:
+- HatReconstruction.lean defines a clipped ramp r(s)=max(0,min(1,s)) and the
+  actual tent phi(s)=r(s+1)-r(s). Its two linear branches and zero tails are
+  proved. For the cell-centered coordinate s=n*x/L-1/2, the one-dimensional
+  weight is phi(s-i)+phi(s-i+n)+phi(s-i-n). Three-copy sums telescope to one
+  on the physical interval. Direct integration of the tent, affine changes of
+  variable, and joining adjacent intervals give integral w_i=L/n, including n=1.
+- Tensor products define the actual reconstructed field R_h u on the cube.
+  Mathlib product-measure integration gives normalized weight integral 1/n^3.
+  Lean checks continuity, equal opposite boundary faces, exact recovery of every
+  stored state at its cell center, and K membership when all grid states lie in K.
+  Integrating gives the exact grid mean. Pointwise Jensen plus integration gives
+    integral eta(R_h u) dmu <= n^-3 sum_cells eta(u).
+  These are statements about the specified functions, not abstract weight
+  hypotheses left for a future implementation.
+- Combining this actual reconstruction with the preceding continuum theorem:
+    [integral eta(U(0)) dmu - n^-3 sum_cells eta(u)]/160
+      <= max_j integral |R_h u_j-U_j(T)| dmu.
+  The existing differentiability, positive density/pressure, Euler-residual,
+  periodicity and exact-final/grid-state region hypotheses remain explicit.
+  The numerator is not yet uniformly proved positive. No solution existence,
+  solver accuracy upper bound, or optimality conclusion is inferred.
+- reconstruction.py implements the periodic interpolant with eight neighboring
+  cells per query. It is not a verified floating-point extraction, and a formal
+  operational-cost equivalence of that sparse evaluator remains separate work.
+  The Lean expression is a finite mathematical sum. Global mean preservation
+  does not by itself establish the approximation error of the reconstructed
+  cell-average data relative to the actual smooth evolved solution.
+- validate_reconstruction.py compares the sparse evaluator with independent
+  dense three-copy max(0,1-|s|) tents on 4096 queries for each n=1,2,3,5 random
+  region-valued grid. Maximum discrepancy: 3.11e-15; cell-center discrepancy: 0;
+  arbitrary whole-period shifts: 7.11e-15; opposite-face discrepancy: 0.
+  Tensor Gauss quadrature is split at every hat breakpoint. Random-grid mean
+  discrepancy is at most 4.00e-15; one-dimensional weight integral discrepancy
+  is at most 5.55e-17. Region and entropy quadrature checks pass, as does a
+  constant-field control. No floating-point enclosure is claimed.
+- Four actual nonlinear EC+LF solves use n=16 for (A,delta)=(.5,-.05),(.75,0),
+  (1,.05), plus n=32 for (1,.05), all through T=.25. Reconstructed mean
+  discrepancy is at most 1.72e-14. Grid mean entropy minus reconstructed entropy
+  quadrature is .001369,.002920,.004960,.001837, respectively. These diagnostics
+  exercise the actual unknown nonlinear evolution; they do not supply an exact
+  future solution or certify its physical error.
+- Two focused bounded jobs succeeded:
+    numerical exp_163c0824cc5419555b227599
+    proof     exp_8d9d72a268d9f5db5762010f
+  The complete 94-statement audit passed in 158.03 seconds with only
+  propext/Classical.choice/Quot.sound. Source SHA-256:
+  0c219836a67fd8c3d9b33ecffae6fe714546c265d2077d0a8db7a31d63e7f0ff.
+  Limits are unchanged from the integral checkpoint. Import cache targets now
+  include Integral.Pi and SpecialFunctions.Integrals.Basic. Development errors
+  and the initial cache-call directory correction remain in local logs.
+- The lab runner accepts --checks followed by the desired validation program
+  names, mutually exclusive with --proof-only; its default still runs all jobs.
+  This run selects validate_reconstruction.py and check_solver.py. The six
+  unchanged numerical records retain their original successful receipts; the
+  new reconstruction and proof receipts bring the current retained set to eight.
+  Eight focused nonlinear/installer tests, Ruff, shell syntax and source/hash
+  checks pass. The twelve-page report is rendered and its changed final pages
+  inspected. Unchanged numerical plots are retained without PDF metadata churn.
+
+Next required work:
+1. Prove the actual analytic initial-cell-average formulas and use integral
+   Jensen on each physical cell to establish mean initial-grid entropy <= the
+   exact initial entropy. Prove equality of the mean conserved state as well.
+2. Establish uniformly positive exact initial excess for the full A/delta
+   family. With closeness and conserved means, this can control final grid
+   excess and connect the accumulated-loss theorem to a necessary resolution.
+3. Pursue common smooth existence and quantitative regularity through T=.25,
+   plus family-specific numerical trajectory bounds and target-time completion.
+   These are still unresolved evolution requirements, not discharged by the
+   reconstruction theorem or the four sampled trajectories.
+4. Derive the actual spatial/temporal accuracy upper bound and operational total
+   work, and justify/finalize the competitor class before any optimality claim.
+
+Analytic lead for the next initialization/excess proof (not yet Lean checked):
+For the specified gamma=2 initial family, exact trigonometric averages should
+satisfy mean rho=1, mean momentum=0, mean E=1+A^2/8, and
+mean[rho*(p-1)]=0. The elementary log inequalities give pointwise
+  eta(U)=-rho*log p+2*rho*log rho
+        >= -rho*(p-1)+2*(rho-1).
+Therefore the normalized exact initial entropy is nonnegative. Its excess over
+eta(mean U) is at least log(1+A^2/8), hence at least log(33/32) >= 1/33 over
+A>=1/2. The density perturbation terms vanish by the sine/cosine averages;
+this is a promising uniform positive constant, not an audited theorem yet.
+Verify the actual initial-state definitions and all integrations before relying
+on it. It may avoid a much weaker lower bound based only on the global Hessian
+constant and initial momentum variance.

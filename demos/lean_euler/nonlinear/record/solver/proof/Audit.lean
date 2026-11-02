@@ -596,3 +596,66 @@ run_cmd do
   | _ => throwError "Not a theorem: EulerEntropyIntegral.physical_error_from_initial_entropy"
   let axioms ← collectAxioms n
   logInfo m!"SIMJECTURE_AXIOMS EulerEntropyIntegral.physical_error_from_initial_entropy: {axioms.toList}"
+run_cmd do
+  let n := `EulerHatReconstruction.weight3_sum
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerHatReconstruction.weight3_sum"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerHatReconstruction.weight3_sum: {axioms.toList}"
+run_cmd do
+  let n := `EulerHatReconstruction.weight3_integral
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerHatReconstruction.weight3_integral"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerHatReconstruction.weight3_integral: {axioms.toList}"
+run_cmd do
+  let n := `EulerHatReconstruction.reconstruction_continuous
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerHatReconstruction.reconstruction_continuous"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerHatReconstruction.reconstruction_continuous: {axioms.toList}"
+run_cmd do
+  let n := `EulerHatReconstruction.reconstruction_in_region
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerHatReconstruction.reconstruction_in_region"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerHatReconstruction.reconstruction_in_region: {axioms.toList}"
+run_cmd do
+  let n := `EulerHatReconstruction.reconstruction_mean
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerHatReconstruction.reconstruction_mean"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerHatReconstruction.reconstruction_mean: {axioms.toList}"
+run_cmd do
+  let n := `EulerHatReconstruction.reconstruction_entropy
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerHatReconstruction.reconstruction_entropy"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerHatReconstruction.reconstruction_entropy: {axioms.toList}"
+run_cmd do
+  let n := `EulerHatReconstruction.reconstruction_boundary
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerHatReconstruction.reconstruction_boundary"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerHatReconstruction.reconstruction_boundary: {axioms.toList}"
+run_cmd do
+  let n := `EulerHatReconstruction.reconstruction_nodes
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerHatReconstruction.reconstruction_nodes"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerHatReconstruction.reconstruction_nodes: {axioms.toList}"
+run_cmd do
+  let n := `EulerHatReconstruction.reconstructed_physical_error_lower_bound
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerHatReconstruction.reconstructed_physical_error_lower_bound"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerHatReconstruction.reconstructed_physical_error_lower_bound: {axioms.toList}"

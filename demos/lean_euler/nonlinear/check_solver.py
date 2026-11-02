@@ -98,6 +98,15 @@ THEOREMS = [
     "EulerEntropyIntegral.normalized_conserved_integral",
     "EulerEntropyIntegral.normalized_error_lower_bound",
     "EulerEntropyIntegral.physical_error_from_initial_entropy",
+    "EulerHatReconstruction.weight3_sum",
+    "EulerHatReconstruction.weight3_integral",
+    "EulerHatReconstruction.reconstruction_continuous",
+    "EulerHatReconstruction.reconstruction_in_region",
+    "EulerHatReconstruction.reconstruction_mean",
+    "EulerHatReconstruction.reconstruction_entropy",
+    "EulerHatReconstruction.reconstruction_boundary",
+    "EulerHatReconstruction.reconstruction_nodes",
+    "EulerHatReconstruction.reconstructed_physical_error_lower_bound",
 ]
 
 
@@ -162,6 +171,13 @@ def main():
             "versus final approximate entropy gives a lower bound on physical L1 error. "
             "Common smooth existence, the actual reconstruction/initialization bridge "
             "and a justified complete work-optimality result are still unproved."
+            " The continuous reconstruction is now an actual cell-centered periodic "
+            "tensor hat interpolant. Its weights, integrals, center interpolation, "
+            "periodic boundaries, mean conservation and entropy upper bound are proved. "
+            "It connects an actual final grid to a physical L1 lower bound involving "
+            "initial exact entropy and final grid entropy. Formal initialization, "
+            "nonzero family excess, existence and trajectory bounds, accuracy upper "
+            "bounds and matching full computational-work bounds remain open."
         ),
     )
     (args.output / "solver-formal.json").write_text(json.dumps(record, indent=2) + "\n")

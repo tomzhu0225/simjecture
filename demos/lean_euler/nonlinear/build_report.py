@@ -32,6 +32,7 @@ ec_record = json.loads((RECORD / "ec-validation.json").read_text())
 step_record = json.loads((RECORD / "step-bound-validation.json").read_text())
 region_record = json.loads((RECORD / "region-validation.json").read_text())
 decay_record = json.loads((RECORD / "entropy-decay-validation.json").read_text())
+reconstruction_record = json.loads((RECORD / "reconstruction-validation.json").read_text())
 proof = formal["result"]
 assert proof["checked"]
 figures = HERE / "figures"
@@ -323,7 +324,7 @@ para(
 para(
     "A further checked result says a finite averaging map with nonnegative weights and "
     "unit row/column sums cannot increase this convex entropy. A bridge to the actual "
-    "continuous output reconstruction remains unfinished."
+    "continuous output reconstruction is now proved on page 12."
 )
 story.append(Image(str(figures / "entropy_loss.png"), width=505, height=505 * 3 / 8.7))
 story.append(Spacer(1, 8))
@@ -486,7 +487,7 @@ para(
 para(
     "<b>Next direction.</b> The alternative flux on the following page cancels the "
     "central face entropy residual exactly, avoiding this criterion. Uniform regularity, "
-    "common smooth existence to T = 0.25, continuous reconstruction, full nonlinear "
+    "common smooth existence to T = 0.25, initialization, full nonlinear "
     "accuracy and matching work bounds still require proof."
 )
 
@@ -708,8 +709,8 @@ para("Toward an evolution-error<br/>lower bound", "TitleR")
 para(
     "Two further pieces are now checked: accumulated entropy loss for a finite "
     "numerical trace, and an integral inequality relating entropy gaps to the requested "
-    "L1 error. The connection through the actual continuous Euler solution and "
-    "reconstruction remains unfinished."
+    "L1 error. Pages 11–12 now supply the integral-conservation and actual "
+    "reconstruction connections. Smooth existence and initialization remain open."
 )
 para("Conditional accumulated loss of the actual method", "HeadingR")
 para(
@@ -761,7 +762,7 @@ para(
 para("Still required to obtain solver optimality", "HeadingR")
 para(
     "Prove common smooth Euler existence; "
-    "instantiate the continuous reconstruction and initialization; establish nonzero "
+    "prove the initialization bounds; establish nonzero "
     "initial excess across the family and uniform evolution bounds; then prove an "
     "accuracy upper bound and matching complete work bounds in a justified class. "
     "The present dissipative argument does not establish optimality against the "
@@ -822,16 +823,79 @@ para("What this leaves open", "HeadingR")
 para(
     "Construct the common smooth solution for the full family through T = 0.25; "
     "prove the numerical trajectory bounds and target-time completion; connect "
-    "actual initialization and continuous reconstruction to these integrals; "
+    "actual initialization to these integrals; "
     "establish a solver accuracy upper bound and matching total work in a justified "
     "competitor class. No optimality claim follows from conservation alone."
 )
 para(
-    f"Evidence: {len(proof['theorems'])} statements in the complete bounded audit at "
-    "research/lab-integral-01. The proof-only replay updates the frozen source, audit "
-    "and receipt; six unchanged numerical validation records retain their original "
+    "Evidence: the 85-statement integral checkpoint is retained at "
+    "research/lab-integral-01. Its proof-only replay updated the frozen source, audit "
+    "and receipt; six unchanged numerical validation records retained their original "
     "receipts. The longer 240-second wall allowance leaves Lean's proof limits and "
     "accepted mathematical principles unchanged.",
+    "SmallR",
+)
+story.append(PageBreak())
+para("A continuous numerical output", "TitleR")
+para(
+    "<b>The reconstruction is now explicit and checked.</b> HatReconstruction.lean "
+    "uses trilinear interpolation at cell centers, with periodic wrapping. It acts "
+    "on the actual conserved grid values; no analytic future flow is prescribed."
+)
+para("What the interpolant preserves", "HeadingR")
+para(
+    "Each one-dimensional weight is the sum of three periodic copies of the "
+    "unit tent φ(s) = max(0, 1−|s|), evaluated at s = nx/L−½−i. The three-dimensional "
+    "weight is the product of the three coordinate weights. Lean proves their "
+    "nonnegativity, sum one and normalized integral 1/n³. The reconstruction is "
+    "continuous, matches opposite faces and recovers every stored value at its cell center."
+)
+para(
+    "For grid states u in K, the reconstructed field R<sub>h</sub>u also lies in K. "
+    "Product integration and actual entropy convexity give<br/>"
+    "<b>∫R<sub>h</sub>u dμ = mean(u), and ∫η(R<sub>h</sub>u)dμ ≤ n⁻³Ση(u).</b>"
+)
+para("Connection to physical error", "HeadingR")
+para(
+    "Combining the preceding page's actual periodic Euler conservation with this "
+    "reconstruction gives<br/>"
+    "<b>[∫η(U(0))dμ − n⁻³Ση(u)] / 160 ≤ "
+    "max<sub>j</sub>∫|R<sub>h</sub>u<sub>j</sub> − U<sub>j</sub>(T)|dμ.</b><br/>"
+    "The smooth-solution and exact-final/grid-state region hypotheses remain "
+    "explicit. Proving a positive lower bound for the numerator still requires "
+    "the initialization and nonzero family-excess connections."
+)
+para("Independent implementation checks", "HeadingR")
+para(
+    "The NumPy evaluator uses eight neighboring cells per query. A separate dense "
+    "tent formula checks 4096 queries on each of four random grids, including n=1. "
+    "Checks also cover cell centers, periodic seams, constants and quadrature split "
+    "at every hat breakpoint. Four actual nonlinear solves exercise the reconstruction."
+)
+table(
+    [["A / δ, grid", "Mean discrepancy", "Quadrature entropy margin"]]
+    + [
+        [
+            f"{row['A']:g} / {row['delta']:g}, {row['n']}³",
+            f"{row['mean_error']:.2e}",
+            f"{row['quadrature_entropy_margin']:.6f}",
+        ]
+        for row in reconstruction_record["family_rows"]
+    ],
+    [150, 155, 200],
+)
+para(
+    "The margin is grid mean entropy minus quadrature reconstruction entropy. "
+    "These floating-point diagnostics are not certified continuum errors or an "
+    "operational-work proof. The evaluator is not a verified extraction.",
+    "SmallR",
+)
+para(
+    f"The complete bounded audit now checks {len(proof['theorems'])} statements. "
+    "The focused lab-reconstruction-01 replay retains the new numerical job and "
+    "proof audit with source hashes; six unchanged numerical receipts are retained. "
+    "Common smooth existence, trajectory bounds, initialization, an accuracy upper "
+    "bound and matching total computational work remain unfinished.",
     "SmallR",
 )
 SimpleDocTemplate(

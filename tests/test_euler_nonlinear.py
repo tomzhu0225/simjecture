@@ -89,6 +89,10 @@ def test_solver_foundations_and_independent_validation_provenance(tmp_path):
         "EulerEntropyIntegral.periodic_conserved_integral",
         "EulerEntropyIntegral.cube_measure_univ",
         "EulerEntropyIntegral.physical_error_from_initial_entropy",
+        "EulerHatReconstruction.reconstruction_nodes",
+        "EulerHatReconstruction.reconstruction_mean",
+        "EulerHatReconstruction.reconstruction_entropy",
+        "EulerHatReconstruction.reconstructed_physical_error_lower_bound",
     } <= set(proof["result"]["theorems"])
     for dependencies in proof["result"]["axioms"].values():
         assert set(dependencies) <= {"propext", "Classical.choice", "Quot.sound"}
@@ -194,3 +198,28 @@ def test_accumulated_entropy_loss_and_l1_comparison_record():
         assert row["max_excess_over_n2_edges"] <= 75_000
         assert row["min_dissipation_over_edges"] >= 1 / 100_000
         assert row["entropy_loss"] >= row["conditional_loss_lower_bound"] > 0
+
+
+def test_continuous_reconstruction_provenance_and_independent_quadrature():
+    record = json.loads((DEMO / "record/solver/reconstruction-validation.json").read_text())
+    for name, checksum in record["sources"].items():
+        assert hashlib.sha256((DEMO / name).read_bytes()).hexdigest() == checksum
+    assert record["constant_error"] < 2e-15
+    assert {row["n"] for row in record["random_rows"]} == {1, 2, 3, 5}
+    for row in record["random_rows"]:
+        assert row["queries"] == 4096
+        assert row["dense_sparse_error"] < 3e-13
+        assert row["node_error"] < 3e-13
+        assert row["periodic_error"] < 3e-13
+        assert row["seam_error"] == 0
+        assert row["min_weight"] >= 0
+        assert row["weight_sum_error"] < 1e-14
+    assert len(record["family_rows"]) == 4
+    for row in record["family_rows"]:
+        assert row["final_time"] == 0.25
+    for row in record["random_rows"] + record["family_rows"]:
+        assert row["mean_error"] < 5e-13
+        assert row["axis_weight_integral_error"] < 2e-14
+        assert abs(row["quadrature_total_weight"] - 1) < 2e-14
+        assert row["quadrature_entropy_margin"] >= -2e-14
+        assert row["reconstruction_region_margin"] >= 0

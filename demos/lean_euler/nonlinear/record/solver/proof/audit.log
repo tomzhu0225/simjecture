@@ -85,3 +85,14 @@ SIMJECTURE_AXIOMS EulerEntropyIntegral.normalized_entropy_conservation: [propext
 SIMJECTURE_AXIOMS EulerEntropyIntegral.normalized_conserved_integral: [propext, Classical.choice, Quot.sound]
 SIMJECTURE_AXIOMS EulerEntropyIntegral.normalized_error_lower_bound: [propext, Classical.choice, Quot.sound]
 SIMJECTURE_AXIOMS EulerEntropyIntegral.physical_error_from_initial_entropy: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS EulerHatReconstruction.weight3_sum: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS EulerHatReconstruction.weight3_integral: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS EulerHatReconstruction.reconstruction_continuous: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS EulerHatReconstruction.reconstruction_in_region: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS EulerHatReconstruction.reconstruction_mean: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS EulerHatReconstruction.reconstruction_entropy: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS EulerHatReconstruction.reconstruction_boundary: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS EulerHatReconstruction.reconstruction_nodes: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS EulerHatReconstruction.reconstructed_physical_error_lower_bound: [propext,
+ Classical.choice,
+ Quot.sound]

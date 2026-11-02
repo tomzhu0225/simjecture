@@ -128,9 +128,9 @@ These are **not a global stability, convergence, or optimality theorem**.
 Common smooth-time bounds, uniform numerical regularity, an actual full-solve
 error estimate, and matching complexity bounds remain open. The initial-cell
 average formulas have an independent quadrature check; their formal
-initialization/reconstruction bridge also remains to be proved.
+initialization and full evolution-error bounds also remain to be proved.
 
-Eighty-five named solver-foundation statements and the independent numerical checks
+Ninety-four named solver-foundation statements and the independent numerical checks
 are retained under `record/solver`. Replay them through the bounded local lab:
 
 ```bash
@@ -144,6 +144,8 @@ not a verified extraction and the numerical checks do not certify IEEE error.
 For changes confined to proofs, add `--proof-only` to replay the complete audit
 without rerunning unchanged numerical experiments. The checker wall allowance is
 240 seconds; Lean's kernel, memory and accepted proof principles are unchanged.
+Use `--checks validate_reconstruction.py check_solver.py` for the reconstruction
+diagnostics and complete proof audit only. The default runs all checks.
 
 The [current PDF report](report.pdf) describes the checked statements and their
 premises. For the varying-coefficient principal update, the energy estimate is
@@ -491,8 +493,7 @@ entropy; it does not assume a numerical error estimate. It is a **necessary
 accuracy comparison**, not an accuracy upper bound for the solver.
 
 To turn these pieces into the requested evolution-error/work lower bound, we still
-must prove the common smooth Euler solution, instantiate the continuous
-reconstruction and initialization bridges,
+must prove the common smooth Euler solution and the initialization bridge,
 and connect the nonzero initial excess entropy to the whole parameter family.
 Uniform numerical evolution bounds, an accuracy upper bound and the justified
 competitor class remain unfinished. In particular, this dissipative argument does
@@ -541,9 +542,57 @@ Integrability follows from continuity on the compact cube. No state bounds
 outside the physical cube are required. With `L = 2π`, the right side is the
 contract's physical error norm. This is a necessary error lower bound for a
 specified approximate field, not a solver accuracy upper bound or optimality
-theorem. Connecting the actual grid values to a continuous reconstruction and
-its entropy integral remains necessary.
+theorem. The actual grid-to-reconstruction connection is now proved below;
+the initialization and uniform evolution requirements remain open.
 
 The `research/lab-integral-01` proof-only replay checks all 85 selected statements.
 Its frozen source, audit and receipt replace the previous proof record; the six
 unchanged numerical validation records and their original receipts are retained.
+
+## Actual continuous periodic reconstruction
+
+`HatReconstruction.lean` defines the cell-centered tensor hat interpolant.
+For `φ(s) = max(0, 1 − |s|)`, set
+
+\[
+w_i(x)=\sum_{k=-1}^{1}\phi\!\left(\frac{nx}{L}-\frac12-i+kn\right),\qquad
+\mathcal R_h u(x,y,z)=\sum_{i,j,k}w_i(x)w_j(y)w_k(z)u_{ijk}.
+\]
+
+The Lean definition expresses the same tent as the difference of two clipped
+linear ramps. Its proofs explicitly calculate the one-dimensional integrals,
+then use product-measure integration in three dimensions. They establish:
+
+- Nonnegative weights summing to one on the cube, with each tensor weight
+  having normalized integral `1/n³`.
+- A continuous field with equal values on opposite periodic faces and exact
+  agreement with the stored states at cell centers.
+- Region membership of the reconstructed field when every grid state lies in K.
+- Preservation of the grid mean and the actual integral entropy bound
+  `∫η(R_h u)dμ ≤ n⁻³ Ση(u_i)`.
+
+The integral conservation and physical-error comparison now apply to this
+specified reconstruction, rather than an unspecified approximate field. Under
+the earlier explicit smooth-Euler and exact-final/grid-state region hypotheses,
+
+\[
+\frac{\int\eta(U(0,x))\,d\mu-n^{-3}\sum_i\eta(u_i)}{160}
+\le \max_j\int|\mathcal R_h u_j-U_j(T)|\,d\mu.
+\]
+
+The numerator need not yet be proved positive. Formal initialization and
+nonzero family entropy excess must connect it to the accumulated loss.
+An accuracy upper bound and matching work theorem remain unproved.
+
+`reconstruction.py` evaluates the interpolant using eight neighboring cells per
+query, including periodic wraparound. It is not a verified floating-point
+extraction or a proved operational-cost implementation. Independent checks
+compare it with a dense three-copy tent formula on four random grids (including
+`n=1`), test cell centers and periodic faces, and integrate over patches split
+at all hat breakpoints. Four actual nonlinear solves exercise the new output.
+These are reconstruction diagnostics; no exact positive-time solution is
+supplied and no quadrature value is called a certified physical error.
+
+The focused `research/lab-reconstruction-01` run contains the new numerical job
+and the complete 94-statement audit. `record/solver` retains those receipts with
+the six unchanged numerical receipts from the previous checkpoint.

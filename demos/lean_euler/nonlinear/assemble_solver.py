@@ -36,6 +36,7 @@ COMPONENTS = [
     "EntropyDecay.lean",
     "EntropyError.lean",
     "EntropyIntegral.lean",
+    "HatReconstruction.lean",
 ]
 
 

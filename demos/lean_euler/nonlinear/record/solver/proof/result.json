@@ -2,7 +2,7 @@
   "schema_version": "0.1.0",
   "status": "proved",
   "checked": true,
-  "source_sha256": "ee0c171f77881a3721c48440376429edc52a4d71fb4b0eb47d007d72f1057b07",
+  "source_sha256": "0c219836a67fd8c3d9b33ecffae6fe714546c265d2077d0a8db7a31d63e7f0ff",
   "theorems": [
     "EulerAdmissible.convex_sum_admissible",
     "EulerAdmissible.flux_splitting_admissible",
@@ -88,7 +88,16 @@
     "EulerEntropyIntegral.normalized_entropy_conservation",
     "EulerEntropyIntegral.normalized_conserved_integral",
     "EulerEntropyIntegral.normalized_error_lower_bound",
-    "EulerEntropyIntegral.physical_error_from_initial_entropy"
+    "EulerEntropyIntegral.physical_error_from_initial_entropy",
+    "EulerHatReconstruction.weight3_sum",
+    "EulerHatReconstruction.weight3_integral",
+    "EulerHatReconstruction.reconstruction_continuous",
+    "EulerHatReconstruction.reconstruction_in_region",
+    "EulerHatReconstruction.reconstruction_mean",
+    "EulerHatReconstruction.reconstruction_entropy",
+    "EulerHatReconstruction.reconstruction_boundary",
+    "EulerHatReconstruction.reconstruction_nodes",
+    "EulerHatReconstruction.reconstructed_physical_error_lower_bound"
   ],
   "allowed_axioms": [
     "Classical.choice",
@@ -520,6 +529,51 @@
       "propext",
       "Classical.choice",
       "Quot.sound"
+    ],
+    "EulerHatReconstruction.weight3_sum": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerHatReconstruction.weight3_integral": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerHatReconstruction.reconstruction_continuous": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerHatReconstruction.reconstruction_in_region": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerHatReconstruction.reconstruction_mean": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerHatReconstruction.reconstruction_entropy": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerHatReconstruction.reconstruction_boundary": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerHatReconstruction.reconstruction_nodes": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerHatReconstruction.reconstructed_physical_error_lower_bound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
     ]
   },
   "timeout_seconds": 240,
@@ -558,12 +612,12 @@
   ],
   "compile_returncode": 0,
   "audit_returncode": 0,
-  "wall_seconds": 149.00093535199994,
+  "wall_seconds": 158.0312504370013,
   "artifact_sha256": {
-    "Audit.lean": "e9676ec5a5bf63b95cf08f80f89e1664f18438a15cde4fe977c0b06a96e8da73",
-    "Candidate.lean": "ee0c171f77881a3721c48440376429edc52a4d71fb4b0eb47d007d72f1057b07",
-    "Candidate.olean": "0f77dc0c49f560bd74f29e7b348547106099a3808dde2b04804c6ba0fa30fa45",
-    "audit.log": "14e9c64b7c0f8baa9726b6982f8de52ef9444bae2d1609b3980c76222aeb6d74",
+    "Audit.lean": "a4422dfd1ebc93f8d12ba45a98ca4350632768b9293508b1a3df7990a9031c47",
+    "Candidate.lean": "0c219836a67fd8c3d9b33ecffae6fe714546c265d2077d0a8db7a31d63e7f0ff",
+    "Candidate.olean": "5bfc45243671d64d5a10d0b39127ef8626b591e0d3b492f8befb405a12185526",
+    "audit.log": "0f5a21c07236a6dd074d565936530392db7e81e336b779ea072932e95dad3087",
     "compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
   }
 }
