@@ -40,3 +40,22 @@ def test_retained_commissioning_and_initial_diagnostic_proof():
     assert checksum == proof["source_sha256"]
     for axioms in proof["axioms"].values():
         assert set(axioms) <= {"propext", "Classical.choice", "Quot.sound"}
+
+
+def test_solver_foundations_and_independent_validation_provenance():
+    record = DEMO / "record/solver"
+    proof = json.loads((record / "solver-formal.json").read_text())
+    assert proof["result"]["checked"]
+    for name, checksum in proof["component_sha256"].items():
+        assert hashlib.sha256((DEMO / "formal" / name).read_bytes()).hexdigest() == checksum
+    source = (record / "proof/Candidate.lean").read_bytes()
+    assert hashlib.sha256(source).hexdigest() == proof["result"]["source_sha256"]
+    for dependencies in proof["result"]["axioms"].values():
+        assert set(dependencies) <= {"propext", "Classical.choice", "Quot.sound"}
+    numerical = json.loads((record / "validation.json").read_text())
+    for name, checksum in numerical["sources"].items():
+        assert hashlib.sha256((DEMO / name).read_bytes()).hexdigest() == checksum
+    assert numerical["cell_average_quadrature_max_error"] < 2e-12
+    assert numerical["random_state_split_min_pressure"] > 0
+    assert numerical["random_state_update_conservation_error"] < 1e-11
+    assert numerical["unsafe_flux_splitting_pressure"] == -49

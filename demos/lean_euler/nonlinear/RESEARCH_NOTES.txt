@@ -1,0 +1,64 @@
+ACTIVE GOAL, started 2026-11-01 23:38:59 UTC (2026-11-02 local time).
+Do not mark complete for the foundations below. User explicitly rejected
+analytic-flow reconstruction as a substitute for numerical Euler evolution.
+
+Established in the current proof components:
+- Admissible.lean: gamma=2 conserved Euler states, convex admissible region,
+  actual physical flux, both LF split states, complete 3D shared-flux update,
+  finite-grid directional maximum wave speeds and final-time-clipped CFL ratio,
+  positivity and conservation, exact negative-pressure split witness.
+- PrimitiveEnergy.lean: q=1/rho, velocity, pressure coordinates; positive
+  quadratic form and symmetric principal matrices.
+- ConservativePrimitive.lean: actual HasDerivAt quotient/product calculus,
+  invertible state-map differential, canonical flux connection and equality
+  of conservative and primitive PDE residuals at differentiable curves.
+- All 11 requested foundation theorems were audited in the local capability.
+  This does not establish solution existence or numerical convergence.
+- finite_volume.py: actual unknown-dynamics candidate with analytic initial
+  cell averages. Independent Gauss quadrature error is about 1e-15. Random
+  admissible fields and six Taylor-Green runs check positive pressure/density,
+  conservation and developing vertical motion. No continuum error reference
+  has been promoted to a certificate.
+
+Stability/existence investigation:
+1. Primitive equations are quadratic:
+     D_t q = q div(v), D_t v = -q grad(p), D_t p = -2p div(v).
+   The checked energy form is
+     dp^2/(2p) + |dv|^2/q + (dq/q+dp/(2p))^2.
+   A continuum/discrete energy estimate still requires integration-by-parts,
+   coefficient derivative bounds, commutators and uniform coercivity. Merely
+   having a symmetrizer is not that estimate.
+2. Published Godunov relative-energy convergence (arXiv:2111.05009;
+   DOI 10.1007/s10915-022-01843-6) assumes a strong solution and uniform
+   nondegeneracy/bounds. Its general rates do not automatically yield a
+   matching optimality bound here. Do not silently assume those hypotheses.
+3. The OpenAI NavierStokesAndEuler development was inspected via its primary
+   GitHub source. It has extensive Sobolev/transport/local-existence machinery
+   for INCOMPRESSIBLE Euler, using Lean 4.34.0-rc2. No drop-in compressible
+   convergence theorem was found. No dependency/toolchain change has been made.
+4. An alternative worth investigating is constructive analytic local existence
+   for this analytic initial family, using time-series majorants for the
+   quadratic primitive system. This would construct an unknown PDE evolution,
+   not supply a pre-existing analytic trajectory. The Lean Cauchy-Kovalevskaya
+   benchmark currently lists the theorem as missing from Mathlib:
+   https://lean-lang.org/eval/problems/cauchy_kovalevskaya/
+   No such theorem has been imported or assumed.
+5. Potential majorant: scalar u_t=C*u*u_x, u(0,x)=M/(1-x/r), whose time
+   coefficients are Catalan(n)*M^(n+1)*(C/r)^n*(1-x/r)^(-2n-1).
+   Derivative-word bounds and convergence of the constructed series must be
+   proved. This route may initially certify only a short positive time;
+   T=0.25 remains the numerical target, not a proved interval. Do not change
+   the declared family/time silently or count a short-time lemma as full goal
+   completion without reconciling the exact target.
+6. A purely pointwise Lipschitz error recurrence with constant O(1/h) gives
+   exp(C*T/h) and is inadequate for convergence. Avoid repeating that dead end.
+7. A meaningful lower bound must be tied to necessary accuracy of the evolved
+   field. Output-size, initial sampling, or a CFL count alone is insufficient.
+   Any reconstruction-degree or algorithmic CFL restriction in the final
+   competitor class must be explicit and scientifically justified before an
+   optimality claim. The current class remains an initial search scope.
+
+Next concrete work: quantitative regularity/local existence, a uniform
+fully discrete energy or analytic-scale stability estimate, then truncation,
+initialization and reconstructed-field error. Only after that can the upper
+work bound be paired with an actual necessary-accuracy lower bound.

@@ -95,3 +95,40 @@ From the repository root:
 Use new output directories. The retained record contains the initial diagnostic
 proof and baseline numerical results; no unknown continuum solution is stored as
 an exact reference.
+
+## Active solver work
+
+The goal is active; [GOAL_STATUS.json](GOAL_STATUS.json) records the current
+front and the unresolved requirements. `finite_volume.py` implements a
+conservative global-speed Rusanov candidate with analytic conservative-cell
+initial averages and a clipped CFL timestep. It evolves the full nonlinear
+system and does not use an exact positive-time solution.
+
+The formal solver foundations now check:
+
+- Convexity of the positive-density/positive-pressure state region and
+  admissible Euler flux splitting.
+- Positivity of the complete nonlinear update with wave speeds and timestep
+  computed from the current finite grid, plus periodic conservation.
+- An exact unsafe-splitting counterexample.
+- A positive primitive-variable energy form that symmetrizes the principal
+  coefficients, connected by actual differentiation to the conservative Euler
+  equations.
+
+These are **not a global stability, convergence, or optimality theorem**.
+Common smooth-time bounds, uniform numerical regularity, an actual full-solve
+error estimate, and matching complexity bounds remain open. The initial-cell
+average formulas have an independent quadrature check; their formal
+initialization/reconstruction bridge also remains to be proved.
+
+Eleven named solver-foundation statements and the independent numerical checks
+are retained under `record/solver`. Replay them through the bounded local lab:
+
+```bash
+.venv/bin/python demos/lean_euler/nonlinear/run_solver_study.py --output artifacts/nonlinear-solver-foundations
+```
+
+The replay uses an isolated local worker with the same pinned Lean runtime and
+an 8 GB proof-job memory allowance. `check_solver.py` and `assemble_solver.py`
+provide the corresponding trusted direct check. The Python implementation is
+not a verified extraction and the numerical checks do not certify IEEE error.

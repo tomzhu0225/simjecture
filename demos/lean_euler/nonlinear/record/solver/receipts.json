@@ -1,0 +1,332 @@
+[
+  {
+    "id": "exp_6f62fc7879c551622f9e3955",
+    "status": "succeeded",
+    "operator_guidance_ids": [],
+    "created_at": 1793578501.3090472,
+    "timeout": 120,
+    "execution_deadline": 1793579401.1880217,
+    "workspace_limit_bytes": 4294967296,
+    "binding": {
+      "source": "validate_candidate.py",
+      "args": [
+        "--output",
+        "numeric"
+      ],
+      "inputs": {
+        "validate_candidate.py": "056049928d57ea7c7b10245d7aac20b4e3b7ca155218b05dd125cdf61cbb8d33",
+        "finite_volume.py": "77c81b82bd152cb967c15d494d715e3006c9cac5d2a44ed1c63693b3f4b9ecd4",
+        "contract.json": "59d2abf1b1bdce7080c68fedded2478a95d1a0b0defd73e1cf94ffefa99b8ecf"
+      },
+      "capability": null,
+      "runtime_sha256": null
+    },
+    "outputs": [
+      "numeric/validation.json"
+    ],
+    "commitment": null,
+    "key": null,
+    "execution_target": "auto",
+    "resources": {
+      "cpus": 1,
+      "memory_mb": 2048,
+      "gpus": 0
+    },
+    "stage": "exploration",
+    "method": null,
+    "review_documents": null,
+    "machine": "local-lean",
+    "pid": 59939,
+    "worker_identity": {
+      "pid": 59939,
+      "starttime": "328915",
+      "argv": [
+        "/home/tomzhu0225/src/simjecture/.venv/bin/python",
+        "-m",
+        "conjecture_solver.research_service",
+        "--root",
+        "/home/tomzhu0225/src/simjecture/artifacts/lean-euler/20261102/nonlinear/research/lab-foundations-02/study",
+        "--execute",
+        "exp_6f62fc7879c551622f9e3955"
+      ],
+      "launched_at": "2026-11-02T00:15:01.485975+00:00",
+      "run_directory": null
+    },
+    "started_at": 1793578502.324948,
+    "remote_job": "job_f2759d9aa0662236ac72d27836e11c4486ff9500",
+    "transport_status": "connected",
+    "assigned_gpu_ids": [],
+    "telemetry": null,
+    "execution_heartbeat": {
+      "elapsed_wall_seconds": 0.7544444050004131,
+      "observed_at": 1793578503.1109548
+    },
+    "remote_terminal_status": "succeeded",
+    "remote_artifacts": {
+      "contract.json": {
+        "sha256": "59d2abf1b1bdce7080c68fedded2478a95d1a0b0defd73e1cf94ffefa99b8ecf",
+        "bytes": 3798
+      },
+      "finite_volume.py": {
+        "sha256": "77c81b82bd152cb967c15d494d715e3006c9cac5d2a44ed1c63693b3f4b9ecd4",
+        "bytes": 3534
+      },
+      "numeric/validation.json": {
+        "sha256": "7acfc6f863d4ef3cd74789e82033ca0c6f7989836a9d6f24881ca49525e84f9e",
+        "bytes": 2617
+      },
+      "validate_candidate.py": {
+        "sha256": "056049928d57ea7c7b10245d7aac20b4e3b7ca155218b05dd125cdf61cbb8d33",
+        "bytes": 4422
+      }
+    },
+    "execution": {
+      "isolation_backend": "bubblewrap",
+      "returncode": 0,
+      "stdout": "{\n  \"scope\": \"Candidate initialization/admissibility/conservation checks; no continuum accuracy or optimality certificate\",\n  \"cell_average_quadrature_max_error\": 9.992007221626409e-16,\n  \"random_state_split_min_pressure\": 0.009422639681530676,\n  \"random_state_update_conservation_error\": 3.552713678800501e-15,\n  \"unsafe_flux_splitting_pressure\": -49,\n  \"rows\": [\n    {\n      \"n\": 16,\n      \"A\": 0.5,\n      \"delta\": -0.05,\n      \"steps\": 11,\n      \"cell_updates\": 45056,\n      \"final_time\": 0.25,\n      \"conservation_error\": 1.9761969838327786e-14,\n      \"min_density\": 0.9648796087769902,\n      \"min_pressure\": 0.9717060614756364,\n      \"vertical_velocity_max\": 0.008675292622866976\n    },\n    {\n      \"n\": 32,\n      \"A\": 0.5,\n      \"delta\": -0.05,\n      \"steps\": 23,\n      \"cell_updates\": 753664,\n      \"final_time\": 0.25,\n      \"conservation_error\": 4.1300296516055823e-14,\n      \"min_density\": 0.95762279407774,\n      \"min_pressure\": 0.9442537613125661,\n      \"vertical_velocity_max\": 0.012396566511161314\n    },\n    {\n      \"n\": 16,\n      \"A\": 0.75,\n      \"delta\": 0,\n      \"steps\": 12,\n      \"cell_updates\": 49152,\n      \"final_time\": 0.25,\n      \"conservation_error\": 8.215650382226158e-15,\n      \"min_density\": 0.997845456283821,\n      \"min_pressure\": 0.9449508521421339,\n      \"vertical_velocity_max\": 0.018992222329317982\n    },\n    {\n      \"n\": 32,\n      \"A\": 0.75,\n      \"delta\": 0,\n      \"steps\": 25,\n      \"cell_updates\": 819200,\n      \"final_time\": 0.25,\n      \"conservation_error\": 2.8199664825478976e-14,\n      \"min_density\": 0.9979432739623629,\n      \"min_pressure\": 0.8821080996380432,\n      \"vertical_velocity_max\": 0.027463334044988588\n    },\n    {\n      \"n\": 16,\n      \"A\": 1.0,\n      \"delta\": 0.05,\n      \"steps\": 13,\n      \"cell_updates\": 53248,\n      \"final_time\": 0.25,\n      \"conservation_error\": 1.0436096431476471e-14,\n      \"min_density\": 0.9692509200371777,\n      \"min_pressure\": 0.9162099961416293,\n      \"vertical_velocity_max\": 0.03274028982921693\n    },\n    {\n      \"n\": 32,\n      \"A\": 1.0,\n      \"delta\": 0.05,\n      \"steps\": 27,\n      \"cell_updates\": 884736,\n      \"final_time\": 0.25,\n      \"conservation_error\": 3.197442310920451e-14,\n      \"min_density\": 0.9613573450341764,\n      \"min_pressure\": 0.8035437848783412,\n      \"vertical_velocity_max\": 0.04790551739201187\n    }\n  ],\n  \"sources\": {\n    \"finite_volume.py\": \"77c81b82bd152cb967c15d494d715e3006c9cac5d2a44ed1c63693b3f4b9ecd4\",\n    \"validate_candidate.py\": \"056049928d57ea7c7b10245d7aac20b4e3b7ca155218b05dd125cdf61cbb8d33\",\n    \"contract.json\": \"59d2abf1b1bdce7080c68fedded2478a95d1a0b0defd73e1cf94ffefa99b8ecf\"\n  }\n}",
+      "stderr": "",
+      "timed_out": false,
+      "cancelled": false,
+      "workspace_exceeded": false,
+      "stdout_truncated": false,
+      "stderr_truncated": false,
+      "heartbeat_count": 0,
+      "wall_seconds": 0.7544444050004131,
+      "workspace_bytes": 14371,
+      "executor_sha256": "b92087579abbb99f55ce2c75d98765355c8ccd4a6ccf3ba55b15ddd5491a22ec",
+      "resource_limits": {
+        "max_file_bytes": 4294967296,
+        "max_workspace_bytes": 4294967296,
+        "max_memory_bytes": 2147483648
+      }
+    },
+    "missing_outputs": [],
+    "input_mutations": [],
+    "output_findings": [],
+    "scientific_status": "unreviewed",
+    "finished_at": 1793578503.11479,
+    "transport_error": null,
+    "collection_deferred": false,
+    "collection_cancel_requested": false,
+    "artifact_policy": "eager",
+    "artifacts": {
+      "contract.json": {
+        "sha256": "59d2abf1b1bdce7080c68fedded2478a95d1a0b0defd73e1cf94ffefa99b8ecf",
+        "bytes": 3798
+      },
+      "finite_volume.py": {
+        "sha256": "77c81b82bd152cb967c15d494d715e3006c9cac5d2a44ed1c63693b3f4b9ecd4",
+        "bytes": 3534
+      },
+      "numeric/validation.json": {
+        "sha256": "7acfc6f863d4ef3cd74789e82033ca0c6f7989836a9d6f24881ca49525e84f9e",
+        "bytes": 2617
+      },
+      "validate_candidate.py": {
+        "sha256": "056049928d57ea7c7b10245d7aac20b4e3b7ca155218b05dd125cdf61cbb8d33",
+        "bytes": 4422
+      }
+    }
+  },
+  {
+    "id": "exp_5662ddb8ee8a41e25dbbc754",
+    "status": "succeeded",
+    "operator_guidance_ids": [],
+    "created_at": 1793578503.9322553,
+    "timeout": 240,
+    "execution_deadline": 1793579401.1880217,
+    "workspace_limit_bytes": 4294967296,
+    "binding": {
+      "source": "check_solver.py",
+      "args": [
+        "--output",
+        "checked"
+      ],
+      "inputs": {
+        "check_solver.py": "579147aa07666313eec506945045d0c2edbe4622d4745571553f15cc96d3c76f",
+        "assemble_solver.py": "acf473690783d7ee75b05721c2a71f0a5d913b7828e403bd5cd00ae44af8d9f4",
+        "formal/Admissible.lean": "137920bcc9f864001f27ed16e0c251b0e551988974cde6607a3789553acfd204",
+        "formal/PrimitiveEnergy.lean": "652a9d57bf336553918cded1337b00f569ff71db0d696db429dca7e095314e09",
+        "formal/ConservativePrimitive.lean": "a3eb81b04068b56631d0fde39c2f2fd795dfcdb6598b0befec34b0db6755b2ac"
+      },
+      "capability": "lean-4.24.0--at-local-lean",
+      "runtime_sha256": "df30fb893a78d6965a4c651f6353ba19982f867b36e71823c54a2e314cf08738",
+      "worker_capability": "lean-4.24.0"
+    },
+    "outputs": [
+      "checked/solver-formal.json",
+      "checked/proof/Candidate.lean",
+      "checked/proof/Audit.lean",
+      "checked/proof/result.json",
+      "checked/proof/compile.log",
+      "checked/proof/audit.log"
+    ],
+    "commitment": null,
+    "key": null,
+    "execution_target": "auto",
+    "resources": {
+      "cpus": 1,
+      "memory_mb": 8192,
+      "gpus": 0
+    },
+    "stage": "exploration",
+    "method": null,
+    "review_documents": null,
+    "machine": "local-lean",
+    "pid": 59997,
+    "worker_identity": {
+      "pid": 59997,
+      "starttime": "329178",
+      "argv": [
+        "/home/tomzhu0225/src/simjecture/.venv/bin/python",
+        "-m",
+        "conjecture_solver.research_service",
+        "--root",
+        "/home/tomzhu0225/src/simjecture/artifacts/lean-euler/20261102/nonlinear/research/lab-foundations-02/study",
+        "--execute",
+        "exp_5662ddb8ee8a41e25dbbc754"
+      ],
+      "launched_at": "2026-11-02T00:15:04.089263+00:00",
+      "run_directory": null
+    },
+    "started_at": 1793578505.0583916,
+    "remote_job": "job_84664138c3669418816d024f37d118023c99a451",
+    "transport_status": "connected",
+    "assigned_gpu_ids": [],
+    "telemetry": null,
+    "execution_heartbeat": {
+      "elapsed_wall_seconds": 21.47686782699975,
+      "observed_at": 1793578526.5859287
+    },
+    "remote_terminal_status": "succeeded",
+    "remote_artifacts": {
+      "assemble_solver.py": {
+        "sha256": "acf473690783d7ee75b05721c2a71f0a5d913b7828e403bd5cd00ae44af8d9f4",
+        "bytes": 792
+      },
+      "check_solver.py": {
+        "sha256": "579147aa07666313eec506945045d0c2edbe4622d4745571553f15cc96d3c76f",
+        "bytes": 2013
+      },
+      "checked/Solver.lean": {
+        "sha256": "6d5451ea31dfc9fd82880734bcd7b1eaabd67bf619515ff2cff815c7dd10c19b",
+        "bytes": 26995
+      },
+      "checked/proof/Audit.lean": {
+        "sha256": "848a8d685506bcf9ccd0b1f8010fb311cc04b47860decbe4bda0b10febf4660b",
+        "bytes": 3720
+      },
+      "checked/proof/Candidate.lean": {
+        "sha256": "6d5451ea31dfc9fd82880734bcd7b1eaabd67bf619515ff2cff815c7dd10c19b",
+        "bytes": 26995
+      },
+      "checked/proof/Candidate.olean": {
+        "sha256": "07f080b3b5bda105e46a2caa4b53e645568861c2f714b0e495cc7c147ad0194c",
+        "bytes": 7486224
+      },
+      "checked/proof/audit.log": {
+        "sha256": "86f44fee6fce42a3572205c6cf711d938b2c228b85d07714a12caf1faa17f87c",
+        "bytes": 1142
+      },
+      "checked/proof/compile.log": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "checked/proof/result.json": {
+        "sha256": "6e2ce9943ca9c9b56c5d257a36c17dde2ffc47f0596e9186d05ffd70a047f30d",
+        "bytes": 4103
+      },
+      "checked/solver-formal.json": {
+        "sha256": "a03aa59cd9ae813c0d7bfe800732f2d492e740fbb8e3cb4b680b25645319f2d4",
+        "bytes": 4914
+      },
+      "formal/Admissible.lean": {
+        "sha256": "137920bcc9f864001f27ed16e0c251b0e551988974cde6607a3789553acfd204",
+        "bytes": 15393
+      },
+      "formal/ConservativePrimitive.lean": {
+        "sha256": "a3eb81b04068b56631d0fde39c2f2fd795dfcdb6598b0befec34b0db6755b2ac",
+        "bytes": 7978
+      },
+      "formal/PrimitiveEnergy.lean": {
+        "sha256": "652a9d57bf336553918cded1337b00f569ff71db0d696db429dca7e095314e09",
+        "bytes": 3811
+      }
+    },
+    "execution": {
+      "isolation_backend": "bubblewrap",
+      "returncode": 0,
+      "stdout": "{\"status\": \"proved\", \"theorems\": 11}",
+      "stderr": "",
+      "timed_out": false,
+      "cancelled": false,
+      "workspace_exceeded": false,
+      "stdout_truncated": false,
+      "stderr_truncated": false,
+      "heartbeat_count": 0,
+      "wall_seconds": 21.47686782699975,
+      "workspace_bytes": 7584080,
+      "executor_sha256": "b92087579abbb99f55ce2c75d98765355c8ccd4a6ccf3ba55b15ddd5491a22ec",
+      "resource_limits": {
+        "max_file_bytes": 4294967296,
+        "max_workspace_bytes": 4294967296,
+        "max_memory_bytes": 8589934592
+      }
+    },
+    "missing_outputs": [],
+    "input_mutations": [],
+    "output_findings": [],
+    "scientific_status": "unreviewed",
+    "finished_at": 1793578526.593988,
+    "transport_error": null,
+    "collection_deferred": false,
+    "collection_cancel_requested": false,
+    "artifact_policy": "eager",
+    "artifacts": {
+      "assemble_solver.py": {
+        "sha256": "acf473690783d7ee75b05721c2a71f0a5d913b7828e403bd5cd00ae44af8d9f4",
+        "bytes": 792
+      },
+      "check_solver.py": {
+        "sha256": "579147aa07666313eec506945045d0c2edbe4622d4745571553f15cc96d3c76f",
+        "bytes": 2013
+      },
+      "checked/proof/Audit.lean": {
+        "sha256": "848a8d685506bcf9ccd0b1f8010fb311cc04b47860decbe4bda0b10febf4660b",
+        "bytes": 3720
+      },
+      "checked/proof/Candidate.lean": {
+        "sha256": "6d5451ea31dfc9fd82880734bcd7b1eaabd67bf619515ff2cff815c7dd10c19b",
+        "bytes": 26995
+      },
+      "checked/proof/audit.log": {
+        "sha256": "86f44fee6fce42a3572205c6cf711d938b2c228b85d07714a12caf1faa17f87c",
+        "bytes": 1142
+      },
+      "checked/proof/compile.log": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "checked/proof/result.json": {
+        "sha256": "6e2ce9943ca9c9b56c5d257a36c17dde2ffc47f0596e9186d05ffd70a047f30d",
+        "bytes": 4103
+      },
+      "checked/solver-formal.json": {
+        "sha256": "a03aa59cd9ae813c0d7bfe800732f2d492e740fbb8e3cb4b680b25645319f2d4",
+        "bytes": 4914
+      },
+      "formal/Admissible.lean": {
+        "sha256": "137920bcc9f864001f27ed16e0c251b0e551988974cde6607a3789553acfd204",
+        "bytes": 15393
+      },
+      "formal/ConservativePrimitive.lean": {
+        "sha256": "a3eb81b04068b56631d0fde39c2f2fd795dfcdb6598b0befec34b0db6755b2ac",
+        "bytes": 7978
+      },
+      "formal/PrimitiveEnergy.lean": {
+        "sha256": "652a9d57bf336553918cded1337b00f569ff71db0d696db429dca7e095314e09",
+        "bytes": 3811
+      }
+    }
+  }
+]

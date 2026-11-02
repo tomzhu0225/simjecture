@@ -7,5 +7,12 @@
   "continuum_solver_accuracy": "unproved",
   "competitor_class": "initial search scope only; formal definition pending",
   "solver_optimality": "unproved",
-  "previous_affine_result": "retained as reconstruction/proof-workflow exercise; does not fulfill this research goal"
+  "previous_affine_result": "retained as reconstruction/proof-workflow exercise; does not fulfill this research goal",
+  "goal_status": "active",
+  "nonlinear_computed_step_admissibility": "Lean checked in exact real arithmetic for all admissible input grids and computed clipped CFL step",
+  "nonlinear_computed_step_conservation": "Lean checked on periodic neighbor permutations",
+  "primitive_energy_form": "Positive form and symmetric principal coefficients checked; differentiated equivalence to canonical conservative Euler checked",
+  "full_solver_error_bound": "unproved",
+  "uniform_numerical_regularity": "unproved",
+  "initializer": "Analytic conservative cell averages implemented; independent quadrature agrees to about 1e-15; formal initialization bridge remains open"
 }

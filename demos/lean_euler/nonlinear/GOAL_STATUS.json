@@ -1,0 +1,47 @@
+{
+  "status": "active",
+  "started_utc": "2026-11-01 23:38:59 UTC",
+  "objective": "A genuinely numerical solver for the coupled nonlinear 3D Euler family, with Lean-checked continuum accuracy and matching total-work upper/lower bounds in a justified class",
+  "completion_requires": [
+    "common smooth-time and regularity bounds",
+    "actual fully discrete solver and reconstruction accuracy",
+    "complete operational work upper bound",
+    "matching lower bound tied to necessary evolution accuracy",
+    "reviewable proof, numerical and PR/report artifacts"
+  ],
+  "current_front": "Derive uniform continuous/numerical regularity and a fully discrete evolution-error estimate. A positive symmetrizing form is available but is not yet a global stability theorem.",
+  "not_completion": [
+    "initial-force diagnostics",
+    "positivity or conservation alone",
+    "analytic-flow reconstruction",
+    "finite timing rankings",
+    "conditional error estimates with undisclosed premises"
+  ],
+  "proof_dependencies_reviewed": [
+    {
+      "source": "https://arxiv.org/abs/2111.05009",
+      "finding": "Relative-energy Godunov estimates require a strong solution and uniform nondegeneracy/numerical bounds; their general rates alone do not provide a matching optimality result for this family."
+    },
+    {
+      "source": "https://github.com/openai/NavierStokesAndEuler",
+      "finding": "Substantial Sobolev/transport/local-existence formal development exists for incompressible Euler, with Lean 4.34.0-rc2. No drop-in compressible-Euler solver/convergence theorem has been identified. Existing pinned toolchain is kept unchanged."
+    }
+  ],
+  "candidate_start": "Directional global-speed local Lax-Friedrichs/Rusanov finite-volume update. Prove admissible flux splitting and convex mixing for arbitrary positive gamma=2 Euler states; these are foundations, not the requested final accuracy/optimality theorem.",
+  "deadline": "No new deadline or token budget was specified when the user activated this goal. Do not reuse the expired earlier four-hour deadline.",
+  "checked_foundations": [
+    "exact-real computed nonlinear finite-volume step preserves positive density/pressure",
+    "actual periodic update conserves all five components",
+    "unsafe flux-splitting counterexample",
+    "positive primitive energy form and symmetric principal part",
+    "actual derivative-based conservative/primitive Euler residual equivalence"
+  ],
+  "latest_evidence": "record/solver: 11 audited statements and independent candidate validation, replayed through two successful bounded local-lab jobs",
+  "remaining_obligations": [
+    "common smooth-time and quantitative regularity for the full parameter family",
+    "formal initialization/reconstruction bounds",
+    "uniform fully discrete stability and convergence",
+    "scientifically justified formal competitor class",
+    "matching total-work lower and upper bounds tied to evolved-field accuracy"
+  ]
+}
