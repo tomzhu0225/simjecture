@@ -9,7 +9,7 @@
     "matching lower bound tied to necessary evolution accuracy",
     "reviewable proof, numerical and PR/report artifacts"
   ],
-  "current_front": "Conditional accumulated entropy loss is proved for the actual periodic EC+LF trace, and actual integral entropy gaps now lower-bound maximum component L1 error on the physical region. Connect these through continuous Euler integral entropy conservation and the specified reconstruction/initialization, while establishing family-specific existence/trajectory bounds. No accuracy upper bound or optimality result is yet proved.",
+  "current_front": "Actual smooth periodic Euler fields now have checked integral entropy/conserved-state conservation. Normalized physical volume and a continuous-field entropy-to-L1 lower bound are instantiated. Connect the actual numerical initialization/reconstruction and entropy loss to this comparison, while proving common smooth existence and family-specific trajectory bounds. Solver accuracy upper bounds and optimality remain unproved.",
   "not_completion": [
     "initial-force diagnostics",
     "positivity or conservation alone",
@@ -67,12 +67,15 @@
     "exact periodic 3^3 compression control: all old states belong to the physical region but every positive trial and the actual entropy-accepted step leave its cell-energy ceiling; this control is not the Taylor-Green family",
     "periodic 3D vector Poincare estimate, actual nonnegative entropy excess, and quantitative excess/edge-dissipation bounds",
     "conditional accumulated entropy loss for completed finite EC+LF traces with computed wave speeds and old states in the physical region",
-    "actual entropy gradient bound and measure-integral comparison: entropy gap divided by 160 lower-bounds maximum conserved-component L1 error for integrable K-valued fields"
+    "actual entropy gradient bound and measure-integral comparison: entropy gap divided by 160 lower-bounds maximum conserved-component L1 error for integrable K-valued fields",
+    "actual conservative Fr\u00e9chet Euler residual implies zero entropy-current divergence; the space-time divergence theorem and periodic states yield global entropy and five-component conservation",
+    "physical cube volume normalized by L^3 has total mass one; normalized entropy and conserved-state integrals are preserved",
+    "for continuous exact-final and approximate fields in the physical region on the cube, the initial-exact versus final-approximate entropy gap divided by 160 lower-bounds the specified normalized maximum-component L1 error; integrability follows from continuity"
   ],
-  "latest_evidence": "record/solver: 77 audited statements and six numerical validation jobs in seven successful lab-entropy-decay-01 jobs. New checks cover periodic pair/variance identities, constant fields, entropy-gradient/L1 comparisons and nine accumulated-loss trajectories. The loss constant is very coarse; no measured factor is promoted to a proof constant or physical-error certificate.",
+  "latest_evidence": "record/solver: complete 85-statement bounded proof audit at lab-integral-01, with six unchanged numerical validation records and their original successful receipts retained from lab-entropy-decay-01. The proof-only replay does not rerun the numerics or certify any new physical solution error.",
   "remaining_obligations": [
-    "prove continuous periodic Euler integral entropy conservation, instantiate the actual continuous reconstruction/initialization and normalized-volume L1 bridge, and prove uniform nonzero initial excess for the full family",
-    "derive uniform residual/cap/retry estimates and prove a family-specific whole-trajectory bound; global method-level invariance of the present region is disproved; target-time completion and integral/reconstruction/grid-Poincare bridges remain open",
+    "instantiate the actual continuous reconstruction/initialization and link discrete entropy loss to the proved physical integral comparison; prove uniform nonzero initial excess for the full family",
+    "derive uniform residual/cap/retry estimates and prove a family-specific whole-trajectory bound; global method-level invariance of the present region is disproved; target-time completion and reconstruction-to-grid bridges remain open",
     "common smooth-time and quantitative regularity for the full parameter family",
     "formal initialization/reconstruction bounds",
     "derive uniform coefficient-difference bounds, control metric time variation and bridge principal stability to the actual nonlinear conservative update",

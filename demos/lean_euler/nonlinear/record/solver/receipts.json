@@ -846,12 +846,12 @@
     }
   },
   {
-    "id": "exp_21673328144100bbc44057b7",
+    "id": "exp_11a68e63de2fd336680f3d2d",
     "status": "succeeded",
     "operator_guidance_ids": [],
-    "created_at": 1793597399.1060839,
-    "timeout": 240,
-    "execution_deadline": 1793598173.584991,
+    "created_at": 1793600250.256977,
+    "timeout": 300,
+    "execution_deadline": 1793601150.1220276,
     "workspace_limit_bytes": 4294967296,
     "binding": {
       "source": "check_solver.py",
@@ -860,8 +860,8 @@
         "checked"
       ],
       "inputs": {
-        "check_solver.py": "543b1d55483e1f74593ec1617a2cdff4a79014b9751fb00bbbcb11f37d7bc822",
-        "assemble_solver.py": "d0e1ed531639671c9e545c51578d50d8fc28b109811e3bd9f6889e74d53afc88",
+        "check_solver.py": "15e805f99c3f28c14b4587c63dd1dde941a82ff4f04792e610a68160f7854926",
+        "assemble_solver.py": "b6f1658a3c5aa36b532d26010b5f80123e47cbc1c9f9e90483acfd2a0d1ae4e1",
         "formal/Admissible.lean": "137920bcc9f864001f27ed16e0c251b0e551988974cde6607a3789553acfd204",
         "formal/PrimitiveEnergy.lean": "652a9d57bf336553918cded1337b00f569ff71db0d696db429dca7e095314e09",
         "formal/ConservativePrimitive.lean": "a3eb81b04068b56631d0fde39c2f2fd795dfcdb6598b0befec34b0db6755b2ac",
@@ -892,7 +892,8 @@
         "formal/RegionEscape.lean": "2475ed6ed9a478be98d289ff11e54c261896c541bf842fde76c8c43a5b9da108",
         "formal/GridPoincare.lean": "bf2cabf5b39906e65c008f73e3ce91e5c579b234692f2394272ff9be5eeae360",
         "formal/EntropyDecay.lean": "07c2dadc742a7b995ca4972b10e1a9dd69a2520ee07a2121e295cf36bbfd4ab3",
-        "formal/EntropyError.lean": "3792ca282a0830f8d420d8cc66c329a6fb78609c0d62dddf53042383820aca80"
+        "formal/EntropyError.lean": "3792ca282a0830f8d420d8cc66c329a6fb78609c0d62dddf53042383820aca80",
+        "formal/EntropyIntegral.lean": "77615c201f052bc1477ccd0d2bb72820c7fd9553626d6560d62bff54e4c66b51"
       },
       "capability": "lean-4.24.0--at-local-lean",
       "runtime_sha256": "026ddb3c1c49b3d7e35a0244560af9837be5933a9d01a366e55eaa42119abbe5",
@@ -918,72 +919,72 @@
     "method": null,
     "review_documents": null,
     "machine": "local-lean",
-    "pid": 365670,
+    "pid": 387954,
     "worker_identity": {
-      "pid": 365670,
-      "starttime": "2218695",
+      "pid": 387954,
+      "starttime": "2503810",
       "argv": [
         "/home/tomzhu0225/src/simjecture/.venv/bin/python",
         "-m",
         "conjecture_solver.research_service",
         "--root",
-        "/home/tomzhu0225/src/simjecture/artifacts/lean-euler/20261102/nonlinear/research/lab-entropy-decay-01/study",
+        "/home/tomzhu0225/src/simjecture/artifacts/lean-euler/20261102/nonlinear/research/lab-integral-01/study",
         "--execute",
-        "exp_21673328144100bbc44057b7"
+        "exp_11a68e63de2fd336680f3d2d"
       ],
-      "launched_at": "2026-11-02T05:29:59.264348+00:00",
+      "launched_at": "2026-11-02T06:17:30.415082+00:00",
       "run_directory": null
     },
-    "started_at": 1793597402.8494277,
-    "remote_job": "job_ff72a66394d0d9257c4bf898031f34a9e604f10f",
+    "started_at": 1793600253.9881997,
+    "remote_job": "job_2823e53f4b7ed7fad08bc193931c669a55f235b2",
     "transport_status": "connected",
     "assigned_gpu_ids": [],
     "telemetry": null,
     "execution_heartbeat": {
-      "elapsed_wall_seconds": 145.41493971099771,
-      "observed_at": 1793597548.362272
+      "elapsed_wall_seconds": 149.0870636030013,
+      "observed_at": 1793600403.1686494
     },
     "remote_terminal_status": "succeeded",
     "remote_artifacts": {
       "assemble_solver.py": {
-        "sha256": "d0e1ed531639671c9e545c51578d50d8fc28b109811e3bd9f6889e74d53afc88",
-        "bytes": 1570
+        "sha256": "b6f1658a3c5aa36b532d26010b5f80123e47cbc1c9f9e90483acfd2a0d1ae4e1",
+        "bytes": 1598
       },
       "check_solver.py": {
-        "sha256": "543b1d55483e1f74593ec1617a2cdff4a79014b9751fb00bbbcb11f37d7bc822",
-        "bytes": 8532
+        "sha256": "15e805f99c3f28c14b4587c63dd1dde941a82ff4f04792e610a68160f7854926",
+        "bytes": 9586
       },
       "checked/Solver.lean": {
-        "sha256": "4394ac6f4f83f034b42bbeac62a4010f4446aa505521f166f00947a461f1769d",
-        "bytes": 254451
+        "sha256": "ee0c171f77881a3721c48440376429edc52a4d71fb4b0eb47d007d72f1057b07",
+        "bytes": 275512
       },
       "checked/proof/Audit.lean": {
-        "sha256": "31146ec0bae726d86feb8d6925de52a403ac637a84d91cb6feadfe75464bc0a5",
-        "bytes": 26462
+        "sha256": "e9676ec5a5bf63b95cf08f80f89e1664f18438a15cde4fe977c0b06a96e8da73",
+        "bytes": 29319
       },
       "checked/proof/Candidate.lean": {
-        "sha256": "4394ac6f4f83f034b42bbeac62a4010f4446aa505521f166f00947a461f1769d",
-        "bytes": 254451
+        "sha256": "ee0c171f77881a3721c48440376429edc52a4d71fb4b0eb47d007d72f1057b07",
+        "bytes": 275512
       },
       "checked/proof/Candidate.olean": {
-        "sha256": "dd01ee487e4195666cc8975fc6630fcb243aef30189e893e82a1a11331061275",
-        "bytes": 31740848
+        "sha256": "0f77dc0c49f560bd74f29e7b348547106099a3808dde2b04804c6ba0fa30fa45",
+        "bytes": 33984856
       },
       "checked/proof/audit.log": {
-        "sha256": "c77e562485002b269ea2fa7c799fb1363a92f1684b464204abac468d288d8a01",
-        "bytes": 7984
+        "sha256": "14e9c64b7c0f8baa9726b6982f8de52ef9444bae2d1609b3980c76222aeb6d74",
+        "bytes": 8851
       },
       "checked/proof/compile.log": {
         "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "bytes": 0
       },
       "checked/proof/result.json": {
-        "sha256": "e6e5dda4f2d227b0559d78529344adf2bdde1460012c7b64a601840be41302e6",
-        "bytes": 15606
+        "sha256": "b18bf8a3854f13c0bfd1010732c88bf65b78d42a13c79e7dc496b801cdf226ad",
+        "bytes": 17076
       },
       "checked/solver-formal.json": {
-        "sha256": "088b825af1b7655db2f23123430833753a0b6744fefe20762e331f2e9553958c",
-        "bytes": 22462
+        "sha256": "b05f3ad54e1e22272392a7dfd9d5f5f9993fb830b06d9442dc34f8c544607c98",
+        "bytes": 24493
       },
       "formal/Admissible.lean": {
         "sha256": "137920bcc9f864001f27ed16e0c251b0e551988974cde6607a3789553acfd204",
@@ -1040,6 +1041,10 @@
       "formal/EntropyGeometry.lean": {
         "sha256": "ab2ab99fb46429153d7006ca1e6cf8492fed31a2dc44a685f1d116f69419e23b",
         "bytes": 4238
+      },
+      "formal/EntropyIntegral.lean": {
+        "sha256": "77615c201f052bc1477ccd0d2bb72820c7fd9553626d6560d62bff54e4c66b51",
+        "bytes": 21060
       },
       "formal/EntropyRegion.lean": {
         "sha256": "e4e571d3f23e51869d24f921516a25fa35d98296a3fb136462b9bf6ea1e3f4ea",
@@ -1113,7 +1118,7 @@
     "execution": {
       "isolation_backend": "bubblewrap",
       "returncode": 0,
-      "stdout": "{\"status\": \"proved\", \"theorems\": 77}",
+      "stdout": "{\"status\": \"proved\", \"theorems\": 85}",
       "stderr": "",
       "timed_out": false,
       "cancelled": false,
@@ -1121,8 +1126,8 @@
       "stdout_truncated": false,
       "stderr_truncated": false,
       "heartbeat_count": 4,
-      "wall_seconds": 145.41493971099771,
-      "workspace_bytes": 32587178,
+      "wall_seconds": 149.0870636030013,
+      "workspace_bytes": 34902675,
       "executor_sha256": "b92087579abbb99f55ce2c75d98765355c8ccd4a6ccf3ba55b15ddd5491a22ec",
       "resource_limits": {
         "max_file_bytes": 4294967296,
@@ -1134,43 +1139,43 @@
     "input_mutations": [],
     "output_findings": [],
     "scientific_status": "unreviewed",
-    "finished_at": 1793597548.383525,
+    "finished_at": 1793600403.1904395,
     "transport_error": null,
     "collection_deferred": false,
     "collection_cancel_requested": false,
     "artifact_policy": "eager",
     "artifacts": {
       "assemble_solver.py": {
-        "sha256": "d0e1ed531639671c9e545c51578d50d8fc28b109811e3bd9f6889e74d53afc88",
-        "bytes": 1570
+        "sha256": "b6f1658a3c5aa36b532d26010b5f80123e47cbc1c9f9e90483acfd2a0d1ae4e1",
+        "bytes": 1598
       },
       "check_solver.py": {
-        "sha256": "543b1d55483e1f74593ec1617a2cdff4a79014b9751fb00bbbcb11f37d7bc822",
-        "bytes": 8532
+        "sha256": "15e805f99c3f28c14b4587c63dd1dde941a82ff4f04792e610a68160f7854926",
+        "bytes": 9586
       },
       "checked/proof/Audit.lean": {
-        "sha256": "31146ec0bae726d86feb8d6925de52a403ac637a84d91cb6feadfe75464bc0a5",
-        "bytes": 26462
+        "sha256": "e9676ec5a5bf63b95cf08f80f89e1664f18438a15cde4fe977c0b06a96e8da73",
+        "bytes": 29319
       },
       "checked/proof/Candidate.lean": {
-        "sha256": "4394ac6f4f83f034b42bbeac62a4010f4446aa505521f166f00947a461f1769d",
-        "bytes": 254451
+        "sha256": "ee0c171f77881a3721c48440376429edc52a4d71fb4b0eb47d007d72f1057b07",
+        "bytes": 275512
       },
       "checked/proof/audit.log": {
-        "sha256": "c77e562485002b269ea2fa7c799fb1363a92f1684b464204abac468d288d8a01",
-        "bytes": 7984
+        "sha256": "14e9c64b7c0f8baa9726b6982f8de52ef9444bae2d1609b3980c76222aeb6d74",
+        "bytes": 8851
       },
       "checked/proof/compile.log": {
         "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "bytes": 0
       },
       "checked/proof/result.json": {
-        "sha256": "e6e5dda4f2d227b0559d78529344adf2bdde1460012c7b64a601840be41302e6",
-        "bytes": 15606
+        "sha256": "b18bf8a3854f13c0bfd1010732c88bf65b78d42a13c79e7dc496b801cdf226ad",
+        "bytes": 17076
       },
       "checked/solver-formal.json": {
-        "sha256": "088b825af1b7655db2f23123430833753a0b6744fefe20762e331f2e9553958c",
-        "bytes": 22462
+        "sha256": "b05f3ad54e1e22272392a7dfd9d5f5f9993fb830b06d9442dc34f8c544607c98",
+        "bytes": 24493
       },
       "formal/Admissible.lean": {
         "sha256": "137920bcc9f864001f27ed16e0c251b0e551988974cde6607a3789553acfd204",
@@ -1227,6 +1232,10 @@
       "formal/EntropyGeometry.lean": {
         "sha256": "ab2ab99fb46429153d7006ca1e6cf8492fed31a2dc44a685f1d116f69419e23b",
         "bytes": 4238
+      },
+      "formal/EntropyIntegral.lean": {
+        "sha256": "77615c201f052bc1477ccd0d2bb72820c7fd9553626d6560d62bff54e4c66b51",
+        "bytes": 21060
       },
       "formal/EntropyRegion.lean": {
         "sha256": "e4e571d3f23e51869d24f921516a25fa35d98296a3fb136462b9bf6ea1e3f4ea",

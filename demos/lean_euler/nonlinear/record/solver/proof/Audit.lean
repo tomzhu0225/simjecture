@@ -540,3 +540,59 @@ run_cmd do
   | _ => throwError "Not a theorem: EulerEntropyError.entropy_gap_error_lower_bound"
   let axioms ← collectAxioms n
   logInfo m!"SIMJECTURE_AXIOMS EulerEntropyError.entropy_gap_error_lower_bound: {axioms.toList}"
+run_cmd do
+  let n := `EulerEntropyIntegral.entropy_divergence_zero
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerEntropyIntegral.entropy_divergence_zero"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerEntropyIntegral.entropy_divergence_zero: {axioms.toList}"
+run_cmd do
+  let n := `EulerEntropyIntegral.periodic_entropy_conservation
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerEntropyIntegral.periodic_entropy_conservation"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerEntropyIntegral.periodic_entropy_conservation: {axioms.toList}"
+run_cmd do
+  let n := `EulerEntropyIntegral.periodic_conserved_integral
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerEntropyIntegral.periodic_conserved_integral"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerEntropyIntegral.periodic_conserved_integral: {axioms.toList}"
+run_cmd do
+  let n := `EulerEntropyIntegral.cube_measure_univ
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerEntropyIntegral.cube_measure_univ"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerEntropyIntegral.cube_measure_univ: {axioms.toList}"
+run_cmd do
+  let n := `EulerEntropyIntegral.normalized_entropy_conservation
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerEntropyIntegral.normalized_entropy_conservation"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerEntropyIntegral.normalized_entropy_conservation: {axioms.toList}"
+run_cmd do
+  let n := `EulerEntropyIntegral.normalized_conserved_integral
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerEntropyIntegral.normalized_conserved_integral"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerEntropyIntegral.normalized_conserved_integral: {axioms.toList}"
+run_cmd do
+  let n := `EulerEntropyIntegral.normalized_error_lower_bound
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerEntropyIntegral.normalized_error_lower_bound"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerEntropyIntegral.normalized_error_lower_bound: {axioms.toList}"
+run_cmd do
+  let n := `EulerEntropyIntegral.physical_error_from_initial_entropy
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerEntropyIntegral.physical_error_from_initial_entropy"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerEntropyIntegral.physical_error_from_initial_entropy: {axioms.toList}"

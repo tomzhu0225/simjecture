@@ -90,6 +90,14 @@ THEOREMS = [
     "EulerEntropyError.entropy_lipschitz",
     "EulerEntropyError.integrated_entropy_error",
     "EulerEntropyError.entropy_gap_error_lower_bound",
+    "EulerEntropyIntegral.entropy_divergence_zero",
+    "EulerEntropyIntegral.periodic_entropy_conservation",
+    "EulerEntropyIntegral.periodic_conserved_integral",
+    "EulerEntropyIntegral.cube_measure_univ",
+    "EulerEntropyIntegral.normalized_entropy_conservation",
+    "EulerEntropyIntegral.normalized_conserved_integral",
+    "EulerEntropyIntegral.normalized_error_lower_bound",
+    "EulerEntropyIntegral.physical_error_from_initial_entropy",
 ]
 
 
@@ -100,7 +108,9 @@ def main():
     args.output.mkdir(parents=True, exist_ok=False)
     source = args.output / "Solver.lean"
     assemble(source)
-    result = check(source, THEOREMS, output=args.output / "proof", timeout=150)
+    # The previous 77-statement assembly took 145.30 seconds. Allow the added
+    # space-time integral proofs to finish without changing kernel proof limits.
+    result = check(source, THEOREMS, output=args.output / "proof", timeout=240)
     here = Path(__file__).resolve().parent
     record = dict(
         result=result,
@@ -144,9 +154,14 @@ def main():
             "loss for the actual finite EC+LF trace with computed wave speeds. Separately, "
             "an actual integral entropy gap divided by 160 is a lower bound on maximum "
             "component L1 error for integrable fields in the stated region, with respect "
-            "to any specified measure. Common smooth existence, continuous Euler integral "
-            "entropy conservation, the actual reconstruction/initialization bridge and "
-            "a justified complete work-optimality result are still unproved."
+            "to any specified measure. Actual smooth periodic Euler fields now have "
+            "checked global entropy and five-component integral conservation, derived "
+            "from their conservative differential equations by the space-time divergence "
+            "theorem. Normalized physical cube volume has total mass one. For continuous "
+            "approximate and exact final fields in the region, initial exact entropy "
+            "versus final approximate entropy gives a lower bound on physical L1 error. "
+            "Common smooth existence, the actual reconstruction/initialization bridge "
+            "and a justified complete work-optimality result are still unproved."
         ),
     )
     (args.output / "solver-formal.json").write_text(json.dumps(record, indent=2) + "\n")

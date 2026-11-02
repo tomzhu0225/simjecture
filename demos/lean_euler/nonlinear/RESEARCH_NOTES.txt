@@ -497,3 +497,68 @@ Next connection toward the real accuracy/work theorem:
 4. Keep the class issue explicit: a fixed LF-dissipation mechanism does not cover
    the whole higher-order initial search scope. The justified competitor class,
    full accuracy upper bound and all-operation upper/lower work proof remain open.
+
+Periodic continuum-integral checkpoint, research/lab-integral-01:
+- EntropyIntegral.lean defines the actual conservative Euler residual using
+  Frechet derivatives on Fin 4 -> Real (time plus three spatial coordinates).
+  The entropy current is (eta, eta*v_x, eta*v_y, eta*v_z). Its divergence is
+  derived from the actual entropy/flux derivatives and vanishes when the
+  conservative Euler residual vanishes; no integral entropy law is assumed.
+- Mathlib.MeasureTheory.Integral.DivergenceTheorem supplies the proved box
+  divergence theorem. Differentiability at all points of the closed box gives
+  the boundary continuity it requires. Zero divergence supplies integrability
+  of that divergence without assuming continuity of all derivative fields.
+  Equal states on opposite spatial faces cancel their flux integrals, leaving
+  the two time faces. The generic vector-valued face-balance lemma proves both
+  entropy conservation and all five conserved-state Bochner integrals.
+- Explicit premises remain: differentiability on the box, positive density and
+  pressure there, zero actual conservative residual, and spatial periodicity.
+  The result neither constructs the family's solution nor continues it through
+  shocks. Physical viscosity remains zero. The earlier large artificial-
+  diffusion threshold belongs to the rejected sufficient Rusanov estimate.
+- cubeMeasure L is ofReal(1/L^3) times volume restricted to [0,L]^3. The volume
+  formula and total mass one for positive L are proved, as are the normalized
+  conservation laws. An almost-everywhere version of the entropy comparison
+  removes any need for state bounds outside the physical cube. Continuity on
+  the compact cube now discharges integrability for continuous fields.
+- physical_error_from_initial_entropy proves, for a specified continuous
+  approximate V and an actual exact final field U(T) both in K on the cube:
+    |integral eta(V) dmu - integral eta(U(0)) dmu|/160
+      <= max_j integral |V_j-U_j(T)| dmu.
+  Taking L=2*pi gives precisely the contract's normalized componentwise L1
+  norm. This necessary lower bound is not a solver accuracy upper bound.
+  It does not identify the continuous V with the current grid output, equate
+  reconstructed entropy to a grid sum, or prove a matching work bound.
+- The strict complete 85-statement audit passed in 149.00 seconds; the only
+  transitive proof principles are propext/Classical.choice/Quot.sound. Receipt:
+  exp_11a68e63de2fd336680f3d2d. Frozen source SHA-256:
+  ee0c171f77881a3721c48440376429edc52a4d71fb4b0eb47d007d72f1057b07.
+  The earlier assembly took 145.30 seconds against a 150-second allowance.
+  The expanded checker now permits 240 wall seconds and the enclosing job 300;
+  Lean's one-thread, 2048-MB, heartbeat and axiom/source limits stay unchanged.
+- run_solver_study.py --proof-only runs the complete bounded audit without
+  repeating unchanged numerical experiments. The six earlier numerical records
+  and receipts are retained; the latest proof receipt replaces the old proof
+  receipt in record/solver. No new physical-error numerics are claimed here.
+- The installer explicitly caches the divergence-theorem dependency. Seven
+  focused nonlinear/installer tests, Ruff and shell syntax checks pass. The
+  report has eleven pages and its revised opening/new final page are visually
+  inspected. Development errors remain in integral-dev-* logs; none were
+  suppressed with options or additional accepted mathematical principles.
+
+Next substantive connection:
+1. Construct actual continuous periodic reconstruction with nonnegative
+   partition-of-unity weights and proved spatial integrals. Periodic tensor
+   trilinear hats are a candidate: prove continuity, cell-average/mean relation,
+   and Jensen's entropy integral bound. Do not substitute piecewise-constant
+   output for the contract's continuous reconstruction without resolving scope.
+2. Prove the analytic initial-cell-average and nonzero family entropy-excess
+   bridges. Connect initial entropy loss and reconstruction to the accumulated
+   discrete loss and new physical-error theorem with all signs accounted for.
+3. Common smooth existence through T=.25 and uniform numerical trajectory
+   bounds are still the major open evolution requirements. The preceding
+   theorem keeps them explicit, rather than treating the existence of U as an
+   established property of the target family.
+4. The solver accuracy upper bound, justified competitor class, and complete
+   computational-work lower/upper proof remain unfinished. The current
+   first-order dissipative mechanism does not cover higher-order competitors.

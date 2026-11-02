@@ -85,6 +85,10 @@ def test_solver_foundations_and_independent_validation_provenance(tmp_path):
         "EulerGridPoincare.vector_poincare",
         "EulerEntropyDecay.computed_trace_entropy_loss",
         "EulerEntropyError.entropy_gap_error_lower_bound",
+        "EulerEntropyIntegral.periodic_entropy_conservation",
+        "EulerEntropyIntegral.periodic_conserved_integral",
+        "EulerEntropyIntegral.cube_measure_univ",
+        "EulerEntropyIntegral.physical_error_from_initial_entropy",
     } <= set(proof["result"]["theorems"])
     for dependencies in proof["result"]["axioms"].values():
         assert set(dependencies) <= {"propext", "Classical.choice", "Quot.sound"}

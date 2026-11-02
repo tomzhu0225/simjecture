@@ -130,7 +130,7 @@ error estimate, and matching complexity bounds remain open. The initial-cell
 average formulas have an independent quadrature check; their formal
 initialization/reconstruction bridge also remains to be proved.
 
-Seventy-seven named solver-foundation statements and the independent numerical checks
+Eighty-five named solver-foundation statements and the independent numerical checks
 are retained under `record/solver`. Replay them through the bounded local lab:
 
 ```bash
@@ -141,6 +141,9 @@ The replay uses an isolated local worker with the same pinned Lean runtime and
 an 8 GB proof-job memory allowance. `check_solver.py` and `assemble_solver.py`
 provide the corresponding trusted direct check. The Python implementation is
 not a verified extraction and the numerical checks do not certify IEEE error.
+For changes confined to proofs, add `--proof-only` to replay the complete audit
+without rerunning unchanged numerical experiments. The checker wall allowance is
+240 seconds; Lean's kernel, memory and accepted proof principles are unchanged.
 
 The [current PDF report](report.pdf) describes the checked statements and their
 premises. For the varying-coefficient principal update, the energy estimate is
@@ -488,8 +491,8 @@ entropy; it does not assume a numerical error estimate. It is a **necessary
 accuracy comparison**, not an accuracy upper bound for the solver.
 
 To turn these pieces into the requested evolution-error/work lower bound, we still
-must prove the common smooth Euler solution and its periodic integral entropy
-conservation, instantiate the continuous reconstruction and initialization bridges,
+must prove the common smooth Euler solution, instantiate the continuous
+reconstruction and initialization bridges,
 and connect the nonzero initial excess entropy to the whole parameter family.
 Uniform numerical evolution bounds, an accuracy upper bound and the justified
 competitor class remain unfinished. In particular, this dissipative argument does
@@ -500,3 +503,47 @@ and `entropy-decay-validation.json`. Its numerical checks cover small-grid pairw
 variance identities, constant states, independent entropy gradients and weighted
 finite-measure comparisons, plus nine nonlinear trajectories. These checks are
 not certified floating-point or continuum-error enclosures.
+
+## Periodic continuum conservation and the physical error norm
+
+`EntropyIntegral.lean` defines the actual conservative Euler residual on
+four-dimensional space-time, using Fréchet derivatives of the five-component
+state and the physical Euler fluxes. The entropy current is
+`(η(U), η(U)v_x, η(U)v_y, η(U)v_z)`. Its divergence vanishes when the actual
+Euler residual does. Applying Mathlib's proved divergence theorem to the
+space-time box and cancelling opposite periodic faces gives
+
+\[
+\int_{[0,L]^3}\eta(U(T,x))\,dx=\int_{[0,L]^3}\eta(U(0,x))\,dx,
+\qquad
+\int_{[0,L]^3}U(T,x)\,dx=\int_{[0,L]^3}U(0,x)\,dx.
+\]
+
+The hypotheses are explicit: differentiability on the closed space-time box,
+positive density and pressure there, zero conservative Euler residual, and
+equal states on opposite spatial faces. The integrals are consequences of these
+local conditions, rather than additional balance assumptions. This theorem
+does not construct the target family's smooth solution or extend past shocks.
+The physical PDE is inviscid throughout; no large physical viscosity is assumed.
+
+The same component defines `cubeMeasure L` as volume restricted to the cube and
+scaled by `1/L³`, proves its total mass is one for `L > 0`, and establishes the
+normalized versions of both conservation laws. For any continuous approximate
+field V and exact final field U(T) lying in K on the cube, Lean derives
+
+\[
+\frac{\left|\int\eta(V)\,d\mu-\int\eta(U(0))\,d\mu\right|}{160}
+\le\max_{j=1,\ldots,5}\int|V_j-U_j(T)|\,d\mu,
+\qquad d\mu=L^{-3}\,dx.
+\]
+
+Integrability follows from continuity on the compact cube. No state bounds
+outside the physical cube are required. With `L = 2π`, the right side is the
+contract's physical error norm. This is a necessary error lower bound for a
+specified approximate field, not a solver accuracy upper bound or optimality
+theorem. Connecting the actual grid values to a continuous reconstruction and
+its entropy integral remains necessary.
+
+The `research/lab-integral-01` proof-only replay checks all 85 selected statements.
+Its frozen source, audit and receipt replace the previous proof record; the six
+unchanged numerical validation records and their original receipts are retained.

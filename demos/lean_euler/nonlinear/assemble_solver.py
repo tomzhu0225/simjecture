@@ -35,6 +35,7 @@ COMPONENTS = [
     "GridPoincare.lean",
     "EntropyDecay.lean",
     "EntropyError.lean",
+    "EntropyIntegral.lean",
 ]
 
 

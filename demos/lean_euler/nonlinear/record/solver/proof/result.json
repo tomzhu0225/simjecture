@@ -2,7 +2,7 @@
   "schema_version": "0.1.0",
   "status": "proved",
   "checked": true,
-  "source_sha256": "4394ac6f4f83f034b42bbeac62a4010f4446aa505521f166f00947a461f1769d",
+  "source_sha256": "ee0c171f77881a3721c48440376429edc52a4d71fb4b0eb47d007d72f1057b07",
   "theorems": [
     "EulerAdmissible.convex_sum_admissible",
     "EulerAdmissible.flux_splitting_admissible",
@@ -80,7 +80,15 @@
     "EulerEntropyDecay.computed_trace_entropy_loss",
     "EulerEntropyError.entropy_lipschitz",
     "EulerEntropyError.integrated_entropy_error",
-    "EulerEntropyError.entropy_gap_error_lower_bound"
+    "EulerEntropyError.entropy_gap_error_lower_bound",
+    "EulerEntropyIntegral.entropy_divergence_zero",
+    "EulerEntropyIntegral.periodic_entropy_conservation",
+    "EulerEntropyIntegral.periodic_conserved_integral",
+    "EulerEntropyIntegral.cube_measure_univ",
+    "EulerEntropyIntegral.normalized_entropy_conservation",
+    "EulerEntropyIntegral.normalized_conserved_integral",
+    "EulerEntropyIntegral.normalized_error_lower_bound",
+    "EulerEntropyIntegral.physical_error_from_initial_entropy"
   ],
   "allowed_axioms": [
     "Classical.choice",
@@ -472,9 +480,49 @@
       "propext",
       "Classical.choice",
       "Quot.sound"
+    ],
+    "EulerEntropyIntegral.entropy_divergence_zero": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerEntropyIntegral.periodic_entropy_conservation": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerEntropyIntegral.periodic_conserved_integral": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerEntropyIntegral.cube_measure_univ": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerEntropyIntegral.normalized_entropy_conservation": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerEntropyIntegral.normalized_conserved_integral": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerEntropyIntegral.normalized_error_lower_bound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerEntropyIntegral.physical_error_from_initial_entropy": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
     ]
   },
-  "timeout_seconds": 150,
+  "timeout_seconds": 240,
   "memory_mb": 2048,
   "threads": 1,
   "scope": "Named Lean propositions only; no implementation or PDE convergence claim.",
@@ -510,12 +558,12 @@
   ],
   "compile_returncode": 0,
   "audit_returncode": 0,
-  "wall_seconds": 145.29858867800067,
+  "wall_seconds": 149.00093535199994,
   "artifact_sha256": {
-    "Audit.lean": "31146ec0bae726d86feb8d6925de52a403ac637a84d91cb6feadfe75464bc0a5",
-    "Candidate.lean": "4394ac6f4f83f034b42bbeac62a4010f4446aa505521f166f00947a461f1769d",
-    "Candidate.olean": "dd01ee487e4195666cc8975fc6630fcb243aef30189e893e82a1a11331061275",
-    "audit.log": "c77e562485002b269ea2fa7c799fb1363a92f1684b464204abac468d288d8a01",
+    "Audit.lean": "e9676ec5a5bf63b95cf08f80f89e1664f18438a15cde4fe977c0b06a96e8da73",
+    "Candidate.lean": "ee0c171f77881a3721c48440376429edc52a4d71fb4b0eb47d007d72f1057b07",
+    "Candidate.olean": "0f77dc0c49f560bd74f29e7b348547106099a3808dde2b04804c6ba0fa30fa45",
+    "audit.log": "14e9c64b7c0f8baa9726b6982f8de52ef9444bae2d1609b3980c76222aeb6d74",
     "compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
   }
 }

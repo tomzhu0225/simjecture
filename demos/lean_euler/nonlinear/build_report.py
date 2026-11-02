@@ -121,9 +121,10 @@ para(
 )
 para("The physical problem", "HeadingR")
 para(
-    "Full, unforced, compressible Euler with γ = 2 on the periodic cube [0, 2π]³. "
+    "Full, unforced, inviscid compressible Euler with γ = 2 on the periodic cube [0, 2π]³. "
     "The family has amplitude A ∈ [0.5, 1] and density perturbation δ ∈ [−0.05, 0.05]. "
-    "Only initial conditions are supplied; all five conserved fields must evolve."
+    "Only initial conditions are supplied; all five conserved fields must evolve. "
+    "Physical viscosity is zero; artificial diffusion belongs to the numerical method."
 )
 para(
     "ρ₀ = 1 + δ sin x sin y sin z<br/>"
@@ -316,8 +317,8 @@ para(
     "its actual gradient and Hessian, convexity on the admissible conserved-state set, "
     "and the local entropy balance that follows from differentiable Euler balance. "
     "The Hessian was derived from η, not defined as a convenient positive form. "
-    "Existence of a smooth solution and the periodic integral conservation theorem "
-    "are still required."
+    "Periodic integral conservation is now derived on page 11. Existence of the "
+    "target family's smooth solution is still required."
 )
 para(
     "A further checked result says a finite averaging map with nonnegative weights and "
@@ -759,7 +760,7 @@ para(
 )
 para("Still required to obtain solver optimality", "HeadingR")
 para(
-    "Prove common smooth Euler existence and periodic integral entropy conservation; "
+    "Prove common smooth Euler existence; "
     "instantiate the continuous reconstruction and initialization; establish nonzero "
     "initial excess across the family and uniform evolution bounds; then prove an "
     "accuracy upper bound and matching complete work bounds in a justified class. "
@@ -768,8 +769,69 @@ para(
 )
 para(
     "Sources: GridPoincare.lean, EntropyDecay.lean and EntropyError.lean. The current "
-    "seven-job replay retains the proof and entropy-decay-validation.json. "
+    "seven-job decay checkpoint retains the earlier proof and entropy-decay-validation.json. "
     "Floating-point and continuum-error certification remain open.",
+    "SmallR",
+)
+story.append(PageBreak())
+para("From Euler balance to physical error", "TitleR")
+para(
+    "<b>New checked connection.</b> EntropyIntegral.lean derives actual global entropy "
+    "and conserved-state integrals from local periodic Euler balance. It also "
+    "instantiates volume normalization in the requested error norm. The physical "
+    "equations have zero viscosity throughout."
+)
+para("Local equations imply global conservation", "HeadingR")
+para(
+    "The source defines the conservative residual using the actual Fréchet derivatives: "
+    "∂ₜU + Σ<sub>d</sub> ∂<sub>d</sub>F<sub>d</sub>(U). The entropy current is "
+    "(η(U), η(U)v<sub>x</sub>, η(U)v<sub>y</sub>, η(U)v<sub>z</sub>). Its divergence "
+    "vanishes when this Euler residual vanishes. Mathlib's space-time box divergence "
+    "theorem and cancellation of equal opposite faces then give<br/>"
+    "<b>∫η(U(T,x))dx = ∫η(U(0,x))dx, and ∫U(T,x)dx = ∫U(0,x)dx.</b>"
+)
+table(
+    [
+        ["Explicit hypothesis", "Meaning"],
+        [
+            "Differentiable U on the closed space-time box",
+            "A smooth-field implication; no existence proof",
+        ],
+        ["Positive density and pressure", "Physical entropy and flux derivatives are defined"],
+        ["Zero conservative residual", "The actual inviscid Euler equations hold"],
+        ["Equal states on opposite spatial faces", "Periodic boundary fluxes cancel"],
+    ],
+    [245, 260],
+)
+para("The normalized L1 comparison", "HeadingR")
+para(
+    "For a cube of side L &gt; 0, μ is restricted volume scaled by 1/L³; Lean proves "
+    "μ(all space) = 1. "
+    "For a continuous approximate field V and exact final field U(T) in K on the cube, "
+    "continuity supplies integrability. Combining the proved conservation law with "
+    "the entropy-gradient bound yields<br/>"
+    "<b>|∫η(V)dμ − ∫η(U(0))dμ| / 160 ≤ max<sub>j</sub> ∫|V<sub>j</sub>−U<sub>j</sub>(T)|dμ.</b>"
+)
+para(
+    "At L = 2π the right side is the specified physical error. State bounds are "
+    "required only on the cube. This is a necessary lower bound for a specified "
+    "approximate field; it does not assume or prove that a numerical output achieves "
+    "a chosen tolerance."
+)
+para("What this leaves open", "HeadingR")
+para(
+    "Construct the common smooth solution for the full family through T = 0.25; "
+    "prove the numerical trajectory bounds and target-time completion; connect "
+    "actual initialization and continuous reconstruction to these integrals; "
+    "establish a solver accuracy upper bound and matching total work in a justified "
+    "competitor class. No optimality claim follows from conservation alone."
+)
+para(
+    f"Evidence: {len(proof['theorems'])} statements in the complete bounded audit at "
+    "research/lab-integral-01. The proof-only replay updates the frozen source, audit "
+    "and receipt; six unchanged numerical validation records retain their original "
+    "receipts. The longer 240-second wall allowance leaves Lean's proof limits and "
+    "accepted mathematical principles unchanged.",
     "SmallR",
 )
 SimpleDocTemplate(

@@ -3,7 +3,7 @@
     "schema_version": "0.1.0",
     "status": "proved",
     "checked": true,
-    "source_sha256": "4394ac6f4f83f034b42bbeac62a4010f4446aa505521f166f00947a461f1769d",
+    "source_sha256": "ee0c171f77881a3721c48440376429edc52a4d71fb4b0eb47d007d72f1057b07",
     "theorems": [
       "EulerAdmissible.convex_sum_admissible",
       "EulerAdmissible.flux_splitting_admissible",
@@ -81,7 +81,15 @@
       "EulerEntropyDecay.computed_trace_entropy_loss",
       "EulerEntropyError.entropy_lipschitz",
       "EulerEntropyError.integrated_entropy_error",
-      "EulerEntropyError.entropy_gap_error_lower_bound"
+      "EulerEntropyError.entropy_gap_error_lower_bound",
+      "EulerEntropyIntegral.entropy_divergence_zero",
+      "EulerEntropyIntegral.periodic_entropy_conservation",
+      "EulerEntropyIntegral.periodic_conserved_integral",
+      "EulerEntropyIntegral.cube_measure_univ",
+      "EulerEntropyIntegral.normalized_entropy_conservation",
+      "EulerEntropyIntegral.normalized_conserved_integral",
+      "EulerEntropyIntegral.normalized_error_lower_bound",
+      "EulerEntropyIntegral.physical_error_from_initial_entropy"
     ],
     "allowed_axioms": [
       "Classical.choice",
@@ -473,9 +481,49 @@
         "propext",
         "Classical.choice",
         "Quot.sound"
+      ],
+      "EulerEntropyIntegral.entropy_divergence_zero": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "EulerEntropyIntegral.periodic_entropy_conservation": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "EulerEntropyIntegral.periodic_conserved_integral": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "EulerEntropyIntegral.cube_measure_univ": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "EulerEntropyIntegral.normalized_entropy_conservation": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "EulerEntropyIntegral.normalized_conserved_integral": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "EulerEntropyIntegral.normalized_error_lower_bound": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "EulerEntropyIntegral.physical_error_from_initial_entropy": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
       ]
     },
-    "timeout_seconds": 150,
+    "timeout_seconds": 240,
     "memory_mb": 2048,
     "threads": 1,
     "scope": "Named Lean propositions only; no implementation or PDE convergence claim.",
@@ -511,12 +559,12 @@
     ],
     "compile_returncode": 0,
     "audit_returncode": 0,
-    "wall_seconds": 145.29858867800067,
+    "wall_seconds": 149.00093535199994,
     "artifact_sha256": {
-      "Audit.lean": "31146ec0bae726d86feb8d6925de52a403ac637a84d91cb6feadfe75464bc0a5",
-      "Candidate.lean": "4394ac6f4f83f034b42bbeac62a4010f4446aa505521f166f00947a461f1769d",
-      "Candidate.olean": "dd01ee487e4195666cc8975fc6630fcb243aef30189e893e82a1a11331061275",
-      "audit.log": "c77e562485002b269ea2fa7c799fb1363a92f1684b464204abac468d288d8a01",
+      "Audit.lean": "e9676ec5a5bf63b95cf08f80f89e1664f18438a15cde4fe977c0b06a96e8da73",
+      "Candidate.lean": "ee0c171f77881a3721c48440376429edc52a4d71fb4b0eb47d007d72f1057b07",
+      "Candidate.olean": "0f77dc0c49f560bd74f29e7b348547106099a3808dde2b04804c6ba0fa30fa45",
+      "audit.log": "14e9c64b7c0f8baa9726b6982f8de52ef9444bae2d1609b3980c76222aeb6d74",
       "compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     }
   },
@@ -551,7 +599,8 @@
     "RegionEscape.lean": "2475ed6ed9a478be98d289ff11e54c261896c541bf842fde76c8c43a5b9da108",
     "GridPoincare.lean": "bf2cabf5b39906e65c008f73e3ce91e5c579b234692f2394272ff9be5eeae360",
     "EntropyDecay.lean": "07c2dadc742a7b995ca4972b10e1a9dd69a2520ee07a2121e295cf36bbfd4ab3",
-    "EntropyError.lean": "3792ca282a0830f8d420d8cc66c329a6fb78609c0d62dddf53042383820aca80"
+    "EntropyError.lean": "3792ca282a0830f8d420d8cc66c329a6fb78609c0d62dddf53042383820aca80",
+    "EntropyIntegral.lean": "77615c201f052bc1477ccd0d2bb72820c7fd9553626d6560d62bff54e4c66b51"
   },
-  "scope": "Nonlinear update admissibility/conservation; conservative-to-primitive derivative connection; frozen and spatially varying principal-update energy estimates; grid-independent 3D embedding; exact noncontraction witness; actual entropy derivatives, convexity, finite averaging bound and local Euler entropy balance. The variable-coefficient estimate assumes explicit state and spatial-difference bounds. Existence, nonlinear full-solve stability, continuum solver accuracy and matching work optimality remain unproved. Actual nonlinear finite-step entropy dissipation is checked under explicit convex-region, curvature, flux, viscosity and timestep conditions. Uniform trajectory membership and those conditions for the current numerical settings remain unproved. Concrete physical-region bounds and initial-family membership are checked. A checked obstruction shows that the global sufficient viscosity criterion cannot certify the current wave-speed recipe on that region, even with improved valid curvature constants. It does not refute actual solver stability. An alternative existing logarithmic-mean entropy-conservative flux plus LF diffusion has a checked exact entropy identity, physical-flux consistency and nonpositive face residual for any nonnegative diffusion. With positive coefficients, a finite real-arithmetic halving search finds a positive, admissible, conservative step satisfying a finite-step entropy decrease condition. The zero-dissipation case is also proved stationary. There is an explicit state-dependent logarithmic retry upper bound and an accepted ratio lower bound, derived from actual directional entropy curvature along the trial path. These are not uniform bounds over the evolving family. There is no certified floating-point guard or proof of reaching the target time, continuum error bound or total-work optimality result. The alternative flux now has a concrete diagonal consistency bound on the physical region, independent of grid resolution. This does not yet give a uniform trajectory or full-solver stability bound. A checked 3x3x3 compression counterexample starts inside that region but every positive step leaves its energy ceiling, including the exact-real accepted step. Those compression data are not the Taylor-Green research family. A periodic 3D Poincare estimate now yields conditional accumulated entropy loss for the actual finite EC+LF trace with computed wave speeds. Separately, an actual integral entropy gap divided by 160 is a lower bound on maximum component L1 error for integrable fields in the stated region, with respect to any specified measure. Common smooth existence, continuous Euler integral entropy conservation, the actual reconstruction/initialization bridge and a justified complete work-optimality result are still unproved."
+  "scope": "Nonlinear update admissibility/conservation; conservative-to-primitive derivative connection; frozen and spatially varying principal-update energy estimates; grid-independent 3D embedding; exact noncontraction witness; actual entropy derivatives, convexity, finite averaging bound and local Euler entropy balance. The variable-coefficient estimate assumes explicit state and spatial-difference bounds. Existence, nonlinear full-solve stability, continuum solver accuracy and matching work optimality remain unproved. Actual nonlinear finite-step entropy dissipation is checked under explicit convex-region, curvature, flux, viscosity and timestep conditions. Uniform trajectory membership and those conditions for the current numerical settings remain unproved. Concrete physical-region bounds and initial-family membership are checked. A checked obstruction shows that the global sufficient viscosity criterion cannot certify the current wave-speed recipe on that region, even with improved valid curvature constants. It does not refute actual solver stability. An alternative existing logarithmic-mean entropy-conservative flux plus LF diffusion has a checked exact entropy identity, physical-flux consistency and nonpositive face residual for any nonnegative diffusion. With positive coefficients, a finite real-arithmetic halving search finds a positive, admissible, conservative step satisfying a finite-step entropy decrease condition. The zero-dissipation case is also proved stationary. There is an explicit state-dependent logarithmic retry upper bound and an accepted ratio lower bound, derived from actual directional entropy curvature along the trial path. These are not uniform bounds over the evolving family. There is no certified floating-point guard or proof of reaching the target time, continuum error bound or total-work optimality result. The alternative flux now has a concrete diagonal consistency bound on the physical region, independent of grid resolution. This does not yet give a uniform trajectory or full-solver stability bound. A checked 3x3x3 compression counterexample starts inside that region but every positive step leaves its energy ceiling, including the exact-real accepted step. Those compression data are not the Taylor-Green research family. A periodic 3D Poincare estimate now yields conditional accumulated entropy loss for the actual finite EC+LF trace with computed wave speeds. Separately, an actual integral entropy gap divided by 160 is a lower bound on maximum component L1 error for integrable fields in the stated region, with respect to any specified measure. Actual smooth periodic Euler fields now have checked global entropy and five-component integral conservation, derived from their conservative differential equations by the space-time divergence theorem. Normalized physical cube volume has total mass one. For continuous approximate and exact final fields in the region, initial exact entropy versus final approximate entropy gives a lower bound on physical L1 error. Common smooth existence, the actual reconstruction/initialization bridge and a justified complete work-optimality result are still unproved."
 }
