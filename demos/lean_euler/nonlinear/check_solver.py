@@ -24,6 +24,16 @@ THEOREMS = [
     "EulerConservativePrimitive.conserved_derivative",
     "EulerConservativePrimitive.canonical_flux_derivative",
     "EulerConservativePrimitive.euler_residual_equivalence",
+    "EulerDiscreteEnergy.principal_quadratic_bound",
+    "EulerDiscreteEnergy.energy_jensen",
+    "EulerDiscreteEnergy.frozen_linearized_energy_contraction",
+    "EulerEnergyBounds.box_coercivity",
+    "EulerEnergyBounds.box_upper_bound",
+    "EulerVariableEnergy.variable_principal_energy_defect",
+    "EulerGridSobolev.three_dimensional_embedding",
+    "EulerCoefficientBounds.metric_variation",
+    "EulerVariableStability.variable_principal_energy_growth",
+    "EulerVariableStability.varying_metric_energy_increase",
 ]
 
 
@@ -43,9 +53,12 @@ def main():
             for name in COMPONENTS
         },
         scope=(
-            "Nonlinear update admissibility/conservation and a differentiated conservative-to-"
-            "primitive energy-form connection. Existence, global stability, continuum solver "
-            "accuracy and matching work optimality remain unproved."
+            "Nonlinear update admissibility/conservation; conservative-to-primitive derivative "
+            "connection; frozen and spatially varying principal-update energy estimates; "
+            "grid-independent 3D embedding; exact noncontraction witness. "
+            "The variable-coefficient estimate assumes explicit state and spatial-difference "
+            "bounds. Existence, nonlinear full-solve stability, continuum solver accuracy "
+            "and matching work optimality remain unproved."
         ),
     )
     (args.output / "solver-formal.json").write_text(json.dumps(record, indent=2) + "\n")

@@ -9,7 +9,7 @@
     "matching lower bound tied to necessary evolution accuracy",
     "reviewable proof, numerical and PR/report artifacts"
   ],
-  "current_front": "Derive uniform continuous/numerical regularity and a fully discrete evolution-error estimate. A positive symmetrizing form is available but is not yet a global stability theorem.",
+  "current_front": "Prove uniform trajectory/derivative bounds, handle changing-in-time metrics and the nonlinear conservative update remainder, and derive a fully discrete continuum-error estimate. Mesh-independent principal-update energy estimates and a 3D grid embedding are now checked foundations.",
   "not_completion": [
     "initial-force diagnostics",
     "positivity or conservation alone",
@@ -34,12 +34,18 @@
     "actual periodic update conserves all five components",
     "unsafe flux-splitting counterexample",
     "positive primitive energy form and symmetric principal part",
-    "actual derivative-based conservative/primitive Euler residual equivalence"
+    "actual derivative-based conservative/primitive Euler residual equivalence",
+    "constant-coefficient principal-update energy contraction from matrix positivity and Jensen",
+    "explicit state-box norm equivalence and metric-coefficient variation bounds",
+    "variable-coefficient principal-update energy growth under explicit spatial-difference bounds",
+    "3D discrete embedding with mesh-independent constant 8",
+    "exact positive-coefficient CFL=1/2 counterexample to varying-metric contraction"
   ],
-  "latest_evidence": "record/solver: 11 audited statements and independent candidate validation, replayed through two successful bounded local-lab jobs",
+  "latest_evidence": "record/solver: 21 audited statements and independent candidate validation, replayed through two successful bounded local-lab jobs; research/lab-energy-03",
   "remaining_obligations": [
     "common smooth-time and quantitative regularity for the full parameter family",
     "formal initialization/reconstruction bounds",
+    "derive uniform coefficient-difference bounds, control metric time variation and bridge principal stability to the actual nonlinear conservative update",
     "uniform fully discrete stability and convergence",
     "scientifically justified formal competitor class",
     "matching total-work lower and upper bounds tied to evolved-field accuracy"

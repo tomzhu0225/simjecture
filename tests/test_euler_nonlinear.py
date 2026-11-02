@@ -42,14 +42,28 @@ def test_retained_commissioning_and_initial_diagnostic_proof():
         assert set(axioms) <= {"propext", "Classical.choice", "Quot.sound"}
 
 
-def test_solver_foundations_and_independent_validation_provenance():
+def test_solver_foundations_and_independent_validation_provenance(tmp_path):
     record = DEMO / "record/solver"
     proof = json.loads((record / "solver-formal.json").read_text())
     assert proof["result"]["checked"]
+    spec = importlib.util.spec_from_file_location("nonlinear_assembly", DEMO / "assemble_solver.py")
+    assembly = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(assembly)
+    assert set(proof["component_sha256"]) == set(assembly.COMPONENTS)
+    assembled = tmp_path / "Solver.lean"
+    assembly.assemble(assembled)
     for name, checksum in proof["component_sha256"].items():
         assert hashlib.sha256((DEMO / "formal" / name).read_bytes()).hexdigest() == checksum
     source = (record / "proof/Candidate.lean").read_bytes()
+    assert assembled.read_bytes() == source
     assert hashlib.sha256(source).hexdigest() == proof["result"]["source_sha256"]
+    assert {
+        "EulerAdmissible.computed_nonlinear_step_admissible",
+        "EulerDiscreteEnergy.frozen_linearized_energy_contraction",
+        "EulerGridSobolev.three_dimensional_embedding",
+        "EulerVariableStability.variable_principal_energy_growth",
+        "EulerVariableStability.varying_metric_energy_increase",
+    } <= set(proof["result"]["theorems"])
     for dependencies in proof["result"]["axioms"].values():
         assert set(dependencies) <= {"propext", "Classical.choice", "Quot.sound"}
     numerical = json.loads((record / "validation.json").read_text())

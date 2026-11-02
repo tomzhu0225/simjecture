@@ -3,7 +3,17 @@
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-COMPONENTS = ["Admissible.lean", "PrimitiveEnergy.lean", "ConservativePrimitive.lean"]
+COMPONENTS = [
+    "Admissible.lean",
+    "PrimitiveEnergy.lean",
+    "ConservativePrimitive.lean",
+    "DiscreteEnergy.lean",
+    "EnergyBounds.lean",
+    "VariableEnergy.lean",
+    "GridSobolev.lean",
+    "CoefficientBounds.lean",
+    "VariableStability.lean",
+]
 
 
 def assemble(destination):

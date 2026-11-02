@@ -3,7 +3,7 @@
     "schema_version": "0.1.0",
     "status": "proved",
     "checked": true,
-    "source_sha256": "6d5451ea31dfc9fd82880734bcd7b1eaabd67bf619515ff2cff815c7dd10c19b",
+    "source_sha256": "769f19ff16454574b600707bc1fceafdb261ec6971d0195e0304122c9994451f",
     "theorems": [
       "EulerAdmissible.convex_sum_admissible",
       "EulerAdmissible.flux_splitting_admissible",
@@ -15,7 +15,17 @@
       "EulerPrimitiveEnergy.symmetric_principal_part",
       "EulerConservativePrimitive.conserved_derivative",
       "EulerConservativePrimitive.canonical_flux_derivative",
-      "EulerConservativePrimitive.euler_residual_equivalence"
+      "EulerConservativePrimitive.euler_residual_equivalence",
+      "EulerDiscreteEnergy.principal_quadratic_bound",
+      "EulerDiscreteEnergy.energy_jensen",
+      "EulerDiscreteEnergy.frozen_linearized_energy_contraction",
+      "EulerEnergyBounds.box_coercivity",
+      "EulerEnergyBounds.box_upper_bound",
+      "EulerVariableEnergy.variable_principal_energy_defect",
+      "EulerGridSobolev.three_dimensional_embedding",
+      "EulerCoefficientBounds.metric_variation",
+      "EulerVariableStability.variable_principal_energy_growth",
+      "EulerVariableStability.varying_metric_energy_increase"
     ],
     "allowed_axioms": [
       "Classical.choice",
@@ -77,6 +87,56 @@
         "propext",
         "Classical.choice",
         "Quot.sound"
+      ],
+      "EulerDiscreteEnergy.principal_quadratic_bound": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "EulerDiscreteEnergy.energy_jensen": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+      ],
+      "EulerDiscreteEnergy.frozen_linearized_energy_contraction": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+      ],
+      "EulerEnergyBounds.box_coercivity": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "EulerEnergyBounds.box_upper_bound": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "EulerVariableEnergy.variable_principal_energy_defect": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+      ],
+      "EulerGridSobolev.three_dimensional_embedding": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "EulerCoefficientBounds.metric_variation": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "EulerVariableStability.variable_principal_energy_growth": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+      ],
+      "EulerVariableStability.varying_metric_energy_increase": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
       ]
     },
     "timeout_seconds": 150,
@@ -115,19 +175,25 @@
     ],
     "compile_returncode": 0,
     "audit_returncode": 0,
-    "wall_seconds": 21.41818880000028,
+    "wall_seconds": 50.197661794999476,
     "artifact_sha256": {
-      "Audit.lean": "848a8d685506bcf9ccd0b1f8010fb311cc04b47860decbe4bda0b10febf4660b",
-      "Candidate.lean": "6d5451ea31dfc9fd82880734bcd7b1eaabd67bf619515ff2cff815c7dd10c19b",
-      "Candidate.olean": "07f080b3b5bda105e46a2caa4b53e645568861c2f714b0e495cc7c147ad0194c",
-      "audit.log": "86f44fee6fce42a3572205c6cf711d938b2c228b85d07714a12caf1faa17f87c",
+      "Audit.lean": "cfa982fe6a41834a5d155f0154a0765c52e60e9b202be9a8019ee3640fdf9fdc",
+      "Candidate.lean": "769f19ff16454574b600707bc1fceafdb261ec6971d0195e0304122c9994451f",
+      "Candidate.olean": "6061875e8e4fe8ceeefa3662a13b7f66f7aa36259fa91b3b8b839f2c9224e7f2",
+      "audit.log": "1475497a92693aa174aba0c0dec49881c6f5c9d4465aef4ade8116d681cc4951",
       "compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     }
   },
   "component_sha256": {
     "Admissible.lean": "137920bcc9f864001f27ed16e0c251b0e551988974cde6607a3789553acfd204",
     "PrimitiveEnergy.lean": "652a9d57bf336553918cded1337b00f569ff71db0d696db429dca7e095314e09",
-    "ConservativePrimitive.lean": "a3eb81b04068b56631d0fde39c2f2fd795dfcdb6598b0befec34b0db6755b2ac"
+    "ConservativePrimitive.lean": "a3eb81b04068b56631d0fde39c2f2fd795dfcdb6598b0befec34b0db6755b2ac",
+    "DiscreteEnergy.lean": "c4073f2c2d91f2b69765c3371da31f9ad9cb04f2003afdb57f9f5b45e57225c4",
+    "EnergyBounds.lean": "d2a931f019988a40d4de20b71c844dd0d9dbec37e67b481d7eb300e5d5f64716",
+    "VariableEnergy.lean": "aa4fe016bcabff9cff0e049e1acc7f0b6b639c0778ebeb35140592d97aaf72be",
+    "GridSobolev.lean": "474618d8f9294e2bb513da0da964e3a532f75216d7514f77b1efee42f6bccd11",
+    "CoefficientBounds.lean": "77ec763eb0e20fcf4b75120ccf14ec72f672dcadc37b8906b1adcb05f7f65406",
+    "VariableStability.lean": "69b482ac05aa707ea5224b8628b6eb7134d0cde4a5320fd75289df32b5d078f6"
   },
-  "scope": "Nonlinear update admissibility/conservation and a differentiated conservative-to-primitive energy-form connection. Existence, global stability, continuum solver accuracy and matching work optimality remain unproved."
+  "scope": "Nonlinear update admissibility/conservation; conservative-to-primitive derivative connection; frozen and spatially varying principal-update energy estimates; grid-independent 3D embedding; exact noncontraction witness. The variable-coefficient estimate assumes explicit state and spatial-difference bounds. Existence, nonlinear full-solve stability, continuum solver accuracy and matching work optimality remain unproved."
 }

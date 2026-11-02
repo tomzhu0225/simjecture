@@ -114,6 +114,15 @@ The formal solver foundations now check:
 - A positive primitive-variable energy form that symmetrizes the principal
   coefficients, connected by actual differentiation to the conservative Euler
   equations.
+- Energy contraction for the constant-coefficient principal update, derived
+  from positive matrix weights and a finite-sum Jensen inequality.
+- Explicit state-box norm/coefficient bounds, an exact varying-coefficient
+  energy defect, and a principal-update growth bound under stated spatial
+  difference bounds. Both before/after energies here use the old local metric.
+- A 3D grid embedding with constant 8 independent of mesh resolution.
+- An exact counterexample to varying-metric contraction: at CFL 1/2, the
+  energy of a particular error field grows from 5 to 125/16. This is an
+  auxiliary stability diagnostic, not a replacement physical problem.
 
 These are **not a global stability, convergence, or optimality theorem**.
 Common smooth-time bounds, uniform numerical regularity, an actual full-solve
@@ -121,7 +130,7 @@ error estimate, and matching complexity bounds remain open. The initial-cell
 average formulas have an independent quadrature check; their formal
 initialization/reconstruction bridge also remains to be proved.
 
-Eleven named solver-foundation statements and the independent numerical checks
+Twenty-one named solver-foundation statements and the independent numerical checks
 are retained under `record/solver`. Replay them through the bounded local lab:
 
 ```bash
@@ -132,3 +141,30 @@ The replay uses an isolated local worker with the same pinned Lean runtime and
 an 8 GB proof-job memory allowance. `check_solver.py` and `assemble_solver.py`
 provide the corresponding trusted direct check. The Python implementation is
 not a verified extraction and the numerical checks do not certify IEEE error.
+
+The [current PDF report](report.pdf) describes the checked statements and their
+premises. For the varying-coefficient principal update, the energy estimate is
+
+\[
+E_{\rm after}\le[1+756\Delta t(256BK+32D)]E_{\rm before}.
+\]
+
+It assumes specific volume q = 1/ρ and pressure in [1/4,4], a valid CFL ratio,
+|a_d| + |v_d| ≤ B, and neighboring differences bounded by |Δq| + |Δp| ≤ hK
+and |Δv_d| ≤ hD. Here Δt = ratio × h. The constant stays independent of the
+number of cells if B, K and D have uniform bounds. Those bounds are **not yet
+proved for the nonlinear trajectory**. Metric variation in time, nonlinear
+update remainders and common smooth existence remain required work.
+
+`GridSobolev.lean` proves |f(i,j,k)|² ≤ 8 E₃(f). Its one-dimensional building
+block is E₁(f) = n⁻¹ Σf² + n Σ(f(k+1)−f(k))²; E₂ and E₃ recursively apply the
+same construction in the other coordinates. Thus E₃ contains eight mixed
+forward differences, with each coordinate differentiated at most once, scaled
+to unit coordinates. This controls values from derivative energies, not the
+growth of those derivative energies during evolution.
+
+The expanded audit is replayed in
+`artifacts/lean-euler/20261102/nonlinear/research/lab-energy-03`. The earlier
+`lab-energy-01` attempt is retained: its final negative-control proof hit Lean's
+simplifier recursion limit. Factoring the computation into smaller checked
+lemmas resolved it without increasing checker limits.

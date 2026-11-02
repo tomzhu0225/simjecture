@@ -68,3 +68,63 @@ run_cmd do
   | _ => throwError "Not a theorem: EulerConservativePrimitive.euler_residual_equivalence"
   let axioms ← collectAxioms n
   logInfo m!"SIMJECTURE_AXIOMS EulerConservativePrimitive.euler_residual_equivalence: {axioms.toList}"
+  let n := `EulerDiscreteEnergy.principal_quadratic_bound
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerDiscreteEnergy.principal_quadratic_bound"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerDiscreteEnergy.principal_quadratic_bound: {axioms.toList}"
+  let n := `EulerDiscreteEnergy.energy_jensen
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerDiscreteEnergy.energy_jensen"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerDiscreteEnergy.energy_jensen: {axioms.toList}"
+  let n := `EulerDiscreteEnergy.frozen_linearized_energy_contraction
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerDiscreteEnergy.frozen_linearized_energy_contraction"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerDiscreteEnergy.frozen_linearized_energy_contraction: {axioms.toList}"
+  let n := `EulerEnergyBounds.box_coercivity
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerEnergyBounds.box_coercivity"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerEnergyBounds.box_coercivity: {axioms.toList}"
+  let n := `EulerEnergyBounds.box_upper_bound
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerEnergyBounds.box_upper_bound"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerEnergyBounds.box_upper_bound: {axioms.toList}"
+  let n := `EulerVariableEnergy.variable_principal_energy_defect
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerVariableEnergy.variable_principal_energy_defect"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerVariableEnergy.variable_principal_energy_defect: {axioms.toList}"
+  let n := `EulerGridSobolev.three_dimensional_embedding
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerGridSobolev.three_dimensional_embedding"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerGridSobolev.three_dimensional_embedding: {axioms.toList}"
+  let n := `EulerCoefficientBounds.metric_variation
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerCoefficientBounds.metric_variation"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerCoefficientBounds.metric_variation: {axioms.toList}"
+  let n := `EulerVariableStability.variable_principal_energy_growth
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerVariableStability.variable_principal_energy_growth"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerVariableStability.variable_principal_energy_growth: {axioms.toList}"
+  let n := `EulerVariableStability.varying_metric_energy_increase
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerVariableStability.varying_metric_energy_increase"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerVariableStability.varying_metric_energy_increase: {axioms.toList}"

@@ -98,6 +98,22 @@ argument. `assemble.py` produces a self-contained checker input from the tracked
 components; `check_formal.py` retains audited receipts and an altered-resolution
 negative control. The installer includes these calculus dependencies.
 
+The active `demos/lean_euler/nonlinear` goal replaces prescribed analytic motion
+with a pressure-coupled compressible 3D Taylor–Green family. Read its contract,
+`GOAL_STATUS.json`, and `RESEARCH_NOTES.txt` before extending the work. Its
+admissibility/conservation theorems concern the actual nonlinear finite-volume
+step. Its principal-update energy estimates concern a different, explicitly
+defined map. Do not identify these maps or discard the nonlinear remainder.
+The variable-coefficient estimate assumes state-box and spatial-difference
+bounds; proving those bounds along the trajectory is still necessary. Both
+energies in that estimate use the old local metric, so metric variation in time
+also needs control. The grid embedding bounds values from derivative energies;
+it does not bound the evolution of those energies. An exact CFL=1/2 witness shows
+that a varying local metric can increase from 5 to 125/16 in one principal step.
+None of these foundations establishes continuum accuracy or work optimality.
+`run_solver_study.py` replays the candidate checks and assembled proof through
+an isolated local lab. The corresponding PDF reports explicit outstanding work.
+
 The affine-shear example has analytically known dynamics; its work theorem is
 principally a function-reconstruction result. It does not fulfill a request for
 an optimal solver of unknown nonlinear Euler evolution. For that research

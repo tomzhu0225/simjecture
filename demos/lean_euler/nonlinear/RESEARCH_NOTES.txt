@@ -12,7 +12,28 @@ Established in the current proof components:
 - ConservativePrimitive.lean: actual HasDerivAt quotient/product calculus,
   invertible state-map differential, canonical flux connection and equality
   of conservative and primitive PDE residuals at differentiable curves.
-- All 11 requested foundation theorems were audited in the local capability.
+- DiscreteEnergy.lean: acoustic quadratic bound, positive seven-action
+  decomposition, finite matrix-weighted Jensen, frozen principal contraction.
+- EnergyBounds.lean: explicit sizeSquared <= 108*g and g <= 32*sizeSquared
+  on the stated positive box (upper bound needs only the lower state bound).
+- VariableEnergy.lean: exact spatial coefficient-variation defect, including
+  cancellation of the constant acoustic cross terms in the symmetrized flux.
+- CoefficientBounds.lean: reciprocal/rational coefficient estimates and
+  |g(q',p')(e,e)-g(q,p)(e,e)| <= 256*(|dq|+|dp|)*sizeSquared(e).
+- VariableStability.lean: principal-update energy growth under explicit
+  coefficient-difference bounds, with factor 1+756*dt*(256*B*K+32*D).
+  Both energies use the old local metric; full nonlinear stability is not
+  asserted. Exact varying-metric noncontraction witness: energy 5 -> 125/16
+  under CFL=1/2, q=(1,2), p=1, v=0, speeds 2 and ratio 1/12.
+- GridSobolev.lean: elementary telescoping/Cauchy-Schwarz 1D estimate and its
+  tensorized 3D embedding, |f_ijk|^2 <= 8*energy3(f), constant independent of n.
+  energy1 = mean(f^2)+n*sum(Delta f)^2; energy2/3 recurse in each coordinate.
+  These are unit-coordinate scaled forward differences, valid on periodic
+  extensions. A bound on the derivative energies along trajectories is absent.
+- All 21 selected foundation theorems were audited in the local capability in
+  research/lab-energy-03. Numeric and formal jobs both succeeded. The previous
+  lab-energy-01 attempt hit a simplifier recursion limit in the final exact
+  witness; smaller intermediate lemmas fixed it without raising checker limits.
   This does not establish solution existence or numerical convergence.
 - finite_volume.py: actual unknown-dynamics candidate with analytic initial
   cell averages. Independent Gauss quadrature error is about 1e-15. Random
@@ -25,9 +46,10 @@ Stability/existence investigation:
      D_t q = q div(v), D_t v = -q grad(p), D_t p = -2p div(v).
    The checked energy form is
      dp^2/(2p) + |dv|^2/q + (dq/q+dp/(2p))^2.
-   A continuum/discrete energy estimate still requires integration-by-parts,
-   coefficient derivative bounds, commutators and uniform coercivity. Merely
-   having a symmetrizer is not that estimate.
+   The principal discrete update now has a checked energy growth estimate.
+   A full continuum/nonlinear estimate still requires coefficient derivative
+   bounds, commutators, metric time variation and a bridge to the actual
+   conservative update. Merely having a symmetrizer is not that estimate.
 2. Published Godunov relative-energy convergence (arXiv:2111.05009;
    DOI 10.1007/s10915-022-01843-6) assumes a strong solution and uniform
    nondegeneracy/bounds. Its general rates do not automatically yield a
@@ -62,3 +84,57 @@ Next concrete work: quantitative regularity/local existence, a uniform
 fully discrete energy or analytic-scale stability estimate, then truncation,
 initialization and reconstructed-field error. Only after that can the upper
 work bound be paired with an actual necessary-accuracy lower bound.
+
+Potential continuation from the new embedding:
+- The elementary embedding uses mixed derivatives up to total order 3.
+- For quadratic primitive equations, an H6 discrete product estimate can put
+  the lower-order factor (order <=3) in Linfinity via that embedding. A top
+  commutator has derivative orders k and 7-k with 1<=k<=6, so the same split
+  is possible. A complete discrete product/commutator proof is still needed.
+- The actual conservative Rusanov step is not exactly the primitive principal
+  update. Finite changes of coordinates introduce nonlinear remainders; do
+  not identify the two maps or silently discard those terms.
+- Current coefficient-growth constants are deliberately loose. Neither the
+  state box nor uniform derivative bounds at T=0.25 have been established.
+  A very short local existence estimate alone does not fulfill the target.
+
+Accuracy-based lower-bound route to investigate (NOT established):
+- The current first-order Rusanov candidate cannot simply be declared optimal
+  in the initial radius-two / up-to-three-stage search scope: higher-order
+  smooth-flow methods may beat its work-versus-error exponent. Finalizing a
+  scientifically recognizable restricted class is essential, not a formality.
+- One possible class is explicit conservative LF/Rusanov finite-volume
+  evolutions with quantitative viscosity and positivity-preserving convex
+  reconstruction. This is a proposed class, not the accepted final contract.
+  All parameter formulas and preprocessing remain available and charged.
+- For gamma=2, use convex mathematical entropy
+      eta(U) = -rho*log(p/rho^2).
+  Smooth periodic Euler conserves its spatial integral and all mean conserved
+  quantities. The nonconstant initial velocity gives a positive relative
+  entropy with respect to the conserved mean, uniformly for A>=1/2.
+- If a method's ACTUAL update can be proved to dissipate relative entropy by
+  at least c*dt*h*R_n per step, R_n is nonincreasing. Final accuracy would force
+  R_N to remain bounded below, yielding total entropy deficit at least c'*h*T.
+  A convex partition-of-unity reconstruction with uniform integral weights
+  cannot restore the lost convex entropy (Jensen). A Lipschitz entropy bound
+  on an established compact state set then forces L1 evolved-field error
+  Omega(h), rather than a mere output representation or initial sampling bound.
+- A necessary h=O(epsilon), a necessary positivity/stability step dt=O(h),
+  and the actual operational cost of local updates could then give
+  Omega(epsilon^-4). A fully proved first-order continuum error bound and a
+  complete solve-work trace would give the matching upper bound. None of
+  these missing statements is supplied by the current energy estimate.
+- Central Rusanov flux is not automatically entropy conservative. Derive its
+  entropy defect and the fully discrete Taylor remainder; do not assume a
+  semidiscrete entropy claim applies to a finite step. A sufficiently strong
+  LF viscosity and strict CFL margin may control both via explicit entropy
+  Hessian and flux bounds, but inclusion of the actual candidate must be
+  demonstrated. Numerical dissipation is not itself an error certificate.
+- Useful algebra to verify: the conservative entropy Hessian pulled back to
+  primitive variations (dq,dv,dp) should be
+      2*dq^2/q^3 + 2*dq*dp/(p*q^2) + dp^2/(q*p^2)
+        + |dv|^2/(p*q^2)
+    = dp^2/(2*p^2*q) + |dv|^2/(p*q^2)
+        + (2/q)*(dq/q+dp/(2*p))^2.
+  This differs from the current convenient symmetrizer g. It must be connected
+  to actual derivatives of eta(U), not merely defined to have the desired form.

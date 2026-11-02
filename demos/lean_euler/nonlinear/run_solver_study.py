@@ -7,6 +7,8 @@ import sys
 import time
 from pathlib import Path
 
+from assemble_solver import COMPONENTS
+
 from conjecture_solver.execution_pool import MachineRegistry
 from conjecture_solver.research_service import ResearchService
 
@@ -46,11 +48,7 @@ def main():
         execution_pool=registry.freeze(["local-lean"]),
         artifact_policy="eager",
     )
-    components = [
-        "formal/Admissible.lean",
-        "formal/PrimitiveEnergy.lean",
-        "formal/ConservativePrimitive.lean",
-    ]
+    components = [f"formal/{name}" for name in COMPONENTS]
     files = components + [
         "assemble_solver.py",
         "check_solver.py",
