@@ -3,7 +3,7 @@
     "schema_version": "0.1.0",
     "status": "proved",
     "checked": true,
-    "source_sha256": "28883c2db7f421f4a493f4de5bc4280a4362f9fbe8255bcba6c4fdf799126c71",
+    "source_sha256": "3a71ade9c27254d8f689fc9035a1cf94dbecf79e392dcbfab4040950b6773174",
     "theorems": [
       "EulerAdmissible.convex_sum_admissible",
       "EulerAdmissible.flux_splitting_admissible",
@@ -60,7 +60,14 @@
       "EulerEntropyCandidateStep.zero_dissipation_stationary",
       "EulerEntropyCandidateStep.exists_acceptable_halving",
       "EulerEntropyCandidateStep.backtracked_step",
-      "EulerEntropyCandidateStep.earlier_trials_rejected"
+      "EulerEntropyCandidateStep.earlier_trials_rejected",
+      "EulerPressurePolynomial.hessian_polynomial",
+      "EulerPressurePolynomial.path_curvature_bound",
+      "EulerEntropyStepBounds.trial_path_bound",
+      "EulerEntropyStepBounds.total_entropy_upper",
+      "EulerEntropyStepBounds.below_cap_acceptable",
+      "EulerEntropyStepBounds.quantitative_retry_bound",
+      "EulerEntropyStepBounds.accepted_ratio_lower_bound"
     ],
     "allowed_axioms": [
       "Classical.choice",
@@ -347,6 +354,41 @@
         "propext",
         "Quot.sound",
         "Classical.choice"
+      ],
+      "EulerPressurePolynomial.hessian_polynomial": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "EulerPressurePolynomial.path_curvature_bound": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "EulerEntropyStepBounds.trial_path_bound": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+      ],
+      "EulerEntropyStepBounds.total_entropy_upper": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+      ],
+      "EulerEntropyStepBounds.below_cap_acceptable": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+      ],
+      "EulerEntropyStepBounds.quantitative_retry_bound": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+      ],
+      "EulerEntropyStepBounds.accepted_ratio_lower_bound": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
       ]
     },
     "timeout_seconds": 150,
@@ -385,12 +427,12 @@
     ],
     "compile_returncode": 0,
     "audit_returncode": 0,
-    "wall_seconds": 103.98692563899931,
+    "wall_seconds": 111.45935650299725,
     "artifact_sha256": {
-      "Audit.lean": "4fe7828a9d8d12d4bb51fea4a10ccc607d76cdef843f7c0a4db4616dba61cb2b",
-      "Candidate.lean": "28883c2db7f421f4a493f4de5bc4280a4362f9fbe8255bcba6c4fdf799126c71",
-      "Candidate.olean": "e6a950001d2f8df24f0c118d527ee0d032e11a52ab1eac796c865fb99b108c04",
-      "audit.log": "345a3273e4a95416f5b2521c3747203da8e936c8cce30eee3497c617519ef4d8",
+      "Audit.lean": "3703af02e4b164f27f99857127feb4092711d044bdcbafb47682feb870a51124",
+      "Candidate.lean": "3a71ade9c27254d8f689fc9035a1cf94dbecf79e392dcbfab4040950b6773174",
+      "Candidate.olean": "58b0dbf1a38a7fb9c12b7fef32c0774f131d78bfe53376b1101a1edcb26eaa62",
+      "audit.log": "542801512a5f6fdf705fbca2d423bf494e47811a10c8848b9b2eede1755dd2a1",
       "compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     }
   },
@@ -418,7 +460,9 @@
     "PhysicalFluxBounds.lean": "f08c3916daabf8a2a4c4cb6f9d305d7918383025a0b0972e48fcf58f78d1939b",
     "LogMean.lean": "875d8f54b8d809a5b69a66f983f2f10e504e178ba5a01df0f3ad5384d85300b7",
     "EntropyConservativeFlux.lean": "a4a11ff5b48f9900c9d093d9e9e41e825927c4c8332ec2de235406b7ff96c3c4",
-    "EntropyCandidateStep.lean": "4cd47d8eb7d51b82c99b280f1de9cc2d218c8e05192336305fe5b8a1a27a53cd"
+    "EntropyCandidateStep.lean": "4cd47d8eb7d51b82c99b280f1de9cc2d218c8e05192336305fe5b8a1a27a53cd",
+    "PressurePolynomial.lean": "a7e912ed6847ae1c10512513366c729d140ec286668740d17243e30e9521a853",
+    "EntropyStepBounds.lean": "e1f8957ede8ccb64f266a275c5e0eef0efd1778eea42c1f32c8c233401230f22"
   },
-  "scope": "Nonlinear update admissibility/conservation; conservative-to-primitive derivative connection; frozen and spatially varying principal-update energy estimates; grid-independent 3D embedding; exact noncontraction witness; actual entropy derivatives, convexity, finite averaging bound and local Euler entropy balance. The variable-coefficient estimate assumes explicit state and spatial-difference bounds. Existence, nonlinear full-solve stability, continuum solver accuracy and matching work optimality remain unproved. Actual nonlinear finite-step entropy dissipation is checked under explicit convex-region, curvature, flux, viscosity and timestep conditions. Uniform trajectory membership and those conditions for the current numerical settings remain unproved. Concrete physical-region bounds and initial-family membership are checked. A checked obstruction shows that the global sufficient viscosity criterion cannot certify the current wave-speed recipe on that region, even with improved valid curvature constants. It does not refute actual solver stability. An alternative existing logarithmic-mean entropy-conservative flux plus LF diffusion has a checked exact entropy identity, physical-flux consistency and nonpositive face residual for any nonnegative diffusion. With positive coefficients, a finite real-arithmetic halving search finds a positive, admissible, conservative step satisfying a finite-step entropy decrease condition. The zero-dissipation case is also proved stationary. There is no uniform retry bound, certified floating-point guard, proof of reaching the target time, continuum error bound or total-work optimality result."
+  "scope": "Nonlinear update admissibility/conservation; conservative-to-primitive derivative connection; frozen and spatially varying principal-update energy estimates; grid-independent 3D embedding; exact noncontraction witness; actual entropy derivatives, convexity, finite averaging bound and local Euler entropy balance. The variable-coefficient estimate assumes explicit state and spatial-difference bounds. Existence, nonlinear full-solve stability, continuum solver accuracy and matching work optimality remain unproved. Actual nonlinear finite-step entropy dissipation is checked under explicit convex-region, curvature, flux, viscosity and timestep conditions. Uniform trajectory membership and those conditions for the current numerical settings remain unproved. Concrete physical-region bounds and initial-family membership are checked. A checked obstruction shows that the global sufficient viscosity criterion cannot certify the current wave-speed recipe on that region, even with improved valid curvature constants. It does not refute actual solver stability. An alternative existing logarithmic-mean entropy-conservative flux plus LF diffusion has a checked exact entropy identity, physical-flux consistency and nonpositive face residual for any nonnegative diffusion. With positive coefficients, a finite real-arithmetic halving search finds a positive, admissible, conservative step satisfying a finite-step entropy decrease condition. The zero-dissipation case is also proved stationary. There is an explicit state-dependent logarithmic retry upper bound and an accepted ratio lower bound, derived from actual directional entropy curvature along the trial path. These are not uniform bounds over the evolving family. There is no certified floating-point guard or proof of reaching the target time, continuum error bound or total-work optimality result."
 }

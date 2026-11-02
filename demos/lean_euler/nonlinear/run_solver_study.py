@@ -57,6 +57,7 @@ def main():
         "validate_entropy.py",
         "entropy_candidate.py",
         "validate_entropy_candidate.py",
+        "validate_step_bound.py",
         "contract.json",
     ]
     for name in files:
@@ -115,6 +116,18 @@ def main():
         ["--output", "ec"],
         ["entropy_candidate.py", "finite_volume.py", "contract.json"],
         ["ec/validation.json"],
+        timeout=300,
+    )
+    execute(
+        "validate_step_bound.py",
+        ["--output", "step-bound"],
+        [
+            "entropy_candidate.py",
+            "validate_entropy_candidate.py",
+            "finite_volume.py",
+            "contract.json",
+        ],
+        ["step-bound/step-bound-validation.json"],
         timeout=300,
     )
     proof_outputs = ["checked/solver-formal.json"]

@@ -76,6 +76,9 @@ def test_solver_foundations_and_independent_validation_provenance(tmp_path):
         "EulerEntropyConservativeFlux.face_entropy_stable",
         "EulerEntropyCandidateStep.backtracked_step",
         "EulerEntropyCandidateStep.earlier_trials_rejected",
+        "EulerPressurePolynomial.path_curvature_bound",
+        "EulerEntropyStepBounds.quantitative_retry_bound",
+        "EulerEntropyStepBounds.accepted_ratio_lower_bound",
     } <= set(proof["result"]["theorems"])
     for dependencies in proof["result"]["axioms"].values():
         assert set(dependencies) <= {"propext", "Classical.choice", "Quot.sound"}
@@ -96,6 +99,7 @@ def test_solver_foundations_and_independent_validation_provenance(tmp_path):
         assert row["entropy_loss"] > 0
         assert row["relative_entropy_final"] > 0
         assert row["conservation_error"] < 1e-11
+
         if row["n"] == 16:
             assert row["direct_solver_replay_max_error"] == 0
     assert len(entropy_record["random_states"]) == 24
@@ -115,3 +119,23 @@ def test_solver_foundations_and_independent_validation_provenance(tmp_path):
         assert row["min_density"] > 0 and row["min_pressure"] > 0
         assert row["minimum_entropy_margin"] >= 0
         assert row["conservation_error"] < 1e-11
+
+
+def test_quantitative_retry_record_and_independent_derivative_checks():
+    record = json.loads((DEMO / "record/solver/step-bound-validation.json").read_text())
+    for name, checksum in record["sources"].items():
+        assert hashlib.sha256((DEMO / name).read_bytes()).hexdigest() == checksum
+    assert record["random_states"] == 2048
+    assert record["hessian_complex_step_max_scaled_error"] < 1e-10
+    assert record["minimum_scaled_curvature_margin"] >= 0
+    assert record["minimum_density_ratio"] >= 0.5
+    assert record["minimum_quadratic_ratio"] >= 0.5
+    control = record["excessive_proposal_control"]
+    assert 0 < control["actual_halvings"] <= control["predicted_halvings"]
+    assert record["zero_dissipation_predicted_halvings"] == 0
+    assert len(record["rows"]) == 9
+    for row in record["rows"]:
+        assert row["final_time"] == 0.25
+        assert 0 <= row["max_actual_halvings"] <= row["max_predicted_halvings"]
+        assert 0 < row["max_proposal_over_cap"] < 1
+        assert row["min_entropy_budget_slack"] > 0

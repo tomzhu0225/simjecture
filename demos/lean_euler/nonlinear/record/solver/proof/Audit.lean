@@ -393,3 +393,52 @@ run_cmd do
   | _ => throwError "Not a theorem: EulerEntropyCandidateStep.earlier_trials_rejected"
   let axioms ← collectAxioms n
   logInfo m!"SIMJECTURE_AXIOMS EulerEntropyCandidateStep.earlier_trials_rejected: {axioms.toList}"
+run_cmd do
+  let n := `EulerPressurePolynomial.hessian_polynomial
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerPressurePolynomial.hessian_polynomial"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerPressurePolynomial.hessian_polynomial: {axioms.toList}"
+run_cmd do
+  let n := `EulerPressurePolynomial.path_curvature_bound
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerPressurePolynomial.path_curvature_bound"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerPressurePolynomial.path_curvature_bound: {axioms.toList}"
+run_cmd do
+  let n := `EulerEntropyStepBounds.trial_path_bound
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerEntropyStepBounds.trial_path_bound"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerEntropyStepBounds.trial_path_bound: {axioms.toList}"
+run_cmd do
+  let n := `EulerEntropyStepBounds.total_entropy_upper
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerEntropyStepBounds.total_entropy_upper"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerEntropyStepBounds.total_entropy_upper: {axioms.toList}"
+run_cmd do
+  let n := `EulerEntropyStepBounds.below_cap_acceptable
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerEntropyStepBounds.below_cap_acceptable"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerEntropyStepBounds.below_cap_acceptable: {axioms.toList}"
+run_cmd do
+  let n := `EulerEntropyStepBounds.quantitative_retry_bound
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerEntropyStepBounds.quantitative_retry_bound"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerEntropyStepBounds.quantitative_retry_bound: {axioms.toList}"
+run_cmd do
+  let n := `EulerEntropyStepBounds.accepted_ratio_lower_bound
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerEntropyStepBounds.accepted_ratio_lower_bound"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerEntropyStepBounds.accepted_ratio_lower_bound: {axioms.toList}"

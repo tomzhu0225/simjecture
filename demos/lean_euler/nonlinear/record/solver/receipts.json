@@ -3,9 +3,9 @@
     "id": "exp_6f62fc7879c551622f9e3955",
     "status": "succeeded",
     "operator_guidance_ids": [],
-    "created_at": 1793590722.1937509,
+    "created_at": 1793592537.3682046,
     "timeout": 120,
-    "execution_deadline": 1793591622.0683608,
+    "execution_deadline": 1793593437.2570734,
     "workspace_limit_bytes": 4294967296,
     "binding": {
       "source": "validate_candidate.py",
@@ -36,30 +36,30 @@
     "method": null,
     "review_documents": null,
     "machine": "local-lean",
-    "pid": 287858,
+    "pid": 302730,
     "worker_identity": {
-      "pid": 287858,
-      "starttime": "1551004",
+      "pid": 302730,
+      "starttime": "1732521",
       "argv": [
         "/home/tomzhu0225/src/simjecture/.venv/bin/python",
         "-m",
         "conjecture_solver.research_service",
         "--root",
-        "/home/tomzhu0225/src/simjecture/artifacts/lean-euler/20261102/nonlinear/research/lab-ec-01/study",
+        "/home/tomzhu0225/src/simjecture/artifacts/lean-euler/20261102/nonlinear/research/lab-step-bound-01/study",
         "--execute",
         "exp_6f62fc7879c551622f9e3955"
       ],
-      "launched_at": "2026-11-02T03:38:42.358770+00:00",
+      "launched_at": "2026-11-02T04:08:57.522216+00:00",
       "run_directory": null
     },
-    "started_at": 1793590723.2441845,
-    "remote_job": "job_ef9e003b789077d373062421f3e1c84e2370b89f",
+    "started_at": 1793592538.2985356,
+    "remote_job": "job_c9a7707c09e9527c601294df7169bc73ed79d485",
     "transport_status": "connected",
     "assigned_gpu_ids": [],
     "telemetry": null,
     "execution_heartbeat": {
-      "elapsed_wall_seconds": 0.754572609999741,
-      "observed_at": 1793590724.0262673
+      "elapsed_wall_seconds": 0.7047390040024766,
+      "observed_at": 1793592539.0316966
     },
     "remote_terminal_status": "succeeded",
     "remote_artifacts": {
@@ -91,7 +91,7 @@
       "stdout_truncated": false,
       "stderr_truncated": false,
       "heartbeat_count": 0,
-      "wall_seconds": 0.754572609999741,
+      "wall_seconds": 0.7047390040024766,
       "workspace_bytes": 14371,
       "executor_sha256": "b92087579abbb99f55ce2c75d98765355c8ccd4a6ccf3ba55b15ddd5491a22ec",
       "resource_limits": {
@@ -104,7 +104,7 @@
     "input_mutations": [],
     "output_findings": [],
     "scientific_status": "unreviewed",
-    "finished_at": 1793590724.0304,
+    "finished_at": 1793592539.0356386,
     "transport_error": null,
     "collection_deferred": false,
     "collection_cancel_requested": false,
@@ -132,9 +132,9 @@
     "id": "exp_c2894c83807af48a6b7ebef3",
     "status": "succeeded",
     "operator_guidance_ids": [],
-    "created_at": 1793590724.81436,
+    "created_at": 1793592540.0014665,
     "timeout": 240,
-    "execution_deadline": 1793591622.0683608,
+    "execution_deadline": 1793593437.2570734,
     "workspace_limit_bytes": 4294967296,
     "binding": {
       "source": "validate_entropy.py",
@@ -165,30 +165,30 @@
     "method": null,
     "review_documents": null,
     "machine": "local-lean",
-    "pid": 287918,
+    "pid": 302759,
     "worker_identity": {
-      "pid": 287918,
-      "starttime": "1551266",
+      "pid": 302759,
+      "starttime": "1732785",
       "argv": [
         "/home/tomzhu0225/src/simjecture/.venv/bin/python",
         "-m",
         "conjecture_solver.research_service",
         "--root",
-        "/home/tomzhu0225/src/simjecture/artifacts/lean-euler/20261102/nonlinear/research/lab-ec-01/study",
+        "/home/tomzhu0225/src/simjecture/artifacts/lean-euler/20261102/nonlinear/research/lab-step-bound-01/study",
         "--execute",
         "exp_c2894c83807af48a6b7ebef3"
       ],
-      "launched_at": "2026-11-02T03:38:44.976548+00:00",
+      "launched_at": "2026-11-02T04:09:00.157693+00:00",
       "run_directory": null
     },
-    "started_at": 1793590725.8023505,
-    "remote_job": "job_005b42762f61abdc9c4b1c444cae19c016892e05",
+    "started_at": 1793592540.9600413,
+    "remote_job": "job_0f4266b6ee72a6b19e28093df30dab994f70c05e",
     "transport_status": "connected",
     "assigned_gpu_ids": [],
     "telemetry": null,
     "execution_heartbeat": {
-      "elapsed_wall_seconds": 13.89791529499962,
-      "observed_at": 1793590739.7313287
+      "elapsed_wall_seconds": 13.901813600998139,
+      "observed_at": 1793592554.889333
     },
     "remote_terminal_status": "succeeded",
     "remote_artifacts": {
@@ -220,7 +220,7 @@
       "stdout_truncated": false,
       "stderr_truncated": false,
       "heartbeat_count": 0,
-      "wall_seconds": 13.89791529499962,
+      "wall_seconds": 13.901813600998139,
       "workspace_bytes": 23640,
       "executor_sha256": "b92087579abbb99f55ce2c75d98765355c8ccd4a6ccf3ba55b15ddd5491a22ec",
       "resource_limits": {
@@ -233,7 +233,7 @@
     "input_mutations": [],
     "output_findings": [],
     "scientific_status": "unreviewed",
-    "finished_at": 1793590739.738002,
+    "finished_at": 1793592554.896489,
     "transport_error": null,
     "collection_deferred": false,
     "collection_cancel_requested": false,
@@ -261,9 +261,9 @@
     "id": "exp_0c49227bd3b58bf5c56df54b",
     "status": "succeeded",
     "operator_guidance_ids": [],
-    "created_at": 1793590741.0054495,
+    "created_at": 1793592555.6694884,
     "timeout": 300,
-    "execution_deadline": 1793591622.0683608,
+    "execution_deadline": 1793593437.2570734,
     "workspace_limit_bytes": 4294967296,
     "binding": {
       "source": "validate_entropy_candidate.py",
@@ -295,30 +295,30 @@
     "method": null,
     "review_documents": null,
     "machine": "local-lean",
-    "pid": 288260,
+    "pid": 302925,
     "worker_identity": {
-      "pid": 288260,
-      "starttime": "1552885",
+      "pid": 302925,
+      "starttime": "1734351",
       "argv": [
         "/home/tomzhu0225/src/simjecture/.venv/bin/python",
         "-m",
         "conjecture_solver.research_service",
         "--root",
-        "/home/tomzhu0225/src/simjecture/artifacts/lean-euler/20261102/nonlinear/research/lab-ec-01/study",
+        "/home/tomzhu0225/src/simjecture/artifacts/lean-euler/20261102/nonlinear/research/lab-step-bound-01/study",
         "--execute",
         "exp_0c49227bd3b58bf5c56df54b"
       ],
-      "launched_at": "2026-11-02T03:39:01.171188+00:00",
+      "launched_at": "2026-11-02T04:09:15.826372+00:00",
       "run_directory": null
     },
-    "started_at": 1793590742.060441,
-    "remote_job": "job_29480e72650e521219befbf56642ec3ba4dd18bf",
+    "started_at": 1793592556.6970286,
+    "remote_job": "job_b7cbfbd8b72641e3b26f7d291c61ddd6a740f44d",
     "transport_status": "connected",
     "assigned_gpu_ids": [],
     "telemetry": null,
     "execution_heartbeat": {
-      "elapsed_wall_seconds": 21.928327336998336,
-      "observed_at": 1793590764.0166728
+      "elapsed_wall_seconds": 21.98097152399714,
+      "observed_at": 1793592578.7070856
     },
     "remote_terminal_status": "succeeded",
     "remote_artifacts": {
@@ -354,7 +354,7 @@
       "stdout_truncated": false,
       "stderr_truncated": false,
       "heartbeat_count": 0,
-      "wall_seconds": 21.928327336998336,
+      "wall_seconds": 21.98097152399714,
       "workspace_bytes": 28582,
       "executor_sha256": "b92087579abbb99f55ce2c75d98765355c8ccd4a6ccf3ba55b15ddd5491a22ec",
       "resource_limits": {
@@ -367,7 +367,7 @@
     "input_mutations": [],
     "output_findings": [],
     "scientific_status": "unreviewed",
-    "finished_at": 1793590764.0231946,
+    "finished_at": 1793592578.7113106,
     "transport_error": null,
     "collection_deferred": false,
     "collection_cancel_requested": false,
@@ -396,12 +396,159 @@
     }
   },
   {
-    "id": "exp_089a14320f1cb39d5db9674a",
+    "id": "exp_84326daeccfc7986de97e073",
     "status": "succeeded",
     "operator_guidance_ids": [],
-    "created_at": 1793590765.263604,
+    "created_at": 1793592579.3843215,
+    "timeout": 300,
+    "execution_deadline": 1793593437.2570734,
+    "workspace_limit_bytes": 4294967296,
+    "binding": {
+      "source": "validate_step_bound.py",
+      "args": [
+        "--output",
+        "step-bound"
+      ],
+      "inputs": {
+        "validate_step_bound.py": "5a7fe8bdc4a04286bf514cd2b5315f1d9384640cc62e01f0028dbf7099c70969",
+        "entropy_candidate.py": "3c155ccb2a4d520d8e1d26347a56263e53adb068cc2b8ede05ac622e7e9a41cc",
+        "validate_entropy_candidate.py": "059907a933f1078ed9db897df8acf757e073221642887c3234fb057e0b044db7",
+        "finite_volume.py": "77c81b82bd152cb967c15d494d715e3006c9cac5d2a44ed1c63693b3f4b9ecd4",
+        "contract.json": "59d2abf1b1bdce7080c68fedded2478a95d1a0b0defd73e1cf94ffefa99b8ecf"
+      },
+      "capability": null,
+      "runtime_sha256": null
+    },
+    "outputs": [
+      "step-bound/step-bound-validation.json"
+    ],
+    "commitment": null,
+    "key": null,
+    "execution_target": "auto",
+    "resources": {
+      "cpus": 1,
+      "memory_mb": 2048,
+      "gpus": 0
+    },
+    "stage": "exploration",
+    "method": null,
+    "review_documents": null,
+    "machine": "local-lean",
+    "pid": 303333,
+    "worker_identity": {
+      "pid": 303333,
+      "starttime": "1736723",
+      "argv": [
+        "/home/tomzhu0225/src/simjecture/.venv/bin/python",
+        "-m",
+        "conjecture_solver.research_service",
+        "--root",
+        "/home/tomzhu0225/src/simjecture/artifacts/lean-euler/20261102/nonlinear/research/lab-step-bound-01/study",
+        "--execute",
+        "exp_84326daeccfc7986de97e073"
+      ],
+      "launched_at": "2026-11-02T04:09:39.540645+00:00",
+      "run_directory": null
+    },
+    "started_at": 1793592580.490365,
+    "remote_job": "job_770b7175c17704cadaf05107c383b9499f275e74",
+    "transport_status": "connected",
+    "assigned_gpu_ids": [],
+    "telemetry": null,
+    "execution_heartbeat": {
+      "elapsed_wall_seconds": 24.591459939001652,
+      "observed_at": 1793592605.1091022
+    },
+    "remote_terminal_status": "succeeded",
+    "remote_artifacts": {
+      "contract.json": {
+        "sha256": "59d2abf1b1bdce7080c68fedded2478a95d1a0b0defd73e1cf94ffefa99b8ecf",
+        "bytes": 3798
+      },
+      "entropy_candidate.py": {
+        "sha256": "3c155ccb2a4d520d8e1d26347a56263e53adb068cc2b8ede05ac622e7e9a41cc",
+        "bytes": 7389
+      },
+      "finite_volume.py": {
+        "sha256": "77c81b82bd152cb967c15d494d715e3006c9cac5d2a44ed1c63693b3f4b9ecd4",
+        "bytes": 3534
+      },
+      "step-bound/step-bound-validation.json": {
+        "sha256": "6b655ba924f24ce6e7ef08568edf9fc3a5144bbd957c5c962c593500f94f1756",
+        "bytes": 4468
+      },
+      "validate_entropy_candidate.py": {
+        "sha256": "059907a933f1078ed9db897df8acf757e073221642887c3234fb057e0b044db7",
+        "bytes": 7273
+      },
+      "validate_step_bound.py": {
+        "sha256": "5a7fe8bdc4a04286bf514cd2b5315f1d9384640cc62e01f0028dbf7099c70969",
+        "bytes": 8542
+      }
+    },
+    "execution": {
+      "isolation_backend": "bubblewrap",
+      "returncode": 0,
+      "stdout": "{\"A\": 0.5, \"delta\": -0.05, \"n\": 16, \"final_time\": 0.25, \"steps\": 11, \"max_predicted_halvings\": 0, \"max_actual_halvings\": 0, \"max_proposal_over_cap\": 0.15331542593923322, \"min_cap\": 0.3741505226476524, \"min_radius\": 0.4421465344930255, \"min_entropy_budget_slack\": 0.01366979574333699}\n{\"A\": 0.5, \"delta\": -0.05, \"n\": 32, \"final_time\": 0.25, \"steps\": 23, \"max_predicted_halvings\": 0, \"max_actual_halvings\": 0, \"max_proposal_over_cap\": 0.11818173538799262, \"min_cap\": 0.48169061615120046, \"min_radius\": 0.48169061615120046, \"min_entropy_budget_slack\": 0.00485900997106632}\n{\"A\": 0.5, \"delta\": -0.05, \"n\": 64, \"final_time\": 0.25, \"steps\": 45, \"max_predicted_halvings\": 0, \"max_actual_halvings\": 0, \"max_proposal_over_cap\": 0.11503059455452506, \"min_cap\": 0.4951084677635932, \"min_radius\": 0.4951084677635932, \"min_entropy_budget_slack\": 0.0014273706862831202}\n{\"A\": 0.75, \"delta\": 0, \"n\": 16, \"final_time\": 0.25, \"steps\": 12, \"max_predicted_halvings\": 0, \"max_actual_halvings\": 0, \"max_proposal_over_cap\": 0.18519341855437563, \"min_cap\": 0.2812302288954028, \"min_radius\": 0.37029659109712115, \"min_entropy_budget_slack\": 0.031174157819025307}\n{\"A\": 0.75, \"delta\": 0, \"n\": 32, \"final_time\": 0.25, \"steps\": 25, \"max_predicted_halvings\": 0, \"max_actual_halvings\": 0, \"max_proposal_over_cap\": 0.11347263219910214, \"min_cap\": 0.4517331088465505, \"min_radius\": 0.4517331088465505, \"min_entropy_budget_slack\": 0.01180589421004174}\n{\"A\": 0.75, \"delta\": 0, \"n\": 64, \"final_time\": 0.25, \"steps\": 50, \"max_predicted_halvings\": 0, \"max_actual_halvings\": 0, \"max_proposal_over_cap\": 0.10529467367710856, \"min_cap\": 0.48629642930997363, \"min_radius\": 0.48629642930997363, \"min_entropy_budget_slack\": 0.0035711092355210335}\n{\"A\": 1.0, \"delta\": 0.05, \"n\": 16, \"final_time\": 0.25, \"steps\": 13, \"max_predicted_halvings\": 0, \"max_actual_halvings\": 0, \"max_proposal_over_cap\": 0.2526634798173906, \"min_cap\": 0.18788668926818877, \"min_radius\": 0.27231034553907346, \"min_entropy_budget_slack\": 0.05553379173045658}\n{\"A\": 1.0, \"delta\": 0.05, \"n\": 32, \"final_time\": 0.25, \"steps\": 27, \"max_predicted_halvings\": 0, \"max_actual_halvings\": 0, \"max_proposal_over_cap\": 0.11763613738562144, \"min_cap\": 0.3957808428072762, \"min_radius\": 0.3957808428072762, \"min_entropy_budget_slack\": 0.0227558942239658}\n{\"A\": 1.0, \"delta\": 0.05, \"n\": 64, \"final_time\": 0.25, \"steps\": 55, \"max_predicted_halvings\": 0, \"max_actual_halvings\": 0, \"max_proposal_over_cap\": 0.09914572284122176, \"min_cap\": 0.4672510786609406, \"min_radius\": 0.4672510786609406, \"min_entropy_budget_slack\": 0.007213187846776168}",
+      "stderr": "",
+      "timed_out": false,
+      "cancelled": false,
+      "workspace_exceeded": false,
+      "stdout_truncated": false,
+      "stderr_truncated": false,
+      "heartbeat_count": 0,
+      "wall_seconds": 24.591459939001652,
+      "workspace_bytes": 35004,
+      "executor_sha256": "b92087579abbb99f55ce2c75d98765355c8ccd4a6ccf3ba55b15ddd5491a22ec",
+      "resource_limits": {
+        "max_file_bytes": 4294967296,
+        "max_workspace_bytes": 4294967296,
+        "max_memory_bytes": 2147483648
+      }
+    },
+    "missing_outputs": [],
+    "input_mutations": [],
+    "output_findings": [],
+    "scientific_status": "unreviewed",
+    "finished_at": 1793592605.1136243,
+    "transport_error": null,
+    "collection_deferred": false,
+    "collection_cancel_requested": false,
+    "artifact_policy": "eager",
+    "artifacts": {
+      "contract.json": {
+        "sha256": "59d2abf1b1bdce7080c68fedded2478a95d1a0b0defd73e1cf94ffefa99b8ecf",
+        "bytes": 3798
+      },
+      "entropy_candidate.py": {
+        "sha256": "3c155ccb2a4d520d8e1d26347a56263e53adb068cc2b8ede05ac622e7e9a41cc",
+        "bytes": 7389
+      },
+      "finite_volume.py": {
+        "sha256": "77c81b82bd152cb967c15d494d715e3006c9cac5d2a44ed1c63693b3f4b9ecd4",
+        "bytes": 3534
+      },
+      "step-bound/step-bound-validation.json": {
+        "sha256": "6b655ba924f24ce6e7ef08568edf9fc3a5144bbd957c5c962c593500f94f1756",
+        "bytes": 4468
+      },
+      "validate_entropy_candidate.py": {
+        "sha256": "059907a933f1078ed9db897df8acf757e073221642887c3234fb057e0b044db7",
+        "bytes": 7273
+      },
+      "validate_step_bound.py": {
+        "sha256": "5a7fe8bdc4a04286bf514cd2b5315f1d9384640cc62e01f0028dbf7099c70969",
+        "bytes": 8542
+      }
+    }
+  },
+  {
+    "id": "exp_4d06d43c69a8f4ec3c902eca",
+    "status": "succeeded",
+    "operator_guidance_ids": [],
+    "created_at": 1793592605.6494324,
     "timeout": 240,
-    "execution_deadline": 1793591622.0683608,
+    "execution_deadline": 1793593437.2570734,
     "workspace_limit_bytes": 4294967296,
     "binding": {
       "source": "check_solver.py",
@@ -410,8 +557,8 @@
         "checked"
       ],
       "inputs": {
-        "check_solver.py": "27b0e435cba7c676eee673ce357ad33c1a40fac62be333c386a81b266e52e185",
-        "assemble_solver.py": "f6e14af4586c67d096b339e8fdcb57e9036824ae6211719400abc69c67ce253a",
+        "check_solver.py": "fb57903ff4aec74ec4dab1375b6d53c0e1e1865255d86bcd13334f367266be39",
+        "assemble_solver.py": "c3066a43cb347e2672d4736fe3591a85dea15661185408dbc958644930f61f33",
         "formal/Admissible.lean": "137920bcc9f864001f27ed16e0c251b0e551988974cde6607a3789553acfd204",
         "formal/PrimitiveEnergy.lean": "652a9d57bf336553918cded1337b00f569ff71db0d696db429dca7e095314e09",
         "formal/ConservativePrimitive.lean": "a3eb81b04068b56631d0fde39c2f2fd795dfcdb6598b0befec34b0db6755b2ac",
@@ -435,7 +582,9 @@
         "formal/PhysicalFluxBounds.lean": "f08c3916daabf8a2a4c4cb6f9d305d7918383025a0b0972e48fcf58f78d1939b",
         "formal/LogMean.lean": "875d8f54b8d809a5b69a66f983f2f10e504e178ba5a01df0f3ad5384d85300b7",
         "formal/EntropyConservativeFlux.lean": "a4a11ff5b48f9900c9d093d9e9e41e825927c4c8332ec2de235406b7ff96c3c4",
-        "formal/EntropyCandidateStep.lean": "4cd47d8eb7d51b82c99b280f1de9cc2d218c8e05192336305fe5b8a1a27a53cd"
+        "formal/EntropyCandidateStep.lean": "4cd47d8eb7d51b82c99b280f1de9cc2d218c8e05192336305fe5b8a1a27a53cd",
+        "formal/PressurePolynomial.lean": "a7e912ed6847ae1c10512513366c729d140ec286668740d17243e30e9521a853",
+        "formal/EntropyStepBounds.lean": "e1f8957ede8ccb64f266a275c5e0eef0efd1778eea42c1f32c8c233401230f22"
       },
       "capability": "lean-4.24.0--at-local-lean",
       "runtime_sha256": "026ddb3c1c49b3d7e35a0244560af9837be5933a9d01a366e55eaa42119abbe5",
@@ -461,72 +610,72 @@
     "method": null,
     "review_documents": null,
     "machine": "local-lean",
-    "pid": 288801,
+    "pid": 303605,
     "worker_identity": {
-      "pid": 288801,
-      "starttime": "1555311",
+      "pid": 303605,
+      "starttime": "1739349",
       "argv": [
         "/home/tomzhu0225/src/simjecture/.venv/bin/python",
         "-m",
         "conjecture_solver.research_service",
         "--root",
-        "/home/tomzhu0225/src/simjecture/artifacts/lean-euler/20261102/nonlinear/research/lab-ec-01/study",
+        "/home/tomzhu0225/src/simjecture/artifacts/lean-euler/20261102/nonlinear/research/lab-step-bound-01/study",
         "--execute",
-        "exp_089a14320f1cb39d5db9674a"
+        "exp_4d06d43c69a8f4ec3c902eca"
       ],
-      "launched_at": "2026-11-02T03:39:25.427947+00:00",
+      "launched_at": "2026-11-02T04:10:05.809242+00:00",
       "run_directory": null
     },
-    "started_at": 1793590768.3345213,
-    "remote_job": "job_cc624da3a9287e83a9d61dfda5b80a3723532462",
+    "started_at": 1793592608.8276358,
+    "remote_job": "job_514e840c5f904d24a5e79bc806600f84f0a0d48a",
     "transport_status": "connected",
     "assigned_gpu_ids": [],
     "telemetry": null,
     "execution_heartbeat": {
-      "elapsed_wall_seconds": 104.07082905000061,
-      "observed_at": 1793590872.4817884
+      "elapsed_wall_seconds": 111.56624272000045,
+      "observed_at": 1793592720.4748244
     },
     "remote_terminal_status": "succeeded",
     "remote_artifacts": {
       "assemble_solver.py": {
-        "sha256": "f6e14af4586c67d096b339e8fdcb57e9036824ae6211719400abc69c67ce253a",
-        "bytes": 1384
+        "sha256": "c3066a43cb347e2672d4736fe3591a85dea15661185408dbc958644930f61f33",
+        "bytes": 1445
       },
       "check_solver.py": {
-        "sha256": "27b0e435cba7c676eee673ce357ad33c1a40fac62be333c386a81b266e52e185",
-        "bytes": 6100
+        "sha256": "fb57903ff4aec74ec4dab1375b6d53c0e1e1865255d86bcd13334f367266be39",
+        "bytes": 6717
       },
       "checked/Solver.lean": {
-        "sha256": "28883c2db7f421f4a493f4de5bc4280a4362f9fbe8255bcba6c4fdf799126c71",
-        "bytes": 183454
+        "sha256": "3a71ade9c27254d8f689fc9035a1cf94dbecf79e392dcbfab4040950b6773174",
+        "bytes": 204194
       },
       "checked/proof/Audit.lean": {
-        "sha256": "4fe7828a9d8d12d4bb51fea4a10ccc607d76cdef843f7c0a4db4616dba61cb2b",
-        "bytes": 19394
+        "sha256": "3703af02e4b164f27f99857127feb4092711d044bdcbafb47682feb870a51124",
+        "bytes": 21796
       },
       "checked/proof/Candidate.lean": {
-        "sha256": "28883c2db7f421f4a493f4de5bc4280a4362f9fbe8255bcba6c4fdf799126c71",
-        "bytes": 183454
+        "sha256": "3a71ade9c27254d8f689fc9035a1cf94dbecf79e392dcbfab4040950b6773174",
+        "bytes": 204194
       },
       "checked/proof/Candidate.olean": {
-        "sha256": "e6a950001d2f8df24f0c118d527ee0d032e11a52ab1eac796c865fb99b108c04",
-        "bytes": 27002336
+        "sha256": "58b0dbf1a38a7fb9c12b7fef32c0774f131d78bfe53376b1101a1edcb26eaa62",
+        "bytes": 28735800
       },
       "checked/proof/audit.log": {
-        "sha256": "345a3273e4a95416f5b2521c3747203da8e936c8cce30eee3497c617519ef4d8",
-        "bytes": 5852
+        "sha256": "542801512a5f6fdf705fbca2d423bf494e47811a10c8848b9b2eede1755dd2a1",
+        "bytes": 6578
       },
       "checked/proof/compile.log": {
         "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "bytes": 0
       },
       "checked/proof/result.json": {
-        "sha256": "f0b75d235efd14d07e268a3d4d7ee16d296d08e72c90da5815ef95ec79b14c22",
-        "bytes": 12035
+        "sha256": "0f6dbde42306def92f81fb59e62f0fb7aa8e9d29d85335f882e18dcdbd015e19",
+        "bytes": 13256
       },
       "checked/solver-formal.json": {
-        "sha256": "6e8b417da99b2f0b0e45204bd14406810a5d383a8c97d70fad7180ea62c5a3ad",
-        "bytes": 16825
+        "sha256": "371efbee63012dfa69503e6631f46bded14171fed04b17d2ff93875e8ad35b7f",
+        "bytes": 18537
       },
       "formal/Admissible.lean": {
         "sha256": "137920bcc9f864001f27ed16e0c251b0e551988974cde6607a3789553acfd204",
@@ -576,6 +725,10 @@
         "sha256": "e4e571d3f23e51869d24f921516a25fa35d98296a3fb136462b9bf6ea1e3f4ea",
         "bytes": 5073
       },
+      "formal/EntropyStepBounds.lean": {
+        "sha256": "e1f8957ede8ccb64f266a275c5e0eef0efd1778eea42c1f32c8c233401230f22",
+        "bytes": 12849
+      },
       "formal/EntropyTaylor.lean": {
         "sha256": "843b074d254cd3293b0100888811f1f867a715c8eb54e2c0b4219a675c9808d0",
         "bytes": 4126
@@ -607,6 +760,10 @@
       "formal/PhysicalRegion.lean": {
         "sha256": "820b1bb688aa5e05ac50abd5db8665d5656a036db0d15a6ba647b612e28cc2d1",
         "bytes": 14896
+      },
+      "formal/PressurePolynomial.lean": {
+        "sha256": "a7e912ed6847ae1c10512513366c729d140ec286668740d17243e30e9521a853",
+        "bytes": 7889
       },
       "formal/PrimitiveEnergy.lean": {
         "sha256": "652a9d57bf336553918cded1337b00f569ff71db0d696db429dca7e095314e09",
@@ -628,7 +785,7 @@
     "execution": {
       "isolation_backend": "bubblewrap",
       "returncode": 0,
-      "stdout": "{\"status\": \"proved\", \"theorems\": 56}",
+      "stdout": "{\"status\": \"proved\", \"theorems\": 63}",
       "stderr": "",
       "timed_out": false,
       "cancelled": false,
@@ -636,8 +793,8 @@
       "stdout_truncated": false,
       "stderr_truncated": false,
       "heartbeat_count": 3,
-      "wall_seconds": 104.07082905000061,
-      "workspace_bytes": 27614656,
+      "wall_seconds": 111.56624272000045,
+      "workspace_bytes": 29417077,
       "executor_sha256": "b92087579abbb99f55ce2c75d98765355c8ccd4a6ccf3ba55b15ddd5491a22ec",
       "resource_limits": {
         "max_file_bytes": 4294967296,
@@ -649,43 +806,43 @@
     "input_mutations": [],
     "output_findings": [],
     "scientific_status": "unreviewed",
-    "finished_at": 1793590872.5024853,
+    "finished_at": 1793592720.4948153,
     "transport_error": null,
     "collection_deferred": false,
     "collection_cancel_requested": false,
     "artifact_policy": "eager",
     "artifacts": {
       "assemble_solver.py": {
-        "sha256": "f6e14af4586c67d096b339e8fdcb57e9036824ae6211719400abc69c67ce253a",
-        "bytes": 1384
+        "sha256": "c3066a43cb347e2672d4736fe3591a85dea15661185408dbc958644930f61f33",
+        "bytes": 1445
       },
       "check_solver.py": {
-        "sha256": "27b0e435cba7c676eee673ce357ad33c1a40fac62be333c386a81b266e52e185",
-        "bytes": 6100
+        "sha256": "fb57903ff4aec74ec4dab1375b6d53c0e1e1865255d86bcd13334f367266be39",
+        "bytes": 6717
       },
       "checked/proof/Audit.lean": {
-        "sha256": "4fe7828a9d8d12d4bb51fea4a10ccc607d76cdef843f7c0a4db4616dba61cb2b",
-        "bytes": 19394
+        "sha256": "3703af02e4b164f27f99857127feb4092711d044bdcbafb47682feb870a51124",
+        "bytes": 21796
       },
       "checked/proof/Candidate.lean": {
-        "sha256": "28883c2db7f421f4a493f4de5bc4280a4362f9fbe8255bcba6c4fdf799126c71",
-        "bytes": 183454
+        "sha256": "3a71ade9c27254d8f689fc9035a1cf94dbecf79e392dcbfab4040950b6773174",
+        "bytes": 204194
       },
       "checked/proof/audit.log": {
-        "sha256": "345a3273e4a95416f5b2521c3747203da8e936c8cce30eee3497c617519ef4d8",
-        "bytes": 5852
+        "sha256": "542801512a5f6fdf705fbca2d423bf494e47811a10c8848b9b2eede1755dd2a1",
+        "bytes": 6578
       },
       "checked/proof/compile.log": {
         "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "bytes": 0
       },
       "checked/proof/result.json": {
-        "sha256": "f0b75d235efd14d07e268a3d4d7ee16d296d08e72c90da5815ef95ec79b14c22",
-        "bytes": 12035
+        "sha256": "0f6dbde42306def92f81fb59e62f0fb7aa8e9d29d85335f882e18dcdbd015e19",
+        "bytes": 13256
       },
       "checked/solver-formal.json": {
-        "sha256": "6e8b417da99b2f0b0e45204bd14406810a5d383a8c97d70fad7180ea62c5a3ad",
-        "bytes": 16825
+        "sha256": "371efbee63012dfa69503e6631f46bded14171fed04b17d2ff93875e8ad35b7f",
+        "bytes": 18537
       },
       "formal/Admissible.lean": {
         "sha256": "137920bcc9f864001f27ed16e0c251b0e551988974cde6607a3789553acfd204",
@@ -735,6 +892,10 @@
         "sha256": "e4e571d3f23e51869d24f921516a25fa35d98296a3fb136462b9bf6ea1e3f4ea",
         "bytes": 5073
       },
+      "formal/EntropyStepBounds.lean": {
+        "sha256": "e1f8957ede8ccb64f266a275c5e0eef0efd1778eea42c1f32c8c233401230f22",
+        "bytes": 12849
+      },
       "formal/EntropyTaylor.lean": {
         "sha256": "843b074d254cd3293b0100888811f1f867a715c8eb54e2c0b4219a675c9808d0",
         "bytes": 4126
@@ -766,6 +927,10 @@
       "formal/PhysicalRegion.lean": {
         "sha256": "820b1bb688aa5e05ac50abd5db8665d5656a036db0d15a6ba647b612e28cc2d1",
         "bytes": 14896
+      },
+      "formal/PressurePolynomial.lean": {
+        "sha256": "a7e912ed6847ae1c10512513366c729d140ec286668740d17243e30e9521a853",
+        "bytes": 7889
       },
       "formal/PrimitiveEnergy.lean": {
         "sha256": "652a9d57bf336553918cded1337b00f569ff71db0d696db429dca7e095314e09",

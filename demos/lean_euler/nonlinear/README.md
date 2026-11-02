@@ -130,7 +130,7 @@ error estimate, and matching complexity bounds remain open. The initial-cell
 average formulas have an independent quadrature check; their formal
 initialization/reconstruction bridge also remains to be proved.
 
-Fifty-six named solver-foundation statements and the independent numerical checks
+Sixty-three named solver-foundation statements and the independent numerical checks
 are retained under `record/solver`. Replay them through the bounded local lab:
 
 ```bash
@@ -330,8 +330,66 @@ and CFL = 0.3: no trial is rejected, sampled density and pressure stay positive,
 and all entropy margins are nonnegative. These observations provide no certified
 continuum error, uniform bound over the parameter family, or speed ranking.
 
-The four-job replay is `research/lab-ec-01` under the dated artifact directory.
-Its source hashes, 56-statement audit and numerical results are retained under
-`record/solver`, including `ec-validation.json`. The next task is a quantitative
-step/work bound compatible with useful speeds and evolving state bounds, followed
-by the still-open continuum-error and competitor lower-bound arguments.
+The original four-job alternative checkpoint is `research/lab-ec-01` under the
+dated artifact directory. The current retained evidence in `record/solver`
+includes the quantitative refinement below as well as `ec-validation.json`.
+
+## Explicit per-state timestep and retry bounds
+
+`PressurePolynomial.lean` and `EntropyStepBounds.lean` now derive a quantitative
+bound directly from the current conserved states and their actual frozen
+residuals k. They do not assume a curvature constant from numerical measurements.
+For each cell, write U = (ρ,m,E), and define
+
+\[
+Q=2\rho E-|m|^2=2\rho p,\quad
+Q_1=2k_\rho E+2\rho k_E-2m\cdot k_m,\quad
+Q_2=2k_\rho k_E-|k_m|^2,\quad W=|Q_1|+2|Q_2|.
+\]
+
+Along U + s k, Q is exactly Q + s Q₁ + s² Q₂. Set
+
+\[
+R=\frac{1}{2[1+\max_i(|k_{\rho,i}|/\rho_i+(|Q_{1,i}|+|Q_{2,i}|)/Q_i)]},
+\]
+\[
+b_i=\frac{6k_{\rho,i}^2}{\rho_i}
++\frac{4|k_{\rho,i}|W_i}{Q_i}
++\frac{6\rho_i|Q_{2,i}|}{Q_i}
++6\rho_i(W_i/Q_i)^2,\qquad B=\sum_i b_i.
+\]
+
+Lean proves positive density/pressure along every trial with 0 ≤ s ≤ R, and
+the actual entropy second directional derivative is at most b_i there. Hence
+
+\[
+H(U+rk)\le H(U)-rD+r^2B/2.
+\]
+
+For D > 0, the explicit positive cap c = min(R, D/(B+D)) ensures every
+0 ≤ r ≤ c passes the acceptance test. If r₀ is the proposed ratio, the first
+accepted index is at most
+
+\[
+N=\operatorname{clog}_2(\lceil r_0/c\rceil),
+\]
+
+where clog₂(n) is the least nonnegative integer N with n ≤ 2ᴺ. The accepted
+ratio is at least min(r₀,c/2). For D = 0, the stationary update accepts the
+original proposal with zero halvings. These are exact-real statements for
+arbitrary finite admissible grids and positive diffusion coefficients.
+
+`validate_step_bound.py` checks the Hessian formula against independent
+complex-step derivatives on 2,048 random states and five positions along each
+trial line. It then evaluates the bound along nine unchanged candidate runs.
+All ordinary-CFL proposals are below the computed cap; the largest ratio r₀/c
+is about 0.253. The excessive-proposal control has bound N = 6 and actually
+uses two halvings. The solver does not execute this diagnostic bound.
+
+This closes the gap between existence and an **explicit per-state retry bound**.
+It does not establish a lower bound on c that holds over the full parameter
+family, all mesh resolutions and the evolving trajectory. Thus target-time
+completion, uniform total cost, continuum accuracy and work optimality remain
+unproved. Floating-point evaluations of the formulas are diagnostics, not
+certified rounding enclosures. The five-job `research/lab-step-bound-01` replay
+checks the 63 named statements and retains `step-bound-validation.json`.

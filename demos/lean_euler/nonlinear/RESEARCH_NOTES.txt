@@ -333,3 +333,51 @@ small accepted steps; it does not rule out accumulation before the target time.
 Then establish common smooth Euler existence/regularity, initialization and
 continuous reconstruction, full spatial/temporal error, a justified competitor
 class, and matching complete work bounds. The active goal is not complete.
+
+Quantitative step checkpoint, research/lab-step-bound-01:
+- PressurePolynomial.lean introduces Q=2*rho*E-|m|^2=2*rho*p, its linear
+  coefficient Q1 along U+s*k, and its quadratic coefficient Q2. It proves
+  the actual conservative entropy Hessian identity
+    H_U[k,k] = 3*kr^2/rho - 2*kr*Q1/Q - 2*rho*Q2/Q + rho*(Q1/Q)^2.
+  The independent numerical check differentiates the entropy gradient using
+  complex steps; it does not reuse this polynomial identity as its reference.
+- With W=|Q1|+2|Q2|, localRate=|kr|/rho+(|Q1|+|Q2|)/Q,
+    R=1/(2*(1+max_cells localRate)),
+    b=6*kr^2/rho+4*|kr|*W/Q+6*rho*|Q2|/Q+6*rho*(W/Q)^2,
+  the entire path 0<=s<=R has rho_s>=rho/2, Q_s>=Q/2 and H_{U+s*k}[k,k]<=b.
+  All bounds come from the actual state/residual; no measured Lipschitz or
+  curvature constant is inserted as a universal premise.
+- EntropyStepBounds.lean applies these pointwise estimates to the actual EC+LF
+  residual k. For B=sum_cells b and D=face dissipation,
+    H(U+r*k)<=H(U)-r*D+r^2*B/2  for 0<=r<=R.
+  When D>0, c=min(R,D/(B+D))>0 and every 0<=r<=c passes the original acceptance
+  test. Mean B and mean D give the same cap, as used by the numerical diagnostic.
+- The same first-accepted-index definition now has the explicit upper bound
+    N=Nat.clog 2 (Nat.ceil (proposal/c)).
+  The accepted ratio is >=min(proposal,c/2). The D=0 branch has zero retries by
+  the previously checked stationary-state argument. These bounds concern exact
+  real arithmetic and each current grid, not IEEE execution or uniform family
+  complexity. The source uses no altered limits or new assumed analytical facts.
+- validate_step_bound.py checks 2048 random states at five path locations,
+  with maximum scaled Hessian discrepancy 1.16e-13. The nine unchanged solver
+  trajectories satisfy proposedRatio/c<=0.252664 and have predicted/actual
+  maximum halvings 0/0. An excessive proposal has predicted bound 6 and actual
+  count 2; the constant-state branch predicts zero. These finite float checks
+  are not validated enclosures and do not prove the cap uniform over the family.
+- All five bounded local-lab jobs succeed. The fully assembled source passes
+  63 selected declaration audits in 111.46 seconds, with only standard
+  propext/Classical.choice/Quot.sound dependencies. Scratch compilation against
+  the immutable EC checkpoint shortened development only; the final audit uses
+  the complete source and allowed imports. Failed development logs are retained.
+- Nat.Log and Floor.Semiring are listed explicitly in the installation cache
+  targets; both already existed at the pinned Mathlib revision locally. Twelve
+  focused nonlinear/accuracy/cache/installer tests pass. Ruff and installer shell
+  syntax checks pass. The eight-page PDF was rendered; revised pages 1,7,8 inspected.
+
+Next obligation after the explicit per-state bound:
+Establish uniform bounds for R and B/D on the actual evolving family and across
+mesh resolutions. The pointwise cap can approach zero in states outside the
+observed regime; neither nine trajectories nor a per-state formula prevents that.
+This requires state/regularity control, then a bridge to a common smooth Euler
+solution and complete spatial/temporal reconstruction error. The justified
+competitor class and matching all-operation work bound remain unfinished.

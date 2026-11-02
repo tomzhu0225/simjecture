@@ -89,6 +89,8 @@ cache_targets=(
   Mathlib/Analysis/SpecialFunctions/Log/Deriv.lean
   Mathlib/Analysis/Convex/Deriv.lean
   Mathlib/Analysis/Convex/Jensen.lean
+  Mathlib/Data/Nat/Log.lean
+  Mathlib/Algebra/Order/Floor/Semiring.lean
 )
 (cd "$prefix/mathlib" && lake exe cache get "${cache_targets[@]}")
 cp "$project_root/src/conjecture_solver/lean_check.py" "$prefix/share/lean_check.py"

@@ -69,6 +69,13 @@ THEOREMS = [
     "EulerEntropyCandidateStep.exists_acceptable_halving",
     "EulerEntropyCandidateStep.backtracked_step",
     "EulerEntropyCandidateStep.earlier_trials_rejected",
+    "EulerPressurePolynomial.hessian_polynomial",
+    "EulerPressurePolynomial.path_curvature_bound",
+    "EulerEntropyStepBounds.trial_path_bound",
+    "EulerEntropyStepBounds.total_entropy_upper",
+    "EulerEntropyStepBounds.below_cap_acceptable",
+    "EulerEntropyStepBounds.quantitative_retry_bound",
+    "EulerEntropyStepBounds.accepted_ratio_lower_bound",
 ]
 
 
@@ -108,7 +115,10 @@ def main():
             "coefficients, a finite real-arithmetic halving search finds a positive, "
             "admissible, conservative step satisfying a finite-step entropy decrease "
             "condition. The zero-dissipation case is also proved stationary. There is "
-            "no uniform retry bound, certified floating-point guard, proof of reaching "
+            "an explicit state-dependent logarithmic retry upper bound and an accepted "
+            "ratio lower bound, derived from actual directional entropy curvature along "
+            "the trial path. These are not uniform bounds over the evolving family. There "
+            "is no certified floating-point guard or proof of reaching "
             "the target time, continuum error bound or total-work optimality result."
         ),
     )

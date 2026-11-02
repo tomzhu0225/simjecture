@@ -2,7 +2,7 @@
   "schema_version": "0.1.0",
   "status": "proved",
   "checked": true,
-  "source_sha256": "28883c2db7f421f4a493f4de5bc4280a4362f9fbe8255bcba6c4fdf799126c71",
+  "source_sha256": "3a71ade9c27254d8f689fc9035a1cf94dbecf79e392dcbfab4040950b6773174",
   "theorems": [
     "EulerAdmissible.convex_sum_admissible",
     "EulerAdmissible.flux_splitting_admissible",
@@ -59,7 +59,14 @@
     "EulerEntropyCandidateStep.zero_dissipation_stationary",
     "EulerEntropyCandidateStep.exists_acceptable_halving",
     "EulerEntropyCandidateStep.backtracked_step",
-    "EulerEntropyCandidateStep.earlier_trials_rejected"
+    "EulerEntropyCandidateStep.earlier_trials_rejected",
+    "EulerPressurePolynomial.hessian_polynomial",
+    "EulerPressurePolynomial.path_curvature_bound",
+    "EulerEntropyStepBounds.trial_path_bound",
+    "EulerEntropyStepBounds.total_entropy_upper",
+    "EulerEntropyStepBounds.below_cap_acceptable",
+    "EulerEntropyStepBounds.quantitative_retry_bound",
+    "EulerEntropyStepBounds.accepted_ratio_lower_bound"
   ],
   "allowed_axioms": [
     "Classical.choice",
@@ -346,6 +353,41 @@
       "propext",
       "Quot.sound",
       "Classical.choice"
+    ],
+    "EulerPressurePolynomial.hessian_polynomial": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerPressurePolynomial.path_curvature_bound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerEntropyStepBounds.trial_path_bound": [
+      "propext",
+      "Quot.sound",
+      "Classical.choice"
+    ],
+    "EulerEntropyStepBounds.total_entropy_upper": [
+      "propext",
+      "Quot.sound",
+      "Classical.choice"
+    ],
+    "EulerEntropyStepBounds.below_cap_acceptable": [
+      "propext",
+      "Quot.sound",
+      "Classical.choice"
+    ],
+    "EulerEntropyStepBounds.quantitative_retry_bound": [
+      "propext",
+      "Quot.sound",
+      "Classical.choice"
+    ],
+    "EulerEntropyStepBounds.accepted_ratio_lower_bound": [
+      "propext",
+      "Quot.sound",
+      "Classical.choice"
     ]
   },
   "timeout_seconds": 150,
@@ -384,12 +426,12 @@
   ],
   "compile_returncode": 0,
   "audit_returncode": 0,
-  "wall_seconds": 103.98692563899931,
+  "wall_seconds": 111.45935650299725,
   "artifact_sha256": {
-    "Audit.lean": "4fe7828a9d8d12d4bb51fea4a10ccc607d76cdef843f7c0a4db4616dba61cb2b",
-    "Candidate.lean": "28883c2db7f421f4a493f4de5bc4280a4362f9fbe8255bcba6c4fdf799126c71",
-    "Candidate.olean": "e6a950001d2f8df24f0c118d527ee0d032e11a52ab1eac796c865fb99b108c04",
-    "audit.log": "345a3273e4a95416f5b2521c3747203da8e936c8cce30eee3497c617519ef4d8",
+    "Audit.lean": "3703af02e4b164f27f99857127feb4092711d044bdcbafb47682feb870a51124",
+    "Candidate.lean": "3a71ade9c27254d8f689fc9035a1cf94dbecf79e392dcbfab4040950b6773174",
+    "Candidate.olean": "58b0dbf1a38a7fb9c12b7fef32c0774f131d78bfe53376b1101a1edcb26eaa62",
+    "audit.log": "542801512a5f6fdf705fbca2d423bf494e47811a10c8848b9b2eede1755dd2a1",
     "compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
   }
 }

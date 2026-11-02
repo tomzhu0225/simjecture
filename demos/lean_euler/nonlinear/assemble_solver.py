@@ -28,6 +28,8 @@ COMPONENTS = [
     "LogMean.lean",
     "EntropyConservativeFlux.lean",
     "EntropyCandidateStep.lean",
+    "PressurePolynomial.lean",
+    "EntropyStepBounds.lean",
 ]
 
 

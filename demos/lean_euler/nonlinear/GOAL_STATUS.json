@@ -9,7 +9,7 @@
     "matching lower bound tied to necessary evolution accuracy",
     "reviewable proof, numerical and PR/report artifacts"
   ],
-  "current_front": "An existing entropy-conservative flux plus LF diffusion now avoids the failed central-flux viscosity criterion. Prove quantitative, uniform timestep/retry and trajectory bounds for its backtracked fully discrete method, then continuum accuracy and matching total work. One-step exact-real termination is a foundation, not completion.",
+  "current_front": "The EC+LF candidate has a proved explicit per-state timestep cap, logarithmic retry upper bound and accepted-ratio lower bound. Establish uniform bounds for these quantities over the actual evolving family and all grids, then common smoothness, continuum accuracy and matching total work. Numerical cap margins are not universal proof constants.",
   "not_completion": [
     "initial-force diagnostics",
     "positivity or conservation alone",
@@ -56,11 +56,13 @@
     "exact obstruction: no valid global curvature constants on this region make the present sufficient viscosity condition compatible with the candidate wave-speed recipe",
     "alternative logarithmic-mean EC+LF flux: actual Euler consistency and exact canonical entropy identity, with face dissipation for any nonnegative numerical diffusion",
     "alternative periodic update: actual total entropy derivative equals minus face dissipation; zero dissipation with positive coefficients implies stationary update",
-    "finite termination of exact-real one-step halving search, including zero-dissipation states; first accepted positive step preserves admissibility, total conservation and a finite-step entropy decrease"
+    "finite termination of exact-real one-step halving search, including zero-dissipation states; first accepted positive step preserves admissibility, total conservation and a finite-step entropy decrease",
+    "actual entropy Hessian expressed through the quadratic pressure polynomial along a trial line; explicit admissible path radius and directional curvature bound derived from current state/residual",
+    "explicit per-state acceptance cap, logarithmic halving-index upper bound, and accepted-ratio lower bound for the same exact-real EC+LF search, including the stationary zero-dissipation branch"
   ],
-  "latest_evidence": "record/solver: 56 audited statements and three numerical validation jobs in four successful bounded lab-ec-01 jobs. Alternative EC+LF candidate reaches T=.25 on nine 16/32/64-grid trajectories at ordinary wave speeds and CFL=.3, with no rejected trials. Excessive-step and constant-state controls exercise both search cases. No continuum accuracy or work optimality theorem.",
+  "latest_evidence": "record/solver: 63 audited statements and four numerical validation jobs in five successful lab-step-bound-01 jobs. New independent Hessian checks cover 2048 states. The per-state cap predicts zero rejections on nine ordinary-CFL trajectories; an excessive proposal has upper bound six halvings and uses two. No uniform trajectory, continuum accuracy or total-work optimality result.",
   "remaining_obligations": [
-    "quantitative uniform timestep/retry bound for the alternative candidate; proof of target-time completion and whole-trajectory bounds; integral/reconstruction and grid-Poincare bridges",
+    "prove uniform bounds for the explicit step cap and retries over the evolving family and all grids; prove target-time completion and whole-trajectory bounds; integral/reconstruction and grid-Poincare bridges",
     "common smooth-time and quantitative regularity for the full parameter family",
     "formal initialization/reconstruction bounds",
     "derive uniform coefficient-difference bounds, control metric time variation and bridge principal stability to the actual nonlinear conservative update",

@@ -1,0 +1,141 @@
+{
+  "scope": "Float diagnostics of explicit exact-real state-dependent bounds. No certified rounding enclosure, uniform family/trajectory estimate, continuum accuracy or total-work optimality. The solver does not execute this diagnostic bound.",
+  "random_states": 2048,
+  "hessian_complex_step_max_scaled_error": 1.1554963736765569e-13,
+  "minimum_scaled_curvature_margin": 0.0002359221725314692,
+  "minimum_density_ratio": 0.9832232259385166,
+  "minimum_quadratic_ratio": 0.9349724258525054,
+  "excessive_proposal_control": {
+    "proposal_ratio": 1.6968209924944901,
+    "cap": 0.0319615940618204,
+    "predicted_halvings": 6,
+    "actual_halvings": 2
+  },
+  "zero_dissipation_predicted_halvings": 0,
+  "rows": [
+    {
+      "A": 0.5,
+      "delta": -0.05,
+      "n": 16,
+      "final_time": 0.25,
+      "steps": 11,
+      "max_predicted_halvings": 0,
+      "max_actual_halvings": 0,
+      "max_proposal_over_cap": 0.15331542593923322,
+      "min_cap": 0.3741505226476524,
+      "min_radius": 0.4421465344930255,
+      "min_entropy_budget_slack": 0.01366979574333699
+    },
+    {
+      "A": 0.5,
+      "delta": -0.05,
+      "n": 32,
+      "final_time": 0.25,
+      "steps": 23,
+      "max_predicted_halvings": 0,
+      "max_actual_halvings": 0,
+      "max_proposal_over_cap": 0.11818173538799262,
+      "min_cap": 0.48169061615120046,
+      "min_radius": 0.48169061615120046,
+      "min_entropy_budget_slack": 0.00485900997106632
+    },
+    {
+      "A": 0.5,
+      "delta": -0.05,
+      "n": 64,
+      "final_time": 0.25,
+      "steps": 45,
+      "max_predicted_halvings": 0,
+      "max_actual_halvings": 0,
+      "max_proposal_over_cap": 0.11503059455452506,
+      "min_cap": 0.4951084677635932,
+      "min_radius": 0.4951084677635932,
+      "min_entropy_budget_slack": 0.0014273706862831202
+    },
+    {
+      "A": 0.75,
+      "delta": 0,
+      "n": 16,
+      "final_time": 0.25,
+      "steps": 12,
+      "max_predicted_halvings": 0,
+      "max_actual_halvings": 0,
+      "max_proposal_over_cap": 0.18519341855437563,
+      "min_cap": 0.2812302288954028,
+      "min_radius": 0.37029659109712115,
+      "min_entropy_budget_slack": 0.031174157819025307
+    },
+    {
+      "A": 0.75,
+      "delta": 0,
+      "n": 32,
+      "final_time": 0.25,
+      "steps": 25,
+      "max_predicted_halvings": 0,
+      "max_actual_halvings": 0,
+      "max_proposal_over_cap": 0.11347263219910214,
+      "min_cap": 0.4517331088465505,
+      "min_radius": 0.4517331088465505,
+      "min_entropy_budget_slack": 0.01180589421004174
+    },
+    {
+      "A": 0.75,
+      "delta": 0,
+      "n": 64,
+      "final_time": 0.25,
+      "steps": 50,
+      "max_predicted_halvings": 0,
+      "max_actual_halvings": 0,
+      "max_proposal_over_cap": 0.10529467367710856,
+      "min_cap": 0.48629642930997363,
+      "min_radius": 0.48629642930997363,
+      "min_entropy_budget_slack": 0.0035711092355210335
+    },
+    {
+      "A": 1.0,
+      "delta": 0.05,
+      "n": 16,
+      "final_time": 0.25,
+      "steps": 13,
+      "max_predicted_halvings": 0,
+      "max_actual_halvings": 0,
+      "max_proposal_over_cap": 0.2526634798173906,
+      "min_cap": 0.18788668926818877,
+      "min_radius": 0.27231034553907346,
+      "min_entropy_budget_slack": 0.05553379173045658
+    },
+    {
+      "A": 1.0,
+      "delta": 0.05,
+      "n": 32,
+      "final_time": 0.25,
+      "steps": 27,
+      "max_predicted_halvings": 0,
+      "max_actual_halvings": 0,
+      "max_proposal_over_cap": 0.11763613738562144,
+      "min_cap": 0.3957808428072762,
+      "min_radius": 0.3957808428072762,
+      "min_entropy_budget_slack": 0.0227558942239658
+    },
+    {
+      "A": 1.0,
+      "delta": 0.05,
+      "n": 64,
+      "final_time": 0.25,
+      "steps": 55,
+      "max_predicted_halvings": 0,
+      "max_actual_halvings": 0,
+      "max_proposal_over_cap": 0.09914572284122176,
+      "min_cap": 0.4672510786609406,
+      "min_radius": 0.4672510786609406,
+      "min_entropy_budget_slack": 0.007213187846776168
+    }
+  ],
+  "sources": {
+    "validate_step_bound.py": "5a7fe8bdc4a04286bf514cd2b5315f1d9384640cc62e01f0028dbf7099c70969",
+    "validate_entropy_candidate.py": "059907a933f1078ed9db897df8acf757e073221642887c3234fb057e0b044db7",
+    "entropy_candidate.py": "3c155ccb2a4d520d8e1d26347a56263e53adb068cc2b8ede05ac622e7e9a41cc",
+    "finite_volume.py": "77c81b82bd152cb967c15d494d715e3006c9cac5d2a44ed1c63693b3f4b9ecd4",
+    "contract.json": "59d2abf1b1bdce7080c68fedded2478a95d1a0b0defd73e1cf94ffefa99b8ecf"
+  }
+}

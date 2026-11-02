@@ -29,6 +29,7 @@ formal = json.loads((RECORD / "solver-formal.json").read_text())
 numeric = json.loads((RECORD / "validation.json").read_text())
 entropy_record = json.loads((RECORD / "entropy-validation.json").read_text())
 ec_record = json.loads((RECORD / "ec-validation.json").read_text())
+step_record = json.loads((RECORD / "step-bound-validation.json").read_text())
 proof = formal["result"]
 assert proof["checked"]
 figures = HERE / "figures"
@@ -138,7 +139,8 @@ para("Candidate and intended result", "HeadingR")
 para(
     "The baseline is a conservative, explicit, global-speed Rusanov finite-volume "
     "method. An alternative uses an existing entropy-conservative flux plus LF diffusion "
-    "and a timestep-halving acceptance test (page 7). Both use analytic initial averages. "
+    "and a timestep-halving acceptance test, now with explicit per-state bounds "
+    "(pages 7–8). Both use analytic initial averages. "
     "T = 0.25 is the numerical target; a common smooth existence interval is still unproved. "
     "The intended error includes the full evolved field, spatial reconstruction and time "
     "integration, using volume-normalized L1 error in each conserved component."
@@ -547,13 +549,83 @@ para(
     "floating-point guards. It gives no uniform retry/timestep bound, no guarantee for "
     "Python's cap of 60 halvings, and no proof of reaching T in finitely many steps. "
     "Continuum accuracy, complete computational work and a matching competitor lower "
-    "bound remain unproved. The goal is still active."
+    "bound remain unproved. Page 8 adds explicit per-state step/retry bounds; "
+    "uniform trajectory control remains open."
 )
 para(
     'Reference: <link href="https://arxiv.org/pdf/1209.4994">Chandrashekar (2013), '
     "section 4.4</link>. Sources: LogMean.lean, EntropyConservativeFlux.lean, "
     "EntropyCandidateStep.lean. Retained evidence: record/solver, including "
-    "ec-validation.json and the 56-statement audit.",
+    f"ec-validation.json and the {len(proof['theorems'])}-statement audit.",
+    "SmallR",
+)
+
+story.append(PageBreak())
+para("Quantitative step and<br/>retry bounds", "TitleR")
+para(
+    "The new proof bounds the accepted timestep and the number of halvings from the "
+    "current grid state. It uses the actual directional entropy curvature, avoiding "
+    "the earlier coarse global Hessian constant. The numerical method is unchanged."
+)
+para("Bounds derived from the conserved variables", "HeadingR")
+para(
+    "For one cell, write U = (ρ,m,E) and let k be its frozen update residual. Define<br/>"
+    "Q = 2ρE − |m|² = 2ρp,<br/>"
+    "Q₁ = 2k<sub>ρ</sub>E + 2ρk<sub>E</sub> − 2m·k<sub>m</sub>,<br/>"
+    "Q₂ = 2k<sub>ρ</sub>k<sub>E</sub> − |k<sub>m</sub>|², and W = |Q₁| + 2|Q₂|."
+)
+para(
+    "Along U + sk, the pressure polynomial is exactly Q + sQ₁ + s²Q₂. With<br/>"
+    "R = 1 / {2[1 + max<sub>cells</sub>(|k<sub>ρ</sub>|/ρ + (|Q₁|+|Q₂|)/Q)]},<br/>"
+    "Lean proves positive density/pressure for every 0 ≤ s ≤ R. The actual entropy "
+    "second directional derivative is at most the explicit cell value<br/>"
+    "b = 6k<sub>ρ</sub>²/ρ + 4|k<sub>ρ</sub>|W/Q + 6ρ|Q₂|/Q + 6ρ(W/Q)²."
+)
+para("The resulting quantitative guarantee", "HeadingR")
+para(
+    "Let B = Σb and let D be the face entropy dissipation from page 7. For D &gt; 0, "
+    "set c = min(R, D/(B+D)). Lean proves c &gt; 0 and<br/>"
+    "H(U+rk) ≤ H(U) − rD + r²B/2 for 0 ≤ r ≤ R.<br/>"
+    "Every 0 ≤ r ≤ c therefore passes the positivity/entropy acceptance test."
+)
+para(
+    "For a positive proposed ratio r₀, the first accepted halving index is at most "
+    "<b>N = clog₂(ceil(r₀/c))</b>, where clog₂(n) is the least integer N ≥ 0 with "
+    "n ≤ 2ᴺ. The accepted ratio is at least <b>min(r₀,c/2)</b>. When D = 0, the "
+    "stationary update accepts the original proposal with zero halvings."
+)
+para("Numerical evaluation of the bound", "HeadingR")
+rows = [["Cells per axis", "Largest proposed r₀/c", "Predicted / actual halvings"]]
+for n in [16, 32, 64]:
+    selected = [row for row in step_record["rows"] if row["n"] == n]
+    rows.append(
+        [
+            n,
+            f"{max(row['max_proposal_over_cap'] for row in selected):.4f}",
+            f"{max(row['max_predicted_halvings'] for row in selected)} / "
+            f"{max(row['max_actual_halvings'] for row in selected)}",
+        ]
+    )
+table(rows, [110, 175, 220])
+para(
+    "These nine trajectories use ordinary wave speeds, CFL = 0.3 and T = 0.25. "
+    "An excessive proposal has a bound of six halvings and actually uses two. "
+    "Independent complex-step Hessians on 2,048 random states and five trial positions "
+    "agree with the polynomial expression to "
+    f"{step_record['hessian_complex_step_max_scaled_error']:.2e} "
+    "maximum scaled error. The solver does not execute this diagnostic bound.",
+    "SmallR",
+)
+para(
+    "<b>What remains.</b> The cap is proved from each current state. There is no proved "
+    "uniform lower bound for it over the entire evolving parameter family and all meshes. "
+    "Floating-point evaluations are not certified enclosures. Target-time completion, "
+    "continuum accuracy, complete computational work and matching optimality remain open."
+)
+para(
+    "Sources: PressurePolynomial.lean and EntropyStepBounds.lean. Five bounded jobs "
+    "replay the current audit and numerical diagnostics; step-bound-validation.json "
+    "retains the new measurements and their source hashes.",
     "SmallR",
 )
 SimpleDocTemplate(
