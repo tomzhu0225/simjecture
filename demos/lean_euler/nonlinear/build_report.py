@@ -33,6 +33,7 @@ step_record = json.loads((RECORD / "step-bound-validation.json").read_text())
 region_record = json.loads((RECORD / "region-validation.json").read_text())
 decay_record = json.loads((RECORD / "entropy-decay-validation.json").read_text())
 reconstruction_record = json.loads((RECORD / "reconstruction-validation.json").read_text())
+initial_record = json.loads((RECORD / "initial-excess-validation.json").read_text())
 proof = formal["result"]
 assert proof["checked"]
 figures = HERE / "figures"
@@ -762,8 +763,7 @@ para(
 para("Still required to obtain solver optimality", "HeadingR")
 para(
     "Prove common smooth Euler existence; "
-    "prove the initialization bounds; establish nonzero "
-    "initial excess across the family and uniform evolution bounds; then prove an "
+    "prove the initialization and uniform evolution bounds; then prove an "
     "accuracy upper bound and matching complete work bounds in a justified class. "
     "The present dissipative argument does not establish optimality against the "
     "higher-order initial search scope."
@@ -863,7 +863,7 @@ para(
     "max<sub>j</sub>∫|R<sub>h</sub>u<sub>j</sub> − U<sub>j</sub>(T)|dμ.</b><br/>"
     "The smooth-solution and exact-final/grid-state region hypotheses remain "
     "explicit. Proving a positive lower bound for the numerator still requires "
-    "the initialization and nonzero family-excess connections."
+    "the initialization connection. A uniform initial-excess bound is proved on page 13."
 )
 para("Independent implementation checks", "HeadingR")
 para(
@@ -891,11 +891,69 @@ para(
     "SmallR",
 )
 para(
-    f"The complete bounded audit now checks {len(proof['theorems'])} statements. "
-    "The focused lab-reconstruction-01 replay retains the new numerical job and "
+    "The reconstruction checkpoint checked 94 statements. "
+    "The focused lab-reconstruction-01 replay retains its numerical job and "
     "proof audit with source hashes; six unchanged numerical receipts are retained. "
     "Common smooth existence, trajectory bounds, initialization, an accuracy upper "
     "bound and matching total computational work remain unfinished.",
+    "SmallR",
+)
+story.append(PageBreak())
+para("A positive starting quantity", "TitleR")
+para(
+    "<b>New universal initial-family result.</b> InitialAverages.lean and "
+    "InitialExcess.lean now prove the exact spatial means and a uniform entropy "
+    "excess of at least 1/33. This covers every allowed amplitude and density "
+    "perturbation, independently of a numerical parameter scan."
+)
+para("Exact means and the entropy lower bound", "HeadingR")
+para(
+    "With normalized volume on [0,2π]³, direct integration of the actual fields gives<br/>"
+    "<b>mean(U₀) = (1,0,0,0,1+A²/8), and mean[ρ₀(p₀−1)] = 0.</b><br/>"
+    "The pointwise logarithm inequality η(U) ≥ −ρ(p−1)+2(ρ−1) then implies "
+    "∫η(U₀)dμ ≥ 0. Consequently the exact initial entropy excess satisfies<br/>"
+    "<b>E₀ = ∫η(U₀)dμ − η(∫U₀dμ) ≥ log(1+A²/8) ≥ 1/33.</b>"
+)
+para("What physical accuracy forces", "HeadingR")
+para(
+    "ExcessAccuracy.lean controls changes in both entropy integrals and entropy "
+    "of mean states using the component L1 error. No exact matching of numerical "
+    "and continuum means is assumed. For a smooth periodic Euler field with the "
+    "specified initial data and final exact/grid states in K, it proves<br/>"
+    "<b>R(u)/n³ ≥ 1/33 − 320e,</b><br/>"
+    "where e is the prescribed physical error of the actual trilinear reconstruction. "
+    "Thus e ≤ 1/21120 implies R(u)/n³ ≥ 1/66. This is a necessary consequence of "
+    "accuracy; attaining that accuracy is still unproved."
+)
+para("Independent initial-data diagnostics", "HeadingR")
+rows = [["A", "Min/max excess across five δ", "Proved uniform bound"]]
+for amplitude in sorted({row["A"] for row in initial_record["rows"]}):
+    values = [
+        row["entropy_excess_quadrature"]
+        for row in initial_record["rows"]
+        if row["A"] == amplitude
+    ]
+    rows.append([f"{amplitude:g}", f"{min(values):.6f} / {max(values):.6f}", "1/33 ≈ 0.030303"])
+table(rows, [75, 230, 200])
+para(
+    "The table uses independent tensor Gauss quadrature at 24 and 48 points per "
+    "axis for 25 parameter pairs. Mean-state discrepancy is at most 4.31·10⁻¹⁴; "
+    "the largest entropy difference between the two rules is 5.30·10⁻¹¹. These "
+    "are diagnostics, not certified integration bounds or evolved-field errors.",
+    "SmallR",
+)
+para("Remaining proof obligations", "HeadingR")
+para(
+    "Prove the actual cell-average initializer and its entropy comparison to connect "
+    "the initial constant to accumulated discrete loss. Common smooth existence "
+    "through T=0.25, uniform numerical trajectories, the accuracy upper bound and "
+    "matching complete work bounds in a justified class also remain open. "
+    "The new initial-state result does not settle any of these evolution questions."
+)
+para(
+    f"Evidence: the complete {len(proof['theorems'])}-statement audit and the new initial "
+    "diagnostic pass in lab-initial-excess-01. Seven unchanged numerical records "
+    "retain their original successful receipts. The goal remains active and the PR draft.",
     "SmallR",
 )
 SimpleDocTemplate(

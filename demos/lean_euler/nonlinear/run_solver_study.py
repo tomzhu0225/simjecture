@@ -32,6 +32,7 @@ def main():
             "validate_region_bounds.py",
             "validate_entropy_decay.py",
             "validate_reconstruction.py",
+            "validate_initial_excess.py",
             "check_solver.py",
         ],
     )
@@ -81,6 +82,7 @@ def main():
         "validate_entropy_decay.py",
         "reconstruction.py",
         "validate_reconstruction.py",
+        "validate_initial_excess.py",
         "contract.json",
     ]
     for name in files:
@@ -195,6 +197,13 @@ def main():
         ],
         ["reconstruction/reconstruction-validation.json"],
         timeout=300,
+    )
+    execute(
+        "validate_initial_excess.py",
+        ["--output", "initial-excess"],
+        ["entropy_candidate.py", "finite_volume.py", "contract.json"],
+        ["initial-excess/initial-excess-validation.json"],
+        timeout=180,
     )
     proof_outputs = ["checked/solver-formal.json"]
     proof_outputs += [

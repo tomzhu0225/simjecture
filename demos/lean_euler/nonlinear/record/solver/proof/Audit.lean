@@ -659,3 +659,45 @@ run_cmd do
   | _ => throwError "Not a theorem: EulerHatReconstruction.reconstructed_physical_error_lower_bound"
   let axioms ← collectAxioms n
   logInfo m!"SIMJECTURE_AXIOMS EulerHatReconstruction.reconstructed_physical_error_lower_bound: {axioms.toList}"
+run_cmd do
+  let n := `EulerInitialAverages.initial_integral_mean
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerInitialAverages.initial_integral_mean"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerInitialAverages.initial_integral_mean: {axioms.toList}"
+run_cmd do
+  let n := `EulerInitialAverages.average_density_pressure_error
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerInitialAverages.average_density_pressure_error"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerInitialAverages.average_density_pressure_error: {axioms.toList}"
+run_cmd do
+  let n := `EulerInitialExcess.initial_entropy_nonnegative
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerInitialExcess.initial_entropy_nonnegative"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerInitialExcess.initial_entropy_nonnegative: {axioms.toList}"
+run_cmd do
+  let n := `EulerInitialExcess.uniform_initial_excess
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerInitialExcess.uniform_initial_excess"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerInitialExcess.uniform_initial_excess: {axioms.toList}"
+run_cmd do
+  let n := `EulerExcessAccuracy.reconstruction_excess_accuracy
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerExcessAccuracy.reconstruction_excess_accuracy"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerExcessAccuracy.reconstruction_excess_accuracy: {axioms.toList}"
+run_cmd do
+  let n := `EulerExcessAccuracy.family_final_excess_bound
+  match (← getEnv).find? n with
+  | some (.thmInfo _) => pure ()
+  | _ => throwError "Not a theorem: EulerExcessAccuracy.family_final_excess_bound"
+  let axioms ← collectAxioms n
+  logInfo m!"SIMJECTURE_AXIOMS EulerExcessAccuracy.family_final_excess_bound: {axioms.toList}"

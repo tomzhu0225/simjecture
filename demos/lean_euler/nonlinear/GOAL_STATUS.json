@@ -9,7 +9,7 @@
     "matching lower bound tied to necessary evolution accuracy",
     "reviewable proof, numerical and PR/report artifacts"
   ],
-  "current_front": "Actual continuous periodic cell-centered trilinear reconstruction now has checked weights, integrals, center agreement, periodic faces, mean preservation and entropy comparison. It connects final grid entropy to a physical L1 lower bound. Prove the initialization/nonzero family-excess bridges, common smooth existence, and numerical trajectory bounds; then derive accuracy upper and matching complete work bounds in a justified class.",
+  "current_front": "Commissioned foundations now include exact global initial means, uniform initial entropy excess >=1/33, and a conditional final-grid excess bound >=1/33-320e for the actual continuous reconstruction. Hand off to the authorized 24-hour UUremote research campaign to prove initialization, common smooth existence, trajectory and accuracy bounds, and matching total work in a justified class.",
   "not_completion": [
     "initial-force diagnostics",
     "positivity or conservation alone",
@@ -72,11 +72,14 @@
     "physical cube volume normalized by L^3 has total mass one; normalized entropy and conserved-state integrals are preserved",
     "for continuous exact-final and approximate fields in the physical region on the cube, the initial-exact versus final-approximate entropy gap divided by 160 lower-bounds the specified normalized maximum-component L1 error; integrability follows from continuity",
     "actual cell-centered periodic tensor-hat reconstruction: nonnegative partition weights, normalized integrals 1/n^3, continuity, periodic boundary agreement, exact cell-center interpolation, region membership, and preservation of the grid mean",
-    "actual reconstructed entropy integral is at most mean grid entropy; initial-exact entropy minus final-grid entropy divided by 160 lower-bounds physical L1 error under the explicit smooth-Euler and final-state region hypotheses"
+    "actual reconstructed entropy integral is at most mean grid entropy; initial-exact entropy minus final-grid entropy divided by 160 lower-bounds physical L1 error under the explicit smooth-Euler and final-state region hypotheses",
+    "exact global spatial averages of the full initial family: mean conserved state (1,0,0,0,1+A^2/8) and zero mean rho*(p-1)",
+    "nonnegative exact initial entropy and uniformly positive exact initial excess >=1/33 for every allowed A and delta",
+    "physical error e implies normalized final-grid entropy excess >=1/33-320e for an actual smooth periodic Euler field with the specified initial data and final-state region bounds; no exact matching of grid and continuum means is assumed"
   ],
-  "latest_evidence": "record/solver: complete 94-statement bounded audit and new reconstruction validation in two successful lab-reconstruction-01 jobs; six unchanged numerical records and receipts retained. Four random grids and four actual nonlinear solves check dense/sparse agreement, nodes, periodicity, mean preservation and entropy quadrature. These are not certified continuum-error measurements.",
+  "latest_evidence": "100 selected statements pass the full bounded audit. The 25-case independent initial-excess quadrature job passes. lab-commissioning-01 rechecks the complete proof and retains a concise current scope; prior demos and validation receipts are commissioning context for the fresh autonomous campaign, not autonomous discoveries.",
   "remaining_obligations": [
-    "prove actual initial-cell-average formulas and the initial entropy comparison; prove uniformly nonzero initial family excess and connect the accumulated loss to the reconstructed physical-error lower bound",
+    "prove the actual initial-cell-average formulas and their entropy comparison, then connect initial entropy to accumulated discrete loss and necessary physical-accuracy resolution",
     "derive uniform residual/cap/retry estimates and prove a family-specific whole-trajectory bound; global method-level invariance of the present region is disproved and target-time completion remains open",
     "common smooth-time and quantitative regularity for the full parameter family",
     "formal initialization and approximation-error bounds for the specified reconstruction; an operational evaluation model connecting the sparse implementation to exact semantics",

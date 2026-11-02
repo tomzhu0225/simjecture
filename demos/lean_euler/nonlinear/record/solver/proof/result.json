@@ -2,7 +2,7 @@
   "schema_version": "0.1.0",
   "status": "proved",
   "checked": true,
-  "source_sha256": "0c219836a67fd8c3d9b33ecffae6fe714546c265d2077d0a8db7a31d63e7f0ff",
+  "source_sha256": "2bc44f4648dca93e74840e5dbfa5ac40acc3438ee237a4cf8123d52b2316708b",
   "theorems": [
     "EulerAdmissible.convex_sum_admissible",
     "EulerAdmissible.flux_splitting_admissible",
@@ -97,7 +97,13 @@
     "EulerHatReconstruction.reconstruction_entropy",
     "EulerHatReconstruction.reconstruction_boundary",
     "EulerHatReconstruction.reconstruction_nodes",
-    "EulerHatReconstruction.reconstructed_physical_error_lower_bound"
+    "EulerHatReconstruction.reconstructed_physical_error_lower_bound",
+    "EulerInitialAverages.initial_integral_mean",
+    "EulerInitialAverages.average_density_pressure_error",
+    "EulerInitialExcess.initial_entropy_nonnegative",
+    "EulerInitialExcess.uniform_initial_excess",
+    "EulerExcessAccuracy.reconstruction_excess_accuracy",
+    "EulerExcessAccuracy.family_final_excess_bound"
   ],
   "allowed_axioms": [
     "Classical.choice",
@@ -574,6 +580,36 @@
       "propext",
       "Classical.choice",
       "Quot.sound"
+    ],
+    "EulerInitialAverages.initial_integral_mean": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerInitialAverages.average_density_pressure_error": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerInitialExcess.initial_entropy_nonnegative": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerInitialExcess.uniform_initial_excess": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerExcessAccuracy.reconstruction_excess_accuracy": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerExcessAccuracy.family_final_excess_bound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
     ]
   },
   "timeout_seconds": 240,
@@ -612,12 +648,12 @@
   ],
   "compile_returncode": 0,
   "audit_returncode": 0,
-  "wall_seconds": 158.0312504370013,
+  "wall_seconds": 187.37020761999884,
   "artifact_sha256": {
-    "Audit.lean": "a4422dfd1ebc93f8d12ba45a98ca4350632768b9293508b1a3df7990a9031c47",
-    "Candidate.lean": "0c219836a67fd8c3d9b33ecffae6fe714546c265d2077d0a8db7a31d63e7f0ff",
-    "Candidate.olean": "5bfc45243671d64d5a10d0b39127ef8626b591e0d3b492f8befb405a12185526",
-    "audit.log": "0f5a21c07236a6dd074d565936530392db7e81e336b779ea072932e95dad3087",
+    "Audit.lean": "61a7ba113c885347434013e52252ca4454b3b43b047c88e1612bad487fe19306",
+    "Candidate.lean": "2bc44f4648dca93e74840e5dbfa5ac40acc3438ee237a4cf8123d52b2316708b",
+    "Candidate.olean": "d77a512a3c8ab0ae2e1547b75944e67d3f9958d059582d274484f19609882904",
+    "audit.log": "1feef859322d1f60c179b9b3cfa7a1c2136f2624b4f95593ac151f0c099750f7",
     "compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
   }
 }

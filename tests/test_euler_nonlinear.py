@@ -93,6 +93,9 @@ def test_solver_foundations_and_independent_validation_provenance(tmp_path):
         "EulerHatReconstruction.reconstruction_mean",
         "EulerHatReconstruction.reconstruction_entropy",
         "EulerHatReconstruction.reconstructed_physical_error_lower_bound",
+        "EulerInitialAverages.initial_integral_mean",
+        "EulerInitialExcess.uniform_initial_excess",
+        "EulerExcessAccuracy.family_final_excess_bound",
     } <= set(proof["result"]["theorems"])
     for dependencies in proof["result"]["axioms"].values():
         assert set(dependencies) <= {"propext", "Classical.choice", "Quot.sound"}
@@ -223,3 +226,23 @@ def test_continuous_reconstruction_provenance_and_independent_quadrature():
         assert abs(row["quadrature_total_weight"] - 1) < 2e-14
         assert row["quadrature_entropy_margin"] >= -2e-14
         assert row["reconstruction_region_margin"] >= 0
+
+
+def test_initial_mean_and_uniform_entropy_excess_record():
+    record = json.loads((DEMO / "record/solver/initial-excess-validation.json").read_text())
+    for name, checksum in record["sources"].items():
+        assert hashlib.sha256((DEMO / name).read_bytes()).hexdigest() == checksum
+    assert record["quadrature_orders"] == [24, 48]
+    assert record["uniform_proved_excess_lower_bound"] == 1 / 33
+    assert record["small_error_threshold_for_half_excess"] == 1 / 21120
+    assert len(record["rows"]) == 25
+    assert len({row["A"] for row in record["rows"]}) == 5
+    assert len({row["delta"] for row in record["rows"]}) == 5
+    for row in record["rows"]:
+        assert row["mean_max_error"] < 2e-12
+        assert abs(row["density_pressure_moment"]) < 2e-12
+        assert row["pressure_formula_error"] < 2e-14
+        assert row["minimum_pointwise_entropy_slack"] >= -2e-14
+        assert row["entropy_quadrature"] >= 0
+        assert row["excess_above_uniform_bound"] > 0
+        assert row["entropy_quadrature_difference_24_48"] < 1e-9

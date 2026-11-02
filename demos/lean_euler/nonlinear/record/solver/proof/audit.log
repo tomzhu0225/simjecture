@@ -96,3 +96,9 @@ SIMJECTURE_AXIOMS EulerHatReconstruction.reconstruction_nodes: [propext, Classic
 SIMJECTURE_AXIOMS EulerHatReconstruction.reconstructed_physical_error_lower_bound: [propext,
  Classical.choice,
  Quot.sound]
+SIMJECTURE_AXIOMS EulerInitialAverages.initial_integral_mean: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS EulerInitialAverages.average_density_pressure_error: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS EulerInitialExcess.initial_entropy_nonnegative: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS EulerInitialExcess.uniform_initial_excess: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS EulerExcessAccuracy.reconstruction_excess_accuracy: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS EulerExcessAccuracy.family_final_excess_bound: [propext, Classical.choice, Quot.sound]

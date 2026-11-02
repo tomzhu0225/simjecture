@@ -37,6 +37,9 @@ COMPONENTS = [
     "EntropyError.lean",
     "EntropyIntegral.lean",
     "HatReconstruction.lean",
+    "InitialAverages.lean",
+    "InitialExcess.lean",
+    "ExcessAccuracy.lean",
 ]
 
 

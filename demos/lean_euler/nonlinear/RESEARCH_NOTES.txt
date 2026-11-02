@@ -650,3 +650,28 @@ this is a promising uniform positive constant, not an audited theorem yet.
 Verify the actual initial-state definitions and all integrations before relying
 on it. It may avoid a much weaker lower bound based only on the global Hessian
 constant and initial momentum variance.
+
+Initial-excess commissioning checkpoint, 2026-11-02:
+InitialAverages.lean now proves the actual normalized initial mean state
+(1,0,0,0,1+A^2/8) and mean rho*(p-1)=0 by product integration and explicit
+trigonometric integrals. InitialExcess.lean proves the proposed logarithm
+inequality, nonnegative exact initial entropy, and uniform excess >=1/33 for
+all allowed A and delta. This supersedes the earlier unproved analytic lead.
+ExcessAccuracy.lean bounds mean-state error by component L1 error and proves
+normalized final grid excess >=1/33-320e. It assumes an actual differentiable,
+admissible, periodic Euler field with the prescribed initial data and final
+exact/grid states in K; it does not construct that field or prove accuracy.
+No exact equality of numerical and continuum means is assumed. If e<=1/21120,
+the bound implies normalized final excess >=1/66.
+The complete 100-statement audit passed at lab-initial-excess-01 in 173.12 s.
+Numerical receipt exp_6123933e08cc8649815c9327 checks 25 A/delta pairs using
+24/48-point tensor Gauss rules. Max mean discrepancy 4.31e-14; max weighted
+rho*(p-1) discrepancy 1.02e-15; max entropy-rule difference 5.30e-11. Excess
+ranges from .03132193 to .12714201. These are not certified quadrature errors.
+lab-commissioning-01 rechecks the same 100 statements after cleaning the
+driver scope description; receipt exp_c4c77b0611a9eabc35dd0999. The mathematical
+source hash remains 2bc44f4648dca93e74840e5dbfa5ac40acc3438ee237a4cf8123d52b2316708b.
+The user has authorized a fresh 24-hour UUremote campaign, using the latest
+main plus this PR, Astra/xhigh director and reviewer, and Sol/high main/helper
+workers. All prior demos and proofs are supplied commissioning context.
+No new discovery or optimality result is claimed by this setup handoff.

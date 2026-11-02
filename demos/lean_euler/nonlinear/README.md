@@ -130,7 +130,7 @@ error estimate, and matching complexity bounds remain open. The initial-cell
 average formulas have an independent quadrature check; their formal
 initialization and full evolution-error bounds also remain to be proved.
 
-Ninety-four named solver-foundation statements and the independent numerical checks
+One hundred named solver-foundation statements and the independent numerical checks
 are retained under `record/solver`. Replay them through the bounded local lab:
 
 ```bash
@@ -494,7 +494,7 @@ accuracy comparison**, not an accuracy upper bound for the solver.
 
 To turn these pieces into the requested evolution-error/work lower bound, we still
 must prove the common smooth Euler solution and the initialization bridge,
-and connect the nonzero initial excess entropy to the whole parameter family.
+and connect the actual cell-average initialization to the exact initial integrals.
 Uniform numerical evolution bounds, an accuracy upper bound and the justified
 competitor class remain unfinished. In particular, this dissipative argument does
 not establish optimality against the higher-order initial search scope.
@@ -580,8 +580,9 @@ the earlier explicit smooth-Euler and exact-final/grid-state region hypotheses,
 \le \max_j\int|\mathcal R_h u_j-U_j(T)|\,d\mu.
 \]
 
-The numerator need not yet be proved positive. Formal initialization and
-nonzero family entropy excess must connect it to the accumulated loss.
+The numerator is not yet uniformly proved positive. The initial-excess result
+below supplies a positive family constant; formal initialization must still
+connect it to the accumulated loss.
 An accuracy upper bound and matching work theorem remain unproved.
 
 `reconstruction.py` evaluates the interpolant using eight neighboring cells per
@@ -596,3 +597,51 @@ supplied and no quadrature value is called a certified physical error.
 The focused `research/lab-reconstruction-01` run contains the new numerical job
 and the complete 94-statement audit. `record/solver` retains those receipts with
 the six unchanged numerical receipts from the previous checkpoint.
+
+## Exact initial means and a uniform positive entropy excess
+
+`InitialAverages.lean` integrates the actual trigonometric initial fields with
+normalized physical volume. Product integration and explicit one-dimensional
+trigonometric integrals prove
+
+\[
+\overline{U_0}=(1,0,0,0,1+A^2/8),\qquad
+\overline{\rho_0(p_0-1)}=0.
+\]
+
+`InitialExcess.lean` derives the pointwise logarithm bound
+`η(U) ≥ −ρ(p−1)+2(ρ−1)`. The proved averages therefore imply
+`∫η(U₀)dμ ≥ 0`. For every `A ∈ [1/2,1]` and `δ ∈ [−1/20,1/20]`, Lean proves
+
+\[
+E_0:=\int\eta(U_0)\,d\mu-\eta\!\left(\int U_0\,d\mu\right)
+\ge\log(1+A^2/8)\ge1/33.
+\]
+
+This is a universal initial-family result, not a finite parameter scan or a
+smooth-existence theorem. It supplies the previously missing nonzero constant.
+
+`ExcessAccuracy.lean` also proves that means differ componentwise by at most
+their component L1 errors. Together with the entropy comparison and the actual
+hat reconstruction, this controls final grid excess without assuming that the
+grid and exact means match. If `e` is the specified maximum component L1 error,
+then for an actual differentiable periodic Euler solution starting from this
+family and final exact/grid states in K,
+
+\[
+\frac{R(u)}{n^3}\ge \frac1{33}-320e.
+\]
+
+In particular, `e ≤ 1/21120` implies normalized grid excess at least `1/66`.
+This is a necessary consequence of accuracy; no algorithm has yet been proved
+to attain that accuracy. The initial cell-average formulas and their entropy
+inequality must still be formalized to complete the accumulated-loss connection.
+Common smooth existence, trajectory bounds, a solver accuracy upper bound and
+matching total-work optimality remain open.
+
+The two-job `research/lab-initial-excess-01` checkpoint retains the complete
+100-statement audit and independent 24/48-point-per-axis Gauss diagnostics for
+25 parameter pairs. The quadrature excess ranges from approximately 0.031322 to
+0.127142, above `1/33 ≈ 0.030303`; the universal claim comes from Lean. Quadrature
+differences are not certified integration-error bounds or positive-time PDE
+errors. Seven unchanged numerical records retain their original receipts.

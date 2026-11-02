@@ -96,6 +96,7 @@ cache_targets=(
   Mathlib/MeasureTheory/Integral/DivergenceTheorem.lean
   Mathlib/MeasureTheory/Integral/Pi.lean
   Mathlib/Analysis/SpecialFunctions/Integrals/Basic.lean
+  Mathlib/MeasureTheory/Integral/Bochner/ContinuousLinearMap.lean
 )
 (cd "$prefix/mathlib" && lake exe cache get "${cache_targets[@]}")
 cp "$project_root/src/conjecture_solver/lean_check.py" "$prefix/share/lean_check.py"

@@ -107,6 +107,12 @@ THEOREMS = [
     "EulerHatReconstruction.reconstruction_boundary",
     "EulerHatReconstruction.reconstruction_nodes",
     "EulerHatReconstruction.reconstructed_physical_error_lower_bound",
+    "EulerInitialAverages.initial_integral_mean",
+    "EulerInitialAverages.average_density_pressure_error",
+    "EulerInitialExcess.initial_entropy_nonnegative",
+    "EulerInitialExcess.uniform_initial_excess",
+    "EulerExcessAccuracy.reconstruction_excess_accuracy",
+    "EulerExcessAccuracy.family_final_excess_bound",
 ]
 
 
@@ -128,56 +134,31 @@ def main():
             for name in COMPONENTS
         },
         scope=(
-            "Nonlinear update admissibility/conservation; conservative-to-primitive derivative "
-            "connection; frozen and spatially varying principal-update energy estimates; "
-            "grid-independent 3D embedding; exact noncontraction witness; actual entropy "
-            "derivatives, convexity, finite averaging bound and local Euler entropy balance. "
-            "The variable-coefficient estimate assumes explicit state and spatial-difference "
-            "bounds. Existence, nonlinear full-solve stability, continuum solver accuracy "
-            "and matching work optimality remain unproved. Actual nonlinear finite-step "
-            "entropy dissipation is checked under explicit convex-region, curvature, flux, "
-            "viscosity and timestep conditions. Uniform trajectory membership and those "
-            "conditions for the current numerical settings remain unproved."
-            " Concrete physical-region bounds and initial-family membership are checked. "
-            "A checked obstruction shows that the global sufficient viscosity criterion "
-            "cannot certify the current wave-speed recipe on that region, even with "
-            "improved valid curvature constants. It does not refute actual solver stability."
-            " An alternative existing logarithmic-mean entropy-conservative flux plus LF "
-            "diffusion has a checked exact entropy identity, physical-flux consistency and "
-            "nonpositive face residual for any nonnegative diffusion. With positive "
-            "coefficients, a finite real-arithmetic halving search finds a positive, "
-            "admissible, conservative step satisfying a finite-step entropy decrease "
-            "condition. The zero-dissipation case is also proved stationary. There is "
-            "an explicit state-dependent logarithmic retry upper bound and an accepted "
-            "ratio lower bound, derived from actual directional entropy curvature along "
-            "the trial path. These are not uniform bounds over the evolving family. There "
-            "is no certified floating-point guard or proof of reaching "
-            "the target time, continuum error bound or total-work optimality result."
-            " The alternative flux now has a concrete diagonal consistency bound on "
-            "the physical region, independent of grid resolution. This does not yet "
-            "give a uniform trajectory or full-solver stability bound. A checked 3x3x3 "
-            "compression counterexample starts inside that region but every positive "
-            "step leaves its energy ceiling, including the exact-real accepted step. "
-            "Those compression data are not the Taylor-Green research family."
-            " A periodic 3D Poincare estimate now yields conditional accumulated entropy "
-            "loss for the actual finite EC+LF trace with computed wave speeds. Separately, "
-            "an actual integral entropy gap divided by 160 is a lower bound on maximum "
-            "component L1 error for integrable fields in the stated region, with respect "
-            "to any specified measure. Actual smooth periodic Euler fields now have "
-            "checked global entropy and five-component integral conservation, derived "
-            "from their conservative differential equations by the space-time divergence "
-            "theorem. Normalized physical cube volume has total mass one. For continuous "
-            "approximate and exact final fields in the region, initial exact entropy "
-            "versus final approximate entropy gives a lower bound on physical L1 error. "
-            "Common smooth existence, the actual reconstruction/initialization bridge "
-            "and a justified complete work-optimality result are still unproved."
-            " The continuous reconstruction is now an actual cell-centered periodic "
-            "tensor hat interpolant. Its weights, integrals, center interpolation, "
-            "periodic boundaries, mean conservation and entropy upper bound are proved. "
-            "It connects an actual final grid to a physical L1 lower bound involving "
-            "initial exact entropy and final grid entropy. Formal initialization, "
-            "nonzero family excess, existence and trajectory bounds, accuracy upper "
-            "bounds and matching full computational-work bounds remain open."
+            "Checked nonlinear Euler foundations, not a completed solver-optimality theorem. "
+            "The actual Rusanov step has positivity/conservation; a separate principal map "
+            "has frozen and conditional variable-coefficient energy estimates. Exact "
+            "counterexamples expose varying-metric noncontraction, a failed global "
+            "diffusion criterion, and noninvariance of the chosen state region for general "
+            "compression data outside the target family. Actual physical entropy calculus "
+            "and flux consistency are checked. The alternative existing logarithmic-mean "
+            "EC+LF flux has face entropy stability and a terminating exact-real one-step "
+            "halving search, with state-dependent acceptance/retry bounds. Conditional "
+            "finite-trace entropy loss follows from a periodic Poincare estimate. These "
+            "results do not prove target-time completion or verify floating-point guards. "
+            "Differentiable positive periodic Euler fields have proved global entropy and "
+            "conserved-state integrals. The actual continuous cell-centered tensor-hat "
+            "reconstruction has nonnegative partition weights, proved integrals, periodic "
+            "faces, exact center interpolation, region membership, mean preservation and "
+            "an integral entropy bound. Entropy gaps give necessary physical L1 error "
+            "lower bounds. Exact global initial averages and a uniform initial entropy "
+            "excess of at least 1/33 are proved for the entire target parameter family. "
+            "For an actual smooth periodic Euler solution with those initial data and "
+            "final exact/grid states in the region, physical reconstruction error e "
+            "forces normalized final grid excess at least 1/33-320e, without assuming "
+            "matching numerical and continuum means. The actual cell-average initializer, "
+            "common smooth existence, uniform numerical trajectories, full spatial/time "
+            "accuracy upper bound, justified competitor class and matching complete "
+            "computational-work bounds remain unproved."
         ),
     )
     (args.output / "solver-formal.json").write_text(json.dumps(record, indent=2) + "\n")
