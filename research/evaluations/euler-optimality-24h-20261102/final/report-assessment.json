@@ -1,0 +1,20 @@
+{
+  "id": "report_a1a961e29b2f9245382751b2",
+  "status": "resolved",
+  "created_at": 1793682070.462211,
+  "reason": "Focused revision of report_6cbee0305f01013871f68a29: correct resolved scalar qualification method_fbd88077831716066d27f12f separately from parent approval; retain exploration/scientifically-unreviewed status and all limits. Clarify separately formulated series share rounding, not independent checker. No numerical results changed. Also assess the bounded paper actual-divergence feasibility paragraph and linked DIVERGENCE_ANALYTIC_FEASIBILITY.md: conditional characteristic budget, explicit missing true gradients/Hessians and algebraic premise-gap example, never frozen-family counterexample. No actual H improvement, affordable proof path or original-objective completion claimed. Cumulative prep2899.1599464416504/3000s,zero new execution. Do not duplicate method qualification or promote report assessment into claim acceptance.",
+  "report": "report_reviews/a1a961e29b2f9245382751b293f5dec8771d3fad57acc2713b6912a635651495/RESULTS.md",
+  "source_report": "research/RESULTS.md",
+  "packet": "report_reviews/a1a961e29b2f9245382751b293f5dec8771d3fad57acc2713b6912a635651495/packet.json",
+  "report_sha256": "198602886362dd3327a0c829860422efbb104fcb3b70251b998e679ab8d97323",
+  "packet_sha256": "e626bae378b183e49ae2a3458ceebaa1234fa48a653ec2a83a01aaff060e4f25",
+  "authority": "Report review only; never scientific claim acceptance",
+  "current_report_unchanged": true,
+  "attempts": 1,
+  "assessment": {
+    "decision": "accepted",
+    "summary": "The findings-first synthesis matches inspected sources, hash-verified outputs and existing review decisions. At T=0.25, the sufficient primitive-energy expression improves from approximately 1.63705e6 to 2229.76 but still exceeds the unit threshold. Sensitivity results give approximately 0.00486710 at hypothetical H=0 with zero incoming error, versus 7.01613 with incoming sqrt-energy 0.1. These enclosures concern conditional certificates, not measured Euler error or actual-error lower bounds. The bounded interpretation is justified: growth and incoming error obstruct this particular comparison. The new divergence assessment identifies missing true-solution gradient and pressure-Hessian bounds and specifies a quantitative budget against which future justified envelopes can be tested. Full-family existence, physical-error conversion, solver accuracy and matching complete-work bounds remain unresolved. The prior qualification-status error is corrected, and inherited results, exploratory diagnostics, conditional proofs and formal claim status are distinguished. Acceptance applies only to the report; it establishes neither hypothesis support nor falsification and promotes no experiment stage.",
+    "issues": []
+  },
+  "resolved_at": 1793682155.2956889
+}

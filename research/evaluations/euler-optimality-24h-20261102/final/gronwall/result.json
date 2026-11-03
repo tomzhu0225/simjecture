@@ -1,0 +1,131 @@
+{
+  "schema_version": "0.1.0",
+  "status": "proved",
+  "checked": true,
+  "source_sha256": "85ba466c1ac520752fdf6d1f942beaca7a32dc031c5b35f23c224981d200ba02",
+  "theorems": [
+    "EulerGronwall.scalar_bound",
+    "EulerGronwall.coefficient_nonneg",
+    "EulerGronwall.gronwall_energy",
+    "EulerGronwall.physical_gronwall_energy",
+    "EulerGronwall.zero_growth_energy",
+    "EulerGronwall.zero_residual_energy",
+    "EulerGronwall.zero_growth_control",
+    "EulerTimeEnergy.metric_coefficient_control",
+    "EulerErrorField.full_definition_control",
+    "EulerMetricEnergy.changing_metric_control",
+    "EulerTransport.periodic_divergence_control",
+    "EulerTransport.nonperiodic_boundary_control"
+  ],
+  "allowed_axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "axioms": {
+    "EulerGronwall.scalar_bound": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerGronwall.coefficient_nonneg": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerGronwall.gronwall_energy": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerGronwall.physical_gronwall_energy": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerGronwall.zero_growth_energy": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerGronwall.zero_residual_energy": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerGronwall.zero_growth_control": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerTimeEnergy.metric_coefficient_control": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerErrorField.full_definition_control": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerMetricEnergy.changing_metric_control": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerTransport.periodic_divergence_control": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "EulerTransport.nonperiodic_boundary_control": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  "timeout_seconds": 480,
+  "memory_mb": 2048,
+  "threads": 1,
+  "scope": "Named Lean propositions only; no implementation or PDE convergence claim.",
+  "execution_boundary": "Use the Simjecture capability sandbox for untrusted source.",
+  "runtime": {
+    "lean_version": "Lean (version 4.24.0, x86_64-unknown-linux-gnu, commit 797c613eb9b6d4ec95db23e3e00af9ac6657f24b, Release)",
+    "lean_archive_sha256": "b14f5e5159219dd1a1956c3b806813319f5e94ccd5bdfd56f54520609a5bb5ec",
+    "mathlib_revision": "f897ebcf72cd16f89ab4577d0c826cd14afaafc7",
+    "mathlib_manifest_sha256": "d1208145605d20579ecc91977126e7647e0216a3f7b7d2b9a55d33d040bcd0b8",
+    "scope": "Lean/Mathlib theorem checking; no solver qualification"
+  },
+  "runtime_record_sha256": "f5eea0937279c73445a042c9e000a5c53a29b301c557367938940c88d35e3cb6",
+  "lean_version": "Lean (version 4.24.0, x86_64-unknown-linux-gnu, commit 797c613eb9b6d4ec95db23e3e00af9ac6657f24b, Release)",
+  "commands": [
+    [
+      "/opt/acs-capabilities/lean-4.24.0/toolchain/bin/lean",
+      "-j1",
+      "-M2048",
+      "-T200000",
+      "-DwarningAsError=true",
+      "-o",
+      "Candidate.olean",
+      "Candidate.lean"
+    ],
+    [
+      "/opt/acs-capabilities/lean-4.24.0/toolchain/bin/lean",
+      "-j1",
+      "-M2048",
+      "-T200000",
+      "-DwarningAsError=true",
+      "Audit.lean"
+    ]
+  ],
+  "compile_returncode": 0,
+  "audit_returncode": 0,
+  "wall_seconds": 199.4419580772519,
+  "artifact_sha256": {
+    "Audit.lean": "a2978b872d3bff59e678f7df3d977eb4c79d898b2b096b90403b10cb6a85f062",
+    "Candidate.lean": "85ba466c1ac520752fdf6d1f942beaca7a32dc031c5b35f23c224981d200ba02",
+    "Candidate.olean": "33ea12c1a0667728c1cfec32743fccadd83ec694cbb5a97cbe6f4b9839284044",
+    "audit.log": "c6124e264b07d6f68317e94b3070cb9a464cbbd05d7e0d3ff9b84597c05c5ac6",
+    "compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}
