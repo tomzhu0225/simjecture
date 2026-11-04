@@ -23,19 +23,19 @@ window.StudyNavigation = (() => {
     container.replaceChildren();
     const list = document.createElement("ul");
     const items = [
-      [project ? "Conversation" : "Workspace", project ? workspace(project, campaign, "interactive", {space}) : "/workspace", "conversation"],
-      [project ? "Study" : "Standalone study", project ? workspace(project, campaign, "autonomous", {space}) : null, "study"],
-      ["Evidence & review", campaign ? evidence(campaign) : null, "evidence"],
+      [SimjectureI18n.live(() => project ? SimjectureI18n.t("ui.conversation") : SimjectureI18n.t("ui.workspace")), project ? workspace(project, campaign, "interactive", {space}) : "/workspace", "conversation"],
+      [SimjectureI18n.live(() => project ? SimjectureI18n.t("ui.study") : SimjectureI18n.t("ui.standalone-study")), project ? workspace(project, campaign, "autonomous", {space}) : null, "study"],
+      [SimjectureI18n.message("ui.evidence-review-2"), campaign ? evidence(campaign) : null, "evidence"],
     ];
     for (const [label, href, step] of items) {
       const item = document.createElement("li");
       const link = document.createElement(href && step !== page ? "a" : "span");
-      link.textContent = label;
+      SimjectureI18n.content(link, label);
       if (href && step !== page) link.href = href;
       if (step === page) link.setAttribute("aria-current", "page");
       else if (!href) link.setAttribute("aria-disabled", "true");
-      if (step === "study" && title) link.title = title;
-      if (step === "evidence" && !campaign) link.title = "Available after a study is started";
+      if (step === "study" && title) SimjectureI18n.attribute(link, "title", () => title);
+      if (step === "evidence" && !campaign) SimjectureI18n.attribute(link, "title", () => SimjectureI18n.t("ui.available-after-a-study-is-started"));
       item.append(link);
       list.append(item);
     }

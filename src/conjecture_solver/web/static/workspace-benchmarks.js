@@ -3,14 +3,14 @@ window.WorkspaceBenchmarks = (() => {
   const $ = id => document.getElementById(id);
   const node = (tag, text, cls) => {
     const n = document.createElement(tag);
-    if (text !== undefined) n.textContent = text;
+    if (text !== undefined) SimjectureI18n.content(n, text);
     if (cls) n.className = cls;
     return n;
   };
-  const money = n => n === null ? "Unknown" : `$${n.toLocaleString(undefined, {maximumFractionDigits:5})}`;
-  const seconds = n => n === null ? "Unknown" : n < 60 ? `${n.toFixed(1)} s` : `${(n / 60).toFixed(2)} min`;
+  const money = n => (n === null ? SimjectureI18n.t("ui.unknown") : `$${n.toLocaleString(undefined, {maximumFractionDigits:5})}`);
+  const seconds = n => (n === null ? SimjectureI18n.t("ui.unknown") : (n < 60 ? `${n.toFixed(1)} s` : `${(n / 60).toFixed(2)} min`));
   const percent = n => `${Math.round(n * 100)}%`;
-  const title = row => `${row.agent} / ${row.model}${row.settings.reasoning_effort ? ` · ${row.settings.reasoning_effort}` : " · default effort"}`;
+  const title = row => `${row.agent} / ${row.model}${(row.settings.reasoning_effort ? ` · ${SimjectureI18n.label(row.settings.reasoning_effort, row.settings.reasoning_effort)}` : SimjectureI18n.t("ui.default-effort"))}`;
   let selected = "";
   let resultsSource = "", officialTask = "rz-diagnostics", rankMode = "time", costBasis = "cached";
 
@@ -19,7 +19,7 @@ window.WorkspaceBenchmarks = (() => {
   const modelName = name => {
     if(name==="deepseek-flash")return "DeepSeek Flash";
     if(name==="deepseek-v4-pro")return "DeepSeek V4 Pro";
-    if(name==="gpt-reserve")return "GPT Reserve · dynamic router";
+    if(name==="gpt-reserve")return SimjectureI18n.live(() => SimjectureI18n.t("ui.gpt-reserve-dynamic-router"));
     if(name==="gpt-oss-120b-medium")return "GPT-OSS 120B";
     if(name.startsWith("gpt-"))return titleWords(name.replace("gpt-","GPT-").replaceAll("-"," ").replace("GPT ","GPT-"));
     if(name.startsWith("gemini-"))return titleWords(name.replace("gemini-","Gemini ").replaceAll("-"," "));
@@ -28,7 +28,7 @@ window.WorkspaceBenchmarks = (() => {
     if(name.startsWith("claude-"))return titleWords(name.replace("claude-","Claude ").replace("4-6","4.6").replaceAll("-"," "));
     return name;
   };
-  const agentName = name => ({codex:"Codex",agy:"Antigravity",grok:"Grok CLI",builtin:"API coding agent","codex-glm":"Codex / GLM"})[name]||name;
+  const agentName = name => (({codex:"Codex",agy:"Antigravity",grok:"Grok CLI",builtin:SimjectureI18n.live(() => SimjectureI18n.t("ui.api-coding-agent")),"codex-glm":"Codex / GLM"})[name] || name);
   const modelColours = {"deepseek-flash":"#4da6ff","deepseek-v4-pro":"#aabfff","gpt-6-luna":"#00d9a6","gpt-6.1-sol":"#b091ff","gpt-6-astra":"#f280b5","gemini-3.8-flash":"#ff7722","gemini-3.7-flash":"#f29f66","gemini-3.6-flash":"#ffc857","gemini-3.1-pro":"#e4d975","gpt-5.5":"#e6e1d4","gpt-5.6-luna":"#46b8b4","gpt-5.6-sol":"#d4c5a9","gpt-5.6-terra":"#a7cb54","gpt-6-sol":"#54c95a","gpt-oss-120b-medium":"#a6cbd0","gpt-reserve":"#c5bbc9","grok-4.5":"#ec6c63","grok-4.6":"#db869e","grok-4.7":"#dc524c","grok-4.7-build-fast":"#cc9661","mimo-v2.6-flash":"#c1d971","mimo-v2.6-pro":"#94c474","claude-opus-4-6-thinking":"#ecafca","claude-sonnet-4-6":"#d6b8ff","glm-5.3":"#7996b5"};
   const familyColour = family => {
     const model=family.includes("/") ? family.split("/").slice(1).join("/") : family;
@@ -40,8 +40,8 @@ window.WorkspaceBenchmarks = (() => {
   const officialCost = row => costBasis==="cached" ? row.cost_per_attempt : row.uncached_cost_per_attempt;
   const costLabel = row => {
     const value=officialCost(row);
-    if(value===null)return !row.trials ? "No inference" : !row.tariff ? "Variable tariff" : "Usage missing";
-    return (row.cost_coverage==="partial" ? "≥ " : row.cost_coverage==="estimated" ? "≈ " : "")+money(value);
+    if(value===null)return (!row.trials ? SimjectureI18n.t("ui.no-inference") : (!row.tariff ? SimjectureI18n.t("ui.variable-tariff") : SimjectureI18n.t("ui.usage-missing")));
+    return ((row.cost_coverage==="partial" ? "≥ " : (row.cost_coverage==="estimated" ? "≈ " : "")) + money(value));
   };
   const rankKey = () => rankMode==="time" ? "median_verified_seconds" : rankMode==="cost" ? (costBasis==="cached" ? "ranked_cost_per_attempt" : "ranked_uncached_cost_per_attempt") : "pass_rate";
 
@@ -52,22 +52,22 @@ window.WorkspaceBenchmarks = (() => {
     const category=r=>ranked(r) ? 0 : r.passes ? 1 : 2;
     const ordered=[...rows].sort((a,b)=>category(a)-category(b)||(category(a)===0 ? metric(a)-metric(b) : 0)||a.model.localeCompare(b.model)||effortOrder.indexOf(a.effort)-effortOrder.indexOf(b.effort));
     const maximum=Math.max(...ordered.map(metric).filter(n=>n!==null),1e-9);
-    const axis=node("div",undefined,"benchmark-bar-axis");axis.append(node("span","0"),node("span",kind==="time" ? seconds(maximum) : money(maximum)));target.append(axis);
-    const list=node("ol",undefined,"benchmark-bar-list");list.setAttribute("aria-label",kind==="time" ? "Finish time ranked from fastest; unfinished runs are red" : "Task cost ranked from cheapest; unfinished runs show recorded spending in red");
+    const axis=node("div",undefined,"benchmark-bar-axis");axis.append(node("span","0"),node("span",SimjectureI18n.live(() => kind==="time" ? seconds(maximum) : money(maximum))));target.append(axis);
+    const list=node("ol",undefined,"benchmark-bar-list");SimjectureI18n.attribute(list, "aria-label", () => kind==="time" ? SimjectureI18n.t("ui.finish-time-ranked-from-fastest-unfinished-runs-are-red") : SimjectureI18n.t("ui.task-cost-ranked-from-cheapest-unfinished-runs-show-recorded-spendin"));
     let previous=null,place=0,position=0;
     for(const row of ordered){
       const value=metric(row),eligible=ranked(row);
       if(eligible){position++;if(value!==previous)place=position;previous=value;}
       const item=node("li",undefined,"benchmark-bar-row"+(!row.passes ? " unfinished" : ""));item.dataset.config=row.id;item.dataset.value=value===null ? "" : String(value);item.dataset.finished=String(row.passes>0);item.dataset.rank=eligible ? String(place) : "";
       item.append(node("span",eligible ? String(place) : "—","benchmark-bar-rank"));
-      const label=node("div",undefined,"benchmark-bar-label");label.append(node("strong",modelName(row.family_label)),node("small",(row.effort||"default")+" · "+agentName(row.agent)));item.append(label);
+      const label=node("div",undefined,"benchmark-bar-label");label.append(node("strong",SimjectureI18n.live(() => modelName(row.family_label))),node("small",SimjectureI18n.live(() => SimjectureI18n.label(row.effort || "default") + " · " + agentName(row.agent))));item.append(label);
       const track=node("div",undefined,"benchmark-bar-track"),bar=node("span",undefined,"benchmark-bar-fill");bar.style.width=value===null ? "0%" : (value/maximum*100)+"%";bar.style.backgroundColor=row.passes ? familyColour(row.family) : unfinishedColour;if(!row.passes&&kind==="time")bar.style.height="0";
       if(row.cost_coverage==="partial"&&kind==="cost")bar.classList.add("partial");
       track.append(bar);item.append(track);
-      const text=!row.passes ? kind==="cost" ? costLabel(row)+" · Unfinished" : "Unfinished" : value===null ? "No fixed tariff" : kind==="time" ? seconds(value) : costLabel(row);
+      const text=SimjectureI18n.live(() => !row.passes ? (kind==="cost" ? (costLabel(row) + SimjectureI18n.t("ui.unfinished")) : SimjectureI18n.t("ui.unfinished-2")) : (value===null ? SimjectureI18n.t("ui.no-fixed-tariff") : (kind==="time" ? seconds(value) : costLabel(row))));
       item.append(node("span",text,"benchmark-bar-value"));
-      item.tabIndex=0;item.setAttribute("role","button");item.setAttribute("aria-label",modelName(row.family_label)+" "+(row.effort||"default")+", "+text);
-      item.title=row.passes+"/"+row.trials+" verified completions"+(row.cost_coverage==="partial"&&kind==="cost" ? " · recorded cost lower bound, unranked" : "");
+      item.tabIndex=0;item.setAttribute("role","button");SimjectureI18n.attribute(item, "aria-label", () => modelName(row.family_label)+" "+SimjectureI18n.label(row.effort||"default")+", "+text);
+      SimjectureI18n.attribute(item, "title", () => row.passes + "/" + row.trials + SimjectureI18n.t("ui.verified-completions") + (row.cost_coverage==="partial"&&kind==="cost" ? SimjectureI18n.t("ui.recorded-cost-lower-bound-unranked") : ""));
       const choose=()=>{const entry=document.querySelector('#benchmark-leaderboard tr[data-config="'+row.id+'"]');if(entry){entry.classList.add("benchmark-highlight");entry.scrollIntoView({block:"nearest",behavior:"smooth"});}};
       item.onclick=choose;item.onkeydown=e=>{if(["Enter"," "].includes(e.key)){e.preventDefault();choose();}};list.append(item);
     }
@@ -77,10 +77,10 @@ window.WorkspaceBenchmarks = (() => {
   function officialPlot(rows, task) {
     const target=$("benchmark-tradeoff"),legend=$("benchmark-series-legend");target.replaceChildren();legend.replaceChildren();
     const points=rows.filter(r=>r.passes>0 && r.median_verified_seconds!==null && officialCost(r)!==null && r.cost_coverage!=="partial");
-    if(!points.length){target.append(empty("No measurements match this filter","Clear the model or effort filter to see the published results."));return;}
+    if(!points.length){target.append(empty(SimjectureI18n.message("ui.no-measurements-match-this-filter"),SimjectureI18n.message("ui.clear-the-model-or-effort-filter-to-see-the-published-results")));return;}
     const ns="http://www.w3.org/2000/svg";
-    const s=(tag,attrs,text)=>{const n=document.createElementNS(ns,tag);for(const [k,v] of Object.entries(attrs||{}))n.setAttribute(k,String(v));if(text!==undefined)n.textContent=text;return n;};
-    const svg=s("svg",{viewBox:"0 0 1000 440",role:"img","aria-label":"Cost-time Pareto plot. Lower cost is left; faster completion is top. Upper left is better."});
+    const s=(tag,attrs,text)=>{const n=document.createElementNS(ns,tag);for(const [k,v] of Object.entries(attrs||{}))["aria-label","title"].includes(k) ? SimjectureI18n.attribute(n,k,() => v) : n.setAttribute(k,String(v));if(text!==undefined)SimjectureI18n.content(n, text);return n;};
+    const svg=s("svg",{viewBox:"0 0 1000 440",role:"img","aria-label":SimjectureI18n.message("ui.cost-time-pareto-plot-lower-cost-is-left-faster-completion-is-top-up")});
     const x0=90,x1=958,y0=365,y1=45,xmax=task.budget_seconds;
     const costs=points.map(officialCost).filter(n=>n>0);
     const logmin=Math.log10(Math.min(...costs)*.75);
@@ -93,24 +93,24 @@ window.WorkspaceBenchmarks = (() => {
     const ticks=[];
     for(let power=Math.floor(logmin);power<=Math.ceil(logmax);power++)for(const multiple of [1,2,5]){const v=multiple*10**power;if(Math.log10(v)>=logmin && Math.log10(v)<=logmax)ticks.push(v);}
     for(const v of ticks){
-      const px=x0+(x1-x0)*(Math.log10(v)-logmin)/(logmax-logmin);svg.append(s("line",{x1:px,x2:px,y1:y1,y2:y0,class:"benchmark-gridline"}));svg.append(s("text",{x:px,y:y0+28,"text-anchor":"middle"},money(v)));
+      const px=x0+(x1-x0)*(Math.log10(v)-logmin)/(logmax-logmin);svg.append(s("line",{x1:px,x2:px,y1:y1,y2:y0,class:"benchmark-gridline"}));svg.append(s("text",{x:px,y:y0+28,"text-anchor":"middle"},SimjectureI18n.live(() => money(v))));
     }
-    svg.append(s("text",{x:x0,y:22,class:"benchmark-axis-title"},"Verified finish time · minutes · faster at top"));
-    svg.append(s("text",{x:(x0+x1)/2,y:427,"text-anchor":"middle",class:"benchmark-axis-title"},"API-equivalent cost per attempt · USD · log scale · cheaper to the left"));
+    svg.append(s("text",{x:x0,y:22,class:"benchmark-axis-title"},SimjectureI18n.message("ui.verified-finish-time-minutes-faster-at-top")));
+    svg.append(s("text",{x:(x0+x1)/2,y:427,"text-anchor":"middle",class:"benchmark-axis-title"},SimjectureI18n.message("ui.api-equivalent-cost-per-attempt-usd-log-scale-cheaper-to-the-left")));
     const frontier=points.filter(r=>!points.some(o=>o!==r && officialCost(o)<=officialCost(r) && o.median_verified_seconds<=r.median_verified_seconds && (officialCost(o)<officialCost(r)||o.median_verified_seconds<r.median_verified_seconds)));
 
-    svg.append(s("text",{x:x0+8,y:y1+20,class:"benchmark-better-corner"},"↖ BETTER · LESS COST + LESS TIME"));
+    svg.append(s("text",{x:x0+8,y:y1+20,class:"benchmark-better-corner"},SimjectureI18n.message("ui.better-less-cost-less-time")));
     const families=new Map();for(const r of points){if(!families.has(r.family))families.set(r.family,[]);families.get(r.family).push(r);}
     for(const [family,variants] of families){
       variants.sort((a,b)=>effortOrder.indexOf(a.effort)-effortOrder.indexOf(b.effort));
       const comparable=variants.filter(r=>r.cost_coverage!=="partial");
       if(comparable.length>1){
         const path=s("polyline",{points:comparable.map(r=>x(r)+","+y(r)).join(" "),fill:"none",stroke:familyColour(family),"stroke-width":2,"stroke-dasharray":"7 5",opacity:.65,class:"benchmark-effort-line","data-family":family});
-        path.append(s("title",{},variants[0].family_label+" · "+comparable.map(r=>r.effort).join(" → ")));svg.append(path);
+        path.append(s("title",{},SimjectureI18n.live(() => variants[0].family_label+" · "+comparable.map(r=>SimjectureI18n.label(r.effort)).join(" → "))));svg.append(path);
       }
       const button=node("button",undefined,"benchmark-series-button");button.type="button";
       const swatch=node("span",undefined,"benchmark-series-swatch"+(comparable.length>1 ? " effort" : ""));swatch.style.backgroundColor=familyColour(family);
-      button.append(swatch,document.createTextNode(modelName(variants[0].family_label)));
+      button.append(swatch,node("span",SimjectureI18n.live(() => modelName(variants[0].family_label))));
       button.onclick=()=>{const search=$("benchmark-search");search.value=search.value===variants[0].family_label ? "" : variants[0].family_label;search.dispatchEvent(new Event("input"));};legend.append(button);
     }
 
@@ -118,16 +118,16 @@ window.WorkspaceBenchmarks = (() => {
     const placedLabels=[];
     for(const row of points){
       const colour=familyColour(row.family),partial=row.cost_coverage==="partial";
-      const dot=s("circle",{cx:x(row),cy:y(row),r:frontier.includes(row) ? 9 : 7,fill:colour,stroke:frontier.includes(row) ? "var(--ink)" : colour,"stroke-width":frontier.includes(row) ? 3 : 2.5,tabindex:0,role:"button",class:"benchmark-official-dot"+(frontier.includes(row) ? " pareto" : ""),"data-model":row.model,"data-effort":row.effort||"default","data-cost":officialCost(row),"data-time":row.median_verified_seconds,"aria-label":row.model+" "+(row.effort||"default")+", "+costLabel(row)+", "+seconds(row.median_verified_seconds)});
-      const label=row.model+" · "+(row.effort||"default")+" effort";
-      dot.append(s("title",{},label+" · "+row.passes+"/"+row.trials+" completed · "+costLabel(row)+" per attempt · "+seconds(row.median_verified_seconds)+(frontier.includes(row) ? " · observed Pareto frontier" : "")));
-      const show=()=>{tooltip.replaceChildren(node("strong",label),node("span",costLabel(row)+" per attempt · "+seconds(row.median_verified_seconds)),node("small",row.passes+"/"+row.trials+" completed"+(row.cost_coverage==="estimated" ? " · AGY counter estimate" : "")+(frontier.includes(row) ? " · Pareto frontier" : "")));tooltip.hidden=false;};
+      const dot=s("circle",{cx:x(row),cy:y(row),r:frontier.includes(row) ? 9 : 7,fill:colour,stroke:frontier.includes(row) ? "var(--ink)" : colour,"stroke-width":frontier.includes(row) ? 3 : 2.5,tabindex:0,role:"button",class:"benchmark-official-dot"+(frontier.includes(row) ? " pareto" : ""),"data-model":row.model,"data-effort":row.effort||"default","data-cost":officialCost(row),"data-time":row.median_verified_seconds,"aria-label":SimjectureI18n.live(() => row.model + " " + SimjectureI18n.label(row.effort || "default") + ", " + costLabel(row) + ", " + seconds(row.median_verified_seconds))});
+      const label=SimjectureI18n.live(() => SimjectureI18n.t("ui.effort-3", {p0:row.model,p1:SimjectureI18n.label(row.effort||"default")}));
+      dot.append(s("title",{},SimjectureI18n.live(() => label + " · " + row.passes + "/" + row.trials + SimjectureI18n.t("ui.completed") + costLabel(row) + SimjectureI18n.t("ui.per-attempt") + seconds(row.median_verified_seconds) + (frontier.includes(row) ? SimjectureI18n.t("ui.observed-pareto-frontier") : ""))));
+      const show=()=>{tooltip.replaceChildren(node("strong",label),node("span",SimjectureI18n.live(() => costLabel(row) + SimjectureI18n.t("ui.per-attempt") + seconds(row.median_verified_seconds))),node("small",SimjectureI18n.live(() => row.passes + "/" + row.trials + SimjectureI18n.t("ui.completed-2") + (row.cost_coverage==="estimated" ? SimjectureI18n.t("ui.agy-counter-estimate") : "") + (frontier.includes(row) ? SimjectureI18n.t("ui.pareto-frontier") : ""))));tooltip.hidden=false;};
       dot.onmouseenter=show;dot.onfocus=show;dot.onmouseleave=()=>tooltip.hidden=true;dot.onblur=()=>tooltip.hidden=true;
       const choose=()=>{document.querySelectorAll("#benchmark-leaderboard .benchmark-highlight").forEach(n=>n.classList.remove("benchmark-highlight"));const entry=document.querySelector('#benchmark-leaderboard tr[data-config="'+row.id+'"]');if(entry){entry.classList.add("benchmark-highlight");entry.scrollIntoView({block:"nearest",behavior:"smooth"});}};
       dot.onclick=choose;dot.onkeydown=e=>{if(["Enter"," "].includes(e.key)){e.preventDefault();choose();}};svg.append(dot);
       if(partial)svg.append(s("text",{x:x(row)+9,y:y(row)-8,fill:colour},"≥"));
       if(families.get(row.family).length>1&&!partial){
-        const width=(row.effort||"").length*6.5;
+        const width=SimjectureI18n.label(row.effort||"").length * (SimjectureI18n.getLanguage() === "zh-CN" ? 12 : 6.5);
         const candidates=[[9,-10],[9,18],[-width-9,-10],[-width-9,18],[0,-25],[0,32]];
         const offset=candidates.find(([dx,dy])=>{
           const box={left:x(row)+dx,top:y(row)+dy-10,right:x(row)+dx+width,bottom:y(row)+dy+3};
@@ -135,44 +135,44 @@ window.WorkspaceBenchmarks = (() => {
           if(placedLabels.some(b=>box.left<b.right+4&&box.right>b.left-4&&box.top<b.bottom+3&&box.bottom>b.top-3))return false;
           placedLabels.push(box);return true;
         });
-        if(offset){const label=s("text",{x:x(row)+offset[0],y:y(row)+offset[1],class:"benchmark-effort-label"},row.effort);label.style.fill=colour;svg.append(label);}
+        if(offset){const label=s("text",{x:x(row)+offset[0],y:y(row)+offset[1],class:"benchmark-effort-label"},SimjectureI18n.live(() => SimjectureI18n.label(row.effort)));label.style.fill=colour;svg.append(label);}
       }
     }
     target.append(svg,tooltip);
-    $("benchmark-plot-title").textContent="Cost–time Pareto plot";
-    $("benchmark-chart-note").textContent="Upper left is better: cheaper to the left, faster at the top. Outlined points mark the observed Pareto frontier. Colour identifies the model. Dashed lines connect reasoning efforts for the same model. Unfinished and partial cost receipts are excluded.";
+    SimjectureI18n.bindText($("benchmark-plot-title"), () => SimjectureI18n.t("ui.cost-time-pareto-plot"));
+    SimjectureI18n.bindText($("benchmark-chart-note"), () => SimjectureI18n.t("ui.upper-left-is-better-cheaper-to-the-left-faster-at-the-top-outlined-"));
   }
 
   function officialBoard(publication, actions) {
     const task=publication.tasks.find(t=>t.id===officialTask)||publication.tasks[0];officialTask=task.id;
     const tabs=$("benchmark-task-tabs");tabs.replaceChildren();
-    for(const t of publication.tasks){const b=node("button",t.title,"benchmark-task-tab");b.type="button";b.setAttribute("aria-pressed",String(t.id===task.id));b.onclick=()=>{officialTask=t.id;officialBoard(publication,actions);};tabs.append(b);}
-    const brief=$("benchmark-task-brief");brief.replaceChildren(node("p",task.description),node("span",task.inputs),node("span",task.budget_seconds/60+" min deadline · "+task.repeats+" scheduled "+(task.repeats===1 ? "attempt" : "attempts")+" per configuration"));
+    for(const t of publication.tasks){const b=node("button",SimjectureI18n.live(() => SimjectureI18n.known(`ui.benchmark-official.${t.id}.title`, t.title)),"benchmark-task-tab");b.type="button";b.setAttribute("aria-pressed",String(t.id===task.id));b.onclick=()=>{officialTask=t.id;officialBoard(publication,actions);};tabs.append(b);}
+    const brief=$("benchmark-task-brief");brief.replaceChildren(node("p",SimjectureI18n.live(() => SimjectureI18n.known(`ui.benchmark-official.${task.id}.description`, task.description))),node("span",SimjectureI18n.live(() => SimjectureI18n.known(`ui.benchmark-official.${task.id}.inputs`, task.inputs))),node("span",SimjectureI18n.live(() => task.budget_seconds/60 + SimjectureI18n.t("ui.min-deadline") + task.repeats + SimjectureI18n.t("ui.scheduled") + (task.repeats===1 ? SimjectureI18n.t("ui.attempt") : SimjectureI18n.t("ui.attempts")) + SimjectureI18n.t("ui.per-configuration"))));
     const redraw=()=>{
       const search=$("benchmark-search").value.toLowerCase().replaceAll(/[^a-z0-9]/g,""),effort=$("benchmark-effort-filter").value;
       let rows=task.rows.filter(r=>r.trials>0&&(r.agent+" "+agentName(r.agent)+" "+r.model+" "+modelName(r.family_label)).toLowerCase().replaceAll(/[^a-z0-9]/g,"").includes(search)&&(effort==="all"||(r.effort||"default")===effort));
       const key=rankKey();rows.sort((a,b)=>(a.ranks[key]??Infinity)-(b.ranks[key]??Infinity)||a.model.localeCompare(b.model)||effortOrder.indexOf(a.effort)-effortOrder.indexOf(b.effort));
       const entries=rows.map(row=>{
-        const identity=node("div",undefined,"benchmark-model-identity"),name=node("strong",modelName(row.family_label)),detail=node("small",agentName(row.agent));identity.append(name,detail);identity.title=row.model+" · "+(row.agent_version||"Version unavailable");
-        const receipts=node("details");receipts.append(node("summary","View "+row.trials+" "+(row.trials===1 ? "attempt" : "attempts")));
-        const token=n=>n===null||n===undefined ? "Not recorded" : n.toLocaleString();
-        receipts.append(table(["Elapsed","Input incl. cache","Cached input","Output","Cost","Result"],row.receipts.map(r=>[seconds(r.wall_seconds),token(r.usage.input_tokens),token(r.usage.cached_input_tokens),token(r.usage.output_tokens),(r.coverage==="partial" ? "≥ " : r.coverage==="agy-estimate" ? "≈ " : "")+money(costBasis==="cached" ? r.cost_usd : r.uncached_cost_usd),r.passed ? "Complete" : r.provider_interruption ? "Quota interrupted after work" : r.numeric_passed&&!r.findings_present ? "Numbers pass; findings missing" : "Incomplete contract"])));
-        if(row.unavailable_attempts)receipts.append(node("p",row.unavailable_attempts+" attempts unavailable before inference; excluded from scores.","field-help"));identity.append(receipts);
-        const score=node("div");score.append(node("strong",row.trials ? percent(row.pass_rate) : "Unavailable"),node("small",row.trials ? row.passes+"/"+row.trials+" complete" : "No successful inference"));
-        const numerical=node("div");numerical.append(node("strong",row.trials ? percent(row.numeric_passes/row.trials) : "—"),node("small",row.trials ? row.numeric_passes+"/"+row.trials+" numerical passes" : ""));
-        const cost=node("div");cost.append(node("strong",costLabel(row)),node("small",row.cost_coverage==="estimated" ? "AGY estimate" : row.cost_coverage==="partial" ? "Partial receipt · unranked by cost" : row.tariff?.reference ? "Groq tariff reference" : row.trials ? "API equivalent" : ""));
-        const rate=node("div");rate.append(node("span",row.tariff ? money(row.tariff.input)+" / "+money(row.tariff.output) : "Variable routing"));
-        if(row.tariff){const link=node("a",row.tariff.reference ? "Reference source" : "Vendor tariff");link.href=row.tariff.source;link.target="_blank";link.rel="noopener noreferrer";rate.append(link);rate.title=row.tariff.basis||"Input / output USD per million tokens; this is separate from task cost.";}
-        return [String(row.ranks[key]??"—"),identity,row.effort||"default",score,numerical,row.median_verified_seconds===null ? row.trials ? "Not completed" : "—" : seconds(row.median_verified_seconds),cost,rate];
+        const identity=node("div",undefined,"benchmark-model-identity"),name=node("strong",SimjectureI18n.live(() => modelName(row.family_label))),detail=node("small",SimjectureI18n.live(() => agentName(row.agent)));identity.append(name,detail);SimjectureI18n.attribute(identity, "title", () => row.model + " · " + (row.agent_version || SimjectureI18n.t("ui.version-unavailable")));
+        const receipts=node("details");receipts.append(node("summary",SimjectureI18n.live(() => SimjectureI18n.t("ui.view") + row.trials + " " + (row.trials===1 ? SimjectureI18n.t("ui.attempt") : SimjectureI18n.t("ui.attempts")))));
+        const token=n=>n===null||n===undefined ? SimjectureI18n.t("ui.not-recorded") : n.toLocaleString();
+        receipts.append(table([SimjectureI18n.message("ui.elapsed"),SimjectureI18n.message("ui.input-incl-cache"),SimjectureI18n.message("ui.cached-input"),SimjectureI18n.message("ui.output"),SimjectureI18n.message("ui.cost"),SimjectureI18n.message("ui.result")],row.receipts.map(r=>[SimjectureI18n.live(() => seconds(r.wall_seconds)),SimjectureI18n.live(() => token(r.usage.input_tokens)),SimjectureI18n.live(() => token(r.usage.cached_input_tokens)),SimjectureI18n.live(() => token(r.usage.output_tokens)),SimjectureI18n.live(() => (r.coverage==="partial" ? "≥ " : r.coverage==="agy-estimate" ? "≈ " : "")+money(costBasis==="cached" ? r.cost_usd : r.uncached_cost_usd)),SimjectureI18n.live(() => r.passed ? SimjectureI18n.t("ui.complete") : r.provider_interruption ? SimjectureI18n.t("ui.quota-interrupted-after-work") : r.numeric_passed&&!r.findings_present ? SimjectureI18n.t("ui.numbers-pass-findings-missing") : SimjectureI18n.t("ui.incomplete-contract"))])));
+        if(row.unavailable_attempts)receipts.append(node("p",SimjectureI18n.live(() => row.unavailable_attempts+SimjectureI18n.t("ui.attempts-unavailable-before-inference-excluded-from-scores")),"field-help"));identity.append(receipts);
+        const score=node("div");score.append(node("strong",SimjectureI18n.live(() => row.trials ? percent(row.pass_rate) : SimjectureI18n.t("ui.unavailable-2"))),node("small",SimjectureI18n.live(() => row.trials ? (row.passes + "/" + row.trials + SimjectureI18n.t("ui.complete-2")) : SimjectureI18n.t("ui.no-successful-inference"))));
+        const numerical=node("div");numerical.append(node("strong",row.trials ? percent(row.numeric_passes/row.trials) : "—"),node("small",SimjectureI18n.live(() => row.trials ? (row.numeric_passes + "/" + row.trials + SimjectureI18n.t("ui.numerical-passes")) : "")));
+        const cost=node("div");cost.append(node("strong",SimjectureI18n.live(() => costLabel(row))),node("small",SimjectureI18n.live(() => row.cost_coverage==="estimated" ? SimjectureI18n.t("ui.agy-estimate") : (row.cost_coverage==="partial" ? SimjectureI18n.t("ui.partial-receipt-unranked-by-cost") : (row.tariff?.reference ? SimjectureI18n.t("ui.groq-tariff-reference") : (row.trials ? SimjectureI18n.t("ui.api-equivalent") : ""))))));
+        const rate=node("div");rate.append(node("span",SimjectureI18n.live(() => row.tariff ? (money(row.tariff.input) + " / " + money(row.tariff.output)) : SimjectureI18n.t("ui.variable-routing"))));
+        if(row.tariff){const link=node("a",SimjectureI18n.live(() => row.tariff.reference ? SimjectureI18n.t("ui.reference-source") : SimjectureI18n.t("ui.vendor-tariff")));link.href=row.tariff.source;link.target="_blank";link.rel="noopener noreferrer";rate.append(link);SimjectureI18n.attribute(rate, "title", () => row.tariff.basis || SimjectureI18n.t("ui.input-output-usd-per-million-tokens-this-is-separate-from-task-cost"));}
+        return [String(row.ranks[key]??"—"),identity,SimjectureI18n.live(() => SimjectureI18n.label(row.effort||"default")),score,numerical,row.median_verified_seconds===null ? row.trials ? SimjectureI18n.live(() => SimjectureI18n.t("ui.not-completed")) : "—" : seconds(row.median_verified_seconds),cost,rate];
       });
       const container=$("benchmark-leaderboard"),wrap=node("div",undefined,"benchmark-table-scroll");container.replaceChildren();
-      const t=table(["Rank","Model / coding agent","Effort","Completion","Numerical checks","Completion time","Cost / attempt · USD","Token tariff · in / out per 1M"],entries);wrap.append(t);container.append(wrap);
+      const t=table([SimjectureI18n.message("ui.rank"),SimjectureI18n.message("ui.model-coding-agent"),SimjectureI18n.message("ui.effort"),SimjectureI18n.message("ui.completion"),SimjectureI18n.message("ui.numerical-checks"),SimjectureI18n.message("ui.completion-time"),SimjectureI18n.message("ui.cost-attempt-usd"),SimjectureI18n.message("ui.token-tariff-in-out-per-1m")],entries);wrap.append(t);container.append(wrap);
       Array.from(t.tBodies[0].rows).forEach((tr,i)=>{tr.dataset.config=rows[i].id;tr.classList.toggle("benchmark-unfinished",!rows[i].passes);});
       for(const [index,mode] of [[3,"score"],[5,"time"],[6,"cost"]]){
-        const th=t.tHead.rows[0].cells[index],label=th.textContent,b=node("button",label+(rankMode===mode ? " ↓" : ""),"benchmark-sort-heading");b.type="button";b.onclick=()=>{$("benchmark-sort").value=mode;rankMode=mode;redraw();};th.replaceChildren(b);th.setAttribute("aria-sort",rankMode===mode ? mode==="score" ? "descending" : "ascending" : "none");
+        const th=t.tHead.rows[0].cells[index],label={3:"ui.completion",5:"ui.completion-time",6:"ui.cost-attempt-usd"}[index],b=node("button",SimjectureI18n.live(() => SimjectureI18n.t(label)+(rankMode===mode ? " ↓" : "")),"benchmark-sort-heading");b.type="button";b.onclick=()=>{$("benchmark-sort").value=mode;rankMode=mode;redraw();};th.replaceChildren(b);th.setAttribute("aria-sort",rankMode===mode ? mode==="score" ? "descending" : "ascending" : "none");
       }
       rankBars(rows,"time");rankBars(rows,"cost");officialPlot(rows,task);
-      $("benchmark-ranking-note").textContent="Time rank = median independently verified completion. Cost rank = mean API-equivalent cost per attempt, including failures. Partial usage has a lower bound and no cost rank. "+(task.repeats===1 ? "RZ has one measured attempt per configuration; ranks describe this initial sweep." : "CSV schedules five fresh attempts; quota-blocked attempts are excluded.")+" API tariffs are published prices; task cost depends on tokens used.";
+      SimjectureI18n.bindText($("benchmark-ranking-note"), () => SimjectureI18n.t("ui.time-rank-median-independently-verified-completion-cost-rank-mean-ap") + (task.repeats===1 ? SimjectureI18n.t("ui.rz-has-one-measured-attempt-per-configuration-ranks-describe-this-in") : SimjectureI18n.t("ui.csv-schedules-five-fresh-attempts-quota-blocked-attempts-are-exclude")) + SimjectureI18n.t("ui.api-tariffs-are-published-prices-task-cost-depends-on-tokens-used"));
     };
     $("benchmark-search").oninput=redraw;$("benchmark-effort-filter").onchange=redraw;
     $("benchmark-sort").value=rankMode;$("benchmark-sort").onchange=()=>{rankMode=$("benchmark-sort").value;redraw();};
@@ -207,17 +207,17 @@ window.WorkspaceBenchmarks = (() => {
     const target = $("benchmark-tradeoff");
     target.replaceChildren();
     if (!points.length) {
-      target.append(empty("Tradeoffs need measured usage and timing", "Missing cost stays unknown. Complete timed trial metadata will place configurations here."));
+      target.append(empty(SimjectureI18n.message("ui.tradeoffs-need-measured-usage-and-timing"), SimjectureI18n.message("ui.missing-cost-stays-unknown-complete-timed-trial-metadata-will-place-")));
       return;
     }
     const ns = "http://www.w3.org/2000/svg";
     const svgNode = (tag, attrs, text) => {
       const n = document.createElementNS(ns, tag);
-      for (const [k,v] of Object.entries(attrs || {})) n.setAttribute(k, String(v));
-      if (text !== undefined) n.textContent = text;
+      for (const [k,v] of Object.entries(attrs || {})) ["aria-label","title"].includes(k) ? SimjectureI18n.attribute(n,k,() => v) : n.setAttribute(k, String(v));
+      if (text !== undefined) SimjectureI18n.content(n, text);
       return n;
     };
-    const svg = svgNode("svg", {viewBox:"0 0 760 290", role:"img", "aria-label":"Estimated token cost and elapsed time per verified success. Includes failed attempts; upper left is cheaper and faster. Pass rate is a third Pareto objective."});
+    const svg = svgNode("svg", {viewBox:"0 0 760 290", role:"img", "aria-label":SimjectureI18n.message("ui.estimated-token-cost-and-elapsed-time-per-verified-success-includes-")});
     const xvalue = r => r.api_tokens_usd_per_success;
     const yvalue = r => r.seconds_per_success;
     const xmax = Math.max(...points.map(xvalue), 0.000001) * 1.15;
@@ -226,11 +226,11 @@ window.WorkspaceBenchmarks = (() => {
       const x = 85 + i * 150, y = 40 + i * 50;
       svg.append(svgNode("line", {x1:x,x2:x,y1:40,y2:240,class:"benchmark-gridline"}));
       svg.append(svgNode("line", {x1:85,x2:685,y1:y,y2:y,class:"benchmark-gridline"}));
-      svg.append(svgNode("text", {x,y:263,"text-anchor":"middle"}, money(i*xmax/4)));
-      svg.append(svgNode("text", {x:73,y:y+4,"text-anchor":"end"}, seconds(i*ymax/4)));
+      svg.append(svgNode("text", {x,y:263,"text-anchor":"middle"}, SimjectureI18n.live(() => money(i*xmax/4))));
+      svg.append(svgNode("text", {x:73,y:y+4,"text-anchor":"end"}, SimjectureI18n.live(() => seconds(i*ymax/4))));
     }
-    svg.append(svgNode("text", {x:385,y:285,"text-anchor":"middle"}, "Token $ estimate / verified success"));
-    svg.append(svgNode("text", {x:85,y:20}, "Elapsed time / verified success"));
+    svg.append(svgNode("text", {x:385,y:285,"text-anchor":"middle"}, SimjectureI18n.message("ui.token-estimate-verified-success")));
+    svg.append(svgNode("text", {x:85,y:20}, SimjectureI18n.message("ui.elapsed-time-verified-success")));
     points.forEach(row => {
       const frontier = row.pareto;
       const dot = svgNode("circle", {
@@ -238,9 +238,9 @@ window.WorkspaceBenchmarks = (() => {
         cy:40+200*yvalue(row)/ymax,
         r:frontier ? 8 : 6, fill:familyColour(`${row.agent}/${row.model}`),
         class:frontier ? "benchmark-dot frontier" : "benchmark-dot",
-        tabindex:0, role:"button", "aria-label":`${title(row)}: ${percent(row.pass_rate)} pass rate, ${money(row.api_tokens_usd_per_success)}, ${seconds(row.seconds_per_success)} per success${row.provisional ? ", provisional" : ""}`,
+        tabindex:0, role:"button", "aria-label":SimjectureI18n.live(() => SimjectureI18n.t("ui.pass-rate-per-success", {p0: title(row), p1: percent(row.pass_rate), p2: money(row.api_tokens_usd_per_success), p3: seconds(row.seconds_per_success), p4: (row.provisional ? SimjectureI18n.t("ui.provisional") : "")})),
       });
-      dot.append(svgNode("title", {}, `${title(row)}\n${row.passes}/${row.trials} passed\n${seconds(row.mean_trial_seconds)} per trial\n${money(row.api_tokens_usd_per_success)} · ${seconds(row.seconds_per_success)} per success${row.provisional ? "\nProvisional: fewer than five trials" : ""}`));
+      dot.append(svgNode("title", {}, SimjectureI18n.live(() => SimjectureI18n.t("ui.passed-per-trial-per-success", {p0: title(row), p1: row.passes, p2: row.trials, p3: seconds(row.mean_trial_seconds), p4: money(row.api_tokens_usd_per_success), p5: seconds(row.seconds_per_success), p6: row.provisional ? SimjectureI18n.t("ui.provisional-fewer-than-five-trials") : ""}))));
       const focus = () => {
         const entries = $("benchmark-leaderboard").querySelectorAll(":scope > .benchmark-table-scroll > table > tbody > tr");
         entries.forEach(n => n.classList.remove("benchmark-highlight"));
@@ -257,87 +257,87 @@ window.WorkspaceBenchmarks = (() => {
   function board(cohort) {
     const container = $("benchmark-leaderboard"); container.replaceChildren();
     if (!cohort) {
-      $("benchmark-cohort-note").textContent = "Each comparison holds the task, prompt, hardware, deadline, harness and continuation policy fixed.";
-      container.append(empty("Build the first comparison", "Prepare a task below, or import final host grades from fresh timed trials. Exploratory results remain visible separately."));
+      SimjectureI18n.bindText($("benchmark-cohort-note"), () => SimjectureI18n.t("ui.each-comparison-holds-the-task-prompt-hardware-deadline-harness-and-"));
+      container.append(empty(SimjectureI18n.message("ui.build-the-first-comparison"), SimjectureI18n.message("ui.prepare-a-task-below-or-import-final-host-grades-from-fresh-timed-tr")));
       scatter([]); return;
     }
     const scope = cohort.scope;
-    $("benchmark-cohort-note").textContent = `${scope.task} · pack ${scope.pack_version} · ${scope.hardware} · ${scope.budget_seconds}s budget · ${scope.execution_backend || "execution unknown"} · harness ${scope.harness_version} · runner ${scope.runner_version}`;
+    SimjectureI18n.bindText($("benchmark-cohort-note"), () => SimjectureI18n.t("ui.pack-s-budget-harness-runner", {p0: scope.task, p1: scope.pack_version, p2: scope.hardware, p3: scope.budget_seconds, p4: (scope.execution_backend || SimjectureI18n.t("ui.execution-unknown")), p5: scope.harness_version, p6: scope.runner_version}));
     const entries = cohort.rows.map(row => {
       const identity = node("div"), quality = node("div");
-      identity.append(node("strong", row.model), node("small", `${row.agent} ${row.agent_version} · ${row.settings.reasoning_effort || "default"} effort`));
-      identity.title = JSON.stringify({model_version:row.model_version,settings:row.settings});
-      const receipts=node("details"),receiptLabel=node("summary","Trial measurements");receipts.append(receiptLabel);
-      const tokens=n=>n===null || n===undefined ? "Unknown" : n.toLocaleString();
-      receipts.append(table(["Elapsed","Input tokens","Cached input","Output tokens","Delivery"],row.receipts.map(r=>[
-        seconds(r.wall_seconds),tokens(r.usage.input_tokens),tokens(r.usage.cached_input_tokens),tokens(r.usage.output_tokens),r.passed ? "Verified pass" : r.provider_interruption ? `Interrupted · ${r.provider_interruption}` : r.numeric_passed && r.findings_present===false ? "Numbers pass · findings missing" : r.deadline_missed ? "Verified after deadline" : "Incomplete contract",
+      identity.append(node("strong", row.model), node("small", SimjectureI18n.live(() => SimjectureI18n.t("ui.effort-2", {p0: row.agent, p1: row.agent_version, p2: SimjectureI18n.label(row.settings.reasoning_effort || "default")}))));
+      SimjectureI18n.attribute(identity, "title", () => JSON.stringify({model_version:row.model_version,settings:row.settings}));
+      const receipts=node("details"),receiptLabel=node("summary",SimjectureI18n.message("ui.trial-measurements"));receipts.append(receiptLabel);
+      const tokens=n=>n===null || n===undefined ? SimjectureI18n.t("ui.unknown") : n.toLocaleString();
+      receipts.append(table([SimjectureI18n.message("ui.elapsed"),SimjectureI18n.message("ui.input-tokens"),SimjectureI18n.message("ui.cached-input"),SimjectureI18n.message("ui.output-tokens"),SimjectureI18n.message("ui.delivery")],row.receipts.map(r=>[
+        SimjectureI18n.live(() => seconds(r.wall_seconds)),SimjectureI18n.live(() => tokens(r.usage.input_tokens)),SimjectureI18n.live(() => tokens(r.usage.cached_input_tokens)),SimjectureI18n.live(() => tokens(r.usage.output_tokens)),SimjectureI18n.live(() => r.passed ? SimjectureI18n.t("ui.verified-pass") : r.provider_interruption ? SimjectureI18n.t("ui.interrupted", {p0: r.provider_interruption}) : r.numeric_passed && r.findings_present===false ? SimjectureI18n.t("ui.numbers-pass-findings-missing-2") : r.deadline_missed ? SimjectureI18n.t("ui.verified-after-deadline") : SimjectureI18n.t("ui.incomplete-contract")),
       ])));identity.append(receipts);
-      quality.append(node("strong", `${percent(row.pass_rate)} · ${row.passes}/${row.trials}`), node("small", `95% interval ${row.pass_rate_95_interval.map(percent).join("–")}`));
-      const status = node("span", row.provisional ? "Provisional" : !row.passes ? "No verified success" : row.pareto === true ? "Pareto frontier" : row.pareto === false ? "Tradeoff dominated" : row.pareto_quality_time ? "Time frontier · cost unknown" : "Cost incomplete", `benchmark-badge ${row.pareto ? "frontier" : ""}`);
-      status.title = `Median first verified completion: ${seconds(row.median_verified_seconds)}. ${row.deadline_misses} late completions. ${row.trials_without_price} trials with unknown token cost.`;
+      quality.append(node("strong", `${percent(row.pass_rate)} · ${row.passes}/${row.trials}`), node("small", SimjectureI18n.live(() => SimjectureI18n.t("ui.95-interval", {p0: row.pass_rate_95_interval.map(percent).join("–")}))));
+      const status = node("span", SimjectureI18n.live(() => row.provisional ? SimjectureI18n.t("ui.provisional-2") : (!row.passes ? SimjectureI18n.t("ui.no-verified-success") : (row.pareto === true ? SimjectureI18n.t("ui.pareto-frontier-2") : (row.pareto === false ? SimjectureI18n.t("ui.tradeoff-dominated") : (row.pareto_quality_time ? SimjectureI18n.t("ui.time-frontier-cost-unknown") : SimjectureI18n.t("ui.cost-incomplete")))))), `benchmark-badge ${row.pareto ? "frontier" : ""}`);
+      SimjectureI18n.attribute(status, "title", () => SimjectureI18n.t("ui.median-first-verified-completion-late-completions-trials-with-unknow", {p0: seconds(row.median_verified_seconds), p1: row.deadline_misses, p2: row.trials_without_price}));
       return [identity,String(row.trials),quality,seconds(row.mean_trial_seconds),seconds(row.seconds_per_success),money(row.api_tokens_usd_per_success),money(row.reported_usd_per_success),status];
     });
     const wrap = node("div",undefined,"benchmark-table-scroll");
-    wrap.append(table(["Agent configuration","Trials","Pass rate","Mean trial time","Time / success","Token $ estimate / success","Reported $ / success","Sample status"],entries));
+    wrap.append(table([SimjectureI18n.message("ui.agent-configuration"),SimjectureI18n.message("ui.trials"),SimjectureI18n.message("ui.pass-rate"),SimjectureI18n.message("ui.mean-trial-time"),SimjectureI18n.message("ui.time-success"),SimjectureI18n.message("ui.token-estimate-success"),SimjectureI18n.message("ui.reported-success"),SimjectureI18n.message("ui.sample-status")],entries));
     container.append(wrap); scatter(cohort.rows);
   }
 
   function runDialog(pack, actions) {
     const dialog=node("dialog",undefined,"research-action-dialog benchmark-run-dialog"), form=node("form");
-    dialog.setAttribute("aria-label", "Benchmark your model");
-    form.append(node("h2","Benchmark your model"),node("p","Run fresh timed trials with your installed coding agent or the API connection saved in Connections. Your agent keeps its native tools. Grades are added here automatically.","field-help"));
-    const field=(label,input)=>{const row=node("label",label);input.setAttribute("aria-label",label);row.append(input);form.append(row);return input;};
-    const backend=field("Coding agent",node("select"));
-    for(const [id,label] of [["codex","Codex"],["codex-glm","Codex / GLM"],["grok","Grok"],["agy","AGY"],["builtin","API coding agent"]]) {const option=node("option",label);option.value=id;backend.append(option);}
-    const model=field("Model ID · suggestions or your own",node("input"));model.required=true;model.maxLength=160;model.autocomplete="off";
+    SimjectureI18n.attribute(dialog, "aria-label", () => SimjectureI18n.t("ui.benchmark-your-model"));
+    form.append(node("h2",SimjectureI18n.message("ui.benchmark-your-model")),node("p",SimjectureI18n.message("ui.run-fresh-timed-trials-with-your-installed-coding-agent-or-the-api-c"),"field-help"));
+    const field=(label,input)=>{const row=node("label",label);SimjectureI18n.attribute(input, "aria-label", () => label);row.append(input);form.append(row);return input;};
+    const backend=field(SimjectureI18n.message("ui.coding-agent"),node("select"));
+    for(const [id,label] of [["codex","Codex"],["codex-glm","Codex / GLM"],["grok","Grok"],["agy","AGY"],["builtin",SimjectureI18n.live(() => SimjectureI18n.t("ui.api-coding-agent"))]]) {const option=node("option",label);option.value=id;backend.append(option);}
+    const model=field(SimjectureI18n.message("ui.model-id-suggestions-or-your-own"),node("input"));model.required=true;model.maxLength=160;model.autocomplete="off";
     const suggestions=node("datalist");suggestions.id=`benchmark-model-${crypto.randomUUID()}`;model.setAttribute("list",suggestions.id);form.append(suggestions);
-    const effort=field("Reasoning effort",node("select"));
-    for(const value of ["","low","medium","high","xhigh","max","ultra"]) {const option=node("option",value || "Provider default");option.value=value;effort.append(option);}
-    const taskList=node("fieldset");taskList.append(node("legend","Tasks"));const checks=[];
-    for(const task of pack.tasks) {const row=node("label"),check=node("input");check.type="checkbox";check.checked=true;checks.push([check,task.id]);row.append(check,document.createTextNode(`${task.title} · ${task.seconds / 60} min per trial`));taskList.append(row);}form.append(taskList);
-    const repeats=field("Fresh trials per task",node("input"));repeats.type="number";repeats.min="1";repeats.max="20";repeats.value="5";repeats.required=true;
-    const advanced=node("details");advanced.append(node("summary","Advanced settings"));const workerLabel=node("label","Parallel trials"),workers=node("input");workers.type="number";workers.min="1";workers.max="8";workers.value="1";workerLabel.append(workers);advanced.append(workerLabel,node("p","Task definitions and deadlines stay fixed. Hardware and runner settings create separate comparison groups. One trial is provisional; five are required for Pareto eligibility.","field-help"));form.append(advanced);
-    form.append(node("p","Uses your configured subscription or API credits. API cost estimates and provider-reported spending remain separate.","field-help"));
+    const effort=field(SimjectureI18n.message("ui.reasoning-effort"),node("select"));
+    for(const value of ["","low","medium","high","xhigh","max","ultra"]) {const option=node("option",SimjectureI18n.live(() => value || SimjectureI18n.t("ui.provider-default")));if(value)SimjectureI18n.bindText(option,()=>SimjectureI18n.label(value,value));option.value=value;effort.append(option);}
+    const taskList=node("fieldset");taskList.append(node("legend",SimjectureI18n.message("ui.tasks")));const checks=[];
+    for(const task of pack.tasks) {const row=node("label"),check=node("input");check.type="checkbox";check.checked=true;checks.push([check,task.id]);row.append(check,node("span",SimjectureI18n.live(() => SimjectureI18n.t("ui.p0-p1-min-per-trial", {p0:SimjectureI18n.known(`ui.benchmark-task.${task.id}.title`, task.title),p1:task.seconds/60}))));taskList.append(row);}form.append(taskList);
+    const repeats=field(SimjectureI18n.message("ui.fresh-trials-per-task"),node("input"));repeats.type="number";repeats.min="1";repeats.max="20";repeats.value="5";repeats.required=true;
+    const advanced=node("details");advanced.append(node("summary",SimjectureI18n.message("ui.advanced-settings")));const workerLabel=node("label",SimjectureI18n.message("ui.parallel-trials")),workers=node("input");workers.type="number";workers.min="1";workers.max="8";workers.value="1";workerLabel.append(workers);advanced.append(workerLabel,node("p",SimjectureI18n.message("ui.task-definitions-and-deadlines-stay-fixed-hardware-and-runner-settin"),"field-help"));form.append(advanced);
+    form.append(node("p",SimjectureI18n.message("ui.uses-your-configured-subscription-or-api-credits-api-cost-estimates-"),"field-help"));
     const error=node("p","","form-error");error.setAttribute("role","alert");form.append(error);
-    const controls=node("div",undefined,"study-controls"),cancel=node("button","Cancel","secondary"),submit=node("button","Start timed trials");cancel.type="button";cancel.onclick=()=>dialog.close();submit.type="submit";controls.append(cancel,submit);form.append(controls);
+    const controls=node("div",undefined,"study-controls"),cancel=node("button",SimjectureI18n.message("ui.cancel"),"secondary"),submit=node("button",SimjectureI18n.message("ui.start-timed-trials"));cancel.type="button";cancel.onclick=()=>dialog.close();submit.type="submit";controls.append(cancel,submit);form.append(controls);
     let request=0;
     backend.onchange=async()=>{
       const current=++request;effort.disabled=backend.value==="agy";if(effort.disabled)effort.value="";
-      try {const catalogue=await actions.api("models",{backend:backend.value});if(current!==request)return;suggestions.replaceChildren();for(const entry of catalogue.models || []) {const option=node("option");option.value=entry.id;suggestions.append(option);}if(!model.value)model.value=catalogue.default || "";}catch(e){if(current===request)error.textContent=e.message;}
+      try {const catalogue=await actions.api("models",{backend:backend.value});if(current!==request)return;suggestions.replaceChildren();for(const entry of catalogue.models || []) {const option=node("option");option.value=entry.id;suggestions.append(option);}if(!model.value)model.value=catalogue.default || "";}catch(e){if(current===request)SimjectureI18n.content(error, e.message);}
     };
     form.onsubmit=async event=>{
-      event.preventDefault();if(submit.disabled)return;submit.disabled=true;error.textContent="";
-      try {const result=await actions.api("start-benchmark-campaign",{backend:backend.value,model:model.value.trim(),reasoning_effort:effort.value,repeats:Number(repeats.value),workers:Number(workers.value),tasks:checks.filter(([check])=>check.checked).map(([,id])=>id)});dialog.close();await actions.refresh();actions.toast(result.message);}catch(e){error.textContent=e.message;submit.disabled=false;}
+      event.preventDefault();if(submit.disabled)return;submit.disabled=true;SimjectureI18n.content(error, "");
+      try {const result=await actions.api("start-benchmark-campaign",{backend:backend.value,model:model.value.trim(),reasoning_effort:effort.value,repeats:Number(repeats.value),workers:Number(workers.value),tasks:checks.filter(([check])=>check.checked).map(([,id])=>id)});dialog.close();await actions.refresh();actions.toast(SimjectureI18n.live(() => SimjectureI18n.known("ui.timed-trials-started", result.message)));}catch(e){SimjectureI18n.content(error, e.message);submit.disabled=false;}
     };
     dialog.append(form);document.body.append(dialog);dialog.addEventListener("close",()=>dialog.remove());dialog.showModal();backend.onchange();model.focus();
   }
 
   function render(pack, actions) {
-    $("benchmark-published-note").textContent=`${pack.published_trials || 0} Simjecture-owned grades · ${pack.community_trials || 0} shipped community grades. Local runs appear as they finish. Community declarations keep separate comparison groups.`;
+    SimjectureI18n.bindText($("benchmark-published-note"), () => SimjectureI18n.t("ui.simjecture-owned-grades-shipped-community-grades-local-runs-appear-a", {p0: (pack.published_trials || 0), p1: (pack.community_trials || 0)}));
     $("benchmark-download-grades").onclick=()=>{
       const url=URL.createObjectURL(new Blob([JSON.stringify({reports:pack.grade_reports || []},null,2)+"\n"],{type:"application/json"}));
       const a=node("a");a.href=url;a.download="simjecture-benchmark-grades.json";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
     };
     $("benchmark-run").disabled=actions.readonly;
-    $("benchmark-run").title=actions.hosted ? "Run your own benchmarks in a self-hosted Simjecture workspace." : "";
+    SimjectureI18n.attribute($("benchmark-run"), "title", () => actions.hosted ? SimjectureI18n.t("ui.run-your-own-benchmarks-in-a-self-hosted-simjecture-workspace") : "");
     $("benchmark-run").onclick=()=>runDialog(pack,actions);
     const campaigns=$("benchmark-campaigns");campaigns.replaceChildren();
     for(const run of pack.campaigns || []) {
       const card=node("article",undefined,"benchmark-campaign");
-      card.append(node("strong",run.name),node("span",`${run.finished}/${run.total} finished · ${run.passed} passed · ${run.active ? "Running" : run.stopped_reason || "Finished"}`));
-      const progress=node("progress");progress.max=run.total || 1;progress.value=run.finished;progress.setAttribute("aria-label",`${run.name} progress`);card.append(progress);
-      if(run.running.length)card.append(node("p",`Working: ${run.running.join(", ")}`,"field-help"));
-      if(run.blocked.length)card.append(node("p",`Unavailable or quota limited: ${[...new Set(run.blocked)].join(", ")}`,"field-help"));
-      if(run.runner_errors)card.append(node("p",`${run.runner_errors} runner errors need attention`,"form-error"));
+      card.append(node("strong",run.name),node("span",SimjectureI18n.live(() => SimjectureI18n.t("ui.finished-passed", {p0: run.finished, p1: run.total, p2: run.passed, p3: run.active ? SimjectureI18n.t("ui.running") : (run.stopped_reason || SimjectureI18n.t("ui.finished-3"))}))));
+      const progress=node("progress");progress.max=run.total || 1;progress.value=run.finished;SimjectureI18n.attribute(progress, "aria-label", () => SimjectureI18n.t("ui.progress", {p0: run.name}));card.append(progress);
+      if(run.running.length)card.append(node("p",SimjectureI18n.live(() => SimjectureI18n.t("ui.working", {p0: run.running.join(", ")})),"field-help"));
+      if(run.blocked.length)card.append(node("p",SimjectureI18n.live(() => SimjectureI18n.t("ui.unavailable-or-quota-limited", {p0: [...new Set(run.blocked)].join(", ")})),"field-help"));
+      if(run.runner_errors)card.append(node("p",SimjectureI18n.live(() => SimjectureI18n.t("ui.runner-errors-need-attention", {p0: run.runner_errors})),"form-error"));
       campaigns.append(card);
     }
     const data = pack.local_leaderboard || pack.leaderboard, allRows = data.cohorts.flatMap(c => c.rows);
     $("benchmark-overview").replaceChildren();
     const values = [
-      [allRows.reduce((n,r)=>n+r.trials,0),"Graded trials"],
-      [data.cohorts.length,"Comparison groups"],
-      [allRows.filter(r=>!r.provisional).length,"Repeated configurations"],
-      [allRows.reduce((n,r)=>n+r.passes,0),"Completed trials"],
+      [allRows.reduce((n,r)=>n+r.trials,0),SimjectureI18n.live(() => SimjectureI18n.t("ui.graded-trials"))],
+      [data.cohorts.length,SimjectureI18n.live(() => SimjectureI18n.t("ui.comparison-groups"))],
+      [allRows.filter(r=>!r.provisional).length,SimjectureI18n.live(() => SimjectureI18n.t("ui.repeated-configurations"))],
+      [allRows.reduce((n,r)=>n+r.passes,0),SimjectureI18n.live(() => SimjectureI18n.t("ui.completed-trials"))],
     ];
     for (const [count,label] of values) {
       const card = node("div",undefined,"benchmark-stat"); card.append(node("strong",String(count)),node("span",label)); $("benchmark-overview").append(card);
@@ -346,46 +346,44 @@ window.WorkspaceBenchmarks = (() => {
     picker.replaceChildren();
     const ordered=[...data.cohorts].sort((a,b)=>b.scope.pack_version.localeCompare(a.scope.pack_version,{numeric:true}) || b.rows.reduce((n,r)=>n+r.trials,0)-a.rows.reduce((n,r)=>n+r.trials,0));
     ordered.forEach((c,i) => {
-      const option = node("option",`${c.scope.protocol==="community-controlled" ? "Community · " : "Local · "}${c.scope.task} · pack ${c.scope.pack_version} · ${c.scope.budget_seconds}s · ${c.id.slice(0,6)}`); option.value=c.id; picker.append(option);
+      const option = node("option",SimjectureI18n.live(() => SimjectureI18n.t("ui.pack-s", {p0: (c.scope.protocol==="community-controlled" ? SimjectureI18n.t("ui.community") : SimjectureI18n.t("ui.local")), p1: c.scope.task, p2: c.scope.pack_version, p3: c.scope.budget_seconds, p4: c.id.slice(0,6)}))); option.value=c.id; picker.append(option);
       if (!selected && i===0) selected=c.id;
     });
-    if (!data.cohorts.length) picker.append(node("option","No controlled trials yet"));
+    if (!data.cohorts.length) picker.append(node("option",SimjectureI18n.message("ui.no-controlled-trials-yet")));
     if (!data.cohorts.some(c=>c.id===selected)) selected=data.cohorts[0]?.id || "";
     picker.value=selected; picker.disabled=!data.cohorts.length;
     picker.onchange=()=>{selected=picker.value; board(data.cohorts.find(c=>c.id===selected));};
     board(data.cohorts.find(c=>c.id===selected));
-    $("benchmark-price-date").textContent=`· ${data.pricing.checked_date}`;
-    $("benchmark-price-note").textContent=`USD per million tokens. ${data.cost_note}`;
+    SimjectureI18n.content($("benchmark-price-date"), `· ${data.pricing.checked_date}`);
+    SimjectureI18n.bindText($("benchmark-price-note"), () => SimjectureI18n.t("ui.usd-per-million-tokens", {p0: SimjectureI18n.known("ui.benchmark-pricing-note", data.cost_note)}));
     const prices = Object.entries(data.pricing.per_million_tokens).map(([model,rate]) => {
-      const link = node("a","Official source"); link.href=rate.source; link.target="_blank"; link.rel="noopener noreferrer";
-      if(rate.basis)link.title=rate.basis;
+      const link = node("a",SimjectureI18n.message("ui.official-source")); link.href=rate.source; link.target="_blank"; link.rel="noopener noreferrer";
+      if(rate.basis)SimjectureI18n.attribute(link, "title", () => rate.basis);
       return [model,money(rate.input),money(rate.cached),money(rate.output),link];
     });
-    $("benchmark-price-table").replaceChildren(table(["Model","Input","Cached input","Output","Reference"],prices));
+    $("benchmark-price-table").replaceChildren(table([SimjectureI18n.message("ui.model"),SimjectureI18n.message("ui.input"),SimjectureI18n.message("ui.cached-input"),SimjectureI18n.message("ui.output"),SimjectureI18n.message("ui.reference")],prices));
     $("benchmark-export").onclick=()=>{
       const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)+"\n"],{type:"application/json"}));
       const a=node("a");a.href=url;a.download="simjecture-leaderboard.json";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
     };
     const files=$("benchmark-import-files");
     $("benchmark-import").disabled=actions.readonly;
-    $("benchmark-import").title=actions.hosted ? "Import custom results in a self-hosted Simjecture workspace." : "";
-    $("benchmark-your-work").querySelector(".field-help").textContent=actions.hosted
-      ? "Browse and download the official results here. Testing models and importing custom results are available in a self-hosted Simjecture workspace."
-      : "Test any supported model with your installed agent or API connection. Local and imported runs appear in Community & local. Official results are maintained by Simjecture.";
+    SimjectureI18n.attribute($("benchmark-import"), "title", () => actions.hosted ? SimjectureI18n.t("ui.import-custom-results-in-a-self-hosted-simjecture-workspace") : "");
+    SimjectureI18n.bindText($("benchmark-your-work").querySelector(".field-help"), () => actions.hosted ? SimjectureI18n.t("ui.browse-and-download-the-official-results-here-testing-models-and-imp") : SimjectureI18n.t("workspace.benchmarkCommunityHelp"));
     $("benchmark-import").onclick=()=>files.click();
     files.onchange=async()=>{
       try {
         const selectedFiles=Array.from(files.files || []);
         if (!selectedFiles.length) return;
-        if (selectedFiles.length>100 || selectedFiles.some(f=>f.size>4000000)) throw Error("Choose at most 100 grade files, up to 4 MB each.");
+        if (selectedFiles.length>100 || selectedFiles.some(f=>f.size>4000000)) throw Error(SimjectureI18n.t("ui.choose-at-most-100-grade-files-up-to-4-mb-each"));
         $("benchmark-import").disabled=true;
         const parsed=await Promise.all(selectedFiles.map(async f=>JSON.parse(await f.text())));
         const reports=parsed.flatMap(value=>Array.isArray(value) ? value : Array.isArray(value.reports) ? value.reports : [value]);
-        if(reports.length>1000)throw Error("Import at most 1000 grades at a time.");
+        if(reports.length>1000)throw Error(SimjectureI18n.t("ui.import-at-most-1000-grades-at-a-time"));
         const knownLocal=new Set((pack.grade_reports || []).filter(r=>r.trial?.comparison?.protocol==="controlled").map(r=>r.trial.trial_id));
         for(const report of reports)if(report.trial?.comparison?.protocol==="controlled" && !knownLocal.has(report.trial.trial_id))report.trial.comparison.protocol="community-controlled";
         const result=await actions.api("import-benchmark-reports",{reports});
-        await actions.refresh(); actions.toast(`${result.imported} grades imported. Repeated imports do not add trials.`);
+        await actions.refresh(); actions.toast(SimjectureI18n.live(() => SimjectureI18n.t("ui.grades-imported-repeated-imports-do-not-add-trials", {p0: result.imported})));
       } catch(error) {actions.toast(error.message,true);}
       finally {files.value="";$("benchmark-import").disabled=actions.readonly;}
     };
@@ -404,9 +402,9 @@ window.WorkspaceBenchmarks = (() => {
     $("benchmark-cohort-note").hidden=official;
     if(official){
       const publication=pack.official;
-      $("benchmark-published-note").textContent="Official Simjecture measurements · "+publication.date+" · maintained result edition · pack "+publication.pack_version;
+      SimjectureI18n.bindText($("benchmark-published-note"), () => SimjectureI18n.t("ui.official-simjecture-measurements") + publication.date + SimjectureI18n.t("ui.maintained-result-edition-pack") + publication.pack_version);
       $("benchmark-overview").replaceChildren();
-      for(const [count,label] of [[new Set(publication.tasks.flatMap(t=>t.rows.filter(r=>r.trials>0).map(r=>r.id))).size,"Configurations tested"],[publication.tasks.reduce((n,t)=>n+t.rows.reduce((m,r)=>m+r.trials,0),0),"Graded attempts"],[publication.tasks.length,"Scientific coding tasks"],[publication.tasks.reduce((n,t)=>n+t.rows.reduce((m,r)=>m+r.passes,0),0),"Completed attempts"]]){
+      for(const [count,label] of [[new Set(publication.tasks.flatMap(t=>t.rows.filter(r=>r.trials>0).map(r=>r.id))).size,SimjectureI18n.live(() => SimjectureI18n.t("ui.configurations-tested"))],[publication.tasks.reduce((n,t)=>n+t.rows.reduce((m,r)=>m+r.trials,0),0),SimjectureI18n.live(() => SimjectureI18n.t("ui.graded-attempts"))],[publication.tasks.length,SimjectureI18n.live(() => SimjectureI18n.t("ui.scientific-coding-tasks"))],[publication.tasks.reduce((n,t)=>n+t.rows.reduce((m,r)=>m+r.passes,0),0),SimjectureI18n.live(() => SimjectureI18n.t("ui.completed-attempts"))]]){
         const card=node("div",undefined,"benchmark-stat");card.append(node("strong",String(count)),node("span",label));$("benchmark-overview").append(card);
       }
       $("benchmark-export").onclick=()=>{
@@ -416,9 +414,9 @@ window.WorkspaceBenchmarks = (() => {
       officialBoard(publication,actions);
     }else{
       $("benchmark-series-legend").replaceChildren();
-      $("benchmark-task-brief").replaceChildren(node("p","Current-pack community and locally declared trials. Each comparison preserves its runner conditions."));
-      $("benchmark-ranking-note").textContent="These submissions are separate from the official publication. Imported and community execution/billing declarations are not independently certified.";
-      $("benchmark-chart-note").textContent="Community and local measurements use their declared comparison protocol.";
+      $("benchmark-task-brief").replaceChildren(node("p",SimjectureI18n.message("ui.current-pack-community-and-locally-declared-trials-each-comparison-p")));
+      SimjectureI18n.bindText($("benchmark-ranking-note"), () => SimjectureI18n.t("ui.these-submissions-are-separate-from-the-official-publication-importe"));
+      SimjectureI18n.bindText($("benchmark-chart-note"), () => SimjectureI18n.t("ui.community-and-local-measurements-use-their-declared-comparison-proto"));
     }
   }
   return {render};
