@@ -1,0 +1,18 @@
+{
+  "source_file_sha256": {
+    "flash:01_results/mesh_v5_summary.json": "c661537dc664df1b23d8f32c9f6586b1b215ef9373d5a599014d03e7aa11c247",
+    "flash:03_visualization/checkpoint_archive_checks.json": "ae46b8888106e09fe1c97096d16d66c84feb6884a308b6335cdcf47fbf648931",
+    "flash:01_results/130-v5-production-loading-to-178-us-with-20-mpi-20-core-quota-after-/provenance.json": "aad90cb077b8212a6d86523d922944a67ab8280fdf9c6b50e49da855533e3342",
+    "flash:01_results/20_mpi_qualification.json": "ee50932333e9ff15e396765f5a505ec21bc3a428d84e8a6f7c6c6843565d21f6",
+    "warpx:rng_continuity_reviews/562-actual-v7-rng-continuity-raw-logs-checksums-all-saved-fields-mas/RNG_CONTINUITY_ACTUAL_REVIEW.json": "d3ebb207320a97d668a8e81dd20114ce0e80510b7a2bec45e787c4d39c0a41c8",
+    "warpx:rng_integrity_controls/564-strict-rng-checksum-rejection-isolated-deliberately-corrupted-ne/CORRUPTION_GUARD_REVIEW.json": "df05d0502fd4488114b6a5b09577a746a9adbeee0b85f2e1dc9295b0753f3f4a",
+    "warpx:rng_checkpoint_validation/559-actual-v7-disabled-regression-review-raw-native-logs-cp-original/DEFAULT_OFF_ACTUAL_REVIEW.json": "d6fe8a5185f749a0debd27d4b13b4feb5b94e8b84e81beb7ba580920ecf73075",
+    "warpx:rng_axis_same_state_reviews/573-finalize-samerng-axis-actual-decision-all-synchronized-checkpoin/ACTUAL_REVIEW.json": "8a2efa0237d2a46563b68f74567f9dd17293bbe4a94cd61b601e56a76edabe03",
+    "warpx:rng_axis_validation/569-finish-saved-v8-composition-actual-review-fix-missing-terminal-m/ACTUAL_REVIEW.json": "70fa0b53bbb104cce8f42c768b85b9cf50948c55f49ba8633056dc9086495b38",
+    "warpx:build_v7_rng_checkpoint_candidate/BUILD_STATUS.json": "b0e12e3414381bed59dbfe7f9e9ed325f054d10d36384d328da47767b4fc5594",
+    "warpx:build_v8_rng_axis_composition/BUILD_STATUS.json": "fe8843a8bbf8b46bdbc0dc6eb2baae0947a023b45921e159d49d14086ac8ebcb",
+    "flash:03_visualization/paused_density_and_mesh.png": "7ac2ba3f14289e44e3491080527dda91e59b1e54b0e9969ea1fb393c40531718",
+    "warpx-project:hybrid_reproduction/visible_exports/cs3_same_rng_axis_14p60_14p75us.png": "aa1ecb8808d129cada6bd9b7909f7e495ce2ce978de5d9ee38e03a474b65c36a"
+  },
+  "export": "Whitelisted JSON fields copied without changing numeric values; host paths, resource samples and raw fields omitted. Axis frames retain six diagnostic fields. Figures copied byte-for-byte. See export_record.py for exact selections. Source hashes identify local files; they do not make omitted raw data verifiable."
+}

@@ -1,0 +1,28 @@
+{
+  "record_type": "Operator-assisted local exploratory development; retrospective excerpt.",
+  "snapshot_date": "2026-11-04",
+  "contributor": "LCB119",
+  "human_framing": "Develop FuZE gas loading and plasma calculations, place refinement near electrodes and the axis within a cell budget, and investigate solver/restart anomalies.",
+  "agent_work": "Local code development, bounded simulations, readback audits and figures.",
+  "review": "Working-assistant audits and operator steering; no formal claim adjudication.",
+  "formal_harness_adjudication": false,
+  "software": {
+    "Simjecture": "0.7.0 installed workspace; exact application Git commit not retained.",
+    "FLASH": "4.8, PARAMESH, local FuZE application overlays; executable hash in flash.json.",
+    "WarpX": {
+      "base_source_revision": "9a685ce598192acde30a0f99f963867ba6441f42",
+      "runtime": "Modified native RZ CUDA, non-MPI, PETSc, embedded boundaries.",
+      "builds": {
+        "v7_rng_checkpoint_candidate": {
+          "sha256": "26658634361a47949768f7d934a090fe0c9bbd526180b3c91b1592b587ce0d22",
+          "scope": "Independent default-off diagnostic checkpoint candidate only. Mode0 unchanged; mode1 snapshots host+ParallelForRNG CUDA state with no RNG draw; mode2 strictly restores matching snapshot before first restarted physical step. Does not serialize private bulk FillRandom generator. No physical field/particle/seed/RNG algorithm/current/gate/dt/tolerance/cap/backend changes. Legacy CP cannot recover lost RNG history; strict mode refuses missing snapshot. Mandatory defaultoff case013/v2 all13 regression and generated-checkpoint split-vs-continuous control before any adoption."
+        },
+        "v8_rng_axis_composition": {
+          "sha256": "dc5c6ab0ce42ddc5a5b8ed660939f4983ae6cf8c1cab531cd8a72671c8f0d19f",
+          "scope": "Independent archive/link composition only, no new equation or parameter. v7 host+ParallelForRNG snapshot hooks plus v6 defaultoff QDSMC axis boundary/probe; same v2 cell Hall E object and v1 remaining objects. Old binaries/source/dependencies unchanged. Must regress all-new-flags-off original case013/v2, mode0 axis1 versus v6, and strict mode2 axis0 versus v7 before same-new-CP/same-RNG axis on/off control. No production/GIF acceptance."
+        }
+      }
+    }
+  },
+  "scope": "Separate FLASH loading and WarpX solver-development branches, not a coupled run. No accepted discharge/pinch prediction, general solver repair or convergence claim."
+}

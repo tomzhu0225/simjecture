@@ -1,0 +1,281 @@
+{
+  "source_job": "560-v7-bounded-rng-state-strict-missing-refusal-then-generated-snaps",
+  "restored_checksum_before_step29201_verified": true,
+  "snapshot_final_bytes_equal": true,
+  "matched_five_resumed_frames13field_L2": [
+    {
+      "plotfile_name": "diag1029220",
+      "relative_L2": {
+        "Er": 2.3188056579840697e-14,
+        "Et": 0.0,
+        "Ez": 2.4607269266139384e-14,
+        "Br": 0.0,
+        "Bt": 4.716953092554749e-15,
+        "Bz": 0.0,
+        "jr": 8.35775909395436e-15,
+        "jt": 3.7793314721912966e-15,
+        "jz": 2.127617049759129e-15,
+        "rho": 9.794999429754323e-16,
+        "eb_covered": 0.0,
+        "Te": 1.2298084266692713e-15,
+        "Pe": 3.765601518971069e-15
+      },
+      "passes1e_10": true
+    },
+    {
+      "plotfile_name": "diag1029240",
+      "relative_L2": {
+        "Er": 3.7732814257855405e-14,
+        "Et": 0.0,
+        "Ez": 4.478699452323672e-14,
+        "Br": 0.0,
+        "Bt": 6.310603983513627e-15,
+        "Bz": 0.0,
+        "jr": 7.115931079462365e-14,
+        "jt": 1.594697706151043e-14,
+        "jz": 1.3551808978697299e-13,
+        "rho": 5.055602199179357e-15,
+        "eb_covered": 0.0,
+        "Te": 3.3314665101760094e-15,
+        "Pe": 4.4342301933884204e-14
+      },
+      "passes1e_10": true
+    },
+    {
+      "plotfile_name": "diag1029260",
+      "relative_L2": {
+        "Er": 1.9055084051241522e-13,
+        "Et": 0.0,
+        "Ez": 2.4491979069738276e-13,
+        "Br": 0.0,
+        "Bt": 1.1785725849367517e-14,
+        "Bz": 0.0,
+        "jr": 3.9941964760589876e-14,
+        "jt": 1.3699686834947927e-14,
+        "jz": 3.9758202569793204e-14,
+        "rho": 3.3537734797571774e-15,
+        "eb_covered": 0.0,
+        "Te": 3.874643408984452e-15,
+        "Pe": 1.5217629991732243e-14
+      },
+      "passes1e_10": true
+    },
+    {
+      "plotfile_name": "diag1029280",
+      "relative_L2": {
+        "Er": 6.873576484178369e-13,
+        "Et": 0.0,
+        "Ez": 3.6297482153782406e-13,
+        "Br": 0.0,
+        "Bt": 2.190541115859156e-14,
+        "Bz": 0.0,
+        "jr": 6.809269818851963e-14,
+        "jt": 3.422537065332723e-14,
+        "jz": 8.657600307201616e-14,
+        "rho": 6.830522082783052e-15,
+        "eb_covered": 0.0,
+        "Te": 6.584741205462778e-15,
+        "Pe": 2.560016357886888e-14
+      },
+      "passes1e_10": true
+    },
+    {
+      "plotfile_name": "diag1029300",
+      "relative_L2": {
+        "Er": 1.5091346881451097e-12,
+        "Et": 0.0,
+        "Ez": 1.6786927369216953e-12,
+        "Br": 0.0,
+        "Bt": 3.989477815684983e-14,
+        "Bz": 0.0,
+        "jr": 1.6084233715993502e-13,
+        "jt": 6.561202627502997e-14,
+        "jz": 1.1698916661643992e-13,
+        "rho": 1.711865088869089e-14,
+        "eb_covered": 0.0,
+        "Te": 3.559488416637986e-14,
+        "Pe": 3.907613676215246e-14
+      },
+      "passes1e_10": true
+    }
+  ],
+  "all_resumed_frames_pass1e_10": true,
+  "maximum_split_continuous_relative_L2": 1.6786927369216953e-12,
+  "particle_comparison": [
+    {
+      "species": "ions",
+      "same_ID_set": true,
+      "continuous_count": 1378002,
+      "split_count": 1378002,
+      "same_weights": true,
+      "common_ID_relative_L2_columns": [
+        5.220032419354488e-16,
+        2.068585874106486e-17,
+        0.0,
+        9.350258886602068e-15,
+        1.0608906825507426e-14,
+        8.023677300203377e-15,
+        5.100305439838268e-15
+      ],
+      "new_cohort_count": 0
+    },
+    {
+      "species": "feed",
+      "same_ID_set": true,
+      "continuous_count": 117195,
+      "split_count": 117195,
+      "same_weights": true,
+      "common_ID_relative_L2_columns": [
+        3.821956680946631e-16,
+        2.8142797923841044e-17,
+        0.0,
+        1.1516514585308523e-14,
+        1.479630766853609e-14,
+        5.928721876053319e-15,
+        2.7967998859418936e-15
+      ],
+      "new_cohort_count": 400,
+      "new_cohort_all7_attributes_exact_equal": true,
+      "new_cohort_RMS_delta_columns": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  ],
+  "limits": "Short controlled checkpoint continuity validation only, not full generic RNG coverage, near-axis repair, convergence or production/GIF permission. Common14.60 frame in controller is copied common anchor, not an independent restarted output; actual audit compares five resumed frames. Full-cell energy proxies omit exact EB/boundary/particle ledger; ionUz is deposited moment; gate prescribed input.",
+  "runs": [
+    {
+      "label": "strict_mode2_missing_legacy_snapshot_expected_rejection",
+      "manifest": {
+        "source_revision": "9a685ce598192acde30a0f99f963867ba6441f42",
+        "returncode": 1,
+        "wall_stop_requested": false
+      },
+      "completed_steps": 0
+    },
+    {
+      "label": "mode1_continuous14p55_to14p65",
+      "manifest": {
+        "source_revision": "9a685ce598192acde30a0f99f963867ba6441f42",
+        "returncode": 0,
+        "wall_stop_requested": false
+      },
+      "completed_steps": 200,
+      "CP": {
+        "step": 29300,
+        "time_s": 1.4649999999992948e-05,
+        "dt_s": 5e-10,
+        "synchronized": true
+      },
+      "species": {
+        "ions": {
+          "macro_particles": 1378002,
+          "mass_kg": 1.881617167016561e-07
+        },
+        "feed": {
+          "macro_particles": 117195,
+          "mass_kg": 1.2305475016626816e-08
+        }
+      },
+      "actual_mass_kg": 2.004671917182829e-07
+    },
+    {
+      "label": "mode2_strict14p60_to14p65",
+      "manifest": {
+        "source_revision": "9a685ce598192acde30a0f99f963867ba6441f42",
+        "returncode": 0,
+        "wall_stop_requested": false
+      },
+      "completed_steps": 100,
+      "CP": {
+        "step": 29300,
+        "time_s": 1.4649999999992948e-05,
+        "dt_s": 5e-10,
+        "synchronized": true
+      },
+      "species": {
+        "ions": {
+          "macro_particles": 1378002,
+          "mass_kg": 1.8816171670165606e-07
+        },
+        "feed": {
+          "macro_particles": 117195,
+          "mass_kg": 1.2305475016626816e-08
+        }
+      },
+      "actual_mass_kg": 2.0046719171828288e-07
+    }
+  ],
+  "snapshots": {
+    "midpoint_snapshot": {
+      "sha256": "fa69004f7c279890caa6eb480e2f4d19afed89f2805673e804c6668e1e98f9aa",
+      "states": 184320,
+      "bytes_per_state": 48,
+      "host_bytes": 6674,
+      "gpu_checksum": 11692405685451275420,
+      "host_checksum": 16104069439214522166,
+      "file_bytes": 8854090
+    },
+    "final_continuous_snapshot": {
+      "sha256": "599924bbfe383821f431e90cd9d33794244323ffc167cedb94018aa5f94089b5",
+      "states": 184320,
+      "bytes_per_state": 48,
+      "host_bytes": 6674,
+      "gpu_checksum": 4408215009720612535,
+      "host_checksum": 16104069439214522166,
+      "file_bytes": 8854090
+    },
+    "final_split_snapshot": {
+      "sha256": "599924bbfe383821f431e90cd9d33794244323ffc167cedb94018aa5f94089b5",
+      "states": 184320,
+      "bytes_per_state": 48,
+      "host_bytes": 6674,
+      "gpu_checksum": 4408215009720612535,
+      "host_checksum": 16104069439214522166,
+      "file_bytes": 8854090
+    }
+  },
+  "default_off": {
+    "gateoff_original_13field_L2": {
+      "Er": 2.736250329978428e-15,
+      "Et": 0.0,
+      "Ez": 2.550689019540938e-15,
+      "Br": 0.0,
+      "Bt": 8.720016208602267e-16,
+      "Bz": 0.0,
+      "jr": 1.8206670796594895e-16,
+      "jt": 2.649654308477011e-16,
+      "jz": 2.0379682679950237e-16,
+      "rho": 2.046216724714392e-16,
+      "eb_covered": 0.0,
+      "Te": 1.297167792500398e-16,
+      "Pe": 9.669725694043366e-16
+    },
+    "mode0_v2_13field_L2": {
+      "Er": 4.3159014514498265e-15,
+      "Et": 0.0,
+      "Ez": 8.326879942949123e-15,
+      "Br": 0.0,
+      "Bt": 6.798055334363082e-16,
+      "Bz": 0.0,
+      "jr": 1.0728574861797074e-16,
+      "jt": 1.5272570239613872e-16,
+      "jz": 1.1316953843994215e-16,
+      "rho": 1.7574006217753588e-16,
+      "eb_covered": 0.0,
+      "Te": 1.6059865644323814e-16,
+      "Pe": 7.287537668779976e-16
+    },
+    "build_sha256": "26658634361a47949768f7d934a090fe0c9bbd526180b3c91b1592b587ce0d22"
+  },
+  "corruption_guard": {
+    "expected_native_rejection_passed": true,
+    "completed_physical_steps": 0,
+    "returncode": 1
+  }
+}

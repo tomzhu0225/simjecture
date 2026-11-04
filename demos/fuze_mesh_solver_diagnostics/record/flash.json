@@ -1,0 +1,212 @@
+{
+  "mesh": {
+    "leaf_cells": 199800,
+    "within_200000_budget": true,
+    "square_cell_sizes_verified": true,
+    "domain_cm": {
+      "r": [
+        0,
+        12
+      ],
+      "z": [
+        0,
+        150
+      ]
+    },
+    "blocks_by_level": {
+      "1": 163,
+      "2": 1075,
+      "3": 218,
+      "4": 214,
+      "5": 328
+    },
+    "cell_edge_mm_by_level": {
+      "1": 2.0,
+      "2": 1.0,
+      "3": 0.5,
+      "4": 0.25,
+      "5": 0.125
+    },
+    "zone_cells_by_level": {
+      "all_copper": {
+        "1": 16300,
+        "2": 21956,
+        "3": 3632,
+        "4": 6400,
+        "5": 12265
+      },
+      "deep_copper": {
+        "1": 8875,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0
+      },
+      "all_flow": {
+        "1": 0,
+        "2": 85544,
+        "3": 18168,
+        "4": 15000,
+        "5": 20535
+      },
+      "core_axis": {
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 7600,
+        "5": 8000
+      },
+      "curved_surface_band": {
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 3656
+      },
+      "rounded_arc_highest": {
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 222
+      },
+      "nose_axis_highest": {
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 8141
+      },
+      "port": {
+        "1": 0,
+        "2": 0,
+        "3": 28,
+        "4": 0,
+        "5": 0
+      }
+    },
+    "new_copper_cells": 60553,
+    "old_mesh_cells": 182100,
+    "old_copper_cells": 47752,
+    "flow_min_level": 2,
+    "port_unique_z_cm": [
+      50.02500000037253,
+      50.07500000111759
+    ],
+    "port_discrete_width_mm": 1.0,
+    "nominal_port_width_mm": 1.0,
+    "note": "Initial-state mesh and geometry checks; does not establish long-time MHD accuracy."
+  },
+  "archive": {
+    "time_us": 43.21970131765699,
+    "leaf_cells": 199800,
+    "block_count": 1998,
+    "sizes_mm": [
+      2.0,
+      1.0,
+      0.5,
+      0.25,
+      0.125
+    ],
+    "finite_positive_thermodynamics": true,
+    "max_species_error": 3.000000248221113e-10,
+    "solver_return_code": 0,
+    "automatic_continuation_enabled": false,
+    "scientific_status": "Gas-loading demonstration; discharge and breakdown not simulated."
+  },
+  "execution": {
+    "mode": "loading",
+    "binary_sha256": "388ab7c916ea79ca9793d2f391984e01636d3240ac3d5cabac7b482f8fa30852",
+    "initial_time_us": 24.775762883745188,
+    "target_time_us": 178.0,
+    "ranks": 20,
+    "quota_cores": 20,
+    "return_code": 0
+  },
+  "solver_argv": [
+    "/opt/acs-capabilities/flash-zpinch-rz-4.8/bin/mpirun",
+    "--use-hwthread-cpus",
+    "--bind-to",
+    "none",
+    "-np",
+    "20",
+    "./flash4",
+    "-par_file",
+    "flash.par"
+  ],
+  "redistribution": {
+    "initial_time_us": 24.762622598978485,
+    "ranks": 20,
+    "quota_cores": 20,
+    "scope": "Checkpoint redistribution to 20 MPI and three-step advance; not physical convergence validation.",
+    "final_checks": {
+      "time_us": 24.775762883745188,
+      "return_code": 0,
+      "finite_positive_thermodynamic_fields": true,
+      "max_species_sum_error": 1.355138223857466e-12,
+      "copper_max_abs_velocity_cm_s": 0.0,
+      "fields": {
+        "dens": {
+          "min": 1e-10,
+          "max": 7.8
+        },
+        "tele": {
+          "min": 273.8514440722827,
+          "max": 939.9261914234588
+        },
+        "tion": {
+          "min": 4.424561560059119,
+          "max": 940.0715903525207
+        },
+        "eion": {
+          "min": 3058503.497339727,
+          "max": 78619585927.33502
+        },
+        "eele": {
+          "min": 480246901.61628723,
+          "max": 156390987925.46994
+        },
+        "ele": {
+          "min": 1e-10,
+          "max": 0.9999999997
+        },
+        "fill": {
+          "min": 1e-10,
+          "max": 1.0000000072826978e-10
+        },
+        "line": {
+          "min": 1e-10,
+          "max": 0.9999999997000001
+        },
+        "vacu": {
+          "min": 1e-10,
+          "max": 0.9999999997013551
+        },
+        "velx": {
+          "min": -344614.65195256955,
+          "max": 214085.4186632799
+        },
+        "vely": {
+          "min": -788398.4153739585,
+          "max": 788066.9200414625
+        },
+        "velz": {
+          "min": 0.0,
+          "max": 0.0
+        },
+        "magz": {
+          "min": 0.0,
+          "max": 0.0
+        }
+      },
+      "leaf_cells": 199800,
+      "leaf_blocks_by_level": {
+        "1": 163,
+        "2": 1075,
+        "3": 218,
+        "4": 214,
+        "5": 328
+      }
+    }
+  }
+}
