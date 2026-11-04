@@ -50,6 +50,8 @@ STATIC_ASSETS = frozenset(
     {
         "index.html",
         "app.js",
+        "i18n-messages.js",
+        "i18n.js",
         "markdown.js",
         "styles.css",
         "interface.css",

@@ -43,13 +43,8 @@ window.WorkspaceMonitor = {
         for (const panel of ["simulations", "commands"]) {
           const container = $(`${prefixFor(panel)}-detail`);
           container.replaceChildren(
-            node(
-              "p",
-              panel === "commands"
-                ? "No command selected."
-                : "No simulation selected.",
-              "monitor-empty",
-            ),
+            window.SimjectureI18n.text(node("p", undefined, "monitor-empty"),
+              panel === "commands" ? "workspace.noCommandSelected" : "workspace.noSimulationSelected"),
           );
           delete container.dataset.job;
           container.scrollTop = 0;

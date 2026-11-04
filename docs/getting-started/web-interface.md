@@ -36,6 +36,29 @@ rationales fold away, with failed reviews expanded. Usage is pending/unavailable
 when the backend has not supplied counters, never assumed to be zero. Archived
 DSH activity remains visible, but its launch route is removed.
 
+## Interface language
+
+Choose **English / 简体中文** at the bottom of the workspace sidebar or in the
+experiment monitor's top bar. The default is English, including when the browser
+uses Chinese. An explicit choice applies immediately and is saved in this
+browser's local storage for both pages on the same origin. Other open tabs update
+as well. If browser storage is unavailable, switching still works on the current
+page, but the preference cannot survive a reload.
+
+This first translation phase covers explanatory copy: workspace mode introductions,
+study preparation and review guidance, form help, empty-state explanations, and
+descriptions of experiments and scientific evidence. Buttons, navigation, status
+labels, errors, API data and agent-generated research content retain their original
+language. An English/Chinese mixture is expected when Chinese is selected.
+
+For contributors, `web/static/i18n-messages.js` keeps English and Chinese copy
+together. Mark text-only elements with `data-i18n="message.key"`; use
+`data-i18n-placeholder` or `data-i18n-title` for explanatory attributes. For dynamic
+copy, use `SimjectureI18n.text(node, "message.key")` each time the node is rendered.
+Keep controls and research content outside marked elements. Missing Chinese entries
+fall back to English; an unknown key is displayed unchanged. No build step or
+additional runtime dependency is required.
+
 ## Open a recorded campaign
 
 The browser interface is included in the core installation and has no Node.js

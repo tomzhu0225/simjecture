@@ -4,6 +4,10 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+- Add an English/Simplified Chinese selector to the workspace and experiment
+  monitor, with a shared saved preference and initial translations of explanatory
+  UI copy. Buttons, navigation and research content keep their original language.
+
 - Add an optional pinned Quantum ESPRESSO runtime, material-configured scalar/collinear DFT workflow, and separate Si and magnetic-metal Fe commissioning examples with independent DOS and band branches.
 - Require a previewed and explicitly confirmed QE research plan before solver execution, with disclosed defaults, exact source/protocol binding and step-specific acceptance.
 

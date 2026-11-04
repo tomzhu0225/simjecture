@@ -432,7 +432,7 @@ async function saveConversationAgent(scope = "conversation") {
 function renderProjects() {
   $("project-list").replaceChildren();
   if (!state.projects.length)
-    $("project-list").append(el("p", "Your work will appear here.", "muted"));
+    $("project-list").append(window.SimjectureI18n.text(el("p", undefined, "muted"), "workspace.projectEmpty"));
   for (const project of state.projects) {
     const button = el("button", project.name, "project-link");
     button.title = project.name;
@@ -812,14 +812,12 @@ function renderProject(force = false) {
   }
   if (!p.files.length)
     $("project-files").append(
-      el("p", "Files you upload and files your agent creates appear here."),
+      window.SimjectureI18n.text(el("p"), "workspace.fileEmpty"),
     );
   $("brief-summary").replaceChildren(
-    el(
-      "p",
-      p.brief?.question ||
-        "No study planned yet. Open Autonomous study when your question is clear.",
-    ),
+    p.brief?.question
+      ? el("p", p.brief.question)
+      : window.SimjectureI18n.text(el("p"), "workspace.emptyBrief"),
   );
   inspector.scrollTop = inspectorScroll;
   if (!state.briefDirty || force) {
@@ -831,9 +829,8 @@ function renderProject(force = false) {
     $("brief-policy").value = b.completion_policy || "answer";
     $("solver-development").checked = b.allow_solver_development ?? !hosted;
     $("solver-development").disabled = hosted || state.readonly;
-    $("solver-development-help").textContent = hosted
-      ? "Hosted policy: use supplied solver implementations. Experiment and analysis scripting remains available within host permissions."
-      : "The agent may change its own copy of a solver. Your installed solvers are never modified, and results from a changed solver are checked before they count as evidence.";
+    window.SimjectureI18n.text($("solver-development-help"), hosted
+      ? "workspace.solverHostedHelp" : "workspace.solverHelp");
     const selectedTools = b.capability_directory ?? (hosted ? "hosted-tools" : "auto");
     if (
       [...$("study-tools").options].some(
@@ -1705,7 +1702,8 @@ function renderToolsView() {
   $("tool-availability-filters").hidden=hosted;
   $("tools-machines-help").hidden=hosted;
   $("installed-tool-label").textContent=hosted ? "Available in this workspace" : "On your workbench";
-  $("installed-tool-help").textContent=hosted ? "Provided and maintained by your administrator" : "Installed tools and detected local builds";
+  window.SimjectureI18n.text($("installed-tool-help"), hosted
+    ? "workspace.managedToolsHelp" : "workspace.installedToolsHelp");
   $("connect-research-tool").hidden=hosted;
   $("connect-research-tool").disabled=state.readonly || hosted;
   for(const button of $("custom-tool-form").querySelectorAll("button[type='submit']"))button.disabled=state.readonly || hosted;
@@ -2023,7 +2021,7 @@ async function renderStudies() {
       card.append(notes);
     }
     const findings = el("div", undefined, "study-findings");
-    findings.append(el("p", "Experiment outputs are recorded results. Scientific acceptance comes from independent review; completing a run alone does not establish a claim.", "field-help"));
+    findings.append(window.SimjectureI18n.text(el("p", undefined, "field-help"), "workspace.findingsHelp"));
     for (const review of report.reviews || [])
       if (review.verdict) {
         const v = review.verdict;
@@ -2121,8 +2119,8 @@ async function boot() {
     $("first-request-help").textContent="The hosted agent and compute are ready.";$("first-request-help").hidden=false;
     $("execution-backend").replaceChildren(new Option("Managed experiments","trusted-template"));
     $("review-model").placeholder="Assigned by the host";
-    $("review-agent-help").textContent="The review agent is managed by the host.";
-    document.querySelector(".research-tools-heading .lead").textContent="Verified tools provided for this hosted workspace.";
+    window.SimjectureI18n.text($("review-agent-help"), "workspace.reviewHostedHelp");
+    window.SimjectureI18n.text(document.querySelector(".research-tools-heading .lead"), "workspace.hostedToolsIntro");
   }
   const reviewBackend = $("review-backend");
   for (const cli of state.settings.clis || [])
