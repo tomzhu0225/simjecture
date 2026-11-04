@@ -104,6 +104,7 @@ research/campaigns
 demos/island-coalescence
 demos/flash-warpx-patch
 demos/qin1-hardware-plasma
+demos/fuze-mesh-solver-diagnostics
 demos/kepler-energy
 ```
 

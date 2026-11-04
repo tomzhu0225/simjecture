@@ -91,6 +91,10 @@ Read these resources as needed:
   scientific observable or acceptance threshold.
 - [Execution and output](references/execution-output.md): command construction,
   provenance, output inspection, and failure handling.
+- [Mesh and restart controls](references/mesh-and-restart.md): read when changing
+  refinement regions, MPI decomposition or version-specific application overlays;
+  inspect realized leaf cells, physical-coordinate restart continuity and active
+  solver call paths.
 - [Hosted HDF5 analysis](references/hosted-analysis.md): scratch/project file
   persistence, raw-output archives and single-block magnetic-field plotting.
 - [Model validity](references/model-validity.md): fluid-model scope and
