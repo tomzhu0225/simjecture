@@ -1,0 +1,38 @@
+{
+  "stage": "2: exact-arithmetic equivalence and restricted caching-schedule optimum",
+  "experiments": [
+    "exp_f5f4cd7d68fd034a88485f04",
+    "exp_2d25c143734d5d6db02d6092"
+  ],
+  "formal_theorems": [
+    "EulerCache.face_consistency",
+    "EulerCache.step_equivalence",
+    "EulerCache.admissible_step_equivalence",
+    "EulerCache.trajectory_equivalence",
+    "EulerCache.cached_conservation",
+    "CacheSchedule.reference_legal",
+    "CacheSchedule.cold_use_rejected",
+    "CacheSchedule.evicted_use_rejected",
+    "CacheSchedule.cache_optimal",
+    "CacheSchedule.saves_two_evaluations_per_cell",
+    "CacheSchedule.cached_library_cost",
+    "CacheSchedule.reference_library_cost",
+    "CacheSchedule.weighted_cache_optimal",
+    "CacheSchedule.weighted_saving",
+    "CacheSchedule.weighted_strict_improvement"
+  ],
+  "claims": {
+    "exact_real_cached_step_and_iterates_equal_reference": "proved",
+    "conservation_of_all_five_components": "proved",
+    "cold_cache_thermodynamic_eval_lower_bound_N": "proved",
+    "cached_N_vs_reference_3N_evaluations": "proved",
+    "minimal_weighted_library_cost_for_complete_single_pass_schedules": "proved",
+    "numpy_correspondence_and_call_counts": "empirical",
+    "wall_clock_speed_advantage": "stage-1 empirical record, not a formal consequence",
+    "verified_floating_point_refinement": "open",
+    "general_Euler_time_to_accuracy_optimality": "open"
+  },
+  "algorithm_class": "Immutable old state, cold cache, Eval/Use/Drop commands; only Eval creates thermodynamic data; every cell/direction is used; weighted comparison has exactly 3N Uses; no algebraic bypass, cross-cell sharing, warm start, or changed flux/time integrator",
+  "cost": "Eval=t, Use=f, Drop=d, nonnegative integer weights: cached=(t+3f)N; reference=(3t+3f)N; saving=2tN. This is a library cost model, not a measured hardware model.",
+  "scope": "Scripted assistant-authored formalization; no autonomous discovery or independent scientific review"
+}

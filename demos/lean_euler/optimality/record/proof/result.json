@@ -1,0 +1,179 @@
+{
+  "schema_version": "0.1.0",
+  "status": "proved",
+  "checked": true,
+  "source_sha256": "671378957588a6d496cd9fb8aae3df22415700c8a65aa98a83bd8f59f56736b9",
+  "theorems": [
+    "Certificate.admissible_is_classical_euler",
+    "Certificate.family_nonempty",
+    "ShearEuler.pressure_of_conserved",
+    "ShearEuler.inverse_flow",
+    "ShearEuler.flow_inverse",
+    "Grid.center_covers_cube",
+    "Grid.centers_separated",
+    "Recovery.exists_base_bump",
+    "Recovery.perturb_admissible",
+    "Optimality.exists_unqueried_cell",
+    "Optimality.accuracy_at_tolerance",
+    "Optimality.sampling_values",
+    "Optimality.euler_algorithm_queries",
+    "Work.solver_program_matches_query_algorithm",
+    "Work.solver_work_exact",
+    "Work.total_work_upper",
+    "Machines.same_answers",
+    "Machines.tree_correct",
+    "Machines.general_machine_work_lower",
+    "Machines.certified_general_optimality"
+  ],
+  "allowed_axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "axioms": {
+    "Certificate.admissible_is_classical_euler": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Certificate.family_nonempty": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "ShearEuler.pressure_of_conserved": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "ShearEuler.inverse_flow": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "ShearEuler.flow_inverse": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Grid.center_covers_cube": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Grid.centers_separated": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Recovery.exists_base_bump": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Recovery.perturb_admissible": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Optimality.exists_unqueried_cell": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Optimality.accuracy_at_tolerance": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Optimality.sampling_values": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Optimality.euler_algorithm_queries": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Work.solver_program_matches_query_algorithm": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Work.solver_work_exact": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Work.total_work_upper": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Machines.same_answers": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Machines.tree_correct": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Machines.general_machine_work_lower": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "Machines.certified_general_optimality": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  "timeout_seconds": 120,
+  "memory_mb": 2048,
+  "threads": 1,
+  "scope": "Named Lean propositions only; no implementation or PDE convergence claim.",
+  "execution_boundary": "Use the Simjecture capability sandbox for untrusted source.",
+  "runtime": {
+    "lean_version": "Lean (version 4.24.0, x86_64-unknown-linux-gnu, commit 797c613eb9b6d4ec95db23e3e00af9ac6657f24b, Release)",
+    "lean_archive_sha256": "b14f5e5159219dd1a1956c3b806813319f5e94ccd5bdfd56f54520609a5bb5ec",
+    "mathlib_revision": "f897ebcf72cd16f89ab4577d0c826cd14afaafc7",
+    "mathlib_manifest_sha256": "d1208145605d20579ecc91977126e7647e0216a3f7b7d2b9a55d33d040bcd0b8",
+    "scope": "Lean/Mathlib theorem checking; no solver qualification"
+  },
+  "runtime_record_sha256": "f5eea0937279c73445a042c9e000a5c53a29b301c557367938940c88d35e3cb6",
+  "lean_version": "Lean (version 4.24.0, x86_64-unknown-linux-gnu, commit 797c613eb9b6d4ec95db23e3e00af9ac6657f24b, Release)",
+  "commands": [
+    [
+      "/opt/acs-capabilities/lean-4.24.0/toolchain/bin/lean",
+      "-j1",
+      "-M2048",
+      "-T200000",
+      "-DwarningAsError=true",
+      "-o",
+      "Candidate.olean",
+      "Candidate.lean"
+    ],
+    [
+      "/opt/acs-capabilities/lean-4.24.0/toolchain/bin/lean",
+      "-j1",
+      "-M2048",
+      "-T200000",
+      "-DwarningAsError=true",
+      "Audit.lean"
+    ]
+  ],
+  "compile_returncode": 0,
+  "audit_returncode": 0,
+  "wall_seconds": 24.433138987995335,
+  "artifact_sha256": {
+    "Audit.lean": "12897d5bf112de5b29498e2ff14047d4024f87ca4d2623232a615fe38e6d9128",
+    "Candidate.lean": "671378957588a6d496cd9fb8aae3df22415700c8a65aa98a83bd8f59f56736b9",
+    "Candidate.olean": "71a64d8805c49f471a4edf769a7eeedff3fd551af6855b69299ae41db597a4a5",
+    "audit.log": "8a12366f7b52a82e6758c4007c9e8f50a7da07280f6d63ac7dcdd94b832d8119",
+    "compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

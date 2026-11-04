@@ -1,0 +1,25 @@
+Operator commissioning notes, 2026-11-02
+
+The first UUremote readiness attempt is preserved, including a 240-second full
+audit timeout and a failed positive-proof installation probe. Neither is a
+mathematical counterexample. The 24-hour research clock had not started.
+
+Small controlled probes separated host execution, namespace isolation, memory
+limits and runtime relocation. The same Ring proof completed in about .6 seconds
+in the minimal relocated namespace when LEAN_SYSROOT explicitly named the mounted
+toolchain; without that setting a probe timed out at 90 seconds. An additional
+read-only original-path mount also restored normal speed, but is unnecessary with
+the explicit sysroot. The deployment retains the original namespace boundary.
+
+The checker now sets LEAN_SYSROOT from its identified runtime, overriding caller
+values, and the capability advertises the same mounted toolchain. A regression
+test supplies deliberately wrong caller sysroot/module paths and requires a real
+checked proof. Installation negative controls now require the intended rejection
+reason, rather than counting an arbitrary timeout as successful rejection.
+All six Lean integration tests pass. Kernel limits, allowed proof principles and
+source guards are unchanged.
+
+Repeated readiness uses a new attempt ID, separate execution worker/registry,
+package and receipts. The prior runtime and failed records remain available.
+Model preflight calls and all operator commissioning are outside the autonomous
+campaign's scientific evidence and its fresh 24-hour allocation.

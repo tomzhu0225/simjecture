@@ -53,7 +53,7 @@ class GuidedResearch:
             put(self.root / "research.json", manifest)
             self.manifest = manifest
 
-    def reproduce_anchor(self, *, timeout=600):
+    def reproduce_anchor(self, *, timeout=600, resources=None):
         """Run the exact unchanged guided command as a fresh exploratory observation."""
         from .research_service import sha
 
@@ -79,6 +79,7 @@ class GuidedResearch:
             timeout=timeout,
             purpose="validation",
             key="guided-anchor",
+            **({"resources": resources} if resources is not None else {}),
         )
 
     def verify_guidance(self):

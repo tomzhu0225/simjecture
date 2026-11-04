@@ -1,0 +1,3 @@
+SIMJECTURE_AXIOMS FiniteVolume.conservation: [propext, Quot.sound, Classical.choice]
+SIMJECTURE_AXIOMS FiniteVolume.conservation3D: [propext, Quot.sound, Classical.choice]
+SIMJECTURE_AXIOMS FiniteVolume.constant_state: [propext, Classical.choice, Quot.sound]

@@ -1,0 +1,83 @@
+{
+  "actual_call_counts": [
+    {
+      "n": 3,
+      "cells": 27,
+      "reference": {
+        "pressure_calls": 3,
+        "pressure_cells": 81,
+        "sqrt_calls": 3,
+        "sqrt_cells": 81
+      },
+      "cached": {
+        "pressure_calls": 1,
+        "pressure_cells": 27,
+        "sqrt_calls": 1,
+        "sqrt_cells": 27
+      },
+      "bitwise_equal": true
+    },
+    {
+      "n": 8,
+      "cells": 512,
+      "reference": {
+        "pressure_calls": 3,
+        "pressure_cells": 1536,
+        "sqrt_calls": 3,
+        "sqrt_cells": 1536
+      },
+      "cached": {
+        "pressure_calls": 1,
+        "pressure_cells": 512,
+        "sqrt_calls": 1,
+        "sqrt_cells": 512
+      },
+      "bitwise_equal": true
+    },
+    {
+      "n": 16,
+      "cells": 4096,
+      "reference": {
+        "pressure_calls": 3,
+        "pressure_cells": 12288,
+        "sqrt_calls": 3,
+        "sqrt_cells": 12288
+      },
+      "cached": {
+        "pressure_calls": 1,
+        "pressure_cells": 4096,
+        "sqrt_calls": 1,
+        "sqrt_cells": 4096
+      },
+      "bitwise_equal": true
+    }
+  ],
+  "scalar_model_transcription_max_difference": 0.0,
+  "stale_pressure_negative_control_max_difference": 0.0012755733609794984,
+  "schedules": {
+    "reference": {
+      "legal": true,
+      "complete": true,
+      "evaluations": 21,
+      "uses": 21,
+      "drops": 0
+    },
+    "cached": {
+      "legal": true,
+      "complete": true,
+      "evaluations": 7,
+      "uses": 21,
+      "drops": 0
+    },
+    "missing_eval_negative_control": {
+      "legal": false,
+      "reason": "use without ready thermodynamics"
+    }
+  },
+  "source_sha256": {
+    "euler.py": "505ebff19d161561f3723a259e65e9476e7c0b40c357146df905dfa56e95d2c2",
+    "experiment.py": "b70d8a26ca230938e1bd8c14ee2ff478472cf19fe8609825b73a76bac9833856",
+    "instrument.py": "f48beef33630e55a37bebcd5761a8733196033f144f2482801f732290a088dc9"
+  },
+  "scope": "Empirical correspondence checks; not verified compilation or floating-point refinement"
+}

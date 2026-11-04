@@ -35,3 +35,23 @@ outputs and review decisions. Distinguish human framing and commissioning from
 autonomous scientific work and later corrections. See
 [the contribution guide](../CONTRIBUTING.md) and
 [documentation development](../docs/development/documentation.md).
+
+## Lean and compressible Euler
+
+[Lean/Euler](lean_euler/README.md) is a local commissioning example with seven
+checked theorems, an exact positivity counterexample, and a periodic 3D NumPy
+reference run. It includes a replay driver using Simjecture lab receipts.
+
+[1D Poisson optimality](lean_poisson/README.md) extends this with a complete
+exact discrete solve, a proved 11N+6 work upper bound and N output lower bound,
+and a local benchmark. It is retained as a baseline for the 3D Euler work.
+
+The next [3D Euler optimization stage](lean_euler/optimization/README.md) records
+a thermodynamic-cache experiment, Lean-checked exact equivalence and a scoped
+caching optimum, with an updated PDF. General solver optimality remains open.
+
+[Stage 3: Euler work at a prescribed error](lean_euler/accuracy/README.md) adds
+full-solve timing, sampled accuracy/work comparisons, an output-representation
+negative control, and a [PDF report](lean_euler/accuracy/report.pdf). Its reference
+and conditional budget lemmas pass Lean; the nonlinear convergence assumptions
+remain unproved.

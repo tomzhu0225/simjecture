@@ -1,0 +1,39 @@
+{
+  "quadrature_max_error": 2.220446049250313e-16,
+  "point_sample_vs_cell_average_max": 0.01784521550661622,
+  "counts": [
+    {
+      "method": "reference",
+      "observed_eos_cells": 25600,
+      "reported_eos_cells": 25600,
+      "density_l1": 0.027476592261101503
+    },
+    {
+      "method": "cached",
+      "observed_eos_cells": 18432,
+      "reported_eos_cells": 18432,
+      "density_l1": 0.027476592261101503
+    },
+    {
+      "method": "fused",
+      "observed_eos_cells": 7680,
+      "reported_eos_cells": 7680,
+      "density_l1": 0.027476592261101503
+    },
+    {
+      "method": "muscl_rk2",
+      "observed_eos_cells": 97280,
+      "reported_eos_cells": 97280,
+      "density_l1": 0.007091282009837567
+    }
+  ],
+  "coarse_first_order_rejected_for_epsilon_002": true,
+  "wrong_final_time_rejected": true,
+  "scope": "Independent numerical checks; quadrature is not a formal integration proof",
+  "source_sha256": {
+    "study.py": "186520dbcec8e3778106b365e51c74c7750d9eb9f661b159fea3bdb766fac101",
+    "validate.py": "126c0502e712aae6e3848bc1b2a2cd29d07ca9541457ffe199e9fd00a548dae0",
+    "euler.py": "505ebff19d161561f3723a259e65e9476e7c0b40c357146df905dfa56e95d2c2",
+    "experiment.py": "b70d8a26ca230938e1bd8c14ee2ff478472cf19fe8609825b73a76bac9833856"
+  }
+}

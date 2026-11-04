@@ -1,0 +1,677 @@
+ACTIVE GOAL, started 2026-11-01 23:38:59 UTC (2026-11-02 local time).
+Do not mark complete for the foundations below. User explicitly rejected
+analytic-flow reconstruction as a substitute for numerical Euler evolution.
+
+Established in the current proof components:
+- Admissible.lean: gamma=2 conserved Euler states, convex admissible region,
+  actual physical flux, both LF split states, complete 3D shared-flux update,
+  finite-grid directional maximum wave speeds and final-time-clipped CFL ratio,
+  positivity and conservation, exact negative-pressure split witness.
+- PrimitiveEnergy.lean: q=1/rho, velocity, pressure coordinates; positive
+  quadratic form and symmetric principal matrices.
+- ConservativePrimitive.lean: actual HasDerivAt quotient/product calculus,
+  invertible state-map differential, canonical flux connection and equality
+  of conservative and primitive PDE residuals at differentiable curves.
+- DiscreteEnergy.lean: acoustic quadratic bound, positive seven-action
+  decomposition, finite matrix-weighted Jensen, frozen principal contraction.
+- EnergyBounds.lean: explicit sizeSquared <= 108*g and g <= 32*sizeSquared
+  on the stated positive box (upper bound needs only the lower state bound).
+- VariableEnergy.lean: exact spatial coefficient-variation defect, including
+  cancellation of the constant acoustic cross terms in the symmetrized flux.
+- CoefficientBounds.lean: reciprocal/rational coefficient estimates and
+  |g(q',p')(e,e)-g(q,p)(e,e)| <= 256*(|dq|+|dp|)*sizeSquared(e).
+- VariableStability.lean: principal-update energy growth under explicit
+  coefficient-difference bounds, with factor 1+756*dt*(256*B*K+32*D).
+  Both energies use the old local metric; full nonlinear stability is not
+  asserted. Exact varying-metric noncontraction witness: energy 5 -> 125/16
+  under CFL=1/2, q=(1,2), p=1, v=0, speeds 2 and ratio 1/12.
+- GridSobolev.lean: elementary telescoping/Cauchy-Schwarz 1D estimate and its
+  tensorized 3D embedding, |f_ijk|^2 <= 8*energy3(f), constant independent of n.
+  energy1 = mean(f^2)+n*sum(Delta f)^2; energy2/3 recurse in each coordinate.
+  These are unit-coordinate scaled forward differences, valid on periodic
+  extensions. A bound on the derivative energies along trajectories is absent.
+- The first 21 selected foundation theorems were audited in the local capability
+  in research/lab-energy-03. Numeric and formal jobs both succeeded. The previous
+  lab-energy-01 attempt hit a simplifier recursion limit in the final exact
+  witness; smaller intermediate lemmas fixed it without raising checker limits.
+  This does not establish solution existence or numerical convergence.
+- finite_volume.py: actual unknown-dynamics candidate with analytic initial
+  cell averages. Independent Gauss quadrature error is about 1e-15. Random
+  admissible fields and six Taylor-Green runs check positive pressure/density,
+  conservation and developing vertical motion. No continuum error reference
+  has been promoted to a certificate.
+
+Stability/existence investigation:
+1. Primitive equations are quadratic:
+     D_t q = q div(v), D_t v = -q grad(p), D_t p = -2p div(v).
+   The checked energy form is
+     dp^2/(2p) + |dv|^2/q + (dq/q+dp/(2p))^2.
+   The principal discrete update now has a checked energy growth estimate.
+   A full continuum/nonlinear estimate still requires coefficient derivative
+   bounds, commutators, metric time variation and a bridge to the actual
+   conservative update. Merely having a symmetrizer is not that estimate.
+2. Published Godunov relative-energy convergence (arXiv:2111.05009;
+   DOI 10.1007/s10915-022-01843-6) assumes a strong solution and uniform
+   nondegeneracy/bounds. Its general rates do not automatically yield a
+   matching optimality bound here. Do not silently assume those hypotheses.
+3. The OpenAI NavierStokesAndEuler development was inspected via its primary
+   GitHub source. It has extensive Sobolev/transport/local-existence machinery
+   for INCOMPRESSIBLE Euler, using Lean 4.34.0-rc2. No drop-in compressible
+   convergence theorem was found. No dependency/toolchain change has been made.
+4. An alternative worth investigating is constructive analytic local existence
+   for this analytic initial family, using time-series majorants for the
+   quadratic primitive system. This would construct an unknown PDE evolution,
+   not supply a pre-existing analytic trajectory. The Lean Cauchy-Kovalevskaya
+   benchmark currently lists the theorem as missing from Mathlib:
+   https://lean-lang.org/eval/problems/cauchy_kovalevskaya/
+   No such theorem has been imported or assumed.
+5. Potential majorant: scalar u_t=C*u*u_x, u(0,x)=M/(1-x/r), whose time
+   coefficients are Catalan(n)*M^(n+1)*(C/r)^n*(1-x/r)^(-2n-1).
+   Derivative-word bounds and convergence of the constructed series must be
+   proved. This route may initially certify only a short positive time;
+   T=0.25 remains the numerical target, not a proved interval. Do not change
+   the declared family/time silently or count a short-time lemma as full goal
+   completion without reconciling the exact target.
+6. A purely pointwise Lipschitz error recurrence with constant O(1/h) gives
+   exp(C*T/h) and is inadequate for convergence. Avoid repeating that dead end.
+7. A meaningful lower bound must be tied to necessary accuracy of the evolved
+   field. Output-size, initial sampling, or a CFL count alone is insufficient.
+   Any reconstruction-degree or algorithmic CFL restriction in the final
+   competitor class must be explicit and scientifically justified before an
+   optimality claim. The current class remains an initial search scope.
+
+Next concrete work: quantitative regularity/local existence, a uniform
+fully discrete energy or analytic-scale stability estimate, then truncation,
+initialization and reconstructed-field error. Only after that can the upper
+work bound be paired with an actual necessary-accuracy lower bound.
+
+Potential continuation from the new embedding:
+- The elementary embedding uses mixed derivatives up to total order 3.
+- For quadratic primitive equations, an H6 discrete product estimate can put
+  the lower-order factor (order <=3) in Linfinity via that embedding. A top
+  commutator has derivative orders k and 7-k with 1<=k<=6, so the same split
+  is possible. A complete discrete product/commutator proof is still needed.
+- The actual conservative Rusanov step is not exactly the primitive principal
+  update. Finite changes of coordinates introduce nonlinear remainders; do
+  not identify the two maps or silently discard those terms.
+- Current coefficient-growth constants are deliberately loose. Neither the
+  state box nor uniform derivative bounds at T=0.25 have been established.
+  A very short local existence estimate alone does not fulfill the target.
+
+Accuracy-based lower-bound route to investigate (NOT established):
+- The current first-order Rusanov candidate cannot simply be declared optimal
+  in the initial radius-two / up-to-three-stage search scope: higher-order
+  smooth-flow methods may beat its work-versus-error exponent. Finalizing a
+  scientifically recognizable restricted class is essential, not a formality.
+- One possible class is explicit conservative LF/Rusanov finite-volume
+  evolutions with quantitative viscosity and positivity-preserving convex
+  reconstruction. This is a proposed class, not the accepted final contract.
+  All parameter formulas and preprocessing remain available and charged.
+- For gamma=2, use convex mathematical entropy
+      eta(U) = -rho*log(p/rho^2).
+  Smooth periodic Euler conserves its spatial integral and all mean conserved
+  quantities. The nonconstant initial velocity gives a positive relative
+  entropy with respect to the conserved mean, uniformly for A>=1/2.
+- If a method's ACTUAL update can be proved to dissipate relative entropy by
+  at least c*dt*h*R_n per step, R_n is nonincreasing. Final accuracy would force
+  R_N to remain bounded below, yielding total entropy deficit at least c'*h*T.
+  A convex partition-of-unity reconstruction with uniform integral weights
+  cannot restore the lost convex entropy (Jensen). A Lipschitz entropy bound
+  on an established compact state set then forces L1 evolved-field error
+  Omega(h), rather than a mere output representation or initial sampling bound.
+- A necessary h=O(epsilon), a necessary positivity/stability step dt=O(h),
+  and the actual operational cost of local updates could then give
+  Omega(epsilon^-4). A fully proved first-order continuum error bound and a
+  complete solve-work trace would give the matching upper bound. None of
+  these missing statements is supplied by the current energy estimate.
+- Central Rusanov flux is not automatically entropy conservative. Derive its
+  entropy defect and the fully discrete Taylor remainder; do not assume a
+  semidiscrete entropy claim applies to a finite step. A sufficiently strong
+  LF viscosity and strict CFL margin may control both via explicit entropy
+  Hessian and flux bounds, but inclusion of the actual candidate must be
+  demonstrated. Numerical dissipation is not itself an error certificate.
+- The conservative entropy Hessian pulled back to primitive variations
+  (dq,dv,dp) is now derived from actual derivatives in Entropy.lean:
+      2*dq^2/q^3 + 2*dq*dp/(p*q^2) + dp^2/(q*p^2)
+        + |dv|^2/(p*q^2)
+    = dp^2/(2*p^2*q) + |dv|^2/(p*q^2)
+        + (2/q)*(dq/q+dp/(2*p))^2.
+  This differs from the convenient symmetrizer g. The actual derivative bridge
+  is checked, not just an algebraic definition of a desired positive form.
+
+Entropy checkpoint, research/lab-entropy-01:
+- Entropy.lean: actual conserved pressure and entropy derivatives, canonical
+  entropy variables, actual derivatives of those variables, positive Hessian
+  pullback, inverse primitive coordinates and arbitrary conservative directional
+  second derivatives. All are ordinary HasDerivAt proofs.
+- EntropyConvexity.lean: convexity on the full admissible conserved-state domain
+  follows from the actual nonnegative second derivatives along segments.
+  Finite Jensen and doubly stochastic averaging follow. Continuous trilinear
+  output and integral conservation are not yet formalized.
+- EntropyDynamics.lean: entropy potential grad(eta).F - eta*v_d = momentum_d,
+  and local entropy balance derived from differentiable conservative Euler
+  balance via the existing residual equivalence. No smooth solution is assumed
+  to exist merely because this implication is checked.
+- Three local-lab jobs succeeded: original candidate validation, nine entropy
+  trajectories at n=16/32/64 and 24 random one-step probes, and 29-theorem audit.
+  For A=1,delta=.05, measured total discrete entropy loss/h is .14785,.18591,
+  .20894 at n=16,32,64. At n=64 minimum observed drop/(dt*h*R_before) ranges
+  5.3687 to 7.0761 across the three parameter choices. These are observations,
+  never certified constants or a physical accuracy estimate.
+- Direct audits entropy-audit-01 and entropy-audit-03 also passed. Intermediate
+  failures were proof elaboration/notation issues, including finite-index
+  normalization and namespace ambiguity; they are retained in research logs.
+
+Earlier actual-step calculation outline (superseded by the checked result below;
+its numerical constants differ and were not proved as written):
+Let a convex state set K contain all edge paths and paths from U^n to U^{n+1}.
+Require actual entropy Hessian lambda*I <= H <= M*I on K and actual flux
+Lipschitz constant L. These bounds must be derived for the chosen state set;
+merely accepting them as unverified physical assumptions does not complete the goal.
+Let alpha_min <= alpha_d <= A be directional LF viscosities and r=dt/h.
+1. Entropy potential compatibility gives, for each edge deltaU,
+   deltaV . (F_L+F_R)/2 - deltaPsi <= (M*L/2)*|deltaU|^2.
+   Strong convexity gives deltaV.deltaU >= lambda*|deltaU|^2.
+   If alpha_min >= 2*M*L/lambda, the LF edge entropy residual is at most
+   -(alpha_min*lambda/4)*|deltaU|^2.
+2. For the actual 3D update U_new=U+r*D, six-neighbor Cauchy-Schwarz gives
+   sum_i |D_i|^2 <= 3*(A+L)^2*sum_forward_edges |deltaU|^2.
+   The finite-step Taylor remainder is at most (M/2)*r^2*sum_i|D_i|^2.
+   Thus r <= alpha_min*lambda/(12*M*(A+L)^2) should retain dissipation
+   at least r*alpha_min*lambda/8 times the edge-square sum.
+3. A proved grid Poincare bound and relative entropy upper bound would turn
+   this into c*dt*h*R_n. This still requires positive, uniform trajectory
+   state bounds and an actual operator/cost definition of the competitor class.
+4. The factor may demand stronger viscosity / smaller CFL than the present
+   numerical candidate. Do not claim the current CFL=.3/max-speed recipe
+   satisfies this conservative sufficient bound without proving it.
+Primary reference inspected: Tadmor, Acta Numerica 12 (2003), sections 7-8,
+https://www.math.umd.edu/~tadmor/pub/TV%2Bentropy/Tadmor_Acta2003.pdf
+It explains balancing spatial dissipation against explicit time entropy
+production. It does not supply a Lean theorem or this family's work lower bound.
+
+Finite-step checkpoint, research/lab-step-02:
+- EntropyTaylor.lean derives a scalar second-derivative remainder estimate using
+  concavity, then applies the actual conservative entropy Hessian to a segment.
+- VectorEstimates.lean and FiniteVolumeEntropy.lean connect the actual Rusanov
+  grid update to six neighbor contributions and periodic flux pairings. The
+  checked increment bound is sum|D_i|^2 <= 6*(A^2+L^2)*sum_edges|deltaU|^2.
+- EntropyGeometry.lean derives the actual symmetric conservative Hessian
+  bilinear form, a Young bound, and its physical flux compatibility.
+- FaceEntropy.lean derives the central entropy residual from those actual
+  derivatives, strong gradient monotonicity, and the dissipative Rusanov term.
+- EntropyRegion.lean packages actual Hessian bounds lambda I <= D2 eta <= M I
+  and flux Lipschitz bound L on a convex admissible region K. If every old and
+  new cell state is in K, M*(1+L^2) <= amin*lambda/2, and
+  3*M*r*(A^2+L^2) <= amin*lambda/8, then
+    sum eta(U_new) <= sum eta(U) - (r*amin*lambda/8)*sum_edges|deltaU|^2.
+  Here amin<=a_d and a_d^2<=A^2. This is a conditional finite-step theorem,
+  not a trajectory bound, continuum error estimate, or optimality result.
+- The direct eight-theorem step-audit-01 passed in about 71 seconds. A full
+  37-theorem sandbox batch compiled but its generated single audit command
+  hit the elaborator recursion limit. lean_check.py now emits one command per
+  declaration. The 80-theorem regression passes without relaxing checker limits.
+  Installed .runtime/lean-4.24.0/share/lean_check.py was refreshed from source;
+  the capability's identity_files records the changed adapter hash.
+
+Next obligations after the conditional finite-step result:
+1. Concrete region bounds are now proved below, using
+     1/4<=rho<=4, total energy E<=4, pressure>=1/4.
+   This replaces the earlier proposed componentwise box. Convexity follows
+   from pressure concavity using supportEnergy and complete_square.
+   It implies rho,p in [1/4,4] and |v|^2<=30.
+2. The following actual conservative Hessian expression is now checked:
+     H_U[k,k] = kr^2/rho + rho*(P/p-kr/rho)^2 + sum_i(kmi-vi*kr)^2/p,
+   where P=pressureD(U,k). It is connected to conservativeHessian by exact
+   algebra from the previously checked derivative definitions.
+3. The global criterion is now proved too restrictive for the baseline speeds
+   on this region even with improved valid global curvature constants. A
+   sharper estimate using smooth small neighbor jumps and the already checked
+   frozen principal energy machinery is another route worth investigating.
+4. Uniform trajectory membership, existence to T=.25, grid Poincare, continuous
+   reconstruction/integral entropy balance, nonlinear convergence, and the
+   justified competitor class with matching complete work bounds remain open.
+
+Concrete-region checkpoint, research/lab-region-01:
+- All 45 selected statements pass the bounded audit; all three lab jobs succeed.
+- PhysicalRegion.lean: convex conserved-state region, actual Hessian square
+  decomposition, quantitative coercivity 1/12500 and upper bound 100000.
+- InitialRegion.lean: full trigonometric initial family lies in this region
+  uniformly in all allowed parameters and spatial points. This is not a
+  positive-time analytical solution or an evolved-state bound.
+- PhysicalFluxBounds.lean: actual conservative Euler flux derivative, its
+  squared norm bound 250000*|k|^2, and finite flux Lipschitz constant 1200.
+  RegionBounds is therefore instantiated without assuming curvature/flux bounds.
+- Coarse viscosity requirement is at least 3,600,002,500,000,000. More strongly,
+  restState=(1,0,0,0,1) belongs to the initial family at (0,pi/2,pi/2) for EVERY
+  A,delta. For k_soft=(1,0,0,0,2), H[k,k]=2 and |k|^2=5; for
+  k_hard=(2,0,0,0,-1), H[k,k]=13 and |k|^2=5. Any valid global region constants
+  obey lambda<=2/5 and M>=13/5. Current global physical wave speeds are <=12
+  on the region, so M*(1+L^2)<=a*lambda/2 is impossible for any such constants.
+  This is an obstruction to THAT sufficient estimate, not to solver entropy
+  stability, the PDE, or the optimality goal. Do not silently crank the viscosity
+  to an astronomical value and call it a useful optimized solver.
+- Trusted local development used import Candidate against the immutable compiled
+  base in region-audit-01 to avoid rechecking the full prefix after every edit.
+  Final lab-region-01 assembles and checks all source anew with only allowed
+  Mathlib/Std/Init imports; no local-module import is part of the final certificate.
+
+Next proof/candidate routes to compare:
+A. Use the actual entropy-weighted principal form and a small-neighbor-jump
+   estimate, retaining the physical wave-speed CFL at leading order. Global
+   Euclidean M/lambda comparisons lose too much structure. The previously
+   checked frozen matrix Jensen argument may help, but must be transferred to
+   the physical Hessian and actual nonlinear remainder. Uniform regularity is
+   still necessary and is not supplied by the observed trajectories.
+B. Investigate an entropy-conservative two-point base flux plus LF dissipation.
+   Its exact Tadmor jump identity could remove the central entropy-residual
+   bound that forced the failed viscosity requirement. This changes the actual
+   method, so positivity, finite time entropy production, cost and convergence
+   all need their own checked bridges; do not reuse baseline positivity blindly.
+   Primary sources read: Chandrashekar, arXiv:1209.4994, section 4.4; Ranocha,
+   arXiv:1701.02264v2, equations (52), Theorem 6.1 and Corollary 6.1. The latter
+   positivity result is for density, not a full pressure/convergence theorem.
+   https://arxiv.org/pdf/1209.4994
+   https://arxiv.org/pdf/1701.02264
+   In 3D, the known flux can be written with beta=rho/(2*p), arithmetic bars
+   and positive logarithmic mean LM(a,b)=(b-a)/(log b-log a), continuously a
+   when a=b:
+     f_rho=LM(rhoL,rhoR)*bar(v_d), p_hat=bar(rho)/(2*bar(beta)),
+     f_mi=f_rho*bar(v_i)+delta_id*p_hat,
+     f_E=f_rho*(1/(2*LM(betaL,betaR)) - .5*bar(|v|^2)) + sum_i bar(v_i)*f_mi
+   for gamma=2. The square mean is mean(|v|^2), NOT |mean(v)|^2. Verify the
+   exact multidimensional formula and logarithmic-mean branches in Lean.
+   This is an existing literature method, not a claim of novel discovery.
+
+Alternative EC+LF checkpoint, research/lab-ec-01:
+- LogMean.lean formalizes the exact-real logarithmic mean, including equal
+  arguments, positivity, interval bounds and the exact logarithmic jump identity.
+- EntropyConservativeFlux.lean implements the above gamma=2 3D flux and proves
+  its consistency with actual physical Euler fluxes and its canonical entropy
+  identity. The LF term gives a nonpositive face residual for any nonnegative
+  diffusion coefficient. The failed Rusanov global viscosity threshold is not
+  needed for this different flux. Do not claim equivalence to Rusanov or a speedup.
+- EntropyCandidateStep.lean defines the periodic residual, freezes it during
+  timestep backtracking, and proves total-entropy derivative = -D, where D is
+  the sum of (a_d/2)*gradientJump dot stateJump over forward faces. D>=0.
+- Actual entropy-gradient strict monotonicity follows from the positive Hessian
+  on the admissible segment. With positive a_d, D=0 forces all neighboring
+  states equal, so the full residual vanishes. For D>0, derivative negativity
+  and continuity of density/pressure imply sufficiently small acceptable steps.
+- A positive proposal*(1/2)^n therefore passes for some finite n. Nat.find
+  specifies the first accepted index; its step preserves admissibility, all
+  five conserved totals and H_after<=H_before-r*D/2. Earlier trials are rejected.
+  This is an exact-real mathematical search, not an executable real-number
+  decision procedure or a verified floating-point program. It supplies no
+  uniform retry bound, time-completion bound or work-to-accuracy theorem.
+- entropy_candidate.py implements the method with ordinary global wave speeds,
+  CFL=.3 proposals and explicit finite-density/pressure/entropy checks. Each
+  rejection halves the timestep while retaining the same old-state residual.
+  Python caps retries at 60 and can report failure; Lean does not certify this
+  cap or rounding-sensitive guards. Preprocessing/checking costs are not omitted
+  from the goal, but the recorded face/update counts are only diagnostics.
+- validate_entropy_candidate.py uses independent 70-digit Decimal logarithmic
+  means and complex-step differentiation of the actual entropy. It checks 1024
+  random state pairs in three directions, symmetry and physical-flux consistency.
+  Maximum scaled entropy-identity residual is 2.09e-14. An excessive proposal
+  needs two halvings, while the constant-state control has zero residual and
+  no halving. Nine 16^3/32^3/64^3 family runs reach T=.25 at ordinary speeds,
+  with no rejections, positive sampled rho/p and nonnegative entropy margins.
+- All four bounded local-lab jobs succeeded, including the full 56-declaration
+  audit. Only propext/Classical.choice/Quot.sound occur in transitive dependencies.
+  Trusted development imported an immutable earlier Candidate.olean only to
+  shorten iteration; the retained bounded proof is fully reassembled and checked
+  with allowed imports. Failed scratch logs ec-dev-03/05/06 are retained.
+- Ten focused nonlinear/accuracy/cache tests pass, including exact assembled
+  proof correspondence and all numerical source hashes. Ruff passes. The updated
+  seven-page PDF was rendered and its revised first and final pages inspected.
+
+Next substantive obligation after EC+LF one-step termination:
+Derive quantitative step/retry estimates compatible with ordinary speeds and
+uniform evolving-state bounds. One-step existence alone permits arbitrarily
+small accepted steps; it does not rule out accumulation before the target time.
+Then establish common smooth Euler existence/regularity, initialization and
+continuous reconstruction, full spatial/temporal error, a justified competitor
+class, and matching complete work bounds. The active goal is not complete.
+
+Quantitative step checkpoint, research/lab-step-bound-01:
+- PressurePolynomial.lean introduces Q=2*rho*E-|m|^2=2*rho*p, its linear
+  coefficient Q1 along U+s*k, and its quadratic coefficient Q2. It proves
+  the actual conservative entropy Hessian identity
+    H_U[k,k] = 3*kr^2/rho - 2*kr*Q1/Q - 2*rho*Q2/Q + rho*(Q1/Q)^2.
+  The independent numerical check differentiates the entropy gradient using
+  complex steps; it does not reuse this polynomial identity as its reference.
+- With W=|Q1|+2|Q2|, localRate=|kr|/rho+(|Q1|+|Q2|)/Q,
+    R=1/(2*(1+max_cells localRate)),
+    b=6*kr^2/rho+4*|kr|*W/Q+6*rho*|Q2|/Q+6*rho*(W/Q)^2,
+  the entire path 0<=s<=R has rho_s>=rho/2, Q_s>=Q/2 and H_{U+s*k}[k,k]<=b.
+  All bounds come from the actual state/residual; no measured Lipschitz or
+  curvature constant is inserted as a universal premise.
+- EntropyStepBounds.lean applies these pointwise estimates to the actual EC+LF
+  residual k. For B=sum_cells b and D=face dissipation,
+    H(U+r*k)<=H(U)-r*D+r^2*B/2  for 0<=r<=R.
+  When D>0, c=min(R,D/(B+D))>0 and every 0<=r<=c passes the original acceptance
+  test. Mean B and mean D give the same cap, as used by the numerical diagnostic.
+- The same first-accepted-index definition now has the explicit upper bound
+    N=Nat.clog 2 (Nat.ceil (proposal/c)).
+  The accepted ratio is >=min(proposal,c/2). The D=0 branch has zero retries by
+  the previously checked stationary-state argument. These bounds concern exact
+  real arithmetic and each current grid, not IEEE execution or uniform family
+  complexity. The source uses no altered limits or new assumed analytical facts.
+- validate_step_bound.py checks 2048 random states at five path locations,
+  with maximum scaled Hessian discrepancy 1.16e-13. The nine unchanged solver
+  trajectories satisfy proposedRatio/c<=0.252664 and have predicted/actual
+  maximum halvings 0/0. An excessive proposal has predicted bound 6 and actual
+  count 2; the constant-state branch predicts zero. These finite float checks
+  are not validated enclosures and do not prove the cap uniform over the family.
+- All five bounded local-lab jobs succeed. The fully assembled source passes
+  63 selected declaration audits in 111.46 seconds, with only standard
+  propext/Classical.choice/Quot.sound dependencies. Scratch compilation against
+  the immutable EC checkpoint shortened development only; the final audit uses
+  the complete source and allowed imports. Failed development logs are retained.
+- Nat.Log and Floor.Semiring are listed explicitly in the installation cache
+  targets; both already existed at the pinned Mathlib revision locally. Twelve
+  focused nonlinear/accuracy/cache/installer tests pass. Ruff and installer shell
+  syntax checks pass. The eight-page PDF was rendered; revised pages 1,7,8 inspected.
+
+Next obligation after the explicit per-state bound:
+Establish uniform bounds for R and B/D on the actual evolving family and across
+mesh resolutions. The pointwise cap can approach zero in states outside the
+observed regime; neither nine trajectories nor a per-state formula prevents that.
+This requires state/regularity control, then a bridge to a common smooth Euler
+solution and complete spatial/temporal reconstruction error. The justified
+competitor class and matching all-operation work bound remain unfinished.
+
+Regional flux and escape checkpoint, research/lab-region-escape-01:
+- ECFluxBounds.lean proves symmetry and the actual endpoint consistency bounds
+    |fEC(U,V)-F(U)|^2 <= (300000000)^2*|V-U|^2,
+  and likewise for F(V), for U,V in the concrete physical region K. The proof
+  uses explicit density/pressure/velocity/beta bounds, finite physical-pressure
+  differences and the interval property of the logarithmic mean. It does not
+  differentiate through the equal-input mean branch. This is an endpoint
+  consistency estimate, not a four-input Lipschitz or full solver error theorem.
+- The constant is deliberately coarse. In 4096 random region pairs plus their
+  1e-8 mixtures, the largest measured ratio was 22.6006. That sample is not used
+  to replace the proved bound. The solver still uses ordinary wave-speed
+  diffusion; this proof constant does not become a numerical viscosity.
+- A proposed global-invariance shortcut is now falsified exactly. On a periodic
+  3^3 cube, rho=1,E=4, and x-momentum is (1,0,-1) on successive x-planes.
+  Other momenta vanish. All old states lie in K. For the central plane,
+    increment_E = 1/(2*LM(1/7,1/8))+56/15 > 0.
+  Thus every positive step, for any diffusion coefficients, leaves E<=4.
+  RegionEscape.lean connects this to the actual first entropy-accepted step,
+  which still preserves positive rho/p, total conserved quantities and the
+  entropy inequality. An additional E<=4 guard would stall on these states.
+- These compression states are a separate negative control, not the target
+  Taylor-Green family. The result rejects global K-invariance from the checked
+  method properties alone; it does not refute a family-specific or expanding
+  state bound. The family initially has substantial margin inside K.
+- validate_region_bounds.py reproduces the exact-control formula numerically:
+  CFL=.3, ratio=.0322490, no rejections, max E=4.2409716, entropy acceptance
+  margin=.0131268, and conservation drift=2.22e-16. It also scans 25 amplitude/
+  density-perturbation combinations at n=16 and three cases each at n=32,64.
+  All 31 target-family trajectories stay in K through T=.25. Minimum sampled
+  region margins by resolution are .43461,.39075,.378995. These finite float
+  results do not discharge the universal trajectory hypothesis.
+- All six bounded jobs succeeded. The complete 69-statement audit took 128.55
+  seconds and has only propext/Classical.choice/Quot.sound dependencies. The
+  five nonlinear provenance/diagnostic tests and Ruff pass. The nine-page report
+  was rendered and its revised final pages inspected. Development errors and
+  discarded simplification attempts remain in uniform-dev-* logs; no checker
+  limits or accepted mathematical principles were changed.
+
+Next substantive work:
+Use the checked endpoint flux bounds to control the full residual and the
+per-state cap uniformly on a specified region, while pursuing a separate
+family-specific evolution estimate. Do not replace that estimate with the
+disproved global invariance shortcut or with the 31 sampled trajectories.
+Common smooth existence through T=.25, continuum reconstruction/error and the
+justified competitor lower/upper work proof still remain open.
+
+Additional literature lead, inspected 2026-11-02:
+Morosi and Pizzocchero, arXiv:1104.3832 (2011), introduction; and the abstract of
+Morosi, Pernici and Pizzocchero, arXiv:1310.5642 (2013), discuss using residual
+and growth bounds around approximate solutions to certify existence intervals
+and errors. Both concern incompressible Euler/Navier-Stokes in divergence-free
+Sobolev spaces. They are a possible methodological lead, not a theorem for the
+present compressible gamma=2 family and not an imported Lean existence proof.
+https://arxiv.org/pdf/1104.3832
+https://arxiv.org/abs/1310.5642
+
+Accumulated-loss and L1 checkpoint, research/lab-entropy-decay-01:
+- GridPoincare.lean defines canonical periodic coordinate neighbors on
+  Fin n x (Fin n x Fin n), n>0. The exact pair-variance identity and three
+  coordinate telescoping bounds give
+    sum_cells |U-mean U|^2 <= (3/2)*n^2*sum_forward_faces |jump U|^2.
+  The Fin.NatCast scope is local to the one-dimensional conversion lemma;
+  it is not enabled globally, avoiding accidental wraparound coercions.
+- EntropyDecay.lean derives the actual nonnegative entropy excess
+    R(U)=H(U)-n^3*eta(mean U), H(U)=sum_cells eta(U).
+  Convexity gives the mean's region membership; the actual Hessian upper bound
+  and mean cancellation give R<=50000*variance<=75000*n^2*J. Strong entropy
+  gradient monotonicity gives D>=J/100000 when directional coefficients>=1/4.
+  The computed global physical speeds obey that lower bound for old states in K.
+- The actual accepted step satisfies r*R_old<=1.5e10*n^2*(R_old-R_new).
+  Conservation and finite telescoping, with monotonicity of R, then imply
+    H(U0)-H(Um) >= T*R(Um)/(3e10*pi*n), T=(2*pi/n)*sum_steps r.
+  This is proved for a completed finite actual EC+LF trace, with old states in K
+  and the existing entropy acceptance rule. It does not prove termination at T,
+  region membership for the target family, or any continuum solution error.
+- EntropyError.lean proves actual entropy-gradient components <=32 in absolute
+  value on K. The proof uses |log rho|,|log p|<=3 and the sharper identity
+  |m|^2/(2*rho*p)=(E-p)/p<=15, rather than a loose velocity-only estimate.
+  It derives |eta(V)-eta(U)|<=32*sum_j|V_j-U_j|, then actual Bochner-integral
+  comparisons for any specified measure with explicit integrability hypotheses:
+    |integral eta(V)-integral eta(U)|/160
+      <= max_j integral |V_j-U_j|.
+  With normalized physical volume this is the requested componentwise L1 norm.
+  The theorem is a necessary comparison between fields, not an assumed numerical
+  accuracy estimate and not a proved accuracy upper bound for this solver.
+- validate_entropy_decay.py checks pairwise variance identities on small periodic
+  grids, a constant state, 4096 region-state pairs with independent complex-step
+  gradients and weighted finite-measure comparisons, and nine solver traces.
+  The largest checked gradient component is 15.6101 (<32); the largest pointwise
+  entropy/component-L1 ratio is 2.57756. Observed trajectory entropy losses are
+  3.42e12 to 5.50e12 times the coarse conditional bound. These measured factors
+  are never substituted for proof constants and do not certify physical errors.
+- All seven bounded jobs succeed; all 77 selected statements pass the assembled
+  audit in 145.30 seconds, with only propext/Classical.choice/Quot.sound. This
+  is close to the current 150-second wall allowance; future larger assemblies
+  may need a measured wall-time adjustment, without changing kernel proof limits.
+  Mathlib.Algebra.Group.Fin.Basic and MeasureTheory.Integral.Bochner.Basic are
+  explicitly included in the pinned installation cache targets. Seven focused
+  nonlinear/installer tests, Ruff and installer shell syntax pass. The ten-page
+  PDF is rendered and its new final page visually inspected.
+
+Next connection toward the real accuracy/work theorem:
+1. Prove continuous periodic Euler integral entropy conservation, starting from
+   the existing actual local entropy balance. A direct conservative entropy-flux
+   derivative lemma may simplify the coordinate/time interface; then use FTC and
+   justified space-time integral interchange on the physical periodic cube.
+2. Instantiate normalized volume, actual continuous reconstruction and initial
+   averaging. The general integral comparison alone does not equate a grid sum
+   with a reconstructed-field entropy integral. Prove that bridge explicitly.
+3. Establish nonzero initial excess uniformly over the actual trigonometric
+   parameter family and the required smooth/exact and numerical state bounds.
+   Only then can accumulated loss force a physical-accuracy resolution bound.
+4. Keep the class issue explicit: a fixed LF-dissipation mechanism does not cover
+   the whole higher-order initial search scope. The justified competitor class,
+   full accuracy upper bound and all-operation upper/lower work proof remain open.
+
+Periodic continuum-integral checkpoint, research/lab-integral-01:
+- EntropyIntegral.lean defines the actual conservative Euler residual using
+  Frechet derivatives on Fin 4 -> Real (time plus three spatial coordinates).
+  The entropy current is (eta, eta*v_x, eta*v_y, eta*v_z). Its divergence is
+  derived from the actual entropy/flux derivatives and vanishes when the
+  conservative Euler residual vanishes; no integral entropy law is assumed.
+- Mathlib.MeasureTheory.Integral.DivergenceTheorem supplies the proved box
+  divergence theorem. Differentiability at all points of the closed box gives
+  the boundary continuity it requires. Zero divergence supplies integrability
+  of that divergence without assuming continuity of all derivative fields.
+  Equal states on opposite spatial faces cancel their flux integrals, leaving
+  the two time faces. The generic vector-valued face-balance lemma proves both
+  entropy conservation and all five conserved-state Bochner integrals.
+- Explicit premises remain: differentiability on the box, positive density and
+  pressure there, zero actual conservative residual, and spatial periodicity.
+  The result neither constructs the family's solution nor continues it through
+  shocks. Physical viscosity remains zero. The earlier large artificial-
+  diffusion threshold belongs to the rejected sufficient Rusanov estimate.
+- cubeMeasure L is ofReal(1/L^3) times volume restricted to [0,L]^3. The volume
+  formula and total mass one for positive L are proved, as are the normalized
+  conservation laws. An almost-everywhere version of the entropy comparison
+  removes any need for state bounds outside the physical cube. Continuity on
+  the compact cube now discharges integrability for continuous fields.
+- physical_error_from_initial_entropy proves, for a specified continuous
+  approximate V and an actual exact final field U(T) both in K on the cube:
+    |integral eta(V) dmu - integral eta(U(0)) dmu|/160
+      <= max_j integral |V_j-U_j(T)| dmu.
+  Taking L=2*pi gives precisely the contract's normalized componentwise L1
+  norm. This necessary lower bound is not a solver accuracy upper bound.
+  It does not identify the continuous V with the current grid output, equate
+  reconstructed entropy to a grid sum, or prove a matching work bound.
+- The strict complete 85-statement audit passed in 149.00 seconds; the only
+  transitive proof principles are propext/Classical.choice/Quot.sound. Receipt:
+  exp_11a68e63de2fd336680f3d2d. Frozen source SHA-256:
+  ee0c171f77881a3721c48440376429edc52a4d71fb4b0eb47d007d72f1057b07.
+  The earlier assembly took 145.30 seconds against a 150-second allowance.
+  The expanded checker now permits 240 wall seconds and the enclosing job 300;
+  Lean's one-thread, 2048-MB, heartbeat and axiom/source limits stay unchanged.
+- run_solver_study.py --proof-only runs the complete bounded audit without
+  repeating unchanged numerical experiments. The six earlier numerical records
+  and receipts are retained; the latest proof receipt replaces the old proof
+  receipt in record/solver. No new physical-error numerics are claimed here.
+- The installer explicitly caches the divergence-theorem dependency. Seven
+  focused nonlinear/installer tests, Ruff and shell syntax checks pass. The
+  report has eleven pages and its revised opening/new final page are visually
+  inspected. Development errors remain in integral-dev-* logs; none were
+  suppressed with options or additional accepted mathematical principles.
+
+Next substantive connection:
+1. Construct actual continuous periodic reconstruction with nonnegative
+   partition-of-unity weights and proved spatial integrals. Periodic tensor
+   trilinear hats are a candidate: prove continuity, cell-average/mean relation,
+   and Jensen's entropy integral bound. Do not substitute piecewise-constant
+   output for the contract's continuous reconstruction without resolving scope.
+2. Prove the analytic initial-cell-average and nonzero family entropy-excess
+   bridges. Connect initial entropy loss and reconstruction to the accumulated
+   discrete loss and new physical-error theorem with all signs accounted for.
+3. Common smooth existence through T=.25 and uniform numerical trajectory
+   bounds are still the major open evolution requirements. The preceding
+   theorem keeps them explicit, rather than treating the existence of U as an
+   established property of the target family.
+4. The solver accuracy upper bound, justified competitor class, and complete
+   computational-work lower/upper proof remain unfinished. The current
+   first-order dissipative mechanism does not cover higher-order competitors.
+
+Continuous reconstruction checkpoint, research/lab-reconstruction-01:
+- HatReconstruction.lean defines a clipped ramp r(s)=max(0,min(1,s)) and the
+  actual tent phi(s)=r(s+1)-r(s). Its two linear branches and zero tails are
+  proved. For the cell-centered coordinate s=n*x/L-1/2, the one-dimensional
+  weight is phi(s-i)+phi(s-i+n)+phi(s-i-n). Three-copy sums telescope to one
+  on the physical interval. Direct integration of the tent, affine changes of
+  variable, and joining adjacent intervals give integral w_i=L/n, including n=1.
+- Tensor products define the actual reconstructed field R_h u on the cube.
+  Mathlib product-measure integration gives normalized weight integral 1/n^3.
+  Lean checks continuity, equal opposite boundary faces, exact recovery of every
+  stored state at its cell center, and K membership when all grid states lie in K.
+  Integrating gives the exact grid mean. Pointwise Jensen plus integration gives
+    integral eta(R_h u) dmu <= n^-3 sum_cells eta(u).
+  These are statements about the specified functions, not abstract weight
+  hypotheses left for a future implementation.
+- Combining this actual reconstruction with the preceding continuum theorem:
+    [integral eta(U(0)) dmu - n^-3 sum_cells eta(u)]/160
+      <= max_j integral |R_h u_j-U_j(T)| dmu.
+  The existing differentiability, positive density/pressure, Euler-residual,
+  periodicity and exact-final/grid-state region hypotheses remain explicit.
+  The numerator is not yet uniformly proved positive. No solution existence,
+  solver accuracy upper bound, or optimality conclusion is inferred.
+- reconstruction.py implements the periodic interpolant with eight neighboring
+  cells per query. It is not a verified floating-point extraction, and a formal
+  operational-cost equivalence of that sparse evaluator remains separate work.
+  The Lean expression is a finite mathematical sum. Global mean preservation
+  does not by itself establish the approximation error of the reconstructed
+  cell-average data relative to the actual smooth evolved solution.
+- validate_reconstruction.py compares the sparse evaluator with independent
+  dense three-copy max(0,1-|s|) tents on 4096 queries for each n=1,2,3,5 random
+  region-valued grid. Maximum discrepancy: 3.11e-15; cell-center discrepancy: 0;
+  arbitrary whole-period shifts: 7.11e-15; opposite-face discrepancy: 0.
+  Tensor Gauss quadrature is split at every hat breakpoint. Random-grid mean
+  discrepancy is at most 4.00e-15; one-dimensional weight integral discrepancy
+  is at most 5.55e-17. Region and entropy quadrature checks pass, as does a
+  constant-field control. No floating-point enclosure is claimed.
+- Four actual nonlinear EC+LF solves use n=16 for (A,delta)=(.5,-.05),(.75,0),
+  (1,.05), plus n=32 for (1,.05), all through T=.25. Reconstructed mean
+  discrepancy is at most 1.72e-14. Grid mean entropy minus reconstructed entropy
+  quadrature is .001369,.002920,.004960,.001837, respectively. These diagnostics
+  exercise the actual unknown nonlinear evolution; they do not supply an exact
+  future solution or certify its physical error.
+- Two focused bounded jobs succeeded:
+    numerical exp_163c0824cc5419555b227599
+    proof     exp_8d9d72a268d9f5db5762010f
+  The complete 94-statement audit passed in 158.03 seconds with only
+  propext/Classical.choice/Quot.sound. Source SHA-256:
+  0c219836a67fd8c3d9b33ecffae6fe714546c265d2077d0a8db7a31d63e7f0ff.
+  Limits are unchanged from the integral checkpoint. Import cache targets now
+  include Integral.Pi and SpecialFunctions.Integrals.Basic. Development errors
+  and the initial cache-call directory correction remain in local logs.
+- The lab runner accepts --checks followed by the desired validation program
+  names, mutually exclusive with --proof-only; its default still runs all jobs.
+  This run selects validate_reconstruction.py and check_solver.py. The six
+  unchanged numerical records retain their original successful receipts; the
+  new reconstruction and proof receipts bring the current retained set to eight.
+  Eight focused nonlinear/installer tests, Ruff, shell syntax and source/hash
+  checks pass. The twelve-page report is rendered and its changed final pages
+  inspected. Unchanged numerical plots are retained without PDF metadata churn.
+
+Next required work:
+1. Prove the actual analytic initial-cell-average formulas and use integral
+   Jensen on each physical cell to establish mean initial-grid entropy <= the
+   exact initial entropy. Prove equality of the mean conserved state as well.
+2. Establish uniformly positive exact initial excess for the full A/delta
+   family. With closeness and conserved means, this can control final grid
+   excess and connect the accumulated-loss theorem to a necessary resolution.
+3. Pursue common smooth existence and quantitative regularity through T=.25,
+   plus family-specific numerical trajectory bounds and target-time completion.
+   These are still unresolved evolution requirements, not discharged by the
+   reconstruction theorem or the four sampled trajectories.
+4. Derive the actual spatial/temporal accuracy upper bound and operational total
+   work, and justify/finalize the competitor class before any optimality claim.
+
+Analytic lead for the next initialization/excess proof (not yet Lean checked):
+For the specified gamma=2 initial family, exact trigonometric averages should
+satisfy mean rho=1, mean momentum=0, mean E=1+A^2/8, and
+mean[rho*(p-1)]=0. The elementary log inequalities give pointwise
+  eta(U)=-rho*log p+2*rho*log rho
+        >= -rho*(p-1)+2*(rho-1).
+Therefore the normalized exact initial entropy is nonnegative. Its excess over
+eta(mean U) is at least log(1+A^2/8), hence at least log(33/32) >= 1/33 over
+A>=1/2. The density perturbation terms vanish by the sine/cosine averages;
+this is a promising uniform positive constant, not an audited theorem yet.
+Verify the actual initial-state definitions and all integrations before relying
+on it. It may avoid a much weaker lower bound based only on the global Hessian
+constant and initial momentum variance.
+
+Initial-excess commissioning checkpoint, 2026-11-02:
+InitialAverages.lean now proves the actual normalized initial mean state
+(1,0,0,0,1+A^2/8) and mean rho*(p-1)=0 by product integration and explicit
+trigonometric integrals. InitialExcess.lean proves the proposed logarithm
+inequality, nonnegative exact initial entropy, and uniform excess >=1/33 for
+all allowed A and delta. This supersedes the earlier unproved analytic lead.
+ExcessAccuracy.lean bounds mean-state error by component L1 error and proves
+normalized final grid excess >=1/33-320e. It assumes an actual differentiable,
+admissible, periodic Euler field with the prescribed initial data and final
+exact/grid states in K; it does not construct that field or prove accuracy.
+No exact equality of numerical and continuum means is assumed. If e<=1/21120,
+the bound implies normalized final excess >=1/66.
+The complete 100-statement audit passed at lab-initial-excess-01 in 173.12 s.
+Numerical receipt exp_6123933e08cc8649815c9327 checks 25 A/delta pairs using
+24/48-point tensor Gauss rules. Max mean discrepancy 4.31e-14; max weighted
+rho*(p-1) discrepancy 1.02e-15; max entropy-rule difference 5.30e-11. Excess
+ranges from .03132193 to .12714201. These are not certified quadrature errors.
+lab-commissioning-01 rechecks the same 100 statements after cleaning the
+driver scope description; receipt exp_c4c77b0611a9eabc35dd0999. The mathematical
+source hash remains 2bc44f4648dca93e74840e5dbfa5ac40acc3438ee237a4cf8123d52b2316708b.
+The user has authorized a fresh 24-hour UUremote campaign, using the latest
+main plus this PR, Astra/xhigh director and reviewer, and Sol/high main/helper
+workers. All prior demos and proofs are supplied commissioning context.
+No new discovery or optimality result is claimed by this setup handoff.

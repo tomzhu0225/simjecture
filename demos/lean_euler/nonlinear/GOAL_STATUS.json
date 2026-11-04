@@ -1,0 +1,91 @@
+{
+  "status": "active",
+  "started_utc": "2026-11-01 23:38:59 UTC",
+  "objective": "A genuinely numerical solver for the coupled nonlinear 3D Euler family, with Lean-checked continuum accuracy and matching total-work upper/lower bounds in a justified class",
+  "completion_requires": [
+    "common smooth-time and regularity bounds",
+    "actual fully discrete solver and reconstruction accuracy",
+    "complete operational work upper bound",
+    "matching lower bound tied to necessary evolution accuracy",
+    "reviewable proof, numerical and PR/report artifacts"
+  ],
+  "current_front": "Commissioned foundations now include exact global initial means, uniform initial entropy excess >=1/33, and a conditional final-grid excess bound >=1/33-320e for the actual continuous reconstruction. Hand off to the authorized 24-hour UUremote research campaign to prove initialization, common smooth existence, trajectory and accuracy bounds, and matching total work in a justified class.",
+  "not_completion": [
+    "initial-force diagnostics",
+    "positivity or conservation alone",
+    "analytic-flow reconstruction",
+    "finite timing rankings",
+    "conditional error estimates with undisclosed premises"
+  ],
+  "proof_dependencies_reviewed": [
+    {
+      "source": "https://arxiv.org/abs/2111.05009",
+      "finding": "Relative-energy Godunov estimates require a strong solution and uniform nondegeneracy/numerical bounds; their general rates alone do not provide a matching optimality result for this family."
+    },
+    {
+      "source": "https://github.com/openai/NavierStokesAndEuler",
+      "finding": "Substantial Sobolev/transport/local-existence formal development exists for incompressible Euler, with Lean 4.34.0-rc2. No drop-in compressible-Euler solver/convergence theorem has been identified. Existing pinned toolchain is kept unchanged."
+    },
+    {
+      "source": "https://arxiv.org/pdf/1209.4994",
+      "finding": "Chandrashekar logarithmic-mean flux is implemented in three dimensions for gamma=2. Exact physical-flux consistency and canonical entropy identity are formalized; the method is existing literature, not a claimed new invention."
+    },
+    {
+      "source": "https://arxiv.org/pdf/1701.02264",
+      "finding": "Ranocha comparison and positivity analysis reviewed. Theorem 6.1/Corollary 6.1 concern density; do not treat them as full pressure positivity or convergence proofs."
+    },
+    {
+      "source": "https://arxiv.org/pdf/1104.3832",
+      "finding": "Introduction reviewed: a posteriori residual/growth control can certify existence intervals and errors for incompressible Euler/Navier-Stokes. This is only a methodological lead; its divergence-free Sobolev framework does not directly prove the present compressible family or supply a Lean theorem."
+    }
+  ],
+  "candidate_start": "Directional global-speed local Lax-Friedrichs/Rusanov finite-volume update. Prove admissible flux splitting and convex mixing for arbitrary positive gamma=2 Euler states; these are foundations, not the requested final accuracy/optimality theorem.",
+  "deadline": "No new deadline or token budget was specified when the user activated this goal. Do not reuse the expired earlier four-hour deadline.",
+  "checked_foundations": [
+    "exact-real computed nonlinear finite-volume step preserves positive density/pressure",
+    "actual periodic update conserves all five components",
+    "unsafe flux-splitting counterexample",
+    "positive primitive energy form and symmetric principal part",
+    "actual derivative-based conservative/primitive Euler residual equivalence",
+    "constant-coefficient principal-update energy contraction from matrix positivity and Jensen",
+    "explicit state-box norm equivalence and metric-coefficient variation bounds",
+    "variable-coefficient principal-update energy growth under explicit spatial-difference bounds",
+    "3D discrete embedding with mesh-independent constant 8",
+    "exact positive-coefficient CFL=1/2 counterexample to varying-metric contraction",
+    "actual conserved-variable mathematical entropy gradient, positive Hessian and convexity on the admissible state domain",
+    "finite doubly stochastic averaging cannot increase mathematical entropy",
+    "canonical entropy-flux potential and local entropy balance derived from differentiable conservative Euler balance",
+    "actual nonlinear finite-step entropy dissipation under explicit convex-region, Hessian, flux, viscosity and timestep bounds",
+    "concrete convex physical region with explicit actual entropy-Hessian and flux bounds; full initial-family membership",
+    "exact obstruction: no valid global curvature constants on this region make the present sufficient viscosity condition compatible with the candidate wave-speed recipe",
+    "alternative logarithmic-mean EC+LF flux: actual Euler consistency and exact canonical entropy identity, with face dissipation for any nonnegative numerical diffusion",
+    "alternative periodic update: actual total entropy derivative equals minus face dissipation; zero dissipation with positive coefficients implies stationary update",
+    "finite termination of exact-real one-step halving search, including zero-dissipation states; first accepted positive step preserves admissibility, total conservation and a finite-step entropy decrease",
+    "actual entropy Hessian expressed through the quadratic pressure polynomial along a trial line; explicit admissible path radius and directional curvature bound derived from current state/residual",
+    "explicit per-state acceptance cap, logarithmic halving-index upper bound, and accepted-ratio lower bound for the same exact-real EC+LF search, including the stationary zero-dissipation branch",
+    "actual EC flux symmetry and concrete endpoint consistency bounds on the physical region, independent of cell count",
+    "exact periodic 3^3 compression control: all old states belong to the physical region but every positive trial and the actual entropy-accepted step leave its cell-energy ceiling; this control is not the Taylor-Green family",
+    "periodic 3D vector Poincare estimate, actual nonnegative entropy excess, and quantitative excess/edge-dissipation bounds",
+    "conditional accumulated entropy loss for completed finite EC+LF traces with computed wave speeds and old states in the physical region",
+    "actual entropy gradient bound and measure-integral comparison: entropy gap divided by 160 lower-bounds maximum conserved-component L1 error for integrable K-valued fields",
+    "actual conservative Fr\u00e9chet Euler residual implies zero entropy-current divergence; the space-time divergence theorem and periodic states yield global entropy and five-component conservation",
+    "physical cube volume normalized by L^3 has total mass one; normalized entropy and conserved-state integrals are preserved",
+    "for continuous exact-final and approximate fields in the physical region on the cube, the initial-exact versus final-approximate entropy gap divided by 160 lower-bounds the specified normalized maximum-component L1 error; integrability follows from continuity",
+    "actual cell-centered periodic tensor-hat reconstruction: nonnegative partition weights, normalized integrals 1/n^3, continuity, periodic boundary agreement, exact cell-center interpolation, region membership, and preservation of the grid mean",
+    "actual reconstructed entropy integral is at most mean grid entropy; initial-exact entropy minus final-grid entropy divided by 160 lower-bounds physical L1 error under the explicit smooth-Euler and final-state region hypotheses",
+    "exact global spatial averages of the full initial family: mean conserved state (1,0,0,0,1+A^2/8) and zero mean rho*(p-1)",
+    "nonnegative exact initial entropy and uniformly positive exact initial excess >=1/33 for every allowed A and delta",
+    "physical error e implies normalized final-grid entropy excess >=1/33-320e for an actual smooth periodic Euler field with the specified initial data and final-state region bounds; no exact matching of grid and continuum means is assumed"
+  ],
+  "latest_evidence": "100 selected statements pass the full bounded audit. The 25-case independent initial-excess quadrature job passes. lab-commissioning-01 rechecks the complete proof and retains a concise current scope; prior demos and validation receipts are commissioning context for the fresh autonomous campaign, not autonomous discoveries.",
+  "remaining_obligations": [
+    "prove the actual initial-cell-average formulas and their entropy comparison, then connect initial entropy to accumulated discrete loss and necessary physical-accuracy resolution",
+    "derive uniform residual/cap/retry estimates and prove a family-specific whole-trajectory bound; global method-level invariance of the present region is disproved and target-time completion remains open",
+    "common smooth-time and quantitative regularity for the full parameter family",
+    "formal initialization and approximation-error bounds for the specified reconstruction; an operational evaluation model connecting the sparse implementation to exact semantics",
+    "derive uniform coefficient-difference bounds, control metric time variation and bridge principal stability to the actual nonlinear conservative update",
+    "uniform fully discrete stability and convergence",
+    "scientifically justified formal competitor class",
+    "matching total-work lower and upper bounds tied to evolved-field accuracy"
+  ]
+}

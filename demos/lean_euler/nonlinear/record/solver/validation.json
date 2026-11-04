@@ -1,0 +1,86 @@
+{
+  "scope": "Candidate initialization/admissibility/conservation checks; no continuum accuracy or optimality certificate",
+  "cell_average_quadrature_max_error": 9.992007221626409e-16,
+  "random_state_split_min_pressure": 0.009422639681530676,
+  "random_state_update_conservation_error": 3.552713678800501e-15,
+  "unsafe_flux_splitting_pressure": -49,
+  "rows": [
+    {
+      "n": 16,
+      "A": 0.5,
+      "delta": -0.05,
+      "steps": 11,
+      "cell_updates": 45056,
+      "final_time": 0.25,
+      "conservation_error": 1.9761969838327786e-14,
+      "min_density": 0.9648796087769902,
+      "min_pressure": 0.9717060614756364,
+      "vertical_velocity_max": 0.008675292622866976
+    },
+    {
+      "n": 32,
+      "A": 0.5,
+      "delta": -0.05,
+      "steps": 23,
+      "cell_updates": 753664,
+      "final_time": 0.25,
+      "conservation_error": 4.1300296516055823e-14,
+      "min_density": 0.95762279407774,
+      "min_pressure": 0.9442537613125661,
+      "vertical_velocity_max": 0.012396566511161314
+    },
+    {
+      "n": 16,
+      "A": 0.75,
+      "delta": 0,
+      "steps": 12,
+      "cell_updates": 49152,
+      "final_time": 0.25,
+      "conservation_error": 8.215650382226158e-15,
+      "min_density": 0.997845456283821,
+      "min_pressure": 0.9449508521421339,
+      "vertical_velocity_max": 0.018992222329317982
+    },
+    {
+      "n": 32,
+      "A": 0.75,
+      "delta": 0,
+      "steps": 25,
+      "cell_updates": 819200,
+      "final_time": 0.25,
+      "conservation_error": 2.8199664825478976e-14,
+      "min_density": 0.9979432739623629,
+      "min_pressure": 0.8821080996380432,
+      "vertical_velocity_max": 0.027463334044988588
+    },
+    {
+      "n": 16,
+      "A": 1.0,
+      "delta": 0.05,
+      "steps": 13,
+      "cell_updates": 53248,
+      "final_time": 0.25,
+      "conservation_error": 1.0436096431476471e-14,
+      "min_density": 0.9692509200371777,
+      "min_pressure": 0.9162099961416293,
+      "vertical_velocity_max": 0.03274028982921693
+    },
+    {
+      "n": 32,
+      "A": 1.0,
+      "delta": 0.05,
+      "steps": 27,
+      "cell_updates": 884736,
+      "final_time": 0.25,
+      "conservation_error": 3.197442310920451e-14,
+      "min_density": 0.9613573450341764,
+      "min_pressure": 0.8035437848783412,
+      "vertical_velocity_max": 0.04790551739201187
+    }
+  ],
+  "sources": {
+    "finite_volume.py": "77c81b82bd152cb967c15d494d715e3006c9cac5d2a44ed1c63693b3f4b9ecd4",
+    "validate_candidate.py": "056049928d57ea7c7b10245d7aac20b4e3b7ca155218b05dd125cdf61cbb8d33",
+    "contract.json": "59d2abf1b1bdce7080c68fedded2478a95d1a0b0defd73e1cf94ffefa99b8ecf"
+  }
+}

@@ -870,6 +870,7 @@ async function send() {
 // One accurate setup brief per tool. Each names the skill files that actually
 // document that tool, so agents never receive another tool's instructions.
 const toolSetupGuides = {
+  lean: {skill: "lean", read: [], focus: "Install the pinned Lean/Mathlib capability (`simjecture install lean`) and run its proof audit checks (`simjecture doctor --profile lean`)."},
   freecad: {skill: "freecad", read: ["references/geometry-handoff.md"], focus: "Use its managed installer (`simjecture install freecad`) and check its headless FreeCAD/Part Python environment (`simjecture doctor --profile freecad`)."},
   gmsh: {skill: "gmsh", read: ["references/local-experience.md"], focus: "Use its managed installer (`simjecture install gmsh`) and check its OpenCASCADE and meshio runtime (`simjecture doctor --profile gmsh`)."},
   elmer: {skill: "elmer", read: ["references/installation.md", "references/local-experience.md"], focus: "Follow the documented Elmer setup route (`simjecture install elmer --source PATH` or build/register a local Elmer installation) and verify with the heat-conduction smoke check (`simjecture doctor --profile elmer`).", ask: "where my prebuilt Elmer installation or source is if none is already on this machine"},

@@ -1,0 +1,2 @@
+SIMJECTURE_AXIOMS Decay.nonnegative: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS Decay.counterexample: [propext, Classical.choice, Quot.sound]

@@ -1,0 +1,93 @@
+Autonomous investigation closeout: scientific objective unresolved
+
+Started: 2026-11-02 17:03:38 Asia/Shanghai.
+Stopped: 2026-11-03 13:04:25 Asia/Shanghai, after 20.013 hours.
+Original deadline: 2026-11-03 17:03:38 Asia/Shanghai.
+Unused allocation at stop: 3.987 hours. No extension or restart occurred.
+
+The Astra/xhigh director stopped the investigation early after a fresh,
+independent Astra/xhigh report assessment accepted the synthesis. The stop
+reason was documented mathematical blockers and no recorded affordable next
+test that would resolve them. The report was accepted; the original scientific
+hypothesis remains unresolved. Supervisor status "completed" means that the
+investigation closed, not that an optimal Euler solver was found or proved.
+
+The original objective was a useful solver for the full frozen nonlinear
+compressible Euler family, a Lean-checked continuum accuracy theorem and
+matching complete-work bounds in a justified competitor class. None of a
+complete solver-accuracy theorem, a certified speedup or solver optimality was
+established. PR #90 remains draft and unmerged.
+
+Verified partial results include exact-real initial cell averages and whole-grid
+aggregation, a fourth-order initializer remainder, reconstruction/error bridges,
+and an obstruction to transferring one first-order dissipation lower-bound
+argument to higher-order reconstruction. Later Lean work derives actual Euler
+error equations, periodic integral energy identities, regularity-to-integration
+premises, a quantitative time-energy estimate, derived time integrability and a
+conditional Gronwall bound. Actual solution construction, quantitative
+true-solution envelopes, full-family coverage, the full higher-order estimate,
+actual discrete solver accuracy, arithmetic refinement and matching work bounds
+remain unresolved. The final Gronwall theorem assumes the Euler solution and
+its stated regularity/positivity/envelope conditions; it derives the energy
+estimate rather than assuming that estimate.
+
+The campaign retained a sixteen-interval conditional calculation through T=1/4
+for A=1, delta=0, with conditional normalized physical-L1 upper 0.00032153916.
+That calculation is not a Lean continuum or production-solver certificate.
+A separate final low-order feasibility test improved a sufficient primitive
+energy expression from about 1.63705e6 to 2229.76, still above its declared unit
+threshold. These two comparisons use different candidates and estimates and
+must not be treated as successive measured Euler errors. Sensitivity testing
+identified missing true-solution gradient/pressure-Hessian control and a
+separate incoming-error/operator-growth obstruction. The failures do not prove
+Euler singularity, an actual error lower bound or impossibility of the objective.
+
+Operational totals at closeout: 120 recorded experiments, 81 execution successes
+and 39 execution failures. Execution success is not scientific acceptance.
+There were 16 helper assignments: 11 completed, 4 failed collection and 1 blocked.
+The failed handoffs and subsequent recovery records remain preserved. The
+controller exited normally, on its first persistent-service attempt. The
+complete remote study, including source snapshots and unsuccessful attempts,
+remains at the location recorded in RUN.txt.
+
+Retained local/PR snapshot in final/:
+- REPORT.txt: unchanged accepted report, originally named RESULTS.md.
+- report-assessment.json: final independent report assessment.
+- closeout.json: authoritative early-stop reason and timestamps.
+- THEOREM_INVENTORY.json: worker-maintained inventory, including historical
+  entries; individual receipts and later decisions supersede stale status text.
+- gronwall/: standalone final Lean source, generated audit, logs and receipt.
+- snapshot-manifest.json: copied-file SHA-256 values and original remote paths.
+
+REPORT.txt intentionally preserves its exact accepted bytes and historical
+pre-assessment language. Its relative links refer to the remote study's research
+tree; the full linked archive is not duplicated in this compact snapshot. The
+final acceptance is recorded separately in report-assessment.json. All raw
+scientific and provenance artifacts remain on UUremote.
+
+The accepted report SHA-256 is
+198602886362dd3327a0c829860422efbb104fcb3b70251b998e679ab8d97323.
+The final Gronwall assembled-source SHA-256 is
+85ba466c1ac520752fdf6d1f942beaca7a32dc031c5b35f23c224981d200ba02.
+Both were verified when retrieving the files. The final receipt records
+successful compilation and all 12 requested theorem/control audits in
+199.44 seconds, with only propext, Classical.choice and Quot.sound.
+The targets include inherited controls; theorem counts from separate assemblies
+overlap and must not be summed as distinct discoveries.
+
+To replay with the pinned, installed local Lean capability from this repository,
+choose a new output path and run Python from the project environment:
+
+  import json
+  from pathlib import Path
+  from conjecture_solver.lean_check import check
+  root = Path("research/evaluations/euler-optimality-24h-20261102/final/gronwall")
+  receipt = json.loads((root / "result.json").read_text())
+  result = check(root / "Candidate.lean", receipt["theorems"],
+                 output="artifacts/gronwall-closeout-recheck", timeout=480)
+  assert result["checked"], result
+
+This is a conditional mathematical proof replay, not a solver benchmark or
+completion of the original objective. The live source stayed pinned to
+93be1b384c07180385c5953604c72f83aae43c78 throughout the run; this retrospective
+reporting commit does not alter that source or the campaign's evidence.

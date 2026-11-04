@@ -1,0 +1,24 @@
+{
+  "contract_sha256": "0b458ed9613ee10bf1a4b16a99758beb8bc657a9e124105309241aed13280b4f",
+  "claims": {
+    "classical_euler_for_frozen_family": "proved",
+    "uniform_full_state_accuracy": "proved",
+    "adaptive_machine_query_lower_bound": "proved",
+    "total_work_order_in_declared_ram_model": "proved",
+    "general_3d_euler_optimality": "not claimed",
+    "numpy_or_ieee_refinement": "not proved",
+    "mathematical_novelty": "not established"
+  },
+  "theorem_count": 20,
+  "experiments": [
+    "exp_817b3ce3c1059019bec4e257",
+    "exp_2ccab4e4fa4d41f7d65a89ea"
+  ],
+  "evidence_scope": "Trusted authored proofs checked in the bounded local Lean capability; lab stage exploration, not an independently reviewed scientific method.",
+  "representation": "Finite n^3 density table plus exact affine reconstruction rule; post-construction output-point evaluations cost extra.",
+  "lower_bound_constant": "Fixed existential K >= 1; not evaluated numerically.",
+  "work_model": "Exact-real RAM with unit-cost point oracle, scalar arithmetic/ceiling, indexing/storage. Modeled work is not NumPy FLOPs or hardware time.",
+  "retained_binaries": "Compiled Lean olean files remain in local artifact runs and can be rebuilt; source, audit, hashes and receipts are tracked.",
+  "research_goal_status": "Not achieved for the user-intended unknown nonlinear Euler dynamics. This record is an analytically known-motion reconstruction exercise.",
+  "replacement_family": "demos/lean_euler/nonlinear/contract.json; solver accuracy and optimality remain unproved"
+}

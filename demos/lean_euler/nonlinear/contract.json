@@ -1,0 +1,29 @@
+{
+  "schema_version": "0.1.0",
+  "status": "replacement problem family; solver accuracy and optimality are unproved",
+  "reason": "User requires unknown nonlinear Euler dynamics. The previous affine-shear example is retained only as an optimal-reconstruction/proof-workflow exercise.",
+  "equations": "Unforced, inviscid full 3D compressible ideal-gas Euler, gamma=2, evolving all five conserved variables",
+  "domain": "[0,2*pi]^3, periodic in all three directions",
+  "parameters": {"vortex_amplitude_A": [0.5, 1.0], "density_perturbation_delta": [-0.05, 0.05]},
+  "initial_density": "rho0=1+delta*sin(x)*sin(y)*sin(z)",
+  "initial_velocity": "v0=A*(sin(x)*cos(y)*cos(z), -cos(x)*sin(y)*cos(z), 0)",
+  "initial_pressure": "p0=1+(A^2/16)*(cos(2*x)+cos(2*y))*(cos(2*z)+2)",
+  "initial_energy": "E0=p0/(gamma-1)+rho0*|v0|^2/2",
+  "initial_admissibility": "rho0 >= 0.95 and p0 >= 0.625 throughout the whole parameter family",
+  "nontriviality_witness": "At (0,0,pi/4), rho0=1, v0=0, d_z p0=-A^2/4. The z-momentum Euler equation forces d_t(rho*v_z)|t=0=A^2/4 >= 1/16. The initial zero vertical velocity cannot remain zero.",
+  "unknowns": "rho, all three velocity components, and pressure at positive time. No exact trajectory map or exact future state is provided to the solver.",
+  "input_access": "All competitors receive the same explicit initial-condition formulas and parameter values. No sample-only restriction on initial density is used.",
+  "time_target": {"T": 0.25, "status": "initial numerical target; a common smooth existence interval and regularity bounds over the family still require proof"},
+  "accuracy_target": "Max over the five nondimensional conserved components of the domain-volume-normalized L1 error in a specified continuous reconstruction at T. This includes spatial and temporal evolution error, not only projection error.",
+  "initial_search_class": "Conservative explicit local finite-volume schemes on uniform Cartesian grids, fixed stencil radius at most two, and one to three explicit Runge-Kutta stages. Method coefficients and adaptation rules must be common across the family; all parameter-specific preprocessing is charged. This is an initial search scope, not yet a finalized formal competitor definition.",
+  "cost_target": "Total scalar arithmetic/memory work for a complete solve at the requested continuum error, including setup, all accepted/rejected steps, fluxes, checks and any certification or preprocessing; wall time reported separately",
+  "proof_requirements": [
+    "Prove a common smooth-time and admissibility contract, or explicitly revise the time/solution concept if it fails",
+    "Prove an actual accuracy upper bound for the selected fully discrete solver and reconstruction",
+    "Prove its total-work upper bound under a declared operational model",
+    "Finalize a scientifically justified competitor class and prove a matching worst-case lower bound tied to necessary evolution accuracy"
+  ],
+  "unacceptable_substitutes": ["initial-data sampling complexity alone", "output-size lower bound alone", "cache counts", "a CFL or stage-count bound alone", "an assumed numerical error estimate", "ranking a finite benchmark catalogue"],
+  "current_evidence": "Only initial nontriviality checks and numerical baseline commissioning are intended in this stage. Refined-grid differences will not be called certified continuum error.",
+  "prior_work": "Adapted from the inviscid compressible 3D Taylor-Green test used in Ranocha et al., Optimized Runge-Kutta Methods with Automatic Step Size Control for Compressible Computational Fluid Dynamics, DOI 10.1007/s42967-021-00159-w. Gamma, amplitude and density perturbation here are explicit adaptations. This is not the analytically solvable two-dimensional incompressible Taylor-Green case."
+}

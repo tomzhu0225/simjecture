@@ -218,6 +218,13 @@ def test_reproduce_anchor_uses_packaged_arguments_and_rejects_edits(tmp_path, mo
     assert result["args"][0] == "--eta"
     assert result["stage"] == "exploration"
     assert not set(result["inputs"]) & set(result["outputs"])
+    assert "resources" not in result
+    reservation = {"cpus": 1, "memory_mb": 8192, "gpus": 0}
+    reserved = s.reproduce_anchor(timeout=12, resources=reservation)
+    assert reserved["resources"] == reservation
+    assert reserved["args"] == result["args"]
+    assert reserved["inputs"] == result["inputs"]
+    assert reserved["stage"] == "exploration"
     (s.work / calls[0][0]).write_text("# changed")
     with pytest.raises(ValueError, match="workspace changed"):
         s.reproduce_anchor()

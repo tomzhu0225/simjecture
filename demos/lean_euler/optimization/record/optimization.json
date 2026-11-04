@@ -1,0 +1,298 @@
+{
+  "stage": "1: fixed-discretization implementation experiment; optimality unproved",
+  "contract": {
+    "equations": "3D ideal-gas compressible Euler, gamma=2",
+    "grid": "uniform periodic Cartesian cells; five conservative variables",
+    "scheme": "first-order shared-face Rusanov plus forward Euler",
+    "allowed_change": "reuse old-state pressure and sound speed across axes",
+    "required_output": "same discrete update for same inputs and timestep",
+    "cost": "one-step CPU wall time, plus instrumentable thermodynamic evaluations"
+  },
+  "equivalence_checks": [
+    {
+      "n": 8,
+      "kind": "random",
+      "seed": 1,
+      "steps": 8,
+      "time": 0.024570194220597596,
+      "bitwise_equal": true,
+      "max_difference": 0,
+      "min_density": 0.8147409115688456,
+      "min_pressure": 1.0601557882927601,
+      "conserved_total_drift": [
+        -2.220446049250313e-16,
+        4.5102810375396984e-17,
+        0.0,
+        1.691355389077387e-17,
+        8.881784197001252e-16
+      ]
+    },
+    {
+      "n": 12,
+      "kind": "random",
+      "seed": 2,
+      "steps": 8,
+      "time": 0.016018844339160346,
+      "bitwise_equal": true,
+      "max_difference": 0,
+      "min_density": 0.7581700092500939,
+      "min_pressure": 0.9454522442982042,
+      "conserved_total_drift": [
+        -2.886579864025407e-15,
+        1.1275702593849246e-17,
+        -2.970713952610282e-17,
+        -1.9081958235744878e-17,
+        -1.9984014443252818e-15
+      ]
+    },
+    {
+      "n": 16,
+      "kind": "coupled",
+      "seed": 3,
+      "steps": 20,
+      "time": 0.048740072488055466,
+      "bitwise_equal": true,
+      "max_difference": 0,
+      "min_density": 0.9190036164166869,
+      "min_pressure": 0.944127753692973,
+      "conserved_total_drift": [
+        -1.6653345369377348e-15,
+        8.03834266944331e-18,
+        -1.4738373282224826e-18,
+        -5.252366602629191e-17,
+        2.6645352591003757e-15
+      ]
+    },
+    {
+      "n": 24,
+      "kind": "blast",
+      "seed": 4,
+      "steps": 20,
+      "time": 0.012452232079395024,
+      "bitwise_equal": true,
+      "max_difference": 0,
+      "min_density": 0.8733538411962114,
+      "min_pressure": 0.1,
+      "conserved_total_drift": [
+        -5.773159728050814e-15,
+        -1.2384845814621594e-18,
+        -4.084112861585226e-19,
+        -2.2250519801655485e-19,
+        1.657007864253046e-14
+      ]
+    }
+  ],
+  "timings": [
+    {
+      "n": 16,
+      "cells": 4096,
+      "trials_seconds": {
+        "reference": [
+          0.0007996139975148253,
+          0.0007448809992638417,
+          0.0008146120017045178,
+          0.0008402509993175045,
+          0.0007325570040848106,
+          0.000799384004494641,
+          0.0008143619998008944,
+          0.000984252998023294,
+          0.0008162250014720485,
+          0.0007400910035357811,
+          0.0007676929963054135
+        ],
+        "cached": [
+          0.0007481369975721464,
+          0.0006856079999124631,
+          0.0006212170046637766,
+          0.0006797379974159412,
+          0.0006646589972660877,
+          0.0006798780013923533,
+          0.0007480470012524165,
+          0.000932727001782041,
+          0.0006868810014566407,
+          0.0006143040009192191,
+          0.0006868609998491593
+        ]
+      },
+      "median_seconds": {
+        "reference": 0.0007996139975148253,
+        "cached": 0.0006856079999124631
+      },
+      "reference_over_cached": 1.1662845206253694,
+      "pressure_cell_evaluations": {
+        "reference": 12288,
+        "cached": 4096
+      },
+      "sound_speed_cell_evaluations": {
+        "reference": 12288,
+        "cached": 4096
+      },
+      "timestep_selection_timed": false,
+      "timing_scope": "entire one-step kernel including cache creation and output allocation"
+    },
+    {
+      "n": 32,
+      "cells": 32768,
+      "trials_seconds": {
+        "reference": [
+          0.009060629003215581,
+          0.008663687003718223,
+          0.008723869003006257,
+          0.008524313001544215,
+          0.010015786996518727,
+          0.008685868000611663,
+          0.008673153999552596,
+          0.008699183003045619,
+          0.008690214999660384,
+          0.00879338199592894,
+          0.008850950995110907
+        ],
+        "cached": [
+          0.008363708002434578,
+          0.007826009998098016,
+          0.007784149995131884,
+          0.008708551999006886,
+          0.008317309999256395,
+          0.008568494995415676,
+          0.008143942002789117,
+          0.008207532002415974,
+          0.007988598001247738,
+          0.008813078995444812,
+          0.009148133001872338
+        ]
+      },
+      "median_seconds": {
+        "reference": 0.008699183003045619,
+        "cached": 0.008317309999256395
+      },
+      "reference_over_cached": 1.0459130420560692,
+      "pressure_cell_evaluations": {
+        "reference": 98304,
+        "cached": 32768
+      },
+      "sound_speed_cell_evaluations": {
+        "reference": 98304,
+        "cached": 32768
+      },
+      "timestep_selection_timed": false,
+      "timing_scope": "entire one-step kernel including cache creation and output allocation"
+    },
+    {
+      "n": 48,
+      "cells": 110592,
+      "trials_seconds": {
+        "reference": [
+          0.02488614599860739,
+          0.024597799994808156,
+          0.024390177997702267,
+          0.02443689500069013,
+          0.02580152000155067,
+          0.024826714005030226,
+          0.025094932003412396,
+          0.025072670003282838,
+          0.02638575600576587,
+          0.025219577000825666,
+          0.02674076699622674
+        ],
+        "cached": [
+          0.021579645996098407,
+          0.02035609800077509,
+          0.021777447997010313,
+          0.02034090899542207,
+          0.023405391999403946,
+          0.020327654005086515,
+          0.02084842000476783,
+          0.020429607000551187,
+          0.021957491000648588,
+          0.020887243998004124,
+          0.020834483999351505
+        ]
+      },
+      "median_seconds": {
+        "reference": 0.025072670003282838,
+        "cached": 0.02084842000476783
+      },
+      "reference_over_cached": 1.2026172725582545,
+      "pressure_cell_evaluations": {
+        "reference": 331776,
+        "cached": 110592
+      },
+      "sound_speed_cell_evaluations": {
+        "reference": 331776,
+        "cached": 110592
+      },
+      "timestep_selection_timed": false,
+      "timing_scope": "entire one-step kernel including cache creation and output allocation"
+    },
+    {
+      "n": 64,
+      "cells": 262144,
+      "trials_seconds": {
+        "reference": [
+          0.05364933399687288,
+          0.05253655799606349,
+          0.050409149000188336,
+          0.05331813699740451,
+          0.054181512001377996,
+          0.04995211400091648,
+          0.0526393719992484,
+          0.050228537002112716,
+          0.0515025280037662,
+          0.05167998599790735,
+          0.05280807099916274
+        ],
+        "cached": [
+          0.04421601999638369,
+          0.042064405999553856,
+          0.044397655001375824,
+          0.041939287999412045,
+          0.04094980600348208,
+          0.04389546399761457,
+          0.041415699000936,
+          0.041928458005713765,
+          0.04086523500154726,
+          0.042596562998369336,
+          0.04664602200500667
+        ]
+      },
+      "median_seconds": {
+        "reference": 0.05253655799606349,
+        "cached": 0.042064405999553856
+      },
+      "reference_over_cached": 1.2489551854511083,
+      "pressure_cell_evaluations": {
+        "reference": 786432,
+        "cached": 262144
+      },
+      "sound_speed_cell_evaluations": {
+        "reference": 786432,
+        "cached": 262144
+      },
+      "timestep_selection_timed": false,
+      "timing_scope": "entire one-step kernel including cache creation and output allocation"
+    }
+  ],
+  "environment": {
+    "python": "3.12.13",
+    "numpy": "2.5.1",
+    "platform": "Linux-6.18.54.1-microsoft-standard-WSL2-x86_64-with-glibc2.39"
+  },
+  "source_sha256": {
+    "experiment.py": "b70d8a26ca230938e1bd8c14ee2ff478472cf19fe8609825b73a76bac9833856",
+    "euler.py": "505ebff19d161561f3723a259e65e9476e7c0b40c357146df905dfa56e95d2c2"
+  },
+  "claim_status": {
+    "tested_update_equivalence": "empirical",
+    "thermodynamic_reuse": "by code inspection",
+    "general_positivity": "open",
+    "pde_accuracy": "not assessed in nonlinear cases",
+    "implementation_optimality": "open",
+    "solver_optimality_at_fixed_error": "open"
+  },
+  "limitations": [
+    "Four exploratory nonlinear 3D trajectories are not a convergence proof",
+    "The blast check tests execution and admissibility, not a validated shock solution",
+    "A speedup over one baseline is not an optimality lower bound",
+    "Timing excludes timestep selection and is not time-to-solution at fixed error"
+  ]
+}

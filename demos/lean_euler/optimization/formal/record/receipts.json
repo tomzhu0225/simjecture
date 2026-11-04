@@ -1,0 +1,236 @@
+[
+  {
+    "id": "exp_f5f4cd7d68fd034a88485f04",
+    "status": "succeeded",
+    "operator_guidance_ids": [],
+    "created_at": 1793536293.823824,
+    "timeout": 240,
+    "execution_deadline": 1793536893.8091288,
+    "workspace_limit_bytes": 4294967296,
+    "binding": {
+      "source": "check_formal.py",
+      "args": [],
+      "inputs": {
+        "check_formal.py": "4e6408477dd07dcac3e67937c006a44fce6dcc75399cbe5c61ee2a83cd80abb8",
+        "EulerCache.lean": "16ce51c0893ed0d33c8eece25d51d5c784a0e8ed8c4ebb19d7cce9addff6ee14",
+        "CacheSchedule.lean": "56d2ce9cc217d439385d6fcfaf19de5dc8a4a3f1bbb52d7840247d26f3a6df30"
+      },
+      "capability": "lean-4.24.0",
+      "runtime_sha256": "bc63616400205dcf4919db154fa34e82b591aa1fe4edcf8f85502d153f959145"
+    },
+    "outputs": [
+      "formal-results.json",
+      "EulerCache/result.json",
+      "EulerCache/Candidate.lean",
+      "EulerCache/Audit.lean",
+      "EulerCache/compile.log",
+      "EulerCache/audit.log",
+      "CacheSchedule/result.json",
+      "CacheSchedule/Candidate.lean",
+      "CacheSchedule/Audit.lean",
+      "CacheSchedule/compile.log",
+      "CacheSchedule/audit.log"
+    ],
+    "commitment": null,
+    "key": null,
+    "stage": "exploration",
+    "method": null,
+    "review_documents": null,
+    "pid": 568977,
+    "worker_identity": {
+      "pid": 568977,
+      "starttime": "4587035",
+      "argv": [
+        "/home/tomzhu0225/src/simjecture/.venv/bin/python",
+        "-m",
+        "conjecture_solver.research_service",
+        "--root",
+        "/home/tomzhu0225/src/simjecture/artifacts/lean-euler/20261101/formal/simjecture-stage2-bounded/study",
+        "--execute",
+        "exp_f5f4cd7d68fd034a88485f04"
+      ],
+      "launched_at": "2026-11-01T12:31:34.003144+00:00",
+      "run_directory": null
+    },
+    "started_at": 1793536294.0032701,
+    "execution": {
+      "isolation_backend": "bubblewrap",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "",
+      "timed_out": false,
+      "cancelled": false,
+      "workspace_exceeded": false,
+      "stdout_truncated": false,
+      "stderr_truncated": false,
+      "heartbeat_count": 0,
+      "wall_seconds": 5.84030276699923,
+      "workspace_bytes": 1115298,
+      "executor_sha256": "b92087579abbb99f55ce2c75d98765355c8ccd4a6ccf3ba55b15ddd5491a22ec",
+      "resource_limits": {
+        "max_file_bytes": 4294967296,
+        "max_workspace_bytes": 4294967296,
+        "max_memory_bytes": 4294967296
+      }
+    },
+    "artifacts": {
+      "CacheSchedule/Audit.lean": {
+        "sha256": "5d621de841bbfb7866cb75033ee892152aad697e85f1543dbd2bffe8a72be663",
+        "bytes": 3093
+      },
+      "CacheSchedule/Candidate.lean": {
+        "sha256": "56d2ce9cc217d439385d6fcfaf19de5dc8a4a3f1bbb52d7840247d26f3a6df30",
+        "bytes": 11704
+      },
+      "CacheSchedule/Candidate.olean": {
+        "sha256": "14dfeaeaad6232ad26275e78b04f0e60448e7fce53664dab927d1a6d7ef9f434",
+        "bytes": 789880
+      },
+      "CacheSchedule/audit.log": {
+        "sha256": "2379c8882c4a19babc025259904fd498e3f3687e228ae650a0c9ea5fdd9243ad",
+        "bytes": 922
+      },
+      "CacheSchedule/compile.log": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "CacheSchedule/result.json": {
+        "sha256": "293e8be03769e3bd8766fbd28f782bebe2dd4dd2eeb1def108f599a93657b56b",
+        "bytes": 3706
+      },
+      "CacheSchedule.lean": {
+        "sha256": "56d2ce9cc217d439385d6fcfaf19de5dc8a4a3f1bbb52d7840247d26f3a6df30",
+        "bytes": 11704
+      },
+      "EulerCache/Audit.lean": {
+        "sha256": "ce87b07a2bbdccd4113a7703212f43689be688d3a60e8bb282814ba7512447b5",
+        "bytes": 1533
+      },
+      "EulerCache/Candidate.lean": {
+        "sha256": "16ce51c0893ed0d33c8eece25d51d5c784a0e8ed8c4ebb19d7cce9addff6ee14",
+        "bytes": 6278
+      },
+      "EulerCache/Candidate.olean": {
+        "sha256": "59d65698a2592a779b665937012ac72ed1a95560fd04c084d18f06198d6cb686",
+        "bytes": 268560
+      },
+      "EulerCache/audit.log": {
+        "sha256": "6a4090804a1c848832de5694f04f4495e992cdaa0c1538bcd52c6a900b57dc58",
+        "bytes": 455
+      },
+      "EulerCache/compile.log": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "EulerCache/result.json": {
+        "sha256": "5631766687366b930944fd1a73b451eedc933b061bac4e42e1ef942eb8fb8e9c",
+        "bytes": 2926
+      },
+      "EulerCache.lean": {
+        "sha256": "16ce51c0893ed0d33c8eece25d51d5c784a0e8ed8c4ebb19d7cce9addff6ee14",
+        "bytes": 6278
+      },
+      "check_formal.py": {
+        "sha256": "4e6408477dd07dcac3e67937c006a44fce6dcc75399cbe5c61ee2a83cd80abb8",
+        "bytes": 1167
+      },
+      "formal-results.json": {
+        "sha256": "c6fe65f0bc6c9075012b5ad6ad7607cabe85b0ef8507d3c641ea753b631d210c",
+        "bytes": 7092
+      }
+    },
+    "missing_outputs": [],
+    "input_mutations": [],
+    "output_findings": [],
+    "scientific_status": "unreviewed",
+    "finished_at": 1793536299.8824754
+  },
+  {
+    "id": "exp_2d25c143734d5d6db02d6092",
+    "status": "succeeded",
+    "operator_guidance_ids": [],
+    "created_at": 1793536293.8350854,
+    "timeout": 120,
+    "execution_deadline": 1793536893.8091288,
+    "workspace_limit_bytes": 4294965609,
+    "binding": {
+      "source": "instrument.py",
+      "args": [],
+      "inputs": {
+        "instrument.py": "f48beef33630e55a37bebcd5761a8733196033f144f2482801f732290a088dc9",
+        "euler.py": "505ebff19d161561f3723a259e65e9476e7c0b40c357146df905dfa56e95d2c2",
+        "experiment.py": "b70d8a26ca230938e1bd8c14ee2ff478472cf19fe8609825b73a76bac9833856"
+      },
+      "capability": null,
+      "runtime_sha256": null
+    },
+    "outputs": [
+      "instrumentation.json"
+    ],
+    "commitment": null,
+    "key": null,
+    "stage": "exploration",
+    "method": null,
+    "review_documents": null,
+    "pid": 568978,
+    "worker_identity": {
+      "pid": 568978,
+      "starttime": "4587036",
+      "argv": [
+        "/home/tomzhu0225/src/simjecture/.venv/bin/python",
+        "-m",
+        "conjecture_solver.research_service",
+        "--root",
+        "/home/tomzhu0225/src/simjecture/artifacts/lean-euler/20261101/formal/simjecture-stage2-bounded/study",
+        "--execute",
+        "exp_2d25c143734d5d6db02d6092"
+      ],
+      "launched_at": "2026-11-01T12:31:34.016000+00:00",
+      "run_directory": null
+    },
+    "started_at": 1793536294.016124,
+    "execution": {
+      "isolation_backend": "bubblewrap",
+      "returncode": 0,
+      "stdout": "{\n  \"actual_call_counts\": [\n    {\n      \"n\": 3,\n      \"cells\": 27,\n      \"reference\": {\n        \"pressure_calls\": 3,\n        \"pressure_cells\": 81,\n        \"sqrt_calls\": 3,\n        \"sqrt_cells\": 81\n      },\n      \"cached\": {\n        \"pressure_calls\": 1,\n        \"pressure_cells\": 27,\n        \"sqrt_calls\": 1,\n        \"sqrt_cells\": 27\n      },\n      \"bitwise_equal\": true\n    },\n    {\n      \"n\": 8,\n      \"cells\": 512,\n      \"reference\": {\n        \"pressure_calls\": 3,\n        \"pressure_cells\": 1536,\n        \"sqrt_calls\": 3,\n        \"sqrt_cells\": 1536\n      },\n      \"cached\": {\n        \"pressure_calls\": 1,\n        \"pressure_cells\": 512,\n        \"sqrt_calls\": 1,\n        \"sqrt_cells\": 512\n      },\n      \"bitwise_equal\": true\n    },\n    {\n      \"n\": 16,\n      \"cells\": 4096,\n      \"reference\": {\n        \"pressure_calls\": 3,\n        \"pressure_cells\": 12288,\n        \"sqrt_calls\": 3,\n        \"sqrt_cells\": 12288\n      },\n      \"cached\": {\n        \"pressure_calls\": 1,\n        \"pressure_cells\": 4096,\n        \"sqrt_calls\": 1,\n        \"sqrt_cells\": 4096\n      },\n      \"bitwise_equal\": true\n    }\n  ],\n  \"scalar_model_transcription_max_difference\": 0.0,\n  \"stale_pressure_negative_control_max_difference\": 0.0012755733609794984,\n  \"schedules\": {\n    \"reference\": {\n      \"legal\": true,\n      \"complete\": true,\n      \"evaluations\": 21,\n      \"uses\": 21,\n      \"drops\": 0\n    },\n    \"cached\": {\n      \"legal\": true,\n      \"complete\": true,\n      \"evaluations\": 7,\n      \"uses\": 21,\n      \"drops\": 0\n    },\n    \"missing_eval_negative_control\": {\n      \"legal\": false,\n      \"reason\": \"use without ready thermodynamics\"\n    }\n  },\n  \"source_sha256\": {\n    \"euler.py\": \"505ebff19d161561f3723a259e65e9476e7c0b40c357146df905dfa56e95d2c2\",\n    \"experiment.py\": \"b70d8a26ca230938e1bd8c14ee2ff478472cf19fe8609825b73a76bac9833856\",\n    \"instrument.py\": \"f48beef33630e55a37bebcd5761a8733196033f144f2482801f732290a088dc9\"\n  },\n  \"scope\": \"Empirical correspondence checks; not verified compilation or floating-point refinement\"\n}",
+      "stderr": "",
+      "timed_out": false,
+      "cancelled": false,
+      "workspace_exceeded": false,
+      "stdout_truncated": false,
+      "stderr_truncated": false,
+      "heartbeat_count": 0,
+      "wall_seconds": 0.10314913399633951,
+      "workspace_bytes": 20103,
+      "executor_sha256": "b92087579abbb99f55ce2c75d98765355c8ccd4a6ccf3ba55b15ddd5491a22ec",
+      "resource_limits": {
+        "max_file_bytes": 4294965609,
+        "max_workspace_bytes": 4294965609,
+        "max_memory_bytes": 4294967296
+      }
+    },
+    "artifacts": {
+      "euler.py": {
+        "sha256": "505ebff19d161561f3723a259e65e9476e7c0b40c357146df905dfa56e95d2c2",
+        "bytes": 5301
+      },
+      "experiment.py": {
+        "sha256": "b70d8a26ca230938e1bd8c14ee2ff478472cf19fe8609825b73a76bac9833856",
+        "bytes": 6975
+      },
+      "instrument.py": {
+        "sha256": "f48beef33630e55a37bebcd5761a8733196033f144f2482801f732290a088dc9",
+        "bytes": 5814
+      },
+      "instrumentation.json": {
+        "sha256": "72bfc3b2c9d407bed489983b6edaa206e8ca870751285f37b9bee45fc5a71a10",
+        "bytes": 2013
+      }
+    },
+    "missing_outputs": [],
+    "input_mutations": [],
+    "output_findings": [],
+    "scientific_status": "unreviewed",
+    "finished_at": 1793536294.1379929
+  }
+]

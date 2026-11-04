@@ -1,0 +1,389 @@
+{
+  "workflow": "Scripted commissioning example executed through Simjecture; no autonomous discovery claim",
+  "experiments": [
+    "exp_2bc5926e270d0b90cf7ee508",
+    "exp_6da8619feaaa4f9d94b3bfa9"
+  ],
+  "proofs": {
+    "Decay.lean": {
+      "schema_version": "0.1.0",
+      "status": "proved",
+      "checked": true,
+      "source_sha256": "fc4ac670138f75fd4fcd3117f1068fce84175b8e4fb60a433e50d81c4d467986",
+      "theorems": [
+        "Decay.nonnegative",
+        "Decay.counterexample"
+      ],
+      "allowed_axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ],
+      "axioms": {
+        "Decay.nonnegative": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "Decay.counterexample": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ]
+      },
+      "timeout_seconds": 60,
+      "memory_mb": 2048,
+      "scope": "Named Lean propositions only; no implementation or PDE convergence claim.",
+      "execution_boundary": "Use the Simjecture capability sandbox for untrusted source.",
+      "runtime": {
+        "lean_version": "Lean (version 4.24.0, x86_64-unknown-linux-gnu, commit 797c613eb9b6d4ec95db23e3e00af9ac6657f24b, Release)",
+        "lean_archive_sha256": "b14f5e5159219dd1a1956c3b806813319f5e94ccd5bdfd56f54520609a5bb5ec",
+        "mathlib_revision": "f897ebcf72cd16f89ab4577d0c826cd14afaafc7",
+        "mathlib_manifest_sha256": "d1208145605d20579ecc91977126e7647e0216a3f7b7d2b9a55d33d040bcd0b8",
+        "scope": "Lean/Mathlib theorem checking; no solver qualification"
+      },
+      "runtime_record_sha256": "f5eea0937279c73445a042c9e000a5c53a29b301c557367938940c88d35e3cb6",
+      "lean_version": "Lean (version 4.24.0, x86_64-unknown-linux-gnu, commit 797c613eb9b6d4ec95db23e3e00af9ac6657f24b, Release)",
+      "commands": [
+        [
+          "/opt/acs-capabilities/lean-4.24.0/toolchain/bin/lean",
+          "-M2048",
+          "-T200000",
+          "-DwarningAsError=true",
+          "-o",
+          "Candidate.olean",
+          "Candidate.lean"
+        ],
+        [
+          "/opt/acs-capabilities/lean-4.24.0/toolchain/bin/lean",
+          "-M2048",
+          "-T200000",
+          "-DwarningAsError=true",
+          "Audit.lean"
+        ]
+      ],
+      "compile_returncode": 0,
+      "audit_returncode": 0,
+      "wall_seconds": 1.8162334030057536,
+      "artifact_sha256": {
+        "Audit.lean": "03c8ba9b8115385c7ed8d74cdf32792fe1917da214c93e1cac3f566e058733ef",
+        "Candidate.lean": "fc4ac670138f75fd4fcd3117f1068fce84175b8e4fb60a433e50d81c4d467986",
+        "Candidate.olean": "3777c928be778500d42a9c99804d081a32fb128b02980aa01928f87aabeba21e",
+        "audit.log": "246453d5190c55a98c4faf7be071ddd5234e791197c41c1b8e4aef73e651ebf3",
+        "compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "Conservation.lean": {
+      "schema_version": "0.1.0",
+      "status": "proved",
+      "checked": true,
+      "source_sha256": "5a14a9decfd0b31ef1d53a3262c1d2c2b420d647c51107d7d6875af6d7d6e036",
+      "theorems": [
+        "FiniteVolume.conservation",
+        "FiniteVolume.conservation3D",
+        "FiniteVolume.constant_state"
+      ],
+      "allowed_axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ],
+      "axioms": {
+        "FiniteVolume.conservation": [
+          "propext",
+          "Quot.sound",
+          "Classical.choice"
+        ],
+        "FiniteVolume.conservation3D": [
+          "propext",
+          "Quot.sound",
+          "Classical.choice"
+        ],
+        "FiniteVolume.constant_state": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ]
+      },
+      "timeout_seconds": 60,
+      "memory_mb": 2048,
+      "scope": "Named Lean propositions only; no implementation or PDE convergence claim.",
+      "execution_boundary": "Use the Simjecture capability sandbox for untrusted source.",
+      "runtime": {
+        "lean_version": "Lean (version 4.24.0, x86_64-unknown-linux-gnu, commit 797c613eb9b6d4ec95db23e3e00af9ac6657f24b, Release)",
+        "lean_archive_sha256": "b14f5e5159219dd1a1956c3b806813319f5e94ccd5bdfd56f54520609a5bb5ec",
+        "mathlib_revision": "f897ebcf72cd16f89ab4577d0c826cd14afaafc7",
+        "mathlib_manifest_sha256": "d1208145605d20579ecc91977126e7647e0216a3f7b7d2b9a55d33d040bcd0b8",
+        "scope": "Lean/Mathlib theorem checking; no solver qualification"
+      },
+      "runtime_record_sha256": "f5eea0937279c73445a042c9e000a5c53a29b301c557367938940c88d35e3cb6",
+      "lean_version": "Lean (version 4.24.0, x86_64-unknown-linux-gnu, commit 797c613eb9b6d4ec95db23e3e00af9ac6657f24b, Release)",
+      "commands": [
+        [
+          "/opt/acs-capabilities/lean-4.24.0/toolchain/bin/lean",
+          "-M2048",
+          "-T200000",
+          "-DwarningAsError=true",
+          "-o",
+          "Candidate.olean",
+          "Candidate.lean"
+        ],
+        [
+          "/opt/acs-capabilities/lean-4.24.0/toolchain/bin/lean",
+          "-M2048",
+          "-T200000",
+          "-DwarningAsError=true",
+          "Audit.lean"
+        ]
+      ],
+      "compile_returncode": 0,
+      "audit_returncode": 0,
+      "wall_seconds": 1.8588256160001038,
+      "artifact_sha256": {
+        "Audit.lean": "f0042ef4cbd75649283d12c30f9db6771b603f13a885ca34b497bd1b8838e492",
+        "Candidate.lean": "5a14a9decfd0b31ef1d53a3262c1d2c2b420d647c51107d7d6875af6d7d6e036",
+        "Candidate.olean": "c1fe2199bb76ea6ab3df992505610f856c7069256d1e95f14706e1a562e9d26e",
+        "audit.log": "3a5e601ef0dddbb32deef51d81341da868f3c5182ca51111ace2207f24fe5a78",
+        "compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "Witness.lean": {
+      "schema_version": "0.1.0",
+      "status": "proved",
+      "checked": true,
+      "source_sha256": "fa6645546df3d5af49e35be66f16461053ead57ec97a6a2fede728abd3e15f8a",
+      "theorems": [
+        "EulerWitness.initial_admissible",
+        "EulerWitness.negative_density"
+      ],
+      "allowed_axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ],
+      "axioms": {
+        "EulerWitness.initial_admissible": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "EulerWitness.negative_density": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ]
+      },
+      "timeout_seconds": 60,
+      "memory_mb": 2048,
+      "scope": "Named Lean propositions only; no implementation or PDE convergence claim.",
+      "execution_boundary": "Use the Simjecture capability sandbox for untrusted source.",
+      "runtime": {
+        "lean_version": "Lean (version 4.24.0, x86_64-unknown-linux-gnu, commit 797c613eb9b6d4ec95db23e3e00af9ac6657f24b, Release)",
+        "lean_archive_sha256": "b14f5e5159219dd1a1956c3b806813319f5e94ccd5bdfd56f54520609a5bb5ec",
+        "mathlib_revision": "f897ebcf72cd16f89ab4577d0c826cd14afaafc7",
+        "mathlib_manifest_sha256": "d1208145605d20579ecc91977126e7647e0216a3f7b7d2b9a55d33d040bcd0b8",
+        "scope": "Lean/Mathlib theorem checking; no solver qualification"
+      },
+      "runtime_record_sha256": "f5eea0937279c73445a042c9e000a5c53a29b301c557367938940c88d35e3cb6",
+      "lean_version": "Lean (version 4.24.0, x86_64-unknown-linux-gnu, commit 797c613eb9b6d4ec95db23e3e00af9ac6657f24b, Release)",
+      "commands": [
+        [
+          "/opt/acs-capabilities/lean-4.24.0/toolchain/bin/lean",
+          "-M2048",
+          "-T200000",
+          "-DwarningAsError=true",
+          "-o",
+          "Candidate.olean",
+          "Candidate.lean"
+        ],
+        [
+          "/opt/acs-capabilities/lean-4.24.0/toolchain/bin/lean",
+          "-M2048",
+          "-T200000",
+          "-DwarningAsError=true",
+          "Audit.lean"
+        ]
+      ],
+      "compile_returncode": 0,
+      "audit_returncode": 0,
+      "wall_seconds": 1.858825324998179,
+      "artifact_sha256": {
+        "Audit.lean": "7b86f3c10dd320980bdb9e0bda3985ba0fae84ef5f10b0cb3e0514c0943a9c2c",
+        "Candidate.lean": "fa6645546df3d5af49e35be66f16461053ead57ec97a6a2fede728abd3e15f8a",
+        "Candidate.olean": "c366c79ad27889e76007f641698a70a65bf9cfb40d6592be7626355b2d50857a",
+        "audit.log": "1c17d0616c22c9c7bd1c99f517fa81d0b3611dc8ba204f452013fbb909cd98c0",
+        "compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  },
+  "numerics": {
+    "scope": "Exploratory reference calculations, not a performance or optimality claim",
+    "numpy": "2.5.1",
+    "python": "3.12.13",
+    "host": "Linux-6.18.54.1-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "smooth_periodic_3d": [
+      {
+        "n": 8,
+        "steps": 14,
+        "time": 0.1,
+        "wall_seconds": 0.00356986000406323,
+        "density_l1": 0.039906110928743736,
+        "min_density": 0.9733640287143608,
+        "min_pressure": 0.9999999999999998,
+        "conservation_drift": [
+          4.440892098500626e-15,
+          2.220446049250313e-15,
+          8.326672684688674e-17,
+          6.938893903907228e-17,
+          4.218847493575595e-15
+        ]
+      },
+      {
+        "n": 16,
+        "steps": 28,
+        "time": 0.1,
+        "wall_seconds": 0.0366901660017902,
+        "density_l1": 0.02910648050239196,
+        "min_density": 0.9485711444649297,
+        "min_pressure": 0.9999999999999992,
+        "conservation_drift": [
+          1.1102230246251565e-15,
+          5.551115123125783e-16,
+          3.858025010572419e-15,
+          -1.9290125052862095e-15,
+          8.43769498715119e-15
+        ]
+      },
+      {
+        "n": 32,
+        "steps": 56,
+        "time": 0.1,
+        "wall_seconds": 0.7090460010003881,
+        "density_l1": 0.016949701429658036,
+        "min_density": 0.9278187598567093,
+        "min_pressure": 0.999999999999999,
+        "conservation_drift": [
+          2.7533531010703882e-14,
+          1.3766765505351941e-14,
+          -3.189115638235762e-14,
+          1.5931700403370996e-14,
+          -2.049471703458039e-13
+        ]
+      }
+    ],
+    "constant_state_preserved": true,
+    "exact_counterexample": {
+      "gamma": "2",
+      "wave_speed": "1",
+      "dt_dx": "4",
+      "before": [
+        [
+          "1",
+          "0",
+          "1/2"
+        ],
+        [
+          "1",
+          "0",
+          "1/2"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ]
+      ],
+      "after": [
+        [
+          "3",
+          "1",
+          "3/2"
+        ],
+        [
+          "3",
+          "-1",
+          "3/2"
+        ],
+        [
+          "-2",
+          "0",
+          "-1"
+        ]
+      ],
+      "attempts": [
+        {
+          "peak": "2",
+          "dt_dx": "1/4",
+          "min_density": "9/8"
+        },
+        {
+          "peak": "2",
+          "dt_dx": "1/2",
+          "min_density": "5/4"
+        },
+        {
+          "peak": "2",
+          "dt_dx": "1",
+          "min_density": "1"
+        },
+        {
+          "peak": "2",
+          "dt_dx": "2",
+          "min_density": "0"
+        },
+        {
+          "peak": "2",
+          "dt_dx": "4",
+          "min_density": "-2"
+        }
+      ],
+      "scope": "1D periodic three-cell compressible Euler Rusanov step; exact rationals"
+    },
+    "broken_shared_flux": {
+      "initial": [
+        "1",
+        "1"
+      ],
+      "transfers": [
+        "1/4",
+        "1/2"
+      ],
+      "after": [
+        "3/4",
+        "3/2"
+      ],
+      "total_change": "1/4"
+    }
+  },
+  "claims": [
+    {
+      "claim": "Scalar decay Euler step preserves nonnegativity when y >= 0 and h <= 1",
+      "status": "proved",
+      "evidence": "Decay.nonnegative"
+    },
+    {
+      "claim": "Uniform-volume periodic shared-flux update conserves each component over any finite cell type",
+      "status": "proved",
+      "evidence": "FiniteVolume.conservation / conservation3D"
+    },
+    {
+      "claim": "Rusanov compressible Euler preserves positive density for every positive time step",
+      "status": "falsified",
+      "evidence": "Exact rational search and EulerWitness.negative_density"
+    },
+    {
+      "claim": "Smooth periodic 3D contact wave error decreases on the tested grids",
+      "status": "empirically_supported",
+      "evidence": "exp_2bc5926e270d0b90cf7ee508"
+    },
+    {
+      "claim": "General Euler positivity under an appropriate CFL condition",
+      "status": "open"
+    },
+    {
+      "claim": "PDE convergence, verified floating-point refinement, and solver optimality",
+      "status": "open"
+    }
+  ],
+  "review": "Exploration receipts only; no independent scientific review or accepted campaign conclusion"
+}
