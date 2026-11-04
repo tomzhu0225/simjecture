@@ -10,6 +10,12 @@ This project follows semantic versioning. Dates use ISO 8601.
   text and dynamic components. Preserve raw research content and API values;
   add a repeatable source-copy audit and browser regression checks.
 
+- Add LCB119's FuZE development record: five-level FLASH gas loading and native
+  WarpX RNG/restart/axis controls, with retained figures, source hashes and
+  no-key excerpt verification. Extend the existing skills with mesh/restart
+  and native RZ diagnostic guidance; preserve the unqualified physical scope
+  and rejected axis-boundary candidate.
+
 - Add an optional pinned Quantum ESPRESSO runtime, material-configured scalar/collinear DFT workflow, and separate Si and magnetic-metal Fe commissioning examples with independent DOS and band branches.
 - Require a previewed and explicitly confirmed QE research plan before solver execution, with disclosed defaults, exact source/protocol binding and step-specific acceptance.
 

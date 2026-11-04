@@ -23,6 +23,7 @@ independent scientific review.
 | Case | What you can inspect |
 |---|---|
 | [Qin-1 hardware-to-plasma](qin1_multiphysics/) | Operator-assisted local toolchain study spanning CAD, meshing, EM/circuits, native 3D plasma and visualization, with retained sensitivity checks and execution limits |
+| [FuZE mesh and solver diagnostics](fuze_mesh_solver_diagnostics/) | Operator-assisted FLASH mesh and native WarpX restart/axis case study; rejected repair retained; no-key checks of the excerpt, without solver reproduction |
 | [Quantum ESPRESSO Si reference](qe_dft_reference/) | Material-specific diamond-Si DFT protocol (`vc-relax`, SCF, bands, DOS and `projwfc.x`), Bubblewrap launcher inputs, and completion-bound reassessment |
 | [Quantum ESPRESSO bcc Fe reference](qe_fe_reference/) | Collinear spin-polarized bcc-Fe protocol and reassessment record demonstrating how non-converged structural optimization (`exit_status=3`) is rejected |
 
