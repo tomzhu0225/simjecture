@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <title>Study details · Simjecture</title>
+    <title data-i18n="ui.study-details-simjecture">Study details · Simjecture</title>
     <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" type="image/x-icon">
     <link rel="icon" href="/favicon.svg" sizes="any" type="image/svg+xml">
     <script src="/assets/i18n-messages.js"></script>
@@ -14,87 +14,87 @@
     <link rel="stylesheet" href="/assets/interface.css">
   </head>
   <body>
-    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <a class="skip-link" href="#main-content" data-i18n="ui.skip-to-main-content">Skip to main content</a>
     <div class="app-shell">
       <header class="topbar">
-        <a class="brand" href="/" aria-label="Simjecture home">
+        <a class="brand" href="/" aria-label="Simjecture home" data-i18n-aria-label="ui.simjecture-home">
           <img class="brand-logo brand-logo-light" src="/assets/brand/simjecture-lockup-light.svg" width="289" height="64" alt="" aria-hidden="true">
           <img class="brand-logo brand-logo-dark" src="/assets/brand/simjecture-lockup-dark.svg" width="289" height="64" alt="" aria-hidden="true">
-          <small>Experiment monitor</small>
+          <small data-i18n="ui.experiment-monitor">Experiment monitor</small>
         </a>
 
         <div class="campaign-picker">
-          <label for="campaign-select">Study details</label>
-          <select id="campaign-select" aria-label="Select campaign"></select>
+          <label for="campaign-select" data-i18n="ui.study-details">Study details</label>
+          <select id="campaign-select" aria-label="Select campaign" data-i18n-aria-label="ui.select-campaign"></select>
         </div>
 
         <div class="topbar-actions">
-          <label class="language-picker"><span class="sr-only">Interface language</span><select id="language-select" data-language-select aria-label="Interface language"><option value="en" lang="en">English</option><option value="zh-CN" lang="zh-CN">简体中文</option></select></label>
-          <a class="button quiet" id="conversation-return" href="/workspace">Workspace</a>
-          <span class="sync-state" id="sync-state"><i></i><span>Connecting</span></span>
-          <button class="icon-button theme-button" id="theme-button" type="button" aria-label="Switch color theme" title="Switch color theme">◐</button>
-          <button class="button quiet" id="pause-button" type="button" disabled>Pause</button>
-          <button class="button quiet" id="resume-button" type="button" disabled>Resume</button>
-          <button class="button danger quiet" id="cancel-button" type="button" disabled>Stop</button>
-          <a class="button quiet" id="continue-study-link" hidden>Continue investigation</a>
-          <a class="button quiet" id="steer-study-link" hidden>Send guidance</a>
-          <button class="button primary" id="new-run-button" type="button" disabled>New hypothesis</button>
+          <label class="language-picker"><span class="sr-only" data-i18n="ui.interface-language">Interface language</span><select id="language-select" data-language-select aria-label="Interface language" data-i18n-aria-label="ui.interface-language"><option value="en" lang="en">English</option><option value="zh-CN" lang="zh-CN">简体中文</option></select></label>
+          <a class="button quiet" id="conversation-return" href="/workspace" data-i18n="ui.workspace">Workspace</a>
+          <span class="sync-state" id="sync-state"><i></i><span data-i18n="ui.connecting">Connecting</span></span>
+          <button class="icon-button theme-button" id="theme-button" type="button" aria-label="Switch color theme" title="Switch color theme" data-i18n-title="ui.switch-color-theme" data-i18n-aria-label="ui.switch-color-theme">◐</button>
+          <button class="button quiet" id="pause-button" type="button" disabled data-i18n="ui.pause">Pause</button>
+          <button class="button quiet" id="resume-button" type="button" disabled data-i18n="ui.resume">Resume</button>
+          <button class="button danger quiet" id="cancel-button" type="button" disabled data-i18n="ui.stop">Stop</button>
+          <a class="button quiet" id="continue-study-link" hidden data-i18n="ui.continue-investigation">Continue investigation</a>
+          <a class="button quiet" id="steer-study-link" hidden data-i18n="ui.send-guidance">Send guidance</a>
+          <button class="button primary" id="new-run-button" type="button" disabled data-i18n="ui.new-hypothesis">New hypothesis</button>
         </div>
       </header>
 
       <main id="main-content" tabindex="-1">
         <section class="empty-state" id="empty-state" hidden>
           <div class="empty-orbit" aria-hidden="true"><i></i><i></i><i></i></div>
-          <p class="eyebrow">No campaign selected</p>
+          <p class="eyebrow" data-i18n="ui.no-campaign-selected">No campaign selected</p>
           <h1 data-i18n="monitor.emptyIntro">Begin with a falsifiable hypothesis.</h1>
           <p data-i18n="monitor.emptyHelp">
             Simjecture tests hypotheses, searches for counterexamples, and preserves
             every scientific branch as durable evidence.
           </p>
-          <button class="button primary large" id="empty-new-run" type="button" disabled>Start a campaign</button>
+          <button class="button primary large" id="empty-new-run" type="button" disabled data-i18n="ui.start-a-campaign">Start a campaign</button>
         </section>
 
-        <nav id="study-navigation" class="study-navigation" aria-label="Research navigation" hidden></nav>
+        <nav id="study-navigation" class="study-navigation" aria-label="Research navigation" hidden data-i18n-aria-label="ui.research-navigation"></nav>
         <section id="dashboard" hidden>
           <div class="campaign-heading">
             <div>
-              <p class="eyebrow">Study details · Evidence &amp; review</p>
+              <p class="eyebrow" data-i18n="ui.study-details-evidence-review">Study details · Evidence &amp; review</p>
               <div class="heading-meta">
                 <span class="status-badge" id="campaign-status">—</span>
                 <span id="campaign-id">—</span>
                 <span class="status-badge" id="study-route">—</span>
               </div>
-              <h1 id="root-hypothesis">Loading campaign…</h1>
+              <h1 id="root-hypothesis" data-i18n="ui.loading-campaign">Loading campaign…</h1>
               <p class="panel-description" data-i18n="monitor.evidenceHelp">Recorded experiments and independent assessments. An output or completed run alone is not an accepted scientific finding.</p>
-              <details id="guidance-details"><summary>Operational guidance</summary><p id="campaign-instruction" hidden></p></details>
+              <details id="guidance-details"><summary data-i18n="ui.operational-guidance">Operational guidance</summary><p id="campaign-instruction" hidden></p></details>
             </div>
             <div class="current-action" id="current-action">
               <span class="action-symbol" aria-hidden="true">◇</span>
               <div>
-                <small>Current action</small>
-                <strong>Reading durable state</strong>
+                <small data-i18n="ui.current-action-2">Current action</small>
+                <strong data-i18n="ui.reading-durable-state">Reading durable state</strong>
               </div>
             </div>
           </div>
 
-          <div class="metric-strip" aria-label="Campaign summary">
+          <div class="metric-strip" aria-label="Campaign summary" data-i18n-aria-label="ui.campaign-summary">
             <article>
-              <span>Claims</span>
+              <span data-i18n="ui.claims">Claims</span>
               <strong id="metric-claims">—</strong>
               <small id="metric-claims-detail">—</small>
             </article>
             <article>
-              <span>Campaign time</span>
+              <span data-i18n="ui.campaign-time">Campaign time</span>
               <strong id="metric-elapsed">—</strong>
               <small id="metric-iterations">—</small>
             </article>
             <article>
-              <span>Model usage</span>
+              <span data-i18n="ui.model-usage">Model usage</span>
               <strong id="metric-tokens">—</strong>
               <small id="metric-model">—</small>
             </article>
             <article>
-              <span>Workspace</span>
+              <span data-i18n="ui.workspace">Workspace</span>
               <strong id="metric-workspace">—</strong>
               <small id="metric-heartbeat">—</small>
             </article>
@@ -105,31 +105,31 @@
             <section class="panel graph-panel" aria-labelledby="graph-title">
               <header class="panel-heading">
                 <div>
-                  <p class="eyebrow">Durable claim ledger</p>
-                  <h2 id="graph-title">Claim graph</h2>
+                  <p class="eyebrow" data-i18n="ui.durable-claim-ledger">Durable claim ledger</p>
+                  <h2 id="graph-title" data-i18n="ui.claim-graph">Claim graph</h2>
                   <p class="panel-description" data-i18n="monitor.graphHelp">Scientific arrows show hypothesis refinement; prerequisite arrows flow from validation claims through commissioning into the scientific target. Drag nodes or empty canvas, zoom at the cursor, or fit the complete graph.</p>
                 </div>
-                <div class="graph-tools" aria-label="Graph controls">
-                  <button class="kind-toggle" id="claim-kind-toggle" type="button" aria-pressed="true">All claim kinds</button>
-                  <button class="icon-button" id="zoom-out" type="button" aria-label="Zoom out">−</button>
-                  <button class="icon-button" id="zoom-fit" type="button" aria-label="Fit every graph node">Fit all</button>
-                  <button class="icon-button" id="zoom-in" type="button" aria-label="Zoom in">+</button>
-                  <button class="kind-toggle" id="reset-layout" type="button">Reset layout</button>
+                <div class="graph-tools" aria-label="Graph controls" data-i18n-aria-label="ui.graph-controls">
+                  <button class="kind-toggle" id="claim-kind-toggle" type="button" aria-pressed="true" data-i18n="ui.all-claim-kinds">All claim kinds</button>
+                  <button class="icon-button" id="zoom-out" type="button" aria-label="Zoom out" data-i18n-aria-label="ui.zoom-out">−</button>
+                  <button class="icon-button" id="zoom-fit" type="button" aria-label="Fit every graph node" data-i18n-aria-label="ui.fit-every-graph-node" data-i18n="ui.fit-all">Fit all</button>
+                  <button class="icon-button" id="zoom-in" type="button" aria-label="Zoom in" data-i18n-aria-label="ui.zoom-in">+</button>
+                  <button class="kind-toggle" id="reset-layout" type="button" data-i18n="ui.reset-layout">Reset layout</button>
                 </div>
               </header>
-              <div class="graph-legend" aria-label="Graph legend">
-                <span><i class="node-key scientific"></i>Scientific</span>
-                <span><i class="node-key instrument"></i>Instrument</span>
-                <span><i class="node-key diagnostic"></i>Diagnostic</span>
-                <span><i class="node-key control"></i>Control</span>
-                <span><i class="node-key stage"></i>Commissioning stage</span>
-                <span><i class="supported"></i>Supported</span>
-                <span><i class="falsified"></i>Falsified</span>
-                <span><i class="open"></i>Open</span>
-                <span><i class="qualified"></i>Qualified / limited</span>
+              <div class="graph-legend" aria-label="Graph legend" data-i18n-aria-label="ui.graph-legend">
+                <span><i class="node-key scientific"></i><span data-i18n="ui.scientific">Scientific</span></span>
+                <span><i class="node-key instrument"></i><span data-i18n="ui.instrument">Instrument</span></span>
+                <span><i class="node-key diagnostic"></i><span data-i18n="ui.diagnostic">Diagnostic</span></span>
+                <span><i class="node-key control"></i><span data-i18n="ui.control">Control</span></span>
+                <span><i class="node-key stage"></i><span data-i18n="ui.commissioning-stage">Commissioning stage</span></span>
+                <span><i class="supported"></i><span data-i18n="ui.supported">Supported</span></span>
+                <span><i class="falsified"></i><span data-i18n="ui.falsified">Falsified</span></span>
+                <span><i class="open"></i><span data-i18n="ui.open-2">Open</span></span>
+                <span><i class="qualified"></i><span data-i18n="ui.qualified-limited">Qualified / limited</span></span>
               </div>
               <div class="graph-viewport" id="graph-viewport" tabindex="0" data-i18n-title="monitor.graphControlsHelp" title="Drag empty canvas to pan; drag nodes to arrange them; scroll to zoom at the cursor">
-                <svg id="claim-graph" role="img" aria-label="Typed claim relationship graph"></svg>
+                <svg id="claim-graph" role="img" aria-label="Typed claim relationship graph" data-i18n-aria-label="ui.typed-claim-relationship-graph"></svg>
                 <p class="panel-placeholder" id="graph-placeholder" data-i18n="monitor.noClaims">No claims have been registered.</p>
               </div>
             </section>
@@ -137,8 +137,8 @@
             <aside class="panel inspector-panel" aria-labelledby="inspector-title">
               <header class="panel-heading inspector-heading">
                 <div>
-                  <p class="eyebrow" id="inspector-kind">Selected record</p>
-                  <h2 id="inspector-title">Record inspector</h2>
+                  <p class="eyebrow" id="inspector-kind" data-i18n="ui.selected-record">Selected record</p>
+                  <h2 id="inspector-title" data-i18n="ui.record-inspector">Record inspector</h2>
                 </div>
                 <span class="status-badge" id="claim-status">—</span>
               </header>
@@ -152,14 +152,14 @@
             <section class="panel execution-panel" aria-labelledby="execution-title">
               <header class="panel-heading">
                 <div>
-                  <p class="eyebrow">Numerical work</p>
-                  <h2 id="execution-title">Execution monitor</h2>
+                  <p class="eyebrow" data-i18n="ui.numerical-work">Numerical work</p>
+                  <h2 id="execution-title" data-i18n="ui.execution-monitor">Execution monitor</h2>
                   <p class="panel-description" data-i18n="monitor.executionHelp">Select one run to inspect its live heartbeat and console record.</p>
                 </div>
-                <span class="operation-summary" id="execution-summary">No executions</span>
+                <span class="operation-summary" id="execution-summary" data-i18n="ui.no-executions">No executions</span>
               </header>
               <div class="execution-layout">
-                <div class="execution-list" id="execution-list" role="listbox" aria-label="Recent simulations and calculations"></div>
+                <div class="execution-list" id="execution-list" role="listbox" aria-label="Recent simulations and calculations" data-i18n-aria-label="ui.recent-simulations-and-calculations"></div>
                 <div class="execution-console" id="execution-console">
                   <div class="console-empty" data-i18n="monitor.noSimulation">No simulation or calculation has been recorded.</div>
                 </div>
@@ -169,13 +169,13 @@
             <section class="panel trace-panel" aria-labelledby="trace-title">
               <header class="panel-heading">
                 <div>
-                  <p class="eyebrow">Auditable agent record</p>
-                  <h2 id="trace-title">Research trace</h2>
+                  <p class="eyebrow" data-i18n="ui.auditable-agent-record">Auditable agent record</p>
+                  <h2 id="trace-title" data-i18n="ui.research-trace">Research trace</h2>
                   <p class="panel-description" data-i18n="monitor.traceHelp">Typed decisions, laboratory notes, tool outcomes, and provider usage—not private hidden chain-of-thought.</p>
                 </div>
               </header>
-              <div id="loop-progress" class="loop-progress" aria-live="polite" aria-label="Research loop progress"></div>
-              <div class="token-breakdown" id="token-breakdown" aria-label="Token usage"></div>
+              <div id="loop-progress" class="loop-progress" aria-live="polite" aria-label="Research loop progress" data-i18n-aria-label="ui.research-loop-progress"></div>
+              <div class="token-breakdown" id="token-breakdown" aria-label="Token usage" data-i18n-aria-label="ui.token-usage"></div>
               <div class="research-trace" id="research-trace"></div>
             </section>
           </div>
@@ -183,12 +183,12 @@
           <section class="panel record-panel" aria-labelledby="record-title">
             <header class="record-header">
               <div>
-                <p class="eyebrow">Durable campaign record</p>
-                <h2 id="record-title">Evidence and conclusion</h2>
+                <p class="eyebrow" data-i18n="ui.durable-campaign-record">Durable campaign record</p>
+                <h2 id="record-title" data-i18n="ui.evidence-and-conclusion">Evidence and conclusion</h2>
               </div>
-              <div class="tabs" role="tablist" aria-label="Campaign record views">
-                <button role="tab" aria-selected="true" data-tab="artifacts" type="button">Artifacts</button>
-                <button role="tab" aria-selected="false" data-tab="conclusion" type="button">Conclusion</button>
+              <div class="tabs" role="tablist" aria-label="Campaign record views" data-i18n-aria-label="ui.campaign-record-views">
+                <button role="tab" aria-selected="true" data-tab="artifacts" type="button" data-i18n="ui.artifacts">Artifacts</button>
+                <button role="tab" aria-selected="false" data-tab="conclusion" type="button" data-i18n="ui.conclusion">Conclusion</button>
               </div>
             </header>
             <div class="tab-panel" id="artifacts-panel" role="tabpanel"></div>
@@ -202,76 +202,76 @@
       <form id="new-run-form">
         <header>
           <div>
-            <p class="eyebrow">New campaign</p>
-            <h2 id="new-run-title">Give Simjecture a hypothesis</h2>
+            <p class="eyebrow" data-i18n="ui.new-campaign">New campaign</p>
+            <h2 id="new-run-title" data-i18n="ui.give-simjecture-a-hypothesis">Give Simjecture a hypothesis</h2>
           </div>
-          <button class="icon-button" id="close-dialog" type="button" aria-label="Close">×</button>
+          <button class="icon-button" id="close-dialog" type="button" aria-label="Close" data-i18n-aria-label="ui.close">×</button>
         </header>
         <input type="hidden" name="mode" id="launch-mode" value="minimal">
-        <label><span>Backend</span><select name="backend" id="launch-backend">
+        <label><span data-i18n="ui.backend">Backend</span><select name="backend" id="launch-backend">
           <option value="codex-glm">Codex GLM</option><option value="codex">Codex</option>
           <option value="grok">Grok</option><option value="agy">AGY</option>
         </select></label>
-        <label><span>Model <em data-i18n="monitor.backendHelp">Uses your existing backend login</em></span>
-          <input name="model" id="launch-model" placeholder="glm-5.3 (Codex GLM default)">
+        <label><span><span data-i18n="ui.model">Model</span> <em data-i18n="monitor.backendHelp">Uses your existing backend login</em></span>
+          <input name="model" id="launch-model" placeholder="glm-5.3 (Codex GLM default)" data-i18n-placeholder="ui.glm-5-3-codex-glm-default">
         </label>
-        <label><span>Experiment execution</span>
+        <label><span data-i18n="ui.experiment-execution">Experiment execution</span>
           <select name="execution_backend" id="launch-execution-backend">
-            <option value="bubblewrap">Bubblewrap — kernel isolation</option>
-            <option value="proot-cooperative">Cooperative PRoot — restricted containers</option>
-            <option value="process-cooperative">Native process — trusted host</option>
+            <option value="bubblewrap" data-i18n="ui.bubblewrap-kernel-isolation">Bubblewrap — kernel isolation</option>
+            <option value="proot-cooperative" data-i18n="ui.cooperative-proot-restricted-containers">Cooperative PRoot — restricted containers</option>
+            <option value="process-cooperative" data-i18n="ui.native-process-trusted-host-2">Native process — trusted host</option>
           </select>
           <small data-i18n="monitor.cooperativeHelp">The cooperative backend shares host networking and is not a security sandbox.</small>
         </label>
         <p class="panel-description" id="launch-route-note" data-i18n="monitor.routeHelp">Minimal keeps native tools available and records experiments and independent reviews.</p>
         <label>
-          <span>Root hypothesis <b>Required</b></span>
-          <textarea name="hypothesis" rows="7" required maxlength="20000" placeholder="State one falsifiable scientific hypothesis…"></textarea>
+          <span><span data-i18n="ui.root-hypothesis">Root hypothesis</span> <b data-i18n="ui.required">Required</b></span>
+          <textarea name="hypothesis" rows="7" required maxlength="20000" placeholder="State one falsifiable scientific hypothesis…" data-i18n-placeholder="ui.state-one-falsifiable-scientific-hypothesis"></textarea>
         </label>
         <label>
-          <span>Operational guidance <em>Optional</em></span>
-          <textarea name="instruction" rows="3" maxlength="20000" placeholder="Constraints, preferred tools, or commissioning material…"></textarea>
+          <span><span data-i18n="ui.operational-guidance">Operational guidance</span> <em data-i18n="ui.optional">Optional</em></span>
+          <textarea name="instruction" rows="3" maxlength="20000" placeholder="Constraints, preferred tools, or commissioning material…" data-i18n-placeholder="ui.constraints-preferred-tools-or-commissioning-material"></textarea>
         </label>
         <div class="form-row">
           <label>
-            <span>Campaign ID <em>Optional</em></span>
-            <input name="campaign_id" maxlength="128" placeholder="Generated automatically">
+            <span><span data-i18n="ui.campaign-id">Campaign ID</span> <em data-i18n="ui.optional">Optional</em></span>
+            <input name="campaign_id" maxlength="128" placeholder="Generated automatically" data-i18n-placeholder="ui.generated-automatically">
           </label>
           <label>
-            <span>Wall-time envelope</span>
+            <span data-i18n="ui.wall-time-envelope">Wall-time envelope</span>
             <select name="max_wall_seconds">
-              <option value="1800">30 minutes</option>
-              <option value="7200">2 hours</option>
-              <option value="21600" selected>6 hours</option>
-              <option value="43200">12 hours</option>
-              <option value="86400">24 hours</option>
+              <option value="1800" data-i18n="ui.30-minutes">30 minutes</option>
+              <option value="7200" data-i18n="ui.2-hours">2 hours</option>
+              <option value="21600" selected data-i18n="ui.6-hours">6 hours</option>
+              <option value="43200" data-i18n="ui.12-hours">12 hours</option>
+              <option value="86400" data-i18n="ui.24-hours">24 hours</option>
             </select>
           </label>
         </div>
-        <label><span>Solver development</span>
+        <label><span data-i18n="ui.solver-development">Solver development</span>
           <select id="launch-solver-development">
-            <option value="allow" selected>Allow experimental source forks</option>
-            <option value="readonly">Use supplied solver implementations</option>
+            <option value="allow" selected data-i18n="ui.allow-experimental-source-forks">Allow experimental source forks</option>
+            <option value="readonly" data-i18n="ui.use-supplied-solver-implementations">Use supplied solver implementations</option>
           </select>
           <small data-i18n="monitor.solverHelp">Minimal mode: protect reference installations and qualify changed methods independently.</small>
         </label>
-        <label><span>Numerical instrument registry <em>Optional</em></span>
-          <input name="capability_directory" placeholder="Directory containing installed capability manifests">
+        <label><span><span data-i18n="ui.numerical-instrument-registry">Numerical instrument registry</span> <em data-i18n="ui.optional">Optional</em></span>
+          <input name="capability_directory" placeholder="Directory containing installed capability manifests" data-i18n-placeholder="ui.directory-containing-installed-capability-manifests">
           <small data-i18n="monitor.registryHelp">Leave blank to use available tools, enter a registry to restrict access, or none for Python only.</small>
         </label>
         <details>
-          <summary>Execution limits</summary>
+          <summary data-i18n="ui.execution-limits">Execution limits</summary>
           <div class="form-row advanced-fields">
             <label>
-              <span>Agent watchdog (seconds)</span>
+              <span data-i18n="ui.agent-watchdog-seconds">Agent watchdog (seconds)</span>
               <input name="max_command_seconds" type="number" min="1" max="86400" value="600">
             </label>
           </div>
         </details>
         <p class="form-error" id="new-run-error" role="alert" hidden></p>
         <footer>
-          <button class="button quiet" id="cancel-dialog" type="button">Cancel</button>
-          <button class="button primary" id="launch-button" type="submit">Launch campaign</button>
+          <button class="button quiet" id="cancel-dialog" type="button" data-i18n="ui.cancel">Cancel</button>
+          <button class="button primary" id="launch-button" type="submit" data-i18n="ui.launch-campaign">Launch campaign</button>
         </footer>
       </form>
     </dialog>

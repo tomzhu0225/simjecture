@@ -45,19 +45,62 @@ browser's local storage for both pages on the same origin. Other open tabs updat
 as well. If browser storage is unavailable, switching still works on the current
 page, but the preference cannot survive a reload.
 
-This first translation phase covers explanatory copy: workspace mode introductions,
-study preparation and review guidance, form help, empty-state explanations, and
-descriptions of experiments and scientific evidence. Buttons, navigation, status
-labels, errors, API data and agent-generated research content retain their original
-language. An English/Chinese mixture is expected when Chinese is selected.
+Translation covers program-owned interface text: page and section headings,
+navigation, buttons, form labels/help/placeholders, dialogs, notifications,
+loading/empty states, status labels, graph legends, tooltips, accessibility text
+and the onboarding tour. Workspace conversations, projects, tools, machines,
+knowledge, benchmarks, study preparation/budgets and the experiment monitor share
+the same catalog and language setting.
+
+User names and input, historical conversations, generated research reports,
+benchmark execution definitions, raw logs/evidence, model/tool identifiers,
+commands, paths and API values remain verbatim. Known built-in tool descriptions,
+benchmark descriptions and usage/pricing explanations are translated at their
+display boundary only when the server wording matches the catalog. Custom or
+newer descriptions and unrecognized server messages remain in their original language.
 
 For contributors, `web/static/i18n-messages.js` keeps English and Chinese copy
 together. Mark text-only elements with `data-i18n="message.key"`; use
-`data-i18n-placeholder` or `data-i18n-title` for explanatory attributes. For dynamic
-copy, use `SimjectureI18n.text(node, "message.key")` each time the node is rendered.
-Keep controls and research content outside marked elements. Missing Chinese entries
-fall back to English; an unknown key is displayed unchanged. No build step or
-additional runtime dependency is required.
+`data-i18n-placeholder`, `data-i18n-title`, `data-i18n-aria-label` and the other
+supported attribute markers for static attributes. Keep nested controls and
+research content outside text-only markers.
+
+Dynamic DOM helpers use `SimjectureI18n.content(node, value)`:
+
+- Pass `SimjectureI18n.message("message.key", {name: value})` for UI copy.
+- Use `SimjectureI18n.live(() => ...)` or `bindText(node, () => ...)` for display
+  expressions that combine localized labels with changing values. Use catalog
+  parameters rather than replacing fragments of an English sentence.
+- Use `SimjectureI18n.attribute(node, "aria-label", () => ...)` for live attributes.
+- Pass research data as ordinary strings. It is never searched for translations.
+- Use `label(rawEnum, englishDisplay)` only for displayed enum labels; keep option
+  values, datasets, state and API payloads raw. `known(key, serverText)` is reserved
+  for explicitly identified built-in UI descriptions, with raw fallback.
+
+Changing language updates bound text/attributes in place, preserving inputs,
+event handlers and expanded sections. UI-only Markdown uses an explicit render
+adapter; research Markdown keeps its normal renderer. Bindings use a `WeakMap`,
+with no global mutation observer. Missing Chinese entries fall back to English;
+an unknown key is displayed unchanged. No build step or extra runtime dependency
+is required.
+
+Run the repeatable source audit from the repository root:
+
+```sh
+python scripts/check_web_i18n.py --check
+python scripts/check_web_i18n.py --json > /tmp/simjecture-i18n-audit.json
+python -m pytest tests/test_web_i18n.py
+```
+
+The audit skips `vendor/` and separates localized references, reviewed technical
+literals and unresolved candidates, including nested JS templates and obvious
+text/attribute sinks. It is a conservative lexer, not a full JavaScript parser or
+a translation percentage: indirect runtime values and server-provided copy need
+browser review. New exclusions must identify technical content, not hide UI copy.
+Review both languages at desktop and mobile widths, including open forms/dialogs,
+dynamic updates, reloads, navigation and simultaneous tabs. Optional hosted,
+authentication, provider and SSH workflows also require their usual integration
+checks; real research output must remain unchanged.
 
 ## Open a recorded campaign
 

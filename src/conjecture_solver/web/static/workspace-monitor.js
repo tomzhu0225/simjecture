@@ -4,7 +4,7 @@ window.WorkspaceMonitor = {
     const $ = (id) => document.getElementById(id);
     const node = (tag, text, cls) => {
       const n = document.createElement(tag);
-      if (text !== undefined) n.textContent = text;
+      if (text !== undefined) SimjectureI18n.content(n, text);
       if (cls) n.className = cls;
       return n;
     };
@@ -102,8 +102,8 @@ window.WorkspaceMonitor = {
         }
       }
       const simulations = jobs.filter((j) => panelFor(j) === "simulations");
-      $("simulation-count").textContent = simulations.length;
-      $("command-count").textContent = jobs.length - simulations.length;
+      SimjectureI18n.content($("simulation-count"), simulations.length);
+      SimjectureI18n.content($("command-count"), jobs.length - simulations.length);
       $("sidebar-simulations").hidden = !simulations.length;
       for (const panel of ["simulations", "commands"]) {
         const entries = jobs.filter((j) => panelFor(j) === panel);
@@ -154,7 +154,7 @@ window.WorkspaceMonitor = {
           });
           const dot = node("span", undefined, `run-dot ${job.status}`);
           const label = node("span", job.name);
-          const status = node("small", job.status.replaceAll("_", " "));
+          const status = node("small", SimjectureI18n.live(() => SimjectureI18n.label(job.status, job.status.replaceAll("_", " "))));
           a.append(dot, label, status);
           $(`${prefixFor(panel)}-list`).append(a);
           if (
@@ -163,6 +163,7 @@ window.WorkspaceMonitor = {
           ) {
             const b = a.cloneNode(true);
             b.className = "sidebar-run";
+            SimjectureI18n.bindText(b.querySelector("small"), () => SimjectureI18n.label(job.status));
             b.onclick = () => window.WorkspacePanels?.set("right", false);
             $("sidebar-run-list").append(b);
           }
@@ -172,7 +173,7 @@ window.WorkspaceMonitor = {
           if (remaining <= 0) continue;
           const more = node(
             "button",
-            `Show ${Math.min(50, remaining)} more ${panel}`,
+            SimjectureI18n.live(() => SimjectureI18n.t("ui.show-more", {p0: Math.min(50, remaining), p1: SimjectureI18n.t(panel === "commands" ? "ui.commands" : "ui.simulations")})),
             "quiet load-more-runs",
           );
           more.type = "button";
@@ -227,7 +228,7 @@ window.WorkspaceMonitor = {
           row.append(a);
           if (file.role === "modified_input")
             row.append(
-              node("small", "Changed from the copied input", "field-help"),
+              node("small", SimjectureI18n.message("ui.changed-from-the-copied-input"), "field-help"),
             );
           target.append(row);
         }
@@ -236,14 +237,10 @@ window.WorkspaceMonitor = {
         "div", undefined, shared ? "run-shared-files" : "run-outputs",
       );
       outputs.append(
-        node("h4", shared ? "Conversation files (shared)" : command ? "Command outputs" : "Run outputs"),
+        node("h4", SimjectureI18n.live(() => shared ? SimjectureI18n.t("ui.conversation-files-shared") : (command ? SimjectureI18n.t("ui.command-outputs") : SimjectureI18n.t("ui.run-outputs")))),
         node(
           "p",
-          shared
-            ? "This job used the shared project folder. These files are not specific to this run."
-            : command
-              ? "Files retained from this command’s isolated workspace."
-              : "Files created or changed in this simulation’s workspace.",
+          SimjectureI18n.live(() => shared ? SimjectureI18n.t("ui.this-job-used-the-shared-project-folder-these-files-are-not-specific") : (command ? SimjectureI18n.t("ui.files-retained-from-this-command-s-isolated-workspace") : SimjectureI18n.t("ui.files-created-or-changed-in-this-simulation-s-workspace"))),
           "field-help",
         ),
       );
@@ -253,24 +250,24 @@ window.WorkspaceMonitor = {
         outputs.append(
           node(
             "p",
-            shared ? "No project files listed." : "No run outputs saved yet.",
+            SimjectureI18n.live(() => shared ? SimjectureI18n.t("ui.no-project-files-listed") : SimjectureI18n.t("ui.no-run-outputs-saved-yet")),
             "field-help",
           ),
         );
       container.append(outputs);
       if (job.console_logs?.length) {
-        const logs = node("details"); logs.append(node("summary", "Complete console logs"));
+        const logs = node("details"); logs.append(node("summary", SimjectureI18n.message("ui.complete-console-logs")));
         appendFiles(logs, job.console_logs, false); container.append(logs);
       }
       const copied = rows.filter((file) => file.role === "input");
       if (copied.length) {
         const details = node("details", undefined, "run-inputs");
         details.open = inputsOpen;
-        details.append(node("summary", `Copied inputs (${copied.length})`));
+        details.append(node("summary", SimjectureI18n.live(() => SimjectureI18n.t("ui.copied-inputs", {p0: copied.length}))));
         details.append(
           node(
             "p",
-            "Conversation files copied when this run started. They can include reports and results from other simulations.",
+            SimjectureI18n.message("ui.conversation-files-copied-when-this-run-started-they-can-include-rep"),
             "field-help",
           ),
         );
@@ -278,7 +275,7 @@ window.WorkspaceMonitor = {
           details.append(
             node(
               "p",
-              "This older run recorded input paths only; changes to those input files cannot be identified retrospectively.",
+              SimjectureI18n.message("ui.this-older-run-recorded-input-paths-only-changes-to-those-input-file"),
               "field-help",
             ),
           );
@@ -327,23 +324,23 @@ window.WorkspaceMonitor = {
             node(
               "span",
               job.native
-                ? "CLI-managed command"
+                ? SimjectureI18n.message("ui.cli-managed-command")
                 : job.subagent
                   ? "Isolated subagent"
-                  : "Interactive exploration",
+                  : SimjectureI18n.message("ui.interactive-exploration"),
             ),
           );
           const command = node("details");
           command.append(
-            node("summary", "Command & location"),
+            node("summary", SimjectureI18n.message("ui.command-location")),
             node("pre", job.command || ""),
-            node("code", job.work_directory || "Conversation files"),
+            node("code", SimjectureI18n.live(() => job.work_directory || SimjectureI18n.t("ui.conversation-files"))),
           );
           const title = node("div", undefined, "console-heading");
-          title.append(node("span", "LIVE CONSOLE"));
+          title.append(node("span", SimjectureI18n.message("ui.live-console")));
           const stop = node(
             "button",
-            panel === "commands" ? "Stop command" : "Stop run",
+            SimjectureI18n.live(() => panel === "commands" ? SimjectureI18n.t("ui.stop-command") : SimjectureI18n.t("ui.stop-run")),
             "quiet stop-run",
           );
           stop.onclick = async () => {
@@ -364,7 +361,7 @@ window.WorkspaceMonitor = {
           title.append(stop);
           const classify = node(
             "button",
-            panel === "commands" ? "Move to Simulations" : "Move to Commands",
+            SimjectureI18n.live(() => panel === "commands" ? SimjectureI18n.t("ui.move-to-simulations") : SimjectureI18n.t("ui.move-to-commands")),
             "quiet classify-run",
           );
           classify.onclick = async () => {
@@ -382,7 +379,7 @@ window.WorkspaceMonitor = {
                 location.hash = link(projectId, {view: "interactive", [kind]: identifier});
                 await open(identifier);
               }
-              notify(kind === "simulation" ? "Moved to Simulations" : "Moved to Commands");
+              notify(kind === "simulation" ? SimjectureI18n.live(() => SimjectureI18n.t("ui.moved-to-simulations")) : SimjectureI18n.live(() => SimjectureI18n.t("ui.moved-to-commands")));
             } catch (e) {
               notify(e.message, true);
             } finally {
@@ -391,10 +388,7 @@ window.WorkspaceMonitor = {
           };
           title.append(classify);
           const output = node("pre", "", "live-console");
-          output.setAttribute(
-            "aria-label",
-            panel === "commands" ? "Command console" : "Simulation console",
-          );
+          SimjectureI18n.attribute(output, "aria-label", () => panel === "commands" ? SimjectureI18n.t("ui.command-console") : SimjectureI18n.t("ui.simulation-console"));
           container.append(
             header,
             meta,
@@ -406,17 +400,14 @@ window.WorkspaceMonitor = {
           container.scrollTop = 0;
         }
         const status = container.querySelector(".run-state");
-        status.textContent = job.status.replaceAll("_", " ");
+        SimjectureI18n.content(status, SimjectureI18n.live(() => SimjectureI18n.label(job.status, job.status.replaceAll("_", " "))));
         status.className = `run-state ${job.status}`;
         const elapsed = container.querySelector(".run-elapsed");
         if (job.live && job.created_at)
           elapsed.dataset.elapsed = job.created_at;
         else {
           delete elapsed.dataset.elapsed;
-          elapsed.textContent =
-            job.elapsed_seconds === undefined
-              ? ""
-              : `${Math.floor(job.elapsed_seconds)}s elapsed`;
+          SimjectureI18n.bindText(elapsed, () => job.elapsed_seconds === undefined ? "" : SimjectureI18n.t("ui.s-elapsed", {p0: Math.floor(job.elapsed_seconds)}));
         }
         const stop = container.querySelector(".stop-run");
         stop.hidden = !job.live || job.native;
@@ -433,11 +424,11 @@ window.WorkspaceMonitor = {
           job.output ||
           job.error ||
           (panel === "commands"
-            ? "Waiting for command output…"
-            : "Waiting for simulation output…")
+            ? SimjectureI18n.t("ui.waiting-for-command-output")
+            : SimjectureI18n.t("ui.waiting-for-simulation-output"))
         ).replace(/\x1b\[[0-?]*[ -/]*[@-~]/g, "");
         if (output.textContent !== text) {
-          output.textContent = text;
+          SimjectureI18n.bindText(output, () => job.output || job.error ? text : panel === "commands" ? SimjectureI18n.t("ui.waiting-for-command-output") : SimjectureI18n.t("ui.waiting-for-simulation-output"));
           output.scrollTop = pinned ? output.scrollHeight : scroll;
         }
         renderFiles(container.querySelector(".simulation-files"), job, p, identifier);
