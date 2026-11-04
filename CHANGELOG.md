@@ -4,6 +4,10 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+- Add an English/Simplified Chinese selector to the workspace and experiment
+  monitor, with a shared saved preference and initial translations of explanatory
+  UI copy. Buttons, navigation and research content keep their original language.
+
 ## 0.7.1 — 2026-11-08
 
 - Add the pinned Lean 4.24.0/Mathlib proof-checking capability (`simjecture

@@ -51,6 +51,10 @@ body, button, input, select, textarea { font-family: var(--ui-font); }
 }
 .skip-link:focus { transform: translateY(0); }
 .composer-help { margin: 10px 0 24px; max-width: 760px; }
+.language-picker { display: inline-flex; align-items: center; max-width: 100%; flex-shrink: 0; }
+.language-picker .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.language-picker select { width: auto; min-width: 0; max-width: 100%; min-height: 34px; padding: 6px 26px 6px 10px; border: 1px solid var(--line); border-radius: 8px; color: var(--text); background-color: var(--surface, #fff); font: inherit; font-size: 12px; }
+[data-i18n] { overflow-wrap: anywhere; }
 dialog { max-height: calc(100dvh - 32px); overflow-y: auto; }
 dialog::backdrop { backdrop-filter: blur(3px); }
 button, .button { transition: background-color 140ms ease, border-color 140ms ease, box-shadow 140ms ease; }

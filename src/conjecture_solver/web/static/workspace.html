@@ -6,6 +6,8 @@
     <title>Simjecture · Research workspace</title>
     <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" type="image/x-icon" />
     <link rel="icon" href="/favicon.svg" sizes="any" type="image/svg+xml" />
+    <script src="/assets/i18n-messages.js"></script>
+    <script src="/assets/i18n.js"></script>
     <script src="/assets/workspace-theme.js"></script>
     <script src="/assets/workspace-panels.js"></script>
     <link
@@ -54,13 +56,13 @@
     </section>
     <dialog id="spaces-dialog" class="organization-dialog" aria-labelledby="spaces-title">
       <div class="dialog-heading"><h2 id="spaces-title">Your workspaces</h2><button type="button" data-close-organization="spaces-dialog" aria-label="Close workspaces">×</button></div>
-      <p class="field-help">Separate places for your research. Switching leaves running work in progress.</p>
+      <p class="field-help" data-i18n="workspace.spacesHelp">Separate places for your research. Switching leaves running work in progress.</p>
       <div id="spaces-list"></div>
       <form id="create-space-form"><label for="new-space-name">New workspace</label><div class="organization-inline"><input id="new-space-name" maxlength="160" placeholder="Lab or team name" required /><button class="primary" type="submit">Create</button></div><p id="space-error" class="field-help" role="alert"></p></form>
     </dialog>
     <dialog id="collection-dialog" class="organization-dialog" aria-labelledby="collection-editor-title">
       <div class="dialog-heading"><h2 id="collection-editor-title">New project</h2><button type="button" data-close-organization="collection-dialog" aria-label="Close project settings">×</button></div>
-      <form id="collection-form"><label for="collection-name">Name</label><input id="collection-name" maxlength="160" required /><label for="collection-summary">Description</label><input id="collection-summary" maxlength="2000" /><label for="collection-guidance">Shared instructions</label><textarea id="collection-guidance" rows="5" maxlength="20000" placeholder="What should an agent know when working on this project?"></textarea><p class="field-help">Conversations can have their own questions. Existing study records stay unchanged.</p><p id="collection-error" class="field-help" role="alert"></p><button class="primary" type="submit">Save project</button></form>
+      <form id="collection-form"><label for="collection-name">Name</label><input id="collection-name" maxlength="160" required /><label for="collection-summary">Description</label><input id="collection-summary" maxlength="2000" /><label for="collection-guidance">Shared instructions</label><textarea id="collection-guidance" rows="5" maxlength="20000" placeholder="What should an agent know when working on this project?"></textarea><p class="field-help" data-i18n="workspace.collectionHelp">Conversations can have their own questions. Existing study records stay unchanged.</p><p id="collection-error" class="field-help" role="alert"></p><button class="primary" type="submit">Save project</button></form>
     </dialog>
     <div class="shell">
       <aside class="sidebar" id="workspace-sidebar">
@@ -105,13 +107,14 @@
         </section>
         <div class="sidebar-label">CONVERSATIONS</div>
         <div id="project-list" class="project-list">
-          <p class="muted">Your work will appear here.</p>
+          <p class="muted" data-i18n="workspace.projectEmpty">Your work will appear here.</p>
         </div>
         <div id="sidebar-simulations" class="sidebar-runs" hidden>
           <div class="sidebar-label">SIMULATIONS</div>
           <div id="sidebar-run-list"></div>
         </div>
         <div class="sidebar-bottom">
+          <label class="language-picker"><span class="sr-only">Interface language</span><select id="language-select" data-language-select aria-label="Interface language"><option value="en" lang="en">English</option><option value="zh-CN" lang="zh-CN">简体中文</option></select></label>
           <button
             id="execution-status"
             class="sidebar-status"
@@ -176,7 +179,7 @@
       <main id="main-content" tabindex="-1">
         <section id="view-knowledge" class="view knowledge-view" hidden aria-labelledby="knowledge-title">
           <header class="knowledge-heading">
-            <div><p class="eyebrow">YOUR RESEARCH LIBRARY</p><h1 id="knowledge-title">Knowledge</h1><p class="knowledge-subtitle">Find the work behind your next idea.</p></div>
+            <div><p class="eyebrow">YOUR RESEARCH LIBRARY</p><h1 id="knowledge-title">Knowledge</h1><p class="knowledge-subtitle" data-i18n="workspace.knowledgeIntro">Find the work behind your next idea.</p></div>
             <button id="knowledge-connect" class="primary" type="button">＋ Connect folder</button>
           </header>
           <nav class="knowledge-tabs" aria-label="Knowledge sections">
@@ -199,36 +202,36 @@
             <div class="knowledge-columns">
               <div id="knowledge-results" class="knowledge-results"></div>
               <aside id="knowledge-preview" class="knowledge-preview" aria-label="Source preview">
-                <div class="knowledge-preview-empty"><span aria-hidden="true">▤</span><h2>Follow an idea to its source</h2><p>Select a result to read the passage, check its version, and bring it into a conversation.</p></div>
+                <div class="knowledge-preview-empty"><span aria-hidden="true">▤</span><h2>Follow an idea to its source</h2><p data-i18n="workspace.knowledgePreviewHelp">Select a result to read the passage, check its version, and bring it into a conversation.</p></div>
               </aside>
             </div>
           </div>
           <div id="knowledge-sources-panel" hidden>
-            <div class="knowledge-section-intro"><div><h2>Connected sources</h2><p>Folders refresh every minute while Simjecture is running. Conversations appear after a turn finishes.</p></div><button id="knowledge-refresh" class="secondary" type="button">Refresh now</button></div>
+            <div class="knowledge-section-intro"><div><h2>Connected sources</h2><p data-i18n="workspace.knowledgeRefreshHelp">Folders refresh every minute while Simjecture is running. Conversations appear after a turn finishes.</p></div><button id="knowledge-refresh" class="secondary" type="button">Refresh now</button></div>
             <div id="knowledge-sources"></div>
-            <p class="field-help">Indexes text, code, PDF, PPTX, DOCX and notebooks. Hidden folders, dependencies, build caches and large binary outputs are skipped. Scanned PDFs need a text layer; figures are available in the original file.</p>
+            <p class="field-help" data-i18n="workspace.knowledgeIndexHelp">Indexes text, code, PDF, PPTX, DOCX and notebooks. Hidden folders, dependencies, build caches and large binary outputs are skipped. Scanned PDFs need a text layer; figures are available in the original file.</p>
           </div>
           <div id="knowledge-access-panel" class="knowledge-access" hidden>
-            <h2>One library for your agents</h2><p>Connect an external agent to this workspace's enabled sources. These tools can search and read; they cannot change your files or start research.</p>
+            <h2>One library for your agents</h2><p data-i18n="workspace.knowledgeAgentHelp">Connect an external agent to this workspace's enabled sources. These tools can search and read; they cannot change your files or start research.</p>
             <div class="knowledge-access-heading"><h3>MCP configuration</h3><button id="knowledge-copy-mcp" class="quiet" type="button">Copy configuration</button></div>
             <pre id="knowledge-mcp-config"></pre>
             <h3>Search from a terminal</h3><pre id="knowledge-cli"></pre>
-            <p class="field-help">Run these commands on the machine that owns the folders. The browser server refreshes the index; when it is closed, refresh with:</p><pre id="knowledge-sync-cli"></pre>
+            <p class="field-help" data-i18n="workspace.knowledgeTerminalHelp">Run these commands on the machine that owns the folders. The browser server refreshes the index; when it is closed, refresh with:</p><pre id="knowledge-sync-cli"></pre>
           </div>
         </section>
         <section id="view-collection" class="view collection-view" hidden>
           <div class="collection-heading"><div><p class="eyebrow">PROJECT</p><h1 id="collection-title"></h1><p id="collection-description" class="lead"></p></div><button id="edit-collection" class="quiet" type="button">Project settings</button></div>
           <button id="collection-new-chat" class="primary" type="button">＋ New conversation</button>
           <div id="collection-conversations" class="collection-conversations"></div>
-          <section class="collection-context"><div class="section-line"><h2>Shared context</h2><label class="secondary" for="collection-upload">Add files</label><input id="collection-upload" type="file" multiple hidden /></div><p class="field-help">Available to conversations in this project. Each agent turn and study keeps its own snapshot.</p><div id="collection-files"></div><p id="collection-instructions"></p></section>
+          <section class="collection-context"><div class="section-line"><h2>Shared context</h2><label class="secondary" for="collection-upload">Add files</label><input id="collection-upload" type="file" multiple hidden /></div><p class="field-help" data-i18n="workspace.sharedContextHelp">Available to conversations in this project. Each agent turn and study keeps its own snapshot.</p><div id="collection-files"></div><p id="collection-instructions"></p></section>
         </section>
-        <div id="readonly" class="banner" hidden>
+        <div id="readonly" class="banner" hidden data-i18n="workspace.readonlyHelp">
           This session is read-only. You can inspect projects and results.
         </div>
         <section id="view-home" class="view home-view">
           <div class="page-intro">
             <button id="home-collection" class="context-pill" type="button" hidden></button>
-            <h1>What are we investigating?</h1>
+            <h1 data-i18n="workspace.homeIntro">What are we investigating?</h1>
           </div>
           <form id="quick-start" class="start-box prompt-composer">
             <label for="first-request" class="sr-only">Your research request</label
@@ -236,7 +239,7 @@
               id="first-request"
               aria-describedby="first-request-help"
               rows="1"
-              placeholder="Ask a question or describe your research…"
+              data-i18n-placeholder="workspace.requestPlaceholder" placeholder="Ask a question or describe your research…"
               required
             ></textarea>
             <div class="start-bottom">
@@ -249,9 +252,9 @@
           <section class="home-modes mode-cards" aria-label="Two ways to work">
             <article class="mode-card" data-mode-card="interactive">
               <p class="mode-card-kicker"><span aria-hidden="true">◐</span> Interactive</p>
-              <h2>Explore with your agent</h2>
-              <p class="mode-card-summary">Chat, run code and simulations, look at plots and decide the next step together. You stay in the loop.</p>
-              <p class="mode-card-best"><strong>Best for</strong> getting started, debugging, and working out what to ask.</p>
+              <h2 data-i18n="workspace.interactiveIntro">Explore with your agent</h2>
+              <p class="mode-card-summary" data-i18n="workspace.interactiveSummary">Chat, run code and simulations, look at plots and decide the next step together. You stay in the loop.</p>
+              <p class="mode-card-best"><strong>Best for</strong> <span data-i18n="workspace.interactiveBest">getting started, debugging, and working out what to ask.</span></p>
               <div class="mode-card-examples" role="group" aria-label="Interactive examples">
                 <button class="mode-example" type="button" data-example="Simulate a double pendulum with Python and SciPy for 20 seconds. Use two 1 m links and two 1 kg masses, g=9.81 m/s², initial angles 120° and -10°, and zero initial angular velocities. Save the trajectory CSV, plot the paths of both masses, and report the numerical energy drift. Run the calculation and link the actual plots and outputs.">
                   <span class="mode-example-text"><strong>Simulate a double pendulum</strong><small>Plot both paths and check energy drift · Python</small></span><span class="mode-example-arrow" aria-hidden="true">↗</span>
@@ -263,22 +266,22 @@
             </article>
             <article class="mode-card" data-mode-card="autonomous">
               <p class="mode-card-kicker"><span aria-hidden="true">◎</span> Autonomous study</p>
-              <h2>Let a study run on its own</h2>
-              <p class="mode-card-summary">Give it a claim and a time budget. It runs experiments and looks for counterexamples; an independent review checks the evidence before anything counts.</p>
-              <p class="mode-card-best"><strong>Best for</strong> “is this true?” questions you can state precisely.</p>
+              <h2 data-i18n="workspace.autonomousIntro">Let a study run on its own</h2>
+              <p class="mode-card-summary" data-i18n="workspace.autonomousSummary">Give it a claim and a time budget. It runs experiments and looks for counterexamples; an independent review checks the evidence before anything counts.</p>
+              <p class="mode-card-best"><strong>Best for</strong> <span data-i18n="workspace.autonomousBest">“is this true?” questions you can state precisely.</span></p>
               <div class="mode-card-examples" role="group" aria-label="Autonomous study examples">
                 <button class="mode-example" type="button" data-example="Prepare a 10-minute autonomous research study with this hypothesis: a lossless 1 m single pendulum released from rest has a period within 1% of 2π√(L/g) for every initial angle from 5° to 120°, with g=9.81 m/s². Use Python to integrate the nonlinear equation, measure periods from the trajectory, and search for a counterexample. Require numerical tolerance controls, retained trajectories, a period-versus-angle plot and independent review. If the claim fails, propose the smallest supported refinement of its amplitude range. Save an editable study brief so I can review and launch the autonomous run.">
                   <span class="mode-example-text"><strong>Does a pendulum keep the same period?</strong><small>Your agent drafts a 10-minute study for you to review · Python</small></span><span class="mode-example-arrow" aria-hidden="true">↗</span>
                 </button>
               </div>
-              <p class="mode-card-note">Start in Interactive; when your claim is clear, switch to Autonomous study inside the conversation.</p>
+              <p class="mode-card-note" data-i18n="workspace.autonomousNote">Start in Interactive; when your claim is clear, switch to Autonomous study inside the conversation.</p>
             </article>
           </section>
         </section>
         <section id="view-machines" class="view machines-view" hidden>
           <div class="machines-heading">
             <div><p class="eyebrow">YOUR COMPUTE</p><h1>Machines</h1>
-              <p class="lead">Connect your machines. Run experiments in parallel.</p></div>
+              <p class="lead" data-i18n="workspace.machinesIntro">Connect your machines. Run experiments in parallel.</p></div>
             <button id="add-machine" class="primary" type="button"><span aria-hidden="true">＋</span> Add machine</button>
           </div>
           <div class="machines-toolbar">
@@ -287,7 +290,7 @@
               <button id="refresh-machines" type="button" class="quiet" aria-label="Refresh machine availability">↻</button></div>
           </div>
           <div id="machine-grid" class="machines-grid"></div>
-          <div class="machines-footnote"><span aria-hidden="true">⌘</span><p>The research agent stays here. Connected machines run your experiments.
+          <div class="machines-footnote"><span aria-hidden="true">⌘</span><p><span data-i18n="workspace.machinesFootnote">The research agent stays here. Connected machines run your experiments.</span>
             <button id="register-local-worker" class="text-button" type="button">Add this computer</button></p></div>
           <section id="machine-jobs-panel" class="machine-jobs-panel" hidden>
             <div class="machine-panel-heading"><h2 id="machine-jobs-title">Worker jobs</h2><button id="close-machine-jobs" class="quiet" type="button" aria-label="Close jobs">×</button></div>
@@ -297,12 +300,12 @@
           <dialog id="machine-dialog" class="machine-dialog" aria-labelledby="machine-editor-title">
             <div class="machine-dialog-heading"><div><p class="eyebrow">SSH CONNECTION</p><h2 id="machine-editor-title">Add a machine</h2></div>
               <button id="close-machine-editor" type="button" class="quiet" aria-label="Close machine settings">×</button></div>
-            <p class="machine-dialog-intro">Connect with an SSH address and your SSH key, agent, or password. We’ll detect the hardware and prepare the worker.</p>
+            <p class="machine-dialog-intro" data-i18n="workspace.machineConnectHelp">Connect with an SSH address and your SSH key, agent, or password. We’ll detect the hardware and prepare the worker.</p>
             <form id="machine-form" class="machine-form">
               <label>SSH address<input id="machine-address" required autocomplete="off" spellcheck="false" placeholder="ssh -p 23 root@your-machine" /></label>
-              <p class="field-help">Also accepts user@host:port or an address from your SSH config.</p>
+              <p class="field-help" data-i18n="workspace.machineAddressHelp">Also accepts user@host:port or an address from your SSH config.</p>
               <label>Password<input id="machine-password" type="password" autocomplete="new-password" placeholder="Leave empty to use your SSH key or agent" /></label>
-              <p class="field-help">Stored privately on this computer.</p>
+              <p class="field-help" data-i18n="workspace.machineSecretHelp">Stored privately on this computer.</p>
               <details id="machine-advanced" class="machine-advanced"><summary>Advanced settings <span>Optional</span></summary>
                 <div class="machine-advanced-fields">
                   <div class="two-fields"><label>Display name<input id="machine-label-input" placeholder="Use the host name" /></label>
@@ -314,7 +317,7 @@
                   <div class="two-fields"><label>GPU IDs<input id="machine-gpus" placeholder="Detect automatically; type none for CPU only" /></label>
                     <label>Concurrent jobs<input id="machine-max-jobs" type="number" min="1" max="256" placeholder="Choose automatically" /></label></div>
                   <label>Experiment environment<select id="machine-execution"><option value="auto">Detect automatically</option><option value="bubblewrap">Linux sandbox</option><option value="proot-cooperative">Cooperative · restricted container</option><option value="process-cooperative">Native process · trusted host</option></select></label>
-                  <p class="field-help">Restricted containers use a dedicated unprivileged worker with cooperative execution.</p>
+                  <p class="field-help" data-i18n="workspace.machineCooperativeHelp">Restricted containers use a dedicated unprivileged worker with cooperative execution.</p>
                   <label>Instrument descriptor directories<textarea id="machine-capabilities" rows="2" placeholder="Optional. Your agent can prepare scientific tools later."></textarea></label>
                   <div class="two-fields"><label>SSH private key path<input id="machine-identity" placeholder="Use your SSH agent" /></label>
                     <label>Known hosts file<input id="machine-known-hosts" placeholder="Managed automatically" /></label></div>
@@ -332,7 +335,7 @@
           <div class="page-intro compact">
             <p class="eyebrow">YOUR AGENT, YOUR MACHINE</p>
             <h1>API connections, if you need them.</h1>
-            <p class="lead">
+            <p class="lead" data-i18n="workspace.settingsIntro">
               Choose your agent and model inside each conversation. Installed
               CLI agents need no API setup here.
             </p>
@@ -359,7 +362,7 @@
                   autocomplete="new-password"
                   placeholder="Enter a key; stored only on this machine"
                 />
-                <p class="field-help">
+                <p class="field-help" data-i18n="workspace.settingsSecretHelp">
                   Stored in a private file on the execution machine. Never
                   returned to the browser or included in project exports.
                 </p>
@@ -372,7 +375,7 @@
             </form>
             <aside class="setup-notes">
               <h3>Where your work runs</h3>
-              <p>
+              <p data-i18n="workspace.settingsHostHelp">
                 Files, installations, and experiments stay on the machine
                 serving this page.
               </p>
@@ -383,7 +386,7 @@
               <p id="machine-result" class="field-help" role="status"></p>
               <hr />
               <h3>Already using a CLI?</h3>
-              <p>
+              <p data-i18n="workspace.settingsCliHelp">
                 Installed agents are detected automatically. They keep their
                 existing login and native tools.
               </p>
@@ -397,7 +400,7 @@
           <div class="benchmark-heading">
             <div><p class="eyebrow">SIMJECTURE BENCHMARK RESULTS</p>
               <h1>Model leaderboard</h1>
-              <p class="lead">Measured scientific coding tasks. Compare completion, time and API-equivalent cost.</p></div>
+              <p class="lead" data-i18n="workspace.benchmarkIntro">Measured scientific coding tasks. Compare completion, time and API-equivalent cost.</p></div>
             <div class="benchmark-actions">
               <button id="benchmark-run" type="button" disabled>＋ Test a model</button>
               <button id="benchmark-export" class="secondary" type="button">Download results</button>
@@ -432,16 +435,16 @@
             <div id="benchmark-ranked-charts" class="benchmark-rank-grid" hidden>
               <section class="benchmark-rank-card" aria-labelledby="benchmark-time-title">
                 <h3 id="benchmark-time-title">Finish time ranking</h3>
-                <p class="field-help">Median verified finish time · shorter bars are better</p>
+                <p class="field-help" data-i18n="workspace.timeBarsHelp">Median verified finish time · shorter bars are better</p>
                 <div id="benchmark-time-bars" class="benchmark-bar-scroll"></div>
               </section>
               <section class="benchmark-rank-card" aria-labelledby="benchmark-cost-title">
                 <h3 id="benchmark-cost-title">Cost ranking</h3>
-                <p class="field-help">API-equivalent cost per attempt · shorter bars are better</p>
+                <p class="field-help" data-i18n="workspace.costBarsHelp">API-equivalent cost per attempt · shorter bars are better</p>
                 <div id="benchmark-cost-bars" class="benchmark-bar-scroll"></div>
               </section>
             </div>
-            <p id="benchmark-bar-note" class="field-help" hidden>Red marks unfinished runs. They have no verified finish-time rank; cost bars still show recorded spending, including labelled lower bounds. Configurations without inference are omitted.</p>
+            <p id="benchmark-bar-note" class="field-help" hidden data-i18n="workspace.unfinishedBarsHelp">Red marks unfinished runs. They have no verified finish-time rank; cost bars still show recorded spending, including labelled lower bounds. Configurations without inference are omitted.</p>
             <div class="benchmark-tradeoff-heading">
               <div><h3 id="benchmark-plot-title">Cost–time Pareto plot</h3><p id="benchmark-chart-note" class="field-help">Upper left is better. Dashed lines connect the same model's reasoning efforts.</p></div>
 
@@ -460,7 +463,7 @@
           </details>
           <details class="benchmark-details" id="benchmark-your-work">
             <summary>Your runs &amp; community contributions</summary>
-            <p class="field-help">Test any supported model with your installed agent or API connection. Local and imported runs appear in Community &amp; local. Official results are maintained by Simjecture.</p>
+            <p class="field-help" data-i18n="workspace.benchmarkCommunityHelp">Test any supported model with your installed agent or API connection. Local and imported runs appear in Community &amp; local. Official results are maintained by Simjecture.</p>
             <div class="benchmark-actions">
               <button id="benchmark-import" class="secondary" type="button">Import grades</button>
               <button id="benchmark-download-grades" class="secondary" type="button">Download raw grades</button>
@@ -477,7 +480,7 @@
         <section id="view-tools" class="view research-tools-view" hidden>
           <div class="research-tools-heading">
             <div><p class="eyebrow">EXPLORE YOUR WORKBENCH</p><h1>Research tools</h1>
-              <p class="lead">Find the right tool for your next investigation. Open a card to learn more.</p></div>
+              <p class="lead" data-i18n="workspace.toolsIntro">Find the right tool for your next investigation. Open a card to learn more.</p></div>
             <button id="connect-research-tool" class="secondary" type="button">＋ Connect existing tool</button>
           </div>
           <div id="tool-collection-note" class="tool-collection-note" hidden></div>
@@ -498,25 +501,25 @@
           </div>
           <div id="active-tool-section" class="active-tool-section" hidden>
             <div class="inventory-heading"><h2>Setup activity <span id="active-count" class="count-badge">0</span></h2>
-              <p>Live installs, readiness checks and setups that need attention</p></div>
+              <p data-i18n="workspace.toolsSetupHelp">Live installs, readiness checks and setups that need attention</p></div>
             <div id="active-tool-grid" class="tool-grid research-tool-grid"></div>
           </div>
           <div id="installed-tool-section">
             <div class="inventory-heading"><h2><span id="installed-tool-label">On your workbench</span> <span id="installed-count" class="count-badge">0</span></h2>
-              <p id="installed-tool-help">Installed tools and detected local builds</p></div>
+              <p id="installed-tool-help" data-i18n="workspace.installedToolsHelp">Installed tools and detected local builds</p></div>
             <div id="installed-tool-grid" class="tool-grid research-tool-grid"></div>
           </div>
           <div id="available-tool-section">
             <div class="inventory-heading"><h2>Discover more <span id="available-count" class="count-badge">0</span></h2>
-              <p>Open a tool to explore setup options</p></div>
+              <p data-i18n="workspace.availableToolsHelp">Open a tool to explore setup options</p></div>
             <div id="available-tool-grid" class="tool-grid research-tool-grid"></div>
           </div>
           <div id="tool-search-empty" class="tool-search-empty" hidden>
-            <h2>No matching tools</h2><p>Try a different keyword or category.</p>
+            <h2>No matching tools</h2><p data-i18n="workspace.toolSearchHelp">Try a different keyword or category.</p>
             <button id="clear-tool-filters" type="button" class="secondary">Clear filters</button>
           </div>
-          <p class="research-tools-footnote">Installation and readiness checks tell you a tool can run. Each investigation still validates its scientific method.
-            <span id="tools-machines-help">For tools on SSH workers, use <button id="tools-open-machines" class="text-button" type="button">Machines</button>.</span></p>
+          <p class="research-tools-footnote"><span data-i18n="workspace.toolsQualificationHelp">Installation and readiness checks tell you a tool can run. Each investigation still validates its scientific method.</span>
+            <span id="tools-machines-help"><span data-i18n="workspace.toolsMachinesHelp">For tools on SSH workers, use</span> <button id="tools-open-machines" class="text-button" type="button">Machines</button>.</span></p>
           <dialog id="tool-details-dialog" class="tool-details-dialog" aria-labelledby="tool-detail-title">
             <div class="tool-dialog-heading"><div><p id="tool-detail-category" class="eyebrow">RESEARCH TOOL</p><div class="tool-detail-title-line"><h2 id="tool-detail-title">Tool details</h2><span id="tool-detail-state" class="tool-status"></span></div></div>
               <button id="close-tool-details" class="quiet" type="button" aria-label="Close tool details">×</button></div>
@@ -529,7 +532,7 @@
           <dialog id="custom-tool-dialog" class="machine-dialog" aria-label="Connect a research tool">
             <div class="machine-dialog-heading"><div><p class="eyebrow">EXISTING INSTALLATION</p><h2>Connect a research tool</h2></div>
               <button id="close-custom-tool" class="quiet" type="button" aria-label="Close tool registration">×</button></div>
-            <p class="machine-dialog-intro">Connect an existing capability directory on this computer. Your agent can help prepare the software and its descriptor.</p>
+            <p class="machine-dialog-intro" data-i18n="workspace.customToolHelp">Connect an existing capability directory on this computer. Your agent can help prepare the software and its descriptor.</p>
             <form id="custom-tool-form" class="machine-form">
               <label for="tool-name">Display name<input id="tool-name" required placeholder="My research solver" /></label>
               <label for="tool-path">Capability directory<input id="tool-path" required placeholder="/path/to/capabilities" /></label>
@@ -559,7 +562,7 @@
           <nav id="study-navigation" class="study-navigation" aria-label="Research navigation"></nav>
           <div id="continuation-chat-context" class="continuation-chat-context" hidden>
             <a id="continuation-parent-link">Continuing an earlier investigation ↗</a>
-            <span>Talk through the next step in chat; your agent then drafts its brief.</span>
+            <span data-i18n="workspace.continuationHelp">Talk through the next step in chat; your agent then drafts its brief.</span>
             <button id="continuation-chat" class="secondary" type="button">Prepare with agent</button>
           </div>
           <wa-split-panel
@@ -579,7 +582,7 @@
                   ><textarea
                     id="chat-input"
                     rows="1"
-                    placeholder="Ask your research agent…"
+                    data-i18n-placeholder="workspace.chatPlaceholder" placeholder="Ask your research agent…"
                     required
                   ></textarea>
                   <div
@@ -589,7 +592,7 @@
                     hidden
                   >
                     <span
-                      >Changing CLI or model starts a fresh agent session. It
+                       data-i18n="workspace.agentSwitchHelp">Changing CLI or model starts a fresh agent session. It
                       may lose tool context and cache reuse, making the next
                       reply slower or less consistent. Your conversation and
                       files are kept. Any running turn continues with its
@@ -663,16 +666,16 @@
                 <section id="study-explainer" class="study-explainer" aria-labelledby="study-explainer-title" hidden>
                   <div class="study-explainer-head">
                     <div>
-                      <h2 id="study-explainer-title">How an autonomous study works</h2>
-                      <p>It runs on its own after you approve a plan. Closing this page does not stop it.</p>
+                      <h2 id="study-explainer-title" data-i18n="workspace.studyIntro">How an autonomous study works</h2>
+                      <p data-i18n="workspace.studyBackgroundHelp">It runs on its own after you approve a plan. Closing this page does not stop it.</p>
                     </div>
                     <button id="dismiss-study-explainer" class="quiet" type="button">Got it</button>
                   </div>
                   <ol>
-                    <li><strong>Discuss</strong>Talk the question through in Interactive, or let Grill me interview you.</li>
-                    <li><strong>Review the brief</strong>Your agent writes the claim, the evidence needed and a time budget. Edit anything.</li>
-                    <li><strong>Launch</strong>Experiments run within the budget and look for counterexamples.</li>
-                    <li><strong>Read the report</strong>An independent reviewer checks the evidence; your agent explains the result in the chat.</li>
+                    <li><strong>Discuss</strong><span data-i18n="workspace.studyDiscussHelp">Talk the question through in Interactive, or let Grill me interview you.</span></li>
+                    <li><strong>Review the brief</strong><span data-i18n="workspace.studyBriefHelp">Your agent writes the claim, the evidence needed and a time budget. Edit anything.</span></li>
+                    <li><strong>Launch</strong><span data-i18n="workspace.studyLaunchHelp">Experiments run within the budget and look for counterexamples.</span></li>
+                    <li><strong>Read the report</strong><span data-i18n="workspace.studyReportHelp">An independent reviewer checks the evidence; your agent explains the result in the chat.</span></li>
                   </ol>
                 </section>
                 <div class="section-line">
@@ -687,8 +690,8 @@
                 <div id="study-runs"></div>
                 <div id="study-preparation" class="panel study-preparation">
                   <p class="eyebrow">STEP 1 OF 2</p>
-                  <h2>Plan the study with your agent</h2>
-                  <p>
+                  <h2 data-i18n="workspace.preparationIntro">Plan the study with your agent</h2>
+                  <p data-i18n="workspace.preparationHelp">
                     Your agent uses this conversation and its files to write a
                     study brief. Nothing runs until you review and start it.
                   </p>
@@ -700,7 +703,7 @@
                     >
                       <strong>Grill me <span>↗</span></strong
                       ><small
-                        >Your agent interviews you one question at a time, pushes
+                         data-i18n="workspace.grillHelp">Your agent interviews you one question at a time, pushes
                         back on vague points, then writes the study brief.</small
                       >
                     </button>
@@ -712,7 +715,7 @@
                       <strong
                         >Draft from this conversation <span>↗</span></strong
                       ><small
-                        >Use what we already discussed. Ask only when something
+                         data-i18n="workspace.draftHelp">Use what we already discussed. Ask only when something
                         important is missing.</small
                       >
                     </button>
@@ -727,7 +730,7 @@
                   <p id="prepared-heading" class="eyebrow">STEP 2 OF 2 · REVIEW AND START</p>
                   <h2 id="prepared-question"></h2>
                   <div id="prepared-details"></div>
-                  <p class="field-help">
+                  <p class="field-help" data-i18n="workspace.briefAfterHelp">
                     When the study finishes, your agent explains the report here
                     in the conversation. Each study keeps its own results.
                   </p>
@@ -803,13 +806,13 @@
                       </div>
                     </div>
                     <label class="research-director-option"><input id="solver-development" type="checkbox" checked /><span>Allow experimental solver development</span></label>
-                    <p id="solver-development-help" class="field-help">The agent may change its own copy of a solver. Your installed solvers are never modified, and results from a changed solver are checked before they count as evidence.</p>
-                    <p class="field-help">The agent can use all available installed tools and choose which ones each experiment needs.</p>
+                    <p id="solver-development-help" class="field-help" data-i18n="workspace.solverHelp">The agent may change its own copy of a solver. Your installed solvers are never modified, and results from a changed solver are checked before they count as evidence.</p>
+                    <p class="field-help" data-i18n="workspace.installedToolsGuide">The agent can use all available installed tools and choose which ones each experiment needs.</p>
                       <label for="study-machines">Execution machines</label>
                       <select id="study-machines" multiple size="4">
                         <option value="" selected>This host · existing local launcher</option>
                       </select>
-                      <p class="field-help">Select several machines to run experiments in parallel.
+                      <p class="field-help" data-i18n="workspace.studyMachinesHelp">Select several machines to run experiments in parallel.
                         Add machines on the Machines page.</p>
                     <details class="advanced">
                       <summary>Execution settings</summary>
@@ -819,11 +822,11 @@
                         <option value="">Python only · no external solver</option>
                       </select>
                       <label class="research-director-option"><input id="research-director" type="checkbox" checked /><span>Research director · may stop a costly experiment and change the plan</span></label>
-                      <p class="field-help">Watches the strategy while experiments run. Data from a stopped experiment is kept. This is separate from the independent review of the final evidence.</p>
+                      <p class="field-help" data-i18n="workspace.directorHelp">Watches the strategy while experiments run. Data from a stopped experiment is kept. This is separate from the independent review of the final evidence.</p>
                       <div id="review-agent-settings">
                       <label for="review-backend">Reviewer and director agent</label>
                       <select id="review-backend"><option value="">Same as conversation agent</option></select>
-                      <p id="review-agent-help" class="field-help">Use another installed CLI or the API in Connections. Each review starts in a separate context.</p>
+                      <p id="review-agent-help" class="field-help" data-i18n="workspace.reviewAgentHelp">Use another installed CLI or the API in Connections. Each review starts in a separate context.</p>
                       <label for="review-model">Reviewer and director model</label>
                       <input id="review-model" placeholder="Default: conversation agent model" />
                       <label for="review-effort">Reviewer and director reasoning</label>
@@ -840,7 +843,7 @@
                         </option>
                         <option value="process-cooperative">Native process — trusted host</option>
                       </select>
-                      <p class="field-help">
+                      <p class="field-help" data-i18n="workspace.executionHelp">
                         Cooperative execution is for a dedicated unprivileged
                         account and does not isolate host networking.
                       </p>
@@ -852,7 +855,7 @@
                         Start autonomous study ↗
                       </button>
                     </div>
-                    <p class="field-help">
+                    <p class="field-help" data-i18n="workspace.studyLifetimeHelp">
                       The study keeps running if you close this page. It stops
                       at the time budget or once the review accepts an answer,
                       and you can pause or stop it at any time.
@@ -882,8 +885,8 @@
                   <div id="simulation-detail" role="region" aria-label="Selected simulation" tabindex="0">
                     <div class="monitor-empty">
                       <span class="monitor-symbol">⌁</span>
-                      <h3>Your experiments, in view.</h3>
-                      <p>
+                      <h3 data-i18n="workspace.simulationIntro">Your experiments, in view.</h3>
+                      <p data-i18n="workspace.simulationHelp">
                         Ask your agent to run a simulation. Its live console and
                         saved outputs appear here, beside the conversation.
                       </p>
@@ -893,7 +896,7 @@
                 <wa-tab-panel name="commands">
                   <div id="command-list" role="region" aria-label="Command history" tabindex="0"></div>
                   <div id="command-detail" role="region" aria-label="Selected command" tabindex="0">
-                    <p class="monitor-empty">
+                    <p class="monitor-empty" data-i18n="workspace.commandHelp">
                       Agent commands and their output appear here.
                     </p>
                   </div>
@@ -901,7 +904,7 @@
                 <wa-tab-panel name="files" active>
                   <div class="context-section">
                     <h3>Conversation files <span id="file-count">0</span></h3>
-                    <p class="field-help">
+                    <p class="field-help" data-i18n="workspace.conversationFilesHelp">
                       Inputs, reports and results shared by this conversation.
                       Each simulation's own outputs are in Simulations.
                     </p>
@@ -909,7 +912,7 @@
                     <details>
                       <summary>Folder on this computer</summary>
                       <code id="project-path"></code>
-                      <p class="field-help">
+                      <p class="field-help" data-i18n="workspace.uploadHelp">
                         Copy large datasets here directly. Browser uploads
                         support files up to 64 MB.
                       </p>
@@ -918,7 +921,7 @@
                   <div class="context-section">
                     <h3>Study brief</h3>
                     <div id="brief-summary">
-                      <p>
+                      <p data-i18n="workspace.emptyBrief">
                         No study planned yet. Open Autonomous study when your
                         question is clear.
                       </p>
@@ -939,12 +942,12 @@
       <form id="delete-form">
         <h2 id="delete-title">Delete conversation?</h2>
         <p id="delete-name"></p>
-        <p>
+        <p data-i18n="workspace.deleteWarning">
           This permanently deletes the conversation, uploaded files, simulation
           outputs, and autonomous studies inside this folder:
         </p>
         <code id="delete-path"></code>
-        <p>Shared tools and API connections are kept. This cannot be undone.</p>
+        <p data-i18n="workspace.deleteIrreversible">Shared tools and API connections are kept. This cannot be undone.</p>
         <p id="delete-error" role="alert" hidden></p>
         <div class="form-actions">
           <button id="cancel-delete" type="button" class="secondary">
@@ -964,7 +967,7 @@
     </dialog>
     <dialog id="knowledge-folder-dialog" class="organization-dialog" aria-labelledby="knowledge-folder-title">
       <div class="dialog-heading"><h2 id="knowledge-folder-title">Connect a research folder</h2><button id="knowledge-folder-close" type="button" aria-label="Close folder dialog">×</button></div>
-      <p class="field-help">Choose a folder on the machine running Simjecture. Its supported files will be searchable in this workspace.</p>
+      <p class="field-help" data-i18n="workspace.knowledgeFolderHelp">Choose a folder on the machine running Simjecture. Its supported files will be searchable in this workspace.</p>
       <form id="knowledge-folder-form">
         <label for="knowledge-folder-path">Folder path</label><input id="knowledge-folder-path" placeholder="/home/you/research" required />
         <label for="knowledge-folder-name">Display name <span class="muted">(optional)</span></label><input id="knowledge-folder-name" maxlength="160" placeholder="Simulation examples" />
@@ -974,7 +977,7 @@
     </dialog>
     <dialog id="knowledge-selection-dialog" class="organization-dialog" aria-labelledby="knowledge-selection-title">
       <div class="dialog-heading"><h2 id="knowledge-selection-title">Knowledge sources</h2><button id="knowledge-selection-close" type="button" aria-label="Close source selection">×</button></div>
-      <p class="field-help">Choose where this conversation's agent can search.</p>
+      <p class="field-help" data-i18n="workspace.knowledgeScopeHelp">Choose where this conversation's agent can search.</p>
       <label class="knowledge-source-choice"><input id="knowledge-inherit" type="checkbox" checked /> Use all enabled workspace sources</label>
       <div id="knowledge-selection-list"></div><p id="knowledge-selection-error" class="field-help" role="alert"></p>
       <button id="knowledge-save-selection" class="primary" type="button">Apply to conversation</button>

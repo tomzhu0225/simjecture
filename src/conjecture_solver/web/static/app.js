@@ -1163,7 +1163,7 @@ function renderInspector() {
   const container = ui["claim-inspector"];
   clear(container);
   if (!state.snapshot) {
-    container.append(paragraph("panel-placeholder", "Select a claim or stage to inspect it."));
+    container.append(window.SimjectureI18n.text(paragraph("panel-placeholder", ""), "monitor.selectClaim"));
     setBadge(ui["claim-status"], "", "—");
     return;
   }
@@ -1175,13 +1175,13 @@ function renderInspector() {
     }
   }
   if (!state.selectedClaim) {
-    container.append(paragraph("panel-placeholder", "Select a claim or stage to inspect it."));
+    container.append(window.SimjectureI18n.text(paragraph("panel-placeholder", ""), "monitor.selectClaim"));
     setBadge(ui["claim-status"], "", "—");
     return;
   }
   const detail = state.snapshot.claim_details[state.selectedClaim];
   if (!detail) {
-    container.append(paragraph("panel-placeholder", "Claim details are not available yet."));
+    container.append(window.SimjectureI18n.text(paragraph("panel-placeholder", ""), "monitor.noClaimDetails"));
     return;
   }
   const node = claimGraphNode(state.selectedClaim);
@@ -1264,7 +1264,7 @@ function renderInspector() {
       contractSection.append(card);
     });
   } else {
-    contractSection.append(paragraph("inspector-empty", "No evidence contract is recorded for this claim."));
+    contractSection.append(window.SimjectureI18n.text(paragraph("inspector-empty", ""), "monitor.noEvidenceContract"));
   }
   container.append(contractSection);
 
@@ -1274,7 +1274,7 @@ function renderInspector() {
       evidenceSection.append(evidenceCard(evidence, `${detail.id}:${index}`));
     });
   } else {
-    evidenceSection.append(paragraph("inspector-empty", "No evidence is linked to this claim yet."));
+    evidenceSection.append(window.SimjectureI18n.text(paragraph("inspector-empty", ""), "monitor.noEvidence"));
   }
   container.append(evidenceSection);
 }
@@ -1454,8 +1454,8 @@ function renderExecutions() {
   ui["execution-summary"].textContent = summary || (projection.total ? `${projection.total} recorded` : "No executions");
 
   if (!items.length) {
-    list.append(paragraph("panel-placeholder", "No numerical execution has been recorded."));
-    consolePanel.append(element("div", "console-empty", "The first simulation or calculation will appear here with its real state and heartbeat."));
+    list.append(window.SimjectureI18n.text(paragraph("panel-placeholder", ""), "monitor.noExecution"));
+    consolePanel.append(window.SimjectureI18n.text(element("div", "console-empty"), "monitor.firstExecutionHelp"));
     state.selectedExecution = null;
     return;
   }
@@ -1655,13 +1655,13 @@ function renderResearchTrace() {
     const waiting = element("section", "research-waiting");
     waiting.append(element("h3", null, "Worker awaiting feedback"),
       element("p", null, engine.worker_wait.reason),
-      element("p", "field-help", "Worker inference is parked. Experiments and host supervision continue; the original campaign deadline remains in force. New review results or operator guidance wake the worker."));
+      window.SimjectureI18n.text(element("p", "field-help"), "monitor.workerWaitHelp"));
     panel.append(waiting);
   }
   if (engine.mode === "minimal" || engine.report_assessments?.length) {
     const reports = element("section", "report-assessments");
     reports.append(element("h3", null, "Independent report assessments"),
-      element("p", "field-help", "Reports can be reviewed while the investigation runs, including inconclusive findings. Report acceptance does not approve the hypothesis or promote exploratory evidence."));
+      window.SimjectureI18n.text(element("p", "field-help"), "monitor.reportReviewHelp"));
     for (const request of (engine.report_assessments || []).slice(-5)) {
       const label = request.assessment?.decision || request.status;
       reports.append(element("strong", null, `Report ${label.replaceAll("_", " ")} · frozen version`));
@@ -1708,7 +1708,7 @@ function renderResearchTrace() {
   if (engine.director_policy?.enabled || engine.director_decisions?.length) {
     const director = element("section", "research-director");
     director.append(element("h3", null, "Research director · strategy & control"),
-      element("p", "field-help", "Stops individual experiments and requests replans. Scientific claim acceptance remains separate."));
+      window.SimjectureI18n.text(element("p", "field-help"), "monitor.directorHelp"));
     const route = engine.director_route || {};
     if (engine.background_review) director.append(element("p", "field-help", "Reviewing alongside the worker · separate context"));
     if (route.model) director.append(element("p", "field-help", `Director route: ${[route.backend, route.model, route.reasoning_effort].filter(Boolean).join(" · ")}`));
@@ -1753,7 +1753,7 @@ function renderResearchTrace() {
       policy.allowed === true ? "Experimental solver development allowed · private forks, protected reference installations, independent qualification."
         : policy.allowed === false ? "Experimental solver development disabled · use supplied solver implementations. Experiment and analysis scripting remains available."
         : "Existing study · source permissions follow its saved operator instructions."));
-    development.append(element("p", "field-help", "Method approval applies to its reviewed source and scope. Instrument readiness is separate from production-method approval and scientific claim acceptance."));
+    development.append(window.SimjectureI18n.text(element("p", "field-help"), "monitor.methodApprovalHelp"));
     for (const build of engine.solver_development.builds || []) {
       const card = element("article", "trace-event"), copy = element("div", "trace-copy"), change = build.development;
       copy.append(element("strong", null, build.name), element("p", "field-help", change ? `${change.change_type} change · parent ${change.parent_capability || "new instrument"}` : "Registered instrument · development provenance not declared"));
@@ -1768,7 +1768,7 @@ function renderResearchTrace() {
   if (engine.receipt_progress?.length || engine.execution_costs?.length || engine.live_experiments?.length) {
     const coverage = element("section", "scientific-progress");
     coverage.append(element("h3", null, "Scientific coverage & cost"),
-      element("p", "field-help", "Live timing is operational telemetry. Recorded metrics have researcher-declared targets and units. Claim approval remains separate."));
+      window.SimjectureI18n.text(element("p", "field-help"), "monitor.telemetryHelp"));
     for (const e of engine.live_experiments || []) {
       const t = e.telemetry, copy = element("div", "trace-copy"), card = element("article", "trace-event");
       copy.append(element("strong", null, `${e.id} · ${e.status}`));
@@ -1819,7 +1819,7 @@ function renderResearchTrace() {
       link.target = "_blank"; link.rel = "noopener"; copy.append(link);
       card.append(element("span", "event-mark", "◷"), copy); coverage.append(card);
     }
-    coverage.append(element("p", "field-help", "Execution wall time excludes provider calls, preflight checks and artifact transfers. Targets and forecasts remain advisory."));
+    coverage.append(window.SimjectureI18n.text(element("p", "field-help"), "monitor.coverageHelp"));
     panel.append(coverage);
   }
   if (snapshot.warnings?.length) {
@@ -1849,7 +1849,7 @@ function renderResearchTrace() {
   const events = [...(snapshot.recent_events || [])].reverse();
   if (!events.length) {
     if (!engineEvents.length) {
-      panel.append(paragraph("panel-placeholder", "No model or tool actions have been recorded yet."));
+      panel.append(window.SimjectureI18n.text(paragraph("panel-placeholder", ""), "monitor.noActions"));
     }
     return;
   }
@@ -1919,7 +1919,7 @@ function renderArtifacts() {
   if (!state.snapshot) return;
   const artifacts = state.snapshot.artifacts || [];
   if (!artifacts.length) {
-    panel.append(paragraph("panel-placeholder", "No browser-visible artifacts have been recorded yet."));
+    panel.append(window.SimjectureI18n.text(paragraph("panel-placeholder", ""), "monitor.noArtifacts"));
     return;
   }
   const grid = element("div", "artifact-grid");
@@ -1960,7 +1960,7 @@ function renderConclusion() {
   if (!state.snapshot) return;
   const report = state.snapshot.snapshot.report;
   if (!report) {
-    panel.append(paragraph("panel-placeholder", "The campaign has not written a terminal conclusion."));
+    panel.append(window.SimjectureI18n.text(paragraph("panel-placeholder", ""), "monitor.noConclusion"));
     return;
   }
   const conclusion = element("article", "conclusion");
