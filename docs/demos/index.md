@@ -44,7 +44,7 @@ and the observed outcome.
 | Case | Scope and verification |
 |---|---|
 | [Qin-1 hardware-to-plasma](qin1-hardware-plasma.md) | Operator-assisted CAD → Gmsh → Elmer/RLC → 3D WarpX → PyVista study with retained sensitivity checks (`demos/qin1_multiphysics/`) |
-| [FuZE mesh and solver diagnostics](fuze-mesh-solver-diagnostics.md) | Operator-assisted FLASH prescribed refinement and native WarpX restart/RNG/axis controls, including a rejected repair candidate and no-key excerpt verification |
+| [FuZE mesh and solver diagnostics](fuze-mesh-solver-diagnostics.md) | Operator-assisted FLASH mesh and native WarpX restart/axis case study; rejected repair retained; no-key checks of the excerpt, without solver reproduction |
 | [Quantum ESPRESSO DFT references](../how-to/quantum-espresso.md) | Material-specific diamond-Si (`demos/qe_dft_reference/`) and magnetic bcc-Fe (`demos/qe_fe_reference/`) protocols, Bubblewrap execution receipts and completion-bound reassessment |
 
 Earlier `v0.1`–`v0.6.2` classic-workflow demo directories have been retired from

@@ -48,6 +48,18 @@ def test_changed_figure_is_detected(excerpt):
         module.verify(excerpt)
 
 
+@pytest.mark.parametrize("value", [-1.0, float("nan"), float("inf")])
+@pytest.mark.parametrize("control", ["gateoff_original_13field_L2", "mode0_v2_13field_L2"])
+def test_invalid_default_off_error_is_rejected(excerpt, control, value):
+    rewrite(
+        excerpt,
+        "restart",
+        lambda data: data["default_off"][control].update(Pe=value),
+    )
+    with pytest.raises(ValueError, match="Default-off regression"):
+        module.verify(excerpt)
+
+
 @pytest.mark.parametrize(
     ("name", "change", "message"),
     [

@@ -111,7 +111,9 @@ def verify(repository: Path) -> dict:
         restart["default_off"]["mode0_v2_13field_L2"],
     ):
         require(
-            set(errors) == FIELDS and max(errors.values()) < TOLERANCE, "Default-off regression"
+            set(errors) == FIELDS
+            and all(math.isfinite(v) and 0 <= v < TOLERANCE for v in errors.values()),
+            "Default-off regression",
         )
 
     axis = read("axis")

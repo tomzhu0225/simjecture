@@ -15,6 +15,10 @@ installed Simjecture 0.7.0 workspace. This retrospective snapshot was exported
 on 4 November 2026. It has no formal harness-adjudicated scientific verdict.
 The FLASH and WarpX results below belong to separate branches, not a coupled run.
 
+**What you can verify:** the retained files and reported arithmetic, using the
+command below. Raw simulation outputs and local solver modifications are omitted,
+so this checkout does not support a solver rerun or independent field reanalysis.
+
 [Inspect the retained record](https://github.com/tomzhu0225/simjecture/tree/main/demos/fuze_mesh_solver_diagnostics)
 
 ## Place refinement where geometry needs it
