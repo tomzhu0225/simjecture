@@ -8,7 +8,10 @@ This project follows semantic versioning. Dates use ISO 8601.
   monitor, with a shared saved preference and live translations of program-owned
   headings, navigation, actions, forms, dialogs, statuses, tooltips, accessibility
   text and dynamic components. Preserve raw research content and API values;
-  add a repeatable source-copy audit and browser regression checks.
+  add a repeatable source-copy audit and browser regression checks. Keep
+  translations in per-language JSON files with a language manifest. Preserve
+  tool-card focus across language switches and polling; cover guided
+  commissioning details and missing benchmark measurements.
 
 ## 0.7.1 — 2026-11-08
 

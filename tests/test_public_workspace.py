@@ -93,6 +93,13 @@ def test_shared_assets_and_hosted_bootstrap_never_expose_credentials(app):
     assert 'meta name="simjecture-hosted"' in client.get("/workspace").text
     for path in ("/assets/workspace.js", "/assets/workspace.css", "/assets/workspace-monitor.js"):
         assert client.get(path).status_code == 200
+    for locale in ("manifest", "en", "zh-CN"):
+        response = client.get(f"/assets/language/{locale}.json")
+        assert response.status_code == 200
+        assert response.headers["content-type"] == "application/json"
+        assert response.json()
+    assert client.get("/assets/language/unknown.json").status_code == 404
+    assert client.get("/assets/language/README.md").status_code == 404
 
 
 def test_every_admin_mutation_is_rejected_even_without_ui(app):

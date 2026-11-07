@@ -80,8 +80,14 @@ def test_translation_catalog_and_static_routes(language_site):
             response = client.get(f"/assets/{asset}")
             assert response.status_code == 200
             assert response.headers["content-type"] == "text/javascript; charset=utf-8"
-        source = client.get("/assets/i18n-messages.js").text
-        messages = json.loads(source.split("window.SimjectureMessages = ", 1)[1].rstrip(";\n"))
+        manifest = client.get("/assets/language/manifest.json").json()
+        assert manifest == {"en": "English", "zh-CN": "简体中文"}
+        catalogs = {}
+        for language in manifest:
+            response = client.get(f"/assets/language/{language}.json")
+            assert response.status_code == 200
+            assert response.headers["content-type"] == "application/json; charset=utf-8"
+            catalogs[language] = response.json()
         for route in ["/workspace", "/monitor"]:
             html = client.get(route).text
             assert html.index("/assets/i18n-messages.js") < html.index("/assets/i18n.js")
@@ -91,14 +97,73 @@ def test_translation_catalog_and_static_routes(language_site):
             )
             assert keys
             for key in keys:
-                assert messages[key]["en"]
-                assert messages[key]["zh-CN"]
-        for key, entry in messages.items():
-            assert entry.get("en"), key
-            assert entry.get("zh-CN"), key
-            assert set(re.findall(r"\{(\w+)\}", entry["en"])) == set(
-                re.findall(r"\{(\w+)\}", entry["zh-CN"])
+                assert catalogs["en"][key]
+                assert catalogs["zh-CN"][key]
+        assert catalogs["en"].keys() == catalogs["zh-CN"].keys()
+        for key, english in catalogs["en"].items():
+            assert english, key
+            assert catalogs["zh-CN"][key], key
+            assert set(re.findall(r"\{(\w+)\}", english)) == set(
+                re.findall(r"\{(\w+)\}", catalogs["zh-CN"][key])
             ), key
+        static = Path(__file__).resolve().parents[1] / "src/conjecture_solver/web/static"
+        for path in static.glob("*.js"):
+            source = path.read_text()
+            keys = re.findall(r'SimjectureI18n\.(?:t|message|known)\("([^"]+)"', source)
+            for key in keys:
+                assert key in catalogs["en"], (path.name, key)
+
+
+@pytest.mark.parametrize("route", ["/workspace", "/monitor"])
+def test_language_manifest_loads_before_startup_and_supplies_new_options(
+    language_site, language_page, route
+):
+    base, _, _ = language_site
+    page, expect = language_page
+    held = []
+    page.route("**/assets/language/manifest.json", lambda request: held.append(request))
+    page.route(
+        "**/assets/language/fr.json",
+        lambda request: request.fulfill(
+            json={"ui.reason": "Raison", "status.pending": "En attente"}
+        ),
+    )
+    page.goto(base + route, wait_until="domcontentloaded")
+    picker = page.locator("[data-language-select]")
+    expect(picker).to_be_disabled()
+    assert held
+    held[0].fulfill(json={"en": "English", "zh-CN": "简体中文", "fr": "Français"})
+    expect(picker).to_be_enabled()
+    expect(picker.locator('option[value="fr"]')).to_have_text("Français")
+    expect(page.locator("html")).to_have_attribute("lang", "en")
+    assert page.evaluate("localStorage.getItem('simjecture-language')") is None
+    page.evaluate("SimjectureI18n.setLanguage('fr')")
+    assert page.evaluate("SimjectureI18n.t('ui.reason')") == "Raison"
+    assert page.evaluate("SimjectureI18n.label('pending')") == "En attente"
+    assert page.evaluate("SimjectureI18n.t('workspace.homeIntro')") == "What are we investigating?"
+    expect(picker).to_have_value("fr")
+    expect(page.locator("html")).to_have_attribute("lang", "fr")
+
+
+@pytest.mark.parametrize("missing", ["manifest", "zh-CN"])
+def test_optional_language_resource_failure_keeps_english_ui(language_site, language_page, missing):
+    base, _, _ = language_site
+    page, expect = language_page
+    page.route(
+        f"**/assets/language/{missing}.json",
+        lambda route: route.fulfill(status=404, body="missing"),
+    )
+    page.goto(base + "/workspace")
+    expect(page.locator("#account-button")).to_be_enabled()
+    expect(page.locator("[data-language-select]")).to_be_enabled()
+    if missing == "zh-CN":
+        choose_language(page, "zh-CN")
+        expect(page.locator("html")).to_have_attribute("lang", "zh-CN")
+    else:
+        expect(page.locator("[data-language-select] option")).to_have_count(1)
+    expect(page.locator('[data-i18n="workspace.homeIntro"]')).to_have_text(
+        "What are we investigating?"
+    )
 
 
 @pytest.mark.parametrize("width", [1440, 390])
@@ -217,6 +282,7 @@ def test_missing_chinese_copy_falls_back_to_english(language_site, language_page
     page, expect = language_page
     page.goto(base + "/workspace")
     # Simulate an incomplete catalog without shipping a deliberately missing translation.
+    page.evaluate("SimjectureI18n.ready")
     page.evaluate("delete SimjectureMessages['workspace.homeIntro']['zh-CN']")
     choose_language(page, "zh-CN")
     expect(page.locator('[data-i18n="workspace.homeIntro"]')).to_have_text(
@@ -715,3 +781,147 @@ def test_legacy_stages_graph_values_and_contract_expansion_stay_stable(
     page.evaluate("renderInspector()")
     expect(detail).to_have_attribute("open", "")
     expect(detail.locator("summary")).to_have_text("Observable")
+
+
+def test_guided_commissioning_keeps_technical_values_and_layout(language_site, language_page):
+    base, _, campaign = language_site
+    page, expect = language_page
+    page.goto(base + f"/monitor?campaign={campaign}")
+    expect(page.locator("#root-hypothesis")).to_have_text("Untranslated scientific hypothesis")
+    values = ["fixture/capability", "fixture/program.py", "fixture/protocol.json", "fixed"]
+    page.evaluate("""values => {
+        state.pollInFlight = true;
+        const root = state.snapshot.claim_graph.nodes[0].id;
+        state.snapshot.commissioning = {guided:{available:true, name:'Fixture setup',
+          description:'Keep this scientific description in English', capability:values[0],
+          program_path:values[1], protocol_path:values[2], policy:values[3]}};
+        window.guidedStage = {id:'stage-fixture',status:'pending',scientific_claim_id:root,
+          claim_ids:[],binding_count:0,guided_available:true};
+        window.guidedHost = document.createElement('section');
+        guidedHost.id = 'guided-review-fixture'; document.body.append(guidedHost);
+    }""", values)
+    for language in ["en", "zh-CN", "en"]:
+        page.evaluate("""language => {
+            SimjectureI18n.setLanguage(language);
+            guidedHost.replaceChildren();
+            renderCommissioningInspector(guidedHost, guidedStage);
+        }""", language)
+        chips = page.locator("#guided-review-fixture .claim-metadata.compact")
+        expect(chips.locator(".metadata-chip")).to_have_text(values)
+        expect(chips).to_have_css("display", "flex")
+        expect(chips).to_have_css("gap", "7px")
+
+
+def test_tools_keep_card_and_dialog_focus_after_language_change_and_poll(
+    language_site, language_page
+):
+    base, _, _ = language_site
+    page, expect = language_page
+    page.goto(base + "/workspace#tools")
+    expect(page.locator(".research-tool-card").first).to_be_visible()
+    page.evaluate("""() => {
+        state.tools.push({id:'i18n-local-fixture',name:'Fixture runtime',installed:true,
+          registered:false,variants:[{},{}],description:'Untranslated technical description'});
+        renderToolsView();
+        window.toolCard = document.querySelector('.research-tool-card');
+        window.toolButton = toolCard.querySelector('button'); toolButton.focus();
+        window.toolRevision = state.toolsRevision;
+    }""")
+    for language in ["zh-CN", "en"]:
+        assert page.evaluate("""language => {
+            SimjectureI18n.setLanguage(language);
+            renderToolsView();
+            return state.toolsRevision === toolRevision && toolCard.isConnected
+              && document.activeElement === toolButton;
+        }""", language)
+    page.evaluate("""() => {
+        window.detailTool = catalogTools().find(tool => tool.id === 'python');
+        renderToolDetails(detailTool);
+        document.getElementById('tool-details-dialog').showModal();
+        window.detailButton = document.getElementById('close-tool-details');
+        detailButton.focus();
+        window.detailDescription = document.querySelector('#tool-details-body p');
+    }""")
+    assert page.evaluate("""() => {
+        SimjectureI18n.setLanguage('zh-CN'); renderToolDetails(detailTool);
+        return detailDescription.isConnected && document.activeElement === detailButton;
+    }""")
+
+
+def test_community_benchmark_missing_measurements_switch_in_place(language_site, language_page):
+    base, _, _ = language_site
+    page, expect = language_page
+    page.goto(base + "/workspace#benchmarks")
+    expect(page.locator("#benchmark-leaderboard tbody tr").first).to_be_visible()
+    page.evaluate("""async () => {
+        const pack = await api('benchmarks');
+        pack.official = null;
+        const board = pack.local_leaderboard || pack.leaderboard;
+        board.cohorts = [{id:'missing-measurements',scope:{task:'fixture',pack_version:pack.version,
+          hardware:'fixture',budget_seconds:60,execution_backend:'fixture',
+          harness_version:'fixture',runner_version:'fixture'},rows:[{
+            agent:'fixture',agent_version:'fixture',model:'fixture',model_version:'fixture',
+            settings:{reasoning_effort:'high'},receipts:[],pass_rate:0,passes:0,trials:1,
+            pass_rate_95_interval:[0,1],provisional:true,pareto:false,
+            deadline_misses:0,trials_without_price:1,median_verified_seconds:null,
+            mean_trial_seconds:null,seconds_per_success:null,
+            api_tokens_usd_per_success:null,reported_usd_per_success:null}]}];
+        window.fixtureBoard = board;
+        window.rawBoard = JSON.stringify(board);
+        WorkspaceBenchmarks.render(pack,{readonly:true,hosted:false,
+          api:()=>{},refresh:()=>{},toast:()=>{}});
+        window.measurementSelector = '#benchmark-leaderboard tbody td:nth-child(4)';
+        window.firstMeasurement = document.querySelector(measurementSelector);
+    }""")
+    for language, expected in [("en", "Unknown"), ("zh-CN", "未知"), ("en", "Unknown")]:
+        page.evaluate("language => SimjectureI18n.setLanguage(language)", language)
+        cells = page.locator("#benchmark-leaderboard tbody tr").first.locator(":scope > td")
+        assert cells.all_text_contents()[3:7] == [expected] * 4
+        assert page.evaluate("""() => JSON.stringify(fixtureBoard) === rawBoard
+          && firstMeasurement === document.querySelector(measurementSelector)""")
+
+
+def test_unchanged_language_does_not_rewrite_bound_dom(language_site, language_page):
+    base, _, _ = language_site
+    page, expect = language_page
+    page.goto(base + "/workspace#benchmarks")
+    expect(page.locator("#benchmark-leaderboard tbody tr").first).to_be_visible()
+    assert page.evaluate("""() => {
+        const observer = new MutationObserver(()=>{});
+        observer.observe(document,{subtree:true,childList:true,characterData:true,attributes:true});
+        SimjectureI18n.setLanguage(SimjectureI18n.getLanguage());
+        SimjectureI18n.apply();
+        const count = observer.takeRecords().length;
+        observer.disconnect(); return count;
+    }""") == 0
+
+
+def test_source_audit_exclusions_do_not_depend_on_installation_formatting(tmp_path, monkeypatch):
+    script = Path(__file__).resolve().parents[1] / "scripts/check_web_i18n.py"
+    spec = importlib.util.spec_from_file_location("check_web_i18n", script)
+    audit = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(audit)
+    monkeypatch.setattr(audit, "STATIC", tmp_path)
+    source = '''button.textContent = "New visible UI label";
+async function assistInstallation(tool, diagnose=false) {
+  // i18n-technical-start: generated agent request
+  const steps = diagnose ? "Inspect the saved log" : "Install the tool";
+  const project = await api("projects", { name: "Install fixture" });
+  // i18n-technical-end
+  button.textContent = "Another visible label";
+}
+'''
+    for declaration in ["const steps = diagnose", "const steps =\n    diagnose"]:
+        (tmp_path / "workspace.js").write_text(
+            source.replace("const steps = diagnose", declaration)
+        )
+        records = audit.audit()
+        assert {row["text"] for row in records if row["category"] == "unresolved"} == {
+            "New visible UI label", "Another visible label"
+        }
+        assert {"Inspect the saved log", "Install the tool", "Install fixture"} <= {
+            row["text"] for row in records if row["category"] == "technical"
+        }
+    (tmp_path / "workspace.js").write_text(source.replace("// i18n-technical-end", ""))
+    with pytest.raises(ValueError, match="no end"):
+        audit.audit()

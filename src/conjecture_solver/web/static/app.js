@@ -158,6 +158,7 @@ function updateThemeButton() {
 async function initialize() {
   setSync("connecting", SimjectureI18n.message("ui.connecting"));
   try {
+    await SimjectureI18n.ready;
     const bootstrap = await api("/api/bootstrap");
     state.campaigns = bootstrap.campaigns || [];
     state.controlToken = bootstrap.control_token;
@@ -1321,9 +1322,9 @@ function renderCommissioningInspector(container, stage) {
     const section = inspectorSection(SimjectureI18n.message("ui.guided-starting-point"));
     if (guided.name) section.append(element("strong", null, guided.name));
     if (guided.description) section.append(markdownBlock(guided.description));
-    const chips = element("div", SimjectureI18n.live(() => SimjectureI18n.t("ui.claim-metadata-compact")));
+    const chips = element("div", "claim-metadata compact");
     for (const value of [guided.capability, guided.program_path, guided.protocol_path, guided.policy]) {
-      if (value) chips.append(element("span", "metadata-chip", value === detail.id ? value : SimjectureI18n.live(() => SimjectureI18n.label(value, value))));
+      if (value) chips.append(element("span", "metadata-chip", value));
     }
     if (chips.childElementCount) section.append(chips);
     if (guided.operator_validation) {

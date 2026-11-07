@@ -156,7 +156,26 @@ window.WorkspaceBenchmarks = (() => {
         const identity=node("div",undefined,"benchmark-model-identity"),name=node("strong",SimjectureI18n.live(() => modelName(row.family_label))),detail=node("small",SimjectureI18n.live(() => agentName(row.agent)));identity.append(name,detail);SimjectureI18n.attribute(identity, "title", () => row.model + " · " + (row.agent_version || SimjectureI18n.t("ui.version-unavailable")));
         const receipts=node("details");receipts.append(node("summary",SimjectureI18n.live(() => SimjectureI18n.t("ui.view") + row.trials + " " + (row.trials===1 ? SimjectureI18n.t("ui.attempt") : SimjectureI18n.t("ui.attempts")))));
         const token=n=>n===null||n===undefined ? SimjectureI18n.t("ui.not-recorded") : n.toLocaleString();
-        receipts.append(table([SimjectureI18n.message("ui.elapsed"),SimjectureI18n.message("ui.input-incl-cache"),SimjectureI18n.message("ui.cached-input"),SimjectureI18n.message("ui.output"),SimjectureI18n.message("ui.cost"),SimjectureI18n.message("ui.result")],row.receipts.map(r=>[SimjectureI18n.live(() => seconds(r.wall_seconds)),SimjectureI18n.live(() => token(r.usage.input_tokens)),SimjectureI18n.live(() => token(r.usage.cached_input_tokens)),SimjectureI18n.live(() => token(r.usage.output_tokens)),SimjectureI18n.live(() => (r.coverage==="partial" ? "≥ " : r.coverage==="agy-estimate" ? "≈ " : "")+money(costBasis==="cached" ? r.cost_usd : r.uncached_cost_usd)),SimjectureI18n.live(() => r.passed ? SimjectureI18n.t("ui.complete") : r.provider_interruption ? SimjectureI18n.t("ui.quota-interrupted-after-work") : r.numeric_passed&&!r.findings_present ? SimjectureI18n.t("ui.numbers-pass-findings-missing") : SimjectureI18n.t("ui.incomplete-contract"))])));
+        receipts.append(table([
+          SimjectureI18n.message("ui.elapsed"), SimjectureI18n.message("ui.input-incl-cache"),
+          SimjectureI18n.message("ui.cached-input"), SimjectureI18n.message("ui.output"),
+          SimjectureI18n.message("ui.cost"), SimjectureI18n.message("ui.result"),
+        ], row.receipts.map(receipt => [
+          SimjectureI18n.live(() => seconds(receipt.wall_seconds)),
+          SimjectureI18n.live(() => token(receipt.usage.input_tokens)),
+          SimjectureI18n.live(() => token(receipt.usage.cached_input_tokens)),
+          SimjectureI18n.live(() => token(receipt.usage.output_tokens)),
+          SimjectureI18n.live(() => {
+            const prefix = receipt.coverage === "partial" ? "≥ " : receipt.coverage === "agy-estimate" ? "≈ " : "";
+            return prefix + money(costBasis === "cached" ? receipt.cost_usd : receipt.uncached_cost_usd);
+          }),
+          SimjectureI18n.live(() => {
+            if (receipt.passed) return SimjectureI18n.t("ui.complete");
+            if (receipt.provider_interruption) return SimjectureI18n.t("ui.quota-interrupted-after-work");
+            if (receipt.numeric_passed && !receipt.findings_present) return SimjectureI18n.t("ui.numbers-pass-findings-missing");
+            return SimjectureI18n.t("ui.incomplete-contract");
+          }),
+        ])));
         if(row.unavailable_attempts)receipts.append(node("p",SimjectureI18n.live(() => row.unavailable_attempts+SimjectureI18n.t("ui.attempts-unavailable-before-inference-excluded-from-scores")),"field-help"));identity.append(receipts);
         const score=node("div");score.append(node("strong",SimjectureI18n.live(() => row.trials ? percent(row.pass_rate) : SimjectureI18n.t("ui.unavailable-2"))),node("small",SimjectureI18n.live(() => row.trials ? (row.passes + "/" + row.trials + SimjectureI18n.t("ui.complete-2")) : SimjectureI18n.t("ui.no-successful-inference"))));
         const numerical=node("div");numerical.append(node("strong",row.trials ? percent(row.numeric_passes/row.trials) : "—"),node("small",SimjectureI18n.live(() => row.trials ? (row.numeric_passes + "/" + row.trials + SimjectureI18n.t("ui.numerical-passes")) : "")));
@@ -262,20 +281,24 @@ window.WorkspaceBenchmarks = (() => {
       scatter([]); return;
     }
     const scope = cohort.scope;
-    SimjectureI18n.bindText($("benchmark-cohort-note"), () => SimjectureI18n.t("ui.pack-s-budget-harness-runner", {p0: scope.task, p1: scope.pack_version, p2: scope.hardware, p3: scope.budget_seconds, p4: (scope.execution_backend || SimjectureI18n.t("ui.execution-unknown")), p5: scope.harness_version, p6: scope.runner_version}));
+    SimjectureI18n.bindText($("benchmark-cohort-note"), () => SimjectureI18n.t("benchmarks.cohortSummary", {task: scope.task, version: scope.pack_version, hardware: scope.hardware, seconds: scope.budget_seconds, backend: scope.execution_backend || SimjectureI18n.t("ui.execution-unknown"), harness: scope.harness_version, runner: scope.runner_version}));
     const entries = cohort.rows.map(row => {
       const identity = node("div"), quality = node("div");
-      identity.append(node("strong", row.model), node("small", SimjectureI18n.live(() => SimjectureI18n.t("ui.effort-2", {p0: row.agent, p1: row.agent_version, p2: SimjectureI18n.label(row.settings.reasoning_effort || "default")}))));
+      identity.append(node("strong", row.model), node("small", SimjectureI18n.live(() => SimjectureI18n.t("benchmarks.agentVersionEffort", {agent: row.agent, version: row.agent_version, effort: SimjectureI18n.label(row.settings.reasoning_effort || "default")}))));
       SimjectureI18n.attribute(identity, "title", () => JSON.stringify({model_version:row.model_version,settings:row.settings}));
       const receipts=node("details"),receiptLabel=node("summary",SimjectureI18n.message("ui.trial-measurements"));receipts.append(receiptLabel);
       const tokens=n=>n===null || n===undefined ? SimjectureI18n.t("ui.unknown") : n.toLocaleString();
       receipts.append(table([SimjectureI18n.message("ui.elapsed"),SimjectureI18n.message("ui.input-tokens"),SimjectureI18n.message("ui.cached-input"),SimjectureI18n.message("ui.output-tokens"),SimjectureI18n.message("ui.delivery")],row.receipts.map(r=>[
         SimjectureI18n.live(() => seconds(r.wall_seconds)),SimjectureI18n.live(() => tokens(r.usage.input_tokens)),SimjectureI18n.live(() => tokens(r.usage.cached_input_tokens)),SimjectureI18n.live(() => tokens(r.usage.output_tokens)),SimjectureI18n.live(() => r.passed ? SimjectureI18n.t("ui.verified-pass") : r.provider_interruption ? SimjectureI18n.t("ui.interrupted", {p0: r.provider_interruption}) : r.numeric_passed && r.findings_present===false ? SimjectureI18n.t("ui.numbers-pass-findings-missing-2") : r.deadline_missed ? SimjectureI18n.t("ui.verified-after-deadline") : SimjectureI18n.t("ui.incomplete-contract")),
       ])));identity.append(receipts);
-      quality.append(node("strong", `${percent(row.pass_rate)} · ${row.passes}/${row.trials}`), node("small", SimjectureI18n.live(() => SimjectureI18n.t("ui.95-interval", {p0: row.pass_rate_95_interval.map(percent).join("–")}))));
+      quality.append(node("strong", `${percent(row.pass_rate)} · ${row.passes}/${row.trials}`), node("small", SimjectureI18n.live(() => SimjectureI18n.t("benchmarks.confidenceInterval", {interval: row.pass_rate_95_interval.map(percent).join("–")}))));
       const status = node("span", SimjectureI18n.live(() => row.provisional ? SimjectureI18n.t("ui.provisional-2") : (!row.passes ? SimjectureI18n.t("ui.no-verified-success") : (row.pareto === true ? SimjectureI18n.t("ui.pareto-frontier-2") : (row.pareto === false ? SimjectureI18n.t("ui.tradeoff-dominated") : (row.pareto_quality_time ? SimjectureI18n.t("ui.time-frontier-cost-unknown") : SimjectureI18n.t("ui.cost-incomplete")))))), `benchmark-badge ${row.pareto ? "frontier" : ""}`);
-      SimjectureI18n.attribute(status, "title", () => SimjectureI18n.t("ui.median-first-verified-completion-late-completions-trials-with-unknow", {p0: seconds(row.median_verified_seconds), p1: row.deadline_misses, p2: row.trials_without_price}));
-      return [identity,String(row.trials),quality,seconds(row.mean_trial_seconds),seconds(row.seconds_per_success),money(row.api_tokens_usd_per_success),money(row.reported_usd_per_success),status];
+      SimjectureI18n.attribute(status, "title", () => SimjectureI18n.t("benchmarks.measurementHint", {seconds: seconds(row.median_verified_seconds), late: row.deadline_misses, unpriced: row.trials_without_price}));
+      return [identity, String(row.trials), quality,
+        SimjectureI18n.live(() => seconds(row.mean_trial_seconds)),
+        SimjectureI18n.live(() => seconds(row.seconds_per_success)),
+        SimjectureI18n.live(() => money(row.api_tokens_usd_per_success)),
+        SimjectureI18n.live(() => money(row.reported_usd_per_success)), status];
     });
     const wrap = node("div",undefined,"benchmark-table-scroll");
     wrap.append(table([SimjectureI18n.message("ui.agent-configuration"),SimjectureI18n.message("ui.trials"),SimjectureI18n.message("ui.pass-rate"),SimjectureI18n.message("ui.mean-trial-time"),SimjectureI18n.message("ui.time-success"),SimjectureI18n.message("ui.token-estimate-success"),SimjectureI18n.message("ui.reported-success"),SimjectureI18n.message("ui.sample-status")],entries));

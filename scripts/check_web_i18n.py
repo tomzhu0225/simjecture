@@ -314,6 +314,28 @@ class HTMLCopy(HTMLParser):
         )
 
 
+def technical_ranges(source):
+    """Explicitly reviewed non-UI blocks, independent of JavaScript formatting."""
+    ranges = []
+    active = None
+    for marker in re.finditer(
+        r"^\s*// i18n-technical-(start|end)(?:: ([^\n]+))?$", source, re.M
+    ):
+        kind, reason = marker.groups()
+        if kind == "start":
+            if active is not None or not reason:
+                raise ValueError("i18n technical blocks need a reason and cannot nest")
+            active = (marker.end(), reason)
+        else:
+            if active is None:
+                raise ValueError("i18n technical block ends without a start")
+            ranges.append((active[0], marker.start(), active[1]))
+            active = None
+    if active is not None:
+        raise ValueError("i18n technical block has no end")
+    return ranges
+
+
 def audit():
     records = []
     css_classes = set()
@@ -365,6 +387,7 @@ def audit():
             HTMLCopy(path.name, emit).feed(source)
             continue
         line_starts = [0] + [m.end() for m in re.finditer("\n", source)]
+        excluded_ranges = technical_ranges(source)
         functions = [
             (m.start(), m.group(1))
             for m in re.finditer(r"^(?:async )?function (\w+)\(", source, re.M)
@@ -383,8 +406,15 @@ def audit():
                     "technical",
                     "scientific Markdown formatter; no owned UI copy",
                 )
-            elif re.fullmatch(r"(?:ui|workspace|monitor|panels|status|time)\.[\w.\-]+", value):
+            elif re.fullmatch(
+                r"(?:ui|workspace|monitor|panels|status|time|benchmarks|tools)\.[\w.\-]+", value
+            ):
                 emit(path.name, line, value, "localized", "message key")
+            elif any(left <= start < right for left, right, _ in excluded_ranges):
+                reason = next(
+                    reason for left, right, reason in excluded_ranges if left <= start < right
+                )
+                emit(path.name, line, value, "technical", reason)
             elif path.name == "workspace.js" and source.rfind(
                 "const toolSetupGuides =", 0, start
             ) > source.rfind("function ", 0, start):
@@ -407,17 +437,6 @@ def audit():
                     "technical",
                     "agent request/instructions; preserve research input",
                 )
-            elif path.name == "workspace.js" and source.find(
-                "  const steps = diagnose"
-            ) < start < source.find('  const project = await api("projects", { name:'):
-                emit(path.name, line, value, "technical", "tool installation request; not UI copy")
-            elif (
-                path.name == "workspace.js"
-                and function == "assistInstallation"
-                and source.rfind('const project = await api("projects", { name:', 0, start)
-                > source.rfind("\n", 0, start)
-            ):
-                emit(path.name, line, value, "technical", "saved conversation name in API payload")
             elif re.search(r"\bprompt\s*:\s*$", before) or re.search(r"\.value\s*=\s*$", before):
                 emit(path.name, line, value, "technical", "form/request data, not a display label")
             elif (

@@ -740,7 +740,10 @@ def create_app(root, *, dispatch=True, secure_cookies=True):
         if (
             not path.is_file()
             or path.is_symlink()
-            or path.suffix not in {".js", ".css", ".svg", ".woff", ".woff2", ".png", ".ico"}
+            or (
+                path.suffix not in {".js", ".css", ".svg", ".woff", ".woff2", ".png", ".ico"}
+                and not (path.parent == WORKSPACE_STATIC / "language" and path.suffix == ".json")
+            )
         ):
             raise HTTPException(404, "Not found")
         return FileResponse(path, headers=HEADERS)
