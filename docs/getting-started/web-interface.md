@@ -36,6 +36,97 @@ rationales fold away, with failed reviews expanded. Usage is pending/unavailable
 when the backend has not supplied counters, never assumed to be zero. Archived
 DSH activity remains visible, but its launch route is removed.
 
+## Interface language
+
+Choose **English / 简体中文** at the bottom of the workspace sidebar or in the
+experiment monitor's top bar. The default is English, including when the browser
+uses Chinese. An explicit choice applies immediately and is saved in this
+browser's local storage for both pages on the same origin. Other open tabs update
+as well. If browser storage is unavailable, switching still works on the current
+page, but the preference cannot survive a reload.
+
+Translation covers program-owned interface text: page and section headings,
+navigation, buttons, form labels/help/placeholders, dialogs, notifications,
+loading/empty states, status labels, graph legends, tooltips, accessibility text
+and the onboarding tour. Workspace conversations, projects, tools, machines,
+knowledge, benchmarks, study preparation/budgets and the experiment monitor share
+the same catalog and language setting.
+
+User names and input, historical conversations, generated research reports,
+benchmark execution definitions, raw logs/evidence, model/tool identifiers,
+commands, paths and API values remain verbatim. Known built-in tool descriptions,
+benchmark descriptions and usage/pricing explanations are translated at their
+display boundary only when the server wording matches the catalog. Custom or
+newer descriptions and unrecognized server messages remain in their original language.
+
+For contributors, `web/static/language/en.json` and `zh-CN.json` contain the
+English and Chinese dictionaries, keyed by the same semantic message IDs.
+`language/manifest.json` maps language codes to their native display names; it
+also supplies both language selectors. To add a language, add its JSON dictionary
+and a manifest entry. No page-rendering changes are needed for existing keys.
+Use meaningful interpolation names such as `{count}` and `{model}` and retain
+matching placeholders across languages. English is the fallback dictionary.
+
+`i18n-messages.js` loads the manifest and dictionaries once; `i18n.js` retains the
+existing translation and DOM-binding API. Both page initializers await
+`SimjectureI18n.ready`, so delayed requests cannot start a partially translated
+application. The selector is disabled until initialization completes. Loading an
+optional dictionary can fail without preventing English fallback. Existing
+languages switch synchronously after initialization. A much larger language set
+could use loading on demand later; the current two dictionaries need no bundler,
+framework or runtime dependency.
+
+This follows the common separation of language resources from rendering code,
+as described in [i18next resource loading](https://www.i18next.com/how-to/add-or-load-translations)
+and [explicit fallback](https://www.i18next.com/principles/fallback), while preserving
+Simjecture's native JavaScript architecture.
+
+Mark text-only elements with `data-i18n="message.key"`; use
+`data-i18n-placeholder`, `data-i18n-title`, `data-i18n-aria-label` and the other
+supported attribute markers for static attributes. Keep nested controls and
+research content outside text-only markers.
+
+Dynamic DOM helpers use `SimjectureI18n.content(node, value)`:
+
+- Pass `SimjectureI18n.message("message.key", {name: value})` for UI copy.
+- Use `SimjectureI18n.live(() => ...)` or `bindText(node, () => ...)` for display
+  expressions that combine localized labels with changing values. Use catalog
+  parameters rather than replacing fragments of an English sentence.
+- Use `SimjectureI18n.attribute(node, "aria-label", () => ...)` for live attributes.
+- Pass research data as ordinary strings. It is never searched for translations.
+- Use `label(rawEnum, englishDisplay)` only for displayed enum labels; keep option
+  values, datasets, state and API payloads raw. `known(key, serverText)` is reserved
+  for explicitly identified built-in UI descriptions, with raw fallback.
+
+Changing language updates bound text/attributes in place, preserving inputs,
+event handlers and expanded sections. State/revision signatures must use raw
+values or stable message IDs, never translated display expressions. UI-only Markdown uses an explicit render
+adapter; research Markdown keeps its normal renderer. Bindings use a `WeakMap`,
+with no global mutation observer. Missing Chinese entries fall back to English;
+an unknown key is displayed unchanged. No build step or extra runtime dependency
+is required.
+
+Run the repeatable source audit from the repository root:
+
+```sh
+python scripts/check_web_i18n.py --check
+python scripts/check_web_i18n.py --json > /tmp/simjecture-i18n-audit.json
+python -m pytest tests/test_web_i18n.py
+```
+
+The audit skips `vendor/` and separates localized references, reviewed technical
+literals and unresolved candidates, including nested JS templates and obvious
+text/attribute sinks. Reviewed non-UI blocks can use paired
+`// i18n-technical-start: reason` and `// i18n-technical-end` comments; keep
+these blocks narrow, since their contents are excluded from translation.
+It is a conservative lexer, not a full JavaScript parser or
+a translation percentage: indirect runtime values and server-provided copy need
+browser review. New exclusions must identify technical content, not hide UI copy.
+Review both languages at desktop and mobile widths, including open forms/dialogs,
+dynamic updates, reloads, navigation and simultaneous tabs. Optional hosted,
+authentication, provider and SSH workflows also require their usual integration
+checks; real research output must remain unchanged.
+
 ## Open a recorded campaign
 
 The browser interface is included in the core installation and has no Node.js

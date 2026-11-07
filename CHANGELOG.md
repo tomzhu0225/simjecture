@@ -4,6 +4,15 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+- Add an English/Simplified Chinese selector to the workspace and experiment
+  monitor, with a shared saved preference and live translations of program-owned
+  headings, navigation, actions, forms, dialogs, statuses, tooltips, accessibility
+  text and dynamic components. Preserve raw research content and API values;
+  add a repeatable source-copy audit and browser regression checks. Keep
+  translations in per-language JSON files with a language manifest. Preserve
+  tool-card focus across language switches and polling; cover guided
+  commissioning details and missing benchmark measurements.
+
 - Add LCB119's FuZE development record: five-level FLASH gas loading and native
   WarpX RNG/restart/axis controls, with retained figures, source hashes and
   no-key excerpt verification. Extend the existing skills with mesh/restart

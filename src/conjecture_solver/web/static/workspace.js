@@ -37,12 +37,12 @@ const bytes = (n) =>
       : `${(n / 1024 ** 2).toFixed(1)} MB`;
 function el(tag, text, cls) {
   const node = document.createElement(tag);
-  if (text !== undefined) node.textContent = text;
+  if (text !== undefined) SimjectureI18n.content(node, text);
   if (cls) node.className = cls;
   return node;
 }
 function toast(message, error = false) {
-  $("toast").textContent = message;
+  SimjectureI18n.content($("toast"), message);
   $("toast").className = `toast${error ? " error" : ""}`;
   $("toast").hidden = false;
   clearTimeout(toast.timer);
@@ -69,14 +69,14 @@ async function api(path, payload) {
   if (hosted && response.status === 401 && path === "bootstrap") {
     const session = await fetch("/api/session", {method:"POST", headers:{"Content-Type":"application/json"},body:"{}"});
     const sessionData = await session.json();
-    if (!session.ok) throw Error(sessionData.detail || "Unable to start a visitor session");
+    if (!session.ok) throw Error(sessionData.detail || SimjectureI18n.t("ui.unable-to-start-a-visitor-session"));
     state.token = sessionData.csrf_token;
     response = await fetch("/api/workspace/bootstrap");
   }
   const data = await response.json();
   if (!response.ok)
     throw Error(
-      data.error || data.message || (typeof data.detail === "string" ? data.detail : "") || `Request failed (${response.status})`,
+      data.error || data.message || (typeof data.detail === "string" ? data.detail : "") || SimjectureI18n.t("ui.request-failed", {p0: response.status}),
     );
   if (hosted && data.hosting) {state.hosting=data.hosting;renderHosting();}
   return data;
@@ -84,35 +84,35 @@ async function api(path, payload) {
 
 function renderAccount() {
   const h=state.hosting;
-  if(hosted && h){const allowed=h.permissions.upload_files;$("file-input").disabled=!allowed;const label=document.querySelector('label[for="file-input"]');if(label){label.hidden=false;label.title=allowed ? "Add project files" : "Sign in to add files";}}
+  if(hosted && h){const allowed=h.permissions.upload_files;$("file-input").disabled=!allowed;const label=document.querySelector('label[for="file-input"]');if(label){label.hidden=false;SimjectureI18n.attribute(label, "title", () => allowed ? SimjectureI18n.t("ui.add-project-files") : SimjectureI18n.t("ui.sign-in-to-add-files"));}}
   const box=$("hosting-account");
   const signature=JSON.stringify(h || state.settings);if(box.dataset.signature===signature)return;box.dataset.signature=signature;
   const account=h?.account;
   const button=$("account-button");button.disabled=false;button.replaceChildren();
-  button.title=account ? account.name || account.login : hosted ? "Sign in" : "Workspace menu";button.setAttribute("aria-label",account ? `Account: ${account.name || account.login}` : hosted ? "Sign in and account" : "Workspace menu");
+  SimjectureI18n.attribute(button, "title", () => account ? (account.name || account.login) : (hosted ? SimjectureI18n.t("ui.sign-in") : SimjectureI18n.t("ui.workspace-menu")));SimjectureI18n.attribute(button, "aria-label", () => account ? SimjectureI18n.t("ui.account", {p0: (account.name || account.login)}) : (hosted ? SimjectureI18n.t("ui.sign-in-and-account") : SimjectureI18n.t("ui.workspace-menu")));
   const fallback=el("span",account ? (account.name || account.login).slice(0,1).toUpperCase() : "S","avatar-fallback");button.append(fallback);
   if(account){const photo=el("img");photo.src="/api/auth/avatar";photo.alt="";photo.onload=()=>fallback.hidden=true;photo.onerror=()=>photo.remove();button.append(photo);}
   const theme=$("theme-toggle");
   box.replaceChildren();
-  box.append(el("small",hosted ? "ACCOUNT" : "SIMJECTURE","account-eyebrow"));
-  box.append(el("strong",account ? account.name || account.login : hosted ? "Guest workspace" : "Local workspace"));
+  box.append(el("small",SimjectureI18n.live(() => hosted ? SimjectureI18n.t("ui.account-2") : "SIMJECTURE"),"account-eyebrow"));
+  box.append(el("strong",SimjectureI18n.live(() => account ? (account.name || account.login) : (hosted ? SimjectureI18n.t("ui.guest-workspace") : SimjectureI18n.t("ui.local-workspace")))));
   if(h){
-  if(h.quota.tier==="owner")box.append(el("small","Owner workspace"));
-  for(const [key,label] of [["interactive","interactive turns"],["research","research campaigns"]]){
-    const q=h.quota[key];box.append(el("small",q.limit===null ? `Unlimited ${label}` : `${q.remaining} / ${q.limit} ${label} available`));
+  if(h.quota.tier==="owner")box.append(el("small",SimjectureI18n.message("ui.owner-workspace")));
+  for(const [key,label] of [["interactive",SimjectureI18n.message("ui.interactive-turns")],["research",SimjectureI18n.message("ui.research-campaigns")]]){
+    const q=h.quota[key];box.append(el("small",SimjectureI18n.live(() => q.limit===null ? SimjectureI18n.t("ui.unlimited", {p0: label}) : SimjectureI18n.t("ui.available-2", {p0: q.remaining, p1: q.limit, p2: label}))));
   }
-  box.append(el("small",h.quota.tier==="owner" ? "No hosted wall-time limit · shared queue" : "Allowance renews over 24 hours · one task at a time"));
-  if(!h.account)box.append(el("small","Temporary workspace. Sign in to keep your files and results."));
-  if(h.account){const out=el("button","Sign out","quiet account-signout");out.onclick=async()=>{await api("/api/auth/logout",{});location.href="/workspace";};box.append(out);}
-  else {const login=el("a",h.login_available ? "Sign in with GitHub" : "GitHub sign-in · being configured","secondary");
+  box.append(el("small",SimjectureI18n.live(() => h.quota.tier==="owner" ? SimjectureI18n.t("ui.no-hosted-wall-time-limit-shared-queue") : SimjectureI18n.t("ui.allowance-renews-over-24-hours-one-task-at-a-time"))));
+  if(!h.account)box.append(el("small",SimjectureI18n.message("ui.temporary-workspace-sign-in-to-keep-your-files-and-results")));
+  if(h.account){const out=el("button",SimjectureI18n.message("ui.sign-out"),"quiet account-signout");out.onclick=async()=>{await api("/api/auth/logout",{});location.href="/workspace";};box.append(out);}
+  else {const login=el("a",SimjectureI18n.live(() => h.login_available ? SimjectureI18n.t("ui.sign-in-with-github") : SimjectureI18n.t("ui.github-sign-in-being-configured")),"secondary");
     if(h.login_available)login.href="/api/auth/github/start";else login.setAttribute("aria-disabled","true");box.append(login);}
   }
   const menu=el("div",undefined,"account-menu-links");
-  if(!hosted){const connections=el("button","Connections","quiet");connections.onclick=()=>{box.hidden=true;button.setAttribute("aria-expanded","false");view("settings");};menu.append(connections);}
-  const tour=el("button","Take the tour","quiet");tour.onclick=()=>{box.hidden=true;button.setAttribute("aria-expanded","false");window.WorkspaceTour?.start();};menu.append(tour);
-  const details=el("button","Workspace details","quiet");details.onclick=()=>{box.hidden=true;button.setAttribute("aria-expanded","false");$("workspace-details-dialog").showModal();};menu.append(details);
+  if(!hosted){const connections=el("button",SimjectureI18n.message("ui.connections"),"quiet");connections.onclick=()=>{box.hidden=true;button.setAttribute("aria-expanded","false");view("settings");};menu.append(connections);}
+  const tour=el("button",SimjectureI18n.message("ui.take-the-tour"),"quiet");tour.onclick=()=>{box.hidden=true;button.setAttribute("aria-expanded","false");window.WorkspaceTour?.start();};menu.append(tour);
+  const details=el("button",SimjectureI18n.message("ui.workspace-details"),"quiet");details.onclick=()=>{box.hidden=true;button.setAttribute("aria-expanded","false");$("workspace-details-dialog").showModal();};menu.append(details);
   if(theme)menu.append(theme);
-  const github=el("a","GitHub ↗","quiet");github.href="https://github.com/tomzhu0225/simjecture";github.target="_blank";github.rel="noopener noreferrer";menu.append(github);
+  const github=el("a",SimjectureI18n.message("ui.github"),"quiet");github.href="https://github.com/tomzhu0225/simjecture";github.target="_blank";github.rel="noopener noreferrer";menu.append(github);
   box.append(menu);
 }
 function renderHosting(){if(hosted&&state.hosting)renderAccount();}
@@ -181,7 +181,7 @@ function renderStudyNavigation() {
     const selected = card.id === `study-${state.routeStudy}`;
     card.classList.toggle("selected-study", selected);
     const marker = card.querySelector(".study-selection");
-    if (marker) marker.textContent = selected ? "Selected study" : "Select study";
+    if (marker) SimjectureI18n.bindText(marker, () => selected ? SimjectureI18n.t("ui.selected-study") : SimjectureI18n.t("ui.select-study"));
   }
 }
 function projectLink(id, options = {}) {
@@ -251,26 +251,20 @@ function renderSettings() {
   const s = state.settings;
   $("base-url").value = s.base_url || "";
   $("api-key").value = "";
-  $("api-key").placeholder = s.has_key
-    ? "Saved · leave blank to keep this key"
-    : "API key (optional for a local server)";
+  SimjectureI18n.attribute($("api-key"), "placeholder", () => s.has_key ? SimjectureI18n.t("ui.saved-leave-blank-to-keep-this-key") : SimjectureI18n.t("ui.api-key-optional-for-a-local-server"));
   const installed = (s.clis || []).filter((c) => c.path);
-  $("connection-button").title = "Configure API connections";
+  SimjectureI18n.attribute($("connection-button"), "title", () => SimjectureI18n.t("ui.configure-api-connections"));
   $("connection-button").disabled = false;
   if(hosted) $("connection-button").hidden=true;
-  $("connection-indicator").textContent = installed.length
-    ? `${installed.length} CLI agents detected`
-    : s.api_configured
-      ? "API endpoint saved"
-      : "Choose an agent in your project";
+  SimjectureI18n.bindText($("connection-indicator"), () => installed.length ? SimjectureI18n.t("ui.cli-agents-detected", {p0: installed.length}) : (s.api_configured ? SimjectureI18n.t("ui.api-endpoint-saved") : SimjectureI18n.t("ui.choose-an-agent-in-your-project")));
   $("connection-indicator").classList.toggle(
     "connected",
     !!installed.length || s.api_configured,
   );
-  $("machine-label").textContent = s.machine || "Local workspace";
+  SimjectureI18n.bindText($("machine-label"), () => s.machine || SimjectureI18n.t("ui.local-workspace"));
   $("machine-card").replaceChildren(
-    el("strong", s.machine || "This machine"),
-    el("small", `${s.platform || "Linux"} · local execution`),
+    el("strong", SimjectureI18n.live(() => s.machine || SimjectureI18n.t("ui.this-machine"))),
+    el("small", SimjectureI18n.live(() => SimjectureI18n.t("ui.local-execution", {p0: (s.platform || "Linux")}))),
   );
   $("detected-agents").replaceChildren(
     ...(s.clis || [])
@@ -278,14 +272,9 @@ function renderSettings() {
       .map((c) => el("span", c.id, "cli-chip")),
   );
   if (!$("detected-agents").children.length)
-    $("detected-agents").textContent =
-      "No supported CLI agents found. You can use the built-in API agent.";
-  $("runtime-status").textContent = s.runtime_installed
-    ? "Built-in agent powered by Hugging Face smolagents. Your existing Simjecture experiment and review services govern autonomous studies."
-    : "To enable the built-in API agent, run once: uv sync --extra workspace. Installed CLI agents work without this extra.";
-  $("connection-result").textContent = s.api_configured
-    ? "API endpoint saved. Select its model in your conversation."
-    : "Optional. You can use an installed CLI without adding an API key.";
+    SimjectureI18n.bindText($("detected-agents"), () => SimjectureI18n.t("ui.no-supported-cli-agents-found-you-can-use-the-built-in-api-agent"));
+  SimjectureI18n.bindText($("runtime-status"), () => s.runtime_installed ? SimjectureI18n.t("ui.built-in-agent-powered-by-hugging-face-smolagents-your-existing-simj") : SimjectureI18n.t("ui.to-enable-the-built-in-api-agent-run-once-uv-sync-extra-workspace-in"));
+  SimjectureI18n.bindText($("connection-result"), () => s.api_configured ? SimjectureI18n.t("ui.api-endpoint-saved-select-its-model-in-your-conversation") : SimjectureI18n.t("ui.optional-you-can-use-an-installed-cli-without-adding-an-api-key"));
 }
 function agentControls(scope = "conversation") {
   const home = scope === "home";
@@ -314,7 +303,8 @@ function mountHomeAgent() {
     node.id = ids[node.id] || node.id;
   for (const label of copy.querySelectorAll("label[for]"))
     label.htmlFor = ids[label.htmlFor] || label.htmlFor;
-  copy.setAttribute("aria-label", "Agent for a new conversation");
+  SimjectureI18n.attribute(copy, "aria-label", () => SimjectureI18n.t("ui.agent-for-a-new-conversation"));
+  SimjectureI18n.apply(copy);
   $("home-agent-host").append(copy);
 }
 async function renderAgent(backend, scope = "conversation") {
@@ -334,25 +324,20 @@ async function renderAgent(backend, scope = "conversation") {
   controls.backend.replaceChildren();
   for (const cli of state.settings.clis || [])
     if (cli.path)
-      controls.backend.add(new Option(`${cli.id} · local CLI`, cli.id));
+      controls.backend.add(SimjectureI18n.bindText(new Option("", cli.id), () => SimjectureI18n.t("ui.local-cli", {p0: cli.id})));
   controls.backend.add(
-    new Option(
-      state.settings.api_configured
-        ? "Compatible API"
-        : "Compatible API · add endpoint",
-      "builtin",
-    ),
+    SimjectureI18n.bindText(new Option("", "builtin"), () => state.settings.api_configured ? SimjectureI18n.t("ui.compatible-api") : SimjectureI18n.t("ui.compatible-api-add-endpoint")),
   );
   controls.backend.value = selected;
   if (!controls.backend.value) {
-    controls.backend.add(new Option(`${selected} · unavailable`, selected));
+    controls.backend.add(SimjectureI18n.bindText(new Option("", selected), () => SimjectureI18n.t("ui.unavailable", {p0: selected})));
     controls.backend.value = selected;
   }
-  controls.model.replaceChildren(new Option("Loading model choices…", ""));
+  controls.model.replaceChildren(SimjectureI18n.bindText(new Option("", ""), () => SimjectureI18n.t("ui.loading-model-choices")));
   controls.model.disabled = true;
   controls.customBox.hidden = true;
   controls.custom.value = "";
-  controls.note.textContent = "Reading model choices…";
+  SimjectureI18n.bindText(controls.note, () => SimjectureI18n.t("ui.reading-model-choices"));
   controls.backend.disabled = state.readonly || hosted;
   controls.custom.disabled = state.readonly;
   controls.refresh.disabled = state.readonly;
@@ -362,7 +347,7 @@ async function renderAgent(backend, scope = "conversation") {
           ? [{ id: p.agent.model, name: p.agent.model }]
           : [],
         default: p.agent?.model || "",
-        note: hosted ? "Provided by Simjecture · model settings managed by the host" : "Recorded conversation agent · read-only session",
+        note: SimjectureI18n.live(() => hosted ? SimjectureI18n.t("ui.provided-by-simjecture-model-settings-managed-by-the-host") : SimjectureI18n.t("ui.recorded-conversation-agent-read-only-session")),
       }
     : await api("models", { backend: selected });
   if (
@@ -375,7 +360,7 @@ async function renderAgent(backend, scope = "conversation") {
   const model = current?.model || choices.default || "";
   controls.model.replaceChildren(
     ...choices.models.map((m) => new Option(m.name, m.id)),
-    ...(hosted ? [] : [new Option("Other model…", "__custom__")]),
+    ...(hosted ? [] : [SimjectureI18n.bindText(new Option("", "__custom__"), () => SimjectureI18n.t("ui.other-model"))]),
   );
   const known = choices.models.some((m) => m.id === model);
   controls.model.value = known ? model : "__custom__";
@@ -386,7 +371,7 @@ async function renderAgent(backend, scope = "conversation") {
   if (selected === "agy") controls.effort.value = "";
   controls.model.disabled = state.readonly || hosted;
   if(hosted){controls.refresh.hidden=true;controls.customBox.hidden=true;}
-  controls.note.textContent = choices.note;
+  SimjectureI18n.content(controls.note, choices.note);
   globalThis.WorkspaceComposer?.refresh(scope);
   return true;
 }
@@ -405,11 +390,11 @@ async function saveConversationAgent(scope = "conversation") {
   const c = agentControls(scope);
   if (c.model.disabled && !state.readonly)
     throw Error(
-      "Model choices are still loading. Please try again in a moment.",
+      SimjectureI18n.t("ui.model-choices-are-still-loading-please-try-again-in-a-moment"),
     );
   const payload = agentPayload(scope);
   if (!payload.model)
-    throw Error("Choose a model, or enter its exact ID in Other model.");
+    throw Error(SimjectureI18n.t("ui.choose-a-model-or-enter-its-exact-id-in-other-model"));
   const previousAgent = scope === "conversation" ? state.project?.agent : null;
   const result = await api("agent", payload);
   state.routeMemory[result.backend] = result;
@@ -432,10 +417,10 @@ async function saveConversationAgent(scope = "conversation") {
 function renderProjects() {
   $("project-list").replaceChildren();
   if (!state.projects.length)
-    $("project-list").append(el("p", "Your work will appear here.", "muted"));
+    $("project-list").append(window.SimjectureI18n.text(el("p", undefined, "muted"), "workspace.projectEmpty"));
   for (const project of state.projects) {
     const button = el("button", project.name, "project-link");
-    button.title = project.name;
+    SimjectureI18n.attribute(button, "title", () => project.name);
     button.classList.toggle("selected", project.id === state.project?.id);
     if (project.id === state.project?.id) button.setAttribute("aria-current", "page");
     button.onclick = () =>
@@ -443,13 +428,13 @@ function renderProjects() {
     const row = el("div", undefined, "conversation-row");
     const remove = el("button", "×", "delete-conversation");
     remove.type = "button";
-    remove.title = "Delete conversation and files";
-    remove.setAttribute("aria-label", `Delete conversation: ${project.name}`);
+    SimjectureI18n.attribute(remove, "title", () => SimjectureI18n.t("ui.delete-conversation-and-files"));
+    SimjectureI18n.attribute(remove, "aria-label", () => SimjectureI18n.t("ui.delete-conversation", {p0: project.name}));
     remove.disabled = state.readonly;
     remove.onclick = () => {
       $("delete-form").dataset.project = project.id;
-      $("delete-name").textContent = project.name;
-      $("delete-path").textContent = project.path || project.id;
+      SimjectureI18n.content($("delete-name"), project.name);
+      SimjectureI18n.content($("delete-path"), project.path || project.id);
       $("delete-error").hidden = true;
       $("delete-dialog").showModal();
       $("cancel-delete").focus();
@@ -529,19 +514,15 @@ function renderProject(force = false) {
   if (!p) return;
   renderMachineSelection();
   renderAgentSwitchWarning();
-  $("project-title").textContent = p.name;
+  SimjectureI18n.content($("project-title"), p.name);
   renderStudyNavigation();
-  $("agent-label").textContent = p.agent
-    ? `${p.agent.backend} / ${p.agent.model || "choose model"}`
-    : "Choose an agent";
+  SimjectureI18n.bindText($("agent-label"), () => p.agent ? `${p.agent.backend} / ${(p.agent.model || SimjectureI18n.t("ui.choose-model"))}` : SimjectureI18n.t("ui.choose-an-agent"));
   $("send-message").disabled = p.running || state.readonly;
   $("stop-agent").hidden = !p.running;
   $("launch-study").disabled = p.running || state.readonly;
   for (const id of ["grill-me", "draft-study", "start-prepared-study"])
     $(id).disabled = p.running || state.readonly;
-  $("preparation-status").textContent = p.running
-    ? "Your agent is working. Its questions and proposed brief appear in the conversation."
-    : "Either way, your agent asks about anything missing and fills in the brief.";
+  SimjectureI18n.bindText($("preparation-status"), () => p.running ? SimjectureI18n.t("ui.your-agent-is-working-its-questions-and-proposed-brief-appear-in-the") : SimjectureI18n.t("ui.either-way-your-agent-asks-about-anything-missing-and-fills-in-the-b"));
   const pendingBrief = p.brief && !p.brief_launched;
   const preparing = !pendingBrief && !p.brief_launched;
   $("study-preparation").hidden = !preparing;
@@ -552,41 +533,35 @@ function renderProject(force = false) {
   $("continuation-chat-context").hidden = !p.continuation_draft;
   if (p.continuation_draft) $("continuation-parent-link").href = `/monitor?campaign=${encodeURIComponent(p.continuation_draft.campaign)}`;
   $("continuation-chat").disabled = p.running || state.readonly;
-  $("study-stage").textContent = pendingBrief
-    ? "Proposal ready — review the brief below, then start the study."
-    : preparing
-      ? p.running
-        ? "Preparing with your agent. Continue the conversation to answer its questions."
-        : "Plan a study with your agent. You review the brief before anything runs."
-      : "Your studies are below. When one finishes, your agent explains its report in the conversation.";
+  SimjectureI18n.bindText($("study-stage"), () => pendingBrief ? SimjectureI18n.t("ui.proposal-ready-review-the-brief-below-then-start-the-study") : (preparing ? (p.running ? SimjectureI18n.t("ui.preparing-with-your-agent-continue-the-conversation-to-answer-its-qu") : SimjectureI18n.t("ui.plan-a-study-with-your-agent-you-review-the-brief-before-anything-ru")) : SimjectureI18n.t("ui.your-studies-are-below-when-one-finishes-your-agent-explains-its-rep")));
   if (p.brief) {
     const b = p.brief;
-    $("prepared-question").textContent = b.question;
-    $("prepared-heading").textContent = p.continuation_draft ? "CONTINUATION PROPOSAL" : "STEP 2 OF 2 · REVIEW AND START";
+    SimjectureI18n.content($("prepared-question"), b.question);
+    SimjectureI18n.bindText($("prepared-heading"), () => p.continuation_draft ? SimjectureI18n.t("ui.continuation-proposal") : SimjectureI18n.t("ui.step-2-of-2-review-and-start"));
     $("prepared-details").replaceChildren();
     if (p.continuation_draft) {
-      const parent = el("a", `Continuation phase · ${p.continuation_draft.files.length} selected files · parent study ↗`);
+      const parent = el("a", SimjectureI18n.live(() => SimjectureI18n.t("ui.continuation-phase-selected-files-parent-study", {p0: p.continuation_draft.files.length})));
       parent.href = `/monitor?campaign=${encodeURIComponent(p.continuation_draft.campaign)}`;
       $("prepared-details").append(parent);
     }
-    const agentRow = el("p", `Agent: ${p.agent?.backend || "choose agent"} / ${p.agent?.model || "choose model"}`, "field-help");
-    const changeAgent = el("button", "Change agent / model", "secondary"); changeAgent.type = "button";
+    const agentRow = el("p", SimjectureI18n.live(() => SimjectureI18n.t("ui.agent", {p0: (p.agent?.backend || SimjectureI18n.t("ui.choose-agent")), p1: (p.agent?.model || SimjectureI18n.t("ui.choose-model"))})), "field-help");
+    const changeAgent = el("button", SimjectureI18n.message("ui.change-agent-model"), "secondary"); changeAgent.type = "button";
     changeAgent.onclick = () => { mode("interactive"); globalThis.WorkspaceComposer?.open("conversation"); $("conversation-backend").focus(); };
     changeAgent.hidden=hosted;
     agentRow.append(document.createTextNode(" "), changeAgent); $("prepared-details").append(agentRow);
     for (const [label, value] of [
-      ["Evidence", b.success_criteria],
-      ["Constraints", b.constraints || "No additional constraints specified."],
-      ["Time budget", b.hours===0 ? "No hosted time limit" : `${b.hours} hours`],
-      ["Execution", b.machine_ids?.length ? b.machine_ids.join(", ") : "This host"],
-      ["Solver development", (b.allow_solver_development ?? !hosted)
-        ? "Allowed on the agent's own solver copies; results from a changed solver are checked before they count."
-        : "Use supplied solver implementations; experiment and analysis scripts remain available."],
+      [SimjectureI18n.message("ui.evidence"), b.success_criteria],
+      [SimjectureI18n.message("ui.constraints"), SimjectureI18n.live(() => b.constraints || SimjectureI18n.t("ui.no-additional-constraints-specified"))],
+      [SimjectureI18n.message("ui.time-budget"), SimjectureI18n.live(() => b.hours===0 ? SimjectureI18n.t("ui.no-hosted-time-limit") : SimjectureI18n.t("ui.hours", {p0: b.hours}))],
+      [SimjectureI18n.message("ui.execution-2"), SimjectureI18n.live(() => b.machine_ids?.length ? b.machine_ids.join(", ") : SimjectureI18n.t("ui.this-host"))],
+      [SimjectureI18n.message("ui.solver-development"), SimjectureI18n.live(() => (b.allow_solver_development ?? !hosted)
+        ? SimjectureI18n.t("ui.allowed-on-the-agent-s-own-solver-copies-results-from-a-changed-solv")
+        : SimjectureI18n.t("ui.use-supplied-solver-implementations-experiment-and-analysis-scripts-"))],
       [
-        "Completion",
-        b.completion_policy === "answer"
-          ? "An independently reviewed answer, including a negative result."
-          : "A supported claim or independently tested repair.",
+        SimjectureI18n.message("ui.completion"),
+        SimjectureI18n.live(() => b.completion_policy === "answer"
+          ? SimjectureI18n.t("ui.an-independently-reviewed-answer-including-a-negative-result")
+          : SimjectureI18n.t("ui.a-supported-claim-or-independently-tested-repair")),
       ],
     ]) {
       const section = el("div");
@@ -628,10 +603,10 @@ function renderProject(force = false) {
     if (!p.messages.length) {
       const welcome = el("div", undefined, "welcome-message");
       welcome.append(
-        el("h2", "Let’s work through your question."),
+        el("h2", SimjectureI18n.message("ui.let-s-work-through-your-question")),
         el(
           "p",
-          "Describe your task or attach a file. You can investigate together, then prepare an autonomous study when the question is clear.",
+          SimjectureI18n.message("ui.describe-your-task-or-attach-a-file-you-can-investigate-together-the"),
         ),
       );
       desiredArticles.push(welcome);
@@ -651,13 +626,7 @@ function renderProject(force = false) {
       article.append(
         el(
           "span",
-          message.role === "user"
-            ? "You"
-            : message.role === "system"
-              ? "Study report received"
-              : message.agent
-                ? `Simjecture · ${message.agent.backend} / ${message.agent.model}`
-                : "Simjecture",
+          SimjectureI18n.live(() => message.role === "user" ? SimjectureI18n.t("ui.you") : (message.role === "system" ? SimjectureI18n.t("ui.study-report-received") : (message.agent ? `Simjecture · ${message.agent.backend} / ${message.agent.model}` : "Simjecture"))),
           "message-role",
         ),
       );
@@ -675,7 +644,7 @@ function renderProject(force = false) {
         details.append(
           el(
             "summary",
-            `${tools.filter((e) => e.type === "tool").length} actions · view activity`,
+            SimjectureI18n.live(() => SimjectureI18n.t("ui.actions-view-activity", {p0: tools.filter((e) => e.type === "tool").length})),
           ),
         );
         const trace = el("div", undefined, "trace");
@@ -707,13 +676,11 @@ function renderProject(force = false) {
         card.append(
           el(
             "span",
-            related.kind === "simulation"
-              ? "SIMULATION"
-              : "AUTONOMOUS STUDY",
+            SimjectureI18n.live(() => related.kind === "simulation" ? SimjectureI18n.t("ui.simulation") : SimjectureI18n.t("ui.autonomous-study")),
             "link-category",
           ),
           el("strong", related.label),
-          el("span", "Open ↗", "link-open"),
+          el("span", SimjectureI18n.message("ui.open"), "link-open"),
         );
         article.append(card);
       }
@@ -722,10 +689,10 @@ function renderProject(force = false) {
       if (message.running) {
         const progress = el("div", undefined, "agent-progress");
         const spinner = el("wa-spinner");
-        spinner.setAttribute("aria-label", "Agent active");
+        SimjectureI18n.attribute(spinner, "aria-label", () => SimjectureI18n.t("ui.agent-active"));
         const label = el(
           "span",
-          message.activity?.label || "Waiting for agent",
+          SimjectureI18n.live(() => message.activity?.label || SimjectureI18n.t("ui.waiting-for-agent")),
         );
         const elapsed = el("small");
         elapsed.dataset.elapsed = message.started_at;
@@ -740,10 +707,10 @@ function renderProject(force = false) {
         since.dataset.idleSince =
           message.last_activity_at || message.started_at;
         meta.append(
-          document.createTextNode("Last agent activity: "),
+          el("span", SimjectureI18n.live(() => SimjectureI18n.t("ui.last-agent-activity-2"))),
           since,
-          document.createTextNode(
-            ` · ${message.monitored_runs || 0} monitored simulation${message.monitored_runs === 1 ? "" : "s"} in this turn`,
+          el("span",
+            SimjectureI18n.live(() => SimjectureI18n.t("ui.monitored-simulation-in-this-turn", {p0: message.monitored_runs || 0, p1: (SimjectureI18n.getLanguage() === "en" && !(message.monitored_runs === 1) ? "s" : "")})),
           ),
         );
         article.append(meta);
@@ -751,7 +718,7 @@ function renderProject(force = false) {
         article.append(
           el(
             "p",
-            "This turn was interrupted. Your files are saved; send a message to continue.",
+            SimjectureI18n.message("ui.this-turn-was-interrupted-your-files-are-saved-send-a-message-to-con"),
             "thinking",
           ),
         );
@@ -766,14 +733,14 @@ function renderProject(force = false) {
         if (!message.running) {
           history.dataset.turn = `recent-${message.turn}`;
           history.open = openSteps.has(history.dataset.turn);
-          history.append(el("summary", "Recent agent activity"));
+          history.append(el("summary", SimjectureI18n.message("ui.recent-agent-activity")));
         }
         const list = el("ol", undefined, "agent-activity-list");
         for (const item of recent.slice(-5)) {
           const row = el("li");
           row.append(
             el("strong", item.label),
-            el("small", item.status.replaceAll("_", " ")),
+            el("small", SimjectureI18n.live(() => SimjectureI18n.label(item.status, item.status.replaceAll("_", " ")))),
           );
           if (item.detail) row.append(el("span", item.detail));
           list.append(row);
@@ -799,27 +766,25 @@ function renderProject(force = false) {
   }
   const inspector = document.querySelector(".project-context");
   const inspectorScroll = inspector.scrollTop;
-  $("project-path").textContent = p.files_directory;
-  $("file-count").textContent = p.files.length;
+  SimjectureI18n.content($("project-path"), p.files_directory);
+  SimjectureI18n.content($("file-count"), p.files.length);
   $("project-files").replaceChildren();
   for (const file of p.files) {
     const row = el("div", undefined, "file-row"),
       link = el("a", file.name);
     link.href = workspaceURL(`/api/workspace/file?id=${encodeURIComponent(p.id)}&path=${encodeURIComponent(file.name)}`);
-    link.title = file.name;
+    SimjectureI18n.attribute(link, "title", () => file.name);
     row.append(link, el("small", bytes(file.bytes)));
     $("project-files").append(row);
   }
   if (!p.files.length)
     $("project-files").append(
-      el("p", "Files you upload and files your agent creates appear here."),
+      window.SimjectureI18n.text(el("p"), "workspace.fileEmpty"),
     );
   $("brief-summary").replaceChildren(
-    el(
-      "p",
-      p.brief?.question ||
-        "No study planned yet. Open Autonomous study when your question is clear.",
-    ),
+    p.brief?.question
+      ? el("p", p.brief.question)
+      : window.SimjectureI18n.text(el("p"), "workspace.emptyBrief"),
   );
   inspector.scrollTop = inspectorScroll;
   if (!state.briefDirty || force) {
@@ -831,9 +796,8 @@ function renderProject(force = false) {
     $("brief-policy").value = b.completion_policy || "answer";
     $("solver-development").checked = b.allow_solver_development ?? !hosted;
     $("solver-development").disabled = hosted || state.readonly;
-    $("solver-development-help").textContent = hosted
-      ? "Hosted policy: use supplied solver implementations. Experiment and analysis scripting remains available within host permissions."
-      : "The agent may change its own copy of a solver. Your installed solvers are never modified, and results from a changed solver are checked before they count as evidence.";
+    window.SimjectureI18n.text($("solver-development-help"), hosted
+      ? "workspace.solverHostedHelp" : "workspace.solverHelp");
     const selectedTools = b.capability_directory ?? (hosted ? "hosted-tools" : "auto");
     if (
       [...$("study-tools").options].some(
@@ -902,6 +866,7 @@ function setupGuideText(tool) {
 async function assistInstallation(tool, diagnose=false) {
   const guide = toolSetupGuides[tool.id] || {};
   const check = tool.operation?.action === "check";
+  // i18n-technical-start: generated agent setup request; preserve scientific input
   const steps = diagnose
     ? `Please:
 1. Read the saved failure below and the full log${tool.operation?.log_path ? ` at ${tool.operation.log_path}` : ""}.
@@ -928,6 +893,7 @@ ${steps}
 
 A passing readiness check shows the tool runs; it is not scientific validation.${diagnostics}`;
   const project = await api("projects", { name: `${diagnose ? "Repair" : "Install"} ${tool.name}` });
+  // i18n-technical-end
   await reloadProjects();
   mode("interactive");
   if (!(await openProject(project.id))) return;
@@ -935,7 +901,7 @@ A passing readiness check shows the tool runs; it is not scientific validation.$
   $("chat-input").dispatchEvent(new Event("input"));
   $("chat-input").focus();
   toast(
-    `${diagnose ? "Repair" : "Setup"} conversation ready. Review the request, choose your agent, then send.`,
+    SimjectureI18n.live(() => SimjectureI18n.t("ui.conversation-ready-review-the-request-choose-your-agent-then-send", {p0: (diagnose ? SimjectureI18n.t("ui.repair") : SimjectureI18n.t("ui.setup"))})),
   );
 }
 
@@ -947,20 +913,20 @@ async function prepareToolStudy(tool) {
   $("chat-input").value = `Help me prepare a custom study with ${tool.name}. Ask me about the physics, geometry, initial conditions and diagnostics I want, then inspect the installed tools and sources to choose a suitable setup. Use the starter presets where they fit, and prepare custom inputs or a private application build where needed.`;
   $("chat-input").dispatchEvent(new Event("input"));
   $("chat-input").focus();
-  toast("Study conversation ready. Describe your problem and send the request.");
+  toast(SimjectureI18n.message("ui.study-conversation-ready-describe-your-problem-and-send-the-request"));
 }
 
-const machineAddress = (m) => m.kind === "local" ? "This computer" : `${m.user ? m.user + "@" : ""}${m.host.includes(":") ? "[" + m.host + "]" : m.host}:${m.port}`;
+const machineAddress = (m) => m.kind === "local" ? SimjectureI18n.live(() => SimjectureI18n.t("ui.this-computer")) : `${m.user ? m.user + "@" : ""}${m.host.includes(":") ? "[" + m.host + "]" : m.host}:${m.port}`;
 function machineState(record) {
-  if (record.preparation?.status === "working") return ["preparing", "Preparing"];
+  if (record.preparation?.status === "working") return ["preparing", SimjectureI18n.message("ui.preparing")];
   const live = record.availability;
-  if (live?.checked_at && Date.now()/1000 - live.checked_at > 75) return ["stale", "Last check stale"];
-  if (live?.status === "offline") return ["offline", "Offline"];
-  if (live?.status === "ready") return ["ready", "Online"];
-  if (record.preparation?.status === "failed") return ["setup_needed", "Setup needs attention"];
-  if (live?.online) return ["setup_needed", "Needs setup"];
-  if (record.probe?.execution?.available && !record.error) return ["stale", "Checking…"];
-  return ["setup_needed", "Not prepared"];
+  if (live?.checked_at && Date.now()/1000 - live.checked_at > 75) return ["stale", SimjectureI18n.message("ui.last-check-stale")];
+  if (live?.status === "offline") return ["offline", SimjectureI18n.message("ui.offline")];
+  if (live?.status === "ready") return ["ready", SimjectureI18n.message("ui.online")];
+  if (record.preparation?.status === "failed") return ["setup_needed", SimjectureI18n.message("ui.setup-needs-attention")];
+  if (live?.online) return ["setup_needed", SimjectureI18n.message("ui.needs-setup")];
+  if (record.probe?.execution?.available && !record.error) return ["stale", SimjectureI18n.message("ui.checking")];
+  return ["setup_needed", SimjectureI18n.message("ui.not-prepared")];
 }
 function machineGlyph() {
   const span = el("span", undefined, "machine-glyph");
@@ -972,10 +938,10 @@ function fillMachine(machine = null, hasPassword = false) {
   const automatic = machine?.automatic_setup;
   const config = machine?.config || {};
   const fields = automatic || (machine ? {...config, root:machine.root,run_as:machine.run_as} : {});
-  $("machine-editor-title").textContent = machine ? "Machine settings" : "Add a machine";
+  SimjectureI18n.bindText($("machine-editor-title"), () => machine ? SimjectureI18n.t("ui.machine-settings") : SimjectureI18n.t("ui.add-a-machine"));
   $("machine-address").value = machine?.kind === "ssh" ? machineAddress(machine) : "";
   $("machine-password").value = "";
-  $("machine-password").placeholder = hasPassword ? "Leave empty to keep the saved password" : "Leave empty to use your SSH key or agent";
+  SimjectureI18n.attribute($("machine-password"), "placeholder", () => hasPassword ? SimjectureI18n.t("ui.leave-empty-to-keep-the-saved-password") : SimjectureI18n.t("ui.leave-empty-to-use-your-ssh-key-or-agent"));
   for (const [id, value] of Object.entries({"machine-id":machine?.id, "machine-label-input":machine?.label,
     "machine-kind":machine?.kind || "ssh", "machine-root":fields.root, "machine-python":machine?.python || "",
     "machine-run-as":fields.run_as, "machine-identity":machine?.identity_file,
@@ -985,7 +951,7 @@ function fillMachine(machine = null, hasPassword = false) {
     "machine-capabilities":(fields.capabilities || []).join("\n"), "machine-execution":fields.execution_backend || "auto"})) $(id).value = value ?? "";
   $("machine-advanced").open = false;
   $("machine-form-error").hidden = true;
-  $("save-machine").textContent = machine ? "Save settings" : "Connect & prepare";
+  SimjectureI18n.bindText($("save-machine"), () => machine ? SimjectureI18n.t("ui.save-settings") : SimjectureI18n.t("ui.connect-prepare"));
   updateMachineKind();
   $("machine-dialog").showModal();
 }
@@ -1008,11 +974,11 @@ $("close-machine-jobs").onclick = () => $("machine-jobs-panel").hidden = true;
 function renderMachineSelection() {
   const select = $("study-machines"), saved = state.project?.brief?.machine_ids || [];
   const selected = state.briefDirty ? [...select.selectedOptions].map(o => o.value) : saved;
-  select.replaceChildren(new Option("This host · existing local launcher", ""));
+  select.replaceChildren(SimjectureI18n.bindText(new Option("", ""), () => SimjectureI18n.t("ui.this-host-existing-local-launcher")));
   for (const record of state.machines) {
     const machine = record.machine, [kind,label] = machineState(record);
     // Retain an existing selection through a temporary outage; launch rechecks it.
-    const option = new Option(`${machine.label || machine.id} · ${label.toLowerCase()}`, machine.id);
+    const option = SimjectureI18n.bindText(new Option("", machine.id), () => `${machine.label || machine.id} · ${String(label).toLowerCase()}`);
     option.disabled = !["ready","stale"].includes(kind) && !selected.includes(machine.id);
     option.selected = selected.includes(machine.id); select.add(option);
   }
@@ -1022,24 +988,24 @@ async function assistMachine(machine) {
   const request = await api("prepare-machine-chat", {id:machine.id});
   await reloadProjects(); mode("interactive"); if (!(await openProject(request.project))) return;
   $("chat-input").value = request.prompt; $("chat-input").dispatchEvent(new Event("input")); $("chat-input").focus();
-  toast("Setup conversation ready. Choose your agent and send the request.");
+  toast(SimjectureI18n.message("ui.setup-conversation-ready-choose-your-agent-and-send-the-request"));
 }
 async function showMachineJobs(machine) {
   const status = await api(`machine-jobs?id=${encodeURIComponent(machine.id)}`);
   $("machine-jobs-panel").hidden = false;
-  $("machine-jobs-title").textContent = `${machine.label || machine.id} · jobs`;
-  $("machine-jobs-report").textContent = JSON.stringify(status,null,2);
+  SimjectureI18n.bindText($("machine-jobs-title"), () => SimjectureI18n.t("ui.jobs", {p0: (machine.label || machine.id)}));
+  SimjectureI18n.content($("machine-jobs-report"), JSON.stringify(status,null,2));
   const list=$("machine-jobs-list");list.replaceChildren();$("machine-job-controls").replaceChildren();
   const jobs=[...(status.jobs || [])].sort((a,b)=> (b.created_at || 0)-(a.created_at || 0));
   for (const job of jobs.slice(0,15)) {
-    const row=el("div",undefined,"machine-job-row");row.append(el("code",job.id.slice(-12)),el("span",job.status.replaceAll("_"," ")));
+    const row=el("div",undefined,"machine-job-row");row.append(el("code",job.id.slice(-12)),el("span",SimjectureI18n.live(() => SimjectureI18n.label(job.status, job.status.replaceAll("_"," ")))));
     if (["staging","queued","running","cancelling"].includes(job.status)) {
-      const stop=el("button",job.status === "cancelling" ? "Stopping…" : "Cancel","quiet");stop.disabled=state.readonly;
+      const stop=el("button",SimjectureI18n.live(() => job.status === "cancelling" ? SimjectureI18n.t("ui.stopping") : SimjectureI18n.t("ui.cancel")),"quiet");stop.disabled=state.readonly;
       stop.onclick=()=>action(stop,async()=>{await api("cancel-machine-job",{id:machine.id,job:job.id});await showMachineJobs(machine);});row.append(stop);
     } else row.append(el("span",job.assigned_gpu_ids?.length ? `GPU ${job.assigned_gpu_ids.join(",")}` : "CPU"));
     list.append(row);
   }
-  if(!jobs.length)list.append(el("p","No experiments on this worker yet.","field-help"));
+  if(!jobs.length)list.append(el("p",SimjectureI18n.message("ui.no-experiments-on-this-worker-yet"),"field-help"));
   $("machine-jobs-panel").scrollIntoView({behavior:"smooth",block:"nearest"});
 }
 function renderMachines(data) {
@@ -1055,38 +1021,38 @@ function renderMachines(data) {
     heading.append(el("h2",machine.label || machine.id),el("div",machineAddress(machine),"machine-address-line"));
     top.append(machineGlyph(),heading,el("span",label,`machine-status ${kind}`));card.append(top);
     const resources=el("div",undefined,"machine-resources");
-    for(const [value,title] of [[machine.config.cpus,"CPU cores"],[`${+(machine.config.memory_mb/1024).toFixed(1)} GB`,"RAM budget"],[machine.config.gpu_ids.length,"GPUs"]]){
+    for(const [value,title] of [[machine.config.cpus,SimjectureI18n.message("ui.cpu-cores")],[`${+(machine.config.memory_mb/1024).toFixed(1)} GB`,SimjectureI18n.message("ui.ram-budget")],[machine.config.gpu_ids.length,SimjectureI18n.message("ui.gpus")]]){
       const metric=el("div",undefined,"machine-resource");metric.append(el("strong",String(value)),el("span",title));resources.append(metric);
     }card.append(resources);
     const instruments=el("div",undefined,"machine-instruments");
     for(const name of Object.keys(record.probe?.capabilities || {})){
       const title=name.startsWith("flash") ? "FLASH" : name.startsWith("warpx") ? `WarpX${name.includes("cuda") ? " · CUDA" : ""}` : name;
-      const pill=el("span",title,"machine-instrument");pill.title=name;instruments.append(pill);
+      const pill=el("span",title,"machine-instrument");SimjectureI18n.attribute(pill, "title", () => name);instruments.append(pill);
     }
-    if(!instruments.children.length)instruments.append(el("span","Your agent can prepare scientific tools.","no-instruments"));card.append(instruments);
+    if(!instruments.children.length)instruments.append(el("span",SimjectureI18n.message("ui.your-agent-can-prepare-scientific-tools"),"no-instruments"));card.append(instruments);
     const runtime=el("div",undefined,"machine-runtime");
-    const backend=machine.config.execution_backend==="process-cooperative" ? "Native process" : machine.config.execution_backend==="proot-cooperative" ? "Cooperative runtime" : "Linux sandbox";
+    const backend=SimjectureI18n.live(() => machine.config.execution_backend==="process-cooperative" ? SimjectureI18n.t("ui.native-process") : machine.config.execution_backend==="proot-cooperative" ? SimjectureI18n.t("ui.cooperative-runtime") : SimjectureI18n.t("ui.linux-sandbox"));
     const active=live?.active_jobs || 0;
-    runtime.append(el("span",`${backend} · ${active}/${machine.config.max_jobs} jobs`));
-    const stamp=el("span",live?.checked_at ? "just checked" : "Awaiting first check");
-    if(live?.checked_at){stamp.dataset.idleSince=live.checked_at;stamp.title=`Last checked ${new Date(live.checked_at*1000).toLocaleString()} · ${live.latency_ms ?? "?"} ms`;}
+    runtime.append(el("span",SimjectureI18n.live(() => SimjectureI18n.t("ui.jobs-2", {p0: backend, p1: active, p2: machine.config.max_jobs}))));
+    const stamp=el("span",SimjectureI18n.live(() => live?.checked_at ? SimjectureI18n.t("ui.just-checked") : SimjectureI18n.t("ui.awaiting-first-check")));
+    if(live?.checked_at){stamp.dataset.idleSince=live.checked_at;SimjectureI18n.attribute(stamp, "title", () => SimjectureI18n.t("ui.last-checked-ms", {p0: new Date(live.checked_at*1000).toLocaleString(), p1: (live.latency_ms ?? "?")}));}
     runtime.append(stamp);card.append(runtime);
-    if(kind==="preparing")card.append(el("p",record.preparation.phase || "Detecting hardware and preparing the worker…","machine-note"));
+    if(kind==="preparing")card.append(el("p",SimjectureI18n.live(() => SimjectureI18n.label(record.preparation.phase) || SimjectureI18n.t("ui.detecting-hardware-and-preparing-the-worker")),"machine-note"));
     const error=kind==="offline" ? live?.error : record.preparation?.status==="failed" ? record.preparation.error : record.error;
-    if(error){const note=el("details",undefined,"machine-note");note.append(el("summary",kind==="offline" ? "Connection unavailable · details" : "Setup needs attention · details"),el("pre",error));card.append(note);}
+    if(error){const note=el("details",undefined,"machine-note");note.append(el("summary",SimjectureI18n.live(() => kind==="offline" ? SimjectureI18n.t("ui.connection-unavailable-details") : SimjectureI18n.t("ui.setup-needs-attention-details"))),el("pre",error));card.append(note);}
     const actions=el("div",undefined,"machine-card-bottom");
-    const jobs=el("button","Jobs","secondary");jobs.disabled=kind!=="ready" && kind!=="stale";jobs.onclick=()=>action(jobs,()=>showMachineJobs(machine));actions.append(jobs);
+    const jobs=el("button",SimjectureI18n.message("ui.jobs-3"),"secondary");jobs.disabled=kind!=="ready" && kind!=="stale";jobs.onclick=()=>action(jobs,()=>showMachineJobs(machine));actions.append(jobs);
     if(kind==="setup_needed"){
-      const prepare=el("button","Prepare worker","secondary");prepare.disabled=state.readonly;prepare.onclick=()=>action(prepare,async()=>{await api("prepare-machine",{id:machine.id});await refreshMachines();});actions.append(prepare);
+      const prepare=el("button",SimjectureI18n.message("ui.prepare-worker"),"secondary");prepare.disabled=state.readonly;prepare.onclick=()=>action(prepare,async()=>{await api("prepare-machine",{id:machine.id});await refreshMachines();});actions.append(prepare);
     }
-    const agent=el("button","Prepare with agent","quiet");agent.disabled=state.readonly || kind==="preparing";agent.onclick=()=>action(agent,()=>assistMachine(machine));actions.append(agent);
-    const edit=el("button","Settings","quiet settings-button");edit.disabled=state.readonly;edit.onclick=()=>fillMachine(machine,record.has_password);actions.append(edit);card.append(actions);
-    if(record.preparation?.log){const log=el("details",undefined,"machine-note");log.style.margin="12px 0 0";log.append(el("summary","Setup log"),el("pre",record.preparation.log));card.append(log);}
+    const agent=el("button",SimjectureI18n.message("ui.prepare-with-agent"),"quiet");agent.disabled=state.readonly || kind==="preparing";agent.onclick=()=>action(agent,()=>assistMachine(machine));actions.append(agent);
+    const edit=el("button",SimjectureI18n.message("ui.settings"),"quiet settings-button");edit.disabled=state.readonly;edit.onclick=()=>fillMachine(machine,record.has_password);actions.append(edit);card.append(actions);
+    if(record.preparation?.log){const log=el("details",undefined,"machine-note");log.style.margin="12px 0 0";log.append(el("summary",SimjectureI18n.message("ui.setup-log")),el("pre",record.preparation.log));card.append(log);}
     grid.append(card);
   }
   const summary=$("machine-summary");summary.replaceChildren();
-  for(const [count,text] of [[data.machines.length,"machines"],[online,"online"],[gpus,"GPUs"]]){const item=el("span");item.append(el("strong",String(count)),document.createTextNode(text));summary.append(item);}
-  if(!data.machines.length){const empty=el("div",undefined,"machine-empty");empty.append(el("h2","Your first machine is one connection away."),el("p","Add an SSH address, or use this computer to get started."));grid.append(empty);}
+  for(const [count,text] of [[data.machines.length,SimjectureI18n.message("ui.machine-count-label")],[online,SimjectureI18n.message("ui.online-count-label")],[gpus,SimjectureI18n.message("ui.gpu-count-label")]]){const item=el("span");item.append(el("strong",String(count)),el("span",text));summary.append(item);}
+  if(!data.machines.length){const empty=el("div",undefined,"machine-empty");empty.append(el("h2",SimjectureI18n.message("ui.your-first-machine-is-one-connection-away")),el("p",SimjectureI18n.message("ui.add-an-ssh-address-or-use-this-computer-to-get-started")));grid.append(empty);}
 }
 async function refreshMachines(){
   const data=await api("machines");state.machines=data.machines;renderMachineSelection();renderMachines(data);
@@ -1126,8 +1092,8 @@ $("machine-form").onsubmit=async e=>{
     const saved=await api("save-machine",payload);
     if(payload.kind==="local")await api("prepare-machine",{id:saved.machine.id});
     $("machine-password").value="";$("machine-dialog").close();state.editMachine=null;
-    await refreshMachines();toast(saved.preparation?.status === "working" ? "Connected. Preparing the worker in the background…" : "Machine settings saved.");
-  }catch(error){$("machine-form-error").textContent=error.message;$("machine-form-error").hidden=false;}
+    await refreshMachines();toast(SimjectureI18n.live(() => saved.preparation?.status === "working" ? SimjectureI18n.t("ui.connected-preparing-the-worker-in-the-background") : SimjectureI18n.t("ui.machine-settings-saved")));
+  }catch(error){SimjectureI18n.content($("machine-form-error"), error.message);$("machine-form-error").hidden=false;}
   finally{button.disabled=false;}
 };
 
@@ -1138,13 +1104,13 @@ async function refreshBenchmarks() {
   if (revision === benchmarkRevision) return;
   benchmarkRevision = revision;
   window.WorkspaceBenchmarks.render(pack, {api, refresh:refreshBenchmarks, toast, readonly:state.readonly || hosted, hosted});
-  $("benchmark-version").textContent = `Task pack ${pack.version} · finite diagnostic coding contracts`;
+  SimjectureI18n.bindText($("benchmark-version"), () => SimjectureI18n.t("ui.task-pack-finite-diagnostic-coding-contracts", {p0: pack.version}));
   $("benchmark-tasks").replaceChildren();
   for (const task of pack.tasks) {
-    const card = el("article", undefined, "tool-card"), button = el("button", "Prepare conversation");
-    card.append(el("h2", task.title), el("p", `${task.seconds / 60} minute suggested budget. ${task.fields ? "HDF5 fields and CSV diagnostics." : "CSV diagnostics; no HDF5 dependency."}`));
+    const card = el("article", undefined, "tool-card"), button = el("button", SimjectureI18n.message("ui.prepare-conversation"));
+    card.append(el("h2", SimjectureI18n.live(() => SimjectureI18n.known(`ui.benchmark-task.${task.id}.title`, task.title))), el("p", SimjectureI18n.live(() => SimjectureI18n.t("ui.minute-suggested-budget", {p0: task.seconds / 60, p1: (task.fields ? SimjectureI18n.t("ui.hdf5-fields-and-csv-diagnostics") : SimjectureI18n.t("ui.csv-diagnostics-note"))}))));
     button.disabled = state.readonly || hosted;
-    if(hosted)button.title="Run your own benchmarks in a self-hosted Simjecture workspace.";
+    if(hosted)SimjectureI18n.attribute(button, "title", () => SimjectureI18n.t("ui.run-your-own-benchmarks-in-a-self-hosted-simjecture-workspace"));
     button.onclick = () => action(button, async () => {
       const project = await api("prepare-benchmark", {task:task.id});
       await reloadProjects();
@@ -1153,7 +1119,7 @@ async function refreshBenchmarks() {
       $("chat-input").value = "Complete the benchmark in ./benchmark under your current working directory. Read benchmark/TASK.md, preserve the inputs, implement the reducer and deliver the requested files in benchmark/. Record progress before a handoff. Do not inspect verifier or oracle implementations. Report limitations honestly.";
       $("chat-input").dispatchEvent(new Event("input"));
       $("chat-input").focus();
-      toast("Task prepared. Choose your agent and send the request.");
+      toast(SimjectureI18n.message("ui.task-prepared-choose-your-agent-and-send-the-request"));
     });
     card.append(button); $("benchmark-tasks").append(card);
   }
@@ -1161,51 +1127,51 @@ async function refreshBenchmarks() {
   for (const project of pack.projects) {
     const card = el("article", undefined, "tool-card"), link = el("a", project.name);
     link.href = projectLink(project.id);
-    card.append(link, el("p", project.grade?.passed === true ? "Passed the finite numerical contract" : project.grade?.passed === false ? "Incomplete or failed numerical contract" : "Not graded"));
-    const button = el("button", "Grade delivered results");
+    card.append(link, el("p", SimjectureI18n.live(() => project.grade?.passed === true ? SimjectureI18n.t("ui.passed-the-finite-numerical-contract") : (project.grade?.passed === false ? SimjectureI18n.t("ui.incomplete-or-failed-numerical-contract") : SimjectureI18n.t("ui.not-graded")))));
+    const button = el("button", SimjectureI18n.message("ui.grade-delivered-results"));
     button.disabled = state.readonly || hosted;
     button.onclick = () => action(button, async () => {
-      button.textContent = "Grading…";
+      SimjectureI18n.bindText(button, () => SimjectureI18n.t("ui.grading"));
       try {
         const report = await api("grade-benchmark", {project:project.id});
-        $("benchmark-report").textContent = JSON.stringify(report, null, 2);
+        SimjectureI18n.content($("benchmark-report"), JSON.stringify(report, null, 2));
         $("benchmark-report").hidden = false;
         $("benchmark-report").closest("details").open = true;
         await refreshBenchmarks();
-      } finally {button.textContent = "Grade delivered results";}
+      } finally {SimjectureI18n.bindText(button, () => SimjectureI18n.t("ui.grade-delivered-results"));}
     });
     card.append(button); $("benchmark-projects").append(card);
   }
-  if (!pack.projects.length) $("benchmark-projects").append(el("p", "Prepare a task to begin."));
+  if (!pack.projects.length) $("benchmark-projects").append(el("p", SimjectureI18n.message("ui.prepare-a-task-to-begin")));
 }
 
 const toolLabels = {
-  "conjecture-1": ["Conjecture 1", "Scientific attention", "C1", "Workflow assistance"],
-  "elmer": ["Elmer", "Finite-element simulation", "FE", "CAD & simulation"],
-  "freecad": ["FreeCAD", "Parametric CAD", "CAD", "CAD & simulation"],
-  "gmsh": ["Gmsh", "Geometry and meshing", "MS", "CAD & simulation"],
-  "python": ["Python research stack", "Numerical exploration", "PY", "Analysis & data"],
-  "warp-lbm": ["Cylinder flow", "Warp-LBM · 2D fluid dynamics", "LB", "Fluids & MHD"],
-  "iter-pack": ["ITER pack", "Diagnostics & data", "IT", "Analysis & data"],
-  "solps": ["SOLPS-ITER", "Edge plasma", "SP", "Plasma & fusion"],
-  "jorek": ["JOREK", "Tokamak MHD", "JK", "Plasma & fusion"],
-  "dina": ["DINA-PS", "Scenario modelling", "DN", "Plasma & fusion"],
-  "warpx-cpu": ["WarpX · CPU", "Particle-in-cell", "WX", "Plasma & fusion"],
-  "warpx-cuda": ["WarpX · CUDA", "GPU particle-in-cell", "WX", "Plasma & fusion"],
-  "flash": ["FLASH", "Hydrodynamics & MHD", "FL", "Fluids & MHD"],
-  "atomec": ["atoMEC", "Atomic physics", "AT", "Materials & radiation"],
-  "singularity-eos": ["Singularity-EOS", "Equation of state", "ES", "Materials & radiation"],
-  "m-aneos": ["M-ANEOS", "Equation of state", "ES", "Materials & radiation"],
-  "feos": ["Frankfurt FEOS", "Electron/ion equation of state", "ES", "Materials & radiation"],
-  "material-eos": ["Material EOS builder", "Model profiles and table export", "ES", "Materials & radiation"],
-  "optab": ["Optab", "Opacity tables", "OP", "Materials & radiation"],
-  "fac": ["FAC", "Atomic structure & rates", "FA", "Materials & radiation"],
+  "conjecture-1": ["Conjecture 1", SimjectureI18n.message("ui.scientific-attention"), "C1", "Workflow assistance"],
+  "elmer": ["Elmer", SimjectureI18n.message("ui.finite-element-simulation"), "FE", "CAD & simulation"],
+  "freecad": ["FreeCAD", SimjectureI18n.message("ui.parametric-cad"), "CAD", "CAD & simulation"],
+  "gmsh": ["Gmsh", SimjectureI18n.message("ui.geometry-and-meshing"), "MS", "CAD & simulation"],
+  "python": [SimjectureI18n.message("ui.python-research-stack"), SimjectureI18n.message("ui.numerical-exploration"), "PY", "Analysis & data"],
+  "warp-lbm": [SimjectureI18n.message("ui.cylinder-flow"), SimjectureI18n.message("ui.warp-lbm-2d-fluid-dynamics"), "LB", "Fluids & MHD"],
+  "iter-pack": [SimjectureI18n.message("ui.iter-pack"), SimjectureI18n.message("ui.diagnostics-data"), "IT", "Analysis & data"],
+  "solps": ["SOLPS-ITER", SimjectureI18n.message("ui.edge-plasma"), "SP", "Plasma & fusion"],
+  "jorek": ["JOREK", SimjectureI18n.message("ui.tokamak-mhd"), "JK", "Plasma & fusion"],
+  "dina": ["DINA-PS", SimjectureI18n.message("ui.scenario-modelling"), "DN", "Plasma & fusion"],
+  "warpx-cpu": ["WarpX · CPU", SimjectureI18n.message("ui.particle-in-cell"), "WX", "Plasma & fusion"],
+  "warpx-cuda": ["WarpX · CUDA", SimjectureI18n.message("ui.gpu-particle-in-cell"), "WX", "Plasma & fusion"],
+  "flash": ["FLASH", SimjectureI18n.message("ui.hydrodynamics-mhd"), "FL", "Fluids & MHD"],
+  "atomec": ["atoMEC", SimjectureI18n.message("ui.atomic-physics"), "AT", "Materials & radiation"],
+  "singularity-eos": ["Singularity-EOS", SimjectureI18n.message("ui.equation-of-state"), "ES", "Materials & radiation"],
+  "m-aneos": ["M-ANEOS", SimjectureI18n.message("ui.equation-of-state"), "ES", "Materials & radiation"],
+  "feos": ["Frankfurt FEOS", SimjectureI18n.message("ui.electron-ion-equation-of-state"), "ES", "Materials & radiation"],
+  "material-eos": [SimjectureI18n.message("ui.material-eos-builder"), SimjectureI18n.message("ui.model-profiles-and-table-export"), "ES", "Materials & radiation"],
+  "optab": ["Optab", SimjectureI18n.message("ui.opacity-tables"), "OP", "Materials & radiation"],
+  "fac": ["FAC", SimjectureI18n.message("ui.atomic-structure-rates"), "FA", "Materials & radiation"],
 };
 // Setup stages reported by the installer itself; they are not percentages.
 const toolStageText = {
-  prepare: ["Prepare", "Checking prerequisites"],
-  install: ["Install", "Downloading and building"],
-  verify: ["Verify", "Running readiness checks"],
+  prepare: [SimjectureI18n.message("ui.prepare"), SimjectureI18n.message("ui.checking-prerequisites")],
+  install: [SimjectureI18n.message("ui.install"), SimjectureI18n.message("ui.downloading-and-building")],
+  verify: [SimjectureI18n.message("ui.verify"), SimjectureI18n.message("ui.running-readiness-checks")],
 };
 // Local start time per running tool, so elapsed time ticks between polls.
 const toolClock = {};
@@ -1218,25 +1184,25 @@ function duration(seconds) {
   if (minutes < 60) return `${minutes}m ${String(total % 60).padStart(2, "0")}s`;
   return `${Math.floor(minutes / 60)}h ${String(minutes % 60).padStart(2, "0")}m`;
 }
-function roughDuration(seconds) {
-  if (seconds < 60) return "under a minute";
+function roughDuration(seconds, approximate = true) {
+  if (seconds < 60) return SimjectureI18n.t("ui.under-a-minute");
   const minutes = Math.round(seconds / 60);
-  return minutes < 60 ? `about ${minutes} min` : `about ${(seconds / 3600).toFixed(1)} h`;
+  return (minutes < 60 ? SimjectureI18n.t(approximate ? "ui.about-min" : "time.minutes", {p0: minutes}) : SimjectureI18n.t(approximate ? "ui.about-h" : "time.hours", {p0: (seconds / 3600).toFixed(1)}));
 }
 function ago(epoch) {
   const seconds = Date.now() / 1000 - epoch;
-  if (seconds < 60) return "just now";
-  if (seconds < 3600) return `${Math.floor(seconds / 60)} min ago`;
-  if (seconds < 86400) return `${Math.floor(seconds / 3600)} h ago`;
-  return `${Math.floor(seconds / 86400)} d ago`;
+  if (seconds < 60) return SimjectureI18n.t("ui.just-now");
+  if (seconds < 3600) return SimjectureI18n.t("ui.min-ago", {p0: Math.floor(seconds / 60)});
+  if (seconds < 86400) return SimjectureI18n.t("ui.h-ago", {p0: Math.floor(seconds / 3600)});
+  return SimjectureI18n.t("ui.d-ago", {p0: Math.floor(seconds / 86400)});
 }
 function catalogTools() {
   const general = !hosted || state.hosting?.permissions.general_execution;
   const python = {
-    id: "python", name: "Python research stack", installed: true, included: true,
-    description: general
-      ? "General Python with NumPy, SciPy, pandas, Matplotlib and PyVista for 3D visualization. Ask your agent to write and run a numerical calculation."
-      : "Numerical libraries support the installed examples. Available through the tools provided by your administrator.",
+    id: "python", name: SimjectureI18n.message("ui.python-research-stack"), installed: true, included: true,
+    description: SimjectureI18n.message(general
+      ? "ui.general-python-with-numpy-scipy-pandas-matplotlib-and-pyvista-for-3d"
+      : "ui.numerical-libraries-support-the-installed-examples-available-through"),
   };
   // The hosted API is the authority for its fixed collection; never add local install offers.
   return [python, ...state.tools.filter(tool => !hosted || tool.installed)];
@@ -1268,31 +1234,37 @@ function toolSection(tool) {
   if (!hosted && (toolRunning(tool) || toolNeedsDiagnosis(tool))) return "active";
   return tool.installed ? "installed" : "available";
 }
+function toolDescription(tool) {
+  return SimjectureI18n.live(() => SimjectureI18n.known(`ui.tool-description.${tool.id}`, tool.description));
+}
 function toolPresentation(tool) {
-  const [name,category,glyph] = toolLabels[tool.id] || [tool.name,"Connected tool","RS"];
+  const [name,category,glyph] = toolLabels[tool.id] || [tool.name,SimjectureI18n.message("ui.connected-tool"),"RS"];
   const base = {name, category, glyph};
-  if(tool.kind === "attention")return {...base,status:tool.installed ? "Client installed" : "Optional",kind:tool.installed ? "installed" : "available",note:"Model service connected per study · disabled by default"};
-  if(tool.included)return {...base,status:"Included",kind:"installed",note:"Included with Simjecture"};
-  if(hosted)return {...base,status:"Available",kind:"installed",note:"Provided by your administrator"};
+  if(tool.kind === "attention")return {...base,status:tool.installed ? SimjectureI18n.message("ui.client-installed") : SimjectureI18n.message("ui.optional"),kind:tool.installed ? "installed" : "available",note:SimjectureI18n.message("ui.model-service-connected-per-study-disabled-by-default")};
+  if(tool.included)return {...base,status:SimjectureI18n.message("ui.included"),kind:"installed",note:SimjectureI18n.message("ui.included-with-simjecture")};
+  if(hosted)return {...base,status:SimjectureI18n.message("ui.available"),kind:"installed",note:SimjectureI18n.message("ui.provided-by-your-administrator")};
   if(toolRunning(tool)){
     const check = tool.operation?.action === "check";
-    if(tool.operation?.stopping)return {...base,status:"Stopping…",kind:"working",note:"Stopping setup…"};
-    return {...base,status:check ? "Checking…" : "Installing…",kind:"working",note:check ? "Readiness check is running." : "Setup is running."};
+    if(tool.operation?.stopping)return {...base,status:SimjectureI18n.message("ui.stopping"),kind:"working",note:SimjectureI18n.message("ui.stopping-setup-2")};
+    return {...base,status:check ? SimjectureI18n.message("ui.checking") : SimjectureI18n.message("ui.installing"),kind:"working",note:check ? SimjectureI18n.message("ui.readiness-check-is-running") : SimjectureI18n.message("ui.setup-is-running")};
   }
-  if(toolNeedsDiagnosis(tool))return {...base,status:"Needs attention",kind:"attention",note:tool.installed ? "Readiness check failed · diagnose with an agent" : "Setup did not finish · diagnose with an agent"};
-  if(toolStopped(tool) && !tool.installed)return {...base,status:"Stopped",kind:"not-installed",note:"Setup was stopped · install again when ready"};
-  if(tool.installed && tool.registered === false)return {...base,status:"Detected",kind:"installed",note:`${tool.variants?.length || 1} local build${tool.variants?.length === 1 ? "" : "s"} · registration needed`};
-  if(tool.installed)return {...base,status:tool.readiness === "passed" ? "✓ Ready" : "✓ Installed",kind:"installed",
-    note:tool.readiness === "passed" ? "Readiness check passed" : "Installed · check readiness when you need it"};
-  return {...base,status:"Not installed",kind:"not-installed",
-    note:["agent","source"].includes(tool.action) ? "Guided setup with your agent" : "One-click install when you need it"};
+  if(toolNeedsDiagnosis(tool))return {...base,status:SimjectureI18n.message("ui.needs-attention"),kind:"attention",note:tool.installed ? SimjectureI18n.message("ui.readiness-check-failed-diagnose-with-an-agent") : SimjectureI18n.message("ui.setup-did-not-finish-diagnose-with-an-agent")};
+  if(toolStopped(tool) && !tool.installed)return {...base,status:SimjectureI18n.message("ui.stopped"),kind:"not-installed",note:SimjectureI18n.message("ui.setup-was-stopped-install-again-when-ready")};
+  if (tool.installed && tool.registered === false) {
+    const count = tool.variants?.length || 1;
+    return {...base, status: SimjectureI18n.message("ui.detected"), kind: "installed",
+      note: SimjectureI18n.message(count === 1 ? "tools.localBuild.one" : "tools.localBuild.other", {count})};
+  }
+  if(tool.installed)return {...base,status:tool.readiness === "passed" ? SimjectureI18n.message("ui.ready-2") : SimjectureI18n.message("ui.installed-2"),kind:"installed",
+    note:tool.readiness === "passed" ? SimjectureI18n.message("ui.readiness-check-passed") : SimjectureI18n.message("ui.installed-check-readiness-when-you-need-it")};
+  return {...base,status:SimjectureI18n.message("ui.not-installed"),kind:"not-installed",
+    note:["agent","source"].includes(tool.action) ? SimjectureI18n.message("ui.guided-setup-with-your-agent") : SimjectureI18n.message("ui.one-click-install-when-you-need-it")};
 }
 function toolActionLabel(tool) {
-  if(tool.kind === "attention")return "Setup guide";
-  if(toolRunning(tool))return tool.operation?.action === "check" ? "Checking…" : "Installing…";
-  if(toolNeedsDiagnosis(tool))return "Diagnose with agent";
-  return tool.installed ? tool.registered === false ? "View installations" : "Check readiness" :
-    tool.action === "custom" ? "Check readiness" : ["agent","source"].includes(tool.action) ? "Install with agent" : "Install";
+  if(tool.kind === "attention")return SimjectureI18n.t("ui.setup-guide");
+  if(toolRunning(tool))return (tool.operation?.action === "check" ? SimjectureI18n.t("ui.checking") : SimjectureI18n.t("ui.installing"));
+  if(toolNeedsDiagnosis(tool))return SimjectureI18n.t("ui.diagnose-with-agent");
+  return (tool.installed ? (tool.registered === false ? SimjectureI18n.t("ui.view-installations") : SimjectureI18n.t("ui.check-readiness")) : (tool.action === "custom" ? SimjectureI18n.t("ui.check-readiness") : (["agent","source"].includes(tool.action) ? SimjectureI18n.t("ui.install-with-agent") : SimjectureI18n.t("ui.install"))));
 }
 function syncToolClock(tool) {
   const elapsed = tool.operation?.elapsed_seconds;
@@ -1309,7 +1281,7 @@ function toolRunView(tool, large = false) {
   head.append(el("span", "", "tool-run-stage"), el("span", "", "tool-run-time"));
   const bar = el("div", undefined, "tool-bar");
   bar.setAttribute("role", "progressbar");
-  bar.setAttribute("aria-label", `${toolPresentation(tool).name} setup progress`);
+  SimjectureI18n.attribute(bar, "aria-label", () => SimjectureI18n.t("ui.setup-progress", {p0: toolPresentation(tool).name}));
   region.append(head, bar);
   if (large) region.append(el("div", "", "tool-run-meta"));
   region.append(el("div", "", "tool-run-activity"));
@@ -1323,11 +1295,10 @@ function updateToolRun(region, tool) {
   const started = toolClock[tool.id] ?? Date.now() / 1000;
   const elapsed = Math.max(0, Date.now() / 1000 - started);
   // Plain stage names; the activity line below shows the installer's own output.
-  const detail = operation.optimistic ? "Starting…" : toolStageText[stages[index]]?.[1] || "Working";
-  const stageText = operation.stopping ? "Stopping setup…"
-    : stages.length > 1 ? `Step ${index + 1} of ${stages.length} · ${detail}` : detail;
-  region.querySelector(".tool-run-stage").textContent = stageText;
-  region.querySelector(".tool-run-time").textContent = duration(elapsed);
+  const detail = SimjectureI18n.live(() => operation.optimistic ? SimjectureI18n.t("ui.starting") : (toolStageText[stages[index]]?.[1] || SimjectureI18n.t("ui.working-2")));
+  const stageText = SimjectureI18n.live(() => operation.stopping ? SimjectureI18n.t("ui.stopping-setup-2") : (stages.length > 1 ? SimjectureI18n.t("ui.step-of", {p0: (index + 1), p1: stages.length, p2: detail}) : detail));
+  SimjectureI18n.content(region.querySelector(".tool-run-stage"), stageText);
+  SimjectureI18n.content(region.querySelector(".tool-run-time"), duration(elapsed));
   const steps = region.querySelector(".tool-steps");
   if (steps) {
     if (steps.children.length !== stages.length) {
@@ -1340,7 +1311,7 @@ function updateToolRun(region, tool) {
     [...steps.children].forEach((item, position) => {
       const status = position < index ? "done" : position === index ? "active" : "pending";
       item.className = status;
-      item.querySelector(".tool-step-mark").textContent = status === "done" ? "✓" : String(position + 1);
+      SimjectureI18n.content(item.querySelector(".tool-step-mark"), status === "done" ? "✓" : String(position + 1));
       if (status === "active") item.setAttribute("aria-current", "step"); else item.removeAttribute("aria-current");
     });
   }
@@ -1359,29 +1330,25 @@ function updateToolRun(region, tool) {
     bar.setAttribute("aria-valuemin", "0");
     bar.setAttribute("aria-valuemax", "100");
     bar.setAttribute("aria-valuenow", String(percent));
-    bar.removeAttribute("aria-valuetext");
   } else {
     [...bar.children].forEach((segment, position) => {
       segment.className = `tool-bar-segment ${position < index ? "done" : position === index ? "active" : ""}`;
     });
     for (const name of ["aria-valuemin", "aria-valuemax", "aria-valuenow"]) bar.removeAttribute(name);
-    bar.setAttribute("aria-valuetext", stageText);
   }
+  SimjectureI18n.attribute(bar, "aria-valuetext", () => estimate ? null : stageText);
   const meta = region.querySelector(".tool-run-meta");
   if (meta) {
-    const timing = estimate
-      ? elapsed < estimate ? `About ${roughDuration(estimate - elapsed).replace(/^about /, "")} left · usually ${roughDuration(estimate)}`
-        : `Taking longer than the usual ${roughDuration(estimate).replace(/^about /, "")}`
-      : "First timed run on this machine · duration depends on network and CPU";
-    meta.textContent = operation.log_bytes ? `${timing} · ${bytes(operation.log_bytes)} of output` : timing;
+    const timing = SimjectureI18n.live(() => estimate ? (elapsed < estimate ? SimjectureI18n.t("ui.about-left-usually", {p0: roughDuration(estimate - elapsed, false), p1: roughDuration(estimate)}) : SimjectureI18n.t("ui.taking-longer-than-the-usual", {p0: roughDuration(estimate, false)})) : SimjectureI18n.t("ui.first-timed-run-on-this-machine-duration-depends-on-network-and-cpu"));
+    SimjectureI18n.bindText(meta, () => operation.log_bytes ? SimjectureI18n.t("ui.of-output", {p0: timing, p1: bytes(operation.log_bytes)}) : timing);
   }
   const activity = region.querySelector(".tool-run-activity");
-  activity.textContent = operation.activity ? `› ${operation.activity}` : "Waiting for output…";
-  activity.title = operation.activity || "";
+  SimjectureI18n.bindText(activity, () => operation.activity ? `› ${operation.activity}` : SimjectureI18n.t("ui.waiting-for-output"));
+  SimjectureI18n.attribute(activity, "title", () => operation.activity || "");
 }
 function toolFailureView(tool) {
   const box = el("div", undefined, "tool-callout attention");
-  box.append(el("strong", tool.installed ? "The readiness check failed" : "Setup did not finish"));
+  box.append(el("strong", SimjectureI18n.live(() => tool.installed ? SimjectureI18n.t("ui.the-readiness-check-failed") : SimjectureI18n.t("ui.setup-did-not-finish"))));
   const list = el("ul", undefined, "tool-failure");
   if (tool.report?.error) list.append(el("li", tool.report.error));
   for (const check of (tool.report?.checks || []).filter(c => c.status === "fail" && c.required !== false)) {
@@ -1390,8 +1357,8 @@ function toolFailureView(tool) {
     if (check.remedy) item.append(el("small", check.remedy));
     list.append(item);
   }
-  if (!list.children.length) list.append(el("li", "The last attempt reported a failed readiness check."));
-  box.append(list, el("p", "Diagnose with agent prepares a conversation with this error and the saved output. You review it and choose the agent before anything runs.", "tool-callout-help"));
+  if (!list.children.length) list.append(el("li", SimjectureI18n.message("ui.the-last-attempt-reported-a-failed-readiness-check")));
+  box.append(list, el("p", SimjectureI18n.message("ui.diagnose-with-agent-prepares-a-conversation-with-this-error-and-the-"), "tool-callout-help"));
   return box;
 }
 function toolConsole(tool, opened) {
@@ -1400,35 +1367,35 @@ function toolConsole(tool, opened) {
   details.dataset.key = `installation-${tool.id}`;
   details.dataset.toolConsole = tool.id;
   details.open = running || toolNeedsDiagnosis(tool) || opened.has(details.dataset.key);
-  const summary = el("summary", hosted ? "Readiness checks" : running ? "Live output" : "Output from the last run");
+  const summary = el("summary", SimjectureI18n.live(() => hosted ? SimjectureI18n.t("ui.readiness-checks") : (running ? SimjectureI18n.t("ui.live-output") : SimjectureI18n.t("ui.output-from-the-last-run"))));
   details.append(summary);
   const bar = el("div", undefined, "tool-console-bar");
-  bar.append(el("span", running ? "Updates automatically" : tool.operation?.finished_at ? `Finished ${ago(tool.operation.finished_at)}` : "", "tool-console-state"));
-  const copy = el("button", "Copy output", "quiet");
+  bar.append(el("span", SimjectureI18n.live(() => running ? SimjectureI18n.t("ui.updates-automatically") : (tool.operation?.finished_at ? SimjectureI18n.t("ui.finished", {p0: ago(tool.operation.finished_at)}) : "")), "tool-console-state"));
+  const copy = el("button", SimjectureI18n.message("ui.copy-output"), "quiet");
   copy.type = "button";
   const pre = el("pre", "", "tool-console-log");
   pre.tabIndex = 0;
   copy.onclick = async () => {
-    try { await navigator.clipboard.writeText(pre.textContent); toast("Output copied"); }
-    catch { toast("Copying is unavailable in this browser; select the text instead.", true); }
+    try { await navigator.clipboard.writeText(pre.textContent); toast(SimjectureI18n.message("ui.output-copied")); }
+    catch { toast(SimjectureI18n.message("ui.copying-is-unavailable-in-this-browser-select-the-text-instead"), true); }
   };
   bar.append(copy);
   details.append(bar, pre);
   const facts = [];
-  if (tool.operation?.log_path && !hosted) facts.push(`Full log: ${tool.operation.log_path}`);
-  if (tool.operation?.attempts) facts.push(`${tool.operation.attempts} earlier attempt${tool.operation.attempts === 1 ? "" : "s"} kept`);
-  if (facts.length) details.append(el("p", facts.join(" · "), "tool-console-foot"));
+  if (tool.operation?.log_path && !hosted) facts.push(SimjectureI18n.live(() => SimjectureI18n.t("ui.full-log-p0", {p0:tool.operation.log_path})));
+  if (tool.operation?.attempts) facts.push(SimjectureI18n.live(() => SimjectureI18n.t("ui.p0-earlier-attempt-p1-kept", {p0:tool.operation.attempts,p1:(SimjectureI18n.getLanguage() === "en" && !(tool.operation.attempts===1) ? "s" : "")})));
+  if (facts.length) details.append(el("p", SimjectureI18n.live(() => facts.join(" · ")), "tool-console-foot"));
   updateToolConsole(details, tool);
   return details;
 }
 function updateToolConsole(details, tool) {
   const pre = details.querySelector("pre");
-  const text = tool.log || (toolRunning(tool) ? "Waiting for setup output…" :
-    Object.keys(tool.report || {}).length ? JSON.stringify(tool.report, null, 2) : "No output was recorded.");
-  if (pre.textContent === text) return;
+  const text = tool.log || (toolRunning(tool) ? SimjectureI18n.live(() => SimjectureI18n.t("ui.waiting-for-setup-output")) :
+    Object.keys(tool.report || {}).length ? JSON.stringify(tool.report, null, 2) : SimjectureI18n.live(() => SimjectureI18n.t("ui.no-output-was-recorded")));
+  if (pre.textContent === String(text)) return;
   // Follow new output only when the reader is already at the end.
   const following = !pre.textContent || pre.scrollHeight - pre.scrollTop - pre.clientHeight < 24;
-  pre.textContent = text;
+  SimjectureI18n.content(pre, text);
   if (following) pre.scrollTop = pre.scrollHeight;
 }
 async function runToolAction(tool, button) {
@@ -1451,7 +1418,7 @@ async function startToolOperation(tool, operation) {
   // Show the start immediately; the server confirms it within the request.
   Object.assign(entry, {state: "working", log: "", operation: {
     action: operation, running: true, optimistic: true, stages, stage: stages[0],
-    stage_detail: "Starting…", attempts: entry.operation?.attempts,
+    stage_detail: "Starting", attempts: entry.operation?.attempts,
   }});
   toolClock[entry.id] = Date.now() / 1000;
   state.toolStarting.add(entry.id);
@@ -1471,20 +1438,20 @@ async function startToolOperation(tool, operation) {
 }
 async function stopToolOperation(tool, button) {
   const name = toolPresentation(tool).name;
-  if (!confirm(`Stop setting up ${name}?\n\nOutput so far is kept and you can start again later.`)) return;
+  if (!confirm(SimjectureI18n.t("ui.stop-setting-up-output-so-far-is-kept-and-you-can-start-again-later", {p0: name}))) return;
   await action(button, async () => {
     await api("stop-install", {name: tool.id});
     const entry = state.tools.find(t => t.id === tool.id);
     if (entry?.operation) entry.operation.stopping = true;
     renderToolChange(entry || tool);
-    toast(`Stopping ${name} setup…`);
+    toast(SimjectureI18n.live(() => SimjectureI18n.t("ui.stopping-setup", {p0: name})));
   });
 }
 function closeToolDetails() {$("tool-details-dialog").close();state.selectedTool=null;state.toolDetailsRevision="";}
 $("close-tool-details").onclick=closeToolDetails;
 $("tool-details-dialog").addEventListener("close",()=>{
   const tool=state.tools.find(t=>t.id===state.selectedTool);
-  if(toolRunning(tool))toast("Setup continues in the background. Follow it in Research tools.");
+  if(toolRunning(tool))toast(SimjectureI18n.message("ui.setup-continues-in-the-background-follow-it-in-research-tools"));
   state.selectedTool=null;state.toolDetailsRevision="";
 });
 function openToolDetails(tool, section=null) {
@@ -1497,15 +1464,13 @@ function openToolDetails(tool, section=null) {
 function toolSetupExplainer(tool) {
   const box = el("div", undefined, "tool-explainer");
   if(tool.kind === "attention") {
-    box.append(el("strong", "Optional attention tool"), el("p", "Connect a separately managed model service and enable it for a study. Shadow mode records suggestions; alert mode permits bounded director requests. Opening this guide does not download weights or allocate a GPU."));
+    box.append(el("strong", SimjectureI18n.message("ui.optional-attention-tool")), el("p", SimjectureI18n.message("ui.connect-a-separately-managed-model-service-and-enable-it-for-a-study")));
   } else if (["agent", "source"].includes(tool.action)) {
-    box.append(el("strong", "Guided setup"), el("p", tool.id === "flash"
-      ? "FLASH is licensed software, so you supply the source. Install with agent opens a conversation that asks for it, along with the application and physics you need, then builds and registers the runtime."
-      : "This tool needs choices that only you can make. Install with agent opens a conversation with setup instructions for your agent. You review the request and choose the agent before anything runs."));
+    box.append(el("strong", SimjectureI18n.message("ui.guided-setup")), el("p", SimjectureI18n.live(() => tool.id === "flash" ? SimjectureI18n.t("ui.flash-is-licensed-software-so-you-supply-the-source-install-with-age") : SimjectureI18n.t("ui.this-tool-needs-choices-that-only-you-can-make-install-with-agent-op"))));
   } else if (tool.action === "custom") {
-    box.append(el("strong", "Connected tool"), el("p", "Check readiness runs the probe defined by its capability descriptor."));
+    box.append(el("strong", SimjectureI18n.message("ui.connected-tool")), el("p", SimjectureI18n.message("ui.check-readiness-runs-the-probe-defined-by-its-capability-descriptor")));
   } else {
-    box.append(el("strong", "One-click install"), el("p", "Simjecture runs the pinned installer in its own runtime folder, then checks that the tool works. Progress and output appear here; you can close this window or stop setup at any time."));
+    box.append(el("strong", SimjectureI18n.message("ui.one-click-install")), el("p", SimjectureI18n.message("ui.simjecture-runs-the-pinned-installer-in-its-own-runtime-folder-then-")));
   }
   return box;
 }
@@ -1526,48 +1491,54 @@ function renderToolDetails(tool,section=null) {
   const previousLog=body.querySelector(".tool-console-log");
   const following=!previousLog || previousLog.scrollHeight-previousLog.scrollTop-previousLog.clientHeight<24;
   const logScroll=previousLog?.scrollTop || 0;
-  $("tool-detail-title").textContent=presentation.name;
-  $("tool-detail-category").textContent=presentation.category;
-  $("tool-detail-state").textContent=presentation.status;
+  SimjectureI18n.content($("tool-detail-title"), presentation.name);
+  SimjectureI18n.content($("tool-detail-category"), presentation.category);
+  SimjectureI18n.content($("tool-detail-state"), SimjectureI18n.live(() => SimjectureI18n.label(presentation.status)));
   $("tool-detail-state").className=`tool-status ${presentation.kind}`;
   body.replaceChildren();
   const running=toolRunning(tool);
   if(running)body.append(toolRunView(tool,true));
   else if(toolNeedsDiagnosis(tool) && !hosted)body.append(toolFailureView(tool));
-  else if(tool.installed && tool.registered === false)body.append(el("div","Local builds are present. Connect a capability directory to use one in recorded studies. A managed-profile check does not test these detected builds.","tool-detail-note"));
+  else if(tool.installed && tool.registered === false)body.append(el("div",SimjectureI18n.message("ui.local-builds-are-present-connect-a-capability-directory-to-use-one-i"),"tool-detail-note"));
   else if(tool.installed && tool.readiness === "passed" && !tool.included && !hosted){
     const ready=el("div",undefined,"tool-callout ready");
-    ready.append(el("strong","Ready to use"),el("p",`Readiness check passed${operation.finished_at ? ` ${ago(operation.finished_at)}` : ""}. Each investigation still validates its own scientific method.`));
+    ready.append(el("strong",SimjectureI18n.message("ui.ready-to-use")),el("p",SimjectureI18n.live(() => SimjectureI18n.t("ui.readiness-check-passed-each-investigation-still-validates-its-own-sc", {p0: (operation.finished_at ? ` ${ago(operation.finished_at)}` : "")}))));
     body.append(ready);
-  } else if(toolStopped(tool))body.append(el("div","The last setup was stopped before it finished. Its output is kept below.","tool-detail-note"));
-  body.append(el("h3","About this tool","tool-about-heading"),el("p",tool.description));
-  if(tool.author_url){const credit=el("a",`Contributed by ${tool.author}`);credit.href=tool.author_url;credit.target="_blank";credit.rel="noopener noreferrer";body.append(credit);}
+  } else if(toolStopped(tool))body.append(el("div",SimjectureI18n.message("ui.the-last-setup-was-stopped-before-it-finished-its-output-is-kept-bel"),"tool-detail-note"));
+  body.append(el("h3",SimjectureI18n.message("ui.about-this-tool"),"tool-about-heading"),el("p",toolDescription(tool)));
+  if(tool.author_url){const credit=el("a",SimjectureI18n.live(() => SimjectureI18n.t("ui.contributed-by", {p0: tool.author})));credit.href=tool.author_url;credit.target="_blank";credit.rel="noopener noreferrer";body.append(credit);}
   if(!tool.installed && !running && !hosted && !tool.included && !toolNeedsDiagnosis(tool))body.append(toolSetupExplainer(tool));
   if(tool.path && !hosted){const location=el("details");location.dataset.key=`location-${tool.id}`;location.open=opened.has(location.dataset.key);
-    location.append(el("summary","Connected capability directory"),el("code",tool.path));body.append(location);}
+    location.append(el("summary",SimjectureI18n.message("ui.connected-capability-directory")),el("code",tool.path));body.append(location);}
   if(tool.variants?.length){
     const variants=el("details",undefined,"installed-variants");variants.dataset.key=`variants-${tool.id}`;
     variants.open=section === "variants" || opened.has(variants.dataset.key);
-    variants.append(el("summary",`${tool.variants.length} ${hosted ? "starter preset" : "installed application"}${tool.variants.length === 1 ? "" : "s"}`));
-    for(const variant of tool.variants){const item=el("div");item.append(el("strong",variant.label || variant.name || "Local build"),el("p",variant.description || ""));if(!hosted)item.append(el("code",variant.runtime || variant.path || ""));variants.append(item);}
+    variants.append(el("summary",SimjectureI18n.live(() => `${tool.variants.length} ${(hosted ? SimjectureI18n.t("ui.starter-preset") : SimjectureI18n.t("ui.installed-application"))}${(SimjectureI18n.getLanguage() === "en" && !(tool.variants.length === 1) ? "s" : "")}`)));
+    for(const variant of tool.variants){const item=el("div");item.append(el("strong",SimjectureI18n.live(() => (variant.label || variant.name) || SimjectureI18n.t("ui.local-build"))),el("p",variant.description || ""));if(!hosted)item.append(el("code",variant.runtime || variant.path || ""));variants.append(item);}
     body.append(variants);
   }
   if(!hosted && tool.installed && tool.registered === false && toolFailure(tool)){
     const diagnostics=el("details");diagnostics.dataset.key=`diagnostics-${tool.id}`;
     diagnostics.open=opened.has(diagnostics.dataset.key);
-    diagnostics.append(el("summary","Managed profile · setup diagnostics"),el("pre",toolFailure(tool),"tool-failure"));
+    diagnostics.append(el("summary",SimjectureI18n.message("ui.managed-profile-setup-diagnostics")),el("pre",toolFailure(tool),"tool-failure"));
     body.append(diagnostics);
   }
   if(!tool.included && (tool.log || Object.keys(tool.report || {}).length || running)){
     const output=toolConsole(tool,opened);body.append(output);
     const log=output.querySelector("pre");log.scrollTop=following ? log.scrollHeight : logScroll;
   }
-  $("tool-detail-status").textContent=hosted ? "This collection is managed by your administrator." : state.readonly ? "Read-only workspace · tool setup is disabled." : tool.included ? "Included with Simjecture. No installation needed." :
-    tool.kind === "attention" ? "Optional per study · shadow by default · model service managed separately." :
-    running ? "You can close this window; setup continues and its progress stays on this page." :
-    toolNeedsDiagnosis(tool) ? "Your agent receives the saved error and output. You choose the agent and send the request." :
-    tool.installed ? "Installation is separate from scientific validation." : "Optional research tool · install when you need it";
-  const actionButton=$("tool-detail-action");actionButton.textContent=toolActionLabel(tool);
+  SimjectureI18n.bindText($("tool-detail-status"), () => {
+    if (hosted) return SimjectureI18n.t("ui.this-collection-is-managed-by-your-administrator");
+    if (state.readonly) return SimjectureI18n.t("ui.read-only-workspace-tool-setup-is-disabled");
+    if (tool.included) return SimjectureI18n.t("ui.included-with-simjecture-no-installation-needed");
+    if (tool.kind === "attention") return SimjectureI18n.t("ui.optional-per-study-shadow-by-default-model-service-managed-separatel");
+    if (running) return SimjectureI18n.t("ui.you-can-close-this-window-setup-continues-and-its-progress-stays-on-");
+    if (toolNeedsDiagnosis(tool)) return SimjectureI18n.t("ui.your-agent-receives-the-saved-error-and-output-you-choose-the-agent-");
+    return SimjectureI18n.t(tool.installed
+      ? "ui.installation-is-separate-from-scientific-validation"
+      : "ui.optional-research-tool-install-when-you-need-it");
+  });
+  const actionButton=$("tool-detail-action");SimjectureI18n.bindText(actionButton, () => toolActionLabel(tool));
   actionButton.disabled=running || state.readonly || hosted;
   actionButton.hidden=hosted || !!tool.included;
   actionButton.className=toolNeedsDiagnosis(tool) || (!tool.installed && !running) ? "primary" : "secondary";
@@ -1579,14 +1550,14 @@ function researchToolCard(tool) {
   const p=toolPresentation(tool),card=el("article",undefined,"research-tool-card");card.dataset.tool=tool.id;card.dataset.state=p.kind;
   const top=el("div",undefined,"research-tool-top"),name=el("div",undefined,"research-tool-name");
   name.append(el("h3",p.name),el("small",p.category));
-  top.append(el("span",p.glyph,"research-tool-icon"),name,el("span",p.status,`tool-status ${p.kind}`));
-  const description=el("p",tool.description,"research-tool-description");description.title=tool.description;
+  top.append(el("span",p.glyph,"research-tool-icon"),name,el("span",SimjectureI18n.live(() => SimjectureI18n.label(p.status)),`tool-status ${p.kind}`));
+  const description=el("p",toolDescription(tool),"research-tool-description");SimjectureI18n.attribute(description, "title", () => toolDescription(tool));
   card.append(top,description);
   if(toolRunning(tool))card.append(toolRunView(tool));
   else card.append(el("div",p.note,`research-tool-note${p.kind === "attention" ? " attention" : ""}`));
   card.dataset.category=toolCategory(tool);
-  const details=el("button",toolRunning(tool) ? "View progress →" : toolNeedsDiagnosis(tool) && !hosted ? "Diagnose setup →" : "Explore tool →","tool-card-open");
-  details.type="button";details.setAttribute("aria-label",`View ${p.name} details`);
+  const details=el("button",SimjectureI18n.live(() => toolRunning(tool) ? SimjectureI18n.t("ui.view-progress") : (toolNeedsDiagnosis(tool) && !hosted ? SimjectureI18n.t("ui.diagnose-setup") : SimjectureI18n.t("ui.explore-tool"))),"tool-card-open");
+  details.type="button";SimjectureI18n.attribute(details, "aria-label", () => SimjectureI18n.t("ui.view-details", {p0: p.name}));
   details.setAttribute("aria-haspopup","dialog");details.onclick=()=>openToolDetails(state.tools.find(t=>t.id===tool.id) || tool);
   card.append(details);
   return card;
@@ -1600,12 +1571,12 @@ function renderToolOptions(tool) {
   actions.replaceChildren();actions.dataset.revision=revision;actions.dataset.selectedTool=tool.id;
   if(tool.included || tool.kind === "attention")return;
   if(!hosted && toolRunning(tool)){
-    const stop=el("button",tool.operation?.stopping ? "Stopping…" : "Stop setup","quiet danger-text");stop.type="button";
+    const stop=el("button",SimjectureI18n.live(() => tool.operation?.stopping ? SimjectureI18n.t("ui.stopping") : SimjectureI18n.t("ui.stop-setup")),"quiet danger-text");stop.type="button";
     stop.disabled=state.readonly || !!tool.operation?.stopping;
     stop.onclick=()=>stopToolOperation(tool,stop);actions.append(stop);
   }
   if(!hosted && toolNeedsDiagnosis(tool)){
-    const retry=el("button",tool.installed || tool.action === "custom" ? "Retry readiness check" : "Retry installation","quiet");
+    const retry=el("button",SimjectureI18n.live(() => tool.installed || tool.action === "custom" ? SimjectureI18n.t("ui.retry-readiness-check") : SimjectureI18n.t("ui.retry-installation")),"quiet");
     retry.disabled=state.readonly;
     retry.onclick=()=>action(retry,async()=>{
       if(["agent","source"].includes(tool.action) && !tool.installed){closeToolDetails();return assistInstallation(tool,true);}
@@ -1614,32 +1585,32 @@ function renderToolOptions(tool) {
   }
   const general=tool.general_execution ?? state.hosting?.permissions.general_execution;
   if(hosted && (general || tool.variants?.some(v=>v.tool_id))){
-    const choice=el("select");choice.setAttribute("aria-label",`${tool.name} study setup`);
-    if(general)choice.add(new Option("Custom study · prepare with agent","custom-study"));
-    const presets=el("optgroup");presets.label="Starter presets";
+    const choice=el("select");SimjectureI18n.attribute(choice, "aria-label", () => SimjectureI18n.t("ui.study-setup", {p0: tool.name}));
+    if(general)choice.add(SimjectureI18n.bindText(new Option("", "custom-study"), () => SimjectureI18n.t("ui.custom-study-prepare-with-agent")));
+    const presets=el("optgroup");SimjectureI18n.attribute(presets, "label", () => SimjectureI18n.t("ui.starter-presets"));
     for(const variant of (tool.variants || []).filter(v=>v.tool_id))presets.append(new Option(variant.label,variant.tool_id));
     if(presets.children.length)choice.append(presets);
     if(previousTool===tool.id && [...choice.options].some(o=>o.value===previousChoice))choice.value=previousChoice;
     choice.disabled=state.readonly;
-    const demo=el("button",general ? "Prepare in chat" : "Run preset","secondary");
+    const demo=el("button",SimjectureI18n.live(() => general ? SimjectureI18n.t("ui.prepare-in-chat") : SimjectureI18n.t("ui.run-preset")),"secondary");
     demo.disabled=state.readonly || state.hosting?.quota.interactive.remaining===0;
-    choice.onchange=()=>demo.textContent=choice.value==="custom-study" ? "Prepare in chat" : "Run preset";
+    choice.onchange=()=>SimjectureI18n.bindText(demo, () => choice.value==="custom-study" ? SimjectureI18n.t("ui.prepare-in-chat") : SimjectureI18n.t("ui.run-preset"));
     choice.onchange();
     demo.onclick=()=>action(demo,async()=>{
       if(choice.value==="custom-study"){closeToolDetails();return prepareToolStudy(tool);}
-      const result=await api("tool-demo",{name:choice.value});closeToolDetails();await reloadProjects();mode("interactive");await openProject(result.project);toast("Starter preset queued. Follow its run in Simulations.");
+      const result=await api("tool-demo",{name:choice.value});closeToolDetails();await reloadProjects();mode("interactive");await openProject(result.project);toast(SimjectureI18n.message("ui.starter-preset-queued-follow-its-run-in-simulations"));
     });
     actions.append(choice,demo);
   }
   if(!hosted && !tool.installed && tool.action !== "custom" && !toolRunning(tool) && !toolNeedsDiagnosis(tool)){
-    const check=el("button","Check existing install","quiet");check.disabled=state.readonly;
-    check.title="Already installed this tool yourself? Run its readiness check.";
+    const check=el("button",SimjectureI18n.message("ui.check-existing-install"),"quiet");check.disabled=state.readonly;
+    SimjectureI18n.attribute(check, "title", () => SimjectureI18n.t("ui.already-installed-this-tool-yourself-run-its-readiness-check"));
     check.onclick=()=>action(check,()=>startToolOperation(tool,"check"));actions.append(check);
   }
-  if(["iter-pack","warp-lbm"].includes(tool.id) && tool.installed && !hosted){const demo=el("button",tool.id === "warp-lbm" ? "Run cylinder wake" : "Run demo","quiet");demo.disabled=toolRunning(tool) || state.readonly;
-    demo.onclick=()=>action(demo,async()=>{const result=await api("tool-demo",{name:tool.id});closeToolDetails();await reloadProjects();mode("interactive");if (!(await openProject(result.project))) return;await monitor.open(result.simulation.id);toast("Simulation started. Its plots and results will appear in Simulations.");});actions.append(demo);}
-  if(tool.benchmark && tool.installed){const benchmark=el("button","Prepare benchmark","quiet");benchmark.disabled=state.readonly;
-    benchmark.onclick=()=>action(benchmark,async()=>{const project=await api("projects",{name:tool.benchmark.title});closeToolDetails();await reloadProjects();if (!(await openProject(project.id)))return;mode("interactive");$("chat-input").value=tool.benchmark.prompt;$("chat-input").dispatchEvent(new Event("input"));$("chat-input").focus();toast("Benchmark task prepared. Choose your agent and send the request.");});actions.append(benchmark);}
+  if(["iter-pack","warp-lbm"].includes(tool.id) && tool.installed && !hosted){const demo=el("button",SimjectureI18n.live(() => tool.id === "warp-lbm" ? SimjectureI18n.t("ui.run-cylinder-wake") : SimjectureI18n.t("ui.run-demo")),"quiet");demo.disabled=toolRunning(tool) || state.readonly;
+    demo.onclick=()=>action(demo,async()=>{const result=await api("tool-demo",{name:tool.id});closeToolDetails();await reloadProjects();mode("interactive");if (!(await openProject(result.project))) return;await monitor.open(result.simulation.id);toast(SimjectureI18n.message("ui.simulation-started-its-plots-and-results-will-appear-in-simulations"));});actions.append(demo);}
+  if(tool.benchmark && tool.installed){const benchmark=el("button",SimjectureI18n.message("ui.prepare-benchmark"),"quiet");benchmark.disabled=state.readonly;
+    benchmark.onclick=()=>action(benchmark,async()=>{const project=await api("projects",{name:tool.benchmark.title});closeToolDetails();await reloadProjects();if (!(await openProject(project.id)))return;mode("interactive");$("chat-input").value=tool.benchmark.prompt;$("chat-input").dispatchEvent(new Event("input"));$("chat-input").focus();toast(SimjectureI18n.message("ui.benchmark-task-prepared-choose-your-agent-and-send-the-request"));});actions.append(benchmark);}
 }
 $("connect-research-tool").onclick=()=>$("custom-tool-dialog").showModal();
 for(const id of ["close-custom-tool","cancel-custom-tool"])$(id).onclick=()=>$("custom-tool-dialog").close();
@@ -1654,7 +1625,7 @@ function filterToolCatalog() {
     const card=cards.get(tool.id);
     if(!card)continue;
     const p=toolPresentation(tool);
-    const searchable=[tool.id,tool.name,p.name,p.category,toolCategory(tool),tool.description,
+    const searchable=[tool.id,tool.name,p.name,p.category,toolCategory(tool),tool.description,toolDescription(tool),
       ...(tool.variants || []).flatMap(v=>[v.label,v.name,v.description])].filter(Boolean).join(" ").toLocaleLowerCase();
     const matches=terms.every(term=>searchable.includes(term)) && (category==="all" || category===toolCategory(tool)) &&
       (hosted || state.toolFilter==="all" || (state.toolFilter==="installed" ? tool.installed : !tool.installed));
@@ -1662,14 +1633,14 @@ function filterToolCatalog() {
     if(matches)counts[toolSection(tool)]++;
   }
   const total=counts.active+counts.installed+counts.available;
-  $("active-count").textContent=counts.active;
-  $("installed-count").textContent=counts.installed;
-  $("available-count").textContent=counts.available;
+  SimjectureI18n.content($("active-count"), counts.active);
+  SimjectureI18n.content($("installed-count"), counts.installed);
+  SimjectureI18n.content($("available-count"), counts.available);
   $("active-tool-section").hidden=counts.active===0;
   $("installed-tool-section").hidden=counts.installed===0;
   $("available-tool-section").hidden=counts.available===0 || hosted;
   $("tool-search-empty").hidden=total>0;
-  $("tool-results-count").textContent=`${total} of ${tools.length} tools`;
+  SimjectureI18n.bindText($("tool-results-count"), () => SimjectureI18n.t("ui.of-tools", {p0: total, p1: tools.length}));
   for(const button of document.querySelectorAll("[data-tool-filter]"))button.setAttribute("aria-pressed",String(button.dataset.toolFilter===state.toolFilter));
 }
 $("tool-search").addEventListener("input",filterToolCatalog);
@@ -1686,9 +1657,9 @@ function renderToolActivity() {
   let badge=nav.querySelector(".nav-activity");
   if(!running){badge?.remove();return;}
   if(!badge){badge=el("span",undefined,"nav-activity");nav.append(badge);}
-  badge.textContent=String(running);
-  const label=`${running} tool setup${running === 1 ? "" : "s"} running`;
-  badge.title=label;badge.setAttribute("aria-label",label);badge.setAttribute("role","status");
+  SimjectureI18n.content(badge, String(running));
+  const label=SimjectureI18n.live(() => SimjectureI18n.t("ui.tool-setup-running", {p0: running, p1: (SimjectureI18n.getLanguage() === "en" && !(running === 1) ? "s" : "")}));
+  SimjectureI18n.attribute(badge, "title", () => label);SimjectureI18n.attribute(badge, "aria-label", () => label);badge.setAttribute("role","status");
 }
 function renderToolChange(tool) {
   renderToolsView();
@@ -1699,13 +1670,12 @@ function renderToolsView() {
   if(state.view!=="tools")return;
   const tools=catalogTools();
   $("tool-collection-note").hidden=!hosted && !state.readonly;
-  $("tool-collection-note").textContent=hosted
-    ? "Managed collection · Your administrator chooses and maintains the tools available on this server. Explore a tool to see how you can use it."
-    : "Read-only workspace · You can explore tools and their details. Installation and setup changes are disabled.";
+  SimjectureI18n.bindText($("tool-collection-note"), () => hosted ? SimjectureI18n.t("ui.managed-collection-your-administrator-chooses-and-maintains-the-tool") : SimjectureI18n.t("ui.read-only-workspace-you-can-explore-tools-and-their-details-installa"));
   $("tool-availability-filters").hidden=hosted;
   $("tools-machines-help").hidden=hosted;
-  $("installed-tool-label").textContent=hosted ? "Available in this workspace" : "On your workbench";
-  $("installed-tool-help").textContent=hosted ? "Provided and maintained by your administrator" : "Installed tools and detected local builds";
+  SimjectureI18n.bindText($("installed-tool-label"), () => hosted ? SimjectureI18n.t("ui.available-in-this-workspace") : SimjectureI18n.t("ui.on-your-workbench"));
+  window.SimjectureI18n.text($("installed-tool-help"), hosted
+    ? "workspace.managedToolsHelp" : "workspace.installedToolsHelp");
   $("connect-research-tool").hidden=hosted;
   $("connect-research-tool").disabled=state.readonly || hosted;
   for(const button of $("custom-tool-form").querySelectorAll("button[type='submit']"))button.disabled=state.readonly || hosted;
@@ -1721,7 +1691,7 @@ function renderToolsView() {
   for(const grid of Object.values(grids))grid.replaceChildren();
   const category=$("tool-category").value;
   const categories=[...new Set(tools.map(toolCategory))].sort();
-  $("tool-category").replaceChildren(new Option("All categories","all"),...categories.map(c=>new Option(c,c)));
+  $("tool-category").replaceChildren(SimjectureI18n.bindText(new Option("", "all"), () => SimjectureI18n.t("ui.all-categories")),...categories.map(c=>SimjectureI18n.bindText(new Option("",c), () => SimjectureI18n.label(c,c))));
   if(categories.includes(category))$("tool-category").value=category;
   for(const tool of tools)grids[toolSection(tool)].append(researchToolCard(tool));
   filterToolCatalog();
@@ -1731,13 +1701,13 @@ function renderToolsView() {
 // otherwise it offers a Python-only example that every installation can run.
 const homeSolverExamples = {
   flash: {
-    title: "Explore reconnecting magnetic islands",
-    detail: "Plot the field lines and track magnetic and kinetic energy · FLASH",
+    title: SimjectureI18n.message("ui.explore-reconnecting-magnetic-islands"),
+    detail: SimjectureI18n.message("ui.plot-the-field-lines-and-track-magnetic-and-kinetic-energy-flash"),
     prompt: "Run a 2D magnetic-island coalescence simulation with the installed FLASH resistive-MHD application. Start with its 64×64 normalized setup, resistivity 0.001 and end time 0.05. Preserve the actual inputs and HDF5 fields. Plot magnetic-field lines and field magnitude, compare magnetic and kinetic energy over time, and explain what this run can tell us about reconnection. Use the island-coalescence application rather than an unrelated vortex or shock example. Inspect available binaries and read-only sources to prepare the appropriate application if needed.",
   },
   python: {
-    title: "Watch chaos appear",
-    detail: "Two almost identical starts in the Lorenz system · Python",
+    title: SimjectureI18n.message("ui.watch-chaos-appear"),
+    detail: SimjectureI18n.message("ui.two-almost-identical-starts-in-the-lorenz-system-python"),
     prompt: "Integrate the Lorenz system (σ=10, ρ=28, β=8/3) with Python and SciPy for 40 time units from two starting points that differ by 1e-8 in x. Plot both trajectories in 3D and their separation on a log scale, estimate the largest Lyapunov exponent from the initial exponential growth, and save the trajectories as CSV. Run the calculation and link the actual plots and outputs.",
   },
 };
@@ -1749,21 +1719,21 @@ function renderHomeExamples() {
   const example = homeSolverExamples[ready ? "flash" : "python"];
   slot.dataset.example = example.prompt;
   slot.dataset.solver = ready ? "flash" : "python";
-  slot.querySelector("strong").textContent = example.title;
-  slot.querySelector("small").textContent = example.detail;
+  SimjectureI18n.content(slot.querySelector("strong"), example.title);
+  SimjectureI18n.content(slot.querySelector("small"), example.detail);
 }
 async function refreshTools() {
   const fetched=await api("tools");
   // Keep an optimistic start visible until the server has recorded it.
   state.tools=fetched.map(tool=>state.toolStarting.has(tool.id) ? state.tools.find(t=>t.id===tool.id) || tool : tool);
   for(const tool of state.tools){syncToolClock(tool);if(toolRunning(tool) && !hosted && !state.toolStarting.has(tool.id))state.toolWatch.add(tool.id);}
-  const previous=$("study-tools").value;$("study-tools").replaceChildren(new Option("All available tools (default)","auto"),new Option("Python only · no external solver",""));
+  const previous=$("study-tools").value;$("study-tools").replaceChildren(SimjectureI18n.bindText(new Option("", "auto"), () => SimjectureI18n.t("ui.all-available-tools-default")),SimjectureI18n.bindText(new Option("", ""), () => SimjectureI18n.t("ui.python-only-no-external-solver")));
   const paths=new Set();
   for(const tool of state.tools){const variants=tool.variants?.length ? tool.variants : [tool];for(const item of variants)if(item.path && !paths.has(item.path)){paths.add(item.path);$("study-tools").add(new Option(item.label || item.name,item.path));}}
   const desired=state.project?.brief?.capability_directory ?? previous ?? "auto";
-  if(desired && ![...$("study-tools").options].some(o=>o.value===desired))$("study-tools").add(new Option("Saved tool restriction · check availability",desired));
+  if(desired && ![...$("study-tools").options].some(o=>o.value===desired))$("study-tools").add(SimjectureI18n.bindText(new Option("", desired), () => SimjectureI18n.t("ui.saved-tool-restriction-check-availability")));
   $("study-tools").value=desired;
-  if(hosted){$("study-tools").replaceChildren(new Option("All verified hosted tools","hosted-tools"));$("study-tools").disabled=true;}
+  if(hosted){$("study-tools").replaceChildren(SimjectureI18n.bindText(new Option("", "hosted-tools"), () => SimjectureI18n.t("ui.all-verified-hosted-tools")));$("study-tools").disabled=true;}
   renderToolActivity();
   renderHomeExamples();
   renderToolsView();
@@ -1772,10 +1742,10 @@ function announceToolResult(id) {
   const tool=state.tools.find(t=>t.id===id);
   if(!tool)return;
   const name=toolPresentation(tool).name, check=tool.operation?.action === "check";
-  if(tool.operation?.cancelled)toast(`${name}: setup stopped. Its output is kept.`);
-  else if(toolNeedsDiagnosis(tool))toast(`${name} needs attention. Open it in Research tools to see why and diagnose with an agent.`,true);
-  else if(tool.installed)toast(`✓ ${name} ${check ? "passed its readiness check" : "is installed and ready"}.`);
-  else toast(`${name}: ${check ? "readiness check" : "setup"} finished.`);
+  if(tool.operation?.cancelled)toast(SimjectureI18n.live(() => SimjectureI18n.t("ui.setup-stopped-its-output-is-kept", {p0: name})));
+  else if(toolNeedsDiagnosis(tool))toast(SimjectureI18n.live(() => SimjectureI18n.t("ui.needs-attention-open-it-in-research-tools-to-see-why-and-diagnose-wi", {p0: name})),true);
+  else if(tool.installed)toast(SimjectureI18n.live(() => `✓ ${name} ${(check ? SimjectureI18n.t("ui.passed-its-readiness-check") : SimjectureI18n.t("ui.is-installed-and-ready"))}.`));
+  else toast(SimjectureI18n.live(() => SimjectureI18n.t("ui.finished-2", {p0: name, p1: (check ? SimjectureI18n.t("ui.readiness-check") : "setup")})));
 }
 async function pollToolProgress() {
   if(hosted || state.toolPolling || !state.toolWatch.size)return;
@@ -1871,10 +1841,10 @@ async function renderStudies() {
       data.live?.status || raw.phase || report.status || "starting";
     const meta = el("div", undefined, "study-meta");
     meta.append(
-      el("span", String(status).replaceAll("_", " ").toUpperCase(), "badge"),
+      el("span", SimjectureI18n.live(() => SimjectureI18n.label(status, String(status).replaceAll("_", " ").toUpperCase())), "badge"),
       el("span", study.campaign_id),
     );
-    const select = el("a", study.campaign === state.routeStudy ? "Selected study" : "Select study", "study-selection");
+    const select = el("a", SimjectureI18n.live(() => study.campaign === state.routeStudy ? SimjectureI18n.t("ui.selected-study") : SimjectureI18n.t("ui.select-study")), "study-selection");
     select.href = selectedLink.href;
     meta.append(select);
     card.append(meta, heading);
@@ -1885,17 +1855,13 @@ async function renderStudies() {
       card.append(
         el(
           "p",
-          status === "completed"
-            ? "Study finished. Review its findings and independent assessment below."
-            : "Study stopped before an accepted outcome. The report records the partial findings.",
+          SimjectureI18n.live(() => status === "completed" ? SimjectureI18n.t("ui.study-finished-review-its-findings-and-independent-assessment-below") : SimjectureI18n.t("ui.study-stopped-before-an-accepted-outcome-the-report-records-the-part")),
           "field-help",
         ),
       );
       const returned = el(
         "a",
-        study.report_turn
-          ? "Read the agent’s explanation in conversation ↗"
-          : "Return to the conversation ↗",
+        SimjectureI18n.live(() => study.report_turn ? SimjectureI18n.t("ui.read-the-agent-s-explanation-in-conversation") : SimjectureI18n.t("ui.return-to-the-conversation")),
         "secondary",
       );
       returned.href = projectLink(state.project.id, {
@@ -1905,7 +1871,7 @@ async function renderStudies() {
       });
       card.append(returned);
       if (!study.explain_on_finish && !study.report_turn) {
-        const explain = el("button", "Explain in conversation", "secondary");
+        const explain = el("button", SimjectureI18n.message("ui.explain-in-conversation"), "secondary");
         explain.disabled = state.readonly;
         explain.onclick = () =>
           action(explain, async () => {
@@ -1914,18 +1880,14 @@ async function renderStudies() {
               campaign: study.campaign,
             });
             mode("interactive");
-            toast("Report queued for your interactive agent.");
+            toast(SimjectureI18n.message("ui.report-queued-for-your-interactive-agent"));
           });
         card.append(explain);
       }
       card.append(
         el(
           "p",
-          study.report_turn
-            ? "The report has been handed to your interactive agent. Its explanation appears in the conversation."
-            : study.explain_on_finish
-              ? "The report will be explained here automatically when the interactive agent is free. Keep the workspace server running; closing the browser is fine."
-              : "Ask your interactive agent to explain this report when you are ready.",
+          SimjectureI18n.live(() => study.report_turn ? SimjectureI18n.t("ui.the-report-has-been-handed-to-your-interactive-agent-its-explanation") : (study.explain_on_finish ? SimjectureI18n.t("ui.the-report-will-be-explained-here-automatically-when-the-interactive") : SimjectureI18n.t("ui.ask-your-interactive-agent-to-explain-this-report-when-you-are-ready"))),
           "field-help",
         ),
       );
@@ -1933,22 +1895,22 @@ async function renderStudies() {
     const metrics = el("div", undefined, "metrics");
     for (const [label, value] of [
       [
-        "Experiments",
+        SimjectureI18n.message("ui.experiments"),
         report.experiments?.length ?? snap.executions?.length ?? 0,
       ],
-      ["Independent reviews", report.reviews?.length ?? 0],
-      ["Input tokens", data.live?.usage ? data.live.usage.input_tokens.toLocaleString() : "—"],
-      ["Output tokens", data.live?.usage ? data.live.usage.output_tokens.toLocaleString() : "—"],
-      ["Provider retry wait", `${Math.round((data.live?.provider_wait_seconds || 0) / 60)} min`],
+      [SimjectureI18n.message("ui.independent-reviews"), report.reviews?.length ?? 0],
+      [SimjectureI18n.message("ui.input-tokens"), data.live?.usage ? data.live.usage.input_tokens.toLocaleString() : "—"],
+      [SimjectureI18n.message("ui.output-tokens"), data.live?.usage ? data.live.usage.output_tokens.toLocaleString() : "—"],
+      [SimjectureI18n.message("ui.provider-retry-wait"), SimjectureI18n.live(() => SimjectureI18n.t("ui.min", {p0: Math.round((data.live?.provider_wait_seconds || 0) / 60)}))],
       [
-        "Time remaining",
-        data.live?.remaining === null ? "Unlimited" : data.live?.remaining === undefined
+        SimjectureI18n.message("ui.time-remaining"),
+        SimjectureI18n.live(() => data.live?.remaining === null ? SimjectureI18n.t("ui.unlimited-2") : data.live?.remaining === undefined
           ? "—"
-          : `${Math.max(0, Math.ceil(data.live.remaining / 60))} min`,
+          : SimjectureI18n.t("ui.min", {p0: Math.max(0, Math.ceil(data.live.remaining / 60))})),
       ],
     ]) {
       const item = el("div", label);
-      item.prepend(el("strong", String(value)));
+      item.prepend(el("strong", SimjectureI18n.live(() => String(value))));
       metrics.append(item);
     }
     card.append(metrics);
@@ -1958,12 +1920,12 @@ async function renderStudies() {
       submit:payload => api("extend-study", payload),
       submitLimits:hosted ? undefined : payload => api("study-limits", payload),
       onLimitsSaved:async () => {
-        toast("Run settings saved. New worker and review calls will use them.");
+        toast(SimjectureI18n.message("ui.run-settings-saved-new-worker-and-review-calls-will-use-them"));
         state.studyRevision = "";
         if (state.project?.id === projectId) await renderStudies();
       },
       onSaved:async () => {
-        toast("Study time extended. The director will update its plan.");
+        toast(SimjectureI18n.message("ui.study-time-extended-the-director-will-update-its-plan"));
         state.studyRevision = "";
         if (state.project?.id === projectId) await renderStudies();
       },
@@ -1972,18 +1934,18 @@ async function renderStudies() {
     if (budgetHistory && openDetails.has(budgetHistory.dataset.key)) budgetHistory.open = true;
     card.append(budget);
     card.append(el("p", data.live?.activity || "", "field-help"));
-    if (data.live?.background_review) card.append(el("p", "Director reviewing alongside the worker", "field-help"));
+    if (data.live?.background_review) card.append(el("p", SimjectureI18n.message("ui.director-reviewing-alongside-the-worker"), "field-help"));
     if (data.live?.usage_details) {
       const usage = data.live.usage_details;
-      card.append(el("p", `${usage.requests} tracked requests; ${usage.requests_without_usage} without usage yet. Cache usage ${usage.cache_usage_complete ? "reported" : "not fully reported"}. ${usage.cost_note}`, "field-help"));
+      card.append(el("p", SimjectureI18n.live(() => SimjectureI18n.t("ui.tracked-requests-without-usage-yet-cache-usage", {p0: usage.requests, p1: usage.requests_without_usage, p2: (usage.cache_usage_complete ? SimjectureI18n.t("ui.reported") : SimjectureI18n.t("ui.not-fully-reported")), p3: SimjectureI18n.known("ui.usage-cost-note", usage.cost_note)})), "field-help"));
     }
     const instrument = data.live?.instrument_requirement;
-    if (instrument?.prefixes?.length) card.append(el("p", `Instrument family: any of ${instrument.prefixes.join(" or ")}. ${instrument.satisfied ? "Available" : "Not available"}; scientific qualification is separate.`, "field-help"));
+    if (instrument?.prefixes?.length) card.append(el("p", SimjectureI18n.live(() => SimjectureI18n.t("ui.instrument-family-any-of-scientific-qualification-is-separate", {p0: instrument.prefixes.join(SimjectureI18n.t("ui.or")), p1: (instrument.satisfied ? SimjectureI18n.t("ui.available") : SimjectureI18n.t("ui.not-available"))})), "field-help"));
     const controls = el("div", undefined, "study-controls");
     for (const [verb, label, allowed] of [
-      ["pause", "Pause", snap.controls?.can_pause],
-      ["resume", "Resume", snap.controls?.can_resume],
-      ["cancel", "Stop", snap.controls?.can_cancel],
+      ["pause", SimjectureI18n.message("ui.pause"), snap.controls?.can_pause],
+      ["resume", SimjectureI18n.message("ui.resume"), snap.controls?.can_resume],
+      ["cancel", SimjectureI18n.message("ui.stop"), snap.controls?.can_cancel],
     ])
       if (allowed) {
         const b = el("button", label, "secondary");
@@ -1994,17 +1956,17 @@ async function renderStudies() {
               `/api/campaigns/${study.campaign}/control/${verb}`,
               {},
             );
-            toast(result.message);
+            toast(SimjectureI18n.live(() => SimjectureI18n.known("ui.campaign-resumed-response", result.message)));
             state.studyRevision = "";
             await renderStudies();
           });
         controls.append(b);
       }
-    const monitor = el("a", "Evidence & review ↗", "secondary");
+    const monitor = el("a", SimjectureI18n.message("ui.evidence-review"), "secondary");
     monitor.href = window.StudyNavigation.evidence(study.campaign);
     controls.append(monitor);
     if (data.live?.mode === "minimal") {
-      for (const [kind, label] of [["continue", "Continue investigation"], ["steer", "Send guidance"]]) {
+      for (const [kind, label] of [["continue", SimjectureI18n.message("ui.continue-investigation")], ["steer", SimjectureI18n.message("ui.send-guidance")]]) {
         if (kind === "steer" && (data.live.remaining <= 0 || ["completed", "cancelled", "budget_exhausted"].includes(status))) continue;
         const button = el("button", label, "secondary"); button.disabled = state.readonly;
         button.onclick = () => action(button, () => openResearchAction(study.campaign, kind)); controls.append(button);
@@ -2012,25 +1974,25 @@ async function renderStudies() {
     }
     card.append(controls);
     if (study.parent_campaign) {
-      const parent = el("a", "Continues an earlier study ↗", "field-help"); parent.href = `/monitor?campaign=${encodeURIComponent(study.parent_campaign)}`; card.append(parent);
+      const parent = el("a", SimjectureI18n.message("ui.continues-an-earlier-study"), "field-help"); parent.href = `/monitor?campaign=${encodeURIComponent(study.parent_campaign)}`; card.append(parent);
     }
     if (data.steering?.length) {
       const notes = el("details"); notes.dataset.key = `steering-${study.campaign}`; notes.open = openDetails.has(notes.dataset.key);
-      notes.append(el("summary", `Operator guidance (${data.steering.filter(n => !n.delivered_at).length} queued)`));
+      notes.append(el("summary", SimjectureI18n.live(() => SimjectureI18n.t("ui.operator-guidance-queued", {p0: data.steering.filter(n => !n.delivered_at).length}))));
       for (const note of data.steering) {
-        notes.append(el("p", `${note.delivered_at ? "Included at agent checkpoint" : "Queued"} · ${new Date(note.created_at * 1000).toLocaleString()}`, "field-help"), el("p", note.message));
+        notes.append(el("p", SimjectureI18n.live(() => `${(note.delivered_at ? SimjectureI18n.t("ui.included-at-agent-checkpoint") : SimjectureI18n.t("ui.queued"))} · ${new Date(note.created_at * 1000).toLocaleString()}`), "field-help"), el("p", note.message));
       }
       card.append(notes);
     }
     const findings = el("div", undefined, "study-findings");
-    findings.append(el("p", "Experiment outputs are recorded results. Scientific acceptance comes from independent review; completing a run alone does not establish a claim.", "field-help"));
+    findings.append(window.SimjectureI18n.text(el("p", undefined, "field-help"), "workspace.findingsHelp"));
     for (const review of report.reviews || [])
       if (review.verdict) {
         const v = review.verdict;
         findings.append(
           el(
             "p",
-            `${v.decision === "approved" ? "Accepted" : "More evidence needed"}: ${v.disposition}. ${v.rationale}`,
+            SimjectureI18n.live(() => `${(v.decision === "approved" ? SimjectureI18n.t("ui.accepted") : SimjectureI18n.t("ui.more-evidence-needed"))}: ${SimjectureI18n.label(v.disposition)}. ${v.rationale}`),
           ),
         );
       }
@@ -2038,7 +2000,7 @@ async function renderStudies() {
       const details = el("details");
       details.dataset.key = `results-${study.campaign}`;
       details.open = openDetails.has(details.dataset.key);
-      details.append(el("summary", "Scientific results"));
+      details.append(el("summary", SimjectureI18n.message("ui.scientific-results")));
       const prose = el("div", undefined, "message-content");
       md(prose, data.results);
       details.append(prose);
@@ -2048,7 +2010,7 @@ async function renderStudies() {
     files.dataset.key = `files-${study.campaign}`;
     files.open = openDetails.has(files.dataset.key);
     files.append(
-      el("summary", "Results, reports, and simulation files"),
+      el("summary", SimjectureI18n.message("ui.results-reports-and-simulation-files")),
       el("code", study.path),
     );
     const linkFile = (name, label) => {
@@ -2072,28 +2034,28 @@ async function renderStudies() {
       files.append(
         el(
           "p",
-          `${index + 1}. ${experiment.key || experiment.binding?.source || "Simulation"} · ${experiment.status}`,
+          SimjectureI18n.live(() => `${(index + 1)}. ${((experiment.key || experiment.binding?.source) || SimjectureI18n.t("ui.simulation-2"))} · ${SimjectureI18n.label(experiment.status)}`),
         ),
       );
       for (const output of experiment.outputs || [])
         files.append(
           linkFile(`experiments/${experiment.id}/workspace/${output}`, output),
         );
-      if (experiment.machine) files.append(el("p", `Machine: ${experiment.machine} · ${experiment.transport_status || "recorded"}`));
+      if (experiment.machine) files.append(el("p", SimjectureI18n.live(() => SimjectureI18n.t("ui.machine", {p0: experiment.machine, p1: (SimjectureI18n.label(experiment.transport_status) || "recorded")}))));
       const retained = Object.keys(experiment.remote_artifacts || {}).filter(name=>!experiment.artifacts?.[name]);
       if (retained.length) {
-        const select = el("select"); select.setAttribute("aria-label", "Remote artifact to retrieve");
+        const select = el("select"); SimjectureI18n.attribute(select, "aria-label", () => SimjectureI18n.t("ui.remote-artifact-to-retrieve"));
         for (const name of retained) select.add(new Option(name, name));
-        const fetch = el("button", "Retrieve from worker", "secondary"); fetch.disabled = state.readonly;
+        const fetch = el("button", SimjectureI18n.message("ui.retrieve-from-worker"), "secondary"); fetch.disabled = state.readonly;
         fetch.onclick = () => action(fetch, async () => {
           await api("fetch-remote-artifact", {campaign:study.campaign,experiment:experiment.id,path:select.value});
-          state.studyRevision = ""; await renderStudies(); toast("Artifact retrieved and SHA256 verified.");
+          state.studyRevision = ""; await renderStudies(); toast(SimjectureI18n.message("ui.artifact-retrieved-and-sha256-verified"));
         });
         files.append(select, fetch);
       }
     }
     const all = el("details");
-    all.append(el("summary", "All recorded files"));
+    all.append(el("summary", SimjectureI18n.message("ui.all-recorded-files")));
     for (const artifact of snap.artifacts || [])
       all.append(linkFile(artifact.path, artifact.path));
     files.append(all);
@@ -2104,6 +2066,7 @@ async function renderStudies() {
   state.studyRevision = rev;
 }
 async function boot() {
+  await SimjectureI18n.ready;
   const data = await api("bootstrap");
   state.token = data.control_token;
   state.settings = data.settings;
@@ -2112,26 +2075,26 @@ async function boot() {
     state.hosting=data.hosting;renderHosting();
     for(const name of ["machines","settings"])document.querySelector(`[data-view="${name}"]`).hidden=true;
     for(const id of ["connect-research-tool","tools-open-machines","connection-button","continuation-chat"])$(id).hidden=true;
-    if(data.hosting.wall_seconds===null){$("brief-hours").removeAttribute("max");$("brief-hours").min="0";$("brief-hours").value="0";document.querySelector('label[for="brief-hours"]').textContent="Time budget (hours; 0 = unlimited)";}else{$("brief-hours").max=String(data.hosting.wall_seconds/3600);$("brief-hours").value=$("brief-hours").max;}
+    if(data.hosting.wall_seconds===null){$("brief-hours").removeAttribute("max");$("brief-hours").min="0";$("brief-hours").value="0";SimjectureI18n.content(document.querySelector('label[for="brief-hours"]'), SimjectureI18n.message("ui.time-budget-hours-0-unlimited"));}else{$("brief-hours").max=String(data.hosting.wall_seconds/3600);$("brief-hours").value=$("brief-hours").max;}
     for(const id of ["execution-backend","study-machines","research-director","review-backend","review-model","review-effort"])$(id).disabled=true;
     $("research-director").checked=false;
     $("research-director").closest("label").hidden=true;
     $("brief-policy").value="answer";
     $("brief-policy").disabled=true;
-    $("first-request-help").textContent="The hosted agent and compute are ready.";$("first-request-help").hidden=false;
-    $("execution-backend").replaceChildren(new Option("Managed experiments","trusted-template"));
-    $("review-model").placeholder="Assigned by the host";
-    $("review-agent-help").textContent="The review agent is managed by the host.";
-    document.querySelector(".research-tools-heading .lead").textContent="Verified tools provided for this hosted workspace.";
+    SimjectureI18n.bindText($("first-request-help"), () => SimjectureI18n.t("ui.the-hosted-agent-and-compute-are-ready"));$("first-request-help").hidden=false;
+    $("execution-backend").replaceChildren(SimjectureI18n.bindText(new Option("", "trusted-template"), () => SimjectureI18n.t("ui.managed-experiments")));
+    SimjectureI18n.attribute($("review-model"), "placeholder", () => SimjectureI18n.t("ui.assigned-by-the-host"));
+    window.SimjectureI18n.text($("review-agent-help"), "workspace.reviewHostedHelp");
+    window.SimjectureI18n.text(document.querySelector(".research-tools-heading .lead"), "workspace.hostedToolsIntro");
   }
   const reviewBackend = $("review-backend");
   for (const cli of state.settings.clis || [])
-    if (cli.path) reviewBackend.add(new Option(`${cli.id} · local CLI`, cli.id));
-  reviewBackend.add(new Option("Compatible API · Connections", "builtin"));
+    if (cli.path) reviewBackend.add(SimjectureI18n.bindText(new Option("", cli.id), () => SimjectureI18n.t("ui.local-cli", {p0: cli.id})));
+  reviewBackend.add(SimjectureI18n.bindText(new Option("", "builtin"), () => SimjectureI18n.t("ui.compatible-api-connections")));
   reviewBackend.onchange = () => {
     const different = reviewBackend.value && reviewBackend.value !== state.project?.agent?.backend;
     $("review-model").required = Boolean(different);
-    $("review-model").placeholder = different ? "Model ID for the selected agent" : "Default: conversation agent model";
+    SimjectureI18n.attribute($("review-model"), "placeholder", () => different ? SimjectureI18n.t("ui.model-id-for-the-selected-agent") : SimjectureI18n.t("ui.default-conversation-agent-model"));
     $("review-effort").disabled = hosted || reviewBackend.value === "agy";
     if (reviewBackend.value === "agy") $("review-effort").value = "";
   };
@@ -2143,12 +2106,8 @@ async function boot() {
       ["proot-cooperative", "process-cooperative"].includes(execution?.backend) ||
       ["proot-cooperative", "process-cooperative"].includes($("execution-backend").value);
     const blocked = execution && !execution.available;
-    const warning = cooperative
-      ? execution?.warning ||
-        "Cooperative execution is not a security sandbox: it does not isolate host files or networking. Use only trusted code under a dedicated non-root account."
-      : blocked
-        ? "Isolated experiments cannot run on this host. Cooperative mode needs PRoot and a dedicated non-root account."
-        : "";
+    const warningText = () => (cooperative ? (execution?.warning || SimjectureI18n.t("ui.cooperative-execution-is-not-a-security-sandbox-it-does-not-isolate-")) : (blocked ? SimjectureI18n.t("ui.isolated-experiments-cannot-run-on-this-host-cooperative-mode-needs-") : ""));
+    const warning = warningText();
     executionNoticeKey = JSON.stringify([
       data.settings.machine,
       execution,
@@ -2160,26 +2119,18 @@ async function boot() {
         localStorage.getItem("simjecture-execution-notice-dismissed") ===
         executionNoticeKey;
     } catch {}
-    const label = hosted ? "Verified tools ready" : cooperative
-      ? "Limited isolation"
-      : blocked
-        ? "Experiments unavailable"
-        : execution?.available
-          ? "Isolated experiments ready"
-          : "Execution status unchecked";
-    $("execution-status").textContent = label;
+    const label = SimjectureI18n.live(() => hosted ? SimjectureI18n.t("ui.verified-tools-ready") : (cooperative ? SimjectureI18n.t("ui.limited-isolation") : (blocked ? SimjectureI18n.t("ui.experiments-unavailable") : (execution?.available ? SimjectureI18n.t("ui.isolated-experiments-ready") : SimjectureI18n.t("ui.execution-status-unchecked")))));
+    SimjectureI18n.content($("execution-status"), label);
     $("execution-status").disabled = !warning;
-    $("execution-warning-title").textContent = cooperative
-      ? "Limited isolation"
-      : "Execution needs setup";
-    $("execution-warning-message").textContent = warning;
-    $("execution-warning-diagnostics").textContent = [
+    SimjectureI18n.bindText($("execution-warning-title"), () => cooperative ? SimjectureI18n.t("ui.limited-isolation") : SimjectureI18n.t("ui.execution-needs-setup"));
+    SimjectureI18n.bindText($("execution-warning-message"), warningText);
+    SimjectureI18n.content($("execution-warning-diagnostics"), [
       execution?.reason,
       execution?.fallback_reason,
       execution?.fallback_unavailable,
     ]
       .filter(Boolean)
-      .join("\n");
+      .join("\n"));
     $("execution-warning-details").hidden = !$("execution-warning-diagnostics")
       .textContent;
     $("execution-warning").hidden = !warning || dismissed;
@@ -2278,30 +2229,28 @@ $("provider-preset").onchange = () => {
 $("settings-form").onsubmit = (e) => {
   e.preventDefault();
   action($("save-connection"), async () => {
-    $("connection-result").textContent = "Saving API connection…";
+    SimjectureI18n.bindText($("connection-result"), () => SimjectureI18n.t("ui.saving-api-connection"));
     try {
       state.settings = await api("api-settings", {
         base_url: $("base-url").value,
         api_key: $("api-key").value,
       });
     } catch (error) {
-      $("connection-result").textContent = `Connection not saved: ${error.message}`;
+      SimjectureI18n.bindText($("connection-result"), () => SimjectureI18n.t("ui.connection-not-saved", {p0: error.message}));
       throw error;
     }
     $("api-key").value = "";
     renderSettings();
-    toast("API connection saved. Choose its model in a conversation.");
+    toast(SimjectureI18n.message("ui.api-connection-saved-choose-its-model-in-a-conversation"));
     await renderAgent(undefined, "home");
     if (state.project) await renderAgent();
   });
 };
 $("check-machine").onclick = () =>
   action($("check-machine"), async () => {
-    $("machine-result").textContent = "Checking Linux experiment execution…";
+    SimjectureI18n.bindText($("machine-result"), () => SimjectureI18n.t("ui.checking-linux-experiment-execution"));
     const result = await api("machine");
-    $("machine-result").textContent = result.available
-      ? "Ready. Recorded experiments can run in the Linux sandbox."
-      : `${result.reason} ${result.remedy || ""}`;
+    SimjectureI18n.bindText($("machine-result"), () => result.available ? SimjectureI18n.t("ui.ready-recorded-experiments-can-run-in-the-linux-sandbox") : `${result.reason} ${(result.remedy || "")}`);
   });
 $("new-project").onclick = () => {
   state.project = null;
@@ -2398,9 +2347,7 @@ async function prepareStudy(approach) {
   mode("interactive");
   renderProject();
   toast(
-    approach === "interview"
-      ? "Your agent will ask focused questions in the conversation."
-      : "Your agent is drafting the study from this conversation.",
+    SimjectureI18n.live(() => approach === "interview" ? SimjectureI18n.t("ui.your-agent-will-ask-focused-questions-in-the-conversation") : SimjectureI18n.t("ui.your-agent-is-drafting-the-study-from-this-conversation")),
   );
 }
 $("new-study").onclick = () =>
@@ -2435,7 +2382,7 @@ $("brief-form").oninput = () => {
 $("save-brief").onclick = () =>
   action($("save-brief"), async () => {
     await saveBrief();
-    toast("Study brief saved");
+    toast(SimjectureI18n.message("ui.study-brief-saved"));
   });
 async function launchStudy() {
   const id = state.project.id;
@@ -2466,7 +2413,7 @@ async function launchStudy() {
   renderProject();
   await renderStudies();
   toast(
-    hosted && !state.hosting?.account ? "Research started. Keep a tab open, or sign in to retain the investigation." : "Autonomous study started. You can close this page and return later.",
+    SimjectureI18n.live(() => hosted && !state.hosting?.account ? SimjectureI18n.t("ui.research-started-keep-a-tab-open-or-sign-in-to-retain-the-investigat") : SimjectureI18n.t("ui.autonomous-study-started-you-can-close-this-page-and-return-later")),
   );
 }
 $("brief-form").onsubmit = (e) => {
@@ -2480,7 +2427,7 @@ $("file-input").onchange = async () => {
     try {
       if (file.size > 64 * 1024 ** 2)
         throw Error(
-          `${file.name} exceeds 64 MB. Copy it to the project folder directly.`,
+          SimjectureI18n.t("ui.exceeds-64-mb-copy-it-to-the-project-folder-directly", {p0: file.name}),
         );
       const data = await new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -2489,7 +2436,7 @@ $("file-input").onchange = async () => {
         reader.readAsDataURL(file);
       });
       await api("upload", { project: state.project.id, name: file.name, data });
-      toast(`Saved ${file.name}`);
+      toast(SimjectureI18n.live(() => SimjectureI18n.t("ui.saved", {p0: file.name})));
     } catch (error) {
       toast(error.message, true);
     }
@@ -2507,7 +2454,7 @@ $("custom-tool-form").onsubmit = (e) => {
       name: $("tool-name").value,
       path: $("tool-path").value,
     });
-    toast("Research tool registered");
+    toast(SimjectureI18n.message("ui.research-tool-registered"));
     $("custom-tool-dialog").close();
     await refreshTools();
   });
@@ -2528,20 +2475,16 @@ setInterval(() => {
       0,
       Math.floor(Date.now() / 1000 - Number(element.dataset.idleSince)),
     );
-    element.textContent =
-      seconds < 60
-        ? `${seconds}s ago`
-        : `${Math.floor(seconds / 60)}m ${seconds % 60}s ago`;
+    SimjectureI18n.bindText(element, () => seconds < 60 ? SimjectureI18n.t("ui.s-ago", {p0: seconds}) : SimjectureI18n.t("ui.m-s-ago", {p0: Math.floor(seconds / 60), p1: seconds % 60}));
   }
   for (const element of document.querySelectorAll("[data-elapsed]")) {
     const seconds = Math.max(
       0,
       Math.floor(Date.now() / 1000 - Number(element.dataset.elapsed)),
     );
-    element.textContent =
-      seconds < 60
+    SimjectureI18n.content(element, seconds < 60
         ? `${seconds}s`
-        : `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
+        : `${Math.floor(seconds / 60)}m ${seconds % 60}s`);
   }
 }, 1000);
 const narrow = matchMedia("(max-width: 1000px)");
@@ -2580,7 +2523,7 @@ setInterval(async () => {
     if (state.view === "knowledge") await globalThis.WorkspaceKnowledge?.refresh();
   } catch (error) {
     toast(
-      `Connection interrupted: ${error.message}. Your work stays on disk.`,
+      SimjectureI18n.live(() => SimjectureI18n.t("ui.connection-interrupted-your-work-stays-on-disk", {p0: error.message})),
       true,
     );
   } finally {
@@ -2619,9 +2562,9 @@ $("delete-form").onsubmit = async (event) => {
     }
     $("delete-dialog").close();
     await reloadProjects();
-    toast(result.message || "Conversation and saved folders deleted");
+    toast(SimjectureI18n.live(() => SimjectureI18n.known("ui.conversation-deleted-response", result.message) || SimjectureI18n.t("ui.conversation-and-saved-folders-deleted")));
   } catch (error) {
-    $("delete-error").textContent = error.message;
+    SimjectureI18n.content($("delete-error"), error.message);
     $("delete-error").hidden = false;
   } finally {
     button.disabled = state.readonly;
@@ -2629,11 +2572,8 @@ $("delete-form").onsubmit = async (event) => {
 };
 function updateThemeToggle() {
   const dark = document.documentElement.dataset.theme === "dark";
-  $("theme-toggle").textContent = dark ? "☀ Light mode" : "☾ Dark mode";
-  $("theme-toggle").setAttribute(
-    "aria-label",
-    dark ? "Switch to light mode" : "Switch to dark mode",
-  );
+  SimjectureI18n.bindText($("theme-toggle"), () => dark ? SimjectureI18n.t("ui.light-mode") : SimjectureI18n.t("ui.dark-mode"));
+  SimjectureI18n.attribute($("theme-toggle"), "aria-label", () => dark ? SimjectureI18n.t("ui.switch-to-light-mode") : SimjectureI18n.t("ui.switch-to-dark-mode"));
 }
 $("theme-toggle").onclick = () => {
   WorkspaceTheme.set(
@@ -2646,7 +2586,7 @@ updateThemeToggle();
 
 // Shared entry point from a study card or a directly opened CLI study monitor.
 async function openResearchAction(campaign, kind) {
-  if (state.readonly) throw Error("This workspace is read-only");
+  if (state.readonly) throw Error(SimjectureI18n.t("ui.this-workspace-is-read-only"));
   if (state.researchAction) return;
   const continuing = kind === "continue";
   const route = location.hash;
@@ -2669,22 +2609,20 @@ async function openResearchAction(campaign, kind) {
   }
   const dialog = el("dialog", undefined, "research-action-dialog");
   active.dialog = dialog;
-  dialog.setAttribute("aria-label", continuing ? "Continue investigation" : "Send guidance");
+  SimjectureI18n.attribute(dialog, "aria-label", () => continuing ? SimjectureI18n.t("ui.continue-investigation") : SimjectureI18n.t("ui.send-guidance"));
   const form = el("form");
-  form.append(el("h2", continuing ? "Continue investigation" : "Send guidance"));
-  form.append(el("p", continuing
-    ? "Prepare a linked phase with a new budget. The previous study stays unchanged. Selected files are snapshotted at launch; earlier results keep their original status. Review the brief and model before starting."
-    : "Guidance reaches the agent at its next checkpoint. It does not change the deadline or existing experiment contracts. Use Continue investigation for a new question or requirements.", "field-help"));
-  const label = el("label", continuing ? "What should the next phase investigate?" : "Guidance for the agent");
+  form.append(el("h2", SimjectureI18n.live(() => continuing ? SimjectureI18n.t("ui.continue-investigation") : SimjectureI18n.t("ui.send-guidance"))));
+  form.append(el("p", SimjectureI18n.live(() => continuing ? SimjectureI18n.t("ui.prepare-a-linked-phase-with-a-new-budget-the-previous-study-stays-un") : SimjectureI18n.t("ui.guidance-reaches-the-agent-at-its-next-checkpoint-it-does-not-change")), "field-help"));
+  const label = el("label", SimjectureI18n.live(() => continuing ? SimjectureI18n.t("ui.what-should-the-next-phase-investigate") : SimjectureI18n.t("ui.guidance-for-the-agent")));
   const message = el("textarea");
   message.required = !continuing; message.maxLength = 8000; message.rows = 6;
   label.append(message); form.append(label);
-  if (continuing) form.append(el("p", "Optional when preparing with an agent: discuss the next direction in chat, then review the agent’s brief before launch.", "field-help"));
+  if (continuing) form.append(el("p", SimjectureI18n.message("ui.optional-when-preparing-with-an-agent-discuss-the-next-direction-in-"), "field-help"));
   const hours = el("input"); hours.type = "number"; hours.min = "0.01"; hours.max = "168"; hours.step = "0.01"; hours.value = "1";
   const selection = [];
   if (continuing) {
-    const budget = el("label", "New wall-time budget (hours)"); budget.append(hours); form.append(budget);
-    const files = el("details"); files.append(el("summary", `Working files to inherit (${preview.files.length} available)`));
+    const budget = el("label", SimjectureI18n.message("ui.new-wall-time-budget-hours")); budget.append(hours); form.append(budget);
+    const files = el("details"); files.append(el("summary", SimjectureI18n.live(() => SimjectureI18n.t("ui.working-files-to-inherit-available", {p0: preview.files.length}))));
     const list = el("div", undefined, "inherit-file-list");
     preview.files.forEach((file, i) => {
       const row = el("label"); const check = el("input"); check.type = "checkbox"; check.checked = i < 64;
@@ -2694,9 +2632,9 @@ async function openResearchAction(campaign, kind) {
   }
   const error = el("p", "", "form-error"); error.setAttribute("role", "alert"); form.append(error);
   const controls = el("div", undefined, "study-controls");
-  const cancel = el("button", "Cancel", "secondary"); cancel.type = "button"; cancel.onclick = () => dialog.close();
-  const submit = el("button", continuing ? "Prepare directly" : "Send guidance"); submit.type = "submit"; submit.value = "direct";
-  const withAgent = continuing ? el("button", "Prepare with agent", "secondary") : null;
+  const cancel = el("button", SimjectureI18n.message("ui.cancel"), "secondary"); cancel.type = "button"; cancel.onclick = () => dialog.close();
+  const submit = el("button", SimjectureI18n.live(() => continuing ? SimjectureI18n.t("ui.prepare-directly") : SimjectureI18n.t("ui.send-guidance"))); submit.type = "submit"; submit.value = "direct";
+  const withAgent = continuing ? el("button", SimjectureI18n.message("ui.prepare-with-agent"), "secondary") : null;
   if (withAgent) { withAgent.type = "submit"; withAgent.value = "agent"; }
   controls.append(cancel, submit); if (withAgent) controls.append(withAgent); form.append(controls); dialog.append(form); document.body.append(dialog);
   const key = crypto.randomUUID();
@@ -2719,13 +2657,16 @@ async function openResearchAction(campaign, kind) {
         if (!(await openProject(result.project))) return;
         state.routeStudy = window.StudyNavigation.selected(state.project, campaign);
         mode(result.view || "autonomous");
-        toast(result.preparation_error || result.message, !!result.preparation_error);
+        toast(SimjectureI18n.live(() => result.preparation_error ||
+          SimjectureI18n.known("ui.continuation-preparing-response",
+            SimjectureI18n.known("ui.continuation-parent-response",
+              SimjectureI18n.known("ui.continuation-draft-response", result.message)))), !!result.preparation_error);
       } else {
         await api("steer-study", {campaign, message: message.value, request_key: key});
-        dialog.close(); toast("Guidance queued for the next agent checkpoint."); state.studyRevision = ""; await renderStudies();
+        dialog.close(); toast(SimjectureI18n.message("ui.guidance-queued-for-the-next-agent-checkpoint")); state.studyRevision = ""; await renderStudies();
       }
     } catch (e) {
-      error.textContent = e.message;
+      SimjectureI18n.content(error, e.message);
       submitting = false;
       cancel.disabled = false;
       submit.disabled = false; if (withAgent) withAgent.disabled = false;
