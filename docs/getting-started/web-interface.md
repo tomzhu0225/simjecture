@@ -59,8 +59,29 @@ benchmark descriptions and usage/pricing explanations are translated at their
 display boundary only when the server wording matches the catalog. Custom or
 newer descriptions and unrecognized server messages remain in their original language.
 
-For contributors, `web/static/i18n-messages.js` keeps English and Chinese copy
-together. Mark text-only elements with `data-i18n="message.key"`; use
+For contributors, `web/static/language/en.json` and `zh-CN.json` contain the
+English and Chinese dictionaries, keyed by the same semantic message IDs.
+`language/manifest.json` maps language codes to their native display names; it
+also supplies both language selectors. To add a language, add its JSON dictionary
+and a manifest entry. No page-rendering changes are needed for existing keys.
+Use meaningful interpolation names such as `{count}` and `{model}` and retain
+matching placeholders across languages. English is the fallback dictionary.
+
+`i18n-messages.js` loads the manifest and dictionaries once; `i18n.js` retains the
+existing translation and DOM-binding API. Both page initializers await
+`SimjectureI18n.ready`, so delayed requests cannot start a partially translated
+application. The selector is disabled until initialization completes. Loading an
+optional dictionary can fail without preventing English fallback. Existing
+languages switch synchronously after initialization. A much larger language set
+could use loading on demand later; the current two dictionaries need no bundler,
+framework or runtime dependency.
+
+This follows the common separation of language resources from rendering code,
+as described in [i18next resource loading](https://www.i18next.com/how-to/add-or-load-translations)
+and [explicit fallback](https://www.i18next.com/principles/fallback), while preserving
+Simjecture's native JavaScript architecture.
+
+Mark text-only elements with `data-i18n="message.key"`; use
 `data-i18n-placeholder`, `data-i18n-title`, `data-i18n-aria-label` and the other
 supported attribute markers for static attributes. Keep nested controls and
 research content outside text-only markers.
@@ -78,7 +99,8 @@ Dynamic DOM helpers use `SimjectureI18n.content(node, value)`:
   for explicitly identified built-in UI descriptions, with raw fallback.
 
 Changing language updates bound text/attributes in place, preserving inputs,
-event handlers and expanded sections. UI-only Markdown uses an explicit render
+event handlers and expanded sections. State/revision signatures must use raw
+values or stable message IDs, never translated display expressions. UI-only Markdown uses an explicit render
 adapter; research Markdown keeps its normal renderer. Bindings use a `WeakMap`,
 with no global mutation observer. Missing Chinese entries fall back to English;
 an unknown key is displayed unchanged. No build step or extra runtime dependency
@@ -94,7 +116,10 @@ python -m pytest tests/test_web_i18n.py
 
 The audit skips `vendor/` and separates localized references, reviewed technical
 literals and unresolved candidates, including nested JS templates and obvious
-text/attribute sinks. It is a conservative lexer, not a full JavaScript parser or
+text/attribute sinks. Reviewed non-UI blocks can use paired
+`// i18n-technical-start: reason` and `// i18n-technical-end` comments; keep
+these blocks narrow, since their contents are excluded from translation.
+It is a conservative lexer, not a full JavaScript parser or
 a translation percentage: indirect runtime values and server-provided copy need
 browser review. New exclusions must identify technical content, not hide UI copy.
 Review both languages at desktop and mobile widths, including open forms/dialogs,

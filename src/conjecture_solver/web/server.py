@@ -95,6 +95,11 @@ STATIC_ASSETS = STATIC_ASSETS | frozenset(
     for p in (STATIC_ROOT / "vendor/webawesome-3.14.0").rglob("*")
     if p.is_file() and p.suffix in {".js", ".css", ".svg"}
 )
+STATIC_ASSETS = STATIC_ASSETS | frozenset(
+    p.relative_to(STATIC_ROOT).as_posix()
+    for p in (STATIC_ROOT / "language").glob("*.json")
+    if p.is_file()
+)
 
 
 class SimjectureHTTPServer(ThreadingHTTPServer):
@@ -307,6 +312,7 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
             ".css": "text/css; charset=utf-8",
             ".html": "text/html; charset=utf-8",
             ".js": "text/javascript; charset=utf-8",
+            ".json": "application/json; charset=utf-8",
             ".svg": "image/svg+xml",
             ".ico": "image/x-icon",
         }.get(path.suffix, "application/octet-stream")

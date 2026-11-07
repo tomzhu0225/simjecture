@@ -866,6 +866,7 @@ function setupGuideText(tool) {
 async function assistInstallation(tool, diagnose=false) {
   const guide = toolSetupGuides[tool.id] || {};
   const check = tool.operation?.action === "check";
+  // i18n-technical-start: generated agent setup request; preserve scientific input
   const steps = diagnose
     ? `Please:
 1. Read the saved failure below and the full log${tool.operation?.log_path ? ` at ${tool.operation.log_path}` : ""}.
@@ -892,6 +893,7 @@ ${steps}
 
 A passing readiness check shows the tool runs; it is not scientific validation.${diagnostics}`;
   const project = await api("projects", { name: `${diagnose ? "Repair" : "Install"} ${tool.name}` });
+  // i18n-technical-end
   await reloadProjects();
   mode("interactive");
   if (!(await openProject(project.id))) return;
@@ -1198,7 +1200,9 @@ function catalogTools() {
   const general = !hosted || state.hosting?.permissions.general_execution;
   const python = {
     id: "python", name: SimjectureI18n.message("ui.python-research-stack"), installed: true, included: true,
-    description: SimjectureI18n.live(() => general ? SimjectureI18n.t("ui.general-python-with-numpy-scipy-pandas-matplotlib-and-pyvista-for-3d") : SimjectureI18n.t("ui.numerical-libraries-support-the-installed-examples-available-through")),
+    description: SimjectureI18n.message(general
+      ? "ui.general-python-with-numpy-scipy-pandas-matplotlib-and-pyvista-for-3d"
+      : "ui.numerical-libraries-support-the-installed-examples-available-through"),
   };
   // The hosted API is the authority for its fixed collection; never add local install offers.
   return [python, ...state.tools.filter(tool => !hosted || tool.installed)];
@@ -1246,7 +1250,11 @@ function toolPresentation(tool) {
   }
   if(toolNeedsDiagnosis(tool))return {...base,status:SimjectureI18n.message("ui.needs-attention"),kind:"attention",note:tool.installed ? SimjectureI18n.message("ui.readiness-check-failed-diagnose-with-an-agent") : SimjectureI18n.message("ui.setup-did-not-finish-diagnose-with-an-agent")};
   if(toolStopped(tool) && !tool.installed)return {...base,status:SimjectureI18n.message("ui.stopped"),kind:"not-installed",note:SimjectureI18n.message("ui.setup-was-stopped-install-again-when-ready")};
-  if(tool.installed && tool.registered === false)return {...base,status:SimjectureI18n.message("ui.detected"),kind:"installed",note:SimjectureI18n.live(() => SimjectureI18n.t("ui.local-build-registration-needed", {p0: (tool.variants?.length || 1), p1: ((SimjectureI18n.getLanguage() === "en" && !(tool.variants?.length === 1) ? "s" : ""))}))};
+  if (tool.installed && tool.registered === false) {
+    const count = tool.variants?.length || 1;
+    return {...base, status: SimjectureI18n.message("ui.detected"), kind: "installed",
+      note: SimjectureI18n.message(count === 1 ? "tools.localBuild.one" : "tools.localBuild.other", {count})};
+  }
   if(tool.installed)return {...base,status:tool.readiness === "passed" ? SimjectureI18n.message("ui.ready-2") : SimjectureI18n.message("ui.installed-2"),kind:"installed",
     note:tool.readiness === "passed" ? SimjectureI18n.message("ui.readiness-check-passed") : SimjectureI18n.message("ui.installed-check-readiness-when-you-need-it")};
   return {...base,status:SimjectureI18n.message("ui.not-installed"),kind:"not-installed",
@@ -1519,7 +1527,17 @@ function renderToolDetails(tool,section=null) {
     const output=toolConsole(tool,opened);body.append(output);
     const log=output.querySelector("pre");log.scrollTop=following ? log.scrollHeight : logScroll;
   }
-  SimjectureI18n.bindText($("tool-detail-status"), () => hosted ? SimjectureI18n.t("ui.this-collection-is-managed-by-your-administrator") : (state.readonly ? SimjectureI18n.t("ui.read-only-workspace-tool-setup-is-disabled") : (tool.included ? SimjectureI18n.t("ui.included-with-simjecture-no-installation-needed") : (tool.kind === "attention" ? SimjectureI18n.t("ui.optional-per-study-shadow-by-default-model-service-managed-separatel") : (running ? SimjectureI18n.t("ui.you-can-close-this-window-setup-continues-and-its-progress-stays-on-") : (toolNeedsDiagnosis(tool) ? SimjectureI18n.t("ui.your-agent-receives-the-saved-error-and-output-you-choose-the-agent-") : (tool.installed ? SimjectureI18n.t("ui.installation-is-separate-from-scientific-validation") : SimjectureI18n.t("ui.optional-research-tool-install-when-you-need-it"))))))));
+  SimjectureI18n.bindText($("tool-detail-status"), () => {
+    if (hosted) return SimjectureI18n.t("ui.this-collection-is-managed-by-your-administrator");
+    if (state.readonly) return SimjectureI18n.t("ui.read-only-workspace-tool-setup-is-disabled");
+    if (tool.included) return SimjectureI18n.t("ui.included-with-simjecture-no-installation-needed");
+    if (tool.kind === "attention") return SimjectureI18n.t("ui.optional-per-study-shadow-by-default-model-service-managed-separatel");
+    if (running) return SimjectureI18n.t("ui.you-can-close-this-window-setup-continues-and-its-progress-stays-on-");
+    if (toolNeedsDiagnosis(tool)) return SimjectureI18n.t("ui.your-agent-receives-the-saved-error-and-output-you-choose-the-agent-");
+    return SimjectureI18n.t(tool.installed
+      ? "ui.installation-is-separate-from-scientific-validation"
+      : "ui.optional-research-tool-install-when-you-need-it");
+  });
   const actionButton=$("tool-detail-action");SimjectureI18n.bindText(actionButton, () => toolActionLabel(tool));
   actionButton.disabled=running || state.readonly || hosted;
   actionButton.hidden=hosted || !!tool.included;
@@ -2048,6 +2066,7 @@ async function renderStudies() {
   state.studyRevision = rev;
 }
 async function boot() {
+  await SimjectureI18n.ready;
   const data = await api("bootstrap");
   state.token = data.control_token;
   state.settings = data.settings;

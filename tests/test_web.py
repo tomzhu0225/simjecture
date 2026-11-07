@@ -373,7 +373,7 @@ def test_web_assets_keep_live_detail_state_and_separate_operator_views() -> None
     assert "Research loop progress" in html
     assert "Commissioning stage" in html
     assert "All claim kinds" in html
-    messages = (STATIC_ROOT / "i18n-messages.js").read_text()
+    messages = (STATIC_ROOT / "language/en.json").read_text()
     assert "Scientific only" in messages
     assert 'SimjectureI18n.t("ui.scientific-only")' in javascript
     for kind in ("Scientific", "Instrument", "Diagnostic", "Control"):

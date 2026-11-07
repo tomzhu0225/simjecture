@@ -3,7 +3,7 @@
 
 window.SimjectureI18n = (() => {
   const storageKey = "simjecture-language";
-  const supported = new Set(["en", "zh-CN"]);
+  const supported = value => Object.hasOwn(window.SimjectureLanguages, value);
   const messages = window.SimjectureMessages;
   const bindings = new WeakMap();
   const messageType = Symbol("UI message");
@@ -11,7 +11,7 @@ window.SimjectureI18n = (() => {
   function storedLanguage() {
     try {
       const saved = localStorage.getItem(storageKey);
-      return supported.has(saved) ? saved : "en";
+      return supported(saved) ? saved : "en";
     } catch {
       return "en";
     }
@@ -46,7 +46,7 @@ window.SimjectureI18n = (() => {
   function label(value, fallback = String(value ?? "").replaceAll("_", " ")) {
     const raw = String(value ?? "");
     const key = `status.${raw.toLowerCase().replaceAll(" ", "_")}`;
-    return language === "zh-CN" && messages[key] ? t(key) : fallback;
+    return language !== "en" && messages[key] ? t(key) : fallback;
   }
 
   function bind(node, render, attribute) {
@@ -96,7 +96,9 @@ window.SimjectureI18n = (() => {
     renderer(String(value ?? ""));
     if (!value?.[messageType]) return node;
     if (!bindings.has(node)) bindings.set(node, new Map());
-    bindings.get(node).set("view", { render: () => renderer(String(value)) });
+    bindings.get(node).set("view", {
+      render: () => String(value), renderer, value: String(value),
+    });
     node.setAttribute("data-i18n-bound", "");
     return node;
   }
@@ -120,29 +122,38 @@ window.SimjectureI18n = (() => {
       for (const [name, binding] of bindings.get(node) || []) {
         if (name === "text") {
           // A renderer that replaced this node's content owns its new text.
-          if (binding.text.parentNode === node) binding.text.nodeValue = String(binding.render() ?? "");
-        } else if (name === "view") binding.render();
-        else {
+          const value = String(binding.render() ?? "");
+          if (binding.text.parentNode === node && binding.text.nodeValue !== value)
+            binding.text.nodeValue = value;
+        } else if (name === "view") {
           const value = binding.render();
-          if (value == null) node.removeAttribute(name);
-          else node.setAttribute(name, String(value));
+          if (binding.value !== value) {
+            binding.renderer(value);
+            binding.value = value;
+          }
+        } else {
+          const value = binding.render();
+          if (value == null) {
+            if (node.hasAttribute(name)) node.removeAttribute(name);
+          } else if (node.getAttribute(name) !== String(value)) node.setAttribute(name, String(value));
         }
       }
     }
     for (const select of document.querySelectorAll("[data-language-select]"))
-      select.value = language;
+      if (select.value !== language) select.value = language;
   }
 
   function update(value) {
-    const changed = language !== value;
+    if (language === value) return;
     language = value;
     document.documentElement.lang = language;
     apply();
-    if (changed) window.dispatchEvent(new Event("simjecture-language"));
+    window.dispatchEvent(new Event("simjecture-language"));
   }
 
   function setLanguage(value) {
-    if (!supported.has(value)) return;
+    if (!initialized) return ready.then(() => setLanguage(value));
+    if (!supported(value)) return;
     // Only an explicit choice writes a preference; storage may be unavailable.
     try { localStorage.setItem(storageKey, value); } catch {}
     update(value);
@@ -157,10 +168,24 @@ window.SimjectureI18n = (() => {
   });
   // Restore the preference when returning to a page from the browser's cache.
   window.addEventListener("pageshow", () => update(storedLanguage()));
-  if (document.readyState === "loading")
-    document.addEventListener("DOMContentLoaded", () => apply(), { once: true });
-  else apply();
+  let initialized = false;
+  const ready = window.SimjectureMessagesReady.then(async () => {
+    if (document.readyState === "loading")
+      await new Promise(resolve => document.addEventListener("DOMContentLoaded", resolve, { once: true }));
+    for (const select of document.querySelectorAll("[data-language-select]")) {
+      select.replaceChildren(...Object.entries(window.SimjectureLanguages).map(([code, name]) => {
+        const option = new Option(name, code);
+        option.lang = code;
+        return option;
+      }));
+      select.disabled = false;
+    }
+    language = storedLanguage();
+    document.documentElement.lang = language;
+    initialized = true;
+    apply();
+  });
 
   return { t, message, live, label, known, text, content, render, bindText, attribute, apply, setLanguage,
-    getLanguage: () => language };
+    ready, getLanguage: () => language };
 })();
