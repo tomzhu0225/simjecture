@@ -23,8 +23,20 @@ independent scientific review.
 | Case | What you can inspect |
 |---|---|
 | [Qin-1 hardware-to-plasma](qin1_multiphysics/) | Operator-assisted local toolchain study spanning CAD, meshing, EM/circuits, native 3D plasma and visualization, with retained sensitivity checks and execution limits |
+| [FuZE mesh and solver diagnostics](fuze_mesh_solver_diagnostics/) | Operator-assisted FLASH mesh and native WarpX restart/axis case study; rejected repair retained; no-key checks of the excerpt, without solver reproduction |
 | [Quantum ESPRESSO Si reference](qe_dft_reference/) | Material-specific diamond-Si DFT protocol (`vc-relax`, SCF, bands, DOS and `projwfc.x`), Bubblewrap launcher inputs, and completion-bound reassessment |
 | [Quantum ESPRESSO bcc Fe reference](qe_fe_reference/) | Collinear spin-polarized bcc-Fe protocol and reassessment record demonstrating how non-converged structural optimization (`exit_status=3`) is rejected |
+
+## Formal proof checking with Lean
+
+These scripted commissioning examples exercise the `lean-4.24.0` capability.
+They are not autonomous discovery results or accepted campaign conclusions.
+
+| Case | What you can inspect |
+|---|---|
+| [Lean and compressible Euler](lean_euler/) | Seven audited theorems (forward-Euler decay, periodic finite-volume conservation), an exact rational positivity counterexample for a Rusanov step, and a periodic 3D NumPy reference run |
+| [1D Poisson optimality](lean_poisson/) | Complete exact discrete Dirichlet solve with proved correctness, uniqueness, an `11N+6` modeled-work upper bound and an `N` output lower bound |
+| [3D Euler cache optimization](lean_euler/optimization/) | Empirical same-update speedup plus fifteen audited theorems for exact-real cache equivalence, conservation and a scoped caching-schedule optimum; general solver optimality remains open |
 
 Earlier classic (`v0.1`–`v0.6.2` `mvp`/DSH) demo directories have been retired from
 `main` and remain preserved in the [`v0.6.2` release tag](https://github.com/tomzhu0225/simjecture/tree/v0.6.2/demos).
@@ -34,23 +46,3 @@ outputs and review decisions. Distinguish human framing and commissioning from
 autonomous scientific work and later corrections. See
 [the contribution guide](../CONTRIBUTING.md) and
 [documentation development](../docs/development/documentation.md).
-
-## Lean and compressible Euler
-
-[Lean/Euler](lean_euler/README.md) is a local commissioning example with seven
-checked theorems, an exact positivity counterexample, and a periodic 3D NumPy
-reference run. It includes a replay driver using Simjecture lab receipts.
-
-[1D Poisson optimality](lean_poisson/README.md) extends this with a complete
-exact discrete solve, a proved 11N+6 work upper bound and N output lower bound,
-and a local benchmark. It is retained as a baseline for the 3D Euler work.
-
-The next [3D Euler optimization stage](lean_euler/optimization/README.md) records
-a thermodynamic-cache experiment, Lean-checked exact equivalence and a scoped
-caching optimum, with an updated PDF. General solver optimality remains open.
-
-[Stage 3: Euler work at a prescribed error](lean_euler/accuracy/README.md) adds
-full-solve timing, sampled accuracy/work comparisons, an output-representation
-negative control, and a [PDF report](lean_euler/accuracy/report.pdf). Its reference
-and conditional budget lemmas pass Lean; the nonlinear convergence assumptions
-remain unproved.

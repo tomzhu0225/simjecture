@@ -1,5 +1,0 @@
-SIMJECTURE_AXIOMS ContactReference.contact_pressure: [propext, Classical.choice, Quot.sound]
-SIMJECTURE_AXIOMS ContactReference.contact_velocity: [propext, Classical.choice, Quot.sound]
-SIMJECTURE_AXIOMS ContactReference.transported_contact_residual: [propext, Classical.choice, Quot.sound]
-SIMJECTURE_AXIOMS ContactReference.sinusoidal_transport_jet: [propext, Classical.choice, Quot.sound]
-SIMJECTURE_AXIOMS ContactReference.density_controls_components: [propext, Classical.choice, Quot.sound]

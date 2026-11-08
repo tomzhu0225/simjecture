@@ -4,6 +4,26 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+- Add the pinned Lean 4.24.0/Mathlib proof-checking capability (`simjecture
+  install lean`, `doctor --profile lean`) and the `lean` skill. The checker
+  freezes sources, audits each named theorem's transitive axioms in a separate
+  generated module, and retains source hashes, commands, diagnostics and limits.
+  `proved` covers only the named statements; the skill requires a hypothesis
+  ledger before a proof is applied to a solver run. Add three scripted
+  commissioning examples: Lean/compressible Euler conservation with an exact
+  positivity counterexample, a 1D Poisson correctness and linear-work baseline,
+  and exact-real 3D Euler cache equivalence with a scoped caching-schedule
+  optimum. General Euler accuracy or solver optimality is not claimed.
+
+- Let `lab.reproduce_anchor` carry an explicit execution-pool resource
+  reservation without changing the packaged command or its qualification.
+
+- Add LCB119's FuZE development record: five-level FLASH gas loading and native
+  WarpX RNG/restart/axis controls, with retained figures, source hashes and
+  no-key excerpt verification. Extend the existing skills with mesh/restart
+  and native RZ diagnostic guidance; preserve the unqualified physical scope
+  and rejected axis-boundary candidate.
+
 - Add an optional pinned Quantum ESPRESSO runtime, material-configured scalar/collinear DFT workflow, and separate Si and magnetic-metal Fe commissioning examples with independent DOS and band branches.
 - Require a previewed and explicitly confirmed QE research plan before solver execution, with disclosed defaults, exact source/protocol binding and step-specific acceptance.
 

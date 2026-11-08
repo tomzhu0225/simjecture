@@ -1,5 +1,0 @@
-SIMJECTURE_AXIOMS ErrorWork.stencil_nonexpansive: [propext, Quot.sound, Classical.choice]
-SIMJECTURE_AXIOMS ErrorWork.accumulate_error: [propext, Classical.choice, Quot.sound]
-SIMJECTURE_AXIOMS ErrorWork.first_order_budget: [propext, Classical.choice, Quot.sound]
-SIMJECTURE_AXIOMS ErrorWork.total_work_bound: [propext]
-SIMJECTURE_AXIOMS ErrorWork.smallest_certified_grid_minimizes_work: [propext]

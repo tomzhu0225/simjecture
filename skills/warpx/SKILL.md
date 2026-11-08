@@ -98,6 +98,10 @@ below are the classic API; do not create that hierarchy in a minimal study.
 
 Read these resources as needed:
 
+- `references/native-rz-development.md`: read for operator-supplied native RZ
+  solver changes, axis anomalies or stochastic restart controls; covers native
+  operator probes, checkpoint/RNG continuity and bounded candidate comparisons.
+  It does not extend the pinned PICMI capability's advertised support.
 - `references/picmi-interface.md`: main Python construction sequence.
 - `references/2d-xz-commissioning.md`: required reading before any 2D Cartesian
   run; coordinate, field-source, equilibrium, and preflight invariants.

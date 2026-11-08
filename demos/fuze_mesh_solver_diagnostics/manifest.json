@@ -1,0 +1,9 @@
+{
+  "demos/fuze_mesh_solver_diagnostics/record/axis.json": "416b7feb2d3fca81e117057df37c34b12803f86462573c2f8f25d5ccab2c756e",
+  "demos/fuze_mesh_solver_diagnostics/record/flash.json": "b7f67df9f285c9acf971eba2415fae97854969574496a7146494816d38f6c2d1",
+  "demos/fuze_mesh_solver_diagnostics/record/provenance.json": "864172ebc41ea996129b75d71e0f560a1780e06aff640f77f506da5f4b6cff2c",
+  "demos/fuze_mesh_solver_diagnostics/record/restart.json": "9c41c9e87c65a67ccec3d3542a6982211e996618813617f4de3873272d932032",
+  "demos/fuze_mesh_solver_diagnostics/record/study.json": "052ec7543f0c948633f4f6c4ca386ad43d8c76624501445967592c6bbf9172df",
+  "docs/_static/demos/fuze/flash-paused.png": "7ac2ba3f14289e44e3491080527dda91e59b1e54b0e9969ea1fb393c40531718",
+  "docs/_static/demos/fuze/same-rng-axis.png": "aa1ecb8808d129cada6bd9b7909f7e495ce2ce978de5d9ee38e03a474b65c36a"
+}

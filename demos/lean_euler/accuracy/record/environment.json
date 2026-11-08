@@ -1,7 +1,0 @@
-{
-  "platform": "Linux-6.18.54.1-microsoft-standard-WSL2-x86_64-with-glibc2.39",
-  "python": "3.12.13 (main, Aug  5 2026, 15:44:22) [Clang 22.1.3 ]",
-  "numpy": "2.5.1",
-  "processor": "AMD Ryzen 9 9900X",
-  "note": "Versions collected on the same host after the run; receipt retains executor identity"
-}

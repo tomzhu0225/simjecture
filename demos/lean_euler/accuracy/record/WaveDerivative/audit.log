@@ -1,2 +1,0 @@
-SIMJECTURE_AXIOMS WaveDerivative.wave_derivative: [propext, Classical.choice, Quot.sound]
-SIMJECTURE_AXIOMS WaveDerivative.phase_transport: [propext, Classical.choice, Quot.sound]

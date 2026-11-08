@@ -1,0 +1,491 @@
+{
+  "source_job": "570-same-v8-same-new14p60-checkpoint-same-strict-saved-rng-serial-ax",
+  "decision": "do_not_adopt_axis_boundary_as_repair_or_resume_production",
+  "same_start_CP_all_file_hashes_verified": true,
+  "input_difference_only_axis": {
+    "hybrid_pic_model.qdsmc_axis_regular_velocity": [
+      "0",
+      "1"
+    ]
+  },
+  "actual_restores_before_step29201": [
+    [
+      184320,
+      11692405685451275420,
+      16104069439214522166,
+      29201
+    ],
+    [
+      184320,
+      11692405685451275420,
+      16104069439214522166,
+      29201
+    ]
+  ],
+  "final_snapshot_bytes_equal": true,
+  "particle_comparison": [
+    {
+      "species": "ions",
+      "counts": [
+        1377978,
+        1377979
+      ],
+      "same_ID_set": false,
+      "same_common_weights": true,
+      "only_axis0_IDs": [],
+      "only_axis1_IDs": [
+        10088063167457396234
+      ],
+      "common_attribute_L2": [
+        0.0007220689301120805,
+        5.9795658634422445e-05,
+        0.0,
+        0.04409770466666402,
+        0.008528665654927296,
+        0.0175821419526746,
+        0.01138552939327676
+      ],
+      "new_count": 0,
+      "new_all7_attributes_exact": true,
+      "axis0_unique_mass_kg": 0.0,
+      "axis0_unique_attributes": [],
+      "axis1_unique_mass_kg": 1.836046267117559e-15,
+      "axis1_unique_attributes": [
+        [
+          0.030827173479486998,
+          1.499756891894422,
+          1097705487792.6097,
+          23011.428240281668,
+          -32153.60619124659,
+          -11625.145685632193,
+          -0.9407898667186441
+        ]
+      ]
+    },
+    {
+      "species": "feed",
+      "counts": [
+        117995,
+        117995
+      ],
+      "same_ID_set": true,
+      "same_common_weights": true,
+      "only_axis0_IDs": [],
+      "only_axis1_IDs": [],
+      "common_attribute_L2": [
+        0.001044073577660184,
+        5.687887712068497e-05,
+        0.0,
+        0.01778927623448391,
+        0.015477910421954547,
+        0.007507580389450251,
+        0.008802684458963862
+      ],
+      "new_count": 1200,
+      "new_all7_attributes_exact": true,
+      "axis0_unique_mass_kg": 0.0,
+      "axis0_unique_attributes": [],
+      "axis1_unique_mass_kg": 0.0,
+      "axis1_unique_attributes": []
+    }
+  ],
+  "axis0_replay_maxL2": 1.6983786535487667e-12,
+  "axis0_replay_all_pass1e_10": true,
+  "spatial_mapping": "Explicit(i,j,0) coordinate lookup, not dictionary insertion reshape.",
+  "limits": "Same CP and initial RNG removes previously observed random-feed restart difference for this bounded comparison. Different fields alter particle trajectories/loss; axis effect does not prove convergence or repair. Fullcell energy proxy omits exact EB/circuit/particle energy ledger. ionUz is deposited moment, not individual velocity maximum; gate externally prescribed, not self-consistent neutral ionization. RNG only host+ParallelForRNG CUDA, excludes private bulk GPU generator. No production/GIF adoption or further native time extension authorized by finite native exit alone.",
+  "actual_interpretation": "Both native0/no wall, strict same initial RNG verified, final RNG bytes equal and1200 newly injected feed all7attributes exactly equal; axis0 first5frame repeat versus560 maxL2=1.69838e-12 passes1e-10. Axis1 does not eliminate near-axis transients:14.68us firstcell B1.21179T and Te482.86eV; axis0 Bpeak1.12375T and wholewindow Tepeak110.63eV. Same-time local magnetic proxy14.68 larger for axis1, despite smaller final local proxy. IonUz moment~6.1e7m/s spikes in both. Different retained ion count1 is recorded, not silently coerced into equal mass or identified as a source defect. No convergence/physical accuracy claim, no continued native run, candidate/GIF/production remain held.",
+  "start_snapshot": {
+    "sha256": "fa69004f7c279890caa6eb480e2f4d19afed89f2805673e804c6668e1e98f9aa",
+    "states": 184320,
+    "bytes_per_state": 48,
+    "host_bytes": 6674,
+    "gpu_checksum": 11692405685451275420,
+    "host_checksum": 16104069439214522166,
+    "file_bytes": 8854090
+  },
+  "final_snapshots": [
+    {
+      "sha256": "9f2e76c0f686b86543c45982489c2aca4530ddac08b4b8cd5b09e362d548b3bc",
+      "states": 184320,
+      "bytes_per_state": 48,
+      "host_bytes": 6674,
+      "gpu_checksum": 2608756611805931010,
+      "host_checksum": 16104069439214522166,
+      "file_bytes": 8854090
+    },
+    {
+      "sha256": "9f2e76c0f686b86543c45982489c2aca4530ddac08b4b8cd5b09e362d548b3bc",
+      "states": 184320,
+      "bytes_per_state": 48,
+      "host_bytes": 6674,
+      "gpu_checksum": 2608756611805931010,
+      "host_checksum": 16104069439214522166,
+      "file_bytes": 8854090
+    }
+  ],
+  "runs": [
+    {
+      "label": "axis0_strict_same14p60_to14p75",
+      "manifest": {
+        "source_revision": "9a685ce598192acde30a0f99f963867ba6441f42",
+        "returncode": 0,
+        "wall_stop_requested": false
+      },
+      "completed_steps": 300,
+      "CP": {
+        "step": 29500,
+        "time_s": 1.4749999999992828e-05,
+        "dt_s": 5e-10,
+        "synchronized": true
+      },
+      "species": {
+        "ions": {
+          "macro_particles": 1377978,
+          "mass_kg": 1.8816017086490404e-07
+        },
+        "feed": {
+          "macro_particles": 117995,
+          "mass_kg": 1.2389475016740316e-08
+        }
+      },
+      "actual_mass_kg": 2.0054964588164434e-07,
+      "axis": 0,
+      "frames": [
+        {
+          "time_us": 14.609999999992995,
+          "all13_finite": true,
+          "Bmax_T": 0.628089919670744,
+          "Te_max_eV": 82.16645590018537,
+          "axis2mm_z100_110cm_magnetic_proxy_J": 0.001610442619456017,
+          "ionUz_moment_abs_max_m_s": 1091485.2286328967
+        },
+        {
+          "time_us": 14.619999999992984,
+          "all13_finite": true,
+          "Bmax_T": 0.6282678789625761,
+          "Te_max_eV": 83.969523418801,
+          "axis2mm_z100_110cm_magnetic_proxy_J": 0.0013683293390875685,
+          "ionUz_moment_abs_max_m_s": 2835060.7998599513
+        },
+        {
+          "time_us": 14.629999999992972,
+          "all13_finite": true,
+          "Bmax_T": 0.628598492792889,
+          "Te_max_eV": 92.87585919440328,
+          "axis2mm_z100_110cm_magnetic_proxy_J": 0.002368754909880852,
+          "ionUz_moment_abs_max_m_s": 5400012.072273111
+        },
+        {
+          "time_us": 14.639999999992959,
+          "all13_finite": true,
+          "Bmax_T": 0.6290366651669215,
+          "Te_max_eV": 79.77893616809496,
+          "axis2mm_z100_110cm_magnetic_proxy_J": 0.004276184457234267,
+          "ionUz_moment_abs_max_m_s": 3877716.4923273837
+        },
+        {
+          "time_us": 14.649999999992948,
+          "all13_finite": true,
+          "Bmax_T": 0.6296529679258315,
+          "Te_max_eV": 85.6752127748231,
+          "axis2mm_z100_110cm_magnetic_proxy_J": 0.00536035653975269,
+          "ionUz_moment_abs_max_m_s": 4551713.175191475
+        },
+        {
+          "time_us": 14.659999999992936,
+          "all13_finite": true,
+          "Bmax_T": 0.6302944445855521,
+          "Te_max_eV": 89.65934630695517,
+          "axis2mm_z100_110cm_magnetic_proxy_J": 0.0047934094268828826,
+          "ionUz_moment_abs_max_m_s": 3146148.0815840526
+        },
+        {
+          "time_us": 14.669999999992925,
+          "all13_finite": true,
+          "Bmax_T": 0.6309946539880682,
+          "Te_max_eV": 83.42002575898222,
+          "axis2mm_z100_110cm_magnetic_proxy_J": 0.004179232198508095,
+          "ionUz_moment_abs_max_m_s": 5628691.694046487
+        },
+        {
+          "time_us": 14.679999999992912,
+          "all13_finite": true,
+          "Bmax_T": 1.1237488614071207,
+          "Te_max_eV": 77.03533535447244,
+          "axis2mm_z100_110cm_magnetic_proxy_J": 0.011441128590025697,
+          "ionUz_moment_abs_max_m_s": 2523543.1909459434
+        },
+        {
+          "time_us": 14.6899999999929,
+          "all13_finite": true,
+          "Bmax_T": 1.0762327064919601,
+          "Te_max_eV": 86.96755926276333,
+          "axis2mm_z100_110cm_magnetic_proxy_J": 0.011878004133980827,
+          "ionUz_moment_abs_max_m_s": 3265961.7091928762
+        },
+        {
+          "time_us": 14.699999999992889,
+          "all13_finite": true,
+          "Bmax_T": 0.8269584033828687,
+          "Te_max_eV": 87.02321452765123,
+          "axis2mm_z100_110cm_magnetic_proxy_J": 0.006162930436548208,
+          "ionUz_moment_abs_max_m_s": 61201588.48466598
+        },
+        {
+          "time_us": 14.709999999992876,
+          "all13_finite": true,
+          "Bmax_T": 0.634187577504265,
+          "Te_max_eV": 80.17215393989541,
+          "axis2mm_z100_110cm_magnetic_proxy_J": 0.002074094586741118,
+          "ionUz_moment_abs_max_m_s": 3896031.162815965
+        },
+        {
+          "time_us": 14.719999999992865,
+          "all13_finite": true,
+          "Bmax_T": 0.6349840782832418,
+          "Te_max_eV": 78.31996329260383,
+          "axis2mm_z100_110cm_magnetic_proxy_J": 0.001673719011487981,
+          "ionUz_moment_abs_max_m_s": 2091690.9559195247
+        },
+        {
+          "time_us": 14.729999999992852,
+          "all13_finite": true,
+          "Bmax_T": 0.6356646384060105,
+          "Te_max_eV": 87.63634646548904,
+          "axis2mm_z100_110cm_magnetic_proxy_J": 0.0012770782557257596,
+          "ionUz_moment_abs_max_m_s": 3194415.1463104645
+        },
+        {
+          "time_us": 14.73999999999284,
+          "all13_finite": true,
+          "Bmax_T": 0.6362461752377585,
+          "Te_max_eV": 110.62695907043224,
+          "axis2mm_z100_110cm_magnetic_proxy_J": 0.0017573463526155775,
+          "ionUz_moment_abs_max_m_s": 2429745.283060003
+        },
+        {
+          "time_us": 14.749999999992829,
+          "all13_finite": true,
+          "Bmax_T": 0.6366909952331644,
+          "Te_max_eV": 87.88708931015982,
+          "axis2mm_z100_110cm_magnetic_proxy_J": 0.0011314090266694395,
+          "ionUz_moment_abs_max_m_s": 2675460.616626525
+        }
+      ]
+    },
+    {
+      "label": "axis1_strict_same14p60_to14p75",
+      "manifest": {
+        "source_revision": "9a685ce598192acde30a0f99f963867ba6441f42",
+        "returncode": 0,
+        "wall_stop_requested": false
+      },
+      "completed_steps": 300,
+      "CP": {
+        "step": 29500,
+        "time_s": 1.4749999999992828e-05,
+        "dt_s": 5e-10,
+        "synchronized": true
+      },
+      "species": {
+        "ions": {
+          "macro_particles": 1377979,
+          "mass_kg": 1.8816017270095028e-07
+        },
+        "feed": {
+          "macro_particles": 117995,
+          "mass_kg": 1.2389475016740316e-08
+        }
+      },
+      "actual_mass_kg": 2.005496477176906e-07,
+      "axis": 1,
+      "frames": [
+        {
+          "time_us": 14.609999999992995,
+          "all13_finite": true,
+          "Bmax_T": 0.6280899197202024,
+          "Te_max_eV": 82.16608807033093,
+          "axis2mm_z100_110cm_magnetic_proxy_J": 0.0016104559280713917,
+          "ionUz_moment_abs_max_m_s": 1091485.2280204524
+        },
+        {
+          "time_us": 14.619999999992984,
+          "all13_finite": true,
+          "Bmax_T": 0.6282678789835171,
+          "Te_max_eV": 83.97162990881179,
+          "axis2mm_z100_110cm_magnetic_proxy_J": 0.0013684607299035145,
+          "ionUz_moment_abs_max_m_s": 2835060.8003970576
+        },
+        {
+          "time_us": 14.629999999992972,
+          "all13_finite": true,
+          "Bmax_T": 0.6285984900806773,
+          "Te_max_eV": 92.87954496488953,
+          "axis2mm_z100_110cm_magnetic_proxy_J": 0.0023679557349716215,
+          "ionUz_moment_abs_max_m_s": 5400034.5270473985
+        },
+        {
+          "time_us": 14.639999999992959,
+          "all13_finite": true,
+          "Bmax_T": 0.6290366675747142,
+          "Te_max_eV": 79.89060464758377,
+          "axis2mm_z100_110cm_magnetic_proxy_J": 0.004276737200543296,
+          "ionUz_moment_abs_max_m_s": 3877716.9806434037
+        },
+        {
+          "time_us": 14.649999999992948,
+          "all13_finite": true,
+          "Bmax_T": 0.6296529706336332,
+          "Te_max_eV": 85.6794333395163,
+          "axis2mm_z100_110cm_magnetic_proxy_J": 0.00535909755588061,
+          "ionUz_moment_abs_max_m_s": 4551713.058719798
+        },
+        {
+          "time_us": 14.659999999992936,
+          "all13_finite": true,
+          "Bmax_T": 0.6302944480061003,
+          "Te_max_eV": 89.67876617576759,
+          "axis2mm_z100_110cm_magnetic_proxy_J": 0.00485583518486893,
+          "ionUz_moment_abs_max_m_s": 3145996.588447356
+        },
+        {
+          "time_us": 14.669999999992925,
+          "all13_finite": true,
+          "Bmax_T": 0.6309946559708751,
+          "Te_max_eV": 83.40155277747796,
+          "axis2mm_z100_110cm_magnetic_proxy_J": 0.004482724899721533,
+          "ionUz_moment_abs_max_m_s": 5590361.070070054
+        },
+        {
+          "time_us": 14.679999999992912,
+          "all13_finite": true,
+          "Bmax_T": 1.2117856547913586,
+          "Te_max_eV": 482.8596955168332,
+          "axis2mm_z100_110cm_magnetic_proxy_J": 0.01958062793191673,
+          "ionUz_moment_abs_max_m_s": 2526916.087370941
+        },
+        {
+          "time_us": 14.6899999999929,
+          "all13_finite": true,
+          "Bmax_T": 0.6941239564053912,
+          "Te_max_eV": 123.67960931596319,
+          "axis2mm_z100_110cm_magnetic_proxy_J": 0.007202110560101772,
+          "ionUz_moment_abs_max_m_s": 3265951.6115621463
+        },
+        {
+          "time_us": 14.699999999992889,
+          "all13_finite": true,
+          "Bmax_T": 0.6333616232060917,
+          "Te_max_eV": 102.20945264752251,
+          "axis2mm_z100_110cm_magnetic_proxy_J": 0.004506699563091556,
+          "ionUz_moment_abs_max_m_s": 61476642.77195536
+        },
+        {
+          "time_us": 14.709999999992876,
+          "all13_finite": true,
+          "Bmax_T": 0.6341875710481613,
+          "Te_max_eV": 89.43723004276201,
+          "axis2mm_z100_110cm_magnetic_proxy_J": 0.0017910222818767808,
+          "ionUz_moment_abs_max_m_s": 3896027.001995537
+        },
+        {
+          "time_us": 14.719999999992865,
+          "all13_finite": true,
+          "Bmax_T": 0.6349840525998338,
+          "Te_max_eV": 78.32742561267632,
+          "axis2mm_z100_110cm_magnetic_proxy_J": 0.0013750114362724303,
+          "ionUz_moment_abs_max_m_s": 2091659.2425245636
+        },
+        {
+          "time_us": 14.729999999992852,
+          "all13_finite": true,
+          "Bmax_T": 0.6356646364799713,
+          "Te_max_eV": 86.91838907226715,
+          "axis2mm_z100_110cm_magnetic_proxy_J": 0.001155360138106698,
+          "ionUz_moment_abs_max_m_s": 3398922.188011883
+        },
+        {
+          "time_us": 14.73999999999284,
+          "all13_finite": true,
+          "Bmax_T": 0.6362462061793908,
+          "Te_max_eV": 110.23971140078726,
+          "axis2mm_z100_110cm_magnetic_proxy_J": 0.0008489473524338573,
+          "ionUz_moment_abs_max_m_s": 2377153.013314834
+        },
+        {
+          "time_us": 14.749999999992829,
+          "all13_finite": true,
+          "Bmax_T": 0.6366910389199437,
+          "Te_max_eV": 87.60044303108863,
+          "axis2mm_z100_110cm_magnetic_proxy_J": 0.0009243073942869693,
+          "ionUz_moment_abs_max_m_s": 2687140.5330270785
+        }
+      ]
+    }
+  ],
+  "composition_regressions": {
+    "binary_sha256": "dc5c6ab0ce42ddc5a5b8ed660939f4983ae6cf8c1cab531cd8a72671c8f0d19f",
+    "comparisons": {
+      "0": {
+        "Er": 2.724550201373332e-15,
+        "Et": 0.0,
+        "Ez": 2.560721538413259e-15,
+        "Br": 0.0,
+        "Bt": 4.330497224080776e-16,
+        "Bz": 0.0,
+        "jr": 1.7745682254377203e-16,
+        "jt": 2.6226174811295284e-16,
+        "jz": 1.9889267165797773e-16,
+        "rho": 1.7311494321905114e-16,
+        "eb_covered": 0.0,
+        "Te": 1.291590703050642e-16,
+        "Pe": 5.757872084055439e-16
+      },
+      "1": {
+        "Er": 4.5270839436421734e-15,
+        "Et": 0.0,
+        "Ez": 8.454912560383221e-15,
+        "Br": 0.0,
+        "Bt": 1.852729390937173e-15,
+        "Bz": 0.0,
+        "jr": 1.4143365190507177e-16,
+        "jt": 1.3566517633383607e-16,
+        "jz": 1.3220992311877547e-16,
+        "rho": 1.7190045720503414e-16,
+        "eb_covered": 0.0,
+        "Te": 1.5920405720809732e-16,
+        "Pe": 2.7301049608672076e-16
+      },
+      "2": {
+        "Er": 4.251030140460356e-15,
+        "Et": 0.0,
+        "Ez": 8.153238651483514e-15,
+        "Br": 0.0,
+        "Bt": 7.960698562557809e-16,
+        "Bz": 0.0,
+        "jr": 1.4282856776591038e-16,
+        "jt": 1.5519728729105464e-16,
+        "jz": 1.3232013684693588e-16,
+        "rho": 2.704572602703678e-16,
+        "eb_covered": 0.0,
+        "Te": 1.6183744162747258e-16,
+        "Pe": 5.089026769025688e-16
+      },
+      "3": {
+        "Er": 4.2336674926095626e-15,
+        "Et": 0.0,
+        "Ez": 7.428127044000551e-15,
+        "Br": 0.0,
+        "Bt": 6.230204973942884e-16,
+        "Bz": 0.0,
+        "jr": 1.2122479605333071e-16,
+        "jt": 1.7008073358993984e-16,
+        "jz": 1.4527823331701677e-16,
+        "rho": 1.4911584379812385e-16,
+        "eb_covered": 0.0,
+        "Te": 1.6380875840750548e-16,
+        "Pe": 5.318667164171781e-16
+      }
+    }
+  }
+}

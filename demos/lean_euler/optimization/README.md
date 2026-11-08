@@ -4,7 +4,7 @@ The research target is a provable optimum within a specified solver class.
 Stage 1 tests a faster implementation of a fixed discrete update.
 [Stage 2](formal/README.md) now proves exact-real equivalence, conservation, and
 minimum cost within an explicit thermodynamic-caching schedule class.
-**General 3D Euler time-to-accuracy optimality remains open.** PR #90 remains draft.
+**General 3D Euler time-to-accuracy optimality remains open.**
 
 The restricted problem is ideal-gas compressible Euler (`gamma=2`), five
 conservative variables, uniform periodic Cartesian cells, first-order shared-face
@@ -66,12 +66,9 @@ The numerical timing ratio is still empirical, and no hardware optimum follows.
    bound and a matching cached schedule. Weighted library-cost optimality excludes
    algebraic bypasses, warm caches and changed numerical methods. NumPy/Lean
    correspondence remains empirical; no floating-point refinement is claimed.
-3. **Time to a prescribed accuracy — empirical ruler implemented.**
-   [Stage 3](../accuracy/README.md) compares 72 complete solves against an analytic
-   transported Euler wave, including a second-order comparator, timestep work,
-   reference/reconstruction audits and conditional Lean error/work lemmas.
-   The nonlinear stability and defect hypotheses are still open; this is not an
-   unconditional PDE error certificate. Smooth nonlinear and shock tests remain.
+3. **Time to a prescribed accuracy — open.** A matched-accuracy comparison of
+   complete solves, with nonlinear stability and defect hypotheses, is not part
+   of this release. Faster steps alone do not establish faster time to accuracy.
 4. **Broader algorithm discovery.** Expand flux, reconstruction, and time
    integration choices only after the previous evidence chain is reliable. A
    new class needs a new upper/lower-bound argument. There is no promised date

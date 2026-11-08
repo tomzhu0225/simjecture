@@ -80,73 +80,28 @@ no algebraic bypass or cross-cell sharing. Report the result as caching-schedule
 optimality. The Python call-count checks and hardware speed ratios are separate
 empirical evidence, not a verified floating-point refinement or PDE optimality.
 
-For total work at prescribed solution error, `demos/lean_euler/accuracy` keeps a
-frozen analytic-reference contract and separates cell-average from reconstructed
-field error. Its error/work theorems are conditional: do not treat their accepted
-proof status as evidence that stability or truncation hypotheses hold for a
-nonlinear solver. Count timestep selection, all stages, setup, error analysis,
-and calibration separately; keep the output representation and error norm explicit.
+## Reporting claims that rest on proofs
 
-The `demos/lean_euler/optimality` example connects a classical 3D affine-shear
-Euler solution to uniform full-state accuracy and matching asymptotic work
-bounds. Its input is an arbitrary C1 Lipschitz density in a fixed pressure-uniform
-flow family. The lower bound covers deterministic adaptive point-oracle machines,
-including machines that terminate only on admissible inputs. Read the frozen
-contract and exact theorem signatures before reusing the claim: the result is
-minimax-order optimality in an exact-real RAM model, not best constants, a
-pressure-driven Euler solver, or certified floating-point execution. The proof
-uses proved smooth perturbations and an explicit oracle indistinguishability
-argument. `assemble.py` produces a self-contained checker input from the tracked
-components; `check_formal.py` retains audited receipts and an altered-resolution
-negative control. The installer includes these calculus dependencies.
+Copy theorem names, statements, and constants from the checked source and
+`proof/result.json`, never from memory or an earlier summary. Recompute every
+inequality or count quoted in prose with a script before reporting it.
 
-The active `demos/lean_euler/nonlinear` goal replaces prescribed analytic motion
-with a pressure-coupled compressible 3D Taylor–Green family. Read its contract,
-`GOAL_STATUS.json`, and `RESEARCH_NOTES.txt` before extending the work. Its
-admissibility/conservation theorems concern the actual nonlinear finite-volume
-step. Its principal-update energy estimates concern a different, explicitly
-defined map. Do not identify these maps or discard the nonlinear remainder.
-The variable-coefficient estimate assumes state-box and spatial-difference
-bounds; proving those bounds along the trajectory is still necessary. Both
-energies in that estimate use the old local metric, so metric variation in time
-also needs control. The grid embedding bounds values from derivative energies;
-it does not bound the evolution of those energies. An exact CFL=1/2 witness shows
-that a varying local metric can increase from 5 to 125/16 in one principal step.
-None of these foundations establishes continuum accuracy or work optimality.
-`run_solver_study.py` replays the candidate checks and assembled proof through
-an isolated local lab. The corresponding PDF reports explicit outstanding work.
+When a theorem is applied to a solver run, list every hypothesis and classify
+it: proved in Lean; checked at runtime with a rounding enclosure; checked at
+runtime in floating point without an enclosure; or assumed. A `proved` status
+for a conditional theorem is not evidence that its hypotheses hold. A theorem
+about one map (for example a linearized or principal update) is not a theorem
+about another (the full nonlinear step).
 
-The nonlinear entropy components derive the gradient/Hessian of the actual
-conserved-state function eta(U)=-rho*log(p/rho^2), prove its convexity, and derive
-local entropy balance from differentiable Euler balance. This is distinct from
-the convenient principal energy form. A local differential implication does
-not establish existence or a periodic integral theorem. Finite convex averaging
-does not yet formalize continuous output reconstruction. Observed entropy loss
-in `validate_entropy.py` is not a certified physical error or a uniform proof
-constant. A fully discrete dissipation argument must account for entropy
-production from the explicit time step; semidiscrete stability alone is not
-sufficient. Read the lower-bound outline in `RESEARCH_NOTES.txt` before extending
-that argument or finalizing the competitor class.
+When parameters change between runs or regimes, recheck every hypothesis, not
+only the quantity a runtime gate monitors. A run that leaves the theorem's
+domain is uncertified even if the gate passes.
 
-`EntropyRegion.lean` now derives a finite-step dissipation estimate for the
-actual nonlinear Rusanov update under explicit convex-region, Hessian, flux,
-viscosity and timestep conditions. It includes temporal entropy production.
-Do not report this as a full-solver theorem: uniform trajectory membership and
-the bounds for the current CFL=.3 numerical settings remain unproved. Concrete
-trajectory bounds, continuum error, and matching work bounds are still needed.
+Failing a sufficient certificate means the certificate was not issued; it does
+not show that the computation was inaccurate. Measure the physical error against
+a converged reference wherever accuracy is claimed, and state whether a bound
+controls the discrete algebraic error or the continuum PDE error.
 
-The concrete region and initial-family membership are now proved in
-`PhysicalRegion.lean`, `InitialRegion.lean`, and `PhysicalFluxBounds.lean`.
-They also prove a structural obstruction: the current global sufficient
-viscosity criterion cannot certify the baseline wave-speed recipe on this
-region, even with improved valid global curvature constants. This is a
-limitation of that criterion, not a proof of numerical instability or PDE
-impossibility. Read the exact obstruction and research notes before pursuing
-the same inequality again or counting it as completion.
-
-The affine-shear example has analytically known dynamics; its work theorem is
-principally a function-reconstruction result. It does not fulfill a request for
-an optimal solver of unknown nonlinear Euler evolution. For that research
-target, use `demos/lean_euler/nonlinear` as the problem-family specification.
-Initial pressure-force checks and numerical commissioning there are not solver
-accuracy or optimality proofs.
+Before claiming that a certified stopping or acceptance rule outperforms fixed
+tolerances, compare it with the simplest available alternatives, including a
+calibrated absolute tolerance as well as relative ones.
