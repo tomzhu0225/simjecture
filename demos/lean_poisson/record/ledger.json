@@ -1,0 +1,47 @@
+{
+  "workflow": "Scripted Simjecture commissioning; not autonomous discovery or independent review",
+  "experiments": [
+    "exp_696c056a8781bd627ffab05f",
+    "exp_24becd7f95282d43a4a42ea6"
+  ],
+  "contract": {
+    "problem": "2*u_i-u_(i-1)-u_(i+1)=f_i, zero Dirichlet boundaries",
+    "inputs": "arbitrary finite rational RHS, N interior unknowns",
+    "output": "all N exact solution values, explicitly materialized",
+    "cost": "unit-cost scalar arithmetic/casts, input reads, branch inspection, output writes",
+    "precomputation": "none; all per-instance work charged; no compressed or lazy output",
+    "upper": "11*N+6",
+    "lower": "N",
+    "comparison": "at most 17 times every correct trace when N>0"
+  },
+  "claims": [
+    {
+      "claim": "Exact discrete correctness and uniqueness for all finite rational RHS",
+      "status": "proved"
+    },
+    {
+      "claim": "Theta(N) work optimality in the stated scalar trace model",
+      "status": "proved"
+    },
+    {
+      "claim": "Floating-point accuracy and timing on the sampled smooth problems",
+      "status": "empirical"
+    },
+    {
+      "claim": "Bit complexity, best hardware constant, Euler optimality, and general PDE convergence",
+      "status": "open"
+    }
+  ],
+  "theorems": [
+    "Poisson.solve_correct",
+    "Poisson.solve_unique",
+    "Poisson.trace_correct",
+    "Poisson.solve_cost",
+    "Poisson.any_solver_lower_bound",
+    "Poisson.work_optimal"
+  ],
+  "exact_cases": 39,
+  "strict_backward_error_failures": [
+    65536
+  ]
+}

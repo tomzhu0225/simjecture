@@ -1,0 +1,83 @@
+{
+  "id": "exp_4b9d125fa0b3a21c08575f21",
+  "status": "succeeded",
+  "operator_guidance_ids": [],
+  "created_at": 1793534845.4585507,
+  "timeout": 240,
+  "execution_deadline": 1793535445.4504886,
+  "workspace_limit_bytes": 4294967296,
+  "binding": {
+    "source": "experiment.py",
+    "args": [],
+    "inputs": {
+      "experiment.py": "b70d8a26ca230938e1bd8c14ee2ff478472cf19fe8609825b73a76bac9833856",
+      "euler.py": "505ebff19d161561f3723a259e65e9476e7c0b40c357146df905dfa56e95d2c2"
+    },
+    "capability": null,
+    "runtime_sha256": null
+  },
+  "outputs": [
+    "optimization.json"
+  ],
+  "commitment": null,
+  "key": null,
+  "stage": "exploration",
+  "method": null,
+  "review_documents": null,
+  "pid": 548582,
+  "worker_identity": {
+    "pid": 548582,
+    "starttime": "4442199",
+    "argv": [
+      "/home/tomzhu0225/src/simjecture/.venv/bin/python",
+      "-m",
+      "conjecture_solver.research_service",
+      "--root",
+      "/home/tomzhu0225/src/simjecture/artifacts/lean-euler/20261101/optimization-stage1/study",
+      "--execute",
+      "exp_4b9d125fa0b3a21c08575f21"
+    ],
+    "launched_at": "2026-11-01T12:07:25.622897+00:00",
+    "run_directory": null
+  },
+  "started_at": 1793534845.6230173,
+  "execution": {
+    "isolation_backend": "bubblewrap",
+    "returncode": 0,
+    "stdout": "{\n  \"checks\": [\n    {\n      \"n\": 8,\n      \"kind\": \"random\",\n      \"seed\": 1,\n      \"steps\": 8,\n      \"time\": 0.024570194220597596,\n      \"bitwise_equal\": true,\n      \"max_difference\": 0,\n      \"min_density\": 0.8147409115688456,\n      \"min_pressure\": 1.0601557882927601,\n      \"conserved_total_drift\": [\n        -2.220446049250313e-16,\n        4.5102810375396984e-17,\n        0.0,\n        1.691355389077387e-17,\n        8.881784197001252e-16\n      ]\n    },\n    {\n      \"n\": 12,\n      \"kind\": \"random\",\n      \"seed\": 2,\n      \"steps\": 8,\n      \"time\": 0.016018844339160346,\n      \"bitwise_equal\": true,\n      \"max_difference\": 0,\n      \"min_density\": 0.7581700092500939,\n      \"min_pressure\": 0.9454522442982042,\n      \"conserved_total_drift\": [\n        -2.886579864025407e-15,\n        1.1275702593849246e-17,\n        -2.970713952610282e-17,\n        -1.9081958235744878e-17,\n        -1.9984014443252818e-15\n      ]\n    },\n    {\n      \"n\": 16,\n      \"kind\": \"coupled\",\n      \"seed\": 3,\n      \"steps\": 20,\n      \"time\": 0.048740072488055466,\n      \"bitwise_equal\": true,\n      \"max_difference\": 0,\n      \"min_density\": 0.9190036164166869,\n      \"min_pressure\": 0.944127753692973,\n      \"conserved_total_drift\": [\n        -1.6653345369377348e-15,\n        8.03834266944331e-18,\n        -1.4738373282224826e-18,\n        -5.252366602629191e-17,\n        2.6645352591003757e-15\n      ]\n    },\n    {\n      \"n\": 24,\n      \"kind\": \"blast\",\n      \"seed\": 4,\n      \"steps\": 20,\n      \"time\": 0.012452232079395024,\n      \"bitwise_equal\": true,\n      \"max_difference\": 0,\n      \"min_density\": 0.8733538411962114,\n      \"min_pressure\": 0.1,\n      \"conserved_total_drift\": [\n        -5.773159728050814e-15,\n        -1.2384845814621594e-18,\n        -4.084112861585226e-19,\n        -2.2250519801655485e-19,\n        1.657007864253046e-14\n      ]\n    }\n  ],\n  \"timings\": [\n    {\n      \"n\": 16,\n      \"cells\": 4096,\n      \"trials_seconds\": {\n        \"reference\": [\n          0.0007996139975148253,\n          0.0007448809992638417,\n          0.0008146120017045178,\n          0.0008402509993175045,\n          0.0007325570040848106,\n          0.000799384004494641,\n          0.0008143619998008944,\n          0.000984252998023294,\n          0.0008162250014720485,\n          0.0007400910035357811,\n          0.0007676929963054135\n        ],\n        \"cached\": [\n          0.0007481369975721464,\n          0.0006856079999124631,\n          0.0006212170046637766,\n          0.0006797379974159412,\n          0.0006646589972660877,\n          0.0006798780013923533,\n          0.0007480470012524165,\n          0.000932727001782041,\n          0.0006868810014566407,\n          0.0006143040009192191,\n          0.0006868609998491593\n        ]\n      },\n      \"median_seconds\": {\n        \"reference\": 0.0007996139975148253,\n        \"cached\": 0.0006856079999124631\n      },\n      \"reference_over_cached\": 1.1662845206253694,\n      \"pressure_cell_evaluations\": {\n        \"reference\": 12288,\n        \"cached\": 4096\n      },\n      \"sound_speed_cell_evaluations\": {\n        \"reference\": 12288,\n        \"cached\": 4096\n      },\n      \"timestep_selection_timed\": false,\n      \"timing_scope\": \"entire one-step kernel including cache creation and output allocation\"\n    },\n    {\n      \"n\": 32,\n      \"cells\": 32768,\n      \"trials_seconds\": {\n        \"reference\": [\n          0.009060629003215581,\n          0.008663687003718223,\n          0.008723869003006257,\n          0.008524313001544215,\n          0.010015786996518727,\n          0.008685868000611663,\n          0.008673153999552596,\n          0.008699183003045619,\n          0.008690214999660384,\n          0.00879338199592894,\n          0.008850950995110907\n        ],\n        \"cached\": [\n          0.008363708002434578,\n          0.007826009998098016,\n          0.007784149995131884,\n          0.008708551999006886,\n          0.008317309999256395,\n          0.008568494995415676,\n          0.008143942002789117,\n          0.008207532002415974,\n          0.007988598001247738,\n          0.008813078995444812,\n          0.009148133001872338\n        ]\n      },\n      \"median_seconds\": {\n        \"reference\": 0.008699183003045619,\n        \"cached\": 0.008317309999256395\n      },\n      \"reference_over_cached\": 1.0459130420560692,\n      \"pressure_cell_evaluations\": {\n        \"reference\": 98304,\n        \"cached\": 32768\n      },\n      \"sound_speed_cell_evaluations\": {\n        \"reference\": 98304,\n        \"cached\": 32768\n      },\n      \"timestep_selection_timed\": false,\n      \"timing_scope\": \"entire one-step kernel including cache creation and output allocation\"\n    },\n    {\n      \"n\": 48,\n      \"cells\": 110592,\n      \"trials_seconds\": {\n        \"reference\": [\n          0.02488614599860739,\n          0.024597799994808156,\n          0.024390177997702267,\n          0.02443689500069013,\n          0.02580152000155067,\n          0.024826714005030226,\n          0.025094932003412396,\n          0.025072670003282838,\n          0.02638575600576587,\n          0.025219577000825666,\n          0.02674076699622674\n        ],\n        \"cached\": [\n          0.021579645996098407,\n          0.02035609800077509,\n          0.021777447997010313,\n          0.02034090899542207,\n          0.023405391999403946,\n          0.020327654005086515,\n          0.02084842000476783,\n          0.020429607000551187,\n          0.021957491000648588,\n          0.020887243998004124,\n          0.020834483999351505\n        ]\n      },\n      \"median_seconds\": {\n        \"reference\": 0.025072670003282838,\n        \"cached\": 0.02084842000476783\n      },\n      \"reference_over_cached\": 1.2026172725582545,\n      \"pressure_cell_evaluations\": {\n        \"reference\": 331776,\n        \"cached\": 110592\n      },\n      \"sound_speed_cell_evaluations\": {\n        \"reference\": 331776,\n        \"cached\": 110592\n      },\n      \"timestep_selection_timed\": false,\n      \"timing_scope\": \"entire one-step kernel including cache creation and output allocation\"\n    },\n    {\n      \"n\": 64,\n      \"cells\": 262144,\n      \"trials_seconds\": {\n        \"reference\": [\n          0.05364933399687288,\n          0.05253655799606349,\n          0.050409149000188336,\n          0.05331813699740451,\n          0.054181512001377996,\n          0.04995211400091648,\n          0.0526393719992484,\n          0.050228537002112716,\n          0.0515025280037662,\n          0.05167998599790735,\n          0.05280807099916274\n        ],\n        \"cached\": [\n          0.04421601999638369,\n          0.042064405999553856,\n          0.044397655001375824,\n          0.041939287999412045,\n          0.04094980600348208,\n          0.04389546399761457,\n          0.041415699000936,\n          0.041928458005713765,\n          0.04086523500154726,\n          0.042596562998369336,\n          0.04664602200500667\n        ]\n      },\n      \"median_seconds\": {\n        \"reference\": 0.05253655799606349,\n        \"cached\": 0.042064405999553856\n      },\n      \"reference_over_cached\": 1.2489551854511083,\n      \"pressure_cell_evaluations\": {\n        \"reference\": 786432,\n        \"cached\": 262144\n      },\n      \"sound_speed_cell_evaluations\": {\n        \"reference\": 786432,\n        \"cached\": 262144\n      },\n      \"timestep_selection_timed\": false,\n      \"timing_scope\": \"entire one-step kernel including cache creation and output allocation\"\n    }\n  ]\n}",
+    "stderr": "",
+    "timed_out": false,
+    "cancelled": false,
+    "workspace_exceeded": false,
+    "stdout_truncated": false,
+    "stderr_truncated": false,
+    "heartbeat_count": 0,
+    "wall_seconds": 2.3688838129965006,
+    "workspace_bytes": 21093,
+    "executor_sha256": "b92087579abbb99f55ce2c75d98765355c8ccd4a6ccf3ba55b15ddd5491a22ec",
+    "resource_limits": {
+      "max_file_bytes": 4294967296,
+      "max_workspace_bytes": 4294967296,
+      "max_memory_bytes": 4294967296
+    }
+  },
+  "artifacts": {
+    "euler.py": {
+      "sha256": "505ebff19d161561f3723a259e65e9476e7c0b40c357146df905dfa56e95d2c2",
+      "bytes": 5301
+    },
+    "experiment.py": {
+      "sha256": "b70d8a26ca230938e1bd8c14ee2ff478472cf19fe8609825b73a76bac9833856",
+      "bytes": 6975
+    },
+    "optimization.json": {
+      "sha256": "c4080c1416624d780e43e4407086179c6a4ed0120feb1fc797f123953e168afd",
+      "bytes": 8817
+    }
+  },
+  "missing_outputs": [],
+  "input_mutations": [],
+  "output_findings": [],
+  "scientific_status": "unreviewed",
+  "finished_at": 1793534848.0066447
+}

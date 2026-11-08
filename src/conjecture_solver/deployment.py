@@ -33,6 +33,7 @@ ATOMEC_CAPABILITY = "atomec-1.4.0"
 SINGULARITY_EOS_CAPABILITY = "singularity-eos-1.12.1"
 M_ANEOS_CAPABILITY = "m-aneos-1.0"
 FREECAD_CAPABILITY = "freecad-1.1.3"
+LEAN_CAPABILITY = "lean-4.24.0"
 GMSH_CAPABILITY = "gmsh-4.15.2"
 ELMER_CAPABILITY = "elmer-0.1"
 FEOS_CAPABILITY = "feos-16.7"
@@ -52,6 +53,7 @@ PRIVATE_ROOT_ENV = "SIMJECTURE_PRIVATE_ROOT"
 FLASH_BOOTSTRAP_SCRIPT = "skills/flash-mhd/scripts/bootstrap_flash.sh"
 
 _CAPABILITY_CONFIGS = {
+    LEAN_CAPABILITY: "lean-4.24.0.json",
     QE_CAPABILITY: "quantum-espresso-7.4.json",
     FREECAD_CAPABILITY: "freecad-1.1.3.json",
     GMSH_CAPABILITY: "gmsh-4.15.2.json",
@@ -136,6 +138,7 @@ def _run_install_command(command, *, capture_output=False, environment=None):
 
 
 class DeploymentProfile(StrEnum):
+    LEAN = "lean"
     FREECAD = "freecad"
     GMSH = "gmsh"
     ELMER = "elmer"
@@ -156,6 +159,7 @@ class DeploymentProfile(StrEnum):
 
 
 _PROFILE_BY_CAPABILITY = {
+    LEAN_CAPABILITY: DeploymentProfile.LEAN,
     QE_CAPABILITY: DeploymentProfile.QUANTUM_ESPRESSO,
     FREECAD_CAPABILITY: DeploymentProfile.FREECAD,
     GMSH_CAPABILITY: DeploymentProfile.GMSH,
@@ -174,6 +178,7 @@ _PROFILE_BY_CAPABILITY = {
     FAC_CAPABILITY: DeploymentProfile.FAC,
 }
 _MISSING_RUNTIME_REMEDY = {
+    LEAN_CAPABILITY: "Run `simjecture install lean`.",
     QE_CAPABILITY: "Run simjecture install quantum-espresso.",
     FREECAD_CAPABILITY: "Run `simjecture install freecad`.",
     GMSH_CAPABILITY: "Run `simjecture install gmsh`.",
@@ -216,6 +221,7 @@ _MISSING_RUNTIME_REMEDY = {
     ),
 }
 _PREFLIGHT_REMEDY = {
+    LEAN_CAPABILITY: "Inspect proof audit logs; rerun `simjecture install lean --repair`.",
     QE_CAPABILITY: "Inspect QE logs; rerun simjecture install quantum-espresso --repair.",
     FREECAD_CAPABILITY: "Inspect STEP checks; rerun `simjecture install freecad --repair`.",
     GMSH_CAPABILITY: "Inspect the mesh check; rerun `simjecture install gmsh --repair`.",
@@ -263,6 +269,14 @@ class _BootstrapSpec:
 
 
 _BOOTSTRAP_SPECS = {
+    DeploymentProfile.LEAN: _BootstrapSpec(
+        capability=LEAN_CAPABILITY,
+        script="skills/lean/scripts/bootstrap.sh",
+        managed_marker="share/build-record.json",
+        pinned_revision="4.24.0",
+        source_label="Lean and Mathlib",
+        verify_revision=False,
+    ),
     DeploymentProfile.QUANTUM_ESPRESSO: _BootstrapSpec(
         capability=QE_CAPABILITY,
         script="skills/quantum-espresso/scripts/bootstrap.sh",

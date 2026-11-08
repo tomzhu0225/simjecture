@@ -27,6 +27,17 @@ independent scientific review.
 | [Quantum ESPRESSO Si reference](qe_dft_reference/) | Material-specific diamond-Si DFT protocol (`vc-relax`, SCF, bands, DOS and `projwfc.x`), Bubblewrap launcher inputs, and completion-bound reassessment |
 | [Quantum ESPRESSO bcc Fe reference](qe_fe_reference/) | Collinear spin-polarized bcc-Fe protocol and reassessment record demonstrating how non-converged structural optimization (`exit_status=3`) is rejected |
 
+## Formal proof checking with Lean
+
+These scripted commissioning examples exercise the `lean-4.24.0` capability.
+They are not autonomous discovery results or accepted campaign conclusions.
+
+| Case | What you can inspect |
+|---|---|
+| [Lean and compressible Euler](lean_euler/) | Seven audited theorems (forward-Euler decay, periodic finite-volume conservation), an exact rational positivity counterexample for a Rusanov step, and a periodic 3D NumPy reference run |
+| [1D Poisson optimality](lean_poisson/) | Complete exact discrete Dirichlet solve with proved correctness, uniqueness, an `11N+6` modeled-work upper bound and an `N` output lower bound |
+| [3D Euler cache optimization](lean_euler/optimization/) | Empirical same-update speedup plus fifteen audited theorems for exact-real cache equivalence, conservation and a scoped caching-schedule optimum; general solver optimality remains open |
+
 Earlier classic (`v0.1`–`v0.6.2` `mvp`/DSH) demo directories have been retired from
 `main` and remain preserved in the [`v0.6.2` release tag](https://github.com/tomzhu0225/simjecture/tree/v0.6.2/demos).
 

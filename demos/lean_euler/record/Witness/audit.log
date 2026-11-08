@@ -1,0 +1,2 @@
+SIMJECTURE_AXIOMS EulerWitness.initial_admissible: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS EulerWitness.negative_density: [propext, Classical.choice, Quot.sound]

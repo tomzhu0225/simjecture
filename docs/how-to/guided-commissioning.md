@@ -81,6 +81,10 @@ Within a guided minimal study, `lab.reproduce_anchor(timeout=600)` submits that
 exact command as a recorded exploratory experiment. It excludes the supplied
 validation summary from inputs, refuses modified package files, and returns the
 same receipt on an unchanged retry. Adaptations use ordinary `lab.run`.
+For a study with an execution pool, supply the required reservation explicitly,
+for example `lab.reproduce_anchor(timeout=600, resources={"cpus": 1,
+"memory_mb": 8192, "gpus": 0})`. This preserves the packaged command and records
+the resource request in the experiment identity; it does not change qualification.
 
 A useful anchor includes the exact solver setup, a tested output reader, the
 relevant observable, output cadence, expected checks, measured runtime, and

@@ -1,0 +1,5 @@
+SIMJECTURE_AXIOMS EulerCache.face_consistency: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS EulerCache.step_equivalence: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS EulerCache.admissible_step_equivalence: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS EulerCache.trajectory_equivalence: [propext, Classical.choice, Quot.sound]
+SIMJECTURE_AXIOMS EulerCache.cached_conservation: [propext, Quot.sound, Classical.choice]

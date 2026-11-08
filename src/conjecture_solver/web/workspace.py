@@ -30,6 +30,7 @@ from ..workspace_projects import ProjectCollections
 from .workspace_machines import MachineWorkspace
 
 CATALOGUE = [
+    ("lean", "Lean", "Formal theorem checking and numerical-method proofs", "install"),
     ("freecad", "FreeCAD", "Parametric CAD and STEP geometry", "install"),
     ("gmsh", "Gmsh", "Geometry preparation and finite-element meshing", "install"),
     (
