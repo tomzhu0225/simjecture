@@ -4,6 +4,8 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+## 0.7.1 — 2026-11-08
+
 - Add the pinned Lean 4.24.0/Mathlib proof-checking capability (`simjecture
   install lean`, `doctor --profile lean`) and the `lean` skill. The checker
   freezes sources, audits each named theorem's transitive axioms in a separate
@@ -17,6 +19,50 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 - Let `lab.reproduce_anchor` carry an explicit execution-pool resource
   reservation without changing the packaged command or its qualification.
+
+- Add optional Conjecture 1 attention tooling (`simjecture attention`,
+  `--attention-config`) with shadow logging by default and opt-in alerts that
+  request the existing director without repair or scientific authority. Package
+  optional offline SFT and measured-return training tools with CPU-only
+  preflight; no model performance claim is made.
+
+- Fix long-campaign attention behavior: compact experiment evidence so
+  heartbeats do not invalidate in-flight scores, preserve incidents and timing
+  across long runs, align confirmation with the configured polling cadence,
+  allow multi-poll persistence when the gap is shorter than the persistence
+  window, and add pre-flight cadence liveness checks and funnel counters.
+
+- Configure the research director model and reasoning effort independently of
+  reviewers, and report the effective director route in study status.
+
+- Record interrupted native invocations explicitly: a zero process exit after
+  SIGTERM no longer implies a completed turn, and no token usage is inferred.
+
+- Let operators set initial per-experiment storage and report budgets. Values
+  are frozen in the study manifest; resume inherits them and rejects changes.
+
+- Add versioned campaign deployment manifests with `simjecture deployment
+  plan/check` readiness reports covering source and package identity, pins,
+  input hashes, disk headroom and attention-service health. A ready report is
+  operational readiness only.
+
+- Stream remote artifact collection through one read-only worker process,
+  resume identity-bound partial files after interruption, and verify SHA256
+  before publishing. Preserve terminal artifact indexes during deferred
+  collection and bind remote review documents to that index.
+
+- **Behavior change:** new studies default to `artifact_policy: remote`. Bulk
+  outputs stay on the numerical worker, terminal receipts and artifact indexes
+  are imported immediately, and `remote_inputs` places follow-up work beside the
+  data. Existing manifests without the field keep eager collection.
+
+- Fix Quantum ESPRESSO reassessment fallbacks for compact archives, return
+  `unqualified` for SCF-only records, validate projection/plot settings before
+  execution, and resolve relative deployment paths.
+
+- Retire examples that depended on the removed `v0.1`–`v0.6.2` workflows (kept
+  in the `v0.6.2` tag), reorganize the documentation and demo catalogue, and
+  refresh the plasma examples with reviewed v0.7 investigations.
 
 - Add LCB119's FuZE development record: five-level FLASH gas loading and native
   WarpX RNG/restart/axis controls, with retained figures, source hashes and
