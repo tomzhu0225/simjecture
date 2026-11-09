@@ -281,7 +281,11 @@ window.WorkspaceMonitor = {
             node("span", "", "run-elapsed"),
             node(
               "span",
-              job.native ? "CLI-managed command" : "Interactive exploration",
+              job.native
+                ? "CLI-managed command"
+                : job.subagent
+                  ? "Isolated subagent"
+                  : "Interactive exploration",
             ),
           );
           const command = node("details");

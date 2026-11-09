@@ -708,7 +708,9 @@ function renderProject(force = false) {
           el(
             "span",
             related.kind === "simulation"
-              ? "SIMULATION"
+              ? related.subagent
+                ? "SUBAGENT TASK"
+                : "SIMULATION"
               : "AUTONOMOUS STUDY",
             "link-category",
           ),

@@ -251,6 +251,7 @@ def snapshot(project, identifier, *, include_files=False, summary=False):
                 "id",
                 "name",
                 "kind",
+                "subagent",
                 "status",
                 "live",
                 "created_at",
@@ -260,6 +261,9 @@ def snapshot(project, identifier, *, include_files=False, summary=False):
             )
             if key in result
         }
+    handoff = read(root / "subagent_result.json")
+    if handoff:
+        result["subagent_result"] = handoff
     result.update(
         output=tail(root / "output.log"),
         controller_output=tail(root / "controller.log", 2000),

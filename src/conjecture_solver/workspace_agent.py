@@ -749,6 +749,45 @@ def agent_tools(root, deadline, project=None, workspace=None):
             """
             return json.dumps(workspace.machine_command(machine, command, timeout_seconds))
 
+        @tool
+        def run_subagents(tasks: list[dict], wait: bool = True) -> str:
+            """Launch 1 to 4 parallel subagents in isolated workspaces with validated handoffs.
+            Each task dict requires 'name', 'task', 'completion_criteria', 'outputs' (list of
+            relative file paths to produce), and optional 'input_files' (list of project-relative
+            files to copy) and 'timeout_seconds' (5..7200, default 600). Subagent outputs stay
+            isolated until imported via subagent_status.
+
+            Args:
+                tasks: List of 1 to 4 task specification dictionaries.
+                wait: Wait for all launched subagents to finish before returning.
+            """
+            result = workspace.start_subagents(project, dict(tasks=tasks, wait=wait))
+            for item in result.get("tasks", []):
+                emit("subagent", id=item["id"], name=item["name"], status=item.get("status"))
+            return json.dumps(result)
+
+        @tool
+        def subagent_status(
+            identifier: str = "",
+            import_files: list[str] | None = None,
+            overwrite: bool = False,
+        ) -> str:
+            """Inspect interactive subagent status, handoff results, and optionally import outputs.
+
+            Args:
+                identifier: Subagent run ID; omit to list all subagents in this conversation.
+                import_files: Optional validated deliverable paths to copy into conversation files.
+                overwrite: Allow replacing an existing conversation file when importing.
+            """
+            return json.dumps(
+                workspace.subagent_status(
+                    project,
+                    identifier or None,
+                    import_files=import_files,
+                    overwrite=overwrite,
+                )
+            )
+
         tools += [
             draft_study,
             research_tools,
@@ -757,6 +796,8 @@ def agent_tools(root, deadline, project=None, workspace=None):
             run_simulation,
             run_command,
             simulation_status,
+            run_subagents,
+            subagent_status,
             progress_update,
         ]
 
@@ -1121,6 +1162,11 @@ def run_external(prompt, root, config, turn, workspace=None, *, wall_seconds=Non
             "'timeout_seconds':3600}). Run commands in foreground; this launches a background "
             "job with permanent inputs/outputs and a live browser monitor. "
             f"w.simulation({root.parent.name!r}, 'run-id') reads status, output and files. "
+            "For parallel multi-task delegation in isolated workspaces use w.start_subagents("
+            f"{root.parent.name!r}, {{'tasks':[{{'name':'Task name','task':'Assignment',"
+            "'completion_criteria':'Criteria','outputs':['result.json'],'input_files':[]}}],"
+            "'wait':True}}) and w.subagent_status("
+            f"{root.parent.name!r}, 'subagent-id', import_files=['result.json']). "
             "Use this for numerical runs instead of untracked background shell processes. "
             "Save run-specific analysis and figures in that run's returned work_directory; "
             "keep cross-run reports and comparisons in the shared project files directory. "

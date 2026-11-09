@@ -1084,7 +1084,12 @@ class Workspace(MachineWorkspace, ProjectCollections):
                     )
                 )
             links += [
-                dict(kind="simulation", label=j["name"], simulation=j["id"])
+                dict(
+                    kind="simulation",
+                    label=j["name"],
+                    simulation=j["id"],
+                    subagent=bool(j.get("subagent")),
+                )
                 for j in simulations
                 if j.get("source_turn") == turn.name
                 and j.get("kind") == "simulation"
@@ -2471,6 +2476,45 @@ class Workspace(MachineWorkspace, ProjectCollections):
 
         with self.lock():
             return classify(self.directory(identifier), simulation, kind)
+
+    def start_subagents(self, identifier, payload):
+        from .subagents import launch_subagents
+
+        directory = self.directory(identifier)
+        with self.lock():
+            project = load(directory / "project.json")
+            config = self.project_connection(project)
+
+        def make_connection():
+            conn = self.root / "turn-connections" / f"{identifier}-subagent-{uuid.uuid4().hex}.json"
+            private_json(conn, config)
+            return conn
+
+        return launch_subagents(directory, make_connection, payload)
+
+    def subagent_status(self, identifier, subagent=None, *, import_files=None, overwrite=False):
+        from .jobs import list_jobs
+        from .subagents import import_subagent_outputs, subagent_snapshot
+
+        directory = self.directory(identifier)
+        if not subagent:
+            return {
+                "tasks": [
+                    subagent_snapshot(directory, j["id"])
+                    for j in list_jobs(directory, summary=True)
+                    if j.get("subagent")
+                ]
+            }
+        if import_files is not None:
+            with self.lock():
+                imported = import_subagent_outputs(
+                    directory,
+                    subagent,
+                    import_files or None,
+                    overwrite=bool(overwrite),
+                )
+            return subagent_snapshot(directory, subagent) | {"imported": imported}
+        return subagent_snapshot(directory, subagent)
 
 
 def record_setup_duration(directory, action, started, *, ready, changed):

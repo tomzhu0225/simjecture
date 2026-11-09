@@ -55,6 +55,13 @@ def describe_tool(name, arguments):
     elif normalized in {"run_simulation", "simulation_status"}:
         label = "Launching simulation" if normalized == "run_simulation" else "Checking simulation"
         detail = args.get("name") or args.get("identifier", "")
+    elif normalized in {"run_subagents", "subagent_status"}:
+        tasks = args.get("tasks") if isinstance(args.get("tasks"), list) else []
+        names = ", ".join(
+            str(t.get("name", "")) for t in tasks if isinstance(t, dict) and t.get("name")
+        )
+        label = "Running subagents" if normalized == "run_subagents" else "Checking subagent"
+        detail = names or args.get("identifier", "")
     elif "web" in normalized or normalized == "fetch_page":
         label, detail = "Searching or reading the web", args.get("query") or args.get("url", "")
     elif normalized == "progress_update":
