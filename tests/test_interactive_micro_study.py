@@ -49,8 +49,9 @@ def test_describe_tool_recognizes_micro_study_and_review():
 
 def test_review_work_freezes_files_and_records_verdict(tmp_path: Path, monkeypatch):
     workspace = Workspace(tmp_path / ".workspace")
-    workspace.save_api({"base_url": "http://127.0.0.1:9999/v1", "model": "test-reviewer"})
+    workspace.save_api({"base_url": "http://127.0.0.1:9999/v1"})
     project = workspace.create({"name": "Audit project"})
+    workspace.select_agent(project["id"], {"backend": "builtin", "model": "test-reviewer"})
     project_dir = workspace.directory(project["id"])
     (project_dir / "files/metrics.json").write_text('{"l2_error": 0.0012, "grid": 32}\n')
 
@@ -96,8 +97,9 @@ def test_review_work_freezes_files_and_records_verdict(tmp_path: Path, monkeypat
 
 def test_run_micro_study_materializes_and_exports_summary(tmp_path: Path, monkeypatch):
     workspace = Workspace(tmp_path / ".workspace")
-    workspace.save_api({"base_url": "http://127.0.0.1:9999/v1", "model": "test-model"})
+    workspace.save_api({"base_url": "http://127.0.0.1:9999/v1"})
     project = workspace.create({"name": "Micro-study project"})
+    workspace.select_agent(project["id"], {"backend": "builtin", "model": "test-model"})
     project_dir = workspace.directory(project["id"])
     (project_dir / "files/solver.py").write_text("print('ok')\n")
 
