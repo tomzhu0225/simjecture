@@ -75,8 +75,9 @@ def test_describe_tool_recognizes_subagent_tools():
 
 def test_subagent_handoff_validation_and_import(tmp_path: Path):
     workspace = Workspace(tmp_path / ".workspace")
-    workspace.save_api({"base_url": "http://127.0.0.1:9999/v1", "model": "test-model"})
+    workspace.save_api({"base_url": "http://127.0.0.1:9999/v1"})
     project = workspace.create({"name": "Subagent test"})
+    workspace.select_agent(project["id"], {"backend": "builtin", "model": "test-model"})
     project_dir = workspace.directory(project["id"])
     (project_dir / "files/input.txt").write_text("alpha=0.25\n")
 
@@ -145,8 +146,9 @@ def test_subagent_handoff_validation_and_import(tmp_path: Path):
 
 def test_run_subagent_handles_agent_execution(tmp_path: Path, monkeypatch):
     workspace = Workspace(tmp_path / ".workspace")
-    workspace.save_api({"base_url": "http://127.0.0.1:9999/v1", "model": "test-model"})
+    workspace.save_api({"base_url": "http://127.0.0.1:9999/v1"})
     project = workspace.create({"name": "Subagent runner"})
+    workspace.select_agent(project["id"], {"backend": "builtin", "model": "test-model"})
     project_dir = workspace.directory(project["id"])
 
     real_popen = subprocess.Popen
