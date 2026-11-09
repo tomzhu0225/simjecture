@@ -749,6 +749,68 @@ def agent_tools(root, deadline, project=None, workspace=None):
             """
             return json.dumps(workspace.machine_command(machine, command, timeout_seconds))
 
+        @tool
+        def run_micro_study(
+            question: str,
+            success_criteria: str,
+            constraints: str = "",
+            minutes: float = 15.0,
+            completion_policy: str = "answer",
+            instrument: str = "",
+            input_files: list[str] | None = None,
+            wait: bool = True,
+        ) -> str:
+            """Run a bounded, self-contained autonomous verification study within this turn.
+            Exports a summary ledger file into the conversation files directory and returns
+            the study status, recorded experiments, and study:<campaign> link.
+
+            Args:
+                question: Precise hypothesis or claim to test.
+                success_criteria: Measurements and controls required to answer it.
+                constraints: Fixed assumptions or required tools.
+                minutes: Wall-clock budget in minutes (1 to 60, default 15).
+                completion_policy: answer accepts a negative result; repair seeks a tested repair.
+                instrument: Optional required installed solver capability ID.
+                input_files: Optional project-relative input files to copy; omit for all.
+                wait: Wait for completion and return the self-contained study summary.
+            """
+            result = workspace.run_micro_study(
+                project,
+                dict(
+                    question=question,
+                    success_criteria=success_criteria,
+                    constraints=constraints,
+                    minutes=minutes,
+                    completion_policy=completion_policy,
+                    instrument=instrument,
+                    input_files=input_files,
+                    wait=wait,
+                ),
+            )
+            emit("micro_study", campaign=result["campaign"], status=result["status"])
+            return json.dumps(result)
+
+        @tool
+        def review_work(
+            claim: str,
+            evidence_files: list[str],
+            criteria: str = "",
+        ) -> str:
+            """Run an on-demand independent skeptical review over frozen SHA-256 project files.
+            Saves an immutable review packet and writes a REVIEW_<id>.md report in project files.
+
+            Args:
+                claim: The scientific or technical claim to audit against the evidence.
+                evidence_files: Project-relative file paths (1 to 32) supporting the claim.
+                criteria: Specific controls or assumptions the reviewer should verify.
+            """
+            result = workspace.review_work(
+                project,
+                dict(claim=claim, evidence_files=evidence_files, criteria=criteria),
+            )
+            emit("review", review_id=result["review_id"], status=result["status"])
+            return json.dumps(result)
+
         tools += [
             draft_study,
             research_tools,
@@ -757,6 +819,8 @@ def agent_tools(root, deadline, project=None, workspace=None):
             run_simulation,
             run_command,
             simulation_status,
+            run_micro_study,
+            review_work,
             progress_update,
         ]
 
@@ -1121,6 +1185,11 @@ def run_external(prompt, root, config, turn, workspace=None, *, wall_seconds=Non
             "'timeout_seconds':3600}). Run commands in foreground; this launches a background "
             "job with permanent inputs/outputs and a live browser monitor. "
             f"w.simulation({root.parent.name!r}, 'run-id') reads status, output and files. "
+            "For a self-contained bounded autonomous study inside a turn use w.run_micro_study("
+            f"{root.parent.name!r}, {{'question':'Claim','success_criteria':'Criteria',"
+            "'minutes':15,'wait':True}}), or for an on-demand independent skeptical audit of "
+            f"project files use w.review_work({root.parent.name!r}, {{'claim':'Claim',"
+            "'evidence_files':['result.json']}}). "
             "Use this for numerical runs instead of untracked background shell processes. "
             "Save run-specific analysis and figures in that run's returned work_directory; "
             "keep cross-run reports and comparisons in the shared project files directory. "

@@ -709,7 +709,9 @@ function renderProject(force = false) {
             "span",
             related.kind === "simulation"
               ? "SIMULATION"
-              : "AUTONOMOUS STUDY",
+              : related.micro_study
+                ? "MICRO-STUDY"
+                : "AUTONOMOUS STUDY",
             "link-category",
           ),
           el("strong", related.label),
