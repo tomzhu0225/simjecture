@@ -711,7 +711,9 @@ function renderProject(force = false) {
               ? related.subagent
                 ? "SUBAGENT TASK"
                 : "SIMULATION"
-              : "AUTONOMOUS STUDY",
+              : related.micro_study
+                ? "MICRO-STUDY"
+                : "AUTONOMOUS STUDY",
             "link-category",
           ),
           el("strong", related.label),

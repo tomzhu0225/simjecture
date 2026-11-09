@@ -1071,7 +1071,12 @@ class Workspace(MachineWorkspace, ProjectCollections):
             if project.get("brief_source_turn") == turn.name and not project.get("brief_launched"):
                 links.append(dict(kind="brief", label="Review autonomous study proposal"))
             links += [
-                dict(kind="study", label=s["question"], campaign=s["campaign"])
+                dict(
+                    kind="study",
+                    label=s["question"],
+                    campaign=s["campaign"],
+                    micro_study=bool(s.get("micro_study")),
+                )
                 for s in project.get("studies", [])
                 if s.get("source_turn") == turn.name
             ]
@@ -2515,6 +2520,16 @@ class Workspace(MachineWorkspace, ProjectCollections):
                 )
             return subagent_snapshot(directory, subagent) | {"imported": imported}
         return subagent_snapshot(directory, subagent)
+
+    def run_micro_study(self, identifier, payload, application=None):
+        from .micro_study import run_micro_study
+
+        return run_micro_study(self, identifier, payload, application=application)
+
+    def review_work(self, identifier, payload):
+        from .micro_study import review_work
+
+        return review_work(self, identifier, payload)
 
 
 def record_setup_duration(directory, action, started, *, ready, changed):

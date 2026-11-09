@@ -62,6 +62,12 @@ def describe_tool(name, arguments):
         )
         label = "Running subagents" if normalized == "run_subagents" else "Checking subagent"
         detail = names or args.get("identifier", "")
+    elif normalized == "run_micro_study":
+        label = "Running micro-study"
+        detail = args.get("question", "")
+    elif normalized == "review_work":
+        label = "Independent review"
+        detail = args.get("claim", "")
     elif "web" in normalized or normalized == "fetch_page":
         label, detail = "Searching or reading the web", args.get("query") or args.get("url", "")
     elif normalized == "progress_update":
